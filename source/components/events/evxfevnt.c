@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -157,11 +157,11 @@ AcpiEnable (void)
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-    AcpiGbl_OriginalMode = AcpiHwGetMode();
+    AcpiGbl_OriginalMode = AcpiHwGetMode ();
 
     if (AcpiGbl_OriginalMode == SYS_MODE_ACPI)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Already in ACPI mode\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Already in ACPI mode.\n"));
     }
 
     else
@@ -204,13 +204,16 @@ AcpiDisable (void)
     FUNCTION_TRACE ("AcpiDisable");
 
 
-    /* Restore original mode  */
-
-    Status = AcpiHwSetMode (AcpiGbl_OriginalMode);
-    if (ACPI_FAILURE (Status))
+    if (AcpiHwGetMode () != AcpiGbl_OriginalMode)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unable to transition to original mode"));
-        return_ACPI_STATUS (Status);
+        /* Restore original mode  */
+    
+        Status = AcpiHwSetMode (AcpiGbl_OriginalMode);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unable to transition to original mode"));
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* Unload the SCI interrupt handler  */
