@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psscope - Parser scope stack management routines
- *              $Revision: 1.30 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,7 +119,7 @@
 #include "acparser.h"
 
 #define _COMPONENT          ACPI_PARSER
-        MODULE_NAME         ("psscope")
+        ACPI_MODULE_NAME    ("psscope")
 
 
 /*******************************************************************************
@@ -160,8 +160,9 @@ BOOLEAN
 AcpiPsHasCompletedScope (
     ACPI_PARSE_STATE        *ParserState)
 {
-    return ((BOOLEAN) ((ParserState->Aml >= ParserState->Scope->ParseScope.ArgEnd ||
-                        !ParserState->Scope->ParseScope.ArgCount)));
+    return ((BOOLEAN)
+            ((ParserState->Aml >= ParserState->Scope->ParseScope.ArgEnd ||
+             !ParserState->Scope->ParseScope.ArgCount)));
 }
 
 
@@ -186,7 +187,7 @@ AcpiPsInitScope (
     ACPI_GENERIC_STATE      *Scope;
 
 
-    FUNCTION_TRACE_PTR ("PsInitScope", RootOp);
+    ACPI_FUNCTION_TRACE_PTR ("PsInitScope", RootOp);
 
 
     Scope = AcpiUtCreateGenericState ();
@@ -233,15 +234,14 @@ AcpiPsPushScope (
     ACPI_GENERIC_STATE      *Scope;
 
 
-    FUNCTION_TRACE_PTR ("PsPushScope", Op);
+    ACPI_FUNCTION_TRACE_PTR ("PsPushScope", Op);
 
 
     Scope = AcpiUtCreateGenericState ();
     if (!Scope)
     {
-        return (AE_NO_MEMORY);
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
-
 
     Scope->Common.DataType         = ACPI_DESC_TYPE_STATE_PSCOPE;
     Scope->ParseScope.Op           = Op;
@@ -253,19 +253,17 @@ AcpiPsPushScope (
 
     AcpiUtPushGenericState (&ParserState->Scope, Scope);
 
-
     if (ArgCount == ACPI_VAR_ARGS)
     {
         /* multiple arguments */
 
         Scope->ParseScope.ArgEnd = ParserState->PkgEnd;
     }
-
     else
     {
         /* single argument */
 
-        Scope->ParseScope.ArgEnd = ACPI_MAX_AML;
+        Scope->ParseScope.ArgEnd = ACPI_TO_POINTER (ACPI_MAX_PTR);
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -298,7 +296,7 @@ AcpiPsPopScope (
     ACPI_GENERIC_STATE      *Scope = ParserState->Scope;
 
 
-    FUNCTION_TRACE ("PsPopScope");
+    ACPI_FUNCTION_TRACE ("PsPopScope");
 
 
     /*
@@ -319,7 +317,6 @@ AcpiPsPopScope (
 
         AcpiUtDeleteGenericState (Scope);
     }
-
     else
     {
         /* empty parse stack, prepare to fetch next opcode */
@@ -328,7 +325,6 @@ AcpiPsPopScope (
         *ArgList                = 0;
         *ArgCount               = 0;
     }
-
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Popped Op %p Args %X\n", *Op, *ArgCount));
     return_VOID;
@@ -354,14 +350,14 @@ AcpiPsCleanupScope (
 {
     ACPI_GENERIC_STATE      *Scope;
 
-    FUNCTION_TRACE_PTR ("PsCleanupScope", ParserState);
+
+    ACPI_FUNCTION_TRACE_PTR ("PsCleanupScope", ParserState);
 
 
     if (!ParserState)
     {
-        return;
+        return_VOID;
     }
-
 
     /* Delete anything on the scope stack */
 

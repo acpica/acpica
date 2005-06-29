@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.51 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,9 +118,41 @@
 #include "acpi.h"
 #include "acparser.h"
 #include "amlcode.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psutils")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsCreateScopeOp
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      ScopeOp
+ *
+ * DESCRIPTION: Create a Scope and associated namepath op with the root name
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiPsCreateScopeOp (
+    void)
+{
+    ACPI_PARSE_OBJECT       *ScopeOp;
+
+
+    ScopeOp = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!ScopeOp)
+    {
+        return (NULL);
+    }
+
+
+    ScopeOp->Named.Name = ACPI_ROOT_NAME;
+    return (ScopeOp);
+}
 
 
 /*******************************************************************************
@@ -148,8 +180,9 @@ AcpiPsInitOp (
     Op->Common.DataType = ACPI_DESC_TYPE_PARSER;
     Op->Common.AmlOpcode = Opcode;
 
-    ACPI_DEBUG_ONLY_MEMBERS (ACPI_STRNCPY (Op->Common.AmlOpName,
-            (AcpiPsGetOpcodeInfo (Opcode))->Name, sizeof (Op->Common.AmlOpName)));
+    ACPI_DISASM_ONLY_MEMBERS (ACPI_STRNCPY (Op->Common.AmlOpName,
+            (AcpiPsGetOpcodeInfo (Opcode))->Name,
+                sizeof (Op->Common.AmlOpName)));
 }
 
 
@@ -171,10 +204,9 @@ ACPI_PARSE_OBJECT*
 AcpiPsAllocOp (
     UINT16                  Opcode)
 {
-    ACPI_PARSE_OBJECT       *Op = NULL;
-    UINT32                  Size;
-    UINT8                   Flags;
+    ACPI_PARSE_OBJECT       *Op;
     const ACPI_OPCODE_INFO  *OpInfo;
+    UINT8                   Flags = ACPI_PARSEOP_GENERIC;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -182,38 +214,33 @@ AcpiPsAllocOp (
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
 
-    /* Allocate the minimum required size object */
+    /* Determine type of ParseOp required */
 
     if (OpInfo->Flags & AML_DEFER)
     {
-        Size = sizeof (ACPI_PARSE_OBJ_NAMED);
         Flags = ACPI_PARSEOP_DEFERRED;
     }
     else if (OpInfo->Flags & AML_NAMED)
     {
-        Size = sizeof (ACPI_PARSE_OBJ_NAMED);
         Flags = ACPI_PARSEOP_NAMED;
     }
     else if (Opcode == AML_INT_BYTELIST_OP)
     {
-        Size = sizeof (ACPI_PARSE_OBJ_NAMED);
         Flags = ACPI_PARSEOP_BYTELIST;
     }
-    else
-    {
-        Size = sizeof (ACPI_PARSE_OBJ_COMMON);
-        Flags = ACPI_PARSEOP_GENERIC;
-    }
 
-    if (Size == sizeof (ACPI_PARSE_OBJ_COMMON))
+    /* Allocate the minimum required size object */
+
+    if (Flags == ACPI_PARSEOP_GENERIC)
     {
-        /*
-         * The generic op is by far the most common (16 to 1)
-         */
+        /* The generic op (default) is by far the most common (16 to 1) */
+
         Op = AcpiUtAcquireFromCache (ACPI_MEM_LIST_PSNODE);
     }
     else
     {
+        /* Extended parseop */
+
         Op = AcpiUtAcquireFromCache (ACPI_MEM_LIST_PSNODE_EXT);
     }
 
@@ -254,7 +281,7 @@ AcpiPsFreeOp (
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "Free retval op: %p\n", Op));
     }
 
-    if (Op->Common.Flags == ACPI_PARSEOP_GENERIC)
+    if (Op->Common.Flags & ACPI_PARSEOP_GENERIC)
     {
         AcpiUtReleaseToCache (ACPI_MEM_LIST_PSNODE, Op);
     }
@@ -265,6 +292,7 @@ AcpiPsFreeOp (
 }
 
 
+#ifdef ACPI_ENABLE_OBJECT_CACHE
 /*******************************************************************************
  *
  * FUNCTION:    AcpiPsDeleteParseCache
@@ -288,6 +316,7 @@ AcpiPsDeleteParseCache (
     AcpiUtDeleteGenericCache (ACPI_MEM_LIST_PSNODE_EXT);
     return_VOID;
 }
+#endif
 
 
 /*******************************************************************************

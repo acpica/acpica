@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.40 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -268,74 +268,6 @@ AcpiPsAppendArg (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsGetChild
- *
- * PARAMETERS:  Op              - Get the child of this Op
- *
- * RETURN:      Child Op, Null if none is found.
- *
- * DESCRIPTION: Get op's children or NULL if none
- *
- ******************************************************************************/
-
-ACPI_PARSE_OBJECT *
-AcpiPsGetChild (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    ACPI_PARSE_OBJECT       *Child = NULL;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    switch (Op->Common.AmlOpcode)
-    {
-    case AML_SCOPE_OP:
-    case AML_ELSE_OP:
-    case AML_DEVICE_OP:
-    case AML_THERMAL_ZONE_OP:
-    case AML_INT_METHODCALL_OP:
-
-        Child = AcpiPsGetArg (Op, 0);
-        break;
-
-
-    case AML_BUFFER_OP:
-    case AML_PACKAGE_OP:
-    case AML_METHOD_OP:
-    case AML_IF_OP:
-    case AML_WHILE_OP:
-    case AML_FIELD_OP:
-
-        Child = AcpiPsGetArg (Op, 1);
-        break;
-
-
-    case AML_POWER_RES_OP:
-    case AML_INDEX_FIELD_OP:
-
-        Child = AcpiPsGetArg (Op, 2);
-        break;
-
-
-    case AML_PROCESSOR_OP:
-    case AML_BANK_FIELD_OP:
-
-        Child = AcpiPsGetArg (Op, 3);
-        break;
-
-
-    default:
-        /* All others have no children */
-        break;
-    }
-
-    return (Child);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiPsGetDepthNext
  *
  * PARAMETERS:  Origin          - Root of subtree to search
@@ -414,5 +346,75 @@ AcpiPsGetDepthNext (
 
     return (Next);
 }
+
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetChild
+ *
+ * PARAMETERS:  Op              - Get the child of this Op
+ *
+ * RETURN:      Child Op, Null if none is found.
+ *
+ * DESCRIPTION: Get op's children or NULL if none
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiPsGetChild (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *Child = NULL;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    switch (Op->Common.AmlOpcode)
+    {
+    case AML_SCOPE_OP:
+    case AML_ELSE_OP:
+    case AML_DEVICE_OP:
+    case AML_THERMAL_ZONE_OP:
+    case AML_INT_METHODCALL_OP:
+
+        Child = AcpiPsGetArg (Op, 0);
+        break;
+
+
+    case AML_BUFFER_OP:
+    case AML_PACKAGE_OP:
+    case AML_METHOD_OP:
+    case AML_IF_OP:
+    case AML_WHILE_OP:
+    case AML_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 1);
+        break;
+
+
+    case AML_POWER_RES_OP:
+    case AML_INDEX_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 2);
+        break;
+
+
+    case AML_PROCESSOR_OP:
+    case AML_BANK_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 3);
+        break;
+
+
+    default:
+        /* All others have no children */
+        break;
+    }
+
+    return (Child);
+}
+#endif
 
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.148 $
+ *              $Revision: 1.149 $
  *
  *****************************************************************************/
 
@@ -217,7 +217,7 @@ AcpiPsPeekOpcode (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiPsCompleteThisOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
@@ -394,7 +394,7 @@ Cleanup:
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiPsNextParseState (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op,
@@ -517,7 +517,7 @@ AcpiPsNextParseState (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiPsParseLoop (
     ACPI_WALK_STATE         *WalkState)
 {
@@ -573,7 +573,8 @@ AcpiPsParseLoop (
                             AcpiFormatException (Status)));
 
                     }
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "GetPredicate Failed, %s\n",
+                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                        "GetPredicate Failed, %s\n",
                         AcpiFormatException (Status)));
                     return_ACPI_STATUS (Status);
                 }
@@ -606,7 +607,7 @@ AcpiPsParseLoop (
             /* Get the next opcode from the AML stream */
 
             WalkState->AmlOffset = (UINT32) ACPI_PTR_DIFF (ParserState->Aml,
-                                                           ParserState->AmlStart);
+                                                    ParserState->AmlStart);
             WalkState->Opcode    = AcpiPsPeekOpcode (ParserState);
 
             /*
