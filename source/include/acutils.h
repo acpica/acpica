@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.156 $
+ *       $Revision: 1.157 $
  *
  *****************************************************************************/
 
@@ -200,6 +200,10 @@ AcpiUtGetTypeName (
 
 char *
 AcpiUtGetNodeName (
+    void                    *Object);
+
+char *
+AcpiUtGetDescriptorName (
     void                    *Object);
 
 char *
