@@ -146,6 +146,10 @@ SOURCE=..\..\Subsystem\Common\cmobject.c
 
 SOURCE=..\..\Subsystem\Common\cmsize.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Common\cmstate.c
+# End Source File
 # End Group
 # Begin Group "Events"
 
