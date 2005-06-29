@@ -526,12 +526,6 @@ CmDumpCurrentAllocations (
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
         ("Total number of unfreed allocations = %d\n", i));
    
-#if defined _RPARSER    
-    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-        ("Stack Ptrs: Obj=%d Mth=%d\n",
-            PsxObjStackLevel(), PsxMthStackLevel()));
-#endif
-    
     return_VOID;
 }   
 
