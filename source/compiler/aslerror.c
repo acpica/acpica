@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.81 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -136,7 +136,7 @@
  *
  ******************************************************************************/
 
-void
+static void
 AeAddToErrorLog (
     ASL_ERROR_MSG           *Enode)
 {
@@ -221,8 +221,10 @@ AePrintException (
     FILE                    *SourceFile;
 
 
-    /* Only listing files have a header, and remarks/optimizations are always output */
-
+    /*
+     * Only listing files have a header, and remarks/optimizations
+     * are always output
+     */
     if (!Header)
     {
         /* Ignore remarks if requested */
@@ -274,17 +276,20 @@ AePrintException (
                  * Seek to the offset in the combined source file, read the source
                  * line, and write it to the output.
                  */
-                Actual = fseek (SourceFile, (long) Enode->LogicalByteOffset, SEEK_SET);
+                Actual = fseek (SourceFile, (long) Enode->LogicalByteOffset,
+                            SEEK_SET);
                 if (Actual)
                 {
-                    fprintf (OutputFile, "[*** iASL: Seek error on source code temp file ***]");
+                    fprintf (OutputFile,
+                        "[*** iASL: Seek error on source code temp file ***]");
                 }
                 else
                 {
                     Actual = fread (&SourceByte, 1, 1, SourceFile);
                     if (!Actual)
                     {
-                        fprintf (OutputFile, "[*** iASL: Read error on source code temp file ***]");
+                        fprintf (OutputFile,
+                            "[*** iASL: Read error on source code temp file ***]");
                     }
 
                     else while (Actual && SourceByte && (SourceByte != '\n'))
@@ -373,9 +378,7 @@ AePrintException (
         }
         else
         {
-            fprintf (OutputFile, " %s %s\n\n",
-                        MainMessage,
-                        ExtraMessage);
+            fprintf (OutputFile, " %s %s\n\n", MainMessage, ExtraMessage);
         }
     }
 }

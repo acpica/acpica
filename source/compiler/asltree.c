@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.44 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -137,13 +137,15 @@
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT *
-TrGetNextNode (void)
+static ACPI_PARSE_OBJECT *
+TrGetNextNode (
+    void)
 {
 
     if (Gbl_NodeCacheNext >= Gbl_NodeCacheLast)
     {
-        Gbl_NodeCacheNext = UtLocalCalloc (sizeof (ACPI_PARSE_OBJECT) * ASL_NODE_CACHE_SIZE);
+        Gbl_NodeCacheNext = UtLocalCalloc (sizeof (ACPI_PARSE_OBJECT) *
+                                ASL_NODE_CACHE_SIZE);
         Gbl_NodeCacheLast = Gbl_NodeCacheNext + ASL_NODE_CACHE_SIZE;
     }
 
@@ -179,8 +181,7 @@ TrAllocateNode (
     Op->Asl.LogicalByteOffset = Gbl_CurrentLineOffset;
     Op->Asl.Column            = Gbl_CurrentColumn;
 
-    strncpy (Op->Asl.ParseOpName, UtGetOpName (ParseOpcode), 12);
-
+    UtSetParseOpName (Op);
     return Op;
 }
 
@@ -202,6 +203,8 @@ void
 TrReleaseNode (
     ACPI_PARSE_OBJECT       *Op)
 {
+
+    return;
 }
 
 
@@ -227,7 +230,6 @@ TrUpdateNode (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-
     if (!Op)
     {
         return NULL;
@@ -240,8 +242,30 @@ TrUpdateNode (
 
     /* Assign new opcode and name */
 
+    if (Op->Asl.ParseOpcode == PARSEOP_ONES)
+    {
+        switch (ParseOpcode)
+        {
+        case PARSEOP_BYTECONST:
+            Op->Asl.Value.Integer = 0xFF;
+            break;
+
+        case PARSEOP_WORDCONST:
+            Op->Asl.Value.Integer = 0xFFFF;
+            break;
+
+        case PARSEOP_DWORDCONST:
+            Op->Asl.Value.Integer = 0xFFFFFFFF;
+            break;
+
+        default:
+            /* Don't care about others, don't need to check QWORD */
+            break;
+        }
+    }
+
     Op->Asl.ParseOpcode = (UINT16) ParseOpcode;
-    strncpy (Op->Asl.ParseOpName, UtGetOpName (ParseOpcode), 12);
+    UtSetParseOpName (Op);
 
     /*
      * For the BYTE, WORD, and DWORD constants, make sure that the integer
@@ -272,9 +296,85 @@ TrUpdateNode (
 
 /*******************************************************************************
  *
+ * FUNCTION:    TrGetNodeFlagName
+ *
+ * PARAMETERS:  Flags               - Flags word to be decoded
+ *
+ * RETURN:      Name string
+ *
+ * DESCRIPTION: Decode a flags word
+ *
+ ******************************************************************************/
+
+static char *
+TrGetNodeFlagName (
+    UINT32                  Flags)
+{
+
+    switch (Flags)
+    {
+    case NODE_VISITED:
+        return ("NODE_VISITED");
+
+    case NODE_AML_PACKAGE:
+        return ("NODE_AML_PACKAGE");
+
+    case NODE_IS_TARGET:
+        return ("NODE_IS_TARGET");
+
+    case NODE_IS_RESOURCE_DESC:
+        return ("NODE_IS_RESOURCE_DESC");
+
+    case NODE_IS_RESOURCE_FIELD:
+        return ("NODE_IS_RESOURCE_FIELD");
+
+    case NODE_HAS_NO_EXIT:
+        return ("NODE_HAS_NO_EXIT");
+
+    case NODE_IF_HAS_NO_EXIT:
+        return ("NODE_IF_HAS_NO_EXIT");
+
+    case NODE_NAME_INTERNALIZED:
+        return ("NODE_NAME_INTERNALIZED");
+
+    case NODE_METHOD_NO_RETVAL:
+        return ("NODE_METHOD_NO_RETVAL");
+
+    case NODE_METHOD_SOME_NO_RETVAL:
+        return ("NODE_METHOD_SOME_NO_RETVAL");
+
+    case NODE_RESULT_NOT_USED:
+        return ("NODE_RESULT_NOT_USED");
+
+    case NODE_METHOD_TYPED:
+        return ("NODE_METHOD_TYPED");
+
+    case NODE_IS_BIT_OFFSET:
+        return ("NODE_IS_BIT_OFFSET");
+
+    case NODE_COMPILE_TIME_CONST:
+        return ("NODE_COMPILE_TIME_CONST");
+
+    case NODE_IS_TERM_ARG:
+        return ("NODE_IS_TERM_ARG");
+
+    case NODE_WAS_ONES_OP:
+        return ("NODE_WAS_ONES_OP");
+
+    case NODE_IS_NAME_DECLARATION:
+        return ("NODE_IS_NAME_DECLARATION");
+
+    default:
+        return ("Multiple Flags (or unknown flag) set");
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    TrSetNodeFlags
  *
- * PARAMETERS:  Op                - An existing parse node
+ * PARAMETERS:  Op                  - An existing parse node
  *              Flags               - New flags word
  *
  * RETURN:      The updated node
@@ -290,14 +390,16 @@ TrSetNodeFlags (
 {
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nSetNodeFlags: Op %p, %d\n\n", Op, Flags);
+        "\nSetNodeFlags: Op %p, %8.8X %s\n\n", Op, Flags,
+        TrGetNodeFlagName (Flags));
 
     if (!Op)
     {
         return NULL;
     }
 
-    Op->Asl.CompileFlags |= (UINT16) Flags;
+    Op->Asl.CompileFlags |= Flags;
+
     return Op;
 }
 
@@ -388,8 +490,8 @@ TrCreateValuedLeafNode (
 
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %8.8X%8.8X  ",
-        Op->Asl.LineNumber, Op, UtGetOpName(ParseOpcode), 
-        ACPI_HIDWORD (Value), ACPI_LODWORD (Value));
+        Op->Asl.LineNumber, Op, UtGetOpName(ParseOpcode),
+        ACPI_FORMAT_UINT64 (Value));
     Op->Asl.Value.Integer = Value;
 
     switch (ParseOpcode)
@@ -466,13 +568,13 @@ TrCreateNode (
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateNode  Line %d NewParent %p Child %d Op %s  ",
         Op->Asl.LineNumber, Op, NumChildren, UtGetOpName(ParseOpcode));
-    RootNode = Op;
 
     /* Some extra debug output based on the parse opcode */
 
     switch (ParseOpcode)
     {
     case PARSEOP_DEFINITIONBLOCK:
+        RootNode = Op;
         DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
@@ -586,11 +688,11 @@ TrLinkChildren (
         "\nLinkChildren  Line [%d to %d] NewParent %p Child %d Op %s  ",
         Op->Asl.LineNumber, Op->Asl.EndLine,
         Op, NumChildren, UtGetOpName(Op->Asl.ParseOpcode));
-    RootNode = Op;
 
     switch (Op->Asl.ParseOpcode)
     {
     case PARSEOP_DEFINITIONBLOCK:
+        RootNode = Op;
         DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
@@ -617,7 +719,8 @@ TrLinkChildren (
 
         if ((Child == PrevChild) && (Child != NULL))
         {
-            AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Child, "Child node list invalid");
+            AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Child,
+                "Child node list invalid");
             return Op;
         }
 
@@ -719,8 +822,10 @@ TrLinkPeerNode (
     if (Op1 == Op2)
     {
         DbgPrint (ASL_DEBUG_OUTPUT,
-            "\n\n************* Internal error, linking node to itself %p\n\n\n", Op1);
-        AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op1, "Linking node to itself");
+            "\n\n************* Internal error, linking node to itself %p\n\n\n",
+            Op1);
+        AslError (ASL_WARNING, ASL_MSG_COMPILER_INTERNAL, Op1,
+            "Linking node to itself");
         return Op1;
     }
 
@@ -860,13 +965,13 @@ TrLinkChildNode (
  *              AscendingCallback       - Called during tree ascent
  *              Context                 - To be passed to the callbacks
  *
- * RETURN:      None
+ * RETURN:      Status from callback(s)
  *
  * DESCRIPTION: Walk the entire parse tree.
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 TrWalkParseTree (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Visitation,
@@ -876,11 +981,13 @@ TrWalkParseTree (
 {
     UINT32                  Level;
     BOOLEAN                 NodePreviouslyVisited;
+    ACPI_PARSE_OBJECT       *StartOp = Op;
+    ACPI_STATUS             Status;
 
 
     if (!RootNode)
     {
-        return;
+        return (AE_OK);
     }
 
     Level = 0;
@@ -897,16 +1004,31 @@ TrWalkParseTree (
                 /*
                  * Let the callback process the node.
                  */
-                DescendingCallback (Op, Level, Context);
-
-                /* Visit children first, once */
-
-                if (Op->Asl.Child)
+                Status = DescendingCallback (Op, Level, Context);
+                if (ACPI_SUCCESS (Status))
                 {
-                    Level++;
-                    Op = Op->Asl.Child;
-                    continue;
+                    /* Visit children first, once */
+
+                    if (Op->Asl.Child)
+                    {
+                        Level++;
+                        Op = Op->Asl.Child;
+                        continue;
+                    }
                 }
+                else if (Status != AE_CTRL_DEPTH)
+                {
+                    /* Exit immediately on any error */
+
+                    return (Status);
+                }
+            }
+
+            /* Terminate walk at start op */
+
+            if (Op == StartOp)
+            {
+                break;
             }
 
             /* No more children, visit peers */
@@ -944,7 +1066,11 @@ TrWalkParseTree (
                  * Let the callback process the node.
                  *
                  */
-                AscendingCallback (Op, Level, Context);
+                Status = AscendingCallback (Op, Level, Context);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
             }
             else
             {
@@ -953,6 +1079,13 @@ TrWalkParseTree (
                 Level++;
                 Op = Op->Asl.Child;
                 continue;
+            }
+
+            /* Terminate walk at start op */
+
+            if (Op == StartOp)
+            {
+                break;
             }
 
             /* No more children, visit peers */
@@ -983,23 +1116,42 @@ TrWalkParseTree (
         {
             if (NodePreviouslyVisited)
             {
-                AscendingCallback (Op, Level, Context);
+                Status = AscendingCallback (Op, Level, Context);
+                if (ACPI_FAILURE (Status))
+                {
+                    return (Status);
+                }
             }
             else
             {
                 /*
                  * Let the callback process the node.
                  */
-                DescendingCallback (Op, Level, Context);
-
-                /* Visit children first, once */
-
-                if (Op->Asl.Child)
+                Status = DescendingCallback (Op, Level, Context);
+                if (ACPI_SUCCESS (Status))
                 {
-                    Level++;
-                    Op = Op->Asl.Child;
-                    continue;
+                    /* Visit children first, once */
+
+                    if (Op->Asl.Child)
+                    {
+                        Level++;
+                        Op = Op->Asl.Child;
+                        continue;
+                    }
                 }
+                else if (Status != AE_CTRL_DEPTH)
+                {
+                    /* Exit immediately on any error */
+
+                    return (Status);
+                }
+            }
+
+            /* Terminate walk at start op */
+
+            if (Op == StartOp)
+            {
+                break;
             }
 
             /* No more children, visit peers */
@@ -1027,6 +1179,10 @@ TrWalkParseTree (
         /* No other types supported */
         break;
     }
+
+    /* If we get here, the walk completed with no errors */
+
+    return (AE_OK);
 }
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.36 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -136,7 +136,7 @@
  *
  ******************************************************************************/
 
-void
+static void
 OpnDoMethod (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -160,7 +160,7 @@ OpnDoMethod (
     Next = Next->Asl.Next;
     if (Next->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
-        NumArgs = Next->Asl.Value.Integer8;
+        NumArgs = (UINT8) Next->Asl.Value.Integer;
         Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
     }
 
@@ -169,7 +169,7 @@ OpnDoMethod (
     Next = Next->Asl.Next;
     if (Next->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
-        Serialized = Next->Asl.Value.Integer8;
+        Serialized = (UINT8) Next->Asl.Value.Integer;
         Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
     }
 
@@ -178,7 +178,7 @@ OpnDoMethod (
     Next = Next->Asl.Next;
     if (Next->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
-        Concurrency = Next->Asl.Value.Integer8;
+        Concurrency = (UINT8) Next->Asl.Value.Integer;
     }
 
     /* Put the bits in their proper places */
@@ -214,7 +214,7 @@ OpnDoMethod (
  *
  ******************************************************************************/
 
-void
+static void
 OpnDoFieldCommon (
     ACPI_PARSE_OBJECT       *FieldOp,
     ACPI_PARSE_OBJECT       *Op)
@@ -227,27 +227,28 @@ OpnDoFieldCommon (
     UINT8                   LockRule;
     UINT8                   UpdateRule;
     UINT8                   FieldFlags;
+    UINT32                  MinimumLength;
 
 
     /* AccessType -- not optional, so no need to check for DEFAULT_ARG */
 
-    AccessType = Op->Asl.Value.Integer8;
+    AccessType = (UINT8) Op->Asl.Value.Integer;
     Op->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
 
     /* Set the access type in the parent (field) node for use later */
 
-    FieldOp->Asl.Value.Integer8 = AccessType;
+    FieldOp->Asl.Value.Integer = AccessType;
 
     /* LockRule -- not optional, so no need to check for DEFAULT_ARG */
 
     Next = Op->Asl.Next;
-    LockRule = Next->Asl.Value.Integer8;
+    LockRule = (UINT8) Next->Asl.Value.Integer;
     Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
 
     /* UpdateRule -- not optional, so no need to check for DEFAULT_ARG */
 
     Next = Next->Asl.Next;
-    UpdateRule = Next->Asl.Value.Integer8;
+    UpdateRule = (UINT8) Next->Asl.Value.Integer;
 
     /*
      * Generate the flags byte.  The various fields are already
@@ -280,6 +281,9 @@ OpnDoFieldCommon (
         {
         case PARSEOP_ACCESSAS:
 
+            PkgLengthNode = Next->Asl.Child;
+            AccessType = (UINT8) PkgLengthNode->Asl.Value.Integer;
+
             /* Nothing additional to do */
             break;
 
@@ -289,7 +293,7 @@ OpnDoFieldCommon (
             /* New offset into the field */
 
             PkgLengthNode = Next->Asl.Child;
-            NewBitOffset = PkgLengthNode->Asl.Value.Integer32 * 8;
+            NewBitOffset = ((UINT32) PkgLengthNode->Asl.Value.Integer) * 8;
 
             /*
              * Examine the specified offset in relation to the
@@ -301,7 +305,8 @@ OpnDoFieldCommon (
                  * Not allowed to specify a backwards offset!
                  * Issue error and ignore this node.
                  */
-                AslError (ASL_ERROR, ASL_MSG_BACKWARDS_OFFSET, PkgLengthNode, NULL);
+                AslError (ASL_ERROR, ASL_MSG_BACKWARDS_OFFSET, PkgLengthNode,
+                    NULL);
                 Next->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
                 PkgLengthNode->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
             }
@@ -320,7 +325,8 @@ OpnDoFieldCommon (
                  * Valid new offset - set the value to be inserted into the AML
                  * and update the offset counter.
                  */
-                PkgLengthNode->Asl.Value.Integer = NewBitOffset - CurrentBitOffset;
+                PkgLengthNode->Asl.Value.Integer =
+                    NewBitOffset - CurrentBitOffset;
                 CurrentBitOffset = NewBitOffset;
             }
             break;
@@ -332,8 +338,34 @@ OpnDoFieldCommon (
             /* Named or reserved field entry */
 
             PkgLengthNode     = Next->Asl.Child;
-            NewBitOffset      = PkgLengthNode->Asl.Value.Integer32;
+            NewBitOffset      = (UINT32) PkgLengthNode->Asl.Value.Integer;
             CurrentBitOffset += NewBitOffset;
+
+            /* Save the current AccessAs value for error checking later */
+
+            switch (AccessType)
+            {
+                case AML_FIELD_ACCESS_ANY:
+                case AML_FIELD_ACCESS_BYTE:
+                case AML_FIELD_ACCESS_BUFFER:
+                default:
+                    MinimumLength = 8;
+                    break;
+
+                case AML_FIELD_ACCESS_WORD:
+                    MinimumLength = 16;
+                    break;
+
+                case AML_FIELD_ACCESS_DWORD:
+                    MinimumLength = 32;
+                    break;
+
+                case AML_FIELD_ACCESS_QWORD:
+                    MinimumLength = 64;
+                    break;
+            }
+
+            PkgLengthNode->Asl.ExtraValue = MinimumLength;
             break;
 
         default:
@@ -360,7 +392,7 @@ OpnDoFieldCommon (
  *
  ******************************************************************************/
 
-void
+static void
 OpnDoField (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -390,7 +422,7 @@ OpnDoField (
  *
  ******************************************************************************/
 
-void
+static void
 OpnDoIndexField (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -424,7 +456,7 @@ OpnDoIndexField (
  *
  ******************************************************************************/
 
-void
+static void
 OpnDoBankField (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -511,12 +543,12 @@ OpnDoRegion (
  *
  ******************************************************************************/
 
-void
+static void
 OpnDoBuffer (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *InitializerOp;
-    ACPI_PARSE_OBJECT       *BufferLengthNode;
+    ACPI_PARSE_OBJECT       *BufferLengthOp;
 
     /* Optional arguments for this opcode with defaults */
 
@@ -526,16 +558,16 @@ OpnDoBuffer (
     /* Opcode and package length first */
     /* Buffer Length is next, followed by the initializer list */
 
-    BufferLengthNode = Op->Asl.Child;
-    InitializerOp = BufferLengthNode->Asl.Next;
+    BufferLengthOp = Op->Asl.Child;
+    InitializerOp = BufferLengthOp->Asl.Next;
 
     /*
      * If the BufferLength is not an INTEGER or was not specified in the ASL
      * (DEFAULT_ARG), it is a TermArg that is
      * evaluated at run-time, and we are therefore finished.
      */
-    if ((BufferLengthNode->Asl.ParseOpcode != PARSEOP_INTEGER) &&
-        (BufferLengthNode->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
+    if ((BufferLengthOp->Asl.ParseOpcode != PARSEOP_INTEGER) &&
+        (BufferLengthOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
     {
         return;
     }
@@ -543,7 +575,7 @@ OpnDoBuffer (
     /*
      * We want to count the number of items in the initializer list, because if
      * it is larger than the buffer length, we will define the buffer size
-     * to be the size of the initializer list (Per ACPI Spec)
+     * to be the size of the initializer list (as per the ACPI Specification)
      */
     switch (InitializerOp->Asl.ParseOpcode)
     {
@@ -582,11 +614,19 @@ OpnDoBuffer (
         break;
 
 
+    case PARSEOP_RAW_DATA:
+
+        /* Buffer nodes are already initialized (e.g. Unicode operator) */
+        return;
+
+
     case PARSEOP_DEFAULT_ARG:
         break;
 
 
     default:
+        AslError (ASL_ERROR, ASL_MSG_INVALID_OPERAND, InitializerOp,
+            "Unknown buffer initializer opcode");
         printf ("Unknown buffer initializer opcode [%s]\n",
                         UtGetOpName (InitializerOp->Asl.ParseOpcode));
         return;
@@ -594,16 +634,16 @@ OpnDoBuffer (
 
     /* Check if initializer list is longer than the buffer length */
 
-    if (BufferLengthNode->Asl.Value.Integer > BufferLength)
+    if (BufferLengthOp->Asl.Value.Integer > BufferLength)
     {
-        BufferLength = BufferLengthNode->Asl.Value.Integer32;
+        BufferLength = (UINT32) BufferLengthOp->Asl.Value.Integer;
     }
 
     if (!BufferLength)
     {
         /* No length AND no items -- issue a warning */
 
-        AslError (ASL_WARNING, ASL_MSG_BUFFER_LENGTH, BufferLengthNode, NULL);
+        AslError (ASL_WARNING, ASL_MSG_BUFFER_LENGTH, BufferLengthOp, NULL);
 
         /* But go ahead and put the buffer length of zero into the AML */
     }
@@ -612,11 +652,11 @@ OpnDoBuffer (
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-    BufferLengthNode->Asl.ParseOpcode   = PARSEOP_INTEGER;
-    BufferLengthNode->Asl.AmlOpcode     = AML_DWORD_OP;
-    BufferLengthNode->Asl.Value.Integer = BufferLength;
+    BufferLengthOp->Asl.ParseOpcode   = PARSEOP_INTEGER;
+    BufferLengthOp->Asl.AmlOpcode     = AML_DWORD_OP;
+    BufferLengthOp->Asl.Value.Integer = BufferLength;
 
-    (void) OpcSetOptimalIntegerSize (BufferLengthNode);
+    (void) OpcSetOptimalIntegerSize (BufferLengthOp);
 
     /* Remaining nodes are handled via the tree walk */
 }
@@ -634,12 +674,12 @@ OpnDoBuffer (
  *
  ******************************************************************************/
 
-void
+static void
 OpnDoPackage (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *InitializerOp;
-    ACPI_PARSE_OBJECT       *PackageLengthNode;
+    ACPI_PARSE_OBJECT       *PackageLengthOp;
 
     /* Optional arguments for this opcode with defaults */
 
@@ -649,8 +689,8 @@ OpnDoPackage (
     /* Opcode and package length first */
     /* Buffer Length is next, followed by the initializer list */
 
-    PackageLengthNode = Op->Asl.Child;
-    InitializerOp = PackageLengthNode->Asl.Next;
+    PackageLengthOp = Op->Asl.Child;
+    InitializerOp = PackageLengthOp->Asl.Next;
 
     /*
      * We always count the number of items in the initializer list, because if
@@ -670,12 +710,12 @@ OpnDoPackage (
 
     /* Check if initializer list is longer than the buffer length */
 
-    if ((PackageLengthNode->Asl.ParseOpcode == PARSEOP_INTEGER)      ||
-        (PackageLengthNode->Asl.ParseOpcode == PARSEOP_BYTECONST))
+    if ((PackageLengthOp->Asl.ParseOpcode == PARSEOP_INTEGER)      ||
+        (PackageLengthOp->Asl.ParseOpcode == PARSEOP_BYTECONST))
     {
-        if (PackageLengthNode->Asl.Value.Integer > PackageLength)
+        if (PackageLengthOp->Asl.Value.Integer > PackageLength)
         {
-            PackageLength = PackageLengthNode->Asl.Value.Integer32;
+            PackageLength = (UINT32) PackageLengthOp->Asl.Value.Integer;
         }
     }
 
@@ -683,15 +723,16 @@ OpnDoPackage (
      * If not a variable-length package, check for a zero
      * package length
      */
-    if ((PackageLengthNode->Asl.ParseOpcode == PARSEOP_INTEGER)      ||
-        (PackageLengthNode->Asl.ParseOpcode == PARSEOP_BYTECONST)    ||
-        (PackageLengthNode->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG))
+    if ((PackageLengthOp->Asl.ParseOpcode == PARSEOP_INTEGER)      ||
+        (PackageLengthOp->Asl.ParseOpcode == PARSEOP_BYTECONST)    ||
+        (PackageLengthOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG))
     {
         if (!PackageLength)
         {
             /* No length AND no items -- issue a warning */
 
-            AslError (ASL_WARNING, ASL_MSG_PACKAGE_LENGTH, PackageLengthNode, NULL);
+            AslError (ASL_WARNING, ASL_MSG_PACKAGE_LENGTH,
+                PackageLengthOp, NULL);
 
             /* But go ahead and put the buffer length of zero into the AML */
         }
@@ -701,10 +742,10 @@ OpnDoPackage (
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-    PackageLengthNode->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
-    PackageLengthNode->Asl.AmlLength = 1;
-    PackageLengthNode->Asl.ParseOpcode = PARSEOP_RAW_DATA;
-    PackageLengthNode->Asl.Value.Integer = PackageLength;
+    PackageLengthOp->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
+    PackageLengthOp->Asl.AmlLength = 1;
+    PackageLengthOp->Asl.ParseOpcode = PARSEOP_RAW_DATA;
+    PackageLengthOp->Asl.Value.Integer = PackageLength;
 
     /* Remaining nodes are handled via the tree walk */
 }
@@ -722,7 +763,7 @@ OpnDoPackage (
  *
  ******************************************************************************/
 
-void
+static void
 OpnDoLoadTable (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -753,10 +794,10 @@ OpnDoLoadTable (
         OpcGenerateAmlOpcode (Next);
     }
 
+#if 0 /* TBD: NOT IMPLEMENTED */
     /* Fifth child is the [optional] ParameterPathString */
     /* Sixth child is the [optional] ParameterData */
 
-/*
     Next = Next->Asl.Next;
     if (Next->Asl.ParseOpcode == DEFAULT_ARG)
     {
@@ -773,7 +814,7 @@ OpnDoLoadTable (
         Next->Asl.ParseOpcode = ZERO;
         OpcGenerateAmlOpcode (Next);
     }
- */
+#endif
 }
 
 
@@ -789,13 +830,13 @@ OpnDoLoadTable (
  *
  ******************************************************************************/
 
-void
+static void
 OpnDoDefinitionBlock (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *Child;
     ACPI_SIZE               Length;
-    NATIVE_UINT             i;
+    ACPI_NATIVE_UINT        i;
 
 
     /*
@@ -824,14 +865,16 @@ OpnDoDefinitionBlock (
         Gbl_TableSignature = Child->Asl.Value.String;
         if (ACPI_STRLEN (Gbl_TableSignature) != 4)
         {
-            AslError (ASL_ERROR, ASL_MSG_TABLE_SIGNATURE, Child, "Length not exactly 4");
+            AslError (ASL_ERROR, ASL_MSG_TABLE_SIGNATURE, Child,
+                "Length not exactly 4");
         }
 
         for (i = 0; i < 4; i++)
         {
             if (!isalnum (Gbl_TableSignature[i]))
             {
-                AslError (ASL_ERROR, ASL_MSG_TABLE_SIGNATURE, Child, "Contains non-alphanumeric characters");
+                AslError (ASL_ERROR, ASL_MSG_TABLE_SIGNATURE, Child,
+                    "Contains non-alphanumeric characters");
             }
         }
     }
@@ -840,6 +883,10 @@ OpnDoDefinitionBlock (
 
     Child = Child->Asl.Next;
     Child->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+
+    /* Use the revision to set the integer width */
+
+    AcpiUtSetIntegerWidth ((UINT8) Child->Asl.Value.Integer);
 
     /* OEMID */
 
@@ -921,12 +968,11 @@ UtGetArg (
  *
  ******************************************************************************/
 
-void
+static void
 OpnAttachNameToNode (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *Child = NULL;
-    ACPI_STATUS             Status;
 
 
     if (Op->Asl.ParseOpcode == PARSEOP_EXTERNAL)
@@ -981,11 +1027,7 @@ OpnAttachNameToNode (
 
     if (Child)
     {
-        Op->Asl.ExternalName = Child->Asl.Value.String;
-        Status = UtInternalizeName (Child->Asl.Value.String, &Op->Asl.Namepath);
-        if (ACPI_FAILURE (Status))
-        {
-        }
+        UtAttachNamepathToOwner (Op, Child);
     }
 }
 

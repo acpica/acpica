@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.39 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -116,7 +116,7 @@
  *****************************************************************************/
 
 #include "aslcompiler.h"
-#include "adisasm.h"
+#include "acapps.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslfiles")
@@ -136,7 +136,8 @@
  ******************************************************************************/
 
 void
-AslAbort (void)
+AslAbort (
+    void)
 {
 
     AePrintErrorLog (ASL_FILE_STDOUT);
@@ -147,7 +148,7 @@ AslAbort (void)
         AePrintErrorLog (ASL_FILE_STDERR);
     }
 
-    exit (0);
+    exit (1);
 }
 
 
@@ -165,7 +166,7 @@ AslAbort (void)
  *
  ******************************************************************************/
 
-FILE *
+static FILE *
 FlOpenLocalFile (
     char                    *LocalName,
     char                    *Mode)
@@ -199,7 +200,8 @@ FlFileError (
     UINT8                   ErrorId)
 {
 
-    sprintf (MsgBuffer, "\"%s\" (%s)", Gbl_Files[FileId].Filename, strerror (errno));
+    sprintf (MsgBuffer, "\"%s\" (%s)", Gbl_Files[FileId].Filename,
+        strerror (errno));
     AslCommonError (ASL_ERROR, ErrorId, 0, 0, 0, 0, NULL, MsgBuffer);
 }
 
@@ -219,7 +221,7 @@ FlFileError (
  *
  ******************************************************************************/
 
-void
+static void
 FlOpenFile (
     UINT32                  FileId,
     char                    *Filename,
@@ -441,8 +443,8 @@ FlSetLineNumber (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-    Gbl_CurrentLineNumber = Op->Asl.Value.Integer32;
-    Gbl_LogicalLineNumber = Op->Asl.Value.Integer32;
+    Gbl_CurrentLineNumber = (UINT32) Op->Asl.Value.Integer;
+    Gbl_LogicalLineNumber = (UINT32) Op->Asl.Value.Integer;
 }
 
 
@@ -487,7 +489,8 @@ FlOpenIncludeFile (
 
     /* Prepend the directory pathname and open the include file */
 
-    DbgPrint (ASL_PARSE_OUTPUT, "\nOpen include file: path %s\n\n", Op->Asl.Value.String);
+    DbgPrint (ASL_PARSE_OUTPUT, "\nOpen include file: path %s\n\n",
+        Op->Asl.Value.String);
     IncFile = FlOpenLocalFile (Op->Asl.Value.String, "r");
     if (!IncFile)
     {
@@ -501,33 +504,33 @@ FlOpenIncludeFile (
     AslPushInputFileStack (IncFile, Op->Asl.Value.String);
 }
 
-
+#ifdef ACPI_OBSOLETE_FUNCTIONS
 /*******************************************************************************
  *
- * FUNCTION:    FlOpenInputFile
+ * FUNCTION:    FlParseInputPathname
  *
  * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
  *                                    compiled
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Open the specified input file, and save the directory path to
- *              the file so that include files and new files can be opened in
- *              the same directory.
+ * DESCRIPTION: Split the input path into a directory and filename part
+ *              1) Directory part used to open include files
+ *              2) Filename part used to generate output filenames
  *
  ******************************************************************************/
 
 ACPI_STATUS
-FlOpenInputFile (
+FlParseInputPathname (
     char                    *InputFilename)
 {
     char                    *Substring;
 
 
-    /* Open the input ASL file, text mode */
-
-    FlOpenFile (ASL_FILE_INPUT, InputFilename, "r");
-    AslCompilerin = Gbl_Files[ASL_FILE_INPUT].Handle;
+    if (!InputFilename)
+    {
+        return (AE_OK);
+    }
 
     /* Get the path to the input filename's directory */
 
@@ -550,11 +553,49 @@ FlOpenInputFile (
     if (!Substring)
     {
         Gbl_DirectoryPath[0] = 0;
+        if (Gbl_UseDefaultAmlFilename)
+        {
+            Gbl_OutputFilenamePrefix = strdup (InputFilename);
+        }
     }
     else
     {
+        if (Gbl_UseDefaultAmlFilename)
+        {
+            Gbl_OutputFilenamePrefix = strdup (Substring + 1);
+        }
         *(Substring+1) = 0;
     }
+
+    return (AE_OK);
+}
+#endif
+
+/*******************************************************************************
+ *
+ * FUNCTION:    FlOpenInputFile
+ *
+ * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
+ *                                    compiled
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Open the specified input file, and save the directory path to
+ *              the file so that include files can be opened in
+ *              the same directory.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+FlOpenInputFile (
+    char                    *InputFilename)
+{
+
+
+    /* Open the input ASL file, text mode */
+
+    FlOpenFile (ASL_FILE_INPUT, InputFilename, "r");
+    AslCompilerin = Gbl_Files[ASL_FILE_INPUT].Handle;
 
     return (AE_OK);
 }
@@ -590,7 +631,8 @@ FlOpenAmlOutputFile (
         Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_AML_CODE);
         if (!Filename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
     }
@@ -627,11 +669,12 @@ FlOpenMiscOutputFiles (
     Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_SOURCE);
     if (!Filename)
     {
-        AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+        AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
+            0, 0, 0, 0, NULL, NULL);
         return (AE_ERROR);
     }
 
-    /* 
+    /*
      * Open the source output file, binary mode (so that LF does not get
      * expanded to CR/LF on some systems, messing up our seek
      * calculations.)
@@ -645,7 +688,8 @@ FlOpenMiscOutputFiles (
         Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_LISTING);
         if (!Filename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
 
@@ -664,7 +708,8 @@ FlOpenMiscOutputFiles (
         Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_ASM_SOURCE);
         if (!Filename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
 
@@ -683,17 +728,59 @@ FlOpenMiscOutputFiles (
         Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_C_SOURCE);
         if (!Filename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
 
-        /* Open the assembly code source file, text mode */
+        /* Open the C code source file, text mode */
 
         FlOpenFile (ASL_FILE_C_SOURCE_OUTPUT, Filename, "w+");
 
         FlPrintFile (ASL_FILE_C_SOURCE_OUTPUT, "/*\n");
         AslCompilerSignon (ASL_FILE_C_SOURCE_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_C_SOURCE_OUTPUT);
+    }
+
+    /* Create/Open a assembly include output file if asked */
+
+    if (Gbl_AsmIncludeOutputFlag)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_ASM_INCLUDE);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        /* Open the assembly include file, text mode */
+
+        FlOpenFile (ASL_FILE_ASM_INCLUDE_OUTPUT, Filename, "w+");
+
+        AslCompilerSignon (ASL_FILE_ASM_INCLUDE_OUTPUT);
+        AslCompilerFileHeader (ASL_FILE_ASM_INCLUDE_OUTPUT);
+    }
+
+    /* Create/Open a C include output file if asked */
+
+    if (Gbl_C_IncludeOutputFlag)
+    {
+        Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_C_INCLUDE);
+        if (!Filename)
+        {
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
+            return (AE_ERROR);
+        }
+
+        /* Open the C include file, text mode */
+
+        FlOpenFile (ASL_FILE_C_INCLUDE_OUTPUT, Filename, "w+");
+
+        FlPrintFile (ASL_FILE_C_INCLUDE_OUTPUT, "/*\n");
+        AslCompilerSignon (ASL_FILE_C_INCLUDE_OUTPUT);
+        AslCompilerFileHeader (ASL_FILE_C_INCLUDE_OUTPUT);
     }
 
     /* Create/Open a hex output file if asked */
@@ -703,7 +790,8 @@ FlOpenMiscOutputFiles (
         Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_HEX_DUMP);
         if (!Filename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
 
@@ -722,7 +810,8 @@ FlOpenMiscOutputFiles (
         Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_NAMESPACE);
         if (!Filename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
 
@@ -741,7 +830,8 @@ FlOpenMiscOutputFiles (
         Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_DEBUG);
         if (!Filename)
         {
-            AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME, 0, 0, 0, 0, NULL, NULL);
+            AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME,
+                0, 0, 0, 0, NULL, NULL);
             return (AE_ERROR);
         }
 
@@ -750,7 +840,8 @@ FlOpenMiscOutputFiles (
         /* TBD: hide this behind a FlReopenFile function */
 
         Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Filename = Filename;
-        Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle   = freopen (Filename, "w+t", stderr);
+        Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle =
+            freopen (Filename, "w+t", stderr);
 
         AslCompilerSignon (ASL_FILE_DEBUG_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_DEBUG_OUTPUT);
