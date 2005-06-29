@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.22 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -228,14 +228,14 @@ LdLoadFieldElements (
     {
         switch (Child->AmlOpcode)
         {
-        case AML_RESERVEDFIELD_OP:
-        case AML_ACCESSFIELD_OP:
+        case AML_INT_RESERVEDFIELD_OP:
+        case AML_INT_ACCESSFIELD_OP:
             break;
 
         default:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo, Child->Value.String,
-                            INTERNAL_TYPE_FIELD, IMODE_LOAD_PASS1,
+                            INTERNAL_TYPE_REGION_FIELD, IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
                             NULL, &NsNode);
             if (ACPI_FAILURE (Status))
@@ -343,7 +343,6 @@ LdLoadResourceElements (
  *
  ******************************************************************************/
 
-
 ACPI_STATUS
 LdNamespace1Begin (
     ASL_PARSE_NODE          *PsNode,
@@ -353,7 +352,7 @@ LdNamespace1Begin (
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
     ACPI_STATUS             Status;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
     NATIVE_CHAR             *Path;
     UINT32                  Flags = NS_NO_UPSEARCH;
     ASL_PARSE_NODE          *Arg;
@@ -460,7 +459,7 @@ LdNamespace1Begin (
             return (Status);
         }
 
-        printf ("Failure from lookup %s\n", AcpiCmFormatException (Status));
+        printf ("Failure from lookup %s\n", AcpiUtFormatException (Status));
         return (Status);
     }
 
@@ -502,7 +501,7 @@ LdNamespace1End (
     void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
 
 
     /* We are only interested in opcodes that have an associated name */
@@ -536,7 +535,7 @@ LdNamespace1End (
 
         DEBUG_PRINT (TRACE_DISPATCH,
             ("Load1EndOp/%s: Popping scope for Op %p\n",
-            AcpiCmGetTypeName (DataType), PsNode));
+            AcpiUtGetTypeName (DataType), PsNode));
 
 
         AcpiDsScopeStackPop (WalkState);

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.24 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -154,10 +154,10 @@ LsDoOneNamespaceObject (
 
     Gbl_NumNamespaceObjects++;
 
-    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s",
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "%5d  [%d]  %*s %4.4s - %s",
                         Gbl_NumNamespaceObjects, Level, (Level * 3), " ",
                         &Node->Name,
-                        AcpiCmGetTypeName (Node->Type));
+                        AcpiUtGetTypeName (Node->Type));
 
     Pnode = (ASL_PARSE_NODE *) Node->Object;
 
@@ -181,12 +181,12 @@ LsDoOneNamespaceObject (
 
             if (Pnode->Value.Integer64 > ACPI_UINT32_MAX)
             {
-                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X%X]",
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X%X]",
                             HIDWORD (Pnode->Value.Integer64), Pnode->Value.Integer32);
             }
             else
             {
-                fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = 0x%X]",
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X]",
                             Pnode->Value.Integer32);
             }
             break;
@@ -199,19 +199,19 @@ LsDoOneNamespaceObject (
                 Pnode = Pnode->Peer;
             }
 
-            fprintf (Gbl_NamespaceOutputFile, "    [Initial Value = \"%s\"]",
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = \"%s\"]",
                         Pnode->Value.String);
 
             break;
 
 
-        case INTERNAL_TYPE_FIELD:
+        case INTERNAL_TYPE_REGION_FIELD:
             if ((Pnode->ParseOpcode == NAMESEG)  ||
                 (Pnode->ParseOpcode == NAMESTRING))
             {
                 Pnode = Pnode->Child;
             }
-            fprintf (Gbl_NamespaceOutputFile, "    [Length = 0x%02X]",
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Length = 0x%02X]",
                         Pnode->Value.Integer32);
 
             break;
@@ -220,7 +220,7 @@ LsDoOneNamespaceObject (
 
     }
 
-    fprintf (Gbl_NamespaceOutputFile, "\n");
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "\n");
 
     return (AE_OK);
 }
@@ -253,8 +253,8 @@ LsDisplayNamespace (void)
 
     /* File header */
 
-    fprintf (Gbl_NamespaceOutputFile, "Contents of ACPI Namespace\n\n");
-    fprintf (Gbl_NamespaceOutputFile, "Count  Depth    Name - Type\n\n");
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "Contents of ACPI Namespace\n\n");
+    FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "Count  Depth    Name - Type\n\n");
 
     /* Walk entire namespace from the supplied root */
 
@@ -416,11 +416,12 @@ LkNamespaceLocateBegin (
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
     ACPI_STATUS             Status;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
     NATIVE_CHAR             *Path;
     UINT8                   PassedArgs;
     ASL_PARSE_NODE          *Next;
-    ASL_PARSE_NODE          *MethodPsNode;
+    ASL_PARSE_NODE          *OwningPsNode;
+    UINT32                  MinimumLength;
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -445,6 +446,7 @@ LkNamespaceLocateBegin (
     {
         Path = PsNode->Value.String;
     }
+
 
     /* Map the raw opcode into an internal object type */
 
@@ -474,7 +476,7 @@ LkNamespaceLocateBegin (
         {
             /*
              * We didn't find the name reference by path -- we can qualify this
-             * a little better before we print an error message 
+             * a little better before we print an error message
              */
 
             if (strlen (Path) == ACPI_NAME_SIZE)
@@ -517,6 +519,8 @@ LkNamespaceLocateBegin (
     }
 
 
+    /* 1) Check for a reference to a resource descriptor */
+
     if (NsNode->Type == INTERNAL_TYPE_RESOURCE)
     {
         /*
@@ -526,7 +530,7 @@ LkNamespaceLocateBegin (
          * AML code generation
          */
 
-        AcpiCmFree (PsNode->Value.String);
+        AcpiUtFree (PsNode->Value.String);
 
         PsNode->ParseOpcode     = INTEGER;
         PsNode->AmlOpcode       = AML_DWORD_OP;
@@ -535,12 +539,9 @@ LkNamespaceLocateBegin (
         PsNode->AmlLength       = OpcSetOptimalIntegerSize (PsNode);
     }
 
-    /*
-     * There are two types of method invocation:
-     * 1) Invocation with arguments -- the parser recognizes this as a METHODCALL
-     * 2) Invocation with no arguments --the parser cannot determine that this is a method
-     *    invocation, therefore we have to figure it out here.
-     */
+
+    /* 2) Check for a method invocation */
+
     else if ((((PsNode->ParseOpcode == NAMESTRING) || (PsNode->ParseOpcode == NAMESEG)) &&
         (NsNode->Type == ACPI_TYPE_METHOD) &&
         (PsNode->Parent) &&
@@ -548,6 +549,13 @@ LkNamespaceLocateBegin (
 
         (PsNode->ParseOpcode == METHODCALL))
     {
+
+        /*
+         * There are two types of method invocation:
+         * 1) Invocation with arguments -- the parser recognizes this as a METHODCALL
+         * 2) Invocation with no arguments --the parser cannot determine that this is a method
+         *    invocation, therefore we have to figure it out here.
+         */
 
         if (NsNode->Type != ACPI_TYPE_METHOD)
         {
@@ -585,7 +593,7 @@ LkNamespaceLocateBegin (
 
                 if (NsNode->OwnerId > 7)
                 {
-                    printf ("too many arguments defined for method [%4.4s]\n", &NsNode->Name);
+                    printf ("too many arguments defined for method [%4.4s]\n", (char *) &NsNode->Name);
                     return (AE_BAD_PARAMETER);
                 }
             }
@@ -604,8 +612,8 @@ LkNamespaceLocateBegin (
         {
             /* 1) The result from the method is used (the method is a TermArg) */
 
-            MethodPsNode = NsNode->Object;
-            if (MethodPsNode->Flags & NODE_METHOD_NO_RETVAL)
+            OwningPsNode = NsNode->Object;
+            if (OwningPsNode->Flags & NODE_METHOD_NO_RETVAL)
             {
                 /*
                  * 2) Method NEVER returns a value
@@ -613,7 +621,7 @@ LkNamespaceLocateBegin (
                 AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, PsNode, PsNode->ExternalName);
             }
 
-            else if (MethodPsNode->Flags & NODE_METHOD_SOME_NO_RETVAL)
+            else if (OwningPsNode->Flags & NODE_METHOD_SOME_NO_RETVAL)
             {
                 /*
                  * 2) Method SOMETIMES returns a value, SOMETIMES not
@@ -622,6 +630,85 @@ LkNamespaceLocateBegin (
             }
         }
     }
+
+
+    /* 3) Check for an ASL Field definition */
+
+    else if ((PsNode->Parent) &&
+            ((PsNode->Parent->ParseOpcode == FIELD)     ||
+             (PsNode->Parent->ParseOpcode == BANKFIELD) ||
+             (PsNode->Parent->ParseOpcode == INDEXFIELD)))
+    {
+        /*
+         * Offset checking for fields.  If the parent operation region has a 
+         * constant length (known at compile time), we can check fields 
+         * defined in that region against the region length.  This will catch 
+         * fields and field units that cannot possibly fit within the region.
+         */
+        if (PsNode == PsNode->Parent->Child)
+        {
+            /* 
+             * This is the first child of the field node, which is
+             * the name of the region.  Get the parse node for the
+             * region -- which contains the length of the regoin.
+             */
+
+            OwningPsNode = (ASL_PARSE_NODE *) NsNode->Object;
+            PsNode->Parent->ExtraValue = MUL_8 (OwningPsNode->Value.Integer32);
+
+            /* Examine the field access width */
+
+            switch (PsNode->Parent->Value.Integer8)
+            {
+            case ACCESS_ANY_ACC:
+            case ACCESS_BYTE_ACC:
+            default:
+                MinimumLength = 1;
+                break;
+
+            case ACCESS_WORD_ACC:
+                MinimumLength = 2;
+                break;
+
+            case ACCESS_DWORD_ACC:
+                MinimumLength = 4;
+                break;
+
+            case ACCESS_QWORD_ACC:
+                MinimumLength = 8;
+                break;
+            }
+
+            /* Is the region at least as big as the access width? */
+
+            if (OwningPsNode->Value.Integer32 < MinimumLength)
+            {
+                AslError (ASL_ERROR, ASL_MSG_FIELD_ACCESS_WIDTH, PsNode, NULL);
+            }
+        }
+
+        else
+        {
+            /*
+             * This is one element of the field list
+             */
+            if (PsNode->Parent->ExtraValue && PsNode->Child)
+            {
+                /*
+                 * Check each field unit against the region size.  The entire
+                 * field unit (start offset plus length) must fit within the
+                 * region.
+                 */
+                if (PsNode->Parent->ExtraValue < 
+                   (PsNode->ExtraValue + PsNode->Child->Value.Integer32))
+                {
+                    AslError (ASL_ERROR, ASL_MSG_FIELD_UNIT_OFFSET, PsNode, NULL);
+                }
+            }
+        }
+
+    }
+
 
     PsNode->NsNode = NsNode;
 
@@ -649,7 +736,7 @@ LkNamespaceLocateEnd (
     void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
 
 
     /* We are only interested in opcodes that have an associated name */
@@ -687,7 +774,7 @@ LkNamespaceLocateEnd (
 
         DEBUG_PRINT (TRACE_DISPATCH,
             ("NamespaceLocateEnd/%s: Popping scope for Op %p\n",
-            AcpiCmGetTypeName (DataType), PsNode));
+            AcpiUtGetTypeName (DataType), PsNode));
 
 
         AcpiDsScopeStackPop (WalkState);
