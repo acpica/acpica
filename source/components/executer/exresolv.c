@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.113 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -227,7 +227,7 @@ AcpiExResolveObjectToValue (
 
     /* This is an ACPI_OPERAND_OBJECT  */
 
-    switch (StackDesc->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (StackDesc))
     {
     case INTERNAL_TYPE_REFERENCE:
 
@@ -330,9 +330,11 @@ AcpiExResolveObjectToValue (
             break;
 
 
+        case AML_REF_OF_OP:
         case AML_DEBUG_OP:
 
             /* Just leave the object as-is */
+
             break;
 
 
@@ -367,7 +369,7 @@ AcpiExResolveObjectToValue (
     case INTERNAL_TYPE_INDEX_FIELD:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "FieldRead SourceDesc=%p Type=%X\n",
-            StackDesc, StackDesc->Common.Type));
+            StackDesc, ACPI_GET_OBJECT_TYPE (StackDesc)));
 
         Status = AcpiExReadDataFromField (WalkState, StackDesc, &ObjDesc);
         *StackPtr = (void *) ObjDesc;

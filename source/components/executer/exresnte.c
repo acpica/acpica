@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -207,10 +207,10 @@ AcpiExResolveNodeToValue (
     {
     case ACPI_TYPE_PACKAGE:
 
-        if (ACPI_TYPE_PACKAGE != SourceDesc->Common.Type)
+        if (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_PACKAGE)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Object not a Package, type %s\n",
-                AcpiUtGetTypeName (SourceDesc->Common.Type)));
+                AcpiUtGetObjectTypeName (SourceDesc)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
@@ -227,10 +227,10 @@ AcpiExResolveNodeToValue (
 
     case ACPI_TYPE_BUFFER:
 
-        if (ACPI_TYPE_BUFFER != SourceDesc->Common.Type)
+        if (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_BUFFER)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Object not a Buffer, type %s\n",
-                AcpiUtGetTypeName (SourceDesc->Common.Type)));
+                AcpiUtGetObjectTypeName (SourceDesc)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
@@ -247,10 +247,10 @@ AcpiExResolveNodeToValue (
 
     case ACPI_TYPE_STRING:
 
-        if (ACPI_TYPE_STRING != SourceDesc->Common.Type)
+        if (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_STRING)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Object not a String, type %s\n",
-                AcpiUtGetTypeName (SourceDesc->Common.Type)));
+                AcpiUtGetObjectTypeName (SourceDesc)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
@@ -263,10 +263,10 @@ AcpiExResolveNodeToValue (
 
     case ACPI_TYPE_INTEGER:
 
-        if (ACPI_TYPE_INTEGER != SourceDesc->Common.Type)
+        if (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_INTEGER)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Object not a Integer, type %s\n",
-                AcpiUtGetTypeName (SourceDesc->Common.Type)));
+                AcpiUtGetObjectTypeName (SourceDesc)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
@@ -320,7 +320,7 @@ AcpiExResolveNodeToValue (
 
         /* No named references are allowed here */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported reference opcode %X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported Reference opcode %X\n",
             SourceDesc->Reference.Opcode));
 
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
