@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -1280,9 +1280,8 @@ AcpiPsParseAml (
         }
         else if (Status != AE_OK)
         {
-            ACPI_REPORT_ERROR (("Method execution failed, %s\n", 
-                AcpiFormatException (Status)));
-            AcpiNsPrintNodePathname (WalkState->MethodNode, "Method pathname: ");
+            ACPI_REPORT_METHOD_ERROR ("Method execution failed", 
+                WalkState->MethodNode, NULL, Status);
         }
 
         /* We are done with this walk, move on to the parent if any */
