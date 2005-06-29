@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.2 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -122,16 +122,15 @@
 
 #include <time.h>
 
-FILE                    *DebugFile;
-UINT8                   AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
-ASL_ANALYSIS_WALK_INFO  AnalysisWalkInfo;
-char                    hex[] = {'0','1','2','3','4','5','6','7',
-                                 '8','9','A','B','C','D','E','F'};
+
+struct tm                   *NewTime;
+time_t                      Aclock;
 
 
 
 /*
- * Stubs
+ * Stubs to simplify linkage to the
+ * ACPI Namespace Manager (Unused functions).
  */
 
 void
@@ -168,16 +167,13 @@ AcpiAmlDumpOperand (
 }
 
 
-struct tm                   *NewTime;
-time_t                      Aclock;
-
 /*******************************************************************************
  *
- * FUNCTION:    Signon and FileHeader
+ * FUNCTION:    AslCompilerSignon
  *
  * PARAMETERS:  None
- *  
- * RETURN:      None      
+ *
+ * RETURN:      None
  *
  * DESCRIPTION: Display compiler signon
  *
@@ -195,34 +191,48 @@ AslCompilerSignon (
 
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslCompilerFileHeader
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Header used at the beginning of output files
+ *
+ ******************************************************************************/
+
 void
 AslCompilerFileHeader (
     FILE                    *Where)
 {
 
-    fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime)); 
+    fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime));
 
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    CmDoCompile
  *
- * PARAMETERS:  
+ * PARAMETERS:  None
  *
- * RETURN:      
+ * RETURN:      Status (0 = OK)
  *
- * DESCRIPTION: 
+ * DESCRIPTION: This procedure performs the entire compile
  *
  ******************************************************************************/
 
 int
 CmDoCompile (void)
 {
-    ACPI_STATUS         Status;
+    ACPI_STATUS             Status;
 
+
+    /* Open the required input and output files */
 
     Status = FlOpenInputFile (Gbl_InputFilename);
     if (ACPI_FAILURE (Status))
@@ -247,24 +257,24 @@ CmDoCompile (void)
     /* Build the parse tree */
 
     AslCompilerparse();
-    
+
 
     /* Generate AML opcodes corresponding to the parse tokens */
 
     DbgPrint ("\nGenerating AML opcodes\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, CgAmlOpcodeWalk, NULL);
+    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
 
     /* Calculate all AML package lengths */
 
     DbgPrint ("\nGenerating Package lengths\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
+    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
 
     /* Semantic error checking */
 
     AnalysisWalkInfo.MethodStack = NULL;
-    
+
     DbgPrint ("\nSemantic analysis\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin, 
+    TrWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
                         AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
 
 
@@ -280,13 +290,13 @@ CmDoCompile (void)
     /* Calculate all AML package lengths */
 
     DbgPrint ("\nGenerating Package lengths\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
-    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
+    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
+    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
 
 
     /*
      * Now that the input is parsed, we can open the AML output file.
-     * Note: by default, the name of this file comes from the table descriptor 
+     * Note: by default, the name of this file comes from the table descriptor
      * within the input file.
      */
     Status = FlOpenAmlOutputFile (Gbl_InputFilename);
@@ -325,9 +335,9 @@ CmDoCompile (void)
     FlCloseSourceOutputFile ();
     FlCloseHexOutputFile ();
 
-    fclose (Gbl_OutputAmlFile);
+    fclose (Gbl_AmlOutputFile);
 
-    if ((AslGbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
+    if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
     {
         unlink (Gbl_OutputFilename);
     }
@@ -337,6 +347,5 @@ CmDoCompile (void)
 
     return 0;
 }
-
 
 
