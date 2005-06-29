@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -180,8 +180,7 @@ AcpiTbMatchSignature (
  *
  * FUNCTION:    AcpiTbInstallTable
  *
- * PARAMETERS:  TablePtr            - Input buffer pointer, optional
- *              TableInfo           - Return value from AcpiTbGetTable
+ * PARAMETERS:  TableInfo           - Return value from AcpiTbGetTable
  *
  * RETURN:      Status
  *
@@ -193,7 +192,6 @@ AcpiTbMatchSignature (
 
 ACPI_STATUS
 AcpiTbInstallTable (
-    ACPI_TABLE_HEADER       *TablePtr,
     ACPI_TABLE_DESC         *TableInfo)
 {
     ACPI_STATUS             Status;
@@ -205,7 +203,7 @@ AcpiTbInstallTable (
      * Check the table signature and make sure it is recognized
      * Also checks the header checksum
      */
-    Status = AcpiTbRecognizeTable (TablePtr, TableInfo);
+    Status = AcpiTbRecognizeTable (TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -235,8 +233,7 @@ AcpiTbInstallTable (
  *
  * FUNCTION:    AcpiTbRecognizeTable
  *
- * PARAMETERS:  TablePtr            - Input buffer pointer, optional
- *              TableInfo           - Return value from AcpiTbGetTable
+ * PARAMETERS:  TableInfo           - Return value from AcpiTbGetTable
  *
  * RETURN:      Status
  *
@@ -254,7 +251,6 @@ AcpiTbInstallTable (
 
 ACPI_STATUS
 AcpiTbRecognizeTable (
-    ACPI_TABLE_HEADER       *TablePtr,
     ACPI_TABLE_DESC         *TableInfo)
 {
     ACPI_TABLE_HEADER       *TableHeader;
@@ -294,7 +290,7 @@ AcpiTbRecognizeTable (
 
     /* Return the table type and length via the info struct */
 
-    TableInfo->Length   = TableHeader->Length;
+    TableInfo->Length = TableHeader->Length;
 
     /*
      * Validate checksum for _most_ tables,
@@ -631,7 +627,7 @@ AcpiTbDeleteSingleTable (
  *
  * PARAMETERS:  TableInfo           - A table info struct
  *
- * RETURN:      None.
+ * RETURN:      Pointer to the next table in the list (of same type)
  *
  * DESCRIPTION: Free the memory associated with an internal ACPI table that
  *              is either installed or has never been installed.
@@ -646,7 +642,7 @@ AcpiTbUninstallTable (
     ACPI_TABLE_DESC         *NextDesc;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("TbDeleteSingleTable", TableDesc);
+    ACPI_FUNCTION_TRACE_PTR ("AcpiTbUninstallTable", TableDesc);
 
 
     if (!TableDesc)

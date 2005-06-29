@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -185,7 +185,7 @@ AcpiLoadTables (void)
 
     /* Now get the rest of the tables */
 
-    Status = AcpiTbGetAllTables (NumberOfTables, NULL);
+    Status = AcpiTbGetAllTables (NumberOfTables);
     if (ACPI_FAILURE (Status))
     {
         ACPI_REPORT_ERROR (("AcpiLoadTables: Error getting required tables (DSDT/FADT/FACS): %s\n",
@@ -263,7 +263,7 @@ AcpiLoadTable (
 
     /* Install the new table into the local data structures */
 
-    Status = AcpiTbInstallTable (NULL, &TableInfo);
+    Status = AcpiTbInstallTable (&TableInfo);
     if (ACPI_FAILURE (Status))
     {
         /* Free table allocated by AcpiTbGetTable */
