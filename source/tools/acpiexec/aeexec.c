@@ -194,10 +194,11 @@ RegionHandler (
     UINT32                      Address,
     UINT32                      BitWidth,
     UINT32                      *Value,
-    void                        *Context)
+    void                        *HandlerContext,
+    void                        *RegionContext)
 {
 
-    ACPI_OBJECT_INTERNAL    *RegionObject = (ACPI_OBJECT_INTERNAL *)Context;
+    ACPI_OBJECT_INTERNAL    *RegionObject = (ACPI_OBJECT_INTERNAL *)RegionContext;
     UINT32                  BaseAddress;
     UINT32                  Length;
     BOOLEAN                 BufferExists;
@@ -364,12 +365,12 @@ RegionInit (
     ACPI_HANDLE                 RegionHandle,
     UINT32                      Function,
     void                        *HandlerContext,
-    void                        **ReturnContext)
+    void                        **RegionContext)
 {
     /*
-     * Real simple, set the ReturnContext to the RegionHandle
+     * Real simple, set the RegionContext to the RegionHandle
      */
-    *ReturnContext = RegionHandle;
+    *RegionContext = RegionHandle;
 
     return AE_OK;
 }
