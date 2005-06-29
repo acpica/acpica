@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,6 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acdebug.h"
-
 #include "acdisasm.h"
 
 
@@ -146,100 +145,6 @@ static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] = {
                             AcpiExOpcode_3A_0T_0R,
                             AcpiExOpcode_3A_1T_1R,
                             AcpiExOpcode_6A_0T_1R};
-
-#ifdef ACPI_DEBUG_OUTPUT
-/*****************************************************************************
- *
- * FUNCTION:    AcpiDsDumpMethodInfo
- *
- * PARAMETERS:  Status          - Method execution status
- *              WalkState       - Current state of the parse tree walk
- *              Op              - Executing parse op
- *
- * RETURN:      None
- *
- * DESCRIPTION: Called when a method has been aborted because of an error.
- *              Dumps the method execution stack, and the method locals/args,
- *              and disassembles the AML opcode that failed.
- *
- ****************************************************************************/
-
-static void
-AcpiDsDumpMethodInfo (
-    ACPI_STATUS             Status,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Op)
-{
-    ACPI_PARSE_OBJECT       *Next;
-    ACPI_THREAD_STATE       *Thread;
-    ACPI_WALK_STATE         *NextWalkState;
-    ACPI_NAMESPACE_NODE     *PreviousMethod = NULL;
-
-
-    /* Ignore control codes, they are not errors */
-
-    if ((Status & AE_CODE_MASK) == AE_CODE_CONTROL)
-    {
-        return;
-    }
-
-    /* Display exception and method name */
-
-    AcpiOsPrintf ("\n**** Exception %s during execution of method ",
-        AcpiFormatException (Status));
-    AcpiNsPrintNodePathname (WalkState->MethodNode, NULL);
-
-    /* Display stack of executing methods */
-
-    AcpiOsPrintf ("\n\nMethod Execution Stack:\n");
-    Thread = WalkState->Thread;
-    NextWalkState = Thread->WalkStateList;
-
-    /* Walk list of linked walk states */
-
-    while (NextWalkState)
-    {
-        AcpiOsPrintf ("    Method [%4.4s] executing: ",
-                NextWalkState->MethodNode->Name.Ascii);
-
-        /* First method is the currently executing method */
-
-        if (NextWalkState == WalkState)
-        {
-            /* Display currently executing ASL statement */
-
-            Next = Op->Common.Next;
-            Op->Common.Next = NULL;
-
-            AcpiDmDisassemble (NextWalkState, Op, ACPI_UINT32_MAX);
-            Op->Common.Next = Next;
-        }
-        else
-        {
-            /*
-             * This method has called another method
-             * NOTE: the method call parse subtree is already deleted at this
-             * point, so we cannot disassemble the method invocation.
-             */
-            AcpiOsPrintf ("Call to method ");
-            AcpiNsPrintNodePathname (PreviousMethod, NULL);
-        }
-
-        PreviousMethod = NextWalkState->MethodNode;
-        NextWalkState = NextWalkState->Next;
-        AcpiOsPrintf ("\n");
-    }
-
-    /* Display the method locals and arguments */
-
-    AcpiOsPrintf ("\n");
-    AcpiDbDisplayLocals ();
-    AcpiOsPrintf ("\n");
-    AcpiDbDisplayArguments ();
-    AcpiOsPrintf ("\n");
-}
-#endif
-
 
 /*****************************************************************************
  *
@@ -871,10 +776,13 @@ Cleanup:
 
     WalkState->NumOperands = 0;
 
-#ifdef ACPI_DEBUG_OUTPUT
+#ifdef ACPI_DISASSEMBLER
+
+    /* On error, display method locals/args */
+
     if (ACPI_FAILURE (Status))
     {
-        AcpiDsDumpMethodInfo (Status, WalkState, Op);
+        AcpiDmDumpMethodInfo (Status, WalkState, Op);
     }
 #endif
 
