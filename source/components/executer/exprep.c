@@ -268,7 +268,7 @@ AmlResolveOperands (
         {
             /* Invalid descriptor */
 
-            DEBUG_PRINT (ACPI_ERROR, ("Bad descriptor type: %x\n", ObjDesc->Common.DataType));
+            DEBUG_PRINT (ACPI_ERROR, ("Bad descriptor type 0x%X in Obj %p\n", ObjDesc->Common.DataType, ObjDesc));
 
             Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
