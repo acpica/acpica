@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: output.h -- debug macros and procedures
+ * Name: output.h -- debug output
  *
  *****************************************************************************/
 
@@ -117,10 +117,6 @@
 #ifndef _OUTPUT_H
 #define _OUTPUT_H
 
-#include "acpiobj.h"
-#include "globals.h"
-#include "common.h"
-
 /*
  * Debug levels and component IDs.  These are used to control the
  * granularity of the output of the DEBUG_PRINT macro -- on a per-
@@ -134,14 +130,15 @@
 #define NAMESPACE                   0x00000004
 #define DEVICE_MANAGER              0x00000008
 #define RESOURCE_MANAGER            0x00000010
-#define EVENT_HANDLING              0x00000020
-#define MISCELLANEOUS               0x00000040
-#define OS_DEPENDENT                0x00000080
-#define OS_APP_INTERFACE            0x00000100
-#define OSPM						0x00000200
+#define TABLE_MANAGER               0x00000020
+#define EVENT_HANDLING              0x00000040
+#define MISCELLANEOUS               0x00000080
+#define OS_DEPENDENT                0x00000100
+#define OS_APP_INTERFACE            0x00001000
+#define OSPM						0x00002000
 
 
-#define ALL_COMPONENTS              0x000002FF
+#define ALL_COMPONENTS              0x00003FFF
 
 
 /* Exception level or Trace level -- used in the global "DebugLevel" */
@@ -189,148 +186,7 @@
 #define HEX                         0x01
 #define ASCII                       0x02
 #define FULL_ADDRESS                0x04
-#define CHARS_PER_LINE              16      /* used in DumpBuf function */
-
-
-
-
-
-/*
- * Reporting macros that are never compiled out
- */
-
-/* Error reporting.  These versions add callers module and line# */
-
-#define REPORT_INFO(a)                  _ReportInfo(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define REPORT_ERROR(a)                 _ReportError(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define REPORT_WARNING(a)               _ReportWarning(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define REPORT_SUCCESS(a)               _ReportSuccess(_THIS_MODULE,__LINE__,_COMPONENT,a)
-
-/* Error reporting.  These versions pass thru the module and line# */
-
-#define _REPORT_INFO(a,b,c,d)           _ReportInfo(a,b,c,d)
-#define _REPORT_ERROR(a,b,c,d)          _ReportError(a,b,c,d)
-#define _REPORT_WARNING(a,b,c,d)        _ReportWarning(a,b,c,d)
-
-/* Buffer dump macros */
-
-#define DUMP_BUFFER(a,b,c)              DumpBuffer((char *)a,b,c,_COMPONENT)
-
-
-/*
- * Debug macros that are conditionally compiled
- */
-
-#ifdef ACPI_DEBUG
-
-/* 
- * Function entry tracing. 
- * The first parameter should be the procedure name as a quoted string.  This is declared
- * as a local string ("_ProcName) so that it can be also used by the function exit macros below.
- */
-
-#define FUNCTION_TRACE(a)               char * _ProcName = a;\
-                                        FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define FUNCTION_TRACE_PTR(a,b)         char * _ProcName = a;\
-                                        FunctionTracePtr(_THIS_MODULE,__LINE__,_COMPONENT,a,(void *)b)
-#define FUNCTION_TRACE_U32(a,b)         char * _ProcName = a;\
-                                        FunctionTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
-#define FUNCTION_TRACE_STR(a,b)         char * _ProcName = a;\
-                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(char *)b)
-/* 
- * Function exit tracing. 
- * WARNING: These macros include a return statement.  This is usually considered 
- * bad form, but having a separate exit macro is very ugly and difficult to maintain.
- * One of the FUNCTION_TRACE macros above must be used in conjunction with these macros
- * so that "_ProcName" is defined.
- */
-#define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
-#define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
-#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT32)s);return(s);}
-
-
-/* Conditional execution */
-
-#define DEBUG_EXEC(a)                   a;
-#define DEBUG_DEFINE(a)                 a;
-
-
-/* Stack and buffer dumping */
-
-#define DUMP_STACK_ENTRY(a)             AmlDumpObjStackEntry(a)
-#define DUMP_STACK(a,b,c,d)             AmlDumpObjStack(a,b,c,d)
-#define DUMP_ENTRY(a,b)                 NsDumpEntry (a,b)
-#define DUMP_TABLES(a,b)                NsDumpTables(a,b)
-
-/* 
- * Master debug print macros 
- * Print iff:
- *    1) Debug print for the current component is enabled
- *    2) Debug error level or trace level for the print statement is enabled
- *
- */
-
-#define	PARAM_LIST(PL) PL
-
-#define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & DebugLevel) && (_COMPONENT & DebugLayer))
-
-#define DEBUG_PRINT(lvl,fp)             TEST_DEBUG_SWITCH(lvl) {\
-                                            DebugPrintPrefix (_THIS_MODULE,__LINE__,_COMPONENT);\
-                                            DebugPrintRaw PARAM_LIST(fp);}
-
-#define DEBUG_PRINT_RAW(lvl,fp)         TEST_DEBUG_SWITCH(lvl) {\
-                                            DebugPrintRaw PARAM_LIST(fp);}
-
-
-
-#else
-/* 
- * This is the non-debug case -- make everything go away,
- * leaving no executable debug code!
- */
-
-#define DEBUG_EXEC(a)  
-#define DEBUG_DEFINE(a)                     
-#define FUNCTION_TRACE(a)
-#define FUNCTION_TRACE_PTR(a,b)
-#define FUNCTION_TRACE_U32(a,b)
-#define FUNCTION_TRACE_STR(a,b)
-#define FUNCTION_EXIT
-#define FUNCTION_STATUS_EXIT(s)
-#define FUNCTION_VALUE_EXIT(s)
-#define DUMP_STACK_ENTRY(a)
-#define DUMP_STACK(a,b,c,d)
-#define DUMP_ENTRY(a,b)
-#define DUMP_TABLES(a,b)
-#define DEBUG_PRINT(l,f)
-#define DEBUG_PRINT_RAW(l,f) 
-
-#define return_VOID                     return
-#define return_ACPI_STATUS(s)           return(s)
-#define return_VALUE(s)                 return(s)
-
-
-#endif
-
-
-
-
-/********************************************************************************************
- *
- * Obsolete??
- */
-
-/*  Bitflags for all display functions  */
-
-#define DISPLAY_DATA        SCREEN
-#define LOG_DATA            LOGFILE 
-#define OUTPUT_DATA         (DISPLAY_DATA | LOG_DATA)
-#define OUTPUT_ERRORS       0x80
-#define PRINT               1                 
-#define APPEND_CRLF         4   
-#define PACRLF              (PRINT | APPEND_CRLF)
-#define SCREEN              1
-#define LOGFILE             2
+#define CHARS_PER_LINE              16          /* used in DumpBuf function */
 
 
 #endif /* _OUTPUT_H */
