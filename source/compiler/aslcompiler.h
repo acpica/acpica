@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -207,11 +207,6 @@ getopt (
 #define AML_PACKAGE_LENGTH          (UINT16) 0xAA10
 #define AML_UNASSIGNED_OPCODE       (UINT16) 0xEEEE
 #define AML_DEFAULT_ARG_OP          (UINT16) 0xDDDD
-
-
-/* TBD: Is this a real opcode? */
-
-#define AML_CONCAT_TPL_OP           (UINT16) 0x00FE
 
 
 /* filename suffixes for output files */
