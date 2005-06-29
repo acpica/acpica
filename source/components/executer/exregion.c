@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -241,15 +241,15 @@ AcpiExSystemMemorySpaceHandler (
     LogicalAddrPtr = MemInfo->MappedLogicalAddress +
                     ((ACPI_INTEGER) Address - (ACPI_INTEGER) MemInfo->MappedPhysicalAddress);
 
-    /* Perform the memory read or write */
+    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
+        ("IO %d (%d width) Address=%p\n", Function, BitWidth, Address));
+
+   /* Perform the memory read or write */
 
     switch (Function)
     {
 
     case ACPI_READ_ADR_SPACE:
-
-        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Read (%d width) Address=%p\n", BitWidth, Address));
 
         switch (BitWidth)
         {
@@ -270,10 +270,6 @@ AcpiExSystemMemorySpaceHandler (
 
 
     case ACPI_WRITE_ADR_SPACE:
-
-        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Write (%d width) Address=%p Value %X\n",
-            BitWidth, Address, *Value));
 
         switch (BitWidth)
         {
@@ -335,6 +331,9 @@ AcpiExSystemIoSpaceHandler (
     FUNCTION_TRACE ("ExSystemIoSpaceHandler");
 
 
+    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
+        ("IO %d (%d width) Address=%p\n", Function, BitWidth, Address));
+
     /* Decode the function parameter */
 
     switch (Function)
@@ -342,13 +341,8 @@ AcpiExSystemIoSpaceHandler (
 
     case ACPI_READ_ADR_SPACE:
 
-        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Read(%d width) Address=%p\n", BitWidth, Address));
-
-        switch (BitWidth)
+        switch (BitWidth) /* I/O Port width */
         {
-        /* I/O Port width */
-
         case 8:
             *Value = (UINT32) AcpiOsIn8 ((ACPI_IO_ADDRESS) Address);
             break;
@@ -372,13 +366,8 @@ AcpiExSystemIoSpaceHandler (
 
     case ACPI_WRITE_ADR_SPACE:
 
-        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("Write(%d width) Address=%p Value %X\n",
-            BitWidth, Address, *Value));
-
-        switch (BitWidth)
+        switch (BitWidth) /* I/O Port width */
         {
-        /* I/O Port width */
         case 8:
             AcpiOsOut8 ((ACPI_IO_ADDRESS) Address, (UINT8) *Value);
             break;
@@ -436,12 +425,8 @@ AcpiExPciConfigSpaceHandler (
     void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  PciSegment;
-    UINT32                  PciBus;
-    UINT32                  PciDevice;
-    UINT32                  PciFunction;
-    UINT32                  PciRegister;
-    ACPI_PCI_SPACE_CONTEXT  *PCIContext;
+    ACPI_PCI_ID             *PciId;
+    UINT16                  PciRegister;
 
 
     FUNCTION_TRACE ("ExPciConfigSpaceHandler");
@@ -459,87 +444,65 @@ AcpiExPciConfigSpaceHandler (
      *  Value - input value for write, output address for read
      *
      */
-    PCIContext  = (ACPI_PCI_SPACE_CONTEXT *) RegionContext;
+    PciId       = (ACPI_PCI_ID *) RegionContext;
+    PciRegister = (UINT16) Address;
 
-    PciSegment  = PCIContext->Segment;
-    PciBus      = PCIContext->Bus;
-    PciDevice   = PCIContext->Device;
-    PciFunction = PCIContext->Function;
-    PciRegister = (UINT32) Address;
+    DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
+        ("IO %d (%d) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n", 
+        Function, BitWidth, PciId->Segment, PciId->Bus, PciId->Device, 
+        PciId->Function, PciRegister));
 
     switch (Function)
     {
 
     case ACPI_READ_ADR_SPACE:
 
-        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("R%d Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) R(%04x)\n", 
-            BitWidth, PCIContext->Segment, PCIContext->Bus, PCIContext->Device, 
-            PCIContext->Function, PciRegister));
-
         *Value  = 0;
 
-        switch (BitWidth)
+        switch (BitWidth) /* PCI Register width */
         {
-        /* PCI Register width */
-
         case 8:
-            Status = AcpiOsReadPciCfgByte (PciSegment, PciBus, PciDevice, 
-                            PciFunction, PciRegister, (UINT8*)Value);
+            Status = AcpiOsReadPciCfgByte (PciId, PciRegister, (UINT8 *) Value);
             break;
 
         case 16:
-            Status = AcpiOsReadPciCfgWord (PciSegment, PciBus, PciDevice, 
-                            PciFunction, PciRegister, (UINT16*)Value);
+            Status = AcpiOsReadPciCfgWord (PciId, PciRegister, (UINT16 *) Value);
             break;
 
         case 32:
-            Status = AcpiOsReadPciCfgDword (PciSegment, PciBus, PciDevice, 
-                            PciFunction, PciRegister, Value);
+            Status = AcpiOsReadPciCfgDword (PciId, PciRegister, Value);
             break;
 
         default:
             DEBUG_PRINTP (ACPI_ERROR, ("Invalid PCIConfig width %d\n",
                 BitWidth));
             Status = AE_AML_OPERAND_VALUE;
-
-        } /* Switch bitWidth */
+        }
 
         break;
 
 
     case ACPI_WRITE_ADR_SPACE:
 
-        DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
-            ("W%d Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) R(%04x) D(%08x)\n", 
-            BitWidth, PCIContext->Segment,PCIContext->Bus,PCIContext->Device,
-            PCIContext->Function, PciRegister,*Value));
-
-        switch (BitWidth)
+        switch (BitWidth) /* PCI Register width */
         {
-        /* PCI Register width */
-
         case 8:
-            Status = AcpiOsWritePciCfgByte (PciSegment, PciBus, PciDevice, 
-                            PciFunction, PciRegister, *(UINT8*)Value);
+            Status = AcpiOsWritePciCfgByte (PciId, PciRegister, *(UINT8*)Value);
             break;
 
         case 16:
-            Status = AcpiOsWritePciCfgWord (PciSegment, PciBus, PciDevice, 
-                            PciFunction, PciRegister, *(UINT16*)Value);
+            Status = AcpiOsWritePciCfgWord (PciId, PciRegister, *(UINT16*)Value);
             break;
 
         case 32:
-            Status = AcpiOsWritePciCfgDword (PciSegment, PciBus, PciDevice, 
-                            PciFunction, PciRegister, *Value);
+            Status = AcpiOsWritePciCfgDword (PciId, PciRegister, *Value);
             break;
 
         default:
             DEBUG_PRINTP (ACPI_ERROR, ("Invalid PCIConfig width %d\n",
                 BitWidth));
             Status = AE_AML_OPERAND_VALUE;
-
-        } /* Switch bitWidth */
+        }
 
         break;
 
@@ -548,7 +511,6 @@ AcpiExPciConfigSpaceHandler (
 
         Status = AE_BAD_PARAMETER;
         break;
-
     }
 
     return_ACPI_STATUS (Status);
