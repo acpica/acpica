@@ -443,6 +443,7 @@ NsCreateAndLinkNewTable (nte *NameTbl, nte *PreviousEntry)
                 NameTbl, ParentScope, NameTbl->Scope));
 
     }
+    return AE_OK;
 }
 
 
