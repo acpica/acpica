@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.133 $
+ *              $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -573,7 +573,7 @@ AcpiAmlStoreObjectToNode (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *TargetDesc;
-    OBJECT_TYPE_INTERNAL    TargetType = ACPI_TYPE_ANY;
+    ACPI_OBJECT_TYPE8       TargetType = ACPI_TYPE_ANY;
 
 
     FUNCTION_TRACE ("AmlStoreObjectToNode");
@@ -703,7 +703,7 @@ AcpiAmlStoreObjectToObject (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
-    OBJECT_TYPE_INTERNAL    DestinationType = DestDesc->Common.Type;
+    ACPI_OBJECT_TYPE8       DestinationType = DestDesc->Common.Type;
 
 
     FUNCTION_TRACE ("AmlStoreObjectToObject");

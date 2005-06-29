@@ -3,7 +3,7 @@
  *
  * Module Name: amstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.29 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 #include "actables.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amstoren")
 
 
@@ -149,7 +149,7 @@
 ACPI_STATUS
 AcpiAmlResolveObject (
     ACPI_OPERAND_OBJECT     **SourceDescPtr,
-    OBJECT_TYPE_INTERNAL    TargetType,
+    ACPI_OBJECT_TYPE8       TargetType,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     *SourceDesc = *SourceDescPtr;
@@ -171,8 +171,8 @@ AcpiAmlResolveObject (
      * These cases all require only Integers or values that
      * can be converted to Integers (Strings or Buffers)
      */
-    case ACPI_TYPE_INTEGER:
-    case ACPI_TYPE_FIELD_UNIT:
+    case ACPI_TYPE_BUFFER_FIELD:
+    case INTERNAL_TYPE_REGION_FIELD:
     case INTERNAL_TYPE_BANK_FIELD:
     case INTERNAL_TYPE_INDEX_FIELD:
 
@@ -180,9 +180,12 @@ AcpiAmlResolveObject (
      * Stores into a Field/Region or into a Buffer/String
      * are all essentially the same.
      */
+    case ACPI_TYPE_INTEGER:
     case ACPI_TYPE_STRING:
     case ACPI_TYPE_BUFFER:
-    case INTERNAL_TYPE_DEF_FIELD:
+
+
+        /* TBD: FIX - check for source==REF, resolve, then check type */
 
         /*
          * If SourceDesc is not a valid type, try to resolve it to one.
@@ -260,12 +263,12 @@ AcpiAmlResolveObject (
 ACPI_STATUS
 AcpiAmlStoreObject (
     ACPI_OPERAND_OBJECT     *SourceDesc,
-    OBJECT_TYPE_INTERNAL    TargetType,
+    ACPI_OBJECT_TYPE8       TargetType,
     ACPI_OPERAND_OBJECT     **TargetDescPtr,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     *TargetDesc = *TargetDescPtr;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("AmlStoreObject");
@@ -283,7 +286,6 @@ AcpiAmlStoreObject (
     {
         return_ACPI_STATUS (Status);
     }
-
 
     /*
      * We now have two objects of identical types, and we can perform a
@@ -311,25 +313,6 @@ AcpiAmlStoreObject (
 
         AcpiAmlTruncateFor32bitTable (TargetDesc, WalkState);
         break;
-
-
-    case ACPI_TYPE_FIELD_UNIT:
-
-        Status = AcpiAmlCopyIntegerToFieldUnit (SourceDesc, TargetDesc);
-        break;
-
-
-    case INTERNAL_TYPE_BANK_FIELD:
-
-        Status = AcpiAmlCopyIntegerToBankField (SourceDesc, TargetDesc);
-        break;
-
-
-    case INTERNAL_TYPE_INDEX_FIELD:
-
-        Status = AcpiAmlCopyIntegerToIndexField (SourceDesc, TargetDesc);
-        break;
-
 
     case ACPI_TYPE_STRING:
 
