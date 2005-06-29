@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  ******************************************************************************/
 
@@ -485,7 +485,7 @@ AcpiUtStrtoul64 (
 
     while (ACPI_IS_SPACE (*String) || *String == '\t')
     {
-        ++String;
+        String++;
     }
 
     /*
@@ -495,10 +495,10 @@ AcpiUtStrtoul64 (
     if (Base == 0)
     {
         if ((*String == '0') &&
-            (ACPI_TOLOWER (*(++String)) == 'x'))
+            (ACPI_TOLOWER (*(String + 1)) == 'x'))
         {
             Base = 16;
-            ++String;
+            String += 2;
         }
         else
         {
@@ -510,11 +510,11 @@ AcpiUtStrtoul64 (
      * For hexadecimal base, skip over the leading
      * 0 or 0x, if they are present.
      */
-    if (Base == 16 &&
-        *String == '0' &&
-        ACPI_TOLOWER (*(++String)) == 'x')
+    if ((Base == 16) &&
+        (*String == '0') &&
+        (ACPI_TOLOWER (*(String + 1)) == 'x'))
     {
-        String++;
+        String += 2;
     }
 
     /* Any string left? */
@@ -567,7 +567,7 @@ AcpiUtStrtoul64 (
 
         ReturnValue *= Base;
         ReturnValue += ThisDigit;
-        ++String;
+        String++;
     }
 
     *RetInteger = ReturnValue;
