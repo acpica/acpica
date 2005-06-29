@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -381,7 +381,7 @@ AcpiEvAsynchExecuteGpeMethod (
         {
             ACPI_REPORT_ERROR (("%s while evaluating method [%4.4s] for GPE[%2X]\n",
                 AcpiFormatException (Status),
-                LocalGpeEventInfo.MethodNode->Name.Ascii, GpeNumber));
+                AcpiUtGetNodeName (LocalGpeEventInfo.MethodNode), GpeNumber));
         }
     }
 

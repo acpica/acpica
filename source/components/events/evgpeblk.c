@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.19 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -149,10 +149,15 @@ AcpiEvValidGpeEvent (
 
     /* No need for spin lock since we are not changing any list elements */
 
+    /* Walk the GPE interrupt levels */
+
     GpeXruptBlock = AcpiGbl_GpeXruptListHead;
     while (GpeXruptBlock)
     {
         GpeBlock = GpeXruptBlock->GpeBlockListHead;
+
+        /* Walk the GPE blocks on this interrupt level */
+
         while (GpeBlock)
         {
             if ((&GpeBlock->EventInfo[0] <= GpeEventInfo) &&
@@ -221,7 +226,7 @@ AcpiEvWalkGpeList (
 
         GpeXruptInfo = GpeXruptInfo->Next;
     }
-    
+
 UnlockAndExit:
     AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_ISR);
     return_ACPI_STATUS (Status);
@@ -234,7 +239,7 @@ UnlockAndExit:
  *
  * PARAMETERS:  Callback from WalkNamespace
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Called from AcpiWalkNamespace.  Expects each object to be a
  *              control method under the _GPE portion of the namespace.
@@ -243,10 +248,10 @@ UnlockAndExit:
  *
  *              The name of each GPE control method is of the form:
  *                  "_Lnn" or "_Enn"
- *              Where:
- *                  L      - means that the GPE is level triggered
- *                  E      - means that the GPE is edge triggered
- *                  nn     - is the GPE number [in HEX]
+ *                  Where:
+ *                      L      - means that the GPE is level triggered
+ *                      E      - means that the GPE is edge triggered
+ *                      nn     - is the GPE number [in HEX]
  *
  ******************************************************************************/
 
@@ -275,7 +280,8 @@ AcpiEvSaveMethodInfo (
     Name[ACPI_NAME_SIZE] = 0;
 
     /*
-     * Edge/Level determination is based on the 2nd character of the method name
+     * Edge/Level determination is based on the 2nd character
+     * of the method name
      */
     switch (Name[1])
     {
@@ -314,7 +320,7 @@ AcpiEvSaveMethodInfo (
     if ((GpeNumber < GpeBlock->BlockBaseNumber) ||
         (GpeNumber >= (GpeBlock->BlockBaseNumber + (GpeBlock->RegisterCount * 8))))
     {
-        /* 
+        /*
          * Not valid for this GPE block, just ignore it
          * However, it may be valid for a different GPE block, since GPE0 and GPE1
          * methods both appear under \_GPE.
@@ -331,16 +337,15 @@ AcpiEvSaveMethodInfo (
     GpeEventInfo->Flags      = Type;
     GpeEventInfo->MethodNode = (ACPI_NAMESPACE_NODE *) ObjHandle;
 
-    /*
-     * Enable the GPE (SCIs should be disabled at this point)
-     */
+    /* Enable the GPE (SCIs should be disabled at this point) */
+
     Status = AcpiHwEnableGpe (GpeEventInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+    ACPI_DEBUG_PRINT ((ACPI_DB_LOAD,
         "Registered GPE method %s as GPE number 0x%.2X\n",
         Name, GpeNumber));
     return_ACPI_STATUS (AE_OK);
@@ -425,7 +430,7 @@ AcpiEvGetGpeXruptBlock (
                     AcpiEvGpeXruptHandler, GpeXrupt);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Could not install GPE interrupt handler at level 0x%X\n",
                 InterruptLevel));
             return_PTR (NULL);
@@ -585,7 +590,7 @@ AcpiEvDeleteGpeBlock (
 
     ACPI_FUNCTION_TRACE ("EvInstallGpeBlock");
 
-    
+
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
     if (ACPI_FAILURE (Status))
     {
@@ -851,17 +856,15 @@ AcpiEvCreateGpeBlock (
 
     /* Dump info about this GPE block */
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "GPE Block: [%4.4s] %X registers at %8.8X%8.8X on interrupt %d\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "GPE %02d to %02d [%4.4s] %d regs at %8.8X%8.8X on int %d\n",
+        GpeBlock->BlockBaseNumber,
+        (UINT32) (GpeBlock->BlockBaseNumber +
+                ((GpeBlock->RegisterCount * ACPI_GPE_REGISTER_WIDTH) -1)),
         GpeDevice->Name.Ascii,
         GpeBlock->RegisterCount,
         ACPI_HIDWORD (ACPI_GET_ADDRESS (GpeBlock->BlockAddress.Address)),
         ACPI_LODWORD (ACPI_GET_ADDRESS (GpeBlock->BlockAddress.Address)),
         InterruptLevel));
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "GPE Block defined as GPE 0x%.2X to GPE 0x%.2X\n",
-        GpeBlock->BlockBaseNumber,
-        (UINT32) (GpeBlock->BlockBaseNumber +
-                ((GpeBlock->RegisterCount * ACPI_GPE_REGISTER_WIDTH) -1))));
 
     /* Find all GPE methods (_Lxx, _Exx) for this block */
 
@@ -986,7 +989,7 @@ AcpiEvGpeInitialize (void)
             /* Install GPE Block 1 */
 
             Status = AcpiEvCreateGpeBlock (GpeDevice, &AcpiGbl_FADT->XGpe1Blk,
-                        RegisterCount1, AcpiGbl_FADT->Gpe1Base, 
+                        RegisterCount1, AcpiGbl_FADT->Gpe1Base,
                         AcpiGbl_FADT->SciInt, &AcpiGbl_GpeFadtBlocks[1]);
             if (ACPI_FAILURE (Status))
             {
@@ -996,8 +999,8 @@ AcpiEvGpeInitialize (void)
             }
 
             /*
-             * GPE0 and GPE1 do not have to be contiguous in the GPE number space,
-             * But, GPE0 always starts at zero.
+             * GPE0 and GPE1 do not have to be contiguous in the GPE number
+             * space. However, GPE0 always starts at GPE number zero.
              */
             GpeNumberMax = AcpiGbl_FADT->Gpe1Base +
                                 ((RegisterCount1 * ACPI_GPE_REGISTER_WIDTH) - 1);

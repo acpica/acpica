@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.67 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -234,11 +234,11 @@ AcpiEvQueueNotifyRequest (
 
             if (NotifyValue <= ACPI_MAX_SYS_NOTIFY)
             {
-                HandlerObj = ObjDesc->CommonNotify.SysHandler;
+                HandlerObj = ObjDesc->CommonNotify.SystemNotify;
             }
             else
             {
-                HandlerObj = ObjDesc->CommonNotify.DrvHandler;
+                HandlerObj = ObjDesc->CommonNotify.DeviceNotify;
             }
             break;
 
@@ -250,8 +250,8 @@ AcpiEvQueueNotifyRequest (
 
     /* If there is any handler to run, schedule the dispatcher */
 
-    if ((AcpiGbl_SysNotify.Handler && (NotifyValue <= ACPI_MAX_SYS_NOTIFY)) ||
-        (AcpiGbl_DrvNotify.Handler && (NotifyValue > ACPI_MAX_SYS_NOTIFY))  ||
+    if ((AcpiGbl_SystemNotify.Handler && (NotifyValue <= ACPI_MAX_SYS_NOTIFY)) ||
+        (AcpiGbl_DeviceNotify.Handler && (NotifyValue > ACPI_MAX_SYS_NOTIFY))  ||
         HandlerObj)
     {
         NotifyInfo = AcpiUtCreateGenericState ();
@@ -278,7 +278,8 @@ AcpiEvQueueNotifyRequest (
         /* There is no per-device notify handler for this device */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "No notify handler for [%4.4s] node %p\n", Node->Name.Ascii, Node));
+            "No notify handler for [%4.4s] node %p\n",
+            AcpiUtGetNodeName (Node), Node));
     }
 
     return (Status);
@@ -319,20 +320,20 @@ AcpiEvNotifyDispatch (
     {
         /* Global system notification handler */
 
-        if (AcpiGbl_SysNotify.Handler)
+        if (AcpiGbl_SystemNotify.Handler)
         {
-            GlobalHandler = AcpiGbl_SysNotify.Handler;
-            GlobalContext = AcpiGbl_SysNotify.Context;
+            GlobalHandler = AcpiGbl_SystemNotify.Handler;
+            GlobalContext = AcpiGbl_SystemNotify.Context;
         }
     }
     else
     {
         /* Global driver notification handler */
 
-        if (AcpiGbl_DrvNotify.Handler)
+        if (AcpiGbl_DeviceNotify.Handler)
         {
-            GlobalHandler = AcpiGbl_DrvNotify.Handler;
-            GlobalContext = AcpiGbl_DrvNotify.Context;
+            GlobalHandler = AcpiGbl_DeviceNotify.Handler;
+            GlobalContext = AcpiGbl_DeviceNotify.Context;
         }
     }
 
@@ -348,8 +349,8 @@ AcpiEvNotifyDispatch (
     HandlerObj = NotifyInfo->Notify.HandlerObj;
     if (HandlerObj)
     {
-        HandlerObj->NotifyHandler.Handler (NotifyInfo->Notify.Node, NotifyInfo->Notify.Value,
-                        HandlerObj->NotifyHandler.Context);
+        HandlerObj->Notify.Handler (NotifyInfo->Notify.Node, NotifyInfo->Notify.Value,
+                        HandlerObj->Notify.Context);
     }
 
     /* All done with the info object */
