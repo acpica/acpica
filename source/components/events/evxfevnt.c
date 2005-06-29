@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,6 @@
         MODULE_NAME         ("evxfevnt")
 
 
-
 /**************************************************************************
  *
  * FUNCTION:    AcpiEnable
@@ -162,7 +161,7 @@ AcpiEnable (void)
 
     if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
     {
-        DEBUG_PRINT (ACPI_WARN, 
+        DEBUG_PRINT (ACPI_WARN,
             ("AcpiEnable: Only legacy mode supported!\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
