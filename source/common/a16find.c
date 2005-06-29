@@ -390,9 +390,36 @@ AfRecognizeTable (
     TableInfo->Length   = TableHeader->Length;
 
 
+    /*
+     * An AE_SUPPORT means that the table was not recognized.
+     * We ignore this table;  just print a debug message
+     */
+
+    if (Status == AE_SUPPORT)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("Unsupported table %s (Type %d) was found and discarded\n",
+                            AcpiGbl_AcpiTableData[TableType].Name, TableType));
+
+        *TableGlobalPtr = NULL;
+        return_ACPI_STATUS (Status);
+    }
+
+
+    Status = AcpiTbValidateTableHeader (TableHeader);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Table failed verification, map all errors to BAD_DATA */
+
+        DEBUG_PRINT (ACPI_ERROR, ("Invalid table header found in table named %s (Type %d)\n",
+                            AcpiGbl_AcpiTableData[TableType].Name, TableType));
+
+        return_ACPI_STATUS (AE_BAD_DATA);
+    }
+
+
     /* Now get the rest of the table */
 
-    *TableGlobalPtr         = AcpiCmAllocate (AcpiTblHeader.Length);
+    *TableGlobalPtr = AcpiCmAllocate (AcpiTblHeader.Length);
     if (!*TableGlobalPtr)
     {
         AcpiOsPrintf ("Could not allocate buffer for Acpi table of length 0x%lX\n",
@@ -423,22 +450,6 @@ AfRecognizeTable (
 
         AcpiTbVerifyTableChecksum (*TableGlobalPtr);
     }
-
-    /*
-     * An AE_SUPPORT means that the table was not recognized.
-     * We basically ignore this;  just print a debug message
-     */
-
-    if (Status == AE_SUPPORT)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("Unsupported table %s (Type %d) was found and discarded\n",
-                            AcpiGbl_AcpiTableData[TableType].Name, TableType));
-
-        AcpiCmFree (*TableGlobalPtr);
-        *TableGlobalPtr = NULL;
-        return_ACPI_STATUS (Status);
-    }
-
 
     return_ACPI_STATUS (Status);
 }
@@ -502,7 +513,7 @@ AfGetAllTables (
 
     if (!AcpiGbl_FADT)
     {
-        AcpiOsPrintf ("FADT not found, can't get to FACS and DSDT!\n");
+        AcpiOsPrintf ("FADT was not found, cannot obtain FACS and DSDT!\n");
         return AE_AML_ERROR;
     }
 
@@ -648,7 +659,19 @@ AfFindDsdt(
 
     DEBUG_PRINT (ACPI_INFO, ("RSDT/XSDT at %lX\n", PhysicalAddress)); 
     AcpiCmDumpBuffer ((char *) &AcpiTblHeader, sizeof (ACPI_TABLE_HEADER), 0, ACPI_UINT32_MAX);
-           
+ 
+    /* Validate the table header */
+    
+    Status = AcpiTbValidateTableHeader (&AcpiTblHeader);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Table failed verification, map all errors to BAD_DATA */
+
+        DEBUG_PRINT (ACPI_ERROR, ("Invalid RSDT table header\n"));
+        return (AE_BAD_DATA);
+    }
+
+
     /* Allocate a buffer for the entire table */
            
     AcpiGbl_XSDT = (void *) malloc ((size_t) AcpiTblHeader.Length);
