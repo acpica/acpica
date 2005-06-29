@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.64 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -413,11 +413,14 @@ MpDisplayReservedNames (
 
 const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 {
+/*! [Begin] no source code translation (keep the table structure) */
+
 
 /* ACCESSAS */                  OP_TABLE_ENTRY (AML_INT_ACCESSFIELD_OP,     0,                              0,                  0),
 /* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BLOCK,     0,                  0),
+/* ACCESSATTRIB_BLOCK_CALL */   OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BLOCK_CALL,0,                  0),
 /* ACCESSATTRIB_BYTE */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_BYTE,      0,                  0),
-/* ACCESSATTRIB_CALL */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_CALL,      0,                  0),
+/* ACCESSATTRIB_WORD_CALL */    OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_WORD_CALL, 0,                  0),
 /* ACCESSATTRIB_QUICK */        OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_QUICK,     0,                  0),
 /* ACCESSATTRIB_SND_RCV */      OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_SEND_RCV,  0,                  0),
 /* ACCESSATTRIB_WORD */         OP_TABLE_ENTRY (AML_BYTE_OP,                AML_FIELD_ATTRIB_SMB_WORD,      0,                  0),
@@ -664,42 +667,8 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* XOR */                       OP_TABLE_ENTRY (AML_BIT_XOR_OP,             0,                              0,                  ACPI_BTYPE_INTEGER),
 /* ZERO */                      OP_TABLE_ENTRY (AML_ZERO_OP,                0,                              0,                  ACPI_BTYPE_INTEGER),
 
+/*! [End] no source code translation !*/
+
 };
-
-
-/*
- * TBD:
- *
- * This function is here temporarily until it is segregated out into separate
- * modules in the main subsystem source.
- */
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExValidateObjectType
- *
- * PARAMETERS:  Type            Object type to validate
- *
- * DESCRIPTION: Determine if a type is a valid ACPI object type
- *
- ******************************************************************************/
-
-#if 0
-BOOLEAN
-AcpiExValidateObjectType (
-    ACPI_OBJECT_TYPE        Type)
-{
-
-    if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
-        (Type > INTERNAL_TYPE_MAX))
-    {
-        return (FALSE);
-    }
-
-    return (TRUE);
-}
-
-
-#endif
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.24 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,7 +118,6 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
-#include "aslresource.h"
 #include "amlcode.h"
 
 
@@ -244,14 +243,14 @@ RsSetFlagBits (
     UINT8                   *Flags,
     ACPI_PARSE_OBJECT       *Op,
     UINT8                   Position,
-    UINT8                   Default)
+    UINT8                   DefaultBit)
 {
 
     if (Op->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
     {
         /* Use the default bit */
 
-        *Flags |= (Default << Position);
+        *Flags |= (DefaultBit << Position);
     }
     else
     {
@@ -308,7 +307,8 @@ RsCompleteNodeAndGetNext (
 ASL_RESOURCE_NODE *
 RsDoOneResourceDescriptor (
     ACPI_PARSE_OBJECT       *DescriptorTypeOp,
-    UINT32                  CurrentByteOffset)
+    UINT32                  CurrentByteOffset,
+    UINT8                   *State)
 {
     ASL_RESOURCE_NODE       *Rnode = NULL;
 
@@ -330,6 +330,22 @@ RsDoOneResourceDescriptor (
         break;
 
     case PARSEOP_ENDDEPENDENTFN:
+        switch (*State)
+        {
+        case ACPI_RSTATE_NORMAL:
+            AslError (ASL_ERROR, ASL_MSG_MISSING_STARTDEPENDENT, DescriptorTypeOp, NULL);
+            break;
+
+        case ACPI_RSTATE_START_DEPENDENT:
+            AslError (ASL_ERROR, ASL_MSG_DEPENDENT_NESTING, DescriptorTypeOp, NULL);
+            break;
+
+        case ACPI_RSTATE_DEPENDENT_LIST:
+        default:
+            break;
+        }
+
+        *State = ACPI_RSTATE_NORMAL;
         Rnode = RsDoEndDependentDescriptor (DescriptorTypeOp, CurrentByteOffset);
         break;
 
@@ -378,11 +394,39 @@ RsDoOneResourceDescriptor (
         break;
 
     case PARSEOP_STARTDEPENDENTFN:
+        switch (*State)
+        {
+        case ACPI_RSTATE_START_DEPENDENT:
+            AslError (ASL_ERROR, ASL_MSG_DEPENDENT_NESTING, DescriptorTypeOp, NULL);
+            break;
+
+        case ACPI_RSTATE_NORMAL:
+        case ACPI_RSTATE_DEPENDENT_LIST:
+        default:
+            break;
+        }
+
+        *State = ACPI_RSTATE_START_DEPENDENT;
         Rnode = RsDoStartDependentDescriptor (DescriptorTypeOp, CurrentByteOffset);
+        *State = ACPI_RSTATE_DEPENDENT_LIST;
         break;
 
     case PARSEOP_STARTDEPENDENTFN_NOPRI:
+        switch (*State)
+        {
+        case ACPI_RSTATE_START_DEPENDENT:
+            AslError (ASL_ERROR, ASL_MSG_DEPENDENT_NESTING, DescriptorTypeOp, NULL);
+            break;
+
+        case ACPI_RSTATE_NORMAL:
+        case ACPI_RSTATE_DEPENDENT_LIST:
+        default:
+            break;
+        }
+
+        *State = ACPI_RSTATE_START_DEPENDENT;
         Rnode = RsDoStartDependentNoPriDescriptor (DescriptorTypeOp, CurrentByteOffset);
+        *State = ACPI_RSTATE_DEPENDENT_LIST;
         break;
 
     case PARSEOP_VENDORLONG:
@@ -495,11 +539,13 @@ RsDoResourceTemplate (
     ACPI_PARSE_OBJECT       *BufferLengthOp;
     ACPI_PARSE_OBJECT       *BufferOp;
     ACPI_PARSE_OBJECT       *DescriptorTypeOp;
+    ACPI_PARSE_OBJECT       *LastOp = NULL;
     ASL_RESOURCE_DESC       *Descriptor;
     UINT32                  CurrentByteOffset = 0;
     ASL_RESOURCE_NODE       HeadRnode;
     ASL_RESOURCE_NODE       *PreviousRnode;
     ASL_RESOURCE_NODE       *Rnode;
+    UINT8                   State;
 
 
     /* ResourceTemplate Opcode is first (Op) */
@@ -517,10 +563,11 @@ RsDoResourceTemplate (
 
     /* Process all resource descriptors in the list */
 
+    State = ACPI_RSTATE_NORMAL;
     PreviousRnode = &HeadRnode;
     while (DescriptorTypeOp)
     {
-        Rnode = RsDoOneResourceDescriptor (DescriptorTypeOp, CurrentByteOffset);
+        Rnode = RsDoOneResourceDescriptor (DescriptorTypeOp, CurrentByteOffset, &State);
 
         /*
          * Update current byte offset to indicate the number of bytes from the
@@ -532,7 +579,17 @@ RsDoResourceTemplate (
 
         /* Get the next descriptor in the list */
 
+        LastOp = DescriptorTypeOp;
         DescriptorTypeOp = ASL_GET_PEER_NODE (DescriptorTypeOp);
+    }
+
+    if (State == ACPI_RSTATE_DEPENDENT_LIST)
+    {
+        if (LastOp)
+        {
+            LastOp = LastOp->Asl.Parent;
+        }
+        AslError (ASL_ERROR, ASL_MSG_MISSING_ENDDEPENDENT, LastOp, NULL);
     }
 
     /*
@@ -550,9 +607,9 @@ RsDoResourceTemplate (
     /*
      * Transform the nodes into the following
      *
-     * Op             -> AML_BUFFER_OP
-     * First Child      -> BufferLength
-     * Second Child     -> Descriptor Buffer (raw byte data)
+     * Op           -> AML_BUFFER_OP
+     * First Child  -> BufferLength
+     * Second Child -> Descriptor Buffer (raw byte data)
      */
     Op->Asl.ParseOpcode               = PARSEOP_BUFFER;
     Op->Asl.AmlOpcode                 = AML_BUFFER_OP;
@@ -561,7 +618,7 @@ RsDoResourceTemplate (
     BufferLengthOp->Asl.ParseOpcode   = PARSEOP_INTEGER;
     BufferLengthOp->Asl.Value.Integer = CurrentByteOffset;
 
-    OpcSetOptimalIntegerSize (BufferLengthOp);
+    (void) OpcSetOptimalIntegerSize (BufferLengthOp);
 
     BufferOp->Asl.ParseOpcode         = PARSEOP_RAW_DATA;
     BufferOp->Asl.AmlOpcode           = AML_RAW_DATA_CHAIN;

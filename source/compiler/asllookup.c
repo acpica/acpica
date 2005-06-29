@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.62 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -128,7 +128,7 @@
         ACPI_MODULE_NAME    ("asllookup")
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LsDoOneNamespaceObject
  *
@@ -139,7 +139,7 @@
  * DESCRIPTION: Dump a namespace object to the namespace output file.
  *              Called during the walk of the namespace to dump all objects.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 LsDoOneNamespaceObject (
@@ -192,6 +192,7 @@ LsDoOneNamespaceObject (
 
 
         case ACPI_TYPE_STRING:
+
             if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
                 (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
@@ -203,14 +204,15 @@ LsDoOneNamespaceObject (
             break;
 
 
-        case INTERNAL_TYPE_REGION_FIELD:
+        case ACPI_TYPE_LOCAL_REGION_FIELD:
+
             if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
                 (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
                 Op = Op->Asl.Child;
             }
-            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Length = 0x%02X]",
-                        Op->Asl.Value.Integer32);
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Offset 0x%02X, Length 0x%02X]",
+                        Op->Asl.Parent->Asl.ExtraValue, Op->Asl.Value.Integer32);
             break;
 
 
@@ -225,7 +227,7 @@ LsDoOneNamespaceObject (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LsDisplayNamespace
  *
@@ -237,7 +239,7 @@ LsDoOneNamespaceObject (
  *              in the tree.  Information is written to the optional
  *              namespace output file.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 LsDisplayNamespace (
@@ -256,7 +258,7 @@ LsDisplayNamespace (
     FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "Contents of ACPI Namespace\n\n");
     FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "Count  Depth    Name - Type\n\n");
 
-    /* Walk entire namespace from the supplied root */
+    /* Walk entire namespace from the root */
 
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
                                 ACPI_UINT32_MAX, FALSE, LsDoOneNamespaceObject,
@@ -265,7 +267,7 @@ LsDisplayNamespace (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LsCompareOneNamespaceObject
  *
@@ -275,7 +277,7 @@ LsDisplayNamespace (
  *
  * DESCRIPTION: Compare name of one object.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 LsCompareOneNamespaceObject (
@@ -300,7 +302,7 @@ LsCompareOneNamespaceObject (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LkObjectExists
  *
@@ -310,7 +312,7 @@ LsCompareOneNamespaceObject (
  *
  * DESCRIPTION: Walk the namespace to find an object
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 BOOLEAN
 LkObjectExists (
@@ -335,7 +337,7 @@ LkObjectExists (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LkCrossReferenceNamespace
  *
@@ -353,7 +355,7 @@ LkObjectExists (
  *        namespace so that references to the external name will be resolved
  *        correctly here.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 LkCrossReferenceNamespace (
@@ -382,7 +384,7 @@ LkCrossReferenceNamespace (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LkCheckFieldRange
  *
@@ -398,7 +400,7 @@ LkCrossReferenceNamespace (
  *
  * Note: AccessBitWidth must be either 8,16,32, or 64
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 void
 LkCheckFieldRange (
@@ -439,8 +441,7 @@ LkCheckFieldRange (
     }
 }
 
-
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LkNamespaceLocateBegin
  *
@@ -457,7 +458,7 @@ LkCheckFieldRange (
  *       important part of the code generation.  We don't know that the
  *       name refers to a resource descriptor until now.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 LkNamespaceLocateBegin (
@@ -469,7 +470,7 @@ LkNamespaceLocateBegin (
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        ObjectType;
-    NATIVE_CHAR             *Path;
+    char                    *Path;
     UINT8                   PassedArgs;
     ACPI_PARSE_OBJECT       *NextOp;
     ACPI_PARSE_OBJECT       *OwningOp;
@@ -477,17 +478,29 @@ LkNamespaceLocateBegin (
     UINT32                  MinimumLength;
     UINT32                  Temp;
     const ACPI_OPCODE_INFO  *OpInfo;
+    UINT32                  Flags;
 
 
-    ACPI_FUNCTION_NAME ("LkNamespaceLocateBegin");
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Op %p\n", Op));
+    ACPI_FUNCTION_TRACE_PTR ("LkNamespaceLocateBegin", Op);
 
+    /*
+     * If this node is the actual declaration of a name
+     * [such as the XXXX name in "Method (XXXX)"],
+     * we are not interested in it here.  We only care about names that are
+     * references to other objects within the namespace and the parent objects
+     * of name declarations
+     */
+    if (Op->Asl.CompileFlags & NODE_IS_NAME_DECLARATION)
+    {
+        return (AE_OK);
+    }
 
     /* We are only interested in opcodes that have an associated name */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Asl.AmlOpcode);
 
     if ((!(OpInfo->Flags & AML_NAMED)) &&
+        (!(OpInfo->Flags & AML_CREATE)) &&
         (Op->Asl.ParseOpcode != PARSEOP_NAMESTRING) &&
         (Op->Asl.ParseOpcode != PARSEOP_NAMESEG)    &&
         (Op->Asl.ParseOpcode != PARSEOP_METHODCALL))
@@ -495,9 +508,48 @@ LkNamespaceLocateBegin (
         return (AE_OK);
     }
 
+    /*
+     * We must enable the "search-to-root" for single NameSegs, but
+     * we have to be very careful about opening up scopes
+     */
+    Flags = ACPI_NS_SEARCH_PARENT;
+    if ((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) ||
+        (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)    ||
+        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
+    {
+        /*
+         * These are name references, do not push the scope stack
+         * for them.
+         */
+        Flags |= ACPI_NS_DONT_OPEN_SCOPE;
+    }
+
+    /* Get the NamePath from the appropriate place */
+
     if (OpInfo->Flags & AML_NAMED)
     {
+        /* For all NAMED operators, the name reference is the first child */
+
         Path = Op->Asl.Child->Asl.Value.String;
+        if (Op->Asl.AmlOpcode == AML_ALIAS_OP)
+        {
+            /*
+             * ALIAS is the only oddball opcode, the name declaration
+             * (alias name) is the second operand
+             */
+            Path = Op->Asl.Child->Asl.Next->Asl.Value.String;
+        }
+    }
+    else if (OpInfo->Flags & AML_CREATE)
+    {
+        /* Name must appear as the last parameter */
+
+        NextOp = Op->Asl.Child;
+        while (!(NextOp->Asl.CompileFlags & NODE_IS_NAME_DECLARATION))
+        {
+            NextOp = NextOp->Asl.Next;
+        }
+        Path = NextOp->Asl.Value.String;
     }
     else
     {
@@ -505,7 +557,7 @@ LkNamespaceLocateBegin (
     }
 
     ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%X\n", ObjectType));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Type=%s\n", AcpiUtGetTypeName (ObjectType)));
 
     /*
      * Lookup the name in the namespace.  Name must exist at this point, or it
@@ -516,9 +568,8 @@ LkNamespaceLocateBegin (
      */
     Gbl_NsLookupCount++;
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
-                            ObjectType, ACPI_IMODE_EXECUTE,
-                            ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
+    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, ObjectType,
+                    ACPI_IMODE_EXECUTE, Flags, WalkState, &(Node));
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
@@ -567,10 +618,40 @@ LkNamespaceLocateBegin (
         return (Status);
     }
 
+    /* Attempt to optimize the NamePath */
+
+    OptOptimizeNamePath (Op, OpInfo->Flags, WalkState, Path, Node);
+
+    /*
+     * Dereference an alias. (A name reference that is an alias.)
+     * Aliases are not nested;  The alias always points to the final object
+     */
+    if ((Op->Asl.ParseOpcode != PARSEOP_ALIAS) && (Node->Type == ACPI_TYPE_LOCAL_ALIAS))
+    {
+        /* This node points back to the original PARSEOP_ALIAS */
+
+        NextOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
+
+        /* The first child is the alias target op */
+
+        NextOp = NextOp->Asl.Child;
+
+        /* Who in turn points back to original target alias node */
+
+        if (NextOp->Asl.Node)
+        {
+            Node = NextOp->Asl.Node;
+        }
+        else
+        {
+            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op, "Missing alias link");
+        }
+    }
+
     /* 1) Check for a reference to a resource descriptor */
 
-    if ((Node->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
-        (Node->Type == INTERNAL_TYPE_RESOURCE))
+    else if ((Node->Type == ACPI_TYPE_LOCAL_RESOURCE_FIELD) ||
+             (Node->Type == ACPI_TYPE_LOCAL_RESOURCE))
     {
         /*
          * This was a reference to a field within a resource descriptor.  Extract
@@ -645,12 +726,13 @@ LkNamespaceLocateBegin (
     /* 2) Check for a method invocation */
 
     else if ((((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) || (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)) &&
-        (Node->Type == ACPI_TYPE_METHOD) &&
-        (Op->Asl.Parent) &&
-        (Op->Asl.Parent->Asl.ParseOpcode != PARSEOP_METHOD))   ||
+                (Node->Type == ACPI_TYPE_METHOD) &&
+                (Op->Asl.Parent) &&
+                (Op->Asl.Parent->Asl.ParseOpcode != PARSEOP_METHOD))   ||
 
-        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
+                (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
     {
+
         /*
          * There are two types of method invocation:
          * 1) Invocation with arguments -- the parser recognizes this as a METHODCALL
@@ -665,9 +747,11 @@ LkNamespaceLocateBegin (
             return (AE_OK);
         }
 
+        /* Save the method node in the caller's op */
+
+        Op->Asl.Node = Node;
         if (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_CONDREFOF)
         {
-            Op->Asl.Node = Node;
             return (AE_OK);
         }
 
@@ -677,8 +761,10 @@ LkNamespaceLocateBegin (
          * under the parent node
          */
         Op->Asl.ParseOpcode = PARSEOP_METHODCALL;
-        PassedArgs          = 0;
-        NextOp              = Op->Asl.Child;
+        UtSetParseOpName (Op);
+
+        PassedArgs = 0;
+        NextOp     = Op->Asl.Child;
 
         while (NextOp)
         {
@@ -700,46 +786,14 @@ LkNamespaceLocateBegin (
                 if (PassedArgs < Node->OwnerId)
                 {
                     AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_LO, Op, MsgBuffer);
-
-                    if (Node->OwnerId > 7)
-                    {
-                        printf ("too many arguments defined for method [%4.4s]\n", (char *) &Node->Name);
-                        return (AE_BAD_PARAMETER);
-                    }
                 }
                 else
                 {
                     AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_HI, Op, MsgBuffer);
                 }
             }
-
-            /*
-             * Check if the method caller expects this method to return a value and
-             * if the called method in fact returns a value.
-             */
-            if (!(Op->Asl.CompileFlags & NODE_RESULT_NOT_USED))
-            {
-                /* 1) The result from the method is used (the method is a TermArg) */
-
-                OwningOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
-                if (OwningOp->Asl.CompileFlags & NODE_METHOD_NO_RETVAL)
-                {
-                    /*
-                     * 2) Method NEVER returns a value
-                     */
-                    AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, Op, Op->Asl.ExternalName);
-                }
-                else if (OwningOp->Asl.CompileFlags & NODE_METHOD_SOME_NO_RETVAL)
-                {
-                    /*
-                     * 2) Method SOMETIMES returns a value, SOMETIMES not
-                     */
-                    AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, Op, Op->Asl.ExternalName);
-                }
-            }
         }
     }
-
 
     /*
      * 3) Check for an ASL Field definition
@@ -815,7 +869,6 @@ LkNamespaceLocateBegin (
                 {
                     AslError (ASL_ERROR, ASL_MSG_REGION_BYTE_ACCESS, Op, NULL);
                 }
-
                 break;
 
             case REGION_SMBUS:
@@ -827,13 +880,13 @@ LkNamespaceLocateBegin (
                 break;
 
             default:
+
                 /* Nothing to do for other address spaces */
                 break;
             }
         }
         else
         {
-
             /*
              * This is one element of the field list.  Check to make sure
              * that it does not go beyond the end of the parent operation region.
@@ -860,7 +913,7 @@ LkNamespaceLocateBegin (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    LkNamespaceLocateEnd
  *
@@ -871,7 +924,7 @@ LkNamespaceLocateBegin (
  * DESCRIPTION: Ascending callback used during cross reference.  We only
  *              need to worry about scope management here.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 LkNamespaceLocateEnd (
@@ -883,7 +936,7 @@ LkNamespaceLocateEnd (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
-    ACPI_FUNCTION_NAME ("LkNamespaceLocateEnd");
+    ACPI_FUNCTION_TRACE ("LkNamespaceLocateEnd");
 
 
     /* We are only interested in opcodes that have an associated name */
@@ -894,13 +947,16 @@ LkNamespaceLocateEnd (
         return (AE_OK);
     }
 
-    /*
-     * TBD: do we ever need to check the argument of AML_NAME_OP
-     * to get the correct type?
-     *  if (Op->Asl.AmlOpcode == AML_NAME_OP)
-     */
+    /* Not interested in name references, we did not open a scope for them */
 
-    /* Pop the scope stack */
+    if ((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) ||
+        (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)    ||
+        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
+    {
+        return (AE_OK);
+    }
+
+    /* Pop the scope stack if necessary */
 
     if (AcpiNsOpensScope (AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode)))
     {
@@ -911,6 +967,7 @@ LkNamespaceLocateEnd (
 
         AcpiDsScopeStackPop (WalkState);
     }
+
     return (AE_OK);
 }
 

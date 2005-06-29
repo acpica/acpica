@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.22 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -1354,7 +1354,7 @@ RsDoInterruptDescriptor (
              * Store the integer and move pointer to the next one.
              */
             Rover->U32Item = InitializerOp->Asl.Value.Integer32;
-            Rover = ACPI_PTR_ADD (ASL_RESOURCE_DESC, &(Rover->U32Item), 1);
+            Rover = ACPI_PTR_ADD (ASL_RESOURCE_DESC, &(Rover->U32Item), 4);
 
             Descriptor->Exx.TableLength++;
             Descriptor->Exx.Length += 4;

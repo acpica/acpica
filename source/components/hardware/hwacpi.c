@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.53 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,7 +118,6 @@
 #define __HWACPI_C__
 
 #include "acpi.h"
-#include "achware.h"
 
 
 #define _COMPONENT          ACPI_HARDWARE
@@ -185,38 +184,84 @@ AcpiHwSetMode (
     UINT32                  Mode)
 {
 
-    ACPI_STATUS             Status = AE_NO_HARDWARE_RESPONSE;
+    ACPI_STATUS             Status;
+    UINT32                  Retry;
 
 
     ACPI_FUNCTION_TRACE ("HwSetMode");
 
-
-    if (Mode == ACPI_SYS_MODE_ACPI)
+    /*
+     * ACPI 2.0 clarified that if SMI_CMD in FADT is zero,
+     * system does not support mode transition.
+     */
+    if (!AcpiGbl_FADT->SmiCmd)
     {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No SMI_CMD in FADT, mode transition failed.\n"));
+        return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
+    }
+
+    /*
+     * ACPI 2.0 clarified the meaning of ACPI_ENABLE and ACPI_DISABLE
+     * in FADT: If it is zero, enabling or disabling is not supported.
+     * As old systems may have used zero for mode transition,
+     * we make sure both the numbers are zero to determine these
+     * transitions are not supported.
+     */
+    if (!AcpiGbl_FADT->AcpiEnable && !AcpiGbl_FADT->AcpiDisable)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "No mode transition supported in this system.\n"));
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    switch (Mode)
+    {
+    case ACPI_SYS_MODE_ACPI:
+
         /* BIOS should have disabled ALL fixed and GP events */
 
-        AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, AcpiGbl_FADT->AcpiEnable, 8);
+        Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd,
+                        (ACPI_INTEGER) AcpiGbl_FADT->AcpiEnable, 8);
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Attempting to enable ACPI mode\n"));
-    }
-    else if (Mode == ACPI_SYS_MODE_LEGACY)
-    {
+        break;
+
+    case ACPI_SYS_MODE_LEGACY:
+
         /*
          * BIOS should clear all fixed status bits and restore fixed event
          * enable bits to default
          */
-        AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, AcpiGbl_FADT->AcpiDisable, 8);
+        Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd,
+                    (ACPI_INTEGER) AcpiGbl_FADT->AcpiDisable, 8);
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                     "Attempting to enable Legacy (non-ACPI) mode\n"));
+        break;
+
+    default:
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Give the platform some time to react */
-
-    AcpiOsStall (20000);
-
-    if (AcpiHwGetMode () == Mode)
+    if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n", Mode));
-        Status = AE_OK;
+        return_ACPI_STATUS (Status);
+    }
+
+    /*
+     * Some hardware takes a LONG time to switch modes. Give them 3 sec to
+     * do so, but allow faster systems to proceed more quickly.
+     */
+    Retry = 3000;
+    while (Retry)
+    {
+        Status = AE_NO_HARDWARE_RESPONSE;
+
+        if (AcpiHwGetMode() == Mode)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n", Mode));
+            Status = AE_OK;
+            break;
+        }
+        AcpiOsStall(1000);
+        Retry--;
     }
 
     return_ACPI_STATUS (Status);
@@ -239,11 +284,19 @@ AcpiHwSetMode (
 UINT32
 AcpiHwGetMode (void)
 {
+    ACPI_STATUS             Status;
+    UINT32                  Value;
+
 
     ACPI_FUNCTION_TRACE ("HwGetMode");
 
+    Status = AcpiGetRegister (ACPI_BITREG_SCI_ENABLE, &Value, ACPI_MTX_LOCK);
+    if (ACPI_FAILURE (Status))
+    {
+        return_VALUE (ACPI_SYS_MODE_LEGACY);
+    }
 
-    if (AcpiHwBitRegisterRead (ACPI_BITREG_SCI_ENABLE, ACPI_MTX_LOCK))
+    if (Value)
     {
         return_VALUE (ACPI_SYS_MODE_ACPI);
     }

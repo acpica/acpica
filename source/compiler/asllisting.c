@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.45 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -233,6 +233,16 @@ LsDoListings (void)
     if (Gbl_AsmOutputFlag)
     {
         LsGenerateListing (ASL_FILE_ASM_SOURCE_OUTPUT);
+    }
+
+    if (Gbl_C_IncludeOutputFlag)
+    {
+        LsGenerateListing (ASL_FILE_C_INCLUDE_OUTPUT);
+    }
+
+    if (Gbl_AsmIncludeOutputFlag)
+    {
+        LsGenerateListing (ASL_FILE_ASM_INCLUDE_OUTPUT);
     }
 }
 
@@ -648,6 +658,12 @@ LsFinishSourceListing (
     UINT32                  FileId)
 {
 
+    if ((FileId == ASL_FILE_ASM_INCLUDE_OUTPUT) ||
+        (FileId == ASL_FILE_C_INCLUDE_OUTPUT))
+    {
+        return;
+    }
+
     LsFlushListingBuffer (FileId);
     Gbl_CurrentAmlOffset = 0;
 
@@ -705,6 +721,12 @@ LsWriteSourceLines (
     UINT32                  ToLogicalLineNumber,
     UINT32                  FileId)
 {
+
+    if ((FileId == ASL_FILE_ASM_INCLUDE_OUTPUT) ||
+        (FileId == ASL_FILE_C_INCLUDE_OUTPUT))
+    {
+        return;
+    }
 
     Gbl_CurrentLine = ToLogicalLineNumber;
 
@@ -842,6 +864,16 @@ LsWriteNodeToListing (
             FlPrintFile (FileId, "    unsigned char    %s_%s_Header [] = \n    {\n",
                 Gbl_TableSignature, Gbl_TableId);
         }
+        if (FileId == ASL_FILE_ASM_INCLUDE_OUTPUT)
+        {
+            FlPrintFile (FileId, "extrn %s_%s_Header : byte\n",
+                Gbl_TableSignature, Gbl_TableId);
+        }
+        if (FileId == ASL_FILE_C_INCLUDE_OUTPUT)
+        {
+            FlPrintFile (FileId, "extern unsigned char    %s_%s_Header [];\n",
+                Gbl_TableSignature, Gbl_TableId);
+        }
         return;
 
 
@@ -884,7 +916,7 @@ LsWriteNodeToListing (
 
 
     default:
-        /* All other opcodes have and AML opcode */
+        /* All other opcodes have an AML opcode */
         break;
     }
 
@@ -924,20 +956,36 @@ LsWriteNodeToListing (
         {
         case AML_SCOPE_OP:
         case AML_ALIAS_OP:
+
+            /* These opcodes do not declare a new object, ignore them */
+
             break;
 
         default:
+
+            /* All other named object opcodes come here */
+
             switch (FileId)
             {
             case ASL_FILE_ASM_SOURCE_OUTPUT:
             case ASL_FILE_C_SOURCE_OUTPUT:
+            case ASL_FILE_ASM_INCLUDE_OUTPUT:
+            case ASL_FILE_C_INCLUDE_OUTPUT:
 
+                /*
+                 * For named objects, we will create a valid symbol so that the
+                 * AML code can be referenced from C or ASM
+                 */
                 if (Op->Asl.ExternalName)
                 {
+                    /* Get the full pathname associated with this node */
+
                     Pathname = AcpiNsGetExternalPathname (Op->Asl.Node);
                     Length = strlen (Pathname);
                     if (Length >= 4)
                     {
+                        /* Convert all dots in the path to underscores */
+
                         for (i = 0; i < Length; i++)
                         {
                             if (Pathname[i] == '.')
@@ -945,6 +993,8 @@ LsWriteNodeToListing (
                                 Pathname[i] = '_';
                             }
                         }
+
+                        /* Create the appropriate symbol in the output file */
 
                         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
                         {
@@ -954,6 +1004,16 @@ LsWriteNodeToListing (
                         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
                         {
                             FlPrintFile (FileId, "    unsigned char    %s_%s_%s [] = \n    {\n",
+                                Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
+                        }
+                        if (FileId == ASL_FILE_ASM_INCLUDE_OUTPUT)
+                        {
+                            FlPrintFile (FileId, "extrn %s_%s_%s : byte\n",
+                                Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
+                        }
+                        if (FileId == ASL_FILE_C_INCLUDE_OUTPUT)
+                        {
+                            FlPrintFile (FileId, "extern unsigned char    %s_%s_%s [];\n",
                                 Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                     }

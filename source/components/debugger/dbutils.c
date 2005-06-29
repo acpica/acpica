@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.50 $
+ *              $Revision: 1.60 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,16 +119,13 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acnamesp.h"
-#include "acparser.h"
-#include "acevents.h"
-#include "acinterp.h"
 #include "acdebug.h"
 #include "acdispat.h"
 
 
-#ifdef ENABLE_DEBUGGER
+#ifdef ACPI_DEBUGGER
 
-#define _COMPONENT          ACPI_DEBUGGER
+#define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbutils")
 
 
@@ -229,7 +226,7 @@ AcpiDbDumpObject (
 
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf ("[Integer] = %8.8X%8.8X\n", 
+        AcpiOsPrintf ("[Integer] = %8.8X%8.8X\n",
                     ACPI_HIDWORD (ObjDesc->Integer.Value),
                     ACPI_LODWORD (ObjDesc->Integer.Value));
         break;
@@ -248,8 +245,15 @@ AcpiDbDumpObject (
 
     case ACPI_TYPE_BUFFER:
 
-        AcpiOsPrintf ("[Buffer] = ");
-        AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        AcpiOsPrintf ("[Buffer] Length %.2X = ", ObjDesc->Buffer.Length);
+        if (ObjDesc->Buffer.Length)
+        {
+            AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        }
+        else
+        {
+            AcpiOsPrintf ("\n");
+        }
         break;
 
 
@@ -264,7 +268,7 @@ AcpiDbDumpObject (
         break;
 
 
-    case INTERNAL_TYPE_REFERENCE:
+    case ACPI_TYPE_LOCAL_REFERENCE:
 
         AcpiOsPrintf ("[Object Reference] = %p\n", ObjDesc->Reference.Handle);
         break;
@@ -304,7 +308,7 @@ AcpiDbDumpObject (
 
 void
 AcpiDbPrepNamestring (
-    NATIVE_CHAR             *Name)
+    char                    *Name)
 {
 
 
@@ -313,7 +317,7 @@ AcpiDbPrepNamestring (
         return;
     }
 
-    STRUPR (Name);
+    ACPI_STRUPR (Name);
 
     /* Convert a leading forward slash to a backslash */
 
@@ -362,7 +366,7 @@ AcpiDbSecondPassParse (
     ACPI_PARSE_OBJECT       *Root)
 {
     ACPI_PARSE_OBJECT       *Op = Root;
-    ACPI_PARSE2_OBJECT      *Method;
+    ACPI_PARSE_OBJECT       *Method;
     ACPI_PARSE_OBJECT       *SearchOp;
     ACPI_PARSE_OBJECT       *StartOp;
     ACPI_STATUS             Status = AE_OK;
@@ -375,12 +379,13 @@ AcpiDbSecondPassParse (
 
     AcpiOsPrintf ("Pass two parse ....\n");
 
-
     while (Op)
     {
-        if (Op->Opcode == AML_METHOD_OP)
+        if (Op->Common.AmlOpcode == AML_METHOD_OP)
         {
-            Method = (ACPI_PARSE2_OBJECT *) Op;
+            Method = Op;
+
+            /* Create a new walk state for the parse */
 
             WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
                                             NULL, NULL, NULL);
@@ -389,33 +394,33 @@ AcpiDbSecondPassParse (
                 return (AE_NO_MEMORY);
             }
 
+            /* Init the Walk State */
 
             WalkState->ParserState.Aml          =
-            WalkState->ParserState.AmlStart     = Method->Data;
+            WalkState->ParserState.AmlStart     = Method->Named.Data;
             WalkState->ParserState.AmlEnd       =
-            WalkState->ParserState.PkgEnd       = Method->Data + Method->Length;
+            WalkState->ParserState.PkgEnd       = Method->Named.Data + Method->Named.Length;
             WalkState->ParserState.StartScope   = Op;
 
             WalkState->DescendingCallback       = AcpiDsLoad1BeginOp;
             WalkState->AscendingCallback        = AcpiDsLoad1EndOp;
 
+            /* Perform the AML parse */
 
             Status = AcpiPsParseAml (WalkState);
 
-
-            BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
-            StartOp = (Method->Value.Arg)->Next;
+            BaseAmlOffset = (Method->Common.Value.Arg)->Common.AmlOffset + 1;
+            StartOp = (Method->Common.Value.Arg)->Common.Next;
             SearchOp = StartOp;
 
             while (SearchOp)
             {
-                SearchOp->AmlOffset += BaseAmlOffset;
+                SearchOp->Common.AmlOffset += BaseAmlOffset;
                 SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
             }
-
         }
 
-        if (Op->Opcode == AML_REGION_OP)
+        if (Op->Common.AmlOpcode == AML_REGION_OP)
         {
             /* TBD: [Investigate] this isn't quite the right thing to do! */
             /*
@@ -454,9 +459,9 @@ AcpiDbSecondPassParse (
 
 ACPI_NAMESPACE_NODE *
 AcpiDbLocalNsLookup (
-    NATIVE_CHAR             *Name)
+    char                    *Name)
 {
-    NATIVE_CHAR             *InternalPath;
+    char                    *InternalPath;
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node = NULL;
 
@@ -488,6 +493,6 @@ AcpiDbLocalNsLookup (
 }
 
 
-#endif /* ENABLE_DEBUGGER */
+#endif /* ACPI_DEBUGGER */
 
 

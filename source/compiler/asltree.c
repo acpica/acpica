@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.49 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -201,6 +201,8 @@ void
 TrReleaseNode (
     ACPI_PARSE_OBJECT       *Op)
 {
+
+    return;
 }
 
 
@@ -357,6 +359,9 @@ TrGetNodeFlagName (
     case NODE_WAS_ONES_OP:
         return ("NODE_WAS_ONES_OP");
 
+    case NODE_IS_NAME_DECLARATION:
+        return ("NODE_IS_NAME_DECLARATION");
+
     default:
         return ("Multiple Flags (or unknown flag) set");
     }
@@ -390,7 +395,8 @@ TrSetNodeFlags (
         return NULL;
     }
 
-    Op->Asl.CompileFlags |= (UINT16) Flags;
+    Op->Asl.CompileFlags |= Flags;
+
     return Op;
 }
 
@@ -559,13 +565,13 @@ TrCreateNode (
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateNode  Line %d NewParent %p Child %d Op %s  ",
         Op->Asl.LineNumber, Op, NumChildren, UtGetOpName(ParseOpcode));
-    RootNode = Op;
 
     /* Some extra debug output based on the parse opcode */
 
     switch (ParseOpcode)
     {
     case PARSEOP_DEFINITIONBLOCK:
+        RootNode = Op;
         DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 
@@ -679,11 +685,11 @@ TrLinkChildren (
         "\nLinkChildren  Line [%d to %d] NewParent %p Child %d Op %s  ",
         Op->Asl.LineNumber, Op->Asl.EndLine,
         Op, NumChildren, UtGetOpName(Op->Asl.ParseOpcode));
-    RootNode = Op;
 
     switch (Op->Asl.ParseOpcode)
     {
     case PARSEOP_DEFINITIONBLOCK:
+        RootNode = Op;
         DbgPrint (ASL_PARSE_OUTPUT, "DEFINITION_BLOCK (Tree Completed)->");
         break;
 

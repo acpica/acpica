@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.47 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,10 +118,8 @@
 #define __EVXFREGN_C__
 
 #include "acpi.h"
-#include "achware.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "amlcode.h"
 #include "acinterp.h"
 
 #define _COMPONENT          ACPI_EVENTS
@@ -155,7 +153,7 @@ AcpiInstallAddressSpaceHandler (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        Type;
     UINT16                  Flags = 0;
 
@@ -170,7 +168,11 @@ AcpiInstallAddressSpaceHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Convert and validate the device handle */
 
@@ -315,8 +317,8 @@ AcpiInstallAddressSpaceHandler (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-        "Installing address handler for region %s(%X) on Device %p(%p)\n",
-        AcpiUtGetRegionName (SpaceId), SpaceId, Node, ObjDesc));
+        "Installing address handler for region %s(%X) on Device %4.4s %p(%p)\n",
+        AcpiUtGetRegionName (SpaceId), SpaceId, Node->Name.Ascii, Node, ObjDesc));
 
     /*
      * Now we can install the handler
@@ -325,7 +327,7 @@ AcpiInstallAddressSpaceHandler (
      * So, we just allocate the object for the handler and link it
      * into the list.
      */
-    HandlerObj = AcpiUtCreateInternalObject (INTERNAL_TYPE_ADDRESS_HANDLER);
+    HandlerObj = AcpiUtCreateInternalObject (ACPI_TYPE_LOCAL_ADDRESS_HANDLER);
     if (!HandlerObj)
     {
         Status = AE_NO_MEMORY;
@@ -368,7 +370,7 @@ AcpiInstallAddressSpaceHandler (
 
 
 UnlockAndExit:
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -397,7 +399,7 @@ AcpiRemoveAddressSpaceHandler (
     ACPI_OPERAND_OBJECT     *RegionObj;
     ACPI_OPERAND_OBJECT     **LastObjPtr;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE ("AcpiRemoveAddressSpaceHandler");
@@ -410,7 +412,11 @@ AcpiRemoveAddressSpaceHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Convert and validate the device handle */
 
@@ -463,7 +469,7 @@ AcpiRemoveAddressSpaceHandler (
                  * The region is just inaccessible as indicated to
                  * the _REG method
                  */
-                AcpiEvDisassociateRegionFromHandler(RegionObj, TRUE);
+                AcpiEvDetachRegion (RegionObj, TRUE);
 
                 /*
                  * Walk the list, since we took the first region and it
@@ -507,7 +513,7 @@ AcpiRemoveAddressSpaceHandler (
 
 
 UnlockAndExit:
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 

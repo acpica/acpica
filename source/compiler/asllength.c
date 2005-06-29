@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.27 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -348,6 +348,10 @@ CgGenerateAmlOpcodeLength (
 
         Op->Asl.AmlLength = 8;
         break;
+
+    default:
+        /* All data opcodes must be above */
+        break;
     }
 }
 
@@ -412,6 +416,9 @@ CgGenerateAmlLengths (
 
         Op->Asl.AmlOpcodeLength = 0;
         return;
+
+    default:
+        break;
     }
 
     switch (Op->Asl.ParseOpcode)

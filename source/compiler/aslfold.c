@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfold - Constant folding
- *              $Revision: 1.4 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -446,7 +446,7 @@ OpcAmlConstantWalk (
     }
     else
     {
-        AslError (ASL_REMARK, ASL_MSG_CONSTANT_FOLDED, Op, Op->Asl.ParseOpName);
+        AslError (ASL_OPTIMIZATION, ASL_MSG_CONSTANT_FOLDED, Op, Op->Asl.ParseOpName);
 
         /*
          * Because we know we executed type 3/4/5 opcodes above, we know that

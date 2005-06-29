@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.10 $
+ * Name: hwtimer.c - ACPI Power Management Timer Interface
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -115,145 +115,173 @@
  *
  *****************************************************************************/
 
-#include <stdio.h>
-#include "aslcompiler.h"
-#include "acdispat.h"
-#include "actables.h"
+#include "acpi.h"
 
-#define _COMPONENT          ACPI_COMPILER
-        ACPI_MODULE_NAME    ("aslstubs")
+#define _COMPONENT          ACPI_HARDWARE
+        ACPI_MODULE_NAME    ("hwtimer")
 
 
-/*
- * Stubs to simplify linkage to the ACPI CA core subsystem.
- * Things like Events, Global Lock, etc. are not used
- * by the compiler, so they are stubbed out here.
- */
-ACPI_STATUS
-AeLocalGetRootPointer (
-    UINT32                  Flags,
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
-{
-    return AE_ERROR;
-}
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiGetTimerResolution
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      Number of bits of resolution in the PM Timer (24 or 32).
+ *
+ * DESCRIPTION: Obtains resolution of the ACPI PM Timer.
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
-AcpiDsMethodDataGetValue (
-    UINT16                  Opcode,
-    UINT32                  Index,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **DestDesc)
+AcpiGetTimerResolution (
+    UINT32                  *Resolution)
 {
-    return (AE_OK);
+    ACPI_FUNCTION_TRACE ("AcpiGetTimerResolution");
+
+
+    if (!Resolution)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    if (0 == AcpiGbl_FADT->TmrValExt)
+    {
+        *Resolution = 24;
+    }
+    else
+    {
+        *Resolution = 32;
+    }
+
+    return_ACPI_STATUS (AE_OK);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiGetTimer
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      Current value of the ACPI PM Timer (in ticks).
+ *
+ * DESCRIPTION: Obtains current value of ACPI PM Timer.
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
-AcpiDsMethodDataGetNode (
-    UINT16                  Opcode,
-    UINT32                  Index,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     **Node)
+AcpiGetTimer (
+    UINT32                  *Ticks)
 {
-    return (AE_OK);
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE ("AcpiGetTimer");
+
+
+    if (!Ticks)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiHwLowLevelRead (32, Ticks, &AcpiGbl_FADT->XPmTmrBlk, 0);
+
+    return_ACPI_STATUS (Status);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiGetTimerDuration
+ *
+ * PARAMETERS:  StartTicks
+ *              EndTicks
+ *              TimeElapsed
+ *
+ * RETURN:      TimeElapsed
+ *
+ * DESCRIPTION: Computes the time elapsed (in microseconds) between two
+ *              PM Timer time stamps, taking into account the possibility of
+ *              rollovers, the timer resolution, and timer frequency.
+ *
+ *              The PM Timer's clock ticks at roughly 3.6 times per
+ *              _microsecond_, and its clock continues through Cx state
+ *              transitions (unlike many CPU timestamp counters) -- making it
+ *              a versatile and accurate timer.
+ *
+ *              Note that this function accomodates only a single timer
+ *              rollover.  Thus for 24-bit timers, this function should only
+ *              be used for calculating durations less than ~4.6 seconds
+ *              (~20 hours for 32-bit timers).
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
-AcpiDsStoreObjectToLocal (
-    UINT16                  Opcode,
-    UINT32                  Index,
-    ACPI_OPERAND_OBJECT     *SrcDesc,
-    ACPI_WALK_STATE         *WalkState)
+AcpiGetTimerDuration (
+    UINT32                  StartTicks,
+    UINT32                  EndTicks,
+    UINT32                  *TimeElapsed)
 {
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiEvQueueNotifyRequest (
-    ACPI_NAMESPACE_NODE     *Node,
-    UINT32                  NotifyValue)
-{
-    return (AE_OK);
-}
-
-BOOLEAN
-AcpiEvIsNotifyObject (
-    ACPI_NAMESPACE_NODE     *Node)
-{
-    return (FALSE);
-}
-
-ACPI_STATUS
-AcpiEvAcquireGlobalLock(
-    UINT32                  Timeout)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiEvReleaseGlobalLock(
-    void)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiEvInitializeRegion (
-    ACPI_OPERAND_OBJECT     *RegionObj,
-    BOOLEAN                 AcpiNsLocked)
-{
-    return (AE_OK);
-}
-
-ACPI_STATUS
-AcpiExReadDataFromField (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **RetBufferDesc)
-{
-    return (AE_SUPPORT);
-}
-
-ACPI_STATUS
-AcpiExWriteDataToField (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **ResultDesc)
-{
-    return (AE_SUPPORT);
-}
-
-ACPI_STATUS
-AcpiExLoadTableOp (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc)
-{
-    return (AE_SUPPORT);
-}
+    UINT32                  DeltaTicks = 0;
+    UINT64_OVERLAY          NormalizedTicks;
+    ACPI_STATUS             Status;
+    ACPI_INTEGER            OutQuotient;
 
 
-ACPI_STATUS
-AcpiExUnloadTable (
-    ACPI_OPERAND_OBJECT     *DdbHandle)
-{
-    return (AE_SUPPORT);
+    ACPI_FUNCTION_TRACE ("AcpiGetTimerDuration");
+
+
+    if (!TimeElapsed)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /*
+     * Compute Tick Delta:
+     * -------------------
+     * Handle (max one) timer rollovers on 24- versus 32-bit timers.
+     */
+    if (StartTicks < EndTicks)
+    {
+        DeltaTicks = EndTicks - StartTicks;
+    }
+    else if (StartTicks > EndTicks)
+    {
+        if (0 == AcpiGbl_FADT->TmrValExt)
+        {
+            /* 24-bit Timer */
+
+            DeltaTicks = (((0x00FFFFFF - StartTicks) + EndTicks) & 0x00FFFFFF);
+        }
+        else
+        {
+            /* 32-bit Timer */
+
+            DeltaTicks = (0xFFFFFFFF - StartTicks) + EndTicks;
+        }
+    }
+    else
+    {
+        *TimeElapsed = 0;
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /*
+     * Compute Duration:
+     * -----------------
+     *
+     * Requires a 64-bit divide:
+     *
+     * TimeElapsed = (DeltaTicks * 1000000) / PM_TIMER_FREQUENCY;
+     */
+    NormalizedTicks.Full = ((UINT64) DeltaTicks) * 1000000;
+
+    Status = AcpiUtShortDivide (&NormalizedTicks.Full, PM_TIMER_FREQUENCY,
+                                    &OutQuotient, NULL);
+
+    *TimeElapsed = (UINT32) OutQuotient;
+    return_ACPI_STATUS (Status);
 }
 
-ACPI_STATUS
-AcpiExLoadOp (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     *Target,
-    ACPI_WALK_STATE         *WalkState)
-{
-    return (AE_SUPPORT);
-}
-
-ACPI_STATUS
-AcpiTbFindTable (
-    char                    *Signature,
-    char                    *OemId,
-    char                    *OemTableId,
-    ACPI_TABLE_HEADER       **TablePtr)
-{
-    return (AE_SUPPORT);
-}
 

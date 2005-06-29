@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
- * Module Name: dbhistry - debugger HISTORY command
- *              $Revision: 1.28 $
+ * Module Name: dmutils - AML disassembler utilities
+ *              $Revision: 1.8 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -116,176 +116,349 @@
 
 
 #include "acpi.h"
-#include "acdebug.h"
+#include "amlcode.h"
+#include "acdisasm.h"
 
-#ifdef ACPI_DEBUGGER
+
+#ifdef ACPI_DISASSEMBLER
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
-        ACPI_MODULE_NAME    ("dbhistry")
+        ACPI_MODULE_NAME    ("dmutils")
 
 
-#define HI_NO_HISTORY       0
-#define HI_RECORD_HISTORY   1
-#define HISTORY_SIZE        20
-
-
-typedef struct HistoryInfo
+/* Data used in keeping track of fields */
+#if 0
+const char                      *AcpiGbl_FENames[ACPI_NUM_FIELD_NAMES] =
 {
-    char                    Command[80];
-    UINT32                  CmdNum;
+    "skip",
+    "?access?"
+};              /* FE = Field Element */
+#endif
 
-} HISTORY_INFO;
+
+const char                      *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS] =
+{
+    "MTR",
+    "MEQ",
+    "MLE",
+    "MLT",
+    "MGE",
+    "MGT"
+};
 
 
-static HISTORY_INFO         AcpiGbl_HistoryBuffer[HISTORY_SIZE];
-static UINT16               AcpiGbl_LoHistory = 0;
-static UINT16               AcpiGbl_NumHistory = 0;
-static UINT16               AcpiGbl_NextHistoryIndex = 0;
-static UINT32               AcpiGbl_NextCmdNum = 1;
+/* Access type decoding */
+
+const char                      *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES] =
+{
+    "AnyAcc",
+    "ByteAcc",
+    "WordAcc",
+    "DWordAcc",
+    "QWordAcc",
+    "BufferAcc",
+};
+
+
+/* Lock rule decoding */
+
+const char                      *AcpiGbl_LockRule[ACPI_NUM_LOCK_RULES] =
+{
+    "NoLock",
+    "Lock"
+};
+
+/* Update rule decoding */
+
+const char                      *AcpiGbl_UpdateRules[ACPI_NUM_UPDATE_RULES] =
+{
+    "Preserve",
+    "WriteAsOnes",
+    "WriteAsZeros"
+};
+
+/*
+ * Strings used to decode resource descriptors
+ */
+const char                      *AcpiGbl_IoDecode[2] =
+{
+    "Decode10",
+    "Decode16"
+};
+
+const char                      *AcpiGbl_WordDecode[4] =
+{
+    "WordMemory",
+    "WordIO",
+    "WordBusNumber",
+    "Unknown-resource-type"
+};
+
+const char                      *AcpiGbl_ConsumeDecode[2] =
+{
+    "ResourceProducer",
+    "ResourceConsumer"
+};
+
+const char                      *AcpiGbl_MinDecode[2] =
+{
+    "MinNotFixed",
+    "MinFixed"
+};
+
+const char                      *AcpiGbl_MaxDecode[2] =
+{
+    "MaxNotFixed",
+    "MaxFixed"
+};
+
+const char                      *AcpiGbl_DECDecode[2] =
+{
+    "PosDecode",
+    "SubDecode"
+};
+
+const char                      *AcpiGbl_RNGDecode[4] =
+{
+    "InvalidRanges",
+    "NonISAOnlyRanges",
+    "ISAOnlyRanges",
+    "EntireRange"
+};
+
+const char                      *AcpiGbl_MEMDecode[4] =
+{
+    "NonCacheable",
+    "Cacheable",
+    "WriteCombining",
+    "Prefetchable"
+};
+
+const char                      *AcpiGbl_RWDecode[2] =
+{
+    "ReadOnly",
+    "ReadWrite"
+};
+
+const char                      *AcpiGbl_IrqDecode[2] =
+{
+    "IRQNoFlags",
+    "IRQ"
+};
+
+const char                      *AcpiGbl_HEDecode[2] =
+{
+    "Level",
+    "Edge"
+};
+
+const char                      *AcpiGbl_LLDecode[2] =
+{
+    "ActiveHigh",
+    "ActiveLow"
+};
+
+const char                      *AcpiGbl_SHRDecode[2] =
+{
+    "Exclusive",
+    "Shared"
+};
+
+const char                      *AcpiGbl_TYPDecode[4] =
+{
+    "Compatibility",
+    "TypeA",
+    "TypeB",
+    "TypeF"
+};
+
+const char                      *AcpiGbl_BMDecode[2] =
+{
+    "NotBusMaster",
+    "BusMaster"
+};
+
+const char                      *AcpiGbl_SIZDecode[4] =
+{
+    "Transfer8",
+    "Transfer8_16",
+    "Transfer16",
+    "InvalidSize"
+};
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbAddToHistory
+ * FUNCTION:    AcpiDmDecodeAttribute
  *
- * PARAMETERS:  CommandLine     - Command to add
+ * PARAMETERS:  Attribute       - Attribute field of AccessAs keyword
  *
  * RETURN:      None
  *
- * DESCRIPTION: Add a command line to the history buffer.
+ * DESCRIPTION: Decode the AccessAs attribute byte.  (Mostly SMBus stuff)
  *
  ******************************************************************************/
 
 void
-AcpiDbAddToHistory (
-    char                    *CommandLine)
+AcpiDmDecodeAttribute (
+    UINT8                   Attribute)
 {
 
-    /* Put command into the next available slot */
-
-    ACPI_STRCPY (AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].Command, CommandLine);
-
-    AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].CmdNum = AcpiGbl_NextCmdNum;
-
-    /* Adjust indexes */
-
-    if ((AcpiGbl_NumHistory == HISTORY_SIZE) &&
-        (AcpiGbl_NextHistoryIndex == AcpiGbl_LoHistory))
+    switch (Attribute)
     {
-        AcpiGbl_LoHistory++;
-        if (AcpiGbl_LoHistory >= HISTORY_SIZE)
-        {
-            AcpiGbl_LoHistory = 0;
-        }
-    }
+    case AML_FIELD_ATTRIB_SMB_QUICK:
 
-    AcpiGbl_NextHistoryIndex++;
-    if (AcpiGbl_NextHistoryIndex >= HISTORY_SIZE)
-    {
-        AcpiGbl_NextHistoryIndex = 0;
-    }
+        AcpiOsPrintf ("SMBQuick");
+        break;
 
-    AcpiGbl_NextCmdNum++;
-    if (AcpiGbl_NumHistory < HISTORY_SIZE)
-    {
-        AcpiGbl_NumHistory++;
+    case AML_FIELD_ATTRIB_SMB_SEND_RCV:
+
+        AcpiOsPrintf ("SMBSendReceive");
+        break;
+
+    case AML_FIELD_ATTRIB_SMB_BYTE:
+
+        AcpiOsPrintf ("SMBByte");
+        break;
+
+    case AML_FIELD_ATTRIB_SMB_WORD:
+
+        AcpiOsPrintf ("SMBWord");
+        break;
+
+    case AML_FIELD_ATTRIB_SMB_WORD_CALL:
+
+        AcpiOsPrintf ("SMBProcessCall");
+        break;
+
+    case AML_FIELD_ATTRIB_SMB_BLOCK:
+
+        AcpiOsPrintf ("SMBBlock");
+        break;
+
+    case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
+
+        AcpiOsPrintf ("SMBBlockProcessCall");
+        break;
+
+    default:
+
+        AcpiOsPrintf ("0x%.2X", Attribute);
+        break;
     }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbDisplayHistory
+ * FUNCTION:    AcpiDmIndent
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Level               - Current source code indentation level
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display the contents of the history buffer
+ * DESCRIPTION: Indent 4 spaces per indentation level.
  *
  ******************************************************************************/
 
 void
-AcpiDbDisplayHistory (void)
+AcpiDmIndent (
+    UINT32                  Level)
 {
-    ACPI_NATIVE_UINT        i;
-    UINT16                  HistoryIndex;
 
-
-    HistoryIndex = AcpiGbl_LoHistory;
-
-    /* Dump entire history buffer */
-
-    for (i = 0; i < AcpiGbl_NumHistory; i++)
+    if (!Level)
     {
-        AcpiOsPrintf ("%ld  %s\n", AcpiGbl_HistoryBuffer[HistoryIndex].CmdNum,
-                                   AcpiGbl_HistoryBuffer[HistoryIndex].Command);
-
-        HistoryIndex++;
-        if (HistoryIndex >= HISTORY_SIZE)
-        {
-            HistoryIndex = 0;
-        }
+        return;
     }
+
+    AcpiOsPrintf ("%*.s", ACPI_MUL_4 (Level), " ");
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbGetFromHistory
+ * FUNCTION:    AcpiDmCommaIfListMember
  *
- * PARAMETERS:  CommandNumArg           - String containing the number of the
- *                                        command to be retrieved
+ * PARAMETERS:  Op              - Current operator/operand
  *
- * RETURN:      None
+ * RETURN:      TRUE if a comma was inserted
  *
- * DESCRIPTION: Get a command from the history buffer
+ * DESCRIPTION: Insert a comma if this Op is a member of an argument list.
  *
  ******************************************************************************/
 
-char *
-AcpiDbGetFromHistory (
-    char                    *CommandNumArg)
+BOOLEAN
+AcpiDmCommaIfListMember (
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_NATIVE_UINT        i;
-    UINT16                  HistoryIndex;
-    UINT32                  CmdNum;
 
-
-    if (CommandNumArg == NULL)
+    if (!Op->Common.Next)
     {
-        CmdNum = AcpiGbl_NextCmdNum - 1;
+        return FALSE;
     }
 
-    else
+    if (AcpiDmListType (Op->Common.Parent) & BLOCK_COMMA_LIST)
     {
-        CmdNum = ACPI_STRTOUL (CommandNumArg, NULL, 0);
-    }
+        /* Check for a NULL target operand */
 
-    /* Search history buffer */
-
-    HistoryIndex = AcpiGbl_LoHistory;
-    for (i = 0; i < AcpiGbl_NumHistory; i++)
-    {
-        if (AcpiGbl_HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
+        if ((Op->Common.Next->Common.AmlOpcode == AML_INT_NAMEPATH_OP) &&
+            (!Op->Common.Next->Common.Value.String))
         {
-            /* Found the commnad, return it */
-
-            return (AcpiGbl_HistoryBuffer[HistoryIndex].Command);
+            /*
+             * To handle the Divide() case where there are two optional
+             * targets, look ahead one more op.  If null, this null target
+             * is the one and only target -- no comma needed.  Otherwise,
+             * we need a comma to prepare for the next target.
+             */
+            if (!Op->Common.Next->Common.Next)
+            {
+                return FALSE;
+            }
         }
 
-
-        HistoryIndex++;
-        if (HistoryIndex >= HISTORY_SIZE)
+        if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST) &&
+            (!(Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)))
         {
-            HistoryIndex = 0;
+            return FALSE;
         }
+
+        AcpiOsPrintf (", ");
+        return (TRUE);
     }
 
-    AcpiOsPrintf ("Invalid history number: %d\n", HistoryIndex);
-    return (NULL);
+    else if ((Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST) &&
+             (Op->Common.Next->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST))
+    {
+        AcpiOsPrintf (", ");
+        return (TRUE);
+    }
+
+    return (FALSE);
 }
 
 
-#endif /* ACPI_DEBUGGER */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmCommaIfFieldMember
+ *
+ * PARAMETERS:  Op              - Current operator/operand
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Insert a comma if this Op is a member of a Field argument list.
+ *
+ ******************************************************************************/
 
+void
+AcpiDmCommaIfFieldMember (
+    ACPI_PARSE_OBJECT       *Op)
+{
+
+    if (Op->Common.Next)
+    {
+        AcpiOsPrintf (", ");
+    }
+}
+
+
+#endif

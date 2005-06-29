@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
- * Module Name: dbhistry - debugger HISTORY command
- *              $Revision: 1.28 $
+ * Module Name: dmresrcs.c - "Small" Resource Descriptor disassembly
+ *              $Revision: 1.4 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -116,176 +116,237 @@
 
 
 #include "acpi.h"
-#include "acdebug.h"
+#include "acdisasm.h"
 
-#ifdef ACPI_DEBUGGER
+
+#ifdef ACPI_DISASSEMBLER
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
-        ACPI_MODULE_NAME    ("dbhistry")
-
-
-#define HI_NO_HISTORY       0
-#define HI_RECORD_HISTORY   1
-#define HISTORY_SIZE        20
-
-
-typedef struct HistoryInfo
-{
-    char                    Command[80];
-    UINT32                  CmdNum;
-
-} HISTORY_INFO;
-
-
-static HISTORY_INFO         AcpiGbl_HistoryBuffer[HISTORY_SIZE];
-static UINT16               AcpiGbl_LoHistory = 0;
-static UINT16               AcpiGbl_NumHistory = 0;
-static UINT16               AcpiGbl_NextHistoryIndex = 0;
-static UINT32               AcpiGbl_NextCmdNum = 1;
+        ACPI_MODULE_NAME    ("dbresrcs")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbAddToHistory
+ * FUNCTION:    AcpiDmIrqDescriptor
  *
- * PARAMETERS:  CommandLine     - Command to add
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
  *
  * RETURN:      None
  *
- * DESCRIPTION: Add a command line to the history buffer.
+ * DESCRIPTION: Decode a IRQ descriptor
  *
  ******************************************************************************/
 
 void
-AcpiDbAddToHistory (
-    char                    *CommandLine)
+AcpiDmIrqDescriptor (
+    ASL_IRQ_FORMAT_DESC     *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
 {
 
-    /* Put command into the next available slot */
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("%s (",
+        AcpiGbl_IrqDecode [Length & 1]);
 
-    ACPI_STRCPY (AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].Command, CommandLine);
-
-    AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].CmdNum = AcpiGbl_NextCmdNum;
-
-    /* Adjust indexes */
-
-    if ((AcpiGbl_NumHistory == HISTORY_SIZE) &&
-        (AcpiGbl_NextHistoryIndex == AcpiGbl_LoHistory))
+    if (Length & 1)
     {
-        AcpiGbl_LoHistory++;
-        if (AcpiGbl_LoHistory >= HISTORY_SIZE)
-        {
-            AcpiGbl_LoHistory = 0;
-        }
+        AcpiOsPrintf ("%s, %s, %s",
+            AcpiGbl_HEDecode [Resource->Flags & 1],
+            AcpiGbl_LLDecode [(Resource->Flags >> 3) & 1],
+            AcpiGbl_SHRDecode [(Resource->Flags >> 4) & 1]);
     }
 
-    AcpiGbl_NextHistoryIndex++;
-    if (AcpiGbl_NextHistoryIndex >= HISTORY_SIZE)
-    {
-        AcpiGbl_NextHistoryIndex = 0;
-    }
-
-    AcpiGbl_NextCmdNum++;
-    if (AcpiGbl_NumHistory < HISTORY_SIZE)
-    {
-        AcpiGbl_NumHistory++;
-    }
+    AcpiDmBitList (Resource->IrqMask);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbDisplayHistory
+ * FUNCTION:    AcpiDmDmaDescriptor
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display the contents of the history buffer
+ * DESCRIPTION: Decode a DMA descriptor
  *
  ******************************************************************************/
 
 void
-AcpiDbDisplayHistory (void)
+AcpiDmDmaDescriptor (
+    ASL_DMA_FORMAT_DESC     *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
 {
-    ACPI_NATIVE_UINT        i;
-    UINT16                  HistoryIndex;
 
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("DMA (%s, %s, %s",
+            AcpiGbl_TYPDecode [(Resource->Flags >> 5) & 3],
+            AcpiGbl_BMDecode  [(Resource->Flags >> 2) & 1],
+            AcpiGbl_SIZDecode [(Resource->Flags >> 0) & 3]);
 
-    HistoryIndex = AcpiGbl_LoHistory;
-
-    /* Dump entire history buffer */
-
-    for (i = 0; i < AcpiGbl_NumHistory; i++)
-    {
-        AcpiOsPrintf ("%ld  %s\n", AcpiGbl_HistoryBuffer[HistoryIndex].CmdNum,
-                                   AcpiGbl_HistoryBuffer[HistoryIndex].Command);
-
-        HistoryIndex++;
-        if (HistoryIndex >= HISTORY_SIZE)
-        {
-            HistoryIndex = 0;
-        }
-    }
+    AcpiDmBitList (Resource->DmaChannelMask);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDbGetFromHistory
+ * FUNCTION:    AcpiDmIoDescriptor
  *
- * PARAMETERS:  CommandNumArg           - String containing the number of the
- *                                        command to be retrieved
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
  *
  * RETURN:      None
  *
- * DESCRIPTION: Get a command from the history buffer
+ * DESCRIPTION: Decode an IO descriptor
  *
  ******************************************************************************/
 
-char *
-AcpiDbGetFromHistory (
-    char                    *CommandNumArg)
+void
+AcpiDmIoDescriptor (
+    ASL_IO_PORT_DESC        *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
 {
-    ACPI_NATIVE_UINT        i;
-    UINT16                  HistoryIndex;
-    UINT32                  CmdNum;
+
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("IO (%s, 0x%4.4X, 0x%4.4X, 0x%2.2X, 0x%2.2X)\n",
+        AcpiGbl_IoDecode [(Resource->Information & 1)],
+        (UINT32) Resource->AddressMin,
+        (UINT32) Resource->AddressMax,
+        (UINT32) Resource->Alignment,
+        (UINT32) Resource->Length);
+}
 
 
-    if (CommandNumArg == NULL)
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmFixedIoDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a Fixed IO descriptor
+ *
+ ******************************************************************************/
+
+void
+AcpiDmFixedIoDescriptor (
+    ASL_FIXED_IO_PORT_DESC  *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("FixedIO (0x%4.4X, 0x%2.2X)\n",
+        (UINT32) Resource->BaseAddress,
+        (UINT32) Resource->Length);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmStartDependentDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a Start Dependendent functions descriptor
+ *
+ ******************************************************************************/
+
+void
+AcpiDmStartDependentDescriptor (
+    ASL_START_DEPENDENT_DESC *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    AcpiDmIndent (Level);
+
+    if (Length & 1)
     {
-        CmdNum = AcpiGbl_NextCmdNum - 1;
+        AcpiOsPrintf ("StartDependentFn (0x%2.2X, 0x%2.2X)\n",
+            (UINT32) Resource->Flags & 3,
+            (UINT32) (Resource->Flags >> 2) & 3);
     }
-
     else
     {
-        CmdNum = ACPI_STRTOUL (CommandNumArg, NULL, 0);
+        AcpiOsPrintf ("StartDependentFnNoPri ()\n");
     }
 
-    /* Search history buffer */
-
-    HistoryIndex = AcpiGbl_LoHistory;
-    for (i = 0; i < AcpiGbl_NumHistory; i++)
-    {
-        if (AcpiGbl_HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
-        {
-            /* Found the commnad, return it */
-
-            return (AcpiGbl_HistoryBuffer[HistoryIndex].Command);
-        }
-
-
-        HistoryIndex++;
-        if (HistoryIndex >= HISTORY_SIZE)
-        {
-            HistoryIndex = 0;
-        }
-    }
-
-    AcpiOsPrintf ("Invalid history number: %d\n", HistoryIndex);
-    return (NULL);
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("{\n");
 }
 
 
-#endif /* ACPI_DEBUGGER */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmEndDependentDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode an End Dependent functions descriptor
+ *
+ ******************************************************************************/
+
+void
+AcpiDmEndDependentDescriptor (
+    ASL_START_DEPENDENT_DESC *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("}\n");
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("EndDependentFn ()\n");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmVendorSmallDescriptor
+ *
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
+ *              Length              - Length of the descriptor in bytes
+ *              Level               - Current source code indentation level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Decode a Vendor Small Descriptor
+ *
+ ******************************************************************************/
+
+void
+AcpiDmVendorSmallDescriptor (
+    ASL_SMALL_VENDOR_DESC   *Resource,
+    UINT32                  Length,
+    UINT32                  Level)
+{
+
+    AcpiDmIndent (Level);
+    AcpiOsPrintf ("VendorShort () {");
+
+    AcpiDmDisasmByteList (0, (UINT8 *) Resource->VendorDefined, Length);
+    AcpiOsPrintf ("}\n");
+}
+
+#endif
+
 

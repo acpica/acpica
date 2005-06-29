@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.78 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -115,108 +115,11 @@
  *
  *****************************************************************************/
 
-
+#define ASL_EXCEPTIONS
 #include "aslcompiler.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslerror")
-
-
-char                        *AslMessages [] = {
-    NULL,
-    "Memory allocation failure",
-    "Could not open input file",
-    "Could not create output filename",
-    "Could not open output AML file",
-    "Could not create listing filename",
-    "Could not open listing file",
-    "Could not create debug filename",
-    "Could not open debug file",
-    "Could not open include file",
-    "Package length too long to encode",
-    "Invalid priority value",
-    "Invalid performance/robustness value",
-    "Method local variable is not initialized",
-    "Method argument is not initialized",
-    "Unsupported feature",
-    "Use of reserved word",
-    "Effective AML buffer length is zero",
-    "Effective AML package length is zero",
-    "Mixed return types in method",
-    "Object not found or not accessible from scope",
-    "Object not accessible from this scope",
-    "Object does not exist",
-    "Nested comment found",
-    "Reserved method has too many arguments",
-    "Reserved method has too few arguments",
-    "Reserved method must return a value",
-    "Too many arguments",
-    "Too few arguments",
-    "Called method returns no value",
-    "Called method may not always return a value",
-    "Internal compiler error",
-    "Invalid backwards offset",
-    "Unknown reserved name",
-    "Name already exists in scope",
-    "Invalid type",
-    "Multiple types",
-    "",
-    "Not a control method, cannot invoke",
-    "Splitting long input line",
-    "Recursive method call",
-    "Not a parameter, used as local only",
-    "Could not open file",
-    "Could not read file",
-    "Could not write file",
-    "Could not seek file",
-    "Could not close file",
-    "Access width is greater than region size",
-    "Host Operation Region requires ByteAcc access",
-    "Host Operation Region requires BufferAcc access",
-    "Field Unit extends beyond region limit",
-    "Access width of Field Unit extends beyond region limit",
-    "Resource field name cannot be used as a target",
-    "Invalid Byte Offset, Bit Offset required",
-    "Invalid Bit Offset, Byte Offset required",
-    "Opcode is not implemented in compiler AML code generator",
-    "No enclosing While statement",
-    "Invalid or unknown escape sequence",
-    "Invalid Hex/Octal Escape - Non-ASCII or NULL",
-    "Invalid Table Signature",
-    "Too many resource items (internal error)",
-    "Target operand not allowed in constant expression",
-    "Invalid operator in constant expression (not type 3/4/5)",
-    "Could not evaluate constant expression",
-    "Constant expression evaluated and reduced",
-    "EISAID string must be of the form \"UUUXXXX\" (3 uppercase, 4 hex digits)",
-    "Invalid operand type for reserved name, must be",
-    "Reserved name must be a control method",
-    "String must be entirely alphanumeric",
-    "Invalid use of reserved name",
-    "Invalid operand",
-    "Missing EndDependentFn() macro in dependent resource list",
-    "Missing StartDependentFn() macro in dependent resource list",
-    "Dependent function macros cannot be nested",\
-    "NamePath optimized",
-    "NamePath optimized to NameSeg (uses run-time search path)",
-    "Integer optimized to single-byte AML opcode",
-    "Existing object has invalid type for Scope operator"
-};
-
-
-char                    *AslErrorLevel [ASL_NUM_REPORT_LEVELS] = {
-    "Error   ",
-    "Warning ",
-    "Remark  ",
-    "Optimize"
-};
-
-#define ASL_ERROR_LEVEL_LENGTH          8       /* Length of strings above */
-
-/* Exception counters */
-
-UINT32                  Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0,0};
-
 
 
 /*******************************************************************************
@@ -371,15 +274,25 @@ AePrintException (
                  * Seek to the offset in the combined source file, read the source
                  * line, and write it to the output.
                  */
-                fseek (SourceFile, (long) Enode->LogicalByteOffset, SEEK_SET);
-
-                Actual = fread (&SourceByte, 1, 1, SourceFile);
-                while (Actual && SourceByte && (SourceByte != '\n'))
+                Actual = fseek (SourceFile, (long) Enode->LogicalByteOffset, SEEK_SET);
+                if (Actual)
                 {
-                    fwrite (&SourceByte, 1, 1, OutputFile);
-                    Actual = fread (&SourceByte, 1, 1, SourceFile);
+                    fprintf (OutputFile, "[*** iASL: Seek error on source code temp file ***]");
                 }
+                else
+                {
+                    Actual = fread (&SourceByte, 1, 1, SourceFile);
+                    if (!Actual)
+                    {
+                        fprintf (OutputFile, "[*** iASL: Read error on source code temp file ***]");
+                    }
 
+                    else while (Actual && SourceByte && (SourceByte != '\n'))
+                    {
+                        fwrite (&SourceByte, 1, 1, OutputFile);
+                        Actual = fread (&SourceByte, 1, 1, SourceFile);
+                    }
+                }
                 fprintf (OutputFile, "\n");
             }
         }
@@ -628,6 +541,53 @@ AslError (
     {
         AslCommonError (Level, MessageId, 0,
                         0, 0, 0, NULL, ExtraMessage);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AslCoreSubsystemError
+ *
+ * PARAMETERS:  Op                  - Parse node where error happened
+ *              Status              - The ACPI CA Exception
+ *              ExtraMessage        - additional error message
+ *              Abort               - TRUE -> Abort compilation
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Error reporting routine for exceptions returned by the ACPI
+ *              CA core subsystem.
+ *
+ ******************************************************************************/
+
+void
+AslCoreSubsystemError (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_STATUS             Status,
+    char                    *ExtraMessage,
+    BOOLEAN                 Abort)
+{
+
+    sprintf (MsgBuffer, "%s %s", AcpiFormatException (Status), ExtraMessage);
+
+    if (Op)
+    {
+        AslCommonError (ASL_ERROR, ASL_MSG_CORE_EXCEPTION, Op->Asl.LineNumber,
+                        Op->Asl.LogicalLineNumber,
+                        Op->Asl.LogicalByteOffset,
+                        Op->Asl.Column,
+                        Op->Asl.Filename, MsgBuffer);
+    }
+    else
+    {
+        AslCommonError (ASL_ERROR, ASL_MSG_CORE_EXCEPTION, 0,
+                        0, 0, 0, NULL, MsgBuffer);
+    }
+
+    if (Abort)
+    {
+        AslAbort ();
     }
 }
 

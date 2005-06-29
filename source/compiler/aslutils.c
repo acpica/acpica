@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.49 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -130,6 +130,14 @@ static const char * const       *yytname = &AslCompilername[255];
 #else
 extern const char * const       yytname[];
 #endif
+
+
+void
+AslOptimizeNamepath (
+    char                *Buffer)
+{
+    printf ("NamePath: %s\n", Buffer);
+}
 
 
 /*******************************************************************************
@@ -480,7 +488,7 @@ UtDisplaySummary (
     /* Input/Output summary */
 
     FlPrintFile (FileId,
-        "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
+        "ASL Input:  %s - %d lines, %d bytes, %d keywords\n",
         Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber,
         Gbl_InputByteCount, TotalKeywords);
 
@@ -497,8 +505,11 @@ UtDisplaySummary (
     /* Error summary */
 
     FlPrintFile (FileId,
-        "Compilation complete. %d Errors %d Warnings\n",
-        Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
+        "Compilation complete. %d Errors, %d Warnings, %d Remarks, %d Optimizations\n",
+        Gbl_ExceptionCount[ASL_ERROR],
+        Gbl_ExceptionCount[ASL_WARNING],
+        Gbl_ExceptionCount[ASL_REMARK],
+        Gbl_ExceptionCount[ASL_OPTIMIZATION]);
 }
 
 
@@ -534,18 +545,19 @@ UtCheckIntegerRange (
     if (Op->Asl.Value.Integer < LowValue)
     {
         ParseError = "Value below valid range";
+        Op->Asl.Value.Integer = LowValue;
     }
 
     if (Op->Asl.Value.Integer > HighValue)
     {
         ParseError = "Value above valid range";
+        Op->Asl.Value.Integer = HighValue;
     }
 
     if (ParseError)
     {
         sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
         AslCompilererror (Buffer);
-        TrReleaseNode (Op);
 
         return NULL;
     }
@@ -568,11 +580,11 @@ UtCheckIntegerRange (
  *
  ******************************************************************************/
 
-NATIVE_CHAR *
+char *
 UtGetStringBuffer (
     UINT32                  Length)
 {
-    NATIVE_CHAR             *Buffer;
+    char                    *Buffer;
 
 
     if ((Gbl_StringCacheNext + Length) >= Gbl_StringCacheLast)
@@ -603,8 +615,8 @@ UtGetStringBuffer (
 
 ACPI_STATUS
 UtInternalizeName (
-    NATIVE_CHAR             *ExternalName,
-    NATIVE_CHAR             **ConvertedName)
+    char                    *ExternalName,
+    char                    **ConvertedName)
 {
     ACPI_NAMESTRING_INFO    Info;
     ACPI_STATUS             Status;
@@ -643,6 +655,101 @@ UtInternalizeName (
 
 /*******************************************************************************
  *
+ * FUNCTION:    UtPadNameWithUnderscores
+ *
+ * PARAMETERS:  NameSeg         - Input nameseg
+ *              PaddedNameSeg   - Output padded nameseg
+ *
+ * RETURN:      Padded nameseg.
+ *
+ * DESCRIPTION: Pads a NameSeg with underscores if necessary to form a full
+ *              ACPI_NAME.
+ *
+ ******************************************************************************/
+
+void
+UtPadNameWithUnderscores (
+    char                    *NameSeg,
+    char                    *PaddedNameSeg)
+{
+    UINT32                  i;
+
+
+    for (i = 0; (i < ACPI_NAME_SIZE); i++)
+    {
+        if (*NameSeg)
+        {
+            *PaddedNameSeg = *NameSeg;
+            NameSeg++;
+        }
+        else
+        {
+            *PaddedNameSeg = '_';
+        }
+        PaddedNameSeg++;
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtAttachNameseg
+ *
+ * PARAMETERS:  Op              - Parent parse node
+ *              Name            - Full ExternalName
+ *
+ * RETURN:      Sets the NameSeg field in parent node
+ *
+ * DESCRIPTION: Extract the last nameseg of the ExternalName and store it
+ *              in the NameSeg field of the Op.
+ *
+ ******************************************************************************/
+
+void
+UtAttachNameseg (
+    ACPI_PARSE_OBJECT       *Op,
+    char                    *Name)
+{
+    char                    *NameSeg;
+    char                    PaddedNameSeg[4];
+
+
+    if (!Name)
+    {
+        return;
+    }
+
+    /* Look for the last dot in the namepath */
+
+    NameSeg = strrchr (Name, '.');
+    if (NameSeg)
+    {
+        /* Found last dot, we have also found the final nameseg */
+
+        NameSeg++;
+        UtPadNameWithUnderscores (NameSeg, PaddedNameSeg);
+    }
+    else
+    {
+        /* No dots in the namepath, there is only a single nameseg. */
+        /* Handle prefixes */
+
+        while ((*Name == '\\') || (*Name == '^'))
+        {
+            Name++;
+        }
+
+        /* Remaing string should be one single nameseg */
+
+        UtPadNameWithUnderscores (Name, PaddedNameSeg);
+    }
+
+    strncpy (Op->Asl.NameSeg, PaddedNameSeg, 4);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    UtAttachNamepathToOwner
  *
  * PARAMETERS:  Op            - Parent parse node
@@ -664,7 +771,15 @@ UtAttachNamepathToOwner (
     ACPI_STATUS             Status;
 
 
+    /* Full external path */
+
     Op->Asl.ExternalName = NameOp->Asl.Value.String;
+
+    /* Last nameseg of the path */
+
+    UtAttachNameseg (Op, Op->Asl.ExternalName);
+
+    /* Create internalized path */
 
     Status = UtInternalizeName (NameOp->Asl.Value.String, &Op->Asl.Namepath);
     if (ACPI_FAILURE (Status))
@@ -688,7 +803,7 @@ UtAttachNamepathToOwner (
 
 ACPI_INTEGER
 UtDoConstant (
-    NATIVE_CHAR             *String)
+    char                    *String)
 {
     ACPI_STATUS             Status;
     ACPI_INTEGER            Converted;
@@ -724,7 +839,7 @@ UtDoConstant (
 
 ACPI_STATUS
 UtStrtoul64 (
-    NATIVE_CHAR             *String,
+    char                    *String,
     UINT32                  Base,
     ACPI_INTEGER            *RetInteger)
 {
