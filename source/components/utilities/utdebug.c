@@ -124,7 +124,8 @@ GetDebugLevel (void)
 }
 
 void
-SetDebugLevel (INT32 NewDebugLevel)
+SetDebugLevel (
+    INT32                   NewDebugLevel)
 {
 
     DebugLevel = NewDebugLevel;
@@ -148,7 +149,11 @@ SetDebugLevel (INT32 NewDebugLevel)
  ****************************************************************************/
 
 void
-FunctionTrace (char *ModuleName, INT32 LineNumber, INT32 ComponentId, char * FunctionName)
+FunctionTrace (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName)
 {
 
     NestingLevel++;
@@ -174,7 +179,11 @@ FunctionTrace (char *ModuleName, INT32 LineNumber, INT32 ComponentId, char * Fun
  ****************************************************************************/
 
 void
-FunctionExit (char *ModuleName, INT32 LineNumber, INT32 ComponentId, char * FunctionName)
+FunctionExit (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
@@ -202,10 +211,15 @@ FunctionExit (char *ModuleName, INT32 LineNumber, INT32 ComponentId, char * Func
  ****************************************************************************/
 
 void
-DebugPrint (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 PrintLevel, 
-            char *Format, ...)
+DebugPrint (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    INT32                   PrintLevel, 
+    char                    *Format,
+    ...)
 {
-    va_list         args;
+    va_list                 args;
 
 
 
@@ -239,7 +253,10 @@ DebugPrint (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 PrintLe
  ****************************************************************************/
 
 void
-DebugPrintPrefix (char *ModuleName, INT32 LineNumber, INT32 ComponentId)
+DebugPrintPrefix (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId)
 {
 
 
@@ -261,9 +278,11 @@ DebugPrintPrefix (char *ModuleName, INT32 LineNumber, INT32 ComponentId)
  ****************************************************************************/
 
 void
-DebugPrintRaw (char *Format, ...)
+DebugPrintRaw (
+    char                    *Format, 
+    ...)
 {
-    va_list         args;
+    va_list                 args;
 
 
     va_start (args, Format);
@@ -272,25 +291,6 @@ DebugPrintRaw (char *Format, ...)
 
     va_end (args);
 }
-
-
-
-/* TBD: Potentially obsolete stuff!! */
-
-
-INT32
-DecIndent (void)
-{
-    return 0;
-}
-
-
-INT32
-IncIndent (void)
-{
-    return 0;
-}
-
 
 
 
