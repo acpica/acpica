@@ -23,7 +23,6 @@
 
 #ifdef FLAT_MODEL
 
-
     #define BYTE    	unsigned char
     #define WORD    	unsigned short
     #define DWORD   	unsigned long
@@ -62,6 +61,7 @@ typedef struct
 #ifndef LOWORD
 #define LOWORD(l)   ((WORD)(DWORD)(l))
 #endif
+
 #ifndef HIWORD
 #define HIWORD(l)   ((WORD)((((DWORD)(l)) >> 16) & 0xFFFF))
 #endif
@@ -69,6 +69,7 @@ typedef struct
 #ifndef LOBYTE
 #define LOBYTE(l)   ((BYTE)(WORD)(l))
 #endif
+
 #ifndef HIBYTE
 #define HIBYTE(l)   ((BYTE)((((WORD)(l)) >> 8) & 0xFF))
 #endif
@@ -88,31 +89,26 @@ typedef struct
 
 
 #ifndef RMX
-#ifndef FLAT_MODEL
-#define selector                        __segment
-#else
-#define selector                        DWORD
-#define FAR
-extern selector sFlatSeg;
-#endif
+  #ifndef FLAT_MODEL
+    #define selector                        __segment
+  #else
+    #define selector                        DWORD
+    #define FAR
+    extern selector sFlatSeg;
+  #endif
 
-
-#ifndef GDT_SLOTS
-#define GDT_SLOTS 10
-#endif
-
-
+  #ifndef GDT_SLOTS
+    #define GDT_SLOTS 10
+  #endif
 #else       /* RMX */
-#define MAX_PRIORITY    (unsigned char) 0X37
-#define THIS_JOB     	NULLSEL
-#define s4GBSegName     (const char *) "4GB selector"
-
-#ifndef __BU_BASE_C__
-extern selector sF000;
-extern selector sFlatSeg;
-#define s4GBSeg sFlatSeg
-#endif
-
+  #define MAX_PRIORITY    (unsigned char) 0X37
+  #define THIS_JOB     	NULLSEL
+  #define s4GBSegName     (const char *) "4GB selector"
+  #ifndef __BU_BASE_C__
+    extern selector sF000;
+    extern selector sFlatSeg;
+    #define s4GBSeg sFlatSeg
+  #endif
 #endif  /* RMX */
 
 #define LOW_BASE(w)     ((WORD) ((w) & 0x0000FFFF))
