@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.47 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -133,7 +133,7 @@
  *
  * FUNCTION:    AcpiLoadNamespace
  *
- * PARAMETERS:  DisplayAmlDuringLoad
+ * PARAMETERS:  None
  *
  * RETURN:      Status
  *
@@ -160,7 +160,6 @@ AcpiNsLoadNamespace (
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-
     /*
      * Load the namespace.  The DSDT is required,
      * but the SSDT and PSDT tables are optional.
@@ -176,11 +175,9 @@ AcpiNsLoadNamespace (
     AcpiNsLoadTableByType (ACPI_TABLE_SSDT);
     AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
 
-
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
         "ACPI Namespace successfully loaded at root %p\n",
         AcpiGbl_RootNode));
-
 
     return_ACPI_STATUS (Status);
 }
@@ -190,11 +187,12 @@ AcpiNsLoadNamespace (
  *
  * FUNCTION:    AcpiNsOneParsePass
  *
- * PARAMETERS:
+ * PARAMETERS:  PassNumber              - 1 or 2
+ *              TableDesc               - The table to be parsed.
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Perform one complete parse of an ACPI/AML table.
  *
  ******************************************************************************/
 
@@ -221,7 +219,6 @@ AcpiNsOneCompleteParse (
 
     ((ACPI_PARSE2_OBJECT *) ParseRoot)->Name = ACPI_ROOT_NAME;
 
-
     /* Create and initialize a new walk state */
 
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
@@ -232,7 +229,7 @@ AcpiNsOneCompleteParse (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, ParseRoot, NULL, TableDesc->AmlStart, 
+    Status = AcpiDsInitAmlWalk (WalkState, ParseRoot, NULL, TableDesc->AmlStart,
                     TableDesc->AmlLength, NULL, NULL, PassNumber);
     if (ACPI_FAILURE (Status))
     {
@@ -290,7 +287,6 @@ AcpiNsParseTable (
         return_ACPI_STATUS (Status);
     }
 
-
     /*
      * AML Parse, pass 2
      *
@@ -315,7 +311,7 @@ AcpiNsParseTable (
  * FUNCTION:    AcpiNsLoadTable
  *
  * PARAMETERS:  TableDesc       - Descriptor for table to be loaded
- *              Node            - Owning NS node 
+ *              Node            - Owning NS node
  *
  * RETURN:      Status
  *
@@ -342,13 +338,11 @@ AcpiNsLoadTable (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "AML block at %p\n", TableDesc->AmlStart));
 
-
     if (!TableDesc->AmlLength)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Zero-length AML block\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
 
     /*
      * Parse the table and load the namespace with all named
@@ -423,7 +417,6 @@ AcpiNsLoadTableByType (
      */
     switch (TableType)
     {
-
     case ACPI_TABLE_DSDT:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Loading DSDT\n"));
@@ -521,9 +514,7 @@ AcpiNsLoadTableByType (
 UnlockAndExit:
 
     AcpiUtReleaseMutex (ACPI_MTX_TABLES);
-
     return_ACPI_STATUS (Status);
-
 }
 
 
@@ -538,8 +529,8 @@ UnlockAndExit:
  * DESCRIPTION: Walks the namespace starting at the given handle and deletes
  *              all objects, entries, and scopes in the entire subtree.
  *
- *              TBD: [Investigate] What if any part of this subtree is in use?
- *              (i.e. on one of the object stacks?)
+ *              Namespace/Interpreter should be locked or the subsystem should
+ *              be in shutdown before this routine is called.
  *
  ******************************************************************************/
 
@@ -575,7 +566,6 @@ AcpiNsDeleteSubtree (
 
         ChildHandle = NextChildHandle;
 
-
         /* Did we get a new object? */
 
         if (ACPI_SUCCESS (Status))
@@ -594,7 +584,6 @@ AcpiNsDeleteSubtree (
                 ChildHandle  = 0;
             }
         }
-
         else
         {
             /*
@@ -655,7 +644,6 @@ AcpiNsUnloadNamespace (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
 
     /* This function does the real work */
 
