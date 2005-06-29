@@ -458,6 +458,10 @@ SOURCE=..\..\Subsystem\NameSpace\nsaccess.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Namespace\nsalloc.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Namespace\nsapinam.c
 # End Source File
 # Begin Source File
