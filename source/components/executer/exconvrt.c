@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.26 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exconvrt")
+        ACPI_MODULE_NAME    ("exconvrt")
 
 
 /*******************************************************************************
@@ -158,7 +158,7 @@ AcpiExConvertToInteger (
     UINT32                  IntegerSize = sizeof (ACPI_INTEGER);
 
 
-    FUNCTION_TRACE_PTR ("ExConvertToInteger", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExConvertToInteger", ObjDesc);
 
 
     switch (ObjDesc->Common.Type)
@@ -226,13 +226,13 @@ AcpiExConvertToInteger (
     {
     case ACPI_TYPE_STRING:
 
-        /* TBD: Need to use 64-bit STRTOUL */
+        /* TBD: Need to use 64-bit ACPI_STRTOUL */
 
         /*
          * Convert string to an integer
          * String must be hexadecimal as per the ACPI specification
          */
-        Result = STRTOUL (Pointer, NULL, 16);
+        Result = ACPI_STRTOUL (Pointer, NULL, 16);
         break;
 
 
@@ -297,7 +297,7 @@ AcpiExConvertToBuffer (
     UINT8                   *NewBuf;
 
 
-    FUNCTION_TRACE_PTR ("ExConvertToBuffer", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExConvertToBuffer", ObjDesc);
 
 
     switch (ObjDesc->Common.Type)
@@ -331,7 +331,7 @@ AcpiExConvertToBuffer (
         NewBuf = ACPI_MEM_CALLOCATE (IntegerSize);
         if (!NewBuf)
         {
-            REPORT_ERROR
+            ACPI_REPORT_ERROR
                 (("ExConvertToBuffer: Buffer allocation failure\n"));
             AcpiUtRemoveReference (RetDesc);
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -365,6 +365,9 @@ AcpiExConvertToBuffer (
         return_ACPI_STATUS (AE_TYPE);
     }
 
+    /* Mark buffer initialized */
+
+    (*ResultDesc)->Common.Flags |= AOPOBJ_DATA_VALID;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -397,7 +400,7 @@ AcpiExConvertToAscii (
     BOOLEAN                 LeadingZero = TRUE;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     switch (Base)
@@ -424,7 +427,7 @@ AcpiExConvertToAscii (
 
             if (!LeadingZero)
             {
-                String[k] = (UINT8) (ASCII_ZERO + Remainder);
+                String[k] = (UINT8) (ACPI_ASCII_ZERO + Remainder);
                 k++;
             }
         }
@@ -438,7 +441,7 @@ AcpiExConvertToAscii (
         {
 
             HexDigit = AcpiUtHexToAsciiChar (Integer, (j * 4));
-            if (HexDigit != ASCII_ZERO)
+            if (HexDigit != ACPI_ASCII_ZERO)
             {
                 LeadingZero = FALSE;
             }
@@ -463,7 +466,7 @@ AcpiExConvertToAscii (
      */
     if (!k)
     {
-        String [0] = ASCII_ZERO;
+        String [0] = ACPI_ASCII_ZERO;
         k = 1;
     }
     String [k] = 0;
@@ -503,7 +506,7 @@ AcpiExConvertToString (
     UINT8                   *Pointer;
 
 
-    FUNCTION_TRACE_PTR ("ExConvertToString", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExConvertToString", ObjDesc);
 
 
     switch (ObjDesc->Common.Type)
@@ -542,7 +545,7 @@ AcpiExConvertToString (
         NewBuf = ACPI_MEM_CALLOCATE (StringLength + 1);
         if (!NewBuf)
         {
-            REPORT_ERROR
+            ACPI_REPORT_ERROR
                 (("ExConvertToString: Buffer allocation failure\n"));
             AcpiUtRemoveReference (RetDesc);
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -617,7 +620,7 @@ AcpiExConvertToString (
         NewBuf = ACPI_MEM_CALLOCATE (StringLength + 1);
         if (!NewBuf)
         {
-            REPORT_ERROR
+            ACPI_REPORT_ERROR
                 (("ExConvertToString: Buffer allocation failure\n"));
             AcpiUtRemoveReference (RetDesc);
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -640,7 +643,7 @@ AcpiExConvertToString (
 
         NewBuf [Index-1] = 0;
         RetDesc->Buffer.Pointer = NewBuf;
-        RetDesc->String.Length = STRLEN ((char *) NewBuf);
+        RetDesc->String.Length = ACPI_STRLEN ((char *) NewBuf);
 
 
         /* Return the new buffer descriptor */
@@ -697,7 +700,7 @@ AcpiExConvertToString (
 
 ACPI_STATUS
 AcpiExConvertToTargetType (
-    ACPI_OBJECT_TYPE8       DestinationType,
+    ACPI_OBJECT_TYPE        DestinationType,
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState)
@@ -705,9 +708,9 @@ AcpiExConvertToTargetType (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExConvertToTargetType");
+    ACPI_FUNCTION_TRACE ("ExConvertToTargetType");
 
-    
+
     /* Default behavior */
 
     *ResultDesc = SourceDesc;
