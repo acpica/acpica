@@ -3,7 +3,7 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.62 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -155,9 +155,8 @@ AcpiExResolveObject (
     ACPI_FUNCTION_TRACE ("ExResolveObject");
 
 
-    /*
-     * Ensure we have a Target that can be stored to
-     */
+    /* Ensure we have a Target that can be stored to */
+
     switch (TargetType)
     {
     case ACPI_TYPE_BUFFER_FIELD:
@@ -196,17 +195,15 @@ AcpiExResolveObject (
             break;
         }
 
-        /*
-         * Must have a Integer, Buffer, or String
-         */
+        /* Must have a Integer, Buffer, or String */
+
         if ((ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_INTEGER)    &&
             (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_BUFFER)     &&
             (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_TYPE_STRING)     &&
             !((ACPI_GET_OBJECT_TYPE (SourceDesc) == ACPI_TYPE_LOCAL_REFERENCE) && (SourceDesc->Reference.Opcode == AML_LOAD_OP)))
         {
-            /*
-             * Conversion successful but still not a valid type
-             */
+            /* Conversion successful but still not a valid type */
+
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Cannot assign type %s to %s (must be type Int/Str/Buf)\n",
                 AcpiUtGetObjectTypeName (SourceDesc),
@@ -219,9 +216,8 @@ AcpiExResolveObject (
     case ACPI_TYPE_LOCAL_ALIAS:
     case ACPI_TYPE_LOCAL_METHOD_ALIAS:
 
-        /*
-         * Aliases are resolved by AcpiExPrepOperands
-         */
+        /* Aliases are resolved by AcpiExPrepOperands */
+
         ACPI_REPORT_ERROR (("Store into Alias - should never happen\n"));
         Status = AE_AML_INTERNAL;
         break;
@@ -353,10 +349,6 @@ AcpiExStoreObjectToObject (
 
     case ACPI_TYPE_BUFFER:
 
-        /*
-         * Note: There is different store behavior depending on the original
-         * source type
-         */
         Status = AcpiExStoreBufferToBuffer (ActualSrcDesc, DestDesc);
         break;
 
