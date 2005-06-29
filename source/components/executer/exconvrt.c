@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -334,7 +334,7 @@ AcpiExConvertToBuffer (
          * Create a new Buffer object
          * Size will be the string length
          */
-        RetDesc = AcpiUtCreateBufferObject (ObjDesc->String.Length);
+        RetDesc = AcpiUtCreateBufferObject ((ACPI_SIZE) ObjDesc->String.Length);
         if (!RetDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
