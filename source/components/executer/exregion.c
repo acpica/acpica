@@ -121,6 +121,7 @@
 #include <amlcode.h>
 #include <namespace.h>
 #include <hardware.h>
+#include <events.h>
 
 
 #define _THIS_MODULE        "ieregion.c"
