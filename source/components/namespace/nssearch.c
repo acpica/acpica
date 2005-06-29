@@ -227,6 +227,7 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
             
             CheckTrash ("leave NsSearchTable FOUND");
             *RetNte = &NameTbl[Position];
+            FUNCTION_EXIT;
             return AE_OK;
         }
 
@@ -273,6 +274,7 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
         RetInfo->NameTbl = NameTbl;
     }
 
+    FUNCTION_EXIT;
     return AE_NOT_FOUND;
 }
 
@@ -334,6 +336,7 @@ NsSearchParentTree (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte)
             if (Status == AE_OK)
             {
                 CheckTrash ("leave NsSearchTable FOUND in parent");
+                FUNCTION_EXIT;
                 return Status;
             }
 
@@ -363,6 +366,7 @@ NsSearchParentTree (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte)
         }
     }
 
+    FUNCTION_EXIT;
     return AE_NOT_FOUND;
 }
 
@@ -410,6 +414,7 @@ NsCreateAndLinkNewTable (nte *NameTbl, nte *PreviousEntry)
     if (!NEXTSEG (NameTbl))
     {
         REPORT_ERROR (&KDT[1]);
+        FUNCTION_EXIT;
         return AE_NO_MEMORY;
     }
 
@@ -443,6 +448,8 @@ NsCreateAndLinkNewTable (nte *NameTbl, nte *PreviousEntry)
                 NameTbl, ParentScope, NameTbl->Scope));
 
     }
+
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -538,6 +545,7 @@ NsInitializeEntry (nte *NameTbl, UINT32 Position, char *NamSeg, NsType Type,
                     ("NsInitializeEntry: %.4s added to %p at %p\n", NamSeg, NameTbl, NewEntry));
     CheckTrash ("leave NsInitializeEntry ADDED");
     
+    FUNCTION_EXIT;
 }
 
 
@@ -585,6 +593,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
     if (!NameTbl || !NamSeg || !RetNte)
     {
         REPORT_ERROR (&KDT[0]);
+        FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
 
@@ -599,6 +608,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
         DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** bad name %08lx *** \n", 
                                     *(UINT32 *) NamSeg));
         CheckTrash ("leave NsSearchTable BADNAME");
+        FUNCTION_EXIT;
         return AE_BAD_CHARACTER;
     }
 
@@ -611,6 +621,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
     {
         /* Either found it or there was an error -- finished either way */
 
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -620,6 +631,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
     Status = NsSearchParentTree (NamSeg, NameTbl, Type, RetNte);
     if (Status == AE_OK)
     {
+        FUNCTION_EXIT;
         return Status;
     }
 
@@ -634,6 +646,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
                                     NamSeg, NameTbl));
         CheckTrash ("leave NsSearchTable NOTFOUND");
     
+        FUNCTION_EXIT;
         return AE_NOT_FOUND;
     }
 
@@ -655,6 +668,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
         Status = NsCreateAndLinkNewTable (NameTbl, SearchInfo.PreviousEntry);
         if (Status != AE_OK)
         {
+            FUNCTION_EXIT;
             return Status;
         }
 
@@ -674,6 +688,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
                         SearchInfo.PreviousEntry);
     *RetNte = &NameTbl[Position];
 
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
