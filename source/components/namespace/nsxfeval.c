@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.4 $
+ *              $Revision: 1.8 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -641,8 +641,8 @@ AcpiNsGetDeviceCallback (
  *
  * DESCRIPTION: Performs a modified depth-first walk of the namespace tree,
  *              starting (and ending) at the object specified by StartHandle.
- *              The UserFunction is called whenever an object that matches
- *              the type parameter is found.  If the user function returns
+ *              The UserFunction is called whenever an object of type
+ *              Device is found.  If the user function returns
  *              a non-zero value, the search is terminated immediately and this
  *              value is returned to the caller.
  *
@@ -653,7 +653,7 @@ AcpiNsGetDeviceCallback (
 
 ACPI_STATUS
 AcpiGetDevices (
-    NATIVE_CHAR             *HID,
+    char                    *HID,
     ACPI_WALK_CALLBACK      UserFunction,
     void                    *Context,
     void                    **ReturnValue)
@@ -707,7 +707,7 @@ AcpiGetDevices (
  *
  * FUNCTION:    AcpiAttachData
  *
- * PARAMETERS:  ObjHandle           - Namespace node 
+ * PARAMETERS:  ObjHandle           - Namespace node
  *              Handler             - Handler for this attachment
  *              Data                - Pointer to data to be attached
  *
