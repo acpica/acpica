@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.93 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -540,9 +540,10 @@ AcpiNsExternalizeName (
 {
     UINT32                  PrefixLength = 0;
     UINT32                  NamesIndex = 0;
-    UINT32                  NamesCount = 0;
+    UINT32                  NumSegments = 0;
     UINT32                  i = 0;
     UINT32                  j = 0;
+    UINT32                  RequiredLength;
 
 
     FUNCTION_TRACE ("NsExternalizeName");
@@ -550,7 +551,6 @@ AcpiNsExternalizeName (
 
     if (!InternalNameLength     ||
         !InternalName           ||
-        !ConvertedNameLength    ||
         !ConvertedName)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -591,36 +591,39 @@ AcpiNsExternalizeName (
     {
         switch (InternalName[PrefixLength])
         {
-
-        /* <count> 4-byte names */
-
         case AML_MULTI_NAME_PREFIX_OP:
+
+            /* <count> 4-byte names */
+
             NamesIndex = PrefixLength + 2;
-            NamesCount = (UINT32) InternalName[PrefixLength + 1];
+            NumSegments = (UINT32) InternalName[PrefixLength + 1];
             break;
 
-
-        /* two 4-byte names */
 
         case AML_DUAL_NAME_PREFIX:
+            
+            /* Two 4-byte names */
+
             NamesIndex = PrefixLength + 1;
-            NamesCount = 2;
+            NumSegments = 2;
             break;
 
-
-        /* NullName */
 
         case 0:
+
+            /* NullName */
+
             NamesIndex = 0;
-            NamesCount = 0;
+            NumSegments = 0;
             break;
 
 
-        /* one 4-byte name */
-
         default:
+
+            /* one 4-byte name */
+
             NamesIndex = PrefixLength;
-            NamesCount = 1;
+            NumSegments = 1;
             break;
         }
     }
@@ -630,14 +633,14 @@ AcpiNsExternalizeName (
      * of the prefix, length of all object names, length of any required
      * punctuation ('.') between object names, plus the NULL terminator.
      */
-    *ConvertedNameLength = PrefixLength + (4 * NamesCount) +
-                        ((NamesCount > 0) ? (NamesCount - 1) : 0) + 1;
+    RequiredLength = PrefixLength + (4 * NumSegments) +
+                        ((NumSegments > 0) ? (NumSegments - 1) : 0) + 1;
 
     /*
      * Check to see if we're still in bounds.  If not, there's a problem
      * with InternalName (invalid format).
      */
-    if (*ConvertedNameLength > InternalNameLength)
+    if (RequiredLength > InternalNameLength)
     {
         REPORT_ERROR (("NsExternalizeName: Invalid internal name\n"));
         return_ACPI_STATUS (AE_BAD_PATHNAME);
@@ -646,8 +649,7 @@ AcpiNsExternalizeName (
     /*
      * Build ConvertedName...
      */
-
-    (*ConvertedName) = ACPI_MEM_CALLOCATE (*ConvertedNameLength);
+    *ConvertedName = ACPI_MEM_CALLOCATE (RequiredLength);
     if (!(*ConvertedName))
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -660,9 +662,9 @@ AcpiNsExternalizeName (
         (*ConvertedName)[j++] = InternalName[i];
     }
 
-    if (NamesCount > 0)
+    if (NumSegments > 0)
     {
-        for (i = 0; i < NamesCount; i++)
+        for (i = 0; i < NumSegments; i++)
         {
             if (i > 0)
             {
@@ -674,6 +676,11 @@ AcpiNsExternalizeName (
             (*ConvertedName)[j++] = InternalName[NamesIndex++];
             (*ConvertedName)[j++] = InternalName[NamesIndex++];
         }
+    }
+
+    if (ConvertedNameLength)
+    {
+        *ConvertedNameLength = RequiredLength;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -718,7 +725,7 @@ AcpiNsMapHandleToNode (
 
     /* We can at least attempt to verify the handle */
 
-    if (!VALID_DESCRIPTOR_TYPE (Handle, ACPI_DESC_TYPE_NAMED))
+    if (ACPI_GET_DESCRIPTOR_TYPE (Handle) != ACPI_DESC_TYPE_NAMED)
     {
         return (NULL);
     }
