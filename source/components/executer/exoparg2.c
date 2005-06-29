@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdyadic - ACPI AML execution for dyadic (2-operand) operators
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -519,15 +519,13 @@ AcpiExDyadic2R (
             goto Cleanup;
         }
 
-        /* Remainder (modulo) */
+        /* 
+         * RetDesc2 will contain the quotient, 
+         * RetDesc  will contain the remainder
+         */
+        Status = AcpiUtDivide (&Operand[0]->Integer.Value, &Operand[1]->Integer.Value,
+                        &RetDesc2->Integer.Value, &RetDesc->Integer.Value);
 
-        RetDesc->Integer.Value   = ACPI_MODULO (Operand[0]->Integer.Value,
-                                                Operand[1]->Integer.Value);
-
-        /* Result (what we used to call the quotient) */
-
-        RetDesc2->Integer.Value  = ACPI_DIVIDE (Operand[0]->Integer.Value,
-                                                Operand[1]->Integer.Value);
         break;
 
 
@@ -541,8 +539,11 @@ AcpiExDyadic2R (
             goto Cleanup;
         }
 
-        RetDesc->Integer.Value   = ACPI_MODULO (Operand[0]->Integer.Value,
-                                                Operand[1]->Integer.Value);
+        /* RetDesc will contain the remainder */
+
+        Status = AcpiUtDivide (&Operand[0]->Integer.Value, &Operand[1]->Integer.Value,
+                        NULL, &RetDesc->Integer.Value);
+
         break;
 
 

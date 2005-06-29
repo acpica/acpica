@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmonad - ACPI AML execution for monadic (1 operand) operators
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -304,11 +304,11 @@ ACPI_STATUS
 AcpiExMonadic2R (
     ACPI_WALK_STATE         *WalkState)
 {
+    ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_OPERAND_OBJECT     *RetDesc = NULL;
     ACPI_OPERAND_OBJECT     *RetDesc2 = NULL;
-    UINT32                  ResVal;
-    ACPI_STATUS             Status = AE_OK;
+    UINT32                  Temp32;
     UINT32                  i;
     UINT32                  j;
     ACPI_INTEGER            Digit;
@@ -359,12 +359,12 @@ AcpiExMonadic2R (
          * Acpi specification describes Integer type as a little
          * endian unsigned value, so this boundary condition is valid.
          */
-        for (ResVal = 0; RetDesc->Integer.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
+        for (Temp32 = 0; RetDesc->Integer.Value && Temp32 < ACPI_INTEGER_BIT_SIZE; ++Temp32)
         {
             RetDesc->Integer.Value >>= 1;
         }
 
-        RetDesc->Integer.Value = ResVal;
+        RetDesc->Integer.Value = Temp32;
         break;
 
 
@@ -377,14 +377,14 @@ AcpiExMonadic2R (
          * The Acpi specification describes Integer type as a little
          * endian unsigned value, so this boundary condition is valid.
          */
-        for (ResVal = 0; RetDesc->Integer.Value && ResVal < ACPI_INTEGER_BIT_SIZE; ++ResVal)
+        for (Temp32 = 0; RetDesc->Integer.Value && Temp32 < ACPI_INTEGER_BIT_SIZE; ++Temp32)
         {
             RetDesc->Integer.Value <<= 1;
         }
 
         /* Since returns must be 1-based, subtract from 33 (65) */
 
-        RetDesc->Integer.Value = ResVal == 0 ? 0 : (ACPI_INTEGER_BIT_SIZE + 1) - ResVal;
+        RetDesc->Integer.Value = Temp32 == 0 ? 0 : (ACPI_INTEGER_BIT_SIZE + 1) - Temp32;
         break;
 
 
@@ -440,17 +440,18 @@ AcpiExMonadic2R (
         {
             /* Divide by nth factor of 10 */
 
+            Temp32 = 0;
             Digit = ObjDesc->Integer.Value;
             for (j = 0; j < i; j++)
             {
-                Digit = ACPI_DIVIDE (Digit, 10);
+                AcpiUtShortDivide (&Digit, 10, &Digit, &Temp32);
             }
 
-            /* Create the BCD digit */
+            /* Create the BCD digit from the remainder above */
 
             if (Digit > 0)
             {
-                RetDesc->Integer.Value += (ACPI_MODULO (Digit, 10) << (i * 4));
+                RetDesc->Integer.Value += (Temp32 << (i * 4));
             }
         }
         break;
@@ -503,7 +504,7 @@ AcpiExMonadic2R (
          * Be careful about deleting the source object,
          * since the object itself may have been stored.
          */
-        ResVal = ObjDesc->Common.ReferenceCount;
+        Temp32 = ObjDesc->Common.ReferenceCount;
         Status = AcpiExStore (ObjDesc, ResDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
@@ -514,7 +515,7 @@ AcpiExMonadic2R (
         }
 
 #if 0
-        if ((ObjDesc->Common.ReferenceCount > ResVal) &&
+        if ((ObjDesc->Common.ReferenceCount > Temp32) &&
             (!AcpiDsIsResultUsed (WalkState->Op, WalkState)))
         {
             ObjDesc->Common.ReferenceCount++;
