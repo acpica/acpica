@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.25 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -127,7 +126,7 @@
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsload");
+        MODULE_NAME         ("nsload")
 
 
 /*******************************************************************************
@@ -135,7 +134,7 @@
  * FUNCTION:    AcpiNsParseTable
  *
  * PARAMETERS:  TableDesc       - An ACPI table descriptor for table to parse
- *              Scope           - Where to enter the table into the namespace
+ *              StartNode       - Where to enter the table into the namespace
  *
  * RETURN:      Status
  *
@@ -146,7 +145,7 @@
 ACPI_STATUS
 AcpiNsParseTable (
     ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMED_OBJECT       *Scope)
+    ACPI_NAMESPACE_NODE     *StartNode)
 {
     ACPI_STATUS             Status;
 
@@ -165,7 +164,7 @@ AcpiNsParseTable (
      * performs another complete parse of the AML..
      */
 
-    /* Create and init a root object */
+    /* Create and init a Root Node */
 
     AcpiGbl_ParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
     if (!AcpiGbl_ParsedNamespaceRoot)
@@ -173,7 +172,7 @@ AcpiNsParseTable (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    ((ACPI_EXTENDED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    ((ACPI_PARSE2_OBJECT *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
 
     /* Pass 1:  Parse everything except control method bodies */
@@ -183,7 +182,7 @@ AcpiNsParseTable (
 
     Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot,
                             TableDesc->AmlPointer,
-                            TableDesc->AmlLength, 
+                            TableDesc->AmlLength,
                             ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
                             NULL, NULL, NULL,
                             AcpiDsLoad1BeginOp,
@@ -207,7 +206,7 @@ AcpiNsParseTable (
      * parse objects are all cached.
      */
 
-    /* Create and init a root object */
+    /* Create and init a Root Node */
 
     AcpiGbl_ParsedNamespaceRoot = AcpiPsAllocOp (AML_SCOPE_OP);
     if (!AcpiGbl_ParsedNamespaceRoot)
@@ -215,7 +214,7 @@ AcpiNsParseTable (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    ((ACPI_EXTENDED_OP *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
+    ((ACPI_PARSE2_OBJECT *) AcpiGbl_ParsedNamespaceRoot)->Name = ACPI_ROOT_NAME;
 
 
     /* Pass 2: Resolve forward references */
@@ -225,7 +224,7 @@ AcpiNsParseTable (
 
     Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot,
                             TableDesc->AmlPointer,
-                            TableDesc->AmlLength, 
+                            TableDesc->AmlLength,
                             ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
                             NULL, NULL, NULL,
                             AcpiDsLoad2BeginOp,
@@ -239,7 +238,7 @@ AcpiNsParseTable (
 
 /* TBD: [Restructure] must generate stats on the fly, can't walk the tree */
 
-    DEBUG_EXEC (AcpiDbGenerateStatistics (AcpiGbl_ParsedNamespaceRoot, 0));
+    DEBUGGER_EXEC (AcpiDbGenerateStatistics (AcpiGbl_ParsedNamespaceRoot, 0));
 
     AcpiPsDeleteParseTree (AcpiGbl_ParsedNamespaceRoot);
     AcpiGbl_ParsedNamespaceRoot = NULL;
@@ -266,7 +265,7 @@ AcpiNsParseTable (
 ACPI_STATUS
 AcpiNsLoadTable (
     ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMED_OBJECT       *NameDesc)
+    ACPI_NAMESPACE_NODE     *Node)
 {
     ACPI_STATUS             Status;
 
@@ -306,7 +305,7 @@ AcpiNsLoadTable (
         ("NsLoadTable: **** Loading table into namespace ****\n"));
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
-    Status = AcpiNsParseTable (TableDesc, NameDesc->Child);
+    Status = AcpiNsParseTable (TableDesc, Node->Child);
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
@@ -324,7 +323,7 @@ AcpiNsLoadTable (
     DEBUG_PRINT (ACPI_INFO,
         ("NsLoadTable: **** Begin Table Method Parsing and Object Initialization ****\n"));
 
-    Status = AcpiDsInitializeObjects (TableDesc, NameDesc);
+    Status = AcpiDsInitializeObjects (TableDesc, Node);
 
     DEBUG_PRINT (ACPI_INFO,
         ("NsLoadTable: **** Completed Table Method Parsing and Object Initialization ****\n"));
@@ -396,7 +395,7 @@ AcpiNsLoadTableByType (
 
         /* Now load the single DSDT */
 
-        Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootObject);
+        Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootNode);
         if (ACPI_SUCCESS (Status))
         {
             TableDesc->LoadedIntoNamespace = TRUE;
@@ -428,7 +427,7 @@ AcpiNsLoadTableByType (
             if (!TableDesc->LoadedIntoNamespace)
             {
                 Status = AcpiNsLoadTable (TableDesc,
-                                            AcpiGbl_RootObject);
+                                            AcpiGbl_RootNode);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -464,7 +463,7 @@ AcpiNsLoadTableByType (
             if (!TableDesc->LoadedIntoNamespace)
             {
                 Status = AcpiNsLoadTable (TableDesc,
-                                            AcpiGbl_RootObject);
+                                            AcpiGbl_RootNode);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -584,7 +583,7 @@ AcpiNsDeleteSubtree (
 
     /* Now delete the starting object, and we are done */
 
-    AcpiNsDeleteNamedObject (ChildHandle);
+    AcpiNsDeleteNode (ChildHandle);
 
 
     return_ACPI_STATUS (AE_OK);
@@ -617,7 +616,7 @@ AcpiNsUnloadNamespace (
 
     /* Parameter validation */
 
-    if (!AcpiGbl_RootObject)
+    if (!AcpiGbl_RootNode)
     {
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }

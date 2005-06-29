@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.43 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -124,7 +123,7 @@
 #include "acinterp.h"
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("pswalk");
+        MODULE_NAME         ("pswalk")
 
 
 /*******************************************************************************
@@ -146,12 +145,12 @@
 ACPI_STATUS
 AcpiPsGetNextWalkOp (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     ACPI_PARSE_UPWARDS      AscendingCallback)
 {
-    ACPI_GENERIC_OP         *Next;
-    ACPI_GENERIC_OP         *Parent;
-    ACPI_GENERIC_OP         *GrandParent;
+    ACPI_PARSE_OBJECT       *Next;
+    ACPI_PARSE_OBJECT       *Parent;
+    ACPI_PARSE_OBJECT       *GrandParent;
     ACPI_STATUS             Status;
 
 
@@ -466,13 +465,13 @@ AcpiPsGetNextWalkOp (
 ACPI_STATUS
 AcpiPsWalkLoop (
     ACPI_WALK_LIST          *WalkList,
-    ACPI_GENERIC_OP         *StartOp,
+    ACPI_PARSE_OBJECT       *StartOp,
     ACPI_PARSE_DOWNWARDS    DescendingCallback,
     ACPI_PARSE_UPWARDS      AscendingCallback)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_WALK_STATE         *WalkState;
-    ACPI_GENERIC_OP         *Op = StartOp;
+    ACPI_PARSE_OBJECT       *Op = StartOp;
 
 
     FUNCTION_TRACE_PTR ("PsWalkLoop", StartOp);
@@ -564,19 +563,19 @@ AcpiPsWalkLoop (
 
 ACPI_STATUS
 AcpiPsWalkParsedAml (
-    ACPI_GENERIC_OP         *StartOp,
-    ACPI_GENERIC_OP         *EndOp,
-    ACPI_OBJECT_INTERNAL    *MthDesc,
-    ACPI_NAMED_OBJECT       *StartScope,
-    ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
+    ACPI_PARSE_OBJECT       *StartOp,
+    ACPI_PARSE_OBJECT       *EndOp,
+    ACPI_OPERAND_OBJECT     *MthDesc,
+    ACPI_NAMESPACE_NODE     *StartNode,
+    ACPI_OPERAND_OBJECT     **Params,
+    ACPI_OPERAND_OBJECT     **CallerReturnDesc,
     ACPI_OWNER_ID           OwnerId,
     ACPI_PARSE_DOWNWARDS    DescendingCallback,
     ACPI_PARSE_UPWARDS      AscendingCallback)
 {
-    ACPI_GENERIC_OP         *Op;
+    ACPI_PARSE_OBJECT       *Op;
     ACPI_WALK_STATE         *WalkState;
-    ACPI_OBJECT_INTERNAL    *ReturnDesc;
+    ACPI_OPERAND_OBJECT     *ReturnDesc;
     ACPI_STATUS             Status;
     ACPI_WALK_LIST          WalkList;
     ACPI_WALK_LIST          *PrevWalkList;
@@ -607,11 +606,11 @@ AcpiPsWalkParsedAml (
     PrevWalkList = AcpiGbl_CurrentWalkList;
     AcpiGbl_CurrentWalkList = &WalkList;
 
-    if (StartScope)
+    if (StartNode)
     {
         /* Push start scope on scope stack and make it current  */
 
-        Status = AcpiDsScopeStackPush (StartScope, ACPI_TYPE_METHOD, WalkState);
+        Status = AcpiDsScopeStackPush (StartNode, ACPI_TYPE_METHOD, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);

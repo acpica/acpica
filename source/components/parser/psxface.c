@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.34 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -126,7 +125,7 @@
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("psxface");
+        MODULE_NAME         ("psxface")
 
 
 /*****************************************************************************
@@ -147,27 +146,27 @@
 
 ACPI_STATUS
 AcpiPsxExecute (
-    ACPI_NAMED_OBJECT       *MethodNameDesc,
-    ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
+    ACPI_NAMESPACE_NODE     *MethodNode,
+    ACPI_OPERAND_OBJECT     **Params,
+    ACPI_OPERAND_OBJECT     **ReturnObjDesc)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     UINT32                  i;
-    ACPI_GENERIC_OP         *Op;
+    ACPI_PARSE_OBJECT       *Op;
 
 
     FUNCTION_TRACE ("PsxExecute");
 
 
-    /* Validate the Named Object and get the attached object */
+    /* Validate the Node and get the attached object */
 
-    if (!MethodNameDesc)
+    if (!MethodNode)
     {
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-    ObjDesc = AcpiNsGetAttachedObject (MethodNameDesc);
+    ObjDesc = AcpiNsGetAttachedObject (MethodNode);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NULL_OBJECT);
@@ -175,7 +174,7 @@ AcpiPsxExecute (
 
     /* Init for new method, wait on concurrency semaphore */
 
-    Status = AcpiDsBeginMethodExecution (MethodNameDesc, ObjDesc);
+    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -201,9 +200,9 @@ AcpiPsxExecute (
 
     DEBUG_PRINT (ACPI_INFO,
         ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
-        MethodNameDesc, ObjDesc));
+        MethodNode, ObjDesc));
 
-    /* Create and init a root object */
+    /* Create and init a Root Node */
 
     Op = AcpiPsAllocOp (AML_SCOPE_OP);
     if (!Op)
@@ -212,13 +211,13 @@ AcpiPsxExecute (
     }
 
     Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                                ObjDesc->Method.PcodeLength, 
+                                ObjDesc->Method.PcodeLength,
                                 ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
-                                MethodNameDesc, Params, ReturnObjDesc,
+                                MethodNode, Params, ReturnObjDesc,
                                 AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
     AcpiPsDeleteParseTree (Op);
 
-    /* Create and init a root object */
+    /* Create and init a Root Node */
 
     Op = AcpiPsAllocOp (AML_SCOPE_OP);
     if (!Op)
@@ -230,9 +229,9 @@ AcpiPsxExecute (
      * The walk of the parse tree is where we actually execute the method
      */
     Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                                ObjDesc->Method.PcodeLength, 
+                                ObjDesc->Method.PcodeLength,
                                 ACPI_PARSE_EXECUTE | ACPI_PARSE_DELETE_TREE,
-                                MethodNameDesc, Params, ReturnObjDesc,
+                                MethodNode, Params, ReturnObjDesc,
                                 AcpiDsExecBeginOp, AcpiDsExecEndOp);
     AcpiPsDeleteParseTree (Op);
 
