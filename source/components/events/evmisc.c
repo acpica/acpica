@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.73 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -210,7 +210,7 @@ AcpiEvQueueNotifyRequest (
 
     if (NotifyValue <= 7)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Notify value: %s\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Notify value: %s\n",
                 AcpiNotifyValueNames[NotifyValue]));
     }
     else
@@ -280,8 +280,8 @@ AcpiEvQueueNotifyRequest (
         /* There is no per-device notify handler for this device */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "No notify handler for [%4.4s] node %p\n",
-            AcpiUtGetNodeName (Node), Node));
+            "No notify handler for Notify(%4.4s, %X) node %p\n",
+            AcpiUtGetNodeName (Node), NotifyValue, Node));
     }
 
     return (Status);
