@@ -526,8 +526,8 @@ EvAddrHandlerHelper (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_OBJECT_INTERNAL   *HandlerObj;
-    ACPI_OBJECT_INTERNAL   *TmpObj;
+    ACPI_OBJECT_INTERNAL    *HandlerObj;
+    ACPI_OBJECT_INTERNAL    *TmpObj;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     NAME_TABLE_ENTRY        *ObjEntry;
 
@@ -562,7 +562,7 @@ EvAddrHandlerHelper (
 
     /* Check for an existing internal object */
 
-    ObjDesc = ObjEntry->Object;
+    ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
     if (!ObjDesc)
     {
         /*
@@ -676,7 +676,7 @@ ACPI_STATUS
 EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
 {
     ACPI_OBJECT_INTERNAL   *HandlerObj;
-    ACPI_OBJECT_INTERNAL   *TmpObj;
+    ACPI_OBJECT_INTERNAL   *ObjDesc;
     UINT32                  SpaceId; 
     NAME_TABLE_ENTRY       *Nte;        /* Namespace Object */
     ACPI_STATUS             Status;
@@ -760,8 +760,8 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
          *  Check to see if a handler exists
          */
         HandlerObj = NULL;
-        TmpObj = (ACPI_OBJECT_INTERNAL *) Nte->Object;
-        if (TmpObj) 
+        ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) Nte);
+        if (ObjDesc) 
         {
             /*
              *  can only be a handler if the object exists
@@ -770,17 +770,17 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
             {
             case ACPI_TYPE_Device:
 
-                HandlerObj = TmpObj->Device.AddrHandler;
+                HandlerObj = ObjDesc->Device.AddrHandler;
                 break;
 
             case ACPI_TYPE_Processor:
 
-                HandlerObj = TmpObj->Processor.AddrHandler;
+                HandlerObj = ObjDesc->Processor.AddrHandler;
                 break;
 
             case ACPI_TYPE_Thermal:
 
-                HandlerObj = TmpObj->ThermalZone.AddrHandler;
+                HandlerObj = ObjDesc->ThermalZone.AddrHandler;
                 break;
             }
 
@@ -794,7 +794,7 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
                 {
                     DEBUG_PRINT (TRACE_OPREGION,
                         ("Found handler (0x%X) for region 0x%X in obj 0x%X\n",
-                        HandlerObj, RegionObj, TmpObj));
+                        HandlerObj, RegionObj, ObjDesc));
                     /*
                      *  Found it! Now update the region and the handler
                      */
