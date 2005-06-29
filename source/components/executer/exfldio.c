@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -155,15 +155,6 @@ AcpiExSetupField (
 
     FUNCTION_TRACE_U32 ("ExSetupField", FieldDatumByteOffset);
 
-
-    /* Parameter validation */
-
-    RgnDesc = ObjDesc->CommonField.RegionObj;
-    if (!ObjDesc || !RgnDesc)
-    {
-        DEBUG_PRINTP (ACPI_ERROR, ("Internal error - null handle\n"));
-        return_ACPI_STATUS (AE_AML_NO_OPERAND);
-    }
 
     if (ACPI_TYPE_REGION != RgnDesc->Common.Type)
     {
