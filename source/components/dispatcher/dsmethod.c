@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.71 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -177,7 +177,7 @@ AcpiDsParseMethod (
     /* Extract the method object from the method Node */
 
     Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
-    ObjDesc = Node->Object;
+    ObjDesc = AcpiNsGetAttachedObject (Node);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NULL_OBJECT);
@@ -225,7 +225,7 @@ AcpiDsParseMethod (
                     ObjDesc->Method.AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: delete walk state */
+        AcpiDsDeleteWalkState (WalkState);
         return_ACPI_STATUS (Status);
     }
 
@@ -416,7 +416,7 @@ AcpiDsCallControlMethod (
                     NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: delete walk state */
+        AcpiDsDeleteWalkState (NextWalkState);
         goto Cleanup;
     }
 
