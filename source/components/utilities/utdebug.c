@@ -111,7 +111,7 @@
  *
  * DESCRIPTION: Get or set value of the debug flag
  *
- *              TBD: Overkill?? remove??
+ *              These are used to allow user's to get/set the debug level
  *
  ****************************************************************************/
 
