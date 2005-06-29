@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.112 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -181,7 +181,7 @@ AcpiExGetObjectReference (
 
         default:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference subtype %X\n",
+            ACPI_REPORT_ERROR (("Unknown Reference subtype in get ref %X\n",
                 ObjDesc->Reference.Opcode));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
@@ -199,8 +199,8 @@ AcpiExGetObjectReference (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid descriptor type %X in %p\n",
-            ACPI_GET_DESCRIPTOR_TYPE (ObjDesc), ObjDesc));
+        ACPI_REPORT_ERROR (("Invalid descriptor type in get ref: %X\n",
+                ACPI_GET_DESCRIPTOR_TYPE (ObjDesc)));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -218,7 +218,7 @@ AcpiExGetObjectReference (
     *ReturnDesc = ReferenceObj;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Object %p Type [%s], returning Reference %p\n",
-        ObjDesc, AcpiUtGetObjectTypeName (ObjDesc), *ReturnDesc));
+            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc), *ReturnDesc));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -324,7 +324,7 @@ AcpiExDoConcatenate (
     UINT32                  i;
     ACPI_INTEGER            ThisInteger;
     ACPI_OPERAND_OBJECT     *ReturnDesc;
-    NATIVE_CHAR             *NewBuf;
+    char                    *NewBuf;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -350,14 +350,14 @@ AcpiExDoConcatenate (
             return (AE_NO_MEMORY);
         }
 
-        NewBuf = (NATIVE_CHAR *) ReturnDesc->Buffer.Pointer;
+        NewBuf = (char *) ReturnDesc->Buffer.Pointer;
 
         /* Convert the first integer */
 
         ThisInteger = ObjDesc1->Integer.Value;
         for (i = 0; i < AcpiGbl_IntegerByteWidth; i++)
         {
-            NewBuf[i] = (NATIVE_CHAR) ThisInteger;
+            NewBuf[i] = (char) ThisInteger;
             ThisInteger >>= 8;
         }
 
@@ -366,7 +366,7 @@ AcpiExDoConcatenate (
         ThisInteger = ObjDesc2->Integer.Value;
         for (; i < (ACPI_MUL_2 (AcpiGbl_IntegerByteWidth)); i++)
         {
-            NewBuf[i] = (NATIVE_CHAR) ThisInteger;
+            NewBuf[i] = (char) ThisInteger;
             ThisInteger >>= 8;
         }
 
@@ -385,8 +385,8 @@ AcpiExDoConcatenate (
 
         /* Operand0 is string  */
 
-        NewBuf = ACPI_MEM_ALLOCATE ((ACPI_SIZE) ObjDesc1->String.Length +
-                                    (ACPI_SIZE) ObjDesc2->String.Length + 1);
+        NewBuf = ACPI_MEM_CALLOCATE ((ACPI_SIZE) ObjDesc1->String.Length +
+                                     (ACPI_SIZE) ObjDesc2->String.Length + 1);
         if (!NewBuf)
         {
             ACPI_REPORT_ERROR
@@ -421,7 +421,7 @@ AcpiExDoConcatenate (
             return (AE_NO_MEMORY);
         }
 
-        NewBuf = (NATIVE_CHAR *) ReturnDesc->Buffer.Pointer;
+        NewBuf = (char *) ReturnDesc->Buffer.Pointer;
 
         /* Concatenate the buffers */
 
@@ -437,6 +437,8 @@ AcpiExDoConcatenate (
 
         /* Invalid object type, should not happen here */
 
+        ACPI_REPORT_ERROR (("Concat - invalid obj type: %X\n",
+                ACPI_GET_OBJECT_TYPE (ObjDesc1)));
         Status = AE_AML_INTERNAL;
         ReturnDesc = NULL;
     }
