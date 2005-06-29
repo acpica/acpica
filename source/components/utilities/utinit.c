@@ -121,7 +121,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInit (
+AcpiInitialize (
     char                    *Filename)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -233,7 +233,7 @@ InitOpenFile (
             /* unable to open ACPI table input file    */
 
             REPORT_ERROR ("Unable to open input file");
-            return AE_FILE_NOT_EXIST;
+            return AE_NOT_EXIST;
         }
     }
 
@@ -306,7 +306,7 @@ InitAcpiGetRsdt (
                         "\n \"%s\"", ACPI_LIB_VER, ACPILIB_DATA_FILE_VERSION));
             DEBUG_PRINT (ACPI_INFO,
                         ("%s's version string is \"%s\"\n", InputFile, Buffer));
-            Status = AE_FILE_NOT_EXIST;
+            Status = AE_VERSION_MISMATCH;
         }
         
         else
@@ -385,7 +385,7 @@ InitAcpiGetRsdt (
                             RSDP->RsdtPhysicalAddress, RSDP->RsdtPhysicalAddress,
                             RSDT->header.Signature));
 
-                Status |= AE_ERROR;
+                Status = AE_BAD_SIGNATURE;
             }
         
             else
@@ -478,7 +478,7 @@ InitAcpiGetAllTables (
                     else
                     {
                         REPORT_ERROR ("Unable to open DSDT file");
-                        Status = AE_FILE_NOT_EXIST;
+                        Status = AE_NOT_EXIST;
                     }
                 }
             
@@ -855,7 +855,6 @@ InitAcpiRegisters (void)
         {
             DEBUG_PRINT (ACPI_ERROR,
                         ("Internal ACPILIB error. Capabilities not initialized correctly by AcpiInit()\n"));
-            Status |= AE_ERROR;
         }
 
         RestoreAcpiChipset = FALSE;
