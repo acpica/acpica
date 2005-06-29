@@ -167,7 +167,7 @@ DumpBuffer (
     /*
      * Nasty little dump buffer routine!
      */
-    while (i <= Count)
+    while (i < Count)
     {
         /* Print current offset */
 
