@@ -8,7 +8,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001 Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -115,19 +115,13 @@
 
 
 /*
- * These interfaces are required in order to link to the ACPI subsystem
- * parser.  They are called during the execution of the parser, and all
- * map directly to Clibrary calls.
+ * These interfaces are required in order to compile the ASL compiler under
+ * Linux. 
  */
-
-
-#pragma warning(disable:4115)   /* warning C4115: named type definition in parentheses (caused by rpcasync.h> */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-/*#include <process.h>
-#include <conio.h>*/
 
 #undef LOWORD
 #undef HIWORD
@@ -139,8 +133,8 @@
 #include "acparser.h"
 #include "acdebug.h"
 
-#define _COMPONENT          PARSER
-        MODULE_NAME         ("adosd")
+#define _COMPONENT          OS_DEPENDENT
+        MODULE_NAME         ("osunixxf")
 
 
 extern FILE                    *DebugFile;
