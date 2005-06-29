@@ -37,11 +37,11 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem"
+# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem\NoDebug"
+# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem\NoDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Gz /MT /Za /W4 /GX /O1 /I "..\..\source\Include" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FD /c
+# ADD CPP /nologo /Gz /MT /Za /W4 /GX /O1 /I "..\..\source\Include" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -68,8 +68,8 @@ PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\librarie
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem"
+# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem\Debug"
+# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem\Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /Gz /MT /Za /W4 /GX /Z7 /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "ENABLE_DEBUGGER" /FR /FD /c
@@ -80,13 +80,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"bin\acpica.lib"
+# ADD LIB32 /nologo /out:"bin\acpica_dbg.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
 PostBuild_Desc=Copy library to acpi/libraries
-PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\libraries\acpica.lib
+PostBuild_Cmds=copy bin\acpica_dbg.lib ..\..\libraries\acpica_dbg.lib	dir ..\..\libraries\acpica_dbg.lib
 # End Special Build Tool
 
 !ENDIF 
