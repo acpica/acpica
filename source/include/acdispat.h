@@ -440,6 +440,10 @@ ACPI_STATUS
 DsResultStackClear (
     ACPI_WALK_STATE         *WalkState);
 
+ACPI_WALK_STATE *
+DsGetCurrentWalkState (
+    ACPI_WALK_LIST          *WalkList);
+
 
 
 
