@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  ******************************************************************************/
 
@@ -154,15 +154,13 @@ AcpiEvSciXruptHandler (
      */
 
     /*
-     * Fixed AcpiEvents:
-     * Check for and dispatch any Fixed AcpiEvents that have occurred
+     * Fixed Events:
+     * Check for and dispatch any Fixed Events that have occurred
      */
     InterruptHandled |= AcpiEvFixedEventDetect ();
 
-/* TBD: What if there are no GPEs defined? */
-
     /*
-     * GPEs:
+     * General Purpose Events:
      * Check for and dispatch any GPEs that have occurred
      */
     InterruptHandled |= AcpiEvGpeDetect (GpeXruptList);

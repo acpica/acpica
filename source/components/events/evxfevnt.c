@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.65 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -291,9 +291,10 @@ AcpiEnableEvent (
  *
  * FUNCTION:    AcpiEnableGpe
  *
- * PARAMETERS:  GpeNumber       - GPE level within the GPE block
- *              GpeBlock        - Owning Gpe Block
+ * PARAMETERS:  GpeDevice       - Parent GPE Device
+ *              GpeNumber       - GPE level within the GPE block
  *              Flags           - Just enable, or also wake enable?
+ *                                Called from ISR or not
  *
  * RETURN:      Status
  *
@@ -303,8 +304,8 @@ AcpiEnableEvent (
 
 ACPI_STATUS
 AcpiEnableGpe (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
     UINT32                  Flags)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -314,15 +315,20 @@ AcpiEnableGpe (
     ACPI_FUNCTION_TRACE ("AcpiEnableGpe");
 
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
+    /* Use semaphore lock if not executing at interrupt level */
+
+    if (Flags & ACPI_NOT_ISR)
     {
-        return_ACPI_STATUS (Status);
+        Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* Ensure that we have a valid GPE number */
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
     if (!GpeEventInfo)
     {
         Status = AE_BAD_PARAMETER;
@@ -343,7 +349,10 @@ AcpiEnableGpe (
     }
 
 UnlockAndExit:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    if (Flags & ACPI_NOT_ISR)
+    {
+        (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    }
     return_ACPI_STATUS (Status);
 }
 
@@ -413,9 +422,10 @@ AcpiDisableEvent (
  *
  * FUNCTION:    AcpiDisableGpe
  *
- * PARAMETERS:  GpeNumber       - GPE level within the GPE block
- *              GpeBlock        - Owning Gpe Block
+ * PARAMETERS:  GpeDevice       - Parent GPE Device
+ *              GpeNumber       - GPE level within the GPE block
  *              Flags           - Just enable, or also wake enable?
+ *                                Called from ISR or not
  *
  * RETURN:      Status
  *
@@ -425,8 +435,8 @@ AcpiDisableEvent (
 
 ACPI_STATUS
 AcpiDisableGpe (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
     UINT32                  Flags)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -436,15 +446,20 @@ AcpiDisableGpe (
     ACPI_FUNCTION_TRACE ("AcpiDisableGpe");
 
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
+    /* Use semaphore lock if not executing at interrupt level */
+
+    if (Flags & ACPI_NOT_ISR)
     {
-        return_ACPI_STATUS (Status);
+        Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* Ensure that we have a valid GPE number */
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
     if (!GpeEventInfo)
     {
         Status = AE_BAD_PARAMETER;
@@ -465,7 +480,10 @@ AcpiDisableGpe (
     }
 
 UnlockAndExit:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    if (Flags & ACPI_NOT_ISR)
+    {
+        (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    }
     return_ACPI_STATUS (Status);
 }
 
@@ -514,8 +532,9 @@ AcpiClearEvent (
  *
  * FUNCTION:    AcpiClearGpe
  *
- * PARAMETERS:  GpeNumber       - GPE level within the GPE block
- *              GpeBlock        - Owning Gpe Block
+ * PARAMETERS:  GpeDevice       - Parent GPE Device
+ *              GpeNumber       - GPE level within the GPE block
+ *              Flags           - Called from an ISR or not
  *
  * RETURN:      Status
  *
@@ -525,8 +544,9 @@ AcpiClearEvent (
 
 ACPI_STATUS
 AcpiClearGpe (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock)
+    UINT32                  Flags)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
@@ -535,15 +555,20 @@ AcpiClearGpe (
     ACPI_FUNCTION_TRACE ("AcpiClearGpe");
 
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
+    /* Use semaphore lock if not executing at interrupt level */
+
+    if (Flags & ACPI_NOT_ISR)
     {
-        return_ACPI_STATUS (Status);
+        Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* Ensure that we have a valid GPE number */
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
     if (!GpeEventInfo)
     {
         Status = AE_BAD_PARAMETER;
@@ -553,7 +578,10 @@ AcpiClearGpe (
     Status = AcpiHwClearGpe (GpeEventInfo);
 
 UnlockAndExit:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    if (Flags & ACPI_NOT_ISR)
+    {
+        (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    }
     return_ACPI_STATUS (Status);
 }
 
@@ -608,8 +636,9 @@ AcpiGetEventStatus (
  *
  * FUNCTION:    AcpiGetGpeStatus
  *
- * PARAMETERS:  GpeNumber       - GPE level within the GPE block
- *              GpeBlock        - Owning Gpe Block
+ * PARAMETERS:  GpeDevice       - Parent GPE Device
+ *              GpeNumber       - GPE level within the GPE block
+ *              Flags           - Called from an ISR or not
  *              Event Status    - Where the current status of the event will
  *                                be returned
  *
@@ -621,8 +650,9 @@ AcpiGetEventStatus (
 
 ACPI_STATUS
 AcpiGetGpeStatus (
+    ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
-    ACPI_GPE_BLOCK_INFO     *GpeBlock,
+    UINT32                  Flags,
     ACPI_EVENT_STATUS       *EventStatus)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -632,15 +662,20 @@ AcpiGetGpeStatus (
     ACPI_FUNCTION_TRACE ("AcpiGetGpeStatus");
 
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
+    /* Use semaphore lock if not executing at interrupt level */
+
+    if (Flags & ACPI_NOT_ISR)
     {
-        return_ACPI_STATUS (Status);
+        Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* Ensure that we have a valid GPE number */
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
+    GpeEventInfo = AcpiEvGetGpeEventInfo (GpeDevice, GpeNumber);
     if (!GpeEventInfo)
     {
         Status = AE_BAD_PARAMETER;
@@ -649,10 +684,13 @@ AcpiGetGpeStatus (
 
     /* Obtain status on the requested GPE number */
 
-    Status = AcpiHwGetGpeStatus (GpeNumber, GpeBlock, EventStatus);
+    Status = AcpiHwGetGpeStatus (GpeEventInfo, EventStatus);
 
 UnlockAndExit:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    if (Flags & ACPI_NOT_ISR)
+    {
+        (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    }
     return_ACPI_STATUS (Status);
 }
 
