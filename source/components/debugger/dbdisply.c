@@ -811,8 +811,7 @@ DbDisplayResultObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
 
-    /* TBD:
-     * We don't always want to display the result.
+    /* TBD: [Future] We don't always want to display the result.
      * For now, only display if single stepping
      * however, this output is very useful in other contexts also
      */

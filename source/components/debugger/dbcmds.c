@@ -864,7 +864,7 @@ DbSetScope (
 
     DbPrepNamestring (Name);
 
-    /* TBD: Validate scope here */
+    /* TBD: [Future] Validate scope here */
 
     if (Name[0] == '\\')
     {
