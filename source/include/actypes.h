@@ -204,6 +204,7 @@ typedef UINT32                          ACPI_IO_ADDRESS;
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000004
 #define _HW_ALIGNMENT_SUPPORT
 
+
 #endif
 
 
@@ -225,6 +226,16 @@ typedef NATIVE_UINT                     ACPI_SIZE;
 #define ACPI_UCHAR_MAX                  (UCHAR)  0xFF
 #define ACPI_INT32_MAX                  (INT32)  0x7FFFFFFF
 #define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
+
+
+#ifndef s8
+typedef INT8                            s8;
+typedef INT16                           s16;
+typedef INT32                           s32;
+typedef UINT8                           u8;
+typedef UINT16                          u16;
+typedef UINT32                          u32;
+#endif
 
 /*! [End] no source code translation !*/
 
