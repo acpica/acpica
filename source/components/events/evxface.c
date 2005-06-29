@@ -744,7 +744,7 @@ AcpiInstallAddressSpaceHandler (
 
     if (Handler == ACPI_DEFAULT_HANDLER)
     {
-        Flags = AH_DEFAULT_HANDLER;
+        Flags = ADDR_HANDLER_DEFAULT_INSTALLED;
 
         switch (SpaceId)
         {
