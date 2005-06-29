@@ -14,15 +14,17 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.14 $
- | $Date: 2005/06/29 17:51:00 $
+ | $Revision: 1.15 $
+ | $Date: 2005/06/29 17:51:02 $
  | $Log: exstore.c,v $
- | Revision 1.14  2005/06/29 17:51:00  aystarik
- | Header cleanup;  Split debug switch into component_id and level
+ | Revision 1.15  2005/06/29 17:51:02  aystarik
+ |
  |
  | 
- | date	99.04.05.23.10.00;	author rmoore1;	state Exp;
+ | date	99.04.06.20.40.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 15    4/06/99 1:40p Rmoore1
  * 
  * 14    4/05/99 4:10p Rmoore1
  * Header cleanup;  Split debug switch into component_id and level
@@ -2421,8 +2423,10 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                     ("ExecStore:internal error: Unknown Lvalue subtype %02x\n",
                     DestDesc->Lvalue.OpCode));
         
-        _dump_buf (DestDesc, sizeof (OBJECT_DESCRIPTOR), ASCII | HEX,
-                         LstFileHandle, LOGFILE);
+        /* TBD:  use object dump routine !! */
+
+        DUMP_BUFFER (DestDesc, sizeof (OBJECT_DESCRIPTOR),0);
+
         DELETE (DestDesc);
         Excep = S_ERROR;
     
