@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.31 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -147,10 +147,13 @@ AcpiPsGetArg (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
+    FUNCTION_ENTRY ();
+
+
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+    if (ACPI_GET_OP_CLASS (OpInfo) == AML_CLASS_UNKNOWN)
     {
         /* Invalid opcode or ASCII character */
 
@@ -159,7 +162,7 @@ AcpiPsGetArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(ACPI_GET_OP_ARGS (OpInfo)))
+    if (!(ACPI_GET_OP_FLAGS (OpInfo) & AML_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -201,6 +204,9 @@ AcpiPsAppendArg (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
+    FUNCTION_ENTRY ();
+
+
     if (!Op)
     {
         return;
@@ -209,16 +215,17 @@ AcpiPsAppendArg (
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
+    if (ACPI_GET_OP_CLASS (OpInfo) == AML_CLASS_UNKNOWN)
     {
         /* Invalid opcode */
 
+        REPORT_ERROR (("PsAppendArg: Invalid AML Opcode: 0x%2.2X\n", Op->Opcode));
         return;
     }
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(ACPI_GET_OP_ARGS (OpInfo)))
+    if (!(ACPI_GET_OP_FLAGS (OpInfo) & AML_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -275,6 +282,9 @@ AcpiPsGetChild (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *Child = NULL;
+
+
+    FUNCTION_ENTRY ();
 
 
     switch (Op->Opcode)
@@ -341,6 +351,9 @@ AcpiPsGetDepthNext (
     ACPI_PARSE_OBJECT       *Next = NULL;
     ACPI_PARSE_OBJECT       *Parent;
     ACPI_PARSE_OBJECT       *Arg;
+
+
+    FUNCTION_ENTRY ();
 
 
     if (!Op)
