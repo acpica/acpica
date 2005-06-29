@@ -210,6 +210,9 @@ typedef struct ArgumentInfo
 
 
 
+void
+DbGenerateStatistics (
+    void);
 
 void
 DbAddToHistory (
