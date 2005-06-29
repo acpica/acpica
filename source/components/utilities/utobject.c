@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -313,7 +313,7 @@ AcpiUtAllocateObjectDescDbg (
     ACPI_SET_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_OPERAND);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "%p Size %X\n",
-            Object, sizeof (ACPI_OPERAND_OBJECT)));
+            Object, (UINT32) sizeof (ACPI_OPERAND_OBJECT)));
 
     return_PTR (Object);
 }
