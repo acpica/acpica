@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -309,6 +309,14 @@ CmDoCompile (void)
     UtBeginEvent (i, "Parse source code and build parse tree");
     AslCompilerparse();
     UtEndEvent (i++);
+
+    /* Did the parse tree get successfully constructed? */
+
+    if (!RootNode)
+    {
+        CmCleanupAndExit ();
+        return -1;
+    }
 
     OpcGetIntegerWidth (RootNode);
 
