@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.120 $
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -138,19 +138,18 @@
  *
  *      AcpiExOpcode_xA_yT_zR
  *
- * Where:  
+ * Where:
  *
- * xA - ARGUMENTS:    The number of arguments (input operands) that are 
+ * xA - ARGUMENTS:    The number of arguments (input operands) that are
  *                    required for this opcode type (1 through 6 args).
- * yT - TARGETS:      The number of targets (output operands) that are required 
+ * yT - TARGETS:      The number of targets (output operands) that are required
  *                    for this opcode type (0, 1, or 2 targets).
- * zR - RETURN VALUE: Indicates whether this opcode type returns a value 
+ * zR - RETURN VALUE: Indicates whether this opcode type returns a value
  *                    as the function return (0 or 1).
  *
- * The AcpiExOpcode* functions are called via the Dispatcher component with 
+ * The AcpiExOpcode* functions are called via the Dispatcher component with
  * fully resolved operands.
 !*/
-
 
 
 /*******************************************************************************
@@ -179,7 +178,7 @@ AcpiExOpcode_1A_0T_0R (
 
     /* Examine the opcode */
 
-    switch (WalkState->Opcode)  
+    switch (WalkState->Opcode)
     {
     case AML_RELEASE_OP:    /*  Release (MutexObject) */
 
@@ -567,7 +566,7 @@ AcpiExOpcode_1A_1T_1R (
 
 
     /*
-     * Store the return value computed above into the target object 
+     * Store the return value computed above into the target object
      */
     Status = AcpiExStore (ReturnDesc, Operand[1], WalkState);
 
@@ -612,7 +611,6 @@ AcpiExOpcode_1A_0T_1R (
 
 
     FUNCTION_TRACE_STR ("ExOpcode_1A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
-
 
 
     /* Get the operand and decode the opcode */
@@ -661,9 +659,9 @@ AcpiExOpcode_1A_0T_1R (
             goto Cleanup;
         }
 
-        /* 
+        /*
          * ReturnDesc is now guaranteed to be an Integer object
-         * Do the actual increment or decrement 
+         * Do the actual increment or decrement
          */
         if (AML_INCREMENT_OP == WalkState->Opcode)
         {

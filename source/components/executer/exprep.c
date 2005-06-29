@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.96 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -292,7 +292,6 @@ AcpiExPrepCommonFieldObject (
         Alignment = 8;
     }
 
-
     /*
      * BaseByteOffset is the address of the start of the field within the region.  It is
      * the byte address of the first *datum* (field-width data unit) of the field.
@@ -304,11 +303,17 @@ AcpiExPrepCommonFieldObject (
 
     /*
      * StartFieldBitOffset is the offset of the first bit of the field within a field datum.
-     * This is calculated as the number of bits from the BaseByteOffset.  In other words,
-     * the start of the field is relative to a byte address, regardless of the access type
-     * of the field.
      */
-    ObjDesc->CommonField.StartFieldBitOffset  = (UINT8) (MOD_8 (FieldBitPosition));
+    ObjDesc->CommonField.StartFieldBitOffset  = (UINT8) (FieldBitPosition % AccessBitWidth);
+
+    /*
+     * Valid bits -- the number of bits that compose a partial datum,
+     * 1) At the end of the field within the region (arbitrary starting bit offset)
+     * 2) At the end of a buffer used to contain the field (starting offset always zero)
+     */
+    ObjDesc->CommonField.EndFieldValidBits    = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) %
+                                                            AccessBitWidth);
+    ObjDesc->CommonField.EndBufferValidBits   = (UINT8) (FieldBitLength % AccessBitWidth); /* StartBufferBitOffset always = 0 */
 
     /*
      * DatumValidBits is the number of valid field bits in the first field datum.
@@ -317,25 +322,14 @@ AcpiExPrepCommonFieldObject (
                                                          ObjDesc->CommonField.StartFieldBitOffset);
 
     /*
-     * Valid bits -- the number of bits that compose a partial datum,
-     * 1) At the end of the field within the region (arbitrary starting bit offset)
-     * 2) At the end of a buffer used to contain the field (starting offset always zero)
+     * Does the entire field fit within a single field access element? (datum)
+     * (i.e., without crossing a datum boundary)
      */
-    ObjDesc->CommonField.EndFieldValidBits    = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset +
-                                                            FieldBitLength) % AccessBitWidth);
-    ObjDesc->CommonField.EndBufferValidBits   = (UINT8) (FieldBitLength % AccessBitWidth); /* StartBufferBitOffset always = 0 */
-
-
-    /*
-     * Does the entire field fit within a single field access element
-     * (datum)?  (without crossing a datum boundary)
-     */
-    if ((ObjDesc->CommonField.StartFieldBitOffset + ObjDesc->CommonField.BitLength) <=
-        (UINT16) ObjDesc->CommonField.AccessBitWidth)
+    if ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) <=
+        (UINT16) AccessBitWidth)
     {
         ObjDesc->CommonField.AccessFlags |= AFIELD_SINGLE_DATUM;
     }
-
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -343,7 +337,7 @@ AcpiExPrepCommonFieldObject (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExPrepRegionFieldValue
+ * FUNCTION:    AcpiExPrepFieldValue
  *
  * PARAMETERS:  Node                - Owning Node
  *              RegionNode          - Region in which field is being defined
@@ -353,297 +347,136 @@ AcpiExPrepCommonFieldObject (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT  of type DefField and
+ * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT of type DefField and
  *              connect it to the parent Node.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExPrepRegionFieldValue (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_HANDLE             RegionNode,
-    UINT8                   FieldFlags,
-    UINT32                  FieldBitPosition,
-    UINT32                  FieldBitLength)
+AcpiExPrepFieldValue (
+    ACPI_CREATE_FIELD_INFO  *Info)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     UINT32                  Type;
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("ExPrepRegionFieldValue");
+    FUNCTION_TRACE ("ExPrepFieldValue");
 
 
     /* Parameter validation */
 
-    if (!RegionNode)
+    if (Info->FieldType != INTERNAL_TYPE_INDEX_FIELD)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null RegionNode\n"));
-        return_ACPI_STATUS (AE_AML_NO_OPERAND);
+        if (!Info->RegionNode)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null RegionNode\n"));
+            return_ACPI_STATUS (AE_AML_NO_OPERAND);
+        }
+
+        Type = AcpiNsGetType (Info->RegionNode);
+        if (Type != ACPI_TYPE_REGION)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Needed Region, found type %X %s\n",
+                Type, AcpiUtGetTypeName (Type)));
+
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+        }
     }
 
-    Type = AcpiNsGetType (RegionNode);
-    if (Type != ACPI_TYPE_REGION)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Needed Region, found type %X %s\n",
-            Type, AcpiUtGetTypeName (Type)));
-        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-    }
+    /* Allocate a new field object */
 
-    /* Allocate a new object */
-
-    ObjDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REGION_FIELD);
+    ObjDesc = AcpiUtCreateInternalObject (Info->FieldType);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-
-    /* ObjDesc and Region valid */
-
-    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Node, IMODE_EXECUTE,
-                    "ExPrepRegionFieldValue", 1, "case RegionField");
-    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &RegionNode, IMODE_EXECUTE,
-                    "ExPrepRegionFieldValue", 1, "case RegionField");
-
     /* Initialize areas of the object that are common to all fields */
 
-    Status = AcpiExPrepCommonFieldObject (ObjDesc, FieldFlags,
-                                            FieldBitPosition, FieldBitLength);
+    ObjDesc->CommonField.Node = Info->FieldNode;
+    Status = AcpiExPrepCommonFieldObject (ObjDesc, Info->FieldFlags,
+                        Info->FieldBitPosition, Info->FieldBitLength);
     if (ACPI_FAILURE (Status))
     {
+        AcpiUtDeleteObjectDesc (ObjDesc);
         return_ACPI_STATUS (Status);
     }
 
-    /* Initialize areas of the object that are specific to this field type */
+    /* Initialize areas of the object that are specific to the field type */
 
-    ObjDesc->Field.RegionObj = AcpiNsGetAttachedObject (RegionNode);
+    switch (Info->FieldType)
+    {
+    case INTERNAL_TYPE_REGION_FIELD:
 
-    /* An additional reference for the container */
+        ObjDesc->Field.RegionObj    = AcpiNsGetAttachedObject (Info->RegionNode);
 
-    AcpiUtAddReference (ObjDesc->Field.RegionObj);
+        /* An additional reference for the container */
+
+        AcpiUtAddReference (ObjDesc->Field.RegionObj);
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RegionField: Bitoff=%X Off=%X Gran=%X Region %p\n",
+            ObjDesc->Field.StartFieldBitOffset, ObjDesc->Field.BaseByteOffset,
+            ObjDesc->Field.AccessBitWidth, ObjDesc->Field.RegionObj));
+        break;
 
 
-    /* Debug info */
+    case INTERNAL_TYPE_BANK_FIELD:
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Bitoff=%X Off=%X Gran=%X Region %p\n",
-        ObjDesc->Field.StartFieldBitOffset, ObjDesc->Field.BaseByteOffset,
-        ObjDesc->Field.AccessBitWidth, ObjDesc->Field.RegionObj));
+        ObjDesc->BankField.Value        = Info->BankValue;
+        ObjDesc->BankField.RegionObj    = AcpiNsGetAttachedObject (Info->RegionNode);
+        ObjDesc->BankField.BankObj      = AcpiNsGetAttachedObject (Info->RegisterNode);
+
+        /* An additional reference for the attached objects */
+
+        AcpiUtAddReference (ObjDesc->BankField.RegionObj);
+        AcpiUtAddReference (ObjDesc->BankField.BankObj);
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Bank Field: BitOff=%X Off=%X Gran=%X Region %p BankReg %p\n",
+            ObjDesc->BankField.StartFieldBitOffset, ObjDesc->BankField.BaseByteOffset,
+            ObjDesc->Field.AccessBitWidth, ObjDesc->BankField.RegionObj,
+            ObjDesc->BankField.BankObj));
+        break;
+
+
+    case INTERNAL_TYPE_INDEX_FIELD:
+
+        ObjDesc->IndexField.IndexObj = AcpiNsGetAttachedObject (Info->RegisterNode);
+        ObjDesc->IndexField.DataObj  = AcpiNsGetAttachedObject (Info->DataRegisterNode);
+        ObjDesc->IndexField.Value    = (UINT32) (Info->FieldBitPosition /
+                                                ObjDesc->Field.AccessBitWidth);
+
+        if (!ObjDesc->IndexField.DataObj || !ObjDesc->IndexField.IndexObj)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null Index Object\n"));
+            return_ACPI_STATUS (AE_AML_INTERNAL);
+        }
+
+        /* An additional reference for the attached objects */
+
+        AcpiUtAddReference (ObjDesc->IndexField.DataObj);
+        AcpiUtAddReference (ObjDesc->IndexField.IndexObj);
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "IndexField: bitoff=%X off=%X gran=%X Index %p Data %p\n",
+            ObjDesc->IndexField.StartFieldBitOffset, ObjDesc->IndexField.BaseByteOffset,
+            ObjDesc->Field.AccessBitWidth, ObjDesc->IndexField.IndexObj,
+            ObjDesc->IndexField.DataObj));
+        break;
+    }
+
+    /*
+     * Store the constructed descriptor (ObjDesc) into the parent Node,
+     * preserving the current type of that NamedObj.
+     */
+    Status = AcpiNsAttachObject (Info->FieldNode, ObjDesc,
+                    (UINT8) AcpiNsGetType (Info->FieldNode));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "set NamedObj %p (%4.4s) val = %p\n",
-        Node, &(Node->Name), ObjDesc));
+            Info->FieldNode, (char*)&(Info->FieldNode->Name), ObjDesc));
 
+    /* Remove local reference to the object */
 
-    /*
-     * Store the constructed descriptor (ObjDesc) into the parent Node,
-     * preserving the current type of that NamedObj.
-     */
-    Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) AcpiNsGetType (Node));
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExPrepBankFieldValue
- *
- * PARAMETERS:  Node                - Owning Node
- *              RegionNode          - Region in which field is being defined
- *              BankRegisterNode    - Bank selection register node
- *              BankVal             - Value to store in selection register
- *              FieldFlags          - Access, LockRule, and UpdateRule
- *              FieldBitPosition    - Field start position
- *              FieldBitLength      - Field length in number of bits
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Construct an object of type BankField and attach it to the
- *              parent Node.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExPrepBankFieldValue (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_NAMESPACE_NODE     *RegionNode,
-    ACPI_NAMESPACE_NODE     *BankRegisterNode,
-    UINT32                  BankVal,
-    UINT8                   FieldFlags,
-    UINT32                  FieldBitPosition,
-    UINT32                  FieldBitLength)
-{
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    UINT32                  Type;
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE ("ExPrepBankFieldValue");
-
-
-    /* Parameter validation */
-
-    if (!RegionNode)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null RegionNode\n"));
-        return_ACPI_STATUS (AE_AML_NO_OPERAND);
-    }
-
-    Type = AcpiNsGetType (RegionNode);
-    if (Type != ACPI_TYPE_REGION)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Needed Region, found type %X %s\n",
-            Type, AcpiUtGetTypeName (Type)));
-        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-    }
-
-    /* Allocate a new object */
-
-    ObjDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_BANK_FIELD);
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    /*  ObjDesc and Region valid    */
-
-    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &Node, IMODE_EXECUTE,
-                    "ExPrepBankFieldValue", 1, "case BankField");
-    DUMP_OPERANDS ((ACPI_OPERAND_OBJECT  **) &RegionNode, IMODE_EXECUTE,
-                    "ExPrepBankFieldValue", 1, "case BankField");
-
-    /* Initialize areas of the object that are common to all fields */
-
-    Status = AcpiExPrepCommonFieldObject (ObjDesc, FieldFlags,
-                                            FieldBitPosition, FieldBitLength);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Initialize areas of the object that are specific to this field type */
-
-    ObjDesc->BankField.Value           = BankVal;
-    ObjDesc->BankField.RegionObj       = AcpiNsGetAttachedObject (RegionNode);
-    ObjDesc->BankField.BankRegisterObj = AcpiNsGetAttachedObject (BankRegisterNode);
-
-    /* An additional reference for the attached objects */
-
-    AcpiUtAddReference (ObjDesc->BankField.RegionObj);
-    AcpiUtAddReference (ObjDesc->BankField.BankRegisterObj);
-
-    /* Debug info */
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "BitOff=%X Off=%X Gran=%X Region %p BankReg %p\n",
-        ObjDesc->BankField.StartFieldBitOffset, ObjDesc->BankField.BaseByteOffset,
-        ObjDesc->Field.AccessBitWidth, ObjDesc->BankField.RegionObj,
-        ObjDesc->BankField.BankRegisterObj));
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Set NamedObj %p (%4.4s) val=%p\n",
-        Node, &(Node->Name), ObjDesc));
-
-
-    /*
-     * Store the constructed descriptor (ObjDesc) into the parent Node,
-     * preserving the current type of that NamedObj.
-     */
-    Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) AcpiNsGetType (Node));
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExPrepIndexFieldValue
- *
- * PARAMETERS:  Node                - Owning Node
- *              IndexReg            - Index register
- *              DataReg             - Data register
- *              FieldFlags          - Access, LockRule, and UpdateRule
- *              FieldBitPosition    - Field start position
- *              FieldBitLength      - Field length in number of bits
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT  of type IndexField and
- *              connect it to the parent Node.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExPrepIndexFieldValue (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_NAMESPACE_NODE     *IndexReg,
-    ACPI_NAMESPACE_NODE     *DataReg,
-    UINT8                   FieldFlags,
-    UINT32                  FieldBitPosition,
-    UINT32                  FieldBitLength)
-{
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE ("ExPrepIndexFieldValue");
-
-
-    /* Parameter validation */
-
-    if (!IndexReg || !DataReg)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null handle\n"));
-        return_ACPI_STATUS (AE_AML_NO_OPERAND);
-    }
-
-    /* Allocate a new object descriptor */
-
-    ObjDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_INDEX_FIELD);
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    /* Initialize areas of the object that are common to all fields */
-
-    Status = AcpiExPrepCommonFieldObject (ObjDesc, FieldFlags,
-                                            FieldBitPosition, FieldBitLength);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Initialize areas of the object that are specific to this field type */
-
-    ObjDesc->IndexField.DataObj  = AcpiNsGetAttachedObject (DataReg);
-    ObjDesc->IndexField.IndexObj = AcpiNsGetAttachedObject (IndexReg);
-    ObjDesc->IndexField.Value    = (UINT32) (FieldBitPosition /
-                                            ObjDesc->Field.AccessBitWidth);
-
-    if (!ObjDesc->IndexField.DataObj || !ObjDesc->IndexField.IndexObj)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null Index Object\n"));
-        return_ACPI_STATUS (AE_AML_INTERNAL);
-    }
-
-    /* An additional reference for the attached objects */
-
-    AcpiUtAddReference (ObjDesc->IndexField.DataObj);
-    AcpiUtAddReference (ObjDesc->IndexField.IndexObj);
-
-    /* Debug info */
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "bitoff=%X off=%X gran=%X Index %p Data %p\n",
-        ObjDesc->IndexField.StartFieldBitOffset, ObjDesc->IndexField.BaseByteOffset,
-        ObjDesc->Field.AccessBitWidth, ObjDesc->IndexField.IndexObj,
-        ObjDesc->IndexField.DataObj));
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "set NamedObj %p (%4.4s) val = %p\n",
-        Node, &(Node->Name), ObjDesc));
-
-
-    /*
-     * Store the constructed descriptor (ObjDesc) into the parent Node,
-     * preserving the current type of that NamedObj.
-     */
-    Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) AcpiNsGetType (Node));
+    AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
 

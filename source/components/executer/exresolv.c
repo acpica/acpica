@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: amresolv - AML Interpreter object resolution
- *              $Revision: 1.72 $
+ * Module Name: exresolv - AML Interpreter object resolution
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __AMRESOLV_C__
+#define __EXRESOLV_C__
 
 #include "acpi.h"
 #include "amlcode.h"
@@ -127,91 +127,78 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amresolv");
+#define _COMPONENT          ACPI_EXECUTER
+        MODULE_NAME         ("exresolv")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlGetFieldUnitValue
+ * FUNCTION:    AcpiExGetBufferFieldValue
  *
- * PARAMETERS:  *FieldDesc          - Pointer to a FieldUnit
- *              *ResultDesc         - Pointer to an empty descriptor
- *                                    which will become a Number
- *                                    containing the field's value.
+ * PARAMETERS:  *ObjDesc            - Pointer to a BufferField
+ *              *ResultDesc         - Pointer to an empty descriptor which will
+ *                                    become an Integer with the field's value
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Retrieve the value from a FieldUnit
+ * DESCRIPTION: Retrieve the value from a BufferField
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlGetFieldUnitValue (
-    ACPI_OBJECT_INTERNAL    *FieldDesc,
-    ACPI_OBJECT_INTERNAL    *ResultDesc)
+AcpiExGetBufferFieldValue (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *ResultDesc)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
     UINT32                  Mask;
-    UINT8                   *Location = NULL;
-    BOOLEAN                 Locked = FALSE;
+    UINT8                   *Location;
 
 
-    FUNCTION_TRACE ("AmlGetFieldUnitValue");
+    FUNCTION_TRACE ("ExGetBufferFieldValue");
 
 
-    if (!FieldDesc)
+    /*
+     * Parameter validation
+     */
+    if (!ObjDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - null field pointer\n"));
-        Status = AE_AML_NO_OPERAND;
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null field pointer\n"));
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
-    else if (!FieldDesc->FieldUnit.Container)
+    if (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - null container pointer\n"));
-        Status = AE_AML_INTERNAL;
+        Status = AcpiDsGetBufferFieldArguments (ObjDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
-    else if (ACPI_TYPE_BUFFER != FieldDesc->FieldUnit.Container->Common.Type)
+    if (!ObjDesc->BufferField.BufferObj)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - container is not a Buffer\n"));
-        Status = AE_AML_OPERAND_TYPE;
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null container pointer\n"));
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    else if (FieldDesc->FieldUnit.Sequence
-                != FieldDesc->FieldUnit.Container->Buffer.Sequence)
+    if (ACPI_TYPE_BUFFER != ObjDesc->BufferField.BufferObj->Common.Type)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - stale Buffer [%lx != %lx]\n",
-            FieldDesc->FieldUnit.Sequence,
-            FieldDesc->FieldUnit.Container->Buffer.Sequence));
-        Status = AE_AML_INTERNAL;
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - container is not a Buffer\n"));
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
-    else if (!ResultDesc)
+    if (!ResultDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - null result pointer\n"));
-        Status = AE_AML_INTERNAL;
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null result pointer\n"));
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-
-        /* Get the global lock if needed */
-
-    Locked = AcpiAmlAcquireGlobalLock (FieldDesc->FieldUnit.LockRule);
 
     /* Field location is (base of buffer) + (byte offset) */
 
-    Location = FieldDesc->FieldUnit.Container->Buffer.Pointer
-                + FieldDesc->FieldUnit.Offset;
+    Location = ObjDesc->BufferField.BufferObj->Buffer.Pointer
+                + ObjDesc->BufferField.BaseByteOffset;
 
     /*
      * Construct Mask with as many 1 bits as the field width
@@ -219,91 +206,85 @@ AcpiAmlGetFieldUnitValue (
      * NOTE: Only the bottom 5 bits are valid for a shift operation, so
      *  special care must be taken for any shift greater than 31 bits.
      *
-     * TBD: [Unhandled] Fields greater than 32-bits will not work.
+     * TBD: [Unhandled] Fields greater than 32 bits will not work.
      */
-
-    if (FieldDesc->FieldUnit.Length < 32)
+    if (ObjDesc->BufferField.BitLength < 32)
     {
-        Mask = ((UINT32) 1 << FieldDesc->FieldUnit.Length) - (UINT32) 1;
+        Mask = ((UINT32) 1 << ObjDesc->BufferField.BitLength) - (UINT32) 1;
     }
     else
     {
-        Mask = 0xFFFFFFFF;
+        Mask = ACPI_UINT32_MAX;
     }
 
-    ResultDesc->Number.Type = (UINT8) ACPI_TYPE_NUMBER;
+    ResultDesc->Integer.Type = (UINT8) ACPI_TYPE_INTEGER;
 
     /* Get the 32 bit value at the location */
 
-    MOVE_UNALIGNED32_TO_32 (&ResultDesc->Number.Value, Location);
+    MOVE_UNALIGNED32_TO_32 (&ResultDesc->Integer.Value, Location);
 
     /*
      * Shift the 32-bit word containing the field, and mask off the
      * resulting value
      */
+    ResultDesc->Integer.Value =
+        (ResultDesc->Integer.Value >> ObjDesc->BufferField.StartFieldBitOffset) & Mask;
 
-    ResultDesc->Number.Value =
-        (ResultDesc->Number.Value >> FieldDesc->FieldUnit.BitOffset) & Mask;
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "** Read from buffer %p byte %d bit %d width %d addr %p mask %08X val %8.8X%8.8X\n",
+        ObjDesc->BufferField.BufferObj->Buffer.Pointer,
+        ObjDesc->BufferField.BaseByteOffset,
+        ObjDesc->BufferField.StartFieldBitOffset,
+        ObjDesc->BufferField.BitLength,
+        Location, Mask,
+        HIDWORD(ResultDesc->Integer.Value),
+        LODWORD(ResultDesc->Integer.Value)));
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
-        FieldDesc->FieldUnit.Container->Buffer.Pointer,
-        FieldDesc->FieldUnit.Offset,
-        FieldDesc->FieldUnit.BitOffset,
-        FieldDesc->FieldUnit.Length,
-        Location, Mask, ResultDesc->Number.Value));
-
-    /* Release global lock if we acquired it earlier */
-
-    AcpiAmlReleaseGlobalLock (Locked);
-
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlResolveToValue
+ * FUNCTION:    AcpiExResolveToValue
  *
  * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can
- *                                    be either an (ACPI_OBJECT_INTERNAL *)
+ *                                    be either an (ACPI_OPERAND_OBJECT *)
  *                                    or an ACPI_HANDLE.
+ *              WalkState           - Current method state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Convert Reference entries on ObjStack to Rvalues
+ * DESCRIPTION: Convert Reference objects to values
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlResolveToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr,
+AcpiExResolveToValue (
+    ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("AmlResolveToValue", StackPtr);
+    FUNCTION_TRACE_PTR ("ExResolveToValue", StackPtr);
 
 
     if (!StackPtr || !*StackPtr)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlResolveToValue: Internal error - null pointer\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null pointer\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
 
     /*
      * The entity pointed to by the StackPtr can be either
-     * 1) A valid ACPI_OBJECT_INTERNAL, or
-     * 2) A ACPI_NAMED_OBJECT (NamedObj)
+     * 1) A valid ACPI_OPERAND_OBJECT, or
+     * 2) A ACPI_NAMESPACE_NODE (NamedObj)
      */
-
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_INTERNAL))
     {
-
-        Status = AcpiAmlResolveObjectToValue (StackPtr, WalkState);
+        Status = AcpiExResolveObjectToValue (StackPtr, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -311,29 +292,32 @@ AcpiAmlResolveToValue (
     }
 
     /*
-     * Object on the stack may have changed if AcpiAmlResolveObjectToValue()
+     * Object on the stack may have changed if AcpiExResolveObjectToValue()
      * was called (i.e., we can't use an _else_ here.)
      */
-
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_NAMED))
     {
-        Status = AcpiAmlResolveNamedObjectToValue ((ACPI_NAMED_OBJECT**) StackPtr);
+        Status = AcpiExResolveNodeToValue ((ACPI_NAMESPACE_NODE **) StackPtr,
+                        WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("AmlResolveToValue: Returning resolved object %p\n", *StackPtr));
-
-    return_ACPI_STATUS (Status);
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Resolved object %p\n", *StackPtr));
+    return_ACPI_STATUS (AE_OK);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlResolveObjectToValue
+ * FUNCTION:    AcpiExResolveObjectToValue
  *
  * PARAMETERS:  StackPtr        - Pointer to a stack location that contains a
  *                                ptr to an internal object.
+ *              WalkState       - Current method state
  *
  * RETURN:      Status
  *
@@ -343,31 +327,30 @@ AcpiAmlResolveToValue (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlResolveObjectToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr,
+AcpiExResolveObjectToValue (
+    ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OBJECT_INTERNAL    *StackDesc;
     ACPI_STATUS             Status = AE_OK;
-    ACPI_HANDLE             TempHandle = NULL;
-    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    UINT32                  Index = 0;
+    ACPI_OPERAND_OBJECT     *StackDesc;
+    void                    *TempNode;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     UINT16                  Opcode;
 
 
-    FUNCTION_TRACE ("AmlResolveObjectToValue");
+    FUNCTION_TRACE ("ExResolveObjectToValue");
 
 
     StackDesc = *StackPtr;
 
-    /* This is an ACPI_OBJECT_INTERNAL */
+    /* This is an ACPI_OPERAND_OBJECT  */
 
     switch (StackDesc->Common.Type)
     {
 
     case INTERNAL_TYPE_REFERENCE:
 
-        Opcode = StackDesc->Reference.OpCode;
+        Opcode = StackDesc->Reference.Opcode;
 
         switch (Opcode)
         {
@@ -376,126 +359,92 @@ AcpiAmlResolveObjectToValue (
 
             /*
              * Convert indirect name ptr to a direct name ptr.
-             * Then, AcpiAmlResolveNamedObjectToValue can be used to get the value
+             * Then, AcpiExResolveNodeToValue can be used to get the value
              */
-
-            TempHandle = StackDesc->Reference.Object;
+            TempNode = StackDesc->Reference.Object;
 
             /* Delete the Reference Object */
 
-            AcpiCmRemoveReference (StackDesc);
+            AcpiUtRemoveReference (StackDesc);
 
             /* Put direct name pointer onto stack and exit */
 
-            (*StackPtr) = TempHandle;
-            Status = AE_OK;
+            (*StackPtr) = TempNode;
             break;
 
 
         case AML_LOCAL_OP:
-
-            Index = StackDesc->Reference.Offset;
+        case AML_ARG_OP:
 
             /*
              * Get the local from the method's state info
              * Note: this increments the local's object reference count
              */
-
-            Status = AcpiDsMethodDataGetValue (MTH_TYPE_LOCAL, Index,
-                                                WalkState, &ObjDesc);
+            Status = AcpiDsMethodDataGetValue (Opcode,
+                            StackDesc->Reference.Offset, WalkState, &ObjDesc);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
-
-            /* 
-             * Now we can delete the original Reference Object and
-             * replace it with the resolve value
-             */
-
-            AcpiCmRemoveReference (StackDesc);
-            *StackPtr = ObjDesc;
-
-            DEBUG_PRINT (ACPI_INFO,
-                ("AmlResolveObjectToValue: [Local%d] ValueObj is %p\n",
-                Index, ObjDesc));
-
-            if (ACPI_TYPE_NUMBER == ObjDesc->Common.Type)
-            {
-                /* Value is a Number */
-
-                DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveObjectToValue: [Local%d] value is [0x%X] \n",
-                    Index, ObjDesc->Number.Value));
-            }
-
-            break;
-
-
-        case AML_ARG_OP:
-
-            Index = StackDesc->Reference.Offset;
-
 
             /*
-             * Get the argument from the method's state info
-             * Note: this increments the object reference count
-             */
-
-            Status = AcpiDsMethodDataGetValue (MTH_TYPE_ARG, Index,
-                                                WalkState, &ObjDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-
-            /* 
              * Now we can delete the original Reference Object and
              * replace it with the resolve value
              */
-
-            AcpiCmRemoveReference (StackDesc);
+            AcpiUtRemoveReference (StackDesc);
             *StackPtr = ObjDesc;
 
-            DEBUG_PRINT (TRACE_EXEC,
-                ("AmlResolveObjectToValue: [Arg%d] ValueObj is %p\n",
-                Index, ObjDesc));
-
-            if (ACPI_TYPE_NUMBER == ObjDesc->Common.Type)
-            {
-                /* Value is a Number */
-
-                DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveObjectToValue: [Arg%d] value is [0x%X] \n",
-                    Index, ObjDesc->Number.Value));
-            }
-
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "[Arg/Local %d] ValueObj is %p\n",
+                StackDesc->Reference.Offset, ObjDesc));
             break;
 
 
         /*
-         * TBD: [Restructure] These next three opcodes change the type of
-         * the object, which is actually a no-no.
+         * For constants, we must change the reference/constant object
+         * to a real integer object
          */
-
         case AML_ZERO_OP:
-
-            StackDesc->Common.Type = (UINT8) ACPI_TYPE_NUMBER;
-            StackDesc->Number.Value = 0;
-            break;
-
-
         case AML_ONE_OP:
-
-            StackDesc->Common.Type = (UINT8) ACPI_TYPE_NUMBER;
-            StackDesc->Number.Value = 1;
-            break;
-
-
         case AML_ONES_OP:
+        case AML_REVISION_OP:
 
-            StackDesc->Common.Type = (UINT8) ACPI_TYPE_NUMBER;
-            StackDesc->Number.Value = 0xFFFFFFFF;
+            /* Create a new integer object */
+
+            ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+            if (!ObjDesc)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            switch (Opcode)
+            {
+            case AML_ZERO_OP:
+                ObjDesc->Integer.Value = 0;
+                break;
+
+            case AML_ONE_OP:
+                ObjDesc->Integer.Value = 1;
+                break;
+
+            case AML_ONES_OP:
+                ObjDesc->Integer.Value = ACPI_INTEGER_MAX;
+
+                /* Truncate value if we are executing from a 32-bit ACPI table */
+
+                AcpiExTruncateFor32bitTable (ObjDesc, WalkState);
+                break;
+
+            case AML_REVISION_OP:
+                ObjDesc->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
+                break;
+            }
+
+            /*
+             * Remove a reference from the original reference object
+             * and put the new object in its place
+             */
+            AcpiUtRemoveReference (StackDesc);
+            *StackPtr = ObjDesc;
             break;
 
 
@@ -518,8 +467,8 @@ AcpiAmlResolveObjectToValue (
                      * (i.e., dereference the package index)
                      * Delete the ref object, increment the returned object
                      */
-                    AcpiCmRemoveReference (StackDesc);
-                    AcpiCmAddReference (ObjDesc);
+                    AcpiUtRemoveReference (StackDesc);
+                    AcpiUtAddReference (ObjDesc);
                     *StackPtr = ObjDesc;
                 }
 
@@ -527,20 +476,20 @@ AcpiAmlResolveObjectToValue (
                 {
                     /*
                      * A NULL object descriptor means an unitialized element of
-                     * the package, can't deref it
+                     * the package, can't dereference it
                      */
-
-                    DEBUG_PRINT (ACPI_ERROR,
-                        ("AmlResolveObjectToValue: Attempt to deref an Index to NULL pkg element Idx=%p\n", StackDesc));
+                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                        "Attempt to deref an Index to NULL pkg element Idx=%p\n",
+                        StackDesc));
                     Status = AE_AML_UNINITIALIZED_ELEMENT;
                 }
                 break;
 
             default:
-                /* Invalid reference OBJ*/
+                /* Invalid reference object */
 
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlResolveObjectToValue: Unknown TargetType %d in Index/Reference obj %p\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Unknown TargetType %X in Index/Reference obj %p\n",
                     StackDesc->Reference.TargetType, StackDesc));
                 Status = AE_AML_INTERNAL;
                 break;
@@ -557,36 +506,28 @@ AcpiAmlResolveObjectToValue (
 
         default:
 
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveObjectToValue: Unknown Reference object subtype %02x in %p\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference object subtype %02X in %p\n",
                 Opcode, StackDesc));
             Status = AE_AML_INTERNAL;
+            break;
 
         }   /* switch (Opcode) */
-
-
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
 
         break; /* case INTERNAL_TYPE_REFERENCE */
 
 
-    case ACPI_TYPE_FIELD_UNIT:
+    case ACPI_TYPE_BUFFER_FIELD:
 
-        ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_ANY);
+        ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_ANY);
         if (!ObjDesc)
         {
-            /* Descriptor allocation failure  */
-
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        Status = AcpiAmlGetFieldUnitValue (StackDesc, ObjDesc);
+        Status = AcpiExGetBufferFieldValue (StackDesc, ObjDesc);
         if (ACPI_FAILURE (Status))
         {
-            AcpiCmRemoveReference (ObjDesc);
+            AcpiUtRemoveReference (ObjDesc);
             ObjDesc = NULL;
         }
 
@@ -596,18 +537,18 @@ AcpiAmlResolveObjectToValue (
 
     case INTERNAL_TYPE_BANK_FIELD:
 
-        ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_ANY);
+        ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_ANY);
         if (!ObjDesc)
         {
-            /* Descriptor allocation failure */
-
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        Status = AcpiAmlGetFieldUnitValue (StackDesc, ObjDesc);
+        /* TBD: WRONG! */
+
+        Status = AcpiExGetBufferFieldValue (StackDesc, ObjDesc);
         if (ACPI_FAILURE (Status))
         {
-            AcpiCmRemoveReference (ObjDesc);
+            AcpiUtRemoveReference (ObjDesc);
             ObjDesc = NULL;
         }
 
