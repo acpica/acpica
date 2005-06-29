@@ -392,13 +392,6 @@ _LocalCallocate (
  */
 #define OUTPUT_ERRORS       0x80
 
-
-#ifdef _SCREEN_IO
-#define LINE_SET(a,b)                   LineSet(a,b)
-#else
-#define LINE_SET(a,b)
-#endif
-
 /* flags for print_message, inc_warning, inc_error, and inc_info. */
 
 #define NO_PRINT        0                  /* quietly increment the count */
@@ -417,68 +410,6 @@ _LocalCallocate (
 
 #define SCREEN          1
 #define LOGFILE         2
-
-
-/* 
- * The following functions deal with the indent level.  The concept is that
- *  if the library is allowed to maintain the indent level rather than doing
- *  it explicitly in the printf_bu format string, an output function can print
- *  correctly no matter where it's called from.
- */
-
-
-#define SetIndentAfterNewLine(NewValue) _SetIndentAfterNewLine ((BOOLEAN) NewValue)
-
-BOOLEAN
-_SetIndentAfterNewLine (BOOLEAN NewValue);
-
-BOOLEAN
-GetIndentAfterNewLine (void);
-
-INT32
-IncIndent (void);
-
-INT32
-DecIndent (void);
-
-INT32
-SetIndent (INT32 i);
-
-INT32
-GetIndent (void);
-
-char *
-pIndent (void);
-
-/* 
- * fflush_bu and fflushall_bu have been changed to be identical and are implemented
- *  as macros.  They both always return E_OK and flush all open logfiles 
- */
-
-/* OLD:  these called file primitives 
- *
- * #define flushall_bu() (CloseOFT(),RestoreOFT(),OsdFlushall())
- * #define fflush_bu(x) flushall_bu()
- *
- * NEW: do nothing
- */
-
-#define flushall_bu()
-#define fflush_bu(x)
-
-/* Log file open mode... */
-
-#define OVERWRITE       0
-#define APPEND          1
-#define FORCE_WRITES    2
-
-LogHandle
-open_log (
-    char        *filename,                      /* name of logfile to open. */
-    INT32       mode);                          /* OVERWRITE, APPEND, FORCE_WRITES */
-
-INT32
-close_log (LogHandle handle);                             /* LogHandle to close */
 
 
 
