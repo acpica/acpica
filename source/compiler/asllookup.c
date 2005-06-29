@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.27 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -416,7 +416,7 @@ LkNamespaceLocateBegin (
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
     ACPI_STATUS             Status;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
     NATIVE_CHAR             *Path;
     UINT8                   PassedArgs;
     ASL_PARSE_NODE          *Next;
@@ -474,7 +474,7 @@ LkNamespaceLocateBegin (
         {
             /*
              * We didn't find the name reference by path -- we can qualify this
-             * a little better before we print an error message 
+             * a little better before we print an error message
              */
 
             if (strlen (Path) == ACPI_NAME_SIZE)
@@ -649,7 +649,7 @@ LkNamespaceLocateEnd (
     void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
 
 
     /* We are only interested in opcodes that have an associated name */

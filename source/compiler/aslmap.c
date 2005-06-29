@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.30 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,6 @@
 
 #define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslmap")
-
 
 
 /*******************************************************************************
@@ -542,7 +541,6 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 };
 
 
-
 #include "amlcode.h"
 #include "acdispat.h"
 #include "acparser.h"
@@ -594,12 +592,12 @@ AcpiAmlValidateObjectType (
  *
  ******************************************************************************/
 
-OBJECT_TYPE_INTERNAL
+ACPI_OBJECT_TYPE8
 AcpiDsMapOpcodeToDataType (
     UINT16                  Opcode,
     UINT32                  *OutFlags)
 {
-    OBJECT_TYPE_INTERNAL    DataType = INTERNAL_TYPE_INVALID;
+    ACPI_OBJECT_TYPE8       DataType = INTERNAL_TYPE_INVALID;
     ACPI_OPCODE_INFO        *OpInfo;
     UINT32                  Flags = 0;
 
@@ -746,11 +744,11 @@ AcpiDsMapOpcodeToDataType (
  *
  ******************************************************************************/
 
-OBJECT_TYPE_INTERNAL
+ACPI_OBJECT_TYPE8
 AcpiDsMapNamedOpcodeToDataType (
     UINT16                  Opcode)
 {
-    OBJECT_TYPE_INTERNAL    DataType;
+    ACPI_OBJECT_TYPE8       DataType;
 
 
     /* Decode Opcode */
