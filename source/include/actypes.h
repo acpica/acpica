@@ -155,7 +155,7 @@ typedef INT64                           NATIVE_INT;
 typedef NATIVE_UINT                     ACPI_TBLPTR;
 typedef UINT64                          ACPI_IO_ADDRESS;
 
-#define ALIGNED_ADDRESS_BOUNDARY        (void *) 0x00000008
+#define ALIGNED_ADDRESS_BOUNDARY        0x00000008
 
 
 #elif _IA16
@@ -176,7 +176,7 @@ typedef INT16                           NATIVE_INT;
 typedef UINT32                          ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 
-#define ALIGNED_ADDRESS_BOUNDARY        (void *) 0x00000002
+#define ALIGNED_ADDRESS_BOUNDARY        0x00000002
 
  
 #else
@@ -197,7 +197,7 @@ typedef INT32                           NATIVE_INT;
 typedef NATIVE_UINT                     ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 
-#define ALIGNED_ADDRESS_BOUNDARY        (void *) 0x00000004
+#define ALIGNED_ADDRESS_BOUNDARY        0x00000004
 
 #endif
 
