@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -188,26 +188,11 @@ AcpiExReadDataFromField (
          * This is an SMBus read.  We must create a buffer to hold the data
          * and directly access the region handler.
          */
-        BufferDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        BufferDesc = AcpiUtCreateBufferObject (ACPI_SMBUS_BUFFER_SIZE);
         if (!BufferDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
-
-        /* Create the actual read buffer */
-
-        BufferDesc->Buffer.Pointer = ACPI_MEM_CALLOCATE (ACPI_SMBUS_BUFFER_SIZE);
-        if (!BufferDesc->Buffer.Pointer)
-        {
-            AcpiUtRemoveReference (BufferDesc);
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        /* Complete the buffer object initialization */
-
-        BufferDesc->Common.Flags = AOPOBJ_DATA_VALID;
-        BufferDesc->Buffer.Length = ACPI_SMBUS_BUFFER_SIZE;
-        Buffer = BufferDesc->Buffer.Pointer;
 
         /* Lock entire transaction if requested */
 
@@ -239,25 +224,11 @@ AcpiExReadDataFromField (
     {
         /* Field is too large for an Integer, create a Buffer instead */
 
-        BufferDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        BufferDesc = AcpiUtCreateBufferObject (Length);
         if (!BufferDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
-
-        /* Create the actual read buffer */
-
-        BufferDesc->Buffer.Pointer = ACPI_MEM_CALLOCATE (Length);
-        if (!BufferDesc->Buffer.Pointer)
-        {
-            AcpiUtRemoveReference (BufferDesc);
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        /* Complete the buffer object initialization */
-
-        BufferDesc->Common.Flags = AOPOBJ_DATA_VALID;
-        BufferDesc->Buffer.Length = Length;
         Buffer = BufferDesc->Buffer.Pointer;
     }
     else
@@ -384,28 +355,13 @@ AcpiExWriteDataToField (
             return_ACPI_STATUS (AE_AML_BUFFER_LIMIT);
         }
 
-        BufferDesc = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+        BufferDesc = AcpiUtCreateBufferObject (ACPI_SMBUS_BUFFER_SIZE);
         if (!BufferDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        /* Create the actual read buffer */
-
-        BufferDesc->Buffer.Pointer = ACPI_MEM_CALLOCATE (ACPI_SMBUS_BUFFER_SIZE);
-        if (!BufferDesc->Buffer.Pointer)
-        {
-            AcpiUtRemoveReference (BufferDesc);
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        /* Complete the buffer object initialization */
-
-        BufferDesc->Common.Flags = AOPOBJ_DATA_VALID;
-        BufferDesc->Buffer.Length = ACPI_SMBUS_BUFFER_SIZE;
         Buffer = BufferDesc->Buffer.Pointer;
-
-
         ACPI_MEMCPY (Buffer, SourceDesc->Buffer.Pointer, ACPI_SMBUS_BUFFER_SIZE);
 
         /* Lock entire transaction if requested */
