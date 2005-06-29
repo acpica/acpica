@@ -186,7 +186,7 @@ AcpiInit (
     InitCloseFile (FilePtr);
     DEBUG_PRINT (ACPI_OK, ("ACPI Subsystem successfully initialized\n"));
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 
 
@@ -194,7 +194,7 @@ ErrorExit:
     InitCloseFile (FilePtr);
     DEBUG_PRINT (ACPI_ERROR, ("Failure during ACPI Subsystem initialization: %x\n", Status));
     
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 
 }
@@ -364,7 +364,7 @@ InitAcpiGetRsdt (
         Status = NsGetTable ((void *) RSDP->RsdtPhysicalAddress, FilePtr, (void *) &RSDT);
         if (Status != AE_OK)
         {
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (Status);
             return Status;
         }
 
@@ -405,7 +405,7 @@ InitAcpiGetRsdt (
 
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -579,7 +579,7 @@ InitAcpiGetAllTables (
         Capabilities = AcpiModeCapabilities ();
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
   
@@ -631,6 +631,8 @@ InitAcpiRegisters (void)
 {
     ACPI_STATUS             Status = AE_OK;
     OSD_FILE                *FilePtr = NULL;
+    INT32                   Index;
+
 
     
     FUNCTION_TRACE ("InitAcpiRegisters");
@@ -723,8 +725,6 @@ InitAcpiRegisters (void)
 
         if (Capabilities != LEGACY_MODE)
         {
-            INT32         Index;
-
             /* Target system supports ACPI mode */
 
             /* 
@@ -741,11 +741,13 @@ InitAcpiRegisters (void)
              * coded here. If this changes in the spec, this code will need to
              * be modified. The PM1bEvtBlk behaves as expected.
              */
+
             Pm1EnableRegisterSave = OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + 2));
             if (FACP->Pm1bEvtBlk)
             {
                 Pm1EnableRegisterSave |= OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + 2));
             }
+
 
             /* 
              * The GPEs behave similarly, except that the length of the register
@@ -759,7 +761,7 @@ InitAcpiRegisters (void)
                 Gpe0EnableRegisterSave = LocalAllocate ((ACPI_SIZE) (FACP->Gpe0BlkLen / 2));
                 if (!Gpe0EnableRegisterSave)
                 {
-                    FUNCTION_EXIT;
+                    FUNCTION_STATUS_EXIT (Status);
                     return AE_NO_MEMORY;
                 }
 
@@ -806,9 +808,11 @@ InitAcpiRegisters (void)
             }
         
         
-            /* verify Fixed ACPI Description Table fields per ACPI 1.0 sections
-             *  4.7.1.2 and 5.2.5 (assertions #410, 415, 435-440)
+            /* 
+             * Verify Fixed ACPI Description Table fields per ACPI 1.0 sections
+             * 4.7.1.2 and 5.2.5 (assertions #410, 415, 435-440)
              */
+
             if (FACP->Pm1EvtLen < 4)
                 ReportFacpRegisterError ("PM1_EVT_LEN", (UINT32) FACP->Pm1EvtLen,
                     ACPI_TABLE_NAMESPACE_SECTION, 410); /* #410 == #435    */
@@ -844,9 +848,6 @@ InitAcpiRegisters (void)
             if (FACP->Gpe1Blk && (FACP->Gpe1BlkLen & 1))    /* length not multiple of 2    */
                 ReportFacpRegisterError ("GPE1_BLK_LEN", (UINT32) FACP->Gpe1BlkLen,
                     ACPI_TABLE_NAMESPACE_SECTION, 440);
-       
-        
-        
         }
     }
     
@@ -865,7 +866,7 @@ InitAcpiRegisters (void)
     }
 
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
 BREAKPOINT3;
     return (Status);
 }
