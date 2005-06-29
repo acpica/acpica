@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -126,7 +125,7 @@
 #include "acinterp.h"
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dswstate");
+        MODULE_NAME         ("dswstate")
 
 
 /*******************************************************************************

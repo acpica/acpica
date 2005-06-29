@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -125,7 +124,7 @@
 
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dsfield");
+        MODULE_NAME         ("dsfield")
 
 
 /*

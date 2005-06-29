@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.40 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -125,14 +124,14 @@
 #include "acnamesp.h"
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dsobject");
+        MODULE_NAME         ("dsobject")
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsInitOneObject
  *
- * PARAMETERS:  ObjHandle       - NTE of the object
+ * PARAMETERS:  ObjHandle       - Named Object
  *              Level           - Current nesting level
  *              Context         - Points to a init info struct
  *              ReturnValue     - Not used
@@ -459,9 +458,9 @@ AcpiDsInitObjectFromOp (
 
             if (Op->Opcode == AML_NAMEPATH_OP)
             {
-                /* Nte was saved in Op */
+                /* NameDesc was saved in Op */
 
-                (*ObjDesc)->Reference.Nte = Op->AcpiNamedObject;
+                (*ObjDesc)->Reference.NameDesc = Op->AcpiNamedObject;
             }
 
             (*ObjDesc)->Reference.OpCode = Opcode;
@@ -716,7 +715,7 @@ AcpiDsBuildInternalObject (
 ACPI_STATUS
 AcpiDsCreateNamedObject (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMED_OBJECT       *Entry,
+    ACPI_NAMED_OBJECT       *NameDesc,
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_STATUS             Status;
@@ -746,12 +745,12 @@ AcpiDsCreateNamedObject (
 
     /* Re-type the object according to it's argument */
 
-    Entry->Type = ObjDesc->Common.Type;
+    NameDesc->Type = ObjDesc->Common.Type;
 
     /* Init obj */
 
-    Status = AcpiNsAttachObject ((ACPI_HANDLE) Entry, ObjDesc,
-                                    (UINT8) Entry->Type);
+    Status = AcpiNsAttachObject ((ACPI_HANDLE) NameDesc, ObjDesc,
+                                    (UINT8) NameDesc->Type);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;

@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
- *              $Revision: 1.35 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -123,7 +122,7 @@
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("dswscope");
+        MODULE_NAME         ("dswscope")
 
 
 #define STACK_POP(head) head
@@ -169,13 +168,13 @@ AcpiDsScopeStackClear (
  *              Type,                   - Type of frame being pushed
  *
  * DESCRIPTION: Push the current scope on the scope stack, and make the
- *              passed nte current.
+ *              passed Named Object current.
  *
  ***************************************************************************/
 
 ACPI_STATUS
 AcpiDsScopeStackPush (
-    ACPI_NAME_TABLE         *NewScope,
+    ACPI_NAMED_OBJECT       *NewScope,
     OBJECT_TYPE_INTERNAL    Type,
     ACPI_WALK_STATE         *WalkState)
 {

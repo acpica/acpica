@@ -1,8 +1,7 @@
-
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.41 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -126,7 +125,7 @@
 #include "acdebug.h"
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("dsutils");
+        MODULE_NAME         ("dsutils")
 
 
 
@@ -435,7 +434,7 @@ AcpiDsCreateOperand (
         {
             return_ACPI_STATUS (Status);
         }
-        DEBUG_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
+        DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
     }
 
 
@@ -481,7 +480,7 @@ AcpiDsCreateOperand (
             DEBUG_PRINT (TRACE_DISPATCH,
                 ("DsCreateOperand: Argument previously created, already stacked \n"));
 
-            DEBUG_EXEC (AcpiDbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1], WalkState));
+            DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1], WalkState));
 
             /*
              * Use value that was already previously returned
@@ -531,7 +530,7 @@ AcpiDsCreateOperand (
             return_ACPI_STATUS (Status);
         }
 
-        DEBUG_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
+        DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
     }
 
     return_ACPI_STATUS (AE_OK);

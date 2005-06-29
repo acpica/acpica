@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.38 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dswexec");
+        MODULE_NAME         ("dswexec")
 
 
 /*****************************************************************************
@@ -277,7 +277,7 @@ AcpiDsExecEndOp (
     UINT8                   Optype;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *NextOp;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
     ACPI_GENERIC_OP         *FirstArg;
     ACPI_OBJECT_INTERNAL    *ResultObj = NULL;
     ACPI_OP_INFO            *OpInfo;
@@ -310,8 +310,8 @@ AcpiDsExecEndOp (
 
     /* Call debugger for single step support (DEBUG build only) */
 
-    DEBUG_EXEC (Status = AcpiDbSingleStep (WalkState, Op, Optype));
-    DEBUG_EXEC (if (ACPI_FAILURE (Status)) {return_ACPI_STATUS (Status);});
+    DEBUGGER_EXEC (Status = AcpiDbSingleStep (WalkState, Op, Optype));
+    DEBUGGER_EXEC (if (ACPI_FAILURE (Status)) {return_ACPI_STATUS (Status);});
 
 
     /* Decode the opcode */
@@ -524,11 +524,11 @@ AcpiDsExecEndOp (
 
         /*
          * (AML_METHODCALL) Op->Value->Arg->AcpiNamedObject contains
-         * the method NTE pointer
+         * the method Named Object pointer
          */
         /* NextOp points to the op that holds the method name */
         NextOp = FirstArg;
-        Entry = NextOp->AcpiNamedObject;
+        NameDesc = NextOp->AcpiNamedObject;
 
         /* NextOp points to first argument op */
         NextOp = NextOp->Next;
@@ -559,7 +559,7 @@ AcpiDsExecEndOp (
 
         /* Open new scope on the scope stack */
 /*
-        Status = AcpiNsScopeStackPushEntry (Entry);
+        Status = AcpiNsScopeStackPushEntry (NameDesc);
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT (ACPI_ERROR,
@@ -726,7 +726,7 @@ AcpiDsExecEndOp (
 
          /* Break to debugger to display result */
 
-        DEBUG_EXEC (AcpiDbDisplayResultObject (ObjDesc, WalkState));
+        DEBUGGER_EXEC (AcpiDbDisplayResultObject (ObjDesc, WalkState));
 
         /* Delete the predicate result object (we know that
         we don't need it anymore) and cleanup the stack */
@@ -744,7 +744,7 @@ Cleanup:
     {
         /* Break to debugger to display result */
 
-        DEBUG_EXEC (AcpiDbDisplayResultObject (ResultObj, WalkState));
+        DEBUGGER_EXEC (AcpiDbDisplayResultObject (ResultObj, WalkState));
 
         /*
          * Delete the result op if and only if:

@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: amconfig - Namespace reconfiguration (Load/Unload opcodes)
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amconfig");
+        MODULE_NAME         ("amconfig")
 
 
 /*****************************************************************************
@@ -151,8 +151,8 @@ AcpiAmlExecLoadTable (
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *TableDesc = NULL;
-    INT8                    *TablePtr;
-    INT8                    *TableDataPtr;
+    UINT8                   *TablePtr;
+    UINT8                   *TableDataPtr;
     ACPI_TABLE_HEADER       TableHeader;
     ACPI_TABLE_DESC         TableInfo;
     UINT32                  i;
@@ -169,7 +169,7 @@ AcpiAmlExecLoadTable (
     for (i = 0; i < sizeof (ACPI_TABLE_HEADER); i++)
     {
         Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ,
-                        i, 8, (UINT32 *) ((INT8 *) &TableHeader + i));
+                        i, 8, (UINT32 *) ((UINT8 *) &TableHeader + i));
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -317,7 +317,7 @@ AcpiAmlExecUnloadTable (
     TableInfo = (ACPI_TABLE_DESC *) TableDesc->Reference.Object;
 
     /*
-     * Delete the entire namespace under this table NTE
+     * Delete the entire namespace under this table Named Object
      * (Offset contains the TableId)
      */
 

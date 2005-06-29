@@ -1,9 +1,8 @@
-
 /******************************************************************************
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of 
  *                         "control" opcodes
- *              $Revision: 1.12 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -128,7 +127,7 @@
 #include "actables.h"
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dsopcode");
+        MODULE_NAME         ("dsopcode")
 
 
 /*****************************************************************************
@@ -149,7 +148,7 @@ AcpiDsGetRegionArguments (
     ACPI_OBJECT_INTERNAL    *RgnDesc)
 {
     ACPI_OBJECT_INTERNAL    *MethodDesc;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
     ACPI_GENERIC_OP         *Op;
     ACPI_GENERIC_OP         *RegionOp;
     ACPI_STATUS             Status;
@@ -166,7 +165,7 @@ AcpiDsGetRegionArguments (
 
 
     MethodDesc = RgnDesc->Region.Method;
-    Entry = RgnDesc->Region.Nte;
+    NameDesc = RgnDesc->Region.NameDesc;
 
 
     /*
@@ -180,13 +179,13 @@ AcpiDsGetRegionArguments (
         return (AE_NO_MEMORY);
     }
 
-    /* Save the NTE for use in AcpiPsParseAml */
+    /* Save the Named Object for use in AcpiPsParseAml */
 
-    Op->AcpiNamedObject = AcpiNsGetParentEntry (Entry);
+    Op->AcpiNamedObject = AcpiNsGetParentObject (NameDesc);
 
     /* Get a handle to the parent ACPI table */
 
-    Status = AcpiTbHandleToObject (Entry->OwnerId, &TableDesc);
+    Status = AcpiTbHandleToObject (NameDesc->OwnerId, &TableDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -208,11 +207,11 @@ AcpiDsGetRegionArguments (
     /* Get and init the actual RegionOp created above */
 
 /*    RegionOp = Op->Value.Arg;
-    Op->AcpiNamedObject = Entry;*/
+    Op->AcpiNamedObject = NameDesc;*/
 
 
     RegionOp = Op->Value.Arg;
-    RegionOp->AcpiNamedObject = Entry;
+    RegionOp->AcpiNamedObject = NameDesc;
     AcpiPsDeleteParseTree (Op);
 
     /* AcpiEvaluate the address and length arguments for the OpRegion */
@@ -223,10 +222,11 @@ AcpiDsGetRegionArguments (
         return (AE_NO_MEMORY);
     }
 
-    Op->AcpiNamedObject = AcpiNsGetParentEntry (Entry);
+    Op->AcpiNamedObject = AcpiNsGetParentObject (NameDesc);
 
     Status = AcpiPsParseAml (Op, MethodDesc->Method.Pcode,
-                                MethodDesc->Method.PcodeLength, PARSE_DELETE_TREE,
+                                MethodDesc->Method.PcodeLength, 
+                                ACPI_PARSE_EXECUTE | ACPI_PARSE_DELETE_TREE,
                                 NULL /*MethodDesc*/, NULL, NULL,
                                 AcpiDsExecBeginOp, AcpiDsExecEndOp);
 /*
@@ -293,7 +293,7 @@ AcpiDsEvalRegionOperands (
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *RegionDesc;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
     ACPI_GENERIC_OP         *NextOp;
 
 
@@ -304,7 +304,7 @@ AcpiDsEvalRegionOperands (
      * This is where we evaluate the address and length fields of the OpRegion declaration
      */
 
-    Entry =  Op->AcpiNamedObject;
+    NameDesc =  Op->AcpiNamedObject;
 
     /* NextOp points to the op that holds the SpaceID */
     NextOp = Op->Value.Arg;
@@ -320,7 +320,7 @@ AcpiDsEvalRegionOperands (
         return_ACPI_STATUS (Status);
     }
 
-    RegionDesc = AcpiNsGetAttachedObject (Entry);
+    RegionDesc = AcpiNsGetAttachedObject (NameDesc);
     if (!RegionDesc)
     {
         return_ACPI_STATUS (AE_NOT_EXIST);

@@ -1,8 +1,7 @@
-
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.31 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -126,7 +125,7 @@
 
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dsmthdat");
+        MODULE_NAME         ("dsmthdat")
 
 
 /*******************************************************************************
@@ -157,8 +156,8 @@ AcpiDsMethodDataInit (
      * WalkState fields are initialized to zero by the
      * AcpiCmCallocate().
      *
-     * An NTE is assigned to each argument and local so
-     * that RefOf() can return a pointer to the NTE.
+     * An Named Object is assigned to each argument and local so
+     * that RefOf() can return a pointer to the Named Object.
      */
 
     /* Init the method arguments */
@@ -514,7 +513,7 @@ AcpiDsMethodDataGetType (
  *              Index               - Which localVar or argument whose type
  *                                      to get
  *
- * RETURN:      Get the NTE associated with a local or arg.
+ * RETURN:      Get the Named Object associated with a local or arg.
  *
  ******************************************************************************/
 
@@ -524,7 +523,7 @@ AcpiDsMethodDataGetNte (
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_NAMED_OBJECT       *Entry = NULL;
+    ACPI_NAMED_OBJECT       *NameDesc = NULL;
 
 
     FUNCTION_TRACE ("DsMethodDataGetNte");
@@ -541,10 +540,10 @@ AcpiDsMethodDataGetNte (
             DEBUG_PRINT (ACPI_ERROR,
                 ("DsMethodDataGetEntry: LocalVar index %d is invalid (max %d)\n",
                 Index, MTH_MAX_LOCAL));
-            return_PTR (Entry);
+            return_PTR (NameDesc);
         }
 
-        Entry =  &WalkState->LocalVariables[Index];
+        NameDesc =  &WalkState->LocalVariables[Index];
         break;
 
 
@@ -555,10 +554,10 @@ AcpiDsMethodDataGetNte (
             DEBUG_PRINT (ACPI_ERROR,
                 ("DsMethodDataGetEntry: Argument index %d is invalid (max %d)\n",
                 Index, MTH_MAX_ARG));
-            return_PTR (Entry);
+            return_PTR (NameDesc);
         }
 
-        Entry = &WalkState->Arguments[Index];
+        NameDesc = &WalkState->Arguments[Index];
         break;
 
 
@@ -570,7 +569,7 @@ AcpiDsMethodDataGetNte (
     }
 
 
-    return_PTR (Entry);
+    return_PTR (NameDesc);
 }
 
 
@@ -811,7 +810,7 @@ AcpiDsMethodDataSetValue (
     {
         /*
          * Check for an indirect store if an argument
-         * contains an object reference (stored as an NTE).
+         * contains an object reference (stored as an Named Object).
          * We don't allow this automatic dereferencing for
          * locals, since a store to a local should overwrite
          * anything there, including an object reference.
@@ -830,19 +829,19 @@ AcpiDsMethodDataSetValue (
             (VALID_DESCRIPTOR_TYPE (*Entry, ACPI_DESC_TYPE_NAMED)))
         {
             DEBUG_PRINT (TRACE_EXEC,
-                ("DsMethodDataSetValue: Arg (%p) is an ObjRef(NTE), storing in %p\n",
+                ("DsMethodDataSetValue: Arg (%p) is an ObjRef(Named Object), storing in %p\n",
                 SrcDesc, *Entry));
 
-            /* Detach an existing object from the NTE */
+            /* Detach an existing object from the Named Object */
 
-            AcpiNsDetachObject (*Entry);
+            AcpiNsDetachObject ((ACPI_NAMED_OBJECT *) *Entry);
 
             /*
-             * Store this object into the NTE
+             * Store this object into the Named Object
              * (do the indirect store)
              */
 
-            Status = AcpiNsAttachObject (*Entry, SrcDesc,
+            Status = AcpiNsAttachObject ((ACPI_NAMED_OBJECT *) *Entry, SrcDesc,
                                             SrcDesc->Common.Type);
             return_ACPI_STATUS (Status);
         }

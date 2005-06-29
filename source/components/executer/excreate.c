@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -127,10 +127,10 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amcreate");
+        MODULE_NAME         ("amcreate")
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiAmlExecCreateField
  *
@@ -157,7 +157,7 @@
  *  NumBits             :=  TermArg=>Integer
  *  SourceBuff          :=  TermArg=>Buffer
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiAmlExecCreateField (
@@ -223,7 +223,10 @@ AcpiAmlExecCreateField (
 
     if (!VALID_DESCRIPTOR_TYPE (ResDesc, ACPI_DESC_TYPE_NAMED))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField (%s): destination must be a Name(NTE)\n", AcpiPsGetOpcodeName (Opcode)));
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("AmlExecCreateField (%s): destination must be a Named Object\n", 
+            AcpiPsGetOpcodeName (Opcode)));
+
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
@@ -414,7 +417,7 @@ AcpiAmlExecCreateField (
         {
             /*
              * There is an existing object here;  delete it and zero out the
-             * NTE
+             * object field within the NamedObject
              */
 
             DUMP_PATHNAME (ResDesc,
@@ -425,7 +428,8 @@ AcpiAmlExecCreateField (
             DUMP_STACK_ENTRY (ObjDesc);
 
             AcpiCmRemoveReference (ObjDesc);
-            AcpiNsAttachObject (ResDesc, NULL, ACPI_TYPE_ANY);
+            AcpiNsAttachObject ((ACPI_NAMED_OBJECT *) ResDesc, NULL, 
+                                    ACPI_TYPE_ANY);
         }
 
         /* Set the type to ANY (or the store below will fail) */
@@ -522,7 +526,7 @@ AcpiAmlExecCreateAlias (
     AcpiCmAddReference (SrcEntry->Object);
 
     /*
-     * Attach the original source NTE to the new Alias NTE.
+     * Attach the original source Named Object to the new Alias Named Object.
      */
     Status = AcpiNsAttachObject (AliasEntry, SrcEntry->Object,
                                     SrcEntry->Type);
@@ -532,7 +536,7 @@ AcpiAmlExecCreateAlias (
      * The new alias assumes the type of the source, but it points
      * to the same object.  The reference count of the object has two
      * additional references to prevent deletion out from under either the
-     * source or the alias NTE
+     * source or the alias Named Object
      */
 
     /* Since both operands are NTEs, we don't need to delete them */
@@ -585,7 +589,7 @@ AcpiAmlExecCreateEvent (
         goto Cleanup;
     }
 
-    /* Attach object to the NTE */
+    /* Attach object to the Named Object */
 
     Status = AcpiNsAttachObject (AcpiDsObjStackGetValue (0, WalkState),
                                     ObjDesc, (UINT8) ACPI_TYPE_EVENT);
@@ -728,7 +732,7 @@ AcpiAmlExecCreateRegion (
                     AcpiGbl_RegionTypes[RegionSpace]));
 
 
-    /* Get the NTE from the object stack  */
+    /* Get the Named Object from the object stack  */
 
     Entry = AcpiDsObjStackGetValue (0, WalkState);
 
@@ -767,11 +771,11 @@ AcpiAmlExecCreateRegion (
     ObjDescRegion->Region.Method->Method.PcodeLength = AmlLength;
 
 
-    /* Install the new region object in the parent NTE */
+    /* Install the new region object in the parent Named Object */
 
-    ObjDescRegion->Region.Nte = (ACPI_NAMED_OBJECT*) Entry;
+    ObjDescRegion->Region.NameDesc = (ACPI_NAMED_OBJECT *) Entry;
 
-    Status = AcpiNsAttachObject (Entry, ObjDescRegion,
+    Status = AcpiNsAttachObject ((ACPI_NAMED_OBJECT *) Entry, ObjDescRegion,
                                 (UINT8) ACPI_TYPE_REGION);
 
     if (ACPI_FAILURE (Status))
@@ -781,10 +785,10 @@ AcpiAmlExecCreateRegion (
 
     /*
      * If we have a valid region, initialize it
+     * Namespace is NOT locked at this point.
      */
-    /* Namespace IS locked */
 
-    Status = AcpiEvInitializeRegion (ObjDescRegion, TRUE);
+    Status = AcpiEvInitializeRegion (ObjDescRegion, FALSE);
 
     if (ACPI_FAILURE (Status))
     {
@@ -824,7 +828,7 @@ Cleanup:
  *
  * PARAMETERS:  Op              - Op containing the Processor definition and
  *                                args
- *              ProcessorNTE    - NTE for the containing NTE
+ *              ProcessorNTE    - Named Object for the containing Named Object
  *
  * RETURN:      Status
  *
@@ -852,7 +856,7 @@ AcpiAmlExecCreateProcessor (
         return_ACPI_STATUS (Status);
     }
 
-    /* Install the new processor object in the parent NTE */
+    /* Install the new processor object in the parent Named Object */
 
     Status = AcpiNsAttachObject (ProcessorNTE, ObjDesc,
                                     (UINT8) ACPI_TYPE_PROCESSOR);
@@ -911,7 +915,7 @@ AcpiAmlExecCreateProcessor (
  *
  * PARAMETERS:  Op              - Op containing the PowerResource definition
  *                                and args
- *              PowerResNTE     - NTE for the containing NTE
+ *              PowerResNTE     - Named Object for the containing Named Object
  *
  * RETURN:      Status
  *
@@ -939,7 +943,7 @@ AcpiAmlExecCreatePowerResource (
         return_ACPI_STATUS (Status);
     }
 
-    /* Install the new power resource object in the parent NTE */
+    /* Install the new power resource object in the parent Named Object */
 
     Status = AcpiNsAttachObject (PowerResNTE, ObjDesc,
                                 (UINT8) ACPI_TYPE_POWER);
@@ -983,11 +987,14 @@ AcpiAmlExecCreatePowerResource (
  *
  * FUNCTION:    AcpiAmlExecCreateMethod
  *
- * PARAMETERS:  InterpreterMode     - Current running mode (load1/Load2/Exec)
+ * PARAMETERS:  AmlPtr          - First byte of the method's AML
+ *              AmlLength       - AML byte count for this method
+ *              MethodFlags     - AML method flag byte
+ *              Method          - Method Named Object
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Create a new mutex object
+ * DESCRIPTION: Create a new method object
  *
  ****************************************************************************/
 
@@ -1028,9 +1035,8 @@ AcpiAmlExecCreateMethod (
                                             METHOD_FLAGS_ARG_COUNT);
 
     /*
-     * Get the concurrency count
-     * If required, a semaphore will be created for this method when it is
-     * parsed.
+     * Get the concurrency count.  If required, a semaphore will be 
+     * created for this method when it is parsed.
      *
      * TBD: [Future]  for APCI 2.0, there will be a SyncLevel value, not
      * just a flag
@@ -1041,29 +1047,18 @@ AcpiAmlExecCreateMethod (
     {
         ObjDesc->Method.Concurrency = 1;
     }
+
     else
     {
         ObjDesc->Method.Concurrency = INFINITE_CONCURRENCY;
     }
 
-    /* Mark the Method as not parsed yet */
-
-    ObjDesc->Method.ParserOp    = NULL;
-
-    /*
-     * Another  +1 gets added when AcpiPsxExecute is called,
-     * no need for: ObjDesc->Method.Pcode++;
-     */
-
-    ObjDesc->Method.AcpiTable   = NULL; /* TBD: [Restructure] was (UINT8 *) PcodeAddr; */
-    ObjDesc->Method.TableLength = 0;    /* TBD: [Restructure] needed? (UINT32) (WalkState->amlEnd - PcodeAddr); */
-
-    /* Attach the new object to the method NTE */
+    /* Attach the new object to the method Named Object */
 
     Status = AcpiNsAttachObject (Method, ObjDesc, (UINT8) ACPI_TYPE_METHOD);
     if (ACPI_FAILURE (Status))
     {
-        AcpiCmFree (ObjDesc);
+        AcpiCmDeleteObjectDesc (ObjDesc);
     }
 
     return_ACPI_STATUS (Status);
