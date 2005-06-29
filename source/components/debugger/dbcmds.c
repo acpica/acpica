@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.119 $
+ *              $Revision: 1.121 $
  *
  ******************************************************************************/
 
@@ -131,6 +131,36 @@
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbcmds")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiDbIntegrityWalk (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+static ACPI_STATUS
+AcpiDbWalkAndMatchName (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+static ACPI_STATUS
+AcpiDbWalkForReferences (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
+
+static ACPI_STATUS
+AcpiDbWalkForSpecificObjects (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue);
 
 
 /*
@@ -793,7 +823,7 @@ AcpiDbSetMethodData (
 
     /* Validate TypeArg */
 
-    ACPI_STRUPR (TypeArg);
+    AcpiUtStrupr (TypeArg);
     Type = TypeArg[0];
     if ((Type != 'L') &&
         (Type != 'A'))

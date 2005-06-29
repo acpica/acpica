@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.109 $
+ *              $Revision: 1.111 $
  *
  ******************************************************************************/
 
@@ -130,6 +130,16 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbdisply")
 
+/* Local prototypes */
+
+static void
+AcpiDbDumpParserDescriptor (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void *
+AcpiDbGetPointer (
+    void                    *Target);
+
 
 /*******************************************************************************
  *
@@ -243,7 +253,7 @@ AcpiDbDecodeAndDisplayObject (
 
     if (OutputType)
     {
-        ACPI_STRUPR (OutputType);
+        AcpiUtStrupr (OutputType);
         if (OutputType[0] == 'W')
         {
             Display = DB_WORD_DISPLAY;
