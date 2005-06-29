@@ -152,7 +152,7 @@ ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     * FACS;
 ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        * FACP;
 ACPI_EXTERN APIC_TABLE                          * APIC;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * DSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
+ACPI_EXTERN ACPI_TABLE_HEADER                   * SBST;
 /* 
  * Since there may be multiple SSDTs and PSDTS, a single pointer is not 
  * sufficient; Therefore, there isn't one!
@@ -259,7 +259,6 @@ ACPI_EXTERN UINT8               *PCode;
 
 /* 
  * Length of AML block, and remaining length of current package.
- * PCodeBlockLen is used in IsInPCodeBlock()
  */
 ACPI_EXTERN INT32               PCodeBlockLen;
 ACPI_EXTERN INT32               PCodeLen;
