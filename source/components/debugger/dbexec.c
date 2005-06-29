@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  ******************************************************************************/
 
@@ -257,12 +257,27 @@ AcpiDbExecuteSetup (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbGetOutstandingAllocations
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Current global allocation count minus cache entries
+ *
+ * DESCRIPTION: Determine the current number of "outstanding" allocations --
+ *              those allocations that have not been freed and also are not
+ *              in one of the various object caches.
+ *
+ ******************************************************************************/
+
 UINT32
 AcpiDbGetOutstandingAllocations (void)
 {
     UINT32                  i;
     UINT32                  Outstanding = 0;
 
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
 
     for (i = ACPI_MEM_LIST_FIRST_CACHE_LIST; i < ACPI_NUM_MEM_LISTS; i++)
     {
@@ -270,11 +285,10 @@ AcpiDbGetOutstandingAllocations (void)
                         AcpiGbl_MemoryLists[i].TotalFreed - 
                         AcpiGbl_MemoryLists[i].CacheDepth);
     }
-
+#endif
 
     return (Outstanding);
 }
-
 
 
 /*******************************************************************************
