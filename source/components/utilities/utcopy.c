@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -242,9 +242,9 @@ AcpiCmCopyIsimpleToEsimple (
             Status = AcpiNsHandleToPathname ((ACPI_HANDLE *) InternalObject->Reference.Node,
                         &Length, (char *) DataSpace);
 
-            /* Actual length is returned from above */
+            /* Converted (external) string length is returned from above */
 
-            ExternalObject->Buffer.Length = Length;
+            ExternalObject->String.Length = Length;
             break;
 
         default:
@@ -325,7 +325,7 @@ AcpiCmCopyIelementToEelement (
 
     switch (ObjectType)
     {
-    case 0:
+    case ACPI_COPY_TYPE_SIMPLE:
 
         /*
          * This is a simple or null object -- get the size
@@ -340,7 +340,7 @@ AcpiCmCopyIelementToEelement (
 
         break;
 
-    case 1:
+    case ACPI_COPY_TYPE_PACKAGE:
 
         /*
          * Build the package object
