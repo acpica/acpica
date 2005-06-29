@@ -1,7 +1,6 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -120,7 +119,7 @@
 #include "amlcode.h"
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("psutils")
+        MODULE_NAME         ("psutils");
 
 
 #define PARSEOP_GENERIC     0x01

@@ -1,7 +1,6 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -122,7 +121,7 @@
 #include "amlcode.h"
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("pstree")
+        MODULE_NAME         ("pstree");
 
 
 /*******************************************************************************

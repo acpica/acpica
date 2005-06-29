@@ -1,7 +1,6 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser opcode information table
- *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -121,7 +120,7 @@
 
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("psopcode")
+        MODULE_NAME         ("psopcode");
 
 
 UINT8 AcpiGbl_AmlShortOpInfoIndex[];

@@ -141,7 +141,7 @@ typedef struct Internal_Search_st
 INTERNAL_PKG_SEARCH_INFO        CopyLevel[MAX_PACKAGE_DEPTH];
 
 
-static INT8                 hex[] =
+static NATIVE_CHAR          hex[] =
     {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
 
@@ -352,12 +352,12 @@ AcpiAmlReleaseGlobalLock (
  *
  ******************************************************************************/
 
-INT32
+UINT32
 AcpiAmlDigitsNeeded (
-    INT32                   val,
-    INT32                   base)
+    UINT32                  val,
+    UINT32                  base)
 {
-    INT32                   NumDigits = 0;
+    UINT32                  NumDigits = 0;
 
 
     FUNCTION_TRACE ("AmlDigitsNeeded");
@@ -397,13 +397,13 @@ _ntohl (
     union
     {
         UINT32              Value;
-        INT8                Bytes[4];
+        UINT8               Bytes[4];
     } Out;
 
     union
     {
         UINT32              Value;
-        INT8                Bytes[4];
+        UINT8               Bytes[4];
     } In;
 
 
@@ -432,7 +432,7 @@ _ntohl (
 ACPI_STATUS
 AcpiAmlEisaIdToString (
     UINT32                  NumericId,
-    INT8                    *OutString)
+    NATIVE_CHAR             *OutString)
 {
     UINT32                  id;
 
