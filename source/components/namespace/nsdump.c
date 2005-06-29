@@ -222,7 +222,7 @@ NsDumpOneObject (NsHandle ObjHandle, UINT32 Level, void *Context)
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("-"));
             }
         
-            else if (NsExistDownstreamSibling (ThisEntry->Scope, NS_DEFAULT_TABLE_SIZE,
+            else if (NsExistDownstreamSibling (ThisEntry->Scope, NS_TABLE_SIZE,
                                                 NEXTSEG (ThisEntry->Scope)))
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
