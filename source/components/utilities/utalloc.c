@@ -1,4 +1,3 @@
-
 /******************************************************************************
  * 
  * Module Name: cmalloc - local memory allocation routines
@@ -120,7 +119,7 @@
 #include <acpiobj.h>
 #include <interpreter.h>
 #include <namespace.h>
-
+#include <globals.h>
 
 #define _THIS_MODULE        "cmalloc.c"
 #define _COMPONENT          MISCELLANEOUS
@@ -134,20 +133,7 @@
  * to add an element to the list; deletion occurs in the bosy of _CmFree.
  */
 
-#ifndef ACPI_DEBUG
-
-#define CmAddElementToAllocList
-#define CmDeleteElementFromAllocList
-#define CmDumpCurrentAllocations
-
-#else
-
-/* Global allocation list pointers */
-
-ALLOCATION_INFO         *HeadAllocPtr;
-ALLOCATION_INFO         *TailAllocPtr;
-
-
+#ifdef ACPI_DEBUG
 
 /*****************************************************************************
  * 
@@ -165,7 +151,7 @@ ALLOCATION_INFO *
 CmSearchAllocList (
     void                    *Address)
 {
-    ALLOCATION_INFO         *Element = HeadAllocPtr;
+    ALLOCATION_INFO         *Element = Gbl_HeadAllocPtr;
 
 
     /* Search for the address. note - this always searches the entire list...*/
@@ -224,23 +210,23 @@ CmAddElementToAllocList (
     
     /* If the head pointer is null, create the first element and fill it in. */
 
-    if (NULL == HeadAllocPtr)
+    if (NULL == Gbl_HeadAllocPtr)
     {
-        HeadAllocPtr = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
+        Gbl_HeadAllocPtr = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
         
         /* error check */
         
-        TailAllocPtr = HeadAllocPtr;
+        Gbl_TailAllocPtr = Gbl_HeadAllocPtr;
     }
 
     else
     {
-        TailAllocPtr->Next = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
+        Gbl_TailAllocPtr->Next = (ALLOCATION_INFO *) OsdCallocate (sizeof (ALLOCATION_INFO));
         
         /* error check */
         
-        TailAllocPtr->Next->Previous = TailAllocPtr;
-        TailAllocPtr = TailAllocPtr->Next;
+        Gbl_TailAllocPtr->Next->Previous = Gbl_TailAllocPtr;
+        Gbl_TailAllocPtr = Gbl_TailAllocPtr->Next;
     }
 
     /* 
@@ -259,12 +245,12 @@ CmAddElementToAllocList (
 
     /* Fill in the instance data. */    
     
-    TailAllocPtr->Address   = Address;
-    TailAllocPtr->Size      = Size;
-    TailAllocPtr->AllocType = AllocType;
-    TailAllocPtr->Component = Component;
-    TailAllocPtr->Line      = Line;
-    strcpy (TailAllocPtr->Module, Module);
+    Gbl_TailAllocPtr->Address   = Address;
+    Gbl_TailAllocPtr->Size      = Size;
+    Gbl_TailAllocPtr->AllocType = AllocType;
+    Gbl_TailAllocPtr->Component = Component;
+    Gbl_TailAllocPtr->Line      = Line;
+    strcpy (Gbl_TailAllocPtr->Module, Module);
     
     CmReleaseMutex (MTX_MEMORY);
     return_VOID;
@@ -300,7 +286,7 @@ CmDeleteElementFromAllocList (
 
     /* cases: none, one, multiple. */
 
-    if (NULL == HeadAllocPtr)
+    if (NULL == Gbl_HeadAllocPtr)
     {
         /* Boy we got problems. */
 
@@ -313,9 +299,9 @@ CmDeleteElementFromAllocList (
     
     CmAcquireMutex (MTX_MEMORY);
 
-    if (HeadAllocPtr == TailAllocPtr)
+    if (Gbl_HeadAllocPtr == Gbl_TailAllocPtr)
     {   
-        if (Address != HeadAllocPtr->Address)
+        if (Address != Gbl_HeadAllocPtr->Address)
         {
             _REPORT_ERROR (Module, Line, Component,
                 "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
@@ -323,9 +309,9 @@ CmDeleteElementFromAllocList (
             goto Cleanup;
         }
         
-        OsdFree (HeadAllocPtr);
-        HeadAllocPtr = NULL;
-        TailAllocPtr = NULL;
+        OsdFree (Gbl_HeadAllocPtr);
+        Gbl_HeadAllocPtr = NULL;
+        Gbl_TailAllocPtr = NULL;
         
         DEBUG_PRINT (TRACE_ALLOCATIONS,
             ("_CmFree: Allocation list deleted.  No more outstanding allocations.\n"));
@@ -341,18 +327,18 @@ CmDeleteElementFromAllocList (
     {
         /* cases: head, tail, other */
 
-        if (Element == HeadAllocPtr)
+        if (Element == Gbl_HeadAllocPtr)
         {
             Element->Next->Previous = NULL;
-            HeadAllocPtr = Element->Next;
+            Gbl_HeadAllocPtr = Element->Next;
         }
 
         else
         {
-            if (Element == TailAllocPtr)
+            if (Element == Gbl_TailAllocPtr)
             {
                 Element->Previous->Next = NULL;
-                TailAllocPtr = Element->Previous;
+                Gbl_TailAllocPtr = Element->Previous;
             }
 
             else
@@ -407,7 +393,7 @@ CmDumpCurrentAllocations (
     UINT32                  Component,
     ACPI_STRING             Module)
 {
-    ALLOCATION_INFO         *Element = HeadAllocPtr;
+    ALLOCATION_INFO         *Element = Gbl_HeadAllocPtr;
     UINT32                  i;
     
 
