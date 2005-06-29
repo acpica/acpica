@@ -118,10 +118,10 @@
 #define __DEBUGGER_H__
 
 
-#define DB_MAX_ARGS         8
+#define DB_MAX_ARGS             8  /* Must be max method args + 1 */
 
-#define COMMAND_PROMPT      '-'
-#define EXECUTE_PROMPT      '%'
+#define DB_COMMAND_PROMPT      '-'
+#define DB_EXECUTE_PROMPT      '%'
 
 
 extern UINT8                    *DsdtPtr;
@@ -131,48 +131,54 @@ extern char                     *optarg;
 extern UINT8                    *AmlPtr;
 extern UINT32                   AmlLength;
 
-extern int                      opt_tables;
-extern int                      opt_disasm;
-extern int                      opt_stats;
-extern int                      opt_parse_jit;
-extern int						opt_verbose;
+extern BOOLEAN                  opt_tables;
+extern BOOLEAN                  opt_disasm;
+extern BOOLEAN                  opt_stats;
+extern BOOLEAN                  opt_parse_jit;
+extern BOOLEAN					opt_verbose;
    
 
-extern char                    *Args[DB_MAX_ARGS];
+extern char                     *Args[DB_MAX_ARGS];
 extern char                     LineBuf[80];
 extern char                     ScopeBuf[40];
 extern char                     DebugFilename[40];
-extern char                     OutputToFile;
+extern BOOLEAN                  OutputToFile;
 extern char                     *Buffer;
 extern char                     *Filename;
 extern char					    *INDENT_STRING;
 extern UINT32                   Gbl_MethodBreakpoint;
+extern UINT8                    Gbl_DbOutputFlags;
+extern UINT32                   Gbl_DbDebugLevel;
+extern UINT32                   Gbl_DbConsoleDebugLevel;
 
-extern UINT32                      NumNames;
-extern UINT32                      NumMethods;
-extern UINT32                      NumRegions;
-extern UINT32                      NumPackages;
-extern UINT32                      NumAliases;
-extern UINT32                      NumDevices;
-extern UINT32                      NumFieldDefs;
-extern UINT32                      NumThermalZones;
-extern UINT32                      NumNamedObjects;
-extern UINT32                      NumGrammarElements;
-extern UINT32                      NumMethodElements ;
-extern UINT32                      NumMutexes;
-extern UINT32                      NumPowerResources;
-extern UINT32                      NumBankFields ;
-extern UINT32                      NumIndexFields;
-extern UINT32                      NumEvents;
+extern UINT32                   NumNames;
+extern UINT32                   NumMethods;
+extern UINT32                   NumRegions;
+extern UINT32                   NumPackages;
+extern UINT32                   NumAliases;
+extern UINT32                   NumDevices;
+extern UINT32                   NumFieldDefs;
+extern UINT32                   NumThermalZones;
+extern UINT32                   NumNamedObjects;
+extern UINT32                   NumGrammarElements;
+extern UINT32                   NumMethodElements ;
+extern UINT32                   NumMutexes;
+extern UINT32                   NumPowerResources;
+extern UINT32                   NumBankFields ;
+extern UINT32                   NumIndexFields;
+extern UINT32                   NumEvents;
 
-extern UINT32                      SizeOfParseTree;
-extern UINT32                      SizeOfMethodTrees;
-extern UINT32                      SizeOfNTEs;
-extern UINT32                      SizeOfAcpiObjects;
+extern UINT32                   SizeOfParseTree;
+extern UINT32                   SizeOfMethodTrees;
+extern UINT32                   SizeOfNTEs;
+extern UINT32                   SizeOfAcpiObjects;
 
 
 #define BUFFER_SIZE             4196
 
+#define DB_REDIRECTABLE_OUTPUT  0x01
+#define DB_CONSOLE_OUTPUT       0x02
+#define DB_DUPLICATE_OUTPUT     0x03
 
 
 
@@ -186,8 +192,31 @@ extern UINT32                      SizeOfAcpiObjects;
 #define EX_NO_SINGLE_STEP       1
 #define EX_SINGLE_STEP          2
 
+void
+DbSetOutputDestination (
+    INT32                   Where);
+    
+void
+DbSetMethodCallBreakpoint (
+    ACPI_GENERIC_OP         *Op);
+
 int
 DbInitialize (void);
+
+ACPI_STATUS
+DbCommandDispatch (
+    char                    *InputBuffer,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op);
+
+void
+DbExecuteThread (
+    void                    *Context);
+
+ACPI_STATUS
+DbUserCommands (
+    char                    Prompt,
+    ACPI_GENERIC_OP         *Op);
 
 NAME_TABLE_ENTRY *
 DbLocalNsLookup (
@@ -212,6 +241,7 @@ DbSecondPassParse (
 
 ACPI_STATUS
 DbSingleStep (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     UINT8                   OpType);
 
@@ -236,6 +266,7 @@ DbDisplayStatistics (
 void
 DbSetMethodBreakpoint (
     char                    *Location,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op);
 
 void
@@ -322,11 +353,13 @@ DbSprintOp (
 
 
 void
-DbDumpNamespace (void);
+DbDumpNamespace (
+    char                    *StartArg);
 
 void
 DbExecute (
     char                    *Name,
+    char                    **Args,
     UINT32                  Flags);
 
 void
