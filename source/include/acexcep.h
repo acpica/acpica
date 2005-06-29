@@ -122,26 +122,8 @@
 #define AE_FILE_NOT_EXIST   (ACPI_STATUS) 0x000D
 #define AE_BUFFER_OVERFLOW  (ACPI_STATUS) 0x000E
 #define AE_BAD_CHARACTER    (ACPI_STATUS) 0x000F
-#define AE_CONTEXT          (ACPI_STATUS) 0x0010
-
-
-/*
- * Return values used in the AML scanner
- *
- * Note that S_FAILURE is not an error, but indicates
- * that other alternatives should be checked.
- *
- * S_RETURN is mostly handled like an error -- a caller which receives either
- * one cleans up, terminates, and passes the received status value back to its
- * own caller -- but S_RETURN is special-cased in appropriate places.
- */
-
-//#define S_SUCCESS   0       /* found what we were looking for */
-//#define S_FAILURE   1       /* did not find what we looked for */
-//#define S_ERROR     2       /* something is wrong */
-//#define S_RETURN    3       /* ReturnOp executed. */
-
-
+#define AE_TERMINATED       (ACPI_STATUS) 0x0010
+#define AE_CONTEXT          (ACPI_STATUS) 0x0011
 
 
 
