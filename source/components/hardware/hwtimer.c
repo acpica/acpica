@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.1 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,7 @@
 #include "acpi.h"
 #include "achware.h"
 
-#define _COMPONENT          HARDWARE
+#define _COMPONENT          ACPI_HARDWARE
         MODULE_NAME         ("hwtimer")
 
 
@@ -128,23 +128,46 @@
  *
  * PARAMETERS:  none
  *
- * RETURN:      Number of bits of resolution in the PM Timer (either 24 or 32)
+ * RETURN:      Number of bits of resolution in the PM Timer (24 or 32).
  *
- * DESCRIPTION: Obtains resolution of the ACPI PM Timer
+ * DESCRIPTION: Obtains resolution of the ACPI PM Timer.
  *
  ******************************************************************************/
 
-UINT32
-AcpiHwPmtResolution (void)
+ACPI_STATUS
+AcpiGetTimerResolution (
+    UINT32                  *Resolution)
 {
+    ACPI_STATUS             Status;
+
+
     FUNCTION_TRACE ("AcpiGetTimerResolution");
+
+
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    if (!Resolution)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
     if (0 == AcpiGbl_FADT->TmrValExt)
     {
-        return_VALUE (24);
+        *Resolution = 24;
     }
 
-    return_VALUE (32);
+    else
+    {
+        *Resolution = 32;
+    }
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -154,25 +177,37 @@ AcpiHwPmtResolution (void)
  *
  * PARAMETERS:  none
  *
- * RETURN:      Current value of the ACPI PMT (timer)
+ * RETURN:      Current value of the ACPI PM Timer (in ticks).
  *
- * DESCRIPTION: Obtains current value of ACPI PMT
+ * DESCRIPTION: Obtains current value of ACPI PM Timer.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiGetTimer (
-    UINT32                  *OutTicks)
+    UINT32                  *Ticks)
 {
+    ACPI_STATUS             Status;
+
+
     FUNCTION_TRACE ("AcpiGetTimer");
 
+    
+    /* Ensure that ACPI has been initialized */
 
-    if (!OutTicks)
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    if (!Ticks)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    *OutTicks = AcpiOsIn32 ((ACPI_IO_ADDRESS) ACPI_GET_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address));
+    AcpiOsReadPort ((ACPI_IO_ADDRESS) 
+        ACPI_GET_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address), Ticks, 32);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -180,70 +215,130 @@ AcpiGetTimer (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiGetTimeElapsed
+ * FUNCTION:    AcpiGetTimerDuration
  *
  * PARAMETERS:  StartTicks
  *              EndTicks
- *              Rollovers
  *              TimeElapsed
  *
- * RETURN:      TimeElapsed 
+ * RETURN:      TimeElapsed
  *
  * DESCRIPTION: Computes the time elapsed (in microseconds) between two
  *              PM Timer time stamps, taking into account the possibility of
- *              rollovers, timer resolution, and operation frequency.
+ *              rollovers, the timer resolution, and timer frequency.
+ *
+ *              The PM Timer's clock ticks at roughly 3.6 times per
+ *              _microsecond_, and its clock continues through Cx state
+ *              transitions (unlike many CPU timestamp counters) -- making it
+ *              a versatile and accurate timer.
+ *
+ *              Note that this function accomodates only a single timer
+ *              rollover.  Thus for 24-bit timers, this function should only
+ *              be used for calculating durations less than ~4.6 seconds
+ *              (~20 hours for 32-bit timers).
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetTimeElapsed (
-	UINT32                     StartTicks,
-	UINT32                     EndTicks,
-    UINT32                     *TimeElapsed)
+AcpiGetTimerDuration (
+    UINT32                  StartTicks,
+    UINT32                  EndTicks,
+    UINT32                  *TimeElapsed)
 {
-    UINT32                     Delta = 0;
+    UINT32                  DeltaTicks = 0;
+    UINT32                  Seconds = 0;
+    UINT32                  Milliseconds = 0;
+    UINT32                  Microseconds = 0;
+    UINT32                  Remainder = 0;
 
-	FUNCTION_TRACE ("AcpiGetTimeElapsed");
 
-	if (!TimeElapsed) 
+    FUNCTION_TRACE ("AcpiGetTimerDuration");
+
+
+    if (!TimeElapsed)
     {
-		return_ACPI_STATUS (AE_BAD_PARAMETER);
-	}
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
-    /* 
-     * Compute Duration:
-     * -----------------
-     * And handle timer rollover on 24- versus 32-bit timers.
+    /*
+     * Compute Tick Delta:
+     * -------------------
+     * Handle (max one) timer rollovers on 24- versus 32-bit timers.
      */
     if (StartTicks < EndTicks)
     {
-        Delta = EndTicks - StartTicks;
+        DeltaTicks = EndTicks - StartTicks;
     }
-    else if (StartTicks > EndTicks) 
+
+    else if (StartTicks > EndTicks)
     {
         /* 24-bit Timer */
+
         if (0 == AcpiGbl_FADT->TmrValExt)
         {
-            Delta = (0x00FFFFFF - StartTicks) + EndTicks;
+            DeltaTicks = (((0x00FFFFFF - StartTicks) + EndTicks) & 0x00FFFFFF);
         }
+
         /* 32-bit Timer */
-        else 
+
+        else
         {
-            Delta = (0xFFFFFFFF - StartTicks) + EndTicks;
+            DeltaTicks = (0xFFFFFFFF - StartTicks) + EndTicks;
         }
     }
 
-    // TODO: Delta should be 64 bits, as the PM timer frequency is given
-    //       in a greater accuracy than we can safely compute in 32 bits,
-    //       but Linux kernel doesn't have 64-bit math (unresolved symbol 
-    //       __udivdi3).
+    else
+    {
+        *TimeElapsed = 0;
+        return_ACPI_STATUS (AE_OK);
+    }
 
-    Delta *= 1000;
-    Delta /= PM_TIMER_FREQUENCY_MS;
+    /*
+     * Compute Duration:
+     * -----------------
+     * Since certain compilers (gcc/Linux, argh!) don't support 64-bit
+     * divides in kernel-space we have to do some trickery to preserve
+     * accuracy while using 32-bit math.
+     *
+     * TBD: Change to use 64-bit math when supported.
+     *
+     * The process is as follows:
+     *  1. Compute the number of seconds by dividing Delta Ticks by
+     *     the timer frequency.
+     *  2. Compute the number of milliseconds in the remainder from step #1
+     *     by multiplying by 1000 and then dividing by the timer frequency.
+     *  3. Compute the number of microseconds in the remainder from step #2
+     *     by multiplying by 1000 and then dividing by the timer frequency.
+     *  4. Add the results from steps 1, 2, and 3 to get the total duration.
+     *
+     * Example: The time elapsed for DeltaTicks = 0xFFFFFFFF should be
+     *          1199864031 microseconds.  This is computed as follows:
+     *          Step #1: Seconds = 1199; Remainder = 3092840
+     *          Step #2: Milliseconds = 864; Remainder = 113120
+     *          Step #3: Microseconds = 31; Remainder = <don't care!>
+     */
 
-    *TimeElapsed = (UINT32)(Delta);
+    /* Step #1 */
 
-	return_ACPI_STATUS (AE_OK);
+    Seconds = DeltaTicks / PM_TIMER_FREQUENCY;
+    Remainder = DeltaTicks % PM_TIMER_FREQUENCY;
+
+    /* Step #2 */
+
+    Milliseconds = (Remainder * 1000) / PM_TIMER_FREQUENCY;
+    Remainder = (Remainder * 1000) % PM_TIMER_FREQUENCY;
+
+    /* Step #3 */
+
+    Microseconds = (Remainder * 1000) / PM_TIMER_FREQUENCY;
+
+    /* Step #4 */
+
+    *TimeElapsed = Seconds * 1000000;
+    *TimeElapsed += Milliseconds * 1000;
+    *TimeElapsed += Microseconds;
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
