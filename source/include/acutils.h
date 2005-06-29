@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.123 $
+ *       $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -742,6 +742,15 @@ AcpiUtReleaseToCache (
 void
 AcpiUtDeleteGenericCache (
     UINT32                  ListId);
+
+ACPI_STATUS
+AcpiUtValidateBuffer (
+    ACPI_BUFFER             *Buffer);
+
+ACPI_STATUS
+AcpiUtValidateBufferSize (
+    ACPI_BUFFER             *Buffer,
+    ACPI_SIZE               RequiredLength);
 
 
 /* Debug Memory allocation functions */

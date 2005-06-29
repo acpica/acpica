@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.210 $
+ *       $Revision: 1.211 $
  *
  *****************************************************************************/
 
@@ -707,6 +707,10 @@ typedef struct AcpiObjList
 /*
  * Miscellaneous common Data Structures used by the interfaces
  */
+
+#define ACPI_NO_BUFFER                  0
+#define ACPI_ALLOCATE_BUFFER            (ACPI_SIZE) (-1)
+#define ACPI_ALLOCATE_LOCAL_BUFFER      (ACPI_SIZE) (-2)
 
 typedef struct
 {
