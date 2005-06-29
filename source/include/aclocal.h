@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.76 $
+ *       $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -126,11 +126,12 @@ typedef UINT32                      ACPI_MUTEX_HANDLE;
 
 /* Object descriptor types */
 
-#define ACPI_DESC_TYPE_INTERNAL     0xAA
-#define ACPI_DESC_TYPE_PARSER       0xBB
-#define ACPI_DESC_TYPE_STATE        0xCC
-#define ACPI_DESC_TYPE_WALK         0xDD
-#define ACPI_DESC_TYPE_NAMED        0xEE
+#define ACPI_CACHED_OBJECT          0x11    /* ORed in when object is cached */
+#define ACPI_DESC_TYPE_STATE        0x22
+#define ACPI_DESC_TYPE_WALK         0x44
+#define ACPI_DESC_TYPE_PARSER       0x66
+#define ACPI_DESC_TYPE_INTERNAL     0x88
+#define ACPI_DESC_TYPE_NAMED        0xAA
 
 
 /*****************************************************************************
