@@ -682,7 +682,7 @@ typedef struct
     UINT32      RangeLength;
 } FIXED_IO_RESOURCE;
 
-#define FIXED_IO_RESOURCE_LENGTH    4
+#define FIXED_IO_RESOURCE_LENGTH    8
 
 typedef struct
 {
@@ -690,7 +690,7 @@ typedef struct
     UINT8       Reserved[1];
 } VENDOR_RESOURCE;
 
-#define VENDOR_RESOURCE_LENGTH      4
+#define VENDOR_RESOURCE_LENGTH      5
 
 typedef struct
 {
@@ -796,7 +796,6 @@ typedef struct
     UINT32          SharedExclusive;
     UINT32          ResourceSourceIndex;
     UINT8           * ResourceSource;
-
     UINT32          NumberOfInterrupts;
     UINT32          Interrupts[1];
 } EXTENDED_IRQ_RESOURCE;
@@ -848,6 +847,33 @@ typedef struct _resource_tag
 
 /*
  * END: Definitions for Resource Attributes
+ */
+
+/*
+ * Definitions for PCI Routing tables
+ */
+typedef struct  
+{
+    UINT32          Address;
+    UINT32          Pin;
+    UINT32          SourceIndex;
+    UINT8           * Source;
+    
+} PRT_ENTRY;
+
+#define PRT_ENTRY_LENGTH    16
+
+
+typedef struct _prt_tag
+{
+    PRT_ENTRY        * Data;
+    struct _prt_tag  * Next;
+} PCI_ROUTING_TABLE;
+
+#define PCI_ROUTING_TABLE_LENGTH     8
+
+/*
+ * END: Definitions for PCI Routing tables
  */
 
 #endif /* ACPITYPES_H */
