@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -380,7 +380,9 @@ typedef enum
     ASL_MSG_SINGLE_NAME_OPTIMIZATION,
     ASL_MSG_INTEGER_OPTIMIZATION,
     ASL_MSG_SCOPE_TYPE,
-    ASL_MSG_CORE_EXCEPTION
+    ASL_MSG_CORE_EXCEPTION,
+    ASL_MSG_UNREACHABLE_CODE,
+    ASL_MSG_EARLY_EOF
 
 } ASL_MESSAGE_IDS;
 
@@ -465,7 +467,9 @@ char                        *AslMessages [] = {
     "NamePath optimized to NameSeg (uses run-time search path)",
     "Integer optimized to single-byte AML opcode",
     "Existing object has invalid type for Scope operator",
-    "From ACPI CA Subsystem"
+    "From ACPI CA Subsystem",
+    "Statement is unreachable",
+    "Premature end-of-file reached"
 };
 
 
