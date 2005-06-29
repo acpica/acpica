@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acintel.h - VC specific defines, etc.
- *       $Revision: 1.6 $
+ *       $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,36 +117,13 @@
 #ifndef __ACINTEL_H__
 #define __ACINTEL_H__
 
-
-#define COMPILER_DEPENDENT_INT64   __int64
-#define COMPILER_DEPENDENT_UINT64  unsigned __int64
-
-/*
- * Calling conventions:
- *
- * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
- * ACPI_EXTERNAL_XFACE      - External ACPI interfaces 
- * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
- * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
- */
-#define ACPI_SYSTEM_XFACE
-#define ACPI_EXTERNAL_XFACE
-#define ACPI_INTERNAL_XFACE
-#define ACPI_INTERNAL_VAR_XFACE
+#define COMPILER_DEPENDENT_UINT64   unsigned __int64
 
 /*
  * Math helper functions
  */
-#define ACPI_DIV_64_BY_32(n, n_hi, n_lo, d32, q32, r32) \
-{ \
-    q32 = n / d32; \
-    r32 = n % d32; \
-}
-
-#define ACPI_SHIFT_RIGHT_64(n, n_hi, n_lo) \
-{ \
-    n <<= 1; \
-}
+#define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32)
+#define ACPI_SHIFT_RIGHT_64(n_hi, n_lo)
 
 
 #pragma warning(disable:810)
