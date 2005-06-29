@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  ******************************************************************************/
 
@@ -639,11 +639,13 @@ AcpiNsGetObjectValue (
          */
 
         AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-        AcpiAmlEnterInterpreter ();
+        Status = AcpiAmlEnterInterpreter ();
+        if (ACPI_SUCCESS (Status))
+        {
+            Status = AcpiAmlResolveToValue (&ObjDesc, NULL);
 
-        Status = AcpiAmlResolveToValue (&ObjDesc, NULL);
-
-        AcpiAmlExitInterpreter ();
+            AcpiAmlExitInterpreter ();
+        }
     }
 
     /*
