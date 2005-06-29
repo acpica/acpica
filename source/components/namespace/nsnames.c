@@ -118,8 +118,8 @@
 
 #include <acpi.h>
 #include <amlcode.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          NAMESPACE
@@ -248,6 +248,8 @@ NsNameOfCurrentScope (void)
  *
  * DESCRIPTION: Build and return a full namespace pathname
  *
+ * MUTEX:       Locks Namespace
+ *
  ***************************************************************************/
 
 ACPI_STATUS
@@ -256,11 +258,13 @@ NsHandleToPathname (
     UINT32                  *BufSize, 
     char                    *UserBuffer)
 {
+    ACPI_STATUS             Status = AE_OK;
     NAME_TABLE_ENTRY        *EntryToSearch = NULL;
     NAME_TABLE_ENTRY        *Temp = NULL;
     ACPI_SIZE               PathLength = 0;
     ACPI_SIZE               Size;
     UINT32                  UserBufSize;
+    BOOLEAN                 NamespaceWasLocked;
 
 
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
@@ -276,7 +280,14 @@ NsHandleToPathname (
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
-    if (!(EntryToSearch = NsConvertHandleToEntry (TargetHandle)))
+    NamespaceWasLocked = Gbl_AcpiMutexLocked [MTX_NAMESPACE];
+    if (!NamespaceWasLocked)
+    {
+        CmAcquireMutex (MTX_NAMESPACE);
+    }
+
+    EntryToSearch = NsConvertHandleToEntry (TargetHandle);
+    if (!EntryToSearch)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -285,7 +296,7 @@ NsHandleToPathname (
      * Compute length of pathname as 5 * number of name segments.
      * Go back up the parent tree to the root
      */
-    for (Size = PATH_SEGMENT_LENGTH, Temp = EntryToSearch;
+    for (Size = 0, Temp = EntryToSearch;
           Temp->ParentEntry;
           Temp = Temp->ParentEntry)
     {
@@ -302,7 +313,8 @@ NsHandleToPathname (
 
     if (PathLength > UserBufSize)
     {
-        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
+        Status = AE_BUFFER_OVERFLOW;
+        goto UnlockAndExit;
     }
           
     /* Store null terminator */
@@ -332,8 +344,16 @@ NsHandleToPathname (
 
     DEBUG_PRINT (ACPI_INFO, ("NsHandleToPathname: Len=%d, %s \n", 
                                 PathLength, UserBuffer));
-    
-    return_ACPI_STATUS (AE_OK);
+
+
+UnlockAndExit:
+
+    if (!NamespaceWasLocked)
+    {
+        CmReleaseMutex (MTX_NAMESPACE);
+    }
+
+    return_ACPI_STATUS (Status);
 }
 
 

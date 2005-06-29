@@ -119,8 +119,8 @@
 
 #include <acpi.h>
 #include <amlcode.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include <namesp.h>
+#include <interp.h>
 #include <tables.h>
 
 
@@ -140,6 +140,8 @@
  * DESCRIPTION: Record the given object as the value associated with the
  *              name whose ACPI_HANDLE is passed.  If Object is NULL 
  *              and Type is ACPI_TYPE_Any, set the name as having no value.
+ *
+ * MUTEX:       Assumes namespace is locked
  *
  ***************************************************************************/
 
@@ -344,7 +346,7 @@ NsAttachObject (
 
             if (GetDebugLevel () > 0)
             {
-                NsDumpPathname (Handle, "NsAttachObject confused: setting bogus type for  ", 
+                DUMP_PATHNAME (Handle, "NsAttachObject confused: setting bogus type for  ", 
                                 ACPI_INFO, _COMPONENT);
 
                 if (TbSystemTablePointer (Object))
@@ -355,12 +357,12 @@ NsAttachObject (
         
                 else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
                 {
-                    NsDumpPathname (Object, "name ", ACPI_INFO, _COMPONENT);
+                    DUMP_PATHNAME (Object, "name ", ACPI_INFO, _COMPONENT);
                 }
         
                 else
                 {
-                    NsDumpPathname (Object, "object ", ACPI_INFO, _COMPONENT);
+                    DUMP_PATHNAME (Object, "object ", ACPI_INFO, _COMPONENT);
                     DUMP_STACK_ENTRY (Object);
                 }
             }
@@ -379,19 +381,15 @@ NsAttachObject (
 
     CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
 
-    CmAcquireMutex (MTX_NAMESPACE);
-    {
-        /* Save the existing object (if any) for deletion later */
+    /* Save the existing object (if any) for deletion later */
 
-        PreviousObjDesc = ThisEntry->Object;
+    PreviousObjDesc = ThisEntry->Object;
 
-        /* Install the object and set the type, flags */
+    /* Install the object and set the type, flags */
 
-        ThisEntry->Object = ObjDesc;
-        ThisEntry->Type = ObjType;
-        ThisEntry->Flags = Flags;
-    }
-    CmReleaseMutex (MTX_NAMESPACE);
+    ThisEntry->Object = ObjDesc;
+    ThisEntry->Type = (UINT8) ObjType;
+    ThisEntry->Flags = Flags;
 
 
     /* 
@@ -418,6 +416,8 @@ NsAttachObject (
  *
  * DESCRIPTION: Record the given offset and p-code length of the method
  *              whose handle is passed
+ *
+ * MUTEX:       Assumes namespace is locked
  *
  ***************************************************************************/
 
@@ -474,12 +474,8 @@ NsAttachMethod (
 
     CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
 
-    CmAcquireMutex (MTX_NAMESPACE);
-    {
-        PreviousObjDesc = ThisEntry->Object;
-        ThisEntry->Object = ObjDesc;
-    }
-    CmReleaseMutex (MTX_NAMESPACE);
+    PreviousObjDesc = ThisEntry->Object;
+    ThisEntry->Object = ObjDesc;
 
 
     /* 
@@ -542,13 +538,10 @@ NsDetachObject (
 
     /* Not every value is an object allocated via CmCallocate, must check */
 
-    if (!TbSystemTablePointer (ObjDesc)) /*&&
-        !VALID_DESCRIPTOR_TYPE      (ObjDesc, DESC_TYPE_NTE))*/
+    if (!TbSystemTablePointer (ObjDesc))
     {
+        /* Attempt to delete the object (and all subobjects) */
 
-        /* Delete the object (and all subobjects) */
-
-        CmUpdateObjectReference (ObjDesc, REF_DECREMENT);   /* Removed from Namespace */
         CmDeleteInternalObject (ObjDesc);
     }
 
@@ -605,7 +598,7 @@ IsNsObject (
 
     FUNCTION_TRACE ("IsNsObject");
 
-    RetHandle = NsFindAttachedObject (ObjDesc, NS_ALL, ACPI_INT_MAX);
+    RetHandle = NsFindAttachedObject (ObjDesc, NS_ALL, ACPI_INT32_MAX);
 
     return_VALUE ((RetHandle != (ACPI_HANDLE) 0));
 }
