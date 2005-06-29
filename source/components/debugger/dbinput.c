@@ -280,7 +280,7 @@ DbDisplayHelp (void)
     OsdPrintf ("History                             Display command history buffer\n");
     OsdPrintf ("Level [<DebugLevel>] [console]      Get/Set debug level for file or console\n");
     OsdPrintf ("Method                              Display list of loaded control methods\n");
-    OsdPrintf ("Namespace [<Address>|<Namepath>]    Display loaded namespace tree or subtree\n");
+    OsdPrintf ("Namespace [<Addr>|<Path>] [Depth]   Display loaded namespace tree/subtree\n");
     OsdPrintf ("Notify <NamePath> <Value>           Send a notification\n");
     OsdPrintf ("Objects <ObjectType>                Display all objects of the given type\n");
     OsdPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
@@ -652,7 +652,7 @@ DbCommandDispatch (
         break;
 
     case CMD_NAMESPACE:
-        DbDumpNamespace (Args[1]);
+        DbDumpNamespace (Args[1], Args[2]);
         break;
 
     case CMD_NOTIFY:
