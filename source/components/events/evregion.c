@@ -309,7 +309,7 @@ EvAddressSpaceDispatch (
     if (Obj->Region.SpaceId == ADDRESS_SPACE_PCI_CONFIG)
     {
         /*
-         *  BUGBUG: This is pretty bogus.  There's got to be a better way
+         *  TBD: This is pretty bogus.  There's got to be a better way
          *
          *  For PCI Config space access, we have to pass the device and function
          *  number too.  The region object has this since it will vary from
@@ -336,7 +336,15 @@ EvAddressSpaceDispatch (
         AmlExitInterpreter ();
     }
 
+	/* Invoke the handler */
+
     Status = Handler (Function, Address, BitWidth, Value, Context);
+
+	if (ACPI_FAILURE (Status))
+	{
+		DEBUG_PRINT (ACPI_ERROR, ("EvAddressSpaceDispatch: %s from handler, SpaceID %d\n", 
+						CmFormatException (Status), Obj->Region.SpaceId));
+	}
 
     if (!(Flags & AH_DEFAULT_HANDLER))
     {
@@ -428,15 +436,6 @@ EvDisassociateRegionFromHandler(
 
             RegionObj->Region.AddrHandler = NULL;
 
-            /*
-             *  Remove handler reference in the region and
-             *  the region reference in the handler
-             */
-/* TBRM
-            CmUpdateObjectReference (RegionObj, REF_DECREMENT);
-            CmUpdateObjectReference (HandlerObj, REF_DECREMENT);
-*/
-
             return_VOID;
 
         } /* found the right handler */
@@ -456,7 +455,7 @@ EvDisassociateRegionFromHandler(
 
     return_VOID;
     
-}  /* EvDisassociateRegionAndHandler */
+}
 
 
 /******************************************************************************
@@ -491,15 +490,6 @@ EvAssociateRegionAndHandler(
     ACPI_ASSERT (RegionObj->Region.AddrHandler == 0);
 
     /*
-     *  We need to update the reference for the handler and the region
-     */
-/* TBRM
-    CmUpdateObjectReference (HandlerObj, REF_INCREMENT);
-
-    CmUpdateObjectReference (RegionObj, REF_INCREMENT);
-*/
-
-    /*
      *  Link this region to the front of the handler's list
      */
 
@@ -517,8 +507,7 @@ EvAssociateRegionAndHandler(
     Status = EvExecuteRegMethod (RegionObj, 1);
 
     return_ACPI_STATUS (Status);
-
-}  /* EvAssociateRegionAndHandler */
+}
 
 
 /****************************************************************************
