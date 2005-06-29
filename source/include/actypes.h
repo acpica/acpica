@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.160 $
+ *       $Revision: 1.161 $
  *
  *****************************************************************************/
 
@@ -393,11 +393,17 @@ typedef UINT8                           OBJECT_TYPE_INTERNAL;
 #define ACPI_BTYPE_DDB_HANDLE           0x00004000
 #define ACPI_BTYPE_DEBUG_OBJECT         0x00008000
 #define ACPI_BTYPE_REFERENCE            0x00010000
-#define ACPI_COMPUTATIONAL_DATA         (ACPI_BTYPE_NUMBER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER)
-#define ACPI_DATA                       (ACPI_COMPUTATIONAL_DATA | ACPI_BTYPE_PACKAGE)
-#define ACPI_DATA_REFERENCE             (ACPI_DATA | ACPI_BTYPE_REFERENCE | ACPI_BTYPE_DDB_HANDLE)
-#define ACPI_TEMP_STORE                 0x0001FFFF  /* ARG or LOCAL */
-#define ACPI_BTYPE_ALL_OBJECTS          0x0000FFFF
+#define ACPI_BTYPE_RESOURCE             0x00020000
+
+#define ACPI_BTYPE_COMPUTE_DATA         (ACPI_BTYPE_NUMBER | ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER)
+
+#define ACPI_BTYPE_DATA                 (ACPI_BTYPE_COMPUTE_DATA  | ACPI_BTYPE_PACKAGE)
+#define ACPI_BTYPE_DATA_REFERENCE       (ACPI_BTYPE_DATA | ACPI_BTYPE_REFERENCE | ACPI_BTYPE_DDB_HANDLE)
+#define ACPI_BTYPE_DEVICE_OBJECTS       (ACPI_BTYPE_DEVICE | ACPI_BTYPE_THERMAL | ACPI_BTYPE_PROCESSOR)
+#define ACPI_BTYPE_OBJECTS_AND_REFS     0x00017FFF  /* ARG or LOCAL */
+#define ACPI_BTYPE_ALL_OBJECTS          0x00007FFF
+
+
 
 #define ACPI_TYPE_ANY                   0  /* 0x00  */
 #define ACPI_TYPE_NUMBER                1  /* 0x01  Byte/Word/Dword/Zero/One/Ones */
