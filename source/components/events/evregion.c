@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
- *              $Revision: 1.81 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -312,7 +312,7 @@ AcpiEvAddressSpaceDispatch (
     {
         DEBUG_PRINT (TRACE_OPREGION,
             ("Dispatch address access region 0x%p, no handler\n", RegionObj));
-        return_ACPI_STATUS(AE_EXIST);
+        return_ACPI_STATUS(AE_NOT_EXIST);
     }
 
     /*
@@ -434,12 +434,13 @@ AcpiEvDisassociateRegionFromHandler(
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     **LastObjPtr;
     ADDRESS_SPACE_SETUP     RegionSetup;
-    void                    *RegionContext = RegionObj->Region.Extra->Extra.RegionContext;
+    void                    *RegionContext;
     ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("EvDisassociateRegionFromHandler");
 
+    RegionContext = RegionObj->Region.Extra->Extra.RegionContext;
 
     /*
      *  Get the address handler from the region object
