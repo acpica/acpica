@@ -312,14 +312,17 @@ typedef enum {
 
 typedef struct nte
 {
-    UINT32          NameSeg;        /* name segment, always 4 chars per ACPI spec.
+    UINT32          Name;           /* Name segment, always 4 chars per ACPI spec.
                                      * NameSeg must be the first field in the nte
                                      * -- see the IsNsHandle macro in acpinmsp.h
                                      */
-    struct nte      *ChildScope;    /* next level of names */
-    struct nte      *ParentScope;   /* previous level of names */
-    NsType          NtType;         /* type associated with name */
-    void            *ptrVal;        /* pointer to value */
+    struct nte      *Scope;         /* Scope owned by this name */
+    struct nte      *ParentScope;   /* Previous level of names */
+    struct nte      *ParentEntry;   /* Actual parent NTE */
+    struct nte      *NextEntry;     /* Next within this scope */
+    struct nte      *PrevEntry;     /* Previous within this scope */
+    NsType          Type;           /* Type associated with this name */
+    void            *Value;         /* Pointer to value associated with this name */
 } nte;
 
 #define NOTFOUND    (nte *)0
@@ -329,14 +332,21 @@ typedef struct nte
 
 typedef struct
 {
-    nte         *Scope;
+    nte             *Scope;
     /* 
      * Type of scope, typically the same as the type of its parent's entry 
      * (but not the same as the type of its parent's scope).
      */
-    NsType      Type;   
+    NsType          Type;   
 } SCOPE_STACK;    
 
+
+typedef struct 
+{
+    char            *SearchFor;
+    NsHandle        *List;
+    INT32           *Count;
+} FIND_CONTEXT;
 
 
 
