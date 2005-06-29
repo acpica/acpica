@@ -741,13 +741,13 @@ BREAKPOINT3;
 
                             /* Execute the Method, passing the stacked args */
                             
-                            Status = AmlExecuteMethod (MthDesc->Method.Pcode + 1, 
-                                                        MthDesc->Method.PcodeLength - 1,
-                                                        AmlObjStackGetPtr (StackOffset -1));
+                            Status = AmlExecute (MthDesc->Method.Pcode + 1, 
+                                                 MthDesc->Method.PcodeLength - 1,
+                                                 AmlObjStackGetPtr (StackOffset -1));
 
                             CurrentStackTop = AmlObjStackLevel ();
 
-                            DEBUG_PRINT (TRACE_LOAD, ("After AmlExecuteMethod, PreviousTOS=%d  CurrentTOS=%d\n",
+                            DEBUG_PRINT (TRACE_LOAD, ("After AmlExecute, PreviousTOS=%d  CurrentTOS=%d\n",
                                             PreviousStackTop, CurrentStackTop));
 
                             if (AE_RETURN_VALUE == Status)
