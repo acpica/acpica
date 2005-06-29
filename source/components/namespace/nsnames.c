@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.51 $
+ *              $Revision: 1.59 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -122,7 +122,7 @@
 #include "acnamesp.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsnames")
 
 
@@ -182,7 +182,7 @@ AcpiNsGetTablePathname (
 
     /* Allocate a buffer to be returned to caller */
 
-    NameBuffer = AcpiCmCallocate (Size + 1);
+    NameBuffer = AcpiUtCallocate (Size + 1);
     if (!NameBuffer)
     {
         REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
@@ -209,11 +209,51 @@ AcpiNsGetTablePathname (
 
     if (Size != 0)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("NsGetTablePathname:  Bad pointer returned; size=%X\n", Size));
+        DEBUG_PRINTP (ACPI_ERROR, ("Bad pointer returned; size=%X\n", Size));
     }
 
     return_PTR (NameBuffer);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetPathnameLength
+ *
+ * PARAMETERS:  Node        - Namespace node
+ *
+ * RETURN:      Length of path, including prefix
+ *
+ * DESCRIPTION: Get the length of the pathname string for this node
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiNsGetPathnameLength (
+    ACPI_NAMESPACE_NODE     *Node)
+{
+    UINT32                  Size;
+    ACPI_NAMESPACE_NODE     *NextNode;
+
+    /*
+     * Compute length of pathname as 5 * number of name segments.
+     * Go back up the parent tree to the root
+     */
+    for (Size = 0, NextNode = Node;
+          AcpiNsGetParentObject (NextNode);
+          NextNode = AcpiNsGetParentObject (NextNode))
+    {
+        Size += PATH_SEGMENT_LENGTH;
+    }
+
+    /* Special case for size still 0 - no parent for "special" nodes */
+
+    if (!Size)
+    {
+        Size = PATH_SEGMENT_LENGTH;
+    }
+
+    return (Size + 1);
 }
 
 
@@ -242,16 +282,15 @@ AcpiNsHandleToPathname (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_NAMESPACE_NODE     *NextNode;
     UINT32                  PathLength;
-    UINT32                  Size;
     UINT32                  UserBufSize;
     ACPI_NAME               Name;
+    UINT32                  Size;
 
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
 
-    if (!AcpiGbl_RootNode || !TargetHandle)
+    if (!AcpiGbl_RootNode)
     {
         /*
          * If the name space has not been initialized,
@@ -267,27 +306,12 @@ AcpiNsHandleToPathname (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /*
-     * Compute length of pathname as 5 * number of name segments.
-     * Go back up the parent tree to the root
-     */
-    for (Size = 0, NextNode = Node;
-          AcpiNsGetParentObject (NextNode);
-          NextNode = AcpiNsGetParentObject (NextNode))
-    {
-        Size += PATH_SEGMENT_LENGTH;
-    }
-
-    /* Special case for size still 0 - no parent for "special" nodes */
-
-    if (!Size)
-    {
-        Size = PATH_SEGMENT_LENGTH;
-    }
 
     /* Set return length to the required path length */
 
-    PathLength = Size + 1;
+    PathLength = AcpiNsGetPathnameLength (Node);
+    Size = PathLength - 1;
+
     UserBufSize = *BufSize;
     *BufSize = PathLength;
 
@@ -330,9 +354,7 @@ AcpiNsHandleToPathname (
 
     UserBuffer[Size] = '\\';
 
-    DEBUG_PRINT (TRACE_EXEC,
-        ("NsHandleToPathname: Len=%X, %s \n",
-        PathLength, UserBuffer));
+    DEBUG_PRINTP (TRACE_EXEC, ("Len=%X, %s \n", PathLength, UserBuffer));
 
 Exit:
     return_ACPI_STATUS (Status);
