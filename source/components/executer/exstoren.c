@@ -3,7 +3,7 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.44 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -128,7 +128,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exstoren")
+        ACPI_MODULE_NAME    ("exstoren")
 
 
 /*******************************************************************************
@@ -156,7 +156,7 @@ AcpiExResolveObject (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExResolveObject");
+    ACPI_FUNCTION_TRACE ("ExResolveObject");
 
 
     /*
@@ -177,10 +177,10 @@ AcpiExResolveObject (
     case ACPI_TYPE_STRING:
     case ACPI_TYPE_BUFFER:
 
-        /* 
+        /*
          * Stores into a Field/Region or into a Integer/Buffer/String
-         * are all essentially the same.  This case handles the 
-         * "interchangeable" types Integer, String, and Buffer. 
+         * are all essentially the same.  This case handles the
+         * "interchangeable" types Integer, String, and Buffer.
          */
         if (SourceDesc->Common.Type == INTERNAL_TYPE_REFERENCE)
         {
@@ -241,7 +241,7 @@ AcpiExResolveObject (
  * FUNCTION:    AcpiExStoreObjectToObject
  *
  * PARAMETERS:  SourceDesc          - Object to store
- *              DestDesc            - Object to recieve a copy of the source
+ *              DestDesc            - Object to receive a copy of the source
  *              NewDesc             - New object if DestDesc is obsoleted
  *              WalkState           - Current walk state
  *
@@ -282,7 +282,7 @@ AcpiExStoreObjectToObject (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("AcpiExStoreObjectToObject", SourceDesc);
+    ACPI_FUNCTION_TRACE_PTR ("AcpiExStoreObjectToObject", SourceDesc);
 
 
     ActualSrcDesc = SourceDesc;
@@ -304,11 +304,11 @@ AcpiExStoreObjectToObject (
          * Perform the "implicit conversion" of the source to the current type
          * of the target as per the ACPI specification.
          *
-         * If no conversion performed, ActualSrcDesc = SourceDesc.  
-         * Otherwise, ActualSrcDesc is a temporary object to hold the 
+         * If no conversion performed, ActualSrcDesc = SourceDesc.
+         * Otherwise, ActualSrcDesc is a temporary object to hold the
          * converted object.
          */
-        Status = AcpiExConvertToTargetType (DestDesc->Common.Type, SourceDesc, 
+        Status = AcpiExConvertToTargetType (DestDesc->Common.Type, SourceDesc,
                         &ActualSrcDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
