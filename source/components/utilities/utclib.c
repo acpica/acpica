@@ -153,7 +153,7 @@
 
 NATIVE_UINT
 AcpiCmStrlen (
-    const char              *String)
+    const INT8              *String)
 {
     NATIVE_UINT             Length = 0;
 
@@ -166,7 +166,7 @@ AcpiCmStrlen (
         String++;
     }
 
-    return Length;
+    return (Length);
 }
 
 
@@ -183,12 +183,12 @@ AcpiCmStrlen (
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiCmStrcpy (
-    char                    *DstString,
-    const char              *SrcString)
+    INT8                    *DstString,
+    const INT8              *SrcString)
 {
-    char                    *String = DstString;
+    INT8                    *String = DstString;
 
 
     /* Move bytes brute force */
@@ -205,7 +205,7 @@ AcpiCmStrcpy (
 
     *String = 0;
 
-    return DstString;
+    return (DstString);
 }
 
 
@@ -223,13 +223,13 @@ AcpiCmStrcpy (
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiCmStrncpy (
-    char                    *DstString,
-    const char              *SrcString,
+    INT8                    *DstString,
+    const INT8              *SrcString,
     NATIVE_UINT             Count)
 {
-    char                    *String = DstString;
+    INT8                    *String = DstString;
 
 
     /* Copy the string */
@@ -248,7 +248,7 @@ AcpiCmStrncpy (
 
     /* Return original pointer */
 
-    return DstString;
+    return (DstString);
 }
 
 
@@ -267,8 +267,8 @@ AcpiCmStrncpy (
 
 UINT32
 AcpiCmStrcmp (
-    const char              *String1,
-    const char              *String2)
+    const INT8              *String1,
+    const INT8              *String2)
 {
 
 
@@ -276,12 +276,12 @@ AcpiCmStrcmp (
     {
         if (!*String1++)
         {
-            return 0;
+            return (0);
         }
     }
 
 
-    return (unsigned char) *String1 - (unsigned char) *String2;
+    return ((unsigned char) *String1 - (unsigned char) *String2);
 }
 
 
@@ -301,8 +301,8 @@ AcpiCmStrcmp (
 
 UINT32
 AcpiCmStrncmp (
-    const char              *String1,
-    const char              *String2,
+    const INT8              *String1,
+    const INT8              *String2,
     NATIVE_UINT             Count)
 {
 
@@ -311,12 +311,12 @@ AcpiCmStrncmp (
     {
         if (!*String1++)
         {
-            return 0;
+            return (0);
         }
     }
 
-    return (Count == -1) ? 0 : ((unsigned char) *String1 -
-        (unsigned char) *String2);
+    return ((Count == -1) ? 0 : ((unsigned char) *String1 -
+        (unsigned char) *String2));
 }
 
 
@@ -333,12 +333,12 @@ AcpiCmStrncmp (
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiCmStrcat (
-    char                    *DstString,
-    const char              *SrcString)
+    INT8                    *DstString,
+    const INT8              *SrcString)
 {
-    char                    *String;
+    INT8                    *String;
 
 
     /* Find end of the destination string */
@@ -351,7 +351,7 @@ AcpiCmStrcat (
     for (--String; (*String++ = *SrcString++); )
     { ; }
 
-    return DstString;
+    return (DstString);
 }
 
 
@@ -370,13 +370,13 @@ AcpiCmStrcat (
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiCmStrncat (
-    char                    *DstString,
-    const char              *SrcString,
+    INT8                    *DstString,
+    const INT8              *SrcString,
     NATIVE_UINT             Count)
 {
-    char                    *String;
+    INT8                    *String;
 
 
     if (Count)
@@ -399,7 +399,7 @@ AcpiCmStrncat (
         }
     }
 
-    return DstString;
+    return (DstString);
 }
 
 
@@ -423,8 +423,8 @@ AcpiCmMemcpy (
     const void              *Src,
     NATIVE_UINT             Count)
 {
-    char                    *New = (char *) Dest;
-    char                    *Old = (char *) Src;
+    INT8                    *New = (INT8 *) Dest;
+    INT8                    *Old = (INT8 *) Src;
 
 
     while (Count)
@@ -435,7 +435,7 @@ AcpiCmMemcpy (
         Count--;
     }
 
-    return Dest;
+    return (Dest);
 }
 
 
@@ -459,7 +459,7 @@ AcpiCmMemset (
     INT32                   Value,
     NATIVE_UINT             Count)
 {
-    char                    *New = (char *) Dest;
+    INT8                    *New = (INT8 *) Dest;
 
 
     while (Count)
@@ -469,7 +469,7 @@ AcpiCmMemset (
         Count--;
     }
 
-    return Dest;
+    return (Dest);
 }
 
 
@@ -488,7 +488,7 @@ AcpiCmMemset (
 #define _UP     0x01    /* 'A'-'Z' */
 #define _XD     0x80    /* '0'-'9', 'A'-'F', 'a'-'f' */
 
-const unsigned char _ctype[257] = {
+const UINT8 _ctype[257] = {
     _CN,            /* 0x0      0.     */
     _CN,            /* 0x1      1.     */
     _CN,            /* 0x2      2.     */
@@ -688,11 +688,11 @@ AcpiCmToLower (
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiCmStrupr (
-    char                    *SrcString)
+    INT8                    *SrcString)
 {
-    char                    *String;
+    INT8                    *String;
 
 
     /* Walk entire string, uppercasing the letters */
@@ -704,7 +704,7 @@ AcpiCmStrupr (
     }
 
 
-    return SrcString;
+    return (SrcString);
 }
 
 
@@ -723,17 +723,17 @@ AcpiCmStrupr (
  *
  ******************************************************************************/
 
-char *
+INT8 *
 AcpiCmStrstr (
-    char                    *String1,
-    char                    *String2)
+    INT8                    *String1,
+    INT8                    *String2)
 {
-    char                    *String;
+    INT8                    *String;
 
 
     if (AcpiCmStrlen (String2) > AcpiCmStrlen (String1))
     {
-        return NULL;
+        return (NULL);
     }
 
     /* Walk entire string, uppercasing the letters */
@@ -742,7 +742,7 @@ AcpiCmStrstr (
     {
         if (*String2 != *String)
         {
-            return NULL;
+            return (NULL);
         }
 
         String2++;
@@ -750,7 +750,7 @@ AcpiCmStrstr (
     }
 
 
-    return String1;
+    return (String1);
 }
 
 
@@ -770,14 +770,14 @@ AcpiCmStrstr (
 
 UINT32
 AcpiCmStrtoul (
-    const char              *String,
-    char                    **Terminator,
+    const INT8              *String,
+    INT8                    **Terminator,
     INT32                   Base)
 {
     UINT32                  converted = 0;
     INT32                   index;
     UINT32                  sign;
-    const char              *StringStart;
+    const INT8              *StringStart;
     UINT32                  ReturnValue = 0;
     ACPI_STATUS             Status = AE_OK;
 
@@ -925,12 +925,12 @@ done:
     {
         if (converted == 0 && ReturnValue == 0L && String != NULL)
         {
-            *Terminator = (char *) StringStart;
+            *Terminator = (INT8 *) StringStart;
         }
 
         else
         {
-            *Terminator = (char *) String;
+            *Terminator = (INT8 *) String;
         }
     }
 

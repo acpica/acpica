@@ -161,12 +161,12 @@ AcpiCmSearchAllocList (
     {
         if (Element == NULL)
         {
-            return NULL;
+            return (NULL);
         }
 
         if (Element->Address == Address)
         {
-            return Element;
+            return (Element);
         }
 
         Element = Element->Next;

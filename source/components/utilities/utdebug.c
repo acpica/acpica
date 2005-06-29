@@ -137,7 +137,7 @@ INT32
 GetDebugLevel (void)
 {
 
-    return AcpiDbgLevel;
+    return (AcpiDbgLevel);
 }
 
 void
@@ -167,16 +167,18 @@ SetDebugLevel (
 
 void
 FunctionTrace (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *FunctionName)
+    INT8                    *FunctionName)
 {
 
     AcpiGbl_NestingLevel++;
 
-    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s\n", AcpiGbl_NestingLevel, FunctionName);
+    DebugPrint (ModuleName, LineNumber, ComponentId,
+                TRACE_FUNCTIONS,
+                " %2.2ld Entered Function: %s\n",
+                AcpiGbl_NestingLevel, FunctionName);
 }
 
 
@@ -199,10 +201,10 @@ FunctionTrace (
 
 void
 FunctionTracePtr (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *FunctionName,
+    INT8                    *FunctionName,
     void                    *Pointer)
 {
 
@@ -232,11 +234,11 @@ FunctionTracePtr (
 
 void
 FunctionTraceStr (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *FunctionName,
-    char                    *String)
+    INT8                    *FunctionName,
+    INT8                    *String)
 {
 
     AcpiGbl_NestingLevel++;
@@ -265,10 +267,10 @@ FunctionTraceStr (
 
 void
 FunctionTraceU32 (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *FunctionName,
+    INT8                    *FunctionName,
     UINT32                  Integer)
 {
 
@@ -297,14 +299,16 @@ FunctionTraceU32 (
 
 void
 FunctionExit (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *FunctionName)
+    INT8                    *FunctionName)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s\n", AcpiGbl_NestingLevel, FunctionName);
+                " %2.2ld Exiting Function: %s\n",
+                AcpiGbl_NestingLevel, FunctionName);
+
     AcpiGbl_NestingLevel--;
 }
 
@@ -328,25 +332,31 @@ FunctionExit (
 
 void
 FunctionStatusExit (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *FunctionName,
+    INT8                    *FunctionName,
     ACPI_STATUS             Status)
 {
 
     if (Status > ACPI_MAX_STATUS)
     {
-        DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                    " %2.2ld Exiting Function: %s, [Unknown Status] 0x%X\n",
-                    AcpiGbl_NestingLevel, FunctionName, Status);
+        DebugPrint (ModuleName, LineNumber, ComponentId,
+            TRACE_FUNCTIONS,
+            " %2.2ld Exiting Function: %s, [Unknown Status] 0x%X\n",
+            AcpiGbl_NestingLevel,
+            FunctionName,
+            Status);
     }
 
     else
     {
-        DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                    " %2.2ld Exiting Function: %s, %s\n",
-                    AcpiGbl_NestingLevel, FunctionName, AcpiCmFormatException (Status));
+        DebugPrint (ModuleName, LineNumber, ComponentId,
+            TRACE_FUNCTIONS,
+            " %2.2ld Exiting Function: %s, %s\n",
+            AcpiGbl_NestingLevel,
+            FunctionName,
+            AcpiCmFormatException (Status));
     }
 
     AcpiGbl_NestingLevel--;
@@ -372,16 +382,17 @@ FunctionStatusExit (
 
 void
 FunctionValueExit (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *FunctionName,
+    INT8                    *FunctionName,
     NATIVE_UINT             Value)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2ld Exiting Function: %s, 0x%X\n",
                 AcpiGbl_NestingLevel, FunctionName, Value);
+
     AcpiGbl_NestingLevel--;
 }
 
@@ -405,16 +416,17 @@ FunctionValueExit (
 
 void
 FunctionPtrExit (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *FunctionName,
-    char                    *Ptr)
+    INT8                    *FunctionName,
+    INT8                    *Ptr)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2ld Exiting Function: %s, 0x%p\n",
                 AcpiGbl_NestingLevel, FunctionName, Ptr);
+
     AcpiGbl_NestingLevel--;
 }
 
@@ -439,11 +451,11 @@ FunctionPtrExit (
 
 void
 DebugPrint (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
     INT32                   PrintLevel,
-    char                    *Format,
+    INT8                    *Format,
     ...)
 {
     va_list                 args;
@@ -451,12 +463,13 @@ DebugPrint (
 
     /* Both the level and the component must be enabled */
 
-    if ((PrintLevel & AcpiDbgLevel) && (ComponentId & AcpiDbgLayer))
+    if ((PrintLevel & AcpiDbgLevel) &&
+        (ComponentId & AcpiDbgLayer))
     {
         va_start (args, Format);
 
-        AcpiOsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
-        AcpiOsdVprintf (Format, args);
+        AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+        AcpiOsVprintf (Format, args);
     }
 }
 
@@ -478,12 +491,12 @@ DebugPrint (
 
 void
 DebugPrintPrefix (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber)
 {
 
 
-    AcpiOsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+    AcpiOsPrintf ("%8s-%04d: ", ModuleName, LineNumber);
 }
 
 
@@ -502,7 +515,7 @@ DebugPrintPrefix (
 
 void
 DebugPrintRaw (
-    char                    *Format,
+    INT8                    *Format,
     ...)
 {
     va_list                 args;
@@ -510,7 +523,7 @@ DebugPrintRaw (
 
     va_start (args, Format);
 
-    AcpiOsdVprintf (Format, args);
+    AcpiOsVprintf (Format, args);
 
     va_end (args);
 }
@@ -532,7 +545,7 @@ DebugPrintRaw (
 
 void
 AcpiCmDumpBuffer (
-    char                    *Buffer,
+    INT8                    *Buffer,
     UINT32                  Count,
     UINT32                  Display,
     INT32                   ComponentId)
@@ -545,7 +558,8 @@ AcpiCmDumpBuffer (
 
     /* Only dump the buffer if tracing is enabled */
 
-    if (!((TRACE_TABLES & AcpiDbgLevel) && (ComponentId & AcpiDbgLayer)))
+    if (!((TRACE_TABLES & AcpiDbgLevel) &&
+        (ComponentId & AcpiDbgLayer)))
     {
         return;
     }
@@ -558,7 +572,7 @@ AcpiCmDumpBuffer (
     {
         /* Print current offset */
 
-        AcpiOsdPrintf ("%05X    ", i);
+        AcpiOsPrintf ("%05X    ", i);
 
 
         /* Print 16 hex chars */
@@ -567,11 +581,11 @@ AcpiCmDumpBuffer (
         {
             if (i + j >= Count)
             {
-                AcpiOsdPrintf ("\n");
+                AcpiOsPrintf ("\n");
                 return;
             }
 
-            /* Make sure that the char doesn't get sign-extended! */
+            /* Make sure that the INT8 doesn't get sign-extended! */
 
             switch (Display)
             {
@@ -579,34 +593,39 @@ AcpiCmDumpBuffer (
 
             default:
 
-                AcpiOsdPrintf ("%02X ", *((UINT8 *) &Buffer[i + j]));
+                AcpiOsPrintf ("%02X ",
+                        *((UINT8 *) &Buffer[i + j]));
                 j += 1;
                 break;
 
 
             case DB_WORD_DISPLAY:
 
-                MOVE_UNALIGNED16_TO_32 (&Temp32, &Buffer[i + j]);
-                AcpiOsdPrintf ("%04X ", Temp32);
+                MOVE_UNALIGNED16_TO_32 (&Temp32,
+                                        &Buffer[i + j]);
+                AcpiOsPrintf ("%04X ", Temp32);
                 j += 2;
                 break;
 
 
             case DB_DWORD_DISPLAY:
 
-                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j]);
-                AcpiOsdPrintf ("%08X ", Temp32);
+                MOVE_UNALIGNED32_TO_32 (&Temp32,
+                                        &Buffer[i + j]);
+                AcpiOsPrintf ("%08X ", Temp32);
                 j += 4;
                 break;
 
 
             case DB_QWORD_DISPLAY:
 
-                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j]);
-                AcpiOsdPrintf ("%08X", Temp32);
+                MOVE_UNALIGNED32_TO_32 (&Temp32,
+                                        &Buffer[i + j]);
+                AcpiOsPrintf ("%08X", Temp32);
 
-                MOVE_UNALIGNED32_TO_32 (&Temp32, &Buffer[i + j + 4]);
-                AcpiOsdPrintf ("%08X ", Temp32);
+                MOVE_UNALIGNED32_TO_32 (&Temp32,
+                                        &Buffer[i + j + 4]);
+                AcpiOsPrintf ("%08X ", Temp32);
                 j += 8;
                 break;
             }
@@ -622,7 +641,7 @@ AcpiCmDumpBuffer (
         {
             if (i + j >= Count)
             {
-                AcpiOsdPrintf ("\n");
+                AcpiOsPrintf ("\n");
                 return;
             }
 
@@ -631,17 +650,17 @@ AcpiCmDumpBuffer (
                 (BufChar > 0x2F && BufChar < 0x61) ||
                 (BufChar > 0x60 && BufChar < 0x7F))
             {
-                AcpiOsdPrintf ("%c", BufChar);
+                AcpiOsPrintf ("%c", BufChar);
             }
             else
             {
-                AcpiOsdPrintf (".");
+                AcpiOsPrintf (".");
             }
         }
 
         /* Done with that line. */
 
-        AcpiOsdPrintf ("\n");
+        AcpiOsPrintf ("\n");
         i += 16;
     }
 
