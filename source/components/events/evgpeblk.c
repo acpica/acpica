@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.31 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -253,8 +253,11 @@ AcpiEvDeleteGpeHandlers (
     ACPI_GPE_BLOCK_INFO     *GpeBlock)
 {
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
-    UINT32                  i;
-    UINT32                  j;
+    ACPI_NATIVE_UINT        i;
+    ACPI_NATIVE_UINT        j;
+
+
+    ACPI_FUNCTION_TRACE ("EvDeleteGpeHandlers");
 
 
     /* Examine each GPE Register within the block */
@@ -276,7 +279,7 @@ AcpiEvDeleteGpeHandlers (
         }
     }
 
-    return (AE_OK);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -314,12 +317,13 @@ AcpiEvSaveMethodInfo (
     UINT32                  GpeNumber;
     char                    Name[ACPI_NAME_SIZE + 1];
     UINT8                   Type;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE ("EvSaveMethodInfo");
 
 
-    /* 
+    /*
      * _Lxx and _Exx GPE method support
      *
      * 1) Extract the name from the object and convert to a string
@@ -394,12 +398,12 @@ AcpiEvSaveMethodInfo (
 
     /* Update enable mask, but don't enable the HW GPE as of yet */
 
-    AcpiEvEnableGpe (GpeEventInfo, FALSE);
+    Status = AcpiEvEnableGpe (GpeEventInfo, FALSE);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_LOAD,
         "Registered GPE method %s as GPE number 0x%.2X\n",
         Name, GpeNumber));
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -425,7 +429,7 @@ AcpiEvMatchPrwAndGpe (
     void                    **ReturnValue)
 {
     ACPI_GPE_WALK_INFO      *GpeInfo = (void *) Info;
-    ACPI_NAMESPACE_NODE     *GpeDevice; 
+    ACPI_NAMESPACE_NODE     *GpeDevice;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_NAMESPACE_NODE     *TargetGpeDevice;
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
@@ -517,8 +521,12 @@ AcpiEvMatchPrwAndGpe (
         /* Mark GPE for WAKE-ONLY but WAKE_DISABLED */
 
         GpeEventInfo->Flags &= ~(ACPI_GPE_WAKE_ENABLED | ACPI_GPE_RUN_ENABLED);
-        AcpiEvSetGpeType (GpeEventInfo, ACPI_GPE_TYPE_WAKE);
-        AcpiEvUpdateGpeEnableMasks (GpeEventInfo, ACPI_GPE_DISABLE);
+        Status = AcpiEvSetGpeType (GpeEventInfo, ACPI_GPE_TYPE_WAKE);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Cleanup;
+        }
+        Status = AcpiEvUpdateGpeEnableMasks (GpeEventInfo, ACPI_GPE_DISABLE);
     }
 
 Cleanup:
@@ -1048,9 +1056,9 @@ AcpiEvCreateGpeBlock (
      */
     if (AcpiGbl_LeaveWakeGpesDisabled)
     {
-        /* 
+        /*
          * Differentiate RUNTIME vs WAKE GPEs, via the _PRW control methods.
-         * (Each GPE that has one or more _PRWs that reference it is by 
+         * (Each GPE that has one or more _PRWs that reference it is by
          * definition a WAKE GPE and will not be enabled while the machine
          * is running.)
          */
@@ -1062,8 +1070,8 @@ AcpiEvCreateGpeBlock (
                         &GpeInfo, NULL);
     }
 
-    /* 
-     * Enable all GPEs in this block that are 1) "runtime" or "run/wake" GPEs, 
+    /*
+     * Enable all GPEs in this block that are 1) "runtime" or "run/wake" GPEs,
      * and 2) have a corresponding _Lxx or _Exx method.  All other GPEs must
      * be enabled via the AcpiEnableGpe() external interface.
      */
@@ -1083,7 +1091,7 @@ AcpiEvCreateGpeBlock (
             {
                 GpeEnabledCount++;
             }
-            
+
             if (GpeEventInfo->Flags & ACPI_GPE_TYPE_WAKE)
             {
                 WakeGpeCount++;
@@ -1108,8 +1116,8 @@ AcpiEvCreateGpeBlock (
 
     Status = AcpiHwEnableRuntimeGpeBlock (NULL, GpeBlock);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, 
-            "Found %u Wake, Enabled %u Runtime GPEs in this block\n", 
+    ACPI_DEBUG_PRINT ((ACPI_DB_INIT,
+            "Found %u Wake, Enabled %u Runtime GPEs in this block\n",
             WakeGpeCount, GpeEnabledCount));
 
     /* Return the new block */
@@ -1253,7 +1261,7 @@ AcpiEvGpeInitialize (
     {
         /* GPEs are not required by ACPI, this is OK */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INIT, 
+        ACPI_DEBUG_PRINT ((ACPI_DB_INIT,
                 "There are no GPE blocks defined in the FADT\n"));
         Status = AE_OK;
         goto Cleanup;
