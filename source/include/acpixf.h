@@ -287,6 +287,14 @@ AcpiEvaluateObject (
     ACPI_BUFFER             *ReturnObjectBuffer);
 
 ACPI_STATUS
+AcpiEvaluateObjectTyped (
+    ACPI_HANDLE             Object,
+    ACPI_STRING             Pathname,
+    ACPI_OBJECT_LIST        *ExternalParams,
+    ACPI_BUFFER             *ReturnBuffer,
+    ACPI_OBJECT_TYPE        ReturnType);
+
+ACPI_STATUS
 AcpiGetObjectInfo (
     ACPI_HANDLE             Device,
     ACPI_DEVICE_INFO        *Info);
