@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -642,7 +642,7 @@ _CmAllocate (
     UINT32                  Line)
 {
     void                    *Address = NULL;
-    DEBUG_EXEC (\
+    DEBUG_ONLY_MEMBERS (\
     ACPI_STATUS             Status)
 
 
@@ -709,7 +709,7 @@ _CmCallocate (
     UINT32                  Line)
 {
     void                    *Address = NULL;
-    DEBUG_EXEC (\
+    DEBUG_ONLY_MEMBERS (\
     ACPI_STATUS             Status)
 
 
