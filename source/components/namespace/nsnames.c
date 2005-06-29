@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.59 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -151,7 +151,7 @@ AcpiNsGetTablePathname (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    FUNCTION_TRACE_PTR ("AcpiNsGetTablePathname", Node);
+    FUNCTION_TRACE_PTR ("NsGetTablePathname", Node);
 
 
     if (!AcpiGbl_RootNode || !Node)
@@ -182,7 +182,7 @@ AcpiNsGetTablePathname (
 
     /* Allocate a buffer to be returned to caller */
 
-    NameBuffer = AcpiUtCallocate (Size + 1);
+    NameBuffer = ACPI_MEM_CALLOCATE (Size + 1);
     if (!NameBuffer)
     {
         REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
@@ -209,7 +209,7 @@ AcpiNsGetTablePathname (
 
     if (Size != 0)
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Bad pointer returned; size=%X\n", Size));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad pointer returned; size=%X\n", Size));
     }
 
     return_PTR (NameBuffer);
@@ -235,6 +235,10 @@ AcpiNsGetPathnameLength (
     UINT32                  Size;
     ACPI_NAMESPACE_NODE     *NextNode;
 
+
+    FUNCTION_ENTRY ();
+
+
     /*
      * Compute length of pathname as 5 * number of name segments.
      * Go back up the parent tree to the root
@@ -244,13 +248,6 @@ AcpiNsGetPathnameLength (
           NextNode = AcpiNsGetParentObject (NextNode))
     {
         Size += PATH_SEGMENT_LENGTH;
-    }
-
-    /* Special case for size still 0 - no parent for "special" nodes */
-
-    if (!Size)
-    {
-        Size = PATH_SEGMENT_LENGTH;
     }
 
     return (Size + 1);
@@ -287,6 +284,7 @@ AcpiNsHandleToPathname (
     ACPI_NAME               Name;
     UINT32                  Size;
 
+
     FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
 
@@ -296,11 +294,10 @@ AcpiNsHandleToPathname (
          * If the name space has not been initialized,
          * this function should not have been called.
          */
-
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
-    Node = AcpiNsConvertHandleToEntry (TargetHandle);
+    Node = AcpiNsMapHandleToNode (TargetHandle);
     if (!Node)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -320,6 +317,13 @@ AcpiNsHandleToPathname (
     if (PathLength > UserBufSize)
     {
         Status = AE_BUFFER_OVERFLOW;
+        goto Exit;
+    }
+
+    if (Size < ACPI_NAME_SIZE)
+    {
+        UserBuffer[0] = '\\';
+        UserBuffer[1] = 0;
         goto Exit;
     }
 
@@ -351,10 +355,9 @@ AcpiNsHandleToPathname (
      * Overlay the "." preceding the first segment with
      * the root name "\"
      */
-
     UserBuffer[Size] = '\\';
 
-    DEBUG_PRINTP (TRACE_EXEC, ("Len=%X, %s \n", PathLength, UserBuffer));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Len=%X, %s \n", PathLength, UserBuffer));
 
 Exit:
     return_ACPI_STATUS (Status);
