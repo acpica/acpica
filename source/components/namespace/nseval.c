@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.106 $
+ *              $Revision: 1.109 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nseval")
+        ACPI_MODULE_NAME    ("nseval")
 
 
 /*******************************************************************************
@@ -165,7 +165,7 @@ AcpiNsEvaluateRelative (
     ACPI_GENERIC_STATE      ScopeInfo;
 
 
-    FUNCTION_TRACE ("NsEvaluateRelative");
+    ACPI_FUNCTION_TRACE ("NsEvaluateRelative");
 
 
     /*
@@ -186,12 +186,16 @@ AcpiNsEvaluateRelative (
 
     /* Get the prefix handle and Node */
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     PrefixNode = AcpiNsMapHandleToNode (Handle);
     if (!PrefixNode)
     {
-        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         Status = AE_BAD_PARAMETER;
         goto Cleanup;
     }
@@ -200,10 +204,10 @@ AcpiNsEvaluateRelative (
 
     ScopeInfo.Scope.Node = PrefixNode;
     Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY,
-                            IMODE_EXECUTE, NS_NO_UPSEARCH, NULL,
+                            ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH, NULL,
                             &Node);
 
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
     {
@@ -262,7 +266,7 @@ AcpiNsEvaluateByName (
     NATIVE_CHAR             *InternalPath = NULL;
 
 
-    FUNCTION_TRACE ("NsEvaluateByName");
+    ACPI_FUNCTION_TRACE ("NsEvaluateByName");
 
 
     /* Build an internal name string for the method */
@@ -273,15 +277,19 @@ AcpiNsEvaluateByName (
         return_ACPI_STATUS (Status);
     }
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Lookup the name in the namespace */
 
     Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY,
-                            IMODE_EXECUTE, NS_NO_UPSEARCH, NULL,
+                            ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH, NULL,
                             &Node);
 
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
     {
@@ -346,7 +354,7 @@ AcpiNsEvaluateByHandle (
     ACPI_OPERAND_OBJECT     *LocalReturnObject;
 
 
-    FUNCTION_TRACE ("NsEvaluateByHandle");
+    ACPI_FUNCTION_TRACE ("NsEvaluateByHandle");
 
 
     /* Check if namespace has been initialized */
@@ -372,12 +380,16 @@ AcpiNsEvaluateByHandle (
 
     /* Get the prefix handle and Node */
 
-    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     Node = AcpiNsMapHandleToNode (Handle);
     if (!Node)
     {
-        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -477,7 +489,7 @@ AcpiNsExecuteControlMethod (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("NsExecuteControlMethod");
+    ACPI_FUNCTION_TRACE ("NsExecuteControlMethod");
 
 
     /* Verify that there is a method associated with this object */
@@ -487,7 +499,7 @@ AcpiNsExecuteControlMethod (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No attached method object\n"));
 
-        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
@@ -495,7 +507,7 @@ AcpiNsExecuteControlMethod (
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Control method at Offset %p Length %x]\n",
         ObjDesc->Method.AmlStart + 1, ObjDesc->Method.AmlLength - 1));
 
-    DUMP_PATHNAME (MethodNode, "NsExecuteControlMethod: Executing",
+    ACPI_DUMP_PATHNAME (MethodNode, "NsExecuteControlMethod: Executing",
         ACPI_LV_NAMES, _COMPONENT);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "At offset %p\n",
@@ -509,7 +521,11 @@ AcpiNsExecuteControlMethod (
      * interpreter locks to ensure that no thread is using the portion of the
      * namespace that is being deleted.
      */
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /*
      * Execute the method via the interpreter.  The interpreter is locked
@@ -551,7 +567,7 @@ AcpiNsGetObjectValue (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("NsGetObjectValue");
+    ACPI_FUNCTION_TRACE ("NsGetObjectValue");
 
 
     /*
@@ -568,7 +584,7 @@ AcpiNsGetObjectValue (
      * NOTE: we can get away with passing in NULL for a walk state
      * because ObjDesc is guaranteed to not be a reference to either
      * a method local or a method argument (because this interface can only be
-     * called from the AcpiEvaluate external interface, never called from 
+     * called from the AcpiEvaluate external interface, never called from
      * a running control method.)
      *
      * Even though we do not directly invoke the interpreter
@@ -579,7 +595,12 @@ AcpiNsGetObjectValue (
      * We must release the namespace lock before entering the
      * intepreter.
      */
-    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     Status = AcpiExEnterInterpreter ();
     if (ACPI_SUCCESS (Status))
     {
