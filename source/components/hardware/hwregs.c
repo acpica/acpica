@@ -202,7 +202,7 @@ HwClearAcpiStatus (void)
     
     if (Gbl_FACP->Gpe0BlkLen)
     {
-        GpeLength = (UINT16) (Gbl_FACP->Gpe0BlkLen / 2);
+        GpeLength = (UINT16) DIV_2 (Gbl_FACP->Gpe0BlkLen);
 
         for (Index = 0; Index < GpeLength; Index++)
         {
@@ -212,7 +212,7 @@ HwClearAcpiStatus (void)
 
     if (Gbl_FACP->Gpe1BlkLen)
     {
-        GpeLength = (UINT16) (Gbl_FACP->Gpe1BlkLen / 2);
+        GpeLength = (UINT16) DIV_2 (Gbl_FACP->Gpe1BlkLen);
 
         for (Index = 0; Index < GpeLength; Index++)
         {
@@ -452,17 +452,17 @@ HwRegisterIO (
                 CmAcquireMutex (MTX_HARDWARE);
             }
 
-            RegisterValue = (UINT32) OsdIn16 ((Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2));
+            RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm1aEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen));
 
             DEBUG_PRINT (TRACE_IO, ("PM1a enable: Read 0x%X from 0x%X\n", 
-                            RegisterValue, (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2)));
+                            RegisterValue, (Gbl_FACP->Pm1aEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen))));
             
             if (Gbl_FACP->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) OsdIn16 ((Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2));
+                RegisterValue |= (UINT32) OsdIn16 (Gbl_FACP->Pm1bEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen));
 
                 DEBUG_PRINT (TRACE_IO, ("PM1b enable: Read 0x%X from 0x%X\n", 
-                                RegisterValue, (Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2)));
+                                RegisterValue, (Gbl_FACP->Pm1bEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen))));
             }
 
             switch (RegisterId)
@@ -500,14 +500,14 @@ HwRegisterIO (
                 RegisterValue  |= Value;
 
                 DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, 
-                            (Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2)));
+                                (Gbl_FACP->Pm1aEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen))));
 
-                OsdOut16 ((Gbl_FACP->Pm1aEvtBlk + Gbl_FACP->Pm1EvtLen / 2), 
+                OsdOut16 ((Gbl_FACP->Pm1aEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen)), 
                             (UINT16) RegisterValue);
                 
                 if (Gbl_FACP->Pm1bEvtBlk)
                 {
-                    OsdOut16 ((Gbl_FACP->Pm1bEvtBlk + Gbl_FACP->Pm1EvtLen / 2), 
+                    OsdOut16 ((Gbl_FACP->Pm1bEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen)), 
                                 (UINT16) RegisterValue);
                 }
             }
@@ -676,8 +676,8 @@ HwRegisterIO (
 
     case GPE1_EN_BLOCK:
 
-        GpeReg = (Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1Base) + (GpeReg + 
-                    ((Gbl_FACP->Gpe1BlkLen) / 2));
+        GpeReg = (Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1Base) + 
+                    (GpeReg + (DIV_2 (Gbl_FACP->Gpe1BlkLen)));
     
 
     case GPE1_STS_BLOCK:
@@ -692,7 +692,7 @@ HwRegisterIO (
 
         if (!GpeReg)
         {
-            GpeReg = Gbl_FACP->Gpe0Blk + (Gbl_FACP->Gpe0BlkLen / 2);
+            GpeReg = Gbl_FACP->Gpe0Blk + DIV_2 (Gbl_FACP->Gpe0BlkLen);
         }
     
 
