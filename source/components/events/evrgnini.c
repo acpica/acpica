@@ -121,7 +121,6 @@
 #include <namesp.h>
 #include <interp.h>
 #include <amlcode.h>
-#include <methods.h>
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evrgnini");
@@ -150,6 +149,8 @@ EvSystemMemoryRegionSetup (
     void                    *HandlerContext,
     void                    **ReturnContext)
 {
+    MEM_HANDLER_CONTEXT     *MemContext;
+
 
     FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
 
@@ -157,15 +158,33 @@ EvSystemMemoryRegionSetup (
     if (Function == ACPI_REGION_DEACTIVATE) 
     {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
+
         *ReturnContext = NULL;
-    } 
-    
-    else 
-    {
-        RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
-        *ReturnContext = HandlerContext;
+        if (HandlerContext)
+        {
+            MemContext = HandlerContext;
+            *ReturnContext = MemContext->HandlerContext;
+
+            CmFree (MemContext);
+        }
+        return_ACPI_STATUS (AE_OK);
     }
 
+
+    /* Activate.  Create a new context */
+
+    MemContext = CmCallocate (sizeof (MEM_HANDLER_CONTEXT));
+    if (!MemContext)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* Init.  (Mapping fields are all set to zeros above) */
+
+    MemContext->HandlerContext = HandlerContext;
+    RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
+
+    *ReturnContext = MemContext;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -199,13 +218,14 @@ EvIoSpaceRegionSetup (
     if (Function == ACPI_REGION_DEACTIVATE) 
     {
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
-        *ReturnContext = NULL;
-    } 
-    else 
-    {
-        RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
         *ReturnContext = HandlerContext;
-    }
+        return_ACPI_STATUS (AE_OK);
+    } 
+
+    /* Activate the region */
+
+    RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
+    *ReturnContext = HandlerContext;
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -236,10 +256,10 @@ EvPciConfigRegionSetup (
     void                    **ReturnContext)
 {
     ACPI_STATUS             Status = AE_OK;
-    NATIVE_UINT             Temp;
-    PCI_HANDLER_CONTEXT    *PCIContext;
-    ACPI_OBJECT_INTERNAL   *HandlerObj;
-    NAME_TABLE_ENTRY       *SearchScope;
+    UINT32                  Temp;
+    PCI_HANDLER_CONTEXT     *PciContext;
+    ACPI_OBJECT_INTERNAL    *HandlerObj;
+    NAME_TABLE_ENTRY        *SearchScope;
 
 
     FUNCTION_TRACE ("EvPciConfigRegionSetup");
@@ -247,13 +267,11 @@ EvPciConfigRegionSetup (
 
     HandlerObj = RegionObj->Region.AddrHandler;
 
-    if(!HandlerObj) 
+    if (!HandlerObj) 
     {
         /*
-         *  No Handler ... bummer....
-         *
-         *  This cannot happen because the dispatch routine checks before
-         *  we get here, but just in case.
+         *  No installed handler. This shouldn't happen because the dispatch routine 
+         *  checks before we get here, but we check again just in case.
          */
         DEBUG_PRINT (TRACE_OPREGION, ("Attempting to init a region 0x%X, with no handler\n", RegionObj));
         return_ACPI_STATUS(AE_EXIST);
@@ -261,18 +279,25 @@ EvPciConfigRegionSetup (
 
     if (Function == ACPI_REGION_DEACTIVATE) 
     {
-        /*
-         *  For right now we just free the allocated space
-         */
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
-//        CmFree(HandlerObj->AddrHandler.Context)
+
         *ReturnContext = NULL;
+        if (HandlerContext)
+        {
+            PciContext = HandlerContext;
+            *ReturnContext = PciContext->HandlerContext;
+
+            CmFree (PciContext);
+        }
+
         return_ACPI_STATUS (Status);
     }
 
-    PCIContext = CmAllocate (sizeof(PCI_HANDLER_CONTEXT));
 
-    if (!PCIContext)
+    /* Create a new context */
+
+    PciContext = CmAllocate (sizeof(PCI_HANDLER_CONTEXT));
+    if (!PciContext)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
@@ -293,7 +318,9 @@ EvPciConfigRegionSetup (
 
     CmReleaseMutex (MTX_NAMESPACE);
 
-    Status = EvaluateNumeric (METHOD_NAME__ADR, SearchScope, &Temp);
+    /* Evaluate the _ADR object */
+
+    Status = CmEvaluateNumericObject (METHOD_NAME__ADR, SearchScope, &Temp);
     /*
      *  The default is zero, since the allocation above zeroed the data, just
      *  do nothing on failures.
@@ -303,7 +330,7 @@ EvPciConfigRegionSetup (
         /*
          *  Got it..
          */
-        PCIContext->DevFunc = Temp;
+        PciContext->DevFunc = Temp;
     }
 
     /*
@@ -315,27 +342,27 @@ EvPciConfigRegionSetup (
 
     SearchScope = HandlerObj->AddrHandler.Nte;
 
-    Status = EvaluateNumeric (METHOD_NAME__SEG, SearchScope, &Temp);
+    Status = CmEvaluateNumericObject (METHOD_NAME__SEG, SearchScope, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         /*
          *  Got it..
          */
-        PCIContext->Seg = Temp;
+        PciContext->Seg = Temp;
     }
 
-    Status = EvaluateNumeric (METHOD_NAME__BBN, SearchScope, &Temp);
+    Status = CmEvaluateNumericObject (METHOD_NAME__BBN, SearchScope, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         /*
          *  Got it..
          */
-        PCIContext->Bus = Temp;
+        PciContext->Bus = Temp;
     }
 
     CmAcquireMutex (MTX_NAMESPACE);
 
-    *ReturnContext = PCIContext;
+    *ReturnContext = PciContext;
 
     RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
     return_ACPI_STATUS (AE_OK);
