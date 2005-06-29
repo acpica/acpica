@@ -1,10 +1,10 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
+ *              $Revision: 1.66 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -121,13 +121,15 @@
 #include "acpi.h"
 #include "acinterp.h"
 #include "acnamesp.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsxfobj");
+        MODULE_NAME         ("nsxfobj")
 
 
-/****************************************************************************
+
+/*******************************************************************************
  *
  * FUNCTION:    AcpiEvaluateObject
  *
@@ -147,7 +149,7 @@
  *              parameters if necessary.  One of "Handle" or "Pathname" must
  *              be valid (non-null)
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiEvaluateObject (
@@ -157,9 +159,9 @@ AcpiEvaluateObject (
     ACPI_BUFFER             *ReturnBuffer)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    **ParamPtr = NULL;
-    ACPI_OBJECT_INTERNAL    *ReturnObj = NULL;
-    ACPI_OBJECT_INTERNAL    *ObjectPtr = NULL;
+    ACPI_OPERAND_OBJECT     **ParamPtr = NULL;
+    ACPI_OPERAND_OBJECT     *ReturnObj = NULL;
+    ACPI_OPERAND_OBJECT     *ObjectPtr = NULL;
     UINT32                  BufferSpaceNeeded;
     UINT32                  UserBufferLength;
     UINT32                  Count;
@@ -186,7 +188,7 @@ AcpiEvaluateObject (
 
         Count           = ParamObjects->Count;
         ParamLength     = (Count + 1) * sizeof (void *);
-        ObjectLength    = Count * sizeof (ACPI_OBJECT_INTERNAL);
+        ObjectLength    = Count * sizeof (ACPI_OPERAND_OBJECT);
 
         ParamPtr = AcpiCmCallocate (ParamLength +   /* Parameter List part */
                                     ObjectLength);  /* Actual objects */
@@ -195,7 +197,7 @@ AcpiEvaluateObject (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        ObjectPtr = (ACPI_OBJECT_INTERNAL *) ((UINT8 *) ParamPtr +
+        ObjectPtr = (ACPI_OPERAND_OBJECT  *) ((UINT8 *) ParamPtr +
                         ParamLength);
 
         /*
@@ -282,9 +284,7 @@ AcpiEvaluateObject (
              * The null pathname case means the handle is for
              * the actual object to be evaluated
              */
-            Status = AcpiNsEvaluateByHandle (Handle,
-                                            ParamPtr,
-                                            &ReturnObj);
+            Status = AcpiNsEvaluateByHandle (Handle, ParamPtr, &ReturnObj);
         }
 
         else
@@ -292,9 +292,8 @@ AcpiEvaluateObject (
            /*
             * Both a Handle and a relative Pathname
             */
-            Status = AcpiNsEvaluateRelative (Handle, Pathname,
-                                            ParamPtr,
-                                            &ReturnObj);
+            Status = AcpiNsEvaluateRelative (Handle, Pathname, ParamPtr,
+                                                &ReturnObj);
         }
     }
 
@@ -311,11 +310,10 @@ AcpiEvaluateObject (
 
         if (ReturnObj)
         {
-            if (VALID_DESCRIPTOR_TYPE (ReturnObj,
-                                        ACPI_DESC_TYPE_NAMED))
+            if (VALID_DESCRIPTOR_TYPE (ReturnObj, ACPI_DESC_TYPE_NAMED))
             {
                 /*
-                 * If we got an NTE as a return object,
+                 * If we got an Node as a return object,
                  * this means the object we are evaluating
                  * has nothing interesting to return (such
                  * as a mutex, etc.)  We return an error
@@ -326,7 +324,7 @@ AcpiEvaluateObject (
                  * types at a later date if necessary.
                  */
                 Status = AE_TYPE;
-                ReturnObj = NULL;   /* No need to delete an NTE */
+                ReturnObj = NULL;   /* No need to delete an Node */
             }
 
             if (ACPI_SUCCESS (Status))
@@ -365,9 +363,8 @@ AcpiEvaluateObject (
                         /*
                          *  We have enough space for the object, build it
                          */
-                        Status =
-                            AcpiCmBuildExternalObject (ReturnObj,
-                                                        ReturnBuffer);
+                        Status = AcpiCmBuildExternalObject (ReturnObj,
+                                        ReturnBuffer);
                         ReturnBuffer->Length = BufferSpaceNeeded;
                     }
                 }
@@ -402,7 +399,7 @@ AcpiEvaluateObject (
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetNextObject
  *
@@ -428,9 +425,9 @@ AcpiGetNextObject (
     ACPI_HANDLE             *RetHandle)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_NAMED_OBJECT       *Entry;
-    ACPI_NAMED_OBJECT       *ParentEntry = NULL;
-    ACPI_NAMED_OBJECT       *ChildEntry = NULL;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_NAMESPACE_NODE     *ParentNode = NULL;
+    ACPI_NAMESPACE_NODE     *ChildNode = NULL;
 
 
     /* Parameter validation */
@@ -448,8 +445,8 @@ AcpiGetNextObject (
     {
         /* Start search at the beginning of the specified scope */
 
-        ParentEntry = AcpiNsConvertHandleToEntry (Parent);
-        if (!ParentEntry)
+        ParentNode = AcpiNsConvertHandleToEntry (Parent);
+        if (!ParentNode)
         {
             Status = AE_BAD_PARAMETER;
             goto UnlockAndExit;
@@ -462,8 +459,8 @@ AcpiGetNextObject (
     {
         /* Convert and validate the handle */
 
-        ChildEntry = AcpiNsConvertHandleToEntry (Child);
-        if (!ChildEntry)
+        ChildNode = AcpiNsConvertHandleToEntry (Child);
+        if (!ChildNode)
         {
             Status = AE_BAD_PARAMETER;
             goto UnlockAndExit;
@@ -473,9 +470,9 @@ AcpiGetNextObject (
 
     /* Internal function does the real work */
 
-    Entry = AcpiNsGetNextObject ((OBJECT_TYPE_INTERNAL) Type,
-                                    ParentEntry, ChildEntry);
-    if (!Entry)
+    Node = AcpiNsGetNextObject ((OBJECT_TYPE_INTERNAL) Type,
+                                    ParentNode, ChildNode);
+    if (!Node)
     {
         Status = AE_NOT_FOUND;
         goto UnlockAndExit;
@@ -483,7 +480,7 @@ AcpiGetNextObject (
 
     if (RetHandle)
     {
-        *RetHandle = AcpiNsConvertEntryToHandle (Entry);
+        *RetHandle = AcpiNsConvertEntryToHandle (Node);
     }
 
 
@@ -494,7 +491,7 @@ UnlockAndExit:
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetType
  *
@@ -512,7 +509,7 @@ AcpiGetType (
     ACPI_HANDLE             Handle,
     ACPI_OBJECT_TYPE        *RetType)
 {
-    ACPI_NAMED_OBJECT       *Object;
+    ACPI_NAMESPACE_NODE     *Node;
 
 
     /* Parameter Validation */
@@ -523,10 +520,9 @@ AcpiGetType (
     }
 
     /*
-     * Special case for the predefined Root Object
+     * Special case for the predefined Root Node
      * (return type ANY)
      */
-
     if (Handle == ACPI_ROOT_OBJECT)
     {
         *RetType = ACPI_TYPE_ANY;
@@ -537,14 +533,14 @@ AcpiGetType (
 
     /* Convert and validate the handle */
 
-    Object = AcpiNsConvertHandleToEntry (Handle);
-    if (!Object)
+    Node = AcpiNsConvertHandleToEntry (Handle);
+    if (!Node)
     {
         AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
         return (AE_BAD_PARAMETER);
     }
 
-    *RetType = Object->Type;
+    *RetType = Node->Type;
 
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -552,7 +548,7 @@ AcpiGetType (
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetParent
  *
@@ -571,7 +567,7 @@ AcpiGetParent (
     ACPI_HANDLE             Handle,
     ACPI_HANDLE             *RetHandle)
 {
-    ACPI_NAMED_OBJECT       *Object;
+    ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -583,7 +579,7 @@ AcpiGetParent (
         return (AE_BAD_PARAMETER);
     }
 
-    /* Special case for the predefined Root Object (no parent) */
+    /* Special case for the predefined Root Node (no parent) */
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
@@ -595,8 +591,8 @@ AcpiGetParent (
 
     /* Convert and validate the handle */
 
-    Object = AcpiNsConvertHandleToEntry (Handle);
-    if (!Object)
+    Node = AcpiNsConvertHandleToEntry (Handle);
+    if (!Node)
     {
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
@@ -606,11 +602,11 @@ AcpiGetParent (
     /* Get the parent entry */
 
     *RetHandle =
-        AcpiNsConvertEntryToHandle (AcpiNsGetParentEntry (Object));
+        AcpiNsConvertEntryToHandle (AcpiNsGetParentObject (Node));
 
     /* Return exeption if parent is null */
 
-    if (!AcpiNsGetParentEntry (Object))
+    if (!AcpiNsGetParentObject (Node))
     {
         Status = AE_NULL_ENTRY;
     }
@@ -623,7 +619,7 @@ UnlockAndExit:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiWalkNamespace
  *
