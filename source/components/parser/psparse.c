@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -648,7 +648,7 @@ AcpiPsNextParseState (
 
         /* Will return value (if any) be used by the caller? */
 
-        WalkState->ReturnUsed = AcpiDsIsResultUsed (Op);
+        WalkState->ReturnUsed = AcpiDsIsResultUsed (Op, WalkState);
         break;
 
 
@@ -696,6 +696,7 @@ AcpiPsParseLoop (
     ACPI_PARSE_STATE        *ParserState;
 
 
+
     FUNCTION_TRACE_PTR ("PsParseLoop", WalkState);
 
 
@@ -703,8 +704,31 @@ AcpiPsParseLoop (
 
     if (WalkState->WalkType & WALK_METHOD_RESTART)
     {
+        /* We are restarting a preempted control method */
+
         if (AcpiPsHasCompletedScope (ParserState))
         {
+            /*
+             * We must check if a predicate to an IF or WHILE statement
+             * was just completed
+             */
+            if ((ParserState->Scope->ParseScope.Op) &&
+                ((ParserState->Scope->ParseScope.Op->Opcode == AML_IF_OP) ||
+                (ParserState->Scope->ParseScope.Op->Opcode == AML_WHILE_OP)) &&
+                (WalkState->ControlState) &&
+                (WalkState->ControlState->Common.State ==
+                    CONTROL_PREDICATE_EXECUTING))
+            {
+
+                /*
+                 * A predicate was just completed, get the value of the 
+                 * predicate and branch based on that value
+                 */
+
+                Status = AcpiDsGetPredicateValue (WalkState, NULL, TRUE);
+                Status = AcpiPsNextParseState (WalkState, Op, Status);
+            }
+
             AcpiPsPopScope (ParserState, &Op, &ArgTypes, &ArgCount);
             DEBUG_PRINT (TRACE_PARSE, ("ParseLoop:  Popped scope, Op=%p\n", Op));
         }
@@ -845,7 +869,6 @@ AcpiPsParseLoop (
                         DeferredOp->Length  = 0;
                     }
                 }
-
             }
 
 
