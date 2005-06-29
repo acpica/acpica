@@ -373,7 +373,7 @@ AmlDoSeg (
              * First character was not a valid name character,
              * so we are looking at something other than a name.
              */
-            DEBUG_PRINT (ACPI_ERROR, ("Leading char not alpha: %02Xh (not a name)\n", CharBuf[0]));
+            DEBUG_PRINT (ACPI_INFO, ("Leading char not alpha: %02Xh (not a name)\n", CharBuf[0]));
             Status = AE_PENDING;
         }
 
