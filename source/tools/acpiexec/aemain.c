@@ -286,7 +286,9 @@ main (
          */
         AeInstallHandlers ();
 
-        AcpiEnableSubsystem (0);
+        AcpiEnableSubsystem (ACPI_NO_HARDWARE_INIT | 
+                             ACPI_NO_ACPI_ENABLE   | 
+                             ACPI_NO_EVENT_INIT);
     }
 
 #ifdef _IA16
