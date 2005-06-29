@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AnMapArgTypeToBtype (
     UINT32                  ArgType)
 {
@@ -202,8 +202,10 @@ AnMapArgTypeToBtype (
 
     case ARGI_DATAOBJECT:
 
-        /* Buffer, string, package or reference to a Op - Used only by SizeOf operator*/
-
+        /*
+         * Buffer, string, package or reference to a Op -
+         * Used only by SizeOf operator
+         */
         return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER |
             ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE);
 
@@ -245,9 +247,9 @@ AnMapArgTypeToBtype (
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AnMapEtypeToBtype (
-    UINT32              Etype)
+    UINT32                  Etype)
 {
 
 
@@ -328,41 +330,6 @@ AnMapEtypeToBtype (
 
 /*******************************************************************************
  *
- * FUNCTION:    AnMapBtypeToEtype
- *
- * PARAMETERS:  Btype               - Bitfield of ACPI types
- *
- * RETURN:      The Etype corresponding the the Btype
- *
- * DESCRIPTION: Convert a bitfield type to an encoded type
- *
- ******************************************************************************/
-
-UINT32
-AnMapBtypeToEtype (
-    UINT32              Btype)
-{
-    UINT32              i;
-    UINT32              Etype;
-
-
-    if (Btype == 0)
-    {
-        return 0;
-    }
-
-    Etype = 1;
-    for (i = 1; i < Btype; i *= 2)
-    {
-        Etype++;
-    }
-
-    return (Etype);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AnFormatBtype
  *
  * PARAMETERS:  Btype               - Bitfield of ACPI types
@@ -374,13 +341,13 @@ AnMapBtypeToEtype (
  *
  ******************************************************************************/
 
-void
+static void
 AnFormatBtype (
-    char                *Buffer,
-    UINT32              Btype)
+    char                    *Buffer,
+    UINT32                  Btype)
 {
-    UINT32              Type;
-    BOOLEAN             First = TRUE;
+    UINT32                  Type;
+    BOOLEAN                 First = TRUE;
 
 
     *Buffer = 0;
@@ -442,7 +409,7 @@ AnFormatBtype (
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AnGetBtype (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -524,7 +491,7 @@ AnGetBtype (
 #define ACPI_EVENT_RESERVED_NAME        (ACPI_UINT32_MAX - 2)
 #define ACPI_COMPILER_RESERVED_NAME     (ACPI_UINT32_MAX - 3)
 
-UINT32
+static UINT32
 AnCheckForReservedName (
     ACPI_PARSE_OBJECT       *Op,
     char                    *Name)
@@ -534,7 +501,8 @@ AnCheckForReservedName (
 
     if (Name[0] == 0)
     {
-        AcpiOsPrintf ("Found a null name, external = %s\n", Op->Asl.ExternalName);
+        AcpiOsPrintf ("Found a null name, external = %s\n",
+            Op->Asl.ExternalName);
     }
 
     /* All reserved names are prefixed with a single underscore */
@@ -552,12 +520,14 @@ AnCheckForReservedName (
         {
             if (ReservedMethods[i].Flags & ASL_RSVD_SCOPE)
             {
-                AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
+                AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op,
+                    Op->Asl.ExternalName);
                 return (ACPI_PREDEFINED_NAME);
             }
             else if (ReservedMethods[i].Flags & ASL_RSVD_RESOURCE_NAME)
             {
-                AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
+                AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op,
+                    Op->Asl.ExternalName);
                 return (ACPI_PREDEFINED_NAME);
             }
 
@@ -608,7 +578,8 @@ AnCheckForReservedName (
      * warning, since the entire namespace starting with an underscore is
      * reserved by the ACPI spec.
      */
-    AslError (ASL_WARNING, ASL_MSG_UNKNOWN_RESERVED_NAME, Op, Op->Asl.ExternalName);
+    AslError (ASL_WARNING, ASL_MSG_UNKNOWN_RESERVED_NAME, Op,
+        Op->Asl.ExternalName);
 
     return (ACPI_NOT_RESERVED_NAME);
 }
@@ -628,7 +599,7 @@ AnCheckForReservedName (
  *
  ******************************************************************************/
 
-void
+static void
 AnCheckForReservedMethod (
     ACPI_PARSE_OBJECT       *Op,
     ASL_METHOD_INFO         *MethodInfo)
@@ -680,11 +651,13 @@ AnCheckForReservedMethod (
 
             if (MethodInfo->NumArguments > ReservedMethods[Index].NumArguments)
             {
-                AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op, MsgBuffer);
+                AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op,
+                    MsgBuffer);
             }
             else
             {
-                AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_LO, Op, MsgBuffer);
+                AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_LO, Op,
+                    MsgBuffer);
             }
         }
 
@@ -700,7 +673,19 @@ AnCheckForReservedMethod (
 }
 
 
-UINT32
+/*******************************************************************************
+ *
+ * FUNCTION:    AnMapObjTypeToBtype
+ *
+ * PARAMETERS:  Op              - A parse node
+ *
+ * RETURN:      A Btype
+ *
+ * DESCRIPTION: Map object to the associated "Btype"
+ *
+ ******************************************************************************/
+
+static UINT32
 AnMapObjTypeToBtype (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -817,7 +802,8 @@ AnMethodAnalysisWalkBegin (
         /* Get the NumArguments node */
 
         Next = Next->Asl.Next;
-        MethodInfo->NumArguments = (UINT8) (((UINT8) Next->Asl.Value.Integer) & 0x07);
+        MethodInfo->NumArguments = (UINT8)
+            (((UINT8) Next->Asl.Value.Integer) & 0x07);
 
         /* Get the SerializeRule and SyncLevel nodes, ignored here */
 
@@ -858,7 +844,8 @@ AnMethodAnalysisWalkBegin (
             }
             else
             {
-                MethodInfo->ValidArgTypes[ActualArgs] = AnMapObjTypeToBtype (NextType);
+                MethodInfo->ValidArgTypes[ActualArgs] =
+                    AnMapObjTypeToBtype (NextType);
                 NextType->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
             }
 
@@ -913,8 +900,10 @@ AnMethodAnalysisWalkBegin (
 
         if (!MethodInfo)
         {
-            /* Probably was an error in the method declaration, no additional error here */
-
+            /*
+             * Probably was an error in the method declaration,
+             * no additional error here
+             */
             ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%p, No parent method\n", Op));
             return (AE_ERROR);
         }
@@ -955,8 +944,10 @@ AnMethodAnalysisWalkBegin (
 
         if (!MethodInfo)
         {
-            /* Probably was an error in the method declaration, no additional error here */
-
+            /*
+             * Probably was an error in the method declaration,
+             * no additional error here
+             */
             ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%p, No parent method\n", Op));
             return (AE_ERROR);
         }
@@ -998,8 +989,10 @@ AnMethodAnalysisWalkBegin (
 
         if (!MethodInfo)
         {
-            /* Probably was an error in the method declaration, no additional error here */
-
+            /*
+             * Probably was an error in the method declaration,
+             * no additional error here
+             */
             ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%p, No parent method\n", Op));
             return (AE_ERROR);
         }
@@ -1081,7 +1074,8 @@ AnMethodAnalysisWalkBegin (
                  * This reserved name must be a control method because
                  * it must have arguments
                  */
-                AslError (ASL_ERROR, ASL_MSG_RESERVED_METHOD, Op, "with arguments");
+                AslError (ASL_ERROR, ASL_MSG_RESERVED_METHOD, Op,
+                    "with arguments");
             }
 
             /*
@@ -1098,7 +1092,8 @@ AnMethodAnalysisWalkBegin (
                 {
                     /* _HID must be a string or an integer */
 
-                    AslError (ASL_ERROR, ASL_MSG_RESERVED_OPERAND_TYPE, Next, "String or Integer");
+                    AslError (ASL_ERROR, ASL_MSG_RESERVED_OPERAND_TYPE, Next,
+                        "String or Integer");
                 }
 
                 if (Next->Asl.ParseOpcode == PARSEOP_STRING_LITERAL)
@@ -1112,7 +1107,8 @@ AnMethodAnalysisWalkBegin (
                     {
                         if (!isalnum (Next->Asl.Value.String[i]))
                         {
-                            AslError (ASL_ERROR, ASL_MSG_ALPHANUMERIC_STRING, Next, Next->Asl.Value.String);
+                            AslError (ASL_ERROR, ASL_MSG_ALPHANUMERIC_STRING,
+                                Next, Next->Asl.Value.String);
                             break;
                         }
                     }
@@ -1145,7 +1141,7 @@ AnMethodAnalysisWalkBegin (
  *
  ******************************************************************************/
 
-BOOLEAN
+static BOOLEAN
 AnLastStatementIsReturn (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -1201,7 +1197,8 @@ AnMethodAnalysisWalkEnd (
         if (!MethodInfo)
         {
             printf ("No method info for method! [%s]\n", Op->Asl.Namepath);
-            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op, "No method info for this method");
+            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op,
+                "No method info for this method");
             CmCleanupAndExit ();
             return (AE_AML_INTERNAL);
         }
@@ -1240,7 +1237,8 @@ AnMethodAnalysisWalkEnd (
         if (MethodInfo->NumReturnNoValue &&
             MethodInfo->NumReturnWithValue)
         {
-            AslError (ASL_WARNING, ASL_MSG_RETURN_TYPES, Op, Op->Asl.ExternalName);
+            AslError (ASL_WARNING, ASL_MSG_RETURN_TYPES, Op,
+                Op->Asl.ExternalName);
         }
 
         /*
@@ -1278,12 +1276,15 @@ AnMethodAnalysisWalkEnd (
          * method is terminated here with the Return() statement.
          */
         Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
-        Op->Asl.ParentMethod = MethodInfo->Op;      /* Used in the "typing" pass later */
+
+        /* Used in the "typing" pass later */
+
+        Op->Asl.ParentMethod = MethodInfo->Op;
 
         /*
          * If there is a peer node after the return statement, then this
-         * node is unreachable code -- i.e., it won't be executed because of the
-         * preceeding Return() statement.
+         * node is unreachable code -- i.e., it won't be executed because of
+         *  thepreceeding Return() statement.
          */
         if (Op->Asl.Next)
         {
@@ -1404,12 +1405,13 @@ AnMethodTypingWalkEnd (
                 (ThisNodeBtype == (ACPI_UINT32_MAX -1)))
             {
                 /*
-                 * The method is untyped at this time (typically a forward reference).
-                 * We must recursively type the method here
+                 * The method is untyped at this time (typically a forward
+                 *  reference). We must recursively type the method here
                  */
-                TrWalkParseTree (ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Op->Asl.Child->Asl.Node->Object),
-                        ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
-                        AnMethodTypingWalkEnd, NULL);
+                TrWalkParseTree (ACPI_CAST_PTR (
+                    ACPI_PARSE_OBJECT, Op->Asl.Child->Asl.Node->Object),
+                    ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
+                    AnMethodTypingWalkEnd, NULL);
 
                 ThisNodeBtype = AnGetBtype (Op->Asl.Child);
             }
@@ -1448,7 +1450,7 @@ AnMethodTypingWalkEnd (
  *
  ******************************************************************************/
 
-void
+static void
 AnCheckMethodReturnValue (
     ACPI_PARSE_OBJECT       *Op,
     const ACPI_OPCODE_INFO  *OpInfo,
@@ -1497,8 +1499,9 @@ AnCheckMethodReturnValue (
          */
         if (ThisNodeBtype != 0)
         {
-            sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]",
-                        StringBuffer, OpInfo->Name, StringBuffer2);
+            sprintf (MsgBuffer,
+                "Method returns [%s], %s operator requires [%s]",
+                StringBuffer, OpInfo->Name, StringBuffer2);
 
             AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgOp, MsgBuffer);
         }
@@ -1514,7 +1517,7 @@ AnCheckMethodReturnValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Descending callback for the analysis walk.  Check methods for :
+ * DESCRIPTION: Descending callback for the analysis walk.  Check methods for:
  *              1) Initialized local variables
  *              2) Valid arguments
  *              3) Return types
@@ -1618,7 +1621,8 @@ AnOperandTypecheckWalkEnd (
             {
                 return (AE_OK);
             }
-            AnCheckMethodReturnValue (Op, OpInfo, ArgOp, RequiredBtypes, ThisNodeBtype);
+            AnCheckMethodReturnValue (Op, OpInfo, ArgOp,
+                RequiredBtypes, ThisNodeBtype);
         }
         return (AE_OK);
 
@@ -1772,7 +1776,8 @@ AnOperandTypecheckWalkEnd (
             {
                 /* Check a method call for a valid return value */
 
-                AnCheckMethodReturnValue (Op, OpInfo, ArgOp, RequiredBtypes, ThisNodeBtype);
+                AnCheckMethodReturnValue (Op, OpInfo, ArgOp,
+                    RequiredBtypes, ThisNodeBtype);
             }
 
             /*
@@ -1855,3 +1860,41 @@ AnOtherSemanticAnalysisWalkEnd (
     return AE_OK;
 
 }
+
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+/*******************************************************************************
+ *
+ * FUNCTION:    AnMapBtypeToEtype
+ *
+ * PARAMETERS:  Btype               - Bitfield of ACPI types
+ *
+ * RETURN:      The Etype corresponding the the Btype
+ *
+ * DESCRIPTION: Convert a bitfield type to an encoded type
+ *
+ ******************************************************************************/
+
+UINT32
+AnMapBtypeToEtype (
+    UINT32              Btype)
+{
+    UINT32              i;
+    UINT32              Etype;
+
+
+    if (Btype == 0)
+    {
+        return 0;
+    }
+
+    Etype = 1;
+    for (i = 1; i < Btype; i *= 2)
+    {
+        Etype++;
+    }
+
+    return (Etype);
+}
+#endif
+
