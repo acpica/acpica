@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.127 $
+ *              $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "actables.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amstore")
 
 
@@ -237,16 +237,12 @@ AcpiAmlExecStore (
 
 
     case AML_LOCAL_OP:
-
-        Status = AcpiDsMethodDataSetValue (MTH_TYPE_LOCAL,
-                        (RefDesc->Reference.Offset), ValDesc, WalkState);
-        break;
-
-
     case AML_ARG_OP:
 
-        Status = AcpiDsMethodDataSetValue (MTH_TYPE_ARG,
-                        (RefDesc->Reference.Offset), ValDesc, WalkState);
+        /* Store to a method local/arg  */
+
+        Status = AcpiDsStoreObjectToLocal (RefDesc->Reference.Opcode,
+                        RefDesc->Reference.Offset, ValDesc, WalkState);
         break;
 
 
