@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -159,25 +159,25 @@ OpnDoMethod (
     /* Num args */
 
     Next = Next->Peer;
-    if (Next->ParseOpcode != DEFAULT_ARG)
+    if (Next->ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
         NumArgs = Next->Value.Integer8;
-        Next->ParseOpcode = DEFAULT_ARG;
+        Next->ParseOpcode = PARSEOP_DEFAULT_ARG;
     }
 
     /* Serialized Flag */
 
     Next = Next->Peer;
-    if (Next->ParseOpcode != DEFAULT_ARG)
+    if (Next->ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
         Serialized = Next->Value.Integer8;
-        Next->ParseOpcode = DEFAULT_ARG;
+        Next->ParseOpcode = PARSEOP_DEFAULT_ARG;
     }
 
     /* Concurrency value (0-15 valid) */
 
     Next = Next->Peer;
-    if (Next->ParseOpcode != DEFAULT_ARG)
+    if (Next->ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
         Concurrency = Next->Value.Integer8;
     }
@@ -193,7 +193,7 @@ OpnDoMethod (
     Next->Value.Integer = MethodFlags;
     Next->AmlOpcode = AML_RAW_DATA_BYTE;
     Next->AmlLength = 1;
-    Next->ParseOpcode = RAW_DATA;
+    Next->ParseOpcode = PARSEOP_RAW_DATA;
 
     /* Save the arg count in the first node */
 
@@ -233,7 +233,7 @@ OpnDoFieldCommon (
     /* AccessType -- not optional, so no need to check for DEFAULT_ARG */
 
     AccessType = Node->Value.Integer8;
-    Node->ParseOpcode = DEFAULT_ARG;
+    Node->ParseOpcode = PARSEOP_DEFAULT_ARG;
 
     /* Set the access type in the parent (field) node for use later */
 
@@ -243,7 +243,7 @@ OpnDoFieldCommon (
 
     Next = Node->Peer;
     LockRule = Next->Value.Integer8;
-    Next->ParseOpcode = DEFAULT_ARG;
+    Next->ParseOpcode = PARSEOP_DEFAULT_ARG;
 
     /* UpdateRule -- not optional, so no need to check for DEFAULT_ARG */
 
@@ -264,7 +264,7 @@ OpnDoFieldCommon (
     Next->Value.Integer = FieldFlags;
     Next->AmlOpcode     = AML_RAW_DATA_BYTE;
     Next->AmlLength     = 1;
-    Next->ParseOpcode   = RAW_DATA;
+    Next->ParseOpcode   = PARSEOP_RAW_DATA;
 
     /* Process the FieldUnitList */
 
@@ -279,13 +279,13 @@ OpnDoFieldCommon (
 
         switch (Next->ParseOpcode)
         {
-        case ACCESSAS:
+        case PARSEOP_ACCESSAS:
 
             /* Nothing additional to do */
             break;
 
 
-        case OFFSET:
+        case PARSEOP_OFFSET:
 
             /* New offset into the field */
 
@@ -303,8 +303,8 @@ OpnDoFieldCommon (
                  * Issue error and ignore this node.
                  */
                 AslError (ASL_ERROR, ASL_MSG_BACKWARDS_OFFSET, PkgLengthNode, NULL);
-                Next->ParseOpcode = DEFAULT_ARG;
-                PkgLengthNode->ParseOpcode = DEFAULT_ARG;
+                Next->ParseOpcode = PARSEOP_DEFAULT_ARG;
+                PkgLengthNode->ParseOpcode = PARSEOP_DEFAULT_ARG;
             }
             else if (NewBitOffset == CurrentBitOffset)
             {
@@ -312,8 +312,8 @@ OpnDoFieldCommon (
                  * Offset is redundant; we don't need to output an
                  * offset opcode.  Just set these nodes to default
                  */
-                Next->ParseOpcode = DEFAULT_ARG;
-                PkgLengthNode->ParseOpcode = DEFAULT_ARG;
+                Next->ParseOpcode = PARSEOP_DEFAULT_ARG;
+                PkgLengthNode->ParseOpcode = PARSEOP_DEFAULT_ARG;
             }
             else
             {
@@ -327,8 +327,8 @@ OpnDoFieldCommon (
             break;
 
 
-        case NAMESEG:
-        case RESERVED_BYTES:
+        case PARSEOP_NAMESEG:
+        case PARSEOP_RESERVED_BYTES:
 
             /* Named or reserved field entry */
 
@@ -483,7 +483,7 @@ OpnDoRegion (
     /* Fourth child is the region length */
 
     Next = Next->Peer;
-    if (Next->ParseOpcode == INTEGER)
+    if (Next->ParseOpcode == PARSEOP_INTEGER)
     {
         Node->Value.Integer = Next->Value.Integer;
     }
@@ -531,8 +531,8 @@ OpnDoBuffer (
      * (DEFAULT_ARG), it is a TermArg that is
      * evaluated at run-time, and we are therefore finished.
      */
-    if ((BufferLengthNode->ParseOpcode != INTEGER) &&
-        (BufferLengthNode->ParseOpcode != DEFAULT_ARG))
+    if ((BufferLengthNode->ParseOpcode != PARSEOP_INTEGER) &&
+        (BufferLengthNode->ParseOpcode != PARSEOP_DEFAULT_ARG))
     {
         return;
     }
@@ -544,10 +544,10 @@ OpnDoBuffer (
      */
     switch (InitializerNode->ParseOpcode)
     {
-    case INTEGER:
-    case BYTECONST:
-    case WORDCONST:
-    case DWORDCONST:
+    case PARSEOP_INTEGER:
+    case PARSEOP_BYTECONST:
+    case PARSEOP_WORDCONST:
+    case PARSEOP_DWORDCONST:
 
         /* The peer list contains the byte list (if any...) */
 
@@ -557,7 +557,7 @@ OpnDoBuffer (
 
             InitializerNode->AmlOpcode      = AML_RAW_DATA_BYTE;
             InitializerNode->AmlLength      = 1;
-            InitializerNode->ParseOpcode    = RAW_DATA;
+            InitializerNode->ParseOpcode    = PARSEOP_RAW_DATA;
 
             BufferLength++;
             InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
@@ -565,7 +565,7 @@ OpnDoBuffer (
         break;
 
 
-    case STRING_LITERAL:
+    case PARSEOP_STRING_LITERAL:
 
         /*
          * Only one initializer, the string.  Buffer must be big enough to hold
@@ -575,11 +575,11 @@ OpnDoBuffer (
 
         InitializerNode->AmlOpcode      = AML_RAW_DATA_BUFFER;
         InitializerNode->AmlLength      = BufferLength;
-        InitializerNode->ParseOpcode    = RAW_DATA;
+        InitializerNode->ParseOpcode    = PARSEOP_RAW_DATA;
         break;
 
 
-    case DEFAULT_ARG:
+    case PARSEOP_DEFAULT_ARG:
         break;
 
 
@@ -609,7 +609,7 @@ OpnDoBuffer (
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-    BufferLengthNode->ParseOpcode   = INTEGER;
+    BufferLengthNode->ParseOpcode   = PARSEOP_INTEGER;
     BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
     BufferLengthNode->Value.Integer = BufferLength;
 
@@ -654,7 +654,7 @@ OpnDoPackage (
      * it is larger than the buffer length, we will define the buffer size
      * to be the size of the initializer list (Per ACPI Spec)
      */
-    if (InitializerNode->ParseOpcode != DEFAULT_ARG)
+    if (InitializerNode->ParseOpcode != PARSEOP_DEFAULT_ARG)
     {
         /* The peer list contains the byte list (if any...) */
 
@@ -667,8 +667,8 @@ OpnDoPackage (
 
     /* Check if initializer list is longer than the buffer length */
 
-    if ((PackageLengthNode->ParseOpcode == INTEGER)      ||
-        (PackageLengthNode->ParseOpcode == BYTECONST))
+    if ((PackageLengthNode->ParseOpcode == PARSEOP_INTEGER)      ||
+        (PackageLengthNode->ParseOpcode == PARSEOP_BYTECONST))
     {
         if (PackageLengthNode->Value.Integer > PackageLength)
         {
@@ -680,9 +680,9 @@ OpnDoPackage (
      * If not a variable-length package, check for a zero
      * package length
      */
-    if ((PackageLengthNode->ParseOpcode == INTEGER)      ||
-        (PackageLengthNode->ParseOpcode == BYTECONST)    ||
-        (PackageLengthNode->ParseOpcode == DEFAULT_ARG))
+    if ((PackageLengthNode->ParseOpcode == PARSEOP_INTEGER)      ||
+        (PackageLengthNode->ParseOpcode == PARSEOP_BYTECONST)    ||
+        (PackageLengthNode->ParseOpcode == PARSEOP_DEFAULT_ARG))
     {
         if (!PackageLength)
         {
@@ -700,7 +700,7 @@ OpnDoPackage (
      */
     PackageLengthNode->AmlOpcode = AML_RAW_DATA_BYTE;
     PackageLengthNode->AmlLength = 1;
-    PackageLengthNode->ParseOpcode = RAW_DATA;
+    PackageLengthNode->ParseOpcode = PARSEOP_RAW_DATA;
     PackageLengthNode->Value.Integer = PackageLength;
 
     /* Remaining nodes are handled via the tree walk */
@@ -742,9 +742,9 @@ OpnDoLoadTable (
     /* Fourth child is the RootPath string */
 
     Next = Next->Peer;
-    if (Next->ParseOpcode == ZERO)
+    if (Next->ParseOpcode == PARSEOP_ZERO)
     {
-        Next->ParseOpcode    = STRING_LITERAL;
+        Next->ParseOpcode    = PARSEOP_STRING_LITERAL;
         Next->Value.String   = "\\";
         Next->AmlLength      = 2;
         OpcGenerateAmlOpcode (Next);
@@ -810,31 +810,43 @@ OpnDoDefinitionBlock (
     {
         Gbl_OutputFilenamePrefix = Child->Value.Pointer;
     }
-    Child->ParseOpcode = DEFAULT_ARG;
+    Child->ParseOpcode = PARSEOP_DEFAULT_ARG;
 
     /* Signature */
 
     Child = Child->Peer;
-    Child->ParseOpcode = DEFAULT_ARG;
+    Child->ParseOpcode = PARSEOP_DEFAULT_ARG;
     if (Child->Value.String)
     {
         Gbl_TableSignature = Child->Value.String;
+        if (ACPI_STRLEN (Gbl_TableSignature) != 4)
+        {
+            AslError (ASL_ERROR, ASL_MSG_TABLE_SIGNATURE, Child, "Length not exactly 4");
+        }
+
+        for (i = 0; i < 4; i++)
+        {
+            if (!isalnum (Gbl_TableSignature[i]))
+            {
+                AslError (ASL_ERROR, ASL_MSG_TABLE_SIGNATURE, Child, "Contains non-alphanumeric characters");
+            }
+        }
     }
 
     /* Revision */
 
     Child = Child->Peer;
-    Child->ParseOpcode = DEFAULT_ARG;
+    Child->ParseOpcode = PARSEOP_DEFAULT_ARG;
 
     /* OEMID */
 
     Child = Child->Peer;
-    Child->ParseOpcode = DEFAULT_ARG;
+    Child->ParseOpcode = PARSEOP_DEFAULT_ARG;
 
     /* OEM TableID */
 
     Child = Child->Peer;
-    Child->ParseOpcode = DEFAULT_ARG;
+    Child->ParseOpcode = PARSEOP_DEFAULT_ARG;
     if (Child->Value.String)
     {
         Length = ACPI_STRLEN (Child->Value.String);
@@ -854,7 +866,7 @@ OpnDoDefinitionBlock (
     /* OEM Revision */
 
     Child = Child->Peer;
-    Child->ParseOpcode = DEFAULT_ARG;
+    Child->ParseOpcode = PARSEOP_DEFAULT_ARG;
 }
 
 
@@ -914,7 +926,7 @@ OpnAttachNameToNode (
     ACPI_STATUS             Status;
 
 
-    if (PsNode->ParseOpcode == EXTERNAL)
+    if (PsNode->ParseOpcode == PARSEOP_EXTERNAL)
     {
         Child = UtGetArg (PsNode, 0);
     }
@@ -1002,50 +1014,50 @@ OpnGenerateAmlOperands (
 
     switch (Node->ParseOpcode)
     {
-    case DEFINITIONBLOCK:
+    case PARSEOP_DEFINITIONBLOCK:
         OpnDoDefinitionBlock (Node);
         break;
 
-    case METHOD:
+    case PARSEOP_METHOD:
         OpnDoMethod (Node);
         break;
 
-    case FIELD:
+    case PARSEOP_FIELD:
         OpnDoField (Node);
         break;
 
-    case INDEXFIELD:
+    case PARSEOP_INDEXFIELD:
         OpnDoIndexField (Node);
         break;
 
-    case BANKFIELD:
+    case PARSEOP_BANKFIELD:
         OpnDoBankField (Node);
         break;
 
-    case BUFFER:
+    case PARSEOP_BUFFER:
         OpnDoBuffer (Node);
         break;
 
-    case LOADTABLE:
+    case PARSEOP_LOADTABLE:
         OpnDoLoadTable (Node);
         break;
 
-    case PACKAGE:
+    case PARSEOP_PACKAGE:
         OpnDoPackage (Node);
         break;
 
-    case OPERATIONREGION:
+    case PARSEOP_OPERATIONREGION:
         OpnDoRegion (Node);
         break;
 
-    case RESOURCETEMPLATE:
+    case PARSEOP_RESOURCETEMPLATE:
         RsDoResourceTemplate (Node);
         break;
 
-    case NAMESEG:
-    case NAMESTRING:
-    case METHODCALL:
-    case STRING_LITERAL:
+    case PARSEOP_NAMESEG:
+    case PARSEOP_NAMESTRING:
+    case PARSEOP_METHODCALL:
+    case PARSEOP_STRING_LITERAL:
         break;
 
     default:
