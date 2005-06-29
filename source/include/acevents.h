@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.70 $
+ *       $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -296,10 +296,6 @@ AcpiEvRemoveSciHandler (
 UINT32
 AcpiEvInitializeSCI (
     UINT32                  ProgramSCI);
-
-void
-AcpiEvRestoreAcpiState (
-    void);
 
 void
 AcpiEvTerminate (
