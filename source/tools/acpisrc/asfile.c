@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -604,7 +604,7 @@ AsProcessOneFile (
             /* Generate the target pathname and write the file */
 
             OutPathname = calloc (MaxPathLength + strlen (Filename) + 2 + strlen (TargetPath), 1);
-            if (!Pathname)
+            if (!OutPathname)
             {
                 printf ("Could not allocate buffer for file pathnames\n");
                 return -1;
