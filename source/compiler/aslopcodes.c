@@ -72,6 +72,7 @@ AcpiNsInternalizeName (
     NATIVE_CHAR             *Result = NULL;
     NATIVE_CHAR             *InternalName;
     UINT32                  NumSegments;
+    UINT32                  NumCarats;
     BOOLEAN                 FullyQualified = FALSE;
     UINT32                  i;
 
@@ -91,7 +92,7 @@ AcpiNsInternalizeName (
      * For the internal name, the required length is 4 bytes
      * per segment, plus 1 each for RootPrefix, MultiNamePrefixOp,
      * segment count, trailing null (which is not really needed,
-     * but no there's harm in putting it there)
+     * but there's no harm in putting it there)
      *
      * strlen() + 1 covers the first NameSeg, which has no
      * path separator
@@ -103,6 +104,17 @@ AcpiNsInternalizeName (
         ExternalName++;
     }
 
+    NumCarats = 0;
+    while (*ExternalName == '^')
+    {
+        if (FullyQualified)
+        {
+            return_ACPI_STATUS (AE_BAD_PATHNAME);
+        }
+
+        NumCarats++;
+        ExternalName++;
+    }
 
     /*
      * Determine the number of ACPI name "segments" by counting
@@ -123,12 +135,12 @@ AcpiNsInternalizeName (
 
     /* We need a segment to store the internal version of the name */
 
-    InternalName = calloc ((ACPI_NAME_SIZE * NumSegments) + 4, 1);
+    InternalName = calloc ((ACPI_NAME_SIZE * NumSegments) + 4 + NumCarats, 1);
     if (!InternalName)
     {
+        DbgPrint ("Error - insufficient memory\n");
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
-
 
     /* Setup the correct prefixes, counts, and pointers */
 
@@ -139,6 +151,11 @@ AcpiNsInternalizeName (
         if (NumSegments == 1)
         {
             Result = &InternalName[1];
+            if (!ExternalName[0])
+            {
+                *Result = 0;
+                NumSegments = 0;
+            }
         }
         else if (NumSegments == 2)
         {
@@ -153,16 +170,30 @@ AcpiNsInternalizeName (
         }
 
     }
-    else if (NumSegments == 2)
+    else 
     {
-        InternalName[0] = AML_DUAL_NAME_PREFIX;
-        Result = &InternalName[1];
-    }
-    else
-    {
-        InternalName[0] = AML_MULTI_NAME_PREFIX_OP;
-        InternalName[1] = (char) NumSegments;
-        Result = &InternalName[2];
+        Result = InternalName;
+        for (i = 0; i < NumCarats; i++)
+        {
+            *Result = '^';
+            Result++;
+        }
+
+        if (NumSegments == 1)
+        {
+        }
+
+        else if (NumSegments == 2)
+        {
+            *Result = AML_DUAL_NAME_PREFIX;
+            Result++;
+        }
+        else
+        {
+            Result[0] = AML_MULTI_NAME_PREFIX_OP;
+            Result[1] = (char) NumSegments;
+            Result = &Result[2];
+        }
     }
 
 
@@ -250,11 +281,11 @@ CgSetOptimalIntegerSize (
     ASL_PARSE_NODE          *Node)
 {
 
-    if ((UINT32) Node->Value <= 0xFF)
+    if (Node->Value.Integer <= 0xFF)
     {
         Node->AmlOpcode = AML_BYTE_OP;
     }
-    else if ((UINT32) Node->Value <= 0xFFFF)
+    else if (Node->Value.Integer <= 0xFFFF)
     {
         Node->AmlOpcode = AML_WORD_OP;
     }
@@ -409,7 +440,7 @@ CgDoMethod (
     Next = Next->Peer;
     if (Next->ParseOpcode != DEFAULT_ARG)
     {
-        NumArgs = (UINT8) Next->Value;
+        NumArgs = Next->Value.Integer8;
         Next->ParseOpcode = DEFAULT_ARG;
     }
 
@@ -418,7 +449,7 @@ CgDoMethod (
     Next = Next->Peer;
     if (Next->ParseOpcode != DEFAULT_ARG)
     {
-        Serialized = (UINT8) Next->Value;
+        Serialized = Next->Value.Integer8;
         Next->ParseOpcode = DEFAULT_ARG;
     }
 
@@ -427,16 +458,16 @@ CgDoMethod (
     Next = Next->Peer;
     if (Next->ParseOpcode != DEFAULT_ARG)
     {
-        Concurrency = (UINT8) Next->Value;
+        Concurrency = Next->Value.Integer8;
     }
 
     /* Put the bits in their proper places */
 
-    MethodFlags = (NumArgs & 0x3) | ((Serialized & 0x1) << 3) | ((Concurrency & 0xF) << 4); 
+    MethodFlags = (NumArgs & 0x7) | ((Serialized & 0x1) << 3) | ((Concurrency & 0xF) << 4); 
 
     /* Use the last node for the combined flags byte */
 
-    Next->Value = (void *) MethodFlags;
+    Next->Value.Integer = MethodFlags;
     Next->AmlOpcode = AML_RAW_DATA_BYTE;
     Next->AmlLength = 1;
     Next->ParseOpcode = RAW_DATA;
@@ -456,36 +487,34 @@ CgDoMethod (
  ******************************************************************************/
 
 void
-CgDoField (
+CgDoFieldCommon (
     ASL_PARSE_NODE              *Node)
 {
     ASL_PARSE_NODE              *Next;
+    ASL_PARSE_NODE              *PkgLengthNode;
+    UINT32                      CurrentBitOffset;
+    UINT32                      NewBitOffset;
     UINT8                       AccessType;
     UINT8                       LockRule;
     UINT8                       UpdateRule;
     UINT8                       FieldFlags;
 
-    /* Opcode is parent node */
-    /* First child is field name */
-
-    Next = Node->Child;
 
     /* AccessType -- not optional, so no need to check for DEFAULT_ARG */
 
-    Next = Next->Peer;
-    AccessType = (UINT8) Next->Value;
-    Next->ParseOpcode = DEFAULT_ARG;
+    AccessType = Node->Value.Integer8;
+    Node->ParseOpcode = DEFAULT_ARG;
 
     /* LockRule -- not optional, so no need to check for DEFAULT_ARG */
 
-    Next = Next->Peer;
-    LockRule = (UINT8) Next->Value;
+    Next = Node->Peer;
+    LockRule = Next->Value.Integer8;
     Next->ParseOpcode = DEFAULT_ARG;
 
     /* UpdateRule -- not optional, so no need to check for DEFAULT_ARG */
 
     Next = Next->Peer;
-    UpdateRule = (UINT8) Next->Value;
+    UpdateRule = Next->Value.Integer8;
 
     /* Generate the flags byte */
 
@@ -495,11 +524,153 @@ CgDoField (
 
     /* Set the node to RAW_DATA */
 
-    Next->Value = (void *) FieldFlags;
+    Next->Value.Integer = FieldFlags;
     Next->AmlOpcode = AML_RAW_DATA_BYTE;
     Next->AmlLength = 1;
     Next->ParseOpcode = RAW_DATA;
+
+    /*  Process the FieldUnitList */
+
+    Next = Next->Peer;
+    CurrentBitOffset = 0;
+
+    while (Next)
+    {
+        switch (Next->ParseOpcode)
+        {
+        case ACCESSAS:
+            break;
+
+        case OFFSET:
+            PkgLengthNode = Next->Child;
+            NewBitOffset = PkgLengthNode->Value.Integer * 8;
+            if (NewBitOffset < CurrentBitOffset)
+            {
+                DbgPrint ("Offset less than current offset\n");
+            }
+    
+            PkgLengthNode->Value.Integer = NewBitOffset - CurrentBitOffset;
+            CurrentBitOffset = NewBitOffset;
+            break;
+
+        case NAMESEG:
+        case RESERVED_BYTES:
+            PkgLengthNode = Next->Child;
+            NewBitOffset = PkgLengthNode->Value.Integer;
+            CurrentBitOffset += NewBitOffset;
+            break;
+
+        }
+        Next = Next->Peer;
+    }
 }
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoField (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+    /* Opcode is parent node */
+    /* First child is field name */
+
+    Next = Node->Child;
+
+    /* Second child is the AccessType */
+
+    CgDoFieldCommon (Next->Peer);
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoIndexField (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+
+    /* Opcode is parent node */
+    /* First child is the index name */
+
+    Next = Node->Child;
+
+    /* Second child is the data name */
+
+    Next = Next->Peer;
+
+    /* Third child is the AccessType */
+
+    CgDoFieldCommon (Next->Peer);
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoBankField (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+
+    /* Opcode is parent node */
+    /* First child is the region name */
+
+    Next = Node->Child;
+
+    /* Second child is the bank name */
+
+    Next = Next->Peer;
+
+    /* Third child is the bank value */
+
+    Next = Next->Peer;
+
+    /* Fourth child is the AccessType */
+
+    CgDoFieldCommon (Next->Peer);
+
+}
+
 
 
 /*******************************************************************************
@@ -559,9 +730,9 @@ CgDoBuffer (
 
     if (BufferLengthNode->ParseOpcode == INTEGER)
     {
-        if ((UINT32) BufferLengthNode->Value > BufferLength)
+        if (BufferLengthNode->Value.Integer > BufferLength)
         {
-            BufferLength = (UINT32) BufferLengthNode->Value;
+            BufferLength = BufferLengthNode->Value.Integer;
         }
     }
 
@@ -583,7 +754,7 @@ CgDoBuffer (
 
     BufferLengthNode->ParseOpcode = INTEGER;
     BufferLengthNode->AmlOpcode = AML_DWORD_OP;
-    BufferLengthNode->Value = (void *) BufferLength;
+    BufferLengthNode->Value.Integer = BufferLength;
 
     CgSetOptimalIntegerSize (BufferLengthNode);
 
@@ -642,9 +813,9 @@ CgDoPackage (
 
     if (PackageLengthNode->ParseOpcode == INTEGER)
     {
-        if ((UINT32) PackageLengthNode->Value > PackageLength)
+        if (PackageLengthNode->Value.Integer > PackageLength)
         {
-            PackageLength = (UINT32) PackageLengthNode->Value;
+            PackageLength = PackageLengthNode->Value.Integer;
         }
     }
 
@@ -667,7 +838,7 @@ CgDoPackage (
     PackageLengthNode->AmlOpcode = AML_RAW_DATA_BYTE;
     PackageLengthNode->AmlLength = 1;
     PackageLengthNode->ParseOpcode = RAW_DATA;
-    PackageLengthNode->Value = (void *) PackageLength;
+    PackageLengthNode->Value.Integer = PackageLength;
 
     /* Remaining nodes are handled via the tree walk */
 }
@@ -691,11 +862,51 @@ CgDoOffset (
 {
     ASL_PARSE_NODE              *InitializerNode;
 
+    /* Entire proc unnecessarY? */
 
     Node->AmlOpcodeLength = 1;
     InitializerNode = Node->Child;
-    InitializerNode->Value = (void *) ((UINT32) InitializerNode->Value * 8);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+CgDoAccessAs (
+    ASL_PARSE_NODE              *Node)
+{
+    ASL_PARSE_NODE              *Next;
+
+
+    Node->AmlOpcodeLength = 1;
+    Next = Node->Child;
+
+    /* First child is the access type */
+
+    Next->AmlOpcode = AML_RAW_DATA_BYTE;
+    Next->ParseOpcode = RAW_DATA;
+    
+    /* Second child is the optional access attribute */
+
+    Next = Next->Peer;
+    if (Next->ParseOpcode == DEFAULT_ARG)
+    {
+        Next->Value.Integer = 0;
+    }
+    Next->AmlOpcode = AML_RAW_DATA_BYTE;
+    Next->ParseOpcode = RAW_DATA;
+}
+
 
 
 /*******************************************************************************
@@ -715,13 +926,30 @@ CgGenerateAmlLengths (
     ASL_PARSE_NODE          *Node)
 {
     char                    *Buffer;
+    ACPI_STATUS             Status;
     
 
 
-    if (Node->AmlOpcode == AML_RAW_DATA_BYTE)
+    switch (Node->AmlOpcode)
     {
+    case AML_RAW_DATA_BYTE:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 1;
+        return;
+    
+    case AML_RAW_DATA_WORD:
+        Node->AmlOpcodeLength = 0;
+        Node->AmlLength = 2;
+        return;
+    
+    case AML_RAW_DATA_DWORD:
+        Node->AmlOpcodeLength = 0;
+        Node->AmlLength = 4;
+        return;
+    
+    case AML_RAW_DATA_QWORD:
+        Node->AmlOpcodeLength = 0;
+        Node->AmlLength = 8;
         return;
     }
 
@@ -733,24 +961,42 @@ CgGenerateAmlLengths (
         break;
 
     case NAMESEG:
+        Node->AmlOpcodeLength = 0;
         Node->AmlLength = 4;
         break;
 
     case NAMESTRING:
-        AcpiNsInternalizeName (Node->Value, &Buffer);
-        free (Node->Value);
-        Node->Value = Buffer;
+        Node->AmlOpcodeLength = 0;
+        Status = AcpiNsInternalizeName (Node->Value.String, &Buffer);
+        if (ACPI_FAILURE (Status))
+        {
+            DbgPrint ("Failure from internalize name %X\n", Status);
+            break;
+        }
+
+        free (Node->Value.String);
+        Node->Value.String = Buffer;
 
         Node->AmlLength = strlen (Buffer);
+        
+        /* 
+         * Check for single backslash reference to root,
+         * make it a null terminated string in the AML
+         */
+        if (Node->AmlLength == 1)
+        {
+            Node->AmlLength = 2;
+        }
         break;
 
     case STRING_LITERAL:
-        Node->AmlLength = strlen (Node->Value) + 1; /* Get null terminator */
+        Node->AmlOpcodeLength = 1;
+        Node->AmlLength = strlen (Node->Value.String) + 1; /* Get null terminator */
         break;
 
     case PACKAGE_LENGTH:
         Node->AmlOpcodeLength = 0;
-        Node->AmlPkgLenBytes = CgGetPackageLenByteCount ((UINT32) Node->Value);
+        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node->Value.Integer);
         break;
 
     case RAW_DATA:
@@ -869,6 +1115,14 @@ CgGenerateAmlOperands (
         CgDoField (Node);
         break;
 
+    case INDEXFIELD:
+        CgDoIndexField (Node);
+        break;
+
+    case BANKFIELD:
+        CgDoBankField (Node);
+        break;
+
     case BUFFER:
         CgDoBuffer (Node);
         break;
@@ -914,9 +1168,9 @@ CgGenerateAmlOpcode (
     Node->AmlOpcode = AslKeywordMapping[Index].AmlOpcode;
     Node->Flags |= AslKeywordMapping[Index].Flags;
 
-    if (!Node->Value)
+    if (!Node->Value.Integer)
     {
-        Node->Value = (void *) AslKeywordMapping[Index].Value;
+        Node->Value.Integer = AslKeywordMapping[Index].Value;
     }
 
 
@@ -933,6 +1187,16 @@ CgGenerateAmlOpcode (
 
     case OFFSET:
         CgDoOffset (Node);
+        break;
+
+    case ACCESSAS:
+        CgDoAccessAs (Node);
+        break;
+
+    case EISAID:
+        /* TBD: implement real code */
+        /* Free string */
+        Node->Value.Integer = 0x12345678;
         break;
     }
 
@@ -969,7 +1233,7 @@ CgGenerateAmlOpcode (
 ASL_MAPPING_ENTRY AslKeywordMapping [] = 
 {
 
-/* ACCESSAS */                  OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0),
+/* ACCESSAS */                  OP_TABLE_ENTRY (AML_ACCESSFIELD_OP,                0,                  0),
 /* ACCESSATTRIB_BLOCK */        OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BLOCK_ACC,   0),
 /* ACCESSATTRIB_BYTE */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0),
 /* ACCESSATTRIB_CALL */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0),
@@ -978,10 +1242,10 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* ACCESSATTRIB_WORD */         OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,    0),
 /* ACCESSTYPE_ANY */            OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_ANY_ACC,     0),
 /* ACCESSTYPE_BUF */            OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_ANY_ACC,     0),
-/* ACCESSTYPE_BYTE */           OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_ANY_ACC,     0),
-/* ACCESSTYPE_DWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_ANY_ACC,     0),
-/* ACCESSTYPE_QWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_ANY_ACC,     0),
-/* ACCESSTYPE_WORD */           OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_ANY_ACC,     0),
+/* ACCESSTYPE_BYTE */           OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_BYTE_ACC,     0),
+/* ACCESSTYPE_DWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_DWORD_ACC,     0),
+/* ACCESSTYPE_QWORD */          OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_DWORD_ACC,     0),
+/* ACCESSTYPE_WORD */           OP_TABLE_ENTRY (AML_BYTE_OP,                ACCESS_WORD_ACC,     0),
 /* ACQUIRE */                   OP_TABLE_ENTRY (AML_ACQUIRE_OP,             0,                  0),
 /* ADD */                       OP_TABLE_ENTRY (AML_ADD_OP,                 0, 0),
 /* ALIAS */                     OP_TABLE_ENTRY (AML_ALIAS_OP,               0, 0),
@@ -993,12 +1257,12 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* ARG4 */                      OP_TABLE_ENTRY (AML_ARG4,                   0, 0),
 /* ARG5 */                      OP_TABLE_ENTRY (AML_ARG5,                   0, 0),
 /* ARG6 */                      OP_TABLE_ENTRY (AML_ARG6,                   0, 0),
-/* BANKFIELD */                 OP_TABLE_ENTRY (AML_BANK_FIELD_OP,          0, 0),
+/* BANKFIELD */                 OP_TABLE_ENTRY (AML_BANK_FIELD_OP,          0,                  NODE_AML_PACKAGE),
 /* BREAK */                     OP_TABLE_ENTRY (AML_BREAK_OP,               0, 0),
 /* BREAKPOINT */                OP_TABLE_ENTRY (AML_BREAKPOINT_OP,          0, 0),
 /* BUFF */                      OP_TABLE_ENTRY (AML_BUFF_OP,                0, 0),
 /* BUFFER */                    OP_TABLE_ENTRY (AML_BUFFER_OP,              0,                  NODE_AML_PACKAGE),
-/* BYTECONST */                 OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
+/* BYTECONST */                 OP_TABLE_ENTRY (AML_RAW_DATA_BYTE,          0, 0),
 /* CASE */                      OP_TABLE_ENTRY (AML_CASE_OP,                0, 0),
 /* CONCATENATE */               OP_TABLE_ENTRY (AML_CONCAT_OP,              0, 0),
 /* CONCATENATERESTEMPLATE */    OP_TABLE_ENTRY (AML_CONCAT_TPL_OP,          0, 0),
@@ -1022,12 +1286,12 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* DEVICE */                    OP_TABLE_ENTRY (AML_DEVICE_OP,              0,                  NODE_AML_PACKAGE),
 /* DIVIDE */                    OP_TABLE_ENTRY (AML_DIVIDE_OP,              0, 0),
 /* DMA */                       OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
-/* DWORDCONST */                OP_TABLE_ENTRY (AML_DWORD_OP,               0, 0),
+/* DWORDCONST */                OP_TABLE_ENTRY (AML_RAW_DATA_DWORD,         0, 0),
 /* DWORDIO */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* DWORDMEMORY */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
-/* EISAID */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
-/* ELSE */                      OP_TABLE_ENTRY (AML_ELSE_OP,                0, 0),
-/* ELSEIF */                    OP_TABLE_ENTRY (AML_ELSEIF_OP,              0, 0),
+/* EISAID */                    OP_TABLE_ENTRY (AML_DWORD_OP,         0, 0),
+/* ELSE */                      OP_TABLE_ENTRY (AML_ELSE_OP,                0,                  NODE_AML_PACKAGE),
+/* ELSEIF */                    OP_TABLE_ENTRY (AML_ELSEIF_OP,              0,                  NODE_AML_PACKAGE),
 /* ENDDEPENDENTFN */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* EVENT */                     OP_TABLE_ENTRY (AML_EVENT_OP,               0, 0),
 /* EXTERNAL */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
@@ -1070,12 +1334,12 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* LOCKRULE_NOLOCK */           OP_TABLE_ENTRY (AML_BYTE_OP,                GLOCK_NEVER_LOCK, 0),
 /* LOR */                       OP_TABLE_ENTRY (AML_LOR_OP,                 0, 0),
 /* MATCH */                     OP_TABLE_ENTRY (AML_MATCH_OP,               0, 0),
-/* MATCHTYPE_MEQ */             OP_TABLE_ENTRY (AML_BYTE_OP,                MATCH_MEQ, 0),
-/* MATCHTYPE_MGE */             OP_TABLE_ENTRY (AML_BYTE_OP,                MATCH_MGE, 0),
-/* MATCHTYPE_MGT */             OP_TABLE_ENTRY (AML_BYTE_OP,                MATCH_MGT, 0),
-/* MATCHTYPE_MLE */             OP_TABLE_ENTRY (AML_BYTE_OP,                MATCH_MLE, 0),
-/* MATCHTYPE_MLT */             OP_TABLE_ENTRY (AML_BYTE_OP,                MATCH_MLT, 0),
-/* MATCHTYPE_MTR */             OP_TABLE_ENTRY (AML_BYTE_OP,                MATCH_MTR, 0),
+/* MATCHTYPE_MEQ */             OP_TABLE_ENTRY (AML_RAW_DATA_BYTE,                MATCH_MEQ, 0),
+/* MATCHTYPE_MGE */             OP_TABLE_ENTRY (AML_RAW_DATA_BYTE,                MATCH_MGE, 0),
+/* MATCHTYPE_MGT */             OP_TABLE_ENTRY (AML_RAW_DATA_BYTE,                MATCH_MGT, 0),
+/* MATCHTYPE_MLE */             OP_TABLE_ENTRY (AML_RAW_DATA_BYTE,                MATCH_MLE, 0),
+/* MATCHTYPE_MLT */             OP_TABLE_ENTRY (AML_RAW_DATA_BYTE,                MATCH_MLT, 0),
+/* MATCHTYPE_MTR */             OP_TABLE_ENTRY (AML_RAW_DATA_BYTE,                MATCH_MTR, 0),
 /* MEMORY24 */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* MEMORY32 */                  OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* MEMORY32FIXED */             OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
@@ -1130,6 +1394,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* REGIONSPACE_SMBUS */         OP_TABLE_ENTRY (AML_RAW_DATA_BYTE,          REGION_SMBUS, 0),
 /* REGISTER */                  OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
 /* RELEASE */                   OP_TABLE_ENTRY (AML_RELEASE_OP,             0, 0),
+/* RESERVED_BYTES */            OP_TABLE_ENTRY (AML_RESERVEDFIELD_OP,       0, 0),
 /* RESET */                     OP_TABLE_ENTRY (AML_RESET_OP,               0, 0),
 /* RESOURCETEMPLATE */          OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
 /* RETURN */                    OP_TABLE_ENTRY (AML_RETURN_OP,              0, 0),
@@ -1146,22 +1411,22 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* STARTDEPENDENTFN_NOPRI */    OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
 /* STORE */                     OP_TABLE_ENTRY (AML_STORE_OP,               0, 0),
 /* STRING */                    OP_TABLE_ENTRY (AML_STRING_OP,              0, 0),
-/* STRING_LITERAL */            OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
+/* STRING_LITERAL */            OP_TABLE_ENTRY (AML_STRING_OP,              0, 0),
 /* SUBTRACT */                  OP_TABLE_ENTRY (AML_SUBTRACT_OP,            0, 0),
 /* SWITCH */                    OP_TABLE_ENTRY (AML_SWITCH_OP,              0, 0),
-/* THERMALZONE */               OP_TABLE_ENTRY (AML_THERMAL_ZONE_OP,        0, 0),
+/* THERMALZONE */               OP_TABLE_ENTRY (AML_THERMAL_ZONE_OP,        0,                  NODE_AML_PACKAGE),
 /* TOBCD */                     OP_TABLE_ENTRY (AML_TO_BCD_OP,              0, 0),
 /* UNICODE */                   OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
 /* UNLOAD */                    OP_TABLE_ENTRY (AML_UNLOAD_OP,              0, 0),
-/* UPDATERULE_ONES */           OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
-/* UPDATERULE_PRESERVE */       OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
-/* UPDATERULE_ZEROS */          OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
+/* UPDATERULE_ONES */           OP_TABLE_ENTRY (AML_BYTE_OP,                UPDATE_WRITE_AS_ONES, 0),
+/* UPDATERULE_PRESERVE */       OP_TABLE_ENTRY (AML_BYTE_OP,                UPDATE_PRESERVE, 0),
+/* UPDATERULE_ZEROS */          OP_TABLE_ENTRY (AML_BYTE_OP,                UPDATE_WRITE_AS_ZEROS, 0),
 /* VENDORLONG */                OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
 /* VENDORSHORT */               OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
 /* WAIT */                      OP_TABLE_ENTRY (AML_WAIT_OP,                0, 0),
 /* WHILE */                     OP_TABLE_ENTRY (AML_WHILE_OP,               0,                  NODE_AML_PACKAGE),
 /* WORDBUSNUMBER */             OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
-/* WORDCONST */                 OP_TABLE_ENTRY (AML_WORD_OP,                0, 0),
+/* WORDCONST */                 OP_TABLE_ENTRY (AML_RAW_DATA_WORD,          0, 0),
 /* WORDIO */                    OP_TABLE_ENTRY (AML_BYTE_OP,                0, 0),
 /* XOR */                       OP_TABLE_ENTRY (AML_BIT_XOR_OP,             0, 0),
 /* ZERO */                      OP_TABLE_ENTRY (AML_ZERO_OP,                0, 0),
