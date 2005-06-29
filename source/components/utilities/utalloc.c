@@ -220,7 +220,7 @@ CmAddElementToAllocList (
     FUNCTION_TRACE ("CmAddElementToAllocList");
     
 
-    /* Any list locking should be done right here. */
+    CmAcquireMutex (MTX_MEMORY);
     
     /* If the head pointer is null, create the first element and fill it in. */
 
@@ -266,6 +266,7 @@ CmAddElementToAllocList (
     TailAllocPtr->Line      = Line;
     strcpy (TailAllocPtr->Module, Module);
     
+    CmReleaseMutex (MTX_MEMORY);
     return_VOID;
 }
 
@@ -308,7 +309,10 @@ CmDeleteElementFromAllocList (
         
         return_VOID;
     }
+
     
+    CmAcquireMutex (MTX_MEMORY);
+
     if (HeadAllocPtr == TailAllocPtr)
     {   
         if (Address != HeadAllocPtr->Address)
@@ -316,7 +320,7 @@ CmDeleteElementFromAllocList (
             _REPORT_ERROR (Module, Line, Component,
                 "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
 
-            return_VOID;
+            goto Cleanup;
         }
         
         OsdFree (HeadAllocPtr);
@@ -326,7 +330,7 @@ CmDeleteElementFromAllocList (
         DEBUG_PRINT (TRACE_ALLOCATIONS,
             ("_CmFree: Allocation list deleted.  No more outstanding allocations.\n"));
     
-        return_VOID;
+        goto Cleanup;
     }
     
 
@@ -377,6 +381,10 @@ CmDeleteElementFromAllocList (
     
     }
 
+
+Cleanup:
+    CmReleaseMutex (MTX_MEMORY);
+
     return_VOID;
 }
 
@@ -417,6 +425,8 @@ CmDumpCurrentAllocations (
      * Walk the allocation list.
      */
 
+    CmAcquireMutex (MTX_MEMORY);
+
     for (i = 1; ; i++)  /* Just a counter */
     {
         if ((Element->Component & Component) &&
@@ -445,6 +455,7 @@ CmDumpCurrentAllocations (
         Element = Element->Next;
     }
 
+    CmReleaseMutex (MTX_MEMORY);
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
         ("Total number of unfreed allocations = %d\n", i));
