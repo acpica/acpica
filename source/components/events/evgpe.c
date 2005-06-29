@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -175,7 +175,7 @@ AcpiEvGpeInitialize (void)
     AcpiGbl_GpeBlockInfo[1].BlockBaseNumber = AcpiGbl_FADT->Gpe1Base;
 
 
-    /* 
+    /*
      * Determine the maximum GPE number for this machine.
      *
      * Note: both GPE0 and GPE1 are optional, and either can exist without
@@ -204,7 +204,7 @@ AcpiEvGpeInitialize (void)
         {
             ACPI_REPORT_ERROR ((
                 "GPE0 block (GPE 0 to %d) overlaps the GPE1 block (GPE %d to %d) - Ignoring GPE1\n",
-                AcpiGbl_GpeNumberMax, AcpiGbl_FADT->Gpe1Base, 
+                AcpiGbl_GpeNumberMax, AcpiGbl_FADT->Gpe1Base,
                 AcpiGbl_FADT->Gpe1Base + ((AcpiGbl_GpeBlockInfo[1].RegisterCount * ACPI_GPE_REGISTER_WIDTH) - 1)));
 
             /* Ignore GPE1 block by setting the register count to zero */
@@ -213,11 +213,11 @@ AcpiEvGpeInitialize (void)
         }
         else
         {
-            /* 
+            /*
              * GPE0 and GPE1 do not have to be contiguous in the GPE number space,
              * But, GPE0 always starts at zero.
              */
-            AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base + 
+            AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base +
                                     ((AcpiGbl_GpeBlockInfo[1].RegisterCount * ACPI_GPE_REGISTER_WIDTH) - 1);
         }
     }
@@ -238,7 +238,7 @@ AcpiEvGpeInitialize (void)
 
     if (AcpiGbl_GpeNumberMax > ACPI_GPE_MAX)
     {
-        ACPI_REPORT_ERROR (("Maximum GPE number from FADT is too large: 0x%X\n", 
+        ACPI_REPORT_ERROR (("Maximum GPE number from FADT is too large: 0x%X\n",
             AcpiGbl_GpeNumberMax));
         return_ACPI_STATUS (AE_BAD_VALUE);
     }
@@ -690,7 +690,7 @@ AcpiEvAsynchExecuteGpeMethod (
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR (("%s while evaluating method [%4.4s] for GPE[%2.2X]\n",
-                AcpiFormatException (Status), 
+                AcpiFormatException (Status),
                 GpeInfo.MethodNode->Name.Ascii, GpeNumber));
         }
     }
