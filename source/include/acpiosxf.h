@@ -20,20 +20,24 @@
  | These interfaces must be implemented by the OS-dependent front-end
  | to the ACPI subsystem.
  |
- | $Revision: 1.8 $
- | $Date: 2005/06/29 19:59:43 $
+ | $Revision: 1.9 $
+ | $Date: 2005/06/29 19:59:45 $
  | $Log: acpiosxf.h,v $
- | Revision 1.8  2005/06/29 19:59:43  aystarik
- | Added File header
+ | Revision 1.9  2005/06/29 19:59:45  aystarik
+ | 16/32/64-bit common data types
  |
  | 
- | date	99.02.12.18.29.00;	author rmosgrov;	state Exp;
+ | date	99.03.10.00.04.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 9     3/09/99 4:04p Rmoore1
+ * 16/32/64-bit common data types
  * 
  * 8     2/12/99 10:29a Rmosgrov
  * Added File header
  */
 
+#include "datatypes.h"
 #include "acpiasm.h"
 
 #define OSD_FILE    void
@@ -53,7 +57,7 @@ OsdOpen (
     const char *    filename, 
     const char *    mode);
 
-int 
+INT32 
 OsdClose (
     OSD_FILE *      stream);
 
@@ -71,13 +75,13 @@ OsdWrite (
     size_t          count, 
     OSD_FILE *      stream); 
 
-int 
+INT32 
 OsdPrintf (
     OSD_FILE *      stream, 
     const char *    format, 
     ...);
 
-int 
+INT32 
 OsdFlushall (
     void);
 
@@ -86,12 +90,12 @@ OsdFlushall (
 
 void *
 OsdAllocate (
-    unsigned long   size);
+    UINT32          size);
 
 char *
 OsdCallocate (
-    unsigned long   num, 
-    unsigned long   size);
+    UINT32          num, 
+    UINT32          size);
 
 void 
 OsdFree (
@@ -102,41 +106,99 @@ OsdFree (
 
 char *
 OsdMapMemory (
-    unsigned long   where,
-    unsigned long   length);
+    UINT32          where,
+    UINT32          length);
 
 void 
 OsdUnMapMemory (
     char *          where, 
-    unsigned long   length);
+    UINT32          length);
 
 
 
 /* Interrupt handlers */
 
-void *OsdInstallInterruptHandler (
-    unsigned long   InterruptNumber,
-    int             (* Isr)(void),
-    unsigned long * ExceptPtr);
+UINT32
+OsdInstallInterruptHandler (
+    UINT32          InterruptNumber,
+    INT32           (* Isr)(void),
+    UINT32          * ExceptPtr);
 
 
 /* Scheduling */
 
 void
 OsdSleep (
-    unsigned long   seconds,
-    unsigned long   milliseconds);
+    UINT32          seconds,
+    UINT32          milliseconds);
 
 void
 OsdSleepUsec (
-    unsigned long   microseconds);
+    UINT32          microseconds);
 
 
 
 /* Misc */
 
-int OsdAssert (
+INT32 
+OsdAssert (
     void *);
+
+
+/*
+ * Platform/Hardware independent I/O interfaces
+ */
+
+UINT8
+OsdIn8 (
+    UINT16          InPort);
+
+UINT16
+OsdIn16 (
+    UINT16          InPort);
+
+UINT32
+OsdIn32 (
+    UINT16          InPort);
+
+void
+OsdOut8 (
+    UINT16          OutPort, 
+    UINT8           Value);
+
+void
+OsdOut16 (
+    UINT16          OutPort, 
+    UINT16          Value);
+
+void
+OsdOut32 (
+    UINT16          OutPort, 
+    UINT32          Value);
+
+
+/*
+ * Standard access to PCI configuration space
+ */
+
+UINT8 
+OsdReadPciCfgByte (INT32, INT32, INT32, UINT8 *);
+
+UINT8 
+OsdReadPciCfgWord (INT32, INT32, INT32, UINT16 *);
+
+UINT8 
+OsdReadPciCfgDword (INT32, INT32, INT32, UINT32 *);
+
+UINT8 
+OsdWritePciCfgByte (INT32, INT32, INT32, UINT8);
+
+UINT8 
+OsdWritePciCfgWord (INT32, INT32, INT32, UINT16);
+
+UINT8 
+OsdWritePciCfgDword (INT32, INT32, INT32, UINT32);
+
 
 
 
