@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmeval - Object evaluation
- *              $Revision: 1.18 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -121,7 +121,7 @@
 #include "acinterp.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmeval")
 
 
@@ -169,7 +169,7 @@ AcpiCmEvaluateNumericObject (
         else
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("%s on %4.4s failed with status %4.4x\n", ObjectName,
+                ("%s on %4.4s failed with status %s\n", ObjectName,
                 &DeviceNode->Name,
                 AcpiCmFormatException (Status)));
         }
@@ -189,11 +189,11 @@ AcpiCmEvaluateNumericObject (
 
     /* Is the return object of the correct type? */
 
-    if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
+    if (ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
     {
         Status = AE_TYPE;
         DEBUG_PRINT (ACPI_ERROR,
-            ("Type returned from %s was not a number: %d \n",
+            ("Type returned from %s was not a number: %X \n",
             ObjectName, ObjDesc->Common.Type));
     }
     else
@@ -202,7 +202,7 @@ AcpiCmEvaluateNumericObject (
          * Since the structure is a union, setting any field will set all
          * of the variables in the union
          */
-        *Address = ObjDesc->Number.Value;
+        *Address = ObjDesc->Integer.Value;
     }
 
     /* On exit, we must delete the return object */
@@ -257,7 +257,7 @@ AcpiCmExecute_HID (
         else
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("_HID on %4.4s failed with status %4.4x\n",
+                ("_HID on %4.4s failed with status %s\n",
                 &DeviceNode->Name,
                 AcpiCmFormatException (Status)));
         }
@@ -278,22 +278,22 @@ AcpiCmExecute_HID (
      *  a string
      */
 
-    if ((ObjDesc->Common.Type != ACPI_TYPE_NUMBER) &&
+    if ((ObjDesc->Common.Type != ACPI_TYPE_INTEGER) &&
         (ObjDesc->Common.Type != ACPI_TYPE_STRING))
     {
         Status = AE_TYPE;
         DEBUG_PRINT (ACPI_ERROR,
-            ("Type returned from _HID was not a number or string: [0x%X] \n",
-            ObjDesc->Common.Type));
+            ("Type returned from _HID not a number or string: %s(%X) \n",
+            AcpiCmGetTypeName (ObjDesc->Common.Type), ObjDesc->Common.Type));
     }
 
     else
     {
-        if (ObjDesc->Common.Type == ACPI_TYPE_NUMBER)
+        if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
         {
             /* Convert the Numeric HID to string */
 
-            AcpiAmlEisaIdToString ((UINT32) ObjDesc->Number.Value, Hid->Buffer);
+            AcpiAmlEisaIdToString ((UINT32) ObjDesc->Integer.Value, Hid->Buffer);
         }
 
         else
@@ -354,7 +354,7 @@ AcpiCmExecute_UID (
         else
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("_UID on %4.4s failed with status %4.4x\n",
+                ("_UID on %4.4s failed with status %s\n",
                 &DeviceNode->Name,
                 AcpiCmFormatException (Status)));
         }
@@ -375,22 +375,22 @@ AcpiCmExecute_UID (
      *  a string
      */
 
-    if ((ObjDesc->Common.Type != ACPI_TYPE_NUMBER) &&
+    if ((ObjDesc->Common.Type != ACPI_TYPE_INTEGER) &&
         (ObjDesc->Common.Type != ACPI_TYPE_STRING))
     {
         Status = AE_TYPE;
         DEBUG_PRINT (ACPI_ERROR,
-            ("Type returned from _UID was not a number or string: %d \n",
+            ("Type returned from _UID was not a number or string: %X \n",
             ObjDesc->Common.Type));
     }
 
     else
     {
-        if (ObjDesc->Common.Type == ACPI_TYPE_NUMBER)
+        if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
         {
             /* Convert the Numeric UID to string */
 
-            AcpiAmlUnsignedIntegerToString (ObjDesc->Number.Value, Uid->Buffer);
+            AcpiAmlUnsignedIntegerToString (ObjDesc->Integer.Value, Uid->Buffer);
         }
 
         else
@@ -470,11 +470,11 @@ AcpiCmExecute_STA (
 
         /* Is the return object of the correct type? */
 
-        if (ObjDesc->Common.Type != ACPI_TYPE_NUMBER)
+        if (ObjDesc->Common.Type != ACPI_TYPE_INTEGER)
         {
             Status = AE_TYPE;
             DEBUG_PRINT (ACPI_ERROR,
-                ("Type returned from _STA was not a number: %d \n",
+                ("Type returned from _STA was not a number: %X \n",
                 ObjDesc->Common.Type));
         }
 
@@ -482,7 +482,7 @@ AcpiCmExecute_STA (
         {
             /* Extract the status flags */
 
-            *Flags = (UINT32) ObjDesc->Number.Value;
+            *Flags = (UINT32) ObjDesc->Integer.Value;
         }
 
         /* On exit, we must delete the return object */
