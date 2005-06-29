@@ -112,11 +112,11 @@
  * 
  * FUNCTION:    AmlSetupField
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR * ObjDesc         Field to be read or written
- *              OBJECT_DESCRIPTOR * RgnDesc         Region containing field
- *              INT32               FieldBitWidth   Field Width in bits (8, 16, or 32)
+ * PARAMETERS:  *ObjDesc            - Field to be read or written
+ *              *RgnDesc            - Region containing field
+ *              FieldBitWidth       - Field Width in bits (8, 16, or 32)
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Common processing for AmlReadField and AmlWriteField
  *
@@ -136,11 +136,11 @@
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldBitWidth)
 {
     OBJECT_DESCRIPTOR   *ObjValDesc = NULL;
-    INT32               Excep = S_SUCCESS;
+    ACPI_STATUS         Status = AE_OK;
     INT32               FieldByteWidth;
 
 
@@ -150,17 +150,17 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
     if (!ObjDesc || !RgnDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: internal error - null handle\n"));
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
 
     else if (TYPE_Region != RgnDesc->ValType)
     {
         DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Needed Region, found %d %s\n",
                         RgnDesc->ValType, NsTypeNames[RgnDesc->ValType]));
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {   
         /* ObjDesc, RgnDesc, and RgnDesc->ValType valid */
         
@@ -171,12 +171,12 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
             (FieldBitWidth != 32))
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField:internal error: bad width %d\n", FieldBitWidth));
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
         }
     }
 
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {   
         /* Everything is valid */
 
@@ -191,9 +191,9 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
             /*  address and length have not been previously evaluated   */
             /*  save PCode and PCodeLen on package stack    */
 
-            Excep = AmlPushExecLength (0L);
+            Status = AmlPushExecLength (0L);
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {   
                 /*  PCode and PCodeLen preserved on package stack   */
                 /*  Point to Address opcode in AML stream   */
@@ -203,9 +203,9 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
 
                 /* Evaluate the Address opcode */
 
-                if ((Excep = AmlDoOpCode (MODE_Exec)) == S_SUCCESS && 
-                    (Excep = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
-                                == S_SUCCESS)
+                if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK && 
+                    (Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
+                                == AE_OK)
                 {
                     /* Capture the address */
 
@@ -219,7 +219,7 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
                                     "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh\n",
                                     ObjValDesc, ObjValDesc->ValType, (UINT8) TYPE_Number));
 
-                        Excep = S_ERROR;
+                        Status = AE_AML_ERROR;
                     }
 
                     else
@@ -228,13 +228,13 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
                     }
                 }
 
-                if (S_SUCCESS == Excep)
+                if (AE_OK == Status)
                 {   
                     /* Evaluate the Length opcode */
 
-                    if ((Excep = AmlDoOpCode (MODE_Exec)) == S_SUCCESS &&
-                        (Excep = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
-                                    == S_SUCCESS)
+                    if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK &&
+                        (Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
+                                    == AE_OK)
                     {
                         /* Capture the length */
 
@@ -245,7 +245,7 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
                         {
 
                             DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Length \n"));
-                            Excep = S_ERROR;
+                            Status = AE_AML_ERROR;
                         }
 
                         else
@@ -264,16 +264,16 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
                 }
             }
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
                 /*  restore PCode and PCodeLen  */
 
-                Excep = AmlPopExec ();
+                Status = AmlPopExec ();
             }
         }
     }
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {
         /* 
          * If (offset rounded up to next multiple of field width)
@@ -293,13 +293,13 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
             DUMP_STACK_ENTRY (RgnDesc);
             DUMP_STACK_ENTRY (ObjDesc);
 
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
         }
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave iSetupFld: %s\n", RV[Excep]));
+    DEBUG_PRINT (TRACE_EXEC, ("Leave iSetupFld: %s\n", ExceptionNames[Status]));
 
-    return Excep;
+    return Status;
 }
 
 
@@ -307,26 +307,26 @@ AmlSetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 Fie
  * 
  * FUNCTION:    AmlReadField
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR * ObjDesc         Field to be read
- *              UINT32*             Value           Where to store value
- *              INT32               FieldBitWidth   Field Width in bits (8, 16, or 32)
+ * PARAMETERS:  *ObjDesc            - Field to be read
+ *              *Value              - Where to store value
+ *              FieldBitWidth       - Field Width in bits (8, 16, or 32)
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Retrieve the value of the given field
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
 {
     /* ObjDesc is validated by callers */
 
     OBJECT_DESCRIPTOR   *RgnDesc = NULL;
+    ACPI_STATUS         Status;
     UINT32              Address;
     UINT32              LocalValue = 0;
     INT32               FieldByteWidth;
-    INT32               Excep;
 
 
     FUNCTION_TRACE ("AmlReadField");
@@ -339,10 +339,10 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
 
 
     FieldByteWidth = FieldBitWidth / 8;
-    Excep = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
-    if (S_SUCCESS != Excep)
+    Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
+    if (AE_OK != Status)
     {
-        return Excep;
+        return Status;
     }
 
     /*  SetupFld validated RgnDesc and FieldBitWidth    */
@@ -392,7 +392,7 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         {
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField:implementation limitation: SystemMemory address %08lx over 1MB\n", Address));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
 
         /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
@@ -424,7 +424,7 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField: invalid SystemMemory width %d\n", FieldBitWidth));
             OsdUnMapMemory (PhysicalAddrPtr, 4);
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
 
         OsdUnMapMemory (PhysicalAddrPtr, 4);
@@ -450,7 +450,7 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         default:
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField: invalid SystemIO width %d\n", FieldBitWidth));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
         break;
 
@@ -478,11 +478,11 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         default:
             DEBUG_PRINT (ACPI_ERROR,
                     ("AmlReadField: invalid PCIConfig width %d\n", FieldBitWidth));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
         if (PciExcep)
         {
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
         break;
 
@@ -493,17 +493,17 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: Region type %s not implemented\n",
                 RegionTypes[RgnDesc->Region.SpaceId]));
-        return S_ERROR;
+        return AE_AML_ERROR;
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: Unknown region SpaceID %d\n",
                 RgnDesc->Region.SpaceId));
-        return S_ERROR;
+        return AE_AML_ERROR;
     }
 
     DEBUG_PRINT (TRACE_OPREGION, (" val %08lx \n", *Value));
 
-    return S_SUCCESS;
+    return AE_OK;
 }
 
 
@@ -511,25 +511,25 @@ AmlReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
  * 
  * FUNCTION:    AmlWriteField
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR * ObjDesc         Field to be set
- *              UINT32              Value           Value to store
- *              INT32               FieldBitWidth   Field Width in bits (8, 16, or 32)
+ * PARAMETERS:  *ObjDesc            - Field to be set
+ *              Value               - Value to store
+ *              FieldBitWidth       - Field Width in bits (8, 16, or 32)
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Store the value into the given field
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
 {
     /* ObjDesc is validated by callers */
 
     OBJECT_DESCRIPTOR *     RgnDesc = NULL;
+    ACPI_STATUS             Status = AE_OK;
     UINT32                  Address;
     INT32                   FieldByteWidth;
-    INT32                   Excep = S_SUCCESS;
 
 
     FUNCTION_TRACE ("AmlWriteField");
@@ -540,10 +540,10 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
     }
 
     FieldByteWidth = FieldBitWidth / 8;
-    Excep = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
-    if (S_SUCCESS != Excep)
+    Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
+    if (AE_OK != Status)
     {
-        return Excep;
+        return Status;
     }
 
     Address = RgnDesc->Region.Address
@@ -582,7 +582,7 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlWriteField:implementation limitation: SystemMemory address %08lx over 1MB\n", Address));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
 
 
@@ -612,7 +612,7 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlWriteField: invalid SystemMemory width %d\n", FieldBitWidth));
             OsdUnMapMemory (PhysicalAddrPtr, 4);
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
         }
 
         OsdUnMapMemory (PhysicalAddrPtr, 4);
@@ -636,7 +636,7 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         default:
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlWriteField: invalid SystemIO width %d\n", FieldBitWidth));
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
         }
         break;
 
@@ -662,12 +662,12 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         default:
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlWriteField: invalid PCIConfig width %d\n", FieldBitWidth));
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
         }
 
         if (PciExcep)
         {
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
         }
         break;
 
@@ -678,38 +678,38 @@ AmlWriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: Region type %s not implemented\n",
                         RegionTypes[RgnDesc->Region.SpaceId]));
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: Unknown region SpaceID %d\n",
                         RgnDesc->Region.SpaceId));
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
 
-    return Excep;
+    return Status;
 }
 
 /*****************************************************************************
  * 
  * FUNCTION:    AmlAccessNamedField
  *
- * PARAMETERS:  INT32       Mode           ACPI_READ or ACPI_WRITE
- *              NsHandle    NamedField     Handle for field to be accessed
- *              UINT32      *Value          Value to be read or written
+ * PARAMETERS:  Mode                - ACPI_READ or ACPI_WRITE
+ *              NamedField          - Handle for field to be accessed
+ *              *Value              - Value to be read or written
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Read or write a named field
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
 {
     OBJECT_DESCRIPTOR       *ObjDesc = NULL;
+    ACPI_STATUS             Status = AE_AML_ERROR;
     char                    *Type = NULL;
     INT32                   Granularity;
-    INT32                   Excep = S_ERROR;
     INT32                   MaxW;
     UINT32                  Mask = 0;
     UINT32                  dValue = 0;
@@ -755,11 +755,11 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         }
         else
         {
-            Excep = S_SUCCESS;
+            Status = AE_OK;
         }
     }
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {
 
         switch (ObjDesc->Field.Access)
@@ -794,24 +794,24 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
             DEBUG_PRINT (ACPI_ERROR, (
                         "AmlAccessNamedField: unknown access type %d\n",
                         ObjDesc->Field.Access));
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
         }
     }
 
 
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {
         /*  field has valid access type */
 
         if (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset > (UINT16) MaxW)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Field exceeds %s\n", Type));
-            return S_ERROR;
+            return AE_AML_ERROR;
         }
     }
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {
         /*  Check lock rule prior to modifing the field */
         
@@ -819,7 +819,7 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         {   
             /*  Lock Rule is Lock   */
             
-            if (S_ERROR == OsGetGlobalLock ())
+            if (OsGetGlobalLock () != AE_OK)
 
                 /*  
                  * lock ownership failed: this is a single threaded implementation
@@ -827,14 +827,14 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
                  * This means something grabbed the global lock and did not
                  * release it.
                  */
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
             else
                 Locked = TRUE;
         }
     }
 
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {
         /* 
          * As long as MaxW/2 is wide enough for the data and MaxW > Granularity,
@@ -876,7 +876,7 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
                      * Read the current contents of the byte/word/dword containing
                      * the field, and merge with the new field value.
                      */
-                    Excep = AmlReadField (ObjDesc, &OldVal, MaxW);
+                    Status = AmlReadField (ObjDesc, &OldVal, MaxW);
                     dValue |= OldVal & ~Mask;
                     break;
 
@@ -899,19 +899,19 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
                     DEBUG_PRINT (ACPI_ERROR, (
                                 "AmlAccessNamedField: Unknown UpdateRule setting %d\n",
                                 ObjDesc->Field.UpdateRule));
-                    Excep = S_ERROR;
+                    Status = AE_AML_ERROR;
                 }
             }
 
 
-            if (S_SUCCESS == Excep)
+            if (AE_OK == Status)
             {
 
                 DEBUG_PRINT (ACPI_INFO, (" invoking AmlWriteField\n"));
 
                 /* perform the update */
 
-                Excep = AmlWriteField (ObjDesc, dValue, MaxW);
+                Status = AmlWriteField (ObjDesc, dValue, MaxW);
             }
         }
 
@@ -919,9 +919,9 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         {
             /* ACPI_READ access */
 
-            Excep = AmlReadField (ObjDesc, Value, MaxW);
+            Status = AmlReadField (ObjDesc, Value, MaxW);
 
-            if ((S_SUCCESS == Excep) &&
+            if ((AE_OK == Status) &&
                  Value)
             {
                 *Value >>= ObjDesc->Field.BitOffset;
@@ -936,7 +936,7 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
     }
 
 
-    return Excep;
+    return Status;
 }
 
 
@@ -944,19 +944,19 @@ AmlAccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
  * 
  * FUNCTION:    AmlSetNamedFieldValue
  *
- * PARAMETERS:  NsHandle    NamedField     Handle for field to be set
- *              UINT32      Value          Value to be stored in field
+ * PARAMETERS:  NamedField          - Handle for field to be set
+ *              Value               - Value to be stored in field
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Store the given value into the field
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlSetNamedFieldValue (NsHandle NamedField, UINT32 Value)
 {
-    INT32           Excep = S_ERROR;
+    ACPI_STATUS         Status = AE_AML_ERROR;
 
 
     FUNCTION_TRACE ("AmlSetNamedFieldValue");
@@ -968,10 +968,10 @@ AmlSetNamedFieldValue (NsHandle NamedField, UINT32 Value)
     }
     else
     {
-        Excep = AmlAccessNamedField (ACPI_WRITE, NamedField, &Value);
+        Status = AmlAccessNamedField (ACPI_WRITE, NamedField, &Value);
     }
 
-    return Excep;
+    return Status;
 }
 
 
@@ -979,19 +979,19 @@ AmlSetNamedFieldValue (NsHandle NamedField, UINT32 Value)
  * 
  * FUNCTION:    AmlGetNamedFieldValue
  *
- * PARAMETERS:  NsHandle    NamedField      Handle for field to be read
- *              UINT32      *Value          Where to store value read froom field
+ * PARAMETERS:  NamedField          - Handle for field to be read
+ *              *Value              - Where to store value read froom field
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Retrieve the value of the given field
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlGetNamedFieldValue (NsHandle NamedField, UINT32 *Value)
 {
-    INT32           Excep = S_ERROR;
+    ACPI_STATUS         Status = AE_AML_ERROR;
 
 
     FUNCTION_TRACE ("AmlGetNamedFieldValue");
@@ -1007,10 +1007,10 @@ AmlGetNamedFieldValue (NsHandle NamedField, UINT32 *Value)
     }
     else
     {
-        Excep = AmlAccessNamedField (ACPI_READ, NamedField, Value);
+        Status = AmlAccessNamedField (ACPI_READ, NamedField, Value);
     }
 
-    return Excep;
+    return Status;
 }
 
 

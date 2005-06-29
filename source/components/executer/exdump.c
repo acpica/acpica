@@ -121,9 +121,14 @@ static ST_KEY_DESC_TABLE KDT[] = {
  * 
  * FUNCTION:    DumpBuffer
  *
- * RETURN:      none
+ * PARAMETERS:  Buffer              - Buffer to dump
+ *              Count               - Amount to dump, in bytes
+ *              Flags               - Options (not implemented)
+ *              ComponentID         - Caller's component ID
  *
- * DESCRIPTION: Generic dump buffer in hex and ascii.
+ * RETURN:      None
+ *
+ * DESCRIPTION: Generic dump buffer in both hex and ascii.
  *
  ****************************************************************************/
 
@@ -207,7 +212,7 @@ cleanup:
  * 
  * FUNCTION:    AmlDumpBuffer
  *
- * PARAMETERS:  size_t  NumBytes    number of AML stream bytes to dump
+ * PARAMETERS:  NumBytes            - Number of AML stream bytes to dump
  *
  * DESCRIPTION: Hex display current AML without consuming the bytes
  *
@@ -229,15 +234,15 @@ AmlDumpBuffer (size_t NumBytes)
  * 
  * FUNCTION:    AmlDumpStackEntry
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *EntryDesc    ptr to SE to be dumped
+ * PARAMETERS:  *EntryDesc          - Pointer to entry to be dumped
  *
- * RETURN:      S_SUCCESS or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Dump a stack entry
  *
  ****************************************************************************/
 
-INT32
+ACPI_STATUS
 AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
 {
     char        *OutString = NULL;
@@ -252,7 +257,7 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
     if (!EntryDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlDumpStackEntry: ***NULL stack entry pointer***\n"));
-        return S_ERROR;
+        return AE_AML_ERROR;
     }
 
     else if (IS_NS_HANDLE (EntryDesc))
@@ -373,16 +378,12 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
                 OBJECT_DESCRIPTOR   **Element;
                 UINT16              ElementIndex;
 
-                (void) IncIndent ();
-
                 for (ElementIndex = 0, Element = EntryDesc->Package.PackageElems;
                       ElementIndex < EntryDesc->Package.PkgCount;
                       ++ElementIndex, ++Element)
                 {
                     AmlDumpStackEntry (*Element);
                 }
-           
-                DecIndent ();
             }
 
             DEBUG_PRINT (ACPI_INFO, ("\n"));
@@ -430,9 +431,7 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
                         EntryDesc->Field.DatLen,   EntryDesc->Field.Access,
                         EntryDesc->Field.LockRule, EntryDesc->Field.UpdateRule,
                         EntryDesc->Field.Offset,   EntryDesc->Field.BitOffset));
-            IncIndent ();
             DUMP_STACK_ENTRY (EntryDesc->Field.Container);
-            DecIndent ();
             break;
 
         case TYPE_IndexField:
@@ -463,9 +462,7 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
                                   ("[stale] %lx \n", EntryDesc->FieldUnit.ConSeq));
                 }
 
-                IncIndent ();
                 DUMP_STACK_ENTRY (EntryDesc->FieldUnit.Container);
-                DecIndent ();
             }
             break;
 
@@ -544,7 +541,7 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
         }
     }
  
-    return S_SUCCESS;
+    return AE_OK;
 }
 
 
@@ -552,10 +549,10 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
  * 
  * FUNCTION:    AmlDumpStack
  *
- * PARAMETERS:  OpMode    LoadExecMode      Load or Exec
- *              char      *Ident            Identification
- *              INT32     NumLevels         # of stack entries to dump above line
- *              char      *Note             Output notation
+ * PARAMETERS:  LoadExecMode        - Load or Exec
+ *              *Ident              - Identification
+ *              NumLevels           - # of stack entries to dump above line
+ *              *Note               - Output notation
  *
  * DESCRIPTION: Dump the object stack
  *
@@ -604,7 +601,7 @@ AmlDumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
          *  - AmlDumpStackEntry fails on an entry other than the first, or
          *  - the entire stack has been dumped.
          */
-        if ((S_SUCCESS != AmlDumpStackEntry (*EntryDesc) &&
+        if ((AE_OK != AmlDumpStackEntry (*EntryDesc) &&
             (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop] != EntryDesc) || 
             (OBJECT_DESCRIPTOR **) &ObjStack[0] == EntryDesc)
         {
@@ -617,6 +614,8 @@ AmlDumpStack (OpMode LoadExecMode, char *Ident, INT32 NumLevels, char *Note)
 /*****************************************************************************
  * 
  * FUNCTION:    AmlDumpObjectDescriptor
+ *
+ * PARAMETERS:  *Object             - Descriptor to dump
  *
  * DESCRIPTION: Dumps the members of the object descriptor given.
  *

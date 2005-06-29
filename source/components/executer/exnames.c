@@ -137,10 +137,6 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *              in fully qualified form.  Used to create labels when
  *              generating an assembly output file.
  *
- * ALLOCATION:
- * Reference   Size                 Pool  Owner                  Description
- * FQN_ptr{sl} FQN_Length{sl:HWM}   bu    LastFullyQualifiedName Last Name seen
- *
  ****************************************************************************/
 
 char *
@@ -197,6 +193,7 @@ AmlLastFullyQualifiedName (void)
                 /* allocation failed */
 
                 REPORT_ERROR (&KDT[0]);
+                return NULL;
             }
         
             FQN_Length = MaxLength;
@@ -241,17 +238,13 @@ AmlLastFullyQualifiedName (void)
  *
  * FUNCTION:    AmlAllocateNameString
  *
- * PARAMETERS:  INT32 PrefixCount   -1  => root
- *                                  0   => none
- *                                  else count of parent levels
- *              INT32 NumNameSegs   count of 4-character name segments
+ * PARAMETERS:  PrefixCount         - Count of parent levels. Special cases:
+ *                                    -1  => root
+ *                                    0   => none
+ *              NumNameSegs         - count of 4-character name segments
  *
  * DESCRIPTION: Ensure allocated name string is long enough,
  *              and set up prefix if any.
- *
- * ALLOCATION:
- * Reference    Size                 Pool  Owner       Description
- * NameString   NameStringSize{HWM}  bu    amlscan     Last AML Name seen
  *
  ****************************************************************************/
 
@@ -324,7 +317,6 @@ AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
             /*  allocation failure  */
 
             REPORT_ERROR (&KDT[1]);
-            OutOfMemory = TRUE;
             NameStringSize = 0;
             return;
         }
@@ -385,9 +377,11 @@ AmlAllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
  *
  * FUNCTION:    AmlGoodChar
  *
- * PARAMETERS:  INT32   Character       the character to be examined
+ * PARAMETERS:  Character           - The character to be examined
  *
  * RETURN:      1 if Character may appear in a name, else 0
+ *
+ * DESCRIPTION: Check for a printable character
  *
  ****************************************************************************/
 
@@ -404,10 +398,10 @@ AmlGoodChar (INT32 Character)
  * 
  * FUNCTION:    AmlDecodePackageLength
  *
- * PARAMETERS:  long    LastPkgLen  latest value decoded by DoPkgLength() for
- *                                  most recently examined package or field
+ * PARAMETERS:  LastPkgLen          - latest value decoded by DoPkgLength() for
+ *                                    most recently examined package or field
  *
- * RETURN:      int NumBytes        Number of bytes contained in package length encoding
+ * RETURN:      Number of bytes contained in package length encoding
  *
  * DESCRIPTION: Decodes the Package Length. Upper 2 bits are are used to
  *              tell if type 1, 2, 3, or 4.
@@ -453,26 +447,24 @@ AmlDecodePackageLength (INT32 LastPkgLen)
  *
  * FUNCTION:    AmlDoSeg
  *
- * PARAMETERS:  OpMode      LoadExecMode      MODE_Load or MODE_Exec
+ * PARAMETERS:  LoadExecMode        - MODE_Load or MODE_Exec
  *
- * RETURN:      S_SUCCESS, S_FAILURE, or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Print/exec a name segment (4 bytes)
  *
  ****************************************************************************/
 
-INT32 
+ACPI_STATUS
 AmlDoSeg (OpMode LoadExecMode)
 {
+    ACPI_STATUS     Status = AE_OK;
     INT32           Index;
-    INT32           Excep = S_SUCCESS;
     char            CharBuf[5];
 
 
     FUNCTION_TRACE ("AmlDoSeg");
 
-
-    LINE_SET (4, LoadExecMode);
 
     /*  If first character is a digit, we aren't looking at a valid name segment    */
 
@@ -481,7 +473,7 @@ AmlDoSeg (OpMode LoadExecMode)
     if ('0' <= CharBuf[0] && CharBuf[0] <= '9')
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlDoSeg: leading digit: %c\n", CharBuf[0]));
-        Excep = S_FAILURE;
+        Status = AE_PENDING;
     }
 
     else 
@@ -496,7 +488,7 @@ AmlDoSeg (OpMode LoadExecMode)
     }
 
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {
         /*  valid name segment  */
 
@@ -526,24 +518,21 @@ AmlDoSeg (OpMode LoadExecMode)
              * so we are looking at something other than a name.
              */
             DEBUG_PRINT (ACPI_ERROR, ("Leading char not alpha: %02Xh (not a name)\n", CharBuf[0]));
-            Excep = S_FAILURE;
+            Status = AE_PENDING;
         }
 
         else
         {
             /* Segment started with one or more valid characters, but fewer than 4 */
         
-            Excep = S_ERROR;
-            LINE_SET (22, LoadExecMode);
+            Status = AE_AML_ERROR;
             DEBUG_PRINT (TRACE_LOAD, (" *Bad char %02x in name*\n", AmlPeek ()));
 
             if (MODE_Load == LoadExecMode)
             {
                 /*  second pass load mode   */
 
-                LINE_SET (strlen (KDT[3].Description), LoadExecMode);
                 REPORT_ERROR (&KDT[3]);
-                LINE_SET (0, LoadExecMode);
             }
 
             else
@@ -554,9 +543,9 @@ AmlDoSeg (OpMode LoadExecMode)
     
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", RV[Excep]));
+    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", ExceptionNames[Status]));
 
-    return Excep;
+    return Status;
 }
 
 
@@ -564,26 +553,22 @@ AmlDoSeg (OpMode LoadExecMode)
  *
  * FUNCTION:    AmlDoName
  *
- * PARAMETERS:  NsType  DataType        Data type to be associated with this name
- *              OpMode  LoadExecMode    MODE_Load or MODE_Exec
+ * PARAMETERS:  DataType            - Data type to be associated with this name
+ *              LoadExecMode        - MODE_Load or MODE_Exec
  *
- * RETURN:      S_SUCCESS, S_FAILURE, or S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Print a name, including any prefixes, enter it in the
  *              name space, and put its handle on the stack.
  *
- * ALLOCATION:
- * Reference   Size                 Pool  Owner       Description
- * ObjStack    s(OBJECT_DESCRIPTOR) bu    amlexec     Name(Lvalue)
- *
  ****************************************************************************/
 
-INT32 
+ACPI_STATUS
 AmlDoName (NsType DataType, OpMode LoadExecMode)
 {
+    ACPI_STATUS     Status = AE_OK;
     INT32           NumSegments;
     INT32           PrefixCount = 0;
-    INT32           Excep = S_SUCCESS;
     UINT8           Prefix = 0;
 
 
@@ -593,8 +578,6 @@ AmlDoName (NsType DataType, OpMode LoadExecMode)
 BREAKPOINT3;
 
     CheckTrash ("enter AmlDoName");
-    LINE_SET (1, LoadExecMode);
-/*     DEBUG_PRINT (TRACE_LOAD, (" ")); REMOVE !! */
 
     if (TYPE_DefField == DataType || 
         TYPE_BankField == DataType || 
@@ -603,7 +586,7 @@ BREAKPOINT3;
         /*  Disallow prefixes for types associated with field names */
 
         AmlAllocateNameString (0, 1);
-        Excep = AmlDoSeg (LoadExecMode);
+        Status = AmlDoSeg (LoadExecMode);
     }
 
     else
@@ -615,7 +598,6 @@ BREAKPOINT3;
             /*  examine first character of name for root or parent prefix operators */
 
         case AML_RootPrefix:
-            LINE_SET (1, LoadExecMode);
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("RootPrefix: %x\n", Prefix));
 
@@ -634,7 +616,6 @@ BREAKPOINT3;
         case AML_ParentPrefix:
             do
             {
-                LINE_SET (1, LoadExecMode);
                 AmlConsumeStreamBytes (1, &Prefix);
                 DEBUG_PRINT (TRACE_LOAD, ("ParentPrefix: %x\n", Prefix));
 
@@ -657,7 +638,6 @@ BREAKPOINT3;
             /* examine first character of name for name segment prefix operator */
             
         case AML_DualNamePrefix:
-            LINE_SET (1, LoadExecMode);
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("DualNamePrefix: %x\n", Prefix));
 
@@ -672,15 +652,14 @@ BREAKPOINT3;
             
             PrefixCount += 2;
 
-            if ((Excep = AmlDoSeg (LoadExecMode)) == S_SUCCESS)
+            if ((Status = AmlDoSeg (LoadExecMode)) == AE_OK)
             {
-                Excep = AmlDoSeg (LoadExecMode);
+                Status = AmlDoSeg (LoadExecMode);
             }
 
             break;
 
         case AML_MultiNamePrefixOp:
-            LINE_SET (1, LoadExecMode);
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("MultiNamePrefix: %x\n", Prefix));
 
@@ -691,15 +670,13 @@ BREAKPOINT3;
 
             NumSegments = AmlPeek ();                      /* fetch count of segments */
 
-            if (AmlDoByteConst (MODE_Load, 0) != S_SUCCESS)
+            if (AmlDoByteConst (MODE_Load, 0) != AE_OK)
             {
                 /* unexpected end of AML */
 
-                LINE_SET (23, LoadExecMode);
                 REPORT_ERROR (&KDT[4]);
                 
-                LINE_SET (0, LoadExecMode);
-                Excep = S_ERROR;
+                Status = AE_AML_ERROR;
                 break;
             }
 
@@ -709,7 +686,7 @@ BREAKPOINT3;
             
             PrefixCount += 2;
 
-            while (NumSegments && (Excep = AmlDoSeg (LoadExecMode)) == S_SUCCESS)
+            while (NumSegments && (Status = AmlDoSeg (LoadExecMode)) == AE_OK)
             {
                 --NumSegments;
             }
@@ -745,20 +722,20 @@ BREAKPOINT3;
             /*  name segment string */
 
             AmlAllocateNameString (PrefixCount, 1);
-            Excep = AmlDoSeg (LoadExecMode);
+            Status = AmlDoSeg (LoadExecMode);
             break;
 
         }   /*  switch (PeekOp ())    */
     }
 
-    if (S_SUCCESS == Excep)
+    if (AE_OK == Status)
     {
         NsHandle        handle;
 
         /* All prefixes have been handled, and the name is in NameString */
 
         DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]);
-        ObjStack[ObjStackTop] = NsEnter (NameString, DataType, LoadExecMode);
+        Status = NsEnter (NameString, DataType, LoadExecMode, &ObjStack[ObjStackTop]);
 
         /* Help view ObjStack during debugging */
 
@@ -774,7 +751,7 @@ BREAKPOINT3;
         if (MODE_Exec == LoadExecMode && !ObjStack[ObjStackTop])
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Name Lookup Failure\n"));
-            Excep = S_ERROR;
+            Status = AE_AML_ERROR;
         }
 
         else if (MODE_Load1 != LoadExecMode)
@@ -805,7 +782,7 @@ BREAKPOINT3;
                     {
                         DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: invoked Method %s has no AML\n",
                                         NameString));
-                        Excep = S_ERROR;
+                        Status = AE_AML_ERROR;
                     }
 
                     else
@@ -817,16 +794,16 @@ BREAKPOINT3;
                         INT32       StackBeforeArgs = ObjStackTop;
 
 
-                        if (((Excep = AmlPushIfExec (MODE_Exec)) == S_SUCCESS) &&
+                        if (((Status = AmlPushIfExec (MODE_Exec)) == AE_OK) &&
                              (ArgCount > 0))
                         {   
                             /*  get arguments   */
                             
-                            while (ArgCount-- && (S_SUCCESS == Excep))
+                            while (ArgCount-- && (AE_OK == Status))
                             {   
                                 /*  get each argument   */
                                 
-                                if (S_SUCCESS == (Excep = AmlDoOpCode (LoadExecMode)))    /*  get argument    */
+                                if (AE_OK == (Status = AmlDoOpCode (LoadExecMode)))    /*  get argument    */
                                 {   
                                     /*  argument on object stack    */
                                     
@@ -838,19 +815,19 @@ BREAKPOINT3;
                                      */
                                     if (MODE_Exec == LoadExecMode)
                                     {
-                                        Excep = AmlGetRvalue ((OBJECT_DESCRIPTOR **)
+                                        Status = AmlGetRvalue ((OBJECT_DESCRIPTOR **)
                                             &ObjStack[ObjStackTop]);
                                     }
 
-                                    if (S_SUCCESS == Excep)
+                                    if (AE_OK == Status)
                                     {
-                                        Excep = AmlPushIfExec (LoadExecMode);    /*  inc iObjStackTop    */
+                                        Status = AmlPushIfExec (LoadExecMode);    /*  inc iObjStackTop    */
                                     }
                                 } 
                             }
                         } 
 
-                        if ((S_SUCCESS == Excep) && (MODE_Exec == LoadExecMode))
+                        if ((AE_OK == Status) && (MODE_Exec == LoadExecMode))
                         {   
                             /* execution mode  */
                             /* Mark end of arg list */
@@ -869,15 +846,15 @@ BREAKPOINT3;
 
                             /* Execute the Method, passing the stacked args */
                             
-                            Excep = AmlExecuteMethod (
+                            Status = AmlExecuteMethod (
                                         MethodPtr->Offset + 1, MethodPtr->Length - 1,
                                         (OBJECT_DESCRIPTOR **)&ObjStack[StackBeforeArgs + 1]);
 
                             DEBUG_PRINT (TRACE_LOAD,
-                                    ("AmlExec Excep=%s, StackBeforeArgs %d  ObjStackTop %d\n",
-                                    RV[Excep], StackBeforeArgs, ObjStackTop));
+                                    ("AmlExec Status=%s, StackBeforeArgs %d  ObjStackTop %d\n",
+                                    ExceptionNames[Status], StackBeforeArgs, ObjStackTop));
 
-                            if (S_RETURN == Excep)
+                            if (AE_RETURN_VALUE == Status)
                             {
                                 /* recover returned value */
 
@@ -887,7 +864,7 @@ BREAKPOINT3;
                                     ObjStack[StackBeforeArgs] = ObjStack[ObjStackTop--];
                                 }
 
-                                Excep = S_SUCCESS;
+                                Status = AE_OK;
                             }
 
                             /* Pop scope stack */
@@ -913,17 +890,15 @@ BREAKPOINT3;
         } 
     }
 
-    else if (S_FAILURE == Excep && PrefixCount != 0)
+    else if (AE_PENDING == Status && PrefixCount != 0)
     {
         /* Ran out of segments after processing a prefix */
 
         if (MODE_Load1 == LoadExecMode || MODE_Load == LoadExecMode)
         {
-            LINE_SET (16, LoadExecMode);
             DEBUG_PRINT (ACPI_ERROR, ("***Malformed Name***\n"));
 
             REPORT_ERROR (&KDT[5]);
-            LINE_SET (0, LoadExecMode);
         }
 
         else
@@ -931,14 +906,14 @@ BREAKPOINT3;
             DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Malformed Name\n"));
         }
 
-        Excep = S_ERROR;
+        Status = AE_AML_ERROR;
     }
 
     CheckTrash ("leave AmlDoName");
 
-    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoName %s \n", RV[Excep]));
+    DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoName %s \n", ExceptionNames[Status]));
 
-    return Excep;
+    return Status;
 }
 
 
@@ -946,7 +921,7 @@ BREAKPOINT3;
  *
  * FUNCTION:    AmlGenLabel
  *
- * PARAMETERS:  char    *Name     The name to be generated
+ * PARAMETERS:  *Name           - The name to be generated
  *
  * DESCRIPTION: If generating assembly output, generate a label.
  *              As of 3/5/97, this generates a comment instead so we don't
