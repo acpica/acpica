@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -237,7 +237,7 @@ AcpiDsGetBufferFieldArguments (
     FieldOp->Node = Node;
     AcpiPsDeleteParseTree (Op);
 
-    /* Evaluate the address and length arguments for the OpRegion */
+    /* Evaluate the address and length arguments for the Buffer Field */
 
     Op = AcpiPsAllocOp (AML_SCOPE_OP);
     if (!Op)
@@ -413,6 +413,7 @@ AcpiDsGetRegionArguments (
 
     Status = AcpiPsParseAml (WalkState);
     AcpiPsDeleteParseTree (Op);
+
 
     return_ACPI_STATUS (Status);
 }
