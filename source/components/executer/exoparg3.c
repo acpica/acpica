@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.15 $
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,35 +120,11 @@
 
 #include "acpi.h"
 #include "acinterp.h"
-#include "acparser.h"
 #include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exoparg3")
-
-
-/*!
- * Naming convention for AML interpreter execution routines.
- *
- * The routines that begin execution of AML opcodes are named with a common
- * convention based upon the number of arguments, the number of target operands,
- * and whether or not a value is returned:
- *
- *      AcpiExOpcode_xA_yT_zR
- *
- * Where:
- *
- * xA - ARGUMENTS:    The number of arguments (input operands) that are
- *                    required for this opcode type (1 through 6 args).
- * yT - TARGETS:      The number of targets (output operands) that are required
- *                    for this opcode type (0, 1, or 2 targets).
- * zR - RETURN VALUE: Indicates whether this opcode type returns a value
- *                    as the function return (0 or 1).
- *
- * The AcpiExOpcode* functions are called via the Dispatcher component with
- * fully resolved operands.
-!*/
+        MODULE_NAME         ("exoparg3")
 
 
 /*******************************************************************************
@@ -172,7 +148,7 @@ AcpiExOpcode_3A_0T_0R (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    FUNCTION_TRACE ("ExOpcode_3A_0T_0R");
 
 
     switch (WalkState->Opcode)
@@ -181,7 +157,7 @@ AcpiExOpcode_3A_0T_0R (
     case AML_FATAL_OP:          /* Fatal (FatalType  FatalCode  FatalArg)    */
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "FatalOp: Type %X Code %X Arg %X <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+            "FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
             (UINT32) Operand[0]->Integer.Value, (UINT32) Operand[1]->Integer.Value,
             (UINT32) Operand[2]->Integer.Value));
 
@@ -197,7 +173,7 @@ AcpiExOpcode_3A_0T_0R (
         /*
          * Always signal the OS!
          */
-        Status = AcpiOsSignal (ACPI_SIGNAL_FATAL, Fatal);
+        AcpiOsSignal (ACPI_SIGNAL_FATAL, Fatal);
 
         /* Might return while OS is shutting down, just continue */
 
@@ -207,14 +183,22 @@ AcpiExOpcode_3A_0T_0R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+        REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
+        break;
     }
 
 
+
 Cleanup:
+
+    /* Always delete operands */
+
+    AcpiUtRemoveReference (Operand[0]);
+    AcpiUtRemoveReference (Operand[1]);
+    AcpiUtRemoveReference (Operand[2]);
 
     return_ACPI_STATUS (Status);
 }
@@ -240,22 +224,23 @@ AcpiExOpcode_3A_1T_1R (
     ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
     char                    *Buffer;
     ACPI_STATUS             Status = AE_OK;
-    NATIVE_UINT             Index;
-    ACPI_SIZE               Length;
+    UINT32                  Index;
+    UINT32                  Length;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    FUNCTION_TRACE ("ExOpcode_3A_1T_1R");
+
 
 
     switch (WalkState->Opcode)
     {
     case AML_MID_OP:        /* Mid  (Source[0], Index[1], Length[2], Result[3]) */
 
-        /*
+        /* 
          * Create the return object.  The Source operand is guaranteed to be
          * either a String or a Buffer, so just use its type.
          */
-        ReturnDesc = AcpiUtCreateInternalObject (ACPI_GET_OBJECT_TYPE (Operand[0]));
+        ReturnDesc = AcpiUtCreateInternalObject (Operand[0]->Common.Type);
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
@@ -264,8 +249,8 @@ AcpiExOpcode_3A_1T_1R (
 
         /* Get the Integer values from the objects */
 
-        Index = (NATIVE_UINT) Operand[1]->Integer.Value;
-        Length = (ACPI_SIZE) Operand[2]->Integer.Value;
+        Index = (UINT32) Operand[1]->Integer.Value;
+        Length = (UINT32) Operand[2]->Integer.Value;
 
         /*
          * If the index is beyond the length of the String/Buffer, or if the
@@ -279,44 +264,52 @@ AcpiExOpcode_3A_1T_1R (
             if ((Index + Length) >
                 Operand[0]->String.Length)
             {
-                Length = (ACPI_SIZE) Operand[0]->String.Length - Index;
+                Length = Operand[0]->String.Length - Index;
             }
 
             /* Allocate a new buffer for the String/Buffer */
 
-            Buffer = ACPI_MEM_CALLOCATE ((ACPI_SIZE) Length + 1);
+            Buffer = ACPI_MEM_CALLOCATE (Length + 1);
             if (!Buffer)
             {
-                Status = AE_NO_MEMORY;
-                goto Cleanup;
+                return (AE_NO_MEMORY);
             }
 
             /* Copy the portion requested */
 
-            ACPI_MEMCPY (Buffer, Operand[0]->String.Pointer + Index,
-                         Length);
+            MEMCPY (Buffer, Operand[0]->String.Pointer + Index,
+                    Length);
 
             /* Set the length of the new String/Buffer */
 
             ReturnDesc->String.Pointer = Buffer;
-            ReturnDesc->String.Length = (UINT32) Length;
+            ReturnDesc->String.Length = Length;
         }
+      
         break;
 
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
+        REPORT_ERROR (("AcpiExOpcode_3A_0T_0R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
+        break;
     }
+
 
     /* Store the result in the target */
 
     Status = AcpiExStore (ReturnDesc, Operand[3], WalkState);
 
 Cleanup:
+
+    /* Always delete operands */
+
+    AcpiUtRemoveReference (Operand[0]);
+    AcpiUtRemoveReference (Operand[1]);
+    AcpiUtRemoveReference (Operand[2]);
 
     /* Delete return object on error */
 
@@ -327,11 +320,10 @@ Cleanup:
 
     /* Set the return object and exit */
 
-    if (!WalkState->ResultObj)
-    {
-        WalkState->ResultObj = ReturnDesc;
-    }
+    WalkState->ResultObj = ReturnDesc;
     return_ACPI_STATUS (Status);
 }
+
+
 
 
