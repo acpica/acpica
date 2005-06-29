@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -699,7 +699,7 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiInstallGpeBlock
  *
- * PARAMETERS:  GpeDevice           - Handle to the parent GPE block
+ * PARAMETERS:  GpeDevice           - Handle to the parent GPE Block Device
  *              GpeBlockAddress     - Address and SpaceID
  *              RegisterCount       - Number of GPE register pairs in the block
  *              InterruptLevel      - H/W interrupt for the block
@@ -739,3 +739,26 @@ AcpiInstallGpeBlock (
 
     return_ACPI_STATUS (Status);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRemoveGpeBlock
+ *
+ * PARAMETERS:  GpeDevice           - Handle to the parent GPE Block Device
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Remove a previously installed block of GPE registers
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiRemoveGpeBlock (
+    ACPI_HANDLE             GpeDevice)
+{
+
+
+    return (AE_NOT_IMPLEMENTED);
+}
+
