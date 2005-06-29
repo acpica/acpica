@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  ******************************************************************************/
 
@@ -124,6 +124,47 @@
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utmisc")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtDwordByteSwap
+ *
+ * PARAMETERS:  Value           - Value to be converted
+ *
+ * DESCRIPTION: Convert a 32-bit value to big-endian (swap the bytes)
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiUtDwordByteSwap (
+    UINT32                  Value)
+{
+    union
+    {
+        UINT32              Value;
+        UINT8               Bytes[4];
+    } Out;
+
+    union
+    {
+        UINT32              Value;
+        UINT8               Bytes[4];
+    } In;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    In.Value = Value;
+
+    Out.Bytes[0] = In.Bytes[3];
+    Out.Bytes[1] = In.Bytes[2];
+    Out.Bytes[2] = In.Bytes[1];
+    Out.Bytes[3] = In.Bytes[0];
+
+    return (Out.Value);
+}
 
 
 /*******************************************************************************
