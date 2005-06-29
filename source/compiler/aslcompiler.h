@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.70 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,7 +122,7 @@
 
 /* Microsoft-specific */
 
-#ifdef WIN32
+#if (defined WIN32 || defined WIN64)
 
 /* warn : used #pragma pack */
 #pragma warning(disable:4103)
@@ -164,11 +164,11 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2024"
-#define CompilerCreatorRevision     0x02002024  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2036"
+#define CompilerCreatorRevision     0x02002036  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
-#define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
+#define CompilerCopyright           "Copyright (C) 2000 - 2002 Intel Corporation"
 #define CompilerCompliance          "ACPI 2.0"
 #define CompilerName                "iasl"
 #define CompilerCreatorId           "INTL"
@@ -209,19 +209,15 @@ getopt (
 #define AML_DEFAULT_ARG_OP          (UINT16) 0xDDDD
 
 
-/* TBD: Is this a real opcode? */
-
-#define AML_CONCAT_TPL_OP           (UINT16) 0x00FE
-
-
 /* filename suffixes for output files */
 
 #define FILE_SUFFIX_AML_CODE        "aml"
 #define FILE_SUFFIX_LISTING         "lst"
-#define FILE_SUFFIX_HEX_DUMP        "hex"
+#define FILE_SUFFIX_HEX_DUMP        "c"
 #define FILE_SUFFIX_DEBUG           "txt"
 #define FILE_SUFFIX_SOURCE          "src"
 #define FILE_SUFFIX_NAMESPACE       "nsp"
+#define FILE_SUFFIX_ASM_SOURCE      "asm"
 
 
 /* Misc */
@@ -363,6 +359,9 @@ void
 LsDoHexOutput (void);
 
 void
+LsDoAsmOutput (void);
+
+void
 LsPushNode (
     char                    *Filename);
 
@@ -440,7 +439,6 @@ CgAmlWriteWalk (
     UINT32                  Level,
     void                    *Context);
 
-
 void
 CgGenerateOutput(
     void);
@@ -453,8 +451,15 @@ void
 CgWriteNode (
     ASL_PARSE_NODE          *Node);
 
+/*
+ * aslmap
+ */
 
-/* 
+ACPI_OBJECT_TYPE
+AslMapNamedOpcodeToDataType (
+    UINT16                  Opcode);
+
+/*
  * asltransform - parse tree transformations
  */
 
@@ -475,6 +480,10 @@ TrDoSwitch (
 
 void
 TrDoDefinitionBlock (
+    ASL_PARSE_NODE          *Node);
+
+void
+TrDoElseif (
     ASL_PARSE_NODE          *Node);
 
 
@@ -561,13 +570,25 @@ TrReleaseNode (
 /* Analyze */
 
 ACPI_STATUS
-AnSemanticAnalysisWalkBegin (
+AnOtherSemanticAnalysisWalkBegin (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
 
 ACPI_STATUS
-AnSemanticAnalysisWalkEnd (
+AnOtherSemanticAnalysisWalkEnd (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+ACPI_STATUS
+AnOperandTypecheckWalkBegin (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+ACPI_STATUS
+AnOperandTypecheckWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
@@ -622,7 +643,7 @@ FlWriteFile (
 ACPI_STATUS
 FlSeekFile (
     UINT32                  FileId,
-    UINT32                  Offset);
+    long                    Offset);
 
 ACPI_STATUS
 FlCloseFile (
@@ -722,6 +743,11 @@ UtHexCharToValue (
 
 void
 UtConvertByteToHex (
+    UINT8                   RawByte,
+    UINT8                   *Buffer);
+
+void
+UtConvertByteToAsmHex (
     UINT8                   RawByte,
     UINT8                   *Buffer);
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -131,11 +131,10 @@
 */
 
 
-
 /*
  * Stubs to simplify linkage to the
  * ACPI Namespace Manager (Unused functions).
- * TBD: These functions should be split out so 
+ * TBD: These functions should be split out so
  * that these stubs are no longer needed.
  */
 void
@@ -193,10 +192,27 @@ void
 AslCompilerSignon (
     UINT32                  FileId)
 {
+    char                    *Prefix = "";
+
+    switch (FileId)
+    {
+    case ASL_FILE_ASM_SOURCE_OUTPUT:
+        Prefix = "; ";
+        break;
+
+    case ASL_FILE_HEX_OUTPUT:
+        Prefix = " * ";
+        break;
+   }
 
     FlPrintFile (FileId,
-        "\n%s %s [%s]\nACPI CA Subsystem version %X\n%s\nSupports ACPI Specification Revision 2.0\n\n",
-        CompilerId, CompilerVersion, __DATE__, ACPI_CA_VERSION, CompilerCopyright);
+        "%s\n%s%s %s [%s]\n%sACPI CA Subsystem version %X\n%s%s\n%sSupports ACPI Specification Revision 2.0\n%s\n",
+        Prefix,
+        Prefix, CompilerId, CompilerVersion, __DATE__, 
+        Prefix, ACPI_CA_VERSION, 
+        Prefix, CompilerCopyright, 
+        Prefix,
+        Prefix);
 }
 
 
@@ -218,14 +234,27 @@ AslCompilerFileHeader (
 {
     struct tm               *NewTime;
     time_t                  Aclock;
+    char                    *Prefix = "";
 
+
+    switch (FileId)
+    {
+    case ASL_FILE_ASM_SOURCE_OUTPUT:
+        Prefix = "; ";
+        break;
+
+    case ASL_FILE_HEX_OUTPUT:
+        Prefix = " * ";
+        break;
+    }
 
     time (&Aclock);
     NewTime = localtime (&Aclock);
 
     FlPrintFile (FileId,
-        "Compilation of \"%s\" - %s\n",
-        Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime));
+        "%sCompilation of \"%s\" - %s%s\n",
+        Prefix, Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime),
+        Prefix);
 }
 
 
@@ -412,6 +441,7 @@ CmDoCompile (void)
     /* Dump the AML as hex if requested */
 
     LsDoHexOutput ();
+    LsDoAsmOutput ();
 
     /* Dump the namespace to the .nsp file if requested */
 
