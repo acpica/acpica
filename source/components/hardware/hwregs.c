@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  ******************************************************************************/
 
@@ -1022,11 +1022,11 @@ AcpiHwLowLevelRead (
 
     case ACPI_ADR_SPACE_PCI_CONFIG:
 
-	PciSeg  = 0;
-	PciBus  = 0;
-	PciDev  = ACPI_PCI_DEVICE( ACPI_GET_ADDRESS(Reg->Address) );
-	PciFunc = ACPI_PCI_FUNCTION( ACPI_GET_ADDRESS(Reg->Address) );
-	PciReg = ACPI_PCI_REGISTER(ACPI_GET_ADDRESS (Reg->Address)) + Offset;
+        PciSeg  = 0;
+        PciBus  = 0;
+        PciDev  = ACPI_PCI_DEVICE( ACPI_GET_ADDRESS(Reg->Address) );
+        PciFunc = ACPI_PCI_FUNCTION( ACPI_GET_ADDRESS(Reg->Address) );
+        PciReg = ACPI_PCI_REGISTER(ACPI_GET_ADDRESS (Reg->Address)) + Offset;
 
         switch (Width)
         {
@@ -1137,11 +1137,11 @@ AcpiHwLowLevelWrite (
 
     case ACPI_ADR_SPACE_PCI_CONFIG:
 
-	PciSeg  = 0;
-	PciBus  = 0;
-	PciDev  = ACPI_PCI_DEVICE( ACPI_GET_ADDRESS(Reg->Address) );
-	PciFunc = ACPI_PCI_FUNCTION( ACPI_GET_ADDRESS(Reg->Address) );
-	PciReg = ACPI_PCI_REGISTER(ACPI_GET_ADDRESS (Reg->Address)) + Offset;
+        PciSeg  = 0;
+        PciBus  = 0;
+        PciDev  = ACPI_PCI_DEVICE( ACPI_GET_ADDRESS(Reg->Address) );
+        PciFunc = ACPI_PCI_FUNCTION( ACPI_GET_ADDRESS(Reg->Address) );
+        PciReg = ACPI_PCI_REGISTER(ACPI_GET_ADDRESS (Reg->Address)) + Offset;
 
         switch (Width)
         {
