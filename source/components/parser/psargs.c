@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.53 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -713,11 +713,14 @@ AcpiPsGetNextField (
 
         case AML_INT_ACCESSFIELD_OP:
 
-            /* Get AccessType and AccessAtrib and merge into the field Op */
-
-            Field->Value.Integer = ((GET8 (ParserState->Aml) << 8) |
-                                     GET8 (ParserState->Aml));
-            ParserState->Aml += 2;
+            /* 
+             * Get AccessType and AccessAttrib and merge into the field Op
+             * AccessType is first operand, AccessAttribute is second
+             */
+            Field->Value.Integer32 = (GET8 (ParserState->Aml) << 8);
+            ParserState->Aml++;
+            Field->Value.Integer32 |= GET8 (ParserState->Aml);
+            ParserState->Aml++;
             break;
         }
     }
@@ -842,6 +845,7 @@ AcpiPsGetNextArg (
 
     case ARGP_TARGET:
     case ARGP_SUPERNAME:
+    case ARGP_SIMPLENAME:
         {
             Subop = AcpiPsPeekOpcode (ParserState);
             if (Subop == 0              ||
