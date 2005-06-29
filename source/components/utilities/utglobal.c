@@ -123,8 +123,8 @@
 #include <interpreter.h>
 
 
-#define _THIS_MODULE        "cmglobal.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cmglobal");
 
 
 
@@ -200,6 +200,12 @@ char                        *Gbl_ExceptionNames[] =
     "AE_DEPTH",
     "AE_UNKNOWN_STATUS"
 };
+
+
+/* Message strings */
+
+char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
+
 
 
 /******************************************************************************
@@ -411,6 +417,11 @@ CmInitGlobals (void)
     }
 
 
+    /* Global notify handlers */
+
+    Gbl_SysNotify.Handler       = NULL;
+    Gbl_DrvNotify.Handler       = NULL;
+
     /* Global "typed" ACPI table pointers */
 
     Gbl_RSDP                    = NULL;
@@ -462,6 +473,9 @@ CmInitGlobals (void)
     Gbl_RootObject->NextEntry   = NULL;
     Gbl_RootObject->PrevEntry   = NULL;
     Gbl_RootObject->Object      = NULL;
+    
+    /* Memory allocation metrics - compiled out in non-debug mode. */
+    INITIALIZE_ALLOCATION_METRICS();
 
     return_VOID;
 }   
