@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -517,6 +517,10 @@ TrDoSwitch (
             {
                 /* Add an ELSE to complete the previous CASE */
 
+                if (!Conditional)
+                {
+                    return;
+                }
                 NewOp             = TrCreateLeafNode (PARSEOP_ELSE);
                 NewOp->Asl.Parent = Conditional->Asl.Parent;
                 TrAmlInitLineNumbers (NewOp, NewOp->Asl.Parent);
@@ -685,6 +689,10 @@ TrDoSwitch (
         {
             /* Convert the DEFAULT node to an ELSE */
 
+            if (!Conditional)
+            {
+                return;
+            }
             TrAmlInitNode (DefaultOp, PARSEOP_ELSE);
             DefaultOp->Asl.Parent = Conditional->Asl.Parent;
 
@@ -730,12 +738,12 @@ TrDoSwitch (
         break;
 
     case ACPI_BTYPE_BUFFER:
-        TrLinkPeerNode (NewOp2, TrCreateValuedLeafNode (PARSEOP_BUFFER,
+        (void) TrLinkPeerNode (NewOp2, TrCreateValuedLeafNode (PARSEOP_BUFFER,
                                     (ACPI_INTEGER) 0));
         Next = NewOp2->Asl.Next;
-        TrLinkChildren (Next, 1, TrCreateValuedLeafNode (PARSEOP_ZERO,
+        (void) TrLinkChildren (Next, 1, TrCreateValuedLeafNode (PARSEOP_ZERO,
                                     (ACPI_INTEGER) 1));
-        TrLinkPeerNode (Next->Asl.Child,
+        (void) TrLinkPeerNode (Next->Asl.Child,
             TrCreateValuedLeafNode (PARSEOP_DEFAULT_ARG, (ACPI_INTEGER) 0));
 
         TrAmlSetSubtreeParent (Next->Asl.Child, Next);

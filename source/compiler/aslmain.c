@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -337,7 +337,7 @@ AslCommandLine (
     char                    **argv)
 {
     BOOLEAN                 BadCommandLine = FALSE;
-    ACPI_NATIVE_UINT        j;
+    ACPI_NATIVE_INT         j;
 
 
     /* Minimum command line contains at least one option or an input file */
@@ -738,8 +738,12 @@ main (
      * If -p not specified, we will use the input filename as the
      * output filename prefix
      */
-    FlSplitInputPathname (Gbl_Files[ASL_FILE_INPUT].Filename,
+    Status = FlSplitInputPathname (Gbl_Files[ASL_FILE_INPUT].Filename,
         &Gbl_DirectoryPath, &Prefix);
+    if (ACPI_FAILURE (Status))
+    {
+        return -1;
+    }
 
     if (Gbl_UseDefaultAmlFilename)
     {
@@ -799,8 +803,12 @@ main (
          * If -p not specified, we will use the input filename as the
          * output filename prefix
          */
-        FlSplitInputPathname (Gbl_Files[ASL_FILE_INPUT].Filename,
+        Status = FlSplitInputPathname (Gbl_Files[ASL_FILE_INPUT].Filename,
             &Gbl_DirectoryPath, &Prefix);
+        if (ACPI_FAILURE (Status))
+        {
+            return -1;
+        }
 
         if (Gbl_UseDefaultAmlFilename)
         {

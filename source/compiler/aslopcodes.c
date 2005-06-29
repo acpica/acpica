@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -494,7 +494,7 @@ OpcDoEisaId (
 
     /*
      * The EISAID string must be exactly 7 characters and of the form
-     * "LLLXXXX" -- 3 letters and 4 hex digits (e.g., "PNP0001")
+     * "UUUXXXX" -- 3 uppercase letters and 4 hex digits (e.g., "PNP0001")
      */
     if (ACPI_STRLEN (InString) != 7)
     {

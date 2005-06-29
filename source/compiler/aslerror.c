@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -217,7 +217,8 @@ AePrintException (
     char                    *Header)
 {
     UINT8                   SourceByte;
-    UINT32                  Actual;
+    int                     Actual;
+    size_t                  RActual;
     UINT32                  MsgLength;
     char                    *MainMessage;
     char                    *ExtraMessage;
@@ -283,7 +284,7 @@ AePrintException (
                  * line, and write it to the output.
                  */
                 Actual = fseek (SourceFile, (long) Enode->LogicalByteOffset,
-                            SEEK_SET);
+                            (int) SEEK_SET);
                 if (Actual)
                 {
                     fprintf (OutputFile,
@@ -291,17 +292,17 @@ AePrintException (
                 }
                 else
                 {
-                    Actual = fread (&SourceByte, 1, 1, SourceFile);
-                    if (!Actual)
+                    RActual = fread (&SourceByte, 1, 1, SourceFile);
+                    if (!RActual)
                     {
                         fprintf (OutputFile,
                             "[*** iASL: Read error on source code temp file ***]");
                     }
 
-                    else while (Actual && SourceByte && (SourceByte != '\n'))
+                    else while (RActual && SourceByte && (SourceByte != '\n'))
                     {
                         fwrite (&SourceByte, 1, 1, OutputFile);
-                        Actual = fread (&SourceByte, 1, 1, SourceFile);
+                        RActual = fread (&SourceByte, 1, 1, SourceFile);
                     }
                 }
                 fprintf (OutputFile, "\n");

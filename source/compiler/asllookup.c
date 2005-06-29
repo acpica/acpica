@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -1165,7 +1165,7 @@ LkNamespaceLocateEnd (
             "%s: Popping scope for Op %p\n",
             AcpiUtGetTypeName (OpInfo->ObjectType), Op));
 
-        AcpiDsScopeStackPop (WalkState);
+        (void) AcpiDsScopeStackPop (WalkState);
     }
 
     return (AE_OK);

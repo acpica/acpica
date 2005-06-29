@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -132,6 +132,12 @@ extern const char * const       yytname[];
 #endif
 
 /* Local prototypes */
+
+static ACPI_STATUS
+UtStrtoul64 (
+    char                    *String,
+    UINT32                  Base,
+    ACPI_INTEGER            *RetInteger);
 
 static void
 UtPadNameWithUnderscores (
@@ -847,7 +853,7 @@ UtDoConstant (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 UtStrtoul64 (
     char                    *String,
     UINT32                  Base,

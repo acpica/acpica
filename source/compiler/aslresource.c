@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -185,7 +185,7 @@ RsCreateBitField (
 {
 
     Op->Asl.ExternalName      = Name;
-    Op->Asl.Value.Integer     = (ByteOffset * 8) + BitOffset;
+    Op->Asl.Value.Integer     = ((ACPI_INTEGER) ByteOffset * 8) + BitOffset;
     Op->Asl.CompileFlags     |= (NODE_IS_RESOURCE_FIELD | NODE_IS_BIT_OFFSET);
 }
 

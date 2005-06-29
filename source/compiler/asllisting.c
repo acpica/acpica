@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -1076,7 +1076,7 @@ LsWriteNodeToListing (
 
         /* Pop off this listing node and go back to the parent file */
 
-        LsPopNode ();
+        (void) LsPopNode ();
         return;
 
 

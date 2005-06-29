@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -730,7 +730,7 @@ LdNamespace1End (
             "(%s): Popping scope for Op [%s] %p\n",
             AcpiUtGetTypeName (ObjectType), Op->Asl.ParseOpName, Op));
 
-        AcpiDsScopeStackPop (WalkState);
+        (void) AcpiDsScopeStackPop (WalkState);
     }
 
     return (AE_OK);
