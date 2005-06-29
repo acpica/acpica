@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -540,7 +540,10 @@ TrDoSwitch (
                 /*
                  * Integer and Buffer case.
                  *
-                 * Change CaseOp() to:  If (PredicateValue == CaseValue) {...}
+                 * Change CaseOp() to:  If (LEqual (SwitchValue, CaseValue)) {...}
+                 * Note: SwitchValue is first to allow the CaseValue to be implicitly
+                 * converted to the type of SwitchValue if necessary.
+                 *
                  * CaseOp->Child is the case value
                  * CaseOp->Child->Peer is the beginning of the case block
                  */
