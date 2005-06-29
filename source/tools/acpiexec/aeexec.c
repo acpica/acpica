@@ -404,7 +404,7 @@ AeInstallHandlers (void)
         /* Install handler at the root object. 
          * TBD: all default handlers should be installed here!
          */
-        Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, i, RegionHandler, NULL);
+        Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, i, RegionHandler, NULL, NULL);
         if (ACPI_FAILURE (Status))
         {
             printf ("Could not install an OpRegion handler\n");
