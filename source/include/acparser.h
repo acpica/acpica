@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.74 $
+ *       $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -360,12 +360,6 @@ void
 AcpiPsSetName(
     ACPI_PARSE_OBJECT       *op,
     UINT32                  name);
-
-#ifdef ACPI_ENABLE_OBJECT_CACHE
-void
-AcpiPsDeleteParseCache (
-    void);
-#endif
 
 
 /*
