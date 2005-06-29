@@ -81,7 +81,7 @@ LIB32=link.exe -lib
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=deleting old library
-PreLink_Cmds=del ..\..\libraries\acpilib.lib
+PreLink_Cmds=mkdir ..\..\libraries	del ..\..\libraries\acpilib.lib
 PostBuild_Desc=Copying built library [Debug Version]
 PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
 # End Special Build Tool
