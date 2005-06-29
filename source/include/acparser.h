@@ -130,10 +130,6 @@
 
 #define ACPI_MAX_AML                ((UINT8 *)(~0UL))
 
-/* mask argument count from method declaration */
-
-#define ACPI_METHOD_ARG_MASK        (0x7)
-
 /* For PsxMthStackSetValue */
 
 #define MTH_TYPE_LOCAL              0
@@ -151,7 +147,7 @@ PsxLoadTable (
 
 ACPI_STATUS
 PsxExecute (
-    ACPI_OBJECT_INTERNAL    *MthDesc,
+    NAME_TABLE_ENTRY        *MethodEntry,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
 
@@ -580,6 +576,7 @@ ACPI_STATUS
 PsWalkParsedAml (
     ACPI_GENERIC_OP         *StartOp,
     ACPI_GENERIC_OP         *EndOp,
+    ACPI_OBJECT_INTERNAL    *MthDesc,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     INTERPRETER_CALLBACK    DescendingCallback,
@@ -601,6 +598,7 @@ PsGetCurrentWalkState (
 ACPI_WALK_STATE *
 PsCreateWalkState (
     ACPI_GENERIC_OP         *Origin,
+    ACPI_OBJECT_INTERNAL    *MthDesc,
     ACPI_WALK_LIST          *WalkList);
 
 ACPI_STATUS
