@@ -287,14 +287,13 @@ ACPI_STATUS
 PsxMthStackGetValue (
     UINT32                  Type,
     UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
+    ACPI_OBJECT_INTERNAL    **ObjDesc);
 
 ACPI_STATUS
 PsxMthStackSetValue (
     UINT32                  Type,
     UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *ObjDesc, 
-    ACPI_OBJECT_INTERNAL    *ObjDesc2);
+    ACPI_OBJECT_INTERNAL    *ObjDesc); 
 
 ACPI_STATUS
 PsxMthStackPop (
@@ -675,17 +674,17 @@ PsSetName(
 
 /* psdump - display parser tree */
 
-INT32 
+INT32
 PsSprintPath (
-    char                    *str, 
-    INT32                   size, 
-    ACPI_GENERIC_OP         *op);
+    char                    *BufferStart,
+    UINT32                  BufferSize,
+    ACPI_GENERIC_OP         *Op);
 
-INT32 
+INT32
 PsSprintOp (
-    char                    *str, 
-    INT32                   size, 
-    ACPI_GENERIC_OP         *op);
+    char                    *BufferStart, 
+    UINT32                  BufferSize, 
+    ACPI_GENERIC_OP         *Op);
 
 void 
 PsShow (
@@ -727,7 +726,7 @@ ACPI_STATUS
 PsxMthStackGetValue (
     UINT32                  Type,
     UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *DestDesc);
+    ACPI_OBJECT_INTERNAL    **DestDesc);
 
 ACPI_STATUS
 PsxMthStackSetValue (
