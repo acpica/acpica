@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
- * Module Name: cminit - Common ACPI subsystem initialization
+ * Module Name: utinit - Common ACPI subsystem initialization
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -115,297 +115,136 @@
  *****************************************************************************/
 
 
-#define __CMINIT_C__
+#define __UTINIT_C__
 
 #include "acpi.h"
-#include "achware.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "acparser.h"
-#include "acdispat.h"
 
-#define _COMPONENT          MISCELLANEOUS
-        MODULE_NAME         ("cminit");
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("utinit")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiCmFacpRegisterError
+ * FUNCTION:    AcpiUtFadtRegisterError
  *
  * PARAMETERS:  *RegisterName           - Pointer to string identifying register
  *              Value                   - Actual register contents value
  *              AcpiTestSpecSection     - TDS section containing assertion
  *              AcpiAssertion           - Assertion number being tested
  *
- * RETURN:      none
+ * RETURN:      AE_BAD_VALUE
  *
  * DESCRIPTION: Display failure message and link failure to TDS assertion
  *
  ******************************************************************************/
 
-void
-AcpiCmFacpRegisterError (
+static void
+AcpiUtFadtRegisterError (
     NATIVE_CHAR             *RegisterName,
-    UINT32                  Value)
+    UINT32                  Value,
+    ACPI_SIZE               Offset)
 {
 
-    REPORT_ERROR ("Invalid FACP register value");
-
-    DEBUG_PRINT (ACPI_ERROR,
-        ("Invalid FACP register value, %s = 0x%X (FACP=0x%X)\n",
-        RegisterName, Value, AcpiGbl_FACP));
+    ACPI_REPORT_WARNING (
+        ("Invalid FADT value %s=%lX at offset %lX FADT=%p\n",
+        RegisterName, Value, Offset, AcpiGbl_FADT));
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiCmHardwareInitialize
+ * FUNCTION:    AcpiUtValidateFadt
  *
  * PARAMETERS:  None
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Initialize and validate various ACPI registers
+ * DESCRIPTION: Validate various ACPI registers in the FADT
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiCmHardwareInitialize (void)
+AcpiUtValidateFadt (
+    void)
 {
-    ACPI_STATUS             Status = AE_OK;
-    UINT32                  Index;
 
-
-    FUNCTION_TRACE ("CmHardwareInitialize");
-
-
-    /* Are we running on the actual hardware */
-
-    if (!AcpiGbl_AcpiHardwarePresent)
+    /*
+     * Verify Fixed ACPI Description Table fields,
+     * but don't abort on any problems, just display error
+     */
+    if (AcpiGbl_FADT->Pm1EvtLen < 4)
     {
-        /* No, just return */
-
-        return_ACPI_STATUS (AE_OK);
+        AcpiUtFadtRegisterError ("PM1_EVT_LEN",
+                        (UINT32) AcpiGbl_FADT->Pm1EvtLen,
+                        ACPI_FADT_OFFSET (Pm1EvtLen));
     }
 
-    /* We must have the ACPI tables by the time we get here */
-
-    if (!AcpiGbl_FACP)
+    if (!AcpiGbl_FADT->Pm1CntLen)
     {
-        AcpiGbl_RestoreAcpiChipset = FALSE;
-
-        DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: No FACP!\n"));
-
-        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+        AcpiUtFadtRegisterError ("PM1_CNT_LEN", 0,
+                        ACPI_FADT_OFFSET (Pm1CntLen));
     }
 
-    /* Must support *some* mode! */
-/*
-    if (!(SystemFlags & SYS_MODES_MASK))
+    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1aEvtBlk.Address))
     {
-        RestoreAcpiChipset = FALSE;
-
-        DEBUG_PRINT (ACPI_ERROR,
-            ("CmHardwareInitialize: Supported modes uninitialized!\n"));
-        return_ACPI_STATUS (AE_ERROR);
+        AcpiUtFadtRegisterError ("X_PM1a_EVT_BLK", 0,
+                        ACPI_FADT_OFFSET (XPm1aEvtBlk.Address));
     }
 
-*/
-
-
-    switch (AcpiGbl_SystemFlags & SYS_MODES_MASK)
+    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1aCntBlk.Address))
     {
-        /* Identify current ACPI/legacy mode   */
-
-    case (SYS_MODE_ACPI):
-
-        AcpiGbl_OriginalMode = SYS_MODE_ACPI;
-        DEBUG_PRINT (ACPI_INFO, ("System supports ACPI mode only.\n"));
-        break;
-
-
-    case (SYS_MODE_LEGACY):
-
-        AcpiGbl_OriginalMode = SYS_MODE_LEGACY;
-        DEBUG_PRINT (ACPI_INFO,
-            ("Tables loaded from buffer, hardware assumed to support LEGACY mode only.\n"));
-        break;
-
-
-    case (SYS_MODE_ACPI | SYS_MODE_LEGACY):
-
-        if (AcpiHwGetMode () == SYS_MODE_ACPI)
-        {
-            AcpiGbl_OriginalMode = SYS_MODE_ACPI;
-        }
-        else
-        {
-            AcpiGbl_OriginalMode = SYS_MODE_LEGACY;
-        }
-
-        DEBUG_PRINT (ACPI_INFO,
-            ("System supports both ACPI and LEGACY modes.\n"));
-
-        DEBUG_PRINT (ACPI_INFO,
-            ("System is currently in %s mode.\n",
-            (AcpiGbl_OriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
-        break;
+        AcpiUtFadtRegisterError ("X_PM1a_CNT_BLK", 0,
+                        ACPI_FADT_OFFSET (XPm1aCntBlk.Address));
     }
 
-
-    if (AcpiGbl_SystemFlags & SYS_MODE_ACPI)
+    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address))
     {
-        /* Target system supports ACPI mode */
-
-        /*
-         * The purpose of this block of code is to save the initial state
-         * of the ACPI event enable registers. An exit function will be
-         * registered which will restore this state when the application
-         * exits. The exit function will also clear all of the ACPI event
-         * status bits prior to restoring the original mode.
-         *
-         * The location of the PM1aEvtBlk enable registers is defined as the
-         * base of PM1aEvtBlk + PM1aEvtBlkLength / 2. Since the spec further
-         * fully defines the PM1aEvtBlk to be a total of 4 bytes, the offset
-         * for the enable registers is always 2 from the base. It is hard
-         * coded here. If this changes in the spec, this code will need to
-         * be modified. The PM1bEvtBlk behaves as expected.
-         */
-
-        AcpiGbl_Pm1EnableRegisterSave =
-            AcpiOsIn16 ((AcpiGbl_FACP->Pm1aEvtBlk + 2));
-        if (AcpiGbl_FACP->Pm1bEvtBlk)
-        {
-            AcpiGbl_Pm1EnableRegisterSave |=
-                AcpiOsIn16 ((AcpiGbl_FACP->Pm1bEvtBlk + 2));
-        }
-
-
-        /*
-         * The GPEs behave similarly, except that the length of the register
-         * block is not fixed, so the buffer must be allocated with malloc
-         */
-
-        if (AcpiGbl_FACP->Gpe0Blk && AcpiGbl_FACP->Gpe0BlkLen)
-        {
-            /* GPE0 specified in FACP  */
-
-            AcpiGbl_Gpe0EnableRegisterSave =
-                AcpiCmAllocate (DIV_2 (AcpiGbl_FACP->Gpe0BlkLen));
-            if (!AcpiGbl_Gpe0EnableRegisterSave)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            /* Save state of GPE0 enable bits */
-
-            for (Index = 0; Index < DIV_2 (AcpiGbl_FACP->Gpe0BlkLen); Index++)
-            {
-                AcpiGbl_Gpe0EnableRegisterSave[Index] =
-                    AcpiOsIn8 (AcpiGbl_FACP->Gpe0Blk +
-                    DIV_2 (AcpiGbl_FACP->Gpe0BlkLen));
-            }
-        }
-
-        else
-        {
-            AcpiGbl_Gpe0EnableRegisterSave = NULL;
-        }
-
-        if (AcpiGbl_FACP->Gpe1Blk && AcpiGbl_FACP->Gpe1BlkLen)
-        {
-            /* GPE1 defined */
-
-            AcpiGbl_Gpe1EnableRegisterSave =
-                AcpiCmAllocate (DIV_2 (AcpiGbl_FACP->Gpe1BlkLen));
-            if (!AcpiGbl_Gpe1EnableRegisterSave)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            /* save state of GPE1 enable bits */
-
-            for (Index = 0; Index < DIV_2 (AcpiGbl_FACP->Gpe1BlkLen); Index++)
-            {
-                AcpiGbl_Gpe1EnableRegisterSave[Index] =
-                    AcpiOsIn8 (AcpiGbl_FACP->Gpe1Blk +
-                    DIV_2 (AcpiGbl_FACP->Gpe1BlkLen));
-            }
-        }
-
-        else
-        {
-            AcpiGbl_Gpe1EnableRegisterSave = NULL;
-        }
-
-
-        /*
-         * Verify Fixed ACPI Description Table fields,
-         * but don't abort on any problems, just display error
-         */
-
-        if (AcpiGbl_FACP->Pm1EvtLen < 4)
-        {
-            AcpiCmFacpRegisterError ("PM1_EVT_LEN",
-                                    (UINT32) AcpiGbl_FACP->Pm1EvtLen);
-        }
-
-        if (!AcpiGbl_FACP->Pm1CntLen)
-        {
-            AcpiCmFacpRegisterError ("PM1_CNT_LEN",
-                                    (UINT32) AcpiGbl_FACP->Pm1CntLen);
-        }
-
-        if (!AcpiGbl_FACP->Pm1aEvtBlk)
-        {
-            AcpiCmFacpRegisterError ("PM1a_EVT_BLK", AcpiGbl_FACP->Pm1aEvtBlk);
-        }
-
-        if (!AcpiGbl_FACP->Pm1aCntBlk)
-        {
-            AcpiCmFacpRegisterError ("PM1a_CNT_BLK", AcpiGbl_FACP->Pm1aCntBlk);
-        }
-
-        if (!AcpiGbl_FACP->PmTmrBlk)
-        {
-            AcpiCmFacpRegisterError ("PM_TMR_BLK", AcpiGbl_FACP->PmTmrBlk);
-        }
-
-        if (AcpiGbl_FACP->Pm2CntBlk && !AcpiGbl_FACP->Pm2CntLen)
-        {
-            AcpiCmFacpRegisterError ("PM2_CNT_LEN",
-                                    (UINT32) AcpiGbl_FACP->Pm2CntLen);
-        }
-
-        if (AcpiGbl_FACP->PmTmLen < 4)
-        {
-            AcpiCmFacpRegisterError ("PM_TM_LEN",
-                                    (UINT32) AcpiGbl_FACP->PmTmLen);
-        }
-
-        /* length not multiple of 2    */
-        if (AcpiGbl_FACP->Gpe0Blk && (AcpiGbl_FACP->Gpe0BlkLen & 1))
-        {
-            AcpiCmFacpRegisterError ("GPE0_BLK_LEN",
-                                    (UINT32) AcpiGbl_FACP->Gpe0BlkLen);
-        }
-
-        /* length not multiple of 2    */
-        if (AcpiGbl_FACP->Gpe1Blk && (AcpiGbl_FACP->Gpe1BlkLen & 1))
-        {
-            AcpiCmFacpRegisterError ("GPE1_BLK_LEN",
-                                    (UINT32) AcpiGbl_FACP->Gpe1BlkLen);
-        }
+        AcpiUtFadtRegisterError ("X_PM_TMR_BLK", 0,
+                        ACPI_FADT_OFFSET (XPmTmrBlk.Address));
     }
 
+    if ((ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm2CntBlk.Address) &&
+        !AcpiGbl_FADT->Pm2CntLen))
+    {
+        AcpiUtFadtRegisterError ("PM2_CNT_LEN",
+                        (UINT32) AcpiGbl_FADT->Pm2CntLen,
+                        ACPI_FADT_OFFSET (Pm2CntLen));
+    }
 
-    return_ACPI_STATUS (Status);
+    if (AcpiGbl_FADT->PmTmLen < 4)
+    {
+        AcpiUtFadtRegisterError ("PM_TM_LEN",
+                        (UINT32) AcpiGbl_FADT->PmTmLen,
+                        ACPI_FADT_OFFSET (PmTmLen));
+    }
+
+    /* Length of GPE blocks must be a multiple of 2 */
+
+    if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address) &&
+        (AcpiGbl_FADT->Gpe0BlkLen & 1))
+    {
+        AcpiUtFadtRegisterError ("(x)GPE0_BLK_LEN",
+                        (UINT32) AcpiGbl_FADT->Gpe0BlkLen,
+                        ACPI_FADT_OFFSET (Gpe0BlkLen));
+    }
+
+    if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address) &&
+        (AcpiGbl_FADT->Gpe1BlkLen & 1))
+    {
+        AcpiUtFadtRegisterError ("(x)GPE1_BLK_LEN",
+                        (UINT32) AcpiGbl_FADT->Gpe1BlkLen,
+                        ACPI_FADT_OFFSET (Gpe1BlkLen));
+    }
+
+    return (AE_OK);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiCmTerminate
+ * FUNCTION:    AcpiUtTerminate
  *
  * PARAMETERS:  none
  *
@@ -416,32 +255,23 @@ AcpiCmHardwareInitialize (void)
  ******************************************************************************/
 
 void
-AcpiCmTerminate (void)
+AcpiUtTerminate (void)
 {
 
-    FUNCTION_TRACE ("CmTerminate");
+    ACPI_FUNCTION_TRACE ("UtTerminate");
 
 
     /* Free global tables, etc. */
 
-    if (AcpiGbl_Gpe0EnableRegisterSave)
-    {
-        AcpiCmFree (AcpiGbl_Gpe0EnableRegisterSave);
-    }
-
-    if (AcpiGbl_Gpe1EnableRegisterSave)
-    {
-        AcpiCmFree (AcpiGbl_Gpe1EnableRegisterSave);
-    }
-
+    /* Nothing to do at this time */
 
     return_VOID;
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiCmSubsystemShutdown
+ * FUNCTION:    AcpiUtSubsystemShutdown
  *
  * PARAMETERS:  none
  *
@@ -452,25 +282,24 @@ AcpiCmTerminate (void)
  *
  ******************************************************************************/
 
-ACPI_STATUS
-AcpiCmSubsystemShutdown (void)
+void
+AcpiUtSubsystemShutdown (void)
 {
 
-    FUNCTION_TRACE ("CmSubsystemShutdown");
+    ACPI_FUNCTION_TRACE ("UtSubsystemShutdown");
 
     /* Just exit if subsystem is already shutdown */
 
     if (AcpiGbl_Shutdown)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("ACPI Subsystem is already terminated\n"));
-        return_ACPI_STATUS (AE_OK);
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "ACPI Subsystem is already terminated\n"));
+        return_VOID;
     }
 
     /* Subsystem appears active, go ahead and shut it down */
 
     AcpiGbl_Shutdown = TRUE;
-    DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
-
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Shutting down ACPI Subsystem...\n"));
 
     /* Close the Namespace */
 
@@ -482,27 +311,19 @@ AcpiCmSubsystemShutdown (void)
 
     /* Close the globals */
 
-    AcpiCmTerminate ();
+    AcpiUtTerminate ();
 
-    /* Flush the local cache(s) */
+    /* Purge the local caches */
 
-    AcpiCmDeleteGenericStateCache ();
-    AcpiCmDeleteObjectCache ();
-    AcpiDsDeleteWalkStateCache ();
-
-    /* Close the Parser */
-
-    /* TBD: [Restructure] AcpiPsTerminate () */
-
-    AcpiPsDeleteParseCache ();
+    (void) AcpiPurgeCachedObjects ();
 
     /* Debug only - display leftover memory allocation, if any */
 
-    AcpiCmDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+    AcpiUtDumpAllocations (ACPI_UINT32_MAX, NULL);
+#endif
 
-    BREAKPOINT3;
-
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 
