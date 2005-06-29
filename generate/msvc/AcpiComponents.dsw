@@ -19,18 +19,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "AcpiDriver"=.\AcpiDriver.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "AcpiDump"=.\AcpiDump.dsp - Package Owner=<4>
 
 Package=<5>
@@ -123,30 +111,10 @@ Package=<4>
 
 ###############################################################################
 
-Project: "AcpiTest"=.\AcpiTest.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-    begin source code control
-    "$/Acpi/source/test/AcpiTest/Wdm", DLHAAAAA
-    ..\..
-    end source code control
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "AslCompiler"=.\AslCompiler.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
-    begin source code control
-    "$/Acpi/source/test/AcpiTest/Wdm", DLHAAAAA
-    ..\..
-    end source code control
 }}}
 
 Package=<4>
@@ -163,18 +131,6 @@ Package=<5>
     "$/Acpi/source/compiler", CRIAAAAA
     ..\..
     end source code control
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "AslFiles"=.\AslFiles.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
 }}}
 
 Package=<4>
