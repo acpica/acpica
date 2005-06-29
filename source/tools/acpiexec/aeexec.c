@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -770,6 +770,67 @@ AeNotifyHandler (
 
 /******************************************************************************
  *
+ * FUNCTION:    AeExceptionHandler
+ *
+ * PARAMETERS:  Standard exception handler parameters
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: System exception handler for AcpiExec utility.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AeExceptionHandler (
+    ACPI_STATUS             AmlStatus)
+{
+    ACPI_STATUS             Status;
+    ACPI_BUFFER             ReturnObj;
+    ACPI_OBJECT_LIST        ArgList;
+    ACPI_OBJECT             Arg[2];
+    const char              *Exception;
+
+
+    Exception = AcpiFormatException (AmlStatus);
+    AcpiOsPrintf ("****AcpiExec exception: %s\n", Exception);
+
+    /*
+     * Invoke the _ERR method if present
+     * 
+     * Setup parameter object
+     */
+    ArgList.Count = 2;
+    ArgList.Pointer = Arg;
+
+    Arg[0].Type = ACPI_TYPE_INTEGER;
+    Arg[0].Integer.Value = AmlStatus;
+
+    Arg[1].Type = ACPI_TYPE_STRING;
+    Arg[1].String.Pointer = (char *) Exception;
+    Arg[1].String.Length = ACPI_STRLEN (Exception);
+
+    /* Setup return buffer */
+
+    ReturnObj.Pointer = NULL;
+    ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
+
+    Status = AcpiEvaluateObject (NULL, "\\_ERR", &ArgList, &ReturnObj);
+    if (ACPI_SUCCESS (Status) &&
+        ReturnObj.Pointer)
+    {
+        /* Override original status */
+
+        AmlStatus = (ACPI_STATUS) 
+            ((ACPI_OBJECT *) ReturnObj.Pointer)->Integer.Value;
+
+        AcpiOsFree (ReturnObj.Pointer);
+    }
+    return (AmlStatus);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AeInstallHandlers
  *
  * PARAMETERS:  None
@@ -794,6 +855,13 @@ AeInstallHandlers (void)
 
     ACPI_FUNCTION_NAME ("AeInstallHandlers");
 
+
+    Status = AcpiInstallExceptionHandler (AeExceptionHandler);
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("Could not install exception handler, %s\n",
+            AcpiFormatException (Status));
+    }
 
     Status = AcpiInstallNotifyHandler (ACPI_ROOT_OBJECT, ACPI_SYSTEM_NOTIFY,
                                         AeNotifyHandler, NULL);
