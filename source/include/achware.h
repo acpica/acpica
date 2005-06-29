@@ -378,22 +378,22 @@ AcpiHwObtainSleepTypeRegisterData (
 
 ACPI_STATUS
 AcpiHwIa32EnterC1(
-    ACPI_IO_ADDRESS         PBlkAddress,
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
 AcpiHwIa32EnterC2(
-    ACPI_IO_ADDRESS         PBlkAddress,
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
 AcpiHwIa32EnterC3(
-    ACPI_IO_ADDRESS         PBlkAddress,
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
 AcpiHwIa32EnterCx (
-    ACPI_IO_ADDRESS         PBlkAddress,
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  *PmTimerTicks);
 
 ACPI_STATUS
@@ -409,23 +409,23 @@ AcpiHwIa32GetCxInfo (
 
 void
 AcpiHwEnableThrottling (
-    ACPI_IO_ADDRESS         PBlkAddress);
+    ACPI_IO_ADDRESS         PblkAddress);
 
 void
 AcpiHwDisableThrottling (
-    ACPI_IO_ADDRESS         PBlkAddress);
+    ACPI_IO_ADDRESS         PblkAddress);
 
 UINT32
 AcpiHwGetDutyCycle (
     UINT8                   DutyOffset,
-    ACPI_IO_ADDRESS         PBlkAddress,
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  NumThrottleStates);
 
 void
 AcpiHwProgramDutyCycle (
     UINT8                   DutyOffset,
     UINT32                  DutyCycle,
-    ACPI_IO_ADDRESS         PBlkAddress,
+    ACPI_IO_ADDRESS         PblkAddress,
     UINT32                  NumThrottleStates);
 
 NATIVE_UINT
