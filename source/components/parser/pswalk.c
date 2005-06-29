@@ -207,8 +207,19 @@ PsGetNextWalkOp (
              */
 
             Next        = Parent->Next;
+            Status      = AE_OK;
 
-            Status = AscendingCallback (WalkState, Parent);
+            /*
+             * TBD: This keeps the IF/WHILE from being closed out
+             *  unless there is a sibling to the object that just 
+             *  returned AE_FALSE;
+             * This fixes a problem where an IF without a sibling
+             *  was getting closed out twice, causeing a page fault.
+             */
+            if (Next)
+            {
+                Status = AscendingCallback (WalkState, Parent);
+            }
 
             /* Now continue to the next node in the tree */
         }
@@ -225,13 +236,13 @@ PsGetNextWalkOp (
 
             return_ACPI_STATUS (Status);
         }
+        
 
 
         /* 
          * No sibling, but check status.
          * Abort on error from callback routine 
          */
-
         if (Status != AE_OK)
         {
             /* Next op will be the parent */
