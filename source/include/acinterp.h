@@ -122,6 +122,9 @@
 #include <acobject.h>
 
 
+#define WALK_OPERANDS       &(WalkState->Operands [WalkState->NumOperands -1])
+
+
 /* Interpreter constants */
 
 #define AML_END_OF_BLOCK            -1
@@ -225,26 +228,25 @@ AmlGetNamedFieldValue (
 ACPI_STATUS
 AmlExecCreateField (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AmlExecFatal (    
-    ACPI_OBJECT_INTERNAL    **Operands);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AmlExecIndex (
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc);
 
 ACPI_STATUS
 AmlExecMatch (
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc);
 
 ACPI_STATUS
 AmlExecCreateMutex (
-    OPERATING_MODE          InterpreterMode,
-    ACPI_OBJECT_INTERNAL    **Operands);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AmlExecCreateProcessor (
@@ -260,16 +262,16 @@ ACPI_STATUS
 AmlExecCreateRegion (
     UINT8                   *AmlPtr,
     UINT32                  AmlLength,
-    ACPI_OBJECT_INTERNAL    **Operands,
-    OPERATING_MODE          InterpreterMode);
+    UINT32                  RegionSpace,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AmlExecCreateEvent (
-    ACPI_OBJECT_INTERNAL    **Operands);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AmlExecCreateAlias (
-    ACPI_OBJECT_INTERNAL    **Operands);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AmlExecCreateMethod (
@@ -434,18 +436,18 @@ AmlExecStore (
 ACPI_STATUS
 AmlExecMonadic1 (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AmlExecMonadic2 (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc);
 
 ACPI_STATUS
 AmlExecMonadic2R (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc);
 
 
@@ -456,24 +458,24 @@ AmlExecMonadic2R (
 ACPI_STATUS
 AmlExecDyadic1 (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AmlExecDyadic2 (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc);
 
 ACPI_STATUS
 AmlExecDyadic2R (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc);
         
 ACPI_STATUS
 AmlExecDyadic2S (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    **ReturnDesc);
 
 
