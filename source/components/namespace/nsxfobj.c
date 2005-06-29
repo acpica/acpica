@@ -370,8 +370,9 @@ Cleanup:
  * FUNCTION:    AcpiGetNextObject
  *
  * PARAMETERS:  Type            - Type of object to be searched for
- *              Scope           - Scope to search in (only if Handle is null)
- *              Handle          - Current object to search from
+ *              Parent          - Parent object whose children we are getting
+ *              LastChild       - Previous child that was found.  
+ *                                The NEXT child will be returned
  *              RetHandle       - Where handle to the next object is placed
  *
  * RETURN:      Status
@@ -385,8 +386,8 @@ Cleanup:
 ACPI_STATUS
 AcpiGetNextObject (
     ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             Scope, 
-    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             Parent, 
+    ACPI_HANDLE             Child, 
     ACPI_HANDLE             *RetHandle)
 {
     NAME_TABLE_ENTRY        *ThisEntry;
@@ -405,30 +406,34 @@ AcpiGetNextObject (
     }
 
 
-    /* If null handle, use the scope */
+    /* If null handle, use the parent */
 
-    if (!Handle)
+    if (!Child)
     {
-        if (!Scope)
+        if (!Parent)
         {
             return AE_NOT_FOUND;
         }
 
         /* Start search at the beginning of the specified scope */
 
-        else if (!(ThisEntry = NsConvertHandleToEntry (Scope)))
+        else if (!(ThisEntry = NsConvertHandleToEntry (Parent)))
         {
             return AE_BAD_PARAMETER;
         }
+
+        /* It's really the parent's _scope_ that we want */
+
+        ThisEntry = ThisEntry->Scope;
     }
 
-    /* Non-null handle, ignore the scope */
+    /* Non-null handle, ignore the parent */
 
     else
     {
         /* Convert and validate the handle */
 
-        if (!(ThisEntry = NsConvertHandleToEntry (Handle)))
+        if (!(ThisEntry = NsConvertHandleToEntry (Child)))
         {
             return AE_BAD_PARAMETER;
         }
@@ -588,134 +593,12 @@ AcpiGetParent (
 }
 
 
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetScope
- *
- * PARAMETERS:  Handle          - Handle of object whose scope is desired
- *              RetScope        - Where the scope handle is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Returns a handle to the scope that is owned by the object
- *              represented by handle.  NOTE: this is NOT the scope that
- *              contains the object (i.e., not the scope that the object is
- *              defined within.)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetScope (
-    ACPI_HANDLE             Handle, 
-    ACPI_HANDLE             *RetScope)
-{
-    NAME_TABLE_ENTRY        *Object;
-
-
-    if (!RetScope)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Special case for the predefined Root Object (return Root Scope) */
-
-    if (Handle == ACPI_ROOT_OBJECT)
-    {
-        *RetScope = RootObject->Scope;
-        return AE_OK;
-    }
-
-    /* Convert and validate the handle */
-
-    if (!(Object = NsConvertHandleToEntry (Handle)))
-    {
-        *RetScope = INVALID_HANDLE;
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Return exception in the case of no scope */
-
-    if (!Object->Scope)
-    {
-        return AE_NULL_ENTRY;
-    }
-
-    /* Get the scope entry */
-
-    *RetScope = Object->Scope;
-
-    return AE_OK;
-}
-
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiGetContainingScope
- *
- * PARAMETERS:  Handle          - Handle to object whose containing scope is desired
- *              RetHandle       - Where the containing scope handle is placed.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Returns a handle for the scope that contains the object represented
- *              by Handle.  This is essentially the scope of the objects parent,
- *              and is the scope where the object is defined in the ASL.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetContainingScope (
-    ACPI_HANDLE             Handle, 
-    ACPI_HANDLE             *RetHandle)
-{
-    NAME_TABLE_ENTRY        *Object;
-    
-
-    /* No trace macro, too verbose */
-
-
-    if (!RetHandle)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Special case for the predefined Root Object (No containing scope) */
-
-    if (Handle == ACPI_ROOT_OBJECT)
-    {
-        return AE_NULL_ENTRY;
-    }
-
-    /* Convert and validate the handle */
-
-    if (!(Object = NsConvertHandleToEntry (Handle)))
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* If no parent, we are in the root scope */
-
-    if (!Object->ParentEntry)
-    {
-        *RetHandle = RootObject->Scope;
-    }
-    else
-    {
-        *RetHandle = Object->ParentEntry->Scope;
-    }
-
-    return AE_OK;
-}
-
-
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiWalkNamespace
  *
  * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
- *              StartHandle         - Handle in namespace where search begins
+ *              StartObject         - Handle in namespace where search begins
  *              MaxDepth            - Depth to which search is to reach
  *              UserFunction        - Called when an object of "Type" is found
  *              Context             - Passed to user function
@@ -741,17 +624,17 @@ AcpiGetContainingScope (
 ACPI_STATUS
 AcpiWalkNamespace (
     ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             StartHandle, 
+    ACPI_HANDLE             StartObject, 
     UINT32                  MaxDepth,
     WALK_CALLBACK           UserFunction, 
     void                    *Context, 
     void                    **ReturnValue)
 {
-    ACPI_HANDLE             ObjHandle = 0;
-    ACPI_HANDLE             Scope;
-    ACPI_HANDLE             NewScope;
+    ACPI_HANDLE             ChildHandle;
+    ACPI_HANDLE             ParentHandle;
+    ACPI_HANDLE             Dummy;
+    UINT32                  Level;
     void                    *UserReturnVal;
-    UINT32                  Level = 1;
 
 
     FUNCTION_TRACE ("AcpiWalkNamespace");
@@ -759,77 +642,77 @@ AcpiWalkNamespace (
 
     /* Parameter validation */
 
-    if (Type > ACPI_TABLE_MAX)
+    if ((Type > ACPI_TABLE_MAX) ||
+        (!MaxDepth)             || 
+        (!UserFunction))
     {
         FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
-    if ((!MaxDepth) || (!UserFunction))
+    /* Special case for the namespace root object */
+
+    if (StartObject == ACPI_ROOT_OBJECT)
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        StartObject = RootObject;
     }
-
-    /* Begin search in the scope owned by the starting object */
-
-    if (StartHandle == ACPI_ROOT_OBJECT)
-    {
-        Scope = RootObject->Scope;
-        StartHandle = RootObject;
-    }
-
-    else if (ACPI_FAILURE (AcpiGetScope (StartHandle, &Scope)))
-    {
-        /* Failure could be bad scope or simply *no* scope */
-
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
-    }
-
 
     /* Init return value, if any */
 
     if (ReturnValue)
+    {
         *ReturnValue = NULL;
+    }
+
+
+    /* Null child means "get first object" */
+
+    ParentHandle    = StartObject;
+    ChildHandle     = 0;
+    Level           = 1;
 
     /* 
-     * Traverse the tree of objects until we bubble back up 
-     * to where we started.
+     * Traverse the tree of objects until we bubble back up to where we
+     * started. When Level is zero, the loop is done because we have 
+     * bubbled up to (and passed) the original parent handle (StartHandle)
      */
 
-    while (ObjHandle != StartHandle)
+    while (Level > 0)
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (Type, Scope, ObjHandle, &ObjHandle)))
+        if (ACPI_SUCCESS (AcpiGetNextObject (Type, ParentHandle, ChildHandle, &ChildHandle))) 
         {
             /* Found an object - process by calling the user function */
 
-            if ((UserReturnVal = UserFunction (ObjHandle, Level, Context)) != 0)
+            if ((UserReturnVal = UserFunction (ChildHandle, Level, Context)) != 0)
             {
                 /* Non-zero from user function means "exit now" */
 
                 if (ReturnValue)
+                {
+                    /* Pass return value back to the caller */
+
                     *ReturnValue = UserReturnVal;
+                }
 
                 FUNCTION_STATUS_EXIT (AE_OK);
                 return AE_OK;
             }
 
-            /* Go down another level if we are allowed to */
+            /* Go down another level in the namespace if we are allowed to */
 
             if (Level < MaxDepth)
             {
-                /* Check for a valid scope for this object */
+                /* Check if this object has any children */
 
-                if (ACPI_SUCCESS (AcpiGetScope (ObjHandle, &NewScope)))
+                if (ACPI_SUCCESS (AcpiGetNextObject (Type, ChildHandle, 0, &Dummy)))
                 {
-                    /* There is a valid scope, we will check for child objects */
+                    /* There is at least one child of this object, visit the object */
 
                     Level++;
-                    ObjHandle = 0;
-                    Scope = NewScope;
+                    ParentHandle    = ChildHandle;
+                    ChildHandle     = 0;
                 }
             }
         }
@@ -837,17 +720,17 @@ AcpiWalkNamespace (
         else
         {
             /* 
-             * No more objects in this scope, go back up to the parent and the 
-             * parent's scope (But only back up to where we started the search)
+             * No more children in this object, go back up to the object's parent
              */
             Level--;
-            AcpiGetParent (Scope, &ObjHandle);
-            AcpiGetContainingScope (ObjHandle, &Scope);
+            ChildHandle = ParentHandle;
+            AcpiGetParent (ParentHandle, &ParentHandle);
         }
     }
 
+
     FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK; /* Complete walk, not terminated by user function */
+    return AE_OK;                   /* Complete walk, not terminated by user function */
 }
 
 
