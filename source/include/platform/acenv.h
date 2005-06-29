@@ -170,14 +170,14 @@
  * We will be using the standard Clib functions
  */
 
-#define STRLEN                  strlen
-#define STRCPY                  strcpy
-#define STRNCPY                 strncpy
-#define STRNCMP                 strncmp
-#define STRCMP                  strcmp
-#define STRCAT                  strcat
-#define STRNCAT                 strncat
-#define STRTOUL                 strtoul
+#define STRLEN(s)               strlen((char *) (s))
+#define STRCPY(d,s)             strcpy((char *) (d), (char *) (s))
+#define STRNCPY(d,s,n)          strncpy((char *) (d), (char *) (s), (n))
+#define STRNCMP(d,s,n)          strncmp((char *) (d), (char *) (s), (n))
+#define STRCMP(d,s)             strcmp((char *) (d), (char *) (s))
+#define STRCAT(d,s)             strcat((char *) (d), (char *) (s))
+#define STRNCAT(d,s,n)          strncat((char *) (d), (char *) (s), (n))
+#define STRTOUL(d,s,n)          strtoul((char *) (d), (char **) (s), (n))
 #define MEMCPY                  memcpy
 #define MEMSET                  memset
 
@@ -222,14 +222,14 @@ typedef char *va_list;
 #endif /* va_arg */
 
 
-#define STRLEN                  _strlen
-#define STRCPY                  _strcpy
-#define STRNCPY                 _strncpy
-#define STRNCMP                 _strncmp
-#define STRCMP                  _strcmp
-#define STRCAT                  _strcat
-#define STRNCAT                 _strncat
-#define STRTOUL                 _strtoul
+#define STRLEN(s)               _strlen((char *) (s))
+#define STRCPY(d,s)             _strcpy((char *) (d), (char *) (s))
+#define STRNCPY(d,s,n)          _strncpy((char *) (d), (char *) (s), (n))
+#define STRNCMP(d,s,n)          _strncmp((char *) (d), (char *) (s), (n))
+#define STRCMP(d,s)             _strcmp((char *) (d), (char *) (s))
+#define STRCAT(d,s)             _strcat((char *) (d), (char *) (s))
+#define STRNCAT(d,s,n)          _strncat((char *) (d), (char *) (s), (n))
+#define STRTOUL(d,s,n)          _strtoul((char *) (d), (char **) (s), (n))
 #define MEMCPY                  _memcpy
 #define MEMSET                  _memset
 
