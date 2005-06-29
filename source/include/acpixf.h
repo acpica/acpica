@@ -411,6 +411,12 @@ AcpiGetEventStatus (
  * Resource interfaces
  */
 
+typedef
+ACPI_STATUS (*ACPI_WALK_RESOURCE_CALLBACK) (
+    ACPI_RESOURCE           *Resource,
+    void                    *Context);
+
+
 ACPI_STATUS
 AcpiGetCurrentResources(
     ACPI_HANDLE             DeviceHandle,
@@ -431,6 +437,10 @@ AcpiGetIrqRoutingTable  (
     ACPI_HANDLE             BusDeviceHandle,
     ACPI_BUFFER             *RetBuffer);
 
+ACPI_STATUS
+AcpiResourceToAddress64 (
+    ACPI_RESOURCE           *Resource,
+    ACPI_RESOURCE_ADDRESS64 *Out);
 
 /*
  * Hardware (ACPI device) interfaces
