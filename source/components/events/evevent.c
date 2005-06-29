@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -280,18 +280,18 @@ AcpiEvFixedEventDetect(void)
      * depend on their values.
      */
 
-    StatusRegister = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1aEvtBlk);
-    if (AcpiGbl_FACP->Pm1bEvtBlk)
+    StatusRegister = (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1aEvtBlk);
+    if (AcpiGbl_FADT->Pm1bEvtBlk)
     {
-        StatusRegister |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bEvtBlk);
+        StatusRegister |= (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1bEvtBlk);
     }
 
-    EnableRegister = (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1aEvtBlk +
-                        DIV_2 (AcpiGbl_FACP->Pm1EvtLen));
-    if (AcpiGbl_FACP->Pm1bEvtBlk)
+    EnableRegister = (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1aEvtBlk +
+                        DIV_2 (AcpiGbl_FADT->Pm1EvtLen));
+    if (AcpiGbl_FADT->Pm1bEvtBlk)
     {
-        EnableRegister |= (UINT32) AcpiOsIn16 (AcpiGbl_FACP->Pm1bEvtBlk +
-                            DIV_2 (AcpiGbl_FACP->Pm1EvtLen));
+        EnableRegister |= (UINT32) AcpiOsIn16 (AcpiGbl_FADT->Pm1bEvtBlk +
+                            DIV_2 (AcpiGbl_FADT->Pm1EvtLen));
     }
 
     DEBUG_PRINT (TRACE_INTERRUPTS,
@@ -420,13 +420,13 @@ AcpiEvGpeInitialize (void)
     /* FADT table contain zeros. The GPE0_LEN and GPE1_LEN do not need */
     /* to be the same size."                                           */
     /*******************************************************************/
-    Gpe0RegisterCount       = (UINT16) DIV_2 (AcpiGbl_FACP->Gpe0BlkLen);
-    Gpe1RegisterCount       = (UINT16) DIV_2 (AcpiGbl_FACP->Gpe1BlkLen);
+    Gpe0RegisterCount       = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe0BlkLen);
+    Gpe1RegisterCount       = (UINT16) DIV_2 (AcpiGbl_FADT->Gpe1BlkLen);
     AcpiGbl_GpeRegisterCount    = Gpe0RegisterCount + Gpe1RegisterCount;
 
     if (!AcpiGbl_GpeRegisterCount)
     {
-        REPORT_WARNING (("Zero GPEs are defined in the FACP\n"));
+        REPORT_WARNING (("Zero GPEs are defined in the FADT\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -476,10 +476,10 @@ AcpiEvGpeInitialize (void)
     for (i = 0; i < Gpe0RegisterCount; i++)
     {
         AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr  =
-                    (UINT16) (AcpiGbl_FACP->Gpe0Blk + i);
+                    (UINT16) (AcpiGbl_FADT->Gpe0Blk + i);
 
         AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr  =
-                    (UINT16) (AcpiGbl_FACP->Gpe0Blk + i + Gpe0RegisterCount);
+                    (UINT16) (AcpiGbl_FADT->Gpe0Blk + i + Gpe0RegisterCount);
 
         AcpiGbl_GpeRegisters[RegisterIndex].GpeBase     = (UINT8) MUL_8 (i);
 
@@ -505,13 +505,13 @@ AcpiEvGpeInitialize (void)
     for (i = 0; i < Gpe1RegisterCount; i++)
     {
         AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr  =
-                    (UINT16) (AcpiGbl_FACP->Gpe1Blk + i);
+                    (UINT16) (AcpiGbl_FADT->Gpe1Blk + i);
 
         AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr  =
-                    (UINT16) (AcpiGbl_FACP->Gpe1Blk + i + Gpe1RegisterCount);
+                    (UINT16) (AcpiGbl_FADT->Gpe1Blk + i + Gpe1RegisterCount);
 
         AcpiGbl_GpeRegisters[RegisterIndex].GpeBase     =
-                    (UINT8) (AcpiGbl_FACP->Gpe1Base + MUL_8 (i));
+                    (UINT8) (AcpiGbl_FADT->Gpe1Base + MUL_8 (i));
 
         for (j = 0; j < 8; j++)
         {
@@ -532,8 +532,8 @@ AcpiEvGpeInitialize (void)
 
     DEBUG_PRINT (ACPI_INFO,
         ("GPE registers: %d@%X (Blk0) %d@%X (Blk1)\n",
-        Gpe0RegisterCount, AcpiGbl_FACP->Gpe0Blk, Gpe1RegisterCount,
-        AcpiGbl_FACP->Gpe1Blk));
+        Gpe0RegisterCount, AcpiGbl_FADT->Gpe0Blk, Gpe1RegisterCount,
+        AcpiGbl_FADT->Gpe1Blk));
 
     return_ACPI_STATUS (AE_OK);
 }
