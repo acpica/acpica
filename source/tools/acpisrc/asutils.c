@@ -1,8 +1,8 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: asutils - common utilities
- *              $Revision: 1.2 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -39,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -118,10 +118,9 @@
 #include "acpisrc.h"
 
 
-
 /******************************************************************************
  *
- * FUNCTION:    AsSkipUntilChar 
+ * FUNCTION:    AsSkipUntilChar
  *
  * DESCRIPTION: Find the next instance of the input character
  *
@@ -132,7 +131,7 @@ AsSkipUntilChar (
     char                    *Buffer,
     char                    Target)
 {
-    
+
     while (*Buffer != Target)
     {
         if (!*Buffer)
@@ -161,7 +160,7 @@ AsSkipPastChar (
     char                    *Buffer,
     char                    Target)
 {
-    
+
     while (*Buffer != Target)
     {
         if (!*Buffer)
@@ -216,26 +215,23 @@ AsReplaceData (
 
         if (LengthToRemove > 0)
         {
+            Gbl_MadeChanges = TRUE;
             memmove ((Buffer + LengthToAdd), (Buffer + LengthToRemove), (BufferLength - LengthToRemove));
         }
     }
 
 
     /*
-     * Now we can move in the new data 
+     * Now we can move in the new data
      */
 
     if (LengthToAdd > 0)
     {
+        Gbl_MadeChanges = TRUE;
         memmove (Buffer, BufferToAdd, LengthToAdd);
     }
 
     return (Buffer + LengthToAdd);
 }
-
-
-
-
-
 
 

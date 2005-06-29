@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -176,6 +176,8 @@ extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
 extern BOOLEAN                  Gbl_VerboseMode;
 extern BOOLEAN                  Gbl_BatchMode;
+extern BOOLEAN                  Gbl_MadeChanges;
+extern BOOLEAN                  Gbl_Overwrite;
 
 extern int                      optind;
 extern char                     *optarg;

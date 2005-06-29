@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -137,6 +137,8 @@ UINT32                  Gbl_FileSize;
 BOOLEAN                 Gbl_VerboseMode = FALSE;
 BOOLEAN                 Gbl_BatchMode = FALSE;
 BOOLEAN                 Gbl_DebugStatementsMode = FALSE;
+BOOLEAN                 Gbl_MadeChanges = FALSE;
+BOOLEAN                 Gbl_Overwrite = FALSE;
 
 
 /******************************************************************************
@@ -425,6 +427,8 @@ AsExaminePaths (
         {
             return -1;
         }
+
+        Gbl_Overwrite = TRUE;
     }
 
     else

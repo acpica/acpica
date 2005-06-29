@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -345,6 +345,7 @@ AsTrimLines (
             SpaceCount += (SubBuffer - StartWhiteSpace);
 
             Length = strlen (SubBuffer) + 1;
+
             memmove (StartWhiteSpace, SubBuffer, Length);
             StartWhiteSpace = NULL;
         }
@@ -356,6 +357,7 @@ AsTrimLines (
 Exit:
     if (SpaceCount)
     {
+        Gbl_MadeChanges = TRUE;
         AsPrint ("Extraneous spaces Removed", SpaceCount, Filename);
     }
 }
@@ -606,6 +608,7 @@ AsMixedCaseToUnderscores (
 
             /* Force the UpperCase letter (#2) to lower case */
 
+            Gbl_MadeChanges = TRUE;
             SubBuffer[1] = (char) tolower (SubBuffer[1]);
 
 
@@ -715,6 +718,7 @@ AsLowerCaseIdentifiers (
         if ((isupper (SubBuffer[0])) &&
             (islower (SubBuffer[1])))
         {
+            Gbl_MadeChanges = TRUE;
             *SubBuffer = (char) tolower (*SubBuffer);
         }
 
@@ -829,6 +833,7 @@ AsBracesOnSameLine (
                     SubBuffer++;
                     Length = strlen (SubBuffer);
 
+                    Gbl_MadeChanges = TRUE;
                     memmove (Beginning + 2, SubBuffer, Length+3);
                     memmove (Beginning, " {", 2);
                 }
@@ -906,6 +911,7 @@ AsRemoveStatement (
 
             StrLength = strlen (SubBuffer);
 
+            Gbl_MadeChanges = TRUE;
             memmove (SubString, SubBuffer, StrLength+1);
             SubBuffer = SubString;
         }
@@ -1016,6 +1022,7 @@ AsRemoveConditionalCompile (
             /* Remove the #ifdef .... #else code */
 
             StrLength = strlen (SubBuffer);
+            Gbl_MadeChanges = TRUE;
             memmove (SubString, SubBuffer, StrLength+1);
 
             /* Next, we will remove the #endif statement */
@@ -1043,6 +1050,7 @@ AsRemoveConditionalCompile (
 
         StrLength = strlen (SubBuffer);
 
+        Gbl_MadeChanges = TRUE;
         memmove (SubString, SubBuffer, StrLength+1);
         SubBuffer = SubString;
     }
@@ -1097,6 +1105,7 @@ AsRemoveLine (
             }
 
             StrLength = strlen (SubBuffer);
+            Gbl_MadeChanges = TRUE;
 
             memmove (SubString, SubBuffer, StrLength+1);
             SubBuffer = SubString;
@@ -1184,6 +1193,7 @@ AsRemoveEmptyBlocks (
 
     if (BlockCount)
     {
+        Gbl_MadeChanges = TRUE;
         AsPrint ("Code blocks deleted", BlockCount, Filename);
     }
 }
@@ -1259,6 +1269,7 @@ AsTabify4 (
                 NewSubBuffer = (SubBuffer + 1) - 4;
                 *NewSubBuffer = '\t';
 
+                Gbl_MadeChanges = TRUE;
                 SubBuffer++;
                 memmove ((NewSubBuffer + 1), SubBuffer, strlen (SubBuffer) + 1);
                 SubBuffer = NewSubBuffer;
@@ -1476,6 +1487,7 @@ AsTabify8 (
                     TabCount++;
                 }
 
+                Gbl_MadeChanges = TRUE;
                 memmove (NewSubBuffer, SubBuffer, strlen (SubBuffer) + 1);
                 SubBuffer = NewSubBuffer;
                 continue;
