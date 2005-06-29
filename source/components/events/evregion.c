@@ -689,9 +689,6 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
 
     ACPI_ASSERT(RegionObj->Region.Nte);
 
-    *((UINT32 *)(&RegionObj->Region.Name[0])) = (UINT32) ' GER';
-    *((UINT32 *)(&RegionObj->Region.Name[4])) = RegionObj->Region.Nte->Name;
-
     Nte = RegionObj->Region.Nte->ParentEntry;
     SpaceId = RegionObj->Region.SpaceId;
 
