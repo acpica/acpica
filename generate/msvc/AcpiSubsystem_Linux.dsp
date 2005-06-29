@@ -25,7 +25,7 @@ CFG=AcpiSubsystem_Linux - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi/generate/msvc", SVBAAAAA"
 # PROP Scc_LocalPath "."
-CPP=cl.exe
+CPP=xicl6.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiSubsystem_Linux - Win32 Release"
@@ -41,13 +41,13 @@ RSC=rc.exe
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem_Linux"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Za /W4 /GX /O2 /I "..\..\source_linux\Include" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_NDEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "DEFINE_ALTERNATE_TYPES" /FR /YX /FD /c
+# ADD CPP /nologo /Gz /Za /W4 /GX /O2 /I "..\..\source_linux\Include" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_NDEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "DEFINE_ALTERNATE_TYPES" /FR /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=link.exe -lib
+LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"\Acpi\Generate\msvc\AcpiSubsystem_Linux\AcpiCa_Linux.lib"
 
@@ -64,13 +64,13 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem_Linux"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Za /W4 /Gm /GX /ZI /Od /I "..\..\source_linux\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "ENABLE_DEBUGGER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "DEFINE_ALTERNATE_TYPES" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /Gz /Za /W4 /Gm /GX /ZI /Od /I "..\..\source_linux\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "ENABLE_DEBUGGER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "DEFINE_ALTERNATE_TYPES" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=link.exe -lib
+LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo /out:"\Acpi\Generate\msvc\AcpiSubsystem_Linux\AcpiCa_Linux.lib"
 
@@ -632,10 +632,6 @@ SOURCE=..\..\source_linux\include\actbl1.h
 # Begin Source File
 
 SOURCE=..\..\source_linux\include\actbl2.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\include\actbl71.h
 # End Source File
 # Begin Source File
 
