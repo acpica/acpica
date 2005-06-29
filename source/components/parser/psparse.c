@@ -185,9 +185,12 @@ AcpiPsDeleteParseTree (
     ACPI_WALK_LIST          WalkList;
 
 
+    FUNCTION_TRACE_PTR ("PsDeleteParseTree", SubtreeRoot);
+
+
     if (!SubtreeRoot)
     {
-        return;
+        return_VOID;
     }
 
     /* Create and initialize a new walk list */
@@ -196,7 +199,7 @@ AcpiPsDeleteParseTree (
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
     if (!WalkState)
     {
-        return;
+        return_VOID;
     }
 
     WalkState->ParserState          = NULL;
@@ -224,6 +227,8 @@ AcpiPsDeleteParseTree (
     /* We are done with this walk */
 
     AcpiDsDeleteWalkState (WalkState);
+
+    return_VOID;
 }
 #endif
 
@@ -334,7 +339,7 @@ AcpiPsCreateState (
     ACPI_PARSE_STATE        *ParserState;
 
 
-    FUNCTION_TRACE ("PsInitState");
+    FUNCTION_TRACE ("PsCreateState");
 
 
     ParserState = AcpiCmCallocate (sizeof (ACPI_PARSE_STATE));
@@ -611,7 +616,7 @@ AcpiPsNextParseState (
          * level.
          */
 
-        ParserState->Aml = ParserState->Scope->PkgEnd;
+        ParserState->Aml = ParserState->Scope->ParseScope.PkgEnd;
 
         /* In the case of a BREAK, just force a predicate (if any) to FALSE */
 
@@ -671,14 +676,14 @@ AcpiPsParseLoop (
     ACPI_GENERIC_OP         *Op = NULL;     /* current op */
     ACPI_OP_INFO            *OpInfo;
     ACPI_GENERIC_OP         *Arg = NULL;
-    ACPI_DEFERRED_OP        *DeferredOp;
+    ACPI_EXTENDED_OP        *DeferredOp;
     UINT32                  ArgCount;       /* push for fixed or var args */
     UINT32                  ArgTypes = 0;
     ACPI_PTRDIFF            AmlOffset;
     UINT16                  Opcode;
     ACPI_GENERIC_OP         PreOp;
     ACPI_PARSE_STATE        *ParserState;
-
+    ACPI_GENERIC_OP         *NewOp;
 
     FUNCTION_TRACE_PTR ("PsParseLoop", WalkState);
 
@@ -797,7 +802,7 @@ AcpiPsParseLoop (
 
                 if (Op->Opcode == AML_REGION_OP)
                 {
-                    DeferredOp = AcpiPsToDeferredOp (Op);
+                    DeferredOp = AcpiPsToExtendedOp (Op);
                     if (DeferredOp)
                     {
                         /*
@@ -811,8 +816,8 @@ AcpiPsParseLoop (
                          * BodyLength is unknown until we parse the body
                          */
 
-                        DeferredOp->Body        = ParserState->Aml - 6;
-                        DeferredOp->BodyLength  = 0;
+                        DeferredOp->Data    = ParserState->Aml - 6;
+                        DeferredOp->Length  = 0;
                     }
                 }
             }
@@ -827,6 +832,13 @@ AcpiPsParseLoop (
                 if (!Op)
                 {
                     return_ACPI_STATUS (AE_NO_MEMORY);
+                }
+
+                NewOp = AcpiPsGetParentScope (ParserState);
+                if (NewOp->Value.Arg == (void *) 0x00DEAD00)
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("Deleted Op found: %p\n", NewOp));
+                    return_ACPI_STATUS (AE_BAD_PARAMETER);
                 }
 
                 AcpiPsAppendArg (AcpiPsGetParentScope (ParserState), Op);
@@ -913,7 +925,7 @@ AcpiPsParseLoop (
 
                 if (Op->Opcode == AML_METHOD_OP)
                 {
-                    DeferredOp = AcpiPsToDeferredOp (Op);
+                    DeferredOp = AcpiPsToExtendedOp (Op);
                     if (DeferredOp)
                     {
                         /*
@@ -922,8 +934,8 @@ AcpiPsParseLoop (
                          * to parse them correctly.
                          */
 
-                        DeferredOp->Body        = ParserState->Aml;
-                        DeferredOp->BodyLength  = ParserState->PkgEnd -
+                        DeferredOp->Data    = ParserState->Aml;
+                        DeferredOp->Length  = ParserState->PkgEnd -
                                                     ParserState->Aml;
 
                         /*
@@ -931,8 +943,8 @@ AcpiPsParseLoop (
                          * parsing because the opregion is not a standalone
                          * package (We don't know where the end is).
                          */
-                        ParserState->Aml        = ParserState->PkgEnd;
-                        ArgCount                = 0;
+                        ParserState->Aml    = ParserState->PkgEnd;
+                        ArgCount            = 0;
                     }
                 }
 
@@ -953,7 +965,7 @@ AcpiPsParseLoop (
 
                 if (Op->Opcode == AML_REGION_OP)
                 {
-                    DeferredOp = AcpiPsToDeferredOp (Op);
+                    DeferredOp = AcpiPsToExtendedOp (Op);
                     if (DeferredOp)
                     {
                         /*
@@ -965,8 +977,8 @@ AcpiPsParseLoop (
                          * know the length.
                          */
 
-                        DeferredOp->BodyLength  = ParserState->Aml -
-                                                    DeferredOp->Body;
+                        DeferredOp->Length = ParserState->Aml -
+                                                    DeferredOp->Data;
                     }
                 }
             }
@@ -988,7 +1000,7 @@ AcpiPsParseLoop (
 
 CloseThisOp:
 
-            ParserState->Scope->ArgCount--;
+            ParserState->Scope->ParseScope.ArgCount--;
             
             /* Close this Op (may result in parse subtree deletion) */
 
@@ -1102,7 +1114,9 @@ CloseThisOp:
                         }
 
                         AcpiPsPopScope (ParserState, &Op, &ArgTypes);
+
                     } while (Op);
+
                     return_ACPI_STATUS (Status);
                 }
 

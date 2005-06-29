@@ -188,19 +188,19 @@ AcpiPsAllocOp (
 
     if (AcpiPsIsDeferredOp (Opcode))
     {
-        Size = sizeof (ACPI_DEFERRED_OP);
+        Size = sizeof (ACPI_EXTENDED_OP);
         Flags = PARSEOP_DEFERRED;
     }
 
     else if (AcpiPsIsNamedOp (Opcode))
     {
-        Size = sizeof (ACPI_NAMED_OP);
+        Size = sizeof (ACPI_EXTENDED_OP);
         Flags = PARSEOP_NAMED;
     }
 
     else if (AcpiPsIsBytelistOp (Opcode))
     {
-        Size = sizeof (ACPI_BYTELIST_OP);
+        Size = sizeof (ACPI_EXTENDED_OP);
         Flags = PARSEOP_BYTELIST;
     }
 
@@ -208,7 +208,11 @@ AcpiPsAllocOp (
     {
         Size = sizeof (ACPI_GENERIC_OP);
         Flags = PARSEOP_GENERIC;
+    }
 
+
+    if (Size == sizeof (ACPI_GENERIC_OP))
+    {
         /*
          * The generic op is by far the most common (16 to 1), and therefore
          * the op cache is implemented with this type.
@@ -228,6 +232,11 @@ AcpiPsAllocOp (
             Op = AcpiGbl_ParseCache;
             AcpiGbl_ParseCache = Op->Next;
 
+            if (Op->DataType == 0xFF)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("Op %p deleted while in cache!\n", Op));
+            }
+
             /* Clear the previously used Op */
 
             MEMSET (Op, 0, sizeof (ACPI_GENERIC_OP));
@@ -237,6 +246,44 @@ AcpiPsAllocOp (
         }
         AcpiCmReleaseMutex (ACPI_MTX_CACHES);
     }
+
+    else
+    {
+        /*
+         * The generic op is by far the most common (16 to 1), and therefore
+         * the op cache is implemented with this type.
+         *
+         * Check if there is an Op already available in the cache
+         */
+
+        AcpiCmAcquireMutex (ACPI_MTX_CACHES);
+        AcpiGbl_ExtParseCacheRequests++;
+        if (AcpiGbl_ExtParseCache)
+        {
+            /* Extract an op from the front of the cache list */
+
+            AcpiGbl_ExtParseCacheDepth--;
+            AcpiGbl_ExtParseCacheHits++;
+
+            Op = (ACPI_GENERIC_OP *) AcpiGbl_ExtParseCache;
+            AcpiGbl_ExtParseCache = (ACPI_EXTENDED_OP *) Op->Next;
+
+            if (Op->DataType == 0xFF)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("Op %p deleted while in cache!\n", Op));
+            }
+
+            /* Clear the previously used Op */
+
+            MEMSET (Op, 0, sizeof (ACPI_EXTENDED_OP));
+
+            DEBUG_PRINT (TRACE_PARSE,
+                            ("PsAllocOp: Op %p from ExtParse Cache\n", Op));
+        }
+        AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+    }
+
+
 
     /* Allocate a new Op if necessary */
 
@@ -304,6 +351,31 @@ AcpiPsFreeOp (
         }
     }
 
+    else
+    {
+        /* Is the cache full? */
+
+        if (AcpiGbl_ExtParseCacheDepth < MAX_EXTPARSE_CACHE_DEPTH)
+        {
+            /* Put a GENERIC_OP back into the cache */
+
+            /* Clear the previously used Op */
+
+            MEMSET (Op, 0, sizeof (ACPI_EXTENDED_OP));
+            Op->Flags = PARSEOP_IN_CACHE;
+
+            AcpiCmAcquireMutex (ACPI_MTX_CACHES);
+            AcpiGbl_ExtParseCacheDepth++;
+
+            Op->Next = (ACPI_GENERIC_OP *) AcpiGbl_ExtParseCache;
+            AcpiGbl_ExtParseCache = (ACPI_EXTENDED_OP *) Op;
+
+            AcpiCmReleaseMutex (ACPI_MTX_CACHES);
+            return;
+        }
+    }
+
+
     /*
      * Not a GENERIC OP, or the cache is full, just free the Op
      */
@@ -344,6 +416,18 @@ AcpiPsDeleteParseCache (
         AcpiCmFree (AcpiGbl_ParseCache);
         AcpiGbl_ParseCache = Next;
         AcpiGbl_ParseCacheDepth--;
+    }
+
+    /* Traverse the global cache list */
+
+    while (AcpiGbl_ExtParseCache)
+    {
+        /* Delete one cached state object */
+
+        Next = AcpiGbl_ExtParseCache->Next;
+        AcpiCmFree (AcpiGbl_ExtParseCache);
+        AcpiGbl_ExtParseCache = (ACPI_EXTENDED_OP *) Next;
+        AcpiGbl_ExtParseCacheDepth--;
     }
 
     return_VOID;
@@ -550,39 +634,18 @@ AcpiPsIsCreateFieldOp (
 
 
 /*
- * Cast an acpi_op to an acpi_deferred_op if possible
+ * Cast an acpi_op to an acpi_extended_op if possible
  */
-ACPI_DEFERRED_OP *
-AcpiPsToDeferredOp (
+
+/* TBD: This is very inefficient, fix */ 
+ACPI_EXTENDED_OP *
+AcpiPsToExtendedOp (
     ACPI_GENERIC_OP         *Op)
 {
-    return (AcpiPsIsDeferredOp (Op->Opcode)
-            ? ( (ACPI_DEFERRED_OP *) Op) : NULL);
+    return ((AcpiPsIsDeferredOp (Op->Opcode) || AcpiPsIsNamedOp (Op->Opcode) || AcpiPsIsBytelistOp (Op->Opcode)) 
+            ? ( (ACPI_EXTENDED_OP *) Op) : NULL);
 }
 
-
-/*
- * Cast an acpi_op to an acpi_named_op if possible
- */
-ACPI_NAMED_OP*
-AcpiPsToNamedOp (
-    ACPI_GENERIC_OP         *Op)
-{
-    return (AcpiPsIsNamedOp (Op->Opcode)
-            ? ( (ACPI_NAMED_OP *) Op) : NULL);
-}
-
-
-/*
- * Cast an acpi_op to an acpi_bytelist_op if possible
- */
-ACPI_BYTELIST_OP*
-AcpiPsToBytelistOp (
-    ACPI_GENERIC_OP         *Op)
-{
-    return (AcpiPsIsBytelistOp (Op->Opcode)
-            ? ( (ACPI_BYTELIST_OP*) Op) : NULL);
-}
 
 
 /*
@@ -592,7 +655,7 @@ UINT32
 AcpiPsGetName (
     ACPI_GENERIC_OP         *Op)
 {
-    ACPI_NAMED_OP               *Named = AcpiPsToNamedOp (Op);
+    ACPI_EXTENDED_OP        *Named = AcpiPsToExtendedOp (Op);
 
     return (Named ? Named->Name : 0);
 }
@@ -606,7 +669,7 @@ AcpiPsSetName (
     ACPI_GENERIC_OP         *Op,
     UINT32                  name)
 {
-    ACPI_NAMED_OP           *Named = AcpiPsToNamedOp (Op);
+    ACPI_EXTENDED_OP        *Named = AcpiPsToExtendedOp (Op);
 
     if (Named)
     {

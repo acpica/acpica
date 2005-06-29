@@ -117,18 +117,15 @@
 #define __PSXFACE_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psxface");
-
-
-char    *AcpiGbl_ParserId = "Non-recursive AML Parser";
 
 
 /*****************************************************************************
@@ -156,6 +153,7 @@ AcpiPsxExecute (
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     UINT32                  i;
+    ACPI_GENERIC_OP         *Op;
 
 
     FUNCTION_TRACE ("PsxExecute");
@@ -204,11 +202,33 @@ AcpiPsxExecute (
         ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
         MethodEntry, ObjDesc));
 
-    Status = AcpiPsWalkParsedAml (ObjDesc->Method.ParserOp,
-                    ObjDesc->Method.ParserOp, ObjDesc,
-                    MethodEntry->ChildTable, Params, ReturnObjDesc,
-                    ObjDesc->Method.OwningId, AcpiDsExecBeginOp,
-                    AcpiDsExecEndOp);
+    /* Create and init a root object */
+
+    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!Op)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
+                                ObjDesc->Method.PcodeLength, PARSE_DELETE_TREE,
+                                MethodEntry, Params, ReturnObjDesc,
+                                AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
+    AcpiPsDeleteParseTree (Op);
+
+    /* Create and init a root object */
+
+    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!Op)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
+                                ObjDesc->Method.PcodeLength, PARSE_DELETE_TREE,
+                                MethodEntry, Params, ReturnObjDesc,
+                                AcpiDsExecBeginOp, AcpiDsExecEndOp);
+    AcpiPsDeleteParseTree (Op);
 
     if (Params)
     {
