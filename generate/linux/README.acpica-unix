@@ -3,6 +3,7 @@ acpica-unix
 
 This source release includes:
 
+
 1) a cross-OS AML interpreter
 
 This is intended to allow commercial and open source operating systems
@@ -15,6 +16,7 @@ build process. We recommend establishing an automated method for
 this, so later versions can also be incorporated easily. Please see
 the documentation on the website for API and other implementation
 information.
+
 
 2) iasl, an ASL compiler/decompiler
 
@@ -33,6 +35,7 @@ environments.
 Run 'iasl -h' for more information, or download the binary version for
 documentation in PDF format.
 
+
 3) acpisrc, a source code conversion tool
 
 acpisrc converts the standard form of the acpica source release (included
@@ -47,5 +50,30 @@ make
 
 It has been compiled on Linux, but should easily port to other Unix
 environments.
+
+
+4) acpibin, an AML file tool
+
+acpibin compares AML files, dumps AML binary files to text files,
+extracts binary AML from text files, and other AML file
+manipulation.
+
+To compile:
+
+cd tools/acpibin
+make
+
+
+5) acpiexec, a user-space AML interpreter
+
+acpiexec allows the loading of ACPI tables and execution of control
+methods from user space.  Useful for debugging AML code and testing
+the AML interpreter.
+
+To compile:
+
+cd tools/acpiexec
+make
+
 
 Thanks -- The ACPI CA Team
