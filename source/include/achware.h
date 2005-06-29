@@ -297,15 +297,15 @@ HwClearAcpiStatus (
 
 void
 HwEnableGpe (
-    UINT32                  GpeNumber);
+    UINT32                  GpeIndex);
 
 void
 HwDisableGpe (
-    UINT32                  GpeNumber);
+    UINT32                  GpeIndex);
 
 void
 HwClearGpe (
-    UINT32                  GpeNumber);
+    UINT32                  GpeIndex);
 
 
 /* Sleep Prototypes */
