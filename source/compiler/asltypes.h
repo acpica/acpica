@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -316,6 +316,7 @@ typedef enum
     ASL_MSG_INTERNAL,
     ASL_MSG_BACKWARDS_OFFSET,
     ASL_MSG_UNKNOWN_RESERVED_NAME,
+    ASL_MSG_NAME_EXISTS,
 
 } ASL_MESSAGE_IDS;
 
