@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  ******************************************************************************/
 
@@ -782,7 +782,6 @@ AcpiUtAcquireMutex (
     ACPI_MUTEX_HANDLE       MutexId)
 {
     ACPI_STATUS             Status;
-    UINT32                  i;
     UINT32                  ThisThreadId;
 
 
@@ -796,33 +795,40 @@ AcpiUtAcquireMutex (
 
     ThisThreadId = AcpiOsGetThreadId ();
 
-    /*
-     * Deadlock prevention.  Check if this thread owns any mutexes of value
-     * greater than or equal to this one.  If so, the thread has violated
-     * the mutex ordering rule.  This indicates a coding error somewhere in
-     * the ACPI subsystem code.
-     */
-    for (i = MutexId; i < MAX_MUTEX; i++)
+#ifdef ACPI_MUTEX_DEBUG
     {
-        if (AcpiGbl_MutexInfo[i].OwnerId == ThisThreadId)
+        UINT32                  i;
+        /*
+         * Mutex debug code, for internal debugging only.
+         *
+         * Deadlock prevention.  Check if this thread owns any mutexes of value
+         * greater than or equal to this one.  If so, the thread has violated
+         * the mutex ordering rule.  This indicates a coding error somewhere in
+         * the ACPI subsystem code.
+         */
+        for (i = MutexId; i < MAX_MUTEX; i++)
         {
-            if (i == MutexId)
+            if (AcpiGbl_MutexInfo[i].OwnerId == ThisThreadId)
             {
+                if (i == MutexId)
+                {
+                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                            "Mutex [%s] already acquired by this thread [%X]\n",
+                            AcpiUtGetMutexName (MutexId), ThisThreadId));
+
+                    return (AE_ALREADY_ACQUIRED);
+                }
+
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                        "Mutex [%s] already acquired by this thread [%X]\n",
-                        AcpiUtGetMutexName (MutexId), ThisThreadId));
+                        "Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
+                        ThisThreadId, AcpiUtGetMutexName (i),
+                        AcpiUtGetMutexName (MutexId)));
 
-                return (AE_ALREADY_ACQUIRED);
+                return (AE_ACQUIRE_DEADLOCK);
             }
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
-                    ThisThreadId, AcpiUtGetMutexName (i),
-                    AcpiUtGetMutexName (MutexId)));
-
-            return (AE_ACQUIRE_DEADLOCK);
         }
     }
+#endif
 
     ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX,
                 "Thread %X attempting to acquire Mutex [%s]\n",
