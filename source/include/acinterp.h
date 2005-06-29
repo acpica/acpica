@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.117 $
+ *       $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -216,38 +216,38 @@ ACPI_STATUS
 AcpiExAccessRegion (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  FieldDatumByteOffset,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     UINT32                  ReadWrite);
 
 BOOLEAN
 AcpiExRegisterOverflow (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT32                  Value);
+    ACPI_INTEGER            Value);
 
 ACPI_STATUS
 AcpiExFieldDatumIo (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  FieldDatumByteOffset,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     UINT32                  ReadWrite);
 
 ACPI_STATUS
 AcpiExWriteWithUpdateRule (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT32                  Mask,
-    UINT32                  FieldValue,
+    ACPI_INTEGER            Mask,
+    ACPI_INTEGER            FieldValue,
     UINT32                  FieldDatumByteOffset);
 
 void
 AcpiExGetBufferDatum(
-    UINT32                  *Datum,
+    ACPI_INTEGER            *Datum,
     void                    *Buffer,
     UINT32                  ByteGranularity,
     UINT32                  Offset);
 
 void
 AcpiExSetBufferDatum (
-    UINT32                  MergedDatum,
+    ACPI_INTEGER            MergedDatum,
     void                    *Buffer,
     UINT32                  ByteGranularity,
     UINT32                  Offset);
@@ -730,7 +730,7 @@ AcpiExSystemMemorySpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
@@ -739,7 +739,7 @@ AcpiExSystemIoSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
@@ -748,7 +748,7 @@ AcpiExPciConfigSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
@@ -757,7 +757,7 @@ AcpiExCmosSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
@@ -766,7 +766,7 @@ AcpiExPciBarSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
@@ -775,7 +775,7 @@ AcpiExEmbeddedControllerSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
@@ -784,7 +784,7 @@ AcpiExSmBusSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    UINT32                  *Value,
+    ACPI_INTEGER            *Value,
     void                    *HandlerContext,
     void                    *RegionContext);
 
