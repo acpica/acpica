@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.53 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -220,10 +220,18 @@ AcpiNsInitializeDevices (
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "Executing all Device _STA and_INI methods:"));
 
-    /* Walk namespace for all objects of type Device */
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
-                    ACPI_UINT32_MAX, FALSE, AcpiNsInitOneDevice, &Info, NULL);
+    /* Walk namespace for all objects of type Device or Processor */
+
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+                    ACPI_UINT32_MAX, TRUE, AcpiNsInitOneDevice, &Info, NULL);
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
     if (ACPI_FAILURE (Status))
     {
@@ -422,6 +430,21 @@ AcpiNsInitOneDevice (
     ACPI_FUNCTION_TRACE ("NsInitOneDevice");
 
 
+    Node = AcpiNsMapHandleToNode (ObjHandle);
+    if (!Node)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /*
+     * We will run _STA/_INI on Devices and Processors only
+     */
+    if ((Node->Type != ACPI_TYPE_DEVICE) &&
+        (Node->Type != ACPI_TYPE_PROCESSOR))
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
     if ((AcpiDbgLevel <= ACPI_LV_ALL_EXCEPTIONS) && (!(AcpiDbgLevel & ACPI_LV_INFO)))
     {
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
@@ -429,44 +452,33 @@ AcpiNsInitOneDevice (
 
     Info->DeviceCount++;
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    Node = AcpiNsMapHandleToNode (ObjHandle);
-    if (!Node)
-    {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /*
      * Run _STA to determine if we can run _INI on the device.
      */
     ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD, Node, "_STA"));
     Status = AcpiUtExecute_STA (Node, &Flags);
+
     if (ACPI_FAILURE (Status))
     {
-        /* Ignore error and move on to next device */
+        if (Node->Type == ACPI_TYPE_DEVICE)
+        {
+            /* Ignore error and move on to next device */
 
-        return_ACPI_STATUS (AE_OK);
+            return_ACPI_STATUS (AE_OK);
+        }
+
+        /* _STA is not required for Processor objects */
     }
-
-    Info->Num_STA++;
-
-    if (!(Flags & 0x01))
+    else
     {
-        /* don't look at children of a not present device */
+        Info->Num_STA++;
 
-        return_ACPI_STATUS(AE_CTRL_DEPTH);
+        if (!(Flags & 0x01))
+        {
+            /* Don't look at children of a not present device */
+
+            return_ACPI_STATUS(AE_CTRL_DEPTH);
+        }
     }
 
     /*
@@ -483,7 +495,7 @@ AcpiNsInitOneDevice (
             /* Ignore error and move on to next device */
 
     #ifdef ACPI_DEBUG_OUTPUT
-            NATIVE_CHAR *ScopeName = AcpiNsGetExternalPathname (ObjHandle);
+            char        *ScopeName = AcpiNsGetExternalPathname (ObjHandle);
 
             ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
                     ScopeName, AcpiFormatException (Status)));
