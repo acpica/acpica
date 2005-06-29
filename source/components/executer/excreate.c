@@ -170,7 +170,7 @@ AmlExecCreateField (
     ACPI_OBJECT_INTERNAL    *SrcDesc = NULL;
     ACPI_OBJECT_INTERNAL    *FieldDesc;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_TYPE        ResType;
+    OBJECT_TYPE_INTERNAL    ResType;
     ACPI_STATUS             Status;
     UINT32                  NumOperands = 3;
     UINT32                  Offset;
@@ -197,6 +197,7 @@ AmlExecCreateField (
         NumOperands = 4;
         Status |= DsObjStackPopObject (&CntDesc, WalkState);
     }
+
     Status |= DsObjStackPopObject (&OffDesc, WalkState);
     Status |= DsObjStackPopObject (&SrcDesc, WalkState);
 
@@ -322,13 +323,13 @@ AmlExecCreateField (
         FieldDesc->FieldUnit.UpdateRule   = (UINT8) UPDATE_Preserve;
         FieldDesc->FieldUnit.Length       = BitCount;
         FieldDesc->FieldUnit.BitOffset    = (UINT8) (BitOffset % 8);
-        FieldDesc->FieldUnit.Offset       = BitOffset / 8;
+        FieldDesc->FieldUnit.Offset       = DIV_8 (BitOffset);
         FieldDesc->FieldUnit.Container    = SrcDesc;
         FieldDesc->FieldUnit.Sequence     = SrcDesc->Buffer.Sequence;
 
         /* An additional reference for SrcDesc */
 
-        CmUpdateObjectReference (SrcDesc, REF_INCREMENT);
+        CmAddReference (SrcDesc);
 
         break;
 
@@ -488,7 +489,7 @@ AmlExecCreateAlias (
 
     /* Add an additional reference to the object */
 
-    CmUpdateObjectReference (SrcEntry->Object, REF_INCREMENT);
+    CmAddReference (SrcEntry->Object);
 
     /* 
      * Attach the original source NTE to the new Alias NTE.
@@ -676,7 +677,7 @@ AmlExecCreateRegion (
 
     if (RegionSpace >= NUM_REGION_TYPES)
     {
-        /* TBD: should this return an error, or should we just keep going? */
+        /* TBD: [Errors] should this return an error, or should we just keep going? */
 
         DEBUG_PRINT (TRACE_LOAD, ("AmlDoNamedObject: Type out of range [*???*]\n"));
         REPORT_WARNING ("Unable to decode the RegionSpace");
@@ -715,7 +716,7 @@ AmlExecCreateRegion (
     ObjDescRegion->Region.SpaceId   = (UINT16) RegionSpace;
     ObjDescRegion->Region.Address   = 0;
     ObjDescRegion->Region.Length    = 0;
-    ObjDescRegion->Region.DataValid = 0;
+    ObjDescRegion->Region.RegionFlags = 0;
 
     /* 
      * Remember location in AML stream of address & length
@@ -734,9 +735,6 @@ AmlExecCreateRegion (
     {
         goto Cleanup;
     }
-
-
-
 
 Cleanup:
 
@@ -758,7 +756,7 @@ Cleanup:
     if (ObjDescRegion)
     {      
         /*
-         *  TBD: Is there anything we can or could do when this fails?
+         *  TBD: [Errors] Is there anything we can or could do when this fails?
          *          We need to do something useful with a failure.
          */
         (void *) EvInitializeRegion (ObjDescRegion, TRUE);  /* Namespace IS locked */
@@ -834,7 +832,7 @@ AmlExecCreateProcessor (
 
     /* Second arg is the PBlock Address */
 
-    ObjDesc->Processor.PBLKAddress = (UINT32) Arg->Value.Integer;
+    ObjDesc->Processor.PBLKAddress = (ACPI_IO_ADDRESS) Arg->Value.Integer;
 
     /* Move to next arg and check existence */
 
@@ -973,7 +971,7 @@ AmlExecCreateMethod (
      * Get the concurrency count
      * If required, a semaphore will be created for this method when it is parsed.
      *
-     * TBD:  for APCI 2.0, there will be a SyncLevel value, not just a flag
+     * TBD: [Future]  for APCI 2.0, there will be a SyncLevel value, not just a flag
      * Concurrency = SyncLevel + 1;.
      */
     if (MethodFlags & METHOD_FLAGS_SERIALIZED)
@@ -991,8 +989,8 @@ AmlExecCreateMethod (
 
     /* Another  +1 gets added when PsxExecute is called, no need for: ObjDesc->Method.Pcode++; */
 
-    ObjDesc->Method.AcpiTable   = NULL;     /* TBD: was (UINT8 *) PcodeAddr; */
-    ObjDesc->Method.TableLength = 0;        /* TBD: needed? (UINT32) (WalkState->amlEnd - PcodeAddr); */
+    ObjDesc->Method.AcpiTable   = NULL;     /* TBD: [Restructure] was (UINT8 *) PcodeAddr; */
+    ObjDesc->Method.TableLength = 0;        /* TBD: [Restructure] needed? (UINT32) (WalkState->amlEnd - PcodeAddr); */
 
     /* Attach the new object to the method NTE */
 

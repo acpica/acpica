@@ -1,8 +1,7 @@
 
 /******************************************************************************
- *
- * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.126 $
+ * 
+ * Module Name: ieprep - ACPI AML (p-code) execution - field prep utilities
  *
  *****************************************************************************/
 
@@ -10,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -39,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,526 +114,442 @@
  *
  *****************************************************************************/
 
-#define __EXPREP_C__
+#define __IEPREP_C__
 
-#include "acpi.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-
-
-#define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exprep")
+#include <acpi.h>
+#include <interp.h>
+#include <amlcode.h>
+#include <namesp.h>
+#include <parser.h>
 
 
-#ifdef ACPI_UNDER_DEVELOPMENT
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExGenerateAccess
- *
- * PARAMETERS:  FieldBitOffset      - Start of field within parent region/buffer
- *              FieldBitLength      - Length of field in bits
- *              RegionLength        - Length of parent in bytes
- *
- * RETURN:      Field granularity (8, 16, 32 or 64) and
- *              ByteAlignment (1, 2, 3, or 4)
- *
- * DESCRIPTION: Generate an optimal access width for fields defined with the
- *              AnyAcc keyword.
- *
- * NOTE: Need to have the RegionLength in order to check for boundary
- *       conditions (end-of-region).  However, the RegionLength is a deferred
- *       operation.  Therefore, to complete this implementation, the generation
- *       of this access width must be deferred until the region length has
- *       been evaluated.
- *
- ******************************************************************************/
-
-static UINT32
-AcpiExGenerateAccess (
-    UINT32                  FieldBitOffset,
-    UINT32                  FieldBitLength,
-    UINT32                  RegionLength)
-{
-    UINT32                  FieldByteLength;
-    UINT32                  FieldByteOffset;
-    UINT32                  FieldByteEndOffset;
-    UINT32                  AccessByteWidth;
-    UINT32                  FieldStartOffset;
-    UINT32                  FieldEndOffset;
-    UINT32                  MinimumAccessWidth = 0xFFFFFFFF;
-    UINT32                  MinimumAccesses = 0xFFFFFFFF;
-    UINT32                  Accesses;
+#define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("ieprep");
 
 
-    ACPI_FUNCTION_TRACE ("ExGenerateAccess");
 
-
-    /* Round Field start offset and length to "minimal" byte boundaries */
-
-    FieldByteOffset    = ACPI_DIV_8 (ACPI_ROUND_DOWN (FieldBitOffset, 8));
-    FieldByteEndOffset = ACPI_DIV_8 (ACPI_ROUND_UP   (FieldBitLength + FieldBitOffset, 8));
-    FieldByteLength    = FieldByteEndOffset - FieldByteOffset;
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "Bit length %d, Bit offset %d\n",
-            FieldBitLength, FieldBitOffset));
-    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "Byte Length %d, Byte Offset %d, End Offset %d\n",
-            FieldByteLength, FieldByteOffset, FieldByteEndOffset));
-
-    /*
-     * Iterative search for the maximum access width that is both aligned
-     * and does not go beyond the end of the region
-     *
-     * Start at ByteAcc and work upwards to QwordAcc max. (1,2,4,8 bytes)
-     */
-    for (AccessByteWidth = 1; AccessByteWidth <= 8; AccessByteWidth <<= 1)
-    {
-        /*
-         * 1) Round end offset up to next access boundary and make sure that this
-         *    does not go beyond the end of the parent region.
-         * 2) When the Access width is greater than the FieldByteLength, we are done.
-         *    (This does not optimize for the perfectly aligned case yet).
-         */
-        if (ACPI_ROUND_UP (FieldByteEndOffset, AccessByteWidth) <= RegionLength)
-        {
-            FieldStartOffset = ACPI_ROUND_DOWN (FieldByteOffset, AccessByteWidth) /
-                                                    AccessByteWidth;
-            FieldEndOffset   = ACPI_ROUND_UP   ((FieldByteLength + FieldByteOffset),
-                                                    AccessByteWidth) / AccessByteWidth;
-            Accesses         = FieldEndOffset - FieldStartOffset;
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                    "AccessWidth %d end is within region\n", AccessByteWidth));
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                    "Field Start %d, Field End %d -- requires %d accesses\n",
-                    FieldStartOffset, FieldEndOffset, Accesses));
-
-            /* Single access is optimal */
-
-            if (Accesses <= 1)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                        "Entire field can be accessed with one operation of size %d\n",
-                        AccessByteWidth));
-                return_VALUE (AccessByteWidth);
-            }
-
-            /*
-             * Fits in the region, but requires more than one read/write.
-             * try the next wider access on next iteration
-             */
-            if (Accesses < MinimumAccesses)
-            {
-                MinimumAccesses    = Accesses;
-                MinimumAccessWidth = AccessByteWidth;
-            }
-        }
-        else
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                    "AccessWidth %d end is NOT within region\n", AccessByteWidth));
-            if (AccessByteWidth == 1)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                        "Field goes beyond end-of-region!\n"));
-                return_VALUE (0);     /* Field does not fit in the region at all */
-            }
-
-            /* This width goes beyond the end-of-region, back off to previous access */
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-                    "Backing off to previous optimal access width of %d\n",
-                    MinimumAccessWidth));
-            return_VALUE (MinimumAccessWidth);
-        }
-    }
-
-    /* Could not read/write field with one operation, just use max access width */
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "Cannot access field in one operation, using width 8\n"));
-    return_VALUE (8);
-}
-#endif /* ACPI_UNDER_DEVELOPMENT */
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExDecodeFieldAccess
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlDecodeFieldAccessType
  *
  * PARAMETERS:  Access          - Encoded field access bits
- *              Length          - Field length.
  *
- * RETURN:      Field granularity (8, 16, 32 or 64) and
- *              ByteAlignment (1, 2, 3, or 4)
+ * RETURN:      Field granularity (8, 16, or 32)
  *
  * DESCRIPTION: Decode the AccessType bits of a field definition.
  *
- ******************************************************************************/
+ ****************************************************************************/
 
-static UINT32
-AcpiExDecodeFieldAccess (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   FieldFlags,
-    UINT32                  *ReturnByteAlignment)
+UINT32
+AmlDecodeFieldAccessType (
+    UINT32                  Access)
 {
-    UINT32                  Access;
-    UINT32                  ByteAlignment;
-    UINT32                  BitLength;
-
-
-    ACPI_FUNCTION_TRACE ("ExDecodeFieldAccess");
-
-
-    Access = (FieldFlags & AML_FIELD_ACCESS_TYPE_MASK);
-
+ 
     switch (Access)
     {
-    case AML_FIELD_ACCESS_ANY:
-
-#ifdef ACPI_UNDER_DEVELOPMENT
-        ByteAlignment = AcpiExGenerateAccess (ObjDesc->CommonField.StartFieldBitOffset,
-                                ObjDesc->CommonField.BitLength,
-                                0xFFFFFFFF /* Temp until we pass RegionLength as param */);
-        BitLength = ByteAlignment * 8;
-#endif
-
-        ByteAlignment = 1;
-        BitLength = 8;
+    case ACCESS_AnyAcc:
+        return 8;
         break;
 
-    case AML_FIELD_ACCESS_BYTE:
-    case AML_FIELD_ACCESS_BUFFER:   /* ACPI 2.0 (SMBus Buffer) */
-        ByteAlignment = 1;
-        BitLength     = 8;
+    case ACCESS_ByteAcc:
+        return 8;
         break;
 
-    case AML_FIELD_ACCESS_WORD:
-        ByteAlignment = 2;
-        BitLength     = 16;
+    case ACCESS_WordAcc:
+        return 16;
         break;
 
-    case AML_FIELD_ACCESS_DWORD:
-        ByteAlignment = 4;
-        BitLength     = 32;
-        break;
-
-    case AML_FIELD_ACCESS_QWORD:    /* ACPI 2.0 */
-        ByteAlignment = 8;
-        BitLength     = 64;
+    case ACCESS_DWordAcc:
+        return 32;
         break;
 
     default:
         /* Invalid field access type */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Unknown field access type %X\n",
-            Access));
-        return_VALUE (0);
+        DEBUG_PRINT (ACPI_ERROR, ("AmlDecodeFieldAccessType: Unknown field access type %x\n",
+                        Access));
+        return 0;
     }
-
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_BUFFER_FIELD)
-    {
-        /*
-         * BufferField access can be on any byte boundary, so the
-         * ByteAlignment is always 1 byte -- regardless of any ByteAlignment
-         * implied by the field access type.
-         */
-        ByteAlignment = 1;
-    }
-
-    *ReturnByteAlignment = ByteAlignment;
-    return_VALUE (BitLength);
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExPrepCommonFieldObject
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlPrepCommonFieldObjec
  *
  * PARAMETERS:  ObjDesc             - The field object
- *              FieldFlags          - Access, LockRule, and UpdateRule.
+ *              FieldFlags          - Access, LockRule, or UpdateRule.
  *                                    The format of a FieldFlag is described
- *                                    in the ACPI specification
- *              FieldBitPosition    - Field start position
- *              FieldBitLength      - Field length in number of bits
+ *                                    in the ACPI specification and in <aml.h>
+ *              FieldPosition       - Field position
+ *              FieldLength         - Field length
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Initialize the areas of the field object that are common
- *              to the various types of fields.  Note: This is very "sensitive"
- *              code because we are solving the general case for field
- *              alignment.
+ *              to the various types of fields.
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiExPrepCommonFieldObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   FieldFlags,
+AmlPrepCommonFieldObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    UINT8                   FieldFlags, 
     UINT8                   FieldAttribute,
-    UINT32                  FieldBitPosition,
-    UINT32                  FieldBitLength)
+    UINT32                  FieldPosition, 
+    UINT32                  FieldLength)
 {
-    UINT32                  AccessBitWidth;
-    UINT32                  ByteAlignment;
-    UINT32                  NearestByteAddress;
+    UINT32                  Granularity;
 
 
-    ACPI_FUNCTION_TRACE ("ExPrepCommonFieldObject");
+    FUNCTION_TRACE ("AmlPrepCommonFieldObject");
 
 
     /*
      * Note: the structure being initialized is the
-     * ACPI_COMMON_FIELD_INFO;  No structure fields outside of the common
-     * area are initialized by this procedure.
+     * ACPI_COMMON_FIELD_INFO;  Therefore, we can just use the Field union to
+     * access this common area.  No structure fields outside of the common area
+     * are initialized by this procedure.
      */
-    ObjDesc->CommonField.FieldFlags = FieldFlags;
-    ObjDesc->CommonField.Attribute  = FieldAttribute;
-    ObjDesc->CommonField.BitLength  = FieldBitLength;
 
-    /*
-     * Decode the access type so we can compute offsets.  The access type gives
-     * two pieces of information - the width of each field access and the
-     * necessary ByteAlignment (address granularity) of the access.
-     *
-     * For AnyAcc, the AccessBitWidth is the largest width that is both
-     * necessary and possible in an attempt to access the whole field in one
-     * I/O operation.  However, for AnyAcc, the ByteAlignment is always one
-     * byte.
-     *
-     * For all Buffer Fields, the ByteAlignment is always one byte.
-     *
-     * For all other access types (Byte, Word, Dword, Qword), the Bitwidth is
-     * the same (equivalent) as the ByteAlignment.
-     */
-    AccessBitWidth = AcpiExDecodeFieldAccess (ObjDesc, FieldFlags,
-                                &ByteAlignment);
-    if (!AccessBitWidth)
+    /* Decode the FieldFlags */
+
+    ObjDesc->Field.Access           = (UINT8) ((FieldFlags & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT);
+    ObjDesc->Field.LockRule         = (UINT8) ((FieldFlags & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT);
+    ObjDesc->Field.UpdateRule       = (UINT8) ((FieldFlags & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT);
+
+    /* Other misc fields */
+
+    ObjDesc->Field.Length           = (UINT16) FieldLength;
+    ObjDesc->Field.AccessAttribute  = FieldAttribute;
+
+    /* Decode the access type so we can compute offsets */
+
+    Granularity = AmlDecodeFieldAccessType (ObjDesc->Field.Access);
+    if (!Granularity)
     {
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
 
-    /* Setup width (access granularity) fields */
+    /* Access granularity based fields */
 
-    ObjDesc->CommonField.AccessByteWidth = (UINT8)
-            ACPI_DIV_8 (AccessBitWidth); /* 1,  2,  4,  8 */
+    ObjDesc->Field.Granularity      = (UINT8) Granularity;
+    ObjDesc->Field.BitOffset        = (UINT8) (FieldPosition % Granularity);
+    ObjDesc->Field.Offset           = (UINT32) FieldPosition / Granularity;
 
-    /*
-     * BaseByteOffset is the address of the start of the field within the
-     * region.  It is the byte address of the first *datum* (field-width data
-     * unit) of the field. (i.e., the first datum that contains at least the
-     * first *bit* of the field.)
-     *
-     * Note: ByteAlignment is always either equal to the AccessBitWidth or 8
-     * (Byte access), and it defines the addressing granularity of the parent
-     * region or buffer.
-     */
-    NearestByteAddress =
-            ACPI_ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
-    ObjDesc->CommonField.BaseByteOffset = (UINT32)
-            ACPI_ROUND_DOWN (NearestByteAddress, ByteAlignment);
-
-    /*
-     * StartFieldBitOffset is the offset of the first bit of the field within
-     * a field datum.
-     */
-    ObjDesc->CommonField.StartFieldBitOffset = (UINT8)
-        (FieldBitPosition - ACPI_MUL_8 (ObjDesc->CommonField.BaseByteOffset));
-
-    /*
-     * Valid bits -- the number of bits that compose a partial datum,
-     * 1) At the end of the field within the region (arbitrary starting bit
-     *    offset)
-     * 2) At the end of a buffer used to contain the field (starting offset
-     *    always zero)
-     */
-    ObjDesc->CommonField.EndFieldValidBits   = (UINT8)
-        ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) %
-                                                            AccessBitWidth);
-    /* StartBufferBitOffset always = 0 */
-
-    ObjDesc->CommonField.EndBufferValidBits  = (UINT8)
-        (FieldBitLength % AccessBitWidth);
-
-    /*
-     * DatumValidBits is the number of valid field bits in the first
-     * field datum.
-     */
-    ObjDesc->CommonField.DatumValidBits      = (UINT8)
-        (AccessBitWidth - ObjDesc->CommonField.StartFieldBitOffset);
-
-    /*
-     * Does the entire field fit within a single field access element? (datum)
-     * (i.e., without crossing a datum boundary)
-     */
-    if ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) <=
-            (UINT16) AccessBitWidth)
-    {
-        ObjDesc->Common.Flags |= AOPOBJ_SINGLE_DATUM;
-    }
 
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlPrepDefFieldValue
  *
- * FUNCTION:    AcpiExPrepFieldValue
- *
- * PARAMETERS:  Node                - Owning Node
- *              RegionNode          - Region in which field is being defined
- *              FieldFlags          - Access, LockRule, and UpdateRule.
- *              FieldBitPosition    - Field start position
- *              FieldBitLength      - Field length in number of bits
+ * PARAMETERS:  ThisEntry           - Owning NTE
+ *              Region              - Region in which field is being defined
+ *              FieldFlags          - Access, LockRule, or UpdateRule.
+ *                                    The format of a FieldFlag is described
+ *                                    in the ACPI specification and in <aml.h>
+ *              FieldPosition       - Field position
+ *              FieldLength         - Field length
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Construct an ACPI_OPERAND_OBJECT of type DefField and
- *              connect it to the parent Node.
+ * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type DefField and 
+ *              connect it to the parent NTE.
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiExPrepFieldValue (
-    ACPI_CREATE_FIELD_INFO  *Info)
+AmlPrepDefFieldValue (
+    NAME_TABLE_ENTRY        *ThisEntry,
+    ACPI_HANDLE             Region, 
+    UINT8                   FieldFlags,
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition, 
+    UINT32                  FieldLength)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    UINT32                  Type;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    INT32                   Type;
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("ExPrepFieldValue");
+    FUNCTION_TRACE ("AmlPrepDefFieldValue");
 
 
     /* Parameter validation */
 
-    if (Info->FieldType != ACPI_TYPE_LOCAL_INDEX_FIELD)
+    if (!Region)
     {
-        if (!Info->RegionNode)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null RegionNode\n"));
-            return_ACPI_STATUS (AE_AML_NO_OPERAND);
-        }
-
-        Type = AcpiNsGetType (Info->RegionNode);
-        if (Type != ACPI_TYPE_REGION)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Needed Region, found type %X (%s)\n",
-                Type, AcpiUtGetTypeName (Type)));
-
-            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-        }
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: null Region\n"));
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
-    /* Allocate a new field object */
-
-    ObjDesc = AcpiUtCreateInternalObject (Info->FieldType);
-    if (!ObjDesc)
+    Type = NsGetType (Region);
+    if (Type != ACPI_TYPE_Region)
     {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
+                        Type, CmGetTypeName (Type)));
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+    }
+
+    /* Allocate a new object */
+
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_DefField);
+    if (!ObjDesc)
+    {   
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+
+    /* ObjDesc and Region valid */
+
+    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &ThisEntry, IMODE_Execute, "AmlPrepDefFieldValue", 1, "case DefField");
+    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &Region, IMODE_Execute, "AmlPrepDefFieldValue", 1, "case DefField");
+
+    /* Initialize areas of the object that are common to all fields */
+
+    Status = AmlPrepCommonFieldObject (ObjDesc, FieldFlags, FieldAttribute, FieldPosition, FieldLength);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Initialize areas of the object that are specific to this field type */
+
+    ObjDesc->Field.Container = NsGetAttachedObject (Region);
+
+    /* An additional reference for the container */
+
+    CmAddReference (ObjDesc->Field.Container);
+
+
+    /* Debug info */
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: bitoff=%X off=%X gran=%X\n",
+                    ObjDesc->Field.BitOffset, ObjDesc->Field.Offset, ObjDesc->Field.Granularity));
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
+                    ThisEntry, &(ThisEntry->Name), ObjDesc));
+
+    DUMP_STACK_ENTRY (ObjDesc);
+    DUMP_ENTRY (Region, ACPI_INFO);
+    DEBUG_PRINT (ACPI_INFO, ("\t%p \n", ObjDesc->Field.Container));
+    if (ObjDesc->Field.Container)
+    {
+        DUMP_STACK_ENTRY (ObjDesc->Field.Container);
+    }
+    DEBUG_PRINT (ACPI_INFO, ("============================================================\n"));
+
+    /* 
+     * Store the constructed descriptor (ObjDesc) into the nte whose
+     * handle is on TOS, preserving the current type of that nte.
+     */
+    Status = NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
+                                (UINT8) NsGetType ((ACPI_HANDLE) ThisEntry));
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlPrepBankFieldValue
+ *
+ * PARAMETERS:  ThisEntry           - Owning NTE
+ *              Region              - Region in which field is being defined
+ *              BankReg             - Bank selection register
+ *              BankVal             - Value to store in selection register
+ *              FieldFlags          - Access, LockRule, or UpdateRule
+ *              FieldPosition       - Field position
+ *              FieldLength         - Field length
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type BankField and 
+ *              connect it to the parent NTE.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AmlPrepBankFieldValue (
+    NAME_TABLE_ENTRY        *ThisEntry,
+    ACPI_HANDLE             Region, 
+    ACPI_HANDLE             BankReg, 
+    UINT32                  BankVal,
+    UINT8                   FieldFlags, 
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition, 
+    UINT32                  FieldLength)
+{
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    INT32                   Type;
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AmlPrepBankFieldValue");
+
+
+    /* Parameter validation */
+
+    if (!Region)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: null Region\n"));
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
+    }
+
+    Type = NsGetType (Region);
+    if (Type != ACPI_TYPE_Region)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepBankFieldValue: Needed Region, found %d %s\n",
+                        Type, CmGetTypeName (Type)));
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+    }
+
+    /* Allocate a new object */
+
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_BankField);
+    if (!ObjDesc)
+    {   
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /*  ObjDesc and Region valid    */
+
+    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &ThisEntry, IMODE_Execute, "AmlPrepBankFieldValue", 1, "case BankField");
+    DUMP_OPERANDS ((ACPI_OBJECT_INTERNAL **) &Region, IMODE_Execute, "AmlPrepBankFieldValue", 1, "case BankField");
+
+    /* Initialize areas of the object that are common to all fields */
+
+    Status = AmlPrepCommonFieldObject (ObjDesc, FieldFlags, FieldAttribute, FieldPosition, FieldLength);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Initialize areas of the object that are specific to this field type */
+
+    ObjDesc->BankField.Value        = BankVal;
+    ObjDesc->BankField.Container    = NsGetAttachedObject (Region);
+    ObjDesc->BankField.BankSelect   = NsGetAttachedObject (BankReg);
+
+    /* An additional reference for the container and bank select */
+    /* TBD: [Restructure] is "BankSelect" ever a real internal object?? */
+
+    CmAddReference (ObjDesc->BankField.Container);
+    CmAddReference (ObjDesc->BankField.BankSelect);
+
+    /* Debug info */
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: bitoff=%X off=%X gran=%X\n",
+                    ObjDesc->BankField.BitOffset, ObjDesc->BankField.Offset, ObjDesc->Field.Granularity));
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
+                    ThisEntry, &(ThisEntry->Name), ObjDesc));
+    
+    DUMP_STACK_ENTRY (ObjDesc);
+    DUMP_ENTRY (Region, ACPI_INFO);
+    DUMP_ENTRY (BankReg, ACPI_INFO);
+    DEBUG_PRINT (ACPI_INFO, ("============================================================\n"));
+
+    /* 
+     * Store the constructed descriptor (ObjDesc) into the nte whose
+     * handle is on TOS, preserving the current type of that nte.
+     */
+    Status = NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
+                                (UINT8) NsGetType ((ACPI_HANDLE) ThisEntry));
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlPrepIndexFieldValue
+ *
+ * PARAMETERS:  ThisEntry           - Owning NTE
+ *              IndexReg            - Index register
+ *              DataReg             - Data register
+ *              FieldFlags          - Access, LockRule, or UpdateRule
+ *              FieldPosition       - Field position
+ *              FieldLength         - Field length
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Construct an ACPI_OBJECT_INTERNAL of type IndexField and 
+ *              connect it to the parent NTE.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AmlPrepIndexFieldValue (
+    NAME_TABLE_ENTRY        *ThisEntry,
+    ACPI_HANDLE             IndexReg, 
+    ACPI_HANDLE             DataReg,
+    UINT8                   FieldFlags, 
+    UINT8                   FieldAttribute,
+    UINT32                  FieldPosition, 
+    UINT32                  FieldLength)
+{
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AmlPrepIndexFieldValue");
+
+
+    /* Parameter validation */
+
+    if (!IndexReg || !DataReg)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlPrepIndexFieldValue: null handle\n"));
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
+    }
+
+    /* Allocate a new object descriptor */
+
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_IndexField);
+    if (!ObjDesc)
+    {   
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Initialize areas of the object that are common to all fields */
 
-    ObjDesc->CommonField.Node = Info->FieldNode;
-    Status = AcpiExPrepCommonFieldObject (ObjDesc, Info->FieldFlags,
-                Info->Attribute, Info->FieldBitPosition, Info->FieldBitLength);
+    Status = AmlPrepCommonFieldObject (ObjDesc, FieldFlags, FieldAttribute, FieldPosition, FieldLength);
     if (ACPI_FAILURE (Status))
     {
-        AcpiUtDeleteObjectDesc (ObjDesc);
         return_ACPI_STATUS (Status);
     }
 
-    /* Initialize areas of the object that are specific to the field type */
+    /* Initialize areas of the object that are specific to this field type */
 
-    switch (Info->FieldType)
-    {
-    case ACPI_TYPE_LOCAL_REGION_FIELD:
+    ObjDesc->IndexField.Value       = (UINT32) (FieldPosition / ObjDesc->Field.Granularity);
+    ObjDesc->IndexField.Index       = IndexReg;
+    ObjDesc->IndexField.Data        = DataReg;
 
-        ObjDesc->Field.RegionObj     = AcpiNsGetAttachedObject (Info->RegionNode);
+    /* Debug info */
 
-        /* An additional reference for the container */
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepIndexFieldValue: bitoff=%X off=%X gran=%X\n",
+                    ObjDesc->IndexField.BitOffset, ObjDesc->IndexField.Offset, ObjDesc->Field.Granularity));
 
-        AcpiUtAddReference (ObjDesc->Field.RegionObj);
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
+                    ThisEntry, &(ThisEntry->Name), ObjDesc));
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "RegionField: BitOff %X, Off %X, Gran %X, Region %p\n",
-            ObjDesc->Field.StartFieldBitOffset, ObjDesc->Field.BaseByteOffset,
-            ObjDesc->Field.AccessByteWidth, ObjDesc->Field.RegionObj));
-        break;
+    DUMP_STACK_ENTRY (ObjDesc);
+    DUMP_ENTRY (IndexReg, ACPI_INFO);
+    DUMP_ENTRY (DataReg, ACPI_INFO);
+    DEBUG_PRINT (ACPI_INFO, ("============================================================\n"));
 
-
-    case ACPI_TYPE_LOCAL_BANK_FIELD:
-
-        ObjDesc->BankField.Value     = Info->BankValue;
-        ObjDesc->BankField.RegionObj = AcpiNsGetAttachedObject (Info->RegionNode);
-        ObjDesc->BankField.BankObj   = AcpiNsGetAttachedObject (Info->RegisterNode);
-
-        /* An additional reference for the attached objects */
-
-        AcpiUtAddReference (ObjDesc->BankField.RegionObj);
-        AcpiUtAddReference (ObjDesc->BankField.BankObj);
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "Bank Field: BitOff %X, Off %X, Gran %X, Region %p, BankReg %p\n",
-            ObjDesc->BankField.StartFieldBitOffset,
-            ObjDesc->BankField.BaseByteOffset,
-            ObjDesc->Field.AccessByteWidth,
-            ObjDesc->BankField.RegionObj,
-            ObjDesc->BankField.BankObj));
-        break;
-
-
-    case ACPI_TYPE_LOCAL_INDEX_FIELD:
-
-        ObjDesc->IndexField.IndexObj = AcpiNsGetAttachedObject (Info->RegisterNode);
-        ObjDesc->IndexField.DataObj  = AcpiNsGetAttachedObject (Info->DataRegisterNode);
-        ObjDesc->IndexField.Value    = (UINT32)
-            (Info->FieldBitPosition / ACPI_MUL_8 (ObjDesc->Field.AccessByteWidth));
-
-        if (!ObjDesc->IndexField.DataObj || !ObjDesc->IndexField.IndexObj)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null Index Object\n"));
-            return_ACPI_STATUS (AE_AML_INTERNAL);
-        }
-
-        /* An additional reference for the attached objects */
-
-        AcpiUtAddReference (ObjDesc->IndexField.DataObj);
-        AcpiUtAddReference (ObjDesc->IndexField.IndexObj);
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
-            "IndexField: BitOff %X, Off %X, Value %X, Gran %X, Index %p, Data %p\n",
-            ObjDesc->IndexField.StartFieldBitOffset,
-            ObjDesc->IndexField.BaseByteOffset,
-            ObjDesc->IndexField.Value,
-            ObjDesc->Field.AccessByteWidth,
-            ObjDesc->IndexField.IndexObj,
-            ObjDesc->IndexField.DataObj));
-        break;
-
-    default:
-        /* No other types should get here */
-        break;
-    }
-
-    /*
-     * Store the constructed descriptor (ObjDesc) into the parent Node,
-     * preserving the current type of that NamedObj.
+    /* 
+     * Store the constructed descriptor (ObjDesc) into the nte whose
+     * handle is on TOS, preserving the current type of that nte.
      */
-    Status = AcpiNsAttachObject (Info->FieldNode, ObjDesc,
-                    AcpiNsGetType (Info->FieldNode));
+    Status = NsAttachObject ((ACPI_HANDLE) ThisEntry, ObjDesc,
+                                (UINT8) NsGetType ((ACPI_HANDLE) ThisEntry));
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD, "Set NamedObj %p [%4.4s], ObjDesc %p\n",
-            Info->FieldNode, AcpiUtGetNodeName (Info->FieldNode), ObjDesc));
-
-    /* Remove local reference to the object */
-
-    AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
 

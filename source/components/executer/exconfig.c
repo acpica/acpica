@@ -161,7 +161,7 @@ AmlExecLoadTable (
 
     FUNCTION_TRACE ("AmlExecLoadTable");
 
-    /* TBD: Object can be either a field or an opregion */
+    /* TBD: [Unhandled] Object can be either a field or an opregion */
 
 
     /* Get the table header */
@@ -242,12 +242,12 @@ AmlExecLoadTable (
     Status = AcpiLoadNamespace ();
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: Unload the table on failure ? */
+        /* TBD: [Errors] Unload the table on failure ? */
 
         goto Cleanup;
     }
 
-    /* TBD: we need a pointer to the table desc */
+    /* TBD: [Investigate] we need a pointer to the table desc */
 
     /* Init the table handle */
 
@@ -295,7 +295,7 @@ AmlExecUnloadTable (
 
 
     /* Validate the handle */
-    /* TBD: Wasn't this done earlier? */
+    /* TBD: [Errors] Wasn't this done earlier? */
 
     if ((!DdbHandle) ||
         (!VALID_DESCRIPTOR_TYPE (DdbHandle, DESC_TYPE_ACPI_OBJ)) ||
