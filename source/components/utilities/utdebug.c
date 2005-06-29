@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: cmdebug - Debug print routines
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,7 +116,7 @@
 
 #define __CMDEBUG_C__
 
-#include <acpi.h>
+#include "acpi.h"
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cmdebug");
@@ -124,7 +124,7 @@
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    Get/Set debug level
  *
  * DESCRIPTION: Get or set value of the debug flag
@@ -138,7 +138,7 @@ INT32
 GetDebugLevel (void)
 {
 
-    return DebugLevel;
+    return AcpiDbgLevel;
 }
 
 void
@@ -146,12 +146,12 @@ SetDebugLevel (
     INT32                   NewDebugLevel)
 {
 
-    DebugLevel = NewDebugLevel;
+    AcpiDbgLevel = NewDebugLevel;
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    FunctionTrace
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -168,21 +168,21 @@ SetDebugLevel (
 
 void
 FunctionTrace (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
     char                    *FunctionName)
 {
-        
-    Gbl_NestingLevel++;  
-    
+
+    AcpiGbl_NestingLevel++;
+
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s\n", Gbl_NestingLevel, FunctionName);
+                " %2.2ld Entered Function: %s\n", AcpiGbl_NestingLevel, FunctionName);
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    FunctionTracePtr
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -200,22 +200,22 @@ FunctionTrace (
 
 void
 FunctionTracePtr (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
     char                    *FunctionName,
     void                    *Pointer)
 {
 
-    Gbl_NestingLevel++;
+    AcpiGbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s, 0x%p\n", 
-                Gbl_NestingLevel, FunctionName, Pointer);
+                " %2.2ld Entered Function: %s, 0x%p\n",
+                AcpiGbl_NestingLevel, FunctionName, Pointer);
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    FunctionTraceStr
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -233,22 +233,22 @@ FunctionTracePtr (
 
 void
 FunctionTraceStr (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
     char                    *FunctionName,
     char                    *String)
 {
 
-    Gbl_NestingLevel++;
+    AcpiGbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s, %s\n", 
-                Gbl_NestingLevel, FunctionName, String);
+                " %2.2ld Entered Function: %s, %s\n",
+                AcpiGbl_NestingLevel, FunctionName, String);
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    FunctionTraceU32
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -266,22 +266,22 @@ FunctionTraceStr (
 
 void
 FunctionTraceU32 (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
     char                    *FunctionName,
     UINT32                  Integer)
 {
 
-    Gbl_NestingLevel++;
+    AcpiGbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s, 0x%lX\n", 
-                Gbl_NestingLevel, FunctionName, Integer);
+                " %2.2ld Entered Function: %s, 0x%lX\n",
+                AcpiGbl_NestingLevel, FunctionName, Integer);
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    FunctionExit
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -298,20 +298,20 @@ FunctionTraceU32 (
 
 void
 FunctionExit (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
     char                    *FunctionName)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s\n", Gbl_NestingLevel, FunctionName);
-    Gbl_NestingLevel--;
+                " %2.2ld Exiting Function: %s\n", AcpiGbl_NestingLevel, FunctionName);
+    AcpiGbl_NestingLevel--;
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    FunctionStatusExit
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -329,9 +329,9 @@ FunctionExit (
 
 void
 FunctionStatusExit (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
     char                    *FunctionName,
     ACPI_STATUS             Status)
 {
@@ -339,23 +339,23 @@ FunctionStatusExit (
     if (Status > ACPI_MAX_STATUS)
     {
         DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                    " %2.2ld Exiting Function: %s, [Unknown Status] 0x%X\n", 
-                    Gbl_NestingLevel, FunctionName, Status);
+                    " %2.2ld Exiting Function: %s, [Unknown Status] 0x%X\n",
+                    AcpiGbl_NestingLevel, FunctionName, Status);
     }
 
     else
-    { 
+    {
         DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                    " %2.2ld Exiting Function: %s, %s\n", 
-                    Gbl_NestingLevel, FunctionName, CmFormatException (Status));
+                    " %2.2ld Exiting Function: %s, %s\n",
+                    AcpiGbl_NestingLevel, FunctionName, AcpiCmFormatException (Status));
     }
 
-    Gbl_NestingLevel--;
+    AcpiGbl_NestingLevel--;
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    FunctionValueExit
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -373,22 +373,22 @@ FunctionStatusExit (
 
 void
 FunctionValueExit (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
     char                    *FunctionName,
     NATIVE_UINT             Value)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s, 0x%X\n", 
-                Gbl_NestingLevel, FunctionName, Value);
-    Gbl_NestingLevel--;
+                " %2.2ld Exiting Function: %s, 0x%X\n",
+                AcpiGbl_NestingLevel, FunctionName, Value);
+    AcpiGbl_NestingLevel--;
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    FunctionPtrExit
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -406,22 +406,22 @@ FunctionValueExit (
 
 void
 FunctionPtrExit (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
     char                    *FunctionName,
     char                    *Ptr)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s, 0x%p\n", 
-                Gbl_NestingLevel, FunctionName, Ptr);
-    Gbl_NestingLevel--;
+                " %2.2ld Exiting Function: %s, 0x%p\n",
+                AcpiGbl_NestingLevel, FunctionName, Ptr);
+    AcpiGbl_NestingLevel--;
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    DebugPrint
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -440,30 +440,30 @@ FunctionPtrExit (
 
 void
 DebugPrint (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
-    INT32                   PrintLevel, 
+    char                    *ModuleName,
+    INT32                   LineNumber,
+    INT32                   ComponentId,
+    INT32                   PrintLevel,
     char                    *Format,
     ...)
 {
     va_list                 args;
-     
-     
+
+
     /* Both the level and the component must be enabled */
 
-    if ((PrintLevel & DebugLevel) && (ComponentId & DebugLayer))
+    if ((PrintLevel & AcpiDbgLevel) && (ComponentId & AcpiDbgLayer))
     {
         va_start (args, Format);
 
-        OsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
-        OsdVprintf (Format, args);  
+        AcpiOsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+        AcpiOsdVprintf (Format, args);
     }
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    DebugPrintPrefix
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
@@ -479,17 +479,17 @@ DebugPrint (
 
 void
 DebugPrintPrefix (
-    char                    *ModuleName, 
+    char                    *ModuleName,
     INT32                   LineNumber)
 {
 
 
-    OsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
+    AcpiOsdPrintf ("%8s-%04d: ", ModuleName, LineNumber);
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    DebugPrintRaw
  *
  * PARAMETERS:  Format              - Printf format field
@@ -497,13 +497,13 @@ DebugPrintPrefix (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Print error message -- without module/line indentifiers 
+ * DESCRIPTION: Print error message -- without module/line indentifiers
  *
  ****************************************************************************/
 
 void
 DebugPrintRaw (
-    char                    *Format, 
+    char                    *Format,
     ...)
 {
     va_list                 args;
@@ -511,7 +511,7 @@ DebugPrintRaw (
 
     va_start (args, Format);
 
-    OsdVprintf (Format, args);
+    AcpiOsdVprintf (Format, args);
 
     va_end (args);
 }
@@ -519,8 +519,8 @@ DebugPrintRaw (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    CmDumpBuffer
+ *
+ * FUNCTION:    AcpiCmDumpBuffer
  *
  * PARAMETERS:  Buffer              - Buffer to dump
  *              Count               - Amount to dump, in bytes
@@ -533,9 +533,9 @@ DebugPrintRaw (
  ****************************************************************************/
 
 void
-CmDumpBuffer (
-    char                    *Buffer, 
-    UINT32                  Count, 
+AcpiCmDumpBuffer (
+    char                    *Buffer,
+    UINT32                  Count,
     UINT32                  Display,
     INT32                   ComponentId)
 {
@@ -547,7 +547,7 @@ CmDumpBuffer (
 
     /* Only dump the buffer if tracing is enabled */
 
-    if (!((TRACE_TABLES & DebugLevel) && (ComponentId & DebugLayer)))
+    if (!((TRACE_TABLES & AcpiDbgLevel) && (ComponentId & AcpiDbgLayer)))
     {
         return;
     }
@@ -560,7 +560,7 @@ CmDumpBuffer (
     {
         /* Print current offset */
 
-        OsdPrintf ("%05X    ", i);
+        AcpiOsdPrintf ("%05X    ", i);
 
 
         /* Print 16 hex chars */
@@ -569,7 +569,7 @@ CmDumpBuffer (
         {
             if (i + j >= Count)
             {
-                OsdPrintf ("\n");
+                AcpiOsdPrintf ("\n");
                 return;
             }
 
@@ -581,7 +581,7 @@ CmDumpBuffer (
 
             default:
 
-                OsdPrintf ("%02X ", *((UINT8 *) &Buffer[i + j]));
+                AcpiOsdPrintf ("%02X ", *((UINT8 *) &Buffer[i + j]));
                 j += 1;
                 break;
 
@@ -589,7 +589,7 @@ CmDumpBuffer (
             case DB_WORD_DISPLAY:
 
                 STORE16TO32 (&Temp32, &Buffer[i + j]);
-                OsdPrintf ("%04X ", Temp32);
+                AcpiOsdPrintf ("%04X ", Temp32);
                 j += 2;
                 break;
 
@@ -597,7 +597,7 @@ CmDumpBuffer (
             case DB_DWORD_DISPLAY:
 
                 STORE32TO32 (&Temp32, &Buffer[i + j]);
-                OsdPrintf ("%08X ", Temp32);
+                AcpiOsdPrintf ("%08X ", Temp32);
                 j += 4;
                 break;
 
@@ -605,17 +605,17 @@ CmDumpBuffer (
             case DB_QWORD_DISPLAY:
 
                 STORE32TO32 (&Temp32, &Buffer[i + j]);
-                OsdPrintf ("%08X", Temp32);
+                AcpiOsdPrintf ("%08X", Temp32);
 
                 STORE32TO32 (&Temp32, &Buffer[i + j + 4]);
-                OsdPrintf ("%08X ", Temp32);
+                AcpiOsdPrintf ("%08X ", Temp32);
                 j += 8;
                 break;
             }
         }
 
 
-        /* 
+        /*
          * Print the ASCII equivalent characters
          * But watch out for the bad unprintable ones...
          */
@@ -624,7 +624,7 @@ CmDumpBuffer (
         {
             if (i + j >= Count)
             {
-                OsdPrintf ("\n");
+                AcpiOsdPrintf ("\n");
                 return;
             }
 
@@ -633,17 +633,17 @@ CmDumpBuffer (
                 (BufChar > 0x2F && BufChar < 0x61) ||
                 (BufChar > 0x60 && BufChar < 0x7F))
             {
-                OsdPrintf ("%c", BufChar);
+                AcpiOsdPrintf ("%c", BufChar);
             }
             else
             {
-                OsdPrintf (".");
+                AcpiOsdPrintf (".");
             }
         }
 
         /* Done with that line. */
 
-        OsdPrintf ("\n");
+        AcpiOsdPrintf ("\n");
         i += 16;
     }
 
