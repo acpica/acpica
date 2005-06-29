@@ -122,8 +122,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "cminit.c"
 #define _COMPONENT          MISCELLANEOUS
+        MODULE_NAME         ("cminit");
 
 
 /*******************************************************************************
@@ -181,9 +181,9 @@ CmHardwareInitialize (void)
 
     /* We must have an the ACPI tables by the time we get here */
 
-    if (!FACP)
+    if (!Gbl_FACP)
     {
-        RestoreAcpiChipset = FALSE;
+        Gbl_RestoreAcpiChipset = FALSE;
 
         DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: No FACP!\n"));
 
@@ -203,20 +203,20 @@ CmHardwareInitialize (void)
 */
 
 
-    switch (SystemFlags & SYS_MODES_MASK)
+    switch (Gbl_SystemFlags & SYS_MODES_MASK)
     {
         /* Identify current ACPI/legacy mode   */
 
     case (SYS_MODE_ACPI):
 
-        OriginalMode = SYS_MODE_ACPI;
+        Gbl_OriginalMode = SYS_MODE_ACPI;
         DEBUG_PRINT (ACPI_INFO, ("System supports ACPI mode only.\n"));
         break;
 
 
     case (SYS_MODE_LEGACY):
 
-        OriginalMode = SYS_MODE_LEGACY;
+        Gbl_OriginalMode = SYS_MODE_LEGACY;
         DEBUG_PRINT (ACPI_INFO,
                     ("Tables loaded from buffer, hardware assumed to support LEGACY mode only.\n"));
         break;
@@ -226,22 +226,22 @@ CmHardwareInitialize (void)
 
         if (HwGetMode () == SYS_MODE_ACPI)
         {
-            OriginalMode = SYS_MODE_ACPI;
+            Gbl_OriginalMode = SYS_MODE_ACPI;
         }
         else
         {
-            OriginalMode = SYS_MODE_LEGACY;
+            Gbl_OriginalMode = SYS_MODE_LEGACY;
         }
 
         DEBUG_PRINT (ACPI_INFO, ("System supports both ACPI and LEGACY modes.\n"));
 
         DEBUG_PRINT (ACPI_INFO, ("System is currently in %s mode.\n",
-                                (OriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
+                                (Gbl_OriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
         break;
     }
 
 
-    if (SystemFlags & SYS_MODE_ACPI)
+    if (Gbl_SystemFlags & SYS_MODE_ACPI)
     {
         /* Target system supports ACPI mode */
 
@@ -260,10 +260,10 @@ CmHardwareInitialize (void)
          * be modified. The PM1bEvtBlk behaves as expected.
          */
 
-        Pm1EnableRegisterSave = OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + 2));
-        if (FACP->Pm1bEvtBlk)
+        Gbl_Pm1EnableRegisterSave = OsdIn16 ((Gbl_FACP->Pm1aEvtBlk + 2));
+        if (Gbl_FACP->Pm1bEvtBlk)
         {
-            Pm1EnableRegisterSave |= OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + 2));
+            Gbl_Pm1EnableRegisterSave |= OsdIn16 ((Gbl_FACP->Pm1bEvtBlk + 2));
         }
 
 
@@ -272,52 +272,52 @@ CmHardwareInitialize (void)
          * block is not fixed, so the buffer must be allocated with malloc 
          */
 
-        if (FACP->Gpe0Blk && FACP->Gpe0BlkLen)
+        if (Gbl_FACP->Gpe0Blk && Gbl_FACP->Gpe0BlkLen)
         {
             /* GPE0 specified in FACP  */
 
-            Gpe0EnableRegisterSave = CmAllocate ((ACPI_SIZE) (FACP->Gpe0BlkLen / 2));
-            if (!Gpe0EnableRegisterSave)
+            Gbl_Gpe0EnableRegisterSave = CmAllocate ((ACPI_SIZE) (Gbl_FACP->Gpe0BlkLen / 2));
+            if (!Gbl_Gpe0EnableRegisterSave)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
             /* Save state of GPE0 enable bits */
 
-            for (Index = 0; Index < FACP->Gpe0BlkLen / 2; Index++)
+            for (Index = 0; Index < Gbl_FACP->Gpe0BlkLen / 2; Index++)
             {
-                Gpe0EnableRegisterSave[Index] =
-                    OsdIn8 ((UINT16) (FACP->Gpe0Blk + FACP->Gpe0BlkLen / 2));
+                Gbl_Gpe0EnableRegisterSave[Index] =
+                    OsdIn8 ((Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2));
             }
         }
         
         else
         {
-            Gpe0EnableRegisterSave = NULL;
+            Gbl_Gpe0EnableRegisterSave = NULL;
         }
 
-        if (FACP->Gpe1Blk && FACP->Gpe1BlkLen)
+        if (Gbl_FACP->Gpe1Blk && Gbl_FACP->Gpe1BlkLen)
         {
             /* GPE1 defined    */
 
-            Gpe1EnableRegisterSave = CmAllocate ((ACPI_SIZE) (FACP->Gpe1BlkLen / 2));
-            if (!Gpe1EnableRegisterSave)
+            Gbl_Gpe1EnableRegisterSave = CmAllocate ((ACPI_SIZE) (Gbl_FACP->Gpe1BlkLen / 2));
+            if (!Gbl_Gpe1EnableRegisterSave)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
             /* save state of GPE1 enable bits */
     
-            for (Index = 0; Index < FACP->Gpe1BlkLen / 2; Index++)
+            for (Index = 0; Index < Gbl_FACP->Gpe1BlkLen / 2; Index++)
             {
-                Gpe1EnableRegisterSave[Index] =
-                    OsdIn8 ((UINT16) (FACP->Gpe1Blk + FACP->Gpe1BlkLen / 2));
+                Gbl_Gpe1EnableRegisterSave[Index] =
+                    OsdIn8 ((Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2));
             }
         }
         
         else
         {
-            Gpe1EnableRegisterSave = NULL;
+            Gbl_Gpe1EnableRegisterSave = NULL;
         }
     
     
@@ -326,40 +326,40 @@ CmHardwareInitialize (void)
          * 4.7.1.2 and 5.2.5 (assertions #410, 415, 435-440)
          */
 
-        if (FACP->Pm1EvtLen < 4)
-            CmFacpRegisterError ("PM1_EVT_LEN", (UINT32) FACP->Pm1EvtLen,
+        if (Gbl_FACP->Pm1EvtLen < 4)
+            CmFacpRegisterError ("PM1_EVT_LEN", (UINT32) Gbl_FACP->Pm1EvtLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 410); /* #410 == #435    */
 
-        if (!FACP->Pm1CntLen)
-            CmFacpRegisterError ("PM1_CNT_LEN", (UINT32) FACP->Pm1CntLen,
+        if (!Gbl_FACP->Pm1CntLen)
+            CmFacpRegisterError ("PM1_CNT_LEN", (UINT32) Gbl_FACP->Pm1CntLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 415); /* #415 == #436    */
 
-        if (!FACP->Pm1aEvtBlk)
-            CmFacpRegisterError ("PM1a_EVT_BLK", FACP->Pm1aEvtBlk,
+        if (!Gbl_FACP->Pm1aEvtBlk)
+            CmFacpRegisterError ("PM1a_EVT_BLK", Gbl_FACP->Pm1aEvtBlk,
                 ACPI_TABLE_NAMESPACE_SECTION, 432);
 
-        if (!FACP->Pm1aCntBlk)
-            CmFacpRegisterError ("PM1a_CNT_BLK", FACP->Pm1aCntBlk,
+        if (!Gbl_FACP->Pm1aCntBlk)
+            CmFacpRegisterError ("PM1a_CNT_BLK", Gbl_FACP->Pm1aCntBlk,
                 ACPI_TABLE_NAMESPACE_SECTION, 433);
 
-        if (!FACP->PmTmrBlk)
-            CmFacpRegisterError ("PM_TMR_BLK", FACP->PmTmrBlk,
+        if (!Gbl_FACP->PmTmrBlk)
+            CmFacpRegisterError ("PM_TMR_BLK", Gbl_FACP->PmTmrBlk,
                 ACPI_TABLE_NAMESPACE_SECTION, 434);
 
-        if (FACP->Pm2CntBlk && !FACP->Pm2CntLen)
-            CmFacpRegisterError ("PM2_CNT_LEN", (UINT32) FACP->Pm2CntLen,
+        if (Gbl_FACP->Pm2CntBlk && !Gbl_FACP->Pm2CntLen)
+            CmFacpRegisterError ("PM2_CNT_LEN", (UINT32) Gbl_FACP->Pm2CntLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 437);
 
-        if (FACP->PmTmLen < 4)
-            CmFacpRegisterError ("PM_TM_LEN", (UINT32) FACP->PmTmLen,
+        if (Gbl_FACP->PmTmLen < 4)
+            CmFacpRegisterError ("PM_TM_LEN", (UINT32) Gbl_FACP->PmTmLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 438);
 
-        if (FACP->Gpe0Blk && (FACP->Gpe0BlkLen & 1))    /* length not multiple of 2    */
-            CmFacpRegisterError ("GPE0_BLK_LEN", (UINT32) FACP->Gpe0BlkLen,
+        if (Gbl_FACP->Gpe0Blk && (Gbl_FACP->Gpe0BlkLen & 1))    /* length not multiple of 2    */
+            CmFacpRegisterError ("GPE0_BLK_LEN", (UINT32) Gbl_FACP->Gpe0BlkLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 439);
 
-        if (FACP->Gpe1Blk && (FACP->Gpe1BlkLen & 1))    /* length not multiple of 2    */
-            CmFacpRegisterError ("GPE1_BLK_LEN", (UINT32) FACP->Gpe1BlkLen,
+        if (Gbl_FACP->Gpe1Blk && (Gbl_FACP->Gpe1BlkLen & 1))    /* length not multiple of 2    */
+            CmFacpRegisterError ("GPE1_BLK_LEN", (UINT32) Gbl_FACP->Gpe1BlkLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 440);
     }
 
@@ -390,14 +390,14 @@ CmTerminate (void)
 
     /* Free global tables, etc. */
 
-    if (Gpe0EnableRegisterSave)
+    if (Gbl_Gpe0EnableRegisterSave)
     {
-        CmFree (Gpe0EnableRegisterSave);
+        CmFree (Gbl_Gpe0EnableRegisterSave);
     }
 
-    if (Gpe1EnableRegisterSave)
+    if (Gbl_Gpe1EnableRegisterSave)
     {
-        CmFree (Gpe1EnableRegisterSave);
+        CmFree (Gbl_Gpe1EnableRegisterSave);
     }
 
 
