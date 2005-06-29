@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.37 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -425,7 +425,8 @@ LkNamespaceLocateBegin (
     UINT32                  Temp;
 
 
-    DEBUG_PRINT (TRACE_DISPATCH, ("NamespaceLocateBegin: PsNode %p\n", PsNode));
+    PROC_NAME ("LkNamespaceLocateBegin");
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: PsNode %p\n", PsNode));
 
 
     /* We are only interested in opcodes that have an associated name */
@@ -453,7 +454,7 @@ LkNamespaceLocateBegin (
     DataType = AcpiDsMapNamedOpcodeToDataType (PsNode->AmlOpcode);
 
 
-    DEBUG_PRINT (TRACE_DISPATCH, ("NamespaceLocateBegin: Type=%x\n", DataType));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%x\n", DataType));
 
 
     /*
@@ -540,22 +541,29 @@ LkNamespaceLocateBegin (
 
         switch (PsNode->Parent->AmlOpcode)
         {
-        /* Ops that require Bit Offsets */
-
-        case AML_CREATE_BIT_FIELD_OP:
         case AML_CREATE_FIELD_OP:
+
+            /* We allow a Byte offset to Bit Offset conversion for this op */
 
             if (!(PsNode->Flags & NODE_IS_BIT_OFFSET))
             {
-                sprintf (MsgBuffer, "byte %d to bit %d", Temp,
-                            MUL_8 (Temp));
+                /* Simply multiply byte offset times 8 to get bit offset */
 
                 Temp = MUL_8 (Temp);
-                AslError (ASL_WARNING, ASL_MSG_BYTES_TO_BITS, PsNode, MsgBuffer);
             }
             break;
 
-        /* Ops that require Byte offsets */
+
+        case AML_CREATE_BIT_FIELD_OP:
+
+            /* This op requires a Bit Offset */
+
+            if (!(PsNode->Flags & NODE_IS_BIT_OFFSET))
+            {
+                AslError (ASL_ERROR, ASL_MSG_BYTES_TO_BITS, PsNode, NULL);
+            }
+            break;
+
 
         case AML_CREATE_BYTE_FIELD_OP:
         case AML_CREATE_WORD_FIELD_OP:
@@ -563,13 +571,11 @@ LkNamespaceLocateBegin (
         case AML_CREATE_QWORD_FIELD_OP:
         case AML_INDEX_OP:
 
+            /* These Ops require Byte offsets */
+
             if (PsNode->Flags & NODE_IS_BIT_OFFSET)
             {
-                sprintf (MsgBuffer, "bit %d to byte %d", Temp,
-                            ROUND_BITS_DOWN_TO_BYTES (Temp));
-
-                Temp = ROUND_BITS_DOWN_TO_BYTES (Temp);
-                AslError (ASL_WARNING, ASL_MSG_BITS_TO_BYTES, PsNode, MsgBuffer);
+                AslError (ASL_ERROR, ASL_MSG_BITS_TO_BYTES, PsNode, NULL);
             }
             break;
         }
@@ -789,6 +795,9 @@ LkNamespaceLocateEnd (
     ACPI_OBJECT_TYPE8       DataType;
 
 
+    PROC_NAME ("LkNamespaceLocateEnd");
+
+
     /* We are only interested in opcodes that have an associated name */
 
     if (!AcpiPsIsNamedOp (PsNode->AmlOpcode))
@@ -822,8 +831,8 @@ LkNamespaceLocateEnd (
     if (AcpiNsOpensScope (DataType))
     {
 
-        DEBUG_PRINT (TRACE_DISPATCH,
-            ("NamespaceLocateEnd/%s: Popping scope for Op %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+            "%s: Popping scope for Op %p\n",
             AcpiUtGetTypeName (DataType), PsNode));
 
 

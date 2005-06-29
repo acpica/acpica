@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -367,7 +367,8 @@ LdNamespace1Begin (
     UINT32                  i;
 
 
-    DEBUG_PRINT (TRACE_DISPATCH, ("LdNamespace1Begin: PsNode %p\n", PsNode));
+    PROC_NAME ("LdNamespace1Begin");
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "PsNode %p\n", PsNode));
 
 
     /* 
@@ -447,7 +448,7 @@ LdNamespace1Begin (
         DataType = AcpiDsMapNamedOpcodeToDataType (PsNode->AmlOpcode);
     }
 
-    DEBUG_PRINT (TRACE_DISPATCH, ("LdNamespace1Begin: Type=%x\n", DataType));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "LdNamespace1Begin: Type=%x\n", DataType));
 
 
     if (PsNode->ParseOpcode != SCOPE)
@@ -530,6 +531,9 @@ LdNamespace1End (
     ACPI_OBJECT_TYPE8       DataType;
 
 
+    PROC_NAME ("LdNamespace1End");
+
+
     /* We are only interested in opcodes that have an associated name */
 
     if (!PsNode->Namepath)
@@ -559,8 +563,8 @@ LdNamespace1End (
     if (AcpiNsOpensScope (DataType))
     {
 
-        DEBUG_PRINT (TRACE_DISPATCH,
-            ("LdNamespace1End/%s: Popping scope for Op %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+            "LdNamespace1End/%s: Popping scope for Op %p\n",
             AcpiUtGetTypeName (DataType), PsNode));
 
 

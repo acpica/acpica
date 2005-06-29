@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.31 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,6 @@
 
 #define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslmap")
-
 
 
 /*******************************************************************************
@@ -340,7 +339,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* CREATEQWORDFIELD */          OP_TABLE_ENTRY (AML_CREATE_QWORD_FIELD_OP,  0,                  0,                  0),
 /* CREATEWORDFIELD */           OP_TABLE_ENTRY (AML_CREATE_WORD_FIELD_OP,   0,                  0,                  0),
 /* DATATABLEREGION */           OP_TABLE_ENTRY (AML_DATA_REGION_OP,         0,                  0,                  0),
-/* DEBUG */                     OP_TABLE_ENTRY (AML_DEBUG_OP,               0,                  0,                  0),
+/* DEBUG */                     OP_TABLE_ENTRY (AML_DEBUG_OP,               0,                  0,                  ACPI_BTYPE_DEBUG_OBJECT),
 /* DECODETYPE_POS */            OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0),
 /* DECODETYPE_SUB */            OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0,                  0),
 /* DECREMENT */                 OP_TABLE_ENTRY (AML_DECREMENT_OP,           0,                  0,                  ACPI_BTYPE_INTEGER),
@@ -358,7 +357,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* DWORDCONST */                OP_TABLE_ENTRY (AML_RAW_DATA_DWORD,         0,                  0,                  ACPI_BTYPE_INTEGER),
 /* DWORDIO */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
 /* DWORDMEMORY */               OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
-/* EISAID */                    OP_TABLE_ENTRY (AML_DWORD_OP,               0,                  0,                  0),
+/* EISAID */                    OP_TABLE_ENTRY (AML_DWORD_OP,               0,                  0,                  ACPI_BTYPE_INTEGER),
 /* ELSE */                      OP_TABLE_ENTRY (AML_ELSE_OP,                0,                  NODE_AML_PACKAGE,   0),
 /* ELSEIF */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  NODE_AML_PACKAGE,   0),
 /* ENDDEPENDENTFN */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                  0,                  0),
@@ -488,11 +487,11 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* RELEASE */                   OP_TABLE_ENTRY (AML_RELEASE_OP,             0,                  0,                  0),
 /* RESERVED_BYTES */            OP_TABLE_ENTRY (AML_INT_RESERVEDFIELD_OP,   0,                  0,                  0),
 /* RESET */                     OP_TABLE_ENTRY (AML_RESET_OP,               0,                  0,                  0),
-/* RESOURCETEMPLATE */          OP_TABLE_ENTRY (AML_BUFFER_OP,              0,                  0,                  0),
+/* RESOURCETEMPLATE */          OP_TABLE_ENTRY (AML_BUFFER_OP,              0,                  0,                  ACPI_BTYPE_BUFFER),
 /* RESOURCETYPE_CONSUMER */     OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0,                  0),
 /* RESOURCETYPE_PRODUCER */     OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0),
 /* RETURN */                    OP_TABLE_ENTRY (AML_RETURN_OP,              0,                  0,                  0),
-/* REVISION */                  OP_TABLE_ENTRY (AML_REVISION_OP,            0,                  0,                  0),
+/* REVISION */                  OP_TABLE_ENTRY (AML_REVISION_OP,            0,                  0,                  ACPI_BTYPE_INTEGER),
 /* SCOPE */                     OP_TABLE_ENTRY (AML_SCOPE_OP,               0,                  NODE_AML_PACKAGE,   0),
 /* SERIALIZERULE_NOTSERIAL */   OP_TABLE_ENTRY (AML_BYTE_OP,                0,                  0,                  0),
 /* SERIALIZERULE_SERIAL */      OP_TABLE_ENTRY (AML_BYTE_OP,                1,                  0,                  0),
@@ -542,7 +541,6 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 };
 
 
-
 #include "amlcode.h"
 #include "acdispat.h"
 #include "acparser.h"
@@ -556,7 +554,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlValidateObjectType
+ * FUNCTION:    AcpiExValidateObjectType
  *
  * PARAMETERS:  Type            Object type to validate
  *
@@ -565,7 +563,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
  ******************************************************************************/
 
 BOOLEAN
-AcpiAmlValidateObjectType (
+AcpiExValidateObjectType (
     ACPI_OBJECT_TYPE        Type)
 {
 
@@ -604,13 +602,15 @@ AcpiDsMapOpcodeToDataType (
     UINT32                  Flags = 0;
 
 
+    PROC_NAME ("DsMapOpcodeToDataType");
+
+
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
     if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
         /* Unknown opcode */
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("MapOpcode: Unknown AML opcode: %x\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown AML opcode: %x\n",
             Opcode));
 
         return (DataType);
@@ -626,6 +626,7 @@ AcpiDsMapOpcodeToDataType (
         case AML_BYTE_OP:
         case AML_WORD_OP:
         case AML_DWORD_OP:
+        case AML_QWORD_OP:
 
             DataType = ACPI_TYPE_INTEGER;
             break;
@@ -641,8 +642,8 @@ AcpiDsMapOpcodeToDataType (
             break;
 
         default:
-            DEBUG_PRINT (ACPI_ERROR,
-                ("MapOpcode: Unknown (type LITERAL) AML opcode: %x\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Unknown (type LITERAL) AML opcode: %x\n",
                 Opcode));
             break;
         }
@@ -659,13 +660,14 @@ AcpiDsMapOpcodeToDataType (
             break;
 
         case AML_PACKAGE_OP:
+        case AML_VAR_PACKAGE_OP:
 
             DataType = ACPI_TYPE_PACKAGE;
             break;
 
         default:
-            DEBUG_PRINT (ACPI_ERROR,
-                ("MapOpcode: Unknown (type DATA_TERM) AML opcode: %x\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Unknown (type DATA_TERM) AML opcode: %x\n",
                 Opcode));
             break;
         }
@@ -685,8 +687,9 @@ AcpiDsMapOpcodeToDataType (
     case OPTYPE_DYADIC2:
     case OPTYPE_DYADIC2R:
     case OPTYPE_DYADIC2S:
-    case OPTYPE_INDEX:
-    case OPTYPE_MATCH:
+    case OPTYPE_TRIADIC:
+    case OPTYPE_QUADRADIC:
+    case OPTYPE_HEXADIC:
     case OPTYPE_RETURN:
 
         Flags = OP_HAS_RETURN_VALUE;
@@ -716,8 +719,8 @@ AcpiDsMapOpcodeToDataType (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("MapOpcode: Unimplemented data type opcode: %x\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Unimplemented data type opcode: %x\n",
             Opcode));
         break;
     }
