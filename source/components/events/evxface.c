@@ -370,7 +370,7 @@ AcpiInstallGpeHandler (UINT32 Gpe, GPE_HANDLER Handler, void *Context)
 
     /* Make sure that there isn't a handler there already */
 
-    if (GpeDispatch[Gpe].Handler)
+    if (GpeInfo[Gpe].Handler)
     {
         FUNCTION_EXIT;
         return AE_HANDLER_EXISTS;
@@ -379,8 +379,8 @@ AcpiInstallGpeHandler (UINT32 Gpe, GPE_HANDLER Handler, void *Context)
 
     /* Install the handler */
 
-    GpeDispatch[Gpe].Handler = Handler;
-    GpeDispatch[Gpe].Context = Context;
+    GpeInfo[Gpe].Handler = Handler;
+    GpeInfo[Gpe].Context = Context;
 
 
     /* TBD: enable the GPE ?? */
@@ -422,7 +422,7 @@ AcpiRemoveGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
 
     /* Make sure that the installed handler is the same */
 
-    if (GpeDispatch[Gpe].Handler != Handler)
+    if (GpeInfo[Gpe].Handler != Handler)
     {
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
@@ -431,8 +431,8 @@ AcpiRemoveGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
 
     /* Remove the handler */
 
-    GpeDispatch[Gpe].Handler = NULL;
-    GpeDispatch[Gpe].Context = NULL;
+    GpeInfo[Gpe].Handler = NULL;
+    GpeInfo[Gpe].Context = NULL;
 
  
     /* TBD: disable the GPE or install default handler ?? */
@@ -448,6 +448,7 @@ AcpiRemoveGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
  *
  * PARAMETERS:  Device          - The device for which notifies will be handled
  *              Handler         - Address of the handler
+ *              Context         - Value passed to the handler on each GPE
  *
  * RETURN:      Status
  *
@@ -456,8 +457,12 @@ AcpiRemoveGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInstallNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
+AcpiInstallNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler, void *Context)
 {
+    OBJECT_DESCRIPTOR       *ObjDesc;
+    nte                     *DeviceNte;
+
+
     FUNCTION_TRACE ("AcpiInstallNotifyHandler");
 
 
@@ -468,6 +473,41 @@ AcpiInstallNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
+
+
+    /*
+     * The handle must refer to either a device or a thermal zone.  These
+     * are the ONLY objects that can receive ACPI notifications
+     */
+
+    DeviceNte = (nte *) Device;
+    if ((DeviceNte->Type != TYPE_Device) &&
+        (DeviceNte->Type != TYPE_Thermal))
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    /* Check for an existing handler */
+
+    ObjDesc = DeviceNte->Value;
+    if (ObjDesc->Device.Handler)
+    {
+        FUNCTION_EXIT;
+        return AE_HANDLER_EXISTS;
+    }
+
+
+    /* 
+     * Now we can install the handler
+     * Devices and Thermal zones share a common structure
+     */
+
+    /* TBD: Mutex?? */
+
+    ObjDesc->Device.Handler = Handler;
+    ObjDesc->Device.Context = Context;
 
 
     FUNCTION_EXIT;
@@ -489,8 +529,12 @@ AcpiInstallNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRemoveNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
+AcpiRemoveNotifyHandler (NsHandle Device, NOTIFY_HANDLER Handler)
 {
+    OBJECT_DESCRIPTOR       *ObjDesc;
+    nte                     *DeviceNte;
+
+
     FUNCTION_TRACE ("AcpiRemoveNotifyHandler");
 
 
@@ -501,6 +545,41 @@ AcpiRemoveNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
+
+
+    /*
+     * The handle must refer to either a device or a thermal zone.  These
+     * are the ONLY objects that can receive ACPI notifications
+     */
+
+    DeviceNte = (nte *) Device;
+    if ((DeviceNte->Type != TYPE_Device) &&
+        (DeviceNte->Type != TYPE_Thermal))
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    /* Make sure handler matches */
+
+    ObjDesc = DeviceNte->Value;
+    if (ObjDesc->Device.Handler != Handler)
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    /* 
+     * Now we can remove the handler
+     * Devices and Thermal zones share a common structure
+     */
+
+    /* TBD: Mutex?? */
+
+    ObjDesc->Device.Handler = NULL;
+    ObjDesc->Device.Context = NULL;
 
 
     FUNCTION_EXIT;
@@ -514,6 +593,7 @@ AcpiRemoveNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
  *
  * PARAMETERS:  OpRegion        - The OpRegion ID
  *              Handler         - Address of the handler
+ *              Context         - Value passed to the handler on each GPE
  *
  * RETURN:      Status
  *
@@ -522,7 +602,7 @@ AcpiRemoveNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInstallOpRegionHandler (UINT32 OpRegion, OPREGION_HANDLER Handler)
+AcpiInstallOpRegionHandler (UINT32 OpRegion, OPREGION_HANDLER Handler, void *Context)
 {
     FUNCTION_TRACE ("AcpiInstallOpRegionHandler");
 
