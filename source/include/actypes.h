@@ -56,10 +56,20 @@ typedef unsigned short  UINT16;
 typedef int             INT32;
 typedef unsigned int    UINT32;
 typedef unsigned char   UCHAR;
+/*typedef long            size_t; */
 
 typedef unsigned char   UINT8_BIT;
 typedef unsigned short  UINT16_BIT;
 typedef unsigned long   UINT32_BIT;
+
+
+/* Types specific to the OS-dependent interface */
+
+typedef void            OSD_FILE;
+
+#ifndef NULL
+#define NULL            (void *)0
+#endif
 
 #ifndef NOVOID
 typedef void            VOID;
@@ -83,6 +93,12 @@ typedef struct
     UINT32 High;
 }  QWORD;
 #endif
+
+/* Local datatypes */
+
+typedef INT32 LogHandle;
+#define NO_LOG_HANDLE ((LogHandle) -1)
+
 
 
 /* Miscellaneous data manipulation macros */
@@ -122,5 +138,19 @@ typedef struct
 #define HI_BASE(b)      ((UINT8)(((b) & 0xFF000000) >> 24))
 #define LOW_LIMIT(w)  	((UINT16) ((w) & 0x0000FFFF))
 #define HI_LIMIT(b)     ((UINT8)(((b) & 0x00FF0000) >> 16))
+
+
+/* useful defines */
+
+#ifdef FALSE
+#undef FALSE
+#endif
+#define FALSE       (1 == 0)
+
+#ifdef TRUE
+#undef TRUE
+#endif
+#define TRUE        (1 == 1)
+
 
 #endif /* DATATYPES_H */

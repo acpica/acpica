@@ -14,15 +14,18 @@
  | FILENAME: acpitype.h - Data structures defined in ACPI specification
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 20:06:30 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 20:06:31 $
  | $Log: actbl.h,v $
- | Revision 1.5  2005/06/29 20:06:30  aystarik
- | 16/32/64-bit common data types
+ | Revision 1.6  2005/06/29 20:06:31  aystarik
+ | Integrated with 03/99 OPSD code
  |
  | 
- | date	99.03.10.00.04.00;	author rmoore1;	state Exp;
+ | date	99.03.31.22.30.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 6     3/31/99 2:30p Rmoore1
+ * Integrated with 03/99 OPSD code
  * 
  * 5     3/09/99 4:04p Rmoore1
  * 16/32/64-bit common data types
@@ -69,8 +72,6 @@
 
 #ifndef __ACPITYPE_H__
 #define __ACPITYPE_H__
-
-#include <bu.h>
 
 typedef UINT32      IOADDR;                 /* Only for clarity in declarations */
 
