@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.136 $
+ *       $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -528,13 +528,6 @@ AcpiExResolveObjectToValue (
 /*
  * exdump - Scanner debug output routines
  */
-
-void
-AcpiExShowHexValue (
-    UINT32                  ByteCount,
-    UINT8                   *AmlStart,
-    UINT32                  LeadSpace);
-
 
 void
 AcpiExDumpOperand (
