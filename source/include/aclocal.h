@@ -362,19 +362,21 @@ typedef union acpi_op_value
     char                    *String;        /* NULL terminated string */
     char                    *Name;          /* NULL terminated string */
     struct acpi_generic_op  *Arg;           /* arguments and contained ops */
+    NAME_TABLE_ENTRY        *Entry;         /* entry in interpreter namespace tbl */ 
 
 } ACPI_OP_VALUE;
 
 
 #define ACPI_COMMON_OP \
-    void                    *Entry;         /* for use by interpreter */\
-    struct acpi_generic_op  *Next;          /* next op */\
+    DEBUG_ONLY_MEMBERS (\
+    char                    OpName[16])     /* op name (debug only) */\
+                                            /* NON-DEBUG members below: */\
     struct acpi_generic_op  *Parent;        /* parent op */\
-    ACPI_PTRDIFF            AmlOffset;      /* offset of declaration in AML */\
+    struct acpi_generic_op  *Next;          /* next op */\
+    void                    *ResultObj;     /* for use by interpreter */\
+    UINT32                  AmlOffset;      /* offset of declaration in AML */\
     UINT32                  Opcode;         /* AML opcode */\
     ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
-    DEBUG_ONLY_MEMBERS (\
-    char                    OpName[12])     /* op name (debug only) */\
 
 
 /*
@@ -405,8 +407,8 @@ typedef struct acpi_deferred_op
 {
     ACPI_COMMON_OP
     UINT32                  Name;           /* 4-byte name or 0 if none */
+    UINT32                  BodyLength;     /* AML body size */
     UINT8                   *Body;          /* AML body */
-    INT32                   BodyLength;     /* AML body size */
 
 } ACPI_DEFERRED_OP;
 
@@ -477,16 +479,24 @@ typedef struct acpi_ctrl_state
 } ACPI_CTRL_STATE;
 
 
+
+#define NEXT_OP_DOWNWARD    1
+#define NEXT_OP_UPWARD      2
+
 typedef struct acpi_walk_state
 {
-    ACPI_GENERIC_OP         *Origin;        /* Start of walk */
-    ACPI_GENERIC_OP         *NextOp;        /* next op to be processed */
-    ACPI_CTRL_STATE         *ControlState;  /* List of control states (nested IFs) */
-    struct acpi_walk_state  *Next;
+    ACPI_GENERIC_OP         *Origin;                            /* Start of walk */
+    ACPI_GENERIC_OP         *PrevOp;                            /* Last op that was processed */
+    ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
+    ACPI_CTRL_STATE         *ControlState;                      /* List of control states (nested IFs) */
+    union AcpiObjInternal   *Arguments[MTH_NUM_ARGS];           /* Control method arguments */
+    union AcpiObjInternal   *LocalVariables[MTH_NUM_LOCALS];    /* Control method locals */
+    union AcpiObjInternal   *Operands[OBJ_NUM_OPERANDS];        /* Operands passed to the interpreter TBD: make max configurable */
+    struct acpi_walk_state  *Next;                              /* Next WalkState in list */
 
-    /* TBD: move method stack here:  METHOD_STACK            MethodInfo; */
-
-    BOOLEAN                 LastPredicate;  /* Result of last predicate */
+    BOOLEAN                 LastPredicate;                      /* Result of last predicate */
+    UINT8                   NextOpInfo;                         /* Info about NextOp */
+    UINT8                   NumOperands;                        /* Count of objects in the Operands[] array */
 
 } ACPI_WALK_STATE;
 
