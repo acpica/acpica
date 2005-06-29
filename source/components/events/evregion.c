@@ -215,7 +215,7 @@ EvExecuteRegMethod (
      */
     Params [0] = &SpaceID_Obj;
     Params [1] = &Function_Obj;
-    Params [1] = NULL;
+    Params [2] = NULL;
 
     /*
      *  Set up the parameter objects
