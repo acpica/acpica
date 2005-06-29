@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  ******************************************************************************/
 
@@ -144,6 +144,7 @@ AcpiCmDeleteInternalObj (
     ACPI_OPERAND_OBJECT     *Object)
 {
     void                    *ObjPointer = NULL;
+    ACPI_OPERAND_OBJECT     *HandlerDesc;
 
 
     FUNCTION_TRACE_PTR ("CmDeleteInternalObj", Object);
@@ -249,12 +250,17 @@ AcpiCmDeleteInternalObj (
 
         if (Object->Region.Extra)
         {
-            /* Free the Context block if it exists */
-
-            /* TBD: [Investigate] what if this is a user-installed context?
-             * (versus the PciContext allocated in AcpiEvPciConfigRegionSetup)
+            /* 
+             * Free the RegionContext if and only if the handler is one of the
+             * default handlers -- and therefore, we created the context object
+             * locally, it was not created by an external caller.
              */
-            ObjPointer = Object->Region.Extra->Extra.RegionContext;
+            HandlerDesc = Object->Region.AddrHandler;
+            if ((HandlerDesc) &&
+                (HandlerDesc->AddrHandler.Hflags == ADDR_HANDLER_DEFAULT_INSTALLED))
+            {
+                ObjPointer = Object->Region.Extra->Extra.RegionContext;
+            }
 
             /* Now we can free the Extra object */
 
