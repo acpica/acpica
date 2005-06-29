@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -246,6 +246,13 @@ UINT8                       AcpiGbl_NsProperties[] =
     NSP_NORMAL,                 /* 33 Extra            */
     NSP_NORMAL                  /* 34 Invalid          */
 };
+
+
+/* Hex to ASCII conversion table */
+
+NATIVE_CHAR                 AcpiGbl_HexToAscii[] =
+                                {'0','1','2','3','4','5','6','7',
+                                '8','9','A','B','C','D','E','F'};
 
 
 /******************************************************************************
