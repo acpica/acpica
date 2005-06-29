@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.138 $
+ *              $Revision: 1.139 $
  *
  *****************************************************************************/
 
@@ -647,11 +647,11 @@ AcpiInstallGpeHandler (
 
     /* Install the handler */
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
     GpeEventInfo->Handler = Handler;
     GpeEventInfo->Context = Context;
     GpeEventInfo->Flags   = (UINT8) Type;
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
 
     /* Clear the GPE (of stale events), the enable it */
 
@@ -738,10 +738,10 @@ AcpiRemoveGpeHandler (
 
     /* Remove the handler */
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
     GpeEventInfo->Handler = NULL;
     GpeEventInfo->Context = NULL;
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
 
 
 UnlockAndExit:
