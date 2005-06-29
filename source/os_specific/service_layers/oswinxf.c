@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.35 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -164,7 +164,128 @@ AeLocalGetRootPointer (
     UINT32                  Flags,
     ACPI_POINTER            *Address);
 
-FILE                        *AcpiGbl_OutputFile = stdout;
+FILE                        *AcpiGbl_OutputFile;
+
+
+#ifndef _ACPI_EXEC_APP
+/* Used by both iASL and AcpiDump applications */
+
+/******************************************************************************
+ *
+ * FUNCTION:    OsGetTable
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Pointer to the table.  NULL if failure
+ *
+ * DESCRIPTION: Get the DSDT from the Windows registry.
+ *
+ *****************************************************************************/
+
+ACPI_TABLE_HEADER *
+OsGetTable (
+    char                *TableName)
+{
+    HKEY                Handle;
+    CHAR                s[500];
+    ULONG               i;
+    LONG                Status;
+    ULONG               Type;
+    ULONG               NameSize;
+    ULONG               DataSize;
+    HKEY                SubKey;
+    ACPI_TABLE_HEADER   *Buffer;
+
+
+    /* Get a handle to the DSDT key */
+
+    ACPI_STRCPY (s, "HARDWARE\\ACPI\\");
+    ACPI_STRCAT (s, TableName);
+
+    Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, s,
+                0L, KEY_ALL_ACCESS, &Handle);
+
+    if (Status != ERROR_SUCCESS) 
+    {
+        AcpiOsPrintf ("Could not find %s in registry at %s\n", TableName, s);
+        return (NULL);
+    }
+
+    /* Actual DSDT is down a couple of levels */
+
+    for (i = 0; ;) 
+    {
+        Status = RegEnumKey (Handle, i, s, sizeof(s));
+        i += 1;
+        if (Status == ERROR_NO_MORE_ITEMS) 
+        {
+            break;
+        }
+
+        Status = RegOpenKey (Handle, s, &SubKey);
+        if (Status != ERROR_SUCCESS) 
+        {
+            AcpiOsPrintf ("Could not open %s entry\n", TableName);
+            return (NULL);
+        }
+
+        RegCloseKey (Handle);
+        Handle = SubKey;
+        i = 0;
+    }
+
+    /* Find the DSDT entry */
+
+    for (i = 0; ;) 
+    {
+        NameSize = sizeof (s);
+        Status = RegEnumValue (Handle, i, s, &NameSize,
+                    NULL, &Type, NULL, 0 );
+        if (Status != ERROR_SUCCESS) 
+        {
+            AcpiOsPrintf ("Could not get %s registry entry\n", TableName);
+            return (NULL);
+        }
+
+        if (Type == REG_BINARY)
+        {
+            break;
+        }
+        i += 1;
+    }
+
+    /* Get the size of the DSDT */
+
+    Status = RegQueryValueEx (Handle, s, NULL, NULL, NULL, &DataSize);
+    if (Status != ERROR_SUCCESS) 
+    {
+        AcpiOsPrintf ("Could not read the %s table size\n", TableName);
+        return (NULL);
+    }
+
+    /* Allocate a new buffer for the DSDT */
+
+    Buffer = AcpiOsAllocate (DataSize);
+    if (!Buffer)
+    {
+        goto Cleanup;
+    }
+
+    /* Get the actual DSDT */
+
+    Status = RegQueryValueEx (Handle, s, NULL, NULL, (UCHAR *) Buffer, &DataSize);
+    if (Status != ERROR_SUCCESS) 
+    {
+        AcpiOsPrintf ("Could not read %s data\n", TableName);
+        return (NULL);
+    }
+
+Cleanup:
+    RegCloseKey (Handle);
+    return (Buffer);
+}
+
+#endif
 
 
 /******************************************************************************
@@ -184,6 +305,8 @@ AcpiOsInitialize (void)
 {
     UINT32                  i;
 
+
+    AcpiGbl_OutputFile = stdout;
 
     for (i = 0; i < NUM_SEMAPHORES; i++)
     {
@@ -243,6 +366,10 @@ AcpiOsTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
     ACPI_TABLE_HEADER       **NewTable)
 {
+#ifndef _ACPI_EXEC_APP
+    char                    TableName[ACPI_NAME_SIZE + 1];
+#endif
+
 
     if (!ExistingTable || !NewTable)
     {
@@ -261,6 +388,24 @@ AcpiOsTableOverride (
         /* override DSDT with itself */
 
         *NewTable = AcpiGbl_DbTablePtr;
+    }
+
+#else
+
+    /* Construct a null-terminated string from table signature */
+
+    TableName[ACPI_NAME_SIZE] = 0;
+    ACPI_STRNCPY (TableName, ExistingTable->Signature, ACPI_NAME_SIZE);
+
+    *NewTable = OsGetTable (TableName);
+    if (*NewTable)
+    {
+        AcpiOsPrintf ("%s obtained from registry, %d bytes\n", 
+            TableName, (*NewTable)->Length);
+    }
+    else
+    {
+        AcpiOsPrintf ("Could not read %s from registry\n", TableName);
     }
 #endif
 
@@ -704,11 +849,12 @@ ACPI_STATUS
 AcpiOsWaitSemaphore (
     ACPI_HANDLE         Handle,
     UINT32              Units,
-    UINT32              Timeout)
+    UINT16              Timeout)
 {
 #ifdef _MULTI_THREADED
     UINT32              Index = (UINT32) Handle;
     UINT32              WaitStatus;
+    UINT32              OsTimeout = Timeout;
 
 
     ACPI_FUNCTION_NAME ("OsWaitSemaphore");
@@ -734,7 +880,12 @@ AcpiOsWaitSemaphore (
         Timeout = 400000;
 */
 
-    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, Timeout);
+    if (Timeout == ACPI_WAIT_FOREVER)
+    {
+        OsTimeout = INFINITE;
+    }
+
+    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout);
     if (WaitStatus == WAIT_TIMEOUT)
     {
 /* Make optional -- wait of 0 is used to detect if unit is available
@@ -1016,6 +1167,16 @@ AcpiOsWritePciConfiguration (
 {
 
     return (AE_OK);
+}
+
+/* TEMPORARY STUB FUNCTION */
+void
+AcpiOsDerivePciId(
+    ACPI_HANDLE	            rhandle,
+    ACPI_HANDLE             chandle,
+    ACPI_PCI_ID	            **PciId)
+{
+
 }
 
 
