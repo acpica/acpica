@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  ******************************************************************************/
 
@@ -816,13 +816,13 @@ AcpiDbDisplayGpes (void)
             AcpiOsPrintf ("\nBlock %d - Info %p  DeviceNode %p [%s]\n",
                     Block, GpeBlock, GpeBlock->Node, Buffer);
             AcpiOsPrintf ("    Registers:    %u (%u GPEs) \n",
-                    GpeBlock->RegisterCount, 
+                    GpeBlock->RegisterCount,
                     ACPI_MUL_8 (GpeBlock->RegisterCount));
             AcpiOsPrintf ("    GPE range:    0x%X to 0x%X\n",
                     GpeBlock->BlockBaseNumber,
-                    GpeBlock->BlockBaseNumber + 
+                    GpeBlock->BlockBaseNumber +
                         (GpeBlock->RegisterCount * 8) -1);
-            AcpiOsPrintf ("    RegisterInfo: %p  Status %p Enable %p\n", 
+            AcpiOsPrintf ("    RegisterInfo: %p  Status %p Enable %p\n",
                     GpeBlock->RegisterInfo,
                     (UINT32) GpeBlock->RegisterInfo->StatusAddress.Address,
                     (UINT32) GpeBlock->RegisterInfo->EnableAddress.Address);
@@ -858,7 +858,7 @@ AcpiDbDisplayGpes (void)
                     AcpiOsPrintf (
                             "        GPE %.3X:  %p    Bit %2.2X  Flags %2.2X: ",
                             GpeBlock->BlockBaseNumber + GpeIndex,
-                            GpeEventInfo, GpeEventInfo->RegisterBit, 
+                            GpeEventInfo, GpeEventInfo->RegisterBit,
                             GpeEventInfo->Flags);
 
                     if (GpeEventInfo->Flags & ACPI_GPE_LEVEL_TRIGGERED)
