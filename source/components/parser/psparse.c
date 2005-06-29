@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.141 $
+ *              $Revision: 1.142 $
  *
  *****************************************************************************/
 
@@ -603,8 +603,8 @@ AcpiPsParseLoop (
         {
             /* Get the next opcode from the AML stream */
 
-            WalkState->AmlOffset = ACPI_PTR_DIFF (ParserState->Aml,
-                                                  ParserState->AmlStart);
+            WalkState->AmlOffset = (UINT32) ACPI_PTR_DIFF (ParserState->Aml,
+                                                           ParserState->AmlStart);
             WalkState->Opcode    = AcpiPsPeekOpcode (ParserState);
 
             /*
@@ -836,8 +836,8 @@ AcpiPsParseLoop (
                 while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) &&
                         !WalkState->ArgCount)
                 {
-                    WalkState->AmlOffset = ACPI_PTR_DIFF (ParserState->Aml,
-                                                          ParserState->AmlStart);
+                    WalkState->AmlOffset = (UINT32) ACPI_PTR_DIFF (ParserState->Aml,
+                                                                   ParserState->AmlStart);
                     Status = AcpiPsGetNextArg (WalkState, ParserState,
                                 GET_CURRENT_ARG_TYPE (WalkState->ArgTypes), &Arg);
                     if (ACPI_FAILURE (Status))
