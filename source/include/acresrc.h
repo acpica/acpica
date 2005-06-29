@@ -117,6 +117,9 @@
 #ifndef __RESOURCE_H__
 #define __RESOURCE_H__
 
+#include <acpitypes.h>
+#include <acpiobj.h>
+
 /* 
  *  Function prototypes called from Acpi* APIs
  */
