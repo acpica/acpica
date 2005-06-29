@@ -1,41 +1,62 @@
+/*__________________________________________________________________________
+ |
+ |
+ |           Copyright (C) Intel Corporation 1994-1996
+ |
+ | All rights reserved.  No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | FILENAME: acpisubsys.h - external interfaces to the ACPI subsystem
+ |__________________________________________________________________________
+*/
 
-//
-// Interfaces to the Generic ACPI Subsystem
-//
-
-
-#include "datatypes.h"
-#include "acpiobj.h"
+#include <datatypes.h>
+#include <acpiobj.h>
 
 #define ACPI_MODE               1
 #define LEGACY_MODE             2
 #define DISABLE_KNOWN_EVENTS    8
 
 
-int 
-AcpiInit (char *);
+INT32 
+AcpiInit (
+    char                *AcpiFile);
 
-int
-AcpiLoadNameSpace (int iDisplayAmlDuringLoad);
+INT32
+AcpiLoadNameSpace (
+    INT32               DisplayAmlDuringLoad);
 
-int
-AcpiExecuteMethod (char * pcMethodName, OBJECT_DESCRIPTOR **ppsReturnValue,
-                    OBJECT_DESCRIPTOR **ppsParams);
+INT32
+AcpiExecuteMethod (
+    char                *MethodName, 
+    OBJECT_DESCRIPTOR   **ReturnValue,
+    OBJECT_DESCRIPTOR   **Params);
 
 void
-AcpiCleanup (void);
+AcpiCleanup (
+    void);
 
-int
-AcpiSetMode (int iMode);
+INT32
+AcpiSetMode (
+    INT32               Mode);
 
-int
-AcpiModeStatus (void);
+INT32
+AcpiModeStatus (
+    void);
 
-int
-AcpiModeCapabilities (void);
+INT32
+AcpiModeCapabilities (
+    void);
 
-int
-AcpiEnable (char *pcTestName, int iFlags);
+INT32
+AcpiEnable (
+    char                *TestName, 
+    INT32               Flags);
 
-int 
-AcpiDisable (void);
+INT32 
+AcpiDisable (
+    void);
