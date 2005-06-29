@@ -169,6 +169,14 @@ SOURCE=..\..\Subsystem\Events\evgpe.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Events\evnotify.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Events\evregion.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Events\evsci.c
 # End Source File
 # Begin Source File
@@ -427,6 +435,10 @@ SOURCE=..\..\Subsystem\Methods\mtsta.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Methods\mtuid.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Methods\mtwak.c
 # End Source File
 # Begin Source File
@@ -556,6 +568,10 @@ SOURCE=..\..\Subsystem\NameSpace\nsutils.c
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsapi.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
