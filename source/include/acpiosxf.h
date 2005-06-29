@@ -335,7 +335,7 @@ AcpiOsWriteMemory (
 
 /*
  * Platform and hardware-independent PCI configuration space access
- * Note: Can't use "Register" as a parameter, changed to "Reg" -- 
+ * Note: Can't use "Register" as a parameter, changed to "Reg" --
  * certain compilers complain.
  */
 
