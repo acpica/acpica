@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -243,7 +243,7 @@ AcpiDsParseMethod (
     OwnerId = AcpiCmAllocateOwnerId (OWNER_TYPE_METHOD);
     ObjDesc->Method.OwningId = OwnerId;
 
-    DEBUG_EXEC (AcpiDbGenerateStatistics (Op, 1));
+    DEBUGGER_EXEC (AcpiDbGenerateStatistics (Op, 1));
 
     DEBUG_PRINT (ACPI_INFO,
         ("DsParseMethod: **** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
