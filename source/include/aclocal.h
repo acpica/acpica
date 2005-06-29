@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.89 $
+ *       $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -266,10 +266,11 @@ typedef struct acpi_node
 
 /* Node flags */
 
-#define ANOBJ_AML_ATTACHMENT        0x1
-#define ANOBJ_END_OF_PEER_LIST      0x2
-#define ANOBJ_DATA_WIDTH_32         0x4     /* Parent table is 64-bits */
-
+#define ANOBJ_AML_ATTACHMENT        0x01
+#define ANOBJ_END_OF_PEER_LIST      0x02
+#define ANOBJ_DATA_WIDTH_32         0x04     /* Parent table is 64-bits */
+#define ANOBJ_METHOD_ARG            0x40
+#define ANOBJ_METHOD_LOCAL          0x80
 
 /*
  * ACPI Table Descriptor.  One per ACPI table
