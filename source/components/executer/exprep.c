@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -491,10 +491,10 @@ AcpiExPrepFieldValue (
      * preserving the current type of that NamedObj.
      */
     Status = AcpiNsAttachObject (Info->FieldNode, ObjDesc,
-                    (UINT8) AcpiNsGetType (Info->FieldNode));
+                    AcpiNsGetType (Info->FieldNode));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "set NamedObj %p (%4.4s) val = %p\n",
-            Info->FieldNode, (char*)&(Info->FieldNode->Name), ObjDesc));
+            Info->FieldNode, (char *) &(Info->FieldNode->Name), ObjDesc));
 
     /* Remove local reference to the object */
 
