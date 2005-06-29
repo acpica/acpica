@@ -202,6 +202,10 @@ NsLookup (
  * Table allocation/deallocation - nsalloc
  */
 
+BOOLEAN
+NsIsInSystemTable (
+    void                    *Where);
+
 NAME_TABLE_ENTRY *
 NsAllocateNameTable (
     INT32                   NteEntries);
