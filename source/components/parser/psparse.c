@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -708,6 +708,10 @@ AcpiPsParseLoop (
                 PreOp.Common.Value.Arg = NULL;
                 PreOp.Common.AmlOpcode = WalkState->Opcode;
 
+                /*
+                 * Get and append arguments until we find the node that contains
+                 * the name (the type ARGP_NAME).
+                 */
                 while (GET_CURRENT_ARG_TYPE (WalkState->ArgTypes) != ARGP_NAME)
                 {
                     Arg = AcpiPsGetNextArg (ParserState,
