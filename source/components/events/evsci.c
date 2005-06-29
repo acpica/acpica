@@ -96,7 +96,7 @@
  *****************************************************************************/
 
 
-#define __EVSCI_C__
+/* What the hell is this?? #define __EVSCI_C__ */
 
 #include <acpi.h>
 #include <namespace.h>
@@ -109,139 +109,16 @@
 
 
 static ST_KEY_DESC_TABLE KDT[] = {
-   {"0000", '1', "", ""},	/*	obsolete	*/
-   {"0001", 'W', "", ""},	/*	obsolete: SCI edge sensitivity in legacy mode	*/
-   {"0002", '1', "ACPI tables are required but not available", "ACPI tables are required but not available"},
-   {"0003", '1', "", ""},	/*	obsolete	*/
-   {"0004", '1', "", ""},	/*	obsolete	*/
-   {"0005", '1', "Unable to transition to ACPI Mode", "Unable to transition to ACPI Mode"},
-   {"0006", '1', "Unable to install System Control Interrupt Handler", "Unable to install System Control Interrupt Handler"},
-   {"0007", 'W', "Unable to restore interrupt to edge sensitivity", "Unable to restore interrupt to edge sensitivity"},
-   {"0008", 'W', "Unable to restore interrupt to disable", "Unable to restore interrupt to disable"},
-   {"0009", 'W', "Unable to transition to Original Mode", "Unable to transition to Original Mode"},
-   {"0010", '1', "ACPI namespace failed to load correctly", "ACPI namespace failed to load correctly"},
-   {"0011", '1', "Unable to enable SCI interrupt", "Unable to enable SCI interrupt"},
+   {"0000", '1', "ACPI tables are required but not available", "ACPI tables are required but not available"},
+   {"0001", '1', "Unable to transition to ACPI Mode", "Unable to transition to ACPI Mode"},
+   {"0002", '1', "Unable to install System Control Interrupt Handler", "Unable to install System Control Interrupt Handler"},
+   {"0003", 'W', "Unable to restore interrupt to edge sensitivity", "Unable to restore interrupt to edge sensitivity"},
+   {"0004", 'W', "Unable to restore interrupt to disable", "Unable to restore interrupt to disable"},
+   {"0005", 'W', "Unable to transition to Original Mode", "Unable to transition to Original Mode"},
+   {"0006", '1', "ACPI namespace failed to load correctly", "ACPI namespace failed to load correctly"},
+   {"0007", '1', "Unable to enable SCI interrupt", "Unable to enable SCI interrupt"},
    {NULL, 'I', NULL, NULL}
 };
-
-/**************************************************************************
- *
- * FUNCTION:    InitializeSCI
- *
- * PARAMETERS:  ProgramSCI     TRUE if SCI can be reprogrammed to level sensitivity
- *                              FALSE if current SCI sensitivity must be preserved
- *
- * RETURN:      0 if successful; non-zero if failure encountered
- *
- * DESCRIPTION: InitializeSCI() ensures that the system control
- *              interrupt (SCI) is properly configured.
- *              If successful, return 0. Otherwise, return non-zero.
- *
- *************************************************************************/
-
-/* TOO LOW LEVEL FOR OS=INDEPENDENT CODE !!! */
-
-
-/*
-INT32        InitializeSCI (INT32        ProgramSCI)
-{
-    INT32            ErrorMask=0, StatusOfIrq;
-
-
-    //  Set up the System Control Interrupt (SCI) as required.
-    //  If it is installed, verify it is level not edge triggered.
-    //  If it is edge triggered, bail.
-    //
-
-    IrqEnabledAtPic (FACP->SciInt, &StatusOfIrq);
-    if (SAVE_NOT_VALID == IrqEnableSave)
-    {
-        IrqEnableSave = StatusOfIrq;
-        trace_bu (debug_level() >= 4, __FILE__, __LINE__,
-            "InitializeSCI: IrqEnableSave=%d (%sabled)", IrqEnableSave,
-            IrqEnableSave ? "dis" : "en");
-    }
-
-    if (IRQ_DISABLE != StatusOfIrq)
-    {   
-        //  SCI interrupt already enabled
-
-        IrqAttributesAtPic (FACP->SciInt, &StatusOfIrq);
-        if (SAVE_NOT_VALID == EdgeLevelSave)
-        {
-            EdgeLevelSave = StatusOfIrq;
-            trace_bu (debug_level() >= 4, __FILE__, __LINE__,
-                "InitializeSCI: EdgeLevelSave=%d (%s)", EdgeLevelSave,
-                EdgeLevelSave ? "level" : "edge");
-        }
-
-        if (IRQ_EDGE == StatusOfIrq)
-        {   
-            //   SCI interrupt is edge sensitive
-
-            printf_bu ("\nInterrupt %02Xh is Enabled/Edge sensitive and the"
-                "\nSCI handler requires it to be Level sensitive.", FACP->SciInt);
-
-            if (ProgramSCI)
-            {   
-                //  set SCI to Level Triggered
-
-                SetIrqToLevel (FACP->SciInt);
-                IrqAttributesAtPic (FACP->SciInt, &StatusOfIrq);
-
-                if (IRQ_EDGE == StatusOfIrq)
-                    printf_bu ("\n  Unable to reprogram SCI interrupt %d to level sensitivity",
-                        FACP->SciInt);
-                else
-                    printf_bu ("\n  Interrupt %02Xh reprogrammed to level sensitive\n",
-                        FACP->SciInt);
-            }
-
-            if (IRQ_EDGE == StatusOfIrq)
-            {   
-                    //  SCI interrupt is still edge sensitive
-
-                if (ACPI_MODE == AcpiModeStatus())
-                {   
-                        //  edge level sensitivity in ACPI mode
-
-                    Kinc_error ("0000", PRINT | APPEND_CRLF);
-                    ErrorMask |= SCI_LEVEL_INT_MASK;
-                    printf_bu ("    Failure Explanation:");
-                    printf_bu ("\n      ACPI Specification 1.0(a) sections 4.7.2.5, 5.2.5, and 5.6.1");
-                    printf_bu ("\n      specify that the system control interrupt must be sharable, level");
-                    printf_bu ("\n      sensitive, active low, and mapped to a declared interrupt vector.\n");
-                }
-
-                else
-                {
-                    //  edge level sensitivity in legacy (non-ACPI) mode
-                    //  To prevent legacy mode interrupt handling problems where
-                    //  interrupt handlers expect the interrupt to be configured
-                    //  edge sensitive, just issue warning since we may be allowed
-                    //  to reprogram the interrupt to level sensitivity after
-                    //  transitioning into ACPI mode.
-                    //
-                    dKinc_warning ("0001", PRINT | APPEND_CRLF);
-
-            }
-        }
-    }
-    else
-    {   
-            //  SCI interrupt disabled
-            //  Enable the SCI Interrupt
-
-        EnableIrqAtPic (FACP->SciInt);
-
-            //  Set it to Level Triggered
-
-        SetIrqToLevel (FACP->SciInt);
-    }
-
-
-    return ErrorMask;
-}
 
 
 /**************************************************************************
@@ -263,16 +140,15 @@ INT32        InitializeSCI (INT32        ProgramSCI)
 INT32        
 VerifyAcpiTablesPresent (char *TestName)
 {
-    INT32            ErrorMask = 0;
+    INT32 ErrorMask = 0;
 
     FUNCTION_TRACE ("VerifyAcpiTablesPresent");
-
 
     if (AcpiLibInitStatus == E_NO_ACPI_TBLS)
     {
         /*	ACPI tables are not available	*/
 
-        REPORT_ERROR (&KDT[2]);
+        REPORT_ERROR (&KDT[0]);
 
         ErrorMask = NO_ACPI_TABLES_MASK;
     }
@@ -303,10 +179,9 @@ VerifyAcpiTablesPresent (char *TestName)
 INT32        
 AcpiEnable (char *TestName, INT32 Flags)
 {
-    INT32            ErrorMask = 0;
+    INT32 ErrorMask = 0;
 
     FUNCTION_TRACE ("AcpiEnable");
-
 
     if (NULL == TestName)
     {
@@ -337,6 +212,8 @@ AcpiEnable (char *TestName, INT32 Flags)
 
         OriginalMode = AcpiModeStatus ();
 
+		/* CHANGE: right now you can enable all or disable all.  This needs
+		   to be split out somehow. */
         if (Flags & DISABLE_KNOWN_EVENTS)
         {   
             /*  disable any ACPI interrupt sources that may be enabled  */
@@ -363,7 +240,7 @@ AcpiEnable (char *TestName, INT32 Flags)
         {   
             /*	Unable to install SCI handler	*/
 
-            REPORT_ERROR (&KDT[6]);
+            REPORT_ERROR (&KDT[2]);
 			ErrorMask |= NO_SCI_HANDLER_MASK;
 		}
 
@@ -384,7 +261,7 @@ AcpiEnable (char *TestName, INT32 Flags)
 				{	
                     /*	Unable to transition to ACPI Mode	*/
 					
-                    REPORT_ERROR (&KDT[5]);
+                    REPORT_ERROR (&KDT[1]);
 					ErrorMask |= NO_ACPI_TRANSITION_MASK;
 				}
 			}
@@ -393,13 +270,13 @@ AcpiEnable (char *TestName, INT32 Flags)
 			{	
                 /*	verify SCI sensitivity while in ACPI mode	*/
 
-/* TOO LOW LEVEL?? !!! TBD                 
+				/* TOO LOW LEVEL?? !!! TBD                 
                 if (GlobalProgramSCI ||	
 					 (Flags & PROGRAM_SCI_LEVEL_SENSITIVITY))
 					ErrorMask |= iInitializeSCI (TRUE);
 				else
 					ErrorMask |= iInitializeSCI (FALSE);
-*/
+				*/
 			}
         }
 
@@ -410,7 +287,7 @@ AcpiEnable (char *TestName, INT32 Flags)
             DEBUG_PRINT (ACPI_INFO, ("Loading ACPI namespace\n"));
 			if (AcpiLoadNameSpace (FALSE))
 			{
-                REPORT_ERROR (&KDT[10]);
+                REPORT_ERROR (&KDT[6]);
 				ErrorMask |= UNABLE_TO_LOAD_NAMESPACE;
 			}
 			else
@@ -442,11 +319,9 @@ AcpiEnable (char *TestName, INT32 Flags)
 void
 RestoreAcpiState (void)
 {
-    INT32           Index;
-
+    INT32 Index;
 
     FUNCTION_TRACE ("RestoreAcpiState");
-
 
     /* restore state of chipset enable bits. */
     
@@ -517,17 +392,15 @@ RestoreAcpiState (void)
 INT32        
 AcpiDisable ()
 {
-    INT32            ErrorMask = 0;
+    INT32 ErrorMask = 0;
 
     FUNCTION_TRACE ("AcpiDisable");
-
-
 
     /* Restore original ACPI mode   */
 
     if (E_OK != AcpiSetMode (OriginalMode))
     {
-        REPORT_WARNING (&KDT[9]);
+        REPORT_WARNING (&KDT[5]);
         
         /*  ErrorMask |= NO_LEGACY_TRANSITION_MASK;    */
     }
@@ -535,7 +408,6 @@ AcpiDisable ()
     /* Unload the SCI interrupt handler  */
 
     UninstallSciHandler ();
-
 
     RestoreAcpiState ();
     AcpiLocalCleanup ();
