@@ -243,6 +243,16 @@ CmBuildInternalObject (
     ACPI_OBJECT             *Obj, 
     ACPI_OBJECT_INTERNAL    *InternalObj);
 
+ACPI_STATUS
+CmCopyInternalSimpleObject (
+    ACPI_OBJECT_INTERNAL    *SourceObj,
+    ACPI_OBJECT_INTERNAL    *DestObj);
+
+ACPI_STATUS
+CmBuildCopyInternalPackageObject (
+    ACPI_OBJECT_INTERNAL    *SourceObj, 
+    ACPI_OBJECT_INTERNAL    *DestObj);
+
 /*
  * CmSize - Object size routines
  */
