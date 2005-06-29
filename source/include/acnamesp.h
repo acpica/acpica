@@ -161,34 +161,6 @@
 #define NS_ROOT_PATH            "/"
 
 
-
-/* 
- * Names built-in to the interpreter
- *
- * Initial values are currently supported only for types String and Number.
- * To avoid type punning, both are specified as strings in this table.
- */
-
-static struct InitVal {
-    char        *Name;
-    NsType      Type;
-    char        *Val;
-} PreDefinedNames[] = {
-    {"_GPE",    TYPE_DefAny},
-    {"_PR_",    TYPE_DefAny},
-    {"_SB_",    TYPE_DefAny},
-    {"_SI_",    TYPE_DefAny},
-    {"_TZ_",    TYPE_DefAny},
-    {"_REV",    TYPE_Number, "2"},
-    {"_OS_",    TYPE_String, "Intel AML interpreter"},
-    {"_GL_",    TYPE_Mutex},
-
-    /* Table terminator */
-
-    {(char *)0, TYPE_Any}
-};
-
-
 /* Namespace globals */
 
 extern SCOPE_STACK              ScopeStack[];
@@ -298,7 +270,7 @@ NsPatternMatch (
 void *
 NsNameCompare (
     NsHandle            ObjHandle, 
-    INT32               Level, 
+    UINT32              Level, 
     void                *Context);
 
 void
@@ -324,7 +296,7 @@ NsGetHandle (
 void *
 NsCompareValue (
     NsHandle            ObjHandle, 
-    INT32               Level, 
+    UINT32              Level, 
     void                *ObjDesc);
 
 NsHandle
