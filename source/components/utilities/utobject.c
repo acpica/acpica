@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -430,7 +430,7 @@ AcpiUtGetSimpleObjectSize (
      * must be accessed bytewise or there may be alignment problems on
      * certain processors
      */
-    switch (InternalObject->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (InternalObject))
     {
     case ACPI_TYPE_STRING:
 
@@ -486,7 +486,7 @@ AcpiUtGetSimpleObjectSize (
     default:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported type=%X in object %p\n",
-            InternalObject->Common.Type, InternalObject));
+            ACPI_GET_OBJECT_TYPE (InternalObject), InternalObject));
         Status = AE_TYPE;
         break;
     }
@@ -645,7 +645,7 @@ AcpiUtGetObjectSize(
 
 
     if ((ACPI_GET_DESCRIPTOR_TYPE (InternalObject) == ACPI_DESC_TYPE_OPERAND) &&
-        (InternalObject->Common.Type == ACPI_TYPE_PACKAGE))
+        (ACPI_GET_OBJECT_TYPE (InternalObject) == ACPI_TYPE_PACKAGE))
     {
         Status = AcpiUtGetPackageObjectSize (InternalObject, ObjLength);
     }
