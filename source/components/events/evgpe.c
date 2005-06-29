@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -176,6 +176,8 @@ AcpiEvSetGpeType (
  * FUNCTION:    AcpiEvUpdateGpeEnableMasks
  *
  * PARAMETERS:  GpeEventInfo            - GPE to update
+ *              Type                    - What to do: ACPI_GPE_DISABLE or
+ *                                        ACPI_GPE_ENABLE
  *
  * RETURN:      Status
  *
@@ -243,6 +245,8 @@ AcpiEvUpdateGpeEnableMasks (
  * FUNCTION:    AcpiEvEnableGpe
  *
  * PARAMETERS:  GpeEventInfo            - GPE to enable
+ *              WriteToHardware         - Enable now, or just mark data structs
+ *                                        (WAKE GPEs should be deferred)
  *
  * RETURN:      Status
  *
@@ -822,7 +826,7 @@ AcpiEvGpeDispatch (
 #ifdef ACPI_GPE_NOTIFY_CHECK
 
 /*******************************************************************************
- * NOT USED, PROTOTYPE ONLY AND WILL PROBABLY BE REMOVED
+ * TBD: NOT USED, PROTOTYPE ONLY AND WILL PROBABLY BE REMOVED
  *
  * FUNCTION:    AcpiEvCheckForWakeOnlyGpe
  *
