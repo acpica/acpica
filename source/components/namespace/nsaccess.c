@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.158 $
+ *              $Revision: 1.159 $
  *
  ******************************************************************************/
 
@@ -352,6 +352,7 @@ AcpiNsLookup (
     ACPI_OBJECT_TYPE        TypeToCheckFor;
     ACPI_OBJECT_TYPE        ThisSearchType;
     UINT32                  LocalFlags = Flags & ~ACPI_NS_ERROR_IF_FOUND;
+    NATIVE_CHAR             *Path = Pathname;
 
 
     ACPI_FUNCTION_TRACE ("NsLookup");
@@ -421,7 +422,7 @@ AcpiNsLookup (
 
         NumSegments  = 0;
         ThisNode     = AcpiGbl_RootNode;
-        Pathname     = "";
+        Path     = "";
 
         ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
             "Null Pathname (Zero segments), Flags=%X\n", Flags));
@@ -441,7 +442,7 @@ AcpiNsLookup (
          * Parent Prefixes (in which case the name's scope is relative
          * to the current scope).
          */
-        if (*Pathname == (UINT8) AML_ROOT_PREFIX)
+        if (*Path == (UINT8) AML_ROOT_PREFIX)
         {
             /* Pathname is fully qualified, start from the root */
 
@@ -449,7 +450,7 @@ AcpiNsLookup (
 
             /* Point to name segment part */
 
-            Pathname++;
+            Path++;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching from root [%p]\n",
                 ThisNode));
@@ -467,13 +468,13 @@ AcpiNsLookup (
              * the parent node for each prefix instance.
              */
             ThisNode = PrefixNode;
-            while (*Pathname == (UINT8) AML_PARENT_PREFIX)
+            while (*Path == (UINT8) AML_PARENT_PREFIX)
             {
                 /*
                  * Point past this prefix to the name segment
                  * part or the next Parent Prefix
                  */
-                Pathname++;
+                Path++;
 
                 /* Backup to the parent node */
 
@@ -502,7 +503,7 @@ AcpiNsLookup (
          * Examine the name prefix opcode, if any, to determine the number of
          * segments.
          */
-        switch (*Pathname)
+        switch (*Path)
         {
         case 0:
             /*
@@ -520,7 +521,7 @@ AcpiNsLookup (
             /* Two segments, point to first name segment */
 
             NumSegments = 2;
-            Pathname++;
+            Path++;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Dual Pathname (2 segments, Flags=%X)\n", Flags));
@@ -530,9 +531,9 @@ AcpiNsLookup (
 
             /* Extract segment count, point to first name segment */
 
-            Pathname++;
-            NumSegments = (UINT32) (UINT8) *Pathname;
-            Pathname++;
+            Path++;
+            NumSegments = (UINT32) (UINT8) *Path;
+            Path++;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Multi Pathname (%d Segments, Flags=%X) \n",
@@ -551,7 +552,7 @@ AcpiNsLookup (
             break;
         }
 
-        ACPI_DEBUG_EXEC (AcpiNsPrintPathname (NumSegments, Pathname));
+        ACPI_DEBUG_EXEC (AcpiNsPrintPathname (NumSegments, Path));
     }
 
     /*
@@ -577,7 +578,7 @@ AcpiNsLookup (
 
         /* Extract one ACPI name from the front of the pathname */
 
-        ACPI_MOVE_UNALIGNED32_TO_32 (&SimpleName, Pathname);
+        ACPI_MOVE_UNALIGNED32_TO_32 (&SimpleName, Path);
 
         /* Try to find the ACPI name */
 
@@ -640,7 +641,7 @@ AcpiNsLookup (
 
         /* Point to next name segment and make this node current */
 
-        Pathname += ACPI_NAME_SIZE;
+        Path += ACPI_NAME_SIZE;
         CurrentNode = ThisNode;
     }
 
