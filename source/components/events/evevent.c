@@ -149,11 +149,11 @@ AcpiEvFixedEventInitialize(void)
         AcpiGbl_FixedEventHandlers[i].Context = NULL;
     }
 
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, ACPI_EVENT_PMTIMER      + TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, ACPI_EVENT_GLOBAL       + TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, ACPI_EVENT_POWER_BUTTON + TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, ACPI_EVENT_SLEEP_BUTTON + TMR_EN, 0);
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, ACPI_EVENT_RTC          + TMR_EN, 0);
+    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_PMTIMER      + TMR_EN, 0);
+    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_GLOBAL       + TMR_EN, 0);
+    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_POWER_BUTTON + TMR_EN, 0);
+    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_SLEEP_BUTTON + TMR_EN, 0);
+    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_RTC          + TMR_EN, 0);
 
     return AE_OK;
 }
@@ -248,7 +248,7 @@ AcpiEvFixedEventDispatch (
 {
     /* Clear the status bit */
 
-    AcpiHwRegisterAccess (ACPI_WRITE, MTX_DO_NOT_LOCK, (INT32)TMR_STS + Event, 1);
+    AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, (INT32)TMR_STS + Event, 1);
 
     /*
      * Make sure we've got a handler.  If not, report an error.
@@ -256,7 +256,7 @@ AcpiEvFixedEventDispatch (
      */
     if (NULL == AcpiGbl_FixedEventHandlers[Event].Handler)
     {
-        AcpiHwRegisterAccess (ACPI_WRITE, MTX_DO_NOT_LOCK, TMR_EN + Event, 0);
+        AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, TMR_EN + Event, 0);
 
         REPORT_ERROR("No installed handler for fixed event.");
         DEBUG_PRINT (ACPI_ERROR, ("EvGpeDispatch: No installed handler for fixed event [0x%08X].", Event));
@@ -434,7 +434,7 @@ AcpiEvSaveMethodInfo (
 
     /* Extract the name from the object and convert to a string */
 
-    MOVE_UNALIGNED32_TO_32 (Name, &((NAME_TABLE_ENTRY *) ObjHandle)->Name);
+    MOVE_UNALIGNED32_TO_32 (Name, &((ACPI_NAMED_OBJECT*) ObjHandle)->Name);
     Name[ACPI_NAME_SIZE] = 0;
 
     /*
@@ -659,9 +659,9 @@ AcpiEvAsynchExecuteGpeMethod (
 
     /* Take a snapshot of the GPE info for this level */
 
-    AcpiCmAcquireMutex (MTX_EVENTS);
+    AcpiCmAcquireMutex (ACPI_MTX_EVENTS);
     GpeInfo = AcpiGbl_GpeInfo [GpeNumber];
-    AcpiCmReleaseMutex (MTX_EVENTS);
+    AcpiCmReleaseMutex (ACPI_MTX_EVENTS);
 
     /*
      * Function Handler (e.g. EC):

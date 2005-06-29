@@ -149,13 +149,13 @@ AcpiEvFindOnePciRootBus (
     void                    *Context,
     void                    **ReturnValue)
 {
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
 
 
-    Entry = (NAME_TABLE_ENTRY *) ObjHandle;
-    ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
+    Entry = (ACPI_NAMED_OBJECT*) ObjHandle;
+    ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
 
 
     /*
@@ -207,7 +207,7 @@ AcpiEvFindOnePciRootBus (
      * handler for this PCI device.
      */
 
-    Status = AcpiInstallAddressSpaceHandler (Entry->ParentEntry, ADDRESS_SPACE_PCI_CONFIG,
+    Status = AcpiInstallAddressSpaceHandler (AcpiNsGetParentEntry (Entry), ADDRESS_SPACE_PCI_CONFIG,
                                                 ACPI_DEFAULT_HANDLER, NULL, NULL);
 
     return AE_OK;
@@ -674,9 +674,9 @@ AcpiEvAssociateRegionAndHandler(
     /*
      *  Last thing, tell all users that this region is usable
      */
-    AcpiCmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     Status = AcpiEvExecuteRegMethod (RegionObj, 1);
-    AcpiCmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     return_ACPI_STATUS (Status);
 }
@@ -711,7 +711,7 @@ AcpiEvAddrHandlerHelper (
     ACPI_OBJECT_INTERNAL    *HandlerObj;
     ACPI_OBJECT_INTERNAL    *TmpObj;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    NAME_TABLE_ENTRY        *ObjEntry;
+    ACPI_NAMED_OBJECT       *ObjEntry;
     ACPI_STATUS             Status;
 
 
