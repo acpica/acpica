@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.52 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -490,14 +490,14 @@ AsReplaceString (
          * blocks of code while replacing
          */
 
-        SubString2 = strstr (SubBuffer, "/*!");
+        SubString2 = strstr (SubBuffer, AS_START_IGNORE);
 
         if ((SubString2) &&
             (SubString2 < SubString1))
         {
             /* Find end of the escape block starting at "Substring2" */
 
-            SubString2 = strstr (SubString2, "!*/");
+            SubString2 = strstr (SubString2, AS_STOP_IGNORE);
             if (!SubString2)
             {
                 /* Didn't find terminator */
@@ -1434,6 +1434,5 @@ Exit:
     }
 }
 #endif
-
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -182,6 +182,9 @@ char * strlwr(char* str);
 #define FLG_NO_CARRIAGE_RETURNS             0x00000001
 #define FLG_NO_FILE_OUTPUT                  0x00000002
 #define FLG_LOWERCASE_DIRNAMES              0x00000004
+
+#define AS_START_IGNORE                     "/*!"
+#define AS_STOP_IGNORE                      "!*/"
 
 
 /* Globals */

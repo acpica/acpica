@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asremove - Source conversion - removal functions
- *              $Revision: 1.5 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -239,12 +239,12 @@ AsRemoveConditionalCompile (
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
-        Comment = strstr (SubString, "/*!");
+        Comment = strstr (SubString, AS_START_IGNORE);
 
         if ((Comment) &&
             (Comment < SubBuffer))
         {
-            SubString = strstr (Comment, "!*/");
+            SubString = strstr (Comment, AS_STOP_IGNORE);
             if (!SubString)
             {
                 return;

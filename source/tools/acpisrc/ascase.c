@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.7 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -159,14 +159,14 @@ AsLowerCaseString (
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
-        SubString2 = strstr (SubBuffer, "/*!");
+        SubString2 = strstr (SubBuffer, AS_START_IGNORE);
 
         if ((SubString2) &&
             (SubString2 < SubString1))
         {
             /* Find end of the escape block starting at "Substring2" */
 
-            SubString2 = strstr (SubString2, "!*/");
+            SubString2 = strstr (SubString2, AS_STOP_IGNORE);
             if (!SubString2)
             {
                 /* Didn't find terminator */
