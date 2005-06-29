@@ -131,7 +131,7 @@
  * FUNCTION:    CmGetTableRsdt
  *
  * PARAMETERS:  NumberOfTables      - Where the table count is placed
- *              FilePtr             - Input file pointer, if file is in use
+ *              TablePtr            - Input buffer pointer, optional
  *
  * RETURN:      Status
  *
@@ -146,13 +146,15 @@ CmGetTableRsdt (
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  VersionLength;
-    char                    Buffer[80];
+    ACPI_TABLE_INFO         TableInfo;
 
 
     FUNCTION_TRACE ("CmGetTableRsdt");
 
     if (*TablePtr)
     {
+        /* Get the RSDP from a buffer */
+
         VersionLength = strlen (ACPILIB_DATA_FILE_VERSION);
 
         if (strncmp (ACPILIB_DATA_FILE_VERSION, *TablePtr, VersionLength))
@@ -162,10 +164,10 @@ CmGetTableRsdt (
             REPORT_ERROR ("Data file version mismatch");
 
             DEBUG_PRINT (ACPI_INFO,
-                        ("ACPILIB version %s expects a data file version string of"
+                        ("ACPICA version %s expects a data file version string of"
                         "\n \"%s\"", ACPI_LIB_VER, ACPILIB_DATA_FILE_VERSION));
             DEBUG_PRINT (ACPI_INFO,
-                        ("%s's version string is \"%s\"\n", InputFile, Buffer));
+                        ("version string is \"%s\"\n", *TablePtr));
 
             FUNCTION_STATUS_EXIT (AE_VERSION_MISMATCH);
             return AE_VERSION_MISMATCH;
@@ -182,7 +184,7 @@ CmGetTableRsdt (
 
     /* Get the RSDP */
 
-    Status = NsFindRsdp (&RSDP, TablePtr);
+    Status = NsFindRsdp (TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         REPORT_WARNING ("RSDP structure not found");
@@ -190,39 +192,51 @@ CmGetTableRsdt (
         return AE_NO_ACPI_TABLES;
     }
 
-    /* RSDP structure found */
+    /* Save the table pointers and allocation info */
+
+    RSDP = (ROOT_SYSTEM_DESCRIPTOR_POINTER *) TableInfo.Pointer;
+    AcpiTables [TABLE_RSDP] = TableInfo;
+
+    /* RSDP structure was found */
 
     if (!*TablePtr)
     {
-        DEBUG_PRINT (ACPI_INFO, ("RSDP located at %lXh\n", RSDP));
+        DEBUG_PRINT (ACPI_INFO, ("RSDP located at %p\n", RSDP));
     }
     
     else
     {
         DEBUG_PRINT (ACPI_INFO,
-                    ("RSDP located at %lXh\n", RsdpOriginalLocation));
+                    ("RSDP located at %lX\n", RsdpOriginalLocation));
         
         /* 
-         * Since we're working from an input file, assume we're running on
+         * Since we're working from an input buffer, assume we're running on
          * legacy hardware.  This is intended to prevent any accesses to the
          * hardware since the ACPI tables are probably not valid for the
          * current hardware 
          */
         
-        Capabilities = LEGACY_MODE;
+        SystemFlags &= ~SYS_MODE_ACPI;
+        SystemFlags |= SYS_MODE_LEGACY;
     }
 
 
 
     /* Get the RSDT */
 
-    Status = NsGetTable ((void *) RSDP->RsdtPhysicalAddress, TablePtr, (void *) &RSDT);
+    Status = NsGetTable ((void *) RSDP->RsdtPhysicalAddress, 
+                            TablePtr, &TableInfo);
     if (Status != AE_OK)
     {
         FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
+
+    /* Save the table pointers and allocation info */
+
+    RSDT = (ROOT_SYSTEM_DESCRIPTION_TABLE *) TableInfo.Pointer;
+    AcpiTables [TABLE_RSDT] = TableInfo;
 
     /* Valid RSDT pointer */
 
@@ -246,8 +260,8 @@ CmGetTableRsdt (
 
     /* Valid RSDT signature, verify the checksum */
 
-    DEBUG_PRINT (ACPI_INFO,
-                ("RSDT located at %lXh\n", RSDP->RsdtPhysicalAddress));
+    DEBUG_PRINT (ACPI_INFO, ("RSDT located at %p, physical address %lX\n", 
+                            RSDT, RSDP->RsdtPhysicalAddress));
 
     Status = NsVerifyTableChecksum (RSDT);
     
@@ -263,10 +277,246 @@ CmGetTableRsdt (
 
 /******************************************************************************
  *
+ * FUNCTION:    CmInstallTable
+ *
+ * PARAMETERS:  TablePtr            - Input buffer pointer, optional
+ *              TableInfo           - Return value from NsGetTable
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Load and validate all tables other than the RSDT.  The RSDT must
+ *              already be loaded and validated.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+CmInstallTable (
+    char                    **TablePtr,
+    ACPI_TABLE_INFO         *TableInfo)
+{
+    ACPI_TABLE_HEADER       *TableHeader = NULL;
+    ACPI_TABLE_INFO         LocalTableInfo;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_TRACE ("CmInstallTable");
+
+
+    TableHeader = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
+    if (!TableHeader)
+    {   
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
+    }
+
+
+    /* TableHeader valid   */
+
+    if (!strncmp (TableHeader->Signature, FACP_SIG, 4))
+    {
+        /* Delete existing table if there is one */
+
+        NsDeleteAcpiTable (TABLE_FACP);
+
+        /* Save the table pointers and allocation info */
+
+        NsDeleteAcpiTable (TABLE_FACP);
+        FACP = (FIXED_ACPI_DESCRIPTION_TABLE *) TableInfo->Pointer;
+        AcpiTables [TABLE_FACP] = *TableInfo;
+
+        DEBUG_PRINT (ACPI_INFO, ("FACP located at %p\n", FACP));
+
+        NsVerifyTableChecksum (FACP);
+
+        /* Now that we have the FACP, we can get the FACS */
+
+        Status = NsGetTableFacs (TablePtr, &LocalTableInfo);
+        if (ACPI_FAILURE (Status))
+        {
+            FUNCTION_STATUS_EXIT (Status);
+            return Status;
+        }
+
+        /* Install the FACS */
+
+        Status = CmInstallTable (TablePtr, &LocalTableInfo);
+        if (ACPI_FAILURE (Status))
+        {
+            FUNCTION_STATUS_EXIT (Status);
+            return Status;
+        }
+    }
+
+    else if (!strncmp (TableHeader->Signature, FACS_SIG, 4))
+    {
+        /* Delete existing table if there is one */
+
+        NsDeleteAcpiTable (TABLE_FACS);
+
+
+        /* Save the table pointers and allocation info */
+
+        FACS = (FIRMWARE_ACPI_CONTROL_STRUCTURE *) TableInfo->Pointer;
+        AcpiTables [TABLE_FACS] = *TableInfo;
+
+        DEBUG_PRINT (ACPI_INFO, ("FACS located at %p, physical address %lXh\n", 
+                                    FACS, FACP->FirmwareCtrl));
+
+        /* TBD: original code used separate file for the DSDT */
+
+        /* Now that we have the FACP, we can get the DSDT */
+
+        Status = NsGetTable ((void *) FACP->Dsdt, TablePtr, &LocalTableInfo);
+        if (ACPI_FAILURE (Status))
+        {
+            FUNCTION_STATUS_EXIT (Status);
+            return Status;
+        }
+
+        /* Install the DSDT */
+
+        Status = CmInstallTable (TablePtr, &LocalTableInfo);
+        if (ACPI_FAILURE (Status))
+        {
+            FUNCTION_STATUS_EXIT (Status);
+            return Status;
+        }
+    }
+
+    else if (!strncmp (TableHeader->Signature, DSDT_SIG, 4))
+    {
+        /* Delete existing table if there is one */
+
+        NsDeleteAcpiTable (TABLE_DSDT);
+
+        /* Save the table pointers and allocation info */
+
+        DSDT = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
+        AcpiTables [TABLE_DSDT] = *TableInfo;
+
+        /* Found the DSDT - Verify the table checksum */
+
+        DEBUG_PRINT (ACPI_INFO, ("DSDT located at %p, physical address %lXh\n", 
+                                DSDT, FACP->Dsdt));
+        NsVerifyTableChecksum (DSDT);
+        
+        /* Dump the DSDT Header */
+
+        DEBUG_PRINT (TRACE_TABLES, ("Hex dump of DSDT Header:\n"));
+        DUMP_BUFFER ((UINT8 *) DSDT,
+                        (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER), HEX | ASCII);
+        
+        /* Dump the entire DSDT */
+
+        DEBUG_PRINT (TRACE_TABLES,
+                    ("Hex dump of DSDT (After header), size %d (0x%x)\n",
+                    (ACPI_SIZE)DSDT->Length, (ACPI_SIZE)DSDT->Length));
+        DUMP_BUFFER ((UINT8 *) (DSDT + 1),
+                        (ACPI_SIZE)DSDT->Length, HEX | ASCII);
+    }
+    
+    else if (!strncmp (TableHeader->Signature, APIC_SIG, 4))
+    {
+        /* APIC table */
+        /* Delete existing table if there is one */
+
+        NsDeleteAcpiTable (TABLE_APIC);
+
+        /* Save the table pointers and allocation info */
+
+        APIC = (APIC_TABLE *) TableInfo->Pointer;
+        AcpiTables [TABLE_APIC] = *TableInfo;
+
+        DEBUG_PRINT (ACPI_INFO, ("APIC Table located at %p\n", APIC));
+
+        NsVerifyTableChecksum (APIC);
+    }
+
+    else if (!strncmp (TableHeader->Signature, PSDT_SIG, 4))
+    {
+        /* PSDT table */
+        /* Delete existing table if there is one */
+
+        NsDeleteAcpiTable (TABLE_PSDT);
+
+        /* Save the table pointers and allocation info */
+
+        PSDT = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
+        AcpiTables [TABLE_PSDT] = *TableInfo;
+        
+        DEBUG_PRINT (ACPI_INFO, ("PSDT located at %p\n", PSDT));
+
+        NsVerifyTableChecksum (PSDT);
+    }
+
+    else if (!strncmp (TableHeader->Signature, SSDT_SIG, 4))
+    {
+        /* SSDT table */
+        /* Delete existing table if there is one */
+
+        NsDeleteAcpiTable (TABLE_SSDT);
+
+        /* TBD - need to be able to deal with multiple SSDTs */
+        /* Save the table pointers and allocation info */
+
+        SSDT = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
+        AcpiTables [TABLE_SSDT] = *TableInfo;
+             
+        DEBUG_PRINT (ACPI_INFO, ("SSDT located at %p\n", SSDT));
+
+        NsVerifyTableChecksum (SSDT);
+    }
+
+    else if (!strncmp (TableHeader->Signature, SBDT_SIG, 4))
+    {
+        /* SBDT table */
+        /* Delete existing table if there is one */
+
+        NsDeleteAcpiTable (TABLE_SBDT);
+
+        /* Save the table pointers and allocation info */
+
+        SBDT = (ACPI_TABLE_HEADER *) TableInfo->Pointer;
+        AcpiTables [TABLE_SBDT] = *TableInfo;
+        
+        DEBUG_PRINT (ACPI_INFO, ("SBDT located at %p\n", SBDT));
+
+        NsVerifyTableChecksum (SBDT);
+    }
+
+    else
+    {
+        /* Unknown table */
+
+        DEBUG_PRINT (ACPI_ERROR, ("Unknown table %x in RSDT with signature '%4.4s' at %p\n",
+                                TableHeader, TableHeader->Signature, 
+                                TableInfo->Pointer));
+        REPORT_ERROR ("Unknown table in the RSDT");
+
+        NsVerifyTableChecksum (TableHeader);
+    
+        /* 
+         * !! TBD - need to be able to handle multiple unknown tables.  Error should be
+         *  displayed when table is displayed,  Displaying it here for now 
+         */
+    
+        DUMP_BUFFER (&RSDT->header, 32, 0);
+
+        Status = AE_BAD_HEADER;
+    }
+
+
+    FUNCTION_STATUS_EXIT (Status);
+    return Status;
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    CmGetAllTables
  *
  * PARAMETERS:  NumberOfTables      - Number of tables to get
- *              FilePtr             - Input file pointer, if file is in use
+ *              TablePtr            - Input buffer pointer, optional
  *
  * RETURN:      Status
  *
@@ -282,7 +532,7 @@ CmGetAllTables (
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Index;
-    ACPI_TABLE_HEADER       *TableHeader = NULL;
+    ACPI_TABLE_INFO         TableInfo;
 
     
     FUNCTION_TRACE ("CmGetAllTables");
@@ -293,138 +543,34 @@ CmGetAllTables (
 
     for (Index = 0; Index < NumberOfTables; Index++)
     {
+        /* Get the table via the RSDT */
+
         Status = NsGetTable ((void *) RSDT->TableOffsetEntry[Index], 
-                                TablePtr, (void *) &TableHeader);
+                                TablePtr, &TableInfo);
         if (ACPI_FAILURE (Status))
         {
             FUNCTION_STATUS_EXIT (Status);
             return Status;
         }
 
-        if (!TableHeader)
-        {   
-            continue;
-        }
+        /* Recognize and install the table */
 
-
-        /* TableHeader valid   */
-
-        if (!strncmp (TableHeader->Signature, FACP_SIG, 4))
+        Status = CmInstallTable (TablePtr, &TableInfo);
+        if (ACPI_FAILURE (Status))
         {
-            FACP = (FIXED_ACPI_DESCRIPTION_TABLE *) TableHeader;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("FACP located at %lXh\n", RSDT->TableOffsetEntry[Index]));
-
-            NsVerifyTableChecksum (FACP);
-
-            Status = NsGetTableFacs (TablePtr, (void *) &FACS);
-            if (ACPI_FAILURE (Status))
-            {
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
-            }
-
-            DEBUG_PRINT (ACPI_INFO,
-                        ("FACS located at %lXh\n", FACP->FirmwareCtrl));
-
-            /* TBD: original code used separate file for the DSDT */
-            /* Get the DSDT */
-
-            Status = NsGetTable ((void *) FACP->Dsdt, TablePtr, (void *) &DSDT);
-            if (ACPI_FAILURE (Status))
-            {
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
-            }
-
-            if (DSDT)
-            {
-                /* Found the DSDT - Verify the table checksum */
-
-                DEBUG_PRINT (ACPI_INFO, ("DSDT located at %lXh\n", FACP->Dsdt));
-                NsVerifyTableChecksum (DSDT);
-                
-                /* Dump the DSDT Header */
-
-                DEBUG_PRINT (TRACE_TABLES, ("Hex dump of DSDT Header:\n"));
-                DUMP_BUFFER ((UINT8 *) DSDT,
-                                (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER), HEX | ASCII);
-                
-                /* Dump the entire DSDT */
-
-                DEBUG_PRINT (TRACE_TABLES,
-                            ("Hex dump of DSDT (After header), size %d (0x%x)\n",
-                            (ACPI_SIZE)DSDT->Length, (ACPI_SIZE)DSDT->Length));
-                DUMP_BUFFER ((UINT8 *) (DSDT + 1),
-                                (ACPI_SIZE)DSDT->Length, HEX | ASCII);
-            }
+            FUNCTION_STATUS_EXIT (Status);
+            return Status;
         }
-        
-        else if (!strncmp (TableHeader->Signature, APIC_SIG, 4))
-        {
-            /* pointer to APIC table   */
 
-            MAPIC = (APIC_TABLE *) TableHeader;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("APIC Table located at %lXh\n", RSDT->TableOffsetEntry[Index]));
-            NsVerifyTableChecksum (MAPIC);
-        }
+    }
+      
     
-        else if (!strncmp (TableHeader->Signature, PSDT_SIG, 4))
-        {
-            /* pointer to PSDT table   */
-
-            PSDT = TableHeader;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("PSDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
-            NsVerifyTableChecksum (PSDT);
-        }
-
-        else if (!strncmp (TableHeader->Signature, SSDT_SIG, 4))
-        {
-            /* pointer to SSDT table   */
-            /* TBD - need to be able to deal with multiple SSDTs */
+    /* 
+     * Initialize the capabilities flags.
+     * Assumes that platform supports ACPI_MODE since we have tables!
+     */
         
-            SSDT = TableHeader;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("SSDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
-            NsVerifyTableChecksum (SSDT);
-        }
-
-        else if (!strncmp (TableHeader->Signature, SBDT_SIG, 4))
-        {
-            /* pointer to SBDT table   */
-
-            SBDT = TableHeader;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("SBDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
-            NsVerifyTableChecksum (SBDT);
-        }
-
-        else
-        {
-            /* pointer to unknown table    */
-
-            DEBUG_PRINT (ACPI_INFO,
-                        ("Unknown table %x in RSDT with signature '%4.4s' located at %lXh\n",
-                        TableHeader, TableHeader->Signature, RSDT->TableOffsetEntry[Index]));
-            NsVerifyTableChecksum (TableHeader);
-        
-            /* 
-             * !! TBD - need to be able to handle multiple unknown tables.  Error should be
-             *  displayed when table is displayed,  Displaying it here for now 
-             */
-        
-            DUMP_BUFFER (&RSDT->header, 32, 0);
-        }
-    }
-        
-    if (!*TablePtr)
-    {   
-        /* since we're operating on ACPI hardware, initialize Capabilities */
-            
-        Capabilities = HwGetModeCapabilities ();
-    }
+    SystemFlags |= HwGetModeCapabilities ();
 
     FUNCTION_STATUS_EXIT (Status);
     return Status;
@@ -433,7 +579,7 @@ CmGetAllTables (
 
 /*******************************************************************************
  *
- * FUNCTION:    ReportFacpRegisterError
+ * FUNCTION:    CmFacpRegisterError
  *
  * PARAMETERS:  *RegisterName           - Pointer to string identifying register
  *              Value                   - Actual register contents value
@@ -447,7 +593,7 @@ CmGetAllTables (
  ******************************************************************************/
 
 void
-ReportFacpRegisterError (
+CmFacpRegisterError (
     char                    *RegisterName, 
     UINT32                  Value,
     INT32                   AcpiTestSpecSection, 
@@ -484,177 +630,191 @@ CmHardwareInitialize (void)
     FUNCTION_TRACE ("CmHardwareInitialize");
 
 
-    /* How are things going now? */
+    /* We must have an the ACPI tables by the time we get here */
 
-    if (FACP &&
-        !(Capabilities & ~(ACPI_MODE | LEGACY_MODE)))
+    if (!FACP)
     {
-        /* ACPILIB initialization OK so far    */
-
-        switch (Capabilities)
-        {
-            /* identify current ACPI/legacy mode   */
-
-        case (ACPI_MODE):
-            OriginalMode = ACPI_MODE;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("System supports ACPI mode only.\n"));
-            break;
-
-        case (LEGACY_MODE):
-            OriginalMode = LEGACY_MODE;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("Tables loaded from file, hardware assumed to support LEGACY mode only.\n"));
-            break;
-
-        case (ACPI_MODE | LEGACY_MODE):
-            (AcpiGetMode () == ACPI_MODE) ? (OriginalMode = ACPI_MODE) : (OriginalMode = LEGACY_MODE);
-
-            DEBUG_PRINT (ACPI_INFO,
-                        ("System supports both ACPI and LEGACY modes.\n"));
-
-            DEBUG_PRINT (ACPI_INFO,
-                        ("System is currently in %s mode.\n",
-                        (OriginalMode == ACPI_MODE) ? "ACPI" : "LEGACY"));
-            break;
-        }
-
-
-        if (Capabilities != LEGACY_MODE)
-        {
-            /* Target system supports ACPI mode */
-
-            /* 
-             * The purpose of this block of code is to save the initial state
-             * of the ACPI event enable registers. An exit function will be
-             * registered which will restore this state when the application
-             * exits. The exit function will also clear all of the ACPI event
-             * status bits prior to restoring the original mode.
-             *
-             * The location of the PM1aEvtBlk enable registers is defined as the
-             * base of PM1aEvtBlk + PM1aEvtBlkLength / 2. Since the spec further
-             * fully defines the PM1aEvtBlk to be a total of 4 bytes, the offset
-             * for the enable registers is always 2 from the base. It is hard
-             * coded here. If this changes in the spec, this code will need to
-             * be modified. The PM1bEvtBlk behaves as expected.
-             */
-
-            Pm1EnableRegisterSave = OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + 2));
-            if (FACP->Pm1bEvtBlk)
-            {
-                Pm1EnableRegisterSave |= OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + 2));
-            }
-
-
-            /* 
-             * The GPEs behave similarly, except that the length of the register
-             * block is not fixed, so the buffer must be allocated with malloc 
-             */
-
-            if (FACP->Gpe0Blk && FACP->Gpe0BlkLen)
-            {
-                /* GPE0 specified in FACP  */
-
-                Gpe0EnableRegisterSave = LocalAllocate ((ACPI_SIZE) (FACP->Gpe0BlkLen / 2));
-                if (!Gpe0EnableRegisterSave)
-                {
-                    FUNCTION_STATUS_EXIT (Status);
-                    return AE_NO_MEMORY;
-                }
-
-                /* save state of GPE0 enable bits */
-
-                for (Index = 0; Index < FACP->Gpe0BlkLen / 2; Index++)
-                {
-                    Gpe0EnableRegisterSave[Index] =
-                        OsdIn8 ((UINT16) (FACP->Gpe0Blk + FACP->Gpe0BlkLen / 2));
-                }
-            }
-            
-            else
-            {
-                Gpe0EnableRegisterSave = NULL;
-            }
-
-            if (FACP->Gpe1Blk && FACP->Gpe1BlkLen)
-            {
-                /* GPE1 defined    */
-
-                Gpe1EnableRegisterSave = LocalAllocate ((ACPI_SIZE) (FACP->Gpe1BlkLen / 2));
-                if (!Gpe1EnableRegisterSave)
-                {
-                    return AE_NO_MEMORY;
-                }
-
-                /* save state of GPE1 enable bits */
-        
-                for (Index = 0; Index < FACP->Gpe1BlkLen / 2; Index++)
-                {
-                    Gpe1EnableRegisterSave[Index] =
-                        OsdIn8 ((UINT16) (FACP->Gpe1Blk + FACP->Gpe1BlkLen / 2));
-                }
-            }
-            
-            else
-            {
-                Gpe1EnableRegisterSave = NULL;
-            }
-        
-        
-            /* 
-             * Verify Fixed ACPI Description Table fields per ACPI 1.0 sections
-             * 4.7.1.2 and 5.2.5 (assertions #410, 415, 435-440)
-             */
-
-            if (FACP->Pm1EvtLen < 4)
-                ReportFacpRegisterError ("PM1_EVT_LEN", (UINT32) FACP->Pm1EvtLen,
-                    ACPI_TABLE_NAMESPACE_SECTION, 410); /* #410 == #435    */
-
-            if (!FACP->Pm1CntLen)
-                ReportFacpRegisterError ("PM1_CNT_LEN", (UINT32) FACP->Pm1CntLen,
-                    ACPI_TABLE_NAMESPACE_SECTION, 415); /* #415 == #436    */
-
-            if (!FACP->Pm1aEvtBlk)
-                ReportFacpRegisterError ("PM1a_EVT_BLK", FACP->Pm1aEvtBlk,
-                    ACPI_TABLE_NAMESPACE_SECTION, 432);
-
-            if (!FACP->Pm1aCntBlk)
-                ReportFacpRegisterError ("PM1a_CNT_BLK", FACP->Pm1aCntBlk,
-                    ACPI_TABLE_NAMESPACE_SECTION, 433);
-
-            if (!FACP->PmTmrBlk)
-                ReportFacpRegisterError ("PM_TMR_BLK", FACP->PmTmrBlk,
-                    ACPI_TABLE_NAMESPACE_SECTION, 434);
-
-            if (FACP->Pm2CntBlk && !FACP->Pm2CntLen)
-                ReportFacpRegisterError ("PM2_CNT_LEN", (UINT32) FACP->Pm2CntLen,
-                    ACPI_TABLE_NAMESPACE_SECTION, 437);
-
-            if (FACP->PmTmLen < 4)
-                ReportFacpRegisterError ("PM_TM_LEN", (UINT32) FACP->PmTmLen,
-                    ACPI_TABLE_NAMESPACE_SECTION, 438);
-
-            if (FACP->Gpe0Blk && (FACP->Gpe0BlkLen & 1))    /* length not multiple of 2    */
-                ReportFacpRegisterError ("GPE0_BLK_LEN", (UINT32) FACP->Gpe0BlkLen,
-                    ACPI_TABLE_NAMESPACE_SECTION, 439);
-
-            if (FACP->Gpe1Blk && (FACP->Gpe1BlkLen & 1))    /* length not multiple of 2    */
-                ReportFacpRegisterError ("GPE1_BLK_LEN", (UINT32) FACP->Gpe1BlkLen,
-                    ACPI_TABLE_NAMESPACE_SECTION, 440);
-        }
-    }
-    
-    else
-    {
-        /* ACPILIB initialization failure  */
-
-        if (!Status && (!Capabilities || (Capabilities & ~(ACPI_MODE | LEGACY_MODE))))
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                        ("Internal ACPILIB error. Capabilities not initialized correctly by AcpiInit()\n"));
-        }
-
         RestoreAcpiChipset = FALSE;
+
+        DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: No FACP!\n"));
+        FUNCTION_STATUS_EXIT (AE_NO_ACPI_TABLES);
+        return AE_NO_ACPI_TABLES;
+    }
+
+    /* Must support *some* mode! */
+/*
+    if (!(SystemFlags & SYS_MODES_MASK))
+    {
+        RestoreAcpiChipset = FALSE;
+
+        DEBUG_PRINT (ACPI_ERROR, ("CmHardwareInitialize: Supported modes unitialized!\n"));
+        FUNCTION_STATUS_EXIT (AE_ERROR);
+        return AE_ERROR;
+    }
+
+*/
+
+
+    switch (SystemFlags & SYS_MODES_MASK)
+    {
+        /* Identify current ACPI/legacy mode   */
+
+    case (SYS_MODE_ACPI):
+
+        OriginalMode = SYS_MODE_ACPI;
+        DEBUG_PRINT (ACPI_INFO, ("System supports ACPI mode only.\n"));
+        break;
+
+
+    case (SYS_MODE_LEGACY):
+
+        OriginalMode = SYS_MODE_LEGACY;
+        DEBUG_PRINT (ACPI_INFO,
+                    ("Tables loaded from buffer, hardware assumed to support LEGACY mode only.\n"));
+        break;
+
+
+    case (SYS_MODE_ACPI | SYS_MODE_LEGACY):
+
+        if (AcpiGetMode () == SYS_MODE_ACPI)
+        {
+            OriginalMode = SYS_MODE_ACPI;
+        }
+        else
+        {
+            OriginalMode = SYS_MODE_LEGACY;
+        }
+
+        DEBUG_PRINT (ACPI_INFO, ("System supports both ACPI and LEGACY modes.\n"));
+
+        DEBUG_PRINT (ACPI_INFO, ("System is currently in %s mode.\n",
+                                (OriginalMode == SYS_MODE_ACPI) ? "ACPI" : "LEGACY"));
+        break;
+    }
+
+
+    if (SystemFlags & SYS_MODE_ACPI)
+    {
+        /* Target system supports ACPI mode */
+
+        /* 
+         * The purpose of this block of code is to save the initial state
+         * of the ACPI event enable registers. An exit function will be
+         * registered which will restore this state when the application
+         * exits. The exit function will also clear all of the ACPI event
+         * status bits prior to restoring the original mode.
+         *
+         * The location of the PM1aEvtBlk enable registers is defined as the
+         * base of PM1aEvtBlk + PM1aEvtBlkLength / 2. Since the spec further
+         * fully defines the PM1aEvtBlk to be a total of 4 bytes, the offset
+         * for the enable registers is always 2 from the base. It is hard
+         * coded here. If this changes in the spec, this code will need to
+         * be modified. The PM1bEvtBlk behaves as expected.
+         */
+
+        Pm1EnableRegisterSave = OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + 2));
+        if (FACP->Pm1bEvtBlk)
+        {
+            Pm1EnableRegisterSave |= OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + 2));
+        }
+
+
+        /* 
+         * The GPEs behave similarly, except that the length of the register
+         * block is not fixed, so the buffer must be allocated with malloc 
+         */
+
+        if (FACP->Gpe0Blk && FACP->Gpe0BlkLen)
+        {
+            /* GPE0 specified in FACP  */
+
+            Gpe0EnableRegisterSave = LocalAllocate ((ACPI_SIZE) (FACP->Gpe0BlkLen / 2));
+            if (!Gpe0EnableRegisterSave)
+            {
+                FUNCTION_STATUS_EXIT (Status);
+                return AE_NO_MEMORY;
+            }
+
+            /* save state of GPE0 enable bits */
+
+            for (Index = 0; Index < FACP->Gpe0BlkLen / 2; Index++)
+            {
+                Gpe0EnableRegisterSave[Index] =
+                    OsdIn8 ((UINT16) (FACP->Gpe0Blk + FACP->Gpe0BlkLen / 2));
+            }
+        }
+        
+        else
+        {
+            Gpe0EnableRegisterSave = NULL;
+        }
+
+        if (FACP->Gpe1Blk && FACP->Gpe1BlkLen)
+        {
+            /* GPE1 defined    */
+
+            Gpe1EnableRegisterSave = LocalAllocate ((ACPI_SIZE) (FACP->Gpe1BlkLen / 2));
+            if (!Gpe1EnableRegisterSave)
+            {
+                FUNCTION_STATUS_EXIT (Status);
+                return AE_NO_MEMORY;
+            }
+
+            /* save state of GPE1 enable bits */
+    
+            for (Index = 0; Index < FACP->Gpe1BlkLen / 2; Index++)
+            {
+                Gpe1EnableRegisterSave[Index] =
+                    OsdIn8 ((UINT16) (FACP->Gpe1Blk + FACP->Gpe1BlkLen / 2));
+            }
+        }
+        
+        else
+        {
+            Gpe1EnableRegisterSave = NULL;
+        }
+    
+    
+        /* 
+         * Verify Fixed ACPI Description Table fields per ACPI 1.0 sections
+         * 4.7.1.2 and 5.2.5 (assertions #410, 415, 435-440)
+         */
+
+        if (FACP->Pm1EvtLen < 4)
+            CmFacpRegisterError ("PM1_EVT_LEN", (UINT32) FACP->Pm1EvtLen,
+                ACPI_TABLE_NAMESPACE_SECTION, 410); /* #410 == #435    */
+
+        if (!FACP->Pm1CntLen)
+            CmFacpRegisterError ("PM1_CNT_LEN", (UINT32) FACP->Pm1CntLen,
+                ACPI_TABLE_NAMESPACE_SECTION, 415); /* #415 == #436    */
+
+        if (!FACP->Pm1aEvtBlk)
+            CmFacpRegisterError ("PM1a_EVT_BLK", FACP->Pm1aEvtBlk,
+                ACPI_TABLE_NAMESPACE_SECTION, 432);
+
+        if (!FACP->Pm1aCntBlk)
+            CmFacpRegisterError ("PM1a_CNT_BLK", FACP->Pm1aCntBlk,
+                ACPI_TABLE_NAMESPACE_SECTION, 433);
+
+        if (!FACP->PmTmrBlk)
+            CmFacpRegisterError ("PM_TMR_BLK", FACP->PmTmrBlk,
+                ACPI_TABLE_NAMESPACE_SECTION, 434);
+
+        if (FACP->Pm2CntBlk && !FACP->Pm2CntLen)
+            CmFacpRegisterError ("PM2_CNT_LEN", (UINT32) FACP->Pm2CntLen,
+                ACPI_TABLE_NAMESPACE_SECTION, 437);
+
+        if (FACP->PmTmLen < 4)
+            CmFacpRegisterError ("PM_TM_LEN", (UINT32) FACP->PmTmLen,
+                ACPI_TABLE_NAMESPACE_SECTION, 438);
+
+        if (FACP->Gpe0Blk && (FACP->Gpe0BlkLen & 1))    /* length not multiple of 2    */
+            CmFacpRegisterError ("GPE0_BLK_LEN", (UINT32) FACP->Gpe0BlkLen,
+                ACPI_TABLE_NAMESPACE_SECTION, 439);
+
+        if (FACP->Gpe1Blk && (FACP->Gpe1BlkLen & 1))    /* length not multiple of 2    */
+            CmFacpRegisterError ("GPE1_BLK_LEN", (UINT32) FACP->Gpe1BlkLen,
+                ACPI_TABLE_NAMESPACE_SECTION, 440);
     }
 
 
