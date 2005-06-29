@@ -98,7 +98,7 @@
 #define __ACPIINIT_C__
 
 #include <acpi.h>
-#include <devices.h>
+#include <hardware.h>
 #include <namespace.h>
 #include <events.h>
 #include <string.h>
