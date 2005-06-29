@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -117,30 +118,29 @@
 #define __DSOBJECT_C__
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
-#include "dispatch.h"
-#include "interp.h"
-#include "namesp.h"
+#include "acdispat.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 
 #define _COMPONENT          DISPATCHER
         MODULE_NAME         ("dsobject");
-
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDsInitOneObject
  *
- * PARAMETERS:  ObjHandle       - NTE of the object
+ * PARAMETERS:  ObjHandle       - Named Object
  *              Level           - Current nesting level
  *              Context         - Points to a init info struct
  *              ReturnValue     - Not used
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Callback from AcpiWalkNamespace.  Invoked for every object within
- *              the  namespace.
+ * DESCRIPTION: Callback from AcpiWalkNamespace.  Invoked for every object
+ *              within the  namespace.
  *
  *              Currently, the only objects that require initialization are:
  *              1) Methods
@@ -157,15 +157,18 @@ AcpiDsInitOneObject (
 {
     OBJECT_TYPE_INTERNAL    Type;
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
     INIT_WALK_INFO          *Info = (INIT_WALK_INFO *) Context;
 
 
-    /* We are only interested in objects owned by the table that was just loaded */
+    /*
+     * We are only interested in objects owned by the table that
+     * was just loaded
+     */
 
-    if (((NAME_TABLE_ENTRY *) ObjHandle)->OwnerId != Info->TableDesc->TableId)
+    if (((ACPI_NAMED_OBJECT*) ObjHandle)->OwnerId !=
+            Info->TableDesc->TableId)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -191,7 +194,10 @@ AcpiDsInitOneObject (
         DEBUG_PRINT_RAW (ACPI_OK, ("."));
 
 
-        /* Always parse methods to detect errors, we may delete the parse tree below */
+        /*
+         * Always parse methods to detect errors, we may delete
+         * the parse tree below
+         */
 
         Status = AcpiDsParseMethod (ObjHandle);
 
@@ -199,21 +205,21 @@ AcpiDsInitOneObject (
 
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("DsInitOneObject: Method %p [%4.4s] parse failed! %s\n",
-                                        ObjHandle, &((NAME_TABLE_ENTRY *)ObjHandle)->Name, AcpiCmFormatException (Status)));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("DsInitOneObject: Method %p [%4.4s] parse failed! %s\n",
+                ObjHandle, &((ACPI_NAMED_OBJECT*)ObjHandle)->Name,
+                AcpiCmFormatException (Status)));
             break;
         }
 
-        /* Keep the parse tree only if we are parsing all methods at init time (versus just-in-time) */
+        /*
+         * Keep the parse tree only if we are parsing all methods
+         * at init time (versus just-in-time)
+         */
 
         if (AcpiGbl_WhenToParseMethods != METHOD_PARSE_AT_INIT)
         {
-
             AcpiNsDeleteNamespaceSubtree (ObjHandle);
-
-            ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
-            AcpiPsDeleteParseTree (ObjDesc->Method.ParserOp);
-            ObjDesc->Method.ParserOp = NULL;
         }
 
         break;
@@ -238,15 +244,15 @@ AcpiDsInitOneObject (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Walk the entire namespace and perform any necessary initialization
- *              on the objects found therein
+ * DESCRIPTION: Walk the entire namespace and perform any necessary 
+ *              initialization on the objects found therein
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiDsInitializeObjects (
     ACPI_TABLE_DESC         *TableDesc,
-    NAME_TABLE_ENTRY        *StartEntry)
+    ACPI_NAMED_OBJECT       *StartEntry)
 {
     ACPI_STATUS             Status;
     INIT_WALK_INFO          Info;
@@ -255,7 +261,8 @@ AcpiDsInitializeObjects (
     FUNCTION_TRACE ("DsInitializeObjects");
 
 
-    DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: **** Starting initialization of namespace objects ****\n"));
+    DEBUG_PRINT (TRACE_DISPATCH,
+        ("DsInitializeObjects: **** Starting initialization of namespace objects ****\n"));
     DEBUG_PRINT_RAW (ACPI_OK, ("Parsing Methods:"));
 
 
@@ -266,16 +273,21 @@ AcpiDsInitializeObjects (
 
     /* Walk entire namespace from the supplied root */
 
-    Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartEntry, ACPI_INT32_MAX, AcpiDsInitOneObject,
+    Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartEntry,
+                                ACPI_UINT32_MAX, AcpiDsInitOneObject,
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("DsInitializeObjects: WalkNamespace failed! %x\n", Status));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("DsInitializeObjects: WalkNamespace failed! %x\n", Status));
     }
 
-    DEBUG_PRINT_RAW (ACPI_OK, ("\n%d Control Methods found and parsed\n", Info.MethodCount));
-    DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
-    DEBUG_PRINT (TRACE_DISPATCH, ("DsInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
+    DEBUG_PRINT_RAW (ACPI_OK,
+        ("\n%d Control Methods found and parsed\n", Info.MethodCount));
+    DEBUG_PRINT (TRACE_DISPATCH,
+        ("DsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
+    DEBUG_PRINT (TRACE_DISPATCH,
+        ("DsInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -302,29 +314,27 @@ AcpiDsInitObjectFromOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
+    ACPI_OBJECT_INTERNAL    **ObjDesc)
 {
     ACPI_STATUS             Status;
     ACPI_GENERIC_OP         *Arg;
-    ACPI_BYTELIST_OP        *ByteList;
+    ACPI_EXTENDED_OP        *ByteList;
     ACPI_OBJECT_INTERNAL    *ArgDesc;
     ACPI_OP_INFO            *OpInfo;
 
 
-
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (!OpInfo)
+    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
         /* Unknown opcode */
 
-        return AE_TYPE;
+        return (AE_TYPE);
     }
-
 
 
     /* Get and prepare the first argument */
 
-    switch (ObjDesc->Common.Type)
+    switch ((*ObjDesc)->Common.Type)
     {
     case ACPI_TYPE_BUFFER:
 
@@ -336,64 +346,88 @@ AcpiDsInitObjectFromOp (
 
         /* Resolve the object (could be an arg or local) */
 
-        Status = AcpiAmlResolveToValue (&ArgDesc);
+        Status = AcpiAmlResolveToValue (&ArgDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             AcpiCmRemoveReference (ArgDesc);
-            return Status;
+            return (Status);
         }
 
         /* We are expecting a number */
 
         if (ArgDesc->Common.Type != ACPI_TYPE_NUMBER)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("InitObject: Expecting number, got obj: %p type %X\n",
-                            ArgDesc, ArgDesc->Common.Type));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("InitObject: Expecting number, got obj: %p type %X\n",
+                ArgDesc, ArgDesc->Common.Type));
             AcpiCmRemoveReference (ArgDesc);
-            return AE_TYPE;
+            return (AE_TYPE);
         }
 
         /* Get the value, delete the internal object */
 
-        ObjDesc->Buffer.Length = ArgDesc->Number.Value;
+        (*ObjDesc)->Buffer.Length = ArgDesc->Number.Value;
         AcpiCmRemoveReference (ArgDesc);
 
         /* Allocate the buffer */
 
-        ObjDesc->Buffer.Pointer = AcpiCmCallocate (ObjDesc->Buffer.Length);
-        if (!ObjDesc->Buffer.Pointer)
+        (*ObjDesc)->Buffer.Pointer =
+                        AcpiCmCallocate ((*ObjDesc)->Buffer.Length);
+
+        if (!(*ObjDesc)->Buffer.Pointer)
         {
-            return AE_NO_MEMORY;
+            return (AE_NO_MEMORY);
         }
 
-        /* Second arg is the buffer data (optional) */
-        /* ByteList can be either individual bytes or a string initializer! */
+        /*
+         * Second arg is the buffer data (optional)
+         * ByteList can be either individual bytes or a
+         * string initializer!
+         */
 
-        Arg = Op->Value.Arg;        /* skip first arg */
-        ByteList = (ACPI_BYTELIST_OP *) Arg->Next;
+        /* skip first arg */
+        Arg = Op->Value.Arg;
+        ByteList = (ACPI_EXTENDED_OP *) Arg->Next;
         if (ByteList)
         {
             if (ByteList->Opcode != AML_BYTELIST_OP)
             {
-                DEBUG_PRINT (ACPI_ERROR, ("InitObject: Expecting bytelist, got: %x\n",
-                                ByteList));
-                return AE_TYPE;
+                DEBUG_PRINT (ACPI_ERROR,
+                    ("InitObject: Expecting bytelist, got: %x\n",
+                    ByteList));
+                return (AE_TYPE);
             }
 
-            MEMCPY (ObjDesc->Buffer.Pointer, ByteList->Data, ObjDesc->Buffer.Length);
+            MEMCPY ((*ObjDesc)->Buffer.Pointer, ByteList->Data,
+                    (*ObjDesc)->Buffer.Length);
         }
 
         break;
 
 
+	case ACPI_TYPE_PACKAGE:
+        
+        /*
+         * When called, an internal package object has already
+         *  been built and is pointed to by *ObjDesc.  
+         *  AcpiDsBuildInternalObject build another internal 
+         *  package object, so remove reference to the original 
+         *  so that it is deleted.  Error checking is done
+         *  within the remove reference function.
+         */
+        AcpiCmRemoveReference(*ObjDesc);
+
+        Status = AcpiDsBuildInternalObject (WalkState, Op, ObjDesc);
+		break;
+
     case ACPI_TYPE_NUMBER:
-        ObjDesc->Number.Value = Op->Value.Integer;
+        (*ObjDesc)->Number.Value = Op->Value.Integer;
         break;
 
 
     case ACPI_TYPE_STRING:
-        ObjDesc->String.Pointer = Op->Value.String;
-        ObjDesc->String.Length = STRLEN (Op->Value.String);
+        (*ObjDesc)->String.Pointer = Op->Value.String;
+        (*ObjDesc)->String.Length = STRLEN (Op->Value.String);
         break;
 
 
@@ -403,34 +437,34 @@ AcpiDsInitObjectFromOp (
 
     case INTERNAL_TYPE_REFERENCE:
 
-        switch (OpInfo->Flags & OP_INFO_TYPE)
+        switch (ACPI_GET_OP_CLASS (OpInfo))
         {
         case OPTYPE_LOCAL_VARIABLE:
 
             /* Split the opcode into a base opcode + offset */
 
-            ObjDesc->Reference.OpCode = AML_LOCAL_OP;
-            ObjDesc->Reference.Offset = Opcode - AML_LOCAL_OP;
+            (*ObjDesc)->Reference.OpCode = AML_LOCAL_OP;
+            (*ObjDesc)->Reference.Offset = Opcode - AML_LOCAL_OP;
             break;
 
         case OPTYPE_METHOD_ARGUMENT:
 
             /* Split the opcode into a base opcode + offset */
 
-            ObjDesc->Reference.OpCode = AML_ARG_OP;
-            ObjDesc->Reference.Offset = Opcode - AML_ARG_OP;
+            (*ObjDesc)->Reference.OpCode = AML_ARG_OP;
+            (*ObjDesc)->Reference.Offset = Opcode - AML_ARG_OP;
             break;
 
         default: /* Constants, Literals, etc.. */
 
             if (Op->Opcode == AML_NAMEPATH_OP)
             {
-                /* Nte was saved in Op */
+                /* NameDesc was saved in Op */
 
-                ObjDesc->Reference.Nte = Op->NameTableEntry;
+                (*ObjDesc)->Reference.NameDesc = Op->AcpiNamedObject;
             }
 
-            ObjDesc->Reference.OpCode = Opcode;
+            (*ObjDesc)->Reference.OpCode = Opcode;
             break;
         }
 
@@ -439,15 +473,15 @@ AcpiDsInitObjectFromOp (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, ("InitObject: Unimplemented data type: %x\n",
-                        ObjDesc->Common.Type));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("InitObject: Unimplemented data type: %x\n",
+            (*ObjDesc)->Common.Type));
 
         break;
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
-
 
 
 /*****************************************************************************
@@ -481,14 +515,20 @@ AcpiDsBuildInternalSimpleObj (
     if (Op->Opcode == AML_NAMEPATH_OP)
     {
         /*
-         * This is an object reference.  If The name was previously looked up in the NS,
-         * it is stored in this op.  Otherwise, go ahead and look it up now
+         * This is an object reference.  If The name was
+         * previously looked up in the NS, it is stored in this op.
+         * Otherwise, go ahead and look it up now
          */
 
-        if (!Op->NameTableEntry)
+        if (!Op->AcpiNamedObject)
         {
-            Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Value.String, ACPI_TYPE_ANY, IMODE_EXECUTE,
-                                        NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, (NAME_TABLE_ENTRY **)&(Op->NameTableEntry));
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
+                            Op->Value.String, ACPI_TYPE_ANY,
+                            IMODE_EXECUTE,
+                            NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE,
+                            NULL,
+                            (ACPI_NAMED_OBJECT**)&(Op->AcpiNamedObject));
+
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -497,12 +537,12 @@ AcpiDsBuildInternalSimpleObj (
 
         /*
          * The reference will be a Reference
-         * TBD: [Restructure] unless we really need a separate type of INTERNAL_TYPE_REFERENCE
-         *      change AcpiDsMapOpcodeToDataType to handle this case
+         * TBD: [Restructure] unless we really need a separate
+         *  type of INTERNAL_TYPE_REFERENCE change
+         *  AcpiDsMapOpcodeToDataType to handle this case
          */
         Type = INTERNAL_TYPE_REFERENCE;
     }
-
     else
     {
         Type = AcpiDsMapOpcodeToDataType (Op->Opcode, NULL);
@@ -517,7 +557,9 @@ AcpiDsBuildInternalSimpleObj (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitObjectFromOp (WalkState, Op, Op->Opcode, ObjDesc);
+    Status = AcpiDsInitObjectFromOp (WalkState, Op,
+                                        Op->Opcode, &ObjDesc);
+
     if (ACPI_FAILURE (Status))
     {
         AcpiCmRemoveReference (ObjDesc);
@@ -570,22 +612,26 @@ AcpiDsBuildInternalPackageObj (
     ObjDesc->Package.Count = Arg->Value.Integer;
 
     /*
-     * Allocate the array of pointers (ptrs to the individual objects)
-     * Add an extra pointer slot so that the list is always null terminated.
+     * Allocate the array of pointers (ptrs to the
+     * individual objects) Add an extra pointer slot so
+     * that the list is always null terminated.
      */
 
-    ObjDesc->Package.Elements   = AcpiCmCallocate ((ObjDesc->Package.Count + 1) * sizeof (void *));
+    ObjDesc->Package.Elements =
+                AcpiCmCallocate ((ObjDesc->Package.Count + 1) *
+                sizeof (void *));
+
     if (!ObjDesc->Package.Elements)
     {
         /* Package vector allocation failure   */
 
         REPORT_ERROR ("DsBuildInternalPackageObj: Package vector allocation failure");
-        AcpiCmFree (ObjDesc);
+
+        AcpiCmDeleteObjectDesc (ObjDesc);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     ObjDesc->Package.NextElement = ObjDesc->Package.Elements;
-
 
     /*
      * Now init the elements of the package
@@ -596,12 +642,14 @@ AcpiDsBuildInternalPackageObj (
     {
         if (Arg->Opcode == AML_PACKAGE_OP)
         {
-            Status = AcpiDsBuildInternalPackageObj (WalkState, Arg, ObjDesc->Package.NextElement);
+            Status = AcpiDsBuildInternalPackageObj (WalkState, Arg,
+                                        ObjDesc->Package.NextElement);
         }
 
         else
         {
-            Status = AcpiDsBuildInternalSimpleObj (WalkState, Arg, ObjDesc->Package.NextElement);
+            Status = AcpiDsBuildInternalSimpleObj (WalkState, Arg,
+                                        ObjDesc->Package.NextElement);
         }
 
         ObjDesc->Package.NextElement++;
@@ -622,7 +670,8 @@ AcpiDsBuildInternalPackageObj (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Translate a parser Op object to the equivalent namespace object
+ * DESCRIPTION: Translate a parser Op object to the equivalent namespace
+ *              object
  *
  ****************************************************************************/
 
@@ -637,17 +686,18 @@ AcpiDsBuildInternalObject (
 
     if (Op->Opcode == AML_PACKAGE_OP)
     {
-        Status = AcpiDsBuildInternalPackageObj (WalkState, Op, ObjDescPtr);
+        Status = AcpiDsBuildInternalPackageObj (WalkState, Op,
+                                                ObjDescPtr);
     }
 
     else
     {
-        Status = AcpiDsBuildInternalSimpleObj (WalkState, Op, ObjDescPtr);
+        Status = AcpiDsBuildInternalSimpleObj (WalkState, Op,
+                                                ObjDescPtr);
     }
 
     return (Status);
 }
-
 
 
 /*****************************************************************************
@@ -666,12 +716,11 @@ AcpiDsBuildInternalObject (
 ACPI_STATUS
 AcpiDsCreateNamedObject (
     ACPI_WALK_STATE         *WalkState,
-    NAME_TABLE_ENTRY        *Entry,
+    ACPI_NAMED_OBJECT       *NameDesc,
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-
 
 
     FUNCTION_TRACE_PTR ("DsCreateNamedObject", Op);
@@ -687,7 +736,8 @@ AcpiDsCreateNamedObject (
 
     /* Build an internal object for the argument(s) */
 
-    Status = AcpiDsBuildInternalObject (WalkState, Op->Value.Arg, &ObjDesc);
+    Status = AcpiDsBuildInternalObject (WalkState,
+                                        Op->Value.Arg, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -696,11 +746,12 @@ AcpiDsCreateNamedObject (
 
     /* Re-type the object according to it's argument */
 
-    Entry->Type = ObjDesc->Common.Type;
+    NameDesc->Type = ObjDesc->Common.Type;
 
     /* Init obj */
 
-    Status = AcpiNsAttachObject ((ACPI_HANDLE) Entry, ObjDesc, (UINT8) Entry->Type);
+    Status = AcpiNsAttachObject ((ACPI_HANDLE) NameDesc, ObjDesc,
+                                    (UINT8) NameDesc->Type);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -709,13 +760,11 @@ AcpiDsCreateNamedObject (
     return_ACPI_STATUS (Status);
 
 
-
 Cleanup:
 
     AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
-
 
 
