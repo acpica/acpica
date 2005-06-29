@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -645,8 +645,14 @@ AsBracesOnSameLine (
                     Length = strlen (SubBuffer);
 
                     Gbl_MadeChanges = TRUE;
+
+#ifdef ADD_EXTRA_WHITESPACE
+                    memmove (Beginning + 3, SubBuffer, Length+4);
+                    memmove (Beginning, " {\n", 3);
+#else
                     memmove (Beginning + 2, SubBuffer, Length+3);
                     memmove (Beginning, " {", 2);
+#endif
                 }
             }
         }
@@ -814,7 +820,6 @@ AsTabify8 (
             }
             else
             {
-
                 ThisTabCount = LastLineTabCount + 1;
             }
         }
@@ -1144,15 +1149,14 @@ AsCountSourceLines (
 
 /******************************************************************************
  *
- * FUNCTION:    AsRemoveMacro
+ * FUNCTION:    AsInsertPrefix
  *
- * DESCRIPTION: Remove every line that contains the keyword.  Does not
- *              skip comments.
+ * DESCRIPTION: Insert struct or union prefixes
  *
  ******************************************************************************/
 
 void
-AsInsertStruct (
+AsInsertPrefix (
     char                    *Buffer,
     char                    *Keyword,
     UINT8                   Type)
@@ -1193,6 +1197,8 @@ AsInsertStruct (
 
     while (SubString)
     {
+        /* Find an instance of the keyword */
+
         SubString = strstr (SubBuffer, LowerKeyword);
 
         if (!SubString)
@@ -1200,10 +1206,37 @@ AsInsertStruct (
             return;
         }
 
+        SubBuffer = SubString;
+
+        /* Must be standalone word, not a substring */
+
         if (AsMatchExactWord (SubString, KeywordLength))
         {
+            /* Make sure the keyword isn't already prefixed with the insert */
 
-            SubBuffer = SubString;
+            if (!strncmp (SubString - InsertLength, InsertString, InsertLength))
+            {
+                /* Already present, add spaces after to align structure members */
+
+                Gbl_MadeChanges = TRUE;
+                SubString = SubBuffer + KeywordLength;
+                StrLength = strlen (SubString);
+
+                memmove (SubString + 8, SubString, StrLength + 1);
+                memmove (SubString, "        ", 8);
+
+                goto Next;
+            }
+
+            /* Make sure the keyword isn't at the end of a struct/union */
+            /* Note: This code depends on a single space after the brace */
+
+            if (*(SubString - 2) == '}')
+            {
+                goto Next;
+            }
+
+            /* Prefix the keyword with the insert string */
 
             Gbl_MadeChanges = TRUE;
             StrLength = strlen (SubString);
@@ -1246,6 +1279,7 @@ AsInsertStruct (
             }
         }
 
+Next:
         SubBuffer += KeywordLength;
     }
 }

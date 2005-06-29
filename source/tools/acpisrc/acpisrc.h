@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -407,7 +407,7 @@ AsPrint (
     char                    *Filename);
 
 void
-AsInsertStruct (
+AsInsertPrefix (
     char                    *Buffer,
     char                    *Keyword,
     UINT8                   Type);

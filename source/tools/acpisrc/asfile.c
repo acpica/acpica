@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -442,7 +442,7 @@ AsConvertFile (
     {
         for (i = 0; StructTable[i].Identifier; i++)
         {
-            AsInsertStruct (FileBuffer, StructTable[i].Identifier, StructTable[i].Type);
+            AsInsertPrefix (FileBuffer, StructTable[i].Identifier, StructTable[i].Type);
         }
     }
 

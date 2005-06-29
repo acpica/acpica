@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -251,7 +251,7 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
 NULL,                       NULL,                       0};
 
-ACPI_TYPED_IDENTIFIER_TABLE           LinuxLowerCase[] = {
+ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
 
     "ACPI_ADR_SPACE_HANDLER",           SRC_TYPE_SIMPLE,
     "ACPI_ADR_SPACE_SETUP",             SRC_TYPE_SIMPLE,
@@ -487,7 +487,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxHeader,
     FLG_NO_CARRIAGE_RETURNS | FLG_LOWERCASE_DIRNAMES,
 
-    LinuxLowerCase,
+    AcpiIdentifiers,
 
     /* C source files */
 
@@ -495,7 +495,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxEliminateLines_C,
     NULL,
     LinuxEliminateMacros,
-    LinuxLowerCase,
+    AcpiIdentifiers,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
      CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS | CVT_SPACES_TO_TABS8),
@@ -506,7 +506,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxEliminateLines_H,
     LinuxConditionalIdentifiers,
     NULL,
-    NULL,
+    AcpiIdentifiers,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
      CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS| CVT_SPACES_TO_TABS8),
