@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -443,7 +443,7 @@ AcpiTbInitTableDescriptor (
 void
 AcpiTbDeleteAllTables (void)
 {
-    ACPI_TABLE_TYPE             Type;
+    ACPI_TABLE_TYPE         Type;
 
 
     /*
@@ -472,7 +472,7 @@ AcpiTbDeleteAllTables (void)
 
 void
 AcpiTbDeleteTablesByType (
-    ACPI_TABLE_TYPE             Type)
+    ACPI_TABLE_TYPE         Type)
 {
     ACPI_TABLE_DESC         *TableDesc;
     UINT32                  Count;
@@ -522,15 +522,16 @@ AcpiTbDeleteTablesByType (
         break;
     }
 
-    /* Free the table */
-    /* Get the head of the list */
-
+    /* 
+     * Free the table
+     * 1) Get the head of the list
+     */
     TableDesc = AcpiGbl_TableLists[Type].Next;
     Count     = AcpiGbl_TableLists[Type].Count;
 
     /*
-     * Walk the entire list, deleting both the allocated tables
-     * and the table descriptors
+     * 2) Walk the entire list, deleting both the allocated tables
+     *    and the table descriptors
      */
     for (i = 0; i < Count; i++)
     {
