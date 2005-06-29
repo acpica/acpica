@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -622,7 +622,7 @@ AcpiPsParseLoop (
     ACPI_PARSE2_OBJECT      *DeferredOp;
     UINT32                  ArgCount;       /* push for fixed or var args */
     UINT32                  ArgTypes = 0;
-    ACPI_PTRDIFF            AmlOffset;
+    UINT32                  AmlOffset;
     UINT16                  Opcode;
     ACPI_PARSE_OBJECT       PreOp;
     ACPI_PARSE_STATE        *ParserState;
@@ -949,7 +949,7 @@ AcpiPsParseLoop (
                          */
 
                         DeferredOp->Data    = ParserState->Aml;
-                        DeferredOp->Length  = ParserState->PkgEnd -
+                        DeferredOp->Length  = (UINT32) ParserState->PkgEnd -
                                                     ParserState->Aml;
 
                         /*
@@ -995,7 +995,7 @@ AcpiPsParseLoop (
                          * know the length.
                          */
 
-                        DeferredOp->Length = ParserState->Aml -
+                        DeferredOp->Length = (UINT32) ParserState->Aml -
                                                 DeferredOp->Data;
                     }
                 }
@@ -1015,7 +1015,7 @@ AcpiPsParseLoop (
                  * BodyLength is unknown until we parse the body
                  */
                 DeferredOp = (ACPI_PARSE2_OBJECT *) Op;
-                DeferredOp->Length = ParserState->Aml - DeferredOp->Data;
+                DeferredOp->Length = (UINT32) ParserState->Aml - DeferredOp->Data;
             }
 
             /* This op complete, notify the dispatcher */
