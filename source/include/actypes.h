@@ -228,7 +228,10 @@ typedef NATIVE_UINT                     ACPI_SIZE;
 #define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
 
 
-#ifndef s8
+#ifdef DEFINE_ALTERNATE_TYPES
+/*
+ * Types used only in translated source
+ */
 typedef INT8                            s8;
 typedef INT16                           s16;
 typedef INT32                           s32;
