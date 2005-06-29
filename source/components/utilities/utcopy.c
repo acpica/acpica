@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -155,7 +155,7 @@ PKG_SEARCH_INFO                 Level[MAX_PACKAGE_DEPTH];
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiCmBuildExternalSimpleObject (
     ACPI_OPERAND_OBJECT     *InternalObj,
     ACPI_OBJECT             *ExternalObj,
@@ -296,7 +296,7 @@ AcpiCmBuildExternalSimpleObject (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiCmBuildExternalPackageObject (
     ACPI_OPERAND_OBJECT     *InternalObj,
     UINT8                   *Buffer,
@@ -621,7 +621,7 @@ AcpiCmBuildInternalSimpleObject (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiCmBuildInternalPackageObject (
     ACPI_OPERAND_OBJECT     *InternalObj,
     UINT8                   *Buffer,
