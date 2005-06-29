@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.170 $
+ *       $Revision: 1.171 $
  *
  *****************************************************************************/
 
@@ -707,6 +707,8 @@ typedef union acpi_parse_val
 #define ACPI_DASM_RESOURCE      0x01
 #define ACPI_DASM_STRING        0x02
 #define ACPI_DASM_UNICODE       0x03
+#define ACPI_DASM_EISAID        0x04
+#define ACPI_DASM_MATCHOP       0x05
 
 /*
  * generic operation (for example:  If, While, Store)
