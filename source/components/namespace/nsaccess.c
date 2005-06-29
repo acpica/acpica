@@ -203,59 +203,53 @@ NsSetup (void)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
-            ObjDesc = AllocateObjectDesc ();
+            ObjDesc = CmCreateInternalObject (InitVal->Type);
             if (!ObjDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
-            else
+            /* 
+             * Convert value string from table entry to internal representation.
+             * Only types actually used for initial values are implemented here.
+             */
+
+            switch (InitVal->Type)
             {
-                ObjDesc->Type = (UINT8) InitVal->Type;
+
+            case TYPE_Number:
+                ObjDesc->Number.Value = (UINT32) strtoul (InitVal->Val, NULL, 10);
+                break;
+
+
+            case TYPE_String:
+                ObjDesc->String.Length = (UINT16) strlen (InitVal->Val);
 
                 /* 
-                 * Convert value string from table entry to internal representation.
-                 * Only types actually used for initial values are implemented here.
+                 * Allocate a buffer for the string.  All String.Pointers must be
+                 * allocated buffers! (makes deletion simpler)
                  */
-
-                switch (InitVal->Type)
+                ObjDesc->String.Pointer = CmAllocate ((ACPI_SIZE) (ObjDesc->String.Length + 1));
+                if (!ObjDesc->String.Pointer)
                 {
-                case TYPE_Number:
-                    ObjDesc->Number.Value = (UINT32) strtoul (InitVal->Val, NULL, 10);
-                    break;
-
-                case TYPE_String:
-                    ObjDesc->String.Length = (UINT16) strlen (InitVal->Val);
-
-                    /* 
-                     * XXX - if this CmAllocate() causes a garbage collection pass,
-                     * XXX - ObjDesc will get deleted since no NT points to it yet.
-                     * XXX - This "should not happen" during initialization.
-                     */
-
-                    ObjDesc->String.Pointer = CmAllocate ((ACPI_SIZE) (ObjDesc->String.Length + 1));
-                    if (!ObjDesc->String.Pointer)
-                    {
-                        REPORT_ERROR ("Initial value string allocation failure");
-                        return_ACPI_STATUS (AE_NO_MEMORY);
-                    }
-                    else
-                    {
-                        strcpy ((char *) ObjDesc->String.Pointer, InitVal->Val);
-                    }
-                    
-                    break;
-
-                default:
-                    CmFree (ObjDesc);
-                    ObjDesc = NULL;
-                    continue;
+                    REPORT_ERROR ("Initial value string allocation failure");
+                    return_ACPI_STATUS (AE_NO_MEMORY);
                 }
 
-                /* Store pointer to value descriptor in nte */
-            
-                NsSetValue (NewEntry, ObjDesc, ObjDesc->Type);
+                strcpy ((char *) ObjDesc->String.Pointer, InitVal->Val);
+                break;
+
+
+            default:
+                REPORT_ERROR ("Unsupported initial type value");
+                CmDeleteInternalObject (ObjDesc);
+                ObjDesc = NULL;
+                continue;
             }
+
+            /* Store pointer to value descriptor in nte */
+        
+            NsAttachObject (NewEntry, ObjDesc, ObjDesc->Type);
         }
     }
 
