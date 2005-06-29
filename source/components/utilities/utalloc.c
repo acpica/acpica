@@ -107,12 +107,6 @@
 #define _COMPONENT          MISCELLANEOUS
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "LocalAllocate: Memory allocation failure", "LocalAllocate: Memory allocation failure"},
-    {"0001", '1', "LocalCallocate: Memory allocation failure", "LocalCallocate: Memory allocation failure"},
-    {NULL, 'I', NULL, NULL}
-};
-
 
 /*****************************************************************************
  * 
@@ -121,7 +115,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
  *              ComponentId         - Caller's component ID (for error output)
- *              KdtEntry            - Error message to use on failure
+ *              Message             - Error message to use on failure
  *
  * RETURN:      Pointer to newly allocated object descriptor.  Null on error
  *
@@ -134,26 +128,26 @@ void *
 _AllocateObjectDesc (
     char                    *ModuleName, 
     INT32                   LineNumber, 
-    INT32                   ComponentId, 
-    ST_KEY_DESC_TABLE       *KdtEntry)
+    INT32                   ComponentId)
 {
     ACPI_OBJECT             *NewDesc;
 
 
     /* Attempt to allocate new descriptor */
 
-    NewDesc = OsdCallocate (sizeof (ACPI_OBJECT      ));
+    NewDesc = OsdCallocate (sizeof (ACPI_OBJECT));
     if (!NewDesc)
     {
         /* Allocation failed */
         
-        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, KdtEntry);
+        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, 
+                        "Could not allocate Object Descriptor");
     }
 
     else
     {
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %x Size 0x%x\n",
-                        NewDesc, sizeof (ACPI_OBJECT      )));
+                        NewDesc, sizeof (ACPI_OBJECT)));
     }
 
     return NewDesc;
@@ -191,7 +185,8 @@ _LocalAllocate (
     {
         /* Report allocation error */
 
-        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, &KDT[0]);
+        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, 
+                            "LocalAllocate: Memory allocation failure");
     }
 
     else
@@ -235,7 +230,8 @@ _LocalCallocate (
     {
         /* Report allocation error */
 
-        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, &KDT[1]);
+        _REPORT_ERROR (ModuleName, LineNumber, ComponentId, 
+                        "LocalCallocate: Memory allocation failure");
     }
 
     else
