@@ -356,13 +356,28 @@ PsxInitializeObjects (
 
 ACPI_STATUS
 PsxBuildInternalPackageObj (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *op,
     ACPI_OBJECT_INTERNAL    **ObjDesc);
 
 ACPI_STATUS
 PsxBuildInternalObject (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *op,
     ACPI_OBJECT_INTERNAL    **ObjDescPtr);
+
+ACPI_STATUS
+PsxInitObjectFromOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op,
+    UINT32                  Opcode,
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+ACPI_STATUS
+PsxCreateNamedObject (
+    ACPI_WALK_STATE         *WalkState,
+    NAME_TABLE_ENTRY        *Entry,
+    ACPI_GENERIC_OP         *Op);
 
 
 /* psxregn - Parser/Interpreter interface - Op Region parsing */
@@ -379,17 +394,16 @@ PsxInitializeRegion (
     
 /* psxutils - Parser/Interpreter interface utility routines */
 
-ACPI_STATUS
-PsxInitObjectFromOp (
-    ACPI_GENERIC_OP         *Op,
-    UINT32                  Opcode,
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
-
 void
 PsxDeleteResultIfNotUsed (
     ACPI_GENERIC_OP         *Op,
     ACPI_OBJECT_INTERNAL    *ResultObj,
     ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+PsxCreateOperand (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Arg);
 
 ACPI_STATUS
 PsxCreateOperands (
@@ -590,6 +604,10 @@ PsCreateWalkState (
 
 ACPI_STATUS
 PsxObjStackDeleteAll (
+    ACPI_WALK_STATE         *WalkState);
+
+void
+PsDeleteWalkState (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_WALK_STATE *
