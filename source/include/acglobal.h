@@ -242,7 +242,7 @@ ACPI_EXTERN BOOLEAN                     Gbl_DbTerminateThreads;
 extern		BOOLEAN                     Gbl_Shutdown;
 extern      UINT32                      Gbl_SystemFlags;
 extern      UINT32                      Gbl_StartupFlags;
-extern      char                       *Gbl_AcpiCaVersion;
+extern      UINT32                      Gbl_AcpiCaVersion;
 
 ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_DrvNotify;
 ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_SysNotify;
