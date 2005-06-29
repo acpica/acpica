@@ -325,6 +325,9 @@ PsGetNextNamestring (
  *
  ******************************************************************************/
 
+
+#ifdef PARSER_ONLY
+
 void
 PsGetNextNamepath (
     ACPI_PARSE_STATE        *ParserState,
@@ -334,6 +337,8 @@ PsGetNextNamepath (
 {
     char                    *Path;
     ACPI_GENERIC_OP         *Name;
+    ACPI_GENERIC_OP         *Op;
+    ACPI_GENERIC_OP         *Count;
 
 
 
@@ -351,57 +356,106 @@ PsGetNextNamepath (
     }
 
 
-#ifdef PARSER_ONLY
     if (Gbl_ParsedNamespaceRoot)
     {
-        ACPI_GENERIC_OP         *MethodOp;
-        ACPI_GENERIC_OP         *Count;
-
         /*
          * Lookup the name in the parsed namespace 
          */
 
-        MethodOp = MethodCall ? PsFind (PsGetParentScope (ParserState), Path, AML_MethodOp, 0):NULL;
-        if (MethodOp)
+        Op = NULL;
+        if (MethodCall)
         {
-            DEBUG_PRINT (TRACE_PARSE, ("PsGetNextNamepath: Found a method while parsed namespace still valid!\n"));
+            Op = PsFind (PsGetParentScope (ParserState), Path, AML_MethodOp, 0);
+        }
 
-            Count = PsGetArg (MethodOp, 0);
-            if (Count && Count->Opcode == AML_ByteOp)
+        if (Op)
+        {
+            if (Op->Opcode == AML_MethodOp)
             {
-                Name = PsAllocOp (AML_NAMEPATH_OP);
-                if (Name)
+                /*
+                 * The name refers to a control method, so this namepath is a method invocation.
+                 * We need to 1) Get the number of arguments associated with this method, and
+                 * 2) Change the NAMEPATH object into a METHODCALL object.
+                 */
+
+                Count = PsGetArg (Op, 0);
+                if (Count && Count->Opcode == AML_ByteOp)
                 {
-                    /* Change arg into a METHOD CALL and attach the name to it */
+                    Name = PsAllocOp (AML_NAMEPATH_OP);
+                    if (Name)
+                    {
+                        /* Change arg into a METHOD CALL and attach the name to it */
 
-                    PsInitOp (Arg, AML_METHODCALL_OP);
+                        PsInitOp (Arg, AML_METHODCALL_OP);
 
-                    Name->Value.Name        = Path;
-                    Name->NameTableEntry    = MethodOp;          /* Point METHODCALL/NAME to the METHOD NTE */
-                    PsAppendArg (Arg, Name);
+                        Name->Value.Name        = Path;
+                        Name->NameTableEntry    = Op;          /* Point METHODCALL/NAME to the METHOD NTE */
+                        PsAppendArg (Arg, Name);
                     
-                    *ArgCount = Count->Value.Integer & METHOD_FLAGS_ARG_COUNT;
+                        *ArgCount = Count->Value.Integer & METHOD_FLAGS_ARG_COUNT;
+                    }
                 }
+
+                return_VOID;
             }
 
-            return_VOID;
+            /*
+             * Else this is normal named object reference.
+             * Just init the NAMEPATH object with the pathname.
+             * (See code below)
+             */
         }
     }
 
+
+    /*
+     * Either we didn't find the object in the namespace, or the object is something
+     * other than a control method.  Just initialize the Op with the pathname
+     */
+
+    PsInitOp (Arg, AML_NAMEPATH_OP);        
+    Arg->Value.Name = Path;
+
+
+    return_VOID;
+}
+
+
 #else
+
+
+void
+PsGetNextNamepath (
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_GENERIC_OP         *Arg,
+    UINT32                  *ArgCount,
+    BOOLEAN                 MethodCall)
+{
+    char                    *Path;
+    ACPI_GENERIC_OP         *Name;
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *Method = NULL;
+    NAME_TABLE_ENTRY        *Nte;
+    ACPI_GENERIC_STATE      ScopeInfo;
+
+
+
+    FUNCTION_TRACE ("PsGetNextNamepath");
+
+
+    Path = PsGetNextNamestring (ParserState);
+    if (!Path || !MethodCall)
     {
-        /*
-         * The full parse tree has already been deleted -- therefore, we are parsing
-         * a control method.  We can lookup the name in the namespace instead of
-         * the parse tree!
-         */
+        /* Null name case, create a null namepath object */
 
-        ACPI_STATUS             Status;
-        NAME_TABLE_ENTRY        *Method = NULL;
-        NAME_TABLE_ENTRY        *Nte;
-        ACPI_GENERIC_STATE      ScopeInfo;
+        PsInitOp (Arg, AML_NAMEPATH_OP);        
+        Arg->Value.Name = Path;
+        return_VOID;
+    }
 
 
+    if (MethodCall)
+    {
         /* 
          * Lookup the name in the internal namespace
          */
@@ -414,7 +468,8 @@ PsGetNextNamepath (
 
         /* 
          * Lookup object.  We don't want to add anything new to the namespace here, however.
-         * So we use MODE_EXECUTE.
+         * So we use MODE_EXECUTE.  Allow searching of the parent tree, but don't open a new
+         * scope -- we just want to lookup the object
          */
 
         Status = NsLookup (&ScopeInfo, Path, ACPI_TYPE_Any, IMODE_Execute, /* MUST BE mode EXECUTE to perform upsearch */ 
@@ -439,15 +494,22 @@ PsGetNextNamepath (
 
                     *ArgCount = ((ACPI_OBJECT_INTERNAL *) Method->Object)->Method.ParamCount;
                 }
-            
+        
                 return_VOID;
             }
+
+            /*
+             * Else this is normal named object reference.
+             * Just init the NAMEPATH object with the pathname.
+             * (See code below)
+             */
         }
     }
-#endif
 
-    /* Everything else has failed */
-    /* variable dereference */
+    /*
+     * Either we didn't find the object in the namespace, or the object is something
+     * other than a control method.  Just initialize the Op with the pathname
+     */
 
     PsInitOp (Arg, AML_NAMEPATH_OP);        
     Arg->Value.Name = Path;
@@ -456,6 +518,7 @@ PsGetNextNamepath (
     return_VOID;
 }
 
+#endif
 
 /*******************************************************************************
  *
