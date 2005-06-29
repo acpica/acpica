@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -488,7 +488,7 @@ static const NATIVE_CHAR    *AcpiGbl_NsTypeNames[] =    /* printable names of AC
 
 NATIVE_CHAR *
 AcpiUtGetTypeName (
-    UINT32                  Type)
+    ACPI_OBJECT_TYPE        Type)
 {
 
     if (Type > INTERNAL_TYPE_INVALID)
@@ -606,7 +606,7 @@ const NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
 
 BOOLEAN
 AcpiUtValidObjectType (
-    UINT32                  Type)
+    ACPI_OBJECT_TYPE        Type)
 {
 
     if (Type > ACPI_TYPE_MAX)
