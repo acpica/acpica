@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -175,7 +175,8 @@ AcpiUtReleaseToCache (
 
         /* Put the object at the head of the cache list */
 
-        * (ACPI_CAST_INDIRECT_PTR (char, &(((char *) Object)[CacheInfo->LinkOffset]))) = CacheInfo->ListHead;
+        * (ACPI_CAST_INDIRECT_PTR (char,
+            &(((char *) Object)[CacheInfo->LinkOffset]))) = CacheInfo->ListHead;
         CacheInfo->ListHead = Object;
         CacheInfo->CacheDepth++;
 
@@ -235,7 +236,8 @@ AcpiUtAcquireFromCache (
         /* There is an object available, use it */
 
         Object = CacheInfo->ListHead;
-        CacheInfo->ListHead = *(ACPI_CAST_INDIRECT_PTR (char, &(((char *) Object)[CacheInfo->LinkOffset])));
+        CacheInfo->ListHead = *(ACPI_CAST_INDIRECT_PTR (char,
+                                &(((char *) Object)[CacheInfo->LinkOffset])));
 
         ACPI_MEM_TRACKING (CacheInfo->CacheHits++);
         CacheInfo->CacheDepth--;
@@ -311,7 +313,8 @@ AcpiUtDeleteGenericCache (
     {
         /* Delete one cached state object */
 
-        Next = *(ACPI_CAST_INDIRECT_PTR (char, &(((char *) CacheInfo->ListHead)[CacheInfo->LinkOffset])));
+        Next = *(ACPI_CAST_INDIRECT_PTR (char,
+                    &(((char *) CacheInfo->ListHead)[CacheInfo->LinkOffset])));
         ACPI_MEM_FREE (CacheInfo->ListHead);
 
         CacheInfo->ListHead = Next;
@@ -461,7 +464,7 @@ AcpiUtInitializeBuffer (
  *
  ******************************************************************************/
 
-void *
+static void *
 AcpiUtAllocate (
     ACPI_SIZE               Size,
     UINT32                  Component,
@@ -513,7 +516,7 @@ AcpiUtAllocate (
  *
  ******************************************************************************/
 
-void *
+static void *
 AcpiUtCallocate (
     ACPI_SIZE               Size,
     UINT32                  Component,
@@ -591,8 +594,8 @@ AcpiUtAllocateAndTrack (
     ACPI_STATUS             Status;
 
 
-    Allocation = AcpiUtAllocate (Size + sizeof (ACPI_DEBUG_MEM_HEADER), Component,
-                                Module, Line);
+    Allocation = AcpiUtAllocate (Size + sizeof (ACPI_DEBUG_MEM_HEADER),
+                    Component, Module, Line);
     if (!Allocation)
     {
         return (NULL);
@@ -639,8 +642,8 @@ AcpiUtCallocateAndTrack (
     ACPI_STATUS             Status;
 
 
-    Allocation = AcpiUtCallocate (Size + sizeof (ACPI_DEBUG_MEM_HEADER), Component,
-                                Module, Line);
+    Allocation = AcpiUtCallocate (Size + sizeof (ACPI_DEBUG_MEM_HEADER),
+                    Component, Module, Line);
     if (!Allocation)
     {
         /* Report allocation error */
@@ -737,7 +740,7 @@ AcpiUtFreeAndTrack (
  *
  ******************************************************************************/
 
-ACPI_DEBUG_MEM_BLOCK *
+static ACPI_DEBUG_MEM_BLOCK *
 AcpiUtFindAllocation (
     UINT32                  ListId,
     void                    *Allocation)
@@ -789,7 +792,7 @@ AcpiUtFindAllocation (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiUtTrackAllocation (
     UINT32                  ListId,
     ACPI_DEBUG_MEM_BLOCK    *Allocation,
@@ -827,10 +830,12 @@ AcpiUtTrackAllocation (
     Element = AcpiUtFindAllocation (ListId, Allocation);
     if (Element)
     {
-        ACPI_REPORT_ERROR (("UtTrackAllocation: Allocation already present in list! (%p)\n",
+        ACPI_REPORT_ERROR ((
+            "UtTrackAllocation: Allocation already present in list! (%p)\n",
             Allocation));
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Element %p Address %p\n", Element, Allocation));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Element %p Address %p\n",
+            Element, Allocation));
 
         goto UnlockAndExit;
     }
@@ -880,7 +885,7 @@ UnlockAndExit:
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiUtRemoveAllocation (
     UINT32                  ListId,
     ACPI_DEBUG_MEM_BLOCK    *Allocation,
@@ -937,7 +942,8 @@ AcpiUtRemoveAllocation (
 
     ACPI_MEMSET (&Allocation->UserSpace, 0xEA, Allocation->Size);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "Freeing size 0%X\n", Allocation->Size));
+    ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "Freeing size 0%X\n",
+        Allocation->Size));
 
     Status = AcpiUtReleaseMutex (ACPI_MTX_MEMORY);
     return_ACPI_STATUS (Status);
@@ -997,7 +1003,8 @@ AcpiUtDumpAllocationInfo (
     ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("%30s: %4d (%3d Kb)\n", "Max Nodes",
                     AcpiGbl_MaxConcurrentNodeCount,
-                    ROUND_UP_TO_1K ((AcpiGbl_MaxConcurrentNodeCount * sizeof (ACPI_NAMESPACE_NODE)))));
+                    ROUND_UP_TO_1K ((AcpiGbl_MaxConcurrentNodeCount *
+                        sizeof (ACPI_NAMESPACE_NODE)))));
 */
     return_VOID;
 }
