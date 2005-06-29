@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: dsmthdat - control method arguments and local variables
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -130,10 +130,10 @@
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDsMethodDataInit
  *
- * PARAMETERS:  *ObjDesc 
+ * PARAMETERS:  *ObjDesc
  *
  * RETURN:      Status
  *
@@ -188,7 +188,7 @@ AcpiDsMethodDataInit (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDsMethodDataDeleteAll
  *
  * PARAMETERS:  None
@@ -249,7 +249,7 @@ AcpiDsMethodDataDeleteAll (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDsMethodDataInitArgs
  *
  * PARAMETERS:  None
@@ -280,14 +280,14 @@ AcpiDsMethodDataInitArgs (
     }
 
     /* Copy passed parameters into the new method stack frame  */
-        
+
     for (Pindex = Mindex = 0; (Mindex < MTH_NUM_ARGS) && (Pindex < MaxParamCount); Mindex++)
-    {   
-        if (Params[Pindex])   
+    {
+        if (Params[Pindex])
         {
             /*
              * A valid parameter.
-             * Set the current method argument to the Params[Pindex++] argument object descriptor   
+             * Set the current method argument to the Params[Pindex++] argument object descriptor
              */
             Status = AcpiDsMethodDataSetValue (MTH_TYPE_ARG, Mindex, Params[Pindex]);
             if (ACPI_FAILURE (Status))
@@ -311,7 +311,7 @@ AcpiDsMethodDataInitArgs (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDsMethodDataGetEntry
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
@@ -339,9 +339,9 @@ AcpiDsMethodDataGetEntry (
 
     WalkState = AcpiDsGetCurrentWalkState (Acpi_GblCurrentWalkList);
 
-    /* 
+    /*
      * Get the requested object.
-     * The stack "Type" is either a LocalVariable or an Argument 
+     * The stack "Type" is either a LocalVariable or an Argument
      */
 
     switch (Type)
@@ -355,7 +355,7 @@ AcpiDsMethodDataGetEntry (
                                     Index, MTH_MAX_LOCAL));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
-        
+
         *Entry = (ACPI_OBJECT_INTERNAL **) &WalkState->LocalVariables[Index].Object;
         break;
 
@@ -368,7 +368,7 @@ AcpiDsMethodDataGetEntry (
                                     Index, MTH_MAX_ARG));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
-        
+
         *Entry = (ACPI_OBJECT_INTERNAL **) &WalkState->Arguments[Index].Object;
         break;
 
@@ -385,7 +385,7 @@ AcpiDsMethodDataGetEntry (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDsMethodDataSetEntry
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
@@ -422,7 +422,7 @@ AcpiDsMethodDataSetEntry (
     /* Increment ref count so object can't be deleted while installed */
 
     AcpiCmAddReference (Object);
-    
+
     /* Install the object into the stack entry */
 
     *Entry = Object;
@@ -432,7 +432,7 @@ AcpiDsMethodDataSetEntry (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDsMethodDataGetType
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
@@ -480,7 +480,7 @@ AcpiDsMethodDataGetType (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDsMethodDataGetNte
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
@@ -516,7 +516,7 @@ AcpiDsMethodDataGetNte (
                                     Index, MTH_MAX_LOCAL));
             return_PTR (Entry);
         }
-        
+
         Entry =  &WalkState->LocalVariables[Index];
         break;
 
@@ -529,7 +529,7 @@ AcpiDsMethodDataGetNte (
                                     Index, MTH_MAX_ARG));
             return_PTR (Entry);
         }
-        
+
         Entry = &WalkState->Arguments[Index];
         break;
 
@@ -546,7 +546,7 @@ AcpiDsMethodDataGetNte (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDsMethodDataGetValue
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
@@ -565,7 +565,7 @@ AcpiDsMethodDataGetNte (
 ACPI_STATUS
 AcpiDsMethodDataGetValue (
     UINT32                  Type,
-    UINT32                  Index, 
+    UINT32                  Index,
     ACPI_OBJECT_INTERNAL    **DestDesc)
 {
     ACPI_STATUS             Status;
@@ -583,7 +583,7 @@ AcpiDsMethodDataGetValue (
         DEBUG_PRINT (ACPI_ERROR, ("DsMethodDataGetValue: NULL object descriptor pointer\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
 
     /* Get a pointer to the requested method stack entry */
 
@@ -602,12 +602,12 @@ AcpiDsMethodDataGetValue (
 
     if (!Object)
     {
-        /* 
+        /*
          * Index points to uninitialized object stack value.  This means
          * that either 1) The expected argument was not passed to the method,
          * or 2) A local variable was referenced by the method (via the ASL)
          * before it was initialized.  Either case is an error.
-         */ 
+         */
 
         switch (Type)
         {
@@ -626,7 +626,7 @@ AcpiDsMethodDataGetValue (
     }
 
 
-    /* 
+    /*
      * Index points to initialized and valid object stack value.
      * Return an additional reference to the object
      */
@@ -639,7 +639,7 @@ AcpiDsMethodDataGetValue (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDsMethodDataDeleteValue
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
@@ -655,7 +655,7 @@ AcpiDsMethodDataGetValue (
 ACPI_STATUS
 AcpiDsMethodDataDeleteValue (
     UINT32                  Type,
-    UINT32                  Index) 
+    UINT32                  Index)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    **Entry;
@@ -677,7 +677,7 @@ AcpiDsMethodDataDeleteValue (
 
     Object = *Entry;
 
-    /* 
+    /*
      * Undefine the Arg or Local by setting its descriptor pointer to NULL.
      * Locals/Args can contain both ACPI_OBJECT_INTERNALS and NAME_TABLE_ENTRYs
      */
@@ -689,7 +689,7 @@ AcpiDsMethodDataDeleteValue (
     {
         /*
          * There is a valid object in this slot
-         * Decrement the reference count by one to balance the increment when the 
+         * Decrement the reference count by one to balance the increment when the
          * object was stored in the slot.
          */
 
@@ -702,7 +702,7 @@ AcpiDsMethodDataDeleteValue (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiDsMethodDataSetValue
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
@@ -725,8 +725,8 @@ AcpiDsMethodDataDeleteValue (
 ACPI_STATUS
 AcpiDsMethodDataSetValue (
     UINT32                  Type,
-    UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *SrcDesc) 
+    UINT32                  Index,
+    ACPI_OBJECT_INTERNAL    *SrcDesc)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    **Entry;
@@ -806,7 +806,7 @@ AcpiDsMethodDataSetValue (
     }
 
 
-    /* 
+    /*
      * Install the ObjStack descriptor (*SrcDesc) into the descriptor for the
      * Arg or Local.
      * Install the new object in the stack entry

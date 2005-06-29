@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -169,7 +169,7 @@ AcpiDsParseMethod (
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** Parsing [%4.4s] **** Nte=%p\n", 
+    DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** Parsing [%4.4s] **** Nte=%p\n",
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle));
 
 
@@ -208,7 +208,7 @@ AcpiDsParseMethod (
     Op->NameTableEntry = Entry;
 
 
-    /* 
+    /*
      * Parse the method, creating a parse tree.
      *
      * The parse also includes a first pass load of the namespace where
@@ -236,7 +236,7 @@ AcpiDsParseMethod (
 
     DEBUG_EXEC (AcpiDbGenerateStatistics (Op, 1));
 
-    DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n", 
+    DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n",
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle, Op));
 
     return_ACPI_STATUS (Status);
@@ -305,7 +305,7 @@ AcpiDsBeginMethodExecution (
     }
 
 
-    /* 
+    /*
      * Increment the method parse tree thread count since there is one additional thread executing
      * in it.  If configured for deletion-on-exit, the parse tree will be deleted when the last
      * thread completes execution of the method
@@ -313,14 +313,14 @@ AcpiDsBeginMethodExecution (
 
     ((ACPI_DEFERRED_OP *) ObjDesc->Method.ParserOp)->ThreadCount++;
 
-    /* 
+    /*
      * Parsing is complete, we can unlock the parser.  Parse tree cannot be deleted
      * at least until this thread completes.
      */
 
     AcpiCmReleaseMutex (MTX_PARSER);
-    
-    /* 
+
+    /*
      * If there is a concurrency limit on this method, we need to obtain a unit
      * from the method semaphore.  This releases the interpreter if we block
      */
@@ -365,7 +365,7 @@ AcpiDsCallControlMethod (
 
     FUNCTION_TRACE_PTR ("DsCallControlMethod", ThisWalkState);
 
-    DEBUG_PRINT (TRACE_DISPATCH, ("DsCall, execute method %p, currentstate=%p\n", 
+    DEBUG_PRINT (TRACE_DISPATCH, ("DsCall, execute method %p, currentstate=%p\n",
                         ThisWalkState->PrevOp, ThisWalkState));
 
 
@@ -409,7 +409,7 @@ AcpiDsCallControlMethod (
     }
 
     /* The NextOp of the NextWalk will be the beginning of the method */
-    
+
     NextWalkState->NextOp = (ACPI_GENERIC_OP *) Method;
 
     /* Open a new scope */
@@ -421,8 +421,8 @@ AcpiDsCallControlMethod (
     }
 
 
-    /* 
-     * Initialize the arguments for the method.  The resolved arguments were put 
+    /*
+     * Initialize the arguments for the method.  The resolved arguments were put
      * on the previous walk state's operand stack.  Operands on the previous walk state
      * stack always start at index 0.
      */
@@ -444,7 +444,7 @@ AcpiDsCallControlMethod (
 
     ThisWalkState->NumOperands = 0;
 
- 
+
     DEBUG_PRINT (TRACE_DISPATCH, ("DsCall, starting nested execution, newstate=%p\n", NextWalkState));
 
     return_ACPI_STATUS (AE_OK);
@@ -500,7 +500,7 @@ AcpiDsRestartControlMethod (
         AcpiDsDeleteResultIfNotUsed (WalkState->MethodCallOp, ReturnDesc, WalkState);
     }
 
-    DEBUG_PRINT (TRACE_DISPATCH, ("DsRestart: Method=%p Return=%p State=%p\n", 
+    DEBUG_PRINT (TRACE_DISPATCH, ("DsRestart: Method=%p Return=%p State=%p\n",
                         WalkState->MethodCallOp, ReturnDesc, WalkState));
 
 
@@ -547,7 +547,7 @@ AcpiDsTerminateControlMethod (
 
     AcpiDsMethodDataDeleteAll (WalkState);
 
-    /* 
+    /*
      * Lock the parser while we terminate this method.
      * If this is the last thread executing the method, we have
      * additional cleanup to perform
@@ -562,7 +562,7 @@ AcpiDsTerminateControlMethod (
     {
         goto UnlockAndExit;
     }
- 
+
     /* Signal completion of the execution of this method if necessary */
 
     if (WalkState->MethodDesc->Method.Semaphore)
@@ -578,7 +578,7 @@ AcpiDsTerminateControlMethod (
         /*
          * There are no more threads executing this method.  Perform additional cleanup.
          *
-         * The method NTE is stored in the method Op 
+         * The method NTE is stored in the method Op
          */
         MethodEntry = Op->NameTableEntry;
 
@@ -591,16 +591,16 @@ AcpiDsTerminateControlMethod (
             AcpiNsDeleteNamespaceSubtree (MethodEntry);
         }
 
-        /* 
-         * Delete any namespace entries created anywhere else within the namespace 
+        /*
+         * Delete any namespace entries created anywhere else within the namespace
          */
 
         AcpiNsDeleteNamespaceByOwner (WalkState->MethodDesc->Method.OwningId);
         AcpiCmReleaseMutex (MTX_NAMESPACE);
 
 
-        /* 
-         * Delete the method's parse tree if asked to 
+        /*
+         * Delete the method's parse tree if asked to
          */
         if (Acpi_GblWhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
         {

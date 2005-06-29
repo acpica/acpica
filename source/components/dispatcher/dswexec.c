@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: dswexec - Dispatcher method execution callbacks;  
+ *
+ * Module Name: dswexec - Dispatcher method execution callbacks;
  *                          Dispatch to interpreter.
  *
  *****************************************************************************/
@@ -39,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -143,7 +143,7 @@
  * RETURN:      Status
  *
  * DESCRIPTION: Descending callback used during the execution of control
- *              methods.  This is where most operators and operands are 
+ *              methods.  This is where most operators and operands are
  *              dispatched to the interpreter.
  *
  ****************************************************************************/
@@ -164,7 +164,7 @@ AcpiDsExecBeginOp (
     {
         return_ACPI_STATUS (AE_OK);
     }
-    
+
     /*
      * If the previous opcode was a conditional, this opcode
      * must be the beginning of the associated predicate.
@@ -193,7 +193,7 @@ AcpiDsExecBeginOp (
 
 
     /*
-     * Handle the opcode based upon the opcode type 
+     * Handle the opcode based upon the opcode type
      */
 
     switch (OpInfo->Flags & OP_INFO_TYPE)
@@ -210,7 +210,7 @@ AcpiDsExecBeginOp (
         {
             /*
              * Found a named object declaration during method execution;  we must enter
-             * this object into the namespace.  The created object is temporary and 
+             * this object into the namespace.  The created object is temporary and
              * will be deleted upon completion of the execution of this method.
              */
 
@@ -240,7 +240,7 @@ AcpiDsExecBeginOp (
  * RETURN:      Status
  *
  * DESCRIPTION: Ascending callback used during the execution of control
- *              methods.  The only thing we really need to do here is to 
+ *              methods.  The only thing we really need to do here is to
  *              notice the beginning of IF, ELSE, and WHILE blocks.
  *
  ****************************************************************************/
@@ -492,7 +492,7 @@ AcpiDsExecEndOp (
         break;
 
 
-    case OPTYPE_METHOD_CALL: 
+    case OPTYPE_METHOD_CALL:
 
         DEBUG_PRINT (TRACE_DISPATCH, ("ExecEndOp: Method invocation, Op=%X\n", Op));
 
@@ -589,7 +589,7 @@ AcpiDsExecEndOp (
             Status = AE_OK;
             break;
         }
-        
+
         break;
 
     default:
@@ -604,7 +604,7 @@ AcpiDsExecEndOp (
 
 
     /*
-     * Check if we just completed the evaluation of a conditional predicate 
+     * Check if we just completed the evaluation of a conditional predicate
      */
 
     if ((WalkState->ControlState) &&
@@ -698,7 +698,7 @@ Cleanup:
 
         DEBUG_EXEC (AcpiDbDisplayResultObject (ResultObj));
 
-        /* 
+        /*
          * Delete the result op if and only if:
          * Parent will not use the result -- such as any non-nested type2 op in a method (parent will be method)
          */
@@ -708,7 +708,7 @@ Cleanup:
     /* Always clear the object stack */
 
     WalkState->NumOperands = 0; /* TBD: [Investigate] Clear stack of return value, but don't delete it */
-    
+
     return_ACPI_STATUS (Status);
 }
 

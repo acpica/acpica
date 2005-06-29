@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: dsutils - Dispatcher utilities
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -141,7 +141,7 @@
  *
  * DESCRIPTION: Used after interpretation of an opcode.  If there is an internal
  *              result descriptor, check if the parent opcode will actually use
- *              this result.  If not, delete the result now so that it will 
+ *              this result.  If not, delete the result now so that it will
  *              not become orphaned.
  *
  ****************************************************************************/
@@ -174,7 +174,7 @@ AcpiDsDeleteResultIfNotUsed (
 
     if (!Op->Parent)
     {
-        /* 
+        /*
          * If there is no parent, the result can't possibly be used!
          * (An executing method typically has no parent, since each method is parsed separately
          */
@@ -226,7 +226,7 @@ AcpiDsDeleteResultIfNotUsed (
     switch (ParentInfo->Flags & OP_INFO_TYPE)
     {
     /*
-     * In these cases, the parent will never use the return object, so delete it 
+     * In these cases, the parent will never use the return object, so delete it
      * here and now.
      */
     case OPTYPE_CONTROL:        /* IF, ELSE, WHILE only */
@@ -246,7 +246,7 @@ AcpiDsDeleteResultIfNotUsed (
         AcpiCmRemoveReference (ResultObj);
         break;
 
-    /* 
+    /*
      * In all other cases. the parent will actually use the return object, so keep it.
      */
     default:
@@ -283,7 +283,7 @@ AcpiDsCreateOperand (
     ACPI_STATUS             Status = AE_OK;
     char                    *NameString;
     UINT32                  NameLength;
-    OBJECT_TYPE_INTERNAL    DataType; 
+    OBJECT_TYPE_INTERNAL    DataType;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *ParentOp;
     UINT16                  Opcode;
@@ -312,7 +312,7 @@ AcpiDsCreateOperand (
         /* All prefixes have been handled, and the name is in NameString */
 
         /*
-         * Differentiate between a namespace "create" operation versus a "lookup" operation 
+         * Differentiate between a namespace "create" operation versus a "lookup" operation
          * (IMODE_LOAD_PASS2 vs. IMODE_EXECUTE) in order to support the creation of namespace
          * objects during the execution of control methods.
          */
@@ -334,7 +334,7 @@ AcpiDsCreateOperand (
             InterpreterMode = IMODE_EXECUTE;
         }
 
-        Status = AcpiNsLookup (WalkState->ScopeInfo, NameString, ACPI_TYPE_ANY, InterpreterMode, 
+        Status = AcpiNsLookup (WalkState->ScopeInfo, NameString, ACPI_TYPE_ANY, InterpreterMode,
                                     NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, WalkState, (NAME_TABLE_ENTRY **) &ObjDesc);
 
         /* Free the namestring created above */
@@ -342,11 +342,11 @@ AcpiDsCreateOperand (
         AcpiCmFree (NameString);
 
         /*
-         * The only case where we pass through (ignore) a NOT_FOUND error is for the 
+         * The only case where we pass through (ignore) a NOT_FOUND error is for the
          * CondRefOf opcode.
          */
 
-        if (Status == AE_NOT_FOUND) 
+        if (Status == AE_NOT_FOUND)
         {
             if (ParentOp->Opcode == AML_COND_REF_OF_OP)
             {
@@ -367,7 +367,7 @@ AcpiDsCreateOperand (
         }
 
         /* Check status from the lookup */
- 
+
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -392,7 +392,7 @@ AcpiDsCreateOperand (
         {
             /*
              * If the name is null, this means that this is an optional result parameter that was
-             * not specified in the original ASL.  Create an Reference for a placeholder 
+             * not specified in the original ASL.  Create an Reference for a placeholder
              */
             Opcode = AML_ZERO_OP;       /* Has no arguments! */
 
@@ -421,7 +421,7 @@ AcpiDsCreateOperand (
 
 //            DEBUG_EXEC (AcpiDbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1]));
 
-            /* 
+            /*
              * Use value that was already previously returned by the evaluation of this argument
              */
 
@@ -497,7 +497,7 @@ AcpiDsCreateOperands (
     ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_OP         *Arg;
     UINT32                  ArgsPushed = 0;
- 
+
 
     FUNCTION_TRACE_PTR ("DsCreateOperands", FirstArg);
 
@@ -515,7 +515,7 @@ AcpiDsCreateOperands (
             goto Cleanup;
         }
 
-        DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperands: Arg #%d (%p) done, Arg1=%p\n", 
+        DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperands: Arg #%d (%p) done, Arg1=%p\n",
                         ArgsPushed, Arg, FirstArg));
 
         /* Move on to next argument, if any */
@@ -528,9 +528,9 @@ AcpiDsCreateOperands (
 
 
 Cleanup:
-    /* 
+    /*
      * We must undo everything done above; meaning that we must pop everything off
-     * of the operand stack and delete those objects 
+     * of the operand stack and delete those objects
      */
 
     AcpiDsObjStackPopAndDelete (ArgsPushed, WalkState);
@@ -561,15 +561,15 @@ AcpiDsResolveOperands (
     UINT32                  i;
     ACPI_STATUS             Status = AE_OK;
 
-    
+
     FUNCTION_TRACE_PTR ("DsResolveOperands", WalkState);
 
 
-    /* 
-     * Attempt to resolve each of the valid operands 
+    /*
+     * Attempt to resolve each of the valid operands
      * Method arguments are passed by value, not by reference
      */
-    
+
     /*
      * TBD: [Investigate] Note from previous parser:
      *   RefOf problem with AcpiAmlResolveToValue() conversion.
@@ -598,7 +598,7 @@ AcpiDsResolveOperands (
  * RETURN:      The ACPI type associated with the opcode
  *
  * DESCRIPTION: Convert a raw AML opcode to the associated ACPI data type,
- *              if any.  If the opcode returns a value as part of the 
+ *              if any.  If the opcode returns a value as part of the
  *              intepreter execution, a flag is returned in OutFlags.
  *
  ****************************************************************************/
@@ -742,11 +742,11 @@ AcpiDsMapOpcodeToDataType (
  *
  ****************************************************************************/
 
-OBJECT_TYPE_INTERNAL 
+OBJECT_TYPE_INTERNAL
 AcpiDsMapNamedOpcodeToDataType (
     UINT16                  Opcode)
 {
-    OBJECT_TYPE_INTERNAL    DataType; 
+    OBJECT_TYPE_INTERNAL    DataType;
 
 
     /* Decode Opcode */
@@ -794,7 +794,7 @@ AcpiDsMapNamedOpcodeToDataType (
         break;
 
     case AML_NAME_OP:                               /* NameOp - special code in original */
-    case AML_NAMEPATH_OP:                    
+    case AML_NAMEPATH_OP:
         DataType = ACPI_TYPE_ANY;
         break;
 

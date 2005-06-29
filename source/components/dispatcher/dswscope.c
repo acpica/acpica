@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: nsstack - Scope stack manipulation
+ *
+ * Module Name: dswscope - Scope stack manipulation
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,15 +114,15 @@
  *
  *****************************************************************************/
 
-#define __NSSTACK_C__
+#define __DSWSCOPE_C__
 
-#include <acpi.h>
-#include <interp.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "interp.h"
+#include "dispatch.h"
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsstack");
+        MODULE_NAME         ("dswscope");
 
 
 #define STACK_POP(head) head
@@ -131,7 +131,7 @@
 
 /****************************************************************************
  *
- * FUNCTION:    NsScopeStackClear
+ * FUNCTION:    AcpiDsScopeStackClear
  *
  * PARAMETERS:  None
  *
@@ -141,30 +141,29 @@
  ***************************************************************************/
 
 void
-NsScopeStackClear (void)
+AcpiDsScopeStackClear (
+    ACPI_WALK_STATE         *WalkState)
 {
-    SCOPE_STACK             *ScopeInfo;
+    ACPI_GENERIC_STATE      *ScopeInfo;
 
 
-    ScopeInfo = Gbl_CurrentScope;
-
-    /* Pop everything except the root scope */
-
-    while (ScopeInfo->Next)
+    while (WalkState->ScopeInfo)
     {
-        /* Pop this scope off the stack */
+        /* Pop a scope off the stack */
 
-        Gbl_CurrentScope = ScopeInfo->Next;
-        CmFree (ScopeInfo);
+        ScopeInfo = WalkState->ScopeInfo;
+        WalkState->ScopeInfo = ScopeInfo->Scope.Next;
 
-        ScopeInfo = Gbl_CurrentScope;
+        DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+        AcpiCmDeleteGenericState (ScopeInfo);
     }
 }
 
 
+
 /****************************************************************************
  *
- * FUNCTION:    NsScopeStackPush
+ * FUNCTION:    AcpiDsScopeStackPush
  *
  * PARAMETERS:  *NewScope,              - Name to be made current
  *              Type,                   - Type of frame being pushed
@@ -175,35 +174,36 @@ NsScopeStackClear (void)
  ***************************************************************************/
 
 ACPI_STATUS
-NsScopeStackPush (
-    NAME_TABLE_ENTRY        *NewScope, 
-    ACPI_OBJECT_TYPE        Type)
+AcpiDsScopeStackPush (
+    NAME_TABLE_ENTRY        *NewScope,
+    OBJECT_TYPE_INTERNAL    Type,
+    ACPI_WALK_STATE         *WalkState)
 {
-    SCOPE_STACK             *ScopeInfo;
+    ACPI_GENERIC_STATE      *ScopeInfo;
 
 
-    FUNCTION_TRACE ("NsScopeStackPush");
+    FUNCTION_TRACE ("DsScopeStackPush");
 
 
     if (!NewScope)
     {
         /*  invalid scope   */
 
-        REPORT_ERROR ("NsScopeStackPush: null scope passed");
+        REPORT_ERROR ("DsScopeStackPush: null scope passed");
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /* Make sure object type is valid */
 
-    if (!AmlValidateObjectType (Type))
+    if (!AcpiAmlValidateObjectType (Type))
     {
-        REPORT_WARNING ("NsScopeStackPush: type code out of range");
+        REPORT_WARNING ("DsScopeStackPush: type code out of range");
     }
 
 
     /* Allocate a new scope object */
 
-    ScopeInfo = CmAllocate (sizeof (SCOPE_STACK));
+    ScopeInfo = AcpiCmCreateGenericState ();
     if (!ScopeInfo)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -211,13 +211,12 @@ NsScopeStackPush (
 
     /* Init new scope object */
 
-    ScopeInfo->Scope = NewScope;
-    ScopeInfo->Type = Type;
+    ScopeInfo->Scope.Entry  = NewScope;
+    ScopeInfo->Common.Value = (UINT16) Type;
 
     /* Push new scope object onto stack */
 
-    ScopeInfo->Next = Gbl_CurrentScope;
-    Gbl_CurrentScope = ScopeInfo;   
+    AcpiCmPushGenericState (&WalkState->ScopeInfo, ScopeInfo);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -225,43 +224,7 @@ NsScopeStackPush (
 
 /****************************************************************************
  *
- * FUNCTION:    NsScopeStackPushEntry
- *
- * PARAMETERS:  NewScope,               - Name to be made current
- *
- * DESCRIPTION: Push the current scope on the scope stack, and make the
- *              passed nte current.
- *
- ***************************************************************************/
-
-ACPI_STATUS
-NsScopeStackPushEntry (
-    ACPI_HANDLE             NewScope)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE_PTR ("NsScopeStackPushEntry", NewScope);
-
-
-    if (!NewScope || 
-       !((NAME_TABLE_ENTRY *) NewScope)->Scope)
-    {
-        /* NewScope or NewScope->Scope invalid */
-
-        REPORT_ERROR ("NsScopeStackPushEntry: null scope passed");
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = NsScopeStackPush (((NAME_TABLE_ENTRY *) NewScope)->Scope, ACPI_TYPE_Method);
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    NsScopeStackPop
+ * FUNCTION:    AcpiDsScopeStackPop
  *
  * PARAMETERS:  Type                - The type of frame to be found
  *
@@ -276,63 +239,30 @@ NsScopeStackPushEntry (
  *
  ***************************************************************************/
 
-INT32
-NsScopeStackPop (
-    ACPI_OBJECT_TYPE        Type)
+ACPI_STATUS
+AcpiDsScopeStackPop (
+    ACPI_WALK_STATE         *WalkState)
 {
-    INT32                   Count = 0;
-    SCOPE_STACK             *ScopeInfo;
-    ACPI_OBJECT_TYPE        ThisType;
+    ACPI_GENERIC_STATE      *ScopeInfo;
 
 
-    FUNCTION_TRACE ("NsScopeStackPop");
-
-
-    /* Validate type */
-
-    if (!AmlValidateObjectType (Type))
-    {
-        REPORT_WARNING ("NsScopeStackPop: type code out of range");
-    }
-
-    DEBUG_PRINT (TRACE_EXEC, ("Popping Scope until type (%d) is found\n", Type));
-
+    FUNCTION_TRACE ("DsScopeStackPop");
 
     /*
-     * Pop scope info objects off the stack until a scope of the
-     * requested type is found, or the stack becomes empty.  
-     * (Empty means only one scope remains, the root scope.)
+     * Pop scope info object off the stack.
      */
 
-    ScopeInfo = Gbl_CurrentScope;
-    while (ScopeInfo->Next)
+    ScopeInfo = AcpiCmPopGenericState (&WalkState->ScopeInfo);
+    if (!ScopeInfo)
     {
-        /* Pop this scope off the stack */
-
-        Count++;
-        Gbl_CurrentScope = ScopeInfo->Next;
-
-        ThisType = ScopeInfo->Type;
-        CmFree (ScopeInfo);
-
-        DEBUG_PRINT (TRACE_EXEC, ("Popped object type (%d)\n", ThisType));
-
-        /* Terminate if Type is found */
-
-        if ((ACPI_TYPE_Any == Type) || 
-            (Type == ThisType))
-        {
-            DEBUG_PRINT (TRACE_EXEC, ("Found object type (%d)\n", Type));
-            return_VALUE (Count);
-        }
-
-        /* Type not found, keep popping the stack */
-
-        ScopeInfo = Gbl_CurrentScope;
+        return_ACPI_STATUS (AE_STACK_UNDERFLOW);
     }
 
-    DEBUG_PRINT (TRACE_EXEC,("Object type (%d) not found on scope stack\n", Type));
-    return_VALUE (-Count);
+    DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+
+    AcpiCmDeleteGenericState (ScopeInfo);
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 

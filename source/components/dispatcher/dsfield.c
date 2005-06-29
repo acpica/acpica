@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: dsfield - Dispatcher field routines
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -141,7 +141,7 @@
 
 /*****************************************************************************
  *
- * FUNCTION:    AcpiDsCreateField 
+ * FUNCTION:    AcpiDsCreateField
  *
  * PARAMETERS:  Op              - Op containing the Field definition and args
  *              Region          - NTE for the containing Operation Region
@@ -167,7 +167,7 @@ AcpiDsCreateField (
 
 
     FUNCTION_TRACE_PTR ("DsCreateField", Op);
-    
+
 
 
     /* First arg is the name of the parent OpRegion */
@@ -203,7 +203,7 @@ AcpiDsCreateField (
 
         case AML_NAMEDFIELD_OP:
 
-            Status = AcpiNsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_DEF_FIELD, IMODE_LOAD_PASS1, 
+            Status = AcpiNsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_DEF_FIELD, IMODE_LOAD_PASS1,
                                         NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
@@ -259,7 +259,7 @@ AcpiDsCreateBankField (
     UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
 
-    
+
     FUNCTION_TRACE_PTR ("DsCreateBankField", Op);
 
 
@@ -271,7 +271,7 @@ AcpiDsCreateBankField (
 
     Arg = Arg->Next;
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String, INTERNAL_TYPE_BANK_FIELD_DEFN, IMODE_LOAD_PASS1, 
+    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String, INTERNAL_TYPE_BANK_FIELD_DEFN, IMODE_LOAD_PASS1,
                                 NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &BankReg);
     if (ACPI_FAILURE (Status))
     {
@@ -279,7 +279,7 @@ AcpiDsCreateBankField (
     }
 
     /* Third arg is the BankValue */
-    
+
     Arg = Arg->Next;
     BankValue = Arg->Value.Integer;
 
@@ -313,7 +313,7 @@ AcpiDsCreateBankField (
 
         case AML_NAMEDFIELD_OP:
 
-            Status = AcpiNsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_DEF_FIELD, IMODE_LOAD_PASS1, 
+            Status = AcpiNsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_DEF_FIELD, IMODE_LOAD_PASS1,
                                         NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {
@@ -370,7 +370,7 @@ AcpiDsCreateIndexField (
     UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
 
-    
+
     FUNCTION_TRACE_PTR ("DsCreateIndexField", Op);
 
 
@@ -378,7 +378,7 @@ AcpiDsCreateIndexField (
 
     /* First arg is the name of the Index register */
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String, ACPI_TYPE_ANY, IMODE_LOAD_PASS1, 
+    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String, ACPI_TYPE_ANY, IMODE_LOAD_PASS1,
                                 NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &IndexReg);
     if (ACPI_FAILURE (Status))
     {
@@ -389,7 +389,7 @@ AcpiDsCreateIndexField (
 
     Arg = Arg->Next;
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String, INTERNAL_TYPE_INDEX_FIELD_DEFN, IMODE_LOAD_PASS1, 
+    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String, INTERNAL_TYPE_INDEX_FIELD_DEFN, IMODE_LOAD_PASS1,
                                 NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &DataReg);
     if (ACPI_FAILURE (Status))
     {
@@ -427,7 +427,7 @@ AcpiDsCreateIndexField (
 
         case AML_NAMEDFIELD_OP:
 
-            Status = AcpiNsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_INDEX_FIELD, IMODE_LOAD_PASS1, 
+            Status = AcpiNsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_INDEX_FIELD, IMODE_LOAD_PASS1,
                                         NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
             if (ACPI_FAILURE (Status))
             {

@@ -1,6 +1,6 @@
 /******************************************************************************
- * 
- * Module Name: pswstate - parser WALK_STATE management routines
+ *
+ * Module Name: dswstate - Dispatcher parse tree walk management routines
  *
  *****************************************************************************/
 
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,33 +114,36 @@
  *****************************************************************************/
 
 
+#define __DSWSTATE_C__
 
-#include <acpi.h>
-#include <amlcode.h>
-#include <parser.h>
-#include <namesp.h>
-#include <interp.h>
+#include "acpi.h"
+#include "amlcode.h"
+#include "parser.h"
+#include "dispatch.h"
+#include "namesp.h"
+#include "interp.h"
 
-#define _COMPONENT          PARSER
-        MODULE_NAME         ("pswstate");
+#define _COMPONENT          DISPATCHER
+        MODULE_NAME         ("dswstate");
 
 
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AcpiDsResultStackClear
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Reset this walk's result stack pointers to zero, thus setting
+ *              the stack to zero.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-PsxResultStackClear (
+AcpiDsResultStackClear (
     ACPI_WALK_STATE         *WalkState)
 {
 
@@ -153,18 +156,19 @@ PsxResultStackClear (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AcpiDsResultStackPush
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  Object              - Object to push
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Push an object onto this walk's result stack
  *
  ******************************************************************************/
 
 ACPI_STATUS
-PsxResultStackPush (
+AcpiDsResultStackPush (
     void                    *Object,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -172,7 +176,7 @@ PsxResultStackPush (
 
     if (WalkState->NumResults >= OBJ_NUM_OPERANDS)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxResultStackPush: overflow! Obj=%X State=%X Num=%X\n", 
+        DEBUG_PRINT (ACPI_ERROR, ("DsResultStackPush: overflow! Obj=%p State=%p Num=%X\n",
                         Object, WalkState, WalkState->NumResults));
         return AE_STACK_OVERFLOW;
     }
@@ -180,8 +184,8 @@ PsxResultStackPush (
     WalkState->Results [WalkState->NumResults] = Object;
     WalkState->NumResults++;
 
-    DEBUG_PRINT (TRACE_EXEC, ("PsxResultStackPush: Obj=%X State=%X Num=%X\n", 
-                    Object, WalkState, WalkState->NumResults));
+    DEBUG_PRINT (TRACE_EXEC, ("DsResultStackPush: Obj=%p State=%p Num=%X Cur=%X\n",
+                    Object, WalkState, WalkState->NumResults, WalkState->CurrentResult));
 
     return AE_OK;
 }
@@ -189,85 +193,91 @@ PsxResultStackPush (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AcpiDsResultStackPop
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  Object              - Where to return the popped object
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Pop an object off the bottom of this walk's result stack.  In
+ *              other words, this is a FIFO.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-PsxResultStackPop (
+AcpiDsResultStackPop (
     ACPI_OBJECT_INTERNAL    **Object,
     ACPI_WALK_STATE         *WalkState)
 {
 
 
-    if ((WalkState->NumResults == 0) ||
-        (WalkState->CurrentResult >= WalkState->NumResults))
+    /* Check for stack underflow */
+
+    if (WalkState->NumResults == 0)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxResultStackPop: Underflow! State=%X Cur=%X Num=%X\n", 
+        DEBUG_PRINT (ACPI_ERROR, ("DsResultStackPop: Underflow! State=%p Cur=%X Num=%X\n",
                         WalkState, WalkState->CurrentResult, WalkState->NumResults));
-        return AE_STACK_UNDERFLOW;
+        return AE_AML_NO_OPERAND;
     }
 
-    *Object = WalkState->Results [WalkState->CurrentResult];
-    WalkState->Results [WalkState->CurrentResult] = NULL;
-    WalkState->CurrentResult++;
 
-    if (WalkState->CurrentResult == WalkState->NumResults)
+    /* Pop the stack */
+
+    WalkState->NumResults--;
+
+    /* Check for a valid result object */
+
+    if (!WalkState->Results [WalkState->NumResults])
     {
-        WalkState->CurrentResult = 0;
-        WalkState->NumResults = 0;
-
-        DEBUG_PRINT (TRACE_EXEC, ("PsxResultStackPop: Stack is now empty.  State=%X Next=%X\n", 
-                        WalkState, WalkState->CurrentResult));
+        DEBUG_PRINT (ACPI_ERROR, ("DsResultStackPop: Null operand! State=%p #Ops=%X\n",
+                        WalkState, WalkState->NumResults));
+        return AE_AML_NO_OPERAND;
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("PsxResultStackPop: State=%X Next=%X\n", 
-                    WalkState, WalkState->CurrentResult));
+
+    *Object = WalkState->Results [WalkState->NumResults];
+    WalkState->Results [WalkState->NumResults] = NULL;
+
+
+    DEBUG_PRINT (TRACE_EXEC, ("DsResultStackPop: Obj=%p State=%p Num=%X Cur=%X\n",
+                    *Object, WalkState, WalkState->NumResults, WalkState->CurrentResult));
 
     return AE_OK;
 }
 
-    
-
-
-
-
-
-
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AcpiDsObjStackDeleteAll
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Clear the object stack by deleting all objects that are on it.
+ *              Should be used with great care, if at all!
  *
  ******************************************************************************/
 
 ACPI_STATUS
-PsxObjStackDeleteAll (
+AcpiDsObjStackDeleteAll (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  i;
 
 
-    FUNCTION_TRACE_PTR ("PsxObjStackDeleteAll", WalkState);
+    FUNCTION_TRACE_PTR ("DsObjStackDeleteAll", WalkState);
 
+
+    /* The stack size is configurable, but fixed */
 
     for (i = 0; i < OBJ_NUM_OPERANDS; i++)
     {
         if (WalkState->Operands[i])
         {
-            CmDeleteOperand (&WalkState->Operands[i]);
+            AcpiCmRemoveReference (WalkState->Operands[i]);
+            WalkState->Operands[i] = NULL;
         }
     }
 
@@ -278,34 +288,39 @@ PsxObjStackDeleteAll (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AcpiDsObjStackPush
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  Object              - Object to push
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Push an object onto this walk's object/operand stack
  *
  ******************************************************************************/
 
 ACPI_STATUS
-PsxObjStackPush (
+AcpiDsObjStackPush (
     void                    *Object,
     ACPI_WALK_STATE         *WalkState)
 {
 
 
+    /* Check for stack overflow */
+
     if (WalkState->NumOperands >= OBJ_NUM_OPERANDS)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxObjStackPush: overflow! Obj=%X State=%X #Ops=%X\n", 
+        DEBUG_PRINT (ACPI_ERROR, ("DsObjStackPush: overflow! Obj=%p State=%p #Ops=%X\n",
                         Object, WalkState, WalkState->NumOperands));
         return AE_STACK_OVERFLOW;
     }
 
+    /* Put the object onto the stack */
+
     WalkState->Operands [WalkState->NumOperands] = Object;
     WalkState->NumOperands++;
 
-    DEBUG_PRINT (TRACE_EXEC, ("PsxObjStackPush: Obj=%X State=%X #Ops=%X\n", 
+    DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPush: Obj=%p State=%p #Ops=%X\n",
                     Object, WalkState, WalkState->NumOperands));
 
     return AE_OK;
@@ -314,82 +329,207 @@ PsxObjStackPush (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AcpiDsObjStackPopObject
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  PopCount            - Number of objects/entries to pop
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Pop this walk's object stack.  Objects on the stack are NOT
+ *              deleted by this routine.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-PsxObjStackPop (
+AcpiDsObjStackPopObject (
+    ACPI_OBJECT_INTERNAL    **Object,
+    ACPI_WALK_STATE         *WalkState)
+{
+
+
+    /* Check for stack underflow */
+
+    if (WalkState->NumOperands == 0)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("DsObjStackPop: Missing operand/stack empty! State=%p #Ops=%X\n",
+                        WalkState, WalkState->NumOperands));
+        return AE_AML_NO_OPERAND;
+    }
+
+
+    /* Pop the stack */
+
+    WalkState->NumOperands--;
+
+    /* Check for a valid operand */
+
+    if (!WalkState->Operands [WalkState->NumOperands])
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("DsObjStackPop: Null operand! State=%p #Ops=%X\n",
+                        WalkState, WalkState->NumOperands));
+        return AE_AML_NO_OPERAND;
+    }
+
+    /* Get operand and set stack entry to null */
+
+    *Object = WalkState->Operands [WalkState->NumOperands];
+    WalkState->Operands [WalkState->NumOperands] = NULL;
+
+    DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPopObject: State=%p #Ops=%X\n",
+                    WalkState, WalkState->NumOperands));
+
+    return AE_OK;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsObjStackPop
+ *
+ * PARAMETERS:  PopCount            - Number of objects/entries to pop
+ *              WalkState           - Current Walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Pop this walk's object stack.  Objects on the stack are NOT
+ *              deleted by this routine.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsObjStackPop (
     UINT32                  PopCount,
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  i;
 
 
+
     for (i = 0; i < PopCount; i++)
     {
+        /* Check for stack underflow */
+
         if (WalkState->NumOperands == 0)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("PsxObjStackPop: Underflow! Count=%X State=%X #Ops=%X\n", 
+            DEBUG_PRINT (ACPI_ERROR, ("DsObjStackPop: Underflow! Count=%X State=%p #Ops=%X\n",
                             PopCount, WalkState, WalkState->NumOperands));
             return AE_STACK_UNDERFLOW;
         }
+
+        /* Just set the stack entry to null */
 
         WalkState->NumOperands--;
         WalkState->Operands [WalkState->NumOperands] = NULL;
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("PsxObjStackPop: Count=%X State=%X #Ops=%X\n", 
+    DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPop: Count=%X State=%p #Ops=%X\n",
                     PopCount, WalkState, WalkState->NumOperands));
 
     return AE_OK;
 }
 
-    
+
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:    AcpiDsObjStackPopAndDelete
  *
- * PARAMETERS:  WalkState       - State to push
+ * PARAMETERS:  PopCount            - Number of objects/entries to pop
+ *              WalkState           - Current Walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION: Pop this walk's object stack and delete each object that is
+ *              popped off.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsObjStackPopAndDelete (
+    UINT32                  PopCount,
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT32                  i;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+
+
+    for (i = 0; i < PopCount; i++)
+    {
+        /* Check for stack underflow */
+
+        if (WalkState->NumOperands == 0)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("DsObjStackPop: Underflow! Count=%X State=%p #Ops=%X\n",
+                            PopCount, WalkState, WalkState->NumOperands));
+            return AE_STACK_UNDERFLOW;
+        }
+
+        /* Pop the stack and delete an object if present in this stack entry */
+
+        WalkState->NumOperands--;
+        ObjDesc = WalkState->Operands [WalkState->NumOperands];
+        if (ObjDesc)
+        {
+            AcpiCmRemoveReference (WalkState->Operands [WalkState->NumOperands]);
+            WalkState->Operands [WalkState->NumOperands] = NULL;
+        }
+    }
+
+    DEBUG_PRINT (TRACE_EXEC, ("DsObjStackPop: Count=%X State=%p #Ops=%X\n",
+                    PopCount, WalkState, WalkState->NumOperands));
+
+    return AE_OK;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsObjStackGetValue
+ *
+ * PARAMETERS:  Index               - Stack index whose value is desired.  Based
+ *                                    on the top of the stack (index=0 == top)
+ *              WalkState           - Current Walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Retrieve an object from this walk's object stack.  Index must
+ *              be within the range of the current stack pointer.
  *
  ******************************************************************************/
 
 void *
-PsxObjStackGetValue (
+AcpiDsObjStackGetValue (
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState)
 {
 
-    FUNCTION_TRACE_PTR ("PsxObjStackGetValue", WalkState);
+    FUNCTION_TRACE_PTR ("DsObjStackGetValue", WalkState);
 
+
+    /* Can't do it if the stack is empty */
 
     if (WalkState->NumOperands == 0)
     {
         return_VALUE (NULL);
     }
 
+    /* or if the index is past the top of the stack */
+
     if (Index > (WalkState->NumOperands - (UINT32) 1))
     {
         return_VALUE (NULL);
     }
 
-    return_VALUE (WalkState->Operands [(WalkState->NumOperands - 1) - Index]);
+
+    return_PTR (WalkState->Operands [(NATIVE_UINT) (WalkState->NumOperands - 1) - Index]);
 }
+
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    PsGetCurrentWalkState
+ * FUNCTION:    AcpiDsGetCurrentWalkState
  *
  * PARAMETERS:  WalkList        - Get current active state for this walk list
  *
@@ -401,12 +541,17 @@ PsxObjStackGetValue (
  ******************************************************************************/
 
 ACPI_WALK_STATE *
-PsGetCurrentWalkState (
+AcpiDsGetCurrentWalkState (
     ACPI_WALK_LIST          *WalkList)
 
 {
 
-    DEBUG_PRINT (TRACE_PARSE, ("PsGetCurrentWalkState, =%p\n", WalkList->WalkState));
+    DEBUG_PRINT (TRACE_PARSE, ("DsGetCurrentWalkState, =%p\n", WalkList->WalkState));
+
+    if (!WalkList)
+    {
+        return NULL;
+    }
 
     return WalkList->WalkState;
 }
@@ -414,7 +559,7 @@ PsGetCurrentWalkState (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsPushWalkState
+ * FUNCTION:    AcpiDsPushWalkState
  *
  * PARAMETERS:  WalkState       - State to push
  *              WalkList        - The list that owns the walk stack
@@ -426,13 +571,13 @@ PsGetCurrentWalkState (
  ******************************************************************************/
 
 void
-PsPushWalkState (
+AcpiDsPushWalkState (
     ACPI_WALK_STATE         *WalkState,
     ACPI_WALK_LIST          *WalkList)
 {
 
 
-    FUNCTION_TRACE ("PsPushWalkState");
+    FUNCTION_TRACE ("DsPushWalkState");
 
 
     WalkState->Next     = WalkList->WalkState;
@@ -444,26 +589,26 @@ PsPushWalkState (
 
 /*******************************************************************************
  *
- * FUNCTION:    PsPopWalkState 
+ * FUNCTION:    AcpiDsPopWalkState
  *
  * PARAMETERS:  WalkList        - The list that owns the walk stack
  *
  * RETURN:      A WalkState object popped from the stack
  *
  * DESCRIPTION: Remove and return the walkstate object that is at the head of
- *              the walk stack for the given walk list.  NULL indicates that 
+ *              the walk stack for the given walk list.  NULL indicates that
  *              the list is empty.
  *
  ******************************************************************************/
 
 ACPI_WALK_STATE *
-PsPopWalkState (
+AcpiDsPopWalkState (
     ACPI_WALK_LIST          *WalkList)
 {
     ACPI_WALK_STATE         *WalkState;
 
 
-    FUNCTION_TRACE ("PsPopWalkState");
+    FUNCTION_TRACE ("DsPopWalkState");
 
 
     WalkState = WalkList->WalkState;
@@ -473,16 +618,21 @@ PsPopWalkState (
         /* Next walk state becomes the current walk state */
 
         WalkList->WalkState = WalkState->Next;
-        WalkState->Next = NULL;
+
+        /*
+         * Don't clear the NEXT field, this serves as an indicator
+         * that there is a parent WALK STATE
+         *     WalkState->Next = NULL;
+         */
     }
 
-    return_VALUE (WalkState);
+    return_PTR (WalkState);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    PsCreateWalkState
+ * FUNCTION:    AcpiDsCreateWalkState
  *
  * PARAMETERS:  Origin          - Starting point for this walk
  *              WalkList        - Owning walk list
@@ -495,33 +645,187 @@ PsPopWalkState (
  ******************************************************************************/
 
 ACPI_WALK_STATE *
-PsCreateWalkState (
+AcpiDsCreateWalkState (
+    ACPI_OWNER_ID           OwnerId,
     ACPI_GENERIC_OP         *Origin,
+    ACPI_OBJECT_INTERNAL    *MthDesc,
     ACPI_WALK_LIST          *WalkList)
 {
     ACPI_WALK_STATE         *WalkState;
 
 
-    FUNCTION_TRACE ("PsCreateWalkState");
+    FUNCTION_TRACE ("DsCreateWalkState");
 
 
-    WalkState = CmCallocate (sizeof (ACPI_WALK_STATE));
-    if (!WalkState)
+    AcpiCmAcquireMutex (MTX_CACHES);
+    Acpi_GblWalkStateCacheRequests++;
+
+    /* Check the cache first */
+
+    if (Acpi_GblWalkStateCache)
     {
-        return_VALUE (NULL);
+        /* There is an object available, use it */
+
+        WalkState = Acpi_GblWalkStateCache;
+        Acpi_GblWalkStateCache = WalkState->Next;
+
+        Acpi_GblWalkStateCacheHits++;
+        Acpi_GblWalkStateCacheDepth--;
+
+        AcpiCmReleaseMutex (MTX_CACHES);
+   }
+
+    else
+    {
+        /* The cache is empty, create a new object */
+
+        AcpiCmReleaseMutex (MTX_CACHES);                        /* Avoid deadlock with AcpiCmCallocate */
+
+        WalkState = AcpiCmCallocate (sizeof (ACPI_WALK_STATE));
+        if (!WalkState)
+        {
+            return_VALUE (NULL);
+        }
     }
 
+    WalkState->DataType         = DESC_TYPE_WALK;
+    WalkState->OwnerId          = OwnerId;
     WalkState->Origin           = Origin;
+    WalkState->MethodDesc       = MthDesc;
 
     /* Init the method args/local */
 
-    PsxMthStackInit (WalkState);
+    AcpiDsMethodDataInit (WalkState);
 
     /* Put the new state at the head of the walk list */
 
-    PsPushWalkState (WalkState, WalkList);
+    AcpiDsPushWalkState (WalkState, WalkList);
 
-    return_VALUE (WalkState);
+    return_PTR (WalkState);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsDeleteWalkState
+ *
+ * PARAMETERS:  WalkState       - State to delete
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Delete a walk state including all internal data structures
+ *
+ ******************************************************************************/
+
+void
+AcpiDsDeleteWalkState (
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_GENERIC_STATE      *State;
+
+
+    FUNCTION_TRACE_PTR ("DsDeleteWalkState", WalkState);
+
+
+    if (!WalkState)
+    {
+        return;
+    }
+
+    if (WalkState->DataType != DESC_TYPE_WALK)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("DsDeleteWalkState: **** %p not a valid walk state\n", WalkState));
+        return;
+    }
+
+    /* Always must free any linked control states */
+
+    while (WalkState->ControlState)
+    {
+        State = WalkState->ControlState;
+        WalkState->ControlState = State->Common.Next;
+
+        AcpiCmDeleteGenericState (State);
+    }
+
+
+    /* Always must free any linked parse states */
+
+    while (WalkState->ScopeInfo)
+    {
+        State = WalkState->ScopeInfo;
+        WalkState->ScopeInfo = State->Common.Next;
+
+        AcpiCmDeleteGenericState (State);
+    }
+
+    /* If walk cache is full, just free this wallkstate object */
+
+    if (Acpi_GblWalkStateCacheDepth >= MAX_WALK_CACHE_DEPTH)
+    {
+        AcpiCmFree (WalkState);
+    }
+
+    /* Otherwise put this object back into the cache */
+
+    else
+    {
+        AcpiCmAcquireMutex (MTX_CACHES);
+
+        /* Clear the state */
+
+        MEMSET (WalkState, 0, sizeof (ACPI_WALK_STATE));
+        WalkState->DataType = DESC_TYPE_WALK;
+
+        /* Put the object at the head of the global cache list */
+
+        WalkState->Next = Acpi_GblWalkStateCache;
+        Acpi_GblWalkStateCache = WalkState;
+        Acpi_GblWalkStateCacheDepth++;
+
+
+        AcpiCmReleaseMutex (MTX_CACHES);
+    }
+
+    return_VOID;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiDsDeleteWalkStateCache
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Purge the global state object cache.  Used during subsystem
+ *              termination.
+ *
+ ******************************************************************************/
+
+void
+AcpiDsDeleteWalkStateCache (
+    void)
+{
+    ACPI_WALK_STATE         *Next;
+
+
+    FUNCTION_TRACE ("DsDeleteWalkStateCache");
+
+
+    /* Traverse the global cache list */
+
+    while (Acpi_GblWalkStateCache)
+    {
+        /* Delete one cached state object */
+
+        Next = Acpi_GblWalkStateCache->Next;
+        AcpiCmFree (Acpi_GblWalkStateCache);
+        Acpi_GblWalkStateCache = Next;
+    }
+
+    return_VOID;
 }
 
 

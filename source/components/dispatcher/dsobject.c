@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: dsobject - Dispatcher object management routines
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -140,7 +140,7 @@
  * RETURN:      Status
  *
  * DESCRIPTION: Callback from AcpiWalkNamespace.  Invoked for every object within
- *              the  namespace. 
+ *              the  namespace.
  *
  *              Currently, the only objects that require initialization are:
  *              1) Methods
@@ -150,8 +150,8 @@
 
 ACPI_STATUS
 AcpiDsInitOneObject (
-    ACPI_HANDLE             ObjHandle, 
-    UINT32                  Level, 
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
     void                    *Context,
     void                    **ReturnValue)
 {
@@ -199,7 +199,7 @@ AcpiDsInitOneObject (
 
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("DsInitOneObject: Method %p [%4.4s] parse failed! %s\n", 
+            DEBUG_PRINT (ACPI_ERROR, ("DsInitOneObject: Method %p [%4.4s] parse failed! %s\n",
                                         ObjHandle, &((NAME_TABLE_ENTRY *)ObjHandle)->Name, AcpiCmFormatException (Status)));
             break;
         }
@@ -207,11 +207,11 @@ AcpiDsInitOneObject (
         /* Keep the parse tree only if we are parsing all methods at init time (versus just-in-time) */
 
         if (Acpi_GblWhenToParseMethods != METHOD_PARSE_AT_INIT)
-        {                
+        {
             
             AcpiNsDeleteNamespaceSubtree (ObjHandle);
 
-            ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object; 
+            ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
             AcpiPsDeleteParseTree (ObjDesc->Method.ParserOp);
             ObjDesc->Method.ParserOp = NULL;
         }
@@ -266,7 +266,7 @@ AcpiDsInitializeObjects (
 
     /* Walk entire namespace from the supplied root */
 
-    Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartEntry, ACPI_INT32_MAX, AcpiDsInitOneObject, 
+    Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartEntry, ACPI_INT32_MAX, AcpiDsInitOneObject,
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
@@ -291,7 +291,7 @@ AcpiDsInitializeObjects (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Initialize a namespace object from a parser Op and its 
+ * DESCRIPTION: Initialize a namespace object from a parser Op and its
  *              associated arguments.  The namespace object is a more compact
  *              representation of the Op and its arguments.
  *
@@ -352,7 +352,7 @@ AcpiDsInitObjectFromOp (
             AcpiCmRemoveReference (ArgDesc);
             return AE_TYPE;
         }
- 
+
         /* Get the value, delete the internal object */
 
         ObjDesc->Buffer.Length = ArgDesc->Number.Value;
@@ -487,7 +487,7 @@ AcpiDsBuildInternalSimpleObj (
 
         if (!Op->NameTableEntry)
         {
-            Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Value.String, ACPI_TYPE_ANY, IMODE_EXECUTE, 
+            Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Value.String, ACPI_TYPE_ANY, IMODE_EXECUTE,
                                         NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, (NAME_TABLE_ENTRY **)&(Op->NameTableEntry));
             if (ACPI_FAILURE (Status))
             {
@@ -498,7 +498,7 @@ AcpiDsBuildInternalSimpleObj (
         /*
          * The reference will be a Reference
          * TBD: [Restructure] unless we really need a separate type of INTERNAL_TYPE_REFERENCE
-         *      change AcpiDsMapOpcodeToDataType to handle this case 
+         *      change AcpiDsMapOpcodeToDataType to handle this case
          */
         Type = INTERNAL_TYPE_REFERENCE;
     }
@@ -539,7 +539,7 @@ AcpiDsBuildInternalSimpleObj (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Translate a parser Op package object to the equivalent 
+ * DESCRIPTION: Translate a parser Op package object to the equivalent
  *              namespace object
  *
  ****************************************************************************/
@@ -569,7 +569,7 @@ AcpiDsBuildInternalPackageObj (
     Arg = Op->Value.Arg;
     ObjDesc->Package.Count = Arg->Value.Integer;
 
-    /* 
+    /*
      * Allocate the array of pointers (ptrs to the individual objects)
      * Add an extra pointer slot so that the list is always null terminated.
      */
@@ -598,7 +598,7 @@ AcpiDsBuildInternalPackageObj (
         {
             Status = AcpiDsBuildInternalPackageObj (WalkState, Arg, ObjDesc->Package.NextElement);
         }
-        
+
         else
         {
             Status = AcpiDsBuildInternalSimpleObj (WalkState, Arg, ObjDesc->Package.NextElement);
@@ -639,7 +639,7 @@ AcpiDsBuildInternalObject (
     {
         Status = AcpiDsBuildInternalPackageObj (WalkState, Op, ObjDescPtr);
     }
-    
+
     else
     {
         Status = AcpiDsBuildInternalSimpleObj (WalkState, Op, ObjDescPtr);
@@ -659,7 +659,7 @@ AcpiDsBuildInternalObject (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ****************************************************************************/
 
@@ -697,7 +697,7 @@ AcpiDsCreateNamedObject (
     /* Re-type the object according to it's argument */
 
     Entry->Type = ObjDesc->Common.Type;
-    
+
     /* Init obj */
 
     Status = AcpiNsAttachObject ((ACPI_HANDLE) Entry, ObjDesc, (UINT8) Entry->Type);
