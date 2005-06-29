@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -166,7 +166,7 @@ AeLocalGetRootPointer (
 FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency2;
 
-#ifndef _ACPI_EXEC_APP
+#ifndef ACPI_EXEC_APP
 /* Used by both iASL and AcpiDump applications */
 
 CHAR                s[500];
@@ -427,7 +427,7 @@ AcpiOsTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
     ACPI_TABLE_HEADER       **NewTable)
 {
-#ifndef _ACPI_EXEC_APP
+#ifndef ACPI_EXEC_APP
     char                    TableName[ACPI_NAME_SIZE + 1];
 #endif
 
@@ -440,7 +440,7 @@ AcpiOsTableOverride (
     *NewTable = NULL;
 
 
-#ifdef _ACPI_EXEC_APP
+#ifdef ACPI_EXEC_APP
 
     /* This code exercises the table override mechanism in the core */
 

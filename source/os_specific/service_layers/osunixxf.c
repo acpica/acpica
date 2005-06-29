@@ -246,7 +246,7 @@ AcpiOsTableOverride (
 
     *NewTable = NULL;
 
-#ifdef _ACPI_EXEC_APP
+#ifdef ACPI_EXEC_APP
 
     /* This code exercises the table override mechanism in the core */
 
