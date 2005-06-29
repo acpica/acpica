@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
+ *       $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -116,6 +116,29 @@
 
 #ifndef __ACENV_H__
 #define __ACENV_H__
+
+
+/*
+ * Configuration for ACPI Utilities
+ */
+
+#ifdef _ACPI_DUMP_APP
+#define ACPI_DEBUG
+#define ACPI_APPLICATION
+#define ENABLE_DEBUGGER
+#define ACPI_USE_SYSTEM_CLIBRARY 
+#define PARSER_ONLY
+#endif   
+
+#ifdef _ACPI_EXEC_APP  
+#undef DEBUGGER_THREADING
+#define DEBUGGER_THREADING      DEBUGGER_SINGLE_THREADED
+#define ACPI_DEBUG
+#define ACPI_APPLICATION
+#define ENABLE_DEBUGGER
+#define ACPI_USE_SYSTEM_CLIBRARY 
+#endif
+
 
 
 /*
