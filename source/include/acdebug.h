@@ -120,6 +120,9 @@
 
 #define DB_MAX_ARGS         8
 
+#define COMMAND_PROMPT      '-'
+#define EXECUTE_PROMPT      '%'
+
 
 extern UINT8                    *DsdtPtr;
 extern UINT32                   DsdtLength;
@@ -127,6 +130,13 @@ extern int                      optind;
 extern char                     *optarg;
 extern UINT8                    *AmlPtr;
 extern UINT32                   AmlLength;
+
+extern int                      opt_tables;
+extern int                      opt_disasm;
+extern int                      opt_stats;
+extern int                      opt_parse_jit;
+extern int						opt_verbose;
+   
 
 extern char                    *Args[DB_MAX_ARGS];
 extern char                     LineBuf[80];
@@ -137,6 +147,28 @@ extern char                     *Buffer;
 extern char                     *Filename;
 extern char					    *INDENT_STRING;
 extern UINT32                   Gbl_MethodBreakpoint;
+
+extern UINT32                      NumNames;
+extern UINT32                      NumMethods;
+extern UINT32                      NumRegions;
+extern UINT32                      NumPackages;
+extern UINT32                      NumAliases;
+extern UINT32                      NumDevices;
+extern UINT32                      NumFieldDefs;
+extern UINT32                      NumThermalZones;
+extern UINT32                      NumNamedObjects;
+extern UINT32                      NumGrammarElements;
+extern UINT32                      NumMethodElements ;
+extern UINT32                      NumMutexes;
+extern UINT32                      NumPowerResources;
+extern UINT32                      NumBankFields ;
+extern UINT32                      NumIndexFields;
+extern UINT32                      NumEvents;
+
+extern UINT32                      SizeOfParseTree;
+extern UINT32                      SizeOfMethodTrees;
+extern UINT32                      SizeOfNTEs;
+extern UINT32                      SizeOfAcpiObjects;
 
 
 #define BUFFER_SIZE             4196
@@ -157,6 +189,27 @@ extern UINT32                   Gbl_MethodBreakpoint;
 int
 DbInitialize (void);
 
+NAME_TABLE_ENTRY *
+DbLocalNsLookup (
+    char                    *Name);
+
+ACPI_STATUS
+DbExecuter (
+    char                    Prompt,
+    ACPI_GENERIC_OP         *Op);
+
+void
+DbPrepNamestring (
+    char                    *Name);
+
+void
+DbDisplayMethodInfo (
+    ACPI_GENERIC_OP         *Op);
+
+ACPI_STATUS
+DbSecondPassParse (
+    ACPI_GENERIC_OP         *Root);
+
 ACPI_STATUS
 DbSingleStep (
     ACPI_GENERIC_OP         *Op,
@@ -169,7 +222,8 @@ DbDisassembleAml (
 
 void
 DbDecodeAndDisplayObject (
-    char                    *Param);
+    char                    *Target,
+    char                    *OutputType);
 
 void
 DbDisplayResultObject (
@@ -191,9 +245,9 @@ DbSendNotify (
 
 void
 DbSetMethodData (
-    char                    Type,
-    UINT32                  Index,
-    UINT32                  Value);
+    char                    *TypeArg,
+    char                    *IndexArg,
+    char                    *ValueArg);
 
 void
 DbDumpBuffer (
@@ -206,11 +260,15 @@ DbDumpObject (
 
 ACPI_STATUS
 DbDisplayAllMethods (
-    UINT32                      DisplayCount);
+    char                    *DisplayCountArg);
 
 void 
 DbDisplayInternalObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+ACPI_STATUS
+DbLoadAcpiTable (
+    char                    *Filename);
 
 void
 DbDisplayArguments (void);
