@@ -205,13 +205,14 @@
 /* Conditional execution */
 
 #define DEBUG_EXEC(a)                   a;
+#define DEBUG_DEFINE(a)                 a;
 
 /* Function entry tracing */
 
 #define FUNCTION_TRACE(a)               char * ThisProc = a;\
-                                        FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a);
-#define FUNCTION_EXIT                   FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc);
-#define FUNCTION_STATUS_EXIT(s)         FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,s);
+                                        FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define FUNCTION_EXIT                   FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc)
+#define FUNCTION_STATUS_EXIT(s)         FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,ThisProc,s)
 
 /* Stack and buffer dumping */
 
@@ -246,14 +247,15 @@
  * leaving no executable debug code!
  */
 
-#define DEBUG_EXEC(a)                       
+#define DEBUG_EXEC(a)  
+#define DEBUG_DEFINE(a)                     
 #define FUNCTION_TRACE(a)
 #define FUNCTION_EXIT
+#define FUNCTION_STATUS_EXIT(s)
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_STACK(a,b,c,d)
 #define DUMP_ENTRY(a)
 #define DUMP_TABLES(a,b)
-
 #define DEBUG_PRINT(l,f)
 #define DEBUG_PRINT_RAW(l,f) 
 
