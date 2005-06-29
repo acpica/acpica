@@ -257,6 +257,8 @@ ACPI_STATUS
 TbValidateTableHeader (
     ACPI_TABLE_HEADER       *TableHeader)
 {
+    ACPI_NAME               Signature;
+
 
     /* Verify that this is a valid address */
 
@@ -269,10 +271,11 @@ TbValidateTableHeader (
 
     /* Ensure that the signature is 4 ASCII characters */
 
-    if (!CmValidAcpiName (*(UINT32 *) TableHeader->Signature))
+    STORE32 (&Signature, &TableHeader->Signature);
+    if (!CmValidAcpiName (Signature))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Table signature at %p [%X] has invalid characters\n", 
-                        TableHeader, *(UINT32 *) TableHeader->Signature));
+                        TableHeader, &Signature));
 
         REPORT_WARNING ("Invalid table signature found");
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
@@ -282,10 +285,10 @@ TbValidateTableHeader (
 
     /* Validate the table length */
 
-    if (TableHeader->Length < (UINT32) sizeof (ACPI_TABLE_HEADER))
+    if (TableHeader->Length < sizeof (ACPI_TABLE_HEADER))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Invalid length in table header %p name %4.4s\n", 
-                        TableHeader, &TableHeader->Signature));
+                        TableHeader, &Signature));
 
         REPORT_WARNING ("Invalid table header length found");
         DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
