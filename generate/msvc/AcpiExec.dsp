@@ -186,6 +186,10 @@ SOURCE=..\..\subsystem\Interpreter\ammonad.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\ammutex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\subsystem\Interpreter\amnames.c
 # End Source File
 # Begin Source File
@@ -523,6 +527,54 @@ SOURCE=..\..\Common\getopt.c
 # Begin Source File
 
 SOURCE=..\..\Common\oswinxf.c
+# End Source File
+# End Group
+# Begin Group "Resources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsaddr.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rscalc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rscreate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsirq.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rslist.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsmemory.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsxface.c
 # End Source File
 # End Group
 # End Group
