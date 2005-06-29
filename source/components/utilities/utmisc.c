@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -383,15 +383,16 @@ AcpiCmAcquireMutex (
             if (i == MutexId)
             {
                 DEBUG_PRINT (ACPI_ERROR,
-                        ("Mutex [%s] already acquired by this thread\n",
-                        AcpiCmGetMutexName (MutexId)));
+                        ("Mutex [%s] already acquired by this thread [%X]\n",
+                        AcpiCmGetMutexName (MutexId), ThisThreadId));
 
                 return (AE_ALREADY_ACQUIRED);
             }
 
             DEBUG_PRINT (ACPI_ERROR,
-                    ("Invalid acquire order: owns [%s], wants [%s]\n",
-                    AcpiCmGetMutexName (i), AcpiCmGetMutexName (MutexId)));
+                    ("Invalid acquire order: Thread %X owns [%s], wants [%s]\n",
+                    ThisThreadId, AcpiCmGetMutexName (i), 
+                    AcpiCmGetMutexName (MutexId)));
 
             return (AE_ACQUIRE_DEADLOCK);
         }
@@ -399,13 +400,15 @@ AcpiCmAcquireMutex (
 
 
     DEBUG_PRINT (TRACE_MUTEX,
-                ("Acquiring Mutex [%s]\n", AcpiCmGetMutexName (MutexId)));
+                ("Thread %X acquiring Mutex [%s]\n", 
+                ThisThreadId, AcpiCmGetMutexName (MutexId)));
 
     Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
                                     1, WAIT_FOREVER);
 
-    DEBUG_PRINT (TRACE_MUTEX, ("Acquired Mutex  [%s] Status %s\n",
-                AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+    DEBUG_PRINT (TRACE_MUTEX, ("Thread %X acquired Mutex [%s] Status %s\n",
+                ThisThreadId, AcpiCmGetMutexName (MutexId), 
+                AcpiCmFormatException (Status)));
 
     if (ACPI_SUCCESS (Status))
     {
