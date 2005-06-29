@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -586,7 +586,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> XOrTerm
 
 %type <n> OptionalTermArg
-%type <n> OptionalListTermArg
+%type <n> OptionalListString
 
 
 /* Keywords */
@@ -1717,8 +1717,8 @@ LoadTableTerm
         TermArg
         TermArgItem
         TermArgItem
-        OptionalListTermArg
-        OptionalListTermArg
+        OptionalListString
+        OptionalListString
         OptionalReference
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$5,$6,$7,$8,$9);}
     | LOADTABLE '('
@@ -2726,9 +2726,9 @@ OptionalDWordConstExpr
     | ',' DWordConstExpr            {$$ = $2;}
     ;
 
-OptionalListTermArg
-    :                               {$$ = TrCreateLeafNode (ZERO);}       /* Placeholder is a ZeroOp object */
-    | ','                           {$$ = TrCreateLeafNode (ZERO);}       /* Placeholder is a ZeroOp object */
+OptionalListString
+    :                               {$$ = TrCreateValuedLeafNode (STRING_LITERAL, ACPI_TO_INTEGER (""));}   /* Placeholder is a NULL string */
+    | ','                           {$$ = TrCreateValuedLeafNode (STRING_LITERAL, ACPI_TO_INTEGER (""));}   /* Placeholder is a NULL string */
     | ',' TermArg                   {$$ = $2;}
     ;
 
