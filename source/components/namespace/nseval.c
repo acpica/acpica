@@ -3,7 +3,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -211,7 +211,7 @@ AcpiNsEvaluateRelative (
     {
         DEBUG_PRINT (ACPI_INFO,
             ("NsEvaluateRelative: Object [%s] not found [%.4X]\n",
-            InternalPath, Status));
+            Pathname, Status));
         goto Cleanup;
     }
 
