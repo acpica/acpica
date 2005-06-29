@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -199,7 +199,7 @@ AcpiPsxExecute (
      * 1) Perform the first pass parse of the method to enter any
      * named objects that it creates into the namespace
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "**** Begin Method Parse **** Entry=%p obj=%p\n",
         MethodNode, ObjDesc));
 
@@ -244,7 +244,7 @@ AcpiPsxExecute (
     /*
      * 2) Execute the method.  Performs second pass parse simultaneously
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "**** Begin Method Execution **** Entry=%p obj=%p\n",
         MethodNode, ObjDesc));
 
@@ -300,7 +300,7 @@ AcpiPsxExecute (
      */
     if (*ReturnObjDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Method returned ObjDesc=%p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Method returned ObjDesc=%p\n",
             *ReturnObjDesc));
         ACPI_DUMP_STACK_ENTRY (*ReturnObjDesc);
 
