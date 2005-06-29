@@ -102,6 +102,10 @@ PostBuild_Cmds=copy Debug\iasl.exe ..\..\Libraries
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=..\..\Tools\AslCompiler\aslanalyze.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Tools\AslCompiler\aslcodegen.c
 # End Source File
 # Begin Source File
@@ -159,6 +163,10 @@ SOURCE=..\..\Tools\AslCompiler\AslCompiler.h
 # Begin Source File
 
 SOURCE=..\..\Tools\AslCompiler\AslCompiler.y.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Tools\AslCompiler\aslresource.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
