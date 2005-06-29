@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.124 $
+ *       $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -648,7 +648,11 @@ typedef struct acpi_opcode_info
 
 typedef union acpi_parse_val
 {
-    UINT32                  Integer;        /* integer constant */
+    ACPI_INTEGER            Integer;        /* integer constant (Up to 64 bits) */
+    UINT64_STRUCT           Integer64;      /* Structure overlay for 2 32-bit Dwords */
+    UINT32                  Integer32;      /* integer constant, 32 bits only */
+    UINT16                  Integer16;      /* integer constant, 16 bits only */
+    UINT8                   Integer8;       /* integer constant, 8 bits only */
     UINT32                  Size;           /* bytelist or field size */
     NATIVE_CHAR             *String;        /* NULL terminated string */
     UINT8                   *Buffer;        /* buffer or string */
@@ -913,6 +917,14 @@ typedef struct
 } ACPI_DEVICE_ID;
 
 
+
+/*****************************************************************************
+ *
+ * Miscellaneous
+ *
+ ****************************************************************************/
+
+#define ASCII_ZERO                      0x30
 
 /*****************************************************************************
  *
