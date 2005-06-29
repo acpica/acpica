@@ -182,10 +182,10 @@ AmlGetObjectReference (
 
         default:
 
-            DEBUG_PRINT (ACPI_ERROR, ("AmlGetObjectReference: Unknown Lvalue subtype %02x\n",
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetObjectReference: (Internal) Unknown Lvalue subtype %02x\n",
                             ObjDesc->Lvalue.OpCode));
             *RetDesc = NULL;
-            Status = AE_AML_ERROR;
+            Status = AE_AML_INTERNAL;
             goto Cleanup;
         }
 
@@ -251,6 +251,11 @@ AmlExecMonadic1 (
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
+
+        if (Status == AE_TYPE)
+        {
+            Status = AE_AML_OPERAND_TYPE;
+        }
         goto Cleanup;
     }
 
@@ -261,7 +266,7 @@ AmlExecMonadic1 (
     ObjDesc = Operands[0];
     if (!ObjDesc)
     {
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
     /* ObjDesc can be an NTE - extract the object from the NTE */
@@ -291,7 +296,7 @@ AmlExecMonadic1 (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
                             ObjDesc->Common.Type));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
         }
 
@@ -307,7 +312,7 @@ AmlExecMonadic1 (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1/ResetOp: Needed Event, found %d\n", 
                             ObjDesc->Common.Type));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
         Status = OsResetEvent (ObjDesc);
@@ -322,7 +327,7 @@ AmlExecMonadic1 (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1/SignalOp: Needed Event, found %d\n", 
                             ObjDesc->Common.Type));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
         }
 
@@ -351,7 +356,7 @@ AmlExecMonadic1 (
     default:
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1: Unknown monadic opcode %02x\n", Opcode));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_OPCODE;
         break;
     
     } /* switch */
@@ -470,7 +475,10 @@ AmlExecMonadic2R (
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 2);
-        Status = AE_AML_ERROR;
+        if (Status == AE_TYPE)
+        {
+            Status = AE_AML_OPERAND_TYPE;
+        }
         goto Cleanup;
     }
 
@@ -557,7 +565,7 @@ AmlExecMonadic2R (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R/FromBCDOp: BCD digit too large %d %d %d %d\n",
                             d3, d2, d1, d0));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_NUMERIC_OVERFLOW;
             goto Cleanup;
         }
         
@@ -574,7 +582,7 @@ AmlExecMonadic2R (
         {
             DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
                             ObjDesc->Number.Value));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_NUMERIC_OVERFLOW;
             goto Cleanup;
         }
         
@@ -673,7 +681,7 @@ AmlExecMonadic2R (
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: internal error: Unknown monadic opcode %02x\n",
                         Opcode));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
     
@@ -756,6 +764,10 @@ AmlExecMonadic2 (
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
+        if (Status == AE_TYPE)
+        {
+            Status = AE_AML_OPERAND_TYPE;
+        }
         goto Cleanup;
     }
 
@@ -832,6 +844,10 @@ AmlExecMonadic2 (
         if (Status != AE_OK)
         {
             AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
+            if (Status == AE_TYPE)
+            {
+                Status = AE_AML_OPERAND_TYPE;
+            }
             goto Cleanup;
         }
 
@@ -911,7 +927,7 @@ AmlExecMonadic2 (
 
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x\n",
                                 ObjDesc->Lvalue.OpCode));
-                Status = AE_AML_ERROR;
+                Status = AE_AML_INTERNAL;
                 goto Cleanup;
             }
         }
@@ -979,7 +995,7 @@ AmlExecMonadic2 (
 
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: Not Buf/Str/Pkg - found type 0x%X\n", 
                                 ObjDesc->Common.Type));
-                Status = AE_AML_ERROR;
+                Status = AE_AML_OPERAND_TYPE;
                 goto Cleanup;
             }
         }
@@ -1089,7 +1105,7 @@ AmlExecMonadic2 (
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: DerefOf, Unknown TargetType %X in obj %p\n", 
                                     ObjDesc->Lvalue.TargetType, ObjDesc));
-                    Status = AE_AML_ERROR;
+                    Status = AE_AML_OPERAND_TYPE;
                     goto Cleanup;
                 }
 
@@ -1115,7 +1131,7 @@ AmlExecMonadic2 (
 
         DEBUG_PRINT (ACPI_ERROR, ( "AmlExecMonadic2: Internal error, unknown monadic opcode %02x\n",
                         Opcode));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
 
