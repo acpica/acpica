@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  ******************************************************************************/
 
@@ -838,7 +838,7 @@ AcpiDbDisplayOpcode (
         Name = AcpiPsGetName (Op);
         AcpiOsPrintf (" %4.4s", &Name);
 
-        if (AcpiGbl_DbOpt_verbose)
+        if ((AcpiGbl_DbOpt_verbose) && (Op->Opcode != AML_INT_NAMEDFIELD_OP))
         {
             AcpiPsDisplayObjectPathname (WalkState, Op);
         }
