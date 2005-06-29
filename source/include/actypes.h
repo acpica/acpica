@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.173 $
+ *       $Revision: 1.174 $
  *
  *****************************************************************************/
 
@@ -322,6 +322,10 @@ typedef UINT64                          ACPI_INTEGER;
 
 #define ACPI_ROOT_OBJECT                (ACPI_HANDLE)(-1)
 
+
+/*
+ * Initialization sequence
+ */
 #define ACPI_FULL_INITIALIZATION        0x00
 #define ACPI_NO_ADDRESS_SPACE_INIT      0x01
 #define ACPI_NO_HARDWARE_INIT           0x02
@@ -343,19 +347,19 @@ typedef UINT64                          ACPI_INTEGER;
 /* let's pretend S4BIOS didn't exist for now. ASG */
 #define ACPI_STATE_S4BIOS               (UINT8) 6
 #define ACPI_S_STATES_MAX               ACPI_STATE_S5
-#define ACPI_S_STATE_COUNT		6
+#define ACPI_S_STATE_COUNT		        6
 
 /*
  * Device power states
  */
-#define ACPI_STATE_D0			(UINT8) 0
-#define ACPI_STATE_D1			(UINT8) 1
-#define ACPI_STATE_D2			(UINT8) 2
-#define ACPI_STATE_D3			(UINT8) 3
-#define ACPI_D_STATES_MAX		ACPI_STATE_D3
-#define ACPI_D_STATE_COUNT		4
+#define ACPI_STATE_D0			        (UINT8) 0
+#define ACPI_STATE_D1			        (UINT8) 1
+#define ACPI_STATE_D2			        (UINT8) 2
+#define ACPI_STATE_D3			        (UINT8) 3
+#define ACPI_D_STATES_MAX		        ACPI_STATE_D3
+#define ACPI_D_STATE_COUNT		        4
 
-#define ACPI_STATE_UNKNOWN		(UINT8) 0xFF
+#define ACPI_STATE_UNKNOWN		        (UINT8) 0xFF
 
 
 /*
