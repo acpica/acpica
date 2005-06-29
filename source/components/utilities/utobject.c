@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "amlcode.h"
 
 
-#define _COMPONENT          MISCELLANEOUS
+#define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("cmobject")
 
 
@@ -169,7 +169,7 @@ _CmCreateInternalObject (
     {
         /* Allocation failure */
 
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     /* Save the object type in the object descriptor */
