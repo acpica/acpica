@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -183,9 +183,9 @@ AcpiInitializeSubsystem (
         return_ACPI_STATUS (Status);
     }
 
-    /* 
-     * Initialize the namespace manager and 
-     * the root of the namespace tree 
+    /*
+     * Initialize the namespace manager and
+     * the root of the namespace tree
      */
 
     Status = AcpiNsRootInitialize ();
@@ -198,14 +198,12 @@ AcpiInitializeSubsystem (
     }
 
 
-
     /* If configured, initialize the AML debugger */
 
     DEBUGGER_EXEC (AcpiDbInitialize ());
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*******************************************************************************
@@ -246,8 +244,8 @@ AcpiEnableSubsystem (
         AcpiEvInstallDefaultAddressSpaceHandlers ();
     }
 
-    /* 
-     * We must initialize the hardware before we can enable ACPI.  
+    /*
+     * We must initialize the hardware before we can enable ACPI.
      */
 
     if (!(Flags & ACPI_NO_HARDWARE_INIT))
@@ -255,9 +253,9 @@ AcpiEnableSubsystem (
         Status = AcpiHwInitialize ();
     }
 
-    /* 
-     * Note: 
-     * We must have the hardware AND events initialized before we can execute 
+    /*
+     * Note:
+     * We must have the hardware AND events initialized before we can execute
      * ANY control methods SAFELY.  Any control method can require ACPI hardware
      * support, so the hardware MUST be initialized before execution!
      */
@@ -303,7 +301,6 @@ AcpiEnableSubsystem (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*******************************************************************************
