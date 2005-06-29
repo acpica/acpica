@@ -144,48 +144,6 @@ CmTerminate (
     void);
 
 
-
-
-void
-CmPushGenericState (
-    ACPI_GENERIC_STATE      **ListHead,
-    ACPI_GENERIC_STATE      *State);
-
-ACPI_GENERIC_STATE *
-CmPopGenericState (
-    ACPI_GENERIC_STATE      **ListHead);
-
-
-ACPI_GENERIC_STATE *
-CmCreateGenericState (
-    void);
-
-ACPI_GENERIC_STATE *
-CmCreateUpdateState (
-    ACPI_OBJECT_INTERNAL    *Object,
-    UINT16                  Action);
-
-ACPI_GENERIC_STATE *
-CmCreateControlState (
-    void);
-
-void
-CmDeleteGenericState (
-    ACPI_GENERIC_STATE      *State);
-
-void
-CmDeleteGenericStateCache (
-    void);
-
-void
-CmDeleteObjectDesc (
-    ACPI_OBJECT_INTERNAL    *Object);
-
-void
-CmDeleteObjectCache (
-    void);
-
-
 /*
  * CmInit - miscellaneous initialization and shutdown
  */
@@ -219,7 +177,86 @@ CmAllocateOwnerId (
     UINT32                  IdType);
 
 
-/* Object construction and conversion interfaces - cmobject */
+/*
+ * CmClib - Local implementations of C library functions
+ */
+
+ACPI_SIZE
+CmStrlen (
+    const char              *String);
+
+char *
+CmStrcpy (
+    char                    *DstString, 
+    const char              *SrcString);
+
+char *
+CmStrncpy (
+    char                    *DstString, 
+    const char              *SrcString, 
+    ACPI_SIZE               Count);
+
+UINT32
+CmStrncmp (
+    const char              *String1, 
+    const char              *String2, 
+    ACPI_SIZE               Count);
+
+UINT32
+CmStrcmp (
+    const char              *String1, 
+    const char              *String2);
+
+char *
+CmStrcat (
+    char                    *DstString,
+    const char              *SrcString);
+
+char *
+CmStrncat (
+    char                    *DstString, 
+    const char              *SrcString, 
+    ACPI_SIZE               Count);
+
+UINT32
+CmStrtoul (
+    const char              *String, 
+    char                    **Terminator, 
+    INT32                   Base);
+
+char *
+CmStrstr (
+    char                    *String1,
+    char                    *String2);
+
+char *
+CmStrupr (
+    char                    *SrcString);
+
+void *
+CmMemcpy (
+    void                    *Dest, 
+    const void              *Src, 
+    ACPI_SIZE               Count);
+
+void *
+CmMemset (
+    void                    *Dest,
+    INT32                   Value,
+    ACPI_SIZE               Count);
+
+INT32
+CmToUpper (
+    INT32                   c);
+
+INT32
+CmToLower (
+    INT32                   c);
+
+
+/* 
+ * CmCopy - Object construction and conversion interfaces
+ */
 
 ACPI_STATUS
 CmBuildSimpleObject(
@@ -259,25 +296,6 @@ CmBuildCopyInternalPackageObject (
     ACPI_OBJECT_INTERNAL    *SourceObj, 
     ACPI_OBJECT_INTERNAL    *DestObj);
 
-/*
- * CmSize - Object size routines
- */
-
-ACPI_STATUS
-CmGetSimpleObjectSize (
-    ACPI_OBJECT_INTERNAL    *Obj, 
-    UINT32                  *ObjLength);
-
-ACPI_STATUS
-CmGetPackageObjectSize (
-    ACPI_OBJECT_INTERNAL    *Obj, 
-    UINT32                  *ObjLength);
-
-ACPI_STATUS
-CmGetObjectSize(
-    ACPI_OBJECT_INTERNAL    *Obj, 
-    UINT32                  *ObjLength);
-
 
 /*
  * CmCreate - Object creation
@@ -294,71 +312,6 @@ _CmCreateInternalObject (
     INT32                   LineNumber, 
     INT32                   ComponentId,
     ACPI_OBJECT_TYPE        Type);
-
-
-/* Object deletion - cmdelete */
-
-void
-CmDeleteInternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *Object);
-
-void
-CmDeleteInternalSimpleObject (
-    ACPI_OBJECT_INTERNAL    *Object);
-
-void
-CmAddReference (
-    ACPI_OBJECT_INTERNAL    *Object);
-
-void
-CmRemoveReference (
-    ACPI_OBJECT_INTERNAL    *Object);
-
-ACPI_STATUS
-CmDeleteInternalObjectList (
-    ACPI_OBJECT_INTERNAL    **ObjList);
-
-void
-CmDeleteInternalObjDispatch (
-    ACPI_OBJECT_INTERNAL    *Object);
-
-
-/*
- * CmMutex - mutual exclusion interfaces
- */
-
-ACPI_STATUS
-CmMutexInitialize (
-    void);
-
-void
-CmMutexTerminate (
-    void);
-
-ACPI_STATUS
-CmCreateMutex (
-    ACPI_MUTEX_HANDLE       MutexId);
-
-ACPI_STATUS
-CmDeleteMutex (
-    ACPI_MUTEX_HANDLE       MutexId);
-
-ACPI_STATUS
-CmAcquireMutex (
-    ACPI_MUTEX_HANDLE       MutexId);
-
-ACPI_STATUS
-CmReleaseMutex (
-    ACPI_MUTEX_HANDLE       MutexId);
-
-
-/*
- * CmError - exception interfaces
- */
-
-char *
-CmFormatException (
-    ACPI_STATUS             Status);
 
 
 /* 
@@ -488,6 +441,166 @@ CmDumpBuffer (
     INT32                   componentId);
 
 
+
+/* 
+ * CmDelete - Object deletion 
+ */
+
+void
+CmDeleteInternalObj (
+    ACPI_OBJECT_INTERNAL    *Object);
+
+void
+CmDeleteInternalPackageObject (
+    ACPI_OBJECT_INTERNAL    *Object);
+
+void
+CmDeleteInternalSimpleObject (
+    ACPI_OBJECT_INTERNAL    *Object);
+
+ACPI_STATUS
+CmDeleteInternalObjectList (
+    ACPI_OBJECT_INTERNAL    **ObjList);
+
+
+
+/*
+ * CmError - exception interfaces
+ */
+
+char *
+CmFormatException (
+    ACPI_STATUS             Status);
+
+
+/*
+ * CmMutex - mutual exclusion interfaces
+ */
+
+ACPI_STATUS
+CmMutexInitialize (
+    void);
+
+void
+CmMutexTerminate (
+    void);
+
+ACPI_STATUS
+CmCreateMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
+ACPI_STATUS
+CmDeleteMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
+ACPI_STATUS
+CmAcquireMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
+ACPI_STATUS
+CmReleaseMutex (
+    ACPI_MUTEX_HANDLE       MutexId);
+
+
+/*
+ * CmObject - internal object create/delete/cache routines
+ */
+
+#define CmCreateInternalObject(t)   _CmCreateInternalObject(_THIS_MODULE,__LINE__,_COMPONENT,t)
+#define CmAllocateObjectDesc()      _CmAllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
+
+void *
+_CmAllocateObjectDesc (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId); 
+
+void
+CmDeleteObjectDesc (
+    ACPI_OBJECT_INTERNAL    *Object);
+
+BOOLEAN
+CmValidInternalObject (
+    void                    *Object);
+
+    
+/*
+ * CmRefCnt - Object reference count management
+ */
+
+void
+CmAddReference (
+    ACPI_OBJECT_INTERNAL    *Object);
+
+void
+CmRemoveReference (
+    ACPI_OBJECT_INTERNAL    *Object);
+
+/*
+ * CmSize - Object size routines
+ */
+
+ACPI_STATUS
+CmGetSimpleObjectSize (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
+
+ACPI_STATUS
+CmGetPackageObjectSize (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
+
+ACPI_STATUS
+CmGetObjectSize(
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
+
+
+/* 
+ * CmState - Generic state creation/cache routines
+ */
+
+void
+CmPushGenericState (
+    ACPI_GENERIC_STATE      **ListHead,
+    ACPI_GENERIC_STATE      *State);
+
+ACPI_GENERIC_STATE *
+CmPopGenericState (
+    ACPI_GENERIC_STATE      **ListHead);
+
+
+ACPI_GENERIC_STATE *
+CmCreateGenericState (
+    void);
+
+ACPI_GENERIC_STATE *
+CmCreateUpdateState (
+    ACPI_OBJECT_INTERNAL    *Object,
+    UINT16                  Action);
+
+ACPI_STATUS
+CmCreateUpdateStateAndPush (
+    ACPI_OBJECT_INTERNAL    *Object,
+    UINT16                  Action,
+    ACPI_GENERIC_STATE      **StateList);
+
+ACPI_GENERIC_STATE *
+CmCreateControlState (
+    void);
+
+void
+CmDeleteGenericState (
+    ACPI_GENERIC_STATE      *State);
+
+void
+CmDeleteGenericStateCache (
+    void);
+
+void
+CmDeleteObjectCache (
+    void);
+
 /*
  * Cmutils
  */
@@ -500,81 +613,6 @@ BOOLEAN
 CmValidAcpiCharacter (
     char                    Character);
 
-/*
- * Local implementations of C library functions
- */
-
-ACPI_SIZE
-CmStrlen (
-    const char              *String);
-
-char *
-CmStrcpy (
-    char                    *DstString, 
-    const char              *SrcString);
-
-char *
-CmStrncpy (
-    char                    *DstString, 
-    const char              *SrcString, 
-    ACPI_SIZE               Count);
-
-UINT32
-CmStrncmp (
-    const char              *String1, 
-    const char              *String2, 
-    ACPI_SIZE               Count);
-
-UINT32
-CmStrcmp (
-    const char              *String1, 
-    const char              *String2);
-
-char *
-CmStrcat (
-    char                    *DstString,
-    const char              *SrcString);
-
-char *
-CmStrncat (
-    char                    *DstString, 
-    const char              *SrcString, 
-    ACPI_SIZE               Count);
-
-UINT32
-CmStrtoul (
-    const char              *String, 
-    char                    **Terminator, 
-    INT32                   Base);
-
-char *
-CmStrstr (
-    char                    *String1,
-    char                    *String2);
-
-char *
-CmStrupr (
-    char                    *SrcString);
-
-void *
-CmMemcpy (
-    void                    *Dest, 
-    const void              *Src, 
-    ACPI_SIZE               Count);
-
-void *
-CmMemset (
-    void                    *Dest,
-    INT32                   Value,
-    ACPI_SIZE               Count);
-
-INT32
-CmToUpper (
-    INT32                   c);
-
-INT32
-CmToLower (
-    INT32                   c);
 
 
 /*
@@ -668,14 +706,6 @@ CmDumpCurrentAllocations (
 
 #endif
 
-#define CmCreateInternalObject(t)   _CmCreateInternalObject(_THIS_MODULE,__LINE__,_COMPONENT,t)
-#define CmAllocateObjectDesc()      _CmAllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
-
-void *
-_CmAllocateObjectDesc (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId); 
 
 
 #endif /* _COMMON_H */
