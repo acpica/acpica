@@ -593,7 +593,7 @@ AcpiCmBuildInternalPackageObject (
     PKG_SEARCH_INFO         *LevelPtr;
 
 
-   
+
     FUNCTION_TRACE ("CmBuildInternalPackageObject");
 
 

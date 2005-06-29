@@ -174,10 +174,10 @@ FunctionTrace (
     char                    *FunctionName)
 {
 
-    Acpi_GblNestingLevel++;
-  
+    AcpiGbl_NestingLevel++;
+
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Entered Function: %s\n", Acpi_GblNestingLevel, FunctionName);
+                " %2.2ld Entered Function: %s\n", AcpiGbl_NestingLevel, FunctionName);
 }
 
 
@@ -207,10 +207,10 @@ FunctionTracePtr (
     void                    *Pointer)
 {
 
-    Acpi_GblNestingLevel++;
+    AcpiGbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2ld Entered Function: %s, 0x%p\n",
-                Acpi_GblNestingLevel, FunctionName, Pointer);
+                AcpiGbl_NestingLevel, FunctionName, Pointer);
 }
 
 
@@ -240,10 +240,10 @@ FunctionTraceStr (
     char                    *String)
 {
 
-    Acpi_GblNestingLevel++;
+    AcpiGbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2ld Entered Function: %s, %s\n",
-                Acpi_GblNestingLevel, FunctionName, String);
+                AcpiGbl_NestingLevel, FunctionName, String);
 }
 
 
@@ -273,10 +273,10 @@ FunctionTraceU32 (
     UINT32                  Integer)
 {
 
-    Acpi_GblNestingLevel++;
+    AcpiGbl_NestingLevel++;
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2ld Entered Function: %s, 0x%lX\n",
-                Acpi_GblNestingLevel, FunctionName, Integer);
+                AcpiGbl_NestingLevel, FunctionName, Integer);
 }
 
 
@@ -305,8 +305,8 @@ FunctionExit (
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
-                " %2.2ld Exiting Function: %s\n", Acpi_GblNestingLevel, FunctionName);
-    Acpi_GblNestingLevel--;
+                " %2.2ld Exiting Function: %s\n", AcpiGbl_NestingLevel, FunctionName);
+    AcpiGbl_NestingLevel--;
 }
 
 
@@ -340,17 +340,17 @@ FunctionStatusExit (
     {
         DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                     " %2.2ld Exiting Function: %s, [Unknown Status] 0x%X\n",
-                    Acpi_GblNestingLevel, FunctionName, Status);
+                    AcpiGbl_NestingLevel, FunctionName, Status);
     }
 
     else
     {
         DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                     " %2.2ld Exiting Function: %s, %s\n",
-                    Acpi_GblNestingLevel, FunctionName, AcpiCmFormatException (Status));
+                    AcpiGbl_NestingLevel, FunctionName, AcpiCmFormatException (Status));
     }
 
-    Acpi_GblNestingLevel--;
+    AcpiGbl_NestingLevel--;
 }
 
 
@@ -382,8 +382,8 @@ FunctionValueExit (
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2ld Exiting Function: %s, 0x%X\n",
-                Acpi_GblNestingLevel, FunctionName, Value);
-    Acpi_GblNestingLevel--;
+                AcpiGbl_NestingLevel, FunctionName, Value);
+    AcpiGbl_NestingLevel--;
 }
 
 
@@ -415,8 +415,8 @@ FunctionPtrExit (
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
                 " %2.2ld Exiting Function: %s, 0x%p\n",
-                Acpi_GblNestingLevel, FunctionName, Ptr);
-    Acpi_GblNestingLevel--;
+                AcpiGbl_NestingLevel, FunctionName, Ptr);
+    AcpiGbl_NestingLevel--;
 }
 
 
@@ -449,7 +449,7 @@ DebugPrint (
 {
     va_list                 args;
 
-     
+
     /* Both the level and the component must be enabled */
 
     if ((PrintLevel & DebugLevel) && (ComponentId & DebugLayer))

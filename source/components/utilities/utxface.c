@@ -207,7 +207,7 @@ AcpiTerminate (void)
 
     /* Terminate the AML Debuger if present */
 
-    Acpi_GblDbTerminateThreads = TRUE;
+    AcpiGbl_DbTerminateThreads = TRUE;
     AcpiCmReleaseMutex (MTX_DEBUG_CMD_READY);
 
 
@@ -289,7 +289,7 @@ AcpiGetSystemInfo (
 
     /* System flags (ACPI capabilities) */
 
-    InfoPtr->Flags              = Acpi_GblSystemFlags;
+    InfoPtr->Flags              = AcpiGbl_SystemFlags;
 
     /* Timer resolution - 24 or 32 bits  */
 
@@ -310,7 +310,7 @@ AcpiGetSystemInfo (
     InfoPtr->NumTableTypes = NUM_ACPI_TABLES;
     for (i = 0; i < NUM_ACPI_TABLES; i++);
     {
-        InfoPtr->TableInfo[i].Count = Acpi_GblAcpiTables[i].Count;
+        InfoPtr->TableInfo[i].Count = AcpiGbl_AcpiTables[i].Count;
     }
 
     return_ACPI_STATUS (AE_OK);

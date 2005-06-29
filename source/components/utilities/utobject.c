@@ -288,20 +288,20 @@ _CmAllocateObjectDesc (
 
     AcpiCmAcquireMutex (MTX_CACHES);
 
-    Acpi_GblObjectCacheRequests++;
+    AcpiGbl_ObjectCacheRequests++;
 
     /* Check the cache first */
 
-    if (Acpi_GblObjectCache)
+    if (AcpiGbl_ObjectCache)
     {
         /* There is an object available, use it */
 
-        Object = Acpi_GblObjectCache;
-        Acpi_GblObjectCache = Object->Common.Next;
+        Object = AcpiGbl_ObjectCache;
+        AcpiGbl_ObjectCache = Object->Common.Next;
         Object->Common.Next = NULL;
 
-        Acpi_GblObjectCacheHits++;
-        Acpi_GblObjectCacheDepth--;
+        AcpiGbl_ObjectCacheHits++;
+        AcpiGbl_ObjectCacheDepth--;
 
         AcpiCmReleaseMutex (MTX_CACHES);
     }
@@ -377,13 +377,13 @@ AcpiCmDeleteObjectDesc (
 
     /* If cache is full, just free this object */
 
-    if (Acpi_GblObjectCacheDepth >= MAX_OBJECT_CACHE_DEPTH)
+    if (AcpiGbl_ObjectCacheDepth >= MAX_OBJECT_CACHE_DEPTH)
     {
         /*
          * Memory allocation metrics.  Call the macro here since we only
          * care about dynamically allocated objects.
          */
-        DECREMENT_OBJECT_METRICS (Acpi_GblObjectCache->Common.Size);
+        DECREMENT_OBJECT_METRICS (AcpiGbl_ObjectCache->Common.Size);
 
         AcpiCmFree (Object);
         return;
@@ -398,9 +398,9 @@ AcpiCmDeleteObjectDesc (
 
     /* Put the object at the head of the global cache list */
 
-    Object->Common.Next = Acpi_GblObjectCache;
-    Acpi_GblObjectCache = Object;
-    Acpi_GblObjectCacheDepth++;
+    Object->Common.Next = AcpiGbl_ObjectCache;
+    AcpiGbl_ObjectCache = Object;
+    AcpiGbl_ObjectCacheDepth++;
 
 
     AcpiCmReleaseMutex (MTX_CACHES);
@@ -433,21 +433,21 @@ AcpiCmDeleteObjectCache (
 
     /* Traverse the global cache list */
 
-    while (Acpi_GblObjectCache)
+    while (AcpiGbl_ObjectCache)
     {
         /* Delete one cached state object */
 
-        Next = Acpi_GblObjectCache->Common.Next;
-        Acpi_GblObjectCache->Common.Next = NULL;
+        Next = AcpiGbl_ObjectCache->Common.Next;
+        AcpiGbl_ObjectCache->Common.Next = NULL;
 
         /*
          * Memory allocation metrics.  Call the macro here since we only
          * care about dynamically allocated objects.
          */
-        DECREMENT_OBJECT_METRICS (Acpi_GblObjectCache->Common.Size);
+        DECREMENT_OBJECT_METRICS (AcpiGbl_ObjectCache->Common.Size);
 
-        AcpiCmFree (Acpi_GblObjectCache);
-        Acpi_GblObjectCache = Next;
+        AcpiCmFree (AcpiGbl_ObjectCache);
+        AcpiGbl_ObjectCache = Next;
     }
 
     return_VOID;

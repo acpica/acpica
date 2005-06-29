@@ -152,7 +152,7 @@ ALLOCATION_INFO *
 AcpiCmSearchAllocList (
     void                    *Address)
 {
-    ALLOCATION_INFO         *Element = Acpi_GblHeadAllocPtr;
+    ALLOCATION_INFO         *Element = AcpiGbl_HeadAllocPtr;
 
 
     /* Search for the address. note - this always searches the entire list...*/
@@ -212,41 +212,41 @@ AcpiCmAddElementToAllocList (
 
     /* Keep track of the running total of all allocations. */
 
-    Acpi_GblCurrentAllocCount++;
-    Acpi_GblRunningAllocCount++;
+    AcpiGbl_CurrentAllocCount++;
+    AcpiGbl_RunningAllocCount++;
 
-    if (Acpi_GblMaxConcurrentAllocCount < Acpi_GblCurrentAllocCount)
+    if (AcpiGbl_MaxConcurrentAllocCount < AcpiGbl_CurrentAllocCount)
     {
-        Acpi_GblMaxConcurrentAllocCount = Acpi_GblCurrentAllocCount;
+        AcpiGbl_MaxConcurrentAllocCount = AcpiGbl_CurrentAllocCount;
     }
 
-    Acpi_GblCurrentAllocSize += Size;
-    Acpi_GblRunningAllocSize += Size;
+    AcpiGbl_CurrentAllocSize += Size;
+    AcpiGbl_RunningAllocSize += Size;
 
-    if (Acpi_GblMaxConcurrentAllocSize < Acpi_GblCurrentAllocSize)
+    if (AcpiGbl_MaxConcurrentAllocSize < AcpiGbl_CurrentAllocSize)
     {
-        Acpi_GblMaxConcurrentAllocSize = Acpi_GblCurrentAllocSize;
+        AcpiGbl_MaxConcurrentAllocSize = AcpiGbl_CurrentAllocSize;
     }
 
     /* If the head pointer is null, create the first element and fill it in. */
 
-    if (NULL == Acpi_GblHeadAllocPtr)
+    if (NULL == AcpiGbl_HeadAllocPtr)
     {
-        Acpi_GblHeadAllocPtr = (ALLOCATION_INFO *) AcpiOsdCallocate (sizeof (ALLOCATION_INFO));
-        if (!Acpi_GblHeadAllocPtr)
+        AcpiGbl_HeadAllocPtr = (ALLOCATION_INFO *) AcpiOsdCallocate (sizeof (ALLOCATION_INFO));
+        if (!AcpiGbl_HeadAllocPtr)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Could not allocate memory info block\n"));
             Status = AE_NO_MEMORY;
             goto UnlockAndExit;
         }
 
-        Acpi_GblTailAllocPtr = Acpi_GblHeadAllocPtr;
+        AcpiGbl_TailAllocPtr = AcpiGbl_HeadAllocPtr;
     }
 
     else
     {
-        Acpi_GblTailAllocPtr->Next = (ALLOCATION_INFO *) AcpiOsdCallocate (sizeof (ALLOCATION_INFO));
-        if (!Acpi_GblTailAllocPtr->Next)
+        AcpiGbl_TailAllocPtr->Next = (ALLOCATION_INFO *) AcpiOsdCallocate (sizeof (ALLOCATION_INFO));
+        if (!AcpiGbl_TailAllocPtr->Next)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Could not allocate memory info block\n"));
             Status = AE_NO_MEMORY;
@@ -255,8 +255,8 @@ AcpiCmAddElementToAllocList (
 
         /* error check */
 
-        Acpi_GblTailAllocPtr->Next->Previous = Acpi_GblTailAllocPtr;
-        Acpi_GblTailAllocPtr = Acpi_GblTailAllocPtr->Next;
+        AcpiGbl_TailAllocPtr->Next->Previous = AcpiGbl_TailAllocPtr;
+        AcpiGbl_TailAllocPtr = AcpiGbl_TailAllocPtr->Next;
     }
 
     /*
@@ -274,14 +274,14 @@ AcpiCmAddElementToAllocList (
     }
 
     /* Fill in the instance data. */
-    
-    Acpi_GblTailAllocPtr->Address   = Address;
-    Acpi_GblTailAllocPtr->Size      = Size;
-    Acpi_GblTailAllocPtr->AllocType = AllocType;
-    Acpi_GblTailAllocPtr->Component = Component;
-    Acpi_GblTailAllocPtr->Line      = Line;
 
-    STRNCPY (Acpi_GblTailAllocPtr->Module, Module, MAX_MODULE_NAME);
+    AcpiGbl_TailAllocPtr->Address   = Address;
+    AcpiGbl_TailAllocPtr->Size      = Size;
+    AcpiGbl_TailAllocPtr->AllocType = AllocType;
+    AcpiGbl_TailAllocPtr->Component = Component;
+    AcpiGbl_TailAllocPtr->Line      = Line;
+
+    STRNCPY (AcpiGbl_TailAllocPtr->Module, Module, MAX_MODULE_NAME);
 
 
 UnlockAndExit:
@@ -323,7 +323,7 @@ AcpiCmDeleteElementFromAllocList (
 
     /* cases: none, one, multiple. */
 
-    if (NULL == Acpi_GblHeadAllocPtr)
+    if (NULL == AcpiGbl_HeadAllocPtr)
     {
         /* Boy we got problems. */
 
@@ -338,22 +338,22 @@ AcpiCmDeleteElementFromAllocList (
     /* Keep track of the amount of memory allocated. */
 
     Size = 0;
-    Acpi_GblCurrentAllocCount--;
+    AcpiGbl_CurrentAllocCount--;
 
-    if (Acpi_GblHeadAllocPtr == Acpi_GblTailAllocPtr)
+    if (AcpiGbl_HeadAllocPtr == AcpiGbl_TailAllocPtr)
     {
-        if (Address != Acpi_GblHeadAllocPtr->Address)
+        if (Address != AcpiGbl_HeadAllocPtr->Address)
         {
             _REPORT_ERROR (Module, Line, Component, "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
 
             goto Cleanup;
         }
 
-        Size = Acpi_GblHeadAllocPtr->Size;
+        Size = AcpiGbl_HeadAllocPtr->Size;
 
-        AcpiOsdFree (Acpi_GblHeadAllocPtr);
-        Acpi_GblHeadAllocPtr = NULL;
-        Acpi_GblTailAllocPtr = NULL;
+        AcpiOsdFree (AcpiGbl_HeadAllocPtr);
+        AcpiGbl_HeadAllocPtr = NULL;
+        AcpiGbl_TailAllocPtr = NULL;
 
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("_CmFree: Allocation list deleted.  There are no outstanding allocations.\n"));
 
@@ -368,18 +368,18 @@ AcpiCmDeleteElementFromAllocList (
     {
         /* cases: head, tail, other */
 
-        if (Element == Acpi_GblHeadAllocPtr)
+        if (Element == AcpiGbl_HeadAllocPtr)
         {
             Element->Next->Previous = NULL;
-            Acpi_GblHeadAllocPtr = Element->Next;
+            AcpiGbl_HeadAllocPtr = Element->Next;
         }
 
         else
         {
-            if (Element == Acpi_GblTailAllocPtr)
+            if (Element == AcpiGbl_TailAllocPtr)
             {
                 Element->Previous->Next = NULL;
-                Acpi_GblTailAllocPtr = Element->Previous;
+                AcpiGbl_TailAllocPtr = Element->Previous;
             }
 
             else
@@ -388,7 +388,7 @@ AcpiCmDeleteElementFromAllocList (
                 Element->Next->Previous = Element->Previous;
             }
         }
-       
+
 
         /* Mark the segment as deleted */
 
@@ -426,7 +426,7 @@ AcpiCmDeleteElementFromAllocList (
 
 Cleanup:
 
-    Acpi_GblCurrentAllocSize -= Size;
+    AcpiGbl_CurrentAllocSize -= Size;
     AcpiCmReleaseMutex (MTX_MEMORY);
 
     return_VOID;
@@ -454,27 +454,27 @@ AcpiCmDumpAllocationInfo (
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Current outstanding allocations: %d (%d b, %d Kb)\n",
-                    Acpi_GblCurrentAllocCount, Acpi_GblCurrentAllocSize, Acpi_GblCurrentAllocSize / 1024));
+                    AcpiGbl_CurrentAllocCount, AcpiGbl_CurrentAllocSize, AcpiGbl_CurrentAllocSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Maximum concurrent allocations thus far: %d (%d b, %d Kb)\n",
-                    Acpi_GblMaxConcurrentAllocCount, Acpi_GblMaxConcurrentAllocSize, Acpi_GblMaxConcurrentAllocSize / 1024));
+                    AcpiGbl_MaxConcurrentAllocCount, AcpiGbl_MaxConcurrentAllocSize, AcpiGbl_MaxConcurrentAllocSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Current number of allocated internal objects: %d (%d b, %d Kb)\n",
-                    Acpi_GblCurrentObjectCount, Acpi_GblCurrentObjectSize, Acpi_GblCurrentObjectSize / 1024));
+                    AcpiGbl_CurrentObjectCount, AcpiGbl_CurrentObjectSize, AcpiGbl_CurrentObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Maximum concurrent number of allocated internal objects: %d (%d b, %d Kb)\n",
-                    Acpi_GblMaxConcurrentObjectCount, Acpi_GblMaxConcurrentObjectSize, Acpi_GblMaxConcurrentObjectSize / 1024));
+                    AcpiGbl_MaxConcurrentObjectCount, AcpiGbl_MaxConcurrentObjectSize, AcpiGbl_MaxConcurrentObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Total number of allocated internal objects: %d (%d b, %d Kb)\n",
-                    Acpi_GblRunningObjectCount, Acpi_GblRunningObjectSize, Acpi_GblRunningObjectSize / 1024));
+                    AcpiGbl_RunningObjectCount, AcpiGbl_RunningObjectSize, AcpiGbl_RunningObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("Total number of allocations: %d (%d b, %d Kb)\n",
-                    Acpi_GblRunningAllocCount, Acpi_GblRunningAllocSize, Acpi_GblRunningAllocSize / 1024));
+                    AcpiGbl_RunningAllocCount, AcpiGbl_RunningAllocSize, AcpiGbl_RunningAllocSize / 1024));
 
     return_VOID;
 }
@@ -498,7 +498,7 @@ AcpiCmDumpCurrentAllocations (
     UINT32                  Component,
     ACPI_STRING             Module)
 {
-    ALLOCATION_INFO         *Element = Acpi_GblHeadAllocPtr;
+    ALLOCATION_INFO         *Element = AcpiGbl_HeadAllocPtr;
     UINT32                  i;
 
 
@@ -743,7 +743,7 @@ _CmFree (
 
         return_VOID;
     }
-   
+
     AcpiCmDeleteElementFromAllocList (Address, Component, Module, Line);
     AcpiOsdFree (Address);
 

@@ -305,7 +305,7 @@ AcpiCmDeleteInternalObjectList (
 {
     ACPI_OBJECT_INTERNAL    **InternalObj;
 
- 
+
     FUNCTION_TRACE ("CmDeleteInternalObjectList");
 
 
