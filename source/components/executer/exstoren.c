@@ -3,7 +3,7 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.59 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -11,7 +11,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -285,6 +285,7 @@ AcpiExStoreObjectToObject (
 {
     ACPI_OPERAND_OBJECT     *ActualSrcDesc;
     ACPI_STATUS             Status = AE_OK;
+    ACPI_OBJECT_TYPE        OriginalSrcType;
 
 
     ACPI_FUNCTION_TRACE_PTR ("ExStoreObjectToObject", SourceDesc);
@@ -302,7 +303,8 @@ AcpiExStoreObjectToObject (
         return_ACPI_STATUS (Status);
     }
 
-    if (ACPI_GET_OBJECT_TYPE (SourceDesc) != ACPI_GET_OBJECT_TYPE (DestDesc))
+    OriginalSrcType = ACPI_GET_OBJECT_TYPE (SourceDesc);
+    if (OriginalSrcType != ACPI_GET_OBJECT_TYPE (DestDesc))
     {
         /*
          * The source type does not match the type of the destination.
@@ -313,8 +315,8 @@ AcpiExStoreObjectToObject (
          * Otherwise, ActualSrcDesc is a temporary object to hold the
          * converted object.
          */
-        Status = AcpiExConvertToTargetType (ACPI_GET_OBJECT_TYPE (DestDesc), SourceDesc,
-                        &ActualSrcDesc, WalkState);
+        Status = AcpiExConvertToTargetType (ACPI_GET_OBJECT_TYPE (DestDesc),
+                        SourceDesc, &ActualSrcDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -323,7 +325,7 @@ AcpiExStoreObjectToObject (
         if (SourceDesc == ActualSrcDesc)
         {
             /*
-             * No conversion was performed.  Return the SourceDesc as the
+             * No conversion was performed. Return the SourceDesc as the
              * new object.
              */
             *NewDesc = SourceDesc;
@@ -353,12 +355,18 @@ AcpiExStoreObjectToObject (
 
     case ACPI_TYPE_BUFFER:
 
-        Status = AcpiExStoreBufferToBuffer (ActualSrcDesc, DestDesc);
+        /*
+         * Note: There is different store behavior depending on the original
+         * source type
+         */
+        Status = AcpiExStoreBufferToBuffer (OriginalSrcType, ActualSrcDesc, 
+                    DestDesc);
         break;
 
     case ACPI_TYPE_PACKAGE:
 
-        Status = AcpiUtCopyIobjectToIobject (ActualSrcDesc, &DestDesc, WalkState);
+        Status = AcpiUtCopyIobjectToIobject (ActualSrcDesc, &DestDesc,
+                    WalkState);
         break;
 
     default:
