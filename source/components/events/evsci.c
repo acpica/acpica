@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.76 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,7 +124,6 @@
 
 #define _COMPONENT          ACPI_EVENTS
         MODULE_NAME         ("evsci")
-
 
 
 /*******************************************************************************
@@ -313,41 +312,4 @@ AcpiEvRestoreAcpiState (void)
 
     return_VOID;
 }
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiEvTerminate
- *
- * PARAMETERS:  none
- *
- * RETURN:      none
- *
- * DESCRIPTION: free memory allocated for table storage.
- *
- ******************************************************************************/
-
-void
-AcpiEvTerminate (void)
-{
-
-    FUNCTION_TRACE ("EvTerminate");
-
-
-    /*
-     * Free global tables, etc.
-     */
-    if (AcpiGbl_GpeRegisters)
-    {
-        ACPI_MEM_FREE (AcpiGbl_GpeRegisters);
-    }
-
-    if (AcpiGbl_GpeInfo)
-    {
-        ACPI_MEM_FREE (AcpiGbl_GpeInfo);
-    }
-
-    return_VOID;
-}
-
 
