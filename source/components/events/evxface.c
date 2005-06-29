@@ -111,24 +111,22 @@ extern FIXED_EVENT_HANDLER FixedEventHandlers[NUM_FIXED_EVENTS];
  *
  * FUNCTION:    AcpiEnable
  *
- * PARAMETERS:  Flags           flag bitmask (logical OR) to specify:
- *                              ACPI_TABLES_REQUIRED, HW_OVERRIDE_SUPPORTED,
- *                              PROGRAM_SCI_LEVEL_SENSITIVITY, DISABLE_KNOWN_EVENTS
+ * PARAMETERS:  None
  *
- * RETURN:      0 if successful; non-zero if failure encountered
+ * RETURN:      Status
  *
  * DESCRIPTION: Ensures that the system
  *              control interrupt (SCI) is properly configured, disables
  *              SCI event sources, installs the SCI handler, and
  *              transfers the system into ACPI mode.
- *              If successful, return 0. Otherwise, return non-zero.
  *
  *************************************************************************/
 
 ACPI_STATUS
-AcpiEnable ()
+AcpiEnable (void)
 {
     FUNCTION_TRACE ("AcpiEnable");
+
 
     if (AcpiLibInitStatus == AE_NO_ACPI_TABLES)
     {
@@ -139,13 +137,12 @@ AcpiEnable ()
         return AE_NO_ACPI_TABLES;
     }
 
-    /*  ACPI tables are available or not required   */
+    /*  ACPI tables are available or not required */
 
     if (LEGACY_MODE == AcpiModeCapabilities ())
     {   
-        /*  no ACPI mode support provided by BIOS   */
-        /*  The only way to get through sign_on() without ACPI support is
-         *  if we are running from an input file.
+        /*
+         * No ACPI mode support provided by BIOS
          */
 
         /* TBD: verify input file specified */
@@ -159,7 +156,7 @@ AcpiEnable ()
 
     if (EvInstallSciHandler () != AE_OK)
     {   
-        /* Unable to install SCI handler    */
+        /* Unable to install SCI handler */
 
         DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler"));
         FUNCTION_EXIT;;
@@ -196,30 +193,31 @@ AcpiEnable ()
  *
  * FUNCTION:    AcpiDisable
  *
- * PARAMETERS:  none
+ * PARAMETERS:  None
  *
- * RETURN:      0 if successful; non-zero if failure encountered
+ * RETURN:      Status
  *
  * DESCRIPTION: Returns the system to original ACPI/legacy mode, and 
  *              uninstalls the SCI interrupt handler.
- *              If successful, return 0. Otherwise, return non-zero.
  *
  *************************************************************************/
 
 ACPI_STATUS     
-AcpiDisable ()
+AcpiDisable (void)
 {
-    UINT32 Except;
+    UINT32          Status;
 
     FUNCTION_TRACE ("AcpiDisable");
 
-    /* Restore original mode   */
+
+    /* Restore original mode  */
 
     if (AE_OK != AcpiSetMode (OriginalMode))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Unable to transition to original mode"));
-        Except = AE_ERROR;    
+        Status = AE_ERROR;    
     }
+
     else
     {
         /* Unload the SCI interrupt handler  */
@@ -228,12 +226,12 @@ AcpiDisable ()
         EvRestoreAcpiState ();
         AcpiLocalCleanup ();
         
-        Except = AE_OK;
+        Status = AE_OK;
         
     }
 
     FUNCTION_EXIT;
-    return Except;
+    return Status;
 }
 
 
@@ -338,36 +336,14 @@ AcpiDisableFixedEvent (
 }
 
 
-
-ACPI_STATUS
-AcpiEnableGpe (
-    UINT32              Event,
-    GPE_HANDLER         Handler)
-{
-    ACPI_STATUS         Status = AE_OK;
-/*
-    UINT16              Register;
-    va_list             args;
-*/
-
-    FUNCTION_TRACE ("AcpiEnableGpe");
-
-/*    
-    DEBUG_PRINT (ACPI_INFO, ("GPE - name: %s, Action:%d\n", EventName, Action)); 
-    WRITE_ACPI_REGISTER (Register + GPE0_EN, Action);
-*/
-
-    return (Status);
-}
-
-
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiInstallGpeHandler
  *
- * PARAMETERS:  Gpe             - The event to install a handler
+ * PARAMETERS:  Gpe             - The GPE number.  The numbering scheme is 
+ *                                bank 0 first, then bank 1.
  *              Handler         - Address of the handler
+ *              Context         - Value passed to the handler on each GPE
  *
  * RETURN:      Status
  *
@@ -376,9 +352,40 @@ AcpiEnableGpe (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInstallGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
+AcpiInstallGpeHandler (UINT32 Gpe, GPE_HANDLER Handler, void *Context)
 {
+    FUNCTION_TRACE ("AcpiInstallGpeHandler");
 
+
+    /* Parameter validation */
+
+    if (!Handler || (Gpe >= GpeRegisterCount))
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    /* TBD: Mutex */
+
+    /* Make sure that there isn't a handler there already */
+
+    if (GpeDispatch[Gpe].Handler)
+    {
+        FUNCTION_EXIT;
+        return AE_HANDLER_EXISTS;
+    }
+
+
+    /* Install the handler */
+
+    GpeDispatch[Gpe].Handler = Handler;
+    GpeDispatch[Gpe].Context = Context;
+
+
+    /* TBD: enable the GPE ?? */
+
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -399,7 +406,38 @@ AcpiInstallGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
 ACPI_STATUS
 AcpiRemoveGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
 {
+    FUNCTION_TRACE ("AcpiRemoveGpeHandler");
 
+
+    /* Parameter validation */
+
+    if (!Handler || (Gpe >= GpeRegisterCount))
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    /* TBD: Mutex */
+
+    /* Make sure that the installed handler is the same */
+
+    if (GpeDispatch[Gpe].Handler != Handler)
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    /* Remove the handler */
+
+    GpeDispatch[Gpe].Handler = NULL;
+    GpeDispatch[Gpe].Context = NULL;
+
+ 
+    /* TBD: disable the GPE or install default handler ?? */
+
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -420,7 +458,19 @@ AcpiRemoveGpeHandler (UINT32 Gpe, GPE_HANDLER Handler)
 ACPI_STATUS
 AcpiInstallNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
 {
+    FUNCTION_TRACE ("AcpiInstallNotifyHandler");
 
+
+    /* Parameter validation */
+
+    if (!Handler)
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -441,7 +491,19 @@ AcpiInstallNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
 ACPI_STATUS
 AcpiRemoveNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
 {
+    FUNCTION_TRACE ("AcpiRemoveNotifyHandler");
 
+
+    /* Parameter validation */
+
+    if (!Handler)
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -462,7 +524,19 @@ AcpiRemoveNotifyHandler (UINT32 Device, NOTIFY_HANDLER Handler)
 ACPI_STATUS
 AcpiInstallOpRegionHandler (UINT32 OpRegion, OPREGION_HANDLER Handler)
 {
+    FUNCTION_TRACE ("AcpiInstallOpRegionHandler");
 
+
+    /* Parameter validation */
+
+    if (!Handler)
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
+
+
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
@@ -483,7 +557,19 @@ AcpiInstallOpRegionHandler (UINT32 OpRegion, OPREGION_HANDLER Handler)
 ACPI_STATUS
 AcpiRemoveOpRegionHandler (UINT32 OpRegion, OPREGION_HANDLER Handler)
 {
+    FUNCTION_TRACE ("AcpiRemoveOpRegionHandler");
 
+
+    /* Parameter validation */
+
+    if (!Handler)
+    {
+       FUNCTION_EXIT;
+       return AE_BAD_PARAMETER;
+    }
+
+
+    FUNCTION_EXIT;
     return AE_OK;
 }
 
