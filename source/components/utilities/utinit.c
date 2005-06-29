@@ -101,7 +101,6 @@
 #include <hardware.h>
 #include <namespace.h>
 #include <events.h>
-#include <string.h>
 
 
 ACPI_STATUS
