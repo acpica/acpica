@@ -13,7 +13,7 @@
 #define WIN_DS_REGISTER     0x0030
 
 char        * Why;
-char        WhyBuf [WhyBuf_SIZE];
+char        WhyBuf [WHYBUF_SIZE];
 int         AcpiHook = 0;
 int         __AcpiLibInitStatus = 0;
 selector    FlatSeg;
@@ -279,10 +279,14 @@ InstallInterruptHandler (
     selector            InterruptHandlerDS,
     WORD *              ExceptPtr)
 {
+	DWORD RetVal;
 
     OsdPrintf (NULL, "InstallInterruptHandler called, not supported **********\n");
 
-    return (DWORD) OsdInstallInterruptHandler (InterruptNumber, Isr, ExceptPtr);
+    RetVal = (DWORD) OsdInstallInterruptHandler (InterruptNumber, Isr, ExceptPtr);
+
+	
+	return(RetVal);
 
 }
 
