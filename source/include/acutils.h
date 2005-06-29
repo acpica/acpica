@@ -488,6 +488,17 @@ CmDumpBuffer (
     INT32                   componentId);
 
 
+/*
+ * Cmutils
+ */
+
+BOOLEAN 
+CmValidAcpiName (
+    UINT32                  Name);
+
+BOOLEAN
+CmValidAcpiCharacter (
+    char                    Character);
 
 /*
  * Local implementations of C library functions
