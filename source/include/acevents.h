@@ -98,31 +98,16 @@
 #ifndef __EVENTS_H__
 #define __EVENTS_H__
 
-
-/* Globals for event handling */
-
-/* The first two can probably be taken out...
-extern INT32            EdgeLevelSave;
-extern INT32            IrqEnableSave;  original SCI config */
-extern INT32            OriginalMode;   /*  stores the original ACPI/legacy mode    */
-extern UINT16			SciHandle;
-
-/* Interrupt handler return values */
-
-#define INTERRUPT_HANDLED               0x01
-#define INTERRUPT_NOT_HANDLED           0x02
-#define INTERRUPT_ERROR                 0x03
-
-/* event index for types of events */
+/* Event types */
 
 enum 
 {
     PMTIMER_EVENT = 0,
-    NOT_USED,
     /* 
      * There's no bus master event so index 1 is used for IRQ's that are not
      * handled by the SCI handler 
      */
+    NOT_USED,
     GLOBAL_EVENT, 
     POWER_BUTTON_EVENT, 
     SLEEP_BUTTON_EVENT, 
@@ -131,8 +116,19 @@ enum
     NUM_EVENTS
 };
 
-/* Array for registering fixed event handlers */
 typedef UINT32 (*FIXED_EVENT_HANDLER) (void);
+
+/* Globals for event handling */
+
+FIXED_EVENT_HANDLER		FixedEventHandlers[NUM_EVENTS];
+UINT32					SciHandle;
+extern INT32            OriginalMode;
+
+/* Interrupt handler return values */
+
+#define INTERRUPT_HANDLED               0x01
+#define INTERRUPT_NOT_HANDLED           0x02
+#define INTERRUPT_ERROR                 0x03
 
 /* 
  * Use the macros below + the function AcpiClearStatusBit for
@@ -141,11 +137,6 @@ typedef UINT32 (*FIXED_EVENT_HANDLER) (void);
  * IMPORTANT: SCI handler must be installed or the enable bit will not be
  * modified. 
  */
-#define ENABLE_EVENT(name)                      AcpiEnableDisableEvent(name, ENABLE)
-#define DISABLE_EVENT(name)                     AcpiEnableDisableEvent(name, DISABLE)
-#define ENABLE_GEN_EVENT(name,offset)           AcpiEnableDisableEvent(name, ENABLE, offset)
-#define DISABLE_GEN_EVENT(name,offset)          AcpiEnableDisableEvent(name, DISABLE, offset)
-
 #define READ_ENABLE_BIT(name,buf)               AcpiReadStatusEnableBit(name, ENABLE, buf)
 #define READ_STATUS_BIT(name,buf)               AcpiReadStatusEnableBit(name, STATUS, buf)
 #define READ_GEN_ENABLE_BIT(name,buf,offset)    AcpiReadStatusEnableBit(name, ENABLE, buf, offset)
@@ -159,26 +150,16 @@ typedef UINT32 (*FIXED_EVENT_HANDLER) (void);
  * by the ACPI interrupt handler... 
  */
 
-// extern volatile UINT32                  EventCount[];   
-
-
 /* Prototypes */
-
-INT32
-AcpiClearStatusBit (
-    char *          EventName, ...);
-
-INT32
-AcpiEnableDisableEvent (
-    char *          EventName, 
-    INT32           Action, ...);
-
-INT32
-AcpiReadStatusEnableBit (
-    char *          EventName, 
-    INT32           StatusOrEnable, 
-    BOOLEAN *       OutBit, ...);
-
+ACPI_STATUS
+AcpiEnableFixedEvent (
+	UINT32 Event,
+ 	FIXED_EVENT_HANDLER Handler);
+ 	
+ACPI_STATUS
+AcpiDisableFixedEvent (
+	UINT32 Event);
+	
 UINT32 
 InstallSciHandler (
     void);
@@ -188,10 +169,6 @@ UninstallSciHandler (
     void);
 
 INT32 
-SciCount (
-    UINT32          Event);
-
-INT32 
 InitializeSCI (
     INT32           ProgramSCI);
 
@@ -199,6 +176,12 @@ void
 RestoreAcpiState (
     void);
 
+#ifdef _DEBUG
 
+INT32 
+SciCount (
+    UINT32          Event);
+
+#endif
 
 #endif  /*  __EVENTS_H__   */
