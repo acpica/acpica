@@ -187,10 +187,10 @@ NsDumpPathname (
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              Level               - Nesting level of the handle
- *              Context             - Passed into NsWalkNamespace
+ *              Context             - Passed into WalkNamespace
  *
  * DESCRIPTION: Dump a single nte
- *             This procedure is a UserFunction called by NsWalkNamespace.
+ *              This procedure is a UserFunction called by NsWalkNamespace.
  *
  ***************************************************************************/
 
@@ -289,7 +289,7 @@ NsDumpOneObject (
 
     if (Type > INTERNAL_TYPE_MAX)
     {
-        Type = TYPE_DefAny;                                 /* prints as *ERROR* */
+        Type = INTERNAL_TYPE_DefAny;                                 /* prints as *ERROR* */
     }
     
     if (!AmlGoodChar ((INT32)* (char *) &ThisEntry->Name))
@@ -302,7 +302,7 @@ NsDumpOneObject (
      */
 
     DEBUG_PRINT_RAW (TRACE_TABLES,
-                ("%4.4s [%s] ", &ThisEntry->Name, Gbl_NsTypeNames[Type]));
+                (" %4.4s %-9s ", &ThisEntry->Name, Gbl_NsTypeNames[Type]));
 
     DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",
                 ThisEntry,
@@ -318,7 +318,7 @@ NsDumpOneObject (
         return NULL;
     }
 
-    if (TYPE_Method == Type)
+    if (ACPI_TYPE_Method == Type)
     {
         /* Name is a Method and its AML offset/length are set */
         
@@ -365,31 +365,31 @@ NsDumpOneObject (
          */
         switch (ObjType)
         {
-        case TYPE_String:
+        case ACPI_TYPE_String:
             Value = (UINT8 *) ObjDesc->String.Pointer;
             break;
 
-        case TYPE_Buffer:
+        case ACPI_TYPE_Buffer:
             Value = (UINT8 *) ObjDesc->Buffer.Pointer;
             break;
 
-        case TYPE_Package:
+        case ACPI_TYPE_Package:
             Value = (UINT8 *) ObjDesc->Package.Elements;
             break;
 
-        case TYPE_FieldUnit:
+        case ACPI_TYPE_FieldUnit:
             Value = (UINT8 *) ObjDesc->FieldUnit.Container;
             break;
 
-        case TYPE_DefField:
+        case INTERNAL_TYPE_DefField:
             Value = (UINT8 *) ObjDesc->Field.Container;
             break;
 
-        case TYPE_BankField:
+        case INTERNAL_TYPE_BankField:
             Value = (UINT8 *) ObjDesc->BankField.Container;
             break;
 
-        case TYPE_IndexField:
+        case INTERNAL_TYPE_IndexField:
             Value = (UINT8 *) ObjDesc->IndexField.Index;
             break;
 
@@ -397,7 +397,7 @@ NsDumpOneObject (
             return NULL;
         }
 
-        ObjType = TYPE_Invalid;     /* Terminate loop after next pass */
+        ObjType = INTERNAL_TYPE_Invalid;     /* Terminate loop after next pass */
     }
 
     return NULL;
@@ -436,7 +436,7 @@ NsDumpObjects (
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              Level               - Nesting level of the handle
- *              Context             - Passed into NsWalkNamespace
+ *              Context             - Passed into WalkNamespace
  *
  * DESCRIPTION: Dump a single nte that represents a device
  *              This procedure is a UserFunction called by NsWalkNamespace.
@@ -500,7 +500,7 @@ NsDumpRootDevices (void)
     AcpiNameToHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
-    AcpiWalkNamespace (TYPE_Device, SysBusHandle, ACPI_INT_MAX, NsDumpOneDevice, NULL, NULL);
+    AcpiWalkNamespace (ACPI_TYPE_Device, SysBusHandle, ACPI_INT_MAX, NsDumpOneDevice, NULL, NULL);
 }
 
 
@@ -547,7 +547,7 @@ NsDumpTables (
     }
 
 
-    NsDumpObjects (TYPE_Any, MaxDepth, SearchHandle);
+    NsDumpObjects (ACPI_TYPE_Any, MaxDepth, SearchHandle);
     return_VOID;
 }
 
