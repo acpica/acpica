@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.113 $
+ *       $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -419,6 +419,10 @@ ACPI_OPERAND_OBJECT *
 AcpiNsGetAttachedObject (
     ACPI_NAMESPACE_NODE     *Node);
 
+ACPI_OPERAND_OBJECT *
+AcpiNsGetSecondaryObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
 ACPI_STATUS
 AcpiNsAttachData (
     ACPI_NAMESPACE_NODE     *Node,
@@ -435,19 +439,6 @@ AcpiNsGetAttachedData (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_OBJECT_HANDLER     Handler,
     void                    **Data);
-
-ACPI_STATUS
-AcpiNsAttachSecondary (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OPERAND_OBJECT     *ObjDesc2);
-
-ACPI_OPERAND_OBJECT *
-AcpiNsGetSecondaryObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-void
-AcpiNsDetachSecondary (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 
 /*
