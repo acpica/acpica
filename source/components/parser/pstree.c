@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.44 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,14 @@
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("pstree")
 
+/* Local prototypes */
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+ACPI_PARSE_OBJECT *
+AcpiPsGetChild (
+    ACPI_PARSE_OBJECT       *op);
+#endif
+
 
 /*******************************************************************************
  *
@@ -132,7 +140,7 @@
  * PARAMETERS:  Op              - Get an argument for this op
  *              Argn            - Nth argument to get
  *
- * RETURN:      The argument (as an Op object).  NULL if argument does not exist
+ * RETURN:      The argument (as an Op object). NULL if argument does not exist
  *
  * DESCRIPTION: Get the specified op's argument.
  *
@@ -233,7 +241,6 @@ AcpiPsAppendArg (
         return;
     }
 
-
     /* Append the argument to the linked argument list */
 
     if (Op->Common.Value.Arg)
@@ -247,14 +254,12 @@ AcpiPsAppendArg (
         }
         PrevArg->Common.Next = Arg;
     }
-
     else
     {
         /* No argument list, this will be the first argument */
 
         Op->Common.Value.Arg = Arg;
     }
-
 
     /* Set the parent in this arg and any args linked after it */
 
@@ -298,7 +303,7 @@ AcpiPsGetDepthNext (
         return (NULL);
     }
 
-    /* look for an argument or child */
+    /* Look for an argument or child */
 
     Next = AcpiPsGetArg (Op, 0);
     if (Next)
@@ -306,7 +311,7 @@ AcpiPsGetDepthNext (
         return (Next);
     }
 
-    /* look for a sibling */
+    /* Look for a sibling */
 
     Next = Op->Common.Next;
     if (Next)
@@ -314,7 +319,7 @@ AcpiPsGetDepthNext (
         return (Next);
     }
 
-    /* look for a sibling of parent */
+    /* Look for a sibling of parent */
 
     Parent = Op->Common.Parent;
 
@@ -328,14 +333,14 @@ AcpiPsGetDepthNext (
 
         if (Arg == Origin)
         {
-            /* reached parent of origin, end search */
+            /* Reached parent of origin, end search */
 
             return (NULL);
         }
 
         if (Parent->Common.Next)
         {
-            /* found sibling of parent */
+            /* Found sibling of parent */
 
             return (Parent->Common.Next);
         }

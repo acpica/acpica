@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.151 $
+ *              $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -136,6 +136,23 @@
 
 
 static UINT32               AcpiGbl_Depth = 0;
+
+/* Local prototypes */
+
+static void
+AcpiPsCompleteThisOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op);
+
+static ACPI_STATUS
+AcpiPsNextParseState (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_STATUS             CallbackStatus);
+
+static ACPI_STATUS
+AcpiPsParseLoop (
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*******************************************************************************
