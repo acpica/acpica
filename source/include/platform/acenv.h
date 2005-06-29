@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.72 $
+ *       $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -253,7 +253,7 @@
 
 #define STRSTR(s1,s2)   strstr((s1), (s2))
 #define STRUPR(s)       strupr((s))
-#define STRLEN(s)       strlen((s))
+#define STRLEN(s)       (UINT32) strlen((s))
 #define STRCPY(d,s)     strcpy((d), (s))
 #define STRNCPY(d,s,n)  strncpy((d), (s), (NATIVE_INT)(n))
 #define STRNCMP(d,s,n)  strncmp((d), (s), (NATIVE_INT)(n))
