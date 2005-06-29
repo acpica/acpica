@@ -149,12 +149,12 @@ AcpiEvFindOnePciRootBus (
     void                    *Context,
     void                    **ReturnValue)
 {
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status;
 
 
-    Entry = (ACPI_NAMED_OBJECT*) ObjHandle;
+    NameDesc = (ACPI_NAMED_OBJECT*) ObjHandle;
     ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
 
 
@@ -162,7 +162,7 @@ AcpiEvFindOnePciRootBus (
      * We are looking for all valid _HID objects.
      */
 
-    if (STRNCMP ((NATIVE_CHAR *) &Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
+    if (STRNCMP ((NATIVE_CHAR *) &NameDesc->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
         (!ObjDesc))
     {
         return (AE_OK);
@@ -208,7 +208,7 @@ AcpiEvFindOnePciRootBus (
      * handler for this PCI device.
      */
 
-    Status = AcpiInstallAddressSpaceHandler (AcpiNsGetParentEntry (Entry),
+    Status = AcpiInstallAddressSpaceHandler (AcpiNsGetParentObject (NameDesc),
                                              ADDRESS_SPACE_PCI_CONFIG,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
 
@@ -658,7 +658,8 @@ AcpiEvDisassociateRegionFromHandler(
             /*
              *  This is it, remove it from the handler's list
              */
-            *LastObjPtr = ObjDesc->Region.Link;
+            *LastObjPtr = ObjDesc->Region.Next;
+            ObjDesc->Region.Next = NULL;            /* Must clear field */
 
             /*
              *  Now stop region accesses by executing the _REG method
@@ -704,8 +705,8 @@ AcpiEvDisassociateRegionFromHandler(
         /*
          *  Move through the linked list of handlers
          */
-        LastObjPtr = &ObjDesc->Region.Link;
-        ObjDesc = ObjDesc->Region.Link;
+        LastObjPtr = &ObjDesc->Region.Next;
+        ObjDesc = ObjDesc->Region.Next;
     }
 
     /*
@@ -755,7 +756,7 @@ AcpiEvAssociateRegionAndHandler (
      *  Link this region to the front of the handler's list
      */
 
-    RegionObj->Region.Link = HandlerObj->AddrHandler.RegionList;
+    RegionObj->Region.Next = HandlerObj->AddrHandler.RegionList;
     HandlerObj->AddrHandler.RegionList = RegionObj;
 
     /*
@@ -792,7 +793,7 @@ AcpiEvAssociateRegionAndHandler (
  *
  * FUNCTION:    AcpiEvAddrHandlerHelper
  *
- * PARAMETERS:  Handle              - Entry to be dumped
+ * PARAMETERS:  Handle              - NameDesc to be dumped
  *              Level               - Nesting level of the handle
  *              Context             - Passed into AcpiNsWalkNamespace
  *
