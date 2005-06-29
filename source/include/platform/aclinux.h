@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.28 $
+ *       $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -145,11 +145,11 @@
 #include <unistd.h>
 
 #if defined(__ia64__) || defined(__x86_64__)
-#define ACPI_MACHINE_WIDTH      64
+#define ACPI_MACHINE_WIDTH	    64
 #define COMPILER_DEPENDENT_INT64    long
 #define COMPILER_DEPENDENT_UINT64   unsigned long
 #else
-#define ACPI_MACHINE_WIDTH      32
+#define ACPI_MACHINE_WIDTH	    32
 #define COMPILER_DEPENDENT_INT64    long long
 #define COMPILER_DEPENDENT_UINT64   unsigned long long
 #define ACPI_USE_NATIVE_DIVIDE
