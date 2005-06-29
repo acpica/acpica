@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.66 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -153,8 +153,7 @@ AcpiNsAttachObject (
     ACPI_OBJECT_TYPE8       Type)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_OPERAND_OBJECT     *PreviousObjDesc;
-    ACPI_OBJECT_TYPE8       ObjType = ACPI_TYPE_ANY;
+    ACPI_OBJECT_TYPE8       ObjectType = ACPI_TYPE_ANY;
     UINT8                   Flags;
 
 
@@ -164,14 +163,6 @@ AcpiNsAttachObject (
     /*
      * Parameter validation
      */
-    if (!AcpiGbl_RootNode)
-    {
-        /* Name space not initialized  */
-
-        REPORT_ERROR (("NsAttachObject: Namespace not initialized\n"));
-        return_ACPI_STATUS (AE_NO_NAMESPACE);
-    }
-
     if (!Node)
     {
         /* Invalid handle */
@@ -206,19 +197,16 @@ AcpiNsAttachObject (
         return_ACPI_STATUS (AE_OK);
     }
 
-
     /* Get the current flags field of the Node */
 
     Flags = Node->Flags;
-    Flags &= ~ANOBJ_AML_ATTACHMENT;
-
 
     /* If null object, we will just install it */
 
     if (!Object)
     {
         ObjDesc = NULL;
-        ObjType = ACPI_TYPE_ANY;
+        ObjectType = ACPI_TYPE_ANY;
     }
 
     /*
@@ -233,17 +221,8 @@ AcpiNsAttachObject (
          * non-null value.  Use that name's value and type.
          */
         ObjDesc = ((ACPI_NAMESPACE_NODE *) Object)->Object;
-        ObjType = ((ACPI_NAMESPACE_NODE *) Object)->Type;
-
-        /*
-         * Copy appropriate flags
-         */
-        if (((ACPI_NAMESPACE_NODE *) Object)->Flags & ANOBJ_AML_ATTACHMENT)
-        {
-            Flags |= ANOBJ_AML_ATTACHMENT;
-        }
+        ObjectType = ((ACPI_NAMESPACE_NODE *) Object)->Type;
     }
-
 
     /*
      * Otherwise, we will use the parameter object, but we must type
@@ -257,41 +236,16 @@ AcpiNsAttachObject (
 
         if (ACPI_TYPE_ANY != Type)
         {
-            ObjType = Type;
+            ObjectType = Type;
         }
-
         else
         {
-            /*
-             * Cannot figure out the type -- set to DefAny which
-             * will print as an error in the name table dump
-             */
-            if (AcpiDbgLevel > 0)
-            {
-                DUMP_PATHNAME (Node,
-                    "NsAttachObject confused: setting bogus type for  ",
-                    ACPI_LV_INFO, _COMPONENT);
-
-                if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
-                {
-                    DUMP_PATHNAME (Object, "name ", ACPI_LV_INFO, _COMPONENT);
-                }
-
-                else
-                {
-                    DUMP_PATHNAME (Object, "object ", ACPI_LV_INFO, _COMPONENT);
-                    DUMP_STACK_ENTRY (Object);
-                }
-            }
-
-            ObjType = INTERNAL_TYPE_DEF_ANY;
+            ObjectType = INTERNAL_TYPE_DEF_ANY;
         }
     }
 
-
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Installing %p into Node %p [%4.4s]\n",
-        ObjDesc, Node, &Node->Name));
-
+        ObjDesc, Node, (char*)&Node->Name));
 
     /*
      * Must increment the new value's reference count
@@ -299,30 +253,15 @@ AcpiNsAttachObject (
      */
     AcpiUtAddReference (ObjDesc);
 
-    /* Save the existing object (if any) for deletion later */
+    /* Detach an existing attached object if present */
 
-    PreviousObjDesc = Node->Object;
+    AcpiUtRemoveReference (Node->Object);
 
     /* Install the object and set the type, flags */
 
     Node->Object   = ObjDesc;
-    Node->Type     = (UINT8) ObjType;
+    Node->Type     = (UINT8) ObjectType;
     Node->Flags    |= Flags;
-
-
-    /*
-     * Delete an existing attached object.
-     */
-    if (PreviousObjDesc)
-    {
-        /* One for the attach to the Node */
-
-        AcpiUtRemoveReference (PreviousObjDesc);
-
-        /* Now delete */
-
-        AcpiUtRemoveReference (PreviousObjDesc);
-    }
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -363,7 +302,7 @@ AcpiNsDetachObject (
     Node->Object = NULL;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object=%p Value=%p Name %4.4s\n",
-        Node, ObjDesc, &Node->Name));
+        Node, ObjDesc, (char *) &Node->Name));
 
     /* Remove one reference on the object (and all subobjects) */
 
