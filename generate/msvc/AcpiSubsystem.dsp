@@ -112,6 +112,10 @@ SOURCE=..\..\Subsystem\Common\cmapi.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Common\cmcreate.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Common\cmdebug.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
@@ -164,6 +168,10 @@ SOURCE=..\..\Subsystem\Common\cmobject.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Common\cmsize.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Common\cmtables.c
 # End Source File
 # End Group
 # Begin Group "Events"
@@ -547,6 +555,10 @@ SOURCE=..\..\Subsystem\Namespace\nsmodify.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Namespace\nsnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Namespace\nsobject.c
 # End Source File
 # Begin Source File
 
