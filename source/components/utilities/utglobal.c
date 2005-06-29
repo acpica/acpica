@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.154 $
+ *              $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -870,6 +870,7 @@ AcpiUtInitGlobals (
 
     /* Miscellaneous variables */
 
+    AcpiGbl_TableFlags                  = ACPI_PHYSICAL_POINTER;
     AcpiGbl_RsdpOriginalLocation        = 0;
     AcpiGbl_CmSingleStep                = FALSE;
     AcpiGbl_DbTerminateThreads          = FALSE;
