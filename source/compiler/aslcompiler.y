@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -183,7 +183,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_ACCESSATTRIB_BLOCK
 %token <i> PARSEOP_ACCESSATTRIB_BLOCK_CALL
 %token <i> PARSEOP_ACCESSATTRIB_BYTE
-%token <i> PARSEOP_ACCESSATTRIB_WORD_CALL
+%token <i> PARSEOP_ACCESSATTRIB_BYTE_CALL
 %token <i> PARSEOP_ACCESSATTRIB_QUICK
 %token <i> PARSEOP_ACCESSATTRIB_SND_RCV
 %token <i> PARSEOP_ACCESSATTRIB_WORD
