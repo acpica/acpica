@@ -274,9 +274,9 @@ typedef union od                /* OBJECT DESCRIPTOR */
         WORD_BIT    DatLen      :13;    /* # of bits in buffer */
         WORD_BIT    BitOffset   : 3;
         DWORD       Offset;         /* Byte offset within containing object */
-        DWORD       dReserved2;
-        union od    *pContainer;     /* Containing object */
-        void        *pvReserved3;
+        DWORD       Reserved2;
+        union od    *Container;     /* Containing object */
+        void        *Reserved3;
     } Field;
 
     struct
