@@ -316,6 +316,11 @@ ACPI_STATUS
 DsTerminateControlMethod (
     ACPI_WALK_STATE         *WalkState);
 
+ACPI_STATUS
+DsBeginMethodExecution (
+    NAME_TABLE_ENTRY        *MethodEntry,
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
 
 /* dsobj - Parser/Interpreter interface - object initialization and conversion */
 
@@ -425,6 +430,7 @@ DsScopeStackClear (
 
 ACPI_WALK_STATE *
 DsCreateWalkState (
+    ACPI_OWNER_ID           OwnerId,
     ACPI_GENERIC_OP         *Origin,
     ACPI_OBJECT_INTERNAL    *MthDesc,
     ACPI_WALK_LIST          *WalkList);
