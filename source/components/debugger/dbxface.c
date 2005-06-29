@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  ******************************************************************************/
 
@@ -432,7 +432,6 @@ AcpiDbTerminate (void)
         AcpiOsFree (AcpiGbl_DbBuffer);
     }
 }
-
 
 
 #endif /* ENABLE_DEBUGGER */
