@@ -633,6 +633,40 @@ AcpiOsSignalSemaphore (
 }
 
 
+ACPI_STATUS
+AcpiOsCreateLock (
+    ACPI_HANDLE             *OutHandle)
+{
+
+    return (AcpiOsCreateSemaphore (1, 1, OutHandle));
+}
+
+void
+AcpiOsDeleteLock (
+    ACPI_HANDLE             Handle)
+{
+    AcpiOsDeleteSemaphore (Handle);
+}
+
+
+void
+AcpiOsAcquireLock (
+    ACPI_HANDLE             Handle,
+    UINT32                  Flags)
+{
+    AcpiOsWaitSemaphore (Handle, 1, 0xFFFF);
+}
+
+
+void
+AcpiOsReleaseLock (
+    ACPI_HANDLE             Handle,
+    UINT32                  Flags)
+{
+    AcpiOsSignalSemaphore (Handle, 1);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsInstallInterruptHandler
