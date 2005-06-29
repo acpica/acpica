@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.61 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,6 +119,19 @@
 
 #define _COMPONENT          ACPI_HARDWARE
         ACPI_MODULE_NAME    ("hwsleep")
+
+
+#define METHOD_NAME__BFS        "\\_BFS"
+#define METHOD_NAME__GTS        "\\_GTS"
+#define METHOD_NAME__PTS        "\\_PTS"
+#define METHOD_NAME__SST        "\\_SI._SST"
+#define METHOD_NAME__WAK        "\\_WAK"
+
+#define ACPI_SST_INDICATOR_OFF  0
+#define ACPI_SST_WORKING        1
+#define ACPI_SST_WAKING         2
+#define ACPI_SST_SLEEPING       3
+#define ACPI_SST_SLEEP_CONTEXT  4
 
 
 /******************************************************************************
@@ -250,21 +263,40 @@ AcpiEnterSleepStatePrep (
 
     /* Run the _PTS and _GTS methods */
 
-    Status = AcpiEvaluateObject (NULL, "\\_PTS", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__PTS, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiEvaluateObject (NULL, "\\_GTS", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__GTS, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         return_ACPI_STATUS (Status);
+    }
+
+    /* Setup the argument to _SST */
+
+    switch (SleepState)
+    {
+    case 1:
+    case 2:
+    case 3:
+        Arg.Integer.Value = ACPI_SST_SLEEPING;
+        break;
+
+    case 4:
+        Arg.Integer.Value = ACPI_SST_SLEEP_CONTEXT;
+        break;
+
+    default:
+        Arg.Integer.Value = ACPI_SST_INDICATOR_OFF; /* Default is indicator off */
+        break;
     }
 
     /* Set the system indicators to show the desired sleep state. */
 
-    Status = AcpiEvaluateObject (NULL, "\\_SI._SST", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__SST, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
          ACPI_REPORT_ERROR (("Method _SST failed, %s\n", AcpiFormatException (Status)));
@@ -580,21 +612,21 @@ AcpiLeaveSleepState (
 
     /* Ignore any errors from these methods */
 
-    Arg.Integer.Value = 0;
-    Status = AcpiEvaluateObject (NULL, "\\_SI._SST", &ArgList, NULL);
+    Arg.Integer.Value = ACPI_SST_WAKING;  /* Waking */
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__SST, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         ACPI_REPORT_ERROR (("Method _SST failed, %s\n", AcpiFormatException (Status)));
     }
 
     Arg.Integer.Value = SleepState;
-    Status = AcpiEvaluateObject (NULL, "\\_BFS", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__BFS, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         ACPI_REPORT_ERROR (("Method _BFS failed, %s\n", AcpiFormatException (Status)));
     }
 
-    Status = AcpiEvaluateObject (NULL, "\\_WAK", &ArgList, NULL);
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__WAK, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         ACPI_REPORT_ERROR (("Method _WAK failed, %s\n", AcpiFormatException (Status)));
@@ -611,5 +643,17 @@ AcpiLeaveSleepState (
     /* Enable BM arbitration */
 
     Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 0, ACPI_MTX_LOCK);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Arg.Integer.Value = ACPI_SST_WORKING;  /* Working */
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__SST, &ArgList, NULL);
+    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
+    {
+        ACPI_REPORT_ERROR (("Method _SST failed, %s\n", AcpiFormatException (Status)));
+    }
+
     return_ACPI_STATUS (Status);
 }
