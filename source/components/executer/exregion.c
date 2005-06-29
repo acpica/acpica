@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.56 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -222,7 +222,7 @@ AcpiExSystemMemorySpaceHandler (
             return_ACPI_STATUS (Status);
         }
 
-        /* TBD: should these pointers go to 64-bit in all cases ? */
+        /* Save the physical address and mapping size */
 
         MemInfo->MappedPhysicalAddress = Address;
         MemInfo->MappedLength = SYSMEM_REGION_WINDOW_SIZE;
@@ -412,8 +412,8 @@ AcpiExPciConfigSpaceHandler (
     PciRegister = (UINT16) Address;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "IO %d (%d) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n", 
-        Function, BitWidth, PciId->Segment, PciId->Bus, PciId->Device, 
+        "IO %d (%d) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n",
+        Function, BitWidth, PciId->Segment, PciId->Bus, PciId->Device,
         PciId->Function, PciRegister));
 
     switch (Function)
