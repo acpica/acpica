@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -393,7 +393,7 @@ AcpiEvFixedEventDispatch (
                                 RegisterId, 0);
 
         REPORT_ERROR (
-            ("EvGpeDispatch: No installed handler for fixed event [0x%08X]\n",
+            ("EvGpeDispatch: No installed handler for fixed event [%08X]\n",
             Event));
 
         return (INTERRUPT_NOT_HANDLED);
@@ -559,7 +559,7 @@ AcpiEvGpeInitialize (void)
     }
 
     DEBUG_PRINT (ACPI_INFO,
-        ("GPE registers: %d@%p (Blk0) %d@%p (Blk1)\n",
+        ("GPE registers: %X@%p (Blk0) %X@%p (Blk1)\n",
         Gpe0RegisterCount, AcpiGbl_FADT->XGpe0Blk.Address, Gpe1RegisterCount,
         AcpiGbl_FADT->XGpe1Blk.Address));
 
@@ -665,7 +665,7 @@ AcpiEvSaveMethodInfo (
     AcpiHwEnableGpe (GpeNumber);
 
     DEBUG_PRINT (ACPI_INFO,
-        ("EvSaveMethodInfo: Registered GPE method %s as GPE number %d\n",
+        ("EvSaveMethodInfo: Registered GPE method %s as GPE number %X\n",
         Name, GpeNumber));
     return (AE_OK);
 }
@@ -876,7 +876,7 @@ AcpiEvGpeDispatch (
     FUNCTION_TRACE ("EvGpeDispatch");
 
 
-    DEBUG_PRINT (ACPI_INFO, ("GPE [%d] event occurred.\n", GpeNumber));
+    DEBUG_PRINT (ACPI_INFO, ("GPE [%X] event occurred.\n", GpeNumber));
 
     /*DEBUG_INCREMENT_EVENT_COUNT (EVENT_GENERAL);*/
 
@@ -884,7 +884,7 @@ AcpiEvGpeDispatch (
 
     if (AcpiGbl_GpeValid[GpeNumber] == ACPI_GPE_INVALID)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Invalid GPE [%d].\n", GpeNumber));
+        DEBUG_PRINT (ACPI_ERROR, ("Invalid GPE [%X].\n", GpeNumber));
         return_VALUE (INTERRUPT_NOT_HANDLED);
     }
 
@@ -923,7 +923,7 @@ AcpiEvGpeDispatch (
              * is restarted, or the handler is removed/reinstalled.
              */
             REPORT_ERROR (
-                ("EvGpeDispatch: Unable to queue the handler for GPE [0x%08X]\n",
+                ("EvGpeDispatch: Unable to queue the handler for GPE [%08X]\n",
                 GpeNumber));
         }
     }
@@ -954,7 +954,7 @@ AcpiEvGpeDispatch (
     else
     {
         REPORT_ERROR (
-            ("EvGpeDispatch: No installed handler for GPE [0x%08X]\n",
+            ("EvGpeDispatch: No installed handler for GPE [%08X]\n",
             GpeNumber));
     }
 
