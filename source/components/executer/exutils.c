@@ -118,16 +118,69 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("isutils");
 
-static char                 hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+static char                 hex[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
 
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlEnterInterpreter
+ *
+ * PARAMETERS:  None
+ *
+ * DESCRIPTION: Enter the interpreter execution region
+ *
+ ****************************************************************************/
+
+void
+AmlEnterInterpreter (void)
+{
+    FUNCTION_TRACE ("AmlEnterInterpreter");
+
+    
+    CmAcquireMutex (MTX_EXECUTE);
+
+    return_VOID;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlExitInterpreter
+ *
+ * PARAMETERS:  None
+ *
+ * DESCRIPTION: Exit the interpreter execution region
+ *
+ * Cases where the interpreter is unlocked:
+ *      1) Completion of the execution of a control method
+ *      2) Method blocked on a Sleep() AML opcode
+ *      3) Method blocked on an Acquire() AML opcode
+ *      4) Method blocked on a Wait() AML opcode
+ *      5) Method blocked to acquire the global lock
+ *      6) Method blocked to execute a serialized control method that is
+ *          already executing
+ *      7) About to invoke a user-installed opregion handler
+ *
+ ****************************************************************************/
+
+void
+AmlExitInterpreter (void)
+{
+    FUNCTION_TRACE ("AmlExitInterpreter");
+
+
+    CmReleaseMutex (MTX_EXECUTE);
+
+    return_VOID;
+}
 
 
 /*****************************************************************************
