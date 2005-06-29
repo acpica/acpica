@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -386,7 +386,7 @@ AcpiAmlCopyIntegerToBankField (
     else
     {
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlCopyIntegerToBankField: BankField: set bakn returned %s\n",
+            ("AmlCopyIntegerToBankField: BankField: set bank returned %s\n",
             AcpiCmFormatException (Status)));
     }
 
