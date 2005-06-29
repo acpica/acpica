@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.54 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -165,7 +165,7 @@ AeLocalGetRootPointer (
     ACPI_POINTER            *Address);
 
 FILE                        *AcpiGbl_OutputFile;
-
+LARGE_INTEGER               TimerFrequency;
 
 #ifndef _ACPI_EXEC_APP
 /* Used by both iASL and AcpiDump applications */
@@ -311,7 +311,6 @@ Cleanup:
 
 #endif
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiOsInitialize, AcpiOsTerminate
@@ -320,7 +319,7 @@ Cleanup:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Init and terminate.  Nothing to do.
+ * DESCRIPTION: Init this OSL
  *
  *****************************************************************************/
 
@@ -335,6 +334,11 @@ AcpiOsInitialize (void)
     for (i = 0; i < NUM_SEMAPHORES; i++)
     {
         AcpiGbl_Semaphores[i].OsHandle = NULL;
+    }
+
+    if (!QueryPerformanceFrequency (&TimerFrequency))
+    {
+        TimerFrequency.QuadPart = 0;
     }
 
     return AE_OK;
@@ -473,23 +477,38 @@ AcpiOsTableOverride (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Current time in milliseconds
+ * RETURN:      Current ticks in 100-nanosecond units
  *
- * DESCRIPTION: Get the current system time (in milliseconds).
+ * DESCRIPTION: Get the value of a system timer
  *
- *****************************************************************************/
+ ******************************************************************************/
 
-UINT32
-AcpiOsGetTimer (void)
+UINT64
+AcpiOsGetTimer (
+    void)
 {
-    SYSTEMTIME              SysTime;
+    LARGE_INTEGER           Timer;
 
 
-    GetSystemTime (&SysTime);
+    /* Attempt to use hi-granularity timer first */
 
-    return ((SysTime.wMinute * 60000) +
-            (SysTime.wSecond * 1000) +
-             SysTime.wMilliseconds);
+    if (TimerFrequency.QuadPart &&
+        QueryPerformanceCounter (&Timer))
+    {
+        /* Convert to 100 nanosecond ticks */
+
+        return ((UINT64) (
+            (Timer.QuadPart * 10000000) / TimerFrequency.QuadPart));
+    }
+
+    /* Fall back to the lo-granularity timer */
+
+    else
+    {
+        /* Convert milliseconds to 100 nanosecond ticks */
+
+        return ((UINT64) GetTickCount() * 10000);
+    }
 }
 
 
@@ -1071,7 +1090,7 @@ AcpiOsReleaseLock (
 UINT32
 AcpiOsInstallInterruptHandler (
     UINT32                  InterruptNumber,
-    OSD_HANDLER             ServiceRoutine,
+    ACPI_OSD_HANDLER        ServiceRoutine,
     void                    *Context)
 {
 
@@ -1094,7 +1113,7 @@ AcpiOsInstallInterruptHandler (
 ACPI_STATUS
 AcpiOsRemoveInterruptHandler (
     UINT32                  InterruptNumber,
-    OSD_HANDLER             ServiceRoutine)
+    ACPI_OSD_HANDLER        ServiceRoutine)
 {
 
     return AE_OK;
@@ -1139,7 +1158,7 @@ AcpiOsGetThreadId (
 ACPI_STATUS
 AcpiOsQueueForExecution (
     UINT32                  Priority,
-    OSD_EXECUTION_CALLBACK  Function,
+    ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
 
@@ -1177,22 +1196,20 @@ AcpiOsStall (
  *
  * FUNCTION:    AcpiOsSleep
  *
- * PARAMETERS:  seconds             To sleep
- *              milliseconds        To sleep
+ * PARAMETERS:  milliseconds        To sleep
  *
  * RETURN:      Blocks until sleep is completed.
  *
- * DESCRIPTION: Sleep at second/millisecond granularity
+ * DESCRIPTION: Sleep at millisecond granularity
  *
  *****************************************************************************/
 
 void
 AcpiOsSleep (
-    UINT32                  seconds,
-    UINT32                  milliseconds)
+    ACPI_INTEGER            milliseconds)
 {
 
-    Sleep ((seconds * 1000) + milliseconds);
+    Sleep ((unsigned long) milliseconds);
     return;
 }
 
