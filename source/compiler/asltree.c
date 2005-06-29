@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -325,16 +325,16 @@ TrCreateLeafNode (
 ASL_PARSE_NODE *
 TrCreateValuedLeafNode (
     UINT32                  ParseOpcode,
-    void                    *Value)
+    ACPI_INTEGER            Value)
 {
     ASL_PARSE_NODE          *Node;
 
 
     Node = TrAllocateNode (ParseOpcode);
 
-    DbgPrint ("\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %X  ",
+    DbgPrint ("\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %lX  ",
                 Node->LineNumber, Node, UtGetOpName(ParseOpcode), Value);
-    Node->Value.Pointer = Value;
+    Node->Value.Integer = Value;
 
     switch (ParseOpcode)
     {
@@ -356,6 +356,10 @@ TrCreateValuedLeafNode (
 
     case METHOD:
         DbgPrint ("METHOD");
+        break;
+
+    case INTEGER:
+        DbgPrint ("INTEGER");
         break;
 
     default:

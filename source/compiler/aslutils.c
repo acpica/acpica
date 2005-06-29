@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -413,6 +413,205 @@ UtAttachNamepathToOwner (
         /* TBD: abort on no memory */
     }
 
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    strtoul
+ *
+ * PARAMETERS:  String          - Null terminated string
+ *              Terminater      - Where a pointer to the terminating byte is returned
+ *              Base            - Radix of the string
+ *
+ * RETURN:      Converted value
+ *
+ * DESCRIPTION: Convert a string into an unsigned value.
+ *
+ ******************************************************************************/
+#define NEGATIVE    1
+#define POSITIVE    0
+
+ACPI_INTEGER
+UtStrtoul64 (   
+    NATIVE_CHAR             *String,
+    NATIVE_CHAR             **Terminator,
+    UINT32                  Base)
+{
+    UINT32                  converted = 0;
+    UINT32                  index;
+    UINT32                  sign;
+    NATIVE_CHAR             *StringStart;
+    ACPI_INTEGER            ReturnValue = 0;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    /*
+     * Save the value of the pointer to the buffer's first
+     * character, save the current errno value, and then
+     * skip over any white space in the buffer:
+     */
+    StringStart = String;
+    while (isspace (*String) || *String == '\t')
+    {
+        ++String;
+    }
+
+    /*
+     * The buffer may contain an optional plus or minus sign.
+     * If it does, then skip over it but remember what is was:
+     */
+    if (*String == '-')
+    {
+        sign = NEGATIVE;
+        ++String;
+    }
+
+    else if (*String == '+')
+    {
+        ++String;
+        sign = POSITIVE;
+    }
+
+    else
+    {
+        sign = POSITIVE;
+    }
+
+    /*
+     * If the input parameter Base is zero, then we need to
+     * determine if it is octal, decimal, or hexadecimal:
+     */
+    if (Base == 0)
+    {
+        if (*String == '0')
+        {
+            if (tolower (*(++String)) == 'x')
+            {
+                Base = 16;
+                ++String;
+            }
+
+            else
+            {
+                Base = 8;
+            }
+        }
+
+        else
+        {
+            Base = 10;
+        }
+    }
+
+    else if (Base < 2 || Base > 36)
+    {
+        /*
+         * The specified Base parameter is not in the domain of
+         * this function:
+         */
+        goto done;
+    }
+
+    /*
+     * For octal and hexadecimal bases, skip over the leading
+     * 0 or 0x, if they are present.
+     */
+    if (Base == 8 && *String == '0')
+    {
+        String++;
+    }
+
+    if (Base == 16 &&
+        *String == '0' &&
+        tolower (*(++String)) == 'x')
+    {
+        String++;
+    }
+
+
+    /*
+     * Main loop: convert the string to an unsigned long:
+     */
+    while (*String)
+    {
+        if (isdigit (*String))
+        {
+            index = *String - '0';
+        }
+
+        else
+        {
+            index = toupper (*String);
+            if (isupper (index))
+            {
+                index = index - 'A' + 10;
+            }
+
+            else
+            {
+                goto done;
+            }
+        }
+
+        if (index >= Base)
+        {
+            goto done;
+        }
+
+        /*
+         * Check to see if value is out of range:
+         */
+
+        if (ReturnValue > ((ACPI_INTEGER_MAX - (ACPI_INTEGER) index) /
+                            (ACPI_INTEGER) Base))
+        {
+            Status = AE_ERROR;
+            ReturnValue = 0L;           /* reset */
+        }
+
+        else
+        {
+            ReturnValue *= Base;
+            ReturnValue += index;
+            converted = 1;
+        }
+
+        ++String;
+    }
+
+done:
+    /*
+     * If appropriate, update the caller's pointer to the next
+     * unconverted character in the buffer.
+     */
+    if (Terminator)
+    {
+        if (converted == 0 && ReturnValue == 0L && String != NULL)
+        {
+            *Terminator = (NATIVE_CHAR *) StringStart;
+        }
+
+        else
+        {
+            *Terminator = (NATIVE_CHAR *) String;
+        }
+    }
+
+    if (Status == AE_ERROR)
+    {
+        ReturnValue = ACPI_INTEGER_MAX;
+    }
+
+    /*
+     * If a minus sign was present, then "the conversion is negated":
+     */
+    if (sign == NEGATIVE)
+    {
+        ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
+    }
+
+    return (ReturnValue);
 }
 
 
