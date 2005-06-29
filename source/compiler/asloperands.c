@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML opcode generation
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -969,28 +969,6 @@ OpnAttachNameToNode (
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    OpnDoSwitch
- *
- * PARAMETERS:  Node        - Parse node
- *
- * RETURN:      None
- *
- *
- * DESCRIPTION: Translate switch to if/else pairs
- *
- ******************************************************************************/
-
-void
-OpnDoSwitch (
-    ASL_PARSE_NODE          *Node)
-{
-
-    AslError (ASL_WARNING, ASL_MSG_AML_NOT_IMPLEMENTED, Node, NULL);
-}
-
-
 
 /*******************************************************************************
  *
@@ -1054,10 +1032,6 @@ OpnGenerateAmlOperands (
 
     case OPERATIONREGION:
         OpnDoRegion (Node);
-        break;
-
-    case SWITCH:
-        OpnDoSwitch (Node);
         break;
 
     case RESOURCETEMPLATE:
