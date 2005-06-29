@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.28 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -169,7 +169,7 @@ AcpiAmlExecLoadTable (
     for (i = 0; i < sizeof (ACPI_TABLE_HEADER); i++)
     {
         Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ,
-                            (ACPI_PHYSICAL_ADDRESS) i, 8, 
+                            (ACPI_PHYSICAL_ADDRESS) i, 8,
                             (UINT32 *) ((UINT8 *) &TableHeader + i));
         if (ACPI_FAILURE (Status))
         {
@@ -196,7 +196,7 @@ AcpiAmlExecLoadTable (
     for (i = 0; i < TableHeader.Length; i++)
     {
         Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ,
-                            (ACPI_PHYSICAL_ADDRESS)i, 8, 
+                            (ACPI_PHYSICAL_ADDRESS)i, 8,
                             (UINT32 *) (TableDataPtr + i));
         if (ACPI_FAILURE (Status))
         {
@@ -263,7 +263,7 @@ AcpiAmlExecLoadTable (
 
     /* Init the table handle */
 
-    TableDesc->Reference.OpCode = AML_LOAD_OP;
+    TableDesc->Reference.Opcode = AML_LOAD_OP;
     TableDesc->Reference.Object = TableInfo.InstalledDesc;
 
     *DdbHandle = TableDesc;
