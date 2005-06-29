@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.181 $
+ *              $Revision: 1.183 $
  *
  ******************************************************************************/
 
@@ -190,7 +190,7 @@ AcpiNsRootInitialize (void)
         }
 
         Status = AcpiNsLookup (NULL, InitVal->Name, InitVal->Type,
-                        ACPI_IMODE_LOAD_PASS2, ACPI_NS_NO_UPSEARCH, 
+                        ACPI_IMODE_LOAD_PASS2, ACPI_NS_NO_UPSEARCH,
                         NULL, &NewNode);
 
         if (ACPI_FAILURE (Status) || (!NewNode)) /* Must be on same line for code converter */
@@ -210,7 +210,7 @@ AcpiNsRootInitialize (void)
             Status = AcpiOsPredefinedOverride (InitVal, &Val);
             if (ACPI_FAILURE (Status))
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                     "Could not override predefined %s\n",
                     InitVal->Name));
             }
@@ -239,14 +239,16 @@ AcpiNsRootInitialize (void)
             switch (InitVal->Type)
             {
             case ACPI_TYPE_METHOD:
-                ObjDesc->Method.ParamCount = (UINT8) ACPI_STRTOUL 
+                ObjDesc->Method.ParamCount = (UINT8) ACPI_STRTOUL
                                                         (Val, NULL, 10);
                 ObjDesc->Common.Flags |= AOPOBJ_DATA_VALID;
 
 #if defined (_ACPI_ASL_COMPILER) || defined (_ACPI_DUMP_APP)
 
-                /* iASL Compiler cheats by putting parameter count in the OwnerID */
-
+                /*
+                 * iASL Compiler cheats by putting parameter count
+                 * in the OwnerID
+                 */
                 NewNode->OwnerId = ObjDesc->Method.ParamCount;
 #else
                 /* Mark this as a very SPECIAL method */
@@ -277,7 +279,7 @@ AcpiNsRootInitialize (void)
             case ACPI_TYPE_MUTEX:
 
                 ObjDesc->Mutex.Node = NewNode;
-                ObjDesc->Mutex.SyncLevel = (UINT8) ACPI_STRTOUL 
+                ObjDesc->Mutex.SyncLevel = (UINT8) ACPI_STRTOUL
                                                         (Val, NULL, 10);
 
                 if (ACPI_STRCMP (InitVal->Name, "_GL_") == 0)
@@ -324,7 +326,8 @@ AcpiNsRootInitialize (void)
 
             /* Store pointer to value descriptor in the Node */
 
-            Status = AcpiNsAttachObject (NewNode, ObjDesc, ACPI_GET_OBJECT_TYPE (ObjDesc));
+            Status = AcpiNsAttachObject (NewNode, ObjDesc,
+                        ACPI_GET_OBJECT_TYPE (ObjDesc));
 
             /* Remove local reference to the object */
 
@@ -565,7 +568,8 @@ AcpiNsLookup (
             Type = ThisNode->Type;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "Prefix-only Pathname (Zero name segments), Flags=%X\n", Flags));
+                "Prefix-only Pathname (Zero name segments), Flags=%X\n",
+                Flags));
             break;
 
         case AML_DUAL_NAME_PREFIX:
@@ -661,7 +665,7 @@ AcpiNsLookup (
         /* Try to find the single (4 character) ACPI name */
 
         Status = AcpiNsSearchAndEnter (SimpleName, WalkState, CurrentNode,
-                        InterpreterMode, ThisSearchType, LocalFlags, &ThisNode);
+                    InterpreterMode, ThisSearchType, LocalFlags, &ThisNode);
         if (ACPI_FAILURE (Status))
         {
             if (Status == AE_NOT_FOUND)
