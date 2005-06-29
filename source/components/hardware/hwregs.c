@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.160 $
+ *              $Revision: 1.161 $
  *
  ******************************************************************************/
 
@@ -845,7 +845,7 @@ AcpiHwLowLevelRead (
 
     /* Get a local copy of the address.  Handles possible alignment issues */
 
-    Address = ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
+    ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
     if (!ACPI_VALID_ADDRESS (Address))
     {
         return (AE_OK);
@@ -927,7 +927,7 @@ AcpiHwLowLevelWrite (
 
     /* Get a local copy of the address.  Handles possible alignment issues */
 
-    Address = ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
+    ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
     if (!ACPI_VALID_ADDRESS (Address))
     {
         return (AE_OK);
