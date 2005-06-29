@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -392,7 +392,7 @@ AcpiDsGetFieldNames (
 
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid opcode in field list: %X\n",
                 Arg->Common.AmlOpcode));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_BAD_OPCODE);
         }
 
         Arg = Arg->Common.Next;
@@ -422,7 +422,7 @@ AcpiDsCreateField (
     ACPI_NAMESPACE_NODE     *RegionNode,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status = AE_AML_ERROR;
+    ACPI_STATUS             Status;
     ACPI_PARSE_OBJECT       *Arg;
     ACPI_CREATE_FIELD_INFO  Info;
 
@@ -481,7 +481,7 @@ AcpiDsInitFieldObjects (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status = AE_AML_ERROR;
+    ACPI_STATUS             Status;
     ACPI_PARSE_OBJECT       *Arg = NULL;
     ACPI_NAMESPACE_NODE     *Node;
     UINT8                   Type = 0;
@@ -534,6 +534,10 @@ AcpiDsInitFieldObjects (
 
                 ACPI_REPORT_ERROR (("Field name [%4.4s] already exists in current scope\n",
                                 &Arg->Named.Name));
+
+                /* Name already exists, just ignore this error */
+
+                Status = AE_OK;
             }
 
             Arg->Common.Node = Node;
@@ -544,7 +548,7 @@ AcpiDsInitFieldObjects (
         Arg = Arg->Common.Next;
     }
 
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -568,7 +572,7 @@ AcpiDsCreateBankField (
     ACPI_NAMESPACE_NODE     *RegionNode,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status = AE_AML_ERROR;
+    ACPI_STATUS             Status;
     ACPI_PARSE_OBJECT       *Arg;
     ACPI_CREATE_FIELD_INFO  Info;
 
