@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.34 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -122,7 +122,7 @@
 #include "actables.h"
 
 
-#define _COMPONENT          TABLE_MANAGER
+#define _COMPONENT          ACPI_TABLES
         MODULE_NAME         ("tbinstal")
 
 

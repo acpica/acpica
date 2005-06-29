@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.30 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -123,7 +123,7 @@
 #include "actables.h"
 
 
-#define _COMPONENT          TABLE_MANAGER
+#define _COMPONENT          ACPI_TABLES
         MODULE_NAME         ("tbxface")
 
 
@@ -142,7 +142,7 @@
 
 ACPI_STATUS
 AcpiLoadTables (
-    UINT64                  RsdpPhysicalAddress)
+    ACPI_PHYSICAL_ADDRESS   RsdpPhysicalAddress)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  NumberOfTables = 0;
@@ -156,6 +156,8 @@ AcpiLoadTables (
     Status = AcpiTbVerifyRsdp (RsdpPhysicalAddress);
     if (ACPI_FAILURE (Status))
     {
+        REPORT_ERROR (("AcpiLoadTables: RSDP Failed validation: %s\n",
+                        AcpiCmFormatException (Status)));
         goto ErrorExit;
     }
 
@@ -164,6 +166,8 @@ AcpiLoadTables (
     Status = AcpiTbGetTableRsdt (&NumberOfTables);
     if (ACPI_FAILURE (Status))
     {
+        REPORT_ERROR (("AcpiLoadTables: Could not load RSDT: %s\n",
+                        AcpiCmFormatException (Status)));
         goto ErrorExit;
     }
 
@@ -172,6 +176,8 @@ AcpiLoadTables (
     Status = AcpiTbGetAllTables (NumberOfTables, NULL);
     if (ACPI_FAILURE (Status))
     {
+        REPORT_ERROR (("AcpiLoadTables: Error getting required tables (DSDT/FADT/FACS): %s\n",
+                        AcpiCmFormatException (Status)));
         goto ErrorExit;
     }
 
@@ -183,6 +189,8 @@ AcpiLoadTables (
     Status = AcpiNsLoadNamespace ();
     if (ACPI_FAILURE (Status))
     {
+        REPORT_ERROR (("AcpiLoadTables: Could not load namespace: %s\n",
+                        AcpiCmFormatException (Status)));
         goto ErrorExit;
     }
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.31 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -121,8 +121,10 @@
 #include "actables.h"
 
 
-#define _COMPONENT          TABLE_MANAGER
+#define _COMPONENT          ACPI_TABLES
         MODULE_NAME         ("tbxfroot")
+
+#define RSDP_CHECKSUM_LENGTH 20
 
 
 /*******************************************************************************
@@ -139,7 +141,7 @@
 
 ACPI_STATUS
 AcpiFindRootPointer (
-    UINT64                  *RsdpPhysicalAddress)
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
 {
     ACPI_TABLE_DESC         TableInfo;
     ACPI_STATUS             Status;
@@ -198,7 +200,7 @@ AcpiTbScanMemoryForRsdp (
 
         if (STRNCMP ((NATIVE_CHAR *) MemRover,
                 RSDP_SIG, sizeof (RSDP_SIG)-1) == 0 &&
-            AcpiTbChecksum (MemRover, sizeof (RSDP_DESCRIPTOR)) == 0)
+            AcpiTbChecksum (MemRover, RSDP_CHECKSUM_LENGTH) == 0)
         {
             /* If so, we have found the RSDP */
 
