@@ -123,7 +123,7 @@
 
 /* Exception level or Trace level -- used in the global "DebugLevel" */
 
-#define ACPI_SUCCESS                0x00000001
+#define ACPI_OK                     0x00000001
 #define ACPI_INFO                   0x00000002
 #define ACPI_WARN                   0x00000004
 #define ACPI_ERROR                  0x00000008
