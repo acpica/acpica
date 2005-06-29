@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.179 $
+ *              $Revision: 1.180 $
  *
  *****************************************************************************/
 
@@ -310,7 +310,7 @@ AcpiExStore (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference opcode %X\n",
+        ACPI_REPORT_ERROR (("ExStore: Unknown Reference opcode %X\n",
             RefDesc->Reference.Opcode));
         ACPI_DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
 
@@ -346,6 +346,7 @@ AcpiExStoreObjectToIndex (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *NewDesc;
     UINT8                   Value = 0;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE ("ExStoreObjectToIndex");
@@ -367,6 +368,7 @@ AcpiExStoreObjectToIndex (
         /*
          * The object at *(IndexDesc->Reference.Where) is the
          * element within the package that is to be modified.
+         * The parent package object is at IndexDesc->Reference.Object
          */
         ObjDesc = *(IndexDesc->Reference.Where);
 
@@ -393,6 +395,13 @@ AcpiExStoreObjectToIndex (
             /* If same as the original source, add a reference */
 
             if (NewDesc == SourceDesc)
+            {
+                AcpiUtAddReference (NewDesc);
+            }
+
+            /* Increment reference count by the ref count of the parent package -1 */
+
+            for (i = 1; i < ((ACPI_OPERAND_OBJECT *) IndexDesc->Reference.Object)->Common.ReferenceCount; i++)
             {
                 AcpiUtAddReference (NewDesc);
             }
