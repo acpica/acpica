@@ -125,10 +125,46 @@
         MODULE_NAME         ("nsstack");
 
 
+#define STACK_POP(head) head
+
+
 
 /****************************************************************************
  *
- * FUNCTION:    NsPushCurrentScope
+ * FUNCTION:    NsScopeStackClear
+ *
+ * PARAMETERS:  None
+ *
+ * DESCRIPTION: Pop (and free) everything on the scope stack except the
+ *              root scope object (which remains at the stack top.)
+ *
+ ***************************************************************************/
+
+void
+NsScopeStackClear (void)
+{
+    SCOPE_STACK             *ScopeInfo;
+
+
+    ScopeInfo = Gbl_CurrentScope;
+
+    /* Pop everything except the root scope */
+
+    while (ScopeInfo->Next)
+    {
+        /* Pop this scope off the stack */
+
+        Gbl_CurrentScope = ScopeInfo->Next;
+        CmFree (ScopeInfo);
+
+        ScopeInfo = Gbl_CurrentScope;
+    }
+}
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsScopeStackPush
  *
  * PARAMETERS:  *NewScope,              - Name to be made current
  *              Type,                   - Type of frame being pushed
@@ -138,56 +174,58 @@
  *
  ***************************************************************************/
 
-void
-NsPushCurrentScope (
+ACPI_STATUS
+NsScopeStackPush (
     NAME_TABLE_ENTRY        *NewScope, 
     ACPI_OBJECT_TYPE        Type)
 {
+    SCOPE_STACK             *ScopeInfo;
 
-    FUNCTION_TRACE ("NsPushCurrentScope");
+
+    FUNCTION_TRACE ("NsScopeStackPush");
 
 
     if (!NewScope)
     {
         /*  invalid scope   */
 
-        REPORT_ERROR ("NsPushCurrentScope: null scope passed");
+        REPORT_ERROR ("NsScopeStackPush: null scope passed");
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    else
+    /* Make sure object type is valid */
+
+    if (!AmlValidateObjectType (Type))
     {
-        if ((Type > INTERNAL_TYPE_MAX)     || 
-            (Gbl_BadType == Gbl_NsTypeNames[Type]))
-        {
-            /*  type code out of range  */
-
-            REPORT_WARNING ("NsPushCurrentScope: type code out of range");
-        }
-
-        if (Gbl_CurrentScope < &Gbl_ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
-        {
-            /*  no Scope stack overflow */
-
-            Gbl_CurrentScope++;
-            Gbl_CurrentScope->Scope = NewScope;
-            Gbl_CurrentScope->Type = Type;
-        }
-    
-        else
-        {
-            /*  Scope stack overflow    */
-
-            REPORT_ERROR ("Scope stack overflow");
-        }
+        REPORT_WARNING ("NsScopeStackPush: type code out of range");
     }
 
-    return_VOID;
+
+    /* Allocate a new scope object */
+
+    ScopeInfo = CmAllocate (sizeof (SCOPE_STACK));
+    if (!ScopeInfo)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* Init new scope object */
+
+    ScopeInfo->Scope = NewScope;
+    ScopeInfo->Type = Type;
+
+    /* Push new scope object onto stack */
+
+    ScopeInfo->Next = Gbl_CurrentScope;
+    Gbl_CurrentScope = ScopeInfo;   
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsPushMethodScope
+ * FUNCTION:    NsScopeStackPushEntry
  *
  * PARAMETERS:  NewScope,               - Name to be made current
  *
@@ -196,43 +234,34 @@ NsPushCurrentScope (
  *
  ***************************************************************************/
 
-void
-NsPushMethodScope (
+ACPI_STATUS
+NsScopeStackPushEntry (
     ACPI_HANDLE             NewScope)
 {
+    ACPI_STATUS             Status;
 
-    FUNCTION_TRACE ("NsPushMethodScope");
+
+    FUNCTION_TRACE ("NsScopeStackPushEntry");
 
 
     if (!NewScope || 
-       (NAME_TABLE_ENTRY *) 0 == ((NAME_TABLE_ENTRY *) NewScope)->Scope)
+       !((NAME_TABLE_ENTRY *) NewScope)->Scope)
     {
-        /*  NewScope or NewScope->Scope invalid    */
+        /* NewScope or NewScope->Scope invalid */
 
-        REPORT_ERROR ("NsPushMethodScope: null scope passed");
+        REPORT_ERROR ("NsScopeStackPushEntry: null scope passed");
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    else
-    {
-        if (Gbl_CurrentScope < &Gbl_ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
-        {
-            NsPushCurrentScope (((NAME_TABLE_ENTRY *) NewScope)->Scope, ACPI_TYPE_Method);
-        }
-    
-        else
-        {
-            /*  scope stack overflow    */
+    Status = NsScopeStackPush (((NAME_TABLE_ENTRY *) NewScope)->Scope, ACPI_TYPE_Method);
 
-            REPORT_ERROR ("Scope stack overflow");
-        }
-    }
-
-    return_VOID;
+    return_ACPI_STATUS (Status);
 }
+
 
 /****************************************************************************
  *
- * FUNCTION:    NsPopCurrent
+ * FUNCTION:    NsScopeStackPop
  *
  * PARAMETERS:  Type                - The type of frame to be found
  *
@@ -248,40 +277,61 @@ NsPushMethodScope (
  ***************************************************************************/
 
 INT32
-NsPopCurrent (
+NsScopeStackPop (
     ACPI_OBJECT_TYPE        Type)
 {
     INT32                   Count = 0;
+    SCOPE_STACK             *ScopeInfo;
+    ACPI_OBJECT_TYPE        ThisType;
 
 
-    FUNCTION_TRACE ("NsPopCurrent");
+    FUNCTION_TRACE ("NsScopeStackPop");
 
 
-    if ((Type > INTERNAL_TYPE_MAX)      || 
-        (Gbl_BadType == Gbl_NsTypeNames[Type]))
+    /* Validate type */
+
+    if (!AmlValidateObjectType (Type))
     {
-        /*  type code out of range  */
-
-        REPORT_WARNING ("NsPopCurrent: type code out of range");
+        REPORT_WARNING ("NsScopeStackPop: type code out of range");
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Popping Scope till type (%d) is found\n", Type));
+    DEBUG_PRINT (TRACE_EXEC, ("Popping Scope until type (%d) is found\n", Type));
 
-    while (Gbl_CurrentScope > &Gbl_ScopeStack[0])
+
+    /*
+     * Pop scope info objects off the stack until a scope of the
+     * requested type is found, or the stack becomes empty.  
+     * (Empty means only one scope remains, the root scope.)
+     */
+
+    ScopeInfo = Gbl_CurrentScope;
+    while (ScopeInfo->Next)
     {
-        Gbl_CurrentScope--;
+        /* Pop this scope off the stack */
+
         Count++;
+        Gbl_CurrentScope = ScopeInfo->Next;
 
-        DEBUG_PRINT (TRACE_EXEC, ("Popped %d\n", (Gbl_CurrentScope+1)->Type));
+        ThisType = ScopeInfo->Type;
+        CmFree (ScopeInfo);
 
-        if ((ACPI_TYPE_Any == Type) || (Type == (Gbl_CurrentScope + 1)->Type))
+        DEBUG_PRINT (TRACE_EXEC, ("Popped object type (%d)\n", ThisType));
+
+        /* Terminate if Type is found */
+
+        if ((ACPI_TYPE_Any == Type) || 
+            (Type == ThisType))
         {
-            DEBUG_PRINT (TRACE_EXEC, ("Found %d\n", Type));
+            DEBUG_PRINT (TRACE_EXEC, ("Found object type (%d)\n", Type));
             return_VALUE (Count);
         }
+
+        /* Type not found, keep popping the stack */
+
+        ScopeInfo = Gbl_CurrentScope;
     }
 
-    DEBUG_PRINT (TRACE_EXEC,("%d Not Found\n", Type));
+    DEBUG_PRINT (TRACE_EXEC,("Object type (%d) not found on scope stack\n", Type));
     return_VALUE (-Count);
 }
 
