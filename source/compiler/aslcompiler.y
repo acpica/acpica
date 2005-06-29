@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.9 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -242,6 +242,7 @@ extern char     *AslCompilertext;
 %token <i> HEXSTR
 %token <i> IF
 %token <i> INCLUDE
+%token <i> INCLUDE_CSTYLE
 %token <i> INCREMENT
 %token <i> INDEX
 %token <i> INDEXFIELD
@@ -437,6 +438,7 @@ extern char     *AslCompilertext;
 
 
 %type <n> IncludeTerm
+%type <n> IncludeCStyleTerm
 %type <n> ExternalTerm
 
 %type <n> FieldUnitList
@@ -686,6 +688,7 @@ extern char     *AslCompilertext;
 %type <n> OptionalTranslationType
 %type <n> OptionalStringData 
 %type <n> OptionalNameString 
+%type <n> OptionalNameString_First 
 %type <n> OptionalAddressRange
 
 %%
@@ -736,8 +739,9 @@ Term
     ;
 
 CompilerDirective
-    : IncludeTerm               {}
-    | ExternalTerm              {}
+    : IncludeTerm               {$$= NULL}
+    | IncludeCStyleTerm         {$$= NULL}
+    | ExternalTerm              {$$= NULL}
     ;
 
 ObjectList
@@ -988,7 +992,12 @@ Type6Opcode
 
 IncludeTerm
     : INCLUDE '(' 
-        String ')'              {}
+        String ')'              {UtOpenIncludeFile ($3);}
+    ;
+
+IncludeCStyleTerm
+    : INCLUDE_CSTYLE 
+        String                  {UtOpenIncludeFile ($2);}
     ;
 
 ExternalTerm
@@ -1312,7 +1321,7 @@ ResetTerm
 
 ReturnTerm
     : RETURN '('
-        TermArg
+        OptionalTermArg
         ')'                     {$$ = TgCreateNode (RETURN,1,$3);}
     ;
 
@@ -1948,8 +1957,7 @@ ArgTerm
     | ARG1                      {$$ = TgCreateLeafNode (ARG1, NULL);}
     | ARG2                      {$$ = TgCreateLeafNode (ARG2, NULL);}
     | ARG3                      {$$ = TgCreateLeafNode (ARG3, NULL);}
-    | ARG4                      {$$ = TgCreateLeafNode (ARG3, NULL);}
-    | ARG5                      {$$ = TgCreateLeafNode (ARG4, NULL);}
+    | ARG4                      {$$ = TgCreateLeafNode (ARG4, NULL);}
     | ARG5                      {$$ = TgCreateLeafNode (ARG5, NULL);}
     | ARG6                      {$$ = TgCreateLeafNode (ARG6, NULL);}
     ;
@@ -2161,10 +2169,10 @@ DMATerm
     : DMA '('
         DMATypeKeyword ','
         BusMasterKeyword ','
-        XferTypeKeyword ','
+        XferTypeKeyword
         OptionalNameString
         ')' '{'
-            ByteList '}'        {$$ = TgCreateNode (DMA,5,$3,$5,$7,$9,$12);}
+            ByteList '}'        {$$ = TgCreateNode (DMA,5,$3,$5,$7,$8,$11);}
     ;
 
 DWordIOTerm
@@ -2247,7 +2255,7 @@ IOTerm
 
 IRQNoFlagsTerm
     : IRQNOFLAGS '('
-        OptionalNameString
+        OptionalNameString_First
         ')' '{' 
             ByteList '}'        {$$ = TgCreateNode (IRQNOFLAGS,2,$3,$6);}
     ;
@@ -2259,7 +2267,7 @@ IRQTerm
         OptionalShareType     
         OptionalNameString
         ')' '{' 
-            ByteList '}'        {$$ = TgCreateNode (IRQ,4,$3,$5,$6,$7);}
+            ByteList '}'        {$$ = TgCreateNode (IRQ,5,$3,$5,$6,$7,$10);}
     ;
 
 Memory24Term
@@ -2268,18 +2276,18 @@ Memory24Term
         WordConstExpr ','
         WordConstExpr ','
         WordConstExpr ','
-        WordConstExpr ','
+        WordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY24,6,$3,$5,$7,$9,$11,$13);}
+        ')'                     {$$ = TgCreateNode (MEMORY24,6,$3,$5,$7,$9,$11,$12);}
     ;
 
 Memory32FixedTerm
     : MEMORY32FIXED '('
         ReadWriteKeyword ','
         DWordConstExpr ','
-        DWordConstExpr ','
+        DWordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY32FIXED,4,$3,$5,$7,$9);}
+        ')'                     {$$ = TgCreateNode (MEMORY32FIXED,4,$3,$5,$7,$8);}
     ;
 
 Memory32Term
@@ -2288,9 +2296,9 @@ Memory32Term
         DWordConstExpr ','
         DWordConstExpr ','
         DWordConstExpr ','
-        DWordConstExpr ','
+        DWordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY32,6,$3,$5,$7,$9,$11,$13);}
+        ')'                     {$$ = TgCreateNode (MEMORY32,6,$3,$5,$7,$9,$11,$12);}
     ;
 
 QWordIOTerm
@@ -2346,9 +2354,9 @@ RegisterTerm
 StartDependentFnTerm
     : STARTDEPENDENTFN '('
         ByteConstExpr ','
-        ByteConstExpr ','
+        ByteConstExpr
         ')' '{' 
-        ResourceMacroList '}'   {$$ = TgCreateNode (STARTDEPENDENTFN,3,$3,$5,$9);}
+        ResourceMacroList '}'   {$$ = TgCreateNode (STARTDEPENDENTFN,3,$3,$5,$8);}
     ;
                 
 StartDependentFnNoPriTerm
@@ -2359,14 +2367,14 @@ StartDependentFnNoPriTerm
                
 VendorLongTerm
     : VENDORLONG '('
-        OptionalNameString
+        OptionalNameString_First
         ')' '{' 
             ByteList '}'        {$$ = TgCreateNode (VENDORLONG,2,$3,$6);}
     ;
         
 VendorShortTerm
     : VENDORSHORT '('
-        OptionalNameString
+        OptionalNameString_First
         ')' '{' 
             ByteList '}'        {$$ = TgCreateNode (VENDORSHORT,2,$3,$6);}
     ;
@@ -2505,6 +2513,12 @@ OptionalNameString
     | ',' NameString            {$$ = $2}
     ;
 
+OptionalNameString_First
+    :                           {$$ = NULL}
+    | NameString                {$$ = $1}
+    ;
+
+
 OptionalAddressRange
     :                           {$$ = NULL}
     | ','                       {$$ = NULL}
@@ -2542,8 +2556,9 @@ OptionalRangeType
     ;
 
 OptionalShareType
-    : ','                       {$$ = NULL}
-    | ShareTypeKeyword ','      {$$ = $1}
+    :                           {$$ = NULL}
+    | ','                       {$$ = NULL}
+    | ',' ShareTypeKeyword      {$$ = $2}
     ;
 
 OptionalType

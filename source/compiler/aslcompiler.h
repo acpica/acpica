@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.10 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -136,7 +136,9 @@
 
 #define CompilerId                              "ACPI Component Architecture ASL Compiler"
 #define CompilerName                            "iasl"
-#define Version                                 "X202"
+#define CompilerCreatorId                       "IASL"
+#define Version                                 "X203"
+#define CompilerCreatorRevision                 0x00020203
 
 
 
@@ -145,6 +147,8 @@ typedef struct asl_method_info
 {
     UINT8                   NumArguments;
     UINT8                   LocalInitialized[8];
+    UINT32                  NumReturnNoValue;
+    UINT32                  NumReturnWithValue;
     struct asl_method_info  *Next;
 
 } ASL_METHOD_INFO;
@@ -162,6 +166,8 @@ typedef struct asl_analysis_walk_info
  */
 #define ASL_OFFSET_OF(s,m)          ((UINT32) &(((s *)0)->m))
 #define ASL_RESDESC_OFFSET(m)       ASL_OFFSET_OF (ASL_RESOURCE_DESC, m)
+#define ASL_PTR_DIFF(a,b)           ((UINT8 *)(b) - (UINT8 *)(a))
+#define ASL_PTR_ADD(a,b)            ((UINT8 *)(a) = ((UINT8 *)(a) + (b)))
 #define ASL_GET_CHILD_NODE(a)       (a)->Child
 #define ASL_GET_PEER_NODE(a)        (a)->Peer
 
@@ -297,6 +303,7 @@ EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuf
 
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_DebugFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
 
 /* Files */
 
@@ -311,7 +318,7 @@ EXTERN FILE                     *Gbl_ListingFile;
 
 /* Statistics */
 
-EXTERN UINT32                   INIT_GLOBAL (InputChars, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_InputByteCount, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
@@ -323,7 +330,7 @@ EXTERN UINT32                   INIT_GLOBAL (WarningCount, 0);
 
 EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
 EXTERN ACPI_TABLE_HEADER        TableHeader;
-EXTERN UINT32                   INIT_GLOBAL (TableLength, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_TableLength, 0);
 
 
 
@@ -334,6 +341,8 @@ typedef enum
 {
     ASL_WARNING_BUFFER_LENGTH = 0,
     ASL_WARNING_PACKAGE_LENGTH,
+    ASL_WARNING_RETURN_TYPES,
+    ASL_WARNING_NOT_FOUND,
 
 } ASL_WARNING_IDS;
 
@@ -347,11 +356,14 @@ typedef enum
     ASL_ERROR_LISTING_FILE_OPEN,
     ASL_ERROR_DEBUG_FILENAME,
     ASL_ERROR_DEBUG_FILE_OPEN,
+    ASL_ERROR_INCLUDE_FILE_OPEN,
     ASL_ERROR_ENCODING_LENGTH,
-    ASL_ERROR_UNITIALIZED_LOCAL,
-    ASL_ERROR_INVALID_ARGUMENT,
     ASL_ERROR_INVALID_PRIORITY,
     ASL_ERROR_INVALID_PERFORMANCE,
+    ASL_ERROR_LOCAL_INIT,
+    ASL_ERROR_ARG_INVALID,
+    ASL_ERROR_PREDEFINED_METHOD_RETURN,
+    ASL_ERROR_UNSUPPORTED,
 
 } ASL_ERROR_IDS;
 
@@ -380,12 +392,23 @@ AslWarning (
     UINT32                  LineNumber);
 
 void
+AslWarningMsg (
+    UINT32                  WarningId,
+    UINT32                  LineNumber,
+    char                    *Message);
+
+void
 AslError (
     UINT32                  ErrorId,
     UINT32                  LineNumber);
 
-
 void
+AslErrorMsg (
+    UINT32                  ErrorId,
+    UINT32                  LineNumber,
+    char                    *Message);
+
+UINT32
 CgSetOptimalIntegerSize (
     ASL_PARSE_NODE          *Node);
 
@@ -409,11 +432,23 @@ CgAmlOpcodeWalk (
     UINT32                  Level,
     void                    *Context);
 
+/* asllength */
+
 void
-CgAmlPackageLengthWalk (
+LnPackageLengthWalk (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
+
+void
+LnInitLengthsWalk (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+
+
+
 
 void
 CgAmlWriteWalk (
@@ -549,6 +584,7 @@ UtLocalCalloc (
 void *
 UtLocalRealloc (
     void                    *Previous,
+    UINT32                  OldSize,
     UINT32                  Size);
 
 
@@ -581,14 +617,25 @@ UtGetArg (
     ASL_PARSE_NODE          *Op,
     UINT32                  Argn);
 
+void
+UtAttachNamepathToOwner (
+    ASL_PARSE_NODE          *Node,
+    ASL_PARSE_NODE          *NameNode);
+
+
+#define UtOpenIncludeFile(a)        _UtOpenIncludeFile ((ASL_PARSE_NODE *)(a))
+
+void
+_UtOpenIncludeFile (
+    ASL_PARSE_NODE          *Node);
+
 
 /* Find */
 
-ASL_PARSE_NODE *
-FdLookupName (
-    ASL_PARSE_NODE          *Scope,
-    NATIVE_CHAR             *Path,
-    UINT16                  Opcode);
+void
+LnAdjustLengthToRoot (
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  LengthDelta);
 
 
 #endif
