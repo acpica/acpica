@@ -101,7 +101,33 @@
 #include "acpiobj.h"
 
 
-/* Prototypes */
+/* Global initialization interfaces */
+
+ACPI_STATUS
+InitAcpiGetRsdt (
+    UINT32              *NumberOfTables, 
+    OSD_FILE            *FilePtr);
+
+ACPI_STATUS
+InitAcpiGetAllTables (
+    UINT32              NumberOfTables, 
+    OSD_FILE            *FilePtr);
+
+ACPI_STATUS
+InitAcpiRegisters (
+    void);
+
+ACPI_STATUS
+InitOpenFile (
+    char                *Filename, 
+    OSD_FILE            **FilePtr);
+void
+InitCloseFile (
+    OSD_FILE            *FilePtr);
+
+
+
+/* Debug interfaces */
 
 INT32
 GetDebugLevel (void);
@@ -178,7 +204,6 @@ DumpBuffer (
     INT32               componentId);
 
 
-
 /* TBD: simplify or remove entirely */
 
 void 
@@ -187,6 +212,7 @@ void
 _Kinc_info (char *, INT32, INT32, char *, INT32, INT32); 
 void 
 _Kinc_warning (char *, INT32, INT32, char *, INT32, INT32);
+
 
 
 /*
@@ -218,10 +244,14 @@ _LocalCallocate (
 
 void
 LocalDeleteObject (
-    OBJECT_DESCRIPTOR   **ppOD);
+    ACPI_OBJECT         **ppOD);
 
 
 
+/*
+ * The point of these macros is to add the caller's module information - to be used
+ * in case of an error during allocation
+ */
 #define LocalAllocate(a)                _LocalAllocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define LocalCallocate(a)               _LocalCallocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define AllocateObjectDesc(a)           _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT,a)
