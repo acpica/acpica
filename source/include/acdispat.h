@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.58 $
+ *       $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -551,9 +551,11 @@ ACPI_WALK_STATE *
 AcpiDsGetCurrentWalkState (
     ACPI_THREAD_STATE       *Thread);
 
+#ifdef ACPI_ENABLE_OBJECT_CACHE
 void
 AcpiDsDeleteWalkStateCache (
     void);
+#endif
 
 ACPI_STATUS
 AcpiDsResultInsert (
