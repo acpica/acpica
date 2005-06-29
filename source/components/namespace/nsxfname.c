@@ -126,8 +126,9 @@
 #include <pnp.h>
 
 
-#define _THIS_MODULE        "nsapinam.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsapinam");
+
 
 /******************************************************************************
  *
@@ -188,7 +189,6 @@ AcpiLoadNamespace (
      * but the SSDT and PSDT tables are optional.
      */
 
-BREAKPOINT3;
 
     Status = AmlLoadTable (TABLE_DSDT);
     if (ACPI_FAILURE (Status))
@@ -205,9 +205,9 @@ BREAKPOINT3;
     DEBUG_PRINT (ACPI_OK, ("**** ACPI Namespace successfully loaded! [%p]\n", 
                     Gbl_RootObject->Scope));
 
-BREAKPOINT3;
 
     /* Install the default OpRegion handlers, ignore the return code right now. */
+
     EvInstallDefaultAddressSpaceHandlers ();
     
     return_ACPI_STATUS (Status);
@@ -367,7 +367,7 @@ AcpiPathnameToHandle (
 
     /* Special case for root, since we can't search for it */
 
-    if (strcmp (Pathname, NS_ROOT_PATH) == 0)
+    if (STRCMP (Pathname, NS_ROOT_PATH) == 0)
     {
         *RetHandle = NsConvertEntryToHandle(Gbl_RootObject);
         return AE_OK;
