@@ -199,14 +199,7 @@ typedef NATIVE_UINT                     ACPI_TBLPTR;
  */
 
 typedef UINT8                           BOOLEAN;
-
-typedef INT8                            BIT8;
-typedef INT16                           BIT16;
-typedef INT32                           BIT32;
-typedef UINT8                           UINT8_BIT;
-typedef UINT16                          UINT16_BIT;
 typedef UINT32                          UINT32_BIT;
-
 typedef NATIVE_INT                      ACPI_PTRDIFF;
 typedef NATIVE_UINT                     ACPI_SIZE;
 typedef NATIVE_UINT                     ACPI_IO_ADDRESS;
