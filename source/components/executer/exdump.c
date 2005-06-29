@@ -286,11 +286,8 @@ DumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
                 break;
 
             case AML_NameOp:
-                FullyQualifiedName = NsFullyQualifiedName
-                                        (EntryDesc->Lvalue.Ref);
-
-                DEBUG_PRINT (ACPI_INFO, ("Lvalue: Name %s\n            ",
-                                FullyQualifiedName ? FullyQualifiedName : "invalid"));
+                NsDumpPathname (EntryDesc->Lvalue.Ref, "Lvalue: Name: ", 
+                                ACPI_INFO, _COMPONENT);
                 DUMP_ENTRY (EntryDesc->Lvalue.Ref);
                 break;
  
