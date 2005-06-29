@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -1437,7 +1437,6 @@ AcpiPsParseAml (
             AcpiCmRemoveReference (ReturnDesc);
         }
     }
-
 
 
     /* Normal exit */
