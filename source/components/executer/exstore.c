@@ -216,7 +216,13 @@ AmlExecuteMethod (
 
     }
 
-    FUNCTION_EXIT;
+    if (ObjStackTop)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("AmlExecuteMethod: Obj stack at exit %p, idx=%d\n",
+                        ObjStack, ObjStackTop));
+    }
+
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -249,6 +255,7 @@ AmlExecStore (
     ACPI_STATUS             Status = AE_AML_ERROR;
     INT32                   Stacked = FALSE;
     BOOLEAN                 Locked = FALSE;
+    ACPI_OBJECT             *DeleteDestDesc = NULL;
 
 
     FUNCTION_TRACE ("AmlExecStore");
@@ -258,7 +265,7 @@ AmlExecStore (
 
     if (!ValDesc || !DestDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: internal error: null pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: internal error - null pointer\n"));
     }
 
     else if (IS_NS_HANDLE (DestDesc))
@@ -269,9 +276,9 @@ AmlExecStore (
         DestDesc = AllocateObjectDesc ();
         if (!DestDesc)
         {   
-            /*  allocation failure  */
+            /* Allocation failure  */
             
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
             return AE_NO_MEMORY;
         }
         else
@@ -282,9 +289,11 @@ AmlExecStore (
             DestDesc->Lvalue.OpCode = AML_NameOp;
             DestDesc->Lvalue.Ref    = TempHandle;
 
-            /* Push the descriptor on TOS temporarily
+            /* 
+             * Push the descriptor on TOS temporarily
              * to protect it from garbage collection
              */
+
             Status = AmlPushIfExec (MODE_Exec);
             if (AE_OK != Status)
             {
@@ -303,13 +312,16 @@ AmlExecStore (
     {
         /* DestDesc is not an ACPI_HANDLE  */
 
+        DEBUG_PRINT (ACPI_INFO, 
+                        ("AmlExecStore: Dest is object (not handle) - may be deleted!\n", 
+                        DestDesc));
         Status = AE_OK;
     }
 
     if ((AE_OK == Status) && 
         (DestDesc->ValType != TYPE_Lvalue))
     {   
-        /*  Store target is not an Lvalue   */
+        /* Store target is not an Lvalue */
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Store target is not an Lvalue [%s]\n",
                         NsTypeNames[DestDesc->ValType]));
@@ -323,8 +335,8 @@ AmlExecStore (
 
     if (AE_OK != Status)
     {
-        FUNCTION_EXIT;
-        return Status;   /*  temporary hack  */
+        FUNCTION_STATUS_EXIT (Status);
+        return Status;   /* TBD: temporary hack */
     }
 
 
@@ -342,19 +354,16 @@ AmlExecStore (
             /* Type of Name's existing value */
 
         case TYPE_Alias:
-#if 1
-            DEBUG_PRINT (ACPI_ERROR, (
-                      "AmlExecStore/NameOp: Store into %s not implemented\n",
-                      NsTypeNames[NsGetType (TempHandle)]));
-            Status = AE_AML_ERROR;
-#else
+
             DEBUG_PRINT (ACPI_WARN,
                         ("AmlExecStore/NameOp: Store into %s not implemented\n",
                         NsTypeNames[NsGetType(TempHandle)]));
+#if 1
+            Status = AE_AML_ERROR;
+#else
             Status = AE_OK;
 #endif
-            OsdFree (DestDesc);
-            DestDesc = NULL;
+            DeleteDestDesc = DestDesc;
             break;
 
         case TYPE_BankField:
@@ -363,20 +372,20 @@ AmlExecStore (
              * Storing into a BankField.
              * If value is not a Number, try to resolve it to one.
              */
+
             if ((ValDesc->ValType != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
-                OsdFree (DestDesc);
-                DestDesc = NULL;
+                DeleteDestDesc = DestDesc;
             }
 
             else if (ValDesc->ValType != TYPE_Number)
             {
-               DEBUG_PRINT (ACPI_ERROR, (
+                DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore: Value assigned to BankField must be Number, not %d\n",
                         ValDesc->ValType));
-                OsdFree (DestDesc);
-                DestDesc = NULL;
+
+                DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
             }
 
@@ -387,7 +396,7 @@ AmlExecStore (
                  * and point to descriptor for name's value instead.
                  */
 
-                OsdFree (DestDesc);
+                DeleteDestDesc = DestDesc;
                 DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
@@ -434,7 +443,7 @@ AmlExecStore (
                             ("AmlExecStore: set bank select returned %s\n", ExceptionNames[Status]));
             }
             
-            break;  /*  Global Lock released below  */
+            break;  /* Global Lock released below  */
 
 
         case TYPE_DefField:
@@ -447,8 +456,7 @@ AmlExecStore (
             if ((ValDesc->ValType != TYPE_Number) && 
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
-                OsdFree (DestDesc);
-                DestDesc = NULL;
+                DeleteDestDesc = DestDesc;
             }
 
             else if (ValDesc->ValType != TYPE_Number)
@@ -456,8 +464,8 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/DefField: Value assigned to Field must be Number, not %d\n",
                         ValDesc->ValType));
-                OsdFree (DestDesc);
-                DestDesc = NULL;
+
+                DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
             }
 
@@ -468,9 +476,8 @@ AmlExecStore (
                  * and point to descriptor for name's value instead.
                  */
 
-                OsdFree (DestDesc);
+                DeleteDestDesc = DestDesc;
                 DestDesc = NsGetValue (TempHandle);
-            
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/DefField: internal error: null old-value pointer\n"));
@@ -494,7 +501,7 @@ AmlExecStore (
 
                 Locked = AmlAcquireGlobalLock (ValDesc->Field.LockRule);
 
-                /* perform the update */
+                /* Perform the update */
                 
                 Status = AmlSetNamedFieldValue (TempHandle, ValDesc->Number.Number);
             }
@@ -512,8 +519,7 @@ AmlExecStore (
             if ((ValDesc->ValType != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
-                OsdFree (DestDesc);
-                DestDesc = NULL;
+                DeleteDestDesc = DestDesc;
             }
 
             else if (ValDesc->ValType != TYPE_Number)
@@ -521,8 +527,8 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore: Value assigned to IndexField must be Number, not %d\n",
                         ValDesc->ValType));
-                OsdFree (DestDesc);
-                DestDesc = NULL;
+
+                DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
             }
 
@@ -533,9 +539,8 @@ AmlExecStore (
                  * and point to descriptor for name's value instead.
                  */
 
-                OsdFree (DestDesc);
+                DeleteDestDesc = DestDesc;
                 DestDesc = NsGetValue (TempHandle);
-            
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/IndexField: internal error: null old-value pointer\n"));
@@ -590,8 +595,7 @@ AmlExecStore (
             if ((ValDesc->ValType != TYPE_Number) &&
                ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
             {
-                OsdFree (DestDesc);
-                DestDesc = NULL;
+                DeleteDestDesc = DestDesc;
             }
 
             else if (ValDesc->ValType != TYPE_Number)
@@ -599,8 +603,8 @@ AmlExecStore (
                 DEBUG_PRINT (ACPI_ERROR, (
                         "AmlExecStore/FieldUnit: Value assigned to Field must be Number, not %d\n",
                           ValDesc->ValType));
-                OsdFree (DestDesc);
-                DestDesc = NULL;
+
+                DeleteDestDesc = DestDesc;
                 Status = AE_AML_ERROR;
             }
 
@@ -611,9 +615,9 @@ AmlExecStore (
                  * Delete descriptor that points to name,
                  * and point to descriptor for name's value instead.
                  */
-                OsdFree (DestDesc);
+
+                DeleteDestDesc = DestDesc;
                 DestDesc = NsGetValue (TempHandle);
-            
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/FieldUnit: internal error: null old-value pointer\n"));
@@ -746,8 +750,8 @@ AmlExecStore (
          * Storing to a constant is a no-op -- see spec sec 15.2.3.3.1.
          * Delete the result descriptor.
          */
-        OsdFree (DestDesc);
-        DestDesc = NULL;
+
+        DeleteDestDesc = DestDesc;
         break;
 
 
@@ -774,8 +778,7 @@ AmlExecStore (
         DEBUG_PRINT (ACPI_INFO, ("DebugOp: \n"));
         DUMP_STACK_ENTRY (ValDesc);
 
-        OsdFree (DestDesc);
-        DestDesc = NULL;
+        DeleteDestDesc = DestDesc;
         break;
 
 #if 0
@@ -792,8 +795,7 @@ AmlExecStore (
 
         DUMP_BUFFER (DestDesc, sizeof (ACPI_OBJECT),0);
 
-        OsdFree (DestDesc);
-        DestDesc = NULL;
+        DeleteDestDesc = DestDesc;
         Status = AE_AML_ERROR;
     
     }   /* switch(DestDesc->Lvalue.OpCode) */
@@ -803,12 +805,31 @@ AmlExecStore (
 
     AmlReleaseGlobalLock (Locked);
 
+    /* Cleanup */
+
+    if (DeleteDestDesc)
+    {
+        OsdFree (DeleteDestDesc);
+        if (ObjStack[ObjStackTop] == DeleteDestDesc)
+        {
+            /* 
+             * Clear the object from the stack entry so that it won't be used
+             * again -- but don't actually pop the stack!
+             */
+
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore - Deleted desc was at stack top %p (idx %d)\n",
+                            &ObjStack[ObjStackTop], ObjStackTop));
+            ObjStack[ObjStackTop] = NULL;
+        }
+    }
+
     if (Stacked)
     {
+        ObjStack[ObjStackTop] = NULL;
         ObjStackTop--;
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 

@@ -415,7 +415,7 @@ AmlGetRvalue (
         {   
             /*  descriptor allocation failure   */
             
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
             return AE_NO_MEMORY;
         }
 
@@ -435,7 +435,7 @@ AmlGetRvalue (
         {   
             /*  descriptor allocation failure   */
             
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
             return AE_NO_MEMORY;
         }
 
@@ -541,7 +541,7 @@ AmlGetRvalue (
             {   
                 /*  descriptor allocation failure   */
                 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
             }
 
@@ -564,7 +564,7 @@ AmlGetRvalue (
             {   
                 /*  descriptor allocation failure   */
 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
             }
 
@@ -588,7 +588,7 @@ AmlGetRvalue (
                  */
                 if (AE_OK != (Status = AmlPushIfExec (MODE_Exec)))                /* ObjStack */
                 {
-                    FUNCTION_EXIT;
+                    FUNCTION_STATUS_EXIT (Status);
                     return Status;
                 }
 
@@ -626,7 +626,7 @@ AmlGetRvalue (
             {   
                 /*  descriptor allocation failure   */
                 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
             }
 
@@ -659,7 +659,7 @@ AmlGetRvalue (
                 {   
                     /*  descriptor allocation failure   */
                     
-                    FUNCTION_EXIT;
+                    FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                     return AE_NO_MEMORY;
                 }
                 
@@ -684,7 +684,7 @@ AmlGetRvalue (
                 {   
                     /*  descriptor allocation failure   */
                     
-                    FUNCTION_EXIT;
+                    FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                     return AE_NO_MEMORY;
                 }
                 
@@ -751,7 +751,7 @@ AmlGetRvalue (
             {   
                 /*  descriptor allocation failure   */
                 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
             }
 
@@ -813,7 +813,7 @@ AmlGetRvalue (
             {
                 /*  descriptor allocation failure   */
 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
             }
 
@@ -873,7 +873,7 @@ AmlGetRvalue (
             {
                 /*  descriptor allocation failure   */
 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
             }
 
@@ -907,7 +907,7 @@ AmlGetRvalue (
             {
                 /*  descriptor allocation failure   */
 
-                FUNCTION_EXIT;
+                FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
                 return AE_NO_MEMORY;
             }
 
@@ -923,7 +923,7 @@ AmlGetRvalue (
         /* cases which just return the name as the rvalue */
         
         case TYPE_Device:
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_OK);
             return AE_OK;
             break;
 
