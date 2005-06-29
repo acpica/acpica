@@ -384,8 +384,6 @@ UINT32                  EventCount[NUM_FIXED_EVENTS];
 
 
 
-
-
 /****************************************************************************
  *
  * FUNCTION:    CmInitGlobals
@@ -416,13 +414,13 @@ CmInitGlobals (void)
     }
 
 
-    /* Table pointers */
+    /* Global "typed" ACPI table pointers */
 
     RSDP                    = NULL;
     RSDT                    = NULL;
     FACS                    = NULL;
     FACP                    = NULL;
-    MAPIC                   = NULL;
+    APIC                    = NULL;
     DSDT                    = NULL;
     PSDT                    = NULL;
     SSDT                    = NULL;
@@ -435,6 +433,12 @@ CmInitGlobals (void)
     StartupFlags            = 0;
     GlobalLockSet           = FALSE;
     RsdpOriginalLocation    = 0;
+    Allocations             = 0;
+    Deallocations           = 0;
+    Allocs                  = 0;
+    Callocs                 = 0;
+    Maps                    = 0;
+    Unmaps                  = 0;
     
     /* Interpreter */
 
@@ -480,82 +484,33 @@ CmInitGlobals (void)
 void
 CmLocalCleanup (void)
 {
-    UINT32                  i;
-
 
     FUNCTION_TRACE ("CmLocalCleanup");
 
 
-
-    /*
-     * Clear all of the table pointers
-     * TBD: get rid of these if possible!
-     */
-
-    RSDP                    = NULL;
-    RSDT                    = NULL;
-    FACS                    = NULL;
-    FACP                    = NULL;
-    MAPIC                   = NULL;
-    DSDT                    = NULL;
-    PSDT                    = NULL;
-    SSDT                    = NULL;
-    SBDT                    = NULL;
+    DEBUG_MEMSTAT;
 
 
     /*
-     * Free memory allocated for ACPI tables
-     * Memory can either be mapped or allocated
+     * 1) Free the entire namespace -- all objects and all tables
      */
 
-    for (i = 0; i < ACPI_TABLE_MAX; i++)
-    {
-        if (AcpiTables[i].Pointer)
-        {
-            /* Valid table, determine type of memory */
+    NsDeleteNamespace ();
 
-            switch (AcpiTables[i].Allocation)
-            {
-
-            case ACPI_MEM_NOT_ALLOCATED:
-
-                break;
+    DEBUG_PRINT (ACPI_INFO, ("CmLocalCleanup: Namespace freed\n"));
+    DEBUG_MEMSTAT;
 
 
-            case ACPI_MEM_ALLOCATED:
+    /* 
+     * 2) Now we can delete the ACPI tables 
+     */
 
-                OsdFree (AcpiTables[i].Pointer);
-                break;
-
-
-            case ACPI_MEM_MAPPED:
-
-                OsdUnMapMemory (AcpiTables[i].Pointer, AcpiTables[i].Length);
-                break;
-            }
-        }
-
-        /* Clear the table entry */
-
-        AcpiTables[i].Pointer    = NULL;
-        AcpiTables[i].Allocation = ACPI_MEM_NOT_ALLOCATED;
-        AcpiTables[i].Length     = 0;
-    }
+    NsDeleteAcpiTables ();
 
     DEBUG_PRINT (ACPI_INFO, ("CmLocalCleanup: ACPI Tables freed\n"));
+    DEBUG_MEMSTAT;
 
-    
-    /*
-     * TBD:
-     * Free all objects within the namespace
-     */
-
-
-    /*
-     * TBD:
-     * Free the namespace tables
-     */
-
+    BREAKPOINT3;
 
     FUNCTION_EXIT;
 }
