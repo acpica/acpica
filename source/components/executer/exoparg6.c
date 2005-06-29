@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -178,21 +178,29 @@ AcpiExDoMatch (
 
 
     /*
-     * Note: Since the PackageObj/MatchObj ordering is opposite to that of the
-     * standard logical operators, we have to reverse them when we call
-     * DoLogicalOp in order to make the implicit conversion rules work correctly.
-     * However, this means we have to flip the entire equation also.
-     * A bit ugly perhaps, but overall, better than fussing the parameters
-     * around at runtime, over and over again.
+     * Note: Since the PackageObj/MatchObj ordering is opposite to that of
+     * the standard logical operators, we have to reverse them when we call
+     * DoLogicalOp in order to make the implicit conversion rules work
+     * correctly. However, this means we have to flip the entire equation
+     * also. A bit ugly perhaps, but overall, better than fussing the
+     * parameters around at runtime, over and over again.
+     *
+     * Below, P[i] refers the package element, M refers to the Match object.
      */
     switch (MatchOp)
     {
-    case MATCH_MTR: /* Always true */
+    case MATCH_MTR: 
+        
+        /* Always true */
 
         break;
 
-    case MATCH_MEQ: /* True if equal (P[i] == M) or (M == P[i]) */
-
+    case MATCH_MEQ:
+        
+        /*
+         * True if equal: (P[i] == M)
+         * Change to:     (M == P[i])
+         */
         Status = AcpiExDoLogicalOp (AML_LEQUAL_OP, MatchObj, PackageObj,
                     &LogicalResult);
         if (ACPI_FAILURE (Status))
@@ -201,8 +209,12 @@ AcpiExDoMatch (
         }
         break;
 
-    case MATCH_MLE: /* True if less than or equal (NotGreater) (P[i] <= M) or (NotLess) (M >= P[i]) */
-
+    case MATCH_MLE:
+    
+        /*
+         * True if less than or equal: (P[i] <= M) (P[i] NotGreater than M)
+         * Change to:                  (M >= P[i]) (M NotLess than P[i])
+         */
         Status = AcpiExDoLogicalOp (AML_LLESS_OP, MatchObj, PackageObj,
                     &LogicalResult);
         if (ACPI_FAILURE (Status))
@@ -212,8 +224,12 @@ AcpiExDoMatch (
         LogicalResult = (BOOLEAN) !LogicalResult;
         break;
 
-    case MATCH_MLT: /* True if less than (P[i] < M) or (M > P[i]) */
-
+    case MATCH_MLT:
+        
+        /*
+         * True if less than: (P[i] < M)
+         * Change to:         (M > P[i])
+         */
         Status = AcpiExDoLogicalOp (AML_LGREATER_OP, MatchObj, PackageObj,
                     &LogicalResult);
         if (ACPI_FAILURE (Status))
@@ -222,8 +238,12 @@ AcpiExDoMatch (
         }
         break;
 
-    case MATCH_MGE: /* True if greater than or equal (NotLess) (P[i] >= M) or (NotGreater) (M <= P[i]) */
-
+    case MATCH_MGE:
+        
+        /*
+         * True if greater than or equal: (P[i] >= M) (P[i] NotLess than M)
+         * Change to:                     (M <= P[i]) (M NotGreater than P[i])
+         */
         Status = AcpiExDoLogicalOp (AML_LGREATER_OP, MatchObj, PackageObj,
                     &LogicalResult);
         if (ACPI_FAILURE (Status))
@@ -233,8 +253,12 @@ AcpiExDoMatch (
         LogicalResult = (BOOLEAN)!LogicalResult;
         break;
 
-    case MATCH_MGT: /* True if greater than (P[i] > M) or (M < P[i]) */
-
+    case MATCH_MGT:
+        
+        /*
+         * True if greater than: (P[i] > M)
+         * Change to:            (M < P[i])
+         */
         Status = AcpiExDoLogicalOp (AML_LLESS_OP, MatchObj, PackageObj,
                     &LogicalResult);
         if (ACPI_FAILURE (Status))
@@ -243,7 +267,9 @@ AcpiExDoMatch (
         }
         break;
 
-    default:        /* Undefined */
+    default:
+        
+        /* Undefined */
 
         return (FALSE);
     }
