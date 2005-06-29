@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  *****************************************************************************/
 
@@ -461,6 +461,7 @@ UnlockAndExit:
  *                                  ACPI_DEVICE_NOTIFY: DriverHandler (80-ff)
  *                                  ACPI_ALL_NOTIFY:  both system and device
  *              Handler         - Address of the handler
+ *
  * RETURN:      Status
  *
  * DESCRIPTION: Remove a handler for notifies on an ACPI device
@@ -506,9 +507,8 @@ AcpiRemoveNotifyHandler (
         goto UnlockAndExit;
     }
 
-    /*
-     * Root Object
-     */
+    /* Root Object */
+
     if (Device == ACPI_ROOT_OBJECT)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Removing notify handler for ROOT object.\n"));
@@ -537,9 +537,8 @@ AcpiRemoveNotifyHandler (
         }
     }
 
-    /*
-     * All Other Objects
-     */
+    /* All Other Objects */
+
     else
     {
         /* Notifies allowed on this object? */
