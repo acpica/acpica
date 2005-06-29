@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.120 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -208,6 +208,8 @@
 #define FILE_SUFFIX_ASM_SOURCE      "asm"
 #define FILE_SUFFIX_C_SOURCE        "c"
 #define FILE_SUFFIX_DISASSEMBLY     "dsl"
+#define FILE_SUFFIX_ASM_INCLUDE     "equ"
+#define FILE_SUFFIX_C_INCLUDE       "h"
 
 
 /* Misc */
@@ -777,6 +779,10 @@ FlPrintFile (
 void
 FlSetLineNumber (
     ACPI_PARSE_OBJECT       *Op);
+
+ACPI_STATUS
+FlParseInputPathname (
+    char                    *InputFilename);
 
 ACPI_STATUS
 FlOpenInputFile (
