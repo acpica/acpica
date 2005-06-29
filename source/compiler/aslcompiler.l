@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.9 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -118,8 +118,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "AslCompiler.y.h"
 #include "AslCompiler.h"
+#include "AslCompiler.y.h"
 YYSTYPE AslCompilerlval;
 
 /*
@@ -130,7 +130,6 @@ YYSTYPE AslCompilerlval;
  * -i: Scanner must be case-insensitive
  */
 
-
 void
 comment (void);
 void
@@ -139,6 +138,8 @@ void
 count (int type);
 void
 literal (void);
+void
+copy (void);
 
 %}
 
@@ -163,299 +164,301 @@ NamePathTail        [.]{NameSeg}
 
 %%
 
-[\n]                        { count (0); }
-[ \t] ;
+[ ]                         { copy(); count (0); }
+[\n]                        { copy(); count (0); }
+[ \t]                       { copy(); count (0); }
 
 
 
-"/*"			            { comment(); }
-"//"                        { comment2(); }
+"/*"			            { copy(); comment(); }
+"//"                        { copy(); comment2(); }
 
 \"([^\"]|(\\\"))*\"	        { literal (); return STRING_LITERAL; }
 
 
 0[xX]{HexDigitChar}+ |
-{DigitChar}+                {AslCompilerlval.l = strtoul((char *)AslCompilertext, (char **) 0, 0);
-                                count (1); 
+{DigitChar}+                { AslCompilerlval.l = strtoul((char *)AslCompilertext, (char **) 0, 0);
+                                copy(); count (1); 
                                 return (INTEGER); }
 
-"Include"                   { count (1); return (INCLUDE); }
-"#include"                  { count (1); return (INCLUDE_CSTYLE); }
+"Include"                   { copy(); count (1); return (INCLUDE); }
+"#include"                  { copy(); count (1); return (INCLUDE_CSTYLE); }
+"External"                  { copy(); count (1); return (EXTERNAL); }
 
 
-"Ones"                      { count (1); return (ONES); }
-"One"                       { count (1); return (ONE); }
-"Zero"                      { count (1); return (ZERO); }
+"Ones"                      { copy(); count (1); return (ONES); }
+"One"                       { copy(); count (1); return (ONE); }
+"Zero"                      { copy(); count (1); return (ZERO); }
                                 
-"Offset"                    { count (1); return (OFFSET); }
-"AccessAs"                  { count (1); return (ACCESSAS); }
-"BankField"                 { count (2); return (BANKFIELD); }
-"CreateBitField"            { count (2); return (CREATEBITFIELD); }
-"CreateByteField"           { count (2); return (CREATEBYTEFIELD); }
-"CreateDWordField"          { count (2); return (CREATEDWORDFIELD); }
-"CreateField"               { count (2); return (CREATEFIELD); }
-"CreateQWordField"          { count (2); return (CREATEQWORDFIELD); }
-"CreateWordField"           { count (2); return (CREATEWORDFIELD); }
-"DataTableRegion"           { count (2); return (DATATABLEREGION); }
-"Device"                    { count (2); return (DEVICE); }
-"Event"                     { count (2); return (EVENT); }
-"Field"                     { count (2); return (FIELD); }
-"IndexField"                { count (2); return (INDEXFIELD); }
-"Method"                    { count (2); return (METHOD); }
-"Mutex"                     { count (2); return (MUTEX); }
-"OperationRegion"           { count (2); return (OPERATIONREGION); }
-"PowerResource"             { count (2); return (POWERRESOURCE); }
-"Processor"                 { count (2); return (PROCESSOR); }
-"ThermalZone"               { count (2); return (THERMALZONE); }
-"Alias"                     { count (2); return (ALIAS); }
-"Name"                      { count (2); return (NAME); }
-"Scope"                     { count (2); return (SCOPE); }
-"Break"                     { count (3); return (BREAK); }
-"BreakPoint"                { count (3); return (BREAKPOINT); }
-"Continue"                  { count (3); return (CONTINUE); }
-"Fatal"                     { count (3); return (FATAL); }
-"If"                        { count (3); return (IF); }
-"Else"                      { count (3); return (ELSE); }
-"ElseIf"                    { count (3); return (ELSEIF); }
-"Load"                      { count (3); return (LOAD); }
-"Noop"                      { count (3); return (NOOP); }
-"Notify"                    { count (3); return (NOTIFY); }
-"Release"                   { count (3); return (RELEASE); }
-"Reset"                     { count (3); return (RESET); }
-"Return"                    { count (3); return (RETURN); }
-"Signal"                    { count (3); return (SIGNAL); }
-"Sleep"                     { count (3); return (SLEEP); }
-"Stall"                     { count (3); return (STALL); }
-"Switch"                    { count (3); return (SWITCH); }
-"Case"                      { count (3); return (CASE); }
-"Default"                   { count (3); return (DEFAULT); }
-"Unload"                    { count (3); return (UNLOAD); }
-"While"                     { count (3); return (WHILE); }
+"Offset"                    { copy(); count (1); return (OFFSET); }
+"AccessAs"                  { copy(); count (1); return (ACCESSAS); }
+"BankField"                 { copy(); count (2); return (BANKFIELD); }
+"CreateBitField"            { copy(); count (2); return (CREATEBITFIELD); }
+"CreateByteField"           { copy(); count (2); return (CREATEBYTEFIELD); }
+"CreateDWordField"          { copy(); count (2); return (CREATEDWORDFIELD); }
+"CreateField"               { copy(); count (2); return (CREATEFIELD); }
+"CreateQWordField"          { copy(); count (2); return (CREATEQWORDFIELD); }
+"CreateWordField"           { copy(); count (2); return (CREATEWORDFIELD); }
+"DataTableRegion"           { copy(); count (2); return (DATATABLEREGION); }
+"Device"                    { copy(); count (2); return (DEVICE); }
+"Event"                     { copy(); count (2); return (EVENT); }
+"Field"                     { copy(); count (2); return (FIELD); }
+"IndexField"                { copy(); count (2); return (INDEXFIELD); }
+"Method"                    { copy(); count (2); return (METHOD); }
+"Mutex"                     { copy(); count (2); return (MUTEX); }
+"OperationRegion"           { copy(); count (2); return (OPERATIONREGION); }
+"PowerResource"             { copy(); count (2); return (POWERRESOURCE); }
+"Processor"                 { copy(); count (2); return (PROCESSOR); }
+"ThermalZone"               { copy(); count (2); return (THERMALZONE); }
+"Alias"                     { copy(); count (2); return (ALIAS); }
+"Name"                      { copy(); count (2); return (NAME); }
+"Scope"                     { copy(); count (2); return (SCOPE); }
+"Break"                     { copy(); count (3); return (BREAK); }
+"BreakPoint"                { copy(); count (3); return (BREAKPOINT); }
+"Continue"                  { copy(); count (3); return (CONTINUE); }
+"Fatal"                     { copy(); count (3); return (FATAL); }
+"If"                        { copy(); count (3); return (IF); }
+"Else"                      { copy(); count (3); return (ELSE); }
+"ElseIf"                    { copy(); count (3); return (ELSEIF); }
+"Load"                      { copy(); count (3); return (LOAD); }
+"Noop"                      { copy(); count (3); return (NOOP); }
+"Notify"                    { copy(); count (3); return (NOTIFY); }
+"Release"                   { copy(); count (3); return (RELEASE); }
+"Reset"                     { copy(); count (3); return (RESET); }
+"Return"                    { copy(); count (3); return (RETURN); }
+"Signal"                    { copy(); count (3); return (SIGNAL); }
+"Sleep"                     { copy(); count (3); return (SLEEP); }
+"Stall"                     { copy(); count (3); return (STALL); }
+"Switch"                    { copy(); count (3); return (SWITCH); }
+"Case"                      { copy(); count (3); return (CASE); }
+"Default"                   { copy(); count (3); return (DEFAULT); }
+"Unload"                    { copy(); count (3); return (UNLOAD); }
+"While"                     { copy(); count (3); return (WHILE); }
 
-"Acquire"                   { count (3); return (ACQUIRE); }
-"Add"                       { count (3); return (ADD); }
-"And"                       { count (3); return (AND); }
-"Buff"                      { count (3); return (BUFF); }
-"Concatenate"               { count (3); return (CONCATENATE); }
-"ConcatenateResTemplate"    { count (3); return (CONCATENATERESTEMPLATE); }
-"CondRefOf"                 { count (3); return (CONDREFOF); }
-"Copy"                      { count (3); return (COPY); }
-"Decrement"                 { count (3); return (DECREMENT); }
-"DecStr"                    { count (3); return (DECSTR); }
-"DeRefOf"                   { count (3); return (DEREFOF); }
-"Divide"                    { count (3); return (DIVIDE); }
-"FindSetLeftBit"            { count (3); return (FINDSETLEFTBIT); }
-"FindSetRightBit"           { count (3); return (FINDSETRIGHTBIT); }
-"FromBCD"                   { count (3); return (FROMBCD); }
-"HexStr"                    { count (3); return (HEXSTR); }
-"Increment"                 { count (3); return (INCREMENT); }
-"Index"                     { count (3); return (INDEX); }
-"Int"                       { count (3); return (INT); }
-"LAnd"                      { count (3); return (LAND); }
-"LEqual"                    { count (3); return (LEQUAL); }
-"LGreater"                  { count (3); return (LGREATER); }
-"LGreaterEqual"             { count (3); return (LGREATEREQUAL); }
-"LLess"                     { count (3); return (LLESS); }
-"LLessEqual"                { count (3); return (LLESSEQUAL); }
-"LNot"                      { count (3); return (LNOT); }
-"LNotEqual"                 { count (3); return (LNOTEQUAL); }
-"LoadTable"                 { count (3); return (LOADTABLE); }
-"LOr"                       { count (3); return (LOR); }
-"Match"                     { count (3); return (MATCH); }
-"Mid"                       { count (3); return (MID); }
-"Mod"                       { count (3); return (MOD); }
-"Multiply"                  { count (3); return (MULTIPLY); }
-"NAnd"                      { count (3); return (NAND); }
-"NOr"                       { count (3); return (NOR); }
-"Not"                       { count (3); return (NOT); }
-"ObjectType"                { count (3); return (OBJECTTYPE); }
-"Or"                        { count (3); return (OR); }
-"RefOf"                     { count (3); return (REFOF); }
-"ShiftLeft"                 { count (3); return (SHIFTLEFT); }
-"ShiftRight"                { count (3); return (SHIFTRIGHT); }
-"SizeOf"                    { count (3); return (SIZEOF); }
-"Store"                     { count (3); return (STORE); }
-"String"                    { count (3); return (STRING); }
-"Subtract"                  { count (3); return (SUBTRACT); }
-"ToBCD"                     { count (3); return (TOBCD); }
-"Wait"                      { count (3); return (WAIT); }
-"XOr"                       { count (3); return (XOR); }
+"Acquire"                   { copy(); count (3); return (ACQUIRE); }
+"Add"                       { copy(); count (3); return (ADD); }
+"And"                       { copy(); count (3); return (AND); }
+"Concatenate"               { copy(); count (3); return (CONCATENATE); }
+"ConcatenateResTemplate"    { copy(); count (3); return (CONCATENATERESTEMPLATE); }
+"CondRefOf"                 { copy(); count (3); return (CONDREFOF); }
+"Copy"                      { copy(); count (3); return (COPY); }
+"Decrement"                 { copy(); count (3); return (DECREMENT); }
+"DeRefOf"                   { copy(); count (3); return (DEREFOF); }
+"Divide"                    { copy(); count (3); return (DIVIDE); }
+"FindSetLeftBit"            { copy(); count (3); return (FINDSETLEFTBIT); }
+"FindSetRightBit"           { copy(); count (3); return (FINDSETRIGHTBIT); }
+"FromBCD"                   { copy(); count (3); return (FROMBCD); }
+"Increment"                 { copy(); count (3); return (INCREMENT); }
+"Index"                     { copy(); count (3); return (INDEX); }
+"LAnd"                      { copy(); count (3); return (LAND); }
+"LEqual"                    { copy(); count (3); return (LEQUAL); }
+"LGreater"                  { copy(); count (3); return (LGREATER); }
+"LGreaterEqual"             { copy(); count (3); return (LGREATEREQUAL); }
+"LLess"                     { copy(); count (3); return (LLESS); }
+"LLessEqual"                { copy(); count (3); return (LLESSEQUAL); }
+"LNot"                      { copy(); count (3); return (LNOT); }
+"LNotEqual"                 { copy(); count (3); return (LNOTEQUAL); }
+"LoadTable"                 { copy(); count (3); return (LOADTABLE); }
+"LOr"                       { copy(); count (3); return (LOR); }
+"Match"                     { copy(); count (3); return (MATCH); }
+"Mid"                       { copy(); count (3); return (MID); }
+"Mod"                       { copy(); count (3); return (MOD); }
+"Multiply"                  { copy(); count (3); return (MULTIPLY); }
+"NAnd"                      { copy(); count (3); return (NAND); }
+"NOr"                       { copy(); count (3); return (NOR); }
+"Not"                       { copy(); count (3); return (NOT); }
+"ObjectType"                { copy(); count (3); return (OBJECTTYPE); }
+"Or"                        { copy(); count (3); return (OR); }
+"RefOf"                     { copy(); count (3); return (REFOF); }
+"ShiftLeft"                 { copy(); count (3); return (SHIFTLEFT); }
+"ShiftRight"                { copy(); count (3); return (SHIFTRIGHT); }
+"SizeOf"                    { copy(); count (3); return (SIZEOF); }
+"Store"                     { copy(); count (3); return (STORE); }
+"String"                    { copy(); count (3); return (STRING); }
+"Subtract"                  { copy(); count (3); return (SUBTRACT); }
+"ToBCD"                     { copy(); count (3); return (TOBCD); }
+"ToBuffer"                  { copy(); count (3); return (TOBUFFER); }
+"ToDecimalString"           { copy(); count (3); return (TODECIMALSTRING); }
+"ToHexString"               { copy(); count (3); return (TOHEXSTRING); }
+"ToInteger"                 { copy(); count (3); return (TOINTEGER); }
+"Wait"                      { copy(); count (3); return (WAIT); }
+"XOr"                       { copy(); count (3); return (XOR); }
 
-"Arg0"                      { count (1); return (ARG0); }
-"Arg1"                      { count (1); return (ARG1); }
-"Arg2"                      { count (1); return (ARG2); }
-"Arg3"                      { count (1); return (ARG3); }
-"Arg4"                      { count (1); return (ARG4); }
-"Arg5"                      { count (1); return (ARG5); }
-"Arg6"                      { count (1); return (ARG6); }
+"Arg0"                      { copy(); count (1); return (ARG0); }
+"Arg1"                      { copy(); count (1); return (ARG1); }
+"Arg2"                      { copy(); count (1); return (ARG2); }
+"Arg3"                      { copy(); count (1); return (ARG3); }
+"Arg4"                      { copy(); count (1); return (ARG4); }
+"Arg5"                      { copy(); count (1); return (ARG5); }
+"Arg6"                      { copy(); count (1); return (ARG6); }
 
-"Local0"                    { count (1); return (LOCAL0); }
-"Local1"                    { count (1); return (LOCAL1); }
-"Local2"                    { count (1); return (LOCAL2); }
-"Local3"                    { count (1); return (LOCAL3); }
-"Local4"                    { count (1); return (LOCAL4); }
-"Local5"                    { count (1); return (LOCAL5); }
-"Local6"                    { count (1); return (LOCAL6); }
-"Local7"                    { count (1); return (LOCAL7); }
+"Local0"                    { copy(); count (1); return (LOCAL0); }
+"Local1"                    { copy(); count (1); return (LOCAL1); }
+"Local2"                    { copy(); count (1); return (LOCAL2); }
+"Local3"                    { copy(); count (1); return (LOCAL3); }
+"Local4"                    { copy(); count (1); return (LOCAL4); }
+"Local5"                    { copy(); count (1); return (LOCAL5); }
+"Local6"                    { copy(); count (1); return (LOCAL6); }
+"Local7"                    { copy(); count (1); return (LOCAL7); }
 
-"Debug"                     { count (1); return (DEBUG); }
+"Debug"                     { copy(); count (1); return (DEBUG); }
 
-"DefinitionBlock"           { count (1); return (DEFINITIONBLOCK); }
-"Buffer"                    { count (1); return (BUFFER); }
-"Package"                   { count (1); return (PACKAGE); }
+"DefinitionBlock"           { copy(); count (1); return (DEFINITIONBLOCK); }
+"Buffer"                    { copy(); count (1); return (BUFFER); }
+"Package"                   { copy(); count (1); return (PACKAGE); }
 
-"EISAID"                    { count (1); return (EISAID); }
-"ResourceTemplate"          { count (1); return (RESOURCETEMPLATE); }
-"Unicode"                   { count (1); return (UNICODE); }
-"DMA"                       { count (1); return (DMA); }
-"DWordIO"                   { count (1); return (DWORDIO); }
-"DWordMemory"               { count (1); return (DWORDMEMORY); }
-"EndDependentFn"            { count (1); return (ENDDEPENDENTFN); }
-"FixedIO"                   { count (1); return (FIXEDIO); }
-"Interrupt"                 { count (1); return (INTERRUPT); }
-"IO"                        { count (1); return (IO); }
-"IRQNoFlags"                { count (1); return (IRQNOFLAGS); }
-"IRQ"                       { count (1); return (IRQ); }
-"Memory24"                  { count (1); return (MEMORY24); }
-"Memory32Fixed"             { count (1); return (MEMORY32FIXED); }
-"Memory32"                  { count (1); return (MEMORY32); }
-"QWordIO"                   { count (1); return (QWORDIO); }
-"QWordMemory"               { count (1); return (QWORDMEMORY); }
-"Register"                  { count (1); return (REGISTER); }
-"StartDependentFn"          { count (1); return (STARTDEPENDENTFN); }
-"StartDependentFnNoPri"     { count (1); return (STARTDEPENDENTFN_NOPRI); }
-"VendorLong"                { count (1); return (VENDORLONG); }
-"VendorShort"               { count (1); return (VENDORSHORT); }
-"WordBusNumber"             { count (1); return (WORDBUSNUMBER); }
-"WordIO"                    { count (1); return (WORDIO); }
+"EISAID"                    { copy(); count (1); return (EISAID); }
+"ResourceTemplate"          { copy(); count (1); return (RESOURCETEMPLATE); }
+"Unicode"                   { copy(); count (1); return (UNICODE); }
+"DMA"                       { copy(); count (1); return (DMA); }
+"DWordIO"                   { copy(); count (1); return (DWORDIO); }
+"DWordMemory"               { copy(); count (1); return (DWORDMEMORY); }
+"EndDependentFn"            { copy(); count (1); return (ENDDEPENDENTFN); }
+"FixedIO"                   { copy(); count (1); return (FIXEDIO); }
+"Interrupt"                 { copy(); count (1); return (INTERRUPT); }
+"IO"                        { copy(); count (1); return (IO); }
+"IRQNoFlags"                { copy(); count (1); return (IRQNOFLAGS); }
+"IRQ"                       { copy(); count (1); return (IRQ); }
+"Memory24"                  { copy(); count (1); return (MEMORY24); }
+"Memory32Fixed"             { copy(); count (1); return (MEMORY32FIXED); }
+"Memory32"                  { copy(); count (1); return (MEMORY32); }
+"QWordIO"                   { copy(); count (1); return (QWORDIO); }
+"QWordMemory"               { copy(); count (1); return (QWORDMEMORY); }
+"Register"                  { copy(); count (1); return (REGISTER); }
+"StartDependentFn"          { copy(); count (1); return (STARTDEPENDENTFN); }
+"StartDependentFnNoPri"     { copy(); count (1); return (STARTDEPENDENTFN_NOPRI); }
+"VendorLong"                { copy(); count (1); return (VENDORLONG); }
+"VendorShort"               { copy(); count (1); return (VENDORSHORT); }
+"WordBusNumber"             { copy(); count (1); return (WORDBUSNUMBER); }
+"WordIO"                    { copy(); count (1); return (WORDIO); }
 
-"UnknownObj"                { count (0); return (OBJECTTYPE_UNK); }
-"IntObj"                    { count (0); return (OBJECTTYPE_INT); }
-"StrObj"                    { count (0); return (OBJECTTYPE_STR); }
-"BuffObj"                   { count (0); return (OBJECTTYPE_BUF); }
-"PkgObj"                    { count (0); return (OBJECTTYPE_PKG); }
-"FieldUnitObj"              { count (0); return (OBJECTTYPE_FLD); }
-"DeviceObj"                 { count (0); return (OBJECTTYPE_DEV); }
-"EventObj"                  { count (0); return (OBJECTTYPE_EVT); }
-"MethodObj"                 { count (0); return (OBJECTTYPE_MTH); }
-"MutexObj"                  { count (0); return (OBJECTTYPE_MTX); }
-"OpRegionObj"               { count (0); return (OBJECTTYPE_OPR); }
-"PowerResObj"               { count (0); return (OBJECTTYPE_POW); }
-"ThermalZoneObj"            { count (0); return (OBJECTTYPE_THZ); }
-"BuffFieldObj"              { count (0); return (OBJECTTYPE_BFF); }
-"DDBHandleObj"              { count (0); return (OBJECTTYPE_DDB); }
+"UnknownObj"                { copy(); count (0); return (OBJECTTYPE_UNK); }
+"IntObj"                    { copy(); count (0); return (OBJECTTYPE_INT); }
+"StrObj"                    { copy(); count (0); return (OBJECTTYPE_STR); }
+"BuffObj"                   { copy(); count (0); return (OBJECTTYPE_BUF); }
+"PkgObj"                    { copy(); count (0); return (OBJECTTYPE_PKG); }
+"FieldUnitObj"              { copy(); count (0); return (OBJECTTYPE_FLD); }
+"DeviceObj"                 { copy(); count (0); return (OBJECTTYPE_DEV); }
+"EventObj"                  { copy(); count (0); return (OBJECTTYPE_EVT); }
+"MethodObj"                 { copy(); count (0); return (OBJECTTYPE_MTH); }
+"MutexObj"                  { copy(); count (0); return (OBJECTTYPE_MTX); }
+"OpRegionObj"               { copy(); count (0); return (OBJECTTYPE_OPR); }
+"PowerResObj"               { copy(); count (0); return (OBJECTTYPE_POW); }
+"ThermalZoneObj"            { copy(); count (0); return (OBJECTTYPE_THZ); }
+"BuffFieldObj"              { copy(); count (0); return (OBJECTTYPE_BFF); }
+"DDBHandleObj"              { copy(); count (0); return (OBJECTTYPE_DDB); }
 
-"AnyAcc"                    { count (0); return (ACCESSTYPE_ANY); }
-"ByteAcc"                   { count (0); return (ACCESSTYPE_BYTE); }
-"WordAcc"                   { count (0); return (ACCESSTYPE_WORD); }
-"DWordAcc"                  { count (0); return (ACCESSTYPE_DWORD); }
-"QWordAcc"                  { count (0); return (ACCESSTYPE_QWORD); }
-"BufferAcc"                 { count (0); return (ACCESSTYPE_BUF); }
+"AnyAcc"                    { copy(); count (0); return (ACCESSTYPE_ANY); }
+"ByteAcc"                   { copy(); count (0); return (ACCESSTYPE_BYTE); }
+"WordAcc"                   { copy(); count (0); return (ACCESSTYPE_WORD); }
+"DWordAcc"                  { copy(); count (0); return (ACCESSTYPE_DWORD); }
+"QWordAcc"                  { copy(); count (0); return (ACCESSTYPE_QWORD); }
+"BufferAcc"                 { copy(); count (0); return (ACCESSTYPE_BUF); }
 
-"Lock"                      { count (0); return (LOCKRULE_LOCK); }
-"NoLock"                    { count (0); return (LOCKRULE_NOLOCK); }
+"Lock"                      { copy(); count (0); return (LOCKRULE_LOCK); }
+"NoLock"                    { copy(); count (0); return (LOCKRULE_NOLOCK); }
 
-"Preserve"                  { count (0); return (UPDATERULE_PRESERVE); }
-"WriteAsOnes"               { count (0); return (UPDATERULE_ONES); }
-"WriteAsZeros"              { count (0); return (UPDATERULE_ZEROS); }
+"Preserve"                  { copy(); count (0); return (UPDATERULE_PRESERVE); }
+"WriteAsOnes"               { copy(); count (0); return (UPDATERULE_ONES); }
+"WriteAsZeros"              { copy(); count (0); return (UPDATERULE_ZEROS); }
 
-"Serialized"                { count (0); return (SERIALIZERULE_SERIAL); }
-"NotSerialized"             { count (0); return (SERIALIZERULE_NOTSERIAL); }
+"Serialized"                { copy(); count (0); return (SERIALIZERULE_SERIAL); }
+"NotSerialized"             { copy(); count (0); return (SERIALIZERULE_NOTSERIAL); }
 
-"SystemIO"                  { count (0); return (REGIONSPACE_IO); }
-"SystemMemory"              { count (0); return (REGIONSPACE_MEM); }
-"PCI_Config"                { count (0); return (REGIONSPACE_PCI); }
-"EmbeddedControl"           { count (0); return (REGIONSPACE_EC); }
-"SMBus"                     { count (0); return (REGIONSPACE_SMBUS); }
-"CMOS"                      { count (0); return (REGIONSPACE_CMOS); }
-"PciBarTarget"              { count (0); return (REGIONSPACE_PCIBAR); }
+"SystemIO"                  { copy(); count (0); return (REGIONSPACE_IO); }
+"SystemMemory"              { copy(); count (0); return (REGIONSPACE_MEM); }
+"PCI_Config"                { copy(); count (0); return (REGIONSPACE_PCI); }
+"EmbeddedControl"           { copy(); count (0); return (REGIONSPACE_EC); }
+"SMBus"                     { copy(); count (0); return (REGIONSPACE_SMBUS); }
+"CMOS"                      { copy(); count (0); return (REGIONSPACE_CMOS); }
+"PciBarTarget"              { copy(); count (0); return (REGIONSPACE_PCIBAR); }
 
-"FFixedHW"                  { count (0); return (ADDRESSSPACE_FFIXEDHW); }
+"FFixedHW"                  { copy(); count (0); return (ADDRESSSPACE_FFIXEDHW); }
 
-"SMBQuick"                  { count (0); return (ACCESSATTRIB_QUICK); }
-"SMBSendReceive"            { count (0); return (ACCESSATTRIB_SND_RCV); }
-"SMBByte"                   { count (0); return (ACCESSATTRIB_BYTE); }
-"SMBWord"                   { count (0); return (ACCESSATTRIB_WORD); }
-"SMBBlock"                  { count (0); return (ACCESSATTRIB_BLOCK); }
-"SMBProcessCall"            { count (0); return (ACCESSATTRIB_CALL); }
+"SMBQuick"                  { copy(); count (0); return (ACCESSATTRIB_QUICK); }
+"SMBSendReceive"            { copy(); count (0); return (ACCESSATTRIB_SND_RCV); }
+"SMBByte"                   { copy(); count (0); return (ACCESSATTRIB_BYTE); }
+"SMBWord"                   { copy(); count (0); return (ACCESSATTRIB_WORD); }
+"SMBBlock"                  { copy(); count (0); return (ACCESSATTRIB_BLOCK); }
+"SMBProcessCall"            { copy(); count (0); return (ACCESSATTRIB_CALL); }
 
-"MTR"                       { count (0); return (MATCHTYPE_MTR); }
-"MEQ"                       { count (0); return (MATCHTYPE_MEQ); }
-"MLE"                       { count (0); return (MATCHTYPE_MLE); }
-"MLT"                       { count (0); return (MATCHTYPE_MLT); }
-"MGE"                       { count (0); return (MATCHTYPE_MGE); }
-"MGT"                       { count (0); return (MATCHTYPE_MGT); }
+"MTR"                       { copy(); count (0); return (MATCHTYPE_MTR); }
+"MEQ"                       { copy(); count (0); return (MATCHTYPE_MEQ); }
+"MLE"                       { copy(); count (0); return (MATCHTYPE_MLE); }
+"MLT"                       { copy(); count (0); return (MATCHTYPE_MLT); }
+"MGE"                       { copy(); count (0); return (MATCHTYPE_MGE); }
+"MGT"                       { copy(); count (0); return (MATCHTYPE_MGT); }
 
-"Compatibility"             { count (0); return (DMATYPE_COMPATIBILITY); }
-"TypeA"                     { count (0); return (DMATYPE_A); }
-"TypeB"                     { count (0); return (DMATYPE_B); }
-"TypeF"                     { count (0); return (DMATYPE_F); }
+"Compatibility"             { copy(); count (0); return (DMATYPE_COMPATIBILITY); }
+"TypeA"                     { copy(); count (0); return (DMATYPE_A); }
+"TypeB"                     { copy(); count (0); return (DMATYPE_B); }
+"TypeF"                     { copy(); count (0); return (DMATYPE_F); }
 
-"BusMaster"                 { count (0); return (BUSMASTERTYPE_MASTER); }
-"NotBusMaster"              { count (0); return (BUSMASTERTYPE_NOTMASTER); }
+"BusMaster"                 { copy(); count (0); return (BUSMASTERTYPE_MASTER); }
+"NotBusMaster"              { copy(); count (0); return (BUSMASTERTYPE_NOTMASTER); }
 
-"Transfer8"                 { count (0); return (XFERTYPE_8); }
-"Transfer8_16"              { count (0); return (XFERTYPE_8_16); }
-"Transfer16"                { count (0); return (XFERTYPE_16); }
+"Transfer8"                 { copy(); count (0); return (XFERTYPE_8); }
+"Transfer8_16"              { copy(); count (0); return (XFERTYPE_8_16); }
+"Transfer16"                { copy(); count (0); return (XFERTYPE_16); }
 
-"ResourceConsumer"          { count (0); return (RESOURCETYPE_CONSUMER); }
-"ResourceProducer"          { count (0); return (RESOURCETYPE_PRODUCER); }
+"ResourceConsumer"          { copy(); count (0); return (RESOURCETYPE_CONSUMER); }
+"ResourceProducer"          { copy(); count (0); return (RESOURCETYPE_PRODUCER); }
 
-"MinFixed"                  { count (0); return (MINTYPE_FIXED); }
-"MinNotFixed"               { count (0); return (MINTYPE_NOTFIXED); }
+"MinFixed"                  { copy(); count (0); return (MINTYPE_FIXED); }
+"MinNotFixed"               { copy(); count (0); return (MINTYPE_NOTFIXED); }
 
-"MaxFixed"                  { count (0); return (MAXTYPE_FIXED); }
-"MaxNotFixed"               { count (0); return (MAXTYPE_NOTFIXED); }
+"MaxFixed"                  { copy(); count (0); return (MAXTYPE_FIXED); }
+"MaxNotFixed"               { copy(); count (0); return (MAXTYPE_NOTFIXED); }
 
-"PosDecode"                 { count (0); return (DECODETYPE_POS); }
-"SubDecode"                 { count (0); return (DECODETYPE_SUB); }
+"PosDecode"                 { copy(); count (0); return (DECODETYPE_POS); }
+"SubDecode"                 { copy(); count (0); return (DECODETYPE_SUB); }
 
-"ISAOnlyRanges"             { count (0); return (RANGETYPE_ISAONLY); }
-"NonISAOnlyRanges"          { count (0); return (RANGETYPE_NONISAONLY); }
-"EntireRange"               { count (0); return (RANGETYPE_ENTIRE); }
+"ISAOnlyRanges"             { copy(); count (0); return (RANGETYPE_ISAONLY); }
+"NonISAOnlyRanges"          { copy(); count (0); return (RANGETYPE_NONISAONLY); }
+"EntireRange"               { copy(); count (0); return (RANGETYPE_ENTIRE); }
 
-"Cacheable"                 { count (0); return (MEMTYPE_CACHEABLE); }
-"WriteCombining"            { count (0); return (MEMTYPE_WRITECOMBINING); }
-"Prefetchable"              { count (0); return (MEMTYPE_PREFETCHABLE); }
-"NonCacheable"              { count (0); return (MEMTYPE_NONCACHEABLE); }
+"Cacheable"                 { copy(); count (0); return (MEMTYPE_CACHEABLE); }
+"WriteCombining"            { copy(); count (0); return (MEMTYPE_WRITECOMBINING); }
+"Prefetchable"              { copy(); count (0); return (MEMTYPE_PREFETCHABLE); }
+"NonCacheable"              { copy(); count (0); return (MEMTYPE_NONCACHEABLE); }
 
-"ReadWrite"                 { count (0); return (READWRITETYPE_BOTH); }
-"ReadOnly"                  { count (0); return (READWRITETYPE_READONLY); }
+"ReadWrite"                 { copy(); count (0); return (READWRITETYPE_BOTH); }
+"ReadOnly"                  { copy(); count (0); return (READWRITETYPE_READONLY); }
 
-"Edge"                      { count (0); return (INTTYPE_EDGE); }
-"Level"                     { count (0); return (INTTYPE_LEVEL); }
+"Edge"                      { copy(); count (0); return (INTTYPE_EDGE); }
+"Level"                     { copy(); count (0); return (INTTYPE_LEVEL); }
 
-"ActiveHigh"                { count (0); return (INTLEVEL_ACTIVEHIGH); }
-"ActiveLow"                 { count (0); return (INTLEVEL_ACTIVELOW); }
+"ActiveHigh"                { copy(); count (0); return (INTLEVEL_ACTIVEHIGH); }
+"ActiveLow"                 { copy(); count (0); return (INTLEVEL_ACTIVELOW); }
 
-"Shared"                    { count (0); return (SHARETYPE_SHARED); }
-"Exclusive"                 { count (0); return (SHARETYPE_EXCLUSIVE); }
+"Shared"                    { copy(); count (0); return (SHARETYPE_SHARED); }
+"Exclusive"                 { copy(); count (0); return (SHARETYPE_EXCLUSIVE); }
 
-"Decode10"                  { count (0); return (IODECODETYPE_10); }
-"Decode16"                  { count (0); return (IODECODETYPE_16); }
+"Decode10"                  { copy(); count (0); return (IODECODETYPE_10); }
+"Decode16"                  { copy(); count (0); return (IODECODETYPE_16); }
 
-"TypeTranslation"           { count (0); return (TYPE_TRANSLATION); }
-"TypeStatic"                { count (0); return (TYPE_STATIC); }
+"TypeTranslation"           { copy(); count (0); return (TYPE_TRANSLATION); }
+"TypeStatic"                { copy(); count (0); return (TYPE_STATIC); }
 
-"SparseTranslation"         { count (0); return (TRANSLATIONTYPE_SPARSE); }
-"DenseTranslation"          { count (0); return (TRANSLATIONTYPE_DENSE); }
+"SparseTranslation"         { copy(); count (0); return (TRANSLATIONTYPE_SPARSE); }
+"DenseTranslation"          { copy(); count (0); return (TRANSLATIONTYPE_DENSE); }
 
-"AddressRangeMemory"        { count (0); return (ADDRESSTYPE_MEMORY); }
-"AddressRangeReserved"      { count (0); return (ADDRESSTYPE_RESERVED); }
-"AddressRangeNVS"           { count (0); return (ADDRESSTYPE_NVS); }
-"AddressRangeACPI"          { count (0); return (ADDRESSTYPE_ACPI); }
+"AddressRangeMemory"        { copy(); count (0); return (ADDRESSTYPE_MEMORY); }
+"AddressRangeReserved"      { copy(); count (0); return (ADDRESSTYPE_RESERVED); }
+"AddressRangeNVS"           { copy(); count (0); return (ADDRESSTYPE_NVS); }
+"AddressRangeACPI"          { copy(); count (0); return (ADDRESSTYPE_ACPI); }
 
 
 
-"{"			                { count (0); return('{'); }
-"}"			                { count (0); return('}'); }
-","			                { count (0); return(','); }
-"("			                { count (0); return('('); }
-")"			                { count (0); return(')'); }
+"{"			                { copy(); count (0); return('{'); }
+"}"			                { copy(); count (0); return('}'); }
+","			                { copy(); count (0); return(','); }
+"("			                { copy(); count (0); return('('); }
+")"			                { copy(); count (0); return(')'); }
 
 
 {NameSeg}                   { char *s;
-                                count (0);
+                                copy(); count (0);
 			                    s=malloc (ACPI_NAME_SIZE + 1);
                                 if (strcmp (AslCompilertext, "\\"))
                                 {
@@ -468,7 +471,7 @@ NamePathTail        [.]{NameSeg}
                                 return (NAMESEG); }
 
 {NameString}                { char *s;
-                                count (0);
+                                copy(); count (0);
 			                    s=malloc (strlen (AslCompilertext)+1);
                                 strupr (AslCompilertext);
 			                    strcpy (s, AslCompilertext);
@@ -477,10 +480,163 @@ NamePathTail        [.]{NameSeg}
                                 DbgPrint ("NameString: %s\n", s);
                                 return (NAMESTRING); }
 
+"*" |
+"/"                         { copy(); count (1); 
+                                AslCompilererror ("parse error, expecting ASL keyword or name");}
 
+.                           { copy(); count (1); 
+                                AslCompilererror ("invalid character, expecting ASL keyword or name");}
+
+<<EOF>>                     { if (AslPopInputFileStack ()) 
+                                yyterminate(); 
+                              else 
+                                return (INCLUDE_END);};
 
 %%
 
+
+
+typedef struct asl_file_node
+{
+    FILE                    *File;
+    UINT32                  CurrentLineNumber;
+    YY_BUFFER_STATE         State;
+    char                    *Filename;
+    struct asl_file_node    *Next;
+
+} ASL_FILE_NODE;
+
+ASL_FILE_NODE               *InputStack = NULL;
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+copy (void)
+{
+
+
+    if (Gbl_SourceOutputFile)
+    {
+       fwrite (yytext, strlen(yytext), 1, Gbl_SourceOutputFile);
+    }
+}
+
+
+void
+copy_one (int c)
+{
+
+    if (Gbl_SourceOutputFile)
+    {
+       fwrite (&c, 1, 1, Gbl_SourceOutputFile);
+    }
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+int
+AslPopInputFileStack (void)
+{
+    ASL_FILE_NODE           *Node;
+    FILE                    *InputFile = NULL;
+  
+
+    Node = InputStack;
+    DbgPrint ("\nPop InputFile Stack, Node %p\n\n", Node);
+
+    if (Node)
+    {
+        fclose (yyin);
+
+        InputStack = Node->Next;
+        InputFile = Node->File;
+
+
+        Gbl_InputFilename = Node->Filename;
+        Gbl_CurrentLineNumber = Node->CurrentLineNumber;
+
+        yy_delete_buffer (YY_CURRENT_BUFFER);
+
+        yy_switch_to_buffer (Node->State);
+
+        free (Node);
+        return 0;
+    }
+
+    return -1;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+AslPushInputFileStack (
+    FILE                    *InputFile,
+    char                    *Filename)
+{
+    ASL_FILE_NODE           *Node;
+    YY_BUFFER_STATE         State;
+      
+
+          
+    Node = calloc (sizeof (ASL_FILE_NODE), 1);
+//    if (!Node)
+//    {
+//    }
+
+    Node->File = yyin;
+    Node->Next = InputStack;
+    Node->State = YY_CURRENT_BUFFER;
+    Node->CurrentLineNumber = Gbl_CurrentLineNumber;
+    Node->Filename = Gbl_InputFilename;
+
+    InputStack = Node;
+
+
+    State = yy_create_buffer (InputFile, YY_BUF_SIZE);
+    yy_switch_to_buffer (State);
+
+    DbgPrint ("\nPush InputFile Stack, returning %p\n\n", InputFile);
+
+    Gbl_InputFilename = Filename;
+    Gbl_CurrentLineNumber = 1;
+
+    yyin = InputFile;
+}
 
 
 /*******************************************************************************
@@ -502,7 +658,54 @@ ResetCurrentLineBuffer (
 
 	Gbl_CurrentColumn = 0;
 	Gbl_CurrentLineNumber++;
+	Gbl_LogicalLineNumber++;
 	Gbl_LineBufPtr = Gbl_CurrentLineBuffer;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+
+void 
+DoOneChar (
+    int                     c)
+{
+
+    Gbl_InputByteCount++;
+
+    copy_one (c);
+
+    if (c == '\n')
+    {
+        ResetCurrentLineBuffer ();
+        return;
+    }
+
+	*Gbl_LineBufPtr = c;
+    Gbl_LineBufPtr++;
+
+    if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
+    {
+        printf ("DoOneChar: Line buffer overflow (%d) at line %d\n", 
+                    ASL_LINE_BUFFER_SIZE, Gbl_CurrentLineNumber);
+        ResetCurrentLineBuffer ();
+    }
+
+    if (c == '\t')
+        Gbl_CurrentColumn += 8 - (Gbl_CurrentColumn & (8-1));
+
+    else
+        Gbl_CurrentColumn++;
 }
 
 
@@ -551,16 +754,18 @@ count (
 			*Gbl_LineBufPtr = yytext[i];
             Gbl_LineBufPtr++;
 
-            if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + 255))
+            if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
             {
-                printf ("Line buf overflow at line %d\n", Gbl_CurrentLineNumber);
+                printf ("Count: Line buffer overflow (%d) at line %d\n", 
+                            ASL_LINE_BUFFER_SIZE, Gbl_CurrentLineNumber);
                 ResetCurrentLineBuffer ();
             }
 
-			if (yytext[i] == '\t')
-				Gbl_CurrentColumn += 8 - (Gbl_CurrentColumn & (8-1));
-			else
-				Gbl_CurrentColumn++;
+            if (yytext[i] == '\t')
+                Gbl_CurrentColumn += 8 - (Gbl_CurrentColumn & (8-1));
+    
+            else
+                Gbl_CurrentColumn++;
 		}
 
         Gbl_InputByteCount++;
@@ -568,37 +773,6 @@ count (
 	}
 }
 
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-
-void 
-DoOneChar (
-    int                     c)
-{
-
-    Gbl_InputByteCount++;
-    if (c == '\n')
-    {
-        ResetCurrentLineBuffer ();
-    }
-
-    else if (c == '\t')
-        Gbl_CurrentColumn += 8 - (Gbl_CurrentColumn & (8-1));
-    
-    else
-        Gbl_CurrentColumn++;
-}
 
 
 /*******************************************************************************
@@ -616,14 +790,35 @@ DoOneChar (
 void
 comment (void)
 {
-	char                c, c1;
+	char                c;
+    char                c1 = 0;
 
 
 loop:
+
+    /* Eat chars until end-of-comment */
+
 	while ((c = input()) != '*' && c != 0)
     {
         DoOneChar (c);
+        c1 = c;
     }
+
+    /*
+     * Check for nested comment -- can help catch cases where a previous
+     * comment was accidently left unterminated
+     */
+    if ((c1 == '/') && (c == '*'))
+    {
+        AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT, 
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, NULL);
+    }
+
+
+
+    /* Comment is closed only if the NEXT character is a slash */
+
+    DoOneChar (c);
 
 	if ((c1 = input()) != '/' && c != 0)
 	{
@@ -686,6 +881,7 @@ literal (void)
     d = CleanString;
 
     s = AslCompilertext;
+    DoOneChar (*s);
     s++;
 
     while (*s)
