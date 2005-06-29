@@ -155,6 +155,75 @@ ARGUMENT_INFO               AcpiDbObjectTypes [] =
     {NULL}           /* Must be null terminated */
 };
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiDbWalkForReferences
+ *
+ * PARAMETERS:  Callback from WalkNamespace
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Called for a single method found in the namespace
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiDbWalkForReferences (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_OBJECT_INTERNAL    *ObjDesc = (ACPI_OBJECT_INTERNAL *) Context;
+    ACPI_NAMED_OBJECT       *Entry = (ACPI_NAMED_OBJECT *) ObjHandle;
+
+
+    if (Entry == (void *) ObjDesc)
+    {
+        AcpiOsPrintf ("Object is a Named Object [%4.4s]\n", &Entry->Name);
+    }
+
+    if (Entry->Object == ObjDesc)
+    {
+        AcpiOsPrintf ("Reference at Entry->Object %p [%4.4s]\n", Entry, &Entry->Name);
+    }
+
+    if (Entry->ChildTable == (void *) ObjDesc)
+    {
+        AcpiOsPrintf ("Reference at Entry->ChildTable %p [%4.4s]\n", Entry, &Entry->Name);
+    }
+
+    return AE_OK;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiDbFindReferences
+ *
+ * PARAMETERS:
+ *
+ * RETURN:
+ *
+ * DESCRIPTION:
+ *
+ *****************************************************************************/
+
+void
+AcpiDbFindReferences (
+    char                    *ObjectArg)
+{
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+
+
+    ObjDesc = (ACPI_OBJECT_INTERNAL *) STRTOUL (ObjectArg, NULL, 16);
+
+    AcpiWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                    AcpiDbWalkForReferences, (void *) ObjDesc, NULL);
+
+
+}
+
 
 /******************************************************************************
  *
@@ -373,12 +442,12 @@ AcpiDbDumpNamespace (
         if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
         {
             SubtreeEntry = (ACPI_HANDLE) STRTOUL (StartArg, NULL, 16);
-            if (!AcpiOsReadable (SubtreeEntry, sizeof (NAME_TABLE_ENTRY)))
+            if (!AcpiOsReadable (SubtreeEntry, sizeof (ACPI_NAMED_OBJECT)))
             {
                 AcpiOsPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
                 return;
             }
-            if (!VALID_DESCRIPTOR_TYPE ((SubtreeEntry), DESC_TYPE_NTE))
+            if (!VALID_DESCRIPTOR_TYPE ((SubtreeEntry), ACPI_DESC_TYPE_NAMED))
             {
                 AcpiOsPrintf ("Address %p is not a valid NTE\n", SubtreeEntry);
                 return;
@@ -481,7 +550,7 @@ AcpiDbSendNotify (
     char                    *Name,
     UINT32                  Value)
 {
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
 
 
     /* Translate name to an NTE */
@@ -631,7 +700,7 @@ AcpiDbWalkForSpecificObjects (
     char                    buffer[64];
 
 
-    ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
+    ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
 
     /* Get the full pathname to this method */
 
@@ -760,7 +829,7 @@ AcpiDbWalkAndMatchName (
     char                    Buffer[96];
 
 
-    ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
+    ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
 
 
     /* Check for a name match */
@@ -770,7 +839,7 @@ AcpiDbWalkAndMatchName (
         /* Wildcard support */
 
         if ((RequestedName[i] != '?') &&
-            (RequestedName[i] != ((char *)(&((NAME_TABLE_ENTRY *)ObjHandle)->Name))[i]))
+            (RequestedName[i] != ((char *)(&((ACPI_NAMED_OBJECT*)ObjHandle)->Name))[i]))
         {
             /* No match, just exit */
 
@@ -791,7 +860,7 @@ AcpiDbWalkAndMatchName (
 
     else
     {
-        AcpiOsPrintf ("%32s (0x%p) - %s\n", Buffer, ObjHandle, AcpiCmGetTypeName (((NAME_TABLE_ENTRY *)ObjHandle)->Type));
+        AcpiOsPrintf ("%32s (0x%p) - %s\n", Buffer, ObjHandle, AcpiCmGetTypeName (((ACPI_NAMED_OBJECT*)ObjHandle)->Type));
     }
 
     return AE_OK;

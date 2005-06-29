@@ -224,7 +224,7 @@ AcpiDbDecodeAndDisplayObject (
     char                    *OutputType)
 {
     void                    *ObjPtr;
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
     UINT32                  Display = DB_BYTE_DISPLAY;
     char                    Buffer[80];
     ACPI_BUFFER             RetBuf;
@@ -269,11 +269,11 @@ AcpiDbDecodeAndDisplayObject (
             return;
         }
 
-        if (VALID_DESCRIPTOR_TYPE ((ObjPtr), DESC_TYPE_NTE))
+        if (VALID_DESCRIPTOR_TYPE ((ObjPtr), ACPI_DESC_TYPE_NAMED))
         {
             /* This is an NTE */
 
-            if (!AcpiOsReadable (ObjPtr, sizeof (NAME_TABLE_ENTRY)))
+            if (!AcpiOsReadable (ObjPtr, sizeof (ACPI_NAMED_OBJECT)))
             {
                 AcpiOsPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
                 return;
@@ -283,7 +283,7 @@ AcpiDbDecodeAndDisplayObject (
             goto DumpNte;
         }
 
-        else if (VALID_DESCRIPTOR_TYPE ((ObjPtr), DESC_TYPE_ACPI_OBJ))
+        else if (VALID_DESCRIPTOR_TYPE ((ObjPtr), ACPI_DESC_TYPE_INTERNAL))
         {
             /* This is an ACPI OBJECT */
 
@@ -297,7 +297,7 @@ AcpiDbDecodeAndDisplayObject (
             AcpiAmlDumpObjectDescriptor (ObjPtr, 1);
         }
 
-        else if (VALID_DESCRIPTOR_TYPE ((ObjPtr), DESC_TYPE_PARSER))
+        else if (VALID_DESCRIPTOR_TYPE ((ObjPtr), ACPI_DESC_TYPE_PARSER))
         {
             /* This is an Parser Op object */
 
@@ -348,14 +348,14 @@ DumpNte:
     }
 
     AcpiOsPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
-    if (!AcpiOsReadable (Entry, sizeof (NAME_TABLE_ENTRY)))
+    if (!AcpiOsReadable (Entry, sizeof (ACPI_NAMED_OBJECT)))
     {
         AcpiOsPrintf ("Invalid NTE at address %p\n", Entry);
         return;
     }
 
-    AcpiCmDumpBuffer ((void *) Entry, sizeof (NAME_TABLE_ENTRY), Display, ACPI_UINT32_MAX);
-    AcpiAmlDumpNameTableEntry (Entry, 1);
+    AcpiCmDumpBuffer ((void *) Entry, sizeof (ACPI_NAMED_OBJECT), Display, ACPI_UINT32_MAX);
+    AcpiAmlDumpAcpiNamedObject (Entry, 1);
 
     if (Entry->Object)
     {
@@ -439,18 +439,18 @@ AcpiDbDisplayInternalObject (
         return;
     }
 
-    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_PARSER))
+    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_PARSER))
     {
         AcpiOsPrintf ("<Parser>  ");
     }
 
-    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
     {
-        AcpiOsPrintf ("<NTE>             Name %4.4s Type %s", &((NAME_TABLE_ENTRY *)ObjDesc)->Name,
-                                                            AcpiCmGetTypeName (((NAME_TABLE_ENTRY *)ObjDesc)->Type));
+        AcpiOsPrintf ("<NTE>             Name %4.4s Type %s", &((ACPI_NAMED_OBJECT*)ObjDesc)->Name,
+                                                            AcpiCmGetTypeName (((ACPI_NAMED_OBJECT*)ObjDesc)->Type));
     }
 
-    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
+    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
     {
         AcpiOsPrintf ("<Obj> ");
         Type = ObjDesc->Common.Type;
@@ -544,7 +544,7 @@ AcpiDbDisplayMethodInfo (
 {
     ACPI_WALK_STATE         *WalkState;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
     ACPI_GENERIC_OP         *RootOp;
     ACPI_GENERIC_OP         *Op;
     ACPI_OP_INFO            *OpInfo;
@@ -567,7 +567,7 @@ AcpiDbDisplayMethodInfo (
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->NameTableEntry;
+    Entry = WalkState->Origin->AcpiNamedObject;
 
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
@@ -655,7 +655,7 @@ AcpiDbDisplayLocals (void)
     UINT32                  i;
     ACPI_WALK_STATE         *WalkState;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
 
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
@@ -666,7 +666,7 @@ AcpiDbDisplayLocals (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->NameTableEntry;
+    Entry = WalkState->Origin->AcpiNamedObject;
 
 
     AcpiOsPrintf ("Local Variables for method [%4.4s]:\n", &Entry->Name);
@@ -700,7 +700,7 @@ AcpiDbDisplayArguments (void)
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     UINT32                  NumArgs;
     UINT32                  Concurrency;
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
 
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
@@ -711,7 +711,7 @@ AcpiDbDisplayArguments (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->NameTableEntry;
+    Entry = WalkState->Origin->AcpiNamedObject;
 
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
@@ -746,7 +746,7 @@ AcpiDbDisplayResults (void)
     ACPI_WALK_STATE         *WalkState;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     UINT32                  NumResults;
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
 
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
@@ -757,7 +757,7 @@ AcpiDbDisplayResults (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->NameTableEntry;
+    Entry = WalkState->Origin->AcpiNamedObject;
     NumResults = WalkState->NumResults - WalkState->CurrentResult;
 
     AcpiOsPrintf ("Method [%4.4s] has %d stacked result objects\n", &Entry->Name, NumResults);
@@ -789,7 +789,7 @@ AcpiDbDisplayCallingTree (void)
     UINT32                  i;
     ACPI_WALK_STATE         *WalkState;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
 
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
@@ -800,14 +800,14 @@ AcpiDbDisplayCallingTree (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->NameTableEntry;
+    Entry = WalkState->Origin->AcpiNamedObject;
 
     AcpiOsPrintf ("Current Control Method Call Tree\n");
 
     for (i = 0; WalkState; i++)
     {
         ObjDesc = WalkState->MethodDesc;
-        Entry = WalkState->Origin->NameTableEntry;
+        Entry = WalkState->Origin->AcpiNamedObject;
 
         AcpiOsPrintf ("    [%4.4s]\n", &Entry->Name);
 
