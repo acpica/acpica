@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: nsstack - Scope stack manipulation
+ * Module Name: dswscope - Scope stack manipulation
  *
  *****************************************************************************/
 
@@ -114,15 +114,15 @@
  *
  *****************************************************************************/
 
-#define __NSSTACK_C__
+#define __DSWSCOPE_C__
 
 #include <acpi.h>
 #include <interp.h>
-#include <namesp.h>
+#include <dispatch.h>
 
 
 #define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsstack");
+        MODULE_NAME         ("dswscope");
 
 
 #define STACK_POP(head) head
@@ -131,7 +131,7 @@
 
 /****************************************************************************
  *
- * FUNCTION:    NsScopeStackClear
+ * FUNCTION:    DsScopeStackClear
  *
  * PARAMETERS:  None
  *
@@ -141,7 +141,7 @@
  ***************************************************************************/
 
 void
-NsScopeStackClear (
+DsScopeStackClear (
 	ACPI_WALK_STATE			*WalkState)
 {
 	ACPI_STATUS				Status = AE_OK;
@@ -151,14 +151,14 @@ NsScopeStackClear (
     {
         /* Pop a scope off the stack */
 
-		Status = NsScopeStackPop (WalkState);
+		Status = DsScopeStackPop (WalkState);
     }
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsScopeStackPush
+ * FUNCTION:    DsScopeStackPush
  *
  * PARAMETERS:  *NewScope,              - Name to be made current
  *              Type,                   - Type of frame being pushed
@@ -169,7 +169,7 @@ NsScopeStackClear (
  ***************************************************************************/
 
 ACPI_STATUS
-NsScopeStackPush (
+DsScopeStackPush (
     NAME_TABLE_ENTRY        *NewScope, 
     ACPI_OBJECT_TYPE        Type,
 	ACPI_WALK_STATE			*WalkState)
@@ -177,14 +177,14 @@ NsScopeStackPush (
     SCOPE_STACK             *ScopeInfo;
 
 
-    FUNCTION_TRACE ("NsScopeStackPush");
+    FUNCTION_TRACE ("DsScopeStackPush");
 
 
     if (!NewScope)
     {
         /*  invalid scope   */
 
-        REPORT_ERROR ("NsScopeStackPush: null scope passed");
+        REPORT_ERROR ("DsScopeStackPush: null scope passed");
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -192,7 +192,7 @@ NsScopeStackPush (
 
     if (!AmlValidateObjectType (Type))
     {
-        REPORT_WARNING ("NsScopeStackPush: type code out of range");
+        REPORT_WARNING ("DsScopeStackPush: type code out of range");
     }
 
 
@@ -220,7 +220,7 @@ NsScopeStackPush (
 
 /****************************************************************************
  *
- * FUNCTION:    NsScopeStackPop
+ * FUNCTION:    DsScopeStackPop
  *
  * PARAMETERS:  Type                - The type of frame to be found
  *
@@ -236,13 +236,13 @@ NsScopeStackPush (
  ***************************************************************************/
 
 ACPI_STATUS
-NsScopeStackPop (
+DsScopeStackPop (
 	ACPI_WALK_STATE			*WalkState)
 {
     SCOPE_STACK             *ScopeInfo;
 
 
-    FUNCTION_TRACE ("NsScopeStackPop");
+    FUNCTION_TRACE ("DsScopeStackPop");
 
     /*
      * Pop scope info object off the stack.
