@@ -310,8 +310,7 @@ CmDeleteElementFromAllocList (
     {
         /* Boy we got problems. */
 
-        _REPORT_ERROR (Module, Line, Component,
-            "CmDeleteElementFromAllocList: Empty allocation list and someone's calling CmFree.");
+        _REPORT_ERROR (Module, Line, Component, "CmDeleteElementFromAllocList: Empty allocation list, nothing to free!");
         
         return_VOID;
     }
@@ -327,8 +326,7 @@ CmDeleteElementFromAllocList (
     {   
         if (Address != Gbl_HeadAllocPtr->Address)
         {
-            _REPORT_ERROR (Module, Line, Component,
-                "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
+            _REPORT_ERROR (Module, Line, Component, "CmDeleteElementFromAllocList: Deleting non-allocated memory...");
 
             goto Cleanup;
         }
@@ -339,8 +337,7 @@ CmDeleteElementFromAllocList (
         Gbl_HeadAllocPtr = NULL;
         Gbl_TailAllocPtr = NULL;
         
-        DEBUG_PRINT (TRACE_ALLOCATIONS,
-            ("_CmFree: Allocation list deleted.  No more outstanding allocations.\n"));
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("_CmFree: Allocation list deleted.  There are no outstanding allocations.\n"));
     
         goto Cleanup;
     }
@@ -376,13 +373,21 @@ CmDeleteElementFromAllocList (
         
         /* Mark the segment as deleted */
 
-        if (Element->Size > sizeof (void *))
+        if (Element->Size >= 4)
         {
-            DwordLen = Element->Size / sizeof (void *);
+            DwordLen = Element->Size / 4;
 
             for (i = 0; i < DwordLen; i++)
             {
-                ((void **) Element->Address)[i] = (void *) 0x00DEAD00;
+                ((UINT32 *) Element->Address)[i] = (UINT32) 0x00DEAD00;
+            }
+
+            /* Set obj type, desc, and ref count fields to all ones */
+
+            ((UINT32 *) Element->Address)[0] = (UINT32) 0xFFFFFFFF;
+            if (Element->Size >= 8)
+            {
+                ((UINT32 *) Element->Address)[1] = (UINT32) 0xFFFFFFFF;
             }
         }
 
@@ -392,11 +397,8 @@ CmDeleteElementFromAllocList (
             
     else
     {
-        _REPORT_ERROR (Module, Line, Component,
-            "_CmFree: Entry not found in list");
-        DEBUG_PRINT (TRACE_ALLOCATIONS,
-            ("_CmFree: Entry %p was not found in allocation list\n", Address));
-    
+        _REPORT_ERROR (Module, Line, Component, "_CmFree: Entry not found in list");
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("_CmFree: Entry %p was not found in allocation list\n", Address));
     }
 
 
@@ -427,24 +429,30 @@ CmDumpAllocationInfo (
 {
     FUNCTION_TRACE ("CmDumpAllocationInfo");
     
+
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	("Current outstanding allocations: %d (%d b, %d Kb)\n",
-    	Gbl_CurrentAllocCount, Gbl_CurrentAllocSize, Gbl_CurrentAllocSize / 1024));
+    	            ("Current outstanding allocations: %d (%d b, %d Kb)\n",
+    	            Gbl_CurrentAllocCount, Gbl_CurrentAllocSize, Gbl_CurrentAllocSize / 1024));
+
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-		("Maximum concurrent allocations thus far: %d (%d b, %d Kb)\n",
-		Gbl_MaxConcurrentAllocCount, Gbl_MaxConcurrentAllocSize, Gbl_MaxConcurrentAllocSize / 1024));
+		            ("Maximum concurrent allocations thus far: %d (%d b, %d Kb)\n",
+		            Gbl_MaxConcurrentAllocCount, Gbl_MaxConcurrentAllocSize, Gbl_MaxConcurrentAllocSize / 1024));
+
 	DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	("Current number of allocated internal objects: %d (%d b, %d Kb)\n",
-    	Gbl_CurrentObjectCount, Gbl_CurrentObjectSize, Gbl_CurrentObjectSize / 1024));
+    	            ("Current number of allocated internal objects: %d (%d b, %d Kb)\n",
+    	            Gbl_CurrentObjectCount, Gbl_CurrentObjectSize, Gbl_CurrentObjectSize / 1024));
+
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	("Maximum concurrent number of allocated internal objects: %d (%d b, %d Kb)\n",
-    	Gbl_MaxConcurrentObjectCount, Gbl_MaxConcurrentObjectSize, Gbl_MaxConcurrentObjectSize / 1024));
+    	            ("Maximum concurrent number of allocated internal objects: %d (%d b, %d Kb)\n",
+    	            Gbl_MaxConcurrentObjectCount, Gbl_MaxConcurrentObjectSize, Gbl_MaxConcurrentObjectSize / 1024));
+
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	("Total number of allocated internal objects: %d (%d b, %d Kb)\n",
-    	Gbl_RunningObjectCount, Gbl_RunningObjectSize, Gbl_RunningObjectSize / 1024));
+    	            ("Total number of allocated internal objects: %d (%d b, %d Kb)\n",
+    	            Gbl_RunningObjectCount, Gbl_RunningObjectSize, Gbl_RunningObjectSize / 1024));
+
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	("Total number of allocations: %d (%d b, %d Kb)\n",
-    	Gbl_RunningAllocCount, Gbl_RunningAllocSize, Gbl_RunningAllocSize / 1024));
+    	            ("Total number of allocations: %d (%d b, %d Kb)\n",
+    	            Gbl_RunningAllocCount, Gbl_RunningAllocSize, Gbl_RunningAllocSize / 1024));
 
 	return_VOID;
 }
@@ -585,8 +593,7 @@ _CmAllocate (
     
     CmAddElementToAllocList (Address, Size, MEM_MALLOC, Component, Module, Line);
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %x Size 0x%x\n",
-        Address, Size));
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmAllocate: %p Size 0x%x\n", Address, Size));
 
     return_VALUE (Address);
 }
@@ -646,8 +653,7 @@ _CmCallocate (
 
     CmAddElementToAllocList (Address, Size, MEM_CALLOC, Component, Module, Line);
     
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %x Size 0x%x\n",
-        Address, Size));
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmCallocate: %p Size 0x%x\n", Address, Size));
 
     return_VALUE (Address);
 }
@@ -689,7 +695,7 @@ _CmFree (
     CmDeleteElementFromAllocList (Address, Component, Module, Line);
     OsdFree (Address);
     
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %x freed\n", Address));
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("CmFree: %p freed\n", Address));
 
     return_VOID;
 }
@@ -742,7 +748,7 @@ _CmAllocateObjectDesc (
 
         NewDesc->Common.DataType = DESC_TYPE_ACPI_OBJ;
 
-        DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %x Size 0x%x\n",
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size 0x%x\n",
                         NewDesc, sizeof (ACPI_OBJECT_INTERNAL)));
     }
 
