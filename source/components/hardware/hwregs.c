@@ -123,9 +123,10 @@
  ******************************************************************************/
 
 INT32
-GetBitShift (UINT32 Mask)
+GetBitShift (
+    UINT32                  Mask)
 {
-    INT32             Shift;
+    INT32                   Shift;
 
 
     FUNCTION_TRACE ("GetBitShift");
@@ -156,12 +157,15 @@ GetBitShift (UINT32 Mask)
  ******************************************************************************/
 
 UINT32
-AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
+AcpiRegisterIO (
+    INT32                   ReadWrite, 
+    INT32                   RegisterId, 
+    ...)
 {
-    UINT32          RegisterValue = 0;
-    UINT32          Mask = 0;
-    UINT32          Value = 0;
-    UINT32          GpeReg = 0;
+    UINT32                  RegisterValue = 0;
+    UINT32                  Mask = 0;
+    UINT32                  Value = 0;
+    UINT32                  GpeReg = 0;
 
 
     FUNCTION_TRACE ("AcpiRegisterIO");
@@ -542,8 +546,8 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
 void 
 HwClearAcpiStatus (void)
 {
-    UINT16      GpeLength;
-    UINT16      Index;
+    UINT16                  GpeLength;
+    UINT16                  Index;
 
 
     FUNCTION_TRACE ("HwClearAcpiStatus");
