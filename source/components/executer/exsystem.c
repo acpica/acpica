@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -206,19 +206,14 @@ AcpiExSystemDoStall (
     ACPI_FUNCTION_ENTRY ();
 
 
-    if (HowLong > 1000) /* 1 millisecond */
+    if (HowLong > 100) /* 100 microseconds */
     {
-        /* Since this thread will sleep, we must release the interpreter */
-
-        AcpiExExitInterpreter ();
-
-        AcpiOsSleep (0, (HowLong / 1000) + 1);
-
-        /* And now we must get the interpreter again */
-
-        Status = AcpiExEnterInterpreter ();
+        /* 
+         * Longer than 100 usec, use sleep instead
+         * (according to ACPI specification)
+         */
+        Status = AcpiExSystemDoSuspend ((HowLong / 1000) + 1);
     }
-
     else
     {
         AcpiOsStall (HowLong);
