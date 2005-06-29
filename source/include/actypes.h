@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.190 $
+ *       $Revision: 1.191 $
  *
  *****************************************************************************/
 
@@ -191,6 +191,7 @@ typedef char                            *ACPI_PHYSICAL_ADDRESS;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000002
 #define _HW_ALIGNMENT_SUPPORT
+#define ACPI_USE_NATIVE_DIVIDE                          /* No 64-bit integers, ok to use native divide */
 
 /*
  * (16-bit only) internal integers must be 32-bits, so
