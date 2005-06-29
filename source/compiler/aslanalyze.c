@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,51 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslanalyze")
+
+/* Local prototypes */
+
+static UINT32
+AnMapArgTypeToBtype (
+    UINT32                  ArgType);
+
+static UINT32
+AnMapEtypeToBtype (
+    UINT32                  Etype);
+
+static void
+AnFormatBtype (
+    char                    *Buffer,
+    UINT32                  Btype);
+
+static UINT32
+AnGetBtype (
+    ACPI_PARSE_OBJECT       *Op);
+
+static UINT32
+AnCheckForReservedName (
+    ACPI_PARSE_OBJECT       *Op,
+    char                    *Name);
+
+static void
+AnCheckForReservedMethod (
+    ACPI_PARSE_OBJECT       *Op,
+    ASL_METHOD_INFO         *MethodInfo);
+
+static UINT32
+AnMapObjTypeToBtype (
+    ACPI_PARSE_OBJECT       *Op);
+
+static BOOLEAN
+AnLastStatementIsReturn (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+AnCheckMethodReturnValue (
+    ACPI_PARSE_OBJECT       *Op,
+    const ACPI_OPCODE_INFO  *OpInfo,
+    ACPI_PARSE_OBJECT       *ArgOp,
+    UINT32                  RequiredBtypes,
+    UINT32                  ThisNodeBtype);
 
 
 /*******************************************************************************

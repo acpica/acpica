@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file for iASL
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -190,31 +190,6 @@ AslPushInputFileStack (
 
 
 /*
- * aslmain - entry
- */
-static void
-Options (
-    void);
-
-static void
-HelpMessage (
-    void);
-
-static void
-Usage (
-    void);
-
-void
-static AslInitialize (
-    void);
-
-static void
-AslCommandLine (
-    int                     argc,
-    char                    **argv);
-
-
-/*
  * aslcompile - compile mainline
  */
 void
@@ -236,14 +211,6 @@ CmDoOutputFiles (
 void
 CmCleanupAndExit (
     void);
-
-static void
-CmFlushSourceCode (
-    void);
-
-static ACPI_STATUS
-FlCheckForAscii (
-    ASL_FILE_INFO           *FileInfo);
 
 
 /*
@@ -297,49 +264,6 @@ AnMethodTypingWalkEnd (
     UINT32                  Level,
     void                    *Context);
 
-static UINT32
-AnMapArgTypeToBtype (
-    UINT32                  ArgType);
-
-static UINT32
-AnMapEtypeToBtype (
-    UINT32                  Etype);
-
-static void
-AnFormatBtype (
-    char                    *Buffer,
-    UINT32                  Btype);
-
-static UINT32
-AnGetBtype (
-    ACPI_PARSE_OBJECT       *Op);
-
-static UINT32
-AnCheckForReservedName (
-    ACPI_PARSE_OBJECT       *Op,
-    char                    *Name);
-
-static void
-AnCheckForReservedMethod (
-    ACPI_PARSE_OBJECT       *Op,
-    ASL_METHOD_INFO         *MethodInfo);
-
-static UINT32
-AnMapObjTypeToBtype (
-    ACPI_PARSE_OBJECT       *Op);
-
-static BOOLEAN
-AnLastStatementIsReturn (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-AnCheckMethodReturnValue (
-    ACPI_PARSE_OBJECT       *Op,
-    const ACPI_OPCODE_INFO  *OpInfo,
-    ACPI_PARSE_OBJECT       *ArgOp,
-    UINT32                  RequiredBtypes,
-    UINT32                  ThisNodeBtype);
-
 
 /*
  * aslerror - error handling/reporting
@@ -388,10 +312,6 @@ AeLocalGetRootPointer (
     UINT32                  Flags,
     ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress);
 
-static void
-AeAddToErrorLog (
-    ASL_ERROR_MSG           *Enode);
-
 
 /*
  * asllisting - generate all "listing" type files
@@ -413,102 +333,12 @@ void
 LsDoHexOutput (
     void);
 
-static void
-LsDumpAscii (
-    UINT32                  FileId,
-    UINT32                  Count,
-    UINT8                   *Buffer);
-
-static void
-LsDumpAsciiInComment (
-    UINT32                  FileId,
-    UINT32                  Count,
-    UINT8                   *Buffer);
-
-static ACPI_STATUS
-LsAmlListingWalk (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static void
-LsGenerateListing (
-    UINT32                  FileId);
-
-static void
-LsPushNode (
-    char                    *Filename);
-
-static ASL_LISTING_NODE *
-LsPopNode (
-    void);
-
-static void
-LsCheckException (
-    UINT32                  LineNumber,
-    UINT32                  FileId);
-
-static void
-LsFlushListingBuffer (
-    UINT32                  FileId);
-
-static void
-LsWriteListingHexBytes (
-    UINT8                   *Buffer,
-    UINT32                  Length,
-    UINT32                  FileId);
-
-static UINT32
-LsWriteOneSourceLine (
-    UINT32                  FileId);
-
-static void
-LsFinishSourceListing (
-    UINT32                  FileId);
-
-static void
-LsWriteSourceLines (
-    UINT32                  ToLineNumber,
-    UINT32                  ToLogicalLineNumber,
-    UINT32                  FileId);
-
-static void
-LsWriteNodeToListing (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  FileId);
-
-static void
-LsDoHexOutputC (
-    void);
-
-static void
-LsDoHexOutputAsm (
-    void);
-
 
 /*
  * aslfold - constant folding
  */
 ACPI_STATUS
 OpcAmlConstantWalk (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static ACPI_STATUS
-OpcAmlEvaluationWalk1 (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static ACPI_STATUS
-OpcAmlEvaluationWalk2 (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static ACPI_STATUS
-OpcAmlCheckForConstant (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context);
@@ -535,22 +365,6 @@ void
 OpcGetIntegerWidth (
     ACPI_PARSE_OBJECT       *Op);
 
-static void
-OpcDoAccessAs (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpcDoUnicode (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpcDoEisaId (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpcDoUuId (
-    ACPI_PARSE_OBJECT       *Op);
-
 
 /*
  * asloperands - generate AML operands for the AML opcodes
@@ -562,51 +376,6 @@ UtGetArg (
 
 void
 OpnGenerateAmlOperands (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnDoField (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnDoBankField (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnDoBuffer (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnDoDefinitionBlock (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnDoFieldCommon (
-    ACPI_PARSE_OBJECT       *FieldOp,
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnDoIndexField (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnDoLoadTable (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnDoMethod (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnDoPackage (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnDoRegion (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-OpnAttachNameToNode (
     ACPI_PARSE_OBJECT       *Op);
 
 
@@ -621,36 +390,6 @@ OptOptimizeNamePath (
     char                    *AmlNameString,
     ACPI_NAMESPACE_NODE     *TargetNode);
 
-static ACPI_STATUS
-OptSearchToRoot (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *CurrentNode,
-    ACPI_NAMESPACE_NODE     *TargetNode,
-    ACPI_BUFFER             *TargetPath,
-    char                    **NewPath);
-
-static ACPI_STATUS
-OptBuildShortestPath (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *CurrentNode,
-    ACPI_NAMESPACE_NODE     *TargetNode,
-    ACPI_BUFFER             *CurrentPath,
-    ACPI_BUFFER             *TargetPath,
-    ACPI_SIZE               AmlNameStringLength,
-    UINT8                   IsDeclaration,
-    char                    **ReturnNewPath);
-
-static ACPI_STATUS
-OptOptimizeNameDeclaration (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *CurrentNode,
-    ACPI_NAMESPACE_NODE     *TargetNode,
-    char                    *AmlNameString,
-    char                    **NewPath);
-
 
 /*
  * aslcodegen - code generation
@@ -658,34 +397,6 @@ OptOptimizeNameDeclaration (
 void
 CgGenerateAmlOutput (
     void);
-
-static ACPI_STATUS
-CgAmlWriteWalk (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static void
-CgLocalWriteAmlData (
-    ACPI_PARSE_OBJECT       *Op,
-    void                    *Buffer,
-    UINT32                  Length);
-
-static void
-CgWriteAmlOpcode (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-CgWriteTableHeader (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-CgCloseTable (
-    void);
-
-static void
-CgWriteNode (
-    ACPI_PARSE_OBJECT       *Op);
 
 
 /*
@@ -714,28 +425,9 @@ CgGenerateAmlLengths (
     ACPI_PARSE_OBJECT       *Op);
 
 
-static UINT8
-CgGetPackageLenByteCount (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  PackageLength);
-
-static void
-CgGenerateAmlOpcodeLength (
-    ACPI_PARSE_OBJECT       *Op);
-
-
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-void
-LnAdjustLengthToRoot (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  LengthDelta);
-#endif
-
-
 /*
  * aslmap - opcode mappings and reserved method names
  */
-
 ACPI_OBJECT_TYPE
 AslMapNamedOpcodeToDataType (
     UINT16                  Opcode);
@@ -753,43 +445,6 @@ TrAmlTransformWalk (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context);
-
-static void
-TrTransformSubtree (
-    ACPI_PARSE_OBJECT       *Op);
-
-static char *
-TrAmlGetNextTempName (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT8                   *TempCount);
-
-static void
-TrAmlInitLineNumbers (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_PARSE_OBJECT       *Neighbor);
-
-static void
-TrAmlInitNode (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT16                  ParseOpcode);
-
-static void
-TrAmlSetSubtreeParent (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_PARSE_OBJECT       *Parent);
-
-static void
-TrAmlInsertPeer (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_PARSE_OBJECT       *NewPeer);
-
-static void
-TrDoDefinitionBlock (
-    ACPI_PARSE_OBJECT       *Op);
-
-static void
-TrDoSwitch (
-    ACPI_PARSE_OBJECT       *StartNode);
 
 
 /*
@@ -853,7 +508,8 @@ TrSetEndLineNumber (
     ACPI_PARSE_OBJECT       *Op);
 
 void
-TrWalkTree (void);
+TrWalkTree (
+    void);
 
 ACPI_PARSE_OBJECT *
 TrLinkPeerNode (
@@ -874,14 +530,6 @@ ACPI_PARSE_OBJECT *
 TrLinkPeerNodes (
     UINT32                  NumPeers,
     ...);
-
-static ACPI_PARSE_OBJECT *
-TrGetNextNode (
-    void);
-
-static char *
-TrGetNodeFlagName (
-    UINT32                  Flags);
 
 
 /*
@@ -943,22 +591,6 @@ ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename);
 
-static void
-FlOpenFile (
-    UINT32                  FileId,
-    char                    *Filename,
-    char                    *Mode);
-
-static FILE *
-FlOpenLocalFile (
-    char                    *LocalName,
-    char                    *Mode);
-
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-ACPI_STATUS
-FlParseInputPathname (
-    char                    *InputFilename);
-#endif
 
 /*
  * asload - load namespace in prep for cross reference
@@ -966,28 +598,6 @@ FlParseInputPathname (
 ACPI_STATUS
 LdLoadNamespace (
     ACPI_PARSE_OBJECT       *RootOp);
-
-static ACPI_STATUS
-LdLoadFieldElements (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState);
-
-static ACPI_STATUS
-LdLoadResourceElements (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_WALK_STATE         *WalkState);
-
-static ACPI_STATUS
-LdNamespace1Begin (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static ACPI_STATUS
-LdNamespace1End (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
 
 
 /*
@@ -1000,44 +610,6 @@ LkCrossReferenceNamespace (
 ACPI_STATUS
 LsDisplayNamespace (
     void);
-
-static ACPI_STATUS
-LsCompareOneNamespaceObject (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
-
-static ACPI_STATUS
-LsDoOneNamespaceObject (
-    ACPI_HANDLE             ObjHandle,
-    UINT32                  Level,
-    void                    *Context,
-    void                    **ReturnValue);
-
-static BOOLEAN
-LkObjectExists (
-    char                    *Name);
-
-static void
-LkCheckFieldRange (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  RegionBitLength,
-    UINT32                  FieldBitOffset,
-    UINT32                  FieldBitLength,
-    UINT32                  AccessBitWidth);
-
-static ACPI_STATUS
-LkNamespaceLocateBegin (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
-static ACPI_STATUS
-LkNamespaceLocateEnd (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
 
 
 /*
@@ -1132,16 +704,6 @@ UtStrtoul64 (
 ACPI_INTEGER
 UtDoConstant (
     char                    *String);
-
-static void
-UtPadNameWithUnderscores (
-    char                    *NameSeg,
-    char                    *PaddedNameSeg);
-
-static void
-UtAttachNameseg (
-    ACPI_PARSE_OBJECT       *Op,
-    char                    *Name);
 
 
 /*
@@ -1338,10 +900,6 @@ ASL_RESOURCE_NODE *
 RsDoGeneralRegisterDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
-
-static UINT32
-RsGetStringDataLength (
-    ACPI_PARSE_OBJECT       *InitializerOp);
 
 #endif /*  __ASLCOMPILER_H */
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -122,6 +122,36 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslcodegen")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+CgAmlWriteWalk (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static void
+CgLocalWriteAmlData (
+    ACPI_PARSE_OBJECT       *Op,
+    void                    *Buffer,
+    UINT32                  Length);
+
+static void
+CgWriteAmlOpcode (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+CgWriteTableHeader (
+    ACPI_PARSE_OBJECT       *Op);
+
+static void
+CgCloseTable (
+    void);
+
+static void
+CgWriteNode (
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*******************************************************************************

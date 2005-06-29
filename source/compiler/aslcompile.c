@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,16 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslcompile")
+
+/* Local prototypes */
+
+static void
+CmFlushSourceCode (
+    void);
+
+static ACPI_STATUS
+FlCheckForAscii (
+    ASL_FILE_INFO           *FileInfo);
 
 
 /*******************************************************************************
