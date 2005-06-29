@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -116,6 +116,9 @@
  *
  *****************************************************************************/
 
+//    \"([^\"]|(\\\"))*\"         { literal (); return STRING_LITERAL; }
+
+
 #include <stdlib.h>
 #include <string.h>
 #include "aslcompiler.h"
@@ -173,7 +176,7 @@ NamePathTail                [.]{NameSeg}
 "/*"                        { comment(); }
 "//"                        { comment2(); }
 
-\"([^\"]|(\\\"))*\"         { literal (); return STRING_LITERAL; }
+"\""                        { literal (); return STRING_LITERAL; }
 
 
 0[xX]{HexDigitChar}+ |
@@ -898,58 +901,69 @@ comment2 (void)
 void
 literal (void)
 {
-    char                *d;
-    char                *s;
+    char                *s = MsgBuffer;
     char                *CleanString;
+    char                Escape = FALSE;
 
 
-    CleanString = malloc (strlen (AslCompilertext));
-    d = CleanString;
 
-    s = AslCompilertext;
-    DoOneChar (*s);
-    s++;
+    /* Eat chars until end-of-literal */
 
-    while (*s)
+    while ((*s = (char) input()) != '\"' && *s != EOF)
     {
-        if (*s != '\\')
-        {
-            *d = *s;
-            d++;
-            DoOneChar (*s);
-            s++;
-        }
+        DoOneChar (*s);
 
-        else /* (*s == backslash escape) */
+        /* Special handling for backslash-escape sequence */
+
+        if (*s == '\\')
         {
+            /* Toss this backslash, get next char */
+
+            *s = (char) input();
+            if (*s == EOF)
+            {
+                break;
+            }
+
             DoOneChar (*s);
-            s++;
+
+            /* Weed out "special" chars */
 
             switch (*s)
             {
             case 'n':
-                *d = 0x0A;      /* LF */
+                *s = 0x0A;      /* LF */
                 break;
 
-            case 't':
-                *d = 0x20;
+            case 't':           /* TAB */
+                *s = 0x20;
                 break;
 
-            default:
-                *d = *s;
+            default:            /* Just keep the char */
                 break;
             }
-
-            d++;
-            DoOneChar (*s);
-            s++;
         }
+
+        s++;
     }
 
-    d--;
-    *d = 0;
+    /* Null terminate and copy string to a new buffer */
 
+    *s = 0;
+
+    CleanString = malloc (strlen (MsgBuffer));
+    if (!CleanString)
+    {
+        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
+                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                        Gbl_InputByteCount, Gbl_CurrentColumn,
+                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+        return;
+    }
+
+    STRCPY (CleanString, MsgBuffer);
     AslCompilerlval.s = CleanString;
 }
+
 
 

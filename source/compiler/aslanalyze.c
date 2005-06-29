@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -194,8 +194,8 @@ AnMapArgTypeToBtype (
     case ARGI_DATAOBJECT:     /* Buffer, string, package or reference to a Node - Used only by SizeOf operator*/
         return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE);
 
-    case ARGI_COMPLEXOBJ:    /* Buffer or package */
-        return (ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE);
+    case ARGI_COMPLEXOBJ:    /* Buffer, String, or package */
+        return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | ACPI_BTYPE_PACKAGE);
 
     case ARGI_MUTEX:
         return (ACPI_BTYPE_MUTEX);
@@ -1235,6 +1235,9 @@ AnSemanticAnalysisWalkEnd (
 
                     /* TBD: implement analysis of current value (type) of the local */
 
+                    /* For now, just treat any local as a typematch */
+
+                    //ThisNodeBtype = RequiredBtypes;
                     break;
 
                 case ARG0:
@@ -1246,6 +1249,9 @@ AnSemanticAnalysisWalkEnd (
                 case ARG6:
 
                     /* Hard to analyze argument types, sow we won't */
+                    /* For now, just treat any arg as a typematch */
+
+                    //ThisNodeBtype = RequiredBtypes;
                     break;
 
                 case DEBUG:
