@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.62 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -140,7 +140,8 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiLoadTables (void)
+AcpiLoadTables (
+    void)
 {
     ACPI_POINTER            RsdpAddress;
     ACPI_STATUS             Status;
@@ -336,7 +337,7 @@ AcpiUnloadTable (
     /* Find all tables of the requested type */
 
     TableDesc = AcpiGbl_TableLists[TableType].Next;
-    while (TableDesc);
+    while (TableDesc)
     {
         /*
          * Delete all namespace entries owned by this table.  Note that these

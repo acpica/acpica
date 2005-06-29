@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.60 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,51 +122,6 @@
 
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbutils")
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiTbHandleToObject
- *
- * PARAMETERS:  TableId             - Id for which the function is searching
- *              TableDesc           - Pointer to return the matching table
- *                                      descriptor.
- *
- * RETURN:      Search the tables to find one with a matching TableId and
- *              return a pointer to that table descriptor.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiTbHandleToObject (
-    UINT16                  TableId,
-    ACPI_TABLE_DESC         **ReturnTableDesc)
-{
-    UINT32                  i;
-    ACPI_TABLE_DESC         *TableDesc;
-
-
-    ACPI_FUNCTION_NAME ("TbHandleToObject");
-
-
-    for (i = 0; i < ACPI_TABLE_MAX; i++)
-    {
-        TableDesc = AcpiGbl_TableLists[i].Next;
-        while (TableDesc)
-        {
-            if (TableDesc->TableId == TableId)
-            {
-                *ReturnTableDesc = TableDesc;
-                return (AE_OK);
-            }
-
-            TableDesc = TableDesc->Next;
-        }
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "TableId=%X does not exist\n", TableId));
-    return (AE_BAD_PARAMETER);
-}
 
 
 /*******************************************************************************
@@ -318,5 +273,52 @@ AcpiTbChecksum (
     }
     return (sum);
 }
+
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbHandleToObject
+ *
+ * PARAMETERS:  TableId             - Id for which the function is searching
+ *              TableDesc           - Pointer to return the matching table
+ *                                      descriptor.
+ *
+ * RETURN:      Search the tables to find one with a matching TableId and
+ *              return a pointer to that table descriptor.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiTbHandleToObject (
+    UINT16                  TableId,
+    ACPI_TABLE_DESC         **ReturnTableDesc)
+{
+    UINT32                  i;
+    ACPI_TABLE_DESC         *TableDesc;
+
+
+    ACPI_FUNCTION_NAME ("TbHandleToObject");
+
+
+    for (i = 0; i < ACPI_TABLE_MAX; i++)
+    {
+        TableDesc = AcpiGbl_TableLists[i].Next;
+        while (TableDesc)
+        {
+            if (TableDesc->TableId == TableId)
+            {
+                *ReturnTableDesc = TableDesc;
+                return (AE_OK);
+            }
+
+            TableDesc = TableDesc->Next;
+        }
+    }
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "TableId=%X does not exist\n", TableId));
+    return (AE_BAD_PARAMETER);
+}
+#endif
 
 

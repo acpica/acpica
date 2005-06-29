@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.74 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -139,7 +139,7 @@
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiTbMatchSignature (
     char                    *Signature,
     ACPI_TABLE_DESC         *TableInfo,
@@ -285,7 +285,8 @@ AcpiTbRecognizeTable (
      * This can be any one of many valid ACPI tables, it just isn't one of
      * the tables that is consumed by the core subsystem
      */
-    Status = AcpiTbMatchSignature (TableHeader->Signature, TableInfo, SearchType);
+    Status = AcpiTbMatchSignature (TableHeader->Signature,
+                TableInfo, SearchType);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -442,7 +443,8 @@ AcpiTbInitTableDescriptor (
  ******************************************************************************/
 
 void
-AcpiTbDeleteAllTables (void)
+AcpiTbDeleteAllTables (
+    void)
 {
     ACPI_TABLE_TYPE         Type;
 
