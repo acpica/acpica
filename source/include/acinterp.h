@@ -337,48 +337,6 @@ AcpiAmlPrepOperands (
 
 
 /*
- * iepstack - package stack utilities
- */
-
-/*
-UINT32
-AcpiAmlPkgStackLevel (
-     void);
-
-void
-AcpiAmlClearPkgStack (
-    void);
-
-ACPI_STATUS
-AcpiAmlPkgPushLength (
-    UINT32                  Length,
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AcpiAmlPkgPushExecLength (
-    UINT32                  Length);
-
-ACPI_STATUS
-AcpiAmlPkgPushExec (
-    UINT8                   *Code,
-    UINT32                  Len);
-
-ACPI_STATUS
-AcpiAmlPkgPopLength (
-    INT32                   NoErrUnder,
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AcpiAmlPkgPopExecLength (
-    void);
-
-ACPI_STATUS
-AcpiAmlPkgPopExec (
-    void);
-
-*/
-
-/*
  * amsystem - Interface to OS services
  */
 
