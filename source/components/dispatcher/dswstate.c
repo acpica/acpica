@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.66 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -962,9 +962,11 @@ AcpiDsCreateWalkState (
     WalkState->MethodDesc       = MthDesc;
     WalkState->Thread           = Thread;
 
+    WalkState->ParserState.StartOp = Origin;
+
     /* Init the method args/local */
 
-#ifndef _ACPI_ASL_COMPILER
+#if (!defined (ACPI_NO_METHOD_EXECUTION) && !defined (ACPI_CONSTANT_EVAL_ONLY))
     AcpiDsMethodDataInit (WalkState);
 #endif
 
@@ -1012,6 +1014,7 @@ AcpiDsInitAmlWalk (
 {
     ACPI_STATUS             Status;
     ACPI_PARSE_STATE        *ParserState = &WalkState->ParserState;
+    ACPI_PARSE_OBJECT       *ExtraOp;
 
 
     ACPI_FUNCTION_TRACE ("DsInitAmlWalk");
@@ -1059,9 +1062,26 @@ AcpiDsInitAmlWalk (
     }
     else
     {
-        /* Setup the current scope */
-
-        ParserState->StartNode = ParserState->StartOp->Common.Node;
+        /* 
+         * Setup the current scope.
+         * Find a Named Op that has a namespace node associated with it.
+         * search upwards from this Op.  Current scope is the first
+         * Op with a namespace node.
+         */
+        ExtraOp = ParserState->StartOp;
+        while (ExtraOp && !ExtraOp->Common.Node)
+        {
+            ExtraOp = ExtraOp->Common.Parent;
+        }
+        if (!ExtraOp)
+        {
+            ParserState->StartNode = NULL;
+        }
+        else
+        {
+            ParserState->StartNode = ExtraOp->Common.Node;
+        }
+        
         if (ParserState->StartNode)
         {
             /* Push start scope on scope stack and make it current  */
