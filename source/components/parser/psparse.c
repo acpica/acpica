@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.154 $
+ *              $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -914,8 +914,17 @@ AcpiPsParseLoop (
 
                 /* Special processing for certain opcodes */
 
-                if (WalkState->PassNumber <= ACPI_IMODE_LOAD_PASS1)
+                if ((WalkState->PassNumber <= ACPI_IMODE_LOAD_PASS1) &&
+                   ((WalkState->ParseFlags & ACPI_PARSE_DISASSEMBLE) == 0))
                 {
+                    /*
+                     * We want to skip If/Else/While constructs during Pass1
+                     * because we want to actually conditionally execute the
+                     * code during Pass2.
+                     *
+                     * Except for disassembly, where we always want to
+                     * walk the If/Else/While packages
+                     */
                     switch (Op->Common.AmlOpcode)
                     {
                     case AML_IF_OP:
