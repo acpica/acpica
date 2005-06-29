@@ -311,4 +311,10 @@ typedef struct AllocationInfo
 } ALLOCATION_INFO;
 
 
+typedef struct
+{
+    FIXED_EVENT_HANDLER     Handler;        /* Address of handler, if any */
+    void                    *Context;       /* Context to be passed to handler */
+
+} FIXED_EVENT_INFO;
 #endif
