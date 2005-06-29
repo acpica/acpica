@@ -121,7 +121,7 @@
 #include <interpreter.h>
 #include <namespace.h>
 #include <tables.h>
-
+#include <parser.h>
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cmdelete");
@@ -520,6 +520,25 @@ CmDeleteInternalObj (
 /* TBD       
         CmDeleteInternalObj (Object->Region.AddrHandler);        
 */
+        break;
+
+
+    case ACPI_TYPE_Method:
+
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Method %p, ParserOp %p\n", 
+                                Object, Object->Method.ParserOp));
+
+/* TBD: Remove ifdef when RPARSER is obsoleted */
+
+#ifndef _RPARSER
+        if (Object->Method.ParserOp)
+        {
+            PsDeleteParseTree (Object->Method.ParserOp);
+            Object->Method.ParserOp = NULL;
+        }
+#endif
+
         break;
 
 
