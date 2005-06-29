@@ -788,6 +788,17 @@ AmlExecStore (
             TmpDesc = *(DestDesc->Reference.Where);
             
             /*
+             * If the TmpDesc is NULL, that means an uninitialized package
+             *  has been used as a destination, therefore, we must create
+             *  the destination element to match the type of the sourc element
+             */
+            if (!TmpDesc)
+            {
+                TmpDesc = CmCreateInternalObject (ValDesc->Common.Type);
+                *(DestDesc->Reference.Where) = TmpDesc;
+            }
+
+            /*
              * If the Destination element is a package, we will delete
              *  that object and construct a new one.
              */
@@ -795,40 +806,44 @@ AmlExecStore (
             {
                 if(ACPI_TYPE_Package == TmpDesc->Common.Type)
                 {
-                    /* Take away the reference for being part of a package and delete 
-                    */
+                    /* Take away the reference for being part of a package and delete  */
+
                     CmRemoveReference (TmpDesc);
 
-                    /* Now create the new object for storage 
-                     *  and build the new package to match the original
+                    /* 
+                     * Now create the new object for storage 
+                     * and build the new package to match the original
                      */
                     TmpDesc = CmCreateInternalObject (ACPI_TYPE_Package);
                     if (TmpDesc)
                     {
-                        Status = CmBuildCopyInternalPackageObject(ValDesc, TmpDesc);
-
+                        Status = CmBuildCopyInternalPackageObject (ValDesc, TmpDesc);
                         if (AE_OK == Status)
                         {
                             /*
                              * Increment the ref count and point the destination
                              *  object's where element to our newly built package.
                              */ 
-                            CmUpdateObjectReference(TmpDesc, REF_INCREMENT);
+                            CmAddReference (TmpDesc);
                             *(DestDesc->Reference.Where) = TmpDesc;
                         }
+
                         else
                         {
-                            /* An error occurred when copying the internal object
+                            /* 
+                             * An error occurred when copying the internal object
                              *  so delete the reference.
                              */
                             CmRemoveReference (TmpDesc);
                         }
                     }
+
                     else
                     {
                         Status = AE_NO_MEMORY;
                     }
                 }
+
                 else
                 {
                     /* 
@@ -840,7 +855,8 @@ AmlExecStore (
 
                     if (AE_OK != Status)
                     {
-                        /* An error occurred when copying the internal object
+                        /* 
+                         * An error occurred when copying the internal object
                          *  so delete the reference.
                          */
                         DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Unable to copy the internal object\n"));
@@ -857,7 +873,7 @@ AmlExecStore (
                  */
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Reference Destination is NULL\n"));
                 DeleteDestDesc = DestDesc;
-                Status = AE_AML_OPERAND_TYPE;
+                Status = AE_NO_MEMORY;
             }
 
             break;
