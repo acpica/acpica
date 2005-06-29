@@ -110,139 +110,6 @@
 #define _COMPONENT          NAMESPACE
 
 
-/* Scope stack */
-
-SCOPE_STACK     ScopeStack[MAX_SCOPE_NESTING];
-SCOPE_STACK     *CurrentScope;
-
-
-/* 
- * Names built-in to the interpreter
- *
- * Initial values are currently supported only for types String and Number.
- * To avoid type punning, both are specified as strings in this table.
- */
-
-static struct InitVal {
-    char        *Name;
-    NsType      Type;
-    char        *Val;
-} PreDefinedNames[] = {
-    {"_GPE",    TYPE_DefAny},
-    {"_PR_",    TYPE_DefAny},
-    {"_SB_",    TYPE_DefAny},
-    {"_SI_",    TYPE_DefAny},
-    {"_TZ_",    TYPE_DefAny},
-    {"_REV",    TYPE_Number, "2"},
-    {"_OS_",    TYPE_String, "Intel AML interpreter"},
-    {"_GL_",    TYPE_Mutex},
-
-    /* Table terminator */
-
-    {(char *)0, TYPE_Any}
-};
-
-
-/* 
- * Elements of NsProperties are bit significant
- * and should be one-to-one with values of NsType in acpinmsp.h
- */
-
-INT32 NsProperties[] = {     /* properties of types */
-    0,                      /* Any              */
-    0,                      /* Number           */
-    0,                      /* String           */
-    0,                      /* Buffer           */
-    LOCAL,                  /* Package          */
-    0,                      /* FieldUnit        */
-    NEWSCOPE | LOCAL,       /* Device           */
-    LOCAL,                  /* Event            */
-    NEWSCOPE | LOCAL,       /* Method           */
-    LOCAL,                  /* Mutex            */
-    LOCAL,                  /* Region           */
-    NEWSCOPE | LOCAL,       /* Power            */
-    NEWSCOPE | LOCAL,       /* Processor        */
-    NEWSCOPE | LOCAL,       /* Thermal          */
-    0,                      /* Alias            */
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0,
-    0,                      /* DefField         */
-    0,                      /* BankField        */
-    0,                      /* IndexField       */
-    0,                      /* DefFieldDefn     */
-    0,                      /* BankFieldDefn    */
-    0,                      /* IndexFieldDefn   */
-    0,                      /* If               */
-    0,                      /* Else             */
-    0,                      /* While            */
-    NEWSCOPE,               /* Scope            */
-    LOCAL,                  /* DefAny           */
-    0                       /* Lvalue           */
-};
-
-char BadType[] = "ERROR: unused type encoding found in table";
-
-
-/* 
- * Elements of NsTypeNames should be
- * one-to-one with values of NsType in acpinmsp.h
- */
-
-/* 
- * The type Any is used as a "don't care" when searching; when stored in a
- * table it really means that we have thus far seen no evidence to indicate
- * what type is actually going to be stored for this entry.
- */
-
-char *NsTypeNames[] = { /* printable names of types */
-    "Unknown",
-    "Number",
-    "String",
-    "Buffer",
-    "Package",
-    "FieldUnit",
-    "Device",
-    "Event",
-    "Method",
-    "Mutex",
-    "Region",
-    "Power",
-    "Processor",
-    "Thermal",
-    "Alias",
-    BadType, 
-    BadType, 
-    BadType, 
-    BadType, 
-    BadType,
-    BadType, 
-    BadType, 
-    BadType, 
-    BadType, 
-    BadType,
-    "DefField",
-    "BankField",
-    "IndexField",
-    "DefFieldDefn",
-    "BankFieldDefn",
-    "IndexFieldDefn",
-    "If",
-    "Else",
-    "While",
-    "Scope",
-    "ERROR: DefAny found in table", /* should never happen */
-    "ERROR: Lvalue found in table"  /* should never happen */
-};
-
-
 
 static ST_KEY_DESC_TABLE KDT[] = {
     {"0000", 'I', "Package stack not empty at method exit", "Package stack not empty at method exit"},
@@ -670,7 +537,7 @@ ACPI_STATUS
 NsSetup (void)
 {
     ACPI_STATUS             Status;
-    struct InitVal          *InitVal = NULL;
+    PREDEFINED_NAMES        *InitVal = NULL;
     NsHandle                handle;
 
 
@@ -688,8 +555,9 @@ NsSetup (void)
         return AE_OK;
     }
 
-    NsCurrentSize = NsRootSize = NS_ROOT_TABLE_SIZE;
-    RootObject->Scope = NsAllocateNteDesc (NsRootSize);
+    /* Allocate a root scope table */
+
+    RootObject->Scope = NsAllocateNteDesc (NS_TABLE_SIZE);
     if (!RootObject->Scope)
     {
         /*  root name table allocation failure  */
@@ -703,18 +571,13 @@ NsSetup (void)
      * Init the root scope first entry -- since it is the exemplar of 
      * the scope (Some fields are duplicated to new entries!) 
      */
-    RootObject->Scope->ParentEntry = RootObject;
+    NsInitializeTable (RootObject->Scope, NULL, RootObject);
 
     /* Push the root name table on the scope stack */
     
     ScopeStack[0].Scope = RootObject->Scope;
     ScopeStack[0].Type = TYPE_Any;
     CurrentScope = &ScopeStack[0];
-
-#ifdef NSLOGFILE
-    LogFile = OsdOpen ("ns.log", "wtc");
-    OsdPrintf (LogFile, "root = %08x size %d\n", RootObject->Scope, NsRootSize);
-#endif
 
     /* Enter the pre-defined names in the name table */
     
@@ -826,7 +689,6 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
     nte             *EntryToSearch = NULL;
     nte             *ThisEntry = NULL;
     nte             *ScopeToPush = NULL;
-    INT32           Size;
     INT32           NumSegments;
     INT32           NullNamePath = FALSE;
     NsType          TypeToCheckFor;              /* Type To Check For */
@@ -913,7 +775,6 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
         DEBUG_PRINT (TRACE_NAMES, ("root \n"));
         
         EntryToSearch = RootObject->Scope;
-        Size = NsRootSize;
         Name++;                 /* point to segment part */
     }
     
@@ -922,7 +783,6 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
         /* Name is relative to current scope, start there */
         
         EntryToSearch = CurrentScope->Scope;
-        Size = NsCurrentSize;
 
         while (*Name == AML_ParentPrefix)
         {
@@ -945,15 +805,6 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
                 FUNCTION_EXIT;
                 return AE_NOT_FOUND;
             }
-        }
-
-        if (EntryToSearch->ParentScope == (nte *) 0)
-        {
-            /*
-             * Backed up all the way to the root
-             * (Only root should have not no parent scope)
-             */
-            Size = NsRootSize;
         }
     }
 
@@ -979,12 +830,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 
         NullNamePath = TRUE;
         NumSegments = 0;
-
-        /* WAS:
-        ThisEntry = RootObject->Scope;
-        */
         ThisEntry = RootObject;
-        Size = NsRootSize;
     }
 
     else
@@ -1074,7 +920,7 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
                 /*  first or second pass load mode ==> locate the next scope    */
                 
                 DEBUG_PRINT (TRACE_NAMES, ("Creating/adding a new scope\n"));
-                ThisEntry->Scope = NsAllocateNteDesc (NS_DEFAULT_TABLE_SIZE);
+                ThisEntry->Scope = NsAllocateNteDesc (NS_TABLE_SIZE);
 
                 if (!ThisEntry->Scope)
                 {
@@ -1107,23 +953,12 @@ NsEnter (char *Name, NsType Type, OpMode LoadMode, NsHandle *RetHandle)
 
             if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
             {
-                /* Set newly-created child scope's parent scope */
-                
-                ThisEntry->Scope->ParentScope = EntryToSearch;
+                /* Initialize the new table */
 
-                /* Set newly-create child scope's actual parent */
-
-                ThisEntry->Scope->ParentEntry = ThisEntry;
-
-                /* Set links */
-
-                ThisEntry->Scope->NextEntry = NULL;
-                ThisEntry->Scope->PrevEntry = NULL;  /* This is first entry?? TBD */
-
+                NsInitializeTable (ThisEntry->Scope, EntryToSearch, ThisEntry);
             }
         }
 
-        Size = NS_DEFAULT_TABLE_SIZE;
         EntryToSearch = ThisEntry->Scope;
         Name += 4;                        /* point to next name segment */
     }
