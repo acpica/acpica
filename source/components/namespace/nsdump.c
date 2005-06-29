@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -274,7 +274,7 @@ AcpiNsDumpOneObject (
 
             else
             {
-                DownstreamSiblingMask &= 0xffffffff ^ (1 << (Level - 1));
+                DownstreamSiblingMask &= ACPI_UINT32_MAX ^ (1 << (Level - 1));
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
             }
 
