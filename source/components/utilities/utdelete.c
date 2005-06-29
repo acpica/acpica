@@ -252,14 +252,14 @@ CmUpdateObjectReference (
 
     if (IS_NS_HANDLE ((NAME_TABLE_ENTRY *) Object))
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmUpdateObjectReference: found a handle %p\n",
+        DEBUG_PRINT (ACPI_INFO, ("CmUpdateObjectReference: Object %p is NS handle\n",
                         Object));
         return_ACPI_STATUS (AE_OK);
     }
 
     if (NsIsInSystemTable (Object))
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmUpdateObjectReference: found an AML pointer %p\n",
+        DEBUG_PRINT (ACPI_INFO, ("CmUpdateObjectReference: **** Object %p is Pcode Ptr\n",
                         Object));
         return_ACPI_STATUS (AE_OK);
     }
@@ -280,6 +280,13 @@ CmUpdateObjectReference (
          */
         for (i = 0; i < Object->Package.Count; i++)
         {
+            /* Check for end-of-list (partially constructed package) */
+
+            if (!Object->Package.Elements[i])
+            {
+                break;
+            }
+
             CmUpdateObjectReference (Object->Package.Elements[i], Action);
         }
         break;
@@ -369,7 +376,7 @@ CmDeleteInternalObj (
 
     case TYPE_String:
 
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** String %p, ptr %p\n", 
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** String %p, ptr %p\n", 
                                 Object, Object->String.Pointer));
 
         /* Free the actual string buffer */
@@ -380,7 +387,7 @@ CmDeleteInternalObj (
 
     case TYPE_Buffer:
         
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Buffer %p, ptr %p\n", 
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Buffer %p, ptr %p\n", 
                                 Object, Object->Buffer.Pointer));
 
         /* Free the actual buffer */
@@ -391,26 +398,26 @@ CmDeleteInternalObj (
 
     case TYPE_Package:
         
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Package of count %d\n", 
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Package of count %d\n", 
                                 Object->Package.Count));
 
         /* Free each object in the element array */
 
         for (i = 0; i < Object->Package.Count; i++)
         {
+            /* Check for end-of-list (partially constructed package) */
+
+            if (!Object->Package.Elements[i])
+            {
+                break;
+            }
+
             CmDeleteInternalObj (Object->Package.Elements[i]);
         }
 
         /* Free the (variable length) element pointer array */
 
         ObjPointer = Object->Package.Elements;
-        break;
-
-
-    case TYPE_Method:
-        
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Method %p\n", 
-                                Object));
         break;
 
 
@@ -422,7 +429,7 @@ CmDeleteInternalObj (
 
     case TYPE_DefField:
         
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Field %p, container %p\n", 
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: **** Field %p, container %p\n", 
                                 Object, Object->Field.Container));
 
         CmDeleteInternalObj (Object->Field.Container);
@@ -432,7 +439,7 @@ CmDeleteInternalObj (
     case TYPE_BankField:
         
         CmDeleteInternalObj (Object->BankField.Container);
-        CmDeleteInternalObj (Object->BankField.BankSelect);
+        CmDeleteInternalObj (Object->BankField.BankSelect);  /* TBD: is this necessary? */
         break;
 
 
@@ -528,19 +535,21 @@ CmDeleteInternalObject (
 
     if (!Object)
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: ***Null Object Ptr\n"));
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: **** Null Object Ptr\n"));
         return_VOID;
     }
 
     if (NsIsInSystemTable (Object))
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: ***Object is in Pcode block\n"));
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: **** Object %p is Pcode Ptr\n",
+                        Object));
         return_VOID;
     }
 
     if (IS_NS_HANDLE (Object))
     {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: ***Object is a namespace handle\n"));
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: **** Object %p is NS handle\n",
+                        Object));
         return_VOID;
     }
 
