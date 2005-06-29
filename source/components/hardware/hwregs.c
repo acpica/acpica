@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  ******************************************************************************/
 
@@ -285,15 +285,9 @@ AcpiHwObtainSleepTypeRegisterData (
      *  two elements
      */
 
-    if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
-    {
-        /* Must be a package */
+    Status = AcpiCmResolvePackageReferences(ObjDesc);
 
-        REPORT_ERROR (("Sleep State object is not of type Package\n"));
-        Status = AE_ERROR;
-    }
-
-    else if (ObjDesc->Package.Count < 2)
+    if (ObjDesc->Package.Count < 2)
     {
         /* Must have at least two elements */
 
