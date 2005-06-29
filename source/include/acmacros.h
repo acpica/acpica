@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.49 $
+ *       $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -308,13 +308,15 @@
 #define ARGP_LIST5(a,b,c,d,e)           (ARG_1(a)|ARG_2(b)|ARG_3(c)|ARG_4(d)|ARG_5(e))
 #define ARGP_LIST6(a,b,c,d,e,f)         (ARG_1(a)|ARG_2(b)|ARG_3(c)|ARG_4(d)|ARG_5(e)|ARG_6(f))
 
-#define GET_CURRENT_ARG_TYPE(List)      (List & 0x1F)
-#define INCREMENT_ARG_LIST(List)        (List >>= ARG_TYPE_WIDTH)
+#define GET_CURRENT_ARG_TYPE(List)      (List & ((UINT32) 0x1F))
+#define INCREMENT_ARG_LIST(List)        (List >>= ((UINT32) ARG_TYPE_WIDTH))
 
 
 /*
  * Reporting macros that are never compiled out
  */
+
+#define PARAM_LIST(pl)                  pl
 
 /*
  * Error reporting.  These versions add callers module and line#.  Since
@@ -324,23 +326,32 @@
 
 #ifdef ACPI_DEBUG
 
-#define REPORT_INFO(a)                  _ReportInfo(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define REPORT_ERROR(a)                 _ReportError(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define REPORT_WARNING(a)               _ReportWarning(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define REPORT_INFO(fp)                 {_ReportInfo(_THIS_MODULE,__LINE__,_COMPONENT); \
+                                            DebugPrintRaw PARAM_LIST(fp);}
+#define REPORT_ERROR(fp)                {_ReportError(_THIS_MODULE,__LINE__,_COMPONENT); \
+                                            DebugPrintRaw PARAM_LIST(fp);}
+#define REPORT_WARNING(fp)              {_ReportWarning(_THIS_MODULE,__LINE__,_COMPONENT); \
+                                            DebugPrintRaw PARAM_LIST(fp);}
 
 #else
 
-#define REPORT_INFO(a)                  _ReportInfo("",__LINE__,_COMPONENT,a)
-#define REPORT_ERROR(a)                 _ReportError("",__LINE__,_COMPONENT,a)
-#define REPORT_WARNING(a)               _ReportWarning("",__LINE__,_COMPONENT,a)
+#define REPORT_INFO(fp)                 {_ReportInfo("",__LINE__,_COMPONENT); \
+                                            DebugPrintRaw PARAM_LIST(fp);}
+#define REPORT_ERROR(fp)                {_ReportError("",__LINE__,_COMPONENT); \
+                                            DebugPrintRaw PARAM_LIST(fp);}
+#define REPORT_WARNING(fp)              {_ReportWarning("",__LINE__,_COMPONENT); \
+                                            DebugPrintRaw PARAM_LIST(fp);}
 
 #endif
 
 /* Error reporting.  These versions pass thru the module and line# */
 
-#define _REPORT_INFO(a,b,c,d)           _ReportInfo(a,b,c,d)
-#define _REPORT_ERROR(a,b,c,d)          _ReportError(a,b,c,d)
-#define _REPORT_WARNING(a,b,c,d)        _ReportWarning(a,b,c,d)
+#define _REPORT_INFO(a,b,c,fp)          {_ReportInfo(a,b,c); \
+                                            DebugPrintRaw PARAM_LIST(fp);}
+#define _REPORT_ERROR(a,b,c,fp)         {_ReportError(a,b,c); \
+                                            DebugPrintRaw PARAM_LIST(fp);}
+#define _REPORT_WARNING(a,b,c,fp)       {_ReportWarning(a,b,c); \
+                                            DebugPrintRaw PARAM_LIST(fp);}
 
 /* Buffer dump macros */
 
@@ -420,8 +431,6 @@
  *    2) Debug error level or trace level for the print statement is enabled
  *
  */
-
-#define PARAM_LIST(pl)                  pl
 
 #define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer))
 
@@ -504,7 +513,7 @@
 #undef DEBUG_ONLY_MEMBERS
 #define DEBUG_ONLY_MEMBERS(a)
 #undef OP_INFO_ENTRY
-#define OP_INFO_ENTRY(Opcode,Flags,Name,PArgs,IArgs)     {Opcode,Flags,PArgs,IArgs}
+#define OP_INFO_ENTRY(Flags,Name,PArgs,IArgs)     {Flags,PArgs,IArgs}
 #endif
 
 
