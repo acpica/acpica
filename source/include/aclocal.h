@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.90 $
+ *       $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -723,7 +723,6 @@ typedef struct acpi_device_walk_info
     UINT16                  Num_STA;
     UINT16                  Num_INI;
     UINT16                  Num_HID;
-    UINT16                  Num_PCI;
     ACPI_TABLE_DESC         *TableDesc;
 
 } ACPI_DEVICE_WALK_INFO;
