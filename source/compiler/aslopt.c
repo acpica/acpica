@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.16 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -367,6 +367,14 @@ OptBuildShortestPath (
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "(EXTRA ^)"));
         }
     }
+
+    /* Make sure we haven't gone off the end of the target path */
+
+    if (Index > TargetPath->Length)
+    {
+        Index = TargetPath->Length;
+    }
+
 
     ACPI_STRCPY (&NewPathExternal[i], &((char *) TargetPath->Pointer)[Index]);
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, " %-24s", NewPathExternal));
