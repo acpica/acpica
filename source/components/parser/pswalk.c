@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -352,7 +352,6 @@ AcpiPsDeleteParseTree (
     {
         return_VOID;
     }
-
 
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, Thread);
     if (!WalkState)
