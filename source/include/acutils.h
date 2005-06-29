@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.112 $
+ *       $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -317,12 +317,12 @@ AcpiUtCopyIobjectToEobject (
 ACPI_STATUS
 AcpiUtCopyEsimpleToIsimple(
     ACPI_OBJECT             *UserObj,
-    ACPI_OPERAND_OBJECT     *Obj);
+    ACPI_OPERAND_OBJECT     **ReturnObj);
 
 ACPI_STATUS
 AcpiUtCopyEobjectToIobject (
     ACPI_OBJECT             *Obj,
-    ACPI_OPERAND_OBJECT     *InternalObj);
+    ACPI_OPERAND_OBJECT     **InternalObj);
 
 ACPI_STATUS
 AcpiUtCopyISimpleToIsimple (
@@ -722,11 +722,6 @@ AcpiUtFree (
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line);
-
-void
-AcpiUtInitStaticObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 void
