@@ -379,7 +379,7 @@ PsGetNextNamepath (
                     Name->ResultObj     = MethodOp;          /* Point METHODCALL/NAME to the METHOD NTE */
                     PsAppendArg (Arg, Name);
                     
-                    *ArgCount = Count->Value.Integer & ACPI_METHOD_ARG_MASK;
+                    *ArgCount = Count->Value.Integer & METHOD_FLAGS_ARG_COUNT;
                 }
             }
 
