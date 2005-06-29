@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -594,28 +594,14 @@ AcpiNsGetObjectValue (
         }
 
         /*
-         *  Just copy from the original to the return object
+         * Just copy from the original to the return object
+         *
+         * TBD: [Future] - need a low-level object copy that handles
+         * the reference count automatically.  (Don't want to copy it)
          */
 
-        switch (Node->Type)
-        {
-        case ACPI_TYPE_PROCESSOR:
-           ObjDesc->Processor.ProcId        = ValDesc->Processor.ProcId;
-           ObjDesc->Processor.Address       = ValDesc->Processor.Address;
-           ObjDesc->Processor.SysHandler    = ValDesc->Processor.SysHandler;
-           ObjDesc->Processor.DrvHandler    = ValDesc->Processor.DrvHandler;
-           ObjDesc->Processor.AddrHandler   = ValDesc->Processor.AddrHandler;
-
-           break;
-
-        case ACPI_TYPE_POWER:
-            ObjDesc->PowerResource.SystemLevel      = ValDesc->PowerResource.SystemLevel;
-            ObjDesc->PowerResource.ResourceOrder    = ValDesc->PowerResource.ResourceOrder;
-            ObjDesc->PowerResource.SysHandler       = ValDesc->PowerResource.SysHandler;
-            ObjDesc->PowerResource.DrvHandler       = ValDesc->PowerResource.DrvHandler;
-
-            break;
-        }
+        MEMCPY (ObjDesc, ValDesc, sizeof (ACPI_OPERAND_OBJECT));
+        ObjDesc->Common.ReferenceCount = 1;
     }
 
 
