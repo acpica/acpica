@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.53 $
+ *       $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -154,6 +154,23 @@
 #define HI_LIMIT(b)                     ((UINT8) (((b) & 0x00FF0000) >> 16))
 
 
+#ifdef _IA16
+/*
+ * For 16-bit addresses, we have to assume that the upper 32 bits 
+ * are zero.
+ */
+#define ACPI_GET_ADDRESS(a)             ((a).Lo)
+#define ACPI_STORE_ADDRESS(a,b)         {(a).Hi=0;(a).Lo=(b);}
+#define ACPI_VALID_ADDRESS(a)           ((a).Hi | (a).Lo)
+
+#else
+/*
+ * Full 64-bit address on 32-bit and 64-bit platforms
+ */
+#define ACPI_GET_ADDRESS(a)             (a)
+#define ACPI_STORE_ADDRESS(a,b)         ((a)=(b))
+#define ACPI_VALID_ADDRESS(a)           (a)
+#endif
  /*
   * Extract a byte of data using a pointer.  Any more than a byte and we
   * get into potential aligment issues -- see the STORE macros below
@@ -219,6 +236,11 @@
 #define MUL_16(a)                       _MUL(a,4)
 #define MOD_16(a)                       _MOD(a,16)
 
+/*
+ * Divide and Modulo
+ */
+#define ACPI_DIVIDE(n,d)                ((n) / (d))
+#define ACPI_MODULO(n,d)                ((n) % (d))
 
 /*
  * Rounding macros (Power of two boundaries only)
@@ -228,12 +250,17 @@
 #define ROUND_UP(value,boundary)        (((value) + ((boundary)-1)) & (~((boundary)-1)))
 
 #define ROUND_DOWN_TO_32_BITS(a)        ROUND_DOWN(a,4)
+#define ROUND_DOWN_TO_64_BITS(a)        ROUND_DOWN(a,8)
 #define ROUND_DOWN_TO_NATIVE_WORD(a)    ROUND_DOWN(a,ALIGNED_ADDRESS_BOUNDARY)
 
 #define ROUND_UP_TO_32BITS(a)           ROUND_UP(a,4)
+#define ROUND_UP_TO_64BITS(a)           ROUND_UP(a,8)
 #define ROUND_UP_TO_NATIVE_WORD(a)      ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
 
 #define ROUND_PTR_UP_TO_4(a,b)          ((b *)(((NATIVE_UINT)(a) + 3) & ~3))
+#define ROUND_PTR_UP_TO_8(a,b)          ((b *)(((NATIVE_UINT)(a) + 7) & ~7))
+
+#define ROUND_UP_TO_1K(a)               (((a) + 1023) >> 10)
 
 #ifdef DEBUG_ASSERT
 #undef DEBUG_ASSERT
@@ -248,9 +275,16 @@
 
 #define ACPI_PCI_FUNCTION(a)            (UINT32) ((((a) & ACPI_PCI_FUNCTION_MASK) >> 16))
 #define ACPI_PCI_DEVICE(a)              (UINT32) ((((a) & ACPI_PCI_DEVICE_MASK) >> 32))
+
+#ifndef _IA16
 #define ACPI_PCI_REGISTER(a)            (UINT32) (((a) & ACPI_PCI_REGISTER_MASK))
 #define ACPI_PCI_DEVFUN(a)              (UINT32) ((ACPI_PCI_DEVICE(a) << 16) | ACPI_PCI_FUNCTION(a))
 
+#else
+#define ACPI_PCI_REGISTER(a)            (UINT32) (((a) & 0x0000FFFF))
+#define ACPI_PCI_DEVFUN(a)              (UINT32) ((((a) & 0xFFFF0000) >> 16))
+
+#endif
 
 /*
  * An ACPI_HANDLE (which is actually an ACPI_NAMESPACE_NODE *) can appear in some contexts,
@@ -400,17 +434,19 @@
  */
 #define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
 #define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
-#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(NATIVE_UINT)s);return(s);}
+#define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(ACPI_INTEGER)s);return(s);}
 #define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT8 *)s);return(s);}
 
 
 /* Conditional execution */
 
-#define DEBUG_EXEC(a)                   a;
+#define DEBUG_EXEC(a)                   a
 #define NORMAL_EXEC(a)
 
 #define DEBUG_DEFINE(a)                 a;
 #define DEBUG_ONLY_MEMBERS(a)           a;
+#define _OPCODE_NAMES
+#define _VERBOSE_STRUCTURES
 
 
 /* Stack and buffer dumping */
@@ -511,7 +547,7 @@
  * DEBUG_PRINT stuff (set by ACPI_DEBUG) is on, or not.
  */
 #ifdef ENABLE_DEBUGGER
-#define DEBUGGER_EXEC(a)                a;
+#define DEBUGGER_EXEC(a)                a
 #else
 #define DEBUGGER_EXEC(a)
 #endif
@@ -523,9 +559,8 @@
  */
 #ifdef _IA16
 #undef DEBUG_ONLY_MEMBERS
+#undef _VERBOSE_STRUCTURES
 #define DEBUG_ONLY_MEMBERS(a)
-#undef OP_INFO_ENTRY
-#define OP_INFO_ENTRY(Flags,Name,PArgs,IArgs)     {Flags,PArgs,IArgs}
 #endif
 
 
@@ -544,5 +579,6 @@
 #define ADD_OBJECT_NAME(a,b)
 
 #endif
+
 
 #endif /* ACMACROS_H */

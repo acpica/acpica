@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.95 $
+ *       $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -567,7 +567,9 @@ typedef struct acpi_opcode_info
     UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
     UINT32                  RuntimeArgs;    /* Interpret time arguments */
 
-    DEBUG_ONLY_MEMBERS (NATIVE_CHAR *Name)  /* op name (debug only) */
+#ifdef _OPCODE_NAMES
+    NATIVE_CHAR             *Name;          /* op name (debug only) */
+#endif
 
 } ACPI_OPCODE_INFO;
 
@@ -842,66 +844,66 @@ typedef struct acpi_get_devices_info
 /*
  * Control bit definitions
  */
-#define TMR_STS     (PM1_STS | 0x01)
-#define BM_STS      (PM1_STS | 0x02)
-#define GBL_STS     (PM1_STS | 0x03)
-#define PWRBTN_STS  (PM1_STS | 0x04)
-#define SLPBTN_STS  (PM1_STS | 0x05)
-#define RTC_STS     (PM1_STS | 0x06)
-#define WAK_STS     (PM1_STS | 0x07)
+#define TMR_STS                     (PM1_STS | 0x01)
+#define BM_STS                      (PM1_STS | 0x02)
+#define GBL_STS                     (PM1_STS | 0x03)
+#define PWRBTN_STS                  (PM1_STS | 0x04)
+#define SLPBTN_STS                  (PM1_STS | 0x05)
+#define RTC_STS                     (PM1_STS | 0x06)
+#define WAK_STS                     (PM1_STS | 0x07)
 
-#define TMR_EN      (PM1_EN | 0x01)
-                     /* no BM_EN */
-#define GBL_EN      (PM1_EN | 0x03)
-#define PWRBTN_EN   (PM1_EN | 0x04)
-#define SLPBTN_EN   (PM1_EN | 0x05)
-#define RTC_EN      (PM1_EN | 0x06)
-#define WAK_EN      (PM1_EN | 0x07)
+#define TMR_EN                      (PM1_EN | 0x01)
+                                    /* no BM_EN */
+#define GBL_EN                      (PM1_EN | 0x03)
+#define PWRBTN_EN                   (PM1_EN | 0x04)
+#define SLPBTN_EN                   (PM1_EN | 0x05)
+#define RTC_EN                      (PM1_EN | 0x06)
+#define WAK_EN                      (PM1_EN | 0x07)
 
-#define SCI_EN      (PM1_CONTROL | 0x01)
-#define BM_RLD      (PM1_CONTROL | 0x02)
-#define GBL_RLS     (PM1_CONTROL | 0x03)
-#define SLP_TYPE_A  (PM1_CONTROL | 0x04)
-#define SLP_TYPE_B  (PM1_CONTROL | 0x05)
-#define SLP_EN      (PM1_CONTROL | 0x06)
+#define SCI_EN                      (PM1_CONTROL | 0x01)
+#define BM_RLD                      (PM1_CONTROL | 0x02)
+#define GBL_RLS                     (PM1_CONTROL | 0x03)
+#define SLP_TYPE_A                  (PM1_CONTROL | 0x04)
+#define SLP_TYPE_B                  (PM1_CONTROL | 0x05)
+#define SLP_EN                      (PM1_CONTROL | 0x06)
 
-#define ARB_DIS     (PM2_CONTROL | 0x01)
+#define ARB_DIS                     (PM2_CONTROL | 0x01)
 
-#define TMR_VAL     (PM_TIMER | 0x01)
+#define TMR_VAL                     (PM_TIMER | 0x01)
 
-#define GPE0_STS    (GPE0_STS_BLOCK | 0x01)
-#define GPE0_EN     (GPE0_EN_BLOCK  | 0x01)
+#define GPE0_STS                    (GPE0_STS_BLOCK | 0x01)
+#define GPE0_EN                     (GPE0_EN_BLOCK  | 0x01)
 
-#define GPE1_STS    (GPE1_STS_BLOCK | 0x01)
-#define GPE1_EN     (GPE1_EN_BLOCK  | 0x01)
+#define GPE1_STS                    (GPE1_STS_BLOCK | 0x01)
+#define GPE1_EN                     (GPE1_EN_BLOCK  | 0x01)
 
 
-#define TMR_STS_MASK        0x0001
-#define BM_STS_MASK         0x0010
-#define GBL_STS_MASK        0x0020
-#define PWRBTN_STS_MASK     0x0100
-#define SLPBTN_STS_MASK     0x0200
-#define RTC_STS_MASK        0x0400
-#define WAK_STS_MASK        0x8000
+#define TMR_STS_MASK                0x0001
+#define BM_STS_MASK                 0x0010
+#define GBL_STS_MASK                0x0020
+#define PWRBTN_STS_MASK             0x0100
+#define SLPBTN_STS_MASK             0x0200
+#define RTC_STS_MASK                0x0400
+#define WAK_STS_MASK                0x8000
 
-#define ALL_FIXED_STS_BITS  (TMR_STS_MASK   | BM_STS_MASK  | GBL_STS_MASK \
-                             | PWRBTN_STS_MASK | SLPBTN_STS_MASK \
-                             | RTC_STS_MASK | WAK_STS_MASK)
+#define ALL_FIXED_STS_BITS          (TMR_STS_MASK   | BM_STS_MASK  | GBL_STS_MASK \
+                                    | PWRBTN_STS_MASK | SLPBTN_STS_MASK \
+                                    | RTC_STS_MASK | WAK_STS_MASK)
 
-#define TMR_EN_MASK         0x0001
-#define GBL_EN_MASK         0x0020
-#define PWRBTN_EN_MASK      0x0100
-#define SLPBTN_EN_MASK      0x0200
-#define RTC_EN_MASK         0x0400
+#define TMR_EN_MASK                 0x0001
+#define GBL_EN_MASK                 0x0020
+#define PWRBTN_EN_MASK              0x0100
+#define SLPBTN_EN_MASK              0x0200
+#define RTC_EN_MASK                 0x0400
 
-#define SCI_EN_MASK         0x0001
-#define BM_RLD_MASK         0x0002
-#define GBL_RLS_MASK        0x0004
-#define SLP_TYPE_X_MASK     0x1C00
-#define SLP_EN_MASK         0x2000
+#define SCI_EN_MASK                 0x0001
+#define BM_RLD_MASK                 0x0002
+#define GBL_RLS_MASK                0x0004
+#define SLP_TYPE_X_MASK             0x1C00
+#define SLP_EN_MASK                 0x2000
 
-#define ARB_DIS_MASK        0x0001
-#define TMR_VAL_MASK        0xFFFFFFFF
+#define ARB_DIS_MASK                0x0001
+#define TMR_VAL_MASK                0xFFFFFFFF
 
 #define GPE0_STS_MASK
 #define GPE0_EN_MASK
@@ -910,8 +912,8 @@ typedef struct acpi_get_devices_info
 #define GPE1_EN_MASK
 
 
-#define ACPI_READ           1
-#define ACPI_WRITE          2
+#define ACPI_READ                   1
+#define ACPI_WRITE                  2
 
 
 /* Plug and play */
