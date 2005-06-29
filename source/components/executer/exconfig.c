@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.82 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,14 @@
 
 #define _COMPONENT          ACPI_EXECUTER
         ACPI_MODULE_NAME    ("exconfig")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiExAddTable (
+    ACPI_TABLE_HEADER       *Table,
+    ACPI_NAMESPACE_NODE     *ParentNode,
+    ACPI_OPERAND_OBJECT     **DdbHandle);
 
 
 /*******************************************************************************
@@ -468,17 +476,23 @@ AcpiExLoadOp (
         Status = AcpiExReadDataFromField (WalkState, ObjDesc, &BufferDesc);
         if (ACPI_FAILURE (Status))
         {
-            goto Cleanup;
+            return_ACPI_STATUS (Status);
         }
 
         TablePtr = ACPI_CAST_PTR (ACPI_TABLE_HEADER,
                         BufferDesc->Buffer.Pointer);
 
-         /* Sanity check the table length */
+        /* All done with the BufferDesc, delete it */
+
+        BufferDesc->Buffer.Pointer = NULL;
+        AcpiUtRemoveReference (BufferDesc);
+
+        /* Sanity check the table length */
 
         if (TablePtr->Length < sizeof (ACPI_TABLE_HEADER))
         {
-            return_ACPI_STATUS (AE_BAD_HEADER);
+            Status = AE_BAD_HEADER;
+            goto Cleanup;
         }
         break;
 
@@ -508,7 +522,9 @@ AcpiExLoadOp (
     Status = AcpiExAddTable (TablePtr, AcpiGbl_RootNode, &DdbHandle);
     if (ACPI_FAILURE (Status))
     {
-        goto Cleanup;
+        /* On error, TablePtr was deallocated above */
+
+        return_ACPI_STATUS (Status);
     }
 
     /* Store the DdbHandle into the Target operand */
@@ -517,18 +533,14 @@ AcpiExLoadOp (
     if (ACPI_FAILURE (Status))
     {
         (void) AcpiExUnloadTable (DdbHandle);
+
+        /* TablePtr was deallocated above */
+
+        return_ACPI_STATUS (Status);
     }
-
-    return_ACPI_STATUS (Status);
-
 
 Cleanup:
-
-    if (BufferDesc)
-    {
-        AcpiUtRemoveReference (BufferDesc);
-    }
-    else
+    if (ACPI_FAILURE (Status))
     {
         ACPI_MEM_FREE (TablePtr);
     }
