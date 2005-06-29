@@ -299,7 +299,7 @@ AmlSetupField (
     }
 
     DEBUG_PRINT (TRACE_EXEC, ("Leave AmlSetupField: %s\n", ExceptionNames[Status]));
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -468,6 +468,7 @@ AmlReadField (
         PciBus = (UINT8) (Address >> 16);
         DevFunc = (UINT8) (Address >> 8);
         PciReg = (UINT8) ((Address >> 2) & 0x3f);
+        *Value = 0;
 
         switch (FieldBitWidth)
         {
@@ -515,9 +516,9 @@ AmlReadField (
         return AE_AML_ERROR;
     }
 
-    DEBUG_PRINT (TRACE_OPREGION, (" val %08lx \n", *Value));
+    DEBUG_PRINT (TRACE_OPREGION, ("AmlReadField: Returned value=%08lx \n", *Value));
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -706,7 +707,7 @@ AmlWriteField (
         Status = AE_AML_ERROR;
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -831,8 +832,7 @@ AmlAccessNamedField (
         if ((UINT32) (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset) > MaxW)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Field exceeds %s\n", Type));
-            FUNCTION_EXIT;
-            return AE_AML_ERROR;
+            Status = AE_AML_ERROR;
         }
     }
 
@@ -944,7 +944,7 @@ AmlAccessNamedField (
 
     AmlReleaseGlobalLock (Locked);
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -1013,12 +1013,12 @@ AmlGetNamedFieldValue (
 
     if (!NamedField)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: internal error: null handle\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: internal error - null handle\n"));
     }
 
     else if (!Value)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: internal error: null pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: internal error - null pointer\n"));
     }
 
     else
@@ -1026,7 +1026,7 @@ AmlGetNamedFieldValue (
         Status = AmlAccessNamedField (ACPI_READ, NamedField, Value);
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
