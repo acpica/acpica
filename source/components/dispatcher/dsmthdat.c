@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: dsmthdat - control method arguments and local variables
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,12 +116,12 @@
 
 #define __DSMTHDAT_C__
 
-#include <acpi.h>
-#include <parser.h>
-#include <dispatch.h>
-#include <interp.h>
-#include <amlcode.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "parser.h"
+#include "dispatch.h"
+#include "interp.h"
+#include "amlcode.h"
+#include "namesp.h"
 
 
 #define _COMPONENT          DISPATCHER
@@ -130,41 +130,10 @@
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    DsIsMethodValue
  *
- * PARAMETERS:  *ObjDesc 
+ * FUNCTION:    AcpiDsMethodDataInit
  *
- * RETURN:      TRUE if the descriptor is the value of an Arg or
- *              Local in a currently-active Method, else FALSE
- *
- * DESCRIPTION: Test if object is the value of an Arg or Local in a currently
- *              active method.
- *
- ****************************************************************************/
-
-BOOLEAN
-DsIsMethodValue (
-    ACPI_OBJECT_INTERNAL    *ObjDesc)
-{
-    FUNCTION_TRACE ("DsIsMethodValue");
-
-
-    /* For each active Method */
-    
-    /* TBD: may no longer be necessary */
-    /* IF so, we must walk the list of active control methods */
-
-    return_VALUE (FALSE);
-}
-
-
-
-/*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataInit
- *
- * PARAMETERS:  *ObjDesc 
+ * PARAMETERS:  *ObjDesc
  *
  * RETURN:      Status
  *
@@ -176,7 +145,7 @@ DsIsMethodValue (
  ****************************************************************************/
 
 ACPI_STATUS
-DsMethodDataInit (
+AcpiDsMethodDataInit (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  i;
@@ -185,7 +154,7 @@ DsMethodDataInit (
     FUNCTION_TRACE ("DsMethodDataInit");
 
     /*
-     * WalkState fields are initialized to zero by the CmCallocate().
+     * WalkState fields are initialized to zero by the AcpiCmCallocate().
      *
      * An NTE is assigned to each argument and local so that RefOf() can return
      * a pointer to the NTE.
@@ -195,18 +164,22 @@ DsMethodDataInit (
 
     for (i = 0; i < MTH_NUM_ARGS; i++)
     {
+        STORE32TO32 (&WalkState->Arguments[i].Name, NAMEOF_ARG_NTE);
+
+        WalkState->Arguments[i].Name            |= (i << 24);
         WalkState->Arguments[i].DataType        = DESC_TYPE_NTE;
-        WalkState->Arguments[i].Type            = INTERNAL_TYPE_MethodArgument;
-        WalkState->Arguments[i].Name            = *((UINT32 *) NAMEOF_ARG_NTE) | (i << 24);
+        WalkState->Arguments[i].Type            = INTERNAL_TYPE_METHOD_ARGUMENT;
     }
 
     /* Init the method locals */
 
     for (i = 0; i < MTH_NUM_LOCALS; i++)
     {
+        STORE32TO32 (&WalkState->LocalVariables[i].Name, NAMEOF_LOCAL_NTE);
+
+        WalkState->LocalVariables[i].Name       |= (i << 24);
         WalkState->LocalVariables[i].DataType   = DESC_TYPE_NTE;
-        WalkState->LocalVariables[i].Type       = INTERNAL_TYPE_MethodLocalVar;
-        WalkState->LocalVariables[i].Name       = *((UINT32 *) NAMEOF_LOCAL_NTE) | (i << 24);
+        WalkState->LocalVariables[i].Type       = INTERNAL_TYPE_METHOD_LOCAL_VAR;
     }
 
 
@@ -215,8 +188,8 @@ DsMethodDataInit (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataDeleteAll
+ *
+ * FUNCTION:    AcpiDsMethodDataDeleteAll
  *
  * PARAMETERS:  None
  *
@@ -228,7 +201,7 @@ DsMethodDataInit (
  ****************************************************************************/
 
 ACPI_STATUS
-DsMethodDataDeleteAll (
+AcpiDsMethodDataDeleteAll (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  Index;
@@ -245,14 +218,13 @@ DsMethodDataDeleteAll (
     for (Index = 0; Index < MTH_NUM_LOCALS; Index++)
     {
         Object = WalkState->LocalVariables[Index].Object;
-        WalkState->LocalVariables[Index].Object = NULL;
-
         if (Object)
-
         {
-            CmUpdateObjectReference (Object, REF_DECREMENT);   /* Removed from Stack */
-            CmRemoveReference (Object);
-        }
+            DEBUG_PRINT (TRACE_EXEC, ("MethodDeleteAll: Deleting Local%d=%p\n", Index, Object));
+
+            WalkState->LocalVariables[Index].Object = NULL; /* Remove first */
+            AcpiCmRemoveReference (Object);                     /* Was given a ref when stored */
+       }
     }
 
 
@@ -263,17 +235,12 @@ DsMethodDataDeleteAll (
     for (Index = 0; Index < MTH_NUM_ARGS; Index++)
     {
         Object = WalkState->Arguments[Index].Object;
-        WalkState->Arguments[Index].Object = NULL;
-
         if (Object)
         {
-            CmUpdateObjectReference (Object, REF_DECREMENT);   /* Removed from Stack */
-            if (Object->Common.ReferenceCount <= 1)
-            {
-                /* Delete the object since it has no owner  */
+            DEBUG_PRINT (TRACE_EXEC, ("MethodDeleteAll: Deleting Arg%d=%p\n", Index, Object));
 
-                CmRemoveReference (Object);
-            }
+            WalkState->Arguments[Index].Object = NULL;      /* Remove first */
+            AcpiCmRemoveReference (Object);                     /* Was given a ref when stored */
         }
     }
 
@@ -282,8 +249,8 @@ DsMethodDataDeleteAll (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataInitArgs
+ *
+ * FUNCTION:    AcpiDsMethodDataInitArgs
  *
  * PARAMETERS:  None
  *
@@ -294,7 +261,7 @@ DsMethodDataDeleteAll (
  ****************************************************************************/
 
 ACPI_STATUS
-DsMethodDataInitArgs (
+AcpiDsMethodDataInitArgs (
     ACPI_OBJECT_INTERNAL    **Params,
     UINT32                  MaxParamCount)
 {
@@ -313,16 +280,16 @@ DsMethodDataInitArgs (
     }
 
     /* Copy passed parameters into the new method stack frame  */
-        
+
     for (Pindex = Mindex = 0; (Mindex < MTH_NUM_ARGS) && (Pindex < MaxParamCount); Mindex++)
-    {   
-        if (Params[Pindex])   
+    {
+        if (Params[Pindex])
         {
             /*
              * A valid parameter.
-             * Set the current method argument to the Params[Pindex++] argument object descriptor   
+             * Set the current method argument to the Params[Pindex++] argument object descriptor
              */
-            Status = DsMethodDataSetValue (MTH_TYPE_ARG, Mindex, Params[Pindex]);
+            Status = AcpiDsMethodDataSetValue (MTH_TYPE_ARG, Mindex, Params[Pindex]);
             if (ACPI_FAILURE (Status))
             {
                 break;
@@ -344,8 +311,8 @@ DsMethodDataInitArgs (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataGetEntry
+ *
+ * FUNCTION:    AcpiDsMethodDataGetEntry
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument to get
@@ -359,7 +326,7 @@ DsMethodDataInitArgs (
  ****************************************************************************/
 
 ACPI_STATUS
-DsMethodDataGetEntry (
+AcpiDsMethodDataGetEntry (
     UINT32                  Type,
     UINT32                  Index,
     ACPI_OBJECT_INTERNAL    ***Entry)
@@ -370,11 +337,11 @@ DsMethodDataGetEntry (
     FUNCTION_TRACE_U32 ("DsMethodDataGetEntry", Index);
 
 
-    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
 
-    /* 
+    /*
      * Get the requested object.
-     * The stack "Type" is either a LocalVariable or an Argument 
+     * The stack "Type" is either a LocalVariable or an Argument
      */
 
     switch (Type)
@@ -388,7 +355,7 @@ DsMethodDataGetEntry (
                                     Index, MTH_MAX_LOCAL));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
-        
+
         *Entry = (ACPI_OBJECT_INTERNAL **) &WalkState->LocalVariables[Index].Object;
         break;
 
@@ -401,7 +368,7 @@ DsMethodDataGetEntry (
                                     Index, MTH_MAX_ARG));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
-        
+
         *Entry = (ACPI_OBJECT_INTERNAL **) &WalkState->Arguments[Index].Object;
         break;
 
@@ -418,8 +385,8 @@ DsMethodDataGetEntry (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataSetEntry
+ *
+ * FUNCTION:    AcpiDsMethodDataSetEntry
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument to get
@@ -432,7 +399,7 @@ DsMethodDataGetEntry (
  ****************************************************************************/
 
 ACPI_STATUS
-DsMethodDataSetEntry (
+AcpiDsMethodDataSetEntry (
     UINT32                  Type,
     UINT32                  Index,
     ACPI_OBJECT_INTERNAL    *Object)
@@ -446,7 +413,7 @@ DsMethodDataSetEntry (
 
     /* Get a pointer to the stack entry to set */
 
-    Status = DsMethodDataGetEntry (Type, Index, &Entry);
+    Status = AcpiDsMethodDataGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -454,8 +421,8 @@ DsMethodDataSetEntry (
 
     /* Increment ref count so object can't be deleted while installed */
 
-    CmUpdateObjectReference (Object, REF_INCREMENT);
-    
+    AcpiCmAddReference (Object);
+
     /* Install the object into the stack entry */
 
     *Entry = Object;
@@ -465,8 +432,8 @@ DsMethodDataSetEntry (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataGetType
+ *
+ * FUNCTION:    AcpiDsMethodDataGetType
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument whose type to get
@@ -476,8 +443,8 @@ DsMethodDataSetEntry (
  *
  ****************************************************************************/
 
-ACPI_OBJECT_TYPE
-DsMethodDataGetType (
+OBJECT_TYPE_INTERNAL
+AcpiDsMethodDataGetType (
     UINT32                  Type,
     UINT32                  Index)
 {
@@ -491,10 +458,10 @@ DsMethodDataGetType (
 
     /* Get a pointer to the requested stack entry */
 
-    Status = DsMethodDataGetEntry (Type, Index, &Entry);
+    Status = AcpiDsMethodDataGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
-        return_VALUE ((ACPI_OBJECT_TYPE) -1);
+        return_VALUE ((ACPI_TYPE_NOT_FOUND));
     }
 
     /* Get the object from the method stack */
@@ -505,7 +472,7 @@ DsMethodDataGetType (
 
     if (!Object)
     {
-        return_VALUE (ACPI_TYPE_Any); /* Any == 0 => "uninitialized" -- see spec 15.2.3.5.2.28 */
+        return_VALUE (ACPI_TYPE_ANY); /* Any == 0 => "uninitialized" -- see spec 15.2.3.5.2.28 */
     }
 
     return_VALUE (Object->Common.Type);
@@ -513,8 +480,8 @@ DsMethodDataGetType (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataGetNte
+ *
+ * FUNCTION:    AcpiDsMethodDataGetNte
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument whose type to get
@@ -524,7 +491,7 @@ DsMethodDataGetType (
  ****************************************************************************/
 
 NAME_TABLE_ENTRY *
-DsMethodDataGetNte (
+AcpiDsMethodDataGetNte (
     UINT32                  Type,
     UINT32                  Index)
 {
@@ -535,7 +502,7 @@ DsMethodDataGetNte (
     FUNCTION_TRACE ("DsMethodDataGetNte");
 
 
-    WalkState = DsGetCurrentWalkState (Gbl_CurrentWalkList);
+    WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
 
 
     switch (Type)
@@ -547,9 +514,9 @@ DsMethodDataGetNte (
         {
             DEBUG_PRINT (ACPI_ERROR, ("DsMethodDataGetEntry: LocalVar index %d is invalid (max %d)\n",
                                     Index, MTH_MAX_LOCAL));
-            return_VALUE (Entry);
+            return_PTR (Entry);
         }
-        
+
         Entry =  &WalkState->LocalVariables[Index];
         break;
 
@@ -560,9 +527,9 @@ DsMethodDataGetNte (
         {
             DEBUG_PRINT (ACPI_ERROR, ("DsMethodDataGetEntry: Argument index %d is invalid (max %d)\n",
                                     Index, MTH_MAX_ARG));
-            return_VALUE (Entry);
+            return_PTR (Entry);
         }
-        
+
         Entry = &WalkState->Arguments[Index];
         break;
 
@@ -574,13 +541,13 @@ DsMethodDataGetNte (
     }
 
 
-    return_VALUE (Entry);
+    return_PTR (Entry);
 }
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataGetValue
+ *
+ * FUNCTION:    AcpiDsMethodDataGetValue
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument to get
@@ -591,14 +558,14 @@ DsMethodDataGetNte (
  *
  * DESCRIPTION: Retrieve value of selected Arg or Local from the method frame
  *              at the current top of the method stack.
- *              Used only in AmlResolveToValue().
+ *              Used only in AcpiAmlResolveToValue().
  *
  ****************************************************************************/
 
 ACPI_STATUS
-DsMethodDataGetValue (
+AcpiDsMethodDataGetValue (
     UINT32                  Type,
-    UINT32                  Index, 
+    UINT32                  Index,
     ACPI_OBJECT_INTERNAL    **DestDesc)
 {
     ACPI_STATUS             Status;
@@ -616,11 +583,11 @@ DsMethodDataGetValue (
         DEBUG_PRINT (ACPI_ERROR, ("DsMethodDataGetValue: NULL object descriptor pointer\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
 
     /* Get a pointer to the requested method stack entry */
 
-    Status = DsMethodDataGetEntry (Type, Index, &Entry);
+    Status = AcpiDsMethodDataGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -635,12 +602,12 @@ DsMethodDataGetValue (
 
     if (!Object)
     {
-        /* 
+        /*
          * Index points to uninitialized object stack value.  This means
          * that either 1) The expected argument was not passed to the method,
          * or 2) A local variable was referenced by the method (via the ASL)
          * before it was initialized.  Either case is an error.
-         */ 
+         */
 
         switch (Type)
         {
@@ -659,21 +626,21 @@ DsMethodDataGetValue (
     }
 
 
-    /* 
+    /*
      * Index points to initialized and valid object stack value.
      * Return an additional reference to the object
      */
 
     *DestDesc = Object;
-    CmUpdateObjectReference (Object, REF_INCREMENT);
+    AcpiCmAddReference (Object);
 
     return_ACPI_STATUS (AE_OK);
 }
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataDeleteValue
+ *
+ * FUNCTION:    AcpiDsMethodDataDeleteValue
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument to delete
@@ -686,9 +653,9 @@ DsMethodDataGetValue (
  ****************************************************************************/
 
 ACPI_STATUS
-DsMethodDataDeleteValue (
+AcpiDsMethodDataDeleteValue (
     UINT32                  Type,
-    UINT32                  Index) 
+    UINT32                  Index)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    **Entry;
@@ -698,56 +665,35 @@ DsMethodDataDeleteValue (
     FUNCTION_TRACE ("DsMethodDataDeleteValue");
 
 
-    /* Get a pointer to the requested method stack entry */
+    /* Get a pointer to the requested entry */
 
-    Status = DsMethodDataGetEntry (Type, Index, &Entry);
+    Status = AcpiDsMethodDataGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    /* Get the current entry in this slot on the method stack */
+    /* Get the current entry in this slot k */
 
     Object = *Entry;
 
-    /* Always clear the entry */
-
+    /*
+     * Undefine the Arg or Local by setting its descriptor pointer to NULL.
+     * Locals/Args can contain both ACPI_OBJECT_INTERNALS and NAME_TABLE_ENTRYs
+     */
     *Entry = NULL;
 
-    /* 
-     * Undefine the Arg or Local by setting its descriptor pointer to NULL.
-     * If it is currently defined, delete the old descriptor first.
-     *
-     * Locals/Args can contain both ACPI_OBJECT_INTERNALs and NAME_TABLE_ENTRYs
-     */
+
     if ((Object) &&
         (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_ACPI_OBJ)))
     {
         /*
-         * There is a valid object in this slot, go ahead and delete
-         * it before clearing the entry.
+         * There is a valid object in this slot
+         * Decrement the reference count by one to balance the increment when the
+         * object was stored in the slot.
          */
 
-        if (ACPI_TYPE_Buffer == Object->Common.Type)
-        {
-            /* 
-             * Ensure the about-to-be-deleted Buffer's sequence number
-             * will no longer match any FieldUnits defined within it,
-             * by inverting its most-significant bit.
-             *
-             * TBD: Is this still necessary??
-             */
-            Object->Buffer.Sequence ^= 0x80000000;
-        }
-
-
-        /* 
-         * Decrement the reference count by one to balance the increment when the 
-         * object was put on the stack.  Then we can attempt to delete it.
-         */
-
-        CmUpdateObjectReference (Object, REF_DECREMENT);
-        CmRemoveReference (Object);
+        AcpiCmRemoveReference (Object);
     }
 
 
@@ -756,8 +702,8 @@ DsMethodDataDeleteValue (
 
 
 /*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataSetValue
+ *
+ * FUNCTION:    AcpiDsMethodDataSetValue
  *
  * PARAMETERS:  Type                - Either MTH_TYPE_LOCAL or MTH_TYPE_ARG
  *              Index               - Which localVar or argument to set
@@ -777,10 +723,10 @@ DsMethodDataDeleteValue (
  ****************************************************************************/
 
 ACPI_STATUS
-DsMethodDataSetValue (
+AcpiDsMethodDataSetValue (
     UINT32                  Type,
-    UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *SrcDesc) 
+    UINT32                  Index,
+    ACPI_OBJECT_INTERNAL    *SrcDesc)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    **Entry;
@@ -801,7 +747,7 @@ DsMethodDataSetValue (
 
     /* Get a pointer to the requested method stack entry */
 
-    Status = DsMethodDataGetEntry (Type, Index, &Entry);
+    Status = AcpiDsMethodDataGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -845,29 +791,29 @@ DsMethodDataSetValue (
 
             /* Detach an existing object from the NTE */
 
-            NsDetachObject (*Entry);
+            AcpiNsDetachObject (*Entry);
 
             /* Store this object into the NTE (do the indirect store) */
 
-            Status = NsAttachObject (*Entry, SrcDesc, SrcDesc->Common.Type);
+            Status = AcpiNsAttachObject (*Entry, SrcDesc, SrcDesc->Common.Type);
             return_ACPI_STATUS (Status);
         }
 
 
         /* Otherwise, just delete the existing object before storing the new one */
 
-        DsMethodDataDeleteValue (Type, Index);
+        AcpiDsMethodDataDeleteValue (Type, Index);
     }
 
 
-    /* 
+    /*
      * Install the ObjStack descriptor (*SrcDesc) into the descriptor for the
      * Arg or Local.
      * Install the new object in the stack entry
      * (increments the object reference count by one)
      */
 
-    Status = DsMethodDataSetEntry (Type, Index, SrcDesc);
+    Status = AcpiDsMethodDataSetEntry (Type, Index, SrcDesc);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
