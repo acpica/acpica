@@ -14,15 +14,18 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 17:50:42 $
+ | $Revision: 1.7 $
+ | $Date: 2005/06/29 17:50:44 $
  | $Log: exstore.c,v $
- | Revision 1.6  2005/06/29 17:50:42  aystarik
- |
+ | Revision 1.7  2005/06/29 17:50:44  aystarik
+ | Removed hungarian notation
  |
  | 
- | date	99.02.11.23.27.00;	author grsmith1;	state Exp;
+ | date	99.02.16.21.22.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 7     2/16/99 1:22p Rmoore1
+ * Removed hungarian notation
  * 
  * 6     2/11/99 3:27p Grsmith1
  * 
@@ -42,10 +45,10 @@
  * AML Interpreter
 // 
 //    Rev 1.32   11 Sep 1998 18:03:16   phutchis
-// Change inc_error() etc. to dKinc_error() etc. (error key logging).
+// Change inc_error() etc. to Kinc_error() etc. (error key logging).
 // 
 //    Rev 1.31   09 Jun 1998 14:26:32   calingle
-// fixed the way the opcode was being evaluated in iSetupFld.  Now iGetRvalue is called to get the pr
+// fixed the way the opcode was being evaluated in SetupField.  Now GetRvalue is called to get the pr
 // oper data on the stack.
 //
 //    Rev 1.30   01 Jun 1998 17:52:52   phutchis
@@ -64,11 +67,11 @@
 // DOS is supported.
 //
 //    Rev 1.27   13 Mar 1998 11:16:20   phutchis
-// Leave operand descriptors on apObjStack[] during operator execution
+// Leave operand descriptors on ObjStack[] during operator execution
 //   to fix GC problems.
-// Fix GC problem in iExecStore() when the destination is a direct name pointer.
+// Fix GC problem in ExecStore() when the destination is a direct name pointer.
 // Add support for Buffer sequence numbering.
-// Correct iPrepStack call for ConcatOp in iExecDyadic2R()
+// Correct PrepStack call for ConcatOp in ExecDyadic2R()
 //
 //    Rev 1.26   06 Mar 1998 14:19:16   phutchis
 // Fixed garbage collection problem:  Must not allow any further allocation
@@ -82,11 +85,11 @@
 //
 //    Rev 1.25   03 Mar 1998 16:31:16   phutchis
 // Added tracing of Field operations in Buffers under control of TraceBufFld.
-// In iGetRvalue():
+// In GetRvalue():
 //   Fixed glitch in debug identification of Local being fetched;
 //   Included the value of the Local in the debug report if its type is Number;
 //   Added similar debug reporting for Args as for Locals.
-// Fixed major bug in iExecCreateField():
+// Fixed major bug in ExecCreateField():
 //   Field creation is supposed to cause the destination Name to refer to
 //   the defined FieldUnit -- it should not store the constructed FieldUnit
 //   object (or its current value) in some location that the Name may already
@@ -97,11 +100,11 @@
 // and fixed associated messages to print completely.
 //
 //    Rev 1.23   05 Feb 1998 11:56:44   phutchis
-// Added iGetMethodDepth() and made several minor changes
+// Added GetMethodDepth() and made several minor changes
 //   to support calling a Method from within another Method.
-// Added debug surrounding call of iGetMethodValue() in iGetRvalue().
-// Improved diagnosis of unexpected Lvalues in iPrepStack().
-// Added vMarkMethodValues() and iIsMethodValue() to support improved
+// Added debug surrounding call of GetMethodValue() in GetRvalue().
+// Improved diagnosis of unexpected Lvalues in PrepStack().
+// Added MarkMethodValues() and IsMethodValue() to support improved
 //   storage management; delete descriptors when overlaid on stack.
 //
 //    Rev 1.22   08 Jan 1998 15:58:02   phutchis
@@ -114,8 +117,8 @@
 // Added casting to shut up iC386 remarks.
 //
 //    Rev 1.19   10 Dec 1997 08:45:48   phutchis
-// Fix iPrepStack() stack underflow bug.
-// Add vAmlAppendOperandDiag(), and call it when iPrepStack() returns
+// Fix PrepStack() stack underflow bug.
+// Add AmlAppendOperandDiag(), and call it when PrepStack() returns
 //   S_ERROR, to identify calling location and opcode being processed.
 //
 //    Rev 1.18   02 Dec 1997 13:34:24   nburke
@@ -129,35 +132,35 @@
 //     at compile time.
 //   Added comments and parameter validation throughout.
 //   Improved error detection and reporting.
-//   Changed most allocation failures to call vKFatalError(())
+//   Changed most allocation failures to call KFatalError(())
 //   Fixed some storage leaks.
 //   Replaced hard-coded constants with #defines where appropriate.
-//   Combine the nearly identical logic of iGetNamedFieldValue() and
-//     iSetNamedFieldValue() into a single function iAccessNamedFieldValue().
-//   Renamed parameters of iExecStore() and rearranged logic for clarity.
+//   Combine the nearly identical logic of GetNamedFieldValue() and
+//     SetNamedFieldValue() into a single function AccessNamedFieldValue().
+//   Renamed parameters of ExecStore() and rearranged logic for clarity.
 //
 //    Rev 1.16   21 Nov 1997 16:49:06   phutchis
-// Fixed iGetRvalue() to work properly when the input is an OBJECT_DESCRIPTOR
+// Fixed GetRvalue() to work properly when the input is an OBJECT_DESCRIPTOR
 // of type FieldUnit.  (It was already handling the case where the input was
 // an NsHandle and the name's value was of type FieldUnit.)
 //
 //    Rev 1.15   17 Nov 1997 15:16:42   phutchis
-// In iExecStore() when the result is a field and the value to be stored is not
-//   a Number, call iGetRvalue() to try to convert the value to a Number.  Fixes
+// In ExecStore() when the result is a field and the value to be stored is not
+//   a Number, call GetRvalue() to try to convert the value to a Number.  Fixes
 //   problem of incorrectly logging an error when both source and destination
 //   are fields.
 // Rework identified in amlscan code inspection:
-//   Replaced MAXLEVEL with new AML_METHOD_MAX_NEST in sizing apMethodStack[].
-//   Revised iPrepBankFieldValue() to possibly work.
+//   Replaced MAXLEVEL with new AML_METHOD_MAX_NEST in sizing MethodStack[].
+//   Revised PrepBankFieldValue() to possibly work.
 //
 //    Rev 1.14   06 Nov 1997 11:56:26   calingle
-// added return S_SUCCESS at end of case Device in iGetRvalue.
+// added return S_SUCCESS at end of case Device in GetRvalue.
 //
 //    Rev 1.13   05 Nov 1997 08:50:10   calingle
 // removed #include <bu_plumr.h>
 //
 //    Rev 1.12   04 Nov 1997 16:55:10   phutchis
-// Handle Device case in iGetRvalue().
+// Handle Device case in GetRvalue().
 // This just returns an NsHandle, which seems to be adequate for current use
 // in acpiirt, but may need to be revisited in the future.
 //
@@ -172,12 +175,12 @@
 //    Rev 1.10   24 Sep 1997 15:12:04   phutchis
 // Add #include of bu_plumr.h to audit allocation and find leaks.
 // Add allocation comments to function headers.
-// Add comments to iSetMethodValue() to clarify flow.
-// Fix storage leaks in iExecMonadic1() and iExecMonadic2().
+// Add comments to SetMethodValue() to clarify flow.
+// Fix storage leaks in ExecMonadic1() and ExecMonadic2().
 //
 //    Rev 1.9   29 Jul 1997 14:36:40   phutchis
 // Handle passing of parameters to methods:
-//   Add ppsParams parameter to iAmlExec()
+//   Add Params parameter to AmlExec()
 //   Undefine locals and unused parameters when entering a method
 // Fix problem with converting a Buffer from in-line AML to an object
 // Fix stack overlay problem during first access to a Region
@@ -222,24 +225,24 @@
 #define _THIS_MODULE    "amlexec.c"
 
 #include <bu.h>
-#include "acpiosd.h"
-#include "acpitype.h"
-#include "acpipriv.h"
-#include "acpirio.h"
-#include "aml.h"
-#include "acpinmsp.h"
-#include "amldsio.h"
-#include "amlscan.h"
-#include "amlexec.h"
-#include "amlpriv.h"
-#include "amlopsys.h"
-#include <bu.h>
+#include <acpiosd.h>
+#include <acpitype.h>
+#include <acpipriv.h>
+#include <acpirio.h>
+#include <aml.h>
+#include <acpinmsp.h>
+#include <amldsio.h>
+#include <amlscan.h>
+#include <amlexec.h>
+#include <amlpriv.h>
+#include <amlopsys.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 
-extern char *apcNsTypeNames[];
+extern char *NsTypeNames[];
 extern char *RV[];
 
 /* Change this to #if 1 to enable logfile notes of some XXX stuff */
@@ -253,122 +256,122 @@ extern char *RV[];
 /* Method Stack, containing locals and args */
 /* per level, 0-7 are Local# and 8-14 are Arg# */
 
-#define LCLBASE 0
-#define NUMLCL      8
-#define ARGBASE (LCLBASE+NUMLCL)
-#define NUMARG      7
+#define LCLBASE             0
+#define NUMLCL              8
+#define ARGBASE             (LCLBASE+NUMLCL)
+#define NUMARG              7
 #define AML_METHOD_MAX_NEST 10  /* Max depth of nested method calls */
 
-static OBJECT_DESCRIPTOR *  apMethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
-static int                  iMethodStackTop = -1;
+static OBJECT_DESCRIPTOR *  MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
+static int                  MethodStackTop = -1;
 
 #include <pciutils.h>
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iGetMethodDepth
+ * FUNCTION:    GetMethodDepth
  *
- * RETURN:      The current value of iMethodStackTop
+ * RETURN:      The current value of MethodStackTop
  *
  ****************************************************************************/
 
 int
-iGetMethodDepth (void)
+GetMethodDepth (void)
 {
 
-    return iMethodStackTop;
+    return MethodStackTop;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iGetMethodValTyp
+ * FUNCTION:    GetMethodValTyp
  *
- * PARAMETERS:  int iIndex      index in apMethodStack[iMethodStackTop]
+ * PARAMETERS:  int Index      index in MethodStack[MethodStackTop]
  *
  * RETURN:      Data type of selected Arg or Local
- *              Used only in iExecMonadic2()/TypeOp.
+ *              Used only in ExecMonadic2()/TypeOp.
  *
  ****************************************************************************/
 
 static NsType
-iGetMethodValTyp(int iIndex)
+GetMethodValTyp (int Index)
 {
-    FUNCTION_TRACE ("iGetMethodValTyp");
+    FUNCTION_TRACE ("GetMethodValTyp");
 
 
-    if (OUTRANGE (iMethodStackTop, apMethodStack)
-        || OUTRANGE (iIndex, apMethodStack[iMethodStackTop]))
+    if (OUTRANGE (MethodStackTop, MethodStack)
+        || OUTRANGE (Index, MethodStack[MethodStackTop]))
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                      "iGetMethodValTyp: internal error: index %d, %d out of range",
-                      iMethodStackTop, iIndex);
-        _dKinc_error ("0001", PACRLF, __LINE__, __FILE__, iLstFileHandle, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                      "GetMethodValTyp: internal error: index %d, %d out of range",
+                      MethodStackTop, Index);
+        _Kinc_error ("0001", PACRLF, __LINE__, __FILE__, LstFileHandle, LOGFILE);
 
         return (NsType)-1;
     }
 
-    if ((OBJECT_DESCRIPTOR *) 0 == apMethodStack[iMethodStackTop][iIndex])
+    if ((OBJECT_DESCRIPTOR *) 0 == MethodStack[MethodStackTop][Index])
     {
         return Any; /* Any == 0 => "uninitialized" -- see spec 15.2.3.5.2.28 */
     }
 
-    return apMethodStack[iMethodStackTop][iIndex]->bValTyp;
+    return MethodStack[MethodStackTop][Index]->ValType;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iGetMethodValue
+ * FUNCTION:    GetMethodValue
  *
- * PARAMETERS:  int                 iIndex      index in apMethodStack[iMethodStackTop]
- *              OBJECT_DESCRIPTOR   *pOD        Descriptor into which selected Arg
+ * PARAMETERS:  int                 Index       index in MethodStack[MethodStackTop]
+ *              OBJECT_DESCRIPTOR   *ObjDesc    Descriptor into which selected Arg
  *                                              or Local value should be copied
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
  * DESCRIPTION: Retrieve value of selected Arg or Local
- *              Used only in iGetRvalue().
+ *              Used only in GetRvalue().
  *
  ****************************************************************************/
 
 static int
-iGetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD)
+GetMethodValue (int Index, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    FUNCTION_TRACE ("iGetMethodValue");
+    FUNCTION_TRACE ("GetMethodValue");
 
 
-    if (OUTRANGE (iMethodStackTop, apMethodStack)
-        || OUTRANGE (iIndex, apMethodStack[iMethodStackTop]))
+    if (OUTRANGE (MethodStackTop, MethodStack)
+        || OUTRANGE (Index, MethodStack[MethodStackTop]))
     {
-        sprintf (acWhyBuf, "iGetMethodValue: Bad method stack index [%d][%d]",
-                iMethodStackTop, iIndex);
+        sprintf (WhyBuf, "GetMethodValue: Bad method stack index [%d][%d]",
+                MethodStackTop, Index);
     }
 
-    else if ((OBJECT_DESCRIPTOR *) 0 == apMethodStack[iMethodStackTop][iIndex])
+    else if ((OBJECT_DESCRIPTOR *) 0 == MethodStack[MethodStackTop][Index])
     {
-        if (ARGBASE <= iIndex && iIndex < (ARGBASE+NUMARG))
+        if (ARGBASE <= Index && Index < (ARGBASE+NUMARG))
         {
-            sprintf (acWhyBuf, "iGetMethodValue: Uninitialized Arg%d",
-                    iIndex - ARGBASE);
+            sprintf (WhyBuf, "GetMethodValue: Uninitialized Arg%d",
+                    Index - ARGBASE);
         }
-        else if (LCLBASE <= iIndex && iIndex < (LCLBASE+NUMLCL))
+        else if (LCLBASE <= Index && Index < (LCLBASE + NUMLCL))
         {
-            sprintf (acWhyBuf, "iGetMethodValue: Uninitialized Local%d",
-                    iIndex - LCLBASE);
+            sprintf (WhyBuf, "GetMethodValue: Uninitialized Local%d",
+                    Index - LCLBASE);
         }
         else
         {
-            sprintf (acWhyBuf, "iGetMethodValue: Uninitialized method value %d",
-                    iIndex);
+            sprintf (WhyBuf, "GetMethodValue: Uninitialized method value %d",
+                    Index);
         }
 
 #ifdef HACK
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                    " ** iGetMethodValue: ret uninit as 4 **");
-        pOD->sNumber.bValTyp = (BYTE) Number;
-        pOD->sNumber.dNumber = 0x4;
+        fprintf_bu (LstFileHandle, LOGFILE,
+                    " ** GetMethodValue: ret uninit as 4 **");
+        ObjDesc->Number.ValType = (BYTE) Number;
+        ObjDesc->Number.Number = 0x4;
         return S_SUCCESS;
 #endif /* HACK */
 
@@ -376,80 +379,80 @@ iGetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD)
 
     else
     {
-        memcpy ((void *) pOD,
-                 (void *) apMethodStack[iMethodStackTop][iIndex],
-                 sizeof (*pOD));
+        memcpy ((void *) ObjDesc,
+                 (void *) MethodStack[MethodStackTop][Index],
+                 sizeof (*ObjDesc));
 
-        if (Buffer == pOD->bValTyp)
+        if (Buffer == ObjDesc->ValType)
         {
             /* Assign a new sequence number */
             
-            pOD->sBuffer.dSequence = dAmlBufSeq();
+            ObjDesc->Buffer.Sequence = AmlBufSeq ();
         }
 
         return S_SUCCESS;
     }
 
-    pcWhy = acWhyBuf;
+    Why = WhyBuf;
     return S_ERROR;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iSetMethodValue
+ * FUNCTION:    SetMethodValue
  *
- * PARAMETERS:  int                 iIndex  index in apMethodStack[iMethodStackTop]
- *              OBJECT_DESCRIPTOR * pOD     Value to be stored
- *                                          May be NULL -- see Description.
- *              OBJECT_DESCRIPTOR * pSCR    Spare descriptor into which *pOD
- *                                          can be copied, or NULL if one must
- *                                          be allocated for the purpose.  If
- *                                          provided, this descriptor will be
- *                                          consumed (either used for the new
- *                                          value or deleted).
+ * PARAMETERS:  int                 Index       index in MethodStack[MethodStackTop]
+ *              OBJECT_DESCRIPTOR * ObjDesc     Value to be stored
+ *                                              May be NULL -- see Description.
+ *              OBJECT_DESCRIPTOR * ObjDesc2    Spare descriptor into which *ObjDesc
+ *                                              can be copied, or NULL if one must
+ *                                              be allocated for the purpose.  If
+ *                                              provided, this descriptor will be
+ *                                              consumed (either used for the new
+ *                                              value or deleted).
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
  * DESCRIPTION: Store a value in an Arg or Local.
- *              To undefine an entry, pass pOD as NULL; the old descriptor
+ *              To undefine an entry, pass ObjDesc as NULL; the old descriptor
  *              will be deleted.
  *
  * ALLOCATION:
- *  Reference       Size                    Pool    Owner       Description
- *  apMethodStack   s(OBJECT_DESCRIPTOR)    bu      amlexec     Object
+ *  Reference     Size                    Pool    Owner       Description
+ *  MethodStack   s(OBJECT_DESCRIPTOR)    bu      amlexec     Object
  *
  ****************************************************************************/
 
 static int
-iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
+SetMethodValue (int Index, OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *ObjDesc2)
 {
-    FUNCTION_TRACE ("iSetMethodValue");
+    FUNCTION_TRACE ("SetMethodValue");
 
 
-    if (OUTRANGE (iMethodStackTop, apMethodStack)
-        || OUTRANGE (iIndex, apMethodStack[iMethodStackTop]))
+    if (OUTRANGE (MethodStackTop, MethodStack)
+        || OUTRANGE (Index, MethodStack[MethodStackTop]))
     {
-        sprintf (acWhyBuf, "iSetMethodValue: Bad method stack index [%d][%d]",
-                iMethodStackTop, iIndex);
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf, "SetMethodValue: Bad method stack index [%d][%d]",
+                MethodStackTop, Index);
+        Why = WhyBuf;
         return S_ERROR;
     }
 
-    if ((OBJECT_DESCRIPTOR *) 0 == apMethodStack[iMethodStackTop][iIndex])
+    if ((OBJECT_DESCRIPTOR *) 0 == MethodStack[MethodStackTop][Index])
     {
         /* Local or Arg is currently undefined */
 
-        if ((OBJECT_DESCRIPTOR *) 0 == pSCR && (OBJECT_DESCRIPTOR *)0 != pOD)
+        if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc2 && (OBJECT_DESCRIPTOR *) 0 != ObjDesc)
         {
             /* 
-             * No descriptor was provided in pSCR, and the currently-undefined
+             * No descriptor was provided in ObjDesc2, and the currently-undefined
              * Local or Arg is to be defined.  Allocate a descriptor.
              */
-            apMethodStack[iMethodStackTop][iIndex] = NEW(OBJECT_DESCRIPTOR);
-            if ((OBJECT_DESCRIPTOR *) 0 == apMethodStack[iMethodStackTop][iIndex])
+            MethodStack[MethodStackTop][Index] = NEW(OBJECT_DESCRIPTOR);
+            if ((OBJECT_DESCRIPTOR *) 0 == MethodStack[MethodStackTop][Index])
             {
-                vKFatalError ("0002", ("iSetMethodValue: Descriptor Allocation Failure"));
+                KFatalError ("0002", ("SetMethodValue: Descriptor Allocation Failure"));
                 return S_ERROR;
             }
         }
@@ -457,13 +460,13 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
         else
         {
             /* 
-             * A descriptor was provided in pSCR; use it for the Arg/Local
+             * A descriptor was provided in ObjDesc2; use it for the Arg/Local
              * new value (or delete it later if the new value is NULL).
              * We also come here if no descriptor was supplied and the
              * undefined Local or Arg is to remain undefined; in that case
              * the assignment is a no-op.
              */
-            apMethodStack[iMethodStackTop][iIndex] = pSCR;
+            MethodStack[MethodStackTop][Index] = ObjDesc2;
         }
     }
  
@@ -473,34 +476,34 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
          * Arg or Local is currently defined, so that descriptor will be
          * reused for the new value.  Delete the spare descriptor if supplied.
          */
-        if ((OBJECT_DESCRIPTOR *)0 != pSCR)
+        if ((OBJECT_DESCRIPTOR *) 0 != ObjDesc2)
         {
             /* XXX - see XXX comment below re possible storage leak */
 
-            DELETE(pSCR);
+            DELETE (ObjDesc2);
         }
     }
 
-    if ((OBJECT_DESCRIPTOR *)0 == pOD)
+    if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
     {
         /* 
          * Undefine the Arg or Local by setting its descriptor pointer to NULL.
          * If it is currently defined, delete the old descriptor first.
          */
-        if ((OBJECT_DESCRIPTOR *)0 != apMethodStack[iMethodStackTop][iIndex])
+        if ((OBJECT_DESCRIPTOR *) 0 != MethodStack[MethodStackTop][Index])
         {
-            if (Buffer == apMethodStack[iMethodStackTop][iIndex]->bValTyp)
+            if (Buffer == MethodStack[MethodStackTop][Index]->ValType)
             {
                 /* 
                  * Ensure the about-to-be-deleted Buffer's sequence number
                  * will no longer match any FieldUnits defined within it,
                  * by inverting its most-significant bit.
                  */
-                apMethodStack[iMethodStackTop][iIndex]->sBuffer.dSequence
+                MethodStack[MethodStackTop][Index]->Buffer.Sequence
                                                                 ^= 0x80000000UL;
             }
 
-            DELETE(apMethodStack[iMethodStackTop][iIndex]);
+            DELETE (MethodStack[MethodStackTop][Index]);
 
             /* 
              * XXX - Should also delete any unshared storage pointed to by this
@@ -508,13 +511,13 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
              * XXX - whether the storage is shared or not we'll let GC handle it.
              */
         }
-        apMethodStack[iMethodStackTop][iIndex] = pOD;
+        MethodStack[MethodStackTop][Index] = ObjDesc;
     }
 
     else
     {
         /* 
-         * Copy the apObjStack descriptor (*pOD) into the descriptor for the
+         * Copy the ObjStack descriptor (*ObjDesc) into the descriptor for the
          * Arg or Local.
          */
         /* 
@@ -524,15 +527,15 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
          * XXX - it should be freed here.  (Good Luck figuring out whether it
          * XXX - is shared or not.)
          */
-        memcpy ((void *) apMethodStack[iMethodStackTop][iIndex],
-                 (void *) pOD, sizeof (*pOD));
+        memcpy ((void *) MethodStack[MethodStackTop][Index],
+                 (void *) ObjDesc, sizeof (*ObjDesc));
 
-        if (Buffer == pOD->bValTyp)
+        if (Buffer == ObjDesc->ValType)
         {
             /* Assign a new sequence number */
 
-            apMethodStack[iMethodStackTop][iIndex]->sBuffer.dSequence
-                    = dAmlBufSeq();
+            MethodStack[MethodStackTop][Index]->Buffer.Sequence
+                    = AmlBufSeq();
         }
     }
 
@@ -542,122 +545,122 @@ iSetMethodValue (int iIndex, OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pSCR)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iPrepDefFieldValue
+ * FUNCTION:    PrepDefFieldValue
  *
- * PARAMETERS:  NsHandle    hRegion     Region in which field is being defined
- *              BYTE        bFldFlg     Access, LockRule, UpdateRule
+ * PARAMETERS:  NsHandle    Region     Region in which field is being defined
+ *              BYTE        FldFlg     Access, LockRule, UpdateRule
  *                                      The format of a FieldFlag is described
  *                                      in the ACPI specification and in <aml.h>
- *              long        lFldPos     field position
- *              long        lFldLen     field length
+ *              long        FldPos     field position
+ *              long        FldLen     field length
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
  * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type DefField and connect
- *              it to the nte whose handle is at apObjStack[iObjStackTop]
+ *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
  * ALLOCATION:
  *  Reference   Size                    Pool    Owner       Description
- *  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ *  nte.ValDesc    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
  *
  ****************************************************************************/
 
- int
-iPrepDefFieldValue (NsHandle hRegion, BYTE bFldFlg, long lFldPos, long lFldLen)
+int
+PrepDefFieldValue (NsHandle Region, BYTE FldFlg, long FldPos, long FldLen)
 {
-    OBJECT_DESCRIPTOR *pOD = NEW(OBJECT_DESCRIPTOR);
+    OBJECT_DESCRIPTOR *ObjDesc = NEW (OBJECT_DESCRIPTOR);
 
 
-    FUNCTION_TRACE ("iPrepDefFieldValue");
+    FUNCTION_TRACE ("PrepDefFieldValue");
 
 
-    if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+    if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
     {
-        vKFatalError ("0003", ("iPrepDefFieldValue: Descriptor Allocation Failure"));
+        KFatalError ("0003", ("PrepDefFieldValue: Descriptor Allocation Failure"));
         return S_ERROR;
     }
 
-    if ((NsHandle) 0 == hRegion)
+    if ((NsHandle) 0 == Region)
     {
-        pcWhy = "iPrepDefFieldValue: null Region";
-        DELETE (pOD);
+        Why = "PrepDefFieldValue: null Region";
+        DELETE (ObjDesc);
         return S_ERROR;
     }
 
-    if (Region != iNsValType (hRegion))
+    if (Region != NsValType (Region))
     {
-        sprintf (acWhyBuf, "iPrepDefFieldValue: Needed Region, found %d",
-                    iNsValType (hRegion));
-        pcWhy = acWhyBuf;
-        DELETE (pOD);
+        sprintf (WhyBuf, "PrepDefFieldValue: Needed Region, found %d",
+                    NsValType (Region));
+        Why = WhyBuf;
+        DELETE (ObjDesc);
         return S_ERROR;
     }
 
     if (debug_level () > 0)
     {
-        vDumpStack(Exec, "iPrepDefFieldValue", 2, "case DefField");
+        DumpStack (Exec, "PrepDefFieldValue", 2, "case DefField");
     }
 
-    pOD->bValTyp = (BYTE)DefField;
-    if (DefField != pOD->sField.bValTyp)
+    ObjDesc->ValType = (BYTE) DefField;
+    if (DefField != ObjDesc->Field.ValType)
     {
         /* 
          * The C implementation has done something which is technically legal
-         * but unexpected:  the bValTyp field which was defined as a BYTE did
+         * but unexpected:  the ValType field which was defined as a BYTE did
          * not map to the same structure offset as the one which was defined
-         * as a WORD_BIT -- see comments in the definition of the sFieldUnit
+         * as a WORD_BIT -- see comments in the definition of the FieldUnit
          * variant of OBJECT_DESCRIPTOR in amlpriv.h.
          *
          * Log some evidence to facilitate porting the code.
          */
-        pOD->sField.bValTyp = 0x005a;
-        sprintf (acWhyBuf,
-                "iPrepDefFieldValue: internal failure %p %02x %02x %02x %02x",
-                pOD, ((BYTE *) pOD)[0], ((BYTE *) pOD)[1], ((BYTE *) pOD)[2],
-                ((BYTE *) pOD)[3]);
-        pcWhy = acWhyBuf;
-        DELETE (pOD);
+        ObjDesc->Field.ValType = 0x005a;
+        sprintf (WhyBuf,
+                "PrepDefFieldValue: internal failure %p %02x %02x %02x %02x",
+                ObjDesc, ((BYTE *) ObjDesc)[0], ((BYTE *) ObjDesc)[1], ((BYTE *) ObjDesc)[2],
+                ((BYTE *) ObjDesc)[3]);
+        Why = WhyBuf;
+        DELETE (ObjDesc);
         return S_ERROR;
     }
 
-    pOD->sField.wAccess     = (bFldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-    pOD->sField.wLockRule   = (bFldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    pOD->sField.wUpdateRule = (bFldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    pOD->sField.wDatLen     = (WORD) lFldLen;
+    ObjDesc->Field.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+    ObjDesc->Field.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+    ObjDesc->Field.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->Field.DatLen     = (WORD) FldLen;
 
     /* XXX - should use width of data register, not hardcoded 8 */
 
-    PRINT_XXX (iLstFileHandle, LOGFILE, " ** iPrepDefFieldValue: hard 8 **");
+    PRINT_XXX (LstFileHandle, LOGFILE, " ** PrepDefFieldValue: hard 8 **");
 
-    pOD->sField.wBitOffset  = (WORD)lFldPos % 8;
-    pOD->sField.dOffset     = (DWORD)lFldPos / 8;
-    pOD->sField.pContainer  = pvNsValPtr (hRegion);
+    ObjDesc->Field.BitOffset  = (WORD) FldPos % 8;
+    ObjDesc->Field.Offset     = (DWORD) FldPos / 8;
+    ObjDesc->Field.Container  = NsValPtr (Region);
 
     if (debug_level () > 0)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                "iPrepDefFieldValue: set nte %p (%4.4s) val = %p",
-                apObjStack[iObjStackTop], apObjStack[iObjStackTop], pOD);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                "PrepDefFieldValue: set nte %p (%4.4s) val = %p",
+                ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc);
 
-        iDumpStackEntry (pOD);
-        vNsDumpEntry (hRegion, LOGFILE);
-        fprintf_bu (iLstFileHandle, LOGFILE, "\t%p ", pOD->sField.pContainer);
+        DumpStackEntry (ObjDesc);
+        NsDumpEntry (Region, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE, "\t%p ", ObjDesc->Field.Container);
 
-        if (pOD->sField.pContainer)
+        if (ObjDesc->Field.Container)
         {
-            iDumpStackEntry(pOD->sField.pContainer);
+            DumpStackEntry (ObjDesc->Field.Container);
         }
 
-        fprintf_bu(iLstFileHandle, LOGFILE,
+        fprintf_bu (LstFileHandle, LOGFILE,
                     "============================================================");
     }
 
     /* 
-     * Store the constructed descriptor (pOD) into the nte whose
+     * Store the constructed descriptor (ObjDesc) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
-    vNsSetValue((NsHandle)apObjStack[iObjStackTop], pOD,
-                (BYTE)iNsValType((NsHandle)apObjStack[iObjStackTop]));
+    NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
+                (BYTE) NsValType ((NsHandle) ObjStack[ObjStackTop]));
 
     return S_SUCCESS;
 }
@@ -665,112 +668,112 @@ iPrepDefFieldValue (NsHandle hRegion, BYTE bFldFlg, long lFldPos, long lFldLen)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iPrepBankFieldValue
+ * FUNCTION:    PrepBankFieldValue
  *
- * PARAMETERS:  NsHandle    hRegion     Region in which field is being defined
- *              NsHandle    hBankReg    Bank selection register
- *              DWORD       dBankVal    Value to store in selection register
- *              BYTE        bFldFlg     Access, LockRule, UpdateRule
- *              long        lFldPos     field position
- *              long        lFldLen     field length
+ * PARAMETERS:  NsHandle    Region     Region in which field is being defined
+ *              NsHandle    BankReg    Bank selection register
+ *              DWORD       BankVal    Value to store in selection register
+ *              BYTE        FldFlg     Access, LockRule, UpdateRule
+ *              long        FldPos     field position
+ *              long        FldLen     field length
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
  * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type BankField and connect
- *              it to the nte whose handle is at apObjStack[iObjStackTop]
+ *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
  * ALLOCATION:
  *  Reference   Size                    Pool    Owner       Description
- *  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ *  nte.ValDesc    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
  *
  ****************************************************************************/
 
 int
-iPrepBankFieldValue (NsHandle hRegion, NsHandle hBankReg, DWORD dBankVal,
-                        BYTE bFldFlg, long lFldPos, long lFldLen)
+PrepBankFieldValue (NsHandle Region, NsHandle BankReg, DWORD BankVal,
+                        BYTE FldFlg, long FldPos, long FldLen)
 {
-    OBJECT_DESCRIPTOR *pOD = NEW (OBJECT_DESCRIPTOR);
+    OBJECT_DESCRIPTOR *ObjDesc = NEW (OBJECT_DESCRIPTOR);
 
 
-    FUNCTION_TRACE ("iPrepBankFieldValue");
+    FUNCTION_TRACE ("PrepBankFieldValue");
 
 
-    if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+    if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
     {
-        vKFatalError ("0004", ("iPrepBankFieldValue: Descriptor Allocation Failure"));
+        KFatalError ("0004", ("PrepBankFieldValue: Descriptor Allocation Failure"));
         return S_ERROR;
     }
 
-    if ((NsHandle) 0 == hRegion)
+    if ((NsHandle) 0 == Region)
     {
-        pcWhy = "iPrepBankFieldValue: null Region";
-        DELETE (pOD);
+        Why = "PrepBankFieldValue: null Region";
+        DELETE (ObjDesc);
         return S_ERROR;
     }
 
-    if (Region != iNsValType (hRegion))
+    if (Region != NsValType (Region))
     {
-        sprintf (acWhyBuf, "iPrepBankFieldValue: Needed Region, found %d",
-                    iNsValType(hRegion));
-        pcWhy = acWhyBuf;
-        DELETE (pOD);
+        sprintf (WhyBuf, "PrepBankFieldValue: Needed Region, found %d",
+                    NsValType (Region));
+        Why = WhyBuf;
+        DELETE (ObjDesc);
         return S_ERROR;
     }
 
     if (debug_level () > 0)
     {
-        vDumpStack (Exec, "iPrepBankFieldValue", 2, "case BankField");
+        DumpStack (Exec, "PrepBankFieldValue", 2, "case BankField");
     }
 
-    pOD->bValTyp = (BYTE)BankField;
-    if (BankField != pOD->sBankField.bValTyp)
+    ObjDesc->ValType = (BYTE) BankField;
+    if (BankField != ObjDesc->BankField.ValType)
     {
-        /* See comments in iPrepDefFieldValue() re unexpected C behavior */
+        /* See comments in PrepDefFieldValue() re unexpected C behavior */
 
-        pOD->sBankField.bValTyp = 0x005a;
-        sprintf (acWhyBuf,
-                "iPrepBankFieldValue: internal failure %p %02x %02x %02x %02x",
-                pOD, ((BYTE *) pOD)[0], ((BYTE *) pOD)[1], ((BYTE *) pOD)[2],
-                ((BYTE *) pOD)[3]);
-        pcWhy = acWhyBuf;
-        DELETE (pOD);
+        ObjDesc->BankField.ValType = 0x005a;
+        sprintf (WhyBuf,
+                "PrepBankFieldValue: internal failure %p %02x %02x %02x %02x",
+                ObjDesc, ((BYTE *) ObjDesc)[0], ((BYTE *) ObjDesc)[1], ((BYTE *) ObjDesc)[2],
+                ((BYTE *) ObjDesc)[3]);
+        Why = WhyBuf;
+        DELETE (ObjDesc);
         return S_ERROR;
     }
 
-    pOD->sBankField.wAccess     = (bFldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-    pOD->sBankField.wLockRule   = (bFldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    pOD->sBankField.wUpdateRule = (bFldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    pOD->sBankField.wDatLen     = (WORD) lFldLen;
+    ObjDesc->BankField.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+    ObjDesc->BankField.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+    ObjDesc->BankField.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->BankField.DatLen     = (WORD) FldLen;
 
     /* XXX - should use width of data register, not hardcoded 8 */
 
-    PRINT_XXX (iLstFileHandle, LOGFILE, " ** iPrepBankFieldValue: hard 8 **");
+    PRINT_XXX (LstFileHandle, LOGFILE, " ** PrepBankFieldValue: hard 8 **");
 
-    pOD->sBankField.wBitOffset  = (WORD) lFldPos % 8;
-    pOD->sBankField.dOffset     = (DWORD) lFldPos / 8;
-    pOD->sBankField.dBankVal    = dBankVal;
-    pOD->sBankField.pContainer  = pvNsValPtr (hRegion);
-    pOD->sBankField.hBankSelect = pvNsValPtr (hBankReg);
+    ObjDesc->BankField.BitOffset  = (WORD) FldPos % 8;
+    ObjDesc->BankField.Offset     = (DWORD) FldPos / 8;
+    ObjDesc->BankField.BankVal    = BankVal;
+    ObjDesc->BankField.Container  = NsValPtr (Region);
+    ObjDesc->BankField.BankSelect = NsValPtr (BankReg);
 
     if (debug_level () > 0)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                    "iPrepBankFieldValue: set nte %p (%4.4s) val = %p",
-                    apObjStack[iObjStackTop], apObjStack[iObjStackTop], pOD);
-        iDumpStackEntry (pOD);
-        vNsDumpEntry (hRegion, LOGFILE);
-        vNsDumpEntry (hBankReg, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                    "PrepBankFieldValue: set nte %p (%4.4s) val = %p",
+                    ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc);
+        DumpStackEntry (ObjDesc);
+        NsDumpEntry (Region, LOGFILE);
+        NsDumpEntry (BankReg, LOGFILE);
 
-        fprintf_bu (iLstFileHandle, LOGFILE,
+        fprintf_bu (LstFileHandle, LOGFILE,
             "============================================================");
     }
 
     /* 
-     * Store the constructed descriptor (pOD) into the nte whose
+     * Store the constructed descriptor (ObjDesc) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
-    vNsSetValue((NsHandle)apObjStack[iObjStackTop], pOD,
-            (BYTE)iNsValType((NsHandle)apObjStack[iObjStackTop]));
+    NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
+                (BYTE) NsValType ((NsHandle) ObjStack[ObjStackTop]));
 
     return S_SUCCESS;
 }
@@ -778,97 +781,97 @@ iPrepBankFieldValue (NsHandle hRegion, NsHandle hBankReg, DWORD dBankVal,
 
 /*****************************************************************************
  * 
- * FUNCTION:    iPrepIndexFieldValue
+ * FUNCTION:    PrepIndexFieldValue
  *
- * PARAMETERS:  NsHandle    hIndexReg   Index register
- *              NsHandle    hDataReg    Data register
- *              BYTE        bFldFlg     Access, LockRule, UpdateRule
- *              long        lFldPos     field position
- *              long        lFldLen     field length
+ * PARAMETERS:  NsHandle    IndexReg   Index register
+ *              NsHandle    DataReg    Data register
+ *              BYTE        FldFlg     Access, LockRule, UpdateRule
+ *              long        FldPos     field position
+ *              long        FldLen     field length
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
  * DESCRIPTION: Construct an OBJECT_DESCRIPTOR of type IndexField and connect
- *              it to the nte whose handle is at apObjStack[iObjStackTop]
+ *              it to the nte whose handle is at ObjStack[ObjStackTop]
  *
  * ALLOCATION:
  *  Reference   Size                    Pool    Owner       Description
- *  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
+ *  nte.ValDesc    s(OBJECT_DESCRIPTOR)    bu      amlexec     Field descriptor
  *
  ****************************************************************************/
 
 int
-iPrepIndexFieldValue (NsHandle hIndexReg, NsHandle hDataReg,
-                        BYTE bFldFlg, long lFldPos, long lFldLen)
+PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
+                        BYTE FldFlg, long FldPos, long FldLen)
 {
-    OBJECT_DESCRIPTOR *pOD = NEW(OBJECT_DESCRIPTOR);
+    OBJECT_DESCRIPTOR *ObjDesc = NEW (OBJECT_DESCRIPTOR);
 
 
-    FUNCTION_TRACE ("iPrepIndexFieldValue");
+    FUNCTION_TRACE ("PrepIndexFieldValue");
 
 
-    if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+    if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
     {
-        vKFatalError ("0005", ("iPrepIndexFieldValue: Descriptor Allocation Failure"));
+        KFatalError ("0005", ("PrepIndexFieldValue: Descriptor Allocation Failure"));
         return S_ERROR;
     }
 
-    if ((NsHandle) 0 == hIndexReg || (NsHandle) 0 == hDataReg)
+    if ((NsHandle) 0 == IndexReg || (NsHandle) 0 == DataReg)
     {
-        pcWhy = "iPrepIndexFieldValue: null handle";
-        DELETE (pOD);
+        Why = "PrepIndexFieldValue: null handle";
+        DELETE (ObjDesc);
         return S_ERROR;
     }
 
-    pOD->bValTyp = (BYTE)IndexField;
-    if (IndexField != pOD->sIndexField.bValTyp)
+    ObjDesc->ValType = (BYTE) IndexField;
+    if (IndexField != ObjDesc->IndexField.ValType)
     {
-        /* See comments in iPrepDefFieldValue() re unexpected C behavior */
+        /* See comments in PrepDefFieldValue() re unexpected C behavior */
         
-        pOD->sIndexField.bValTyp = 0x005a;
-        sprintf (acWhyBuf,
-                "iPrepIndexFieldValue: internal failure %p %02x %02x %02x %02x",
-                pOD, ((BYTE *) pOD)[0], ((BYTE *) pOD)[1], ((BYTE *) pOD)[2],
-                ((BYTE *) pOD)[3]);
-        pcWhy = acWhyBuf;
-        DELETE (pOD);
+        ObjDesc->IndexField.ValType = 0x005a;
+        sprintf (WhyBuf,
+                "PrepIndexFieldValue: internal failure %p %02x %02x %02x %02x",
+                ObjDesc, ((BYTE *) ObjDesc)[0], ((BYTE *) ObjDesc)[1], ((BYTE *) ObjDesc)[2],
+                ((BYTE *) ObjDesc)[3]);
+        Why = WhyBuf;
+        DELETE (ObjDesc);
         return S_ERROR;
     }
 
-    pOD->sIndexField.wAccess        = (bFldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-    pOD->sIndexField.wLockRule      = (bFldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    pOD->sIndexField.wUpdateRule    = (bFldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    pOD->sIndexField.wDatLen        = (WORD) lFldLen;
+    ObjDesc->IndexField.Access        = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+    ObjDesc->IndexField.LockRule      = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+    ObjDesc->IndexField.UpdateRule    = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->IndexField.DatLen        = (WORD) FldLen;
 
     /* XXX - should use width of data register, not hardcoded 8 */
 
-    PRINT_XXX (iLstFileHandle, LOGFILE, " ** iPrepIndexFieldValue: hard 8 **");
+    PRINT_XXX (LstFileHandle, LOGFILE, " ** PrepIndexFieldValue: hard 8 **");
 
-    pOD->sIndexField.wBitOffset = (WORD) lFldPos % 8;
-    pOD->sIndexField.dIndexVal  = (DWORD) lFldPos / 8;
-    pOD->sIndexField.hIndex     = hIndexReg;
-    pOD->sIndexField.hData      = hDataReg;
+    ObjDesc->IndexField.BitOffset = (WORD) FldPos % 8;
+    ObjDesc->IndexField.IndexVal  = (DWORD) FldPos / 8;
+    ObjDesc->IndexField.Index     = IndexReg;
+    ObjDesc->IndexField.Data      = DataReg;
 
     if (debug_level () > 0)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                    "iPrepIndexFieldValue: set nte %p (%4.4s) val = %p",
-                    apObjStack[iObjStackTop], apObjStack[iObjStackTop], pOD);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                    "PrepIndexFieldValue: set nte %p (%4.4s) val = %p",
+                    ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc);
 
-        iDumpStackEntry (pOD);
-        vNsDumpEntry (hIndexReg, LOGFILE);
-        vNsDumpEntry( hDataReg, LOGFILE);
+        DumpStackEntry (ObjDesc);
+        NsDumpEntry (IndexReg, LOGFILE);
+        NsDumpEntry (DataReg, LOGFILE);
 
-        fprintf_bu (iLstFileHandle, LOGFILE,
+        fprintf_bu (LstFileHandle, LOGFILE,
             "============================================================");
     }
 
     /* 
-     * Store the constructed descriptor (pOD) into the nte whose
+     * Store the constructed descriptor (ObjDesc) into the nte whose
      * handle is on TOS, preserving the current type of that nte.
      */
-    vNsSetValue ((NsHandle) apObjStack[iObjStackTop], pOD,
-                (BYTE) iNsValType ((NsHandle) apObjStack[iObjStackTop]));
+    NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
+                (BYTE) NsValType ((NsHandle) ObjStack[ObjStackTop]));
 
     return S_SUCCESS;
 }
@@ -876,160 +879,160 @@ iPrepIndexFieldValue (NsHandle hIndexReg, NsHandle hDataReg,
 
 /*****************************************************************************
  * 
- * FUNCTION:    iSetupFld
+ * FUNCTION:    SetupField
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR * pOD     Field to be read or written
- *              OBJECT_DESCRIPTOR * pRgn    Region containing field
- *              int                 iFldW   Field Width in bits (8, 16, or 32)
+ * PARAMETERS:  OBJECT_DESCRIPTOR * ObjDesc         Field to be read or written
+ *              OBJECT_DESCRIPTOR * RgnDesc         Region containing field
+ *              int                 FieldBitWidth   Field Width in bits (8, 16, or 32)
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
- * DESCRIPTION: Common processing for iReadFld and iWriteFld
+ * DESCRIPTION: Common processing for ReadField and WriteField
  *
  ****************************************************************************/
 
 static int
-iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
+SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, int FieldBitWidth)
 {
-    int iRv;
-    int iFldByteW = iFldW / 8;                  /* possible values are 1, 2, 4 */
+    int Excep;
+    int FieldByteWidth = FieldBitWidth / 8;                  /* possible values are 1, 2, 4 */
 
 
-    FUNCTION_TRACE ("iSetupFld");
+    FUNCTION_TRACE ("SetupField");
 
 
-    if ((OBJECT_DESCRIPTOR *) 0 == pOD || (OBJECT_DESCRIPTOR *) 0 == pRgn)
+    if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc || (OBJECT_DESCRIPTOR *) 0 == RgnDesc)
     {
-        pcWhy = "iSetupFld:internal error: null handle";
+        Why = "SetupField:internal error: null handle";
         return S_ERROR;
     }
 
-    if (Region != pRgn->bValTyp)
+    if (Region != RgnDesc->ValType)
     {
-        sprintf (acWhyBuf, "iSetupFld: Needed Region, found %d", pRgn->bValTyp);
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf, "SetupField: Needed Region, found %d", RgnDesc->ValType);
+        Why = WhyBuf;
         return S_ERROR;
     }
 
-    if (iFldW != 8 && iFldW != 16 && iFldW != 32)
+    if (FieldBitWidth != 8 && FieldBitWidth != 16 && FieldBitWidth != 32)
     {
-        sprintf (acWhyBuf, "iSetupFld:internal error: bad width %d", iFldW);
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf, "SetupField:internal error: bad width %d", FieldBitWidth);
+        Why = WhyBuf;
         return S_ERROR;
     }
 
-    if (debug_level() > 2)
+    if (debug_level () > 2)
     {
         /* flow trace */
-        fprintf_bu (iLstFileHandle, LOGFILE, "iSetupFld: ");
+        fprintf_bu (LstFileHandle, LOGFILE, "SetupField: ");
     }
 
     /* 
      * If the address and length have not been previously evaluated,
      * evaluate them and save the results.
      */
-    if (0 == pRgn->sRegion.wAdrLenValid)
+    if (0 == RgnDesc->Region.AdrLenValid)
     {
         /* preserve current stack */
 
-        if ((iRv = PushExecLen (0L)) != S_SUCCESS)
+        if ((Excep = PushExecLen (0L)) != S_SUCCESS)
         {
             if (debug_level() > 2)
             {
                 /* flow trace */
-                fprintf_bu (iLstFileHandle, LOGFILE,
-                        "PushExecLen returned %s", RV[iRv]);
+                fprintf_bu (LstFileHandle, LOGFILE,
+                            "PushExecLen returned %s", RV[Excep]);
             }
-            return iRv;
+            return Excep;
         }
 
         /* Point to Address opcode in AML stream */
 
-        vSetCurrentLoc (&pRgn->sRegion.sAdrLoc);
+        SetCurrentLoc (&RgnDesc->Region.AdrLoc);
 
         /* Evaluate the Address opcode */
 
-        if ((iRv = DoOpCode (Exec)) == S_SUCCESS
-            && (iRv = iGetRvalue ((OBJECT_DESCRIPTOR **) &apObjStack[iObjStackTop]))
+        if ((Excep = DoOpCode (Exec)) == S_SUCCESS
+            && (Excep = GetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
              == S_SUCCESS)
         {
             /* Capture the address */
 
-            OBJECT_DESCRIPTOR       *pODval = apObjStack[iObjStackTop];
+            OBJECT_DESCRIPTOR       *ObjValDesc = ObjStack[ObjStackTop];
 
 
-            if ((OBJECT_DESCRIPTOR *) 0 == pODval
-                || pODval->bValTyp != (BYTE) Number)
+            if ((OBJECT_DESCRIPTOR *) 0 == ObjValDesc
+                || ObjValDesc->ValType != (BYTE) Number)
             {
-                pcWhy = "iSetupFld: Malformed Region/Address";
+                Why = "SetupField: Malformed Region/Address";
 
                 if (debug_level () > 2)
                 {
                     /* flow trace */
-                    fprintf_bu (iLstFileHandle, LOGFILE, " Malformed Region/Address "
-                                "pODval = %p, pODval->bValTyp = %02Xh, Number = %02Xh",
-                                pODval, pODval->bValTyp, (BYTE) Number);
+                    fprintf_bu (LstFileHandle, LOGFILE, " Malformed Region/Address "
+                                "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh",
+                                ObjValDesc, ObjValDesc->ValType, (BYTE) Number);
 
                 }
                 return S_ERROR;
             }
 
-            pRgn->sRegion.dAddress = pODval->sNumber.dNumber;
+            RgnDesc->Region.Address = ObjValDesc->Number.Number;
 
             /* Evaluate the Length opcode */
 
-            if ((iRv = DoOpCode (Exec)) == S_SUCCESS
-                && (iRv = iGetRvalue ((OBJECT_DESCRIPTOR **) &apObjStack[iObjStackTop]))
+            if ((Excep = DoOpCode (Exec)) == S_SUCCESS
+                && (Excep = GetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
                  == S_SUCCESS)
             {
                 /* Capture the length */
 
-                pODval = apObjStack[iObjStackTop];
+                ObjValDesc = ObjStack[ObjStackTop];
 
-                if ((OBJECT_DESCRIPTOR *)0 == pODval
-                    || pODval->bValTyp != (BYTE) Number)
+                if ((OBJECT_DESCRIPTOR *)0 == ObjValDesc
+                    || ObjValDesc->ValType != (BYTE) Number)
                 {
-                    pcWhy = "iSetupFld: Malformed Region/Length";
+                    Why = "SetupField: Malformed Region/Length";
                     if (debug_level () > 2)
                     {
                         /* flow trace */
-                        fprintf_bu (iLstFileHandle, LOGFILE,
+                        fprintf_bu (LstFileHandle, LOGFILE,
                                     " Malformed Region/Length ");
                     }
                     return S_ERROR;
                 }
 
-                pRgn->sRegion.dLength = pODval->sNumber.dNumber;
+                RgnDesc->Region.Length = ObjValDesc->Number.Number;
 
                 /* 
                  * Remember that both Address and Length
                  * have been successfully evaluated and saved.
                  */
-                pRgn->sRegion.wAdrLenValid = 1;
+                RgnDesc->Region.AdrLenValid = 1;
             }
         }
 
-        if (S_SUCCESS != iRv)
+        if (S_SUCCESS != Excep)
         {
             if (debug_level () > 1)
             {
-                fprintf_bu (iLstFileHandle, LOGFILE,
+                fprintf_bu (LstFileHandle, LOGFILE,
                             " DoOpCode at [%04x:%04lx] returned %s ",
-                            pRgn->sRegion.sAdrLoc.iOffset,
-                            pRgn->sRegion.sAdrLoc.lLength,
-                            RV[iRv]);
+                            RgnDesc->Region.AdrLoc.Offset,
+                            RgnDesc->Region.AdrLoc.Length,
+                            RV[Excep]);
             }
-            return iRv;
+            return Excep;
         }
 
-        if ((iRv = PopExec ()) != S_SUCCESS)
+        if ((Excep = PopExec ()) != S_SUCCESS)
         {
             if (debug_level() > 1)
             {
-                fprintf_bu (iLstFileHandle, LOGFILE,
-                            " PopExec returned %s ", RV[iRv]);
+                fprintf_bu (LstFileHandle, LOGFILE,
+                            " PopExec returned %s ", RV[Excep]);
             }
-            return iRv;
+            return Excep;
         }
     }
 
@@ -1037,24 +1040,24 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
      * If (offset rounded up to next multiple of field width)
      * exceeds region length, indicate an error.
      */
-    if (pRgn->sRegion.dLength
-        < (pOD->sField.dOffset & ~((DWORD)iFldByteW - 1)) + iFldByteW)
+    if (RgnDesc->Region.Length
+        < (ObjDesc->Field.Offset & ~((DWORD) FieldByteWidth - 1)) + FieldByteWidth)
     {
-        sprintf (acWhyBuf,
-                "iSetupFld: Operation at %08lx width %d bits exceeds region bound %08lx",
-                pOD->sField.dOffset, iFldW, pRgn->sRegion.dLength);
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf,
+                "SetupField: Operation at %08lx width %d bits exceeds region bound %08lx",
+                ObjDesc->Field.Offset, FieldBitWidth, RgnDesc->Region.Length);
+        Why = WhyBuf;
 
-        if (debug_level() > 2)
+        if (debug_level () > 2)
         {
             /* flow trace */
-            fprintf_bu (iLstFileHandle, LOGFILE, "out of bounds");
+            fprintf_bu (LstFileHandle, LOGFILE, "out of bounds");
         }
 
-        if (debug_level() > 0)
+        if (debug_level () > 0)
         {
-            iDumpStackEntry (pRgn);
-            iDumpStackEntry (pOD);
+            DumpStackEntry (RgnDesc);
+            DumpStackEntry (ObjDesc);
         }
         return S_ERROR;
     }
@@ -1062,7 +1065,7 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
     if (debug_level () > 2)
     {
         /* flow trace */
-        fprintf_bu (iLstFileHandle, LOGFILE, "S_SUCCESS");
+        fprintf_bu (LstFileHandle, LOGFILE, "S_SUCCESS");
     }
 
     return S_SUCCESS;
@@ -1071,11 +1074,11 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iReadFld
+ * FUNCTION:    ReadField
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR * pOD     Field to be read
- *              DWORD *             pdVal   Where to store value
- *              int                 iFldW   Field Width in bits (8, 16, or 32)
+ * PARAMETERS:  OBJECT_DESCRIPTOR * ObjDesc         Field to be read
+ *              DWORD *             Value           Where to store value
+ *              int                 FieldBitWidth   Field Width in bits (8, 16, or 32)
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -1084,153 +1087,154 @@ iSetupFld (OBJECT_DESCRIPTOR *pOD, OBJECT_DESCRIPTOR *pRgn, int iFldW)
  ****************************************************************************/
 
 static int
-iReadFld (OBJECT_DESCRIPTOR *pOD, DWORD *pdVal, int iFldW)
+ReadField (OBJECT_DESCRIPTOR *ObjDesc, DWORD *Value, int FieldBitWidth)
 {
-    /* pOD is validated by callers */
+    /* ObjDesc is validated by callers */
 
-    OBJECT_DESCRIPTOR   *pRgn = pOD->sField.pContainer;
-    DWORD               dAdr;
-    int                 iFldByteW = iFldW / 8;
-    int                 iRv = iSetupFld(pOD, pRgn, iFldW);
-
-
-    FUNCTION_TRACE ("iReadFld");
+    OBJECT_DESCRIPTOR   *RgnDesc = ObjDesc->Field.Container;
+    DWORD               Address;
+    int                 FieldByteWidth = FieldBitWidth / 8;
+    int                 Excep = SetupField (ObjDesc, RgnDesc, FieldBitWidth);
 
 
-    if (S_SUCCESS != iRv)
+    FUNCTION_TRACE ("ReadField");
+
+
+    if (S_SUCCESS != Excep)
     {
-        return iRv;
+        return Excep;
     }
 
     /* 
      * Round offset down to next multiple of
      * field width, and add region base address.
      */
-    dAdr = pRgn->sRegion.dAddress
-            + (pOD->sField.dOffset & ~((DWORD) iFldByteW - 1));
+    Address = RgnDesc->Region.Address
+            + (ObjDesc->Field.Offset & ~((DWORD) FieldByteWidth - 1));
 
     if (Trace & TraceOpRgn)
     {
-        if (OUTRANGE (pRgn->sRegion.bSpaceId, apcRegionTypes))
+        if (OUTRANGE (RgnDesc->Region.SpaceId, RegionTypes))
         {
-            fprintf_bu (iLstFileHandle, LOGFILE,
-                "** iReadFld: Read from unknown region SpaceID %d at %08lx width %d ** ",
-                    pRgn->sRegion.bSpaceId, dAdr, iFldW);
+            fprintf_bu (LstFileHandle, LOGFILE,
+                "** ReadField: Read from unknown region SpaceID %d at %08lx width %d ** ",
+                    RgnDesc->Region.SpaceId, Address, FieldBitWidth);
         }
 
         else
         {
-            fprintf_bu (iLstFileHandle, LOGFILE,
-                    "** Read from %s at %08lx width %d",
-                    apcRegionTypes[pRgn->sRegion.bSpaceId], dAdr, iFldW);
-            fflush_bu (iLstFileHandle);
+            fprintf_bu (LstFileHandle, LOGFILE,
+                        "** Read from %s at %08lx width %d",
+                        RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth);
+            fflush_bu (LstFileHandle);
         }
     }
 
 
-    switch(pRgn->sRegion.bSpaceId)
+    switch(RgnDesc->Region.SpaceId)
     {
-        void *      pvPhysPtr;
-        BYTE        bPciBus, bDevFunc, bPciReg, bRv;
+        void *      PhysicalAddrPtr;
+        BYTE        PciBus;
+        BYTE        DevFunc;
+        BYTE        PciReg;
+        BYTE        PciExcep;
 
         case SystemMemory:
 
             /* System memory defined to be in first Mbyte  */
             /* XXX:  Is this true on all OS/platform combinations??  */
 
-            if (dAdr & 0xFFF00000UL)
+            if (Address & 0xFFF00000UL)
             {
-                sprintf(acWhyBuf,
-                        "iReadFld:implementation limitation: SystemMemory address %08lx over 1MB", dAdr);
-                pcWhy = acWhyBuf;
+                sprintf(WhyBuf,
+                        "ReadField:implementation limitation: SystemMemory address %08lx over 1MB", Address);
+                Why = WhyBuf;
                 return S_ERROR;
             }
 
-            /* XXX: was pvPhysPtr = PHYStoFP(dAdr); */
+            /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
 
             /* 
              * XXX: This may be too high an overhead to do every time.
              * Probably should have a mapping cached.
              */
 
-            pvPhysPtr = OsdMapMemory (dAdr, 4);
+            PhysicalAddrPtr = OsdMapMemory (Address, 4);
 
-            switch (iFldW)
+            switch (FieldBitWidth)
             {
                 case 8:
-                    *pdVal = (DWORD)* (BYTE *) pvPhysPtr;
+                    *Value = (DWORD)* (BYTE *) PhysicalAddrPtr;
                     break;
 
                 case 16:
-                    *pdVal = (DWORD)* (WORD *) pvPhysPtr;
+                    *Value = (DWORD)* (WORD *) PhysicalAddrPtr;
                     break;
 
                 case 32:
-                    *pdVal = * (DWORD *) pvPhysPtr;
+                    *Value = * (DWORD *) PhysicalAddrPtr;
                     break;
 
                 default:
-                    sprintf (acWhyBuf,
-                            "iReadFld: invalid SystemMemory width %d", iFldW);
-                    pcWhy = acWhyBuf;
-                    OsdUnMapMemory (pvPhysPtr, 4);
+                    sprintf (WhyBuf,
+                            "ReadField: invalid SystemMemory width %d", FieldBitWidth);
+                    Why = WhyBuf;
+                    OsdUnMapMemory (PhysicalAddrPtr, 4);
                     return S_ERROR;
             }
 
-            OsdUnMapMemory (pvPhysPtr, 4);
+            OsdUnMapMemory (PhysicalAddrPtr, 4);
             break;
 
         case SystemIO:
-            switch (iFldW)
+            switch (FieldBitWidth)
             {
                 case 8:
-                    *pdVal = (DWORD)bIn8((WORD)dAdr);
+                    *Value = (DWORD) In8 ((WORD) Address);
                     break;
 
                 case 16:
-                    *pdVal = (DWORD)wIn16((WORD)dAdr);
+                    *Value = (DWORD) In16 ((WORD) Address);
                     break;
 
                 case 32:
-                    *pdVal = dIn32((WORD)dAdr);
+                    *Value = In32 ((WORD) Address);
                     break;
 
                 default:
-                    sprintf(acWhyBuf,
-                            "iReadFld: invalid SystemIO width %d", iFldW);
-                    pcWhy = acWhyBuf;
+                    sprintf(WhyBuf,
+                            "ReadField: invalid SystemIO width %d", FieldBitWidth);
+                    Why = WhyBuf;
                     return S_ERROR;
             }
             break;
 
         case PCIConfig:
-            bPciBus = (BYTE) (dAdr >> 16);
-            bDevFunc = (BYTE) (dAdr >> 8);
-            bPciReg = (BYTE) ((dAdr >> 2) & 0x3f);
+            PciBus = (BYTE) (Address >> 16);
+            DevFunc = (BYTE) (Address >> 8);
+            PciReg = (BYTE) ((Address >> 2) & 0x3f);
 
-            switch (iFldW)
+            switch (FieldBitWidth)
             {
                 case 8:
-                    bRv
-                    = bReadPciCfgByte (bPciBus, bDevFunc, bPciReg, (BYTE *)pdVal);
+                    PciExcep = ReadPciCfgByte (PciBus, DevFunc, PciReg, (BYTE *) Value);
                     break;
 
                 case 16:
-                    bRv
-                    = bReadPciCfgWord (bPciBus, bDevFunc, bPciReg, (WORD *)pdVal);
+                    PciExcep = ReadPciCfgWord (PciBus, DevFunc, PciReg, (WORD *) Value);
                     break;
 
                 case 32:
-                    bRv = bReadPciCfgDword (bPciBus, bDevFunc, bPciReg, pdVal);
+                    PciExcep = ReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
                     break;
 
                 default:
-                    sprintf (acWhyBuf,
-                            "iReadFld: invalid PCIConfig width %d", iFldW);
-                    pcWhy = acWhyBuf;
+                    sprintf (WhyBuf,
+                            "ReadField: invalid PCIConfig width %d", FieldBitWidth);
+                    Why = WhyBuf;
                     return S_ERROR;
             }
-            if (bRv)
+            if (PciExcep)
             {
                 return S_ERROR;
             }
@@ -1241,21 +1245,21 @@ iReadFld (OBJECT_DESCRIPTOR *pOD, DWORD *pdVal, int iFldW)
 
             /* XXX - Actual read should happen here */
 
-            sprintf (acWhyBuf, "iReadFld: Region type %s not implemented",
-                    apcRegionTypes[pRgn->sRegion.bSpaceId]);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "ReadField: Region type %s not implemented",
+                    RegionTypes[RgnDesc->Region.SpaceId]);
+            Why = WhyBuf;
             return S_ERROR;
 
         default:
-            sprintf (acWhyBuf, "iReadFld: Unknown region SpaceID %d",
-                    pRgn->sRegion.bSpaceId);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "ReadField: Unknown region SpaceID %d",
+                    RgnDesc->Region.SpaceId);
+            Why = WhyBuf;
             return S_ERROR;
     }
 
     if (Trace & TraceOpRgn)
     {
-        fprintf_bu(iLstFileHandle, LOGFILE, " val %08lx ", *pdVal);
+        fprintf_bu (LstFileHandle, LOGFILE, " val %08lx ", *Value);
     }
 
     return S_SUCCESS;
@@ -1264,11 +1268,11 @@ iReadFld (OBJECT_DESCRIPTOR *pOD, DWORD *pdVal, int iFldW)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iWriteFld
+ * FUNCTION:    WriteField
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR * pOD     Field to be set
- *              DWORD               dVal    Value to store
- *              int                 iFldW   Field Width in bits (8, 16, or 32)
+ * PARAMETERS:  OBJECT_DESCRIPTOR * ObjDesc         Field to be set
+ *              DWORD               Value           Value to store
+ *              int                 FieldBitWidth   Field Width in bits (8, 16, or 32)
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -1277,144 +1281,146 @@ iReadFld (OBJECT_DESCRIPTOR *pOD, DWORD *pdVal, int iFldW)
  ****************************************************************************/
 
 static int
-iWriteFld (OBJECT_DESCRIPTOR *pOD, DWORD dVal, int iFldW)
+WriteField (OBJECT_DESCRIPTOR *ObjDesc, DWORD Value, int FieldBitWidth)
 {
-    /* pOD is validated by callers */
+    /* ObjDesc is validated by callers */
 
-    OBJECT_DESCRIPTOR *     pRgn = pOD->sField.pContainer;
-    DWORD                   dAdr;
-    int                     iFldByteW = iFldW / 8;
-    int                     iRv = iSetupFld(pOD, pRgn, iFldW);
-
-
-    FUNCTION_TRACE ("iWriteFld");
+    OBJECT_DESCRIPTOR *     RgnDesc = ObjDesc->Field.Container;
+    DWORD                   Address;
+    int                     FieldByteWidth = FieldBitWidth / 8;
+    int                     Excep = SetupField (ObjDesc, RgnDesc, FieldBitWidth);
 
 
-    if (S_SUCCESS != iRv)
+    FUNCTION_TRACE ("WriteField");
+
+
+    if (S_SUCCESS != Excep)
     {
-        return iRv;
+        return Excep;
     }
 
-    dAdr = pRgn->sRegion.dAddress
-          + (pOD->sField.dOffset & ~((DWORD) iFldByteW - 1));
+    Address = RgnDesc->Region.Address
+                + (ObjDesc->Field.Offset & ~((DWORD) FieldByteWidth - 1));
 
     if (Trace & TraceOpRgn)
     {
-        if (OUTRANGE (pRgn->sRegion.bSpaceId, apcRegionTypes))
+        if (OUTRANGE (RgnDesc->Region.SpaceId, RegionTypes))
         {
-            fprintf_bu (iLstFileHandle, LOGFILE,
-                "** iWriteFld: Store %lx in unknown region SpaceID %d at %08lx width %d ** ",
-                    dVal, pRgn->sRegion.bSpaceId, dAdr, iFldW);
+            fprintf_bu (LstFileHandle, LOGFILE,
+                "** WriteField: Store %lx in unknown region SpaceID %d at %08lx width %d ** ",
+                    Value, RgnDesc->Region.SpaceId, Address, FieldBitWidth);
         }
         else
         {
-            fprintf_bu (iLstFileHandle, LOGFILE,
+            fprintf_bu (LstFileHandle, LOGFILE,
                     "** Store %lx in %s at %08lx width %d",
-                    dVal, apcRegionTypes[pRgn->sRegion.bSpaceId], dAdr, iFldW);
-            fflush_bu (iLstFileHandle);
+                    Value, RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth);
+            fflush_bu (LstFileHandle);
         }
     }
 
-    switch(pRgn->sRegion.bSpaceId)
+    switch(RgnDesc->Region.SpaceId)
     {
-        void        *pvPhysPtr;
-        BYTE        bPciBus, bDevFunc, bPciReg, bRv;
+        void        *PhysicalAddrPtr;
+        BYTE        PciBus;
+        BYTE        DevFunc;
+        BYTE        PciReg;
+        BYTE        PciExcep;
+
 
         case SystemMemory:
 
-            if (dAdr & 0xFFF00000UL)
+            if (Address & 0xFFF00000UL)
             {
-                sprintf (acWhyBuf,
-                        "iWriteFld:implementation limitation: SystemMemory address %08lx over 1MB", dAdr);
-                pcWhy = acWhyBuf;
+                sprintf (WhyBuf,
+                        "WriteField:implementation limitation: SystemMemory address %08lx over 1MB", Address);
+                Why = WhyBuf;
                 return S_ERROR;
             }
 
 
-            /* XXX: was pvPhysPtr = PHYStoFP(dAdr); */
+            /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
 
             /* XXX: This may be too high an overhead to do every time.
              * Probably should have a mapping cached.
              */
 
-            pvPhysPtr = OsdMapMemory (dAdr, 4);
+            PhysicalAddrPtr = OsdMapMemory (Address, 4);
                     
-            switch (iFldW)
+            switch (FieldBitWidth)
             {
                 case 8:
-                    *(BYTE *)pvPhysPtr = (BYTE) dVal;
+                    *(BYTE *) PhysicalAddrPtr = (BYTE) Value;
                     break;
 
                 case 16:
-                    *(WORD *)pvPhysPtr = (WORD) dVal;
+                    *(WORD *) PhysicalAddrPtr = (WORD) Value;
                     break;
 
                 case 32:
-                    *(DWORD *)pvPhysPtr = dVal;
+                    *(DWORD *) PhysicalAddrPtr = Value;
                     break;
 
                 default:
-                    sprintf (acWhyBuf,
-                            "iWriteFld: invalid SystemMemory width %d", iFldW);
-                    pcWhy = acWhyBuf;
-                    OsdUnMapMemory (pvPhysPtr, 4);
+                    sprintf (WhyBuf,
+                            "WriteField: invalid SystemMemory width %d", FieldBitWidth);
+                    Why = WhyBuf;
+                    OsdUnMapMemory (PhysicalAddrPtr, 4);
                     return S_ERROR;
             }
 
-            OsdUnMapMemory (pvPhysPtr, 4);
+            OsdUnMapMemory (PhysicalAddrPtr, 4);
             break;
 
         case SystemIO:
-            switch (iFldW)
+            switch (FieldBitWidth)
             {
                 case 8:
-                    vOut8((WORD) dAdr, (BYTE) dVal);
+                    Out8 ((WORD) Address, (BYTE) Value);
                     break;
 
                 case 16:
-                    vOut16((WORD) dAdr, (WORD) dVal);
+                    Out16 ((WORD) Address, (WORD) Value);
                     break;
 
                 case 32:
-                    vOut32((WORD) dAdr, dVal);
+                    Out32 ((WORD) Address, Value);
                     break;
 
                 default:
-                    sprintf (acWhyBuf,
-                            "iWriteFld: invalid SystemIO width %d", iFldW);
-                    pcWhy = acWhyBuf;
+                    sprintf (WhyBuf,
+                            "WriteField: invalid SystemIO width %d", FieldBitWidth);
+                    Why = WhyBuf;
                     return S_ERROR;
             }
             break;
 
         case PCIConfig:
-            bPciBus = (BYTE) (dAdr >> 16);
-            bDevFunc = (BYTE) (dAdr >> 8);
-            bPciReg = (BYTE) ((dAdr >> 2) & 0x3f);
+            PciBus = (BYTE) (Address >> 16);
+            DevFunc = (BYTE) (Address >> 8);
+            PciReg = (BYTE) ((Address >> 2) & 0x3f);
 
-            switch (iFldW)
+            switch (FieldBitWidth)
             {
                 case 8:
-                    bRv
-                    = bWritePciCfgByte (bPciBus, bDevFunc, bPciReg, *(BYTE *)&dVal);
+                    PciExcep = WritePciCfgByte (PciBus, DevFunc, PciReg, *(BYTE *)&Value);
                     break;
 
                 case 16:
-                    bRv
-                    = bWritePciCfgWord (bPciBus, bDevFunc, bPciReg, *(WORD *)&dVal);
+                    PciExcep = WritePciCfgWord (PciBus, DevFunc, PciReg, *(WORD *)&Value);
                     break;
 
                 case 32:
-                    bRv = bWritePciCfgDword (bPciBus, bDevFunc, bPciReg, dVal);
+                    PciExcep = WritePciCfgDword (PciBus, DevFunc, PciReg, Value);
                     break;
 
                 default:
-                    sprintf (acWhyBuf,
-                            "iWriteFld: invalid PCIConfig width %d", iFldW);
-                    pcWhy = acWhyBuf;
+                    sprintf (WhyBuf,
+                            "WriteField: invalid PCIConfig width %d", FieldBitWidth);
+                    Why = WhyBuf;
                     return S_ERROR;
             }
-            if (bRv)
+            if (PciExcep)
             {
                 return S_ERROR;
             }
@@ -1425,15 +1431,15 @@ iWriteFld (OBJECT_DESCRIPTOR *pOD, DWORD dVal, int iFldW)
 
             /* XXX - Actual write should happen here */
  
-            sprintf (acWhyBuf, "iWriteFld: Region type %s not implemented",
-                    apcRegionTypes[pRgn->sRegion.bSpaceId]);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "WriteField: Region type %s not implemented",
+                    RegionTypes[RgnDesc->Region.SpaceId]);
+            Why = WhyBuf;
             return S_ERROR;
 
         default:
-            sprintf (acWhyBuf, "iWriteFld: Unknown region SpaceID %d",
-                    pRgn->sRegion.bSpaceId);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "WriteField: Unknown region SpaceID %d",
+                    RgnDesc->Region.SpaceId);
+            Why = WhyBuf;
             return S_ERROR;
     }
 
@@ -1443,32 +1449,32 @@ iWriteFld (OBJECT_DESCRIPTOR *pOD, DWORD dVal, int iFldW)
 
 /*****************************************************************************
  * 
- * FUNCTION:    vAmlAppendBlockOwner
+ * FUNCTION:    AmlAppendBlockOwner
  *
- * PARAMETERS:  void *pvB
+ * PARAMETERS:  void *Owner
  *
- * DESCRIPTION: Append block-owner data from bu_plumr to acWhyBuf.
+ * DESCRIPTION: Append block-owner data from bu_plumr to WhyBuf.
  *
  ****************************************************************************/
 
 static void
-vAmlAppendBlockOwner (void *pvB)
+AmlAppendBlockOwner (void *Owner)
 {
 
 #ifdef PLUMBER
-    if (pcWhy != acWhyBuf)
+    if (Why != WhyBuf)
     {
-        /* Copy message to acWhyBuf */
+        /* Copy message to WhyBuf */
         
-        strcpy(acWhyBuf, pcWhy);
-        pcWhy = acWhyBuf;
+        strcpy(WhyBuf, Why);
+        Why = WhyBuf;
     }
 
 #if 1
-    vPlumber("internal type mismatch", 3);
+    vPlumber ("internal type mismatch", 3);
 #endif
 
-    sprintf(&acWhyBuf[strlen(acWhyBuf)], " %s", pcIdentifyOwner(pvB));
+    sprintf (&WhyBuf[strlen (WhyBuf)], " %s", pcIdentifyOwner(Owner));
 
 #endif  /* PLUMBER */
 }
@@ -1476,11 +1482,11 @@ vAmlAppendBlockOwner (void *pvB)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iAccessNamedField
+ * FUNCTION:    AccessNamedField
  *
- * PARAMETERS:  int         iMode           ACPI_READ or ACPI_WRITE
- *              NsHandle    hNamedField     Handle for field to be accessed
- *              DWORD       *pdVal          Value to be read or written
+ * PARAMETERS:  int         Mode           ACPI_READ or ACPI_WRITE
+ *              NsHandle    NamedField     Handle for field to be accessed
+ *              DWORD       *Value          Value to be read or written
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -1489,121 +1495,123 @@ vAmlAppendBlockOwner (void *pvB)
  ****************************************************************************/
 
 static int
-iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
+AccessNamedField (int Mode, NsHandle NamedField, DWORD *Value)
 {
-    OBJECT_DESCRIPTOR *     pOD = pvNsValPtr(hNamedField);
-    char *                  pcType;
-    int                     iGran, iRv, iMaxW;
+    OBJECT_DESCRIPTOR *     ObjDesc = NsValPtr (NamedField);
+    char *                  Type;
+    int                     Granularity;
+    int                     Excep;
+    int                     MaxW;
 
 
-    FUNCTION_TRACE ("iAccessNamedField");
+    FUNCTION_TRACE ("AccessNamedField");
 
 
-    if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+    if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
     {
-        pcWhy = "iAccessNamedField:internal error: null value pointer";
+        Why = "AccessNamedField:internal error: null value pointer";
         return S_ERROR;
     }
 
-    if (DefField != iNsValType (hNamedField))
+    if (DefField != NsValType (NamedField))
     {
-        sprintf (acWhyBuf,
-                  "iAccessNamedField: Name %4.4s type %d is not a defined field",
-                  hNamedField, iNsValType(hNamedField));
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf,
+                  "AccessNamedField: Name %4.4s type %d is not a defined field",
+                  NamedField, NsValType (NamedField));
+        Why = WhyBuf;
         return S_ERROR;
     }
 
     if (debug_level () > 2)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                    "in iAccessNamedField: DefField type and ValPtr OK in nte ");
-        vNsDumpEntry (hNamedField, LOGFILE);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                    "in AccessNamedField: DefField type and ValPtr OK in nte ");
+        NsDumpEntry (NamedField, LOGFILE);
 
-        fprintf_bu (iLstFileHandle, LOGFILE, "pOD = %p, pOD->bValTyp = %d",
-                    pOD, pOD->bValTyp);
-        fprintf_bu (iLstFileHandle, LOGFILE, " wDatLen = %d, wBitOffset = %d",
-                    pOD->sFieldUnit.wDatLen, pOD->sFieldUnit.wBitOffset);
+        fprintf_bu (LstFileHandle, LOGFILE, "ObjDesc = %p, ObjDesc->ValType = %d",
+                    ObjDesc, ObjDesc->ValType);
+        fprintf_bu (LstFileHandle, LOGFILE, " DatLen = %d, BitOffset = %d",
+                    ObjDesc->FieldUnit.DatLen, ObjDesc->FieldUnit.BitOffset);
     }
 
-    if (DefField != pOD->bValTyp)
+    if (DefField != ObjDesc->ValType)
     {
-        sprintf (acWhyBuf,
-                "iAccessNamedField:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                hNamedField, iNsValType(hNamedField), pOD->bValTyp, pOD);
-        pcWhy = acWhyBuf;
-        vAmlAppendBlockOwner (pOD);
+        sprintf (WhyBuf,
+                "AccessNamedField:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                NamedField, NsValType (NamedField), ObjDesc->ValType, ObjDesc);
+        Why = WhyBuf;
+        AmlAppendBlockOwner (ObjDesc);
         return S_ERROR;
     }
 
-    switch (pOD->sField.wAccess)
+    switch (ObjDesc->Field.Access)
     {
         case AnyAcc:
-            iGran = 8;
-            iMaxW = 32;
-            pcType = "DWORD";
+            Granularity = 8;
+            MaxW = 32;
+            Type = "DWORD";
             break;
 
         case ByteAcc:
-            iGran = iMaxW = 8;
-            pcType = "BYTE";
+            Granularity = MaxW = 8;
+            Type = "BYTE";
             break;
 
         case WordAcc:
-            iGran = iMaxW = 16;
-            pcType = "WORD";
+            Granularity = MaxW = 16;
+            Type = "WORD";
             break;
 
         case DWordAcc:
-            iGran = iMaxW = 32;
-            pcType = "DWORD";
+            Granularity = MaxW = 32;
+            Type = "DWORD";
             break;
 
         default:
-            sprintf (acWhyBuf,
-                    "iAccessNamedField: unknown access type %d",
-                    pOD->sField.wAccess);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf,
+                    "AccessNamedField: unknown access type %d",
+                    ObjDesc->Field.Access);
+            Why = WhyBuf;
             return S_ERROR;
     }
 
-    if (pOD->sFieldUnit.wDatLen + pOD->sFieldUnit.wBitOffset > (WORD) iMaxW)
+    if (ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset > (WORD) MaxW)
     {
-        sprintf (acWhyBuf, "iAccessNamedField: Field exceeds %s", pcType);
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf, "AccessNamedField: Field exceeds %s", Type);
+        Why = WhyBuf;
         return S_ERROR;
     }
 
     /* 
-     * As long as iMaxW/2 is wide enough for the data and iMaxW > iGran,
-     * divide iMaxW by 2.
+     * As long as MaxW/2 is wide enough for the data and MaxW > Granularity,
+     * divide MaxW by 2.
      */
-    while (iGran < iMaxW
-            && pOD->sFieldUnit.wDatLen + pOD->sFieldUnit.wBitOffset
-                <= (WORD)iMaxW / 2)
+    while (Granularity < MaxW
+            && ObjDesc->FieldUnit.DatLen + ObjDesc->FieldUnit.BitOffset
+                <= (WORD) MaxW / 2)
     {
-        iMaxW /= 2;
+        MaxW /= 2;
     }
 
-    if (ACPI_WRITE == iMode)
+    if (ACPI_WRITE == Mode)
     {
-        /* Construct dMask with 1 bits where the field is, 0 bits elsewhere */
+        /* Construct Mask with 1 bits where the field is, 0 bits elsewhere */
 
-        DWORD       dMask = (((DWORD)1 << pOD->sFieldUnit.wDatLen) - (DWORD)1)
-                            << pOD->sField.wBitOffset;
+        DWORD       Mask = (((DWORD)1 << ObjDesc->FieldUnit.DatLen) - (DWORD)1)
+                            << ObjDesc->Field.BitOffset;
         /* Shift and mask the value into the field position */
 
-        DWORD       dValue = (*pdVal << pOD->sField.wBitOffset) & dMask;
-        int         iLocked = FALSE;
+        DWORD       dValue = (*Value << ObjDesc->Field.BitOffset) & Mask;
+        int         Locked = FALSE;
 
 
-        if (pOD->sFieldUnit.wDatLen % iGran || pOD->sFieldUnit.wBitOffset)
+        if (ObjDesc->FieldUnit.DatLen % Granularity || ObjDesc->FieldUnit.BitOffset)
         {
             /* Write does not fill an integral number of naturally aligned units */
 
-            switch (pOD->sField.wUpdateRule)
+            switch (ObjDesc->Field.UpdateRule)
             {
-                DWORD dOldVal;
+                DWORD OldVal;
 
                 case Preserve:
 
@@ -1611,73 +1619,73 @@ iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
                      * Read the current contents of the byte/word/dword containing
                      * the field, and merge with the new field value.
                      */
-                    iRv = iReadFld(pOD, &dOldVal, iMaxW);
-                    if (S_SUCCESS != iRv)
+                    Excep = ReadField (ObjDesc, &OldVal, MaxW);
+                    if (S_SUCCESS != Excep)
                     {
-                        return iRv;
+                        return Excep;
                     }
 
-                    dValue |= dOldVal & ~dMask;
+                    dValue |= OldVal & ~Mask;
                     break;
 
                 case WriteAsOnes:
 
                     /* Set positions outside the field to 1's */
 
-                    dValue |= ~dMask;
+                    dValue |= ~Mask;
                     break;
 
                 case WriteAsZeros:
 
                     /* 
                      * Positions outside the field are already 0
-                     * due to "& dMask" above
+                     * due to "& Mask" above
                      */
                     break;
 
                 default:
-                    sprintf(acWhyBuf,
-                                "iAccessNamedField: Unknown UpdateRule setting %d",
-                                pOD->sField.wUpdateRule);
-                    pcWhy = acWhyBuf;
+                    sprintf (WhyBuf,
+                                "AccessNamedField: Unknown UpdateRule setting %d",
+                                ObjDesc->Field.UpdateRule);
+                    Why = WhyBuf;
                     return S_ERROR;
             }
         }
 
-        if (debug_level() > 2)
+        if (debug_level () > 2)
         {
-            fprintf_bu(iLstFileHandle, LOGFILE, " invoking iWriteFld");
+            fprintf_bu (LstFileHandle, LOGFILE, " invoking WriteField");
         }
 
         /* Check lock rule prior to modifing the field */
 
-        if (pOD->sFieldUnit.wLockRule == (WORD) Lock)
+        if (ObjDesc->FieldUnit.LockRule == (WORD) Lock)
         {
-            if (iGetGlobalLock () == S_ERROR)
+            if (GetGlobalLock () == S_ERROR)
             {
                 /* the ownship failed - Bad Bad Bad, this is a single threaded */
                 /* implementation so there is no way some other process should */
                 /* own this.  This means something grabbed it and did not */
-                /* release the Global Lock! (pcWhy will already be set) */
+                /* release the Global Lock! (Why will already be set) */
 
                 return (S_ERROR);
             }
             else
             {
-                iLocked = TRUE;
+                Locked = TRUE;
             }
         }
 
         /* perform the update */
 
-        iRv = iWriteFld (pOD, dValue, iMaxW);
+        Excep = WriteField (ObjDesc, dValue, MaxW);
 
         /* if the Global Lock is owned the release it */
 
-        if (iLocked)
+        if (Locked)
         {
-            vReleaseGlobalLock ();
-            iLocked = FALSE;
+            ReleaseGlobalLock ();
+            Locked = FALSE;
         }
     }
 
@@ -1685,25 +1693,25 @@ iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
     {
         /* ACPI_READ */
 
-        iRv = iReadFld (pOD, pdVal, iMaxW);
+        Excep = ReadField (ObjDesc, Value, MaxW);
 
-        if (S_SUCCESS == iRv)
+        if (S_SUCCESS == Excep)
         {
-            *pdVal >>= pOD->sField.wBitOffset;
-            *pdVal &= (((DWORD) 1 << pOD->sFieldUnit.wDatLen) - (DWORD) 1);
+            *Value >>= ObjDesc->Field.BitOffset;
+            *Value &= (((DWORD) 1 << ObjDesc->FieldUnit.DatLen) - (DWORD) 1);
         }
     }
 
-    return iRv;
+    return Excep;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iSetNamedFieldValue
+ * FUNCTION:    SetNamedFieldValue
  *
- * PARAMETERS:  NsHandle    hNamedField     Handle for field to be set
- *              DWORD       dValue          Value to be stored in field
+ * PARAMETERS:  NsHandle    NamedField     Handle for field to be set
+ *              DWORD       Value          Value to be stored in field
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -1712,27 +1720,27 @@ iAccessNamedField (int iMode, NsHandle hNamedField, DWORD *pdVal)
  ****************************************************************************/
 
 int
-iSetNamedFieldValue (NsHandle hNamedField, DWORD dValue)
+SetNamedFieldValue (NsHandle NamedField, DWORD Value)
 {
-    FUNCTION_TRACE ("iSetNamedFieldValue");
+    FUNCTION_TRACE ("SetNamedFieldValue");
 
 
-    if ((NsHandle) 0 == hNamedField)
+    if ((NsHandle) 0 == NamedField)
     {
-        pcWhy = "iSetNamedFieldValue:internal error:null handle";
+        Why = "SetNamedFieldValue:internal error:null handle";
         return S_ERROR;
     }
 
-    return iAccessNamedField (ACPI_WRITE, hNamedField, &dValue);
+    return AccessNamedField (ACPI_WRITE, NamedField, &Value);
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iGetNamedFieldValue
+ * FUNCTION:    GetNamedFieldValue
  *
- * PARAMETERS:  NsHandle    hNamedField     Handle for field to be read
- *              DWORD       *pdVal          Where to store value read froom field
+ * PARAMETERS:  NsHandle    NamedField      Handle for field to be read
+ *              DWORD       *Value          Where to store value read froom field
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -1741,27 +1749,27 @@ iSetNamedFieldValue (NsHandle hNamedField, DWORD dValue)
  ****************************************************************************/
 
 int
-iGetNamedFieldValue (NsHandle hNamedField, DWORD *pdVal)
+GetNamedFieldValue (NsHandle NamedField, DWORD *Value)
 {
-    FUNCTION_TRACE ("iGetNamedFieldValue");
+    FUNCTION_TRACE ("GetNamedFieldValue");
 
 
-    if ((NsHandle) 0 == hNamedField)
+    if ((NsHandle) 0 == NamedField)
     {
-        pcWhy = "iGetNamedFieldValue:internal error:null handle";
+        Why = "GetNamedFieldValue:internal error:null handle";
         return S_ERROR;
     }
 
-    return iAccessNamedField (ACPI_READ, hNamedField, pdVal);
+    return AccessNamedField (ACPI_READ, NamedField, Value);
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecStore
+ * FUNCTION:    ExecStore
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *pVal     value to be stored
- *              OBJECT_DESCRIPTOR *pDest    where to store it -- must be
+ * PARAMETERS:  OBJECT_DESCRIPTOR *ValDesc  value to be stored
+ *              OBJECT_DESCRIPTOR *DestDesc where to store it -- must be
  *                                          either an (NsHandle) or an
  *                                          OBJECT_DESCRIPTOR of type Lvalue;
  *                                          if the latter the descriptor will
@@ -1769,111 +1777,111 @@ iGetNamedFieldValue (NsHandle hNamedField, DWORD *pdVal)
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
- * DESCRIPTION: Store the value described by pVal into the location
- *              described by pDest.  Called by various interpreter
+ * DESCRIPTION: Store the value described by ValDesc into the location
+ *              described by DestDesc.  Called by various interpreter
  *              functions to store the result of an operation into
  *              the destination operand.
  *
  * ALLOCATION:
- *  Reference   Size                    Pool    Owner       Description
- *  nte.pVal    s(OBJECT_DESCRIPTOR)    bu      amlexec     Name(Lvalue)
+ *  Reference      Size                    Pool    Owner       Description
+ *  nte.ValDesc    s(OBJECT_DESCRIPTOR)    bu      amlexec     Name(Lvalue)
  *
  ****************************************************************************/
 
 int
-iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
+ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 {
-    NsHandle        nTemp;
-    int             iRv;
-    int             iStacked = FALSE;
-    int             iLocked = FALSE;
+    NsHandle        TempHandle;
+    int             Excep;
+    int             Stacked = FALSE;
+    int             Locked = FALSE;
 
 
-    FUNCTION_TRACE ("iExecStore");
+    FUNCTION_TRACE ("ExecStore");
 
 
-    if ((OBJECT_DESCRIPTOR *) 0 == pVal || (OBJECT_DESCRIPTOR *) 0 == pDest)
+    if ((OBJECT_DESCRIPTOR *) 0 == ValDesc || (OBJECT_DESCRIPTOR *) 0 == DestDesc)
     {
-        pcWhy = "iExecStore:internal error: null pointer";
+        Why = "ExecStore:internal error: null pointer";
         return S_ERROR;
     }
 
     if (debug_level () > 2)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE, "in iExecStore");
+        fprintf_bu (LstFileHandle, LOGFILE, "in ExecStore");
     }
 
-    if (iIsNsHandle (pDest))
+    if (IsNsHandle (DestDesc))
     {
-        nTemp = (NsHandle) pDest;
-        pDest = NEW (OBJECT_DESCRIPTOR);
+        TempHandle = (NsHandle) DestDesc;
+        DestDesc = NEW (OBJECT_DESCRIPTOR);
 
-        if (pDest)
+        if (DestDesc)
         {
-            pDest->bValTyp          = (BYTE)Lvalue;
-            pDest->sLvalue.bOpCode  = NameOp;
-            pDest->sLvalue.pvRef    = nTemp;
+            DestDesc->ValType       = (BYTE) Lvalue;
+            DestDesc->Lvalue.OpCode = NameOp;
+            DestDesc->Lvalue.Ref    = TempHandle;
 
             /* Push the descriptor on TOS temporarily
              * to protect it from garbage collection
              */
-            iRv = iPushIfExec (Exec);
-            if (S_SUCCESS != iRv)
+            Excep = PushIfExec (Exec);
+            if (S_SUCCESS != Excep)
             {
-                DELETE (pDest);
-                return iRv;
+                DELETE (DestDesc);
+                return Excep;
             }
 
-            apObjStack[iObjStackTop] = pDest;
-            iStacked = TRUE;
+            ObjStack[ObjStackTop] = DestDesc;
+            Stacked = TRUE;
         }
 
         else
         {
-            vKFatalError ("0006", ("iExecStore: Descriptor Allocation Failure"));
+            KFatalError ("0006", ("ExecStore: Descriptor Allocation Failure"));
             return S_ERROR;
         }
     }
 
-    if (pDest->bValTyp != Lvalue)
+    if (DestDesc->ValType != Lvalue)
     {
-        sprintf (acWhyBuf, "iExecStore: Store target is not an Lvalue [%s]",
-                apcNsTypeNames[pDest->bValTyp]);
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf, "ExecStore: Store target is not an Lvalue [%s]",
+                NsTypeNames[DestDesc->ValType]);
+        Why = WhyBuf;
 
         if (debug_level () > 0)
         {
-            iDumpStackEntry (pVal);
-            iDumpStackEntry (pDest);
-            vDumpStack (Exec, "iExecStore", 2, "target not Lvalue");
+            DumpStackEntry (ValDesc);
+            DumpStackEntry (DestDesc);
+            DumpStack (Exec, "ExecStore", 2, "target not Lvalue");
         }
 
         return S_ERROR;
     }
 
-    switch(pDest->sLvalue.bOpCode)
+    switch (DestDesc->Lvalue.OpCode)
     {
     case NameOp:
 
         /* Storing into a Name */
 
-        nTemp = pDest->sLvalue.pvRef;
-        switch (iNsValType (nTemp))              /* Type of Name's existing value */
+        TempHandle = DestDesc->Lvalue.Ref;
+        switch (NsValType (TempHandle))              /* Type of Name's existing value */
         {
             case Alias:
 #if 1
-                sprintf (acWhyBuf,
-                          "iExecStore/NameOp: Store into %s not implemented",
-                          apcNsTypeNames[iNsValType(nTemp)]);
-                pcWhy = acWhyBuf;
-                iRv = S_ERROR;
+                sprintf (WhyBuf,
+                          "ExecStore/NameOp: Store into %s not implemented",
+                          NsTypeNames[NsValType (TempHandle)]);
+                Why = WhyBuf;
+                Excep = S_ERROR;
 #else
-                fprintf_bu (iLstFileHandle, LOGFILE,
-                        "iExecStore/NameOp: Store into %s not implemented",
-                          apcNsTypeNames[iNsValType(nTemp)]);
-                iRv = S_SUCCESS;
+                fprintf_bu (LstFileHandle, LOGFILE,
+                        "ExecStore/NameOp: Store into %s not implemented",
+                          NsTypeNames[NsValType(TempHandle)]);
+                Excep = S_SUCCESS;
 #endif
-                DELETE (pDest);
+                DELETE (DestDesc);
                 break;
 
             case BankField:
@@ -1882,21 +1890,21 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                  * Storing into a BankField.
                  * If value is not a Number, try to resolve it to one.
                  */
-                if (pVal->bValTyp != Number
-                    && (iRv = iGetRvalue (&pVal)) != S_SUCCESS)
+                if (ValDesc->ValType != Number
+                    && (Excep = GetRvalue (&ValDesc)) != S_SUCCESS)
                 {
-                    DELETE (pDest);
+                    DELETE (DestDesc);
                     break;
                 }
 
-                if (pVal->bValTyp != Number)
+                if (ValDesc->ValType != Number)
                 {
-                    sprintf(acWhyBuf,
-                            "iExecStore: Value assigned to BankField must be Number, not %d",
-                            pVal->bValTyp);
-                    pcWhy = acWhyBuf;
-                    DELETE (pDest);
-                    iRv = S_ERROR;
+                    sprintf(WhyBuf,
+                            "ExecStore: Value assigned to BankField must be Number, not %d",
+                            ValDesc->ValType);
+                    Why = WhyBuf;
+                    DELETE (DestDesc);
+                    Excep = S_ERROR;
                     break;
                 }
 
@@ -1905,40 +1913,40 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                  * and point to descriptor for name's value instead.
                  */
 
-                DELETE (pDest);
-                pDest = pvNsValPtr (nTemp);
+                DELETE (DestDesc);
+                DestDesc = NsValPtr (TempHandle);
 
-                if ((OBJECT_DESCRIPTOR *)0 == pDest)
+                if ((OBJECT_DESCRIPTOR *) 0 == DestDesc)
                 {
-                    pcWhy = "iExecStore/BankField:internal error: null old-value pointer";
-                    iRv = S_ERROR;
+                    Why = "ExecStore/BankField:internal error: null old-value pointer";
+                    Excep = S_ERROR;
                     break;
                 }
 
-                if (BankField != pDest->bValTyp)
+                if (BankField != DestDesc->ValType)
                 {
-                    sprintf(acWhyBuf,
-                            "iExecStore/BankField:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                              nTemp, iNsValType(nTemp), pDest->bValTyp, pDest);
-                    pcWhy = acWhyBuf;
-                    vAmlAppendBlockOwner (pDest);
-                    iRv = S_ERROR;
+                    sprintf(WhyBuf,
+                            "ExecStore/BankField:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                              TempHandle, NsValType(TempHandle), DestDesc->ValType, DestDesc);
+                    Why = WhyBuf;
+                    AmlAppendBlockOwner (DestDesc);
+                    Excep = S_ERROR;
                     break;
                 }
 
                 /* Set Bank value to select proper Bank */
                 /* Check lock rule prior to modifing the field */
 
-                if (pDest->sBankField.wLockRule == (WORD) Lock)
+                if (DestDesc->BankField.LockRule == (WORD) Lock)
                 {
                     /* Lock Rule is Lock */
 
-                    if (iGetGlobalLock () == S_ERROR)
+                    if (GetGlobalLock () == S_ERROR)
                     {
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! (pcWhy will already be set) */
+                        /* release the Global Lock! (Why will already be set) */
 
                         return (S_ERROR);
                     }
@@ -1947,13 +1955,13 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     {
                         /* perform the update */
 
-                        iRv = iSetNamedFieldValue (pDest->sBankField.hBankSelect,
-                                                            pDest->sBankField.dBankVal);
+                        Excep = SetNamedFieldValue (DestDesc->BankField.BankSelect,
+                                                            DestDesc->BankField.BankVal);
                     }
                     
                     /* Release the Global Lock */
                     
-                    vReleaseGlobalLock ();
+                    ReleaseGlobalLock ();
                 }
                 
                 else
@@ -1961,31 +1969,31 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     /* Lock Rule is NoLock */
                     /* perform the update */
                     
-                    iRv = iSetNamedFieldValue (pDest->sBankField.hBankSelect,
-                                                        pDest->sBankField.dBankVal);
+                    Excep = SetNamedFieldValue (DestDesc->BankField.BankSelect,
+                                                        DestDesc->BankField.BankVal);
                 }
                 
                 if (debug_level () > 2)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE,
-                                "set bank select returned %s", RV[iRv]);
+                    fprintf_bu (LstFileHandle, LOGFILE,
+                                "set bank select returned %s", RV[Excep]);
                 }
 
-                if (S_SUCCESS == iRv)
+                if (S_SUCCESS == Excep)
                 {
                     if (debug_level () > 2)
                     {
-                        fprintf_bu (iLstFileHandle, LOGFILE, " about to set data");
+                        fprintf_bu (LstFileHandle, LOGFILE, " about to set data");
                     }
 
                     /* Set Data value */
                     
-                    iRv = iSetNamedFieldValue (pDest->sBankField.hBankSelect,
-                                                      pVal->sBankField.dBankVal);
+                    Excep = SetNamedFieldValue (DestDesc->BankField.BankSelect,
+                                                      ValDesc->BankField.BankVal);
                     if (debug_level() > 2)
                     {
-                        fprintf_bu(iLstFileHandle, LOGFILE,
-                                "set bank select returned %s", RV[iRv]);
+                        fprintf_bu (LstFileHandle, LOGFILE,
+                                "set bank select returned %s", RV[Excep]);
                     }
                 }
                 break;
@@ -1998,21 +2006,21 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                  * If value is not a Number, try to resolve it to one.
                  */
 
-                if (pVal->bValTyp != Number
-                    && (iRv = iGetRvalue(&pVal)) != S_SUCCESS)
+                if (ValDesc->ValType != Number
+                    && (Excep = GetRvalue (&ValDesc)) != S_SUCCESS)
                 {
-                    DELETE (pDest);
+                    DELETE (DestDesc);
                     break;
                 }
 
-                if (pVal->bValTyp != Number)
+                if (ValDesc->ValType != Number)
                 {
-                    sprintf (acWhyBuf,
-                            "iExecStore/DefField: Value assigned to Field must be Number, not %d",
-                              pVal->bValTyp);
-                    pcWhy = acWhyBuf;
-                    DELETE (pDest);
-                    iRv = S_ERROR;
+                    sprintf (WhyBuf,
+                            "ExecStore/DefField: Value assigned to Field must be Number, not %d",
+                              ValDesc->ValType);
+                    Why = WhyBuf;
+                    DELETE (DestDesc);
+                    Excep = S_ERROR;
                     break;
                 }
 
@@ -2021,39 +2029,39 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                  * and point to descriptor for name's value instead.
                  */
 
-                DELETE (pDest);
-                pDest = pvNsValPtr (nTemp);
+                DELETE (DestDesc);
+                DestDesc = NsValPtr (TempHandle);
                 
-                if ((OBJECT_DESCRIPTOR *) 0 == pDest)
+                if ((OBJECT_DESCRIPTOR *) 0 == DestDesc)
                 {
-                    pcWhy = "iExecStore/DefField:internal error: null old-value pointer";
-                    iRv = S_ERROR;
+                    Why = "ExecStore/DefField:internal error: null old-value pointer";
+                    Excep = S_ERROR;
                     break;
                 }
 
-                if (DefField != pDest->bValTyp)
+                if (DefField != DestDesc->ValType)
                 {
-                    sprintf (acWhyBuf,
-                                "iExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                                nTemp, iNsValType(nTemp), pDest->bValTyp, pDest);
-                    pcWhy = acWhyBuf;
-                    vAmlAppendBlockOwner (pDest);
-                    iRv = S_ERROR;
+                    sprintf (WhyBuf,
+                                "ExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                                TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc);
+                    Why = WhyBuf;
+                    AmlAppendBlockOwner (DestDesc);
+                    Excep = S_ERROR;
                     break;
                 }
 
                 /* Check lock rule prior to modifing the field */
                 
-                if (pVal->sField.wLockRule == (WORD) Lock)
+                if (ValDesc->Field.LockRule == (WORD) Lock)
                 {
                     /* Lock Rule is Lock */
                     
-                    if (iGetGlobalLock () == S_ERROR)
+                    if (GetGlobalLock () == S_ERROR)
                     {
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! (pcWhy will already be set) */
+                        /* release the Global Lock! (Why will already be set) */
                         
                         return (S_ERROR);
                     }
@@ -2062,12 +2070,12 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     {
                         /* perform the update */
                         
-                        iRv = iSetNamedFieldValue (nTemp, pVal->sNumber.dNumber);
+                        Excep = SetNamedFieldValue (TempHandle, ValDesc->Number.Number);
                     }
                     
                     /* Release the Global Lock */
                     
-                    vReleaseGlobalLock();
+                    ReleaseGlobalLock();
                 }
                 
                 else
@@ -2075,7 +2083,7 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     /* Lock Rule is NoLock */
                     /* perform the update */
                     
-                    iRv = iSetNamedFieldValue (nTemp, pVal->sNumber.dNumber);
+                    Excep = SetNamedFieldValue (TempHandle, ValDesc->Number.Number);
                 }
                 
                 break;
@@ -2087,21 +2095,21 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                  * If value is not a Number, try to resolve it to one.
                  */
                 
-                if (pVal->bValTyp != Number
-                    && (iRv = iGetRvalue (&pVal)) != S_SUCCESS)
+                if (ValDesc->ValType != Number
+                    && (Excep = GetRvalue (&ValDesc)) != S_SUCCESS)
                 {
-                    DELETE (pDest);
+                    DELETE (DestDesc);
                     break;
                 }
 
-                if (pVal->bValTyp != Number)
+                if (ValDesc->ValType != Number)
                 {
-                    sprintf (acWhyBuf,
-                            "iExecStore: Value assigned to IndexField must be Number, not %d",
-                              pVal->bValTyp);
-                    pcWhy = acWhyBuf;
-                    DELETE (pDest);
-                    iRv = S_ERROR;
+                    sprintf (WhyBuf,
+                            "ExecStore: Value assigned to IndexField must be Number, not %d",
+                              ValDesc->ValType);
+                    Why = WhyBuf;
+                    DELETE (DestDesc);
+                    Excep = S_ERROR;
                     break;
                 }
 
@@ -2110,40 +2118,40 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                  * and point to descriptor for name's value instead.
                  */
 
-                DELETE (pDest);
-                pDest = pvNsValPtr (nTemp);
+                DELETE (DestDesc);
+                DestDesc = NsValPtr (TempHandle);
                 
-                if ((OBJECT_DESCRIPTOR *) 0 == pDest)
+                if ((OBJECT_DESCRIPTOR *) 0 == DestDesc)
                 {
-                    pcWhy = "iExecStore/IndexField:internal error: null old-value pointer";
-                    iRv = S_ERROR;
+                    Why = "ExecStore/IndexField:internal error: null old-value pointer";
+                    Excep = S_ERROR;
                     break;
                 }
                 
-                if (IndexField != pDest->bValTyp)
+                if (IndexField != DestDesc->ValType)
                 {
-                    sprintf (acWhyBuf,
-                            "iExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                              nTemp, iNsValType(nTemp), pDest->bValTyp, pDest);
-                    pcWhy = acWhyBuf;
-                    vAmlAppendBlockOwner (pDest);
-                    iRv = S_ERROR;
+                    sprintf (WhyBuf,
+                            "ExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                              TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc);
+                    Why = WhyBuf;
+                    AmlAppendBlockOwner (DestDesc);
+                    Excep = S_ERROR;
                     break;
                 }
 
                 /* Set Index value to select proper Data register */
                 /* Check lock rule prior to modifing the field */
                 
-                if (pDest->sIndexField.wLockRule == (WORD) Lock)
+                if (DestDesc->IndexField.LockRule == (WORD) Lock)
                 {
                     /* Lock Rule is Lock */
                    
-                    if (iGetGlobalLock () == S_ERROR)
+                    if (GetGlobalLock () == S_ERROR)
                     {
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! (pcWhy will already be set) */
+                        /* release the Global Lock! (Why will already be set) */
                         
                         return (S_ERROR);
                     }
@@ -2151,13 +2159,13 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     else
                     {
                         /* perform the update */
-                        iRv = iSetNamedFieldValue (pDest->sIndexField.hIndex,
-                                                          pDest->sIndexField.dIndexVal);
+                        Excep = SetNamedFieldValue (DestDesc->IndexField.Index,
+                                                          DestDesc->IndexField.IndexVal);
                     }
 
                     /* Release the Global Lock */
                     
-                    vReleaseGlobalLock();
+                    ReleaseGlobalLock();
                 }
                 
                 else
@@ -2165,33 +2173,33 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     /* Lock Rule is NoLock */
                     /* perform the update */
                     
-                    iRv = iSetNamedFieldValue (pDest->sIndexField.hIndex,
-                                                      pDest->sIndexField.dIndexVal);
+                    Excep = SetNamedFieldValue (DestDesc->IndexField.Index,
+                                                      DestDesc->IndexField.IndexVal);
                 }
                 
-                iRv = iSetNamedFieldValue (pDest->sIndexField.hIndex,
-                                                  pDest->sIndexField.dIndexVal);
-                if (debug_level() > 2)
+                Excep = SetNamedFieldValue (DestDesc->IndexField.Index,
+                                                  DestDesc->IndexField.IndexVal);
+                if (debug_level () > 2)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE,
-                            "set index returned %s", RV[iRv]);
+                    fprintf_bu (LstFileHandle, LOGFILE,
+                            "set index returned %s", RV[Excep]);
                 }
 
-                if (S_SUCCESS == iRv)
+                if (S_SUCCESS == Excep)
                 {
-                    if (debug_level() > 2)
+                    if (debug_level () > 2)
                     {
-                        fprintf_bu (iLstFileHandle, LOGFILE, " about to set data");
+                        fprintf_bu (LstFileHandle, LOGFILE, " about to set data");
                     }
 
                     /* Set Data value */
                     
-                    iRv = iSetNamedFieldValue(pDest->sIndexField.hData,
-                                                      pVal->sNumber.dNumber);
-                    if (debug_level() > 2)
+                    Excep = SetNamedFieldValue (DestDesc->IndexField.Data,
+                                                      ValDesc->Number.Number);
+                    if (debug_level () > 2)
                     {
-                        fprintf_bu(iLstFileHandle, LOGFILE,
-                                "set data returned %s", RV[iRv]);
+                        fprintf_bu(LstFileHandle, LOGFILE,
+                                "set data returned %s", RV[Excep]);
                     }
                 }
                 break;
@@ -2202,21 +2210,21 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                  * Storing into a FieldUnit (defined in a Buffer).
                  * If value is not a Number, try to resolve it to one.
                  */
-                if (pVal->bValTyp != Number
-                    && (iRv = iGetRvalue (&pVal)) != S_SUCCESS)
+                if (ValDesc->ValType != Number
+                    && (Excep = GetRvalue (&ValDesc)) != S_SUCCESS)
                 {
-                    DELETE (pDest);
+                    DELETE (DestDesc);
                     break;
                 }
 
-                if (pVal->bValTyp != Number)
+                if (ValDesc->ValType != Number)
                 {
-                    sprintf (acWhyBuf,
-                            "iExecStore/FieldUnit: Value assigned to Field must be Number, not %d",
-                              pVal->bValTyp);
-                    pcWhy = acWhyBuf;
-                    DELETE (pDest);
-                    iRv = S_ERROR;
+                    sprintf (WhyBuf,
+                            "ExecStore/FieldUnit: Value assigned to Field must be Number, not %d",
+                              ValDesc->ValType);
+                    Why = WhyBuf;
+                    DELETE (DestDesc);
+                    Excep = S_ERROR;
                     break;
                 }
 
@@ -2224,61 +2232,61 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                  * Delete descriptor that points to name,
                  * and point to descriptor for name's value instead.
                  */
-                DELETE (pDest);
-                pDest = pvNsValPtr (nTemp);
+                DELETE (DestDesc);
+                DestDesc = NsValPtr (TempHandle);
                 
-                if ((OBJECT_DESCRIPTOR *) 0 == pDest)
+                if ((OBJECT_DESCRIPTOR *) 0 == DestDesc)
                 {
-                    pcWhy = "iExecStore/FieldUnit:internal error: null old-value pointer";
-                    iRv = S_ERROR;
+                    Why = "ExecStore/FieldUnit:internal error: null old-value pointer";
+                    Excep = S_ERROR;
                     break;
                 }
                 
-                if (pDest->bValTyp != (BYTE) iNsValType (nTemp))
+                if (DestDesc->ValType != (BYTE) NsValType (TempHandle))
                 {
-                    sprintf (acWhyBuf,
-                            "iExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                              nTemp, iNsValType(nTemp), pDest->bValTyp, pDest);
-                    pcWhy = acWhyBuf;
-                    vAmlAppendBlockOwner (pDest);
-                    iRv = S_ERROR;
+                    sprintf (WhyBuf,
+                            "ExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                              TempHandle, NsValType(TempHandle), DestDesc->ValType, DestDesc);
+                    Why = WhyBuf;
+                    AmlAppendBlockOwner (DestDesc);
+                    Excep = S_ERROR;
                     break;
                 }
 
-                if (!pDest->sFieldUnit.pContainer
-                    || Buffer != pDest->sFieldUnit.pContainer->bValTyp
-                    || pDest->sFieldUnit.dConSeq
-                     != pDest->sFieldUnit.pContainer->sBuffer.dSequence)
+                if (!DestDesc->FieldUnit.Container
+                    || Buffer != DestDesc->FieldUnit.Container->ValType
+                    || DestDesc->FieldUnit.ConSeq
+                     != DestDesc->FieldUnit.Container->Buffer.Sequence)
                 {
-                    char *pcFQN = pcNsFullyQualifiedName (nTemp);
+                    char *FullyQN = NsFullyQualifiedName (TempHandle);
 
                     if (debug_level() > 0)
                     {
-                        printf_bu ("iExecStore/FieldUnit: bad container in %s (%p)\n",
-                                     pcFQN, nTemp);
-                        vNsDumpEntry (nTemp, SCREEN|LOGFILE);
+                        printf_bu ("ExecStore/FieldUnit: bad container in %s (%p)\n",
+                                     FullyQN, TempHandle);
+                        NsDumpEntry (TempHandle, SCREEN | LOGFILE);
                     }
 
-                    sprintf (acWhyBuf,
-                                "iExecStore/FieldUnit: bad container %p in %s",
-                                pDest->sFieldUnit.pContainer, pcFQN);
-                    pcWhy = acWhyBuf;
-                    iRv = S_ERROR;
+                    sprintf (WhyBuf,
+                                "ExecStore/FieldUnit: bad container %p in %s",
+                                DestDesc->FieldUnit.Container, FullyQN);
+                    Why = WhyBuf;
+                    Excep = S_ERROR;
                     break;
                 }
 
                 /* Check lock rule prior to modifing the field */
                 
-                if (pDest->sFieldUnit.wLockRule == (WORD) Lock)
+                if (DestDesc->FieldUnit.LockRule == (WORD) Lock)
                 {
                     /* Lock Rule is Lock */
                     
-                    if (iGetGlobalLock () == S_ERROR)
+                    if (GetGlobalLock () == S_ERROR)
                     {
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! (pcWhy will already be set) */
+                        /* release the Global Lock! (Why will already be set) */
                         
                         return (S_ERROR);
                     }
@@ -2287,76 +2295,76 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                     {
                         /* Set the Locked Flag */
                         
-                        iLocked = TRUE;
+                        Locked = TRUE;
                     }
                 }
                 
-                if (pDest->sFieldUnit.wDatLen + pDest->sFieldUnit.wBitOffset > 32)
+                if (DestDesc->FieldUnit.DatLen + DestDesc->FieldUnit.BitOffset > 32)
                 {
-                    if (iLocked)
+                    if (Locked)
                     {
                         /* Release the Global Lock */
                         
-                        vReleaseGlobalLock ();
-                        iLocked = FALSE;
+                        ReleaseGlobalLock ();
+                        Locked = FALSE;
                     }
                     
-                    pcWhy = "iExecStore/FieldUnit:implementation limitation: Field exceeds DWORD";
-                    iRv = S_ERROR;
+                    Why = "ExecStore/FieldUnit:implementation limitation: Field exceeds DWORD";
+                    Excep = S_ERROR;
                 }
                 
                 else
                 {
                     /* Field location is (base of buffer) + (byte offset) */
                     
-                    BYTE *      pbLoc = pDest->sFieldUnit.pContainer->sBuffer.pbBuffer
-                                        + pDest->sFieldUnit.dOffset;
+                    BYTE *      Location = DestDesc->FieldUnit.Container->Buffer.Buffer
+                                            + DestDesc->FieldUnit.Offset;
                     
                     /* 
-                     * Construct dMask with 1 bits where the field is,
+                     * Construct Mask with 1 bits where the field is,
                      * 0 bits elsewhere
                      */
-                    DWORD       dMask = ((DWORD)1 << pDest->sFieldUnit.wDatLen) - (DWORD)1
-                                         << pDest->sFieldUnit.wBitOffset;
+                    DWORD       Mask = ((DWORD) 1 << DestDesc->FieldUnit.DatLen) - (DWORD)1
+                                         << DestDesc->FieldUnit.BitOffset;
 
                     if (Trace & TraceBufFld)
                     {
-                        fprintf_bu(iLstFileHandle, LOGFILE,
+                        fprintf_bu(LstFileHandle, LOGFILE,
                             "** Store %lx in buffer %p byte %ld bit %d width %d addr %p mask %08lx",
-                            pVal->sNumber.dNumber,
-                            pDest->sFieldUnit.pContainer->sBuffer.pbBuffer,
-                            pDest->sFieldUnit.dOffset,
-                            pDest->sFieldUnit.wBitOffset,
-                            pDest->sFieldUnit.wDatLen,
-                            pbLoc, dMask);
+                            ValDesc->Number.Number,
+                            DestDesc->FieldUnit.Container->Buffer.Buffer,
+                            DestDesc->FieldUnit.Offset,
+                            DestDesc->FieldUnit.BitOffset,
+                            DestDesc->FieldUnit.DatLen,
+                            Location, Mask);
                     }
 
                     /* zero out the field in the buffer */
                     
-                    *(DWORD *) pbLoc &= ~dMask;
+                    *(DWORD *) Location &= ~Mask;
 
                     /* 
                      * Shift and mask the new value into position,
                      * and or it into the buffer.
                      */
-                    *(DWORD *)pbLoc
-                        |= (pVal->sNumber.dNumber << pDest->sFieldUnit.wBitOffset) & dMask;
+                    *(DWORD *) Location
+                        |= (ValDesc->Number.Number << DestDesc->FieldUnit.BitOffset) & Mask;
                     
                     if (Trace & TraceBufFld)
                     {
-                        fprintf_bu(iLstFileHandle, LOGFILE,
-                            " val %08lx", *(DWORD *) pbLoc);
+                        fprintf_bu(LstFileHandle, LOGFILE,
+                            " val %08lx", *(DWORD *) Location);
                     }
 
-                    iRv = S_SUCCESS;
+                    Excep = S_SUCCESS;
                 }
                 
-                if (iLocked)
+                if (Locked)
                 {
                     /* Release the Global Lock */
                     
-                    vReleaseGlobalLock ();
-                    iLocked = FALSE;
+                    ReleaseGlobalLock ();
+                    Locked = FALSE;
                 }
                 break;
 
@@ -2364,32 +2372,33 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
                 
                 /* 
                  * All other types than Alias and the various Fields come here.
-                 * Store a copy of pVal as the new value of the Name, and set
+                 * Store a copy of ValDesc as the new value of the Name, and set
                  * the Name's type to that of the value being stored in it.
                  */
-                memcpy ((void *) pDest, (void *) pVal, sizeof (*pVal));
+                memcpy ((void *) DestDesc, (void *) ValDesc, sizeof (*ValDesc));
                 
-                if (Buffer == pDest->bValTyp)
+                if (Buffer == DestDesc->ValType)
                 {
                     /* Assign a new sequence number */
 
-                    pDest->sBuffer.dSequence = dAmlBufSeq ();
+                    DestDesc->Buffer.Sequence = AmlBufSeq ();
                 }
 
-                vNsSetValue (nTemp, pDest, pDest->bValTyp);
+                NsSetValue (TempHandle, DestDesc, DestDesc->ValType);
 
-                if (iStacked && debug_level() > 0)
+                if (Stacked && debug_level () > 0)
                 {
-                    printf_bu ("\niExecStore: set %s (%p)\n",
-                                 pcNsFullyQualifiedName (nTemp), nTemp);
-                    vNsDumpEntry (nTemp, SCREEN|LOGFILE);
-                    iDumpStackEntry (pDest);
+                    printf_bu ("ExecStore: set %s (%p)\n",
+                                 NsFullyQualifiedName (TempHandle), TempHandle);
+                    NsDumpEntry (TempHandle, SCREEN | LOGFILE);
+                    DumpStackEntry (DestDesc);
                 }
 
-                iRv = S_SUCCESS;
+                Excep = S_SUCCESS;
                 break;
         }
         break;
+
 
     case ZeroOp: case OneOp: case OnesOp:
 
@@ -2397,21 +2406,24 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
          * Storing to a constant is a no-op -- see spec sec 15.2.3.3.1.
          * Delete the result descriptor.
          */
-        DELETE (pDest);
-        iRv = S_SUCCESS;
+        DELETE (DestDesc);
+        Excep = S_SUCCESS;
         break;
+
 
     case Local0: case Local1: case Local2: case Local3:
     case Local4: case Local5: case Local6: case Local7:
 
-        iRv = iSetMethodValue (LCLBASE + pDest->sLvalue.bOpCode - Local0, pVal, pDest);
+        Excep = SetMethodValue (LCLBASE + DestDesc->Lvalue.OpCode - Local0, ValDesc, DestDesc);
         break;
+
 
     case Arg0: case Arg1: case Arg2: case Arg3:
     case Arg4: case Arg5: case Arg6:
 
-        iRv = iSetMethodValue (ARGBASE + pDest->sLvalue.bOpCode - Arg0, pVal, pDest);
+        Excep = SetMethodValue (ARGBASE + DestDesc->Lvalue.OpCode - Arg0, ValDesc, DestDesc);
         break;
+
 
     case Debug1:
 
@@ -2419,10 +2431,10 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see sec. 15.2.3.3.3.
          */
-        fprintf_bu (iLstFileHandle, LOGFILE, "DebugOp: ");
-        iDumpStackEntry (pVal);
-        DELETE (pDest);
-        iRv = S_SUCCESS;
+        fprintf_bu (LstFileHandle, LOGFILE, "DebugOp: ");
+        DumpStackEntry (ValDesc);
+        DELETE (DestDesc);
+        Excep = S_SUCCESS;
         break;
 
 #if 0
@@ -2431,38 +2443,38 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
 #endif
 
     default:
-        sprintf (acWhyBuf,
-                    "iExecStore:internal error: Unknown Lvalue subtype %02x",
-                    pDest->sLvalue.bOpCode);
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf,
+                    "ExecStore:internal error: Unknown Lvalue subtype %02x",
+                    DestDesc->Lvalue.OpCode);
+        Why = WhyBuf;
         
-        fprintf_bu (iLstFileHandle, LOGFILE,
-                    "iExecStore:internal error: Unknown Lvalue subtype %02x",
-                    pDest->sLvalue.bOpCode);
+        fprintf_bu (LstFileHandle, LOGFILE,
+                    "ExecStore:internal error: Unknown Lvalue subtype %02x",
+                    DestDesc->Lvalue.OpCode);
         
-        _dump_buf (pDest, sizeof(OBJECT_DESCRIPTOR), ASCII | HEX,
-                         iLstFileHandle, LOGFILE);
-        DELETE (pDest);
-        iRv = S_ERROR;
+        _dump_buf (DestDesc, sizeof (OBJECT_DESCRIPTOR), ASCII | HEX,
+                         LstFileHandle, LOGFILE);
+        DELETE (DestDesc);
+        Excep = S_ERROR;
     
-    }   /* switch(pDest->sLvalue.bOpCode) */
+    }   /* switch(DestDesc->Lvalue.OpCode) */
 
 
-    if (iStacked)
+    if (Stacked)
     {
-        --iObjStackTop;
+        --ObjStackTop;
     }
 
-    return iRv;
+    return Excep;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iGetFieldUnitValue
+ * FUNCTION:    GetFieldUnitValue
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR * pField      points to a FIeldUnit
- *              OBJECT_DESCRIPTOR * pResult     points to an empty descriptor
+ * PARAMETERS:  OBJECT_DESCRIPTOR * FieldDesc   points to a FIeldUnit
+ *              OBJECT_DESCRIPTOR * ResultDesc  points to an empty descriptor
  *                                              which will become a Number
  *                                              containing the field's value.
  *
@@ -2475,63 +2487,63 @@ iExecStore(OBJECT_DESCRIPTOR *pVal, OBJECT_DESCRIPTOR *pDest)
  ****************************************************************************/
 
 static int
-iGetFieldUnitValue (OBJECT_DESCRIPTOR *pField, OBJECT_DESCRIPTOR *pResult)
+GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
 {
-    BYTE *          pbLoc;
-    DWORD           dMask;
-    int             iLocked = FALSE;
+    BYTE *          Location;
+    DWORD           Mask;
+    int             Locked = FALSE;
 
 
-    FUNCTION_TRACE ("iGetFieldUnitValue");
+    FUNCTION_TRACE ("GetFieldUnitValue");
 
 
-    if (!pField)
+    if (!FieldDesc)
     {
-        pcWhy = "iGetFieldUnitValue: internal error: null field pointer";
+        Why = "GetFieldUnitValue: internal error: null field pointer";
         return S_ERROR;
     }
 
-    if (!pField->sFieldUnit.pContainer)
+    if (!FieldDesc->FieldUnit.Container)
     {
-        pcWhy = "iGetFieldUnitValue: internal error: null container pointer";
+        Why = "GetFieldUnitValue: internal error: null container pointer";
         return S_ERROR;
     }
 
-    if (Buffer != pField->sFieldUnit.pContainer->bValTyp)
+    if (Buffer != FieldDesc->FieldUnit.Container->ValType)
     {
-        pcWhy = "iGetFieldUnitValue: internal error: container is not a Buffer";
+        Why = "GetFieldUnitValue: internal error: container is not a Buffer";
         return S_ERROR;
     }
 
-    if (pField->sFieldUnit.dConSeq
-         != pField->sFieldUnit.pContainer->sBuffer.dSequence)
+    if (FieldDesc->FieldUnit.ConSeq
+         != FieldDesc->FieldUnit.Container->Buffer.Sequence)
     {
-        sprintf (acWhyBuf,
-                "iGetFieldUnitValue: internal error: stale Buffer [%lx != %lx]",
-                pField->sFieldUnit.dConSeq,
-                pField->sFieldUnit.pContainer->sBuffer.dSequence);
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf,
+                "GetFieldUnitValue: internal error: stale Buffer [%lx != %lx]",
+                FieldDesc->FieldUnit.ConSeq,
+                FieldDesc->FieldUnit.Container->Buffer.Sequence);
+        Why = WhyBuf;
         return S_ERROR;
     }
 
-    if (!pResult)
+    if (!ResultDesc)
     {
-        pcWhy = "iGetFieldUnitValue: internal error: null result pointer";
+        Why = "GetFieldUnitValue: internal error: null result pointer";
         return S_ERROR;
     }
 
     /* Check lock rule prior to modifing the field */
 
-    if (pField->sFieldUnit.wLockRule == (WORD) Lock)
+    if (FieldDesc->FieldUnit.LockRule == (WORD) Lock)
     {
         /* Lock Rule is Lock */
         
-        if (iGetGlobalLock () == S_ERROR)
+        if (GetGlobalLock () == S_ERROR)
         {
             /* the ownship failed - Bad Bad Bad, this is a single threaded */
             /* implementation so there is no way some other process should */
             /* own this.  This means something grabbed it and did not */
-            /* release the Global Lock! (pcWhy will already be set) */
+            /* release the Global Lock! (Why will already be set) */
             
             return (S_ERROR);
         }
@@ -2540,57 +2552,57 @@ iGetFieldUnitValue (OBJECT_DESCRIPTOR *pField, OBJECT_DESCRIPTOR *pResult)
         {
             /* set the Locked Flag */
 
-            iLocked = TRUE;
+            Locked = TRUE;
         }
     }
     
-    if (pField->sFieldUnit.wDatLen + pField->sFieldUnit.wBitOffset > 32)
+    if (FieldDesc->FieldUnit.DatLen + FieldDesc->FieldUnit.BitOffset > 32)
     {
-        if (iLocked)
+        if (Locked)
         {
             /* Release the Global Lock */
             
-            vReleaseGlobalLock ();
-            iLocked = FALSE;
+            ReleaseGlobalLock ();
+            Locked = FALSE;
         }
         
-        pcWhy = "iGetFieldUnitValue: implementation limitation: Field exceeds DWORD";
+        Why = "GetFieldUnitValue: implementation limitation: Field exceeds DWORD";
         return S_ERROR;
     }
 
     /* Field location is (base of buffer) + (byte offset) */
     
-    pbLoc = pField->sFieldUnit.pContainer->sBuffer.pbBuffer
-            + pField->sFieldUnit.dOffset;
+    Location = FieldDesc->FieldUnit.Container->Buffer.Buffer
+                + FieldDesc->FieldUnit.Offset;
 
-    /* Construct dMask with as many 1 bits as the field width */
+    /* Construct Mask with as many 1 bits as the field width */
     
-    dMask = ((DWORD) 1 << pField->sFieldUnit.wDatLen) - (DWORD) 1;
+    Mask = ((DWORD) 1 << FieldDesc->FieldUnit.DatLen) - (DWORD) 1;
 
-    pResult->sNumber.bValTyp = (BYTE)Number;
+    ResultDesc->Number.ValType = (BYTE) Number;
 
     /* Shift the word containing the field, and mask the value */
     
-    pResult->sNumber.dNumber
-        = *(DWORD *) pbLoc >> pField->sFieldUnit.wBitOffset & dMask;
+    ResultDesc->Number.Number
+        = *(DWORD *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
 
     if (Trace & TraceBufFld)
     {
-        fprintf_bu (iLstFileHandle, LOGFILE,
+        fprintf_bu (LstFileHandle, LOGFILE,
             "** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx",
-            pField->sFieldUnit.pContainer->sBuffer.pbBuffer,
-            pField->sFieldUnit.dOffset,
-            pField->sFieldUnit.wBitOffset,
-            pField->sFieldUnit.wDatLen,
-            pbLoc, dMask, pResult->sNumber.dNumber);
+            FieldDesc->FieldUnit.Container->Buffer.Buffer,
+            FieldDesc->FieldUnit.Offset,
+            FieldDesc->FieldUnit.BitOffset,
+            FieldDesc->FieldUnit.DatLen,
+            Location, Mask, ResultDesc->Number.Number);
     }
 
-    if (iLocked)
+    if (Locked)
     {
         /* Release the Global Lock */
         
-        vReleaseGlobalLock ();
-        iLocked = FALSE;
+        ReleaseGlobalLock ();
+        Locked = FALSE;
     }
 
     return S_SUCCESS;
@@ -2599,85 +2611,85 @@ iGetFieldUnitValue (OBJECT_DESCRIPTOR *pField, OBJECT_DESCRIPTOR *pResult)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iGetRvalue
+ * FUNCTION:    GetRvalue
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR **ppStackPtr  points to entry on ObjStack,
+ * PARAMETERS:  OBJECT_DESCRIPTOR **StackPtr    points to entry on ObjStack,
  *                                              which can be either an
  *                                              (OBJECT_DESCRIPTOR *)
  *                                              or an NsHandle.
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
- * DESCRIPTION: Convert Lvalue entries on apObjStack to rvalues
+ * DESCRIPTION: Convert Lvalue entries on ObjStack to rvalues
  *
  * ALLOCATION:
  *  Reference   Size                    Pool    Owner       Description
- *  *ppStackPtr s(OBJECT_DESCRIPTOR)    bu      amlexec     Value
+ *  *StackPtr   s(OBJECT_DESCRIPTOR)    bu      amlexec     Value
  *
  ****************************************************************************/
 
 int
-iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
+GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 {
-    NsHandle            nTemp;
-    OBJECT_DESCRIPTOR * pOD;
-    int                 iRv;
+    NsHandle            TempHandle;
+    OBJECT_DESCRIPTOR * ObjDesc;
+    int                 Excep;
 
 
-    FUNCTION_TRACE ("iGetRvalue");
+    FUNCTION_TRACE ("GetRvalue");
 
 
-    if ((OBJECT_DESCRIPTOR **) 0 == ppStackPtr
-        || (OBJECT_DESCRIPTOR *) 0 == *ppStackPtr)
+    if ((OBJECT_DESCRIPTOR **) 0 == StackPtr
+        || (OBJECT_DESCRIPTOR *) 0 == *StackPtr)
     {
-        pcWhy = "iGetRvalue:internal error: null pointer";
+        Why = "GetRvalue:internal error: null pointer";
         return S_ERROR;
     }
 
-    switch ((*ppStackPtr)->bValTyp)
+    switch ((*StackPtr)->ValType)
     {
         case Lvalue:
-            switch ((*ppStackPtr)->sLvalue.bOpCode)
+            switch ((*StackPtr)->Lvalue.OpCode)
             {
-                BYTE        bMvIndex;
+                BYTE        MvIndex;
 
                 case NameOp:
                     
                     /* Convert indirect name ptr to direct name ptr */
                     
-                    nTemp = (*ppStackPtr)->sLvalue.pvRef;
-                    DELETE (*ppStackPtr);
-                    (*ppStackPtr) = nTemp;
-                    iRv = S_SUCCESS;
+                    TempHandle = (*StackPtr)->Lvalue.Ref;
+                    DELETE (*StackPtr);
+                    (*StackPtr) = TempHandle;
+                    Excep = S_SUCCESS;
                     break;
 
                 case Local0: case Local1: case Local2: case Local3:
                 case Local4: case Local5: case Local6: case Local7:
 
-                    if (debug_level() > 0)
+                    if (debug_level () > 0)
                     {
-                        fprintf_bu(iLstFileHandle, LOGFILE,
-                            "iGetRvalue:Lcl%d: before iGetMethodValue %p %p %08lx ",
-                            bMvIndex = (*ppStackPtr)->sLvalue.bOpCode - Local0,
-                            ppStackPtr, *ppStackPtr, *(DWORD *)*ppStackPtr);
+                        fprintf_bu (LstFileHandle, LOGFILE,
+                            "GetRvalue:Lcl%d: before GetMethodValue %p %p %08lx ",
+                            MvIndex = (*StackPtr)->Lvalue.OpCode - Local0,
+                            StackPtr, *StackPtr, *(DWORD *)* StackPtr);
                     }
 
-                    iRv = iGetMethodValue (LCLBASE + (*ppStackPtr)->sLvalue.bOpCode - Local0,
-                                            *ppStackPtr);
+                    Excep = GetMethodValue (LCLBASE + (*StackPtr)->Lvalue.OpCode - Local0,
+                                            *StackPtr);
 
-                    if (debug_level() > 0)
+                    if (debug_level () > 0)
                     {
-                        fprintf_bu (iLstFileHandle, LOGFILE,
-                                    "iGetRvalue:Lcl%d: iGMV iRv=%s %p %p %08lx ",
-                                    bMvIndex, RV[iRv], ppStackPtr, *ppStackPtr,
-                                    *(DWORD *)*ppStackPtr);
+                        fprintf_bu (LstFileHandle, LOGFILE,
+                                    "GetRvalue:Lcl%d: iGMV Excep=%s %p %p %08lx ",
+                                    MvIndex, RV[Excep], StackPtr, *StackPtr,
+                                    *(DWORD *)* StackPtr);
                         
-                        if (Number == (*ppStackPtr)->bValTyp)
+                        if (Number == (*StackPtr)->ValType)
                         {
                             /* Value is a Number */
                             
-                            fprintf_bu (iLstFileHandle, LOGFILE,
-                                        "[%ld] ", (*ppStackPtr)->sNumber.dNumber);
+                            fprintf_bu (LstFileHandle, LOGFILE,
+                                        "[%ld] ", (*StackPtr)->Number.Number);
                         }
                     }
                     break;
@@ -2687,134 +2699,134 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
 
                     if (debug_level() > 0)
                     {
-                        fprintf_bu (iLstFileHandle, LOGFILE,
-                                    "iGetRvalue:Arg%d: before iGetMethodValue %p %p %08lx ",
-                                    bMvIndex = (*ppStackPtr)->sLvalue.bOpCode - Arg0,
-                                    ppStackPtr, *ppStackPtr, *(DWORD *)*ppStackPtr);
+                        fprintf_bu (LstFileHandle, LOGFILE,
+                                    "GetRvalue:Arg%d: before GetMethodValue %p %p %08lx ",
+                                    MvIndex = (*StackPtr)->Lvalue.OpCode - Arg0,
+                                    StackPtr, *StackPtr, *(DWORD *)* StackPtr);
                     }
 
-                    iRv = iGetMethodValue (ARGBASE + (*ppStackPtr)->sLvalue.bOpCode - Arg0,
-                                            *ppStackPtr);
+                    Excep = GetMethodValue (ARGBASE + (*StackPtr)->Lvalue.OpCode - Arg0,
+                                            *StackPtr);
                     
                     if (debug_level () > 0)
                     {
-                        fprintf_bu(iLstFileHandle, LOGFILE,
-                                    "iGetRvalue:Arg%d: iGMV returned %s %p %p %08lx ",
-                                    bMvIndex, RV[iRv], ppStackPtr, *ppStackPtr,
-                                    *(DWORD *)*ppStackPtr);
+                        fprintf_bu (LstFileHandle, LOGFILE,
+                                    "GetRvalue:Arg%d: iGMV returned %s %p %p %08lx ",
+                                    MvIndex, RV[Excep], StackPtr, *StackPtr,
+                                    *(DWORD *)* StackPtr);
 
-                        if (Number == (*ppStackPtr)->bValTyp)
+                        if (Number == (*StackPtr)->ValType)
                         {
                             /* Value is a Number */
                             
-                            fprintf_bu (iLstFileHandle, LOGFILE,
-                                        "[%ld] ", (*ppStackPtr)->sNumber.dNumber);
+                            fprintf_bu (LstFileHandle, LOGFILE,
+                                        "[%ld] ", (*StackPtr)->Number.Number);
                         }
                     }
                     break;
 
                 case ZeroOp:
-                    (*ppStackPtr)->bValTyp = (BYTE)Number;
-                    (*ppStackPtr)->sNumber.dNumber = 0;
-                    iRv = S_SUCCESS;
+                    (*StackPtr)->ValType = (BYTE) Number;
+                    (*StackPtr)->Number.Number = 0;
+                    Excep = S_SUCCESS;
                     break;
 
                 case OneOp:
-                    (*ppStackPtr)->bValTyp = (BYTE)Number;
-                    (*ppStackPtr)->sNumber.dNumber = 1;
-                    iRv = S_SUCCESS;
+                    (*StackPtr)->ValType = (BYTE) Number;
+                    (*StackPtr)->Number.Number = 1;
+                    Excep = S_SUCCESS;
                     break;
 
                 case OnesOp:
-                    (*ppStackPtr)->bValTyp = (BYTE)Number;
-                    (*ppStackPtr)->sNumber.dNumber = 0xFFFFFFFF;
-                    iRv = S_SUCCESS;
+                    (*StackPtr)->ValType = (BYTE) Number;
+                    (*StackPtr)->Number.Number = 0xFFFFFFFF;
+                    Excep = S_SUCCESS;
                     break;
 
                 default:
-                    sprintf (acWhyBuf, "iGetRvalue: Unknown Lvalue subtype %02x",
-                            (*ppStackPtr)->sLvalue.bOpCode);
-                    pcWhy = acWhyBuf;
-                    iRv = S_ERROR;
+                    sprintf (WhyBuf, "GetRvalue: Unknown Lvalue subtype %02x",
+                            (*StackPtr)->Lvalue.OpCode);
+                    Why = WhyBuf;
+                    Excep = S_ERROR;
 
-            }   /* switch ((*ppStackPtr)->sLvalue.bOpCode) */
+            }   /* switch ((*StackPtr)->Lvalue.OpCode) */
 
-            if (S_SUCCESS != iRv)
+            if (S_SUCCESS != Excep)
             {
-                return iRv;
+                return Excep;
             }
 
             break;
 
         case FieldUnit:
-            pOD = NEW (OBJECT_DESCRIPTOR);
-            if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+            ObjDesc = NEW (OBJECT_DESCRIPTOR);
+            if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
             {
-                vKFatalError ("0007", ("iGetRvalue: Descriptor Allocation Failure"));
+                KFatalError ("0007", ("GetRvalue: Descriptor Allocation Failure"));
                 return S_ERROR;
             }
 
-            if ((iRv = iGetFieldUnitValue(*ppStackPtr, pOD)) != S_SUCCESS)
+            if ((Excep = GetFieldUnitValue (*StackPtr, ObjDesc)) != S_SUCCESS)
             {
-                DELETE (pOD);
+                DELETE (ObjDesc);
             }
             
-            *ppStackPtr = (void *)pOD;
-            return iRv;
+            *StackPtr = (void *) ObjDesc;
+            return Excep;
 
         case BankField:
-            pOD = NEW (OBJECT_DESCRIPTOR);
-            if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+            ObjDesc = NEW (OBJECT_DESCRIPTOR);
+            if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
             {
-                vKFatalError ("0008", ("iGetRvalue: Descriptor Allocation Failure"));
+                KFatalError ("0008", ("GetRvalue: Descriptor Allocation Failure"));
                 return S_ERROR;
             }
 
-            if ((iRv = iGetFieldUnitValue (*ppStackPtr, pOD)) != S_SUCCESS)
+            if ((Excep = GetFieldUnitValue (*StackPtr, ObjDesc)) != S_SUCCESS)
             {
-                DELETE(pOD);
+                DELETE(ObjDesc);
             }
 
-            *ppStackPtr = (void *) pOD;
-            return iRv;
+            *StackPtr = (void *) ObjDesc;
+            return Excep;
             break;
 
-        /* XXX - may need to handle sIndexField, and DefField someday */
+        /* XXX - may need to handle IndexField, and DefField someday */
 
         default:
             break;
 
-    }   /* switch ((*ppStackPtr)->bValTyp) */
+    }   /* switch ((*StackPtr)->ValType) */
 
 
-    if (iIsNsHandle(*ppStackPtr))       /* direct name ptr */
+    if (IsNsHandle (*StackPtr))       /* direct name ptr */
     {
-        OBJECT_DESCRIPTOR *pVal
-                = (OBJECT_DESCRIPTOR *) pvNsValPtr ((NsHandle)* ppStackPtr);
+        OBJECT_DESCRIPTOR *ValDesc
+                = (OBJECT_DESCRIPTOR *) NsValPtr ((NsHandle)* StackPtr);
 
         if (Trace & TraceExec)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE,
-                          "iGetRvalue: found direct name ptr ");
+            fprintf_bu (LstFileHandle, LOGFILE,
+                          "GetRvalue: found direct name ptr ");
         }
 
-        switch (iNsValType ((NsHandle)* ppStackPtr))
+        switch (NsValType ((NsHandle)* StackPtr))
         {
-            DWORD           dTemp;
+            DWORD           TempVal;
 
             case Package:
 
                 /* 
-                 * pVal should point to either an OBJECT_DESCRIPTOR of
+                 * ValDesc should point to either an OBJECT_DESCRIPTOR of
                  * type Package, or an initialization in the AML stream.
                  */
-                if ((OBJECT_DESCRIPTOR *) 0 == pVal)
+                if ((OBJECT_DESCRIPTOR *) 0 == ValDesc)
                 {
-                    pcWhy = "iGetRvalue/Package:internal error: null ValPtr";
+                    Why = "GetRvalue/Package:internal error: null ValPtr";
                     return S_ERROR;
                 }
 
-                if (PackageOp == *(BYTE *) pVal)
+                if (PackageOp == *(BYTE *) ValDesc)
                 {
                     /* 
                      * The value pointer in the name table entry
@@ -2822,123 +2834,123 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                      * Convert it to an object.
                      */
 
-                    if (S_SUCCESS != (iRv = iPushIfExec(Exec)))             /* ObjStack */
+                    if (S_SUCCESS != (Excep = PushIfExec(Exec)))             /* ObjStack */
                     {
-                        return iRv;
+                        return Excep;
                     }
 
-                    if (S_SUCCESS == (iRv = PushExec ((BYTE *)pVal + 1, 0L))/*PkgStack*/
-                        && S_SUCCESS == (iRv = DoPkg (Package, Exec))
-                        && S_SUCCESS == (iRv = PopExec ()))                 /* PkgStack */
+                    if (S_SUCCESS == (Excep = PushExec ((BYTE *) ValDesc + 1, 0L))/*PkgStack*/
+                        && S_SUCCESS == (Excep = DoPkg (Package, Exec))
+                        && S_SUCCESS == (Excep = PopExec ()))                 /* PkgStack */
                     {
-                        vNsSetValue ((NsHandle)* ppStackPtr,
-                                        apObjStack[iObjStackTop],
+                        NsSetValue ((NsHandle)* StackPtr,
+                                        ObjStack[ObjStackTop],
                                         (BYTE) Package);
 
                         /* Refresh local value pointer to reflect newly set value */
                         
-                        pVal = (OBJECT_DESCRIPTOR *) pvNsValPtr ((NsHandle)* ppStackPtr);
-                        --iObjStackTop;
+                        ValDesc = (OBJECT_DESCRIPTOR *) NsValPtr ((NsHandle)* StackPtr);
+                        --ObjStackTop;
                     }
                     
                     else
                     {
-                        --iObjStackTop;
-                        return iRv;
+                        --ObjStackTop;
+                        return Excep;
                     }
                 }
                 
-                if (Package != pVal->bValTyp)
+                if (Package != ValDesc->ValType)
                 {
-                    pcWhy = "iGetRvalue:internal error: Bad package value";
+                    Why = "GetRvalue:internal error: Bad package value";
                     return S_ERROR;
                 }
 
-                pOD = NEW (OBJECT_DESCRIPTOR);
-                if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+                ObjDesc = NEW (OBJECT_DESCRIPTOR);
+                if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                 {
-                    vKFatalError ("0009", ("iGetRvalue: Descriptor Allocation Failure"));
+                    KFatalError ("0009", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                memcpy ((void *) pOD, (void *) pVal, sizeof (*pOD));
+                memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
                 break;
 
             case String:
 
                 /* XXX - Is there a problem here if the nte points to an AML definition? */
                 
-                if (String != pVal->bValTyp)
+                if (String != ValDesc->ValType)
                 {
-                    pcWhy = "iGetRvalue:internal error: Bad string value";
+                    Why = "GetRvalue:internal error: Bad string value";
                     return S_ERROR;
                 }
 
-                pOD = NEW (OBJECT_DESCRIPTOR);
-                if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+                ObjDesc = NEW (OBJECT_DESCRIPTOR);
+                if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                 {
-                    vKFatalError ("0010", ("iGetRvalue: Descriptor Allocation Failure"));
+                    KFatalError ("0010", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                memcpy ((void *) pOD, (void *) pVal, sizeof (*pOD));
+                memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
                 break;
 
             case Buffer:
-                if (BufferOp == *(BYTE *) pVal)
+                if (BufferOp == *(BYTE *) ValDesc)
                 {
                     /* 
                      * The value pointer in the name table entry
                      * points to a buffer definition in the AML stream.
                      * Convert it to an object.
                      */
-                    if (S_SUCCESS != (iRv = iPushIfExec (Exec)))                /* ObjStack */
+                    if (S_SUCCESS != (Excep = PushIfExec (Exec)))                /* ObjStack */
                     {
-                        return iRv;
+                        return Excep;
                     }
 
-                    if (S_SUCCESS == (iRv = PushExec ((BYTE *) pVal + 1, 0L))   /*PkgStack*/
-                        && S_SUCCESS == (iRv = DoPkg (Buffer, Exec))
-                        && S_SUCCESS == (iRv = PopExec ()))                     /* PkgStack */
+                    if (S_SUCCESS == (Excep = PushExec ((BYTE *) ValDesc + 1, 0L))   /*PkgStack*/
+                        && S_SUCCESS == (Excep = DoPkg (Buffer, Exec))
+                        && S_SUCCESS == (Excep = PopExec ()))                     /* PkgStack */
                     {
-                        vNsSetValue ((NsHandle) *ppStackPtr,
-                                        apObjStack[iObjStackTop],
+                        NsSetValue ((NsHandle) *StackPtr,
+                                        ObjStack[ObjStackTop],
                                         (BYTE) Buffer);
                         
                         /* Refresh local value pointer to reflect newly set value */
                         
-                        pVal = (OBJECT_DESCRIPTOR *) pvNsValPtr((NsHandle)* ppStackPtr);
-                        --iObjStackTop;
+                        ValDesc = (OBJECT_DESCRIPTOR *) NsValPtr ((NsHandle)* StackPtr);
+                        --ObjStackTop;
                     }
                     
                     else
                     {
-                        --iObjStackTop;
-                        return iRv;
+                        --ObjStackTop;
+                        return Excep;
                     }
                 }
                 
-                if (Buffer != pVal->bValTyp)
+                if (Buffer != ValDesc->ValType)
                 {
-                    pcWhy = "iGetRvalue: Bad buffer value";
+                    Why = "GetRvalue: Bad buffer value";
                     return S_ERROR;
                 }
 
-                pOD = NEW (OBJECT_DESCRIPTOR);
-                if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+                ObjDesc = NEW (OBJECT_DESCRIPTOR);
+                if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                 {
-                    vKFatalError ("0011", ("iGetRvalue: Descriptor Allocation Failure"));
+                    KFatalError ("0011", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                memcpy ((void *) pOD, (void *) pVal, sizeof (*pOD));
+                memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
 
                 /* Assign a new sequence number */
                 
-                pOD->sBuffer.dSequence = dAmlBufSeq();
+                ObjDesc->Buffer.Sequence = AmlBufSeq();
                 
                 if ((Trace & TraceBufFld) && debug_level () > 0)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE,
-                                "iGetRvalue: new Buffer descriptor seq %ld @ %p ",
-                                pOD->sBuffer.dSequence, pOD);
+                    fprintf_bu (LstFileHandle, LOGFILE,
+                                "GetRvalue: new Buffer descriptor seq %ld @ %p ",
+                                ObjDesc->Buffer.Sequence, ObjDesc);
                 }
 
                 break;
@@ -2946,18 +2958,18 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
             case Number:
                 if (Trace & TraceExec)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE, "case Number ");
+                    fprintf_bu (LstFileHandle, LOGFILE, "case Number ");
                 }
 
-                if (Number == pVal->bValTyp)
+                if (Number == ValDesc->ValType)
                 {
-                    pOD = NEW(OBJECT_DESCRIPTOR);
-                    if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+                    ObjDesc = NEW(OBJECT_DESCRIPTOR);
+                    if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                     {
-                        vKFatalError ("0012", ("iGetRvalue: Descriptor Allocation Failure"));
+                        KFatalError ("0012", ("GetRvalue: Descriptor Allocation Failure"));
                     }
                     
-                    memcpy ((void *) pOD, (void *) pVal, sizeof (*pOD));
+                    memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
                 }
                 
                 else
@@ -2966,34 +2978,34 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                      * nte type is Number, but it does not point to a Number,
                      * so it had better point to a Literal in the AML stream.
                      */
-                    if (!iIsInPCodeBlock ((BYTE *) pVal))
+                    if (!IsInPCodeBlock ((BYTE *) ValDesc))
                     {
-                        pcWhy = "iGetRvalue/Number:internal error: not a Number";
+                        Why = "GetRvalue/Number:internal error: not a Number";
                         return S_ERROR;
                     }
 
-                    pOD = NEW(OBJECT_DESCRIPTOR);
-                    if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+                    ObjDesc = NEW(OBJECT_DESCRIPTOR);
+                    if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                     {
-                        vKFatalError ("0013", ("iGetRvalue: Descriptor Allocation Failure"));
+                        KFatalError ("0013", ("GetRvalue: Descriptor Allocation Failure"));
                     }
                     
-                    switch (*(BYTE *) pVal)
+                    switch (*(BYTE *) ValDesc)
                     {
                         case ZeroOp:
-                            pOD->sNumber.dNumber = 0;
+                            ObjDesc->Number.Number = 0;
                             break;
 
                         case OneOp:
-                            pOD->sNumber.dNumber = 1;
+                            ObjDesc->Number.Number = 1;
                             break;
 
                         case OnesOp:
-                            pOD->sNumber.dNumber = 0xFFFFFFFF;
+                            ObjDesc->Number.Number = 0xFFFFFFFF;
                             break;
 
                         case ByteOp:
-                            pOD->sNumber.dNumber = (DWORD)((BYTE *) pVal)[1];
+                            ObjDesc->Number.Number = (DWORD)((BYTE *) ValDesc)[1];
                             break;
 
                         /* 
@@ -3002,22 +3014,22 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                          * XXX - that of the AML.
                          */
                         case WordOp:
-                            pOD->sNumber.dNumber = (DWORD)*(WORD *)&((BYTE *) pVal)[1];
+                            ObjDesc->Number.Number = (DWORD)*(WORD *)&((BYTE *) ValDesc)[1];
                             break;
 
                         case DWordOp:
-                            pOD->sNumber.dNumber = *(DWORD *)&((BYTE *) pVal)[1];
+                            ObjDesc->Number.Number = *(DWORD *)&((BYTE *) ValDesc)[1];
                             break;
 
                         default:
-                            DELETE (pOD);
-                            sprintf (acWhyBuf,
-                                    "iGetRvalue/Number:internal error: Expected AML number, found %02x",
-                                    *(BYTE *) pVal);
-                            pcWhy = acWhyBuf;
+                            DELETE (ObjDesc);
+                            sprintf (WhyBuf,
+                                    "GetRvalue/Number:internal error: Expected AML number, found %02x",
+                                    *(BYTE *) ValDesc);
+                            Why = WhyBuf;
                             return S_ERROR;
                     }
-                    pOD->sNumber.bValTyp = (BYTE) Number;
+                    ObjDesc->Number.ValType = (BYTE) Number;
                 }
                 break;
 
@@ -3028,47 +3040,47 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                  * XXX - Number, but they really are supposed to be type Buffer.
                  * XXX - The two are interchangeable only for lengths <= 32 bits.
                  */
-                iRv = iGetNamedFieldValue ((NsHandle)* ppStackPtr, &dTemp);
-                if (S_SUCCESS != iRv)
+                Excep = GetNamedFieldValue ((NsHandle)* StackPtr, &TempVal);
+                if (S_SUCCESS != Excep)
                 {
                     return S_ERROR;
                 }
 
-                pOD = NEW(OBJECT_DESCRIPTOR);
-                if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+                ObjDesc = NEW (OBJECT_DESCRIPTOR);
+                if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                 {
-                    vKFatalError ("0014", ("iGetRvalue: Descriptor Allocation Failure"));
+                    KFatalError ("0014", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                pOD->sNumber.bValTyp = (BYTE) Number;
-                pOD->sNumber.dNumber = dTemp;
+                ObjDesc->Number.ValType = (BYTE) Number;
+                ObjDesc->Number.Number = TempVal;
                 break;
 
             case BankField:
-                if (BankField != pVal->bValTyp)
+                if (BankField != ValDesc->ValType)
                 {
-                    sprintf (acWhyBuf,
-                                "iGetRvalue/BankField:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                                *ppStackPtr, BankField, pVal->bValTyp, pVal);
+                    sprintf (WhyBuf,
+                                "GetRvalue/BankField:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                                *StackPtr, BankField, ValDesc->ValType, ValDesc);
                     
-                    pcWhy = acWhyBuf;
-                    vAmlAppendBlockOwner (pVal);
+                    Why = WhyBuf;
+                    AmlAppendBlockOwner (ValDesc);
                     return S_ERROR;
                 }
 
                 /* Set Index value to select proper Data register */
                 /* Check lock rule prior to modifing the field */
                 
-                if (pOD->sFieldUnit.wLockRule == (WORD) Lock)
+                if (ObjDesc->FieldUnit.LockRule == (WORD) Lock)
                 {
                     /* Lock Rule is Lock */
                     
-                    if (iGetGlobalLock () == S_ERROR)
+                    if (GetGlobalLock () == S_ERROR)
                     {
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! (pcWhy will already be set) */
+                        /* release the Global Lock! (Why will already be set) */
                         
                         return (S_ERROR);
                     }
@@ -3077,13 +3089,13 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                     {
                         /* perform the update */
                         
-                        iRv = iSetNamedFieldValue (pVal->sBankField.hBankSelect,
-                                                          pVal->sBankField.dBankVal);
+                        Excep = SetNamedFieldValue (ValDesc->BankField.BankSelect,
+                                                          ValDesc->BankField.BankVal);
                     }
                     
                     /* Release the Global Lock */
                     
-                    vReleaseGlobalLock ();
+                    ReleaseGlobalLock ();
                 }
                 
                 else
@@ -3091,59 +3103,59 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                     /* Lock Rule is NoLock */
                     /* perform the update */
                     
-                    iRv = iSetNamedFieldValue (pVal->sBankField.hBankSelect,
-                                                      pVal->sBankField.dBankVal);
+                    Excep = SetNamedFieldValue (ValDesc->BankField.BankSelect,
+                                                      ValDesc->BankField.BankVal);
                 }
                 
-                if (S_SUCCESS != iRv)
+                if (S_SUCCESS != Excep)
                 {
                     return S_ERROR;
                 }
 
                 /* Read Data value */
                 
-                iRv = iGetNamedFieldValue ((NsHandle)pVal->sBankField.pContainer, &dTemp);
-                if (S_SUCCESS != iRv)
+                Excep = GetNamedFieldValue ((NsHandle) ValDesc->BankField.Container, &TempVal);
+                if (S_SUCCESS != Excep)
                 {
                     return S_ERROR;
                 }
 
-                pOD = NEW(OBJECT_DESCRIPTOR);
-                if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+                ObjDesc = NEW (OBJECT_DESCRIPTOR);
+                if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                 {
-                    vKFatalError ("0015", ("iGetRvalue: Descriptor Allocation Failure"));
+                    KFatalError ("0015", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                pOD->sNumber.bValTyp = (BYTE) Number;
-                pOD->sNumber.dNumber = dTemp;
+                ObjDesc->Number.ValType = (BYTE) Number;
+                ObjDesc->Number.Number = TempVal;
                 break;
 
 
             case IndexField:
-                if (IndexField != pVal->bValTyp)
+                if (IndexField != ValDesc->ValType)
                 {
-                    sprintf (acWhyBuf,
-                            "iGetRvalue/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                            *ppStackPtr, IndexField, pVal->bValTyp, pVal);
+                    sprintf (WhyBuf,
+                            "GetRvalue/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                            *StackPtr, IndexField, ValDesc->ValType, ValDesc);
                     
-                    pcWhy = acWhyBuf;
-                    vAmlAppendBlockOwner (pVal);
+                    Why = WhyBuf;
+                    AmlAppendBlockOwner (ValDesc);
                     return S_ERROR;
                 }
 
                 /* Set Index value to select proper Data register */
                 /* Check lock rule prior to modifing the field */
                 
-                if (pOD->sFieldUnit.wLockRule == (WORD) Lock)
+                if (ObjDesc->FieldUnit.LockRule == (WORD) Lock)
                 {
                     /* Lock Rule is Lock */
                     
-                    if (iGetGlobalLock () == S_ERROR)
+                    if (GetGlobalLock () == S_ERROR)
                     {
                         /* the ownship failed - Bad Bad Bad, this is a single threaded */
                         /* implementation so there is no way some other process should */
                         /* own this.  This means something grabbed it and did not */
-                        /* release the Global Lock! (pcWhy will already be set) */
+                        /* release the Global Lock! (Why will already be set) */
                         
                         return (S_ERROR);
                     }
@@ -3152,13 +3164,13 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                     {
                         /* perform the update */
                         
-                        iRv = iSetNamedFieldValue (pVal->sIndexField.hIndex,
-                                                          pVal->sIndexField.dIndexVal);
+                        Excep = SetNamedFieldValue (ValDesc->IndexField.Index,
+                                                          ValDesc->IndexField.IndexVal);
                     }
                     
                     /* Release the Global Lock */
                     
-                    vReleaseGlobalLock ();
+                    ReleaseGlobalLock ();
                 }
                 
                 else
@@ -3166,57 +3178,57 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
                     /* Lock Rule is NoLock */
                     /* perform the update */
                     
-                    iRv = iSetNamedFieldValue (pVal->sIndexField.hIndex,
-                                                      pVal->sIndexField.dIndexVal);
+                    Excep = SetNamedFieldValue (ValDesc->IndexField.Index,
+                                                      ValDesc->IndexField.IndexVal);
                 }
 
-                if (S_SUCCESS != iRv)
+                if (S_SUCCESS != Excep)
                 {
                     return S_ERROR;
                 }
 
                 /* Read Data value */
                 
-                iRv = iGetNamedFieldValue (pVal->sIndexField.hData, &dTemp);
-                if (S_SUCCESS != iRv)
+                Excep = GetNamedFieldValue (ValDesc->IndexField.Data, &TempVal);
+                if (S_SUCCESS != Excep)
                 {
                     return S_ERROR;
                 }
 
-                pOD = NEW (OBJECT_DESCRIPTOR);
-                if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+                ObjDesc = NEW (OBJECT_DESCRIPTOR);
+                if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                 {
-                    vKFatalError("0016", ("iGetRvalue: Descriptor Allocation Failure"));
+                    KFatalError("0016", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                pOD->sNumber.bValTyp = (BYTE) Number;
-                pOD->sNumber.dNumber = dTemp;
+                ObjDesc->Number.ValType = (BYTE) Number;
+                ObjDesc->Number.Number = TempVal;
                 break;
 
             case FieldUnit:
-                if (pVal->bValTyp != (BYTE) iNsValType ((NsHandle)* ppStackPtr))
+                if (ValDesc->ValType != (BYTE) NsValType ((NsHandle)* StackPtr))
                 {
-                    sprintf (acWhyBuf,
-                            "iGetRvalue/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p",
-                              *ppStackPtr, iNsValType((NsHandle)*ppStackPtr),
-                              pVal->bValTyp, pVal);
+                    sprintf (WhyBuf,
+                            "GetRvalue/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p",
+                              *StackPtr, NsValType ((NsHandle)* StackPtr),
+                              ValDesc->ValType, ValDesc);
                     
-                    pcWhy = acWhyBuf;
-                    vAmlAppendBlockOwner (pVal);
+                    Why = WhyBuf;
+                    AmlAppendBlockOwner (ValDesc);
                     return S_ERROR;
                     break;
                 }
 
-                pOD = NEW (OBJECT_DESCRIPTOR);
-                if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+                ObjDesc = NEW (OBJECT_DESCRIPTOR);
+                if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                 {
-                    vKFatalError ("0017", ("iGetRvalue: Descriptor Allocation Failure"));
+                    KFatalError ("0017", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                if ((iRv = iGetFieldUnitValue (pVal, pOD)) != S_SUCCESS)
+                if ((Excep = GetFieldUnitValue (ValDesc, ObjDesc)) != S_SUCCESS)
                 {
-                    DELETE (pOD);
-                    return iRv;
+                    DELETE (ObjDesc);
+                    return Excep;
                 }
 
                 break;
@@ -3240,29 +3252,29 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
             case Any:
                 if (Trace & TraceExec)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE, "case %s ",
-                                apcNsTypeNames[iNsValType ((NsHandle)* ppStackPtr)]);
+                    fprintf_bu (LstFileHandle, LOGFILE, "case %s ",
+                                NsTypeNames[NsValType ((NsHandle)* StackPtr)]);
                 }
 #ifdef HACK
-                fprintf_bu (iLstFileHandle, LOGFILE,
-                            "** iGetRvalue: Fetch from %s not implemented, using value 0",
-                            apcNsTypeNames[iNsValType ((NsHandle)* ppStackPtr)]);
+                fprintf_bu (LstFileHandle, LOGFILE,
+                            "** GetRvalue: Fetch from %s not implemented, using value 0",
+                            NsTypeNames[NsValType ((NsHandle)* StackPtr)]);
                 
-                pOD = NEW (OBJECT_DESCRIPTOR);
-                if ((OBJECT_DESCRIPTOR *) 0 == pOD)
+                ObjDesc = NEW (OBJECT_DESCRIPTOR);
+                if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                 {
-                    vKFatalError ("0018", ("iGetRvalue: Descriptor Allocation Failure"));
+                    KFatalError ("0018", ("GetRvalue: Descriptor Allocation Failure"));
                 }
 
-                pOD->sNumber.bValTyp = (BYTE) Number;
-                pOD->sNumber.dNumber = 0x0;
+                ObjDesc->Number.ValType = (BYTE) Number;
+                ObjDesc->Number.Number = 0x0;
                 break;
 #else
-                sprintf (acWhyBuf,
-                        "iGetRvalue: Fetch from %s not implemented",
-                        apcNsTypeNames[iNsValType((NsHandle)*ppStackPtr)]);
+                sprintf (WhyBuf,
+                        "GetRvalue: Fetch from %s not implemented",
+                        NsTypeNames[NsValType ((NsHandle)* StackPtr)]);
                 
-                pcWhy = acWhyBuf;
+                Why = WhyBuf;
                 return S_ERROR;
 #endif /* HACK */
 
@@ -3270,16 +3282,16 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
 
                 if (Trace & TraceExec)
                 {
-                    fprintf_bu(iLstFileHandle, LOGFILE, "default??? ");
+                    fprintf_bu(LstFileHandle, LOGFILE, "default??? ");
                 }
 
-                sprintf (acWhyBuf, "iGetRvalue: Unknown NsType %d",
-                        iNsValType ((NsHandle)* ppStackPtr));
-                pcWhy = acWhyBuf;
+                sprintf (WhyBuf, "GetRvalue: Unknown NsType %d",
+                        NsValType ((NsHandle)* StackPtr));
+                Why = WhyBuf;
                 return S_ERROR;
         }
 
-        *ppStackPtr = (void *) pOD;
+        *StackPtr = (void *) ObjDesc;
     }
 
     return S_SUCCESS;
@@ -3288,16 +3300,16 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iPrepStack
+ * FUNCTION:    PrepStack
  *
- * PARAMETERS:  char *pcTypes       String showing operand types needed
+ * PARAMETERS:  char *Types       String showing operand types needed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
  * DESCRIPTION: Convert stack entries to required types
  *
- *      Each character in pcTypes represents one required operand
- *      and indicates the required bValTyp:
+ *      Each character in Types represents one required operand
+ *      and indicates the required ValType:
  *          l => Lvalue, also accepts an entry which is an NsHandle
  *                  instead of an (OBJECT_DESCRIPTOR *))
  *          n => Number
@@ -3311,280 +3323,281 @@ iGetRvalue (OBJECT_DESCRIPTOR **ppStackPtr)
  ****************************************************************************/
 
 int
-iPrepStack (char *pcTypes)
+PrepStack (char *Types)
 {
-    OBJECT_DESCRIPTOR **    ppStackPtr = (OBJECT_DESCRIPTOR **)&apObjStack[iObjStackTop];
-    int                     iRv;
+    OBJECT_DESCRIPTOR **    StackPtr = (OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop];
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iPrepStack");
+    FUNCTION_TRACE ("PrepStack");
 
 
     /* 
-     * Ensure room on stack for iGetRvalue() to operate
+     * Ensure room on stack for GetRvalue() to operate
      * without clobbering top existing entry.
      */
 
-    iRv = iPushIfExec (Exec);
-    if (S_SUCCESS != iRv)
+    Excep = PushIfExec (Exec);
+    if (S_SUCCESS != Excep)
     {
-        return iRv;
+        return Excep;
     }
 
     /* 
-     * Normal exit is with *pcTypes == '\0' at end of string.
+     * Normal exit is with *Types == '\0' at end of string.
      * Function will return S_ERROR from within the loop upon
      * finding an entry which is not, and cannot be converted
      * to, the required type; if stack underflows; or upon
      * finding a NULL stack entry (which "should never happen").
      */
 
-    while (*pcTypes)
+    while (*Types)
     {
         BYTE        bTypeFound;
-        char        acTypeFound[30], *pcTypeFound;
+        char        TypeFound[30];
+        char        *TypeFoundPtr;
 
 
-        if ((OBJECT_DESCRIPTOR *) 0 == *ppStackPtr)
+        if ((OBJECT_DESCRIPTOR *) 0 == *StackPtr)
         {
-            pcWhy = "iPrepStack:internal error: null stack entry";
-            --iObjStackTop;
+            Why = "PrepStack:internal error: null stack entry";
+            --ObjStackTop;
             return S_ERROR;
         }
 
-        bTypeFound = (*ppStackPtr)->bValTyp;
-        if (bTypeFound > (BYTE)Lvalue
-            || acBadType == apcNsTypeNames[bTypeFound])
+        bTypeFound = (*StackPtr)->ValType;
+        if (bTypeFound > (BYTE) Lvalue
+            || BadType == NsTypeNames[bTypeFound])
         {
-            sprintf (acTypeFound, "type encoding %d", bTypeFound);
-            pcTypeFound = acTypeFound;
+            sprintf (TypeFound, "type encoding %d", bTypeFound);
+            TypeFoundPtr = TypeFound;
         }
         
         else if ((BYTE) Lvalue == bTypeFound)
         {
-            strcpy (acTypeFound, "Lvalue ");
-            switch ((*ppStackPtr)->sLvalue.bOpCode)
+            strcpy (TypeFound, "Lvalue ");
+            switch ((*StackPtr)->Lvalue.OpCode)
             {
                 case ZeroOp:
-                    strcat (acTypeFound, "Zero");
+                    strcat (TypeFound, "Zero");
                     break;
                 
                 case OneOp:
-                    strcat (acTypeFound, "One");
+                    strcat (TypeFound, "One");
                     break;
                 
                 case OnesOp:
-                    strcat (acTypeFound, "Ones");
+                    strcat (TypeFound, "Ones");
                     break;
                 
                 case Debug1:
-                    strcat (acTypeFound, "Debug");
+                    strcat (TypeFound, "Debug");
                     break;
                 case NameOp:
                 
-                    sprintf (&acTypeFound[7], "Name");
+                    sprintf (&TypeFound[7], "Name");
                     break;
                
                 case IndexOp:
-                    sprintf (&acTypeFound[7], "Index %p",
-                                (*ppStackPtr)->sLvalue.pvRef);
+                    sprintf (&TypeFound[7], "Index %p",
+                                (*StackPtr)->Lvalue.Ref);
                     break;
                 
                 case Arg0: case Arg1: case Arg2: case Arg3:
                 case Arg4: case Arg5: case Arg6:
-                    sprintf (&acTypeFound[7], "Arg%d",
-                                (*ppStackPtr)->sLvalue.bOpCode - Arg0);
+                    sprintf (&TypeFound[7], "Arg%d",
+                                (*StackPtr)->Lvalue.OpCode - Arg0);
                     break;
                 
                 case Local0: case Local1: case Local2: case Local3:
                 case Local4: case Local5: case Local6: case Local7:
-                    sprintf (&acTypeFound[7], "Local%d",
-                                (*ppStackPtr)->sLvalue.bOpCode - Local0);
+                    sprintf (&TypeFound[7], "Local%d",
+                                (*StackPtr)->Lvalue.OpCode - Local0);
                     break;
                 
                 default:
-                    sprintf (&acTypeFound[7], "??? %02x",
-                                (*ppStackPtr)->sLvalue.bOpCode);
+                    sprintf (&TypeFound[7], "??? %02x",
+                                (*StackPtr)->Lvalue.OpCode);
                     break;
             }
         }
         
         else
         {
-            pcTypeFound = apcNsTypeNames[bTypeFound];
+            TypeFoundPtr = NsTypeNames[bTypeFound];
         }
 
 
-        switch (*pcTypes++)
+        switch (*Types++)
         {
             case 'l':                                   /* need Lvalue */
-                if (iIsNsHandle(*ppStackPtr))           /* direct name ptr OK as-is */
+                if (IsNsHandle (*StackPtr))             /* direct name ptr OK as-is */
                 {
                     break;
                 }
 
-                if (Lvalue != (*ppStackPtr)->bValTyp)
+                if (Lvalue != (*StackPtr)->ValType)
                 {
-                    sprintf (acWhyBuf, "iPrepStack: Needed Lvalue, found %s",
-                                pcTypeFound);
-                    pcWhy = acWhyBuf;
-                    --iObjStackTop;
+                    sprintf (WhyBuf, "PrepStack: Needed Lvalue, found %s",
+                                TypeFoundPtr);
+                    Why = WhyBuf;
+                    --ObjStackTop;
                     return S_ERROR;
                 }
 
-                if (NameOp == (*ppStackPtr)->sLvalue.bOpCode)
+                if (NameOp == (*StackPtr)->Lvalue.OpCode)
                 {
                     /* Convert indirect name ptr to direct name ptr */
                     
-                    NsHandle nTemp = (*ppStackPtr)->sLvalue.pvRef;
-                    DELETE (*ppStackPtr);
-                    (*ppStackPtr) = nTemp;
+                    NsHandle TempHandle = (*StackPtr)->Lvalue.Ref;
+                    DELETE (*StackPtr);
+                    (*StackPtr) = TempHandle;
                 }
                 break;
 
             case 'n':                                   /* need Number */
-                if ((iRv = iGetRvalue (ppStackPtr)) != S_SUCCESS)
+                if ((Excep = GetRvalue (StackPtr)) != S_SUCCESS)
                 {
                     if (debug_level () > 0)
                     {
-                        fprintf_bu (iLstFileHandle, LOGFILE,
-                                      "iPrepStack:n: iGetRvalue returned %s", RV[iRv]);
+                        fprintf_bu (LstFileHandle, LOGFILE,
+                                      "PrepStack:n: GetRvalue returned %s", RV[Excep]);
                     }
 
-                    --iObjStackTop;
-                    return iRv;
+                    --ObjStackTop;
+                    return Excep;
                 }
 
                 if (Trace & TraceExec)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE,
-                                  "iGetRvalue returned S_SUCCESS");
+                    fprintf_bu (LstFileHandle, LOGFILE,
+                                  "GetRvalue returned S_SUCCESS");
                 }
 
-                if (Number != (*ppStackPtr)->bValTyp)
+                if (Number != (*StackPtr)->ValType)
                 {
-                    sprintf (acWhyBuf, "iPrepStack: Needed Number, found %s",
-                                pcTypeFound);
-                    pcWhy = acWhyBuf;
-                    --iObjStackTop;
+                    sprintf (WhyBuf, "PrepStack: Needed Number, found %s",
+                                TypeFoundPtr);
+                    Why = WhyBuf;
+                    --ObjStackTop;
                     return S_ERROR;
                 }
                 break;
 
             case 's':                                   /* need String (or Buffer) */
-                if ((iRv = iGetRvalue (ppStackPtr)) != S_SUCCESS)
+                if ((Excep = GetRvalue (StackPtr)) != S_SUCCESS)
                 {
-                    --iObjStackTop;
-                    return iRv;
+                    --ObjStackTop;
+                    return Excep;
                 }
 
                 if (Trace & TraceExec)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE,
-                                  "iGetRvalue returned S_SUCCESS");
+                    fprintf_bu (LstFileHandle, LOGFILE,
+                                  "GetRvalue returned S_SUCCESS");
                 }
 
-                if (String != (*ppStackPtr)->bValTyp
-                    && Buffer != (*ppStackPtr)->bValTyp)
+                if (String != (*StackPtr)->ValType
+                    && Buffer != (*StackPtr)->ValType)
                 {
-                    sprintf (acWhyBuf,
-                            "iPrepStack: Needed String or Buffer, found %s",
-                                pcTypeFound);
-                    pcWhy = acWhyBuf;
-                    --iObjStackTop;
+                    sprintf (WhyBuf,
+                            "PrepStack: Needed String or Buffer, found %s",
+                                TypeFoundPtr);
+                    Why = WhyBuf;
+                    --ObjStackTop;
                     return S_ERROR;
                 }
                 break;
 
             case 'b':                                   /* need Buffer */
-                if ((iRv = iGetRvalue(ppStackPtr)) != S_SUCCESS)
+                if ((Excep = GetRvalue(StackPtr)) != S_SUCCESS)
                 {
-                    --iObjStackTop;
-                    return iRv;
+                    --ObjStackTop;
+                    return Excep;
                 }
 
                 if (Trace & TraceExec)
                 {
-                    fprintf_bu(iLstFileHandle, LOGFILE,
-                                  "iGetRvalue returned S_SUCCESS");
+                    fprintf_bu(LstFileHandle, LOGFILE,
+                                  "GetRvalue returned S_SUCCESS");
                 }
 
-                if (Buffer != (*ppStackPtr)->bValTyp)
+                if (Buffer != (*StackPtr)->ValType)
                 {
-                    sprintf(acWhyBuf, "iPrepStack: Needed Buffer, found %s",
-                                pcTypeFound);
-                    pcWhy = acWhyBuf;
-                    --iObjStackTop;
+                    sprintf(WhyBuf, "PrepStack: Needed Buffer, found %s",
+                                TypeFoundPtr);
+                    Why = WhyBuf;
+                    --ObjStackTop;
                     return S_ERROR;
                 }
                 break;
 
             case 'i':                                   /* need If */
-                if (If != (*ppStackPtr)->bValTyp)
+                if (If != (*StackPtr)->ValType)
                 {
-                    sprintf (acWhyBuf, "iPrepStack: Needed If, found %s",
-                                pcTypeFound);
-                    pcWhy = acWhyBuf;
-                    --iObjStackTop;
+                    sprintf (WhyBuf, "PrepStack: Needed If, found %s",
+                                TypeFoundPtr);
+                    Why = WhyBuf;
+                    --ObjStackTop;
                     return S_ERROR;
                 }
                 break;
 
             case 'p':                                   /* need Package */
-                if ((iRv = iGetRvalue (ppStackPtr)) != S_SUCCESS)
+                if ((Excep = GetRvalue (StackPtr)) != S_SUCCESS)
                 {
-                    --iObjStackTop;
-                    return iRv;
+                    --ObjStackTop;
+                    return Excep;
                 }
 
                 if (Trace & TraceExec)
                 {
-                    fprintf_bu (iLstFileHandle, LOGFILE,
-                                  "iGetRvalue returned S_SUCCESS");
+                    fprintf_bu (LstFileHandle, LOGFILE,
+                                  "GetRvalue returned S_SUCCESS");
                 }
 
-                if (Package != (*ppStackPtr)->bValTyp)
+                if (Package != (*StackPtr)->ValType)
                 {
-                    sprintf (acWhyBuf, "iPrepStack: Needed Package, found %s",
-                                pcTypeFound);
-                    pcWhy = acWhyBuf;
-                    --iObjStackTop;
+                    sprintf (WhyBuf, "PrepStack: Needed Package, found %s",
+                                TypeFoundPtr);
+                    Why = WhyBuf;
+                    --ObjStackTop;
                     return S_ERROR;
                 }
                 break;
 
             default:
-                sprintf (acWhyBuf,
-                            "iPrepStack:internal error Unknown type flag %02x",
-                            *--pcTypes);
-                pcWhy = acWhyBuf;
-                --iObjStackTop;
+                sprintf (WhyBuf,
+                            "PrepStack:internal error Unknown type flag %02x",
+                            *--Types);
+                Why = WhyBuf;
+                --ObjStackTop;
                 return S_ERROR;
 
-        }   /* switch (*pcTypes++) */
+        }   /* switch (*Types++) */
 
 
         /* 
-         * If more operands needed, decrement ppStackPtr to point
+         * If more operands needed, decrement StackPtr to point
          * to next operand on stack (after checking for underflow).
          */
-        if (*pcTypes)
+        if (*Types)
         {
             /* Don't try to decrement below bottom of stack */
             
-            if ((OBJECT_DESCRIPTOR **) &apObjStack[0] == ppStackPtr)
+            if ((OBJECT_DESCRIPTOR **) &ObjStack[0] == StackPtr)
             {
-                pcWhy = "iPrepStack: not enough operands";
-                --iObjStackTop;
+                Why = "PrepStack: not enough operands";
+                --ObjStackTop;
                 return S_ERROR;
             }
 
-            --ppStackPtr;
+            --StackPtr;
         }
 
-    }   /* while (*pcTypes) */
+    }   /* while (*Types) */
 
-    --iObjStackTop;
+    --ObjStackTop;
     return S_SUCCESS;
 }
 
@@ -3593,52 +3606,54 @@ iPrepStack (char *pcTypes)
  * 
  * FUNCTION:    AmlAppendOperandDiag
  *
- * PARAMETERS:  char *  pcFN        Name of source file
- *              int     iLine       Line Number in file
- *              WORD    wOpCode     OpCode being executed
- *              int     iNOperands  Number of operands iPrepStack tried to check
+ * PARAMETERS:  char *  FileName    Name of source file
+ *              int     LineNum     Line Number in file
+ *              WORD    OpCode      OpCode being executed
+ *              int     NumOperands Number of operands PrepStack tried to check
  *
- * DESCRIPTION: Append diagnostic information about operands to acWhyBuf
- *              This function is intended to be called after iPrepStack
+ * DESCRIPTION: Append diagnostic information about operands to WhyBuf
+ *              This function is intended to be called after PrepStack
  *              has returned S_ERROR.
  *
  ****************************************************************************/
 
 void
-vAmlAppendOperandDiag(char *pcFN, int iLine, WORD wOpCode, int iNOperands)
+AmlAppendOperandDiag(char *FileName, int LineNum, WORD OpCode, int NumOperands)
 {
     meth            sM;
 
 
-    if (pcWhy != acWhyBuf)
+    if (Why != WhyBuf)
     {
-        /* Copy message to acWhyBuf */
+        /* Copy message to WhyBuf */
         
-        strcpy (acWhyBuf, pcWhy);
-        pcWhy = acWhyBuf;
+        strcpy (WhyBuf, Why);
+        Why = WhyBuf;
     }
 
-    vGetCurrentLoc (&sM);
-    sprintf (&acWhyBuf[strlen(acWhyBuf)], " [%s:%d, op = %s AML offset %04x]",
-            pcFN, iLine,
-            (wOpCode > UCHAR_MAX)
-                ? apcLongOps[wOpCode & 0x00ff]
-                : apcShortOps[wOpCode],
-            sM.iOffset);
+    GetCurrentLoc (&sM);
+
+    sprintf (&WhyBuf[strlen (WhyBuf)], " [%s:%d, opcode = %s AML offset %04x]",
+            FileName, LineNum,
+            (OpCode > UCHAR_MAX)
+                ? LongOps[OpCode & 0x00ff]
+                : ShortOps[OpCode],
+            sM.Offset);
 
     if (debug_level () > 0)
     {
         int         iTraceWas = Trace;
 
-        /* Turn on TraceExec to enable output from vDumpStack() */
+        /* Turn on TraceExec to enable output from DumpStack() */
         
         Trace |= TraceExec;
-        vDumpStack(Exec,
-                      (wOpCode > UCHAR_MAX)
-                      ? apcLongOps[wOpCode & 0x00ff]
-                      : apcShortOps[wOpCode],
-                      iNOperands,
-                      "after iPrepStack failed");
+
+        DumpStack (Exec,
+                      (OpCode > UCHAR_MAX)
+                      ? LongOps[OpCode & 0x00ff]
+                      : ShortOps[OpCode],
+                      NumOperands,
+                      "after PrepStack failed");
         Trace = iTraceWas;
     }
 }
@@ -3646,9 +3661,9 @@ vAmlAppendOperandDiag(char *pcFN, int iLine, WORD wOpCode, int iNOperands)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecMonadic1
+ * FUNCTION:    ExecMonadic1
  *
- * PARAMETERS:  WORD    op      The opcode to be executed
+ * PARAMETERS:  WORD    opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -3660,108 +3675,108 @@ vAmlAppendOperandDiag(char *pcFN, int iLine, WORD wOpCode, int iNOperands)
  ****************************************************************************/
 
 int
-iExecMonadic1(WORD op)
+ExecMonadic1 (WORD opcode)
 {
-    OBJECT_DESCRIPTOR *     op1;
-    int                     iRv;
+    OBJECT_DESCRIPTOR *     ObjDesc;
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iExecMonadic1");
+    FUNCTION_TRACE ("ExecMonadic1");
 
 
-    if (SleepOp == op || StallOp == op)
+    if (SleepOp == opcode || StallOp == opcode)
     {
-        iRv = iPrepStack ("n");                 /* operand should be a Number */
+        Excep = PrepStack ("n");                 /* operand should be a Number */
     }
     else
     {
-        iRv = iPrepStack ("l");                 /* operand should be an Lvalue */
+        Excep = PrepStack ("l");                 /* operand should be an Lvalue */
     }
 
-    if (iRv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
-        vAmlAppendOperandDiag (__FILE__, __LINE__, op, 1);
-        return iRv;
+        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 1);
+        return Excep;
     }
 
 
-    vDumpStack(Exec, apcLongOps[op & 0x00ff], 1, "after iPrepStack");
+    DumpStack (Exec, LongOps[opcode & 0x00ff], 1, "after PrepStack");
 
-    op1 = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
+    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
 
-    switch (op)
+    switch (opcode)
     {
         case ReleaseOp:
-            if (Mutex != op1->bValTyp)
+            if (Mutex != ObjDesc->ValType)
             {
-                sprintf (acWhyBuf,
-                        "iExecMonadic1/ReleaseOp: Needed Mutex, found %d",
-                        op1->bValTyp);
-                pcWhy = acWhyBuf;
+                sprintf (WhyBuf,
+                        "ExecMonadic1/ReleaseOp: Needed Mutex, found %d",
+                        ObjDesc->ValType);
+                Why = WhyBuf;
                 return S_ERROR;
             }
 
-            return (iReleaseOpRqst (op1));
+            return (ReleaseOpRqst (ObjDesc));
 
         case ResetOp:
-            if (Event != op1->bValTyp)
+            if (Event != ObjDesc->ValType)
             {
-                sprintf (acWhyBuf,
-                        "iExecMonadic1/ResetOp: Needed Event, found %d", op1->bValTyp);
-                pcWhy = acWhyBuf;
+                sprintf (WhyBuf,
+                        "ExecMonadic1/ResetOp: Needed Event, found %d", ObjDesc->ValType);
+                Why = WhyBuf;
                 return S_ERROR;
             }
 
-            return (iResetOpRqst (op1));
+            return (ResetOpRqst (ObjDesc));
 
         case SignalOp:
-            if (Event != op1->bValTyp)
+            if (Event != ObjDesc->ValType)
             {
-                sprintf (acWhyBuf,
-                        "iExecMonadic1/SignalOp: Needed Event, found %d", op1->bValTyp);
-                pcWhy = acWhyBuf;
+                sprintf (WhyBuf,
+                        "ExecMonadic1/SignalOp: Needed Event, found %d", ObjDesc->ValType);
+                Why = WhyBuf;
                 return S_ERROR;
             }
-            return (iSignalOpRqst (op1));
+            return (SignalOpRqst (ObjDesc));
 
         case SleepOp:
 #ifndef RMX
-            vDoSuspend (op1->sNumber.dNumber);
+            DoSuspend (ObjDesc->Number.Number);
             break;
 #else
-            pcWhy = "iExecMonadic1: SleepOp not implemented on RMX";
+            Why = "ExecMonadic1: SleepOp not implemented on RMX";
             return S_ERROR;
 #endif
 
         case StallOp:
 #ifndef RMX
-            OsdSleepUsec (op1->sNumber.dNumber);
+            OsdSleepUsec (ObjDesc->Number.Number);
             break;
 #else
             /* 
              * XXX - this is supposed to NOT yield the processor, so should
              * XXX - busy-wait.  RMX has no corresponding service.
              */
-            pcWhy = "iExecMonadic1: StallOp not implemented on RMX";
+            Why = "ExecMonadic1: StallOp not implemented on RMX";
             return S_ERROR;
 #endif
 
         default:
-            sprintf (acWhyBuf, "iExecMonadic1: Unknown monadic opcode %02x", op);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "ExecMonadic1: Unknown monadic opcode %02x", opcode);
+            Why = WhyBuf;
             return S_ERROR;
     }
 
-    DELETE (op1);
+    DELETE (ObjDesc);
     return S_SUCCESS;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecMonadic2R
+ * FUNCTION:    ExecMonadic2R
  *
- * PARAMETERS:  WORD    op      The opcode to be executed
+ * PARAMETERS:  WORD    opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -3771,94 +3786,96 @@ iExecMonadic1(WORD op)
  ****************************************************************************/
 
 int
-iExecMonadic2R (WORD op)
+ExecMonadic2R (WORD opcode)
 {
-    OBJECT_DESCRIPTOR       *op1, *res;
-    DWORD                   dResVal;
-    int                     rv;
+    OBJECT_DESCRIPTOR       *ObjDesc;
+    OBJECT_DESCRIPTOR       *ResDesc;
+    DWORD                   ResVal;
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iExecMonadic2R");
+    FUNCTION_TRACE ("ExecMonadic2R");
 
 
-    rv = iPrepStack ("ln");
+    Excep = PrepStack ("ln");
 
-    if (rv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
         /* This was added since it is allowable to return a buffer so */
         /* ln is a local and a number and that will fail.  lb is a local */
         /* and a buffer which will pass.  */
         
-        rv = iPrepStack ("lb");
+        Excep = PrepStack ("lb");
 
-        if (rv != S_SUCCESS)
+        if (Excep != S_SUCCESS)
         {
-            vAmlAppendOperandDiag (__FILE__, __LINE__, op, 2);
-            return rv;
+            AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 2);
+            return Excep;
         }
     }
 
-    vDumpStack (Exec, apcShortOps[op], 2, "after iPrepStack");
+    DumpStack (Exec, ShortOps[opcode], 2, "after PrepStack");
 
-    res = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
-    op1 = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 1];
+    ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
 
-    switch (op)
+    switch (opcode)
     {
         int             d0, d1, d2, d3;
 
+
         case BitNotOp:
-            op1->sNumber.dNumber = ~op1->sNumber.dNumber;
+            ObjDesc->Number.Number = ~ObjDesc->Number.Number;
             break;
 
         case FindSetLeftBitOp:
-            for (dResVal = 0 ; op1->sNumber.dNumber && dResVal < 33 ; ++dResVal)
+            for (ResVal = 0; ObjDesc->Number.Number && ResVal < 33; ++ResVal)
             {
-                op1->sNumber.dNumber >>= 1;
+                ObjDesc->Number.Number >>= 1;
             }
 
-            op1->sNumber.dNumber = dResVal;
+            ObjDesc->Number.Number = ResVal;
             break;
 
         case FindSetRightBitOp:
-            for (dResVal = 0 ; op1->sNumber.dNumber && dResVal < 33 ; ++dResVal)
+            for (ResVal = 0; ObjDesc->Number.Number && ResVal < 33; ++ResVal)
             {
-                op1->sNumber.dNumber <<= 1;
+                ObjDesc->Number.Number <<= 1;
             }
 
-            op1->sNumber.dNumber = dResVal == 0 ? 0 : 33 - dResVal;
+            ObjDesc->Number.Number = ResVal == 0 ? 0 : 33 - ResVal;
             break;
 
         case FromBCDOp:
-            d0 = (int) (op1->sNumber.dNumber & 15);
-            d1 = (int) (op1->sNumber.dNumber >> 4 & 15);
-            d2 = (int) (op1->sNumber.dNumber >> 8 & 15);
-            d3 = (int) (op1->sNumber.dNumber >> 12 & 15);
+            d0 = (int) (ObjDesc->Number.Number & 15);
+            d1 = (int) (ObjDesc->Number.Number >> 4 & 15);
+            d2 = (int) (ObjDesc->Number.Number >> 8 & 15);
+            d3 = (int) (ObjDesc->Number.Number >> 12 & 15);
             
             if (d0 > 9 || d1 > 9 || d2 > 9 || d3 > 9)
             {
-                sprintf (acWhyBuf,
-                        "iExecMonadic2R/FromBCDOp: improper BCD digit %d %d %d %d",
+                sprintf (WhyBuf,
+                        "ExecMonadic2R/FromBCDOp: improper BCD digit %d %d %d %d",
                         d3, d2, d1, d0);
-                pcWhy = acWhyBuf;
+                Why = WhyBuf;
                 return S_ERROR;
             }
             
-            op1->sNumber.dNumber = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
+            ObjDesc->Number.Number = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
             break;
 
         case ToBCDOp:
-            if (op1->sNumber.dNumber > 9999)
+            if (ObjDesc->Number.Number > 9999)
             {
-                pcWhy = "iExecMonadic2R/ToBCDOp: BCD overflow";
+                Why = "ExecMonadic2R/ToBCDOp: BCD overflow";
                 return S_ERROR;
             }
             
-            op1->sNumber.dNumber
-                = op1->sNumber.dNumber % 10
-                + (op1->sNumber.dNumber / 10 % 10 << 4)
-                + (op1->sNumber.dNumber / 100 % 10 << 8)
-                + (op1->sNumber.dNumber / 1000 % 10 << 12);
+            ObjDesc->Number.Number
+                = ObjDesc->Number.Number % 10
+                + (ObjDesc->Number.Number / 10 % 10 << 4)
+                + (ObjDesc->Number.Number / 100 % 10 << 8)
+                + (ObjDesc->Number.Number / 1000 % 10 << 12);
             
             break;
 
@@ -3866,32 +3883,32 @@ iExecMonadic2R (WORD op)
         case ShiftRightBitOp:
         case CondRefOfOp:
             
-            sprintf (acWhyBuf, "iExecMonadic2R: %s unimplemented",
-                    (op > UCHAR_MAX) ? apcLongOps[op & 0x00ff] : apcShortOps[op]);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "ExecMonadic2R: %s unimplemented",
+                    (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]);
+            Why = WhyBuf;
             return S_ERROR;
 
         case StoreOp:
             break;
 
         default:
-            sprintf (acWhyBuf, "iExecMonadic2R:internal error: Unknown monadic opcode %02x", op);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "ExecMonadic2R:internal error: Unknown monadic opcode %02x", opcode);
+            Why = WhyBuf;
             return S_ERROR;
     }
     
-    rv = iExecStore(op1, res);
-    --iObjStackTop;
+    Excep = ExecStore (ObjDesc, ResDesc);
+    --ObjStackTop;
     
-    return rv;
+    return Excep;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecMonadic2
+ * FUNCTION:    ExecMonadic2
  *
- * PARAMETERS:  WORD    op      The opcode to be executed
+ * PARAMETERS:  WORD    opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -3901,154 +3918,155 @@ iExecMonadic2R (WORD op)
  *
  * ALLOCATION:
  *  Reference   Size                    Pool    Owner       Description
- *  apObjStack  s(OBJECT_DESCRIPTOR)    bu      amlexec     Number
+ *  ObjStack    s(OBJECT_DESCRIPTOR)    bu      amlexec     Number
  *
  ****************************************************************************/
 
 int
-iExecMonadic2 (WORD op)
+ExecMonadic2 (WORD opcode)
 {
-    OBJECT_DESCRIPTOR       *op1, *res;
-    int                     iRv;
+    OBJECT_DESCRIPTOR       *ObjDesc;
+    OBJECT_DESCRIPTOR       *ResDesc;
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iExecMonadic2");
+    FUNCTION_TRACE ("ExecMonadic2");
 
 
-    if (LNotOp == op)
+    if (LNotOp == opcode)
     {
-        iRv = iPrepStack ("n");
+        Excep = PrepStack ("n");
     }
     else
     {
-        iRv = iPrepStack ("l");
+        Excep = PrepStack ("l");
     }
 
-    if (iRv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
-        vAmlAppendOperandDiag (__FILE__, __LINE__, op, 1);
-        return iRv;
+        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 1);
+        return Excep;
     }
 
-    vDumpStack (Exec, apcShortOps[op], 1, "after iPrepStack");
+    DumpStack (Exec, ShortOps[opcode], 1, "after PrepStack");
 
-    op1 = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
+    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
 
 
-    switch (op)
+    switch (opcode)
     {
         case LNotOp:
-            op1->sNumber.dNumber = (!op1->sNumber.dNumber) - (DWORD) 1;
+            ObjDesc->Number.Number = (!ObjDesc->Number.Number) - (DWORD) 1;
             break;
 
         case DecrementOp:
         case IncrementOp:
 
-            if ((iRv = iPushIfExec (Exec)) != S_SUCCESS)
+            if ((Excep = PushIfExec (Exec)) != S_SUCCESS)
             {
-                vKFatalError("0019", ("iExecMonadic2/IncDec: stack overflow"));
+                KFatalError("0019", ("ExecMonadic2/IncDec: stack overflow"));
             }
 
             /* duplicate the Lvalue on TOS */
             
-            res = NEW (OBJECT_DESCRIPTOR);
-            if (res)
+            ResDesc = NEW (OBJECT_DESCRIPTOR);
+            if (ResDesc)
             {
-                memcpy ((void *) res, (void *) op1, sizeof (*op1));
+                memcpy ((void *) ResDesc, (void *) ObjDesc, sizeof (*ObjDesc));
                 
-                /* push went into unused space, so no need to vDeleteObject() */
+                /* push went into unused space, so no need to DeleteObject() */
                 
-                apObjStack[iObjStackTop] = (void *) res;
+                ObjStack[ObjStackTop] = (void *) ResDesc;
             }
             
             else
             {
-                vKFatalError ("0020", ("iExecMonadic2/IncDec: Descriptor Allocation Failure"));
+                KFatalError ("0020", ("ExecMonadic2/IncDec: Descriptor Allocation Failure"));
                 return S_ERROR;
             }
 
             /* Convert the top copy to a Number */
             
-            iRv = iPrepStack ("n");
-            if (iRv != S_SUCCESS)
+            Excep = PrepStack ("n");
+            if (Excep != S_SUCCESS)
             {
-                vAmlAppendOperandDiag (__FILE__, __LINE__, op, 1);
-                return iRv;
+                AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 1);
+                return Excep;
             }
 
-            /* get the Number in op1 and the Lvalue in res */
+            /* get the Number in ObjDesc and the Lvalue in ResDesc */
             
-            op1 = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
-            res = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 1];
+            ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+            ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
 
             /* do the ++ or -- */
             
-            if (IncrementOp == op)
+            if (IncrementOp == opcode)
             {
-                ++op1->sNumber.dNumber;
+                ++ObjDesc->Number.Number;
             }
             else
             {
-                --op1->sNumber.dNumber;
+                --ObjDesc->Number.Number;
             }
 
             /* store result */
             
-            vDeleteObject ((OBJECT_DESCRIPTOR **) &apObjStack[iObjStackTop - 1]);
-            apObjStack[iObjStackTop - 1] = (void *) op1;
+            DeleteObject ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop - 1]);
+            ObjStack[ObjStackTop - 1] = (void *) ObjDesc;
             
-            iRv = iExecStore (op1, res);
-            --iObjStackTop;
-            return iRv;
+            Excep = ExecStore (ObjDesc, ResDesc);
+            --ObjStackTop;
+            return Excep;
 
         case TypeOp:
             
-            /* This case uses iRv to hold the type encoding */
+            /* This case uses Excep to hold the type encoding */
             
-            if (Lvalue == op1->bValTyp)
+            if (Lvalue == ObjDesc->ValType)
             {
                 /* 
                  * Not a Name -- an indirect name pointer would have
-                 * been converted to a direct name pointer in iPrepStack
+                 * been converted to a direct name pointer in PrepStack
                  */
-                switch (op1->sLvalue.bOpCode)
+                switch (ObjDesc->Lvalue.OpCode)
                 {
                 case ZeroOp: case OneOp: case OnesOp:
                     
                     /* Constants are of type Number */
                     
-                    iRv = (int) Number;
+                    Excep = (int) Number;
                     break;
 
                 case Debug1:
                     
                     /* Per spec, Debug object is of type Region */
                     
-                    iRv = (int) Region;
+                    Excep = (int) Region;
                     break;
 
                 case IndexOp:
                     
-                    pcWhy = "iExecMonadic2/TypeOp: determining type of Index result is not implemented";
+                    Why = "ExecMonadic2/TypeOp: determining type of Index result is not implemented";
                     return S_ERROR;
 
                 case Local0: case Local1: case Local2: case Local3:
                 case Local4: case Local5: case Local6: case Local7:
                     
-                    iRv = (int) iGetMethodValTyp (LCLBASE + op1->sLvalue.bOpCode - Local0);
+                    Excep = (int) GetMethodValTyp (LCLBASE + ObjDesc->Lvalue.OpCode - Local0);
                     break;
 
                 case Arg0: case Arg1: case Arg2: case Arg3:
                 case Arg4: case Arg5: case Arg6:
                     
-                    iRv = (int)iGetMethodValTyp (ARGBASE + op1->sLvalue.bOpCode - Arg0);
+                    Excep = (int) GetMethodValTyp (ARGBASE + ObjDesc->Lvalue.OpCode - Arg0);
                     break;
 
                 default:
                     
-                    sprintf (acWhyBuf,
-                            "iExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x",
-                            op1->sLvalue.bOpCode);
+                    sprintf (WhyBuf,
+                            "ExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x",
+                            ObjDesc->Lvalue.OpCode);
                     return S_ERROR;
                 }
             }
@@ -4056,69 +4074,69 @@ iExecMonadic2 (WORD op)
             else
             {
                 /* 
-                 * Since we passed iPrepStack("l") and it's not an Lvalue,
+                 * Since we passed PrepStack("l") and it's not an Lvalue,
                  * it must be a direct name pointer.  Allocate a descriptor
                  * to hold the type.
                  */
-                iRv = (int) iNsValType ((NsHandle) op1);
-                op1 = NEW (OBJECT_DESCRIPTOR);
-                if ((OBJECT_DESCRIPTOR *) 0 == op1)
+                Excep = (int) NsValType ((NsHandle) ObjDesc);
+                ObjDesc = NEW (OBJECT_DESCRIPTOR);
+                if ((OBJECT_DESCRIPTOR *) 0 == ObjDesc)
                 {
-                    vKFatalError ("0021", ("iExecMonadic2/TypeOp: Descriptor Allocation Failure"));
+                    KFatalError ("0021", ("ExecMonadic2/TypeOp: Descriptor Allocation Failure"));
                     return S_ERROR;
                 }
 
                 /* 
                  * Replace (NsHandle) on TOS with descriptor containing result.
-                 * No need to vDeleteObject() first since TOS is an NsHandle.
+                 * No need to DeleteObject() first since TOS is an NsHandle.
                  */
 
-                apObjStack[iObjStackTop] = (void *) op1;
+                ObjStack[ObjStackTop] = (void *) ObjDesc;
             }
             
-            op1->bValTyp = (BYTE) Number;
-            op1->sNumber.dNumber = (DWORD)(long) iRv;
+            ObjDesc->ValType = (BYTE) Number;
+            ObjDesc->Number.Number = (DWORD)(long) Excep;
             break;
 
         case SizeOfOp:
-            switch (op1->bValTyp)
+            switch (ObjDesc->ValType)
             {
                 case Buffer:
-                    op1->sNumber.dNumber = op1->sBuffer.wBufLen;
-                    op1->bValTyp = (BYTE) Number;
+                    ObjDesc->Number.Number = ObjDesc->Buffer.BufLen;
+                    ObjDesc->ValType = (BYTE) Number;
                     break;
 
                 case String:
-                    op1->sNumber.dNumber = op1->sString.wStrLen;
-                    op1->bValTyp = (BYTE) Number;
+                    ObjDesc->Number.Number = ObjDesc->String.StrLen;
+                    ObjDesc->ValType = (BYTE) Number;
                     break;
 
                 case Package:
-                    op1->sNumber.dNumber = op1->sPackage.wPkgCount;
-                    op1->bValTyp = (BYTE) Number;
+                    ObjDesc->Number.Number = ObjDesc->Package.PkgCount;
+                    ObjDesc->ValType = (BYTE) Number;
                     break;
 
                 default:
-                    sprintf (acWhyBuf,
-                            "iExecMonadic2: Needed aggregate, found %d", op1->bValTyp);
-                    pcWhy = acWhyBuf;
+                    sprintf (WhyBuf,
+                            "ExecMonadic2: Needed aggregate, found %d", ObjDesc->ValType);
+                    Why = WhyBuf;
                     return S_ERROR;
             }
             break;
 
         case RefOfOp:
         case DerefOfOp:
-            sprintf (acWhyBuf, "iExecMonadic2: %s unimplemented",
-                    (op > UCHAR_MAX) ? apcLongOps[op & 0x00ff] : apcShortOps[op]);
-            pcWhy = acWhyBuf;
-            ++iObjStackTop;
+            sprintf (WhyBuf, "ExecMonadic2: %s unimplemented",
+                    (opcode > UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]);
+            Why = WhyBuf;
+            ++ObjStackTop;
             return S_ERROR;
 
         default:
-            sprintf (acWhyBuf,
-                        "iExecMonadic2:internal error: Unknown monadic opcode %02x",
-                        op);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf,
+                        "ExecMonadic2:internal error: Unknown monadic opcode %02x",
+                        opcode);
+            Why = WhyBuf;
             return S_ERROR;
     }
 
@@ -4128,9 +4146,9 @@ iExecMonadic2 (WORD op)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecDyadic1
+ * FUNCTION:    ExecDyadic1
  *
- * PARAMETERS:  WORD op  The opcode to be executed
+ * PARAMETERS:  WORD opcode  The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -4141,32 +4159,34 @@ iExecMonadic2 (WORD op)
  *
  ****************************************************************************/
 
- int
-iExecDyadic1(WORD op)
+int
+ExecDyadic1 (WORD opcode)
 {
-    OBJECT_DESCRIPTOR       *obj, *val;
-    int                     iRv;
+    OBJECT_DESCRIPTOR       *ObjDesc;
+    OBJECT_DESCRIPTOR       *ValDesc;
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iExecDyadic1");
+    FUNCTION_TRACE ("ExecDyadic1");
 
 
-    iRv = iPrepStack ("nl");
+    Excep = PrepStack ("nl");
 
-    if (iRv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
-        vAmlAppendOperandDiag (__FILE__, __LINE__, op, 2);
-        return iRv;
+        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 2);
+        return Excep;
     }
 
-    vDumpStack (Exec, apcShortOps[op], 2, "after iPrepStack");
+    DumpStack (Exec, ShortOps[opcode], 2, "after PrepStack");
 
-    val = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
-    obj = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 1];
+    ValDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
 
-    switch (op)
+    switch (opcode)
     {
         case NotifyOp:
+
             /* XXX - What should actually happen here [NotifyOp] ?
              * XXX - See ACPI 1.0 spec sec 5.6.3 p. 5-102.
              * XXX - We may need to simulate what an OS would
@@ -4178,7 +4198,8 @@ iExecDyadic1(WORD op)
              * XXX - For value 0x80 (Status Change) on the power button or
              * XXX -        sleep button, initiate soft-off or sleep operation?
              */
-            switch (obj->bValTyp)
+
+            switch (ObjDesc->ValType)
             {
                 case Device:
                 case Thermal:
@@ -4186,27 +4207,28 @@ iExecDyadic1(WORD op)
                     /* XXX - Requires that sDevice and sThermalZone
                      * XXX - be compatible mappings
                      */
-                    iDoNotifyOp (val, obj);
+
+                    DoNotifyOp (ValDesc, ObjDesc);
                     break;
 
                 default:
-                    sprintf (acWhyBuf,
-                            "iExecDyadic1/NotifyOp: unexpected object type %d",
-                            obj->bValTyp);
-                    pcWhy = acWhyBuf;
+                    sprintf (WhyBuf,
+                            "ExecDyadic1/NotifyOp: unexpected object type %d",
+                            ObjDesc->ValType);
+                    Why = WhyBuf;
                     return S_ERROR;
             }
             break;
 
         default:
-            sprintf (acWhyBuf, "iExecDyadic1: Unknown dyadic opcode %02x", op);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "ExecDyadic1: Unknown dyadic opcode %02x", opcode);
+            Why = WhyBuf;
             return S_ERROR;
     }
 
-    DELETE (val);
-    DELETE (obj);
-    apObjStack[--iObjStackTop] = (void *)0;
+    DELETE (ValDesc);
+    DELETE (ObjDesc);
+    ObjStack[--ObjStackTop] = (void *) 0;
 
     return S_SUCCESS;
 }
@@ -4214,9 +4236,9 @@ iExecDyadic1(WORD op)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecDyadic2R
+ * FUNCTION:    ExecDyadic2R
  *
- * PARAMETERS:  WORD    op      The opcode to be executed
+ * PARAMETERS:  WORD    opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -4225,212 +4247,216 @@ iExecDyadic1(WORD op)
  *
  * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
  *  Reference       Size        Pool    Owner   Description
- *  sString.pbString varies     bu    amlexec   result of Concat
- *  sBuffer.pbBuffer varies     bu    amlexec   result of Concat
+ *  String.String varies     bu    amlexec   result of Concat
+ *  Buffer.Buffer varies     bu    amlexec   result of Concat
  *
  ****************************************************************************/
 
 int
-iExecDyadic2R (WORD op)
+ExecDyadic2R (WORD opcode)
 {
-    OBJECT_DESCRIPTOR       *op1, *op2, *res, *res2;
+    OBJECT_DESCRIPTOR       *ObjDesc;
+    OBJECT_DESCRIPTOR       *ObjDesc2;
+    OBJECT_DESCRIPTOR       *ResDesc;
+    OBJECT_DESCRIPTOR       *ResDesc2;
     DWORD                   remain;
-    int                     iRv, iNOperands;
+    int                     Excep;
+    int                     NumOperands;
 
 
-    FUNCTION_TRACE ("iExecDyadic2R");
+    FUNCTION_TRACE ("ExecDyadic2R");
 
 
-    switch (op)
+    switch (opcode)
     {
         case ConcatOp:
-            iRv = iPrepStack ("lss");
-            iNOperands = 3;
+            Excep = PrepStack ("lss");
+            NumOperands = 3;
             break;
 
         case DivideOp:
-            iRv = iPrepStack ("llnn");
-            iNOperands = 4;
+            Excep = PrepStack ("llnn");
+            NumOperands = 4;
             break;
 
         default:
-            iRv = iPrepStack ("lnn");
-            iNOperands = 3;
+            Excep = PrepStack ("lnn");
+            NumOperands = 3;
             break;
     }
 
-    if (iRv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
-        vAmlAppendOperandDiag (__FILE__, __LINE__, op, iNOperands);
-        return iRv;
+        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, NumOperands);
+        return Excep;
     }
 
-    vDumpStack (Exec, apcShortOps[op], iNOperands, "after iPrepStack");
+    DumpStack (Exec, ShortOps[opcode], NumOperands, "after PrepStack");
 
-    if (DivideOp == op)
+    if (DivideOp == opcode)
     {
-        res2 = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop--];
+        ResDesc2 = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];
     }
 
-    res = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop--];
-    op2 = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop--];
-    op1 = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
-    iObjStackTop += iNOperands - 1;
+    ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];
+    ObjDesc2 = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];
+    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ObjStackTop += NumOperands - 1;
 
-    switch (op)
+    switch (opcode)
     {
         case AddOp:
-            op1->sNumber.dNumber += op2->sNumber.dNumber;
+            ObjDesc->Number.Number += ObjDesc2->Number.Number;
             break;
         
         case BitAndOp:
-            op1->sNumber.dNumber &= op2->sNumber.dNumber;
+            ObjDesc->Number.Number &= ObjDesc2->Number.Number;
             break;
         
         case BitNandOp:
-            op1->sNumber.dNumber = ~(op1->sNumber.dNumber & op2->sNumber.dNumber);
+            ObjDesc->Number.Number = ~(ObjDesc->Number.Number & ObjDesc2->Number.Number);
             break;
         
         case BitOrOp:
-            op1->sNumber.dNumber |= op2->sNumber.dNumber;
+            ObjDesc->Number.Number |= ObjDesc2->Number.Number;
             break;
         
         case BitNorOp:
-            op1->sNumber.dNumber = ~(op1->sNumber.dNumber | op2->sNumber.dNumber);
+            ObjDesc->Number.Number = ~(ObjDesc->Number.Number | ObjDesc2->Number.Number);
             break;
         
         case BitXorOp:
-            op1->sNumber.dNumber ^= op2->sNumber.dNumber;
+            ObjDesc->Number.Number ^= ObjDesc2->Number.Number;
             break;
         
         case DivideOp:
-            if ((DWORD) 0 == op2->sNumber.dNumber)
+            if ((DWORD) 0 == ObjDesc2->Number.Number)
             {
-                pcWhy = "iExecDyadic2R/DivideOp: divide by zero";
+                Why = "ExecDyadic2R/DivideOp: divide by zero";
                 return S_ERROR;
             }
 
-            remain = op1->sNumber.dNumber % op2->sNumber.dNumber;
-            op1->sNumber.dNumber /= op2->sNumber.dNumber;
-            op2->sNumber.dNumber = remain;
+            remain = ObjDesc->Number.Number % ObjDesc2->Number.Number;
+            ObjDesc->Number.Number /= ObjDesc2->Number.Number;
+            ObjDesc2->Number.Number = remain;
             break;
         
         case MultiplyOp:
-            op1->sNumber.dNumber *= op2->sNumber.dNumber;
+            ObjDesc->Number.Number *= ObjDesc2->Number.Number;
             break;
         
         case ShiftLeftOp:
-            op1->sNumber.dNumber <<= op2->sNumber.dNumber;
+            ObjDesc->Number.Number <<= ObjDesc2->Number.Number;
             break;
         
         case ShiftRightOp:
-            op1->sNumber.dNumber >>= op2->sNumber.dNumber;
+            ObjDesc->Number.Number >>= ObjDesc2->Number.Number;
             break;
         
         case SubtractOp:
-            op1->sNumber.dNumber -= op2->sNumber.dNumber;
+            ObjDesc->Number.Number -= ObjDesc2->Number.Number;
             break;
 
         case ConcatOp:
-            if (op2->bValTyp != op1->bValTyp)
+            if (ObjDesc2->ValType != ObjDesc->ValType)
             {
-                sprintf (acWhyBuf,
-                        "iExecDyadic2R/ConcatOp: operand type mismatch %d %d",
-                        op1->bValTyp, op2->bValTyp);
-                pcWhy = acWhyBuf;
+                sprintf (WhyBuf,
+                        "ExecDyadic2R/ConcatOp: operand type mismatch %d %d",
+                        ObjDesc->ValType, ObjDesc2->ValType);
+                Why = WhyBuf;
                 return S_ERROR;
             }
 
-            /* Both bValTyp are now known to be the same */
+            /* Both ValType are now known to be the same */
             
-            if (String == op1->bValTyp)
+            if (String == ObjDesc->ValType)
             {
-                char *pcNew = OsdAllocate ((size_t)(op1->sString.wStrLen
-                                            + op2->sString.wStrLen + 1));
-                if ((char *) 0 == pcNew)
+                char *NewBuf = OsdAllocate ((size_t) (ObjDesc->String.StrLen
+                                                    + ObjDesc2->String.StrLen + 1));
+                if ((char *) 0 == NewBuf)
                 {
-                    vKFatalError ("0022", (
-                        "iExecDyadic2R/ConcatOp: String allocation failure %d",
-                        op1->sString.wStrLen + op2->sString.wStrLen + 1));
+                    KFatalError ("0022", (
+                        "ExecDyadic2R/ConcatOp: String allocation failure %d",
+                        ObjDesc->String.StrLen + ObjDesc2->String.StrLen + 1));
                     
-                    pcWhy = acWhyBuf;
+                    Why = WhyBuf;
                     return S_ERROR;
                 }
                 
-                strcpy(pcNew, (char *) op1->sString.pbString);
-                strcpy(pcNew + op1->sString.wStrLen,
-                         (char *)op2->sString.pbString);
+                strcpy (NewBuf, (char *) ObjDesc->String.String);
+                strcpy (NewBuf + ObjDesc->String.StrLen,
+                         (char *) ObjDesc2->String.String);
                 
-                /* Don't free old op1->sString.pbString; the operand still exists */
+                /* Don't free old ObjDesc->String.String; the operand still exists */
                 
-                op1->sString.pbString = (BYTE *)pcNew;
-                op1->sString.wStrLen += op2->sString.wStrLen;
+                ObjDesc->String.String = (BYTE *) NewBuf;
+                ObjDesc->String.StrLen += ObjDesc2->String.StrLen;
             }
             
             else
             {
-                char *pcNew = OsdAllocate ((size_t)(op1->sBuffer.wBufLen
-                                            + op2->sBuffer.wBufLen));
-                if ((char *) 0 == pcNew)
+                char *NewBuf = OsdAllocate ((size_t) (ObjDesc->Buffer.BufLen
+                                                    + ObjDesc2->Buffer.BufLen));
+                if ((char *) 0 == NewBuf)
                 {
                     /* Only bail out if the buffer is small */
                     
-                    if (op1->sBuffer.wBufLen + op2->sBuffer.wBufLen < 1024)
+                    if (ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen < 1024)
                     {
-                        vKFatalError ("0023", (
-                                "iExecDyadic2R/ConcatOp: Buffer allocation failure %d",
-                                op1->sBuffer.wBufLen + op2->sBuffer.wBufLen));
+                        KFatalError ("0023", (
+                                "ExecDyadic2R/ConcatOp: Buffer allocation failure %d",
+                                ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen));
                     }
 
-                    sprintf (acWhyBuf,
-                                "iExecDyadic2R/ConcatOp: Buffer allocation failure %d",
-                                op1->sBuffer.wBufLen + op2->sBuffer.wBufLen);
-                    pcWhy = acWhyBuf;
+                    sprintf (WhyBuf,
+                                "ExecDyadic2R/ConcatOp: Buffer allocation failure %d",
+                                ObjDesc->Buffer.BufLen + ObjDesc2->Buffer.BufLen);
+                    Why = WhyBuf;
                     return S_ERROR;
                 }
 
-                memcpy (pcNew, op1->sBuffer.pbBuffer, (size_t) op1->sBuffer.wBufLen);
-                memcpy (pcNew + op1->sBuffer.wBufLen, op2->sBuffer.pbBuffer,
-                        (size_t) op2->sBuffer.wBufLen);
+                memcpy (NewBuf, ObjDesc->Buffer.Buffer, (size_t) ObjDesc->Buffer.BufLen);
+                memcpy (NewBuf + ObjDesc->Buffer.BufLen, ObjDesc2->Buffer.Buffer,
+                        (size_t) ObjDesc2->Buffer.BufLen);
                 
-                /* Don't free old op1->sBuffer.pbBuffer; the operand still exists */
+                /* Don't free old ObjDesc->Buffer.Buffer; the operand still exists */
                 
-                op1->sBuffer.pbBuffer = (BYTE *) pcNew;
-                op1->sBuffer.wBufLen += op2->sBuffer.wBufLen;
+                ObjDesc->Buffer.Buffer = (BYTE *) NewBuf;
+                ObjDesc->Buffer.BufLen += ObjDesc2->Buffer.BufLen;
             }
             break;
 
         default:
-            sprintf (acWhyBuf, "iExecDyadic2R: Unknown dyadic opcode %02x", op);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "ExecDyadic2R: Unknown dyadic opcode %02x", opcode);
+            Why = WhyBuf;
             return S_ERROR;
     }
     
-    if ((iRv = iExecStore (op1, res)) != S_SUCCESS)
+    if ((Excep = ExecStore (ObjDesc, ResDesc)) != S_SUCCESS)
     {
-        iObjStackTop -= iNOperands - 1;
-        return iRv;
+        ObjStackTop -= NumOperands - 1;
+        return Excep;
     }
     
-    if (DivideOp == op)
+    if (DivideOp == opcode)
     {
-        iRv = iExecStore(op2, res2);
+        Excep = ExecStore(ObjDesc2, ResDesc2);
     }
 
-    /* Don't delete op1 because it remains on the stack */
+    /* Don't delete ObjDesc because it remains on the stack */
     
-    DELETE (op2);
-    iObjStackTop -= iNOperands - 1;
+    DELETE (ObjDesc2);
+    ObjStackTop -= NumOperands - 1;
     
-    return iRv;
+    return Excep;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecDyadic2S
+ * FUNCTION:    ExecDyadic2S
  *
- * PARAMETERS:  WORD    op      The opcode to be executed
+ * PARAMETERS:  WORD    opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -4441,76 +4467,78 @@ iExecDyadic2R (WORD op)
  ****************************************************************************/
 
 int
-iExecDyadic2S (WORD op)
+ExecDyadic2S (WORD opcode)
 {
-    OBJECT_DESCRIPTOR       *obj, *timeo, *res;
-    int                     iRv;
+    OBJECT_DESCRIPTOR       *ObjDesc;
+    OBJECT_DESCRIPTOR       *TimeDesc;
+    OBJECT_DESCRIPTOR       *ResDesc;
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iExecDyadic2S");
+    FUNCTION_TRACE ("ExecDyadic2S");
 
 
-    iRv = iPrepStack ("nl");
+    Excep = PrepStack ("nl");
 
-    if (iRv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
-        vAmlAppendOperandDiag (__FILE__, __LINE__, op, 2);
-        return iRv;
+        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 2);
+        return Excep;
     }
 
-    vDumpStack (Exec, apcLongOps[op & 0x00ff], 2, "after iPrepStack");
+    DumpStack (Exec, LongOps[opcode & 0x00ff], 2, "after PrepStack");
 
-    timeo = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
-    obj = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 1];
+    TimeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
 
-    switch (op)
+    switch (opcode)
     {
         case AcquireOp:
-            if (Mutex != obj->bValTyp)
+            if (Mutex != ObjDesc->ValType)
             {
-                sprintf (acWhyBuf,
-                        "iExecDyadic2S/AcquireOp: Needed Mutex, found %d",
-                        res->bValTyp);
-                pcWhy = acWhyBuf;
+                sprintf (WhyBuf,
+                        "ExecDyadic2S/AcquireOp: Needed Mutex, found %d",
+                        ResDesc->ValType);
+                Why = WhyBuf;
                 return S_ERROR;
             }
-            return (iAcquireOpRqst (timeo, obj));
+            return (AcquireOpRqst (TimeDesc, ObjDesc));
 
 
         case WaitOp:
-            if (Event != obj->bValTyp)
+            if (Event != ObjDesc->ValType)
             {
-                sprintf (acWhyBuf,
-                        "iExecDyadic2S/WaitOp: Needed Event, found %d",
-                        res->bValTyp);
-                pcWhy = acWhyBuf;
+                sprintf (WhyBuf,
+                        "ExecDyadic2S/WaitOp: Needed Event, found %d",
+                        ResDesc->ValType);
+                Why = WhyBuf;
                 return S_ERROR;
             }
-            return (iWaitOpRqst (timeo, obj));
+            return (WaitOpRqst (TimeDesc, ObjDesc));
 
 
         default:
-            sprintf (acWhyBuf,
-                    "iExecDyadic2S: Unknown dyadic synchronization opcode %02x",
-                    op);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf,
+                    "ExecDyadic2S: Unknown dyadic synchronization opcode %02x",
+                    opcode);
+            Why = WhyBuf;
             return S_ERROR;
     }
 
     /* This will become reachable when Acquire or Wait is implemented */
     
-    DELETE (timeo);
-    --iObjStackTop;
+    DELETE (TimeDesc);
+    --ObjStackTop;
     
-    return iRv;
+    return Excep;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecDyadic2
+ * FUNCTION:    ExecDyadic2
  *
- * PARAMETERS:  WORD    op      The opcode to be executed
+ * PARAMETERS:  WORD    opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -4523,80 +4551,85 @@ iExecDyadic2S (WORD op)
  ****************************************************************************/
 
 int
-iExecDyadic2 (WORD op)
+ExecDyadic2 (WORD opcode)
 {
-    OBJECT_DESCRIPTOR       *op1, *op2;
-    int                     rv;
+    OBJECT_DESCRIPTOR       *ObjDesc;
+    OBJECT_DESCRIPTOR       *ObjDesc2;
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iExecDyadic2");
+    FUNCTION_TRACE ("ExecDyadic2");
 
 
-    rv = iPrepStack ("nn");
+    Excep = PrepStack ("nn");
 
-    if (rv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
-        vAmlAppendOperandDiag (__FILE__, __LINE__, op, 2);
-        return rv;
+        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, 2);
+        return Excep;
     }
 
-    vDumpStack (Exec, apcShortOps[op], 2, "after iPrepStack");
+    DumpStack (Exec, ShortOps[opcode], 2, "after PrepStack");
 
-    op2 = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
-    op1 = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 1];
+    ObjDesc2 = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    ObjDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
 
-    switch (op)
+    switch (opcode)
     {
         case LAndOp:
-            if (op1->sNumber.dNumber && op2->sNumber.dNumber)
-                rv = 1;
+            if (ObjDesc->Number.Number && ObjDesc2->Number.Number)
+                Excep = 1;
             else
-                rv = 0;
+                Excep = 0;
             break;
 
         case LEqualOp:
-            if (op1->sNumber.dNumber == op2->sNumber.dNumber)
-                rv = 1;
+            if (ObjDesc->Number.Number == ObjDesc2->Number.Number)
+                Excep = 1;
             else
-                rv = 0;
+                Excep = 0;
             break;
 
         case LGreaterOp:
-            if (op1->sNumber.dNumber > op2->sNumber.dNumber)
-                rv = 1;
+            if (ObjDesc->Number.Number > ObjDesc2->Number.Number)
+                Excep = 1;
             else
-                rv = 0;
+                Excep = 0;
             break;
 
         case LLessOp:
-            if (op1->sNumber.dNumber < op2->sNumber.dNumber)
-                rv = 1;
+            if (ObjDesc->Number.Number < ObjDesc2->Number.Number)
+                Excep = 1;
             else
-                rv = 0;
+                Excep = 0;
             break;
 
         case LOrOp:
-            if (op1->sNumber.dNumber || op2->sNumber.dNumber)
-                rv = 1;
+            if (ObjDesc->Number.Number || ObjDesc2->Number.Number)
+                Excep = 1;
             else
-                rv = 0;
+                Excep = 0;
             break;
         
         default:
-            sprintf (acWhyBuf, "iExecDyadic2: Unknown dyadic opcode %02x", op);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "ExecDyadic2: Unknown dyadic opcode %02x", opcode);
+            Why = WhyBuf;
             return S_ERROR;
     }
 
-    /* op1->bValTyp == Number was assured by iPrepStack("nn") call */
+    /* ObjDesc->ValType == Number was assured by PrepStack("nn") call */
     
-    if (rv)
-        op1->sNumber.dNumber = 0xffffffff;
+    if (Excep)
+    {
+        ObjDesc->Number.Number = 0xffffffff;
+    }
     else
-        op1->sNumber.dNumber = 0;
+    {
+        ObjDesc->Number.Number = 0;
+    }
 
-    DELETE (op2);
-    --iObjStackTop;
+    DELETE (ObjDesc2);
+    --ObjStackTop;
     
     return S_SUCCESS;
 }
@@ -4604,9 +4637,9 @@ iExecDyadic2 (WORD op)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecCreateField
+ * FUNCTION:    ExecCreateField
  *
- * PARAMETERS:  WORD    op      The opcode to be executed
+ * PARAMETERS:  WORD    opcode      The opcode to be executed
  *
  * RETURN:      S_SUCCESS or S_ERROR
  *
@@ -4619,147 +4652,152 @@ iExecDyadic2 (WORD op)
  ****************************************************************************/
 
 int
-iExecCreateField (WORD op)
+ExecCreateField (WORD opcode)
 {
-    OBJECT_DESCRIPTOR       *res, *count, *off, *src;
-    char                    *pcOpName;
-    DWORD                   dBitOffset;
-    int                     iRv, iNOperands;
-    WORD                    wBitCount;
+    OBJECT_DESCRIPTOR       *ResDesc;
+    OBJECT_DESCRIPTOR       *CntDesc;
+    OBJECT_DESCRIPTOR       *OffDesc;
+    OBJECT_DESCRIPTOR       *SrcDesc;
+    char                    *OpName;
+    int                     NumOperands;
+    WORD                    BitCount;
+    DWORD                   BitOffset;
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iExecCreateField");
+    FUNCTION_TRACE ("ExecCreateField");
 
 
-    if (CreateFieldOp == op)
+    if (CreateFieldOp == opcode)
     {
-        iRv = iPrepStack ("lnnb");
-        iNOperands = 4;
-        pcOpName = apcLongOps[op & 0x00ff];
+        Excep = PrepStack ("lnnb");
+        NumOperands = 4;
+        OpName = LongOps[opcode & 0x00ff];
     }
     
     else
     {
-        iRv = iPrepStack ("lnb");
-        iNOperands = 3;
-        pcOpName = apcShortOps[op];
+        Excep = PrepStack ("lnb");
+        NumOperands = 3;
+        OpName = ShortOps[opcode];
     }
 
-    if (iRv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
-        vAmlAppendOperandDiag (__FILE__, __LINE__, op, iNOperands);
-        return iRv;
+        AmlAppendOperandDiag (__FILE__, __LINE__, opcode, NumOperands);
+        return Excep;
     }
 
-    vDumpStack (Exec, pcOpName, iNOperands, "after iPrepStack");
+    DumpStack (Exec, OpName, NumOperands, "after PrepStack");
 
-    res = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop--];         /* result */
+    ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];        /* result */
     
-    if (CreateFieldOp == op)
+    if (CreateFieldOp == opcode)
     {
-        count = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop--];       /* count */
+        CntDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];        /* count */
     }
 
-    off = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop--];         /* offset */
-    src = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];           /* source */
-    iObjStackTop += iNOperands - 1;
+    OffDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];        /* offset */
+    SrcDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];          /* source */
+    ObjStackTop += NumOperands - 1;
 
-    /* If res is a Name, it will be a direct name pointer after iPrepStack() */
+    /* If ResDesc is a Name, it will be a direct name pointer after PrepStack() */
     
-    if (!iIsNsHandle (res))
+    if (!IsNsHandle (ResDesc))
     {
-        sprintf (acWhyBuf, "%s: destination must be a Name", pcOpName);
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf, "%s: destination must be a Name", OpName);
+        Why = WhyBuf;
         return S_ERROR;
     }
 
-    switch (op)
+    switch (opcode)
     {
         case BitFieldOp:
-            dBitOffset = off->sNumber.dNumber;              /* offset is in bits */
-            wBitCount = 1;                                  /* field is a bit */
+            BitOffset = OffDesc->Number.Number;             /* offset is in bits */
+            BitCount = 1;                                   /* field is a bit */
             break;
 
         case ByteFieldOp:
-            dBitOffset = 8 * off->sNumber.dNumber;          /* offset is in bytes */
-            wBitCount = 8;                                  /* field is a Byte */
+            BitOffset = 8 * OffDesc->Number.Number;         /* offset is in bytes */
+            BitCount = 8;                                   /* field is a Byte */
             break;
 
         case WordFieldOp:
-            dBitOffset = 8 * off->sNumber.dNumber;          /* offset is in bytes */
-            wBitCount = 16;                                 /* field is a Word */
+            BitOffset = 8 * OffDesc->Number.Number;         /* offset is in bytes */
+            BitCount = 16;                                  /* field is a Word */
             break;
 
         case DWordFieldOp:
-            dBitOffset = 8 * off->sNumber.dNumber;          /* offset is in bytes */
-            wBitCount = 32;                                 /* field is a DWord */
+            BitOffset = 8 * OffDesc->Number.Number;         /* offset is in bytes */
+            BitCount = 32;                                  /* field is a DWord */
             break;
 
         case CreateFieldOp:
-            dBitOffset = off->sNumber.dNumber;              /* offset is in bits */
-            wBitCount = (WORD) count->sNumber.dNumber;      /* as is count */
+            BitOffset = OffDesc->Number.Number;             /* offset is in bits */
+            BitCount = (WORD) CntDesc->Number.Number;       /* as is count */
             break;
 
         default:
-            sprintf (acWhyBuf,
-                    "iExecCreateField:internal error: Unknown field creation opcode %02x",
-                    op);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf,
+                    "ExecCreateField:internal error: Unknown field creation opcode %02x",
+                    opcode);
+            Why = WhyBuf;
             return S_ERROR;
     }
 
-    switch (src->bValTyp)
+    switch (SrcDesc->ValType)
     {
         BYTE        bTypeFound;
-        char        acTypeFound[20], *pcTypeFound;
+        char        TypeFound[20];
+        char        *TypeFoundPtr;
 
     case Buffer:
-        if (dBitOffset + (DWORD) wBitCount > 8 * (DWORD) src->sBuffer.wBufLen)
+        if (BitOffset + (DWORD) BitCount > 8 * (DWORD) SrcDesc->Buffer.BufLen)
         {
-            sprintf (acWhyBuf, "iExecCreateField: Field exceeds Buffer %d > %d",
-                    dBitOffset + (DWORD)wBitCount,
-                    8 * (DWORD)src->sBuffer.wBufLen);
-            pcWhy = acWhyBuf;
+            sprintf (WhyBuf, "ExecCreateField: Field exceeds Buffer %d > %d",
+                    BitOffset + (DWORD)BitCount,
+                    8 * (DWORD)SrcDesc->Buffer.BufLen);
+            Why = WhyBuf;
             return S_ERROR;
         }
 
-        /* Reuse "off" descriptor to build result */
+        /* Reuse "OffDesc" descriptor to build result */
         
-        off->bValTyp                = (BYTE) FieldUnit;
-        off->sFieldUnit.wAccess     = (WORD) AnyAcc;
-        off->sFieldUnit.wLockRule   = (WORD) NoLock;
-        off->sFieldUnit.wUpdateRule = (WORD) Preserve;
-        off->sFieldUnit.wDatLen     = wBitCount;
-        off->sFieldUnit.wBitOffset  = (WORD) dBitOffset % 8;
-        off->sFieldUnit.dOffset     = dBitOffset / 8;
-        off->sFieldUnit.pContainer  = src;
-        off->sFieldUnit.dConSeq     = src->sBuffer.dSequence;
+        OffDesc->ValType                = (BYTE) FieldUnit;
+        OffDesc->FieldUnit.Access       = (WORD) AnyAcc;
+        OffDesc->FieldUnit.LockRule     = (WORD) NoLock;
+        OffDesc->FieldUnit.UpdateRule   = (WORD) Preserve;
+        OffDesc->FieldUnit.DatLen       = BitCount;
+        OffDesc->FieldUnit.BitOffset    = (WORD) BitOffset % 8;
+        OffDesc->FieldUnit.Offset       = BitOffset / 8;
+        OffDesc->FieldUnit.Container    = SrcDesc;
+        OffDesc->FieldUnit.ConSeq       = SrcDesc->Buffer.Sequence;
         break;
 
     default:
-        bTypeFound = src->bValTyp;
+        bTypeFound = SrcDesc->ValType;
 
         if (bTypeFound > (BYTE) Lvalue
-            || acBadType == apcNsTypeNames[bTypeFound])
+            || BadType == NsTypeNames[bTypeFound])
         {
-            sprintf (acTypeFound, "encoding %d", bTypeFound);
-            pcTypeFound = acTypeFound;
+            sprintf (TypeFound, "encoding %d", bTypeFound);
+            TypeFoundPtr = TypeFound;
         }
         else
         {
-            pcTypeFound = apcNsTypeNames[bTypeFound];
+            TypeFoundPtr = NsTypeNames[bTypeFound];
         }
 
-        sprintf (acWhyBuf,
-                "iExecCreateField: Tried to create field in improper object type %s",
-                pcTypeFound);
-        pcWhy = acWhyBuf;
+        sprintf (WhyBuf,
+                "ExecCreateField: Tried to create field in improper object type %s",
+                TypeFoundPtr);
+        Why = WhyBuf;
         return S_ERROR;
     }
 
-    if (CreateFieldOp == op)
+    if (CreateFieldOp == opcode)
     {
-        DELETE (count);
+        DELETE (CntDesc);
     }
 
     /* 
@@ -4767,27 +4805,29 @@ iExecCreateField (WORD op)
      * to the defined FieldUnit -- it must not store the constructed
      * FieldUnit object (or its current value) in some location that the
      * Name may already be pointing to.  So, if the Name currently contains
-     * a reference which would cause iExecStore() to perform an indirect
+     * a reference which would cause ExecStore() to perform an indirect
      * store rather than setting the value of the Name itself, clobber that
-     * reference before calling iExecStore().
+     * reference before calling ExecStore().
      */
 
-    switch (iNsValType (res))                /* Type of Name's existing value */
+    switch (NsValType (ResDesc))                /* Type of Name's existing value */
     {
         case Alias:
         case BankField:
         case DefField:
         case FieldUnit:
         case IndexField:
+
             if ((Trace & TraceBufFld) && debug_level () > 0)
             {
-                printf_bu ("iExecCreateField: clobber %s (%p) ",
-                             pcNsFullyQualifiedName (res), res);
-                vNsDumpEntry (res, SCREEN|LOGFILE);
-                iDumpStackEntry (pvNsValPtr (res));
+                printf_bu ("ExecCreateField: clobber %s (%p) ",
+                             NsFullyQualifiedName (ResDesc), ResDesc);
+
+                NsDumpEntry (ResDesc, SCREEN|LOGFILE);
+                DumpStackEntry (NsValPtr (ResDesc));
             }
             
-            vNsSetValue (res, NULL, Any);
+            NsSetValue (ResDesc, NULL, Any);
             break;
 
         default:
@@ -4796,16 +4836,16 @@ iExecCreateField (WORD op)
 
     /* Store constructed field descriptor in result location */
     
-    iRv = iExecStore (off, res);
-    iObjStackTop -= iNOperands - 1;
+    Excep = ExecStore (OffDesc, ResDesc);
+    ObjStackTop -= NumOperands - 1;
     
-    return iRv;
+    return Excep;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecFatal
+ * FUNCTION:    ExecFatal
  *
  * PARAMETERS:  none
  *
@@ -4816,42 +4856,44 @@ iExecCreateField (WORD op)
  ****************************************************************************/
 
 int
-iExecFatal (void)
+ExecFatal (void)
 {
-    OBJECT_DESCRIPTOR       *poType, *poCode, *poArg;
-    int                     iRv;
+    OBJECT_DESCRIPTOR       *TypeDesc;
+    OBJECT_DESCRIPTOR       *CodeDesc;
+    OBJECT_DESCRIPTOR       *ArgDesc;
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iExecFatal");
+    FUNCTION_TRACE ("ExecFatal");
 
 
-    iRv = iPrepStack ("nnn");
+    Excep = PrepStack ("nnn");
 
-    if (iRv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
-        vAmlAppendOperandDiag (__FILE__, __LINE__, (WORD) FatalOp, 3);
-        return iRv;
+        AmlAppendOperandDiag (__FILE__, __LINE__, (WORD) FatalOp, 3);
+        return Excep;
     }
 
-    vDumpStack (Exec, apcLongOps[FatalOp & 0x00ff], 3, "after iPrepStack");
+    DumpStack (Exec, LongOps[FatalOp & 0x00ff], 3, "after PrepStack");
 
-    poArg = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
-    poCode = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 1];
-    poType = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 2];
+    ArgDesc  = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    CodeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+    TypeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
 
-    fprintf_bu (iLstFileHandle, LOGFILE,
+    fprintf_bu (LstFileHandle, LOGFILE,
                 "FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
-                poType->sNumber.dNumber, poCode->sNumber.dNumber,
-                poArg->sNumber.dNumber);
+                TypeDesc->Number.Number, CodeDesc->Number.Number,
+                ArgDesc->Number.Number);
 
-    pcWhy = "iExecFatal: FatalOp executed";
+    Why = "ExecFatal: FatalOp executed";
     return S_ERROR;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecIndex
+ * FUNCTION:    ExecIndex
  *
  * PARAMETERS:  none
  *
@@ -4864,59 +4906,62 @@ iExecFatal (void)
  ****************************************************************************/
 
 int
-iExecIndex (void)
+ExecIndex (void)
 {
-    OBJECT_DESCRIPTOR       *poPkg, *poIdx, *poResult;
-    int                     iRv;
+    OBJECT_DESCRIPTOR       *PkgDesc;
+    OBJECT_DESCRIPTOR       *IdxDesc;
+    OBJECT_DESCRIPTOR       *ResDesc;
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iExecIndex");
+    FUNCTION_TRACE ("ExecIndex");
 
 
-    iRv = iPrepStack ("lnp");
+    Excep = PrepStack ("lnp");
 
-    if (iRv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
-        vAmlAppendOperandDiag (__FILE__, __LINE__, (WORD)IndexOp, 3);
-        return iRv;
+        AmlAppendOperandDiag (__FILE__, __LINE__, (WORD)IndexOp, 3);
+        return Excep;
     }
 
-    vDumpStack (Exec, apcShortOps[IndexOp], 3, "after iPrepStack");
+    DumpStack (Exec, ShortOps[IndexOp], 3, "after PrepStack");
 
-    poResult = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
-    poIdx = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 1];
-    poPkg = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 2];
+    ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    IdxDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+    PkgDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
 
-    if (poIdx->sNumber.dNumber < 0
-        || poIdx->sNumber.dNumber >= (DWORD) poPkg->sPackage.wPkgCount)
+    if (IdxDesc->Number.Number < 0
+        || IdxDesc->Number.Number >= (DWORD) PkgDesc->Package.PkgCount)
     {
-        pcWhy = "iExecIndex: Index value out of range";
+        Why = "ExecIndex: Index value out of range";
         return S_ERROR;
     }
 
-    /* XXX - possible dangling reference: if the package vector changes
+    /* 
+     * XXX - possible dangling reference: if the package vector changes
      * XXX - before this pointer is used, the results may be surprising.
      */
-    poPkg->sLvalue.pvRef    = (void *) &poPkg->sPackage.ppPackage[poIdx->sNumber.dNumber];
-    poPkg->bValTyp          = (BYTE) Lvalue;
-    poPkg->sLvalue.bOpCode  = IndexOp;
+    PkgDesc->Lvalue.Ref     = (void *) &PkgDesc->Package.PackageElems[IdxDesc->Number.Number];
+    PkgDesc->ValType        = (BYTE) Lvalue;
+    PkgDesc->Lvalue.OpCode  = IndexOp;
 
-    if ((iRv = iExecStore (poPkg, poResult)) != S_SUCCESS)
+    if ((Excep = ExecStore (PkgDesc, ResDesc)) != S_SUCCESS)
     {
-        iObjStackTop -= 2;
-        return iRv;
+        ObjStackTop -= 2;
+        return Excep;
     }
     
-    DELETE (poIdx);
-    iObjStackTop -= 2;
+    DELETE (IdxDesc);
+    ObjStackTop -= 2;
     
-    return iRv;
+    return Excep;
 }
 
 
 /*****************************************************************************
  * 
- * FUNCTION:    iExecMatch
+ * FUNCTION:    ExecMatch
  *
  * PARAMETERS:  none
  *
@@ -4929,47 +4974,52 @@ iExecIndex (void)
  ****************************************************************************/
 
 int
-iExecMatch (void)
+ExecMatch (void)
 {
-    OBJECT_DESCRIPTOR       *poPkg, *poOp1, *poV1, *poOp2, *poV2, *poStart;
-    DWORD                   dLook;
-    DWORD                   dMatchVal = (DWORD)-1;
-    int                     iRv;
+    OBJECT_DESCRIPTOR       *PkgDesc;
+    OBJECT_DESCRIPTOR       *Op1Desc;
+    OBJECT_DESCRIPTOR       *V1Desc;
+    OBJECT_DESCRIPTOR       *Op2Desc;
+    OBJECT_DESCRIPTOR       *V2Desc;
+    OBJECT_DESCRIPTOR       *StartDesc;
+    DWORD                   Look;
+    DWORD                   MatchValue = (DWORD)-1;
+    int                     Excep;
 
 
-    FUNCTION_TRACE ("iExecMatch");
+    FUNCTION_TRACE ("ExecMatch");
 
 
-    iRv = iPrepStack ("nnnnnp");
+    Excep = PrepStack ("nnnnnp");
 
-    if (iRv != S_SUCCESS)
+    if (Excep != S_SUCCESS)
     {
-        vAmlAppendOperandDiag (__FILE__, __LINE__, (WORD)MatchOp, 6);
-        return iRv;
+        AmlAppendOperandDiag (__FILE__, __LINE__, (WORD)MatchOp, 6);
+        return Excep;
     }
 
-    vDumpStack(Exec, apcShortOps[MatchOp], 6, "after iPrepStack");
+    DumpStack (Exec, ShortOps[MatchOp], 6, "after PrepStack");
 
-    poStart = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop];
-    poV2    = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 1];
-    poOp2   = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 2];
-    poV1    = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 3];
-    poOp1   = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 4];
-    poPkg   = (OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop - 5];
+    StartDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
+    V2Desc    = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
+    Op2Desc   = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
+    V1Desc    = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 3];
+    Op1Desc   = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 4];
+    PkgDesc   = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 5];
 
     /* Validate match comparison sub-opcodes */
     
-    if (poOp1->sNumber.dNumber < 0 || poOp1->sNumber.dNumber > 5
-        || poOp2->sNumber.dNumber < 0 || poOp2->sNumber.dNumber > 5)
+    if (Op1Desc->Number.Number < 0 || Op1Desc->Number.Number > 5
+        || Op2Desc->Number.Number < 0 || Op2Desc->Number.Number > 5)
     {
-        pcWhy = "iExecMatch: operation encoding out of range";
+        Why = "ExecMatch: operation encoding out of range";
         return S_ERROR;
     }
 
-    dLook = poStart->sNumber.dNumber;
-    if (dLook < 0 || dLook >= (DWORD) poPkg->sPackage.wPkgCount)
+    Look = StartDesc->Number.Number;
+    if (Look < 0 || Look >= (DWORD) PkgDesc->Package.PkgCount)
     {
-        pcWhy = "iExecMatch: start position value out of range";
+        Why = "ExecMatch: start position value out of range";
         return S_ERROR;
     }
 
@@ -4978,19 +5028,19 @@ iExecMatch (void)
      * "continue" signifies that the current element does not match
      * and the next should be examined.
      * Upon finding a match, the loop will terminate via "break" at
-     * the bottom.  If it terminates "normally", dMatchVal will be -1
+     * the bottom.  If it terminates "normally", MatchValue will be -1
      * (its initial value) indicating that no match was found.  When
      * returned as a Number, this will produce the Ones value as specified.
      */
 
-    for ( ; dLook < (DWORD) poPkg->sPackage.wPkgCount ; ++dLook)
+    for ( ; Look < (DWORD) PkgDesc->Package.PkgCount ; ++Look)
     {
         /* 
          * Treat any NULL or non-numeric elements as non-matching.
          * XXX - if an element is a Name, should we examine its value?
          */
-        if ((OBJECT_DESCRIPTOR *) 0 == poPkg->sPackage.ppPackage[dLook]
-          || Number != poPkg->sPackage.ppPackage[dLook]->bValTyp)
+        if ((OBJECT_DESCRIPTOR *) 0 == PkgDesc->Package.PackageElems[Look]
+          || Number != PkgDesc->Package.PackageElems[Look]->ValType)
         {
             continue;
         }
@@ -5001,38 +5051,38 @@ iExecMatch (void)
          *      "continue" (proceed to next iteration of enclosing
          *          "for" loop) signifies a non-match.
          */
-        switch(poOp1->sNumber.dNumber)
+        switch (Op1Desc->Number.Number)
         {
             case MTR:
                 break;
 
             case MEQ:
-                if (poPkg->sPackage.ppPackage[dLook]->sNumber.dNumber
-                     != poV1->sNumber.dNumber)
+                if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                     != V1Desc->Number.Number)
                     continue;
                 break;
 
             case MLE:
-                if (poPkg->sPackage.ppPackage[dLook]->sNumber.dNumber
-                     > poV1->sNumber.dNumber)
+                if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                     > V1Desc->Number.Number)
                     continue;
                 break;
 
             case MLT:
-                if (poPkg->sPackage.ppPackage[dLook]->sNumber.dNumber
-                     >= poV1->sNumber.dNumber)
+                if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                     >= V1Desc->Number.Number)
                     continue;
                 break;
 
             case MGE:
-                if (poPkg->sPackage.ppPackage[dLook]->sNumber.dNumber
-                     < poV1->sNumber.dNumber)
+                if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                     < V1Desc->Number.Number)
                     continue;
                 break;
 
             case MGT:
-                if (poPkg->sPackage.ppPackage[dLook]->sNumber.dNumber
-                     <= poV1->sNumber.dNumber)
+                if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                     <= V1Desc->Number.Number)
                     continue;
                 break;
 
@@ -5040,38 +5090,38 @@ iExecMatch (void)
                 continue;
         }
         
-        switch(poOp2->sNumber.dNumber)
+        switch(Op2Desc->Number.Number)
         {
             case MTR:
                 break;
 
             case MEQ:
-                if (poPkg->sPackage.ppPackage[dLook]->sNumber.dNumber
-                     != poV2->sNumber.dNumber)
+                if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                     != V2Desc->Number.Number)
                     continue;
                 break;
 
             case MLE:
-                if (poPkg->sPackage.ppPackage[dLook]->sNumber.dNumber
-                     > poV2->sNumber.dNumber)
+                if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                     > V2Desc->Number.Number)
                     continue;
                 break;
 
             case MLT:
-                if (poPkg->sPackage.ppPackage[dLook]->sNumber.dNumber
-                     >= poV2->sNumber.dNumber)
+                if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                     >= V2Desc->Number.Number)
                     continue;
                 break;
 
             case MGE:
-                if (poPkg->sPackage.ppPackage[dLook]->sNumber.dNumber
-                     < poV2->sNumber.dNumber)
+                if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                     < V2Desc->Number.Number)
                     continue;
                 break;
 
             case MGT:
-                if (poPkg->sPackage.ppPackage[dLook]->sNumber.dNumber
-                     <= poV2->sNumber.dNumber)
+                if (PkgDesc->Package.PackageElems[Look]->Number.Number
+                     <= V2Desc->Number.Number)
                     continue;
                 break;
 
@@ -5081,33 +5131,33 @@ iExecMatch (void)
 
         /* Match found: exit from loop */
         
-        dMatchVal = dLook;
+        MatchValue = Look;
         break;
     }
 
-    poPkg->bValTyp = (BYTE) Number;
-    poPkg->sNumber.dNumber = dMatchVal;
+    PkgDesc->ValType = (BYTE) Number;
+    PkgDesc->Number.Number = MatchValue;
 
-    DELETE (poStart);
-    DELETE (poV2);
-    DELETE (poOp2);
-    DELETE (poV1);
-    DELETE (poOp1);
+    DELETE (StartDesc);
+    DELETE (V2Desc);
+    DELETE (Op2Desc);
+    DELETE (V1Desc);
+    DELETE (Op1Desc);
     
-    iObjStackTop -= 5;          /* Remove operands */
+    ObjStackTop -= 5;          /* Remove operands */
     return S_SUCCESS;
 }
 
 
 /******************************************************************************
  * 
- * FUNCTION:    iAmlExec
+ * FUNCTION:    AmlExec
  *
- * PARAMETERS:  int                 iOffset     Offset to method in code block
- *              long                lLen        Length of method
- *              OBJECT_DESCRIPTOR **ppsParams   list of parameters to pass to
+ * PARAMETERS:  int                 Offset      Offset to method in code block
+ *              long                Length      Length of method
+ *              OBJECT_DESCRIPTOR   **Params    list of parameters to pass to
  *                                              method, terminated by NULL.
- *                                              ppsParams itself may be NULL if
+ *                                              Params itself may be NULL if
  *                                              no parameters are being passed.
  *
  * RETURN:      S_SUCCESS, S_RETURN, or S_ERROR
@@ -5117,27 +5167,28 @@ iExecMatch (void)
  *****************************************************************************/
 
 int
-iAmlExec (int iOffset, long lLen, OBJECT_DESCRIPTOR **ppsParams)
+AmlExec (int Offset, long Length, OBJECT_DESCRIPTOR **Params)
 {
-    int             iRv;
-    int             i1, i2;
+    int             Excep;
+    int             i1;
+    int             i2;
 
 
-    FUNCTION_TRACE ("iAmlExec");
+    FUNCTION_TRACE ("AmlExec");
 
 
-    if (iAmlPrepExec (iOffset, lLen) != S_SUCCESS)               /* package stack */
+    if (AmlPrepExec (Offset, Length) != S_SUCCESS)               /* package stack */
     {
-        pcWhy = "iAmlExec: Exec Stack Overflow";
+        Why = "AmlExec: Exec Stack Overflow";
         return S_ERROR;
     }
 
     /* Push new frame on Method stack */
     
-    if (++iMethodStackTop >= AML_METHOD_MAX_NEST)
+    if (++MethodStackTop >= AML_METHOD_MAX_NEST)
     {
-        --iMethodStackTop;
-        pcWhy = "iAmlExec: Method Stack Overflow";
+        --MethodStackTop;
+        Why = "AmlExec: Method Stack Overflow";
         return S_ERROR;
     }
 
@@ -5145,11 +5196,11 @@ iAmlExec (int iOffset, long lLen, OBJECT_DESCRIPTOR **ppsParams)
     
     for (i1 = 0; i1 < NUMLCL; ++i1)
     {
-        iRv = iSetMethodValue (i1 + LCLBASE, NULL, NULL);
-        if (S_SUCCESS != iRv)
+        Excep = SetMethodValue (i1 + LCLBASE, NULL, NULL);
+        if (S_SUCCESS != Excep)
         {
-            --iMethodStackTop;
-            return iRv;
+            --MethodStackTop;
+            return Excep;
         }
     }
 
@@ -5157,20 +5208,20 @@ iAmlExec (int iOffset, long lLen, OBJECT_DESCRIPTOR **ppsParams)
     
     for (i2 = i1 = 0; i1 < NUMARG; ++i1)
     {
-        if (ppsParams && ppsParams[i2])
+        if (Params && Params[i2])
         {
-            iRv = iSetMethodValue (i1 + ARGBASE, ppsParams[i2++], NULL);
+            Excep = SetMethodValue (i1 + ARGBASE, Params[i2++], NULL);
         }
         
         else
         {
-            iRv = iSetMethodValue (i1 + ARGBASE, NULL, NULL);
+            Excep = SetMethodValue (i1 + ARGBASE, NULL, NULL);
         }
 
-        if (S_SUCCESS != iRv)
+        if (S_SUCCESS != Excep)
         {
-            --iMethodStackTop;
-            return iRv;
+            --MethodStackTop;
+            return Excep;
         }
     }
 
@@ -5178,35 +5229,36 @@ iAmlExec (int iOffset, long lLen, OBJECT_DESCRIPTOR **ppsParams)
 
 
     /* 
-     * Normal exit is with iRv == S_RETURN when a ReturnOp has been executed,
-     * or with iRv == S_FAILURE at end of AML block (end of Method code)
+     * Normal exit is with Excep == S_RETURN when a ReturnOp has been executed,
+     * or with Excep == S_FAILURE at end of AML block (end of Method code)
      */
 
-    while ((iRv = DoCode (Exec)) == S_SUCCESS)
+    while ((Excep = DoCode (Exec)) == S_SUCCESS)
     {;}
 
-    if (S_FAILURE == iRv)
+    if (S_FAILURE == Excep)
     {
-        iRv = PopExec();            /* package stack -- inverse of iAmlPrepExec() */
+        Excep = PopExec ();            /* package stack -- inverse of AmlPrepExec() */
     }
 
     else
     {
-        if (S_RETURN == iRv && debug_level () > 0)
+        if (S_RETURN == Excep && debug_level () > 0)
         {
-            fprintf_bu (iLstFileHandle, LOGFILE, "Method returned: ");
+            fprintf_bu (LstFileHandle, LOGFILE, "Method returned: ");
             
-            iDumpStackEntry ((OBJECT_DESCRIPTOR *) apObjStack[iObjStackTop]);
-            fprintf_bu (iLstFileHandle, LOGFILE,
-                        " at stack level %d", iObjStackTop);
+            DumpStackEntry ((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);
+
+            fprintf_bu (LstFileHandle, LOGFILE,
+                        " at stack level %d", ObjStackTop);
         }
 
-        (void) PopExec ();            /* package stack -- inverse of iAmlPrepExec() */
+        (void) PopExec ();            /* package stack -- inverse of AmlPrepExec() */
     }
 
-    --iMethodStackTop;          /* pop our frame off method stack */
+    --MethodStackTop;          /* pop our frame off method stack */
 
-    return iRv;
+    return Excep;
 }
 
 
@@ -5214,37 +5266,38 @@ iAmlExec (int iOffset, long lLen, OBJECT_DESCRIPTOR **ppsParams)
 
 /*****************************************************************************
  * 
- * FUNCTION:    vMarkMethodValues
+ * FUNCTION:    MarkMethodValues
  *
- * PARAMETERS:  int *   piCount        Count of blocks marked
+ * PARAMETERS:  int *   Count        Count of blocks marked
  *
  * DESCRIPTION: Mark blocks occupied by currently-active args and locals
  *
  ****************************************************************************/
 
 void
-vMarkMethodValues (int *piCount)
+MarkMethodValues (int *Count)
 {
-    int             iMethodNestLevel, iIndex;
+    int             MethodNestLevel;
+    int             Index;
 
 
-    FUNCTION_TRACE ("vMarkMethodValues");
+    FUNCTION_TRACE ("MarkMethodValues");
 
 
     /* For each active Method */
     
-    for (iMethodNestLevel = iMethodStackTop; iMethodNestLevel >= 0; --iMethodNestLevel)
+    for (MethodNestLevel = MethodStackTop; MethodNestLevel >= 0; --MethodNestLevel)
     {
         /* For each possible Arg and Local */
         
-        for (iIndex = 0; iIndex < (ARGBASE+NUMARG); ++iIndex)
+        for (Index = 0; Index < (ARGBASE + NUMARG); ++Index)
         {
             /* Mark value's storage */
             
-            if ((OBJECT_DESCRIPTOR *) 0 != apMethodStack[iMethodNestLevel][iIndex])
+            if ((OBJECT_DESCRIPTOR *) 0 != MethodStack[MethodNestLevel][Index])
             {
-                ++*piCount;
-                vAmlMarkObject (apMethodStack[iMethodStackTop][iIndex]);
+                ++*Count;
+                AmlMarkObject (MethodStack[MethodStackTop][Index]);
             }
         }
     }
@@ -5255,9 +5308,9 @@ vMarkMethodValues (int *piCount)
 
 /*****************************************************************************
  * 
- * FUNCTION:    iIsMethodValue
+ * FUNCTION:    IsMethodValue
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *pOD
+ * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc
  *
  * RETURN:      TRUE if the passed descriptor is the value of an Arg or
  *              Local in a currently-active Method, else FALSE
@@ -5265,23 +5318,24 @@ vMarkMethodValues (int *piCount)
  ****************************************************************************/
 
 int
-iIsMethodValue (OBJECT_DESCRIPTOR *pOD)
+IsMethodValue (OBJECT_DESCRIPTOR *ObjDesc)
 {
-    int             iMethodNestLevel, iIndex;
+    int             MethodNestLevel;
+    int             Index;
 
 
-    FUNCTION_TRACE ("iIsMethodValue");
+    FUNCTION_TRACE ("IsMethodValue");
 
 
     /* For each active Method */
     
-    for (iMethodNestLevel = iMethodStackTop; iMethodNestLevel >= 0; --iMethodNestLevel)
+    for (MethodNestLevel = MethodStackTop; MethodNestLevel >= 0; --MethodNestLevel)
     {
         /* For each possible Arg and Local */
         
-        for (iIndex = 0; iIndex < (ARGBASE+NUMARG); ++iIndex)
+        for (Index = 0; Index < (ARGBASE + NUMARG); ++Index)
         {
-            if (pOD == apMethodStack[iMethodNestLevel][iIndex])
+            if (ObjDesc == MethodStack[MethodNestLevel][Index])
             {
                 return TRUE;
             }
