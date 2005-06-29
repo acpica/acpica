@@ -239,12 +239,15 @@ AcpiGetHandle (
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ThisEntry;
-
+    ACPI_HANDLE             Scope = NULL;
 
     if (!RetHandle || !Pathname)
     {
         return AE_BAD_PARAMETER;
     }
+
+    if (Parent)
+        Scope = Parent->Scope;
 
     /* Special case for root, since we can't search for it */
 
@@ -254,13 +257,11 @@ AcpiGetHandle (
         return AE_OK;
     }
 
-
-
     /*
      *  Find the Nte and convert to the user format
      */
     ThisEntry = NULL;
-    Status = NsGetNte (Pathname, Parent->Scope, &ThisEntry);
+    Status = NsGetNte (Pathname, Scope, &ThisEntry);
 
    *RetHandle = NsConvertEntryToHandle (ThisEntry);
 
