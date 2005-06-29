@@ -6,6 +6,7 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	asllisting.c aslload.c asllookup.c aslmain.c aslmap.c aslopcodes.c \
 	asloperands.c aslresource.c aslrestype1.c aslrestype2.c \
 	asltree.c aslutils.c asltransform.c aslfold.c aslstubs.c \
+	../common/getopt.c \
 	../utilities/utalloc.c \
 	../utilities/utcopy.c \
 	../utilities/utdebug.c \
