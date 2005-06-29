@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -906,7 +906,7 @@ AcpiOsSleep (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Read a byte (8 bits) from PCI configuration space
+ * DESCRIPTION: Read data from PCI configuration space
  *
  *****************************************************************************/
 
@@ -914,7 +914,7 @@ ACPI_STATUS
 AcpiOsReadPciConfiguration (
     ACPI_PCI_ID             *PciId,
     UINT32                  Register,
-    UINT32                  *Value,
+    void                    *Value,
     UINT32                  Width)
 {
 
@@ -933,7 +933,7 @@ AcpiOsReadPciConfiguration (
  *
  * RETURN:      Status.
  *
- * DESCRIPTION: Write a byte (8 bits) to PCI configuration space
+ * DESCRIPTION: Write data to PCI configuration space
  *
  *****************************************************************************/
 
@@ -941,7 +941,7 @@ ACPI_STATUS
 AcpiOsWritePciConfiguration (
     ACPI_PCI_ID             *PciId,
     UINT32                  Register,
-    UINT32                  Value,
+    NATIVE_UINT             Value,
     UINT32                  Width)
 {
 
@@ -959,18 +959,32 @@ AcpiOsWritePciConfiguration (
  *
  * RETURN:      Value read from port
  *
- * DESCRIPTION: Read a byte (8 bits) from an I/O port or register
+ * DESCRIPTION: Read data from an I/O port or register
  *
  *****************************************************************************/
 
 ACPI_STATUS
 AcpiOsReadPort (
     ACPI_IO_ADDRESS         Address,
-    UINT32                  *Value,
+    void                    *Value,
     UINT32                  Width)
 {
 
-    *Value = 0;
+    switch (Width)
+    {
+    case 8:
+        *((UINT8 *) Value) = 0;
+        break;
+
+    case 16:
+        *((UINT16 *) Value) = 0;
+        break;
+
+    case 32: 
+        *((UINT32 *) Value) = 0;
+        break;
+    }
+
     return (AE_OK);
 }
 
@@ -985,14 +999,14 @@ AcpiOsReadPort (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Write a byte (8 bits) to an I/O port or register
+ * DESCRIPTION: Write data to an I/O port or register
  *
  *****************************************************************************/
 
 ACPI_STATUS
 AcpiOsWritePort (
     ACPI_IO_ADDRESS         Address,
-    UINT32                  Value,
+    NATIVE_UINT             Value,
     UINT32                  Width)
 {
 
@@ -1010,18 +1024,31 @@ AcpiOsWritePort (
  *
  * RETURN:      Value read from physical memory address
  *
- * DESCRIPTION: Read a byte (8 bits) from a physical memory address
+ * DESCRIPTION: Read data from a physical memory address
  *
  *****************************************************************************/
 
 ACPI_STATUS
 AcpiOsReadMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  *Value,
+    void                    *Value,
     UINT32                  Width)
 {
 
-    *Value = 0;
+    switch (Width)
+    {
+    case 8:
+        *((UINT8 *) Value) = 0;
+        break;
+
+    case 16:
+        *((UINT16 *) Value) = 0;
+        break;
+
+    case 32: 
+        *((UINT32 *) Value) = 0;
+        break;
+    }
     return (AE_OK);
 }
 
@@ -1036,14 +1063,14 @@ AcpiOsReadMemory (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Write a byte (8 bits) to a physical memory address
+ * DESCRIPTION: Write data to a physical memory address
  *
  *****************************************************************************/
 
 ACPI_STATUS
 AcpiOsWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Value,
+    NATIVE_UINT             Value,
     UINT32                  Width)
 {
 
