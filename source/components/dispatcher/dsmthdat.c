@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  ******************************************************************************/
 
@@ -853,18 +853,17 @@ AcpiDsStoreObjectToLocal (
         }
 
 
+#ifdef ACPI_ENABLE_IMPLICIT_CONVERSION
         /*
          * Perform "Implicit conversion" of the new object to the type of the
          * existing object
          */
-        if (!(WalkState->MethodNode->Flags & ANOBJ_DATA_WIDTH_32))
+        Status = AcpiAmlConvertToTargetType ((*Entry)->Common.Type, &SrcDesc, WalkState);
+        if (ACPI_FAILURE (Status))
         {
-            Status = AcpiAmlConvertToTargetType ((*Entry)->Common.Type, &SrcDesc, WalkState);
-            if (ACPI_FAILURE (Status))
-            {
-                goto Cleanup;
-            }
+            goto Cleanup;
         }
+#endif
 
         /*
          * Delete the existing object
