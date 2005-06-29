@@ -298,21 +298,6 @@ extern char         *UpdateRules[];
 #pragma message ("AML Globals defined in this module.")
 
 
-/* 
- * Human-readable decode of rv values, mostly for debugging
- * These need to match the corresponding definitions in amlpriv.h
- * Note that S_FAILURE is not an error, but indicates
- * that other alternatives should be checked.
- */
-char            *RV[] = 
-{ 
-    "S_SUCCESS", 
-    "S_FAILURE", 
-    "S_ERROR",
-    "S_RETURN" 
-};
-
-
 /* Data used in keeping track of fields */
 
 char            *FENames[] = 
