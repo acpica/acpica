@@ -235,6 +235,10 @@ SOURCE=..\..\Subsystem\Hardware\hwtimer.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Interpreter\iapi.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Interpreter\idoatoms.c
 # End Source File
 # Begin Source File
