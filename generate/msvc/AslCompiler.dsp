@@ -312,7 +312,7 @@ SOURCE=../../AslCompiler/AslCompiler.l
 InputPath=../../AslCompiler/AslCompiler.l
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -o$(InputPath).c $(InputPath)
+	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(InputPath).c $(InputPath)
 
 # End Custom Build
 
