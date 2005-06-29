@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -794,6 +794,7 @@ AcpiEvGpeDetect (void)
     UINT8                   BitMask;
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
     UINT32                  InValue;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_NAME ("EvGpeDetect");
@@ -808,14 +809,22 @@ AcpiEvGpeDetect (void)
     {
         GpeRegisterInfo = &AcpiGbl_GpeRegisterInfo[i];
 
-        (void) AcpiHwLowLevelRead (8, &InValue, &GpeRegisterInfo->StatusAddress, 0);
+        Status = AcpiHwLowLevelRead (8, &InValue, &GpeRegisterInfo->StatusAddress, 0);
         GpeRegisterInfo->Status = (UINT8) InValue;
+        if (ACPI_FAILURE (Status))
+        {
+            return (ACPI_INTERRUPT_NOT_HANDLED);
+        }
 
-        (void) AcpiHwLowLevelRead (8, &InValue, &GpeRegisterInfo->EnableAddress, 0);
+        Status = AcpiHwLowLevelRead (8, &InValue, &GpeRegisterInfo->EnableAddress, 0);
         GpeRegisterInfo->Enable = (UINT8) InValue;
+        if (ACPI_FAILURE (Status))
+        {
+            return (ACPI_INTERRUPT_NOT_HANDLED);
+        }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
-            "GPE block at %8.8X%8.8X - Enable %08X Status %08X\n",
+            "GPE block at %8.8X%8.8X - Values: Enable %02X Status %02X\n",
             ACPI_HIDWORD (GpeRegisterInfo->EnableAddress.Address),
             ACPI_LODWORD (GpeRegisterInfo->EnableAddress.Address),
             GpeRegisterInfo->Enable,
@@ -893,13 +902,15 @@ AcpiEvAsynchExecuteGpeMethod (
      * Take a snapshot of the GPE info for this level - we copy the
      * info to prevent a race condition with RemoveHandler.
      */
-    if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_EVENTS)))
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
     {
         return_VOID;
     }
 
     GpeInfo = AcpiGbl_GpeNumberInfo [GpeNumberIndex];
-    if (ACPI_FAILURE (AcpiUtReleaseMutex (ACPI_MTX_EVENTS)))
+    Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
     {
         return_VOID;
     }
@@ -924,7 +935,11 @@ AcpiEvAsynchExecuteGpeMethod (
          * GPE is level-triggered, we clear the GPE status bit after handling
          * the event.
          */
-        (void) AcpiHwClearGpe (GpeNumber);
+        Status = AcpiHwClearGpe (GpeNumber);
+        if (ACPI_FAILURE (Status))
+        {
+            return_VOID;
+        }
     }
 
     /*
