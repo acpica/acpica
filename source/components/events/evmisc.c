@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -125,8 +125,6 @@
         MODULE_NAME         ("evmisc")
 
 
-
-
 /**************************************************************************
  *
  * FUNCTION:    AcpiEvQueueNotifyRequest
@@ -239,7 +237,7 @@ AcpiEvQueueNotifyRequest (
         NotifyInfo->Notify.Value      = (UINT16) NotifyValue;
         NotifyInfo->Notify.HandlerObj = HandlerObj;
 
-        Status = AcpiOsQueueForExecution (OSD_PRIORITY_HIGH, 
+        Status = AcpiOsQueueForExecution (OSD_PRIORITY_HIGH,
                         AcpiEvNotifyDispatch, NotifyInfo);
         if (ACPI_FAILURE (Status))
         {
@@ -258,8 +256,6 @@ AcpiEvQueueNotifyRequest (
 
     return (Status);
 }
-
-
 
 
 /**************************************************************************
@@ -312,7 +308,7 @@ AcpiEvNotifyDispatch (
         }
     }
 
-    
+
     /* Invoke the system handler first, if present */
 
     if (GlobalHandler)
@@ -325,7 +321,7 @@ AcpiEvNotifyDispatch (
     HandlerObj = NotifyInfo->Notify.HandlerObj;
     if (HandlerObj)
     {
-        HandlerObj->NotifyHandler.Handler (NotifyInfo->Notify.Node, NotifyInfo->Notify.Value, 
+        HandlerObj->NotifyHandler.Handler (NotifyInfo->Notify.Node, NotifyInfo->Notify.Value,
                         HandlerObj->NotifyHandler.Context);
     }
 
