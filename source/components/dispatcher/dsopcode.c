@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -642,7 +642,7 @@ AcpiDsEvalBufferFieldOperands (
          * Initialize areas of the field object that are common to all fields 
          * For FieldFlags, use LOCK_RULE = 0 (NO_LOCK), UPDATE_RULE = 0 (UPDATE_PRESERVE)
          */
-        Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags, 0,
+        Status = AcpiAmlPrepCommonFieldObject (ObjDesc, FieldFlags,
                                                 BitOffset, BitCount);
         if (ACPI_FAILURE (Status))
         {
