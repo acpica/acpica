@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -187,7 +187,8 @@ char                        *AslMessages [] = {
     "Target operand not allowed in constant expression",
     "Invalid operator (not type 3/4/5) in constant expression",
     "Could not evaluate constant expression",
-    "Constant expression evaluated and reduced"
+    "Constant expression evaluated and reduced",
+    "Invalid EISAID string, not of the form \"UUUXXXX\" (3 uppercase, 4 hex digits)"
 };
 
 
