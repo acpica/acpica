@@ -1,7 +1,6 @@
 /******************************************************************************
- *
+ * 
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -9,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,256 +114,285 @@
  *****************************************************************************/
 
 
-#include "acpi.h"
-#include "acparser.h"
-#include "amlcode.h"
+#include <acpi.h>
+#include <parser.h>
+#include "psopcode.h"
 
-#define _COMPONENT          ACPI_PARSER
-        ACPI_MODULE_NAME    ("psutils")
+#define _COMPONENT          PARSER
+        MODULE_NAME         ("psutils");
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsInitOp
+ * FUNCTION:    PsInitOp
  *
  * PARAMETERS:  Op              - A newly allocated Op object
  *              Opcode          - Opcode to store in the Op
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on
- *              opcode
+ * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on opcode
  *
  ******************************************************************************/
 
+
+/* TBD: merge with allocOp */
+
 void
-AcpiPsInitOp (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT16                  Opcode)
+PsInitOp (
+    ACPI_GENERIC_OP         *Op,
+    INT32                   Opcode)
 {
-    ACPI_FUNCTION_ENTRY ();
+    ACPI_OP_INFO             *AmlOp;
 
 
-    Op->DataType = ACPI_DESC_TYPE_PARSER;
     Op->Opcode = Opcode;
 
-    ACPI_DEBUG_ONLY_MEMBERS (STRNCPY (Op->OpName, (AcpiPsGetOpcodeInfo (Opcode))->Name,
-                        sizeof (Op->OpName)));
+
+    AmlOp = PsGetOpcodeInfo (Opcode);
+    if (AmlOp)
+    {
+        /* Debug only! */
+
+        STRNCPY (Op->OpName, AmlOp->Name, sizeof (Op->OpName));
+    }
+
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsAllocOp
+ * FUNCTION:    PsAllocOp
  *
  * PARAMETERS:  Opcode          - Opcode that will be stored in the new Op
  *
  * RETURN:      Pointer to the new Op.
  *
- * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on
- *              opcode.  A cache of opcodes is available for the pure
- *              GENERIC_OP, since this is by far the most commonly used.
+ * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on opcode
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT*
-AcpiPsAllocOp (
-    UINT16                  Opcode)
+ACPI_GENERIC_OP*
+PsAllocOp (
+    INT32                   Opcode)
 {
-    ACPI_PARSE_OBJECT       *Op = NULL;
-    UINT32                  Size;
-    UINT8                   Flags;
-    const ACPI_OPCODE_INFO  *OpInfo;
+    ACPI_GENERIC_OP         *Op = NULL;
+    INT32                   Size;
 
 
-    ACPI_FUNCTION_ENTRY ();
+    /* determine size by testing with is_xxx_op */
 
-
-    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-
-    /* Allocate the minimum required size object */
-
-    if (OpInfo->Flags & AML_DEFER)
+    if (PsIsDeferredOp (Opcode))
     {
-        Size = sizeof (ACPI_PARSE2_OBJECT);
-        Flags = ACPI_PARSEOP_DEFERRED;
+        Size = sizeof (ACPI_DEFERRED_OP);
     }
 
-    else if (OpInfo->Flags & AML_NAMED)
+    else if (PsIsNamedOp (Opcode))
     {
-        Size = sizeof (ACPI_PARSE2_OBJECT);
-        Flags = ACPI_PARSEOP_NAMED;
+        Size = sizeof (ACPI_NAMED_OP);
     }
-
-    else if (Opcode == AML_INT_BYTELIST_OP)
+    
+    else if (PsIsBytelistOp (Opcode))
     {
-        Size = sizeof (ACPI_PARSE2_OBJECT);
-        Flags = ACPI_PARSEOP_BYTELIST;
+        Size = sizeof (ACPI_BYTELIST_OP);
     }
 
     else
     {
-        Size = sizeof (ACPI_PARSE_OBJECT);
-        Flags = ACPI_PARSEOP_GENERIC;
+        Size = sizeof (ACPI_GENERIC_OP);
     }
 
-
-    if (Size == sizeof (ACPI_PARSE_OBJECT))
-    {
-        /*
-         * The generic op is by far the most common (16 to 1)
-         */
-        Op = AcpiUtAcquireFromCache (ACPI_MEM_LIST_PSNODE);
-    }
-
-    else
-    {
-        Op = AcpiUtAcquireFromCache (ACPI_MEM_LIST_PSNODE_EXT);
-    }
-
-    /* Initialize the Op */
-
+    /* actually do the allocation */
+    
+    Op = CmCallocate (Size);
     if (Op)
     {
-        AcpiPsInitOp (Op, Opcode);
-        Op->Flags = Flags;
+        PsInitOp (Op, Opcode);
     }
 
-    return (Op);
+    return Op;
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsFreeOp
- *
- * PARAMETERS:  Op              - Op to be freed
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Free an Op object.  Either put it on the GENERIC_OP cache list
- *              or actually free it.
- *
- ******************************************************************************/
-
-void
-AcpiPsFreeOp (
-    ACPI_PARSE_OBJECT       *Op)
-{
-    ACPI_FUNCTION_NAME ("PsFreeOp");
 
 
-    if (Op->Opcode == AML_INT_RETURN_VALUE_OP)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Free retval op: %p\n", Op));
-    }
-
-    if (Op->Flags == ACPI_PARSEOP_GENERIC)
-    {
-        AcpiUtReleaseToCache (ACPI_MEM_LIST_PSNODE, Op);
-    }
-
-    else
-    {
-        AcpiUtReleaseToCache (ACPI_MEM_LIST_PSNODE_EXT, Op);
-    }
-}
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsDeleteParseCache
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Free all objects that are on the parse cache list.
- *
- ******************************************************************************/
-
-void
-AcpiPsDeleteParseCache (
-    void)
-{
-    ACPI_FUNCTION_TRACE ("PsDeleteParseCache");
 
 
-    AcpiUtDeleteGenericCache (ACPI_MEM_LIST_PSNODE);
-    AcpiUtDeleteGenericCache (ACPI_MEM_LIST_PSNODE_EXT);
-    return_VOID;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    Utility functions
- *
- * DESCRIPTION: Low level character and object functions
- *
- ******************************************************************************/
+/*
+ * TBD:
+ * 1) Some of these functions should be macros
+ * 2) Some can be simplfied
+ */
 
 
 /*
  * Is "c" a namestring lead character?
  */
-BOOLEAN
-AcpiPsIsLeadingChar (
-    UINT32                  c)
-{
-    return ((BOOLEAN) (c == '_' || (c >= 'A' && c <= 'Z')));
-}
 
+
+INT32
+PsIsLeadingChar (INT32 c)
+{
+    return (c == '_' || (c >= 'A' && c <= 'Z'));
+}
 
 /*
  * Is "c" a namestring prefix character?
  */
-BOOLEAN
-AcpiPsIsPrefixChar (
-    UINT32                  c)
+INT32
+PsIsPrefixChar (INT32 c)
 {
-    return ((BOOLEAN) (c == '\\' || c == '^'));
+    return (c == '\\' || c == '^');
 }
 
+INT32
+PsIsDeferredOp (INT32 Opcode)
+{
+    return (Opcode == AML_METHOD ||
+            Opcode == AML_OPREGION);
+}
+
+
+
+/*
+ * Is opcode for a named object Op?
+ * (Includes all named object opcodes)
+ *
+ * TBD: Need a better way than this brute force approach!
+ */
+INT32
+PsIsNamedObjectOp (INT32 Opcode)
+{
+    return (Opcode == AML_SCOPE         || 
+            Opcode == AML_DEVICE        || 
+            Opcode == AML_THERMALZONE   || 
+            Opcode == AML_METHOD        || 
+            Opcode == AML_POWERRES      || 
+            Opcode == AML_PROCESSOR     || 
+            Opcode == AML_FIELD         || 
+            Opcode == AML_INDEXFIELD    || 
+            Opcode == AML_BANKFIELD     || 
+            Opcode == AML_NAMEDFIELD    || 
+            Opcode == AML_NAME          || 
+            Opcode == AML_ALIAS         || 
+            Opcode == AML_MUTEX         || 
+            Opcode == AML_EVENT         || 
+            Opcode == AML_OPREGION      ||
+            Opcode == AML_CREATEFIELD       ||
+            Opcode == AML_CREATEBITFIELD    ||
+            Opcode == AML_CREATEBYTEFIELD   ||
+            Opcode == AML_CREATEWORDFIELD   ||
+            Opcode == AML_CREATEDWORDFIELD  ||
+            Opcode == AML_METHODCALL        ||
+            Opcode == AML_NAMEPATH);
+}
+/*
+ * Is opcode for a named Op?
+ */
+INT32
+PsIsNamedOp (INT32 Opcode)
+{
+    return (Opcode == AML_SCOPE         || 
+            Opcode == AML_DEVICE        || 
+            Opcode == AML_THERMALZONE   || 
+            Opcode == AML_METHOD        || 
+            Opcode == AML_POWERRES      || 
+            Opcode == AML_PROCESSOR     || 
+            Opcode == AML_FIELD         || 
+            Opcode == AML_INDEXFIELD    || 
+            Opcode == AML_BANKFIELD     || 
+            Opcode == AML_NAMEDFIELD    || 
+            Opcode == AML_NAME          || 
+            Opcode == AML_ALIAS         || 
+            Opcode == AML_MUTEX         || 
+            Opcode == AML_EVENT         || 
+            Opcode == AML_OPREGION);
+}
+
+/*
+ * Is opcode for a bytelist?
+ */
+INT32
+PsIsBytelistOp (INT32 Opcode)
+{
+    return (Opcode == AML_BYTELIST);
+}
+
+/*
+ * Is opcode for a Field, IndexField, or BankField
+ */
+INT32
+PsIsFieldOp (INT32 Opcode)
+{
+    return (Opcode == AML_FIELD
+            || Opcode == AML_INDEXFIELD
+            || Opcode == AML_BANKFIELD);
+}
+
+/*
+ * Cast an acpi_op to an acpi_deferred_op if possible
+ */
+ACPI_DEFERRED_OP *
+PsToDeferredOp (
+    ACPI_GENERIC_OP             *Op)
+{
+    return (PsIsDeferredOp (Op->Opcode)
+            ? ( (ACPI_DEFERRED_OP *) Op):NULL);
+}
+
+/*
+ * Cast an acpi_op to an acpi_named_op if possible
+ */
+ACPI_NAMED_OP*
+PsToNamedOp (ACPI_GENERIC_OP* Op)
+{
+    return (PsIsNamedOp (Op->Opcode)
+            ? ( (ACPI_NAMED_OP *) Op):NULL);
+}
+
+/*
+ * Cast an acpi_op to an acpi_bytelist_op if possible
+ */
+ACPI_BYTELIST_OP*
+PsToBytelistOp (ACPI_GENERIC_OP* Op)
+{
+    return (PsIsBytelistOp (Op->Opcode)
+            ? ( (ACPI_BYTELIST_OP*) Op):NULL);
+}
+
+/*
+ * Cast away const-ness
+ */
+ACPI_GENERIC_OP*
+PsToNonconstOp (ACPI_GENERIC_OP* Op)
+{
+    return (ACPI_GENERIC_OP*) Op;
+}
 
 /*
  * Get op's name (4-byte name segment) or 0 if unnamed
  */
 UINT32
-AcpiPsGetName (
-    ACPI_PARSE_OBJECT       *Op)
+PsGetName (ACPI_GENERIC_OP *Op)
 {
-
-
-    /* The "generic" object has no name associated with it */
-
-    if (Op->Flags & ACPI_PARSEOP_GENERIC)
-    {
-        return (0);
-    }
-
-    /* Only the "Extended" parse objects have a name */
-
-    return (((ACPI_PARSE2_OBJECT *) Op)->Name);
+    ACPI_NAMED_OP *Named
+        = PsToNamedOp (PsToNonconstOp (Op));
+    return (Named ? Named->Name : 0);
 }
-
 
 /*
  * Set op's name
  */
 void
-AcpiPsSetName (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  name)
+PsSetName (ACPI_GENERIC_OP *Op, UINT32 name)
 {
-
-    /* The "generic" object has no name associated with it */
-
-    if (Op->Flags & ACPI_PARSEOP_GENERIC)
+    ACPI_NAMED_OP *Named = PsToNamedOp (Op);
+    if (Named)
     {
-        return;
+        Named->Name = name;
     }
-
-    ((ACPI_PARSE2_OBJECT *) Op)->Name = name;
 }
 

@@ -1,7 +1,6 @@
 /******************************************************************************
- *
+ * 
  * Module Name: psscope - Parser scope stack management routines
- *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -9,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,16 +114,19 @@
  *****************************************************************************/
 
 
-#include "acpi.h"
-#include "acparser.h"
 
-#define _COMPONENT          ACPI_PARSER
-        ACPI_MODULE_NAME    ("psscope")
+#include <acpi.h>
+#include <parser.h>
+#include "psopcode.h"
+
+#define _COMPONENT          PARSER
+        MODULE_NAME         ("psscope");
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsGetParentScope
+ * FUNCTION:    PsGetParentScope 
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *
@@ -134,17 +136,17 @@
  *
  ******************************************************************************/
 
-ACPI_PARSE_OBJECT *
-AcpiPsGetParentScope (
+ACPI_GENERIC_OP *
+PsGetParentScope (
     ACPI_PARSE_STATE        *ParserState)
 {
-    return (ParserState->Scope->ParseScope.Op);
+    return ParserState->Scope->Op;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsHasCompletedScope
+ * FUNCTION:    PsHasCompletedScope
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *
@@ -157,20 +159,20 @@ AcpiPsGetParentScope (
  ******************************************************************************/
 
 BOOLEAN
-AcpiPsHasCompletedScope (
+PsHasCompletedScope (
     ACPI_PARSE_STATE        *ParserState)
 {
-    return ((BOOLEAN) ((ParserState->Aml >= ParserState->Scope->ParseScope.ArgEnd ||
-                        !ParserState->Scope->ParseScope.ArgCount)));
+    return (ParserState->Aml >= ParserState->Scope->ArgEnd ||
+            !ParserState->Scope->ArgCount);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsInitScope
+ * FUNCTION:    PsInitScope
  *
  * PARAMETERS:  ParserState         - Current parser state object
- *              Root                - the Root Node of this new scope
+ *              Root                - the root object of this new scope
  *
  * RETURN:      Status
  *
@@ -179,43 +181,37 @@ AcpiPsHasCompletedScope (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiPsInitScope (
+PsInitScope (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *RootOp)
+    ACPI_GENERIC_OP         *Root)
 {
-    ACPI_GENERIC_STATE      *Scope;
-
-
-    ACPI_FUNCTION_TRACE_PTR ("PsInitScope", RootOp);
-
-
-    Scope = AcpiUtCreateGenericState ();
+    ACPI_PARSE_SCOPE        *Scope;
+    
+    
+    Scope = CmCallocate (sizeof (ACPI_PARSE_SCOPE));
     if (!Scope)
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        return AE_NO_MEMORY;
     }
 
-    Scope->Common.DataType      = ACPI_DESC_TYPE_STATE_RPSCOPE;
-    Scope->ParseScope.Op        = RootOp;
-    Scope->ParseScope.ArgCount  = ACPI_VAR_ARGS;
-    Scope->ParseScope.ArgEnd    = ParserState->AmlEnd;
-    Scope->ParseScope.PkgEnd    = ParserState->AmlEnd;
+    Scope->Op           = Root;
+    Scope->ArgCount     = ACPI_VAR_ARGS;
+    Scope->ArgEnd       = ParserState->AmlEnd;
+    Scope->PkgEnd       = ParserState->AmlEnd;
+    ParserState->Scope  = Scope;
 
-    ParserState->Scope          = Scope;
-    ParserState->StartOp        = RootOp;
-
-    return_ACPI_STATUS (AE_OK);
+    return AE_OK;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsPushScope
+ * FUNCTION:    PsPushScope
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              Op                  - Current op to be pushed
- *              RemainingArgs       - List of args remaining
- *              ArgCount            - Fixed or variable number of args
+ *              NextArg             - Next op argument (to be pushed)
+ *              ArgCount            - Fixed or variable number of args 
  *
  * RETURN:      Status
  *
@@ -224,63 +220,72 @@ AcpiPsInitScope (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiPsPushScope (
+PsPushScope (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  RemainingArgs,
+    ACPI_GENERIC_OP         *Op, 
+    char                    *NextArg,
     UINT32                  ArgCount)
 {
-    ACPI_GENERIC_STATE      *Scope;
+    ACPI_PARSE_SCOPE        *Scope = ParserState->ScopeAvail;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("PsPushScope", Op);
+    FUNCTION_TRACE ("PsPushScope");
 
 
-    Scope = AcpiUtCreateGenericState ();
-    if (!Scope)
+    if (Scope)
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
+        /* grabbed scope from available list */
 
-
-    Scope->Common.DataType         = ACPI_DESC_TYPE_STATE_PSCOPE;
-    Scope->ParseScope.Op           = Op;
-    Scope->ParseScope.ArgList      = RemainingArgs;
-    Scope->ParseScope.ArgCount     = ArgCount;
-    Scope->ParseScope.PkgEnd       = ParserState->PkgEnd;
-
-    /* Push onto scope stack */
-
-    AcpiUtPushGenericState (&ParserState->Scope, Scope);
-
-
-    if (ArgCount == ACPI_VAR_ARGS)
-    {
-        /* multiple arguments */
-
-        Scope->ParseScope.ArgEnd = ParserState->PkgEnd;
+        ParserState->ScopeAvail = Scope->Parent;
     }
 
     else
     {
-        /* single argument */
+        /* allocate scope from the heap */
 
-        Scope->ParseScope.ArgEnd = ACPI_TO_POINTER (ACPI_MAX_PTR);
+        Scope = (ACPI_PARSE_SCOPE*) CmAllocate (sizeof (ACPI_PARSE_SCOPE));
+        if (!Scope)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
     }
 
+    /* Always zero out the scope before init */
+
+    MEMSET (Scope, 0, sizeof (*Scope));
+
+    Scope->Op           = Op;
+    Scope->NextArg      = NextArg;
+    Scope->ArgCount     = ArgCount;
+    Scope->PkgEnd       = ParserState->PkgEnd;
+    Scope->Parent       = ParserState->Scope;
+    ParserState->Scope  = Scope;
+    
+    if (ArgCount == ACPI_VAR_ARGS)
+    {
+        /* multiple arguments */
+
+        Scope->ArgEnd = ParserState->PkgEnd;
+    }
+    
+    else
+    {
+        /* single argument */
+
+        Scope->ArgEnd = ACPI_MAX_AML;
+    }
+ 
     return_ACPI_STATUS (AE_OK);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsPopScope
+ * FUNCTION:    PsPopScope
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              Op                  - Where the popped op is returned
- *              ArgList             - Where the popped "next argument" is
- *                                    returned
- *              ArgCount            - Count of objects in ArgList
+ *              NextArg             - Where the popped "next argument" is returned
  *
  * RETURN:      Status
  *
@@ -289,86 +294,83 @@ AcpiPsPushScope (
  ******************************************************************************/
 
 void
-AcpiPsPopScope (
+PsPopScope (
     ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       **Op,
-    UINT32                  *ArgList,
-    UINT32                  *ArgCount)
+    ACPI_GENERIC_OP         **Op,
+    char                    **NextArg)
 {
-    ACPI_GENERIC_STATE      *Scope = ParserState->Scope;
+    ACPI_PARSE_SCOPE        *Scope = ParserState->Scope;
 
 
-    ACPI_FUNCTION_TRACE ("PsPopScope");
+    FUNCTION_TRACE ("PsPopScope");
 
 
-    /*
-     * Only pop the scope if there is in fact a next scope
-     */
-    if (Scope->Common.Next)
+    if (Scope->Parent)
     {
-        Scope = AcpiUtPopGenericState (&ParserState->Scope);
-
         /* return to parsing previous op */
+        
+        *Op = Scope->Op;
+        *NextArg = Scope->NextArg;
+        ParserState->PkgEnd = Scope->PkgEnd;
+        ParserState->Scope = Scope->Parent;
 
-        *Op                     = Scope->ParseScope.Op;
-        *ArgList                = Scope->ParseScope.ArgList;
-        *ArgCount               = Scope->ParseScope.ArgCount;
-        ParserState->PkgEnd     = Scope->ParseScope.PkgEnd;
+        /* add scope to available list */
 
-        /* All done with this scope state structure */
-
-        AcpiUtDeleteGenericState (Scope);
+        Scope->Parent = ParserState->ScopeAvail;
+        ParserState->ScopeAvail = Scope;
     }
 
     else
     {
         /* empty parse stack, prepare to fetch next opcode */
 
-        *Op                     = NULL;
-        *ArgList                = 0;
-        *ArgCount               = 0;
+        *Op = NULL;
+        *NextArg = NULL;
     }
 
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Popped Op %p Args %X\n", *Op, *ArgCount));
     return_VOID;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsCleanupScope
+ * FUNCTION:    PsCleanupScope
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Destroy available list, remaining stack levels, and return
+ * DESCRIPTION: Destroy available list, remaining stack levels, and return 
  *              root scope
  *
  ******************************************************************************/
 
 void
-AcpiPsCleanupScope (
+PsCleanupScope (
     ACPI_PARSE_STATE        *ParserState)
 {
-    ACPI_GENERIC_STATE      *Scope;
-
-    ACPI_FUNCTION_TRACE_PTR ("PsCleanupScope", ParserState);
+    ACPI_PARSE_SCOPE        *Scope; 
 
 
-    if (!ParserState)
+    FUNCTION_TRACE_PTR ("PsCleanupScope", ParserState);
+
+
+    /* destroy available list */
+
+    while (ParserState->ScopeAvail)
     {
-        return;
+        Scope = ParserState->ScopeAvail;
+        ParserState->ScopeAvail = Scope->Parent;
+        CmFree (Scope);
     }
 
-
-    /* Delete anything on the scope stack */
+    /* destroy scope stack */
 
     while (ParserState->Scope)
     {
-        Scope = AcpiUtPopGenericState (&ParserState->Scope);
-        AcpiUtDeleteGenericState (Scope);
+        Scope = ParserState->Scope;
+        ParserState->Scope = Scope->Parent;
+        CmFree (Scope);
     }
 
     return_VOID;
