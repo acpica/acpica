@@ -824,14 +824,48 @@ CmCopyInternalSimpleObject (
     case ACPI_TYPE_String:
 
         DestObj->String.Length      = SourceObj->String.Length;
-        DestObj->String.Pointer     = SourceObj->String.Pointer;
+        
+        if (DestObj->String.Length > 0)
+        {
+            /* Allocate space for the destination object
+            */
+            DestObj->String.Pointer = CmCallocate(DestObj->String.Length);
+            if (!DestObj->String.Pointer)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+            /* Copy the data
+            */
+            STRNCPY (SourceObj->String.Pointer, DestObj->String.Pointer, DestObj->String.Length);
+        }
+        else
+        {
+            DestObj->String.Pointer = NULL;
+        }
         break;
 
 
     case ACPI_TYPE_Buffer:
 
         DestObj->Buffer.Length      = SourceObj->Buffer.Length;
-        DestObj->Buffer.Pointer     = SourceObj->Buffer.Pointer;
+        
+        if (DestObj->Buffer.Length > 0)
+        {
+            /* Allocate space for the destination object
+            */
+            DestObj->Buffer.Pointer = CmCallocate(DestObj->Buffer.Length);
+            if (!DestObj->Buffer.Pointer)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+            /* Copy the data
+            */
+            STRNCPY (SourceObj->Buffer.Pointer, DestObj->Buffer.Pointer, DestObj->Buffer.Length);
+        }
+        else
+        {
+            DestObj->Buffer.Pointer = NULL;
+        }
         break;
 
 
