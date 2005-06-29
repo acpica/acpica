@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  ******************************************************************************/
 
@@ -256,7 +256,7 @@ AcpiNsRootInitialize (void)
 
             case ACPI_TYPE_MUTEX:
 
-                ObjDesc->Mutex.SyncLevel = 
+                ObjDesc->Mutex.SyncLevel =
                             (UINT16) STRTOUL (InitVal->Val, NULL, 10);
 
                 if (STRCMP (InitVal->Name, "_GL_") == 0)
@@ -392,7 +392,7 @@ AcpiNsLookup (
         (!ScopeInfo->Scope.Node))
     {
         DEBUG_PRINT (TRACE_NAMES,
-            ("NsLookup: Null scope prefix, using root node (%p)\n", 
+            ("NsLookup: Null scope prefix, using root node (%p)\n",
             AcpiGbl_RootNode));
 
         PrefixNode = AcpiGbl_RootNode;
