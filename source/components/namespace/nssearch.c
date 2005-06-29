@@ -231,11 +231,12 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
             return AE_OK;
         }
 
-
-        /* Save a pointer to the last entry for back link in new entry */
-
         if (RetInfo)
+        {
+            /* Save a pointer to this entry, it might become the previous entry */
+
             RetInfo->PreviousEntry = &NameTbl[Position];
+        }
         
 
         /* Done with this table? */
@@ -269,6 +270,8 @@ NsSearchOnly (char *NamSeg, nte *NameTbl, NsType Type, nte **RetNte,
 
     if (RetInfo)
     {
+        /* Save the final information (not found) */
+
         RetInfo->TableFull = !(Tries);      /* Table is full if no more tries available */
         RetInfo->Position = Position;
         RetInfo->NameTbl = NameTbl;
@@ -389,6 +392,7 @@ NsCreateAndLinkNewTable (nte *NameTbl, nte *PreviousEntry)
 {
     nte                 *NewTbl;
     nte                 *ParentScope;
+    ACPI_STATUS         Status = AE_OK;
 
 
     FUNCTION_TRACE ("NsCreateAndLinkNewTable");
@@ -414,8 +418,7 @@ NsCreateAndLinkNewTable (nte *NameTbl, nte *PreviousEntry)
     if (!NEXTSEG (NameTbl))
     {
         REPORT_ERROR (&KDT[1]);
-        FUNCTION_EXIT;
-        return AE_NO_MEMORY;
+        Status = AE_NO_MEMORY;
     }
 
     else
@@ -440,17 +443,18 @@ NsCreateAndLinkNewTable (nte *NameTbl, nte *PreviousEntry)
          * are separate, disjoint tables.
          */
 
-        NameTbl[0].PrevEntry = PreviousEntry;
-        NameTbl[0].NextEntry = NULL;
+        /* TBD: Probably not needed, performed by InitializeEntry */
+
+        NewTbl[0].PrevEntry = PreviousEntry;
+        NewTbl[0].NextEntry = NULL;
 
         DEBUG_PRINT (TRACE_EXEC, 
-            ("NsCreateAndLinkNewTable: appendage NameTbl=%p, ParentScope=%p, Scope=%p\n",
-                NameTbl, ParentScope, NameTbl->Scope));
-
+            ("NsCreateAndLinkNewTable: NewTbl=%p, ParentScope=%p, Scope=%p\n",
+                NewTbl, ParentScope, NameTbl->Scope));
     }
 
     FUNCTION_EXIT;
-    return AE_OK;
+    return Status;
 }
 
 
@@ -482,9 +486,10 @@ NsInitializeEntry (nte *NameTbl, UINT32 Position, char *NamSeg, NsType Type,
     /*  first or second pass load mode, NameTbl valid   */
 
     CheckTrash ("NsSearchTable about to add");
-    NewEntry->Name = *(UINT32 *) NamSeg;
-    NewEntry->ParentScope = NameTbl[0].ParentScope;
-    NewEntry->ParentEntry = NameTbl[0].ParentEntry;
+
+    NewEntry->Name          = *(UINT32 *) NamSeg;
+    NewEntry->ParentScope   = NameTbl[0].ParentScope;
+    NewEntry->ParentEntry   = NameTbl[0].ParentEntry;
 
     /* Set forward and back links */
 
@@ -541,8 +546,8 @@ NsInitializeEntry (nte *NameTbl, UINT32 Position, char *NamSeg, NsType Type,
                         &NewEntry->Type, NewEntry->Type, Type, (void *) NameTbl);
     }
 
-    DEBUG_PRINT (TRACE_NAMES,
-                    ("NsInitializeEntry: %.4s added to %p at %p\n", NamSeg, NameTbl, NewEntry));
+    DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %.4s added to %p at %p\n", 
+                                NamSeg, NameTbl, NewEntry));
     CheckTrash ("leave NsInitializeEntry ADDED");
     
     FUNCTION_EXIT;
@@ -613,7 +618,7 @@ NsSearchAndEnter (char *NamSeg, nte *NameTbl,
     }
 
 
-    /* Try to find the name in the table */
+    /* Try to find the name in the table specified by the caller */
 
     *RetNte = NOTFOUND;
     Status = NsSearchOnly (NamSeg, NameTbl, Type, RetNte, &SearchInfo);
