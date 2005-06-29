@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.13 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -179,9 +179,6 @@ extern BOOLEAN                  Gbl_BatchMode;
 extern BOOLEAN                  Gbl_MadeChanges;
 extern BOOLEAN                  Gbl_Overwrite;
 
-extern int                      optind;
-extern char                     *optarg;
-
 #define PARAM_LIST(pl)          pl
 #define TERSE_PRINT(a)          if (!Gbl_VerboseMode) printf PARAM_LIST(a)
 #define VERBOSE_PRINT(a)        if (Gbl_VerboseMode) printf PARAM_LIST(a)
@@ -219,23 +216,19 @@ typedef struct acpi_conversion_table
     ACPI_STRING_TABLE           *SourceStringTable;
     ACPI_IDENTIFIER_TABLE       *SourceLineTable;
     ACPI_IDENTIFIER_TABLE       *SourceConditionalTable;
+    ACPI_IDENTIFIER_TABLE       *SourceMacroTable;
     UINT32                      SourceFunctions;
 
     ACPI_STRING_TABLE           *HeaderStringTable;
-    ACPI_IDENTIFIER_TABLE      *HeaderLineTable;
-    ACPI_IDENTIFIER_TABLE      *HeaderConditionalTable;
+    ACPI_IDENTIFIER_TABLE       *HeaderLineTable;
+    ACPI_IDENTIFIER_TABLE       *HeaderConditionalTable;
+    ACPI_IDENTIFIER_TABLE       *HeaderMacroTable;
     UINT32                      HeaderFunctions;
 
 } ACPI_CONVERSION_TABLE;
 
 
 /* Prototypes */
-
-int
-getopt (
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
 
 char *
 AsSkipUntilChar (

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.31 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,6 +117,7 @@
 
 
 #include "acpisrc.h"
+#include "acapps.h"
 
 
 /* Globals */
@@ -187,7 +188,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" *  Copyright (C) 2000, 2001 R. Byron Moore\n"
+" *  Copyright (C) 2000 - 2002, R. Byron Moore\n"
 " *\n"
 " *  This program is free software; you can redistribute it and/or modify\n"
 " *  it under the terms of the GNU General Public License as published by\n"
@@ -254,10 +255,9 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address  ",*/
     /*"NATIVE_UINT  ",            "native_uint  ",*/
     /*"NATIVE_INT  ",             "native_int  ",*/
-    /*"NATIVE_CHAR  ",            "native_char  ",*/
+    /*"char         ",            "native_char  ",*/
 
     "ACPI_ADR_SPACE_HANDLER",
-    "ACPI_ADR_SPACE_INFO",
     "ACPI_ADR_SPACE_SETUP",
     "ACPI_BUFFER",
     "ACPI_BUS_ATTRIBUTE",
@@ -345,22 +345,31 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     "ACPI_WALK_INFO",
     "ACPI_WALK_LIST",
     "ACPI_WALK_STATE",
-    "DB_METHOD_INFO",
+    "ACPI_DB_METHOD_INFO",
     "FACS_DESCRIPTOR_REV071",
     "FACS_DESCRIPTOR_REV1",
     "FACS_DESCRIPTOR_REV2",
     "FADT_DESCRIPTOR_REV071",
     "FADT_DESCRIPTOR_REV1",
     "FADT_DESCRIPTOR_REV2",
-    "FIND_CONTEXT",
-    "NS_SEARCH_DATA",
-    "OPERATING_MODE",
-    "PCI_ROUTING_TABLE",
-    "PREDEFINED_NAMES",
+    "ACPI_FIND_CONTEXT",
+    "ACPI_NS_SEARCH_DATA",
+    "ACPI_INTERPRETER_MODE",
+    "ACPI_PCI_ROUTING_TABLE",
+    "ACPI_PREDEFINED_NAMES",
+    "UINT64_OVERLAY",
     "UINT64_STRUCT",
     "XSDT_DESCRIPTOR",
 
     NULL,
+};
+
+
+ACPI_IDENTIFIER_TABLE       LinuxEliminateMacros[] = {
+
+    "ACPI_GET_ADDRESS",
+    "ACPI_VALID_ADDRESS",
+    NULL
 };
 
 
@@ -391,6 +400,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxDataTypes,
     LinuxLineIdentifiers,
     NULL,
+    LinuxEliminateMacros,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
      CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS | CVT_SPACES_TO_TABS8),
@@ -400,6 +410,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxDataTypes,
     NULL,
     LinuxConditionalIdentifiers,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
      CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS| CVT_SPACES_TO_TABS8),
@@ -423,10 +434,12 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
     NULL,
     NULL,
     NULL,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
+    NULL,
     NULL,
     NULL,
     NULL,
@@ -445,10 +458,12 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
     NULL,
     NULL,
     NULL,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
 
     /* C header files */
 
+    NULL,
     NULL,
     NULL,
     NULL,
@@ -464,15 +479,17 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
+#if 0
+    "1999 - 2002, Intel Corp",      "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
+    "1999, Intel Corp",             "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
+    "  All rights\n * reserved.",    "\n * All rights reserved.",     REPLACE_WHOLE_WORD,
+    "Copyright (C) 2000, 2001",     "Copyright (C) 2000 - 2002",      REPLACE_WHOLE_WORD,
+#endif
 
-    "2000, 2001, Intel Corp",     "2000, 2001, Intel Corp",     REPLACE_WHOLE_WORD,
-    "ACPI_TYPE_INTEGER",     "ACPI_TYPE_INTEGER",               REPLACE_WHOLE_WORD,
-    "ARGI_INTEGER",          "ARGI_INTEGER",                    REPLACE_WHOLE_WORD,
-    "ARGP_INTEGER",          "ARGP_INTEGER",                    REPLACE_WHOLE_WORD,
-    "ACPI_BTYPE_INTEGER",    "ACPI_BTYPE_INTEGER",              REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT_INTEGER",   "ACPI_OBJECT_INTEGER",             REPLACE_WHOLE_WORD,
-    "->Integer",             "->Integer",                       REPLACE_WHOLE_WORD,
-    NULL,                   NULL, 0
+    "char *",         "char *",             REPLACE_WHOLE_WORD,
+    "char        ",          "char        ",     REPLACE_WHOLE_WORD,
+    "char",           "char",             REPLACE_WHOLE_WORD,
+    NULL,                    NULL, 0
 };
 
 
@@ -487,11 +504,13 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
     CustomReplacements,
     NULL,
     NULL,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
     CustomReplacements,
+    NULL,
     NULL,
     NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
@@ -642,7 +661,7 @@ AsDisplayUsage (void)
  *
  ******************************************************************************/
 
-int
+int ACPI_SYSTEM_XFACE
 main (
     NATIVE_UINT             argc,
     char                    *argv[])
@@ -665,7 +684,7 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "lcsuvyd")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "lcsuvyd")) != EOF) switch(j)
     {
     case 'l':
         /* Linux code generation */
@@ -717,7 +736,7 @@ main (
     }
 
 
-    SourcePath = argv[optind];
+    SourcePath = argv[AcpiGbl_Optind];
     if (!SourcePath)
     {
         printf ("Missing source path\n");
@@ -725,7 +744,7 @@ main (
         return -1;
     }
 
-    TargetPath = argv[optind+1];
+    TargetPath = argv[AcpiGbl_Optind+1];
 
     if (!ConversionTable)
     {

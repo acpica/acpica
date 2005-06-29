@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.27 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,7 +121,6 @@
 /* Opening signature of the Intel legal header */
 
 char        *HeaderBegin = "/******************************************************************************\n *\n * 1. Copyright Notice";
-
 
 
 /******************************************************************************
@@ -639,7 +638,6 @@ AsLowerCaseString (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AsMixedCaseToUnderscores
@@ -665,7 +663,6 @@ AsMixedCaseToUnderscores (
 
     while (*SubBuffer)
     {
-
         /*
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
@@ -696,9 +693,6 @@ AsMixedCaseToUnderscores (
                 }
                 continue;
             }
-
-            SubBuffer++;
-            continue;
         }
 
         /* Ignore format specification fields */
@@ -716,6 +710,13 @@ AsMixedCaseToUnderscores (
             continue;
         }
 
+        /* Ignore standard escape sequences (\n, \r, etc.)  Not Hex or Octal escapes */
+
+        if (SubBuffer[0] == '\\')
+        {
+            SubBuffer += 2;
+            continue;
+        }
 
         /*
          * Convert each pair of letters that matches the form:
@@ -731,11 +732,16 @@ AsMixedCaseToUnderscores (
         {
             if (isdigit (SubBuffer[0]))
             {
-                if (isupper (*(SubBuffer-1)))
+                /* Ignore <UpperCase><Digit><UpperCase> */
+                /* Ignore <Underscore><Digit><UpperCase> */
+
+                if (isupper (*(SubBuffer-1)) ||
+                    *(SubBuffer-1) == '_')
                 {
                     SubBuffer++;
                     continue;
                 }
+
             }
 
             /*
@@ -840,13 +846,13 @@ AsLowerCaseIdentifiers (
 
         /* Ignore quoted strings */
 
-        if (SubBuffer[0] == '\"')
+        if ((SubBuffer[0] == '\"') && (SubBuffer[1] != '\''))
         {
             SubBuffer++;
 
             /* Find the closing quote */
 
-            while (1)
+            while (SubBuffer[0])
             {
                 /* Ignore escaped quote characters */
 
@@ -864,6 +870,10 @@ AsLowerCaseIdentifiers (
             }
         }
 
+        if (!SubBuffer[0])
+        {
+            return;
+        }
 
         /*
          * Only lower case if we have an upper followed by a lower
@@ -1248,6 +1258,83 @@ AsRemoveConditionalCompile (
         memmove (SubString, SubBuffer, StrLength+1);
 
         SubBuffer = SubString;
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveMacro
+ *
+ * DESCRIPTION: Remove every line that contains the keyword.  Does not
+ *              skip comments.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveMacro (
+    char                    *Buffer,
+    char                    *Keyword)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    int                     StrLength;
+    int                     NestLevel;
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+
+    while (SubString)
+    {
+        SubString = strstr (SubBuffer, Keyword);
+
+        if (SubString)
+        {
+            SubBuffer = SubString;
+
+            /* Find start of the macro parameters */
+
+            while (*SubString != '(')
+            {
+                SubString++;
+            }
+            SubString++;
+
+            StrLength = strlen (SubBuffer);
+            Gbl_MadeChanges = TRUE;
+
+            memmove (SubBuffer, SubString, StrLength+1);
+            SubString = SubBuffer;
+
+            NestLevel = 1;
+            while (*SubString)
+            {
+                if (*SubString == '(')
+                {
+                    NestLevel++;
+                }
+                else if (*SubString == ')')
+                {
+                    NestLevel--;
+                }
+
+                SubString++;
+
+                if (NestLevel == 0)
+                {
+                    break;
+                }
+            }
+
+
+            StrLength = strlen (SubString);
+            Gbl_MadeChanges = TRUE;
+
+            memmove (SubString-1, SubString, StrLength+1);
+            SubBuffer = SubString;
+        }
     }
 }
 
@@ -1706,7 +1793,7 @@ void
 AsRemoveDebugMacros (
     char                    *Buffer)
 {
-    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG");
+    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG_OUTPUT");
 
     AsRemoveStatement (Buffer, "ACPI_DEBUG_PRINT",      REPLACE_WHOLE_WORD);
     AsRemoveStatement (Buffer, "ACPI_DEBUG_PRINT_RAW",  REPLACE_WHOLE_WORD);

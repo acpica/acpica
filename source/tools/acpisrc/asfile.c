@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.14 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -352,6 +352,7 @@ AsConvertFile (
     ACPI_STRING_TABLE       *StringTable;
     ACPI_IDENTIFIER_TABLE   *ConditionalTable;
     ACPI_IDENTIFIER_TABLE   *LineTable;
+    ACPI_IDENTIFIER_TABLE   *MacroTable;
 
 
     switch (FileType)
@@ -361,13 +362,15 @@ AsConvertFile (
         StringTable         = ConversionTable->SourceStringTable;
         LineTable           = ConversionTable->SourceLineTable;
         ConditionalTable    = ConversionTable->SourceConditionalTable;
-        break;
+        MacroTable          = ConversionTable->SourceMacroTable;
+       break;
 
     case FILE_TYPE_HEADER:
         Functions           = ConversionTable->HeaderFunctions;
         StringTable         = ConversionTable->HeaderStringTable;
         LineTable           = ConversionTable->HeaderLineTable;
         ConditionalTable    = ConversionTable->HeaderConditionalTable;
+        MacroTable          = ConversionTable->HeaderMacroTable;
         break;
 
     default:
@@ -390,7 +393,6 @@ AsConvertFile (
         }
     }
 
-
     /* Process all the string replacements */
 
     if (StringTable)
@@ -412,7 +414,6 @@ AsConvertFile (
         }
     }
 
-
     if (ConditionalTable)
     {
         for (i = 0; ConditionalTable[i].Identifier; i++)
@@ -421,6 +422,13 @@ AsConvertFile (
         }
     }
 
+    if (MacroTable)
+    {
+        for (i = 0; MacroTable[i].Identifier; i++)
+        {
+            AsRemoveMacro (FileBuffer, MacroTable[i].Identifier);
+        }
+    }
 
     /* Process the function table */
 
