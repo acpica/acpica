@@ -662,7 +662,7 @@ AmlDumpObjStackEntry (
  * 
  * FUNCTION:    _AmlDumpObjStack
  *
- * PARAMETERS:  LoadExecMode        - Load or Exec
+ * PARAMETERS:  InterpreterMode      - Load or Exec
  *              *Ident              - Identification
  *              NumLevels           - # of stack entries to dump above line
  *              *Note               - Output notation
@@ -673,7 +673,7 @@ AmlDumpObjStackEntry (
 
 void
 _AmlDumpObjStack (
-    OPERATING_MODE          LoadExecMode, 
+    OPERATING_MODE          InterpreterMode, 
     char                    *Ident, 
     INT32                   NumLevels, 
     char                    *Note,
@@ -700,8 +700,8 @@ _AmlDumpObjStack (
 
     CurrentStackTop = AmlObjStackLevel ();
 
-    DEBUG_PRINT (ACPI_INFO, ("*************AmlDumpObjStack, TOS=%d******************\n", 
-                    CurrentStackTop));
+    DEBUG_PRINT (ACPI_INFO, ("*************AmlDumpObjStack**TOS=%d**Mode=%X******************\n", 
+                    CurrentStackTop, InterpreterMode));
     DEBUG_PRINT (ACPI_INFO, ("From %12s(%d)  %s: %s\n", ModuleName, LineNumber, Ident, Note));
 
 
