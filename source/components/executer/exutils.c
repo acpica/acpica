@@ -225,9 +225,8 @@ AmlBufSeq (void)
 void
 DeleteObject (OBJECT_DESCRIPTOR **ObjDesc)
 {
+
     FUNCTION_TRACE ("DeleteObject");
-
-
     DEBUG_PRINT (ACPI_INFO, ("DeleteObject: %x\n", *ObjDesc));
 
 
@@ -257,6 +256,7 @@ DeleteObject (OBJECT_DESCRIPTOR **ObjDesc)
 
     }
 
+    FUNCTION_EXIT;
 }
 
 
@@ -306,6 +306,8 @@ AmlMarkPackage (OBJECT_DESCRIPTOR *ObjDesc)
         
         MarkBlock (ObjDesc);
     } 
+
+    FUNCTION_EXIT;
 }
 
 
@@ -388,6 +390,8 @@ AmlMarkObject (OBJECT_DESCRIPTOR *ObjDesc)
                 break;
         }
     } 
+
+    FUNCTION_EXIT;
 }
 
 
@@ -427,6 +431,8 @@ MarkObjectStack (INT32 *Count)
             AmlMarkObject (ObjStack[Index]);
         }
     }
+
+    FUNCTION_EXIT;
 } 
 
 #endif   /* PLUMBER */
@@ -464,6 +470,7 @@ DigitsNeeded (INT32 val, INT32 base)
         { ; }
     }
 
+    FUNCTION_EXIT;
     return NumDigits;
 }
 
