@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -474,7 +474,6 @@ AcpiDbLoadAcpiTable (
                             AcpiFormatException (Status));
         }
 
-        AcpiOsFree (AcpiGbl_DbTablePtr);
         return (Status);
     }
 
