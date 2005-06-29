@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.146 $
+ *              $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 #define ACPI_NUM_DEFAULT_SPACES     4
 
-UINT8                   AcpiGbl_DefaultAddressSpaces[ACPI_NUM_DEFAULT_SPACES] = {
+static UINT8        AcpiGbl_DefaultAddressSpaces[ACPI_NUM_DEFAULT_SPACES] = {
                             ACPI_ADR_SPACE_SYSTEM_MEMORY,
                             ACPI_ADR_SPACE_SYSTEM_IO,
                             ACPI_ADR_SPACE_PCI_CONFIG,
@@ -811,9 +811,6 @@ AcpiEvRegRun (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_NAME ("EvRegRun");
 
 
     HandlerObj = (ACPI_OPERAND_OBJECT  *) Context;
