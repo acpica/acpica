@@ -268,7 +268,27 @@ SOURCE=..\..\source\compiler\aslutils.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psfind.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\interpreter\parser\psopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psparse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\pstree.c
 # End Source File
 # Begin Source File
 
@@ -301,10 +321,6 @@ SOURCE=..\..\source\components\interpreter\dispatcher\dswexec.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\Dispatcher\dswscope.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\Dispatcher\dswstate.c
 # End Source File
 # End Group
 # Begin Group "Common"
@@ -453,6 +469,70 @@ SOURCE=..\..\source\components\interpreter\executer\exsystem.c
 SOURCE=..\..\source\components\interpreter\executer\exutils.c
 # End Source File
 # End Group
+# Begin Group "Disassembler"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\common\adisasm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\disassembler\dmbuffer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\disassembler\dmnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\disassembler\dmopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\disassembler\dmresrc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\disassembler\dmresrcl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\disassembler\dmresrcs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\Disassembler\dmutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\disassembler\dmwalk.c
+# End Source File
+# End Group
+# Begin Group "Tables"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\tables\tbinstal.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\tables\tbutils.c
+# End Source File
+# End Group
+# Begin Group "Dispatcher No. 1"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswstate.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
@@ -464,10 +544,6 @@ SOURCE=..\..\source\compiler\aslcompiler.h
 # Begin Source File
 
 SOURCE=..\..\source\compiler\aslglobal.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\compiler\aslresource.h
 # End Source File
 # Begin Source File
 
