@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmalloc - local memory allocation routines
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -453,7 +453,6 @@ Cleanup:
 
     return_VOID;
 }
-#endif  /* #ifdef ACPI_DEBUG_TRACK_ALLOCATIONS */
 
 
 /*****************************************************************************
@@ -474,8 +473,6 @@ AcpiCmDumpAllocationInfo (
 {
     FUNCTION_TRACE ("CmDumpAllocationInfo");
 
-
-#ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
                     ("%30s: %4d (%3d Kb)\n", "Current allocations",
@@ -517,8 +514,6 @@ AcpiCmDumpAllocationInfo (
                     AcpiGbl_RunningAllocCount,
                     ROUND_UP_TO_1K (AcpiGbl_RunningAllocSize)));
 
-#endif
-
     return_VOID;
 }
 
@@ -541,8 +536,6 @@ AcpiCmDumpCurrentAllocations (
     UINT32                  Component,
     NATIVE_CHAR             *Module)
 {
-#ifdef ACPI_DEBUG_TRACK_ALLOCATIONS
-
     ALLOCATION_INFO         *Element = AcpiGbl_HeadAllocPtr;
     UINT32                  i;
 
@@ -624,11 +617,9 @@ AcpiCmDumpCurrentAllocations (
 
 
     return_VOID;
-#else
-    return;
-#endif
-}
 
+}
+#endif  /* #ifdef ACPI_DEBUG_TRACK_ALLOCATIONS */
 
 /*****************************************************************************
  *
