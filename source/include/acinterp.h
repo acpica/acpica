@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.153 $
+ *       $Revision: 1.154 $
  *
  *****************************************************************************/
 
@@ -156,22 +156,20 @@ ACPI_STATUS
 AcpiExConvertToInteger (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **ResultDesc,
-    UINT16                  Opcode);
+    UINT32                  Flags);
 
 ACPI_STATUS
 AcpiExConvertToBuffer (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **ResultDesc,
-    UINT16                  Opcode);
+    ACPI_OPERAND_OBJECT     **ResultDesc);
 
 ACPI_STATUS
 AcpiExConvertToString (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **ResultDesc,
-    UINT32                  Type,
-    UINT16                  Opcode);
+    UINT32                  Type);
 
-/* Types for String conversion */
+/* Types for ->String conversion */
 
 #define ACPI_EXPLICIT_BYTE_COPY         0x00000000
 #define ACPI_EXPLICIT_CONVERT_HEX       0x00000001
