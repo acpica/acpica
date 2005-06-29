@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.120 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -171,7 +171,7 @@ AcpiUtReleaseToCache (
 
         /* Mark the object as cached */
 
-        MEMSET (Object, 0xCA, CacheInfo->ObjectSize);
+        ACPI_MEMSET (Object, 0xCA, CacheInfo->ObjectSize);
         ACPI_SET_DESCRIPTOR_TYPE (Object, ACPI_CACHED_OBJECT);
 
         /* Put the object at the head of the cache list */
@@ -242,7 +242,7 @@ AcpiUtAcquireFromCache (
 
         /* Clear (zero) the previously used Object */
 
-        MEMSET (Object, 0, CacheInfo->ObjectSize);
+        ACPI_MEMSET (Object, 0, CacheInfo->ObjectSize);
     }
 
     else
@@ -299,7 +299,6 @@ AcpiUtDeleteGenericCache (
         CacheInfo->CacheDepth--;
     }
 }
-
 
 
 /*******************************************************************************
@@ -390,7 +389,7 @@ AcpiUtInitializeBuffer (
 
         /* Clear the buffer */
 
-        MEMSET (Buffer->Pointer, 0, RequiredLength);
+        ACPI_MEMSET (Buffer->Pointer, 0, RequiredLength);
         break;
 
 
@@ -406,7 +405,7 @@ AcpiUtInitializeBuffer (
 
         /* Clear the buffer */
 
-        MEMSET (Buffer->Pointer, 0, RequiredLength);
+        ACPI_MEMSET (Buffer->Pointer, 0, RequiredLength);
         break;
 
 
@@ -421,7 +420,7 @@ AcpiUtInitializeBuffer (
 
         /* Clear the buffer */
 
-        MEMSET (Buffer->Pointer, 0, RequiredLength);
+        ACPI_MEMSET (Buffer->Pointer, 0, RequiredLength);
         break;
     }
 
@@ -531,11 +530,9 @@ AcpiUtCallocate (
 
     /* Clear the memory block */
 
-    MEMSET (Allocation, 0, Size);
-
+    ACPI_MEMSET (Allocation, 0, Size);
     return_PTR (Allocation);
 }
-
 
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
@@ -549,7 +546,6 @@ AcpiUtCallocate (
  * AcpiUtTrackAllocation to add an element to the list; deletion
  * occurs in the body of AcpiUtFree.
  */
-
 
 
 /*******************************************************************************
@@ -578,7 +574,6 @@ AcpiUtAllocateAndTrack (
     ACPI_STATUS             Status;
 
 
-
     Allocation = AcpiUtAllocate (Size + sizeof (ACPI_DEBUG_MEM_BLOCK), Component,
                                 Module, Line);
     if (!Allocation)
@@ -599,7 +594,6 @@ AcpiUtAllocateAndTrack (
 
     return ((void *) &Allocation->UserSpace);
 }
-
 
 
 /*******************************************************************************
@@ -626,7 +620,6 @@ AcpiUtCallocateAndTrack (
 {
     ACPI_DEBUG_MEM_BLOCK    *Allocation;
     ACPI_STATUS             Status;
-
 
 
     Allocation = AcpiUtCallocate (Size + sizeof (ACPI_DEBUG_MEM_BLOCK), Component,
@@ -705,7 +698,6 @@ AcpiUtFreeAndTrack (
 
     return_VOID;
 }
-
 
 
 /*******************************************************************************
@@ -824,7 +816,7 @@ AcpiUtTrackAllocation (
     Allocation->Component = Component;
     Allocation->Line      = Line;
 
-    STRNCPY (Allocation->Module, Module, ACPI_MAX_MODULE_NAME);
+    ACPI_STRNCPY (Allocation->Module, Module, ACPI_MAX_MODULE_NAME);
 
     /* Insert at list head */
 
@@ -915,7 +907,7 @@ AcpiUtRemoveAllocation (
 
     /* Mark the segment as deleted */
 
-    MEMSET (&Allocation->UserSpace, 0xEA, Allocation->Size);
+    ACPI_MEMSET (&Allocation->UserSpace, 0xEA, Allocation->Size);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "Freeing size %X\n", Allocation->Size));
 
@@ -1020,7 +1012,7 @@ AcpiUtDumpAllocations (
     while (Element)
     {
         if ((Element->Component & Component) &&
-            ((Module == NULL) || (0 == STRCMP (Module, Element->Module))))
+            ((Module == NULL) || (0 == ACPI_STRCMP (Module, Element->Module))))
         {
             /* Ignore allocated objects that are in a cache */
 
@@ -1041,8 +1033,8 @@ AcpiUtDumpAllocations (
                     break;
 
                 case ACPI_DESC_TYPE_PARSER:
-                    AcpiOsPrintf ("ParseObj Opcode %04X",
-                            ((ACPI_PARSE_OBJECT *)(&Element->UserSpace))->Opcode);
+                    AcpiOsPrintf ("ParseObj AmlOpcode %04X",
+                            ((ACPI_PARSE_OBJECT *)(&Element->UserSpace))->Asl.AmlOpcode);
                     break;
 
                 case ACPI_DESC_TYPE_NAMED:
@@ -1116,7 +1108,6 @@ AcpiUtDumpAllocations (
 
     return_VOID;
 }
-
 
 
 #endif  /* #ifdef ACPI_DBG_TRACK_ALLOCATIONS */
