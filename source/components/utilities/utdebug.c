@@ -40,9 +40,9 @@ INT32       __AcpiLibInitStatus = 0;
 /* Debug switch - level mask */
 
 #ifdef _DEBUG
-INT32 DebugLevel = TRACE_ALL | ACPI_ALL;
+INT32 DebugLevel = DEBUG_DEFAULT;
 #else
-INT32 DebugLevel = ACPI_ALL;
+INT32 DebugLevel = NORMAL_DEFAULT;
 #endif
 
 
