@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  ******************************************************************************/
 
@@ -245,12 +245,8 @@ AcpiNsRootInitialize (void)
                  */
                 ObjDesc->String.Pointer = AcpiCmAllocate (
                                                 (ObjDesc->String.Length + 1));
-
                 if (!ObjDesc->String.Pointer)
                 {
-                    REPORT_ERROR ("Initial value string"
-                                    "allocation failure");
-
                     AcpiCmRemoveReference (ObjDesc);
                     Status = AE_NO_MEMORY;
                     goto UnlockAndExit;
@@ -302,7 +298,8 @@ AcpiNsRootInitialize (void)
 
 
             default:
-                REPORT_ERROR ("Unsupported initial type value");
+                REPORT_ERROR (("Unsupported initial type value %X\n", 
+                    InitVal->Type));
                 AcpiCmRemoveReference (ObjDesc);
                 ObjDesc = NULL;
                 continue;
@@ -519,8 +516,7 @@ AcpiNsLookup (
                 {
                     /* Current scope has no parent scope */
 
-                    REPORT_ERROR ("Too many parent prefixes (^) - reached root");
-
+                    REPORT_ERROR (("Too many parent prefixes (^) - reached root\n"));
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
 
@@ -658,8 +654,7 @@ AcpiNsLookup (
         {
             /* Complain about a type mismatch */
 
-            REPORT_WARNING ("Type mismatch");
-            DEBUG_PRINT (ACPI_WARN,
+            REPORT_WARNING (
                 ("NsLookup: %4.4s, type 0x%X, checking for type 0x%X\n",
                 &SimpleName, ThisNode->Type, TypeToCheckFor));
         }
