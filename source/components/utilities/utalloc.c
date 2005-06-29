@@ -138,12 +138,18 @@ _AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId,
 
     /* Attempt to allocate new descriptor */
 
-    NewDesc = NEW (OBJECT_DESCRIPTOR);
+    NewDesc = OsdCallocate (sizeof (OBJECT_DESCRIPTOR));
     if (!NewDesc)
     {
         /* Allocation failed */
         
         _REPORT_ERROR (ModuleName, LineNumber, ComponentId, KdtEntry);
+    }
+
+    else
+    {
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %x Size 0x%x\n",
+                        NewDesc, sizeof (OBJECT_DESCRIPTOR)));
     }
 
     return NewDesc;
@@ -180,6 +186,12 @@ _LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 All
         _REPORT_ERROR (ModuleName, LineNumber, ComponentId, &KDT[0]);
     }
 
+    else
+    {
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("LocalAllocate: %x Size 0x%x\n",
+                        Block, AllocSize));
+    }
+
     return Block;
 }
 
@@ -212,6 +224,12 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
         /* Report allocation error */
 
         _REPORT_ERROR (ModuleName, LineNumber, ComponentId, &KDT[1]);
+    }
+
+    else
+    {
+        DEBUG_PRINT (TRACE_ALLOCATIONS, ("LocalCallocate: %x Size 0x%x\n",
+                        Block, AllocSize));
     }
 
     return Block;
