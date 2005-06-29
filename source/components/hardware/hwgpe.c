@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.52 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -433,18 +433,15 @@ AcpiHwDisableGpeBlock (
     ACPI_GPE_BLOCK_INFO     *GpeBlock)
 {
     UINT32                  i;
-    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
     ACPI_STATUS             Status;
 
-
-    /* Get the register info for the entire GPE block */
-
-    GpeRegisterInfo = GpeBlock->RegisterInfo;
 
     /* Examine each GPE Register within the block */
 
     for (i = 0; i < GpeBlock->RegisterCount; i++)
     {
+        /* Disable all GPEs in this register */
+
         Status = AcpiHwLowLevelWrite (8, 0x00,
                     &GpeBlock->RegisterInfo[i].EnableAddress);
         if (ACPI_FAILURE (Status))
@@ -476,18 +473,15 @@ AcpiHwClearGpeBlock (
     ACPI_GPE_BLOCK_INFO     *GpeBlock)
 {
     UINT32                  i;
-    ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
     ACPI_STATUS             Status;
 
-
-    /* Get the register info for the entire GPE block */
-
-    GpeRegisterInfo = GpeBlock->RegisterInfo;
 
     /* Examine each GPE Register within the block */
 
     for (i = 0; i < GpeBlock->RegisterCount; i++)
     {
+        /* Clear all GPEs in this register */
+
         Status = AcpiHwLowLevelWrite (8, 0xFF,
                     &GpeBlock->RegisterInfo[i].StatusAddress);
         if (ACPI_FAILURE (Status))
@@ -607,7 +601,7 @@ AcpiHwDisableNonWakeupGpes (
  *
  ******************************************************************************/
 
-static ACPI_STATUS 
+static ACPI_STATUS
 AcpiHwEnableNonWakeupGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
     ACPI_GPE_BLOCK_INFO     *GpeBlock)
@@ -644,7 +638,7 @@ AcpiHwEnableNonWakeupGpeBlock (
 
     return (AE_OK);
 }
- 
+
 
 /******************************************************************************
  *
