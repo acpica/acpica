@@ -15,15 +15,18 @@
  |                                  legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.2 $
- | $Date: 2005/06/29 19:31:08 $
+ | $Revision: 1.3 $
+ | $Date: 2005/06/29 19:31:09 $
  | $Log: acevents.h,v $
- | Revision 1.2  2005/06/29 19:31:08  aystarik
- |
+ | Revision 1.3  2005/06/29 19:31:09  aystarik
+ | Made pretty
  |
  | 
- | date	99.02.12.22.26.00;	author rmosgrov;	state Exp;
+ | date	99.02.16.22.36.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 3     2/16/99 2:36p Rmoore1
+ * Made pretty
  * 
  * 2     2/12/99 2:26p Rmosgrov
  * 
@@ -53,100 +56,52 @@
 
 */
 
-#ifndef __SCILAST_H__
-#define __SCILAST_H__
+#ifndef __EVSCI_H__
+#define __EVSCI_H__
 
 
 /*  InstallSCIHandlerXferToACPI() Flags bitmask options   */
-#define ACPI_TABLES_REQUIRED                1
+
+#define ACPI_TABLES_REQUIRED            1
 #define HW_OVERRIDE_SUPPORTED           2
 #define PROGRAM_SCI_LEVEL_SENSITIVITY   4
-#define DISABLE_KNOWN_EVENTS                8
+#define DISABLE_KNOWN_EVENTS            8
+
 
 /*  iErrorMask mask bits    */
-#define NO_ACPI_TABLES_MASK         1
-#define NO_ACPI_TRANSITION_MASK     2
-#define SCI_LEVEL_INT_MASK          4
-#define NO_SCI_HANDLER_MASK         8
-#define NO_LEGACY_TRANSITION_MASK   0x10
 
-#define SAVE_NOT_VALID      -1
+#define NO_ACPI_TABLES_MASK             1
+#define NO_ACPI_TRANSITION_MASK         2
+#define SCI_LEVEL_INT_MASK              4
+#define NO_SCI_HANDLER_MASK             8
+#define NO_LEGACY_TRANSITION_MASK       0x10
 
-#ifdef __SCILAST_C__
-int EdgeLevelSave=SAVE_NOT_VALID, IrqEnableSave=SAVE_NOT_VALID;
-int OriginalMode=SAVE_NOT_VALID;           /*  original ACPI/legacy mode   */
+#define SAVE_NOT_VALID                  -1
+
+#ifdef __EVSCI_C__
+int EdgeLevelSave   = SAVE_NOT_VALID;
+int IrqEnableSave   = SAVE_NOT_VALID;
+int OriginalMode    = SAVE_NOT_VALID;   /*  original ACPI/legacy mode   */
+
 #else
-extern  int EdgeLevelSave, IrqEnableSave; /*  original SCI config */
+extern  int EdgeLevelSave;
+extern  int IrqEnableSave; /*  original SCI config */
 extern  int OriginalMode;  /*  stores the original ACPI/legacy mode    */
 #endif
 
+/* Prototypes */
 
-/**************************************************************************
- *  FUNCTION:       int InitializeSCI
- *
- *  PARAMETERS:
- *      ProgramSCI --  TRUE if SCI can be reprogrammed to level sensitivity
- *                          FALSE if current SCI sensitivity must be preserved
- *
- *  RETURN:         0 if successful; non-zero if failure encountered
- *
- *  DESCRIPTION:    InitializeSCI() ensures that the system control
- *                      interrupt (SCI) is properly configured.
- *                      If successful, return 0. Otherwise, return non-zero.
- *************************************************************************/
-int InitializeSCI (int ProgramSCI);
+int 
+InitializeSCI (int ProgramSCI);
+
+int 
+VerifyAcpiTablesPresent (char *TestName);
+
+int 
+InstallSCIHandlerXferToACPI (char *TestName, int Flags);
+
+int 
+UninstallSCIHandlerXferToLegacy (void);
 
 
-/**************************************************************************
- *  FUNCTION:       int VerifyAcpiTablesPresent
- *
- *  PARAMETERS:
- *      TestName  --  pointer to test name string for log messages
- *
- *  RETURN:
- *      0               if tables are present
- *      non-zero        if ACPI tables can NOT be located
- *
- *  DESCRIPTION:    VerifyAcpiTablesPresent() ensures that the current
- *                      environment contains ACPI (namespace) tables from
- *                      either the BIOS or from an input file.
- *                      Return 0 if tables are present; non-zero otherwise.
- *************************************************************************/
-int VerifyAcpiTablesPresent (char *TestName);
-
-
-/**************************************************************************
- *  FUNCTION:       int InstallSCIHandlerXferToACPI
- *
- *  PARAMETERS:
- *      TestName  --  pointer to test name string for log messages
- *      Flags      --  flag bitmask (logical OR) to specify:
- *                          ACPI_TABLES_REQUIRED, HW_OVERRIDE_SUPPORTED,
- *                          PROGRAM_SCI_LEVEL_SENSITIVITY, DISABLE_KNOWN_EVENTS
- *
- *  RETURN:         0 if successful; non-zero if failure encountered
- *
- *  DESCRIPTION:    InstallSCIHandlerXferToACPI() ensures that the system
- *                      control interrupt (SCI) is properly configured, disables
- *                      SCI event sources, installs the SCI handler, and
- *                      transfers the system into ACPI mode.
- *                      If successful, return 0. Otherwise, return non-zero.
- *************************************************************************/
-int InstallSCIHandlerXferToACPI (char *TestName, int Flags);
-
-
-/**************************************************************************
- *  FUNCTION:       int UninstallSCIHandlerXferToLegacy
- *
- *  PARAMETERS:     none
- *
- *  RETURN:         0 if successful; non-zero if failure encountered
- *
- *  DESCRIPTION:    UninstallSCIHandlerXferToLegacy() returns the system
- *                      to original ACPI/legacy mode, unloads the SCI handler,
- *                      and restores the SCI to its original configuration.
- *                      If successful, return 0. Otherwise, return non-zero.
- *************************************************************************/
-int UninstallSCIHandlerXferToLegacy ();
-
-#endif  /*  __SCILAST_H__   */
+#endif  /*  __EVSCI_H__   */
