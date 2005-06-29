@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  ******************************************************************************/
 
@@ -169,6 +169,8 @@ AcpiUtDeleteInternalObj (
 
         if (!(Object->Common.Flags & AOPOBJ_STATIC_POINTER))
         {
+            /* But only if it is NOT a pointer into an ACPI table */
+
             ObjPointer = Object->String.Pointer;
         }
         break;
@@ -181,7 +183,12 @@ AcpiUtDeleteInternalObj (
 
         /* Free the actual buffer */
 
-        ObjPointer = Object->Buffer.Pointer;
+        if (!(Object->Common.Flags & AOPOBJ_STATIC_POINTER))
+        {
+            /* But only if it is NOT a pointer into an ACPI table */
+
+            ObjPointer = Object->Buffer.Pointer;
+        }
         break;
 
 
