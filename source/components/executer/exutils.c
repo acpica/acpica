@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.69 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,6 @@
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("amutils")
-
 
 
 /*******************************************************************************
@@ -277,19 +276,21 @@ AcpiAmlAcquireGlobalLock (
     FUNCTION_TRACE ("AmlAcquireGlobalLock");
 
 
-    /*  Only attempt lock if the Rule says so */
+    /* Only attempt lock if the Rule says so */
 
     if (Rule == (UINT32) GLOCK_ALWAYS_LOCK)
     {
-        /*  OK to get the lock   */
+        /* We should attempt to get the lock */
 
         Status = AcpiEvAcquireGlobalLock ();
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Get Global Lock Failed!!\n"));
+            DEBUG_PRINT (ACPI_ERROR, 
+                ("Could not acquire Global Lock, %s\n",
+                AcpiCmFormatException (Status)));
         }
 
-        if (ACPI_SUCCESS (Status))
+        else
         {
             AcpiGbl_GlobalLockSet = TRUE;
             Locked = TRUE;
@@ -488,9 +489,5 @@ AcpiAmlUnsignedIntegerToString (
 
     return (AE_OK);
 }
-
-
-
-
 
 
