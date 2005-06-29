@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -160,6 +160,7 @@ AcpiTbValidateTableHeader (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Cannot read table header at %p\n", TableHeader));
+
         return (AE_BAD_ADDRESS);
     }
 
@@ -174,6 +175,7 @@ AcpiTbValidateTableHeader (
 
         ACPI_REPORT_WARNING (("Invalid table signature found: [%4.4s]\n",
             (char *) &Signature));
+
         ACPI_DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_SIGNATURE);
     }
@@ -188,6 +190,7 @@ AcpiTbValidateTableHeader (
 
         ACPI_REPORT_WARNING (("Invalid table header length (0x%X) found\n",
             (UINT32) TableHeader->Length));
+
         ACPI_DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_HEADER);
     }
@@ -228,8 +231,10 @@ AcpiTbVerifyTableChecksum (
 
     if (Checksum)
     {
-        ACPI_REPORT_WARNING (("Invalid checksum in table [%4.4s] (%02X, sum %02X is not zero)\n",
-            TableHeader->Signature, (UINT32) TableHeader->Checksum, (UINT32) Checksum));
+        ACPI_REPORT_WARNING ((
+            "Invalid checksum in table [%4.4s] (%02X, sum %02X is not zero)\n",
+            TableHeader->Signature, (UINT32) TableHeader->Checksum,
+            (UINT32) Checksum));
 
         Status = AE_BAD_CHECKSUM;
     }
@@ -244,7 +249,7 @@ AcpiTbVerifyTableChecksum (
  * PARAMETERS:  Buffer              - Buffer to checksum
  *              Length              - Size of the buffer
  *
- * RETURNS      8 bit checksum of buffer
+ * RETURN:      8 bit checksum of buffer
  *
  * DESCRIPTION: Computes an 8 bit checksum of the buffer(length) and returns it.
  *

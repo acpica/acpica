@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -131,6 +131,7 @@
  *
  * PARAMETERS:  Signature           - Table signature to match
  *              TableInfo           - Return data
+ *              SearchType          - Table type to match (primary/secondary)
  *
  * RETURN:      Status
  *
@@ -151,9 +152,8 @@ AcpiTbMatchSignature (
     ACPI_FUNCTION_TRACE ("TbMatchSignature");
 
 
-    /*
-     * Search for a signature match among the known table types
-     */
+    /* Search for a signature match among the known table types */
+
     for (i = 0; i < NUM_ACPI_TABLE_TYPES; i++)
     {
         if (!(AcpiGbl_TableData[i].Flags & SearchType))
@@ -242,6 +242,7 @@ AcpiTbInstallTable (
  * FUNCTION:    AcpiTbRecognizeTable
  *
  * PARAMETERS:  TableInfo           - Return value from AcpiTbGetTableBody
+ *              SearchType          - Table type to match (primary/secondary)
  *
  * RETURN:      Status
  *
@@ -339,9 +340,8 @@ AcpiTbInitTableDescriptor (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /*
-     * Install the table into the global data structure
-     */
+    /* Install the table into the global data structure */
+
     ListHead = &AcpiGbl_TableLists[TableType];
 
     /*
@@ -409,7 +409,8 @@ AcpiTbInitTableDescriptor (
     TableDesc->AmlStart             = (UINT8 *) (TableDesc->Pointer + 1),
     TableDesc->AmlLength            = (UINT32) (TableDesc->Length -
                                         (UINT32) sizeof (ACPI_TABLE_HEADER));
-    TableDesc->TableId              = AcpiUtAllocateOwnerId (ACPI_OWNER_TYPE_TABLE);
+    TableDesc->TableId              = AcpiUtAllocateOwnerId (
+                                        ACPI_OWNER_TYPE_TABLE);
     TableDesc->LoadedIntoNamespace  = FALSE;
 
     /*
