@@ -392,6 +392,8 @@ NsEvaluateByHandle (
      * Two major cases here:
      * 1) The object is an actual control method -- execute it.
      * 2) The object is not a method -- just return it's current value
+     *
+     * In both cases, the namespace is unlocked by the Ns* procedure
      */
 
     if (NsGetType (ObjEntry) == ACPI_TYPE_Method)
@@ -415,7 +417,6 @@ NsEvaluateByHandle (
 
     if (Status == AE_CTRL_RETURN_VALUE)
     {
-BREAKPOINT3;
         /* 
          * If the Method returned a value and the caller provided a place
          * to store a returned value, Copy the returned value to the object
@@ -437,6 +438,10 @@ BREAKPOINT3;
             Status = AE_OK;
         }
     }
+
+    /* Namespace was unlocked by the handling Ns* function, so we just return */
+
+    return_ACPI_STATUS (Status);
 
 
 UnlockAndExit:
@@ -498,8 +503,16 @@ NsExecuteControlMethod (
 
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n", ObjDesc->Method.Pcode + 1));
 
+   
+    /* 
+     * Unlock the namespace before execution.  This allows namespace access
+     * via the external Acpi* interfaces while a method is being executed.
+     * However, any namespace deletion must acquire both the namespace and
+     * interpter locks to ensure that no thread is using the portion of the
+     * namespace that is being deleted.
+     */
 
-    /* TBD: Should we unlock the namespace during control method execution ? */
+    CmReleaseMutex (MTX_NAMESPACE);
 
     /* 
      * Excecute the method via the interpreter
@@ -536,20 +549,23 @@ NsGetObjectValue (
 
     FUNCTION_TRACE ("NsGetObjectValue");
 
+
     /*
      *  We take the value from certain objects directly
      */
 
     if ((ObjectEntry->Type == ACPI_TYPE_Processor) ||
-        (ObjectEntry->Type == ACPI_TYPE_Power)) {
+        (ObjectEntry->Type == ACPI_TYPE_Power)) 
+    {
 
         /*
-         *  Create an Reference object to contain the object
+         *  Create a Reference object to contain the object
          */
         ObjDesc = CmCreateInternalObject (ObjectEntry->Type);
         if (!ObjDesc)
         {
-            return_ACPI_STATUS (AE_NO_MEMORY);
+           Status = AE_NO_MEMORY;
+           goto UnlockAndExit;
         }
 
         /*
@@ -559,24 +575,31 @@ NsGetObjectValue (
         ValDesc = NsGetAttachedObject (ObjectEntry);
         if (!ValDesc)
         {
-            return_ACPI_STATUS (AE_AML_INTERNAL);
+            Status = AE_NULL_OBJECT;
+            goto UnlockAndExit;
         }
 
         /*
-         *  Just copy form the original to the return object
+         *  Just copy from the original to the return object
          */
 
-        MEMCPY ((void *) &ObjDesc->Common.FirstNonCommonByte,
-                (void *) &ValDesc->Common.FirstNonCommonByte,
+        MEMCPY (&ObjDesc->Common.FirstNonCommonByte, &ValDesc->Common.FirstNonCommonByte,
                 (sizeof(ACPI_OBJECT_Common) - sizeof(ObjDesc->Common.FirstNonCommonByte)));
-    } else {
-        
+    } 
+    
+
+    /*
+     * Other objects require a reference object wrapper which we then attempt to resolve.
+     */
+    else 
+    {       
         /* Create an Reference object to contain the object */
 
         ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_Reference);
         if (!ObjDesc)
         {
-            return_ACPI_STATUS (AE_NO_MEMORY);
+           Status = AE_NO_MEMORY;
+           goto UnlockAndExit;
         }
 
         /* Construct a descriptor pointing to the name */
@@ -591,6 +614,7 @@ NsGetObjectValue (
 
         Status = AmlResolveToValue (&ObjDesc);
     }
+
     /* 
      * If AmlResolveToValue() succeeded, the return value was placed in ObjDesc.
      */
@@ -600,10 +624,14 @@ NsGetObjectValue (
         Status = AE_CTRL_RETURN_VALUE;
 
         *ReturnObjDesc = ObjDesc;
-        DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning obj %p\n", 
-                            *ReturnObjDesc));
+        DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning obj %p\n", *ReturnObjDesc));
     }
 
 
+UnlockAndExit:
+
+    /* Unlock the namespace */
+
+    CmReleaseMutex (MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
