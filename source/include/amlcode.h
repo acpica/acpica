@@ -242,20 +242,20 @@
 
 /* Bogus opcodes (they are actually two separate opcodes) */
 
-#define AML_LGREATEREQUAL           (UINT16) 0x9295
-#define AML_LLESSEQUAL              (UINT16) 0x9294
-#define AML_LNOTEQUAL               (UINT16) 0x9293
+#define AML_LGREATEREQUAL_OP        (UINT16) 0x9295
+#define AML_LLESSEQUAL_OP           (UINT16) 0x9294
+#define AML_LNOTEQUAL_OP            (UINT16) 0x9293
 
 
 /* Internal opcodes */
 
-#define AML_NAMEPATH                (UINT16) 0x002d
-#define AML_NAMEDFIELD              (UINT16) 0x0030
-#define AML_RESERVEDFIELD           (UINT16) 0x0031
-#define AML_ACCESSFIELD             (UINT16) 0x0032
-#define AML_BYTELIST                (UINT16) 0x0033
-#define AML_STATICSTRING            (UINT16) 0x0034
-#define AML_METHODCALL              (UINT16) 0x0035
+#define AML_NAMEPATH_OP             (UINT16) 0x002d
+#define AML_NAMEDFIELD_OP           (UINT16) 0x0030
+#define AML_RESERVEDFIELD_OP        (UINT16) 0x0031
+#define AML_ACCESSFIELD_OP          (UINT16) 0x0032
+#define AML_BYTELIST_OP             (UINT16) 0x0033
+#define AML_STATICSTRING_OP         (UINT16) 0x0034
+#define AML_METHODCALL_OP           (UINT16) 0x0035
 
 
 
@@ -263,6 +263,8 @@
 /*
  * argument types
  */
+
+/*
 #define AML_ASCIICHARLIST_ARG       'A'
 #define AML_BYTEDATA_ARG            'b'
 #define AML_BYTELIST_ARG            'B'
@@ -278,6 +280,50 @@
 #define AML_TERMARG_ARG             't'
 #define AML_TERMLIST_ARG            'T'
 #define AML_WORDDATA_ARG            'w'
+*/
+
+
+#define ARG_NONE                    0x0
+
+/*
+ * Argument types for the AML Parser 
+ */
+
+#define ARGP_CHARLIST               0x1
+#define ARGP_BYTEDATA               0x2
+#define ARGP_BYTELIST               0x3
+#define ARGP_WORDDATA               0x4
+#define ARGP_DWORDDATA              0x5
+#define ARGP_DATAOBJ                0x6
+#define ARGP_DATAOBJLIST            0x7
+#define ARGP_FIELDLIST              0x8
+#define ARGP_NAMESTRING             0x9
+#define ARGP_OBJLIST                0xA
+#define ARGP_PKGLENGTH              0xB
+#define ARGP_SUPERNAME              0xC
+#define ARGP_TARGET                 0xD
+#define ARGP_TERMARG                0xE
+#define ARGP_TERMLIST               0xF
+
+/*
+ * Resolved argument types for the AML Interpreter
+ */
+
+#define ARGI_ANYTYPE                0x1
+#define ARGI_TARGETREF              0x2
+#define ARGI_LVALUE                 0x3
+#define ARGI_IF                     0x4
+#define ARGI_NUMBER                 0x5
+#define ARGI_STRING                 0x6
+#define ARGI_BUFFER                 0x7
+#define ARGI_PACKAGE                0x8
+#define ARGI_DATAOBJECT             0x9     /* Buffer, string, or package */
+#define ARGI_COMPLEXOBJ             0xA     /* Buffer or package */
+#define ARGI_MUTEX                  0xB
+#define ARGI_EVENT                  0xC
+
+#define ARGI_INVALID_OPCODE         0xFFFFFFFF
+
 
 
 /*
