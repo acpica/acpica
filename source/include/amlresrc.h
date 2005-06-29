@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource.h - ASL resource descriptors
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,6 @@
 #define __ASLRESOURCE_H
 
 
-
 #define ASL_RESNAME_ADDRESS                     "_ADR"
 #define ASL_RESNAME_ALIGNMENT                   "_ALN"
 #define ASL_RESNAME_ADDRESSSPACE                "_ASI"
@@ -148,8 +147,6 @@
 #define ASL_RESNAME_TRANSTYPE                   "_TRS"  /* Sparse(1), Dense(0) */
 #define ASL_RESNAME_TYPE                        "_TTP"  /* Translation(1), Static (0) */
 #define ASL_RESNAME_XFERTYPE                    "_SIZ"  /* 8(0), 8And16(1), 16(2) */
-
-
 
 
 /* ResourceType values */
@@ -192,8 +189,6 @@ typedef struct asl_resource_node
     struct asl_resource_node    *Next;
 
 } ASL_RESOURCE_NODE;
-
-
 
 
 /*
@@ -294,8 +289,6 @@ typedef struct asl_end_tag_desc
     UINT8                       Checksum;
 
 } ASL_END_TAG_DESC;
-
-
 
 
 /* LARGE descriptors */
@@ -404,7 +397,6 @@ typedef struct asl_word_address_desc
 } ASL_WORD_ADDRESS_DESC;
 
 
-
 #pragma pack(1)
 typedef struct asl_extended_xrupt_desc
 {
@@ -461,7 +453,6 @@ typedef union asl_resource_desc
 #define NEXT_RESOURCE_DESC(a,b)     (ASL_RESOURCE_DESC *) (((char *) (a)) + sizeof(b))
 
 #define DEFAULT_RESOURCE_DESC_SIZE  (sizeof (ASL_RESOURCE_DESC) + sizeof (ASL_END_TAG_DESC))
-
 
 
 /*
@@ -529,42 +520,42 @@ ASL_RESOURCE_NODE *
 RsDoInterruptDescriptor (
     ASL_PARSE_NODE          *Node,
     UINT32                  CurrentByteOffset);
-   
+
 ASL_RESOURCE_NODE *
 RsDoIoDescriptor (
     ASL_PARSE_NODE          *Node,
     UINT32                  CurrentByteOffset);
-   
+
 ASL_RESOURCE_NODE *
 RsDoIrqDescriptor (
     ASL_PARSE_NODE          *Node,
     UINT32                  CurrentByteOffset);
-    
+
 ASL_RESOURCE_NODE *
 RsDoIrqNoFlagsDescriptor (
     ASL_PARSE_NODE          *Node,
     UINT32                  CurrentByteOffset);
-    
+
 ASL_RESOURCE_NODE *
 RsDoMemory24Descriptor (
     ASL_PARSE_NODE          *Node,
     UINT32                  CurrentByteOffset);
-    
+
 ASL_RESOURCE_NODE *
 RsDoMemory32Descriptor (
     ASL_PARSE_NODE          *Node,
     UINT32                  CurrentByteOffset);
-    
+
 ASL_RESOURCE_NODE *
 RsDoMemory32FixedDescriptor (
     ASL_PARSE_NODE          *Node,
     UINT32                  CurrentByteOffset);
-    
+
 ASL_RESOURCE_NODE *
 RsDoStartDependentDescriptor (
     ASL_PARSE_NODE          *Node,
     UINT32                  CurrentByteOffset);
-    
+
 ASL_RESOURCE_NODE *
 RsDoStartDependentNoPriDescriptor (
     ASL_PARSE_NODE          *Node,
