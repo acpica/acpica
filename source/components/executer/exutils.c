@@ -117,6 +117,7 @@
 #define __ISUTILS_C__
 
 #include <acpi.h>
+#include <parser.h>
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
@@ -125,6 +126,33 @@
         MODULE_NAME         ("isutils");
 
 static char                 hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlValidateObjectType
+ *
+ * PARAMETERS:  Type            Object type to validate
+ *
+ * DESCRIPTION: Determine if a type is a valid ACPI object type
+ *
+ ****************************************************************************/
+
+BOOLEAN
+AmlValidateObjectType (
+    ACPI_OBJECT_TYPE        Type)
+{
+
+    if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
+        (Type > INTERNAL_TYPE_MAX))
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
 
 
 /*****************************************************************************
@@ -155,20 +183,12 @@ AmlAppendOperandDiag(
 /* TBD: Rparser only    AmlGetCurrentLocation (&MthDesc); */
 
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
-                    FileName, LineNum,
-                    (OpCode > ACPI_UCHAR_MAX)
-                        ? Gbl_LongOps[OpCode & 0x00ff]
-                        : Gbl_ShortOps[OpCode],
-                        NULL /*MthDesc.Method.Pcode*/));
+                    FileName, LineNum, PsGetOpcodeName (OpCode), NULL /*MthDesc.Method.Pcode*/));
 
     if (GetDebugLevel () > 0)
     {
-        DUMP_STACK (IMODE_Execute,
-                      (OpCode > ACPI_UCHAR_MAX)
-                      ? Gbl_LongOps[OpCode & 0x00ff]
-                      : Gbl_ShortOps[OpCode],
-                      NumOperands,
-                      "after PrepStack failed");
+        DUMP_STACK (IMODE_Execute, PsGetOpcodeName (OpCode),
+                      NumOperands, "after PrepStack failed");
     }
 }
 
