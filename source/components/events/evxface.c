@@ -491,7 +491,7 @@ AcpiInstallNotifyHandler (
     NOTIFY_HANDLER          Handler, 
     void                    *Context)
 {
-    ACPI_OBJECT             *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
     NAME_TABLE_ENTRY        *ObjEntry;
 
 
@@ -572,7 +572,7 @@ AcpiRemoveNotifyHandler (
     ACPI_HANDLE             Device, 
     NOTIFY_HANDLER          Handler)
 {
-    ACPI_OBJECT             *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
     NAME_TABLE_ENTRY        *ObjEntry;
 
 
