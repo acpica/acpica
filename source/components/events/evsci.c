@@ -154,7 +154,7 @@
 UINT32 
 EvSciHandler (void *Context)
 {
-    UINT32 InterruptHandled = 0;
+    UINT32 InterruptHandled = INTERRUPT_NOT_HANDLED;
 
     FUNCTION_TRACE("EvSciHandler");
 
@@ -164,27 +164,25 @@ EvSciHandler (void *Context)
      * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
      * required to treat the SCI interrupt as sharable, level, active low.
      */
-    if (READ_ACPI_REGISTER (SCI_EN))
-    {
-        /*
-         * Fixed Events:
-         * -------------
-         * Check for and dispatch any Fixed Events that have occurred
-         */
-        InterruptHandled &= EvFixedEventDetect ();
-
-        /*
-         * GPEs:
-         * -----
-         * Check for and dispatch any GPEs that have occurred
-         */
-        InterruptHandled &= EvGpeDetect ();
-    }
-    else
+    if (!READ_ACPI_REGISTER (SCI_EN))
     {
         REPORT_ERROR ("Received and SCI but ACPI is not enabled.");
-        InterruptHandled = INTERRUPT_NOT_HANDLED;
+        return_VALUE (INTERRUPT_NOT_HANDLED);
     }
+
+    /*
+     * Fixed Events:
+     * -------------
+     * Check for and dispatch any Fixed Events that have occurred
+     */
+    InterruptHandled |= EvFixedEventDetect ();
+
+    /*
+     * GPEs:
+     * -----
+     * Check for and dispatch any GPEs that have occurred
+     */
+    InterruptHandled |= EvGpeDetect ();
 
     return_VALUE (InterruptHandled);
 }
