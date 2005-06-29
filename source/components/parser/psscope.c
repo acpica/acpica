@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psscope - Parser scope stack management routines
- *              $Revision: 1.20 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -213,7 +213,7 @@ AcpiPsInitScope (
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              Op                  - Current op to be pushed
- *              NextArg             - Next op argument (to be pushed)
+ *              RemainingArgs       - List of args remaining
  *              ArgCount            - Fixed or variable number of args
  *
  * RETURN:      Status
@@ -276,8 +276,9 @@ AcpiPsPushScope (
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *              Op                  - Where the popped op is returned
- *              NextArg             - Where the popped "next argument" is
+ *              ArgList             - Where the popped "next argument" is
  *                                    returned
+ *              ArgCount            - Count of objects in ArgList
  *
  * RETURN:      Status
  *
@@ -328,7 +329,7 @@ AcpiPsPopScope (
 
 
     DEBUG_PRINT (TRACE_PARSE,
-        ("PsPopScope:  Popped Op %p Args %d\n", *Op, *ArgCount));
+        ("PsPopScope:  Popped Op %p Args %X\n", *Op, *ArgCount));
     return_VOID;
 }
 

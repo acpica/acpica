@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.63 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,7 @@
  * generated parser to tightly constrain stack and dynamic memory
  * usage.  At the same time, parsing is kept flexible and the code
  * fairly compact by parsing based on a list of AML opcode
- * templates in AcpiGbl_AmlOpInfo[]
+ * templates in AmlOpInfo[]
  */
 
 #include "acpi.h"
@@ -141,101 +141,6 @@ extern UINT32               AcpiGbl_ScopeDepth;
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsDeleteCompletedOp
- *
- * PARAMETERS:  State           - Walk state
- *              Op              - Completed op
- *
- * RETURN:      AE_OK
- *
- * DESCRIPTION: Callback function for AcpiPsGetNextWalkOp().  Used during
- *              AcpiPsDeleteParse tree to delete Op objects when all sub-objects
- *              have been visited (and deleted.)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiPsDeleteCompletedOp (
-    ACPI_WALK_STATE         *State,
-    ACPI_PARSE_OBJECT       *Op)
-{
-
-    AcpiPsFreeOp (Op);
-    return (AE_OK);
-}
-
-
-#ifndef PARSER_ONLY
-/*******************************************************************************
- *
- * FUNCTION:    AcpiPsDeleteParseTree
- *
- * PARAMETERS:  SubtreeRoot         - Root of tree (or subtree) to delete
- *
- * RETURN:      None
- *
- * DESCRIPTION: Delete a portion of or an entire parse tree.
- *
- ******************************************************************************/
-
-void
-AcpiPsDeleteParseTree (
-    ACPI_PARSE_OBJECT       *SubtreeRoot)
-{
-    ACPI_WALK_STATE         *WalkState;
-    ACPI_WALK_LIST          WalkList;
-
-
-    FUNCTION_TRACE_PTR ("PsDeleteParseTree", SubtreeRoot);
-
-
-    if (!SubtreeRoot)
-    {
-        return_VOID;
-    }
-
-    /* Create and initialize a new walk list */
-
-    WalkList.WalkState = NULL;
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
-    if (!WalkState)
-    {
-        return_VOID;
-    }
-
-    WalkState->ParserState          = NULL;
-    WalkState->ParseFlags           = 0;
-    WalkState->DescendingCallback   = NULL;
-    WalkState->AscendingCallback    = NULL;
-
-
-    WalkState->Origin = SubtreeRoot;
-    WalkState->NextOp = SubtreeRoot;
-
-
-    /* Head downward in the tree */
-
-    WalkState->NextOpInfo = NEXT_OP_DOWNWARD;
-
-    /* Visit all nodes in the subtree */
-
-    while (WalkState->NextOp)
-    {
-        AcpiPsGetNextWalkOp (WalkState, WalkState->NextOp,
-                                AcpiPsDeleteCompletedOp);
-    }
-
-    /* We are done with this walk */
-
-    AcpiDsDeleteWalkState (WalkState);
-
-    return_VOID;
-}
-#endif
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiPsPeekOpcode
  *
  * PARAMETERS:  None
@@ -246,7 +151,7 @@ AcpiPsDeleteParseTree (
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiPsGetOpcodeSize (
     UINT32                  Opcode)
 {
@@ -428,7 +333,7 @@ AcpiPsFindObject (
  *
  ******************************************************************************/
 
-BOOLEAN
+static BOOLEAN
 AcpiPsCompleteThisOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
@@ -560,8 +465,7 @@ AcpiPsCompleteThisOp (
  *
  ******************************************************************************/
 
-
-ACPI_STATUS
+static ACPI_STATUS
 AcpiPsNextParseState (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op,
@@ -800,7 +704,7 @@ AcpiPsParseLoop (
                 /* The opcode is unrecognized.  Just skip unknown opcodes */
 
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("ParseLoop: Found unknown opcode 0x%lX at AML offset 0x%X, ignoring\n",
+                    ("ParseLoop: Found unknown opcode %lX at AML offset %X, ignoring\n",
                     Opcode, AmlOffset));
 
                 DUMP_BUFFER (ParserState->Aml, 128);
