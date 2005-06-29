@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.13 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -214,6 +214,8 @@ EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
 EXTERN ASL_LISTING_NODE         INIT_GLOBAL (*Gbl_ListingNode, NULL);
 EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheNext, NULL);
 EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*Gbl_NodeCacheLast, NULL);
+EXTERN NATIVE_CHAR              INIT_GLOBAL (*Gbl_StringCacheNext, NULL);
+EXTERN NATIVE_CHAR              INIT_GLOBAL (*Gbl_StringCacheLast, NULL);
 
 
 

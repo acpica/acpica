@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.32 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -424,8 +424,7 @@ LkNamespaceLocateBegin (
     UINT32                  MinimumLength;
 
 
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("NamespaceLocateBegin: PsNode %p\n", PsNode));
+    DEBUG_PRINT (TRACE_DISPATCH, ("NamespaceLocateBegin: PsNode %p\n", PsNode));
 
 
     /* We are only interested in opcodes that have an associated name */
@@ -453,8 +452,7 @@ LkNamespaceLocateBegin (
     DataType = AcpiDsMapNamedOpcodeToDataType (PsNode->AmlOpcode);
 
 
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("NamespaceLocateBegin: Type=%x\n", DataType));
+    DEBUG_PRINT (TRACE_DISPATCH, ("NamespaceLocateBegin: Type=%x\n", DataType));
 
 
     /*
@@ -530,7 +528,7 @@ LkNamespaceLocateBegin (
          * AML code generation
          */
 
-        AcpiUtFree (PsNode->Value.String);
+        // TBD: obsolete, no need to delete: AcpiUtFree (PsNode->Value.String);
 
         PsNode->ParseOpcode     = INTEGER;
         PsNode->AmlOpcode       = AML_DWORD_OP;
@@ -640,14 +638,14 @@ LkNamespaceLocateBegin (
              (PsNode->Parent->ParseOpcode == INDEXFIELD)))
     {
         /*
-         * Offset checking for fields.  If the parent operation region has a 
-         * constant length (known at compile time), we can check fields 
-         * defined in that region against the region length.  This will catch 
+         * Offset checking for fields.  If the parent operation region has a
+         * constant length (known at compile time), we can check fields
+         * defined in that region against the region length.  This will catch
          * fields and field units that cannot possibly fit within the region.
          */
         if (PsNode == PsNode->Parent->Child)
         {
-            /* 
+            /*
              * This is the first child of the field node, which is
              * the name of the region.  Get the parse node for the
              * region -- which contains the length of the regoin.
@@ -699,7 +697,7 @@ LkNamespaceLocateBegin (
                  * field unit (start offset plus length) must fit within the
                  * region.
                  */
-                if (PsNode->Parent->ExtraValue < 
+                if (PsNode->Parent->ExtraValue <
                    (PsNode->ExtraValue + PsNode->Child->Value.Integer32))
                 {
                     AslError (ASL_ERROR, ASL_MSG_FIELD_UNIT_OFFSET, PsNode, NULL);

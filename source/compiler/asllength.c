@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.30 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,10 +119,11 @@
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
 #include "amlcode.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          ACPI_COMPILER
-        ACPI_MODULE_NAME    ("asllength")
+        MODULE_NAME         ("asllength")
 
 
 /*******************************************************************************
@@ -131,7 +132,7 @@
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:      Status
+ * RETURN:      None.
  *
  * DESCRIPTION: Walk callback to initialize (and re-initialize) the node
  *              subtree length(s) to zero.  The Subtree lengths are bubbled
@@ -141,12 +142,13 @@
 
 ACPI_STATUS
 LnInitLengthsWalk (
-    ACPI_PARSE_OBJECT       *Op,
+    ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context)
 {
 
-    Op->Asl.AmlSubtreeLength = 0;
+    Node->AmlSubtreeLength = 0;
+
     return (AE_OK);
 }
 
@@ -157,7 +159,7 @@ LnInitLengthsWalk (
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Walk callback to calculate the total AML length.
  *              1) Calculate the AML lengths (opcode, package length, etc.) for
@@ -174,25 +176,26 @@ LnInitLengthsWalk (
 
 ACPI_STATUS
 LnPackageLengthWalk (
-    ACPI_PARSE_OBJECT       *Op,
+    ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context)
 {
 
     /* Generate the AML lengths for this node */
 
-    CgGenerateAmlLengths (Op);
+    CgGenerateAmlLengths (Node);
 
     /* Bubble up all lengths (this node and all below it) to the parent */
 
-    if ((Op->Asl.Parent) &&
-        (Op->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
+    if ((Node->Parent) &&
+        (Node->ParseOpcode != DEFAULT_ARG))
     {
-        Op->Asl.Parent->Asl.AmlSubtreeLength += (Op->Asl.AmlLength +
-                                           Op->Asl.AmlOpcodeLength +
-                                           Op->Asl.AmlPkgLenBytes +
-                                           Op->Asl.AmlSubtreeLength);
+        Node->Parent->AmlSubtreeLength += (Node->AmlLength +
+                                            Node->AmlOpcodeLength +
+                                            Node->AmlPkgLenBytes +
+                                            Node->AmlSubtreeLength);
     }
+
     return (AE_OK);
 }
 
@@ -201,7 +204,7 @@ LnPackageLengthWalk (
  *
  * FUNCTION:    LnAdjustLengthToRoot
  *
- * PARAMETERS:  Op      - Node whose Length was changed
+ * PARAMETERS:  PsNode      - Node whose Length was changed
  *
  * RETURN:      None.
  *
@@ -214,19 +217,19 @@ LnPackageLengthWalk (
 
 void
 LnAdjustLengthToRoot (
-    ACPI_PARSE_OBJECT       *SubtreeOp,
+    ASL_PARSE_NODE          *PsNode,
     UINT32                  LengthDelta)
 {
-    ACPI_PARSE_OBJECT       *Op;
+    ASL_PARSE_NODE          *Node;
 
 
     /* Adjust all subtree lengths up to the root */
 
-    Op = SubtreeOp->Asl.Parent;
-    while (Op)
+    Node = PsNode->Parent;
+    while (Node)
     {
-        Op->Asl.AmlSubtreeLength -= LengthDelta;
-        Op = Op->Asl.Parent;
+        Node->AmlSubtreeLength -= LengthDelta;
+        Node = Node->Parent;
     }
 
     /* Adjust the global table length */
@@ -239,7 +242,7 @@ LnAdjustLengthToRoot (
  *
  * FUNCTION:    CgGetPackageLenByteCount
  *
- * PARAMETERS:  Op            - Parse node
+ * PARAMETERS:  Node            - Parse node
  *              PackageLength   - Length to be encoded
  *
  * RETURN:      Required length of the package length encoding
@@ -251,7 +254,7 @@ LnAdjustLengthToRoot (
 
 UINT8
 CgGetPackageLenByteCount (
-    ACPI_PARSE_OBJECT       *Op,
+    ASL_PARSE_NODE          *Node,
     UINT32                  PackageLength)
 {
 
@@ -260,27 +263,32 @@ CgGetPackageLenByteCount (
      * Note: the package length includes the number of bytes used to encode
      * the package length, so we must account for this also.
      */
+
     if (PackageLength <= (0x0000003F - 1))
     {
         return (1);
     }
+
     else if (PackageLength <= (0x00000FFF - 2))
     {
         return (2);
     }
+
     else if (PackageLength <= (0x000FFFFF - 3))
     {
         return (3);
     }
+
     else if (PackageLength <= (0x0FFFFFFF - 4))
     {
         return (4);
     }
+
     else
     {
         /* Fatal error - the package length is too large to encode */
 
-        AslError (ASL_ERROR, ASL_MSG_ENCODING_LENGTH, Op, NULL);
+        AslError (ASL_ERROR, ASL_MSG_ENCODING_LENGTH, Node, NULL);
     }
 
     return (0);
@@ -291,7 +299,7 @@ CgGetPackageLenByteCount (
  *
  * FUNCTION:    CgGenerateAmlOpcodeLength
  *
- * PARAMETERS:  Op        - Parse node whose AML opcode lengths will be
+ * PARAMETERS:  Node        - Parse node whose AML opcode lengths will be
  *                            calculated
  *
  * RETURN:      None.
@@ -303,54 +311,49 @@ CgGetPackageLenByteCount (
 
 void
 CgGenerateAmlOpcodeLength (
-    ACPI_PARSE_OBJECT       *Op)
+    ASL_PARSE_NODE          *Node)
 {
+
 
     /* Check for two-byte opcode */
 
-    if (Op->Asl.AmlOpcode > 0x00FF)
+    if (Node->AmlOpcode > 0x00FF)
     {
-        Op->Asl.AmlOpcodeLength = 2;
+        Node->AmlOpcodeLength = 2;
     }
+
     else
     {
-        Op->Asl.AmlOpcodeLength = 1;
+        Node->AmlOpcodeLength = 1;
     }
 
     /* Does this opcode have an associated "PackageLength" field? */
 
-    Op->Asl.AmlPkgLenBytes = 0;
-    if (Op->Asl.CompileFlags & NODE_AML_PACKAGE)
+    Node->AmlPkgLenBytes = 0;
+    if (Node->Flags & NODE_AML_PACKAGE)
     {
-        Op->Asl.AmlPkgLenBytes = CgGetPackageLenByteCount (Op, Op->Asl.AmlSubtreeLength);
+        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node, Node->AmlSubtreeLength);
     }
+
 
     /* Data opcode lengths are easy */
 
-    switch (Op->Asl.AmlOpcode)
+    switch (Node->AmlOpcode)
     {
     case AML_BYTE_OP:
-
-        Op->Asl.AmlLength = 1;
+        Node->AmlLength = 1;
         break;
 
     case AML_WORD_OP:
-
-        Op->Asl.AmlLength = 2;
+        Node->AmlLength = 2;
         break;
 
     case AML_DWORD_OP:
-
-        Op->Asl.AmlLength = 4;
+        Node->AmlLength = 4;
         break;
 
     case AML_QWORD_OP:
-
-        Op->Asl.AmlLength = 8;
-        break;
-
-    default:
-        /* All data opcodes must be above */
+        Node->AmlLength = 8;
         break;
     }
 }
@@ -360,7 +363,7 @@ CgGenerateAmlOpcodeLength (
  *
  * FUNCTION:    CgGenerateAmlLengths
  *
- * PARAMETERS:  Op        - Parse node
+ * PARAMETERS:  Node        - Parse node
  *
  * RETURN:      None.
  *
@@ -371,80 +374,67 @@ CgGenerateAmlOpcodeLength (
 
 void
 CgGenerateAmlLengths (
-    ACPI_PARSE_OBJECT       *Op)
+    ASL_PARSE_NODE          *Node)
 {
     char                    *Buffer;
     ACPI_STATUS             Status;
 
 
-    switch (Op->Asl.AmlOpcode)
+    switch (Node->AmlOpcode)
     {
     case AML_RAW_DATA_BYTE:
-
-        Op->Asl.AmlOpcodeLength = 0;
-        Op->Asl.AmlLength = 1;
+        Node->AmlOpcodeLength = 0;
+        Node->AmlLength = 1;
         return;
 
     case AML_RAW_DATA_WORD:
-
-        Op->Asl.AmlOpcodeLength = 0;
-        Op->Asl.AmlLength = 2;
+        Node->AmlOpcodeLength = 0;
+        Node->AmlLength = 2;
         return;
 
     case AML_RAW_DATA_DWORD:
-
-        Op->Asl.AmlOpcodeLength = 0;
-        Op->Asl.AmlLength = 4;
+        Node->AmlOpcodeLength = 0;
+        Node->AmlLength = 4;
         return;
 
     case AML_RAW_DATA_QWORD:
-
-        Op->Asl.AmlOpcodeLength = 0;
-        Op->Asl.AmlLength = 8;
+        Node->AmlOpcodeLength = 0;
+        Node->AmlLength = 8;
         return;
 
     case AML_RAW_DATA_BUFFER:
-
         /* Aml length is/was set by creator */
-
-        Op->Asl.AmlOpcodeLength = 0;
+        Node->AmlOpcodeLength = 0;
         return;
 
     case AML_RAW_DATA_CHAIN:
-
         /* Aml length is/was set by creator */
-
-        Op->Asl.AmlOpcodeLength = 0;
+        Node->AmlOpcodeLength = 0;
         return;
-
-    default:
-        break;
     }
 
-    switch (Op->Asl.ParseOpcode)
+
+    switch (Node->ParseOpcode)
     {
-    case PARSEOP_DEFINITIONBLOCK:
-
-        Gbl_TableLength = sizeof (ACPI_TABLE_HEADER) + Op->Asl.AmlSubtreeLength;
+    case DEFINITIONBLOCK:
+        Gbl_TableLength = sizeof (ACPI_TABLE_HEADER) + Node->AmlSubtreeLength;
         break;
 
-    case PARSEOP_NAMESEG:
-
-        Op->Asl.AmlOpcodeLength = 0;
-        Op->Asl.AmlLength = 4;
-        Op->Asl.ExternalName = Op->Asl.Value.String;
+    case NAMESEG:
+        Node->AmlOpcodeLength = 0;
+        Node->AmlLength = 4;
+        Node->ExternalName = Node->Value.String;
         break;
 
-    case PARSEOP_NAMESTRING:
-    case PARSEOP_METHODCALL:
-
-        if (Op->Asl.CompileFlags & NODE_NAME_INTERNALIZED)
+    case NAMESTRING:
+    case METHODCALL:
+        if (Node->Flags & NODE_NAME_INTERNALIZED)
         {
             break;
         }
 
-        Op->Asl.AmlOpcodeLength = 0;
-        Status = UtInternalizeName (Op->Asl.Value.String, &Buffer);
+        Node->AmlOpcodeLength = 0;
+        Status = UtInternalizeName (Node->Value.String, &Buffer);
         if (ACPI_FAILURE (Status))
         {
             DbgPrint (ASL_DEBUG_OUTPUT,
@@ -452,51 +442,46 @@ CgGenerateAmlLengths (
             break;
         }
 
-        Op->Asl.ExternalName = Op->Asl.Value.String;
-        Op->Asl.Value.String = Buffer;
-        Op->Asl.CompileFlags |= NODE_NAME_INTERNALIZED;
+        Node->ExternalName = Node->Value.String;
+        Node->Value.String = Buffer;
+        Node->Flags |= NODE_NAME_INTERNALIZED;
 
-        Op->Asl.AmlLength = strlen (Buffer);
+        Node->AmlLength = strlen (Buffer);
 
         /*
          * Check for single backslash reference to root,
          * make it a null terminated string in the AML
          */
-        if (Op->Asl.AmlLength == 1)
+        if (Node->AmlLength == 1)
         {
-            Op->Asl.AmlLength = 2;
+            Node->AmlLength = 2;
         }
         break;
 
-    case PARSEOP_STRING_LITERAL:
-
-        Op->Asl.AmlOpcodeLength = 1;
-        Op->Asl.AmlLength = strlen (Op->Asl.Value.String) + 1; /* Get null terminator */
+    case STRING_LITERAL:
+        Node->AmlOpcodeLength = 1;
+        Node->AmlLength = strlen (Node->Value.String) + 1; /* Get null terminator */
         break;
 
-    case PARSEOP_PACKAGE_LENGTH:
-
-        Op->Asl.AmlOpcodeLength = 0;
-        Op->Asl.AmlPkgLenBytes = CgGetPackageLenByteCount (Op, (UINT32) Op->Asl.Value.Integer);
+    case PACKAGE_LENGTH:
+        Node->AmlOpcodeLength = 0;
+        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node, Node->Value.Integer32);
         break;
 
-    case PARSEOP_RAW_DATA:
-
-        Op->Asl.AmlOpcodeLength = 0;
+    case RAW_DATA:
+        Node->AmlOpcodeLength = 0;
         break;
 
-    case PARSEOP_DEFAULT_ARG:
-    case PARSEOP_EXTERNAL:
-    case PARSEOP_INCLUDE:
-    case PARSEOP_INCLUDE_END:
+    /* Ignore the "default arg" nodes, they are extraneous at this point */
 
-        /* Ignore the "default arg" nodes, they are extraneous at this point */
-
+    case DEFAULT_ARG:
+    case EXTERNAL:
+    case INCLUDE:
+    case INCLUDE_END:
         break;
 
     default:
-
-        CgGenerateAmlOpcodeLength (Op);
+        CgGenerateAmlOpcodeLength (Node);
         break;
     }
 }
