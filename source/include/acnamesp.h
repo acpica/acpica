@@ -186,10 +186,6 @@ NsGetFACS (
  */
 
 
-INT32
-PriUnloadNameSpace (
-    void);
-
 ACPI_STATUS
 NsSetup (
     void);
@@ -200,6 +196,14 @@ NsEnter (
     NsType              Type, 
     OpMode              iLE,
     NsHandle            *RetHandle);
+
+ACPI_STATUS
+NsUnloadNamespace (
+    NsHandle            Handle);
+
+ACPI_STATUS
+NsDeleteSubtree (
+    NsHandle            StartHandle);
 
 
 /*
