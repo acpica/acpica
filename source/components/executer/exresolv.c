@@ -139,7 +139,7 @@ AmlIsMethodValue (
     {
         /* For each possible Arg and Local */
         
-        for (Index = 0; Index < (ARGBASE + NUMARG); ++Index)
+        for (Index = 0; Index < (MTH_ARG_BASE + MTH_NUM_ARGS); ++Index)
         {
             if (ObjDesc == MethodStack[MethodNestLevel][Index])
             {
@@ -301,7 +301,7 @@ AmlGetRvalue (
 
     if (!StackPtr || !*StackPtr)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Internal error - null pointer\n"));
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
@@ -323,20 +323,21 @@ AmlGetRvalue (
             Status = AE_OK;
             break;
 
+
         case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
         case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
             MvIndex = (*StackPtr)->Lvalue.OpCode - AML_Local0;
 
             DEBUG_PRINT (ACPI_INFO,
-                            ("AmlGetRvalue:Lcl%d: before AmlMthStackGetValue %p %p %08lx \n",
-                            MvIndex,StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
+                            ("AmlGetRvalue: [Local%d] before AmlMthStackGetValue %p %p %08lx \n",
+                            MvIndex, StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
 
-            Status = AmlMthStackGetValue (LCLBASE + (*StackPtr)->Lvalue.OpCode - AML_Local0,
+            Status = AmlMthStackGetValue (MTH_LOCAL_BASE + (*StackPtr)->Lvalue.OpCode - AML_Local0,
                                             *StackPtr);
 
             DEBUG_PRINT (ACPI_INFO,
-                        ("AmlGetRvalue:Lcl%d: iGMV Status=%s %p %p %08lx \n",
+                        ("AmlGetRvalue: [Local%d] after MSGV Status=%s %p %p %08lx \n",
                             MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
                             *(UINT32 *)* StackPtr));
             
@@ -344,23 +345,25 @@ AmlGetRvalue (
             {
                 /* Value is a Number */
                 
-                DEBUG_PRINT (ACPI_INFO, ("[%ld] \n", (*StackPtr)->Number.Number));
+                DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalue: [Local%d] value is [%ld] \n", 
+                                            MvIndex, (*StackPtr)->Number.Number));
             }
             break;
+
 
         case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
         case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
             DEBUG_PRINT (TRACE_EXEC,
-                            ("AmlGetRvalue:Arg%d: before AmlMthStackGetValue %p %p %08lx \n",
+                            ("AmlGetRvalue: [Arg%d] before AmlMthStackGetValue %p %p %08lx \n",
                             MvIndex = (*StackPtr)->Lvalue.OpCode - AML_Arg0,
                             StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
 
-            Status = AmlMthStackGetValue (ARGBASE + (*StackPtr)->Lvalue.OpCode - AML_Arg0,
+            Status = AmlMthStackGetValue (MTH_ARG_BASE + (*StackPtr)->Lvalue.OpCode - AML_Arg0,
                                             *StackPtr);
         
             DEBUG_PRINT (TRACE_EXEC,
-                            ("AmlGetRvalue:Arg%d: iGMV returned %s %p %p %08lx \n",
+                            ("AmlGetRvalue: [Arg%d] MSGV returned %s %p %p %08lx \n",
                             MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
                             *(UINT32 *)* StackPtr));
 
@@ -368,30 +371,39 @@ AmlGetRvalue (
             {
                 /* Value is a Number */
                 
-                DEBUG_PRINT (ACPI_INFO, ("[%ld] \n", (*StackPtr)->Number.Number));
+                DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalue: [Arg%d] value is [%ld] \n", 
+                                            MvIndex, (*StackPtr)->Number.Number));
             }
 
             break;
 
+
         case AML_ZeroOp:
+
             (*StackPtr)->ValType = (UINT8) TYPE_Number;
             (*StackPtr)->Number.Number = 0;
             Status = AE_OK;
             break;
 
+
         case AML_OneOp:
+
             (*StackPtr)->ValType = (UINT8) TYPE_Number;
             (*StackPtr)->Number.Number = 1;
             Status = AE_OK;
             break;
 
+
         case AML_OnesOp:
+
             (*StackPtr)->ValType = (UINT8) TYPE_Number;
             (*StackPtr)->Number.Number = 0xFFFFFFFF;
             Status = AE_OK;
             break;
 
+
         default:
+
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Unknown Lvalue subtype %02x\n",
                             (*StackPtr)->Lvalue.OpCode));
             Status = AE_AML_ERROR;
@@ -406,7 +418,9 @@ AmlGetRvalue (
 
         break;
 
+
     case TYPE_FieldUnit:
+
         ObjDesc = AllocateObjectDesc ();
         if (!ObjDesc)
         {   
@@ -426,7 +440,9 @@ AmlGetRvalue (
         FUNCTION_STATUS_EXIT (Status);
         return Status;
 
+
     case TYPE_BankField:
+
         ObjDesc = AllocateObjectDesc ();
         if (!ObjDesc)
         {   
@@ -447,9 +463,11 @@ AmlGetRvalue (
         return Status;
         break;
 
+
     /* XXX - may need to handle IndexField, and DefField someday */
 
     default:
+
         break;
 
     }   /* switch ((*StackPtr)->ValType) */
@@ -543,6 +561,7 @@ AmlGetRvalue (
             memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
             break;
 
+
         case TYPE_String:
 
             /* XXX - Is there a problem here if the nte points to an AML definition? */
@@ -566,7 +585,9 @@ AmlGetRvalue (
             memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
             break;
 
+
         case TYPE_Buffer:
+
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null Buffer ValuePtr\n"));
@@ -636,7 +657,9 @@ AmlGetRvalue (
 
             break;
 
+
         case TYPE_Number:
+
             DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue: case Number \n"));
 
             if (!ValDesc)
@@ -685,34 +708,47 @@ AmlGetRvalue (
                 switch (*(UINT8 *) ValDesc)
                 {
                 case AML_ZeroOp:
+
                     ObjDesc->Number.Number = 0;
                     break;
 
+
                 case AML_OneOp:
+
                     ObjDesc->Number.Number = 1;
                     break;
 
+
                 case AML_OnesOp:
+
                     ObjDesc->Number.Number = 0xFFFFFFFF;
                     break;
 
+
                 case AML_ByteOp:
+
                     ObjDesc->Number.Number = (UINT32)((UINT8 *) ValDesc)[1];
                     break;
+
 
                 /* 
                  *  XXX - WordOp and DWordOp will not work properly if the
                  *  XXX - processor's endianness does not match the AML's.
                  */
                 case AML_WordOp:
+
                     ObjDesc->Number.Number = (UINT32)*(UINT16 *)&((UINT8 *) ValDesc)[1];
                     break;
 
+
                 case AML_DWordOp:
+
                     ObjDesc->Number.Number = *(UINT32 *)&((UINT8 *) ValDesc)[1];
                     break;
 
+
                 default:
+
                     OsdFree (ObjDesc);
                     DEBUG_PRINT (ACPI_ERROR, (
                             "AmlGetRvalue/Number: internal error - expected AML number, found %02x\n",
@@ -720,11 +756,14 @@ AmlGetRvalue (
                     FUNCTION_STATUS_EXIT (AE_AML_ERROR);
                     return AE_AML_ERROR;
                 
+
                 }   /* switch */
                 
                 ObjDesc->Number.ValType = (UINT8) TYPE_Number;
             }
+
             break;
+
 
         case TYPE_DefField:
 
@@ -753,7 +792,9 @@ AmlGetRvalue (
             ObjDesc->Number.Number = TempVal;
             break;
 
+
         case TYPE_BankField:
+
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null BankField ValuePtr\n"));
@@ -817,6 +858,7 @@ AmlGetRvalue (
 
 
         case TYPE_IndexField:
+
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null IndexField ValuePtr\n"));
@@ -875,7 +917,9 @@ AmlGetRvalue (
             ObjDesc->Number.Number = TempVal;
             break;
 
+
         case TYPE_FieldUnit:
+
             if (!ValDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null FieldUnit ValuePtr\n"));
@@ -917,6 +961,7 @@ AmlGetRvalue (
         /* cases which just return the name as the rvalue */
         
         case TYPE_Device:
+
             FUNCTION_STATUS_EXIT (AE_OK);
             return AE_OK;
             break;
@@ -932,6 +977,7 @@ AmlGetRvalue (
         case TYPE_Region:        /* XXX - unimplemented, may not be needed */
 
         case TYPE_Any:
+
             DEBUG_PRINT (TRACE_EXEC, ("case %s \n",
                         NsTypeNames[NsGetType ((ACPI_HANDLE)* StackPtr)]));
           

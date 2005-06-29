@@ -156,29 +156,29 @@ AmlExecuteMethod (
     {
         /* Undefine all local variables */
     
-        for (i1 = 0; (i1 < NUMLCL) && (Status == AE_OK); ++i1)
+        for (i1 = 0; (i1 < MTH_NUM_LOCALS) && (Status == AE_OK); ++i1)
         {
-            Status = AmlMthStackSetValue (i1 + LCLBASE, NULL, NULL);
+            Status = AmlMthStackSetValue (i1 + MTH_LOCAL_BASE, NULL, NULL);
         }
 
         if (AE_OK == Status)
         {
             /*  Copy passed parameters into method stack frame  */
                 
-            for (i2 = i1 = 0; (i1 < NUMARG) && (AE_OK == Status); ++i1)
+            for (i2 = i1 = 0; (i1 < MTH_NUM_ARGS) && (AE_OK == Status); ++i1)
             {   
                 if (Params && Params[i2])   
                 {
                     /*  parameter/argument specified    */
                     /*  define ppsParams[i2++] argument object descriptor   */
                     
-                    Status = AmlMthStackSetValue (i1 + ARGBASE, Params[i2++], NULL);
+                    Status = AmlMthStackSetValue (i1 + MTH_ARG_BASE, Params[i2++], NULL);
                 }
                 else    
                 {
                     /*  no parameter/argument object descriptor definition  */
                     
-                    Status = AmlMthStackSetValue (i1 + ARGBASE, NULL, NULL);
+                    Status = AmlMthStackSetValue (i1 + MTH_ARG_BASE, NULL, NULL);
                 }
             }
         }
@@ -256,6 +256,10 @@ AmlExecStore (
     INT32                   Stacked = FALSE;
     BOOLEAN                 Locked = FALSE;
     ACPI_OBJECT             *DeleteDestDesc = NULL;
+    UINT8                   *Location=NULL;
+    UINT32                  Mask;
+
+
 
 
     FUNCTION_TRACE ("AmlExecStore");
@@ -670,10 +674,6 @@ AmlExecStore (
             
             if (AE_OK == Status)
             {
-                UINT8           *Location=NULL;
-                UINT32          Mask;
-
-
                 /* Field location is (base of buffer) + (byte offset) */
                 
                 Location = DestDesc->FieldUnit.Container->Buffer.Buffer
@@ -758,14 +758,14 @@ AmlExecStore (
     case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
     case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-        Status = AmlMthStackSetValue (LCLBASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
+        Status = AmlMthStackSetValue (MTH_LOCAL_BASE + DestDesc->Lvalue.OpCode - AML_Local0, ValDesc, DestDesc);
         break;
 
 
     case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
     case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-        Status = AmlMthStackSetValue (ARGBASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
+        Status = AmlMthStackSetValue (MTH_ARG_BASE + DestDesc->Lvalue.OpCode - AML_Arg0, ValDesc, DestDesc);
         break;
 
 
