@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -1045,18 +1046,6 @@ AcpiAmlExecCreateMethod (
     {
         ObjDesc->Method.Concurrency = INFINITE_CONCURRENCY;
     }
-
-    /* Mark the Method as not parsed yet */
-
-    ObjDesc->Method.ParserOp    = NULL;
-
-    /*
-     * Another  +1 gets added when AcpiPsxExecute is called,
-     * no need for: ObjDesc->Method.Pcode++;
-     */
-
-    ObjDesc->Method.AcpiTable   = NULL; /* TBD: [Restructure] was (UINT8 *) PcodeAddr; */
-    ObjDesc->Method.TableLength = 0;    /* TBD: [Restructure] needed? (UINT32) (WalkState->amlEnd - PcodeAddr); */
 
     /* Attach the new object to the method NTE */
 
