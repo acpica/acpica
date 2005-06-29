@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -149,6 +149,13 @@ AcpiTbDeleteAcpiTables (void)
 {
 }
 
+ACPI_STATUS
+AeLocalGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+{
+    return AE_ERROR;
+}
 
 void
 AcpiExDumpOperands (
