@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.15 $
+ *              $Revision: 1.4 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -134,7 +134,7 @@
  *
  * RETURN:      None
  *
- * DESCRIPTION: Dump a bit mask as a list of individual interrupt/DMA levels.
+ * DESCRIPTION: Dump a bit mask as a list of individual interrupt/dma levels.
  *
  ******************************************************************************/
 
@@ -195,7 +195,7 @@ AcpiDmResourceDescriptor (
     UINT8                   *ByteData,
     UINT32                  ByteCount)
 {
-    ACPI_NATIVE_UINT        CurrentByteOffset;
+    NATIVE_UINT             CurrentByteOffset;
     UINT8                   CurrentByte;
     UINT8                   DescriptorId;
     UINT32                  Length;
@@ -224,7 +224,7 @@ AcpiDmResourceDescriptor (
             CurrentByteOffset += 1;
         }
 
-        CurrentByteOffset += (ACPI_NATIVE_UINT) Length;
+        CurrentByteOffset += (NATIVE_UINT) Length;
 
         /* Determine type of resource */
 
@@ -305,7 +305,7 @@ AcpiDmResourceDescriptor (
                 AcpiOsPrintf ("/*** Missing EndDependentFunctions descriptor */");
 
                 /*
-                 * We could fix the problem, but then the ASL would not match the AML
+                 * We could fix the problem, but then the ASL would not match the AML 
                  * So, we don't do this:
                  * AcpiDmEndDependentDescriptor (DescriptorBody, Length, Level);
                  */
@@ -370,12 +370,6 @@ AcpiDmResourceDescriptor (
             break;
 
 
-        case ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE:
-
-            AcpiDmExtendedDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
         default:
             /*
              * Anything else is unrecognized.
@@ -397,7 +391,7 @@ AcpiDmResourceDescriptor (
  *
  * PARAMETERS:  Op          - Buffer Op to be examined
  *
- * RETURN:      TRUE if this Buffer Op contains a valid resource
+ * RETURN:      TRUE if this Buffer Op contains a valid resource 
  *              descriptor.
  *
  * DESCRIPTION: Walk a byte list to determine if it consists of a valid set
@@ -412,7 +406,7 @@ AcpiDmIsResourceDescriptor (
     UINT8                   *ByteData;
     UINT32                  ByteCount;
     ACPI_PARSE_OBJECT       *NextOp;
-    ACPI_NATIVE_UINT        CurrentByteOffset;
+    NATIVE_UINT             CurrentByteOffset;
     UINT8                   CurrentByte;
     UINT8                   DescriptorId;
     UINT32                  Length;
@@ -436,17 +430,10 @@ AcpiDmIsResourceDescriptor (
 
     /* Extract the data pointer and data length */
 
-    ByteCount = (UINT32) NextOp->Common.Value.Integer;
+    ByteCount = NextOp->Common.Value.Integer32;
     ByteData = NextOp->Named.Data;
 
-    /* Absolute minimum descriptor is an END_TAG (2 bytes) */
-
-    if (ByteCount < 2)
-    {
-        return (FALSE);
-    }
-
-    /* The list must have a valid 2-byte END_TAG */
+    /* The list must have a valid END_TAG */
 
     if (ByteData[ByteCount-2] != (ACPI_RDESC_TYPE_END_TAG | 1))
     {
@@ -454,10 +441,10 @@ AcpiDmIsResourceDescriptor (
     }
 
     /*
-     * Walk the byte list.  Abort on any invalid descriptor ID or
+     * Walk the byte list.  Abort on any invalid descriptor ID or 
      * or length
      */
-    for (CurrentByteOffset = 0; CurrentByteOffset < ByteCount;)
+    for (CurrentByteOffset = 0; CurrentByteOffset < ByteCount; )
     {
         CurrentByte = ByteData[CurrentByteOffset];
 
@@ -476,7 +463,7 @@ AcpiDmIsResourceDescriptor (
             CurrentByteOffset += 1;
         }
 
-        CurrentByteOffset += (ACPI_NATIVE_UINT) Length;
+        CurrentByteOffset += (NATIVE_UINT) Length;
 
         /* Determine type of resource */
 
@@ -492,7 +479,6 @@ AcpiDmIsResourceDescriptor (
         case ACPI_RDESC_TYPE_IO_PORT:
         case ACPI_RDESC_TYPE_FIXED_IO_PORT:
         case ACPI_RDESC_TYPE_SMALL_VENDOR:
-
         /*
          * "Large" type descriptors
          */
@@ -505,7 +491,6 @@ AcpiDmIsResourceDescriptor (
         case ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE:
         case ACPI_RDESC_TYPE_EXTENDED_XRUPT:
         case ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE:
-        case ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE:
 
             /* Valid descriptor ID, keep going */
 

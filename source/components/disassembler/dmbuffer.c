@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.17 $
+ *              $Revision: 1.6 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,12 +126,6 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dmbuffer")
 
-/* Local prototypes */
-
-static void
-AcpiDmUnicode (
-    ACPI_PARSE_OBJECT       *Op);
-
 
 /*******************************************************************************
  *
@@ -143,7 +137,7 @@ AcpiDmUnicode (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Dump an AML "ByteList" in Hex format
+ * DESCRIPTION: Dump a list of bytes in Hex format
  *
  ******************************************************************************/
 
@@ -211,7 +205,7 @@ AcpiDmByteList (
 
 
     ByteData = Op->Named.Data;
-    ByteCount = (UINT32) Op->Common.Value.Integer;
+    ByteCount = Op->Common.Value.Integer32;
 
     /*
      * The byte list belongs to a buffer, and can be produced by either
@@ -227,7 +221,7 @@ AcpiDmByteList (
     case ACPI_DASM_STRING:
 
         AcpiDmIndent (Info->Level);
-        AcpiUtPrintString ((char *) ByteData, ACPI_UINT8_MAX);
+        AcpiDmString ((char *) ByteData);
         AcpiOsPrintf ("\n");
         break;
 
@@ -270,7 +264,7 @@ AcpiDmIsUnicodeBuffer (
     UINT32                  WordCount;
     ACPI_PARSE_OBJECT       *SizeOp;
     ACPI_PARSE_OBJECT       *NextOp;
-    ACPI_NATIVE_UINT        i;
+    NATIVE_UINT             i;
 
 
     /* Buffer size is the buffer argument */
@@ -288,7 +282,7 @@ AcpiDmIsUnicodeBuffer (
     /* Extract the byte list info */
 
     ByteData = NextOp->Named.Data;
-    ByteCount = (UINT32) NextOp->Common.Value.Integer;
+    ByteCount = NextOp->Common.Value.Integer32;
     WordCount = ACPI_DIV_2 (ByteCount);
 
     /*
@@ -327,7 +321,7 @@ AcpiDmIsUnicodeBuffer (
  *
  * PARAMETERS:  Op              - Buffer Object to be examined
  *
- * RETURN:      TRUE if buffer contains a ASCII string, FALSE otherwise
+ * RETURN:      TRUE if buffer contains a ASCII string
  *
  * DESCRIPTION: Determine if a buffer Op contains a ASCII string
  *
@@ -359,7 +353,7 @@ AcpiDmIsStringBuffer (
     /* Extract the byte list info */
 
     ByteData = NextOp->Named.Data;
-    ByteCount = (UINT32) NextOp->Common.Value.Integer;
+    ByteCount = NextOp->Common.Value.Integer32;
 
     /* Last byte must be the null terminator */
 
@@ -388,6 +382,96 @@ AcpiDmIsStringBuffer (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDmString
+ *
+ * PARAMETERS:  String          - Null terminated ASCII string
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Dump an ASCII string with support for ACPI-defined escape
+ *              sequences.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmString (
+    char                    *String)
+{
+    UINT32                  i;
+
+
+    if (!String)
+    {
+        AcpiOsPrintf ("<\"NULL STRING PTR\">");
+        return;
+    }
+
+    AcpiOsPrintf ("\"");
+    for (i = 0; String[i]; i++)
+    {
+        /* Escape sequences */
+
+        switch (String[i])
+        {
+        case 0x07:
+            AcpiOsPrintf ("\\a");        /* BELL */
+            break;
+
+        case 0x08:
+            AcpiOsPrintf ("\\b");       /* BACKSPACE */
+            break;
+
+        case 0x0C:
+            AcpiOsPrintf ("\\f");       /* FORMFEED */
+            break;
+
+        case 0x0A:
+            AcpiOsPrintf ("\\n");       /* LINEFEED */
+            break;
+
+        case 0x0D:
+            AcpiOsPrintf ("\\r");       /* CARRIAGE RETURN*/
+            break;
+
+        case 0x09:
+            AcpiOsPrintf ("\\t");       /* HORIZONTAL TAB */
+            break;
+
+        case 0x0B:
+            AcpiOsPrintf ("\\v");       /* VERTICAL TAB */
+            break;
+
+        case '\'':                      /* Single Quote */
+        case '\"':                      /* Double Quote */
+        case '\\':                      /* Backslash */
+            AcpiOsPrintf ("\\%c", (int) String[i]);
+            break;
+
+        default:
+
+            /* Check for printable character or hex escape */
+
+            if (ACPI_IS_PRINT (String[i]))
+            {
+                /* This is a normal character */
+
+                AcpiOsPrintf ("%c", (int) String[i]);
+            }
+            else
+            {
+                /* All others will be Hex escapes */
+
+                AcpiOsPrintf ("\\x%2.2X", (INT32) String[i]);
+            }
+            break;
+        }
+    }
+    AcpiOsPrintf ("\"");
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDmUnicode
  *
  * PARAMETERS:  Op              - Byte List op containing Unicode string
@@ -399,7 +483,7 @@ AcpiDmIsStringBuffer (
  *
  ******************************************************************************/
 
-static void
+void
 AcpiDmUnicode (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -411,7 +495,7 @@ AcpiDmUnicode (
     /* Extract the buffer info as a WORD buffer */
 
     WordData = ACPI_CAST_PTR (UINT16, Op->Named.Data);
-    WordCount = ACPI_DIV_2 (((UINT32) Op->Common.Value.Integer));
+    WordCount = ACPI_DIV_2 (Op->Common.Value.Integer32);
 
 
     AcpiOsPrintf ("\"");
@@ -429,7 +513,7 @@ AcpiDmUnicode (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiIsEisaId
+ * FUNCTION:    AcpiIsEisaId 
  *
  * PARAMETERS:  Op              - Op to be examined
  *
@@ -446,7 +530,7 @@ AcpiIsEisaId (
     UINT32                  Name;
     UINT32                  BigEndianId;
     ACPI_PARSE_OBJECT       *NextOp;
-    ACPI_NATIVE_UINT        i;
+    NATIVE_UINT             i;
     UINT32                  Prefix[3];
 
 
@@ -457,10 +541,10 @@ AcpiIsEisaId (
     {
         return;
     }
-
+    
     /* We are looking for _HID */
 
-    if (ACPI_STRNCMP ((char *) &Name, METHOD_NAME__HID, 4))
+    if (ACPI_STRNCMP ((char *) &Name, "_HID", 4))
     {
         return;
     }
@@ -476,7 +560,7 @@ AcpiIsEisaId (
 
     /* Swap from little-endian to big-endian to simplify conversion */
 
-    BigEndianId = AcpiUtDwordByteSwap ((UINT32) NextOp->Common.Value.Integer);
+    BigEndianId = AcpiUtDwordByteSwap (NextOp->Common.Value.Integer32);
 
     /* Create the 3 leading ASCII letters */
 
@@ -503,7 +587,7 @@ AcpiIsEisaId (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmEisaId
+ * FUNCTION:    AcpiDmEisaId 
  *
  * PARAMETERS:  EncodedId       - Raw encoded EISA ID.
  *

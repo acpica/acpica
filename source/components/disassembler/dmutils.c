@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmutils - AML disassembler utilities
- *              $Revision: 1.7 $
+ *              $Revision: 1.3 $
  *
  ******************************************************************************/
 
@@ -126,9 +126,11 @@
         ACPI_MODULE_NAME    ("dmutils")
 
 
+
+
 /* Data used in keeping track of fields */
 #if 0
-const char                      *AcpiGbl_FENames[ACPI_NUM_FIELD_NAMES] =
+const NATIVE_CHAR               *AcpiGbl_FENames[NUM_FIELD_NAMES] =
 {
     "skip",
     "?access?"
@@ -136,7 +138,7 @@ const char                      *AcpiGbl_FENames[ACPI_NUM_FIELD_NAMES] =
 #endif
 
 
-const char                      *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS] =
+const NATIVE_CHAR               *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
 {
     "MTR",
     "MEQ",
@@ -149,7 +151,7 @@ const char                      *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS] =
 
 /* Access type decoding */
 
-const char                      *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES] =
+const NATIVE_CHAR               *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
 {
     "AnyAcc",
     "ByteAcc",
@@ -162,7 +164,7 @@ const char                      *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES] =
 
 /* Lock rule decoding */
 
-const char                      *AcpiGbl_LockRule[ACPI_NUM_LOCK_RULES] =
+const NATIVE_CHAR               *AcpiGbl_LockRule[NUM_LOCK_RULES] =
 {
     "NoLock",
     "Lock"
@@ -170,7 +172,7 @@ const char                      *AcpiGbl_LockRule[ACPI_NUM_LOCK_RULES] =
 
 /* Update rule decoding */
 
-const char                      *AcpiGbl_UpdateRules[ACPI_NUM_UPDATE_RULES] =
+const NATIVE_CHAR               *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
 {
     "Preserve",
     "WriteAsOnes",
@@ -289,68 +291,6 @@ const char                      *AcpiGbl_SIZDecode[4] =
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmDecodeAttribute
- *
- * PARAMETERS:  Attribute       - Attribute field of AccessAs keyword
- *
- * RETURN:      None
- *
- * DESCRIPTION: Decode the AccessAs attribute byte.  (Mostly SMBus stuff)
- *
- ******************************************************************************/
-
-void
-AcpiDmDecodeAttribute (
-    UINT8                   Attribute)
-{
-
-    switch (Attribute)
-    {
-    case AML_FIELD_ATTRIB_SMB_QUICK:
-
-        AcpiOsPrintf ("SMBQuick");
-        break;
-
-    case AML_FIELD_ATTRIB_SMB_SEND_RCV:
-
-        AcpiOsPrintf ("SMBSendReceive");
-        break;
-
-    case AML_FIELD_ATTRIB_SMB_BYTE:
-
-        AcpiOsPrintf ("SMBByte");
-        break;
-
-    case AML_FIELD_ATTRIB_SMB_WORD:
-
-        AcpiOsPrintf ("SMBWord");
-        break;
-
-    case AML_FIELD_ATTRIB_SMB_WORD_CALL:
-
-        AcpiOsPrintf ("SMBProcessCall");
-        break;
-
-    case AML_FIELD_ATTRIB_SMB_BLOCK:
-
-        AcpiOsPrintf ("SMBBlock");
-        break;
-
-    case AML_FIELD_ATTRIB_SMB_BLOCK_CALL:
-
-        AcpiOsPrintf ("SMBBlockProcessCall");
-        break;
-
-    default:
-
-        AcpiOsPrintf ("0x%.2X", Attribute);
-        break;
-    }
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiDmIndent
  *
  * PARAMETERS:  Level               - Current source code indentation level
@@ -459,6 +399,7 @@ AcpiDmCommaIfFieldMember (
         AcpiOsPrintf (", ");
     }
 }
+
 
 
 #endif
