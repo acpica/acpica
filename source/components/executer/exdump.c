@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.174 $
+ *              $Revision: 1.175 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@
  *
  * PARAMETERS:  *ObjDesc          - Pointer to entry to be dumped
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Dump an operand object
  *
@@ -145,12 +145,11 @@
 
 void
 AcpiExDumpOperand (
-    ACPI_OPERAND_OBJECT     *ObjDesc)
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT32                  Depth)
 {
-    UINT8                   *Buf = NULL;
     UINT32                  Length;
-    ACPI_OPERAND_OBJECT     **Element;
-    UINT16                  ElementIndex;
+    UINT32                  Index;
 
 
     ACPI_FUNCTION_NAME ("ExDumpOperand")
@@ -164,9 +163,9 @@ AcpiExDumpOperand (
     if (!ObjDesc)
     {
         /*
-         * This usually indicates that something serious is wrong
+         * This could be a null element of a package
          */
-        AcpiOsPrintf ("Null Object Descriptor\n");
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Null Object Descriptor\n"));
         return;
     }
 
@@ -188,7 +187,13 @@ AcpiExDumpOperand (
 
     /* ObjDesc is a valid object */
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%p ", ObjDesc));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, ""));
+    if (Depth > 0)
+    {
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC, "%*s[%u] ", Depth, " ", Depth));
+    }
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC, "%p ", ObjDesc));
+
 
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
@@ -275,7 +280,6 @@ AcpiExDumpOperand (
             break;
 
         }
-
         break;
 
 
@@ -285,7 +289,6 @@ AcpiExDumpOperand (
             ObjDesc->Buffer.Length, ObjDesc->Buffer.Pointer);
 
         Length = ObjDesc->Buffer.Length;
-
         if (Length > 64)
         {
             Length = 64;
@@ -297,13 +300,12 @@ AcpiExDumpOperand (
         {
             AcpiOsPrintf ("Buffer Contents: ");
 
-            for (Buf = ObjDesc->Buffer.Pointer; Length--; ++Buf)
+            for (Index = 0; Index < Length; Index++)
             {
-                AcpiOsPrintf (" %02x", *Buf);
+                AcpiOsPrintf (" %02x", ObjDesc->Buffer.Pointer[Index]);
             }
             AcpiOsPrintf ("\n");
         }
-
         break;
 
 
@@ -316,25 +318,22 @@ AcpiExDumpOperand (
 
     case ACPI_TYPE_PACKAGE:
 
-        AcpiOsPrintf ("Package count %X @ %p\n",
+        AcpiOsPrintf ("Package [Len %X] ElementArray %p\n",
             ObjDesc->Package.Count, ObjDesc->Package.Elements);
 
         /*
-         * If elements exist, package vector pointer is valid,
+         * If elements exist, package element pointer is valid,
          * and debug_level exceeds 1, dump package's elements.
          */
         if (ObjDesc->Package.Count &&
             ObjDesc->Package.Elements &&
             AcpiDbgLevel > 1)
         {
-            for (ElementIndex = 0, Element = ObjDesc->Package.Elements;
-                  ElementIndex < ObjDesc->Package.Count;
-                  ++ElementIndex, ++Element)
+            for (Index = 0; Index < ObjDesc->Package.Count; Index++)
             {
-                AcpiExDumpOperand (*Element);
+                AcpiExDumpOperand (ObjDesc->Package.Elements[Index], Depth+1);
             }
         }
-        AcpiOsPrintf ("\n");
         break;
 
 
@@ -384,7 +383,7 @@ AcpiExDumpOperand (
             ObjDesc->Field.FieldFlags & AML_FIELD_LOCK_RULE_MASK,
             ObjDesc->Field.FieldFlags & AML_FIELD_UPDATE_RULE_MASK,
             ObjDesc->Field.BaseByteOffset, ObjDesc->Field.StartFieldBitOffset);
-        ACPI_DUMP_STACK_ENTRY (ObjDesc->Field.RegionObj);
+        AcpiExDumpOperand (ObjDesc->Field.RegionObj, Depth+1);
         break;
 
 
@@ -411,9 +410,8 @@ AcpiExDumpOperand (
         }
         else
         {
-            ACPI_DUMP_STACK_ENTRY (ObjDesc->BufferField.BufferObj);
+            AcpiExDumpOperand (ObjDesc->BufferField.BufferObj, Depth+1);
         }
-
         break;
 
 
@@ -500,7 +498,6 @@ AcpiExDumpOperands (
     UINT32                  LineNumber)
 {
     ACPI_NATIVE_UINT        i;
-    ACPI_OPERAND_OBJECT     **ObjDesc;
 
 
     ACPI_FUNCTION_NAME ("ExDumpOperands");
@@ -529,8 +526,7 @@ AcpiExDumpOperands (
 
     for (i = 0; NumLevels > 0; i--, NumLevels--)
     {
-        ObjDesc = &Operands[i];
-        AcpiExDumpOperand (*ObjDesc);
+        AcpiExDumpOperand (Operands[i], 0);
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
@@ -595,7 +591,7 @@ AcpiExOutAddress (
  *
  * FUNCTION:    AcpiExDumpNode
  *
- * PARAMETERS:  *Node           - Descriptor to dump
+ * PARAMETERS:  *Node               - Descriptor to dump
  *              Flags               - Force display
  *
  * DESCRIPTION: Dumps the members of the given.Node
