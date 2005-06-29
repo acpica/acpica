@@ -104,6 +104,9 @@
 #include <pnp.h>
 
 
+#define ACPILIB_DATA_FILE_VERSION "ADF-001"
+
+
 /* 
  * If USE_HASHING is not set, there will be an (nte *) prefix to each name
  * table, containing either a NULL pointer or the address of the next array
@@ -114,7 +117,9 @@
 #define NEXTSEG(NameTbl) ((nte **)NameTbl)[-1]
 #endif
 
+/* Names are 4 bytes long */
 
+#define ACPI_NAME_SIZE          4
 
 /* 
  * An NsHandle (which is actually an nte *) can appear in some contexts,
@@ -142,8 +147,14 @@
  * Elements of NsProperties are bit significant
  * and should be one-to-one with values of NsType in acpinmsp.h
  */
-#define NEWSCOPE    1               /* a definition of this type opens a name scope */
-#define LOCAL       2               /* suppress search of enclosing scopes */
+#define NEWSCOPE                1   /* a definition of this type opens a name scope */
+#define LOCAL                   2   /* suppress search of enclosing scopes */
+
+
+/* UINT32 definitions of the predefined namespace names */
+
+#define NS_ROOT                 '/   '
+#define NS_SYSTEM_BUS           '_BS_'
 
 
 
@@ -184,54 +195,69 @@ extern INT32                    NsProperties[NUM_NS_TYPES];
 
 
 
+/* External interfaces?? TBD - these shouldn't be here */
 
-/* Prototypes */
+INT32
+AcpiLoadNameSpace  (
+    INT32               DisplayAmlDuringLoad);
+
+void
+AcpiLocalCleanup (
+    void);
+
+void 
+InitAcpiLibGlobals (
+    void);
+
+INT32
+LoadNameSpace (
+    INT32               DisplayAmlDuringLoad);
+
+INT32
+AcpiSetFirmwareWakingVector (
+    UINT32              PhysicalAddress);
+
+INT32
+AcpiGetFirmwareWakingVector (
+    UINT32              *PhysicalAddress);
+
+
+/*
+ * ACPI Table functions - nstables
+ */
+
+INT32
+NsFindRootSystemDescriptorPointer (
+    ROOT_SYSTEM_DESCRIPTOR_POINTER  ** RSDP,
+    OSD_FILE                        *InputFile);
+
+INT32
+NsVerifyTableChecksum (
+    void                *TableHeader, 
+    INT32               DisplayBitFlags);
+
+void * 
+NsGetTable (
+    UINT32              PhysicalAddress, 
+    OSD_FILE            *InputFile);
+
+void * 
+NsGetFACS (
+    OSD_FILE            *InputFile);
+
+
+/*
+ * Top-level namespace access - nsaccess
+ */
+
 
 INT32
 PriUnloadNameSpace (
     void);
 
 void
-NsPushMethodScope (
-    NsHandle            nNewScope);
-
-INT32
-AcpiExecuteMethod (
-    char                *MethodName, 
-    OBJECT_DESCRIPTOR   **ReturnValue,
-    OBJECT_DESCRIPTOR   **Params);
-
-int 
-AcpiInit (
-    char *);
-
-INT32
-AcpiLoadNameSpace  (
-    INT32               DisplayAmlDuringLoad);
-
-INT32
-AcpiUnloadNameSpace (
-    void);
-
-void
-AcpiLocalCleanup (
-    void);
-
-NsType
-NsValType (
-    NsHandle            h);
-
-void *
-NsValPtr (
-    NsHandle            h);
-
-void
 NsSetup (
     void);
-
-INT32
-NsPopCurrent (
-    NsType              Type);
 
 NsHandle
 NsEnter (
@@ -239,9 +265,26 @@ NsEnter (
     NsType              Type, 
     OpMode              iLE);
 
-NsHandle 
-GetParentHandle (
-    NsHandle            Look);
+
+/*
+ * Scope manipulation - nsscope
+ */
+
+INT32
+NsOpensScope (
+    NsType              Type);
+
+nte *
+NsSearchTable (
+    char                *NamSeg, 
+    nte                 *NameTbl, 
+    INT32               TableSize, 
+    OpMode              LoadMode, 
+    NsType              Type);
+
+char *
+NsNameOfScope (
+    nte                 *EntryToSearch);
 
 char *
 NsNameOfCurrentScope (
@@ -253,24 +296,34 @@ NsFullyQualifiedName (
 
 void
 NsSetMethod (
-    NsHandle            h, 
+    NsHandle            ObjHandle, 
     ptrdiff_t           Offset, 
     INT32               Length);
-        
+
 void
 NsSetValue (
-    NsHandle h, 
+    NsHandle            ObjHandle, 
     ACPI_OBJECT_HANDLE  v, 
     UINT8               ValTyp);
 
-void
-NsDumpTables (
-    NsHandle            SearchBase, 
-    INT32               MaxDepth);
+BOOLEAN
+NsPatternMatch (
+    nte                 *ObjEntry, 
+    char                *SearchFor);
+        
+void *
+NsNameCompare (
+    NsHandle            ObjHandle, 
+    INT32               Level, 
+    void                *Context);
 
 void
-NsDumpEntry (
-    NsHandle            h);
+NsLowFindNames (
+    nte                 *ThisEntry, 
+    char                *SearchFor,
+    INT32               *Count, 
+    NsHandle            List[], 
+    INT32               MaxDepth);
 
 NsHandle *
 NsFindNames (
@@ -283,6 +336,108 @@ NsGetHandle (
     char                *Name, 
     NsHandle            Scope);
 
+void *
+NsCompareValue (
+    NsHandle            ObjHandle, 
+    INT32               Level, 
+    void                *ObjDesc);
+
+NsHandle
+NsFindValue (
+    OBJECT_DESCRIPTOR   *ObjDesc, 
+    NsHandle            SearchBase, 
+    INT32               MaxDepth);
+
+
+/*
+ * Scope Stack manipulation - nsstack
+ */
+
+void
+NsPushCurrentScope (
+    nte                 *NewScope, 
+    NsType              Type);
+
+void
+NsPushMethodScope (
+    NsHandle            nNewScope);
+
+INT32
+NsPopCurrent (
+    NsType              Type);
+
+
+/*
+ * Parent/Child/Peer utility functions - nsfamily
+ */
+
+char *
+NsFindParentName (
+    nte                 *EntryToSearch, 
+    INT32               Trace);
+
+INT32
+NsExistDownstreamSibling (
+    nte                 *ThisEntry, 
+    INT32               Size, 
+    nte                 *Appendage);
+
+NsHandle 
+NsGetParentHandle (
+    NsHandle            Look);
+
+
+/* 
+ * Namespace dump/print utilities - nsdump
+ */
+
+void
+NsDumpTables (
+    NsHandle            SearchBase, 
+    INT32               MaxDepth);
+
+void
+NsDumpEntry (
+    NsHandle            Handle);
+
+
+/*
+ * Utility functions - nsutils
+ */
+
+nte *
+NsAllocateNteDesc (
+    INT32               Size);
+
+UINT8
+NsChecksum (
+    void                *Buffer,
+    UINT32              Length);
+
+void *
+NsWalkNamespace (
+    NsType              Type, 
+    NsHandle            StartHandle, 
+    UINT32              MaxDepth,
+    void                * (* UserFunction)(NsHandle, UINT32, void *), 
+    void                *Context);
+
+NsType
+NsGetType (
+    NsHandle            ObjHandle);
+
+void *
+NsGetValue (
+    NsHandle            ObjHandle);
+
+INT32
+NsLocal (
+    NsType              Type);
+
+char *
+NsInternalizeName (
+    char                *DottedName);
+
 INT32
 IsNsValue (
     OBJECT_DESCRIPTOR   *pOD);
@@ -291,6 +446,11 @@ INT32
 NsMarkNS(
     void);
 
+
+
+/*
+ * TBD: What is PLUMBER??
+ */
 
 #ifndef PLUMBER
 
@@ -311,184 +471,6 @@ MarkStaticBlocks (
 
 #endif /* PLUMBER */
 
-/******************************************************************************
- *
- * The following are the publically defined APIs published and exposed to the OSD
- *
- ******************************************************************************/
-
-INT32
-AcpiLoadNameSpace (
-    INT32               DisplayAmlDuringLoad);
-
-NsHandle 
-AcpiLoadTable (
-    NsHandle            OpRegion);
-
-INT32 
-AcpiUnLoadTable (
-    NsHandle            TableHandle);
-
-NsHandle 
-AcpiLoadTableFromFile (
-    char                *FileName);
-
-INT32 
-AcpiEnumerateDevice (
-    NsHandle            DeviceHandle, 
-    DEVICE_ID           *HidPtr, 
-    BOOLEAN             *EnumPtr);
-
-NsHandle 
-AcpiGetNextSubDevice(
-    NsHandle            DeviceHandle, 
-    UINT32              Count);
-
-NsHandle 
-AcpiNameToHandle (
-    char                *NsName, 
-    NsHandle            Scope);
-
-char * 
-AcpiHandleToName (
-    NsHandle            InHandle);
-
-NsHandle 
-AcpiGetParentHandle (
-    NsHandle            ChildHandle);
-
-NsType 
-AcpiValueType (
-    NsHandle            Handle);
-
-char * 
-AcpiCurrentScopeName (
-    void);
-
-BOOLEAN 
-AcpiIsNameSpaceHandle (
-    NsHandle            QueryHandle);
-
-BOOLEAN 
-AcpiIsNameSpaceValue (
-    NsType              Value);
-
-INT32
-AcpiSetFirmwareWakingVector (
-    UINT32              PhysicalAddress);
-
-INT32
-AcpiGetFirmwareWakingVector (
-    UINT32              *PhysicalAddress);
-
-ACPI_TABLE_HEADER * 
-AcpiGetTableHeader (
-    NsHandle            Handle);
-
-ACPI_TABLE_HEADER * 
-AcpiGetTable (
-    NsHandle            Handle);
-
-
-
-
-#define ACPILIB_DATA_FILE_VERSION "ADF-001"
-
-/* ACPI Table Prototypes */
-
-/* functions visable outside of the library itself */
-
-void 
-InitAcpiLibGlobals (
-    void);
-
-INT32
-LoadNameSpace (
-    INT32               DisplayAmlDuringLoad);
-
-INT32
-AcpiSetFirmwareWakingVector (
-    UINT32              PhysicalAddress);
-
-INT32
-AcpiGetFirmwareWakingVector (
-    UINT32              *PhysicalAddress);
-
-/* functions private to the library */
-
-INT32
-FindRootSystemDescriptorPointer (
-    ROOT_SYSTEM_DESCRIPTOR_POINTER  ** RSDP,
-    OSD_FILE                        *InputFile);
-
-UINT8
-checksum (
-    void                *Buffer,
-    UINT32              Length);
-
-
-INT32
-VerifyTableChecksum (
-    void                *TableHeader, 
-    INT32               DisplayBitFlags);
-
-void * 
-GetTable (
-    UINT32              PhysicalAddress, 
-    OSD_FILE            *InputFile);
-
-void * 
-GetFACS (
-    OSD_FILE            *InputFile);
-
-
-
-
-/* nsaccess functions */
-
-
-INT32
-ExistDownstreamSibling (
-    nte                 *ThisEntry, 
-    INT32               Size, 
-    nte                 *Appendage);
-
-
-char *
-InternalizeName (
-    char                *DottedName);
-
-void
-NsPushCurrentScope (
-    nte                 *NewScope, 
-    NsType              Type);
-
-nte *
-AllocateNteDesc (
-    INT32               Size);
-
-nte *
-SearchTable (
-    char                *NamSeg, 
-    nte                 *NameTbl, 
-    INT32               TableSize, 
-    OpMode              LoadMode, 
-    NsType              Type);
-
-INT32
-NsOpensScope (
-    NsType              Type);
-
-NsHandle
-NsFindpVal (
-    OBJECT_DESCRIPTOR   *ObjDesc, 
-    NsHandle            SearchBase, 
-    INT32               MaxDepth);
-
-char *
-FindParentName (
-    nte                 *EntryToSearch, 
-    INT32               Trace);
 
 
 
