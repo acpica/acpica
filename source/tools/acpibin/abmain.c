@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abmain - Main module for the acpi binary utility
- *              $Revision: 1.7 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,8 @@
 
 #define _DECLARE_GLOBALS
 #include "acpibin.h"
+#include "acapps.h"
+#include "acconfig.h"
 
 
 /******************************************************************************
@@ -129,14 +131,25 @@
  ******************************************************************************/
 
 void
-AbDisplayUsage (void)
+AbDisplayUsage (
+    UINT8                   OptionCount)
 {
 
-    printf ("Usage: acpibin [-cd] <File1> [<File2>]\n\n");
-    printf ("Options:  -c               Compare AML files\n");
-    printf ("          -d               Dump AML file\n");
-    printf ("          -s               Compute checksum for ACPI table\n");
-    printf ("          -t               Terse mode\n");
+    if (OptionCount)
+    {
+        printf ("Option requires %d arguments\n\n", OptionCount);
+    }
+
+    printf ("Usage: acpibin [options]\n\n");
+    printf ("Options:\n\n");  
+    printf (" -c <File1> <File2>           Compare two AML files\n");
+    printf (" -d <InFile> <OutFile>        Dump AML binary to text file\n");
+    printf (" -e <Sig> <InFile> <OutFile>  Extract binary AML table from AcpiDmp file\n\n");
+
+    printf (" -h <File>                    Display table header for binary AML file\n");
+    printf (" -s <File>                    Update checksum for binary AML file\n");
+    printf (" -t                           Terse mode\n");
+
     printf ("\n");
     return;
 }
@@ -152,61 +165,93 @@ AbDisplayUsage (void)
 
 int ACPI_SYSTEM_XFACE
 main (
-    NATIVE_UINT             argc,
+    ACPI_NATIVE_UINT        argc,
     char                    *argv[])
 {
     int                     j;
+    int                     Status;
 
 
-    printf ("\nACPI Binary (AML) Utility");
-    printf (" version [%s]\n\n", __DATE__);
+    AcpiOsInitialize ();
+
+    printf ("\nACPI Binary Utility for AML files version %X [%s]\n\n",
+        ACPI_CA_VERSION, __DATE__);
 
     if (argc < 2)
     {
-        AbDisplayUsage ();
+        AbDisplayUsage (0);
         return 0;
     }
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "cdst")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "c:d:e:h:s:t")) != EOF) switch(j)
     {
-    case 'c':
-        /* Compare Files */
+    case 'c':   /* Compare Files */
 
-        Gbl_CompareMode = TRUE;
+        if (argc < 4)
+        {
+            AbDisplayUsage (2);
+            return -1;
+        }
+
+        Status = AbCompareAmlFiles (AcpiGbl_Optarg, argv[AcpiGbl_Optind]);
         break;
 
-    case 'd':
+    case 'd':   /* Dump AML file */
 
-        Gbl_DumpMode = TRUE;
+        if (argc < 4)
+        {
+            AbDisplayUsage (2);
+            return -1;
+        }
+
+        Status = AbDumpAmlFile (AcpiGbl_Optarg, argv[AcpiGbl_Optind]);
         break;
 
-    case 's':
+    case 'e':   /* Extract AML text file */
 
-        AbComputeChecksum (argv[optind]);
+        if (argc < 5)
+        {
+            AbDisplayUsage (3);
+            return -1;
+        }
+
+        Status = AbExtractAmlFile (AcpiGbl_Optarg, argv[AcpiGbl_Optind],
+                    argv[AcpiGbl_Optind+1]);
+        break;
+
+    case 'h':   /* Display ACPI table header */
+
+        if (argc < 3)
+        {
+            AbDisplayUsage (1);
+            return -1;
+        }
+
+        AbDisplayHeader (AcpiGbl_Optarg);
         return (0);
 
-    case 't':
+    case 's':   /* Compute/update checksum */
+
+        if (argc < 3)
+        {
+            AbDisplayUsage (1);
+            return -1;
+        }
+
+        AbComputeChecksum (AcpiGbl_Optarg);
+        return (0);
+
+    case 't':   /* Enable terse mode */
 
         Gbl_TerseMode = TRUE;
         break;
 
     default:
-        AbDisplayUsage ();
+        AbDisplayUsage (0);
         return -1;
     }
 
-
-    if (Gbl_CompareMode)
-    {
-        AbCompareAmlFiles (argv[optind], argv[optind+1]);
-    }
-
-    else if (Gbl_DumpMode)
-    {
-        AbDumpAmlFile (argv[optind]);
-    }
-
-    return 0;
+    return Status;
 }

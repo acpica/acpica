@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpibinh - Include file for AcpiBin utility
- *              $Revision: 1.5 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -131,9 +131,6 @@
 /* Constants */
 
 
-/* Globals */
-
-
 /*
  * Global variables.  Defined in main.c only, externed in all other files
  */
@@ -147,32 +144,34 @@
 #endif
 
 
-extern int                      optind;
-extern char                     *optarg;
-
 /* Globals */
 
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_TerseMode, FALSE);
-EXTERN BOOLEAN              INIT_GLOBAL (Gbl_CompareMode, FALSE);
-EXTERN BOOLEAN              INIT_GLOBAL (Gbl_DumpMode, FALSE);
 
 
 /* Prototypes */
-
-int
-getopt (
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
 
 int
 AbCompareAmlFiles (
     char                    *File1Path,
     char                    *File2Path);
 
+int
+AbExtractAmlFile (
+    char                    *TableSig,
+    char                    *File1Path,
+    char                    *File2Path);
 
 int
 AbDumpAmlFile (
+    char                    *File1Path,
+    char                    *File2Path);
+
+void
+AbComputeChecksum (
     char                    *File1Path);
 
+void
+AbDisplayHeader (
+    char                    *File1Path);
 
