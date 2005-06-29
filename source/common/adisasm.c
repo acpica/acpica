@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -871,6 +871,11 @@ AdGetLocalTables (
     {
         ACPI_STRNCPY (TableHeader.Signature, "RSDT", 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
+        if (!NewTable)
+        {
+            fprintf (stderr, "Could not obtain RSDT\n");
+            return AE_NO_ACPI_TABLES;
+        }
 
 #if ACPI_MACHINE_WIDTH != 64
 
@@ -933,7 +938,7 @@ AdGetLocalTables (
     else
     {
         fprintf (stderr, "Could not obtain DSDT\n");
-        Status = AE_NO_ACPI_TABLES;
+        return AE_NO_ACPI_TABLES;
     }
 
     AcpiOsPrintf ("\n");
