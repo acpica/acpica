@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.128 $
+ *       $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -752,7 +752,7 @@ AcpiUtValidateBuffer (
     ACPI_BUFFER             *Buffer);
 
 ACPI_STATUS
-AcpiUtValidateBufferSize (
+AcpiUtInitializeBuffer (
     ACPI_BUFFER             *Buffer,
     ACPI_SIZE               RequiredLength);
 
