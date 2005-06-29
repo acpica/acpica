@@ -118,20 +118,20 @@
 #include <acpi.h>
 #include <acapi.h>
 #include <debugger.h>
+#include <namesp.h>
+#include <parser.h>
 
 #ifdef ACPI_DEBUG
 
 #define _COMPONENT          DEBUGGER
         MODULE_NAME         ("dbfileio");
 
+ACPI_GENERIC_OP         *root;
 
 #ifdef ACPI_APPLICATION
 #include <stdio.h>
 FILE                    *DebugFile = NULL;
 #endif
-
-char                    OutputToFile = FALSE;
-
 
 
 /******************************************************************************
@@ -184,6 +184,11 @@ DbOpenDebugFile (
 
 #ifdef ACPI_APPLICATION
 
+    if (DebugLevel == DEBUG_DEFAULT)
+    {
+        DebugLevel = 0x0FFFFEFF;
+    }
+            
     DbCloseDebugFile ();
     DebugFile = fopen (Name, "w+");
     if (DebugFile)
@@ -194,6 +199,124 @@ DbOpenDebugFile (
     }
 
 #endif
+}
+
+
+#ifdef ACPI_APPLICATION
+/******************************************************************************
+ * 
+ * FUNCTION:    DbLoadDsdt
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Load the DSDT from the file pointer
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DbLoadDsdt(
+    FILE                    *fp, 
+    UINT8                   **DsdtPtr, 
+    UINT32                  *DsdtLength)
+{
+    ACPI_TABLE_HEADER       dsdt_hdr;
+    UINT8                   *AmlPtr;
+    UINT32                   AmlLength;
+
+
+    if (fread (&dsdt_hdr, 1, sizeof (dsdt_hdr), fp) == sizeof (dsdt_hdr))
+    {
+        *DsdtLength = dsdt_hdr.Length;
+
+        if (*DsdtLength)
+        {
+            *DsdtPtr = (UINT8*) malloc ((size_t) *DsdtLength);
+
+            if (*DsdtPtr)
+            {
+                AmlPtr = *DsdtPtr + sizeof (dsdt_hdr);
+                AmlLength = *DsdtLength - sizeof (dsdt_hdr);
+
+                memcpy (*DsdtPtr, &dsdt_hdr, sizeof (dsdt_hdr));
+                if ((UINT32) fread (AmlPtr, 1, (size_t) AmlLength, fp) == AmlLength)
+                {
+                    return AE_OK;
+                }
+
+                free(*DsdtPtr);
+            }
+        }
+    }
+
+    *DsdtPtr = NULL;
+    *DsdtLength = 0;
+
+    return AE_AML_ERROR;
+}
+#endif
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbLoadAcpiTable
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Load an ACPI table from a file
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+DbLoadAcpiTable (
+    char                    *Filename)
+{
+#ifdef ACPI_APPLICATION
+    FILE                    *fp;
+    ACPI_STATUS             Status;
+
+
+    AcpiInitialize (NULL);
+
+
+    fp = fopen (Filename, "rb");
+    if (!fp)
+    {
+        OsdPrintf ("Couldn't open file %s\n", Filename);
+        return AE_ERROR;
+    }
+
+    OsdPrintf ("Loading DSDT from file %s\n", Filename);
+    Status = DbLoadDsdt (fp, &DsdtPtr, &DsdtLength);
+    fclose(fp);
+
+    /* TBD: set real Dsdt ptr here.  BUT FIX this */
+
+    Gbl_DSDT = (ACPI_TABLE_HEADER *) DsdtPtr;
+
+
+
+    AmlPtr = DsdtPtr + sizeof (ACPI_TABLE_HEADER);
+    AmlLength = DsdtLength - sizeof (ACPI_TABLE_HEADER);
+
+    Status = NsSetup ();
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+
+    Status = PsxLoadTable (AmlPtr, AmlLength);
+    if (ACPI_SUCCESS (Status))
+    {
+        Status = DbSecondPassParse (root);
+    }
+
+#endif  /* ACPI_APPLICATION */  
+    return AE_OK;
 }
 
 
