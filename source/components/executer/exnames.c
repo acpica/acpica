@@ -121,8 +121,8 @@
 #include <amlcode.h>
 #include <namespace.h>
 
-#define _THIS_MODULE        "isnames.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("isnames");
 
 
 #define PKG_Type1   64              /*  or 0x40 Max encoding size = 0x3F    */
@@ -808,7 +808,7 @@ BREAKPOINT3;
                                     AmlObjStackPop (1);
                                 }
 
-                                Status = AE_OK;
+                                /* NOTE: be sure to allow AE_RETURN_VALUE status to bubble up to caller! */
                             }
 
                             /* Pop scope stack */
