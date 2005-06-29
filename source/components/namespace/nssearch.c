@@ -135,19 +135,21 @@ NsSearchOnly (
 {
     UINT32                  Position;
     UINT32                  Tries;
-    char                    *ScopeName;
 
 
     FUNCTION_TRACE ("NsSearchOnly");
 
     /* Debug only */
 
-    DEBUG_EXEC (ScopeName = NsNameOfScope (NameTable));
-    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Searching %s [%p]\n",
-                        ScopeName, NameTable));
-    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type %d)\n",
-                        EntryName, Type));
-    DEBUG_EXEC (OsdFree (ScopeName));
+    {
+        DEBUG_EXEC (char *ScopeName = NsNameOfScope (NameTable));
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Searching %s [%p]\n",
+                            ScopeName, NameTable));
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type %d)\n",
+                            EntryName, Type));
+        DEBUG_EXEC (OsdFree (ScopeName));
+    }
+
 
     /* 
      * Name tables are built (and subsequently dumped) in the
@@ -179,10 +181,8 @@ NsSearchOnly (
 
     for (Tries = NS_TABLE_SIZE; Tries && 0 != NameTable[Position].Name; Tries--)
     {
-        /*  search for name in table    */
+        /* Search for name in table */
 
-        CheckTrash ("top of NsSearchTable loop");
-        
         if (NameTable[Position].Name == *(UINT32 *) EntryName)
         {
             /* 
@@ -218,7 +218,6 @@ NsSearchOnly (
             DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (actual type %d) found at %p\n", 
                             EntryName, NameTable[Position].Type, &NameTable[Position]));
             
-            CheckTrash ("leave NsSearchTable FOUND");
             *RetEntry = &NameTable[Position];
             FUNCTION_STATUS_EXIT (AE_OK);
             return AE_OK;
@@ -338,7 +337,6 @@ NsSearchParentTree (
             Status = NsSearchOnly (EntryName, ParentScope, TYPE_Any, RetEntry, NULL);
             if (Status == AE_OK)
             {
-                CheckTrash ("leave NsSearchTable FOUND in parent");
                 FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
@@ -518,8 +516,6 @@ NsInitializeEntry (
     
     /*  first or second pass load mode, NameTable valid   */
 
-    CheckTrash ("NsSearchTable about to add");
-
     NewEntry->Name          = *(UINT32 *) EntryName;
     NewEntry->ParentScope   = NameTable[0].ParentScope;
     NewEntry->ParentEntry   = NameTable[0].ParentEntry;
@@ -537,8 +533,6 @@ NsInitializeEntry (
 
     NewEntry->PrevEntry = PreviousEntry;
     NewEntry->NextEntry = NULL;
-
-    CheckTrash ("NsInitializeEntry added name");
 
     /* 
      * If adding a name with unknown type, or having to add the region in
@@ -582,14 +576,10 @@ NsInitializeEntry (
         (Type != TYPE_IndexFieldDefn))
     {
         NewEntry->Type = Type;
-        CheckTrashA ("NsInitializeEntry added type",
-                        &NewEntry->Name, NewEntry->Name, Hash,
-                        &NewEntry->Type, NewEntry->Type, Type, (void *) NameTable);
     }
 
     DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %.4s added to %p at %p\n", 
                                 EntryName, NameTable, NewEntry));
-    CheckTrash ("leave NsInitializeEntry ADDED");
     
     FUNCTION_EXIT;
 }
@@ -633,7 +623,6 @@ NsSearchAndEnter (
 
 
     FUNCTION_TRACE ("NsSearchAndEnter");
-    CheckTrash ("enter NsSearchAndEnter");
 
 
     /* Parameter validation */
@@ -655,7 +644,7 @@ NsSearchAndEnter (
     {
         DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** bad name %08lx *** \n", 
                                     *(UINT32 *) EntryName));
-        CheckTrash ("leave NsSearchTable BADNAME");
+
         FUNCTION_STATUS_EXIT (AE_BAD_CHARACTER);
         return AE_BAD_CHARACTER;
     }
@@ -704,7 +693,6 @@ NsSearchAndEnter (
     {
         DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %.4s Not found in %p [Not adding]\n", 
                                     EntryName, NameTable));
-        CheckTrash ("leave NsSearchTable NOTFOUND");
     
         FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
         return AE_NOT_FOUND;
