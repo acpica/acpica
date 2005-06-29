@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmonad - ACPI AML execution for monadic (1 operand) operators
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -214,7 +214,7 @@ Cleanup:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExMonadic1
+ * FUNCTION:    AcpiExOpcode_1A_0T_0R
  *
  * PARAMETERS:  WalkState           - Current state (contains AML opcode)
  *
@@ -226,14 +226,14 @@ Cleanup:
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExMonadic1 (
+AcpiExOpcode_1A_0T_0R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("ExMonadic1", WALK_OPERANDS);
+    FUNCTION_TRACE_PTR ("ExOpcode_1A_0T_0R", WALK_OPERANDS);
 
 
     /* Examine the opcode */
@@ -272,7 +272,7 @@ AcpiExMonadic1 (
 
     default:                /*  Unknown opcode  */
 
-        REPORT_ERROR (("AcpiExMonadic1: Unknown monadic opcode %X\n",
+        REPORT_ERROR (("AcpiExOpcode_1A_0T_0R: Unknown opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
@@ -289,19 +289,19 @@ AcpiExMonadic1 (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExMonadic2R
+ * FUNCTION:    AcpiExOpcode_1A_1T_1R
  *
  * PARAMETERS:  WalkState           - Current state (contains AML opcode)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute Type 2 monadic operator with numeric operand and
- *              result operand on operand stack
+ * DESCRIPTION: Execute opcode with one argument, one target, and a
+ *              return value.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExMonadic2R (
+AcpiExOpcode_1A_1T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -314,7 +314,7 @@ AcpiExMonadic2R (
     ACPI_INTEGER            Digit;
 
 
-    FUNCTION_TRACE_PTR ("ExMonadic2R", WALK_OPERANDS);
+    FUNCTION_TRACE_PTR ("ExOpcode_1A_1T_1R", WALK_OPERANDS);
 
 
 
@@ -504,7 +504,6 @@ AcpiExMonadic2R (
          * Be careful about deleting the source object,
          * since the object itself may have been stored.
          */
-        Temp32 = ObjDesc->Common.ReferenceCount;
         Status = AcpiExStore (ObjDesc, ResDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
@@ -513,14 +512,6 @@ AcpiExMonadic2R (
             AcpiUtRemoveReference (ObjDesc);
             return_ACPI_STATUS (Status);
         }
-
-#if 0
-        if ((ObjDesc->Common.ReferenceCount > Temp32) &&
-            (!AcpiDsIsResultUsed (WalkState->Op, WalkState)))
-        {
-            ObjDesc->Common.ReferenceCount++;
-        }
-#endif
 
         /*
          * Normally, we would remove a reference on the ObjDesc parameter;
@@ -576,7 +567,7 @@ AcpiExMonadic2R (
 
     default:                        /* Unknown opcode */
 
-        REPORT_ERROR (("AcpiExMonadic2R: Unknown monadic opcode %X\n",
+        REPORT_ERROR (("AcpiExOpcode_1A_1T_1R: Unknown opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
@@ -615,20 +606,18 @@ Cleanup:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExMonadic2
+ * FUNCTION:    AcpiExOpcode_1A_0T_1R
  *
  * PARAMETERS:  WalkState           - Current state (contains AML opcode)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute Type 2 monadic operator with numeric operand:
- *              DerefOfOp, RefOfOp, SizeOfOp, TypeOp, IncrementOp,
- *              DecrementOp, LNotOp,
+ * DESCRIPTION: Execute opcode with one argument, no target, and a return value
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExMonadic2 (
+AcpiExOpcode_1A_0T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
@@ -639,7 +628,7 @@ AcpiExMonadic2 (
     ACPI_INTEGER            Value;
 
 
-    FUNCTION_TRACE_PTR ("ExMonadic2", WALK_OPERANDS);
+    FUNCTION_TRACE_PTR ("ExOpcode_1A_0T_1R", WALK_OPERANDS);
 
 
 
@@ -788,7 +777,7 @@ AcpiExMonadic2 (
 
             default:
 
-                REPORT_ERROR (("AcpiExMonadic2/TypeOp: Internal error - Unknown Reference subtype %X\n",
+                REPORT_ERROR (("AcpiExOpcode_1A_0T_1R/TypeOp: Internal error - Unknown Reference subtype %X\n",
                     ObjDesc->Reference.Opcode));
                 Status = AE_AML_INTERNAL;
                 goto Cleanup;
@@ -830,39 +819,43 @@ AcpiExMonadic2 (
 
     case AML_SIZE_OF_OP:            /* SizeOf (SourceObject)  */
 
+        TmpDesc = ObjDesc;
         if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
-            ObjDesc = AcpiNsGetAttachedObject ((ACPI_NAMESPACE_NODE *) ObjDesc);
+            TmpDesc = AcpiNsGetAttachedObject ((ACPI_NAMESPACE_NODE *) ObjDesc);
         }
 
-        if (!ObjDesc)
+        if (!TmpDesc)
         {
             Value = 0;
         }
 
         else
         {
-            switch (ObjDesc->Common.Type)
+            switch (TmpDesc->Common.Type)
             {
             case ACPI_TYPE_BUFFER:
-                Value = ObjDesc->Buffer.Length;
+                Value = TmpDesc->Buffer.Length;
                 break;
 
             case ACPI_TYPE_STRING:
-                Value = ObjDesc->String.Length;
+                Value = TmpDesc->String.Length;
                 break;
 
             case ACPI_TYPE_PACKAGE:
-                Value = ObjDesc->Package.Count;
+                Value = TmpDesc->Package.Count;
                 break;
 
             case INTERNAL_TYPE_REFERENCE:
+
+                /* TBD: this must be a ref to a buf/str/pkg?? */
+
                 Value = 4;
                 break;
 
             default:
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Not Buf/Str/Pkg - found type %X\n",
-                    ObjDesc->Common.Type));
+                    TmpDesc->Common.Type));
                 Status = AE_AML_OPERAND_TYPE;
                 goto Cleanup;
             }
@@ -1046,7 +1039,7 @@ AcpiExMonadic2 (
 
     default:
 
-        REPORT_ERROR (("AcpiExMonadic2: Unknown monadic opcode %X\n",
+        REPORT_ERROR (("AcpiExOpcode_1A_0T_1R: Unknown opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;

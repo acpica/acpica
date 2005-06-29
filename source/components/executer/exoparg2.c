@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdyadic - ACPI AML execution for dyadic (2-operand) operators
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -313,21 +313,21 @@ Cleanup:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExDyadic1
+ * FUNCTION:    AcpiExOpcode_2A_0T_0R
  *
  * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute Type 1 dyadic operator with numeric operands:
- *              NotifyOp
+ * DESCRIPTION: Execute opcode with two arguments, no target, and no return
+ *              value.
  *
  * ALLOCATION:  Deletes both operands
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExDyadic1 (
+AcpiExOpcode_2A_0T_0R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
@@ -335,7 +335,7 @@ AcpiExDyadic1 (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("ExDyadic1", WALK_OPERANDS);
+    FUNCTION_TRACE_PTR ("ExOpcode_2A_0T_0R", WALK_OPERANDS);
 
 
 
@@ -383,7 +383,7 @@ AcpiExDyadic1 (
 
     default:
 
-        REPORT_ERROR (("AcpiExDyadic1: Unknown dyadic opcode %X\n", WalkState->Opcode));
+        REPORT_ERROR (("AcpiExOpcode_2A_0T_0R: Unknown dyadic opcode %X\n", WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
     }
 
@@ -400,7 +400,7 @@ AcpiExDyadic1 (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExDyadicType21
+ * FUNCTION:    AcpiExOpcode_2A_2T_1R
  *
  * PARAMETERS:  WalkState           - Current walk state
  *
@@ -412,7 +412,7 @@ AcpiExDyadic1 (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExDyadicType21 (
+AcpiExOpcode_2A_2T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
@@ -421,7 +421,7 @@ AcpiExDyadicType21 (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_STR ("ExDyadicType21", AcpiPsGetOpcodeName (WalkState->Opcode));
+    FUNCTION_TRACE_STR ("ExOpcode_2A_2T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
     /*
      * Execute the opcode
@@ -453,7 +453,7 @@ AcpiExDyadicType21 (
 
     default:
 
-        REPORT_ERROR (("AcpiExDyadic2R: Unknown dyadic opcode %X\n",
+        REPORT_ERROR (("AcpiExOpcode_2A_2T_1R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
@@ -677,21 +677,19 @@ AcpiExDoLogicalOp (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExDyadic2R
+ * FUNCTION:    AcpiExOpcode_2A_1T_1R
  *
  * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute Type 2 dyadic operator with numeric operands and
- *              one or two result operands.
- *
- * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
+ * DESCRIPTION: Execute opcode with two arguments, one target, and a return
+ *              value.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExDyadic2R (
+AcpiExOpcode_2A_1T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
@@ -699,7 +697,7 @@ AcpiExDyadic2R (
     ACPI_STATUS             Status      = AE_OK;
 
 
-    FUNCTION_TRACE_U32 ("ExDyadic2R", WalkState->Opcode);
+    FUNCTION_TRACE_U32 ("ExOpcode_2A_1T_1R", WalkState->Opcode);
 
 
     /*
@@ -802,7 +800,7 @@ AcpiExDyadic2R (
 
     default:
 
-        REPORT_ERROR (("AcpiExDyadic2R: Unknown dyadic opcode %X\n",
+        REPORT_ERROR (("AcpiExOpcode_2A_1T_1R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
@@ -855,22 +853,18 @@ Cleanup:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExDyadic2
+ * FUNCTION:    AcpiExOpcode_2A_0T_1R
  *
  * PARAMETERS:  WalkState           - Current walk state
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute Type 2 dyadic operator with numeric operands and
- *              no result operands
- *
- * ALLOCATION:  Deletes one operand descriptor -- other remains on stack
- *              containing result value
+ * DESCRIPTION: Execute opcode with 2 arguments, no target, and a return value
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExDyadic2 (
+AcpiExOpcode_2A_0T_1R (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
@@ -879,7 +873,7 @@ AcpiExDyadic2 (
     BOOLEAN                 LogicalResult = FALSE;
 
 
-    FUNCTION_TRACE_PTR ("ExDyadic2", WALK_OPERANDS);
+    FUNCTION_TRACE_PTR ("ExOpcode_2A_0T_1R", WALK_OPERANDS);
 
 
     /* Create the internal return object */
@@ -940,7 +934,7 @@ AcpiExDyadic2 (
 
     default:
 
-        REPORT_ERROR (("AcpiExDyadic2: Unknown dyadic opcode %X\n", WalkState->Opcode));
+        REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown dyadic opcode %X\n", WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
         break;
