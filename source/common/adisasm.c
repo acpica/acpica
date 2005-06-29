@@ -118,6 +118,7 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdebug.h"
+#include "acdispat.h"
 #include "acnamesp.h"
 #include "adcommon.h"
 
@@ -138,7 +139,8 @@ UINT32                  DsdtLength;
 
 BOOLEAN
 AcpiDsIsResultUsed (
-    ACPI_PARSE_OBJECT       *Op)
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState)
 {
     return TRUE;
 }
@@ -361,6 +363,7 @@ AdSecondPassParse (
     ACPI_PARSE_OBJECT       *StartOp;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  BaseAmlOffset;
+    ACPI_WALK_STATE         *WalkState;
 
 
     PROC_NAME ("AdSecondPassParse");
@@ -375,10 +378,24 @@ AdSecondPassParse (
             Method = (ACPI_PARSE2_OBJECT *) Op;
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing method [%4.4s]\n", &Method->Name));
 
+            WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
+                                            Op, NULL, NULL);
+            if (!WalkState)
+            {
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, Method->Data, 
+                            Method->Length, NULL, NULL, 1);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+
             /* Parse the method */
 
-            Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
-                                        NULL, NULL, NULL, AcpiPsFindObject, NULL);
+            Status = AcpiPsParseAml (WalkState); //Op, Method->Data, Method->Length, 0,
+                                        //NULL, NULL, NULL, AcpiPsFindObject, NULL);
 
             /*
              * We need to update all of the Aml offsets, since the parser thought
@@ -487,6 +504,21 @@ AdGetTables (
 }
 
 
+ACPI_STATUS
+AcpiDsInitCallbacks (
+    ACPI_WALK_STATE         *WalkState,
+    UINT32                  PassNumber)
+{
+
+    WalkState->ParseFlags         = 0;
+    WalkState->DescendingCallback = AcpiPsFindObject;
+    WalkState->AscendingCallback  = NULL;
+
+    return (AE_OK);
+}
+
+
+
 /******************************************************************************
  *
  * FUNCTION:    AdParseTable
@@ -503,6 +535,7 @@ ACPI_STATUS
 AdParseTables (void)
 {
     ACPI_STATUS             Status = AE_OK;
+    ACPI_WALK_STATE         *WalkState;
 
 
     if (!AcpiGbl_DSDT)
@@ -526,12 +559,29 @@ AdParseTables (void)
 
     printf ("Pass 1 parse\n");
 
-    DsdtLength = AcpiGbl_DSDT->Length;
-    AmlLength = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
-    AmlStart = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
+    /* Create and initialize a new walk state */
 
-    Status = AcpiPsParseAml (AcpiGbl_ParsedNamespaceRoot, AmlStart, AmlLength, 0,
-                                NULL, NULL, NULL, AcpiPsFindObject, NULL);
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
+                                    AcpiGbl_ParsedNamespaceRoot, NULL, NULL);
+    if (!WalkState)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    DsdtLength = AcpiGbl_DSDT->Length;
+    AmlLength  = DsdtLength  - sizeof (ACPI_TABLE_HEADER);
+    AmlStart   = ((UINT8 *) AcpiGbl_DSDT + sizeof (ACPI_TABLE_HEADER));
+
+    Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParsedNamespaceRoot, NULL, AmlStart, 
+                    AmlLength, NULL, NULL, 1);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+
+    Status = AcpiPsParseAml (WalkState); //, AmlStart, AmlLength, 0,
+                                //NULL, NULL, NULL, AcpiPsFindObject, NULL);
     if (ACPI_FAILURE (Status))
     {
         return Status;
