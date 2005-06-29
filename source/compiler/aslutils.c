@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.46 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -117,6 +117,7 @@
 
 
 #include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "acnamesp.h"
 #include "amlcode.h"
 
@@ -443,7 +444,11 @@ UtGetOpName (
     UINT32                  ParseOpcode)
 {
 
-    return ((char *) yytname [ParseOpcode - 255] + 8);
+    /* 
+     * First entries (ASL_YYTNAME_START) in yytname are special reserved names.
+     * Ignore first 8 characters of the name
+     */
+    return ((char *) yytname [(ParseOpcode - ASL_FIRST_PARSE_OPCODE) + ASL_YYTNAME_START] + 8);
 }
 
 
@@ -468,8 +473,8 @@ UtDisplaySummary (
     {
         /* Compiler name and version number */
 
-        FlPrintFile (FileId, "%s %s [%s]\n",
-            CompilerId, CompilerVersion, __DATE__);
+        FlPrintFile (FileId, "%s version %X [%s]\n",
+            CompilerId, (UINT32) ACPI_CA_VERSION, __DATE__);
     }
 
     /* Input/Output summary */
