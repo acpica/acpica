@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.142 $
+ *       $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -312,8 +312,6 @@
 #define ACPI_MOVE_64_TO_64(d,s)         *(UINT64 *)(void *)(d) = *(UINT64 *)(void *)(s)
 #endif
 
-#define ACPI_MOVE_SIZE_TO_16(d,s)       ACPI_MOVE_16_TO_16(d,s)
-
 #else
 /*
  * The hardware does not support unaligned transfers.  We must move the
@@ -353,6 +351,21 @@
                                          ((  UINT8 *)(void *)(d))[6] = ((UINT8 *)(void *)(s))[6];\
                                          ((  UINT8 *)(void *)(d))[7] = ((UINT8 *)(void *)(s))[7];}
 #endif
+#endif
+
+/* Macros based on machine integer width */
+
+#if ACPI_MACHINE_WIDTH == 16
+#define ACPI_MOVE_SIZE_TO_16(d,s)       ACPI_MOVE_16_TO_16(d,s)
+
+#elif ACPI_MACHINE_WIDTH == 32
+#define ACPI_MOVE_SIZE_TO_16(d,s)       ACPI_MOVE_32_TO_16(d,s)
+
+#elif ACPI_MACHINE_WIDTH == 64
+#define ACPI_MOVE_SIZE_TO_16(d,s)       ACPI_MOVE_64_TO_16(d,s)
+
+#else
+#error unknown ACPI_MACHINE_WIDTH
 #endif
 
 
