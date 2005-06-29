@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.30 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -279,7 +279,7 @@ AcpiNsInitOneObject (
     /* And even then, we are only interested in a few object types */
 
     Type = AcpiNsGetType (ObjHandle);
-    ObjDesc = Node->Object;
+    ObjDesc = AcpiNsGetAttachedObject (Node);
     if (!ObjDesc)
     {
         return (AE_OK);
@@ -319,7 +319,7 @@ AcpiNsInitOneObject (
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ERROR, "\n"));
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                     "%s while getting region arguments [%4.4s]\n",
-                    AcpiFormatException (Status), &Node->Name));
+                    AcpiFormatException (Status), (char*)&Node->Name));
         }
 
         if (!(AcpiDbgLevel & ACPI_LV_INIT))
@@ -345,7 +345,7 @@ AcpiNsInitOneObject (
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ERROR, "\n"));
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                     "%s while getting buffer field arguments [%4.4s]\n",
-                    AcpiFormatException (Status), &Node->Name));
+                    AcpiFormatException (Status), (char*)&Node->Name));
         }
         if (!(AcpiDbgLevel & ACPI_LV_INIT))
         {
@@ -408,11 +408,11 @@ AcpiNsInitOneDevice (
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
-    Node = AcpiNsConvertHandleToEntry (ObjHandle);
+    Node = AcpiNsMapHandleToNode (ObjHandle);
     if (!Node)
     {
         AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-        return (AE_BAD_PARAMETER);
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -420,7 +420,6 @@ AcpiNsInitOneDevice (
     /*
      * Run _STA to determine if we can run _INI on the device.
      */
-
     DEBUG_EXEC (AcpiUtDisplayInitPathname (Node, "_STA  [Method]"));
     Status = AcpiUtExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))

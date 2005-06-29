@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.59 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -216,13 +216,9 @@ AcpiNsDeleteNode (
     ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].TotalFreed++);
 
     /*
-     * Detach an object if there is one
+     * Detach an object if there is one then delete the node
      */
-    if (Node->Object)
-    {
-        AcpiNsDetachObject (Node);
-    }
-
+    AcpiNsDetachObject (Node);
     ACPI_MEM_FREE (Node);
     return_VOID;
 }
@@ -314,7 +310,7 @@ AcpiNsInstallNode (
          * real definition is found later.
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "[%4.4s] is a forward reference\n",
-            &Node->Name));
+            (char*)&Node->Name));
     }
 
     /*
@@ -341,7 +337,7 @@ AcpiNsInstallNode (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "%4.4s added to %p at %p\n",
-        &Node->Name, ParentNode, Node));
+        (char*)&Node->Name, ParentNode, Node));
 
     /*
      * Increment the reference count(s) of all parents up to
@@ -408,7 +404,7 @@ AcpiNsDeleteChildren (
 
         if (ChildNode->Child)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Found a grandchild! P=%X C=%X\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Found a grandchild! P=%p C=%p\n",
                 ParentNode, ChildNode));
         }
 
