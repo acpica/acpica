@@ -181,49 +181,51 @@ DbDisplayStatistics (void)
     OsdPrintf ("\n\n");
 
     OsdPrintf ("ACPI Table Information:\n\n");
-    OsdPrintf ("DSDT Length:................% 6ld (0x%X)\n", Gbl_DSDT->Length, Gbl_DSDT->Length);
-    OsdPrintf ("Names:......................% 6ld\n", NumNames);
-    OsdPrintf ("Events:.....................% 6ld\n", NumEvents);
-    OsdPrintf ("Devices:....................% 6ld\n", NumDevices);
-    OsdPrintf ("Aliases:....................% 6ld\n", NumAliases);
-    OsdPrintf ("Mutexes:....................% 6ld\n", NumMutexes);
-    OsdPrintf ("Packages:...................% 6ld\n", NumPackages);
-    OsdPrintf ("Bank Fields.................% 6ld\n", NumBankFields);
-    OsdPrintf ("Index Fields................% 6ld\n", NumIndexFields);
-    OsdPrintf ("Thermal Zones:..............% 6ld\n", NumThermalZones);
-    OsdPrintf ("Power Resources:............% 6ld\n", NumPowerResources);
-    OsdPrintf ("Control Methods:............% 6ld\n", NumMethods);
-    OsdPrintf ("Operation Regions:..........% 6ld\n", NumRegions);
-    OsdPrintf ("Field Definitions:..........% 6ld\n", NumFieldDefs);
-    OsdPrintf ("Total Named objects:........% 6ld\n", NumNamedObjects);
+    OsdPrintf ("DSDT Length:................% 7ld (0x%X)\n", Gbl_DSDT->Length, Gbl_DSDT->Length);
+    OsdPrintf ("Names:......................% 7ld\n", NumNames);
+    OsdPrintf ("Events:.....................% 7ld\n", NumEvents);
+    OsdPrintf ("Devices:....................% 7ld\n", NumDevices);
+    OsdPrintf ("Aliases:....................% 7ld\n", NumAliases);
+    OsdPrintf ("Mutexes:....................% 7ld\n", NumMutexes);
+    OsdPrintf ("Packages:...................% 7ld\n", NumPackages);
+    OsdPrintf ("Bank Fields.................% 7ld\n", NumBankFields);
+    OsdPrintf ("Index Fields................% 7ld\n", NumIndexFields);
+    OsdPrintf ("Thermal Zones:..............% 7ld\n", NumThermalZones);
+    OsdPrintf ("Power Resources:............% 7ld\n", NumPowerResources);
+    OsdPrintf ("Control Methods:............% 7ld\n", NumMethods);
+    OsdPrintf ("Operation Regions:..........% 7ld\n", NumRegions);
+    OsdPrintf ("Field Definitions:..........% 7ld\n", NumFieldDefs);
+    OsdPrintf ("Total Named objects:........% 7ld\n", NumNamedObjects);
 
     OsdPrintf ("\n");
 
     OsdPrintf ("ASL/AML Grammar Usage:\n\n");
-    OsdPrintf ("Elements Inside Methods:....% 6ld\n", NumMethodElements);
-    OsdPrintf ("Elements Outside Methods:...% 6ld\n", NumGrammarElements - NumMethodElements);
-    OsdPrintf ("Total Grammar Elements:.....% 6ld\n", NumGrammarElements);
+    OsdPrintf ("Elements Inside Methods:....% 7ld\n", NumMethodElements);
+    OsdPrintf ("Elements Outside Methods:...% 7ld\n", NumGrammarElements - NumMethodElements);
+    OsdPrintf ("Total Grammar Elements:.....% 7ld\n", NumGrammarElements);
 
     OsdPrintf ("\n");
 
     OsdPrintf ("Dynamic Memory Estimates:\n\n");
-    OsdPrintf ("Parse Tree without Methods:.% 6ld\n", SizeOfParseTree);
-    OsdPrintf ("Control Method Parse Trees:.% 6ld\n", SizeOfMethodTrees);
-    OsdPrintf ("Named Object NTEs:..........% 6ld\n", SizeOfNTEs);
-    OsdPrintf ("Named Internal Objects......% 6ld\n", SizeOfAcpiObjects);
+    OsdPrintf ("Parse Tree without Methods:.% 7ld\n", SizeOfParseTree);
+    OsdPrintf ("Control Method Parse Trees:.% 7ld\n", SizeOfMethodTrees);
+    OsdPrintf ("Named Object NTEs:..........% 7ld\n", SizeOfNTEs);
+    OsdPrintf ("Named Internal Objects......% 7ld\n", SizeOfAcpiObjects);
+    OsdPrintf ("Global State Cache depth....% 7ld\n", Gbl_GenericStateCacheDepth);
+    OsdPrintf ("Global State Cache..........% 7ld\n", Gbl_GenericStateCacheDepth * sizeof (ACPI_GENERIC_STATE));
 
     OsdPrintf ("\n");
 
     OsdPrintf ("Search Statistics:\n\n");
-    OsdPrintf ("Calls to PsFind:..  ........% 6ld\n", Gbl_PsFindCount);
-    OsdPrintf ("Calls to NsLookup:..........% 6ld\n", Gbl_NsLookupCount);
+    OsdPrintf ("Calls to PsFind:..  ........% 7ld\n", Gbl_PsFindCount);
+    OsdPrintf ("Calls to NsLookup:..........% 7ld\n", Gbl_NsLookupCount);
 
     OsdPrintf ("\n");
 
     OsdPrintf ("Mutex usage:\n\n");
     for (i = 0; i < NUM_MTX; i++)
     {
-        OsdPrintf ("%-20s:       % 6ld\n", CmGetMutexName (i), Gbl_AcpiMutexInfo[i].UseCount);
+        OsdPrintf ("%-20s:       % 7ld\n", CmGetMutexName (i), Gbl_AcpiMutexInfo[i].UseCount);
     }
 
     OsdPrintf ("\n");
