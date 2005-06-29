@@ -642,6 +642,14 @@ typedef struct InitWalkInfo
 } INIT_WALK_INFO;
 
 
+/* TBD: Merge with struct above */
+
+typedef struct AcpiWalkInfo
+{
+    UINT32                  DebugLevel;
+    UINT32                  OwnerId;
+
+} ACPI_WALK_INFO;
 
 
 /*****************************************************************************
