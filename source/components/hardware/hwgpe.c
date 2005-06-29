@@ -118,12 +118,11 @@
 #include <namespace.h>
 #include <events.h>
 
-#define _THIS_MODULE        "hwgpe.c"
 #define _COMPONENT          DEVICE_MANAGER
+        MODULE_NAME         ("hwgpe");
 
 
 UINT8 DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
-
 
 
 /******************************************************************************
@@ -134,7 +133,7 @@ UINT8 DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
  *
  * RETURN:      None
  *
- * DESCRIPTION: Enable a single GPE level
+ * DESCRIPTION: Enable a single GPE
  *
  ******************************************************************************/
 
@@ -143,41 +142,25 @@ HwEnableGpe (
     UINT32                  GpeNumber)
 {
     UINT8                   InByte;
-    UINT32                  RegIndex;
-    UINT8                   GpeBit;
-    UINT32                  GpeIndex;
+    UINT32                  RegisterIndex;
+    UINT8                   BitIndex;
 
-
-    /* Translate Gpe number to index into tables */
-
-    GpeIndex = Gbl_GpeValid[GpeNumber];
-
-    /*
-     * Calculate the register number and bit position in that register.
-     * There are 8 GPEs per register.
+    /* 
+     * Translate GPE number to index into global registers array.
      */
+    RegisterIndex = Gbl_GpeValid[GpeNumber];
 
-    RegIndex    = DIV_8 (GpeIndex);
-    GpeBit      = DecodeTo8bit [MOD_8 (GpeIndex)];
-
+    /* 
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitIndex = DecodeTo8bit [MOD_8 (GpeNumber)];
 
     /* 
      * Read the current value of the register, set the appropriate bit,
      * and write out the new register value to enable the GPE.
      */
-
-    InByte = OsdIn8 (Gbl_GpeRegisters[RegIndex].EnableAddr);
-    
-    DEBUG_PRINT (VERBOSE_EVENTS,
-        ("Enabling GPE %d by writing byte %08x to port %08x\n",
-    	GpeNumber, (UINT8)(InByte | GpeBit), Gbl_GpeRegisters[RegIndex].EnableAddr));
-    
-    OsdOut8 (Gbl_GpeRegisters[RegIndex].EnableAddr, (UINT8)(InByte | GpeBit));
-    
-    if (OsdIn8 (Gbl_GpeRegisters[RegIndex].EnableAddr) != (UINT8)(InByte | GpeBit))
-    {
-        DEBUG_PRINT (ACPI_WARN, ("Enabling the GPE %d didn't stick...\n", GpeNumber));
-    }
+    InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr);
+    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte | BitIndex));
 }
 
 
@@ -189,7 +172,7 @@ HwEnableGpe (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Disable a single GPE level
+ * DESCRIPTION: Disable a single GPE 
  *
  ******************************************************************************/
 
@@ -198,32 +181,25 @@ HwDisableGpe (
     UINT32                  GpeNumber)
 {
     UINT8                   InByte;
-    UINT8                   GpeBit;
-    UINT32                  RegIndex;
-    UINT32                  GpeIndex;
+    UINT32                  RegisterIndex;
+    UINT8                   BitIndex;
 
-
-    /* Translate Gpe number to index into tables */
-
-    GpeIndex = Gbl_GpeValid[GpeNumber];
-
-
-    /*
-     * Calculate the register number and bit position in that register.
-     * There are 8 GPEs per register.
+    /* 
+     * Translate GPE number to index into global registers array.
      */
+    RegisterIndex = Gbl_GpeValid[GpeNumber];
 
-    RegIndex    = DIV_8 (GpeIndex);
-    GpeBit      = DecodeTo8bit [MOD_8 (GpeIndex)];
-
+    /* 
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitIndex = DecodeTo8bit [MOD_8 (GpeNumber)];
 
     /* 
      * Read the current value of the register, clear the appropriate bit,
      * and write out the new register value to disable the GPE.
      */
-
-    InByte = OsdIn8 (Gbl_GpeRegisters[RegIndex].EnableAddr);
-    OsdOut8 (Gbl_GpeRegisters[RegIndex].EnableAddr, (UINT8)(InByte & ~GpeBit));
+    InByte = OsdIn8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr);
+    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].EnableAddr, (UINT8)(InByte & ~BitIndex));
 }
 
 
@@ -235,7 +211,7 @@ HwDisableGpe (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Clear a single GPE level
+ * DESCRIPTION: Clear a single GPE
  *
  ******************************************************************************/
 
@@ -243,30 +219,21 @@ void
 HwClearGpe (
     UINT32                  GpeNumber)
 {
-    UINT32                  RegIndex;
-    UINT8                   GpeBit;
-    UINT32                  GpeIndex;
+    UINT32                  RegisterIndex;
+    UINT8                   BitIndex;
 
-
-    /* Translate Gpe number to index into tables */
-
-    GpeIndex = Gbl_GpeValid[GpeNumber];
-
-
-    /*
-     * Calculate the register number and bit position in that register.
-     * There are 8 GPEs per register.
+    /* 
+     * Translate GPE number to index into global registers array.
      */
+    RegisterIndex = Gbl_GpeValid[GpeNumber];
 
-    RegIndex    = DIV_8 (GpeIndex);
-    GpeBit      = DecodeTo8bit [MOD_8 (GpeIndex)];
-
+    /* 
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitIndex = DecodeTo8bit [MOD_8 (GpeNumber)];
 
     /* 
      * Write a one to the appropriate status bit
      */
-
-    OsdOut8 (Gbl_GpeRegisters[RegIndex].StatusAddr, GpeBit);
+    OsdOut8 (Gbl_GpeRegisters[RegisterIndex].StatusAddr, BitIndex);
 }
-
-
