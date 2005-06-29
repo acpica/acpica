@@ -117,12 +117,11 @@
 #define __PSAPI_C__
 
 #include <acpi.h>
+#include <parser.h>
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
 
-#include <parser.h>
-#include <psopcode.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psapi");
@@ -225,10 +224,10 @@ BREAKPOINT3;
 ACPI_STATUS
 PsxExecute (
     ACPI_OBJECT_INTERNAL    *MthDesc,
-    ACPI_OBJECT_INTERNAL    **Params)
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
     ACPI_STATUS             Status;
-    void                    *StackTopEntry;
     UINT8                   *Pcode;
     UINT32                  PcodeLength;
 
@@ -238,27 +237,13 @@ PsxExecute (
     Pcode = MthDesc->Method.Pcode;
     PcodeLength = MthDesc->Method.PcodeLength;
 
-    /* Push new frame on Method stack */
-    
-    Status = AmlMthStackPush (Params);
-    if (ACPI_FAILURE (Status))
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("PsxExecute: Could not push Method Stack\n"));
-
-        /* TBD: do we need to pop the package stack here? */
-
-        goto Cleanup;
-    }
-
-
-    StackTopEntry = AmlObjStackGetValue (STACK_TOP);
 
     /* This is where we really execute the method */
 
     DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Execution **** code=%p len=%X\n",
                     Pcode, PcodeLength));
 
-BREAKPOINT3;
+OsdBreakpoint ("About to Execute");
 
 /* TBD: if method not parsed, must parse it first !! */
 /*
@@ -266,36 +251,23 @@ BREAKPOINT3;
                             AmlBeginScopeForExecution, AmlEndScopeForExecution);
 */
 
-    Status = PsWalkParsedAml (MthDesc->Method.ParserOp, MthDesc->Method.ParserOp,
+    Status = PsWalkParsedAml (MthDesc->Method.ParserOp, MthDesc->Method.ParserOp, Params, ReturnObjDesc,
                                 PsxExecBeginOp, PsxExecEndOp);
     /* 
      * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
      * or with Status == AE_PENDING at end of AML block (end of Method code)
      */
 
-    if (AE_RETURN_VALUE == Status)
+    if (*ReturnObjDesc)
     {
-        DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
-        DUMP_STACK_ENTRY (AmlObjStackGetValue (STACK_TOP));
-        DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", AmlObjStackLevel()));
+        DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n", *ReturnObjDesc));
+        DUMP_STACK_ENTRY (*ReturnObjDesc);
+
+        Status = AE_RETURN_VALUE;
     }
 
     else
     {
-        /*
-         * TBD:
-         * Check if there is an extraneous object left on the stack.  This can happen from 
-         * the execution of an numeric operator.  It is not clear who should delete the result
-         * object if it is not to be returned.  Needs more investigation.
-         */
-/*
-        if (StackTopEntry != AmlObjStackGetValue (STACK_TOP))
-        {
-            DEBUG_PRINT (ACPI_INFO, ("PsxExecute: *** Deleting internal return value %p\n"));
-            AmlObjStackDeleteValue (STACK_TOP);
-        }
-*/
-
         /* Map PENDING (normal exit, no return value) to OK */
 
         if (AE_PENDING == Status)
@@ -305,19 +277,6 @@ BREAKPOINT3;
     }
 
 
-    /* Stack cleanup */
-
-    AmlMthStackPop ();      /* pop our frame off method stack */
-
-
-    if (AmlObjStackLevel())
-    {
-        DEBUG_PRINT (ACPI_INFO, ("PsxExecute: Obj TOS at exit=%d\n",
-                        AmlObjStackLevel()));
-    }
-
-
-Cleanup:
     return_ACPI_STATUS (Status);
 }
 
