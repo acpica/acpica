@@ -371,6 +371,12 @@ typedef enum
 
 } ACPI_EVENT_TYPE;
 
+/* Interrupt handler return values (must be unique bits) */
+
+#define INTERRUPT_HANDLED       0x01
+#define INTERRUPT_NOT_HANDLED   0x02
+#define INTERRUPT_ERROR         0x04
+
 
 /*
  * Miscellaneous common Data Structures used by the interfaces
