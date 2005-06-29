@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -382,6 +382,17 @@ AcpiInstallAddressSpaceHandler (
      */
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Device, ACPI_UINT32_MAX,
                     ACPI_NS_WALK_UNLOCK, AcpiEvInstallHandler,
+                    HandlerObj, NULL);
+
+    /* 
+     * Now we can run the _REG methods for all Regions for this
+     * space ID.  This is a separate walk in order to handle any
+     * interdependencies between regions and _REG methods.  (i.e. handlers
+     * must be installed for all regions of this Space ID before we
+     * can run any _REG methods.
+     */
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Device, ACPI_UINT32_MAX,
+                    ACPI_NS_WALK_UNLOCK, AcpiEvRegRun,
                     HandlerObj, NULL);
 
 UnlockAndExit:
