@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,7 @@
 #include <string.h>
 #include "acpi.h"
 
-#define _COMPONENT          COMPILER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslparse")
 
 
@@ -2841,7 +2841,7 @@ AslLocalAllocate (unsigned int Size)
 
     DbgPrint (ASL_PARSE_OUTPUT, "\nAslLocalAllocate: Expanding Stack to %d\n\n", Size);
 
-    Mem = _UtCallocate (Size, 0, "", 0);
+    Mem = ACPI_MEM_CALLOCATE (Size);
     if (!Mem)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
