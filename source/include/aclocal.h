@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.141 $
+ *       $Revision: 1.142 $
  *
  *****************************************************************************/
 
@@ -878,10 +878,6 @@ typedef struct acpi_parse_state
 
 #define GPE1_STS_MASK
 #define GPE1_EN_MASK
-
-
-#define ACPI_READ                       1
-#define ACPI_WRITE                      2
 
 
 /*****************************************************************************
