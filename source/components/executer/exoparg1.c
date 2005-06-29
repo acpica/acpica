@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Module Name: iemonadic - ACPI AML (p-code) execution for monadic operators
+ * Module Name: iemonad - ACPI AML (p-code) execution for monadic operators
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __IEMONADIC_C__
+#define __IEMONAD_C__
 
 #include <acpi.h>
 #include <interpreter.h>
@@ -122,7 +122,7 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "iemonadic.c"
+#define _THIS_MODULE        "iemonad.c"
 #define _COMPONENT          INTERPRETER
 
 
@@ -171,7 +171,7 @@ AmlExecMonadic1 (
 
 
     AmlDumpObjStack (MODE_Exec, LongOps[opcode & 0x00ff], 1, "after AmlPrepObjStack");
-    ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+    ObjDesc = AmlObjStackGetValue (STACK_TOP);
 
 
     /* Examine the opcode */
@@ -258,7 +258,7 @@ AmlExecMonadic1 (
     } /* switch */
 
 
-    OsdFree (ObjDesc);
+    CmFree (ObjDesc);
     FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
@@ -313,8 +313,8 @@ AmlExecMonadic2R (
 
     AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
 
-    ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
-    ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
+    ResDesc = AmlObjStackGetValue (STACK_TOP);
+    ObjDesc = AmlObjStackGetValue (1);
 
     switch (opcode)
     {
@@ -378,6 +378,7 @@ AmlExecMonadic2R (
     
     case AML_ToBCDOp:
 
+
         if (ObjDesc->Number.Value > 9999)
         {
             DEBUG_PRINT (ACPI_ERROR, ("iExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
@@ -423,7 +424,10 @@ AmlExecMonadic2R (
     }
     
     Status = AmlExecStore (ObjDesc, ResDesc);
-    ObjStackTop--;
+
+    /* Must clear off the stack! */
+
+    AmlObjStackPop (1);
 
     FUNCTION_STATUS_EXIT (Status);
     return Status;
@@ -474,7 +478,7 @@ AmlExecMonadic2 (
 
     AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 1, "after AmlPrepObjStack");
 
-    ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+    ObjDesc = AmlObjStackGetValue (STACK_TOP);
 
 
     switch (opcode)
@@ -494,7 +498,7 @@ AmlExecMonadic2 (
     case AML_DecrementOp:
     case AML_IncrementOp:
 
-        if ((Status = AmlObjPushIfExec (MODE_Exec)) != AE_OK)
+        if ((Status = AmlObjStackPushIfExec (MODE_Exec)) != AE_OK)
         {
             REPORT_ERROR ("AmlExecMonadic2/IncDec: stack overflow");
             FUNCTION_STATUS_EXIT (AE_AML_ERROR);
@@ -510,7 +514,7 @@ AmlExecMonadic2 (
             
             /* push went into unused space, so no need to DeleteObject() */
             
-            ObjStack[ObjStackTop] = (void *) ResDesc;
+            AmlObjStackSetValue (STACK_TOP, ResDesc);
         }
         
         else
@@ -531,8 +535,8 @@ AmlExecMonadic2 (
 
         /* get the Number in ObjDesc and the Lvalue in ResDesc */
         
-        ObjDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
-        ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
+        ObjDesc = AmlObjStackGetValue (STACK_TOP);
+        ResDesc = AmlObjStackGetValue (1);
 
         /* do the ++ or -- */
         
@@ -545,13 +549,14 @@ AmlExecMonadic2 (
             ObjDesc->Number.Value--;
         }
 
-        /* store result */
+        /* Store result (Result must be placed at the stack top -1) */
         
-        LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop - 1]);
-        ObjStack[ObjStackTop - 1] = (void *) ObjDesc;
-        
+        AmlObjStackDeleteValue (1);
+        AmlObjStackSetValue (1, ObjDesc);
+
         Status = AmlExecStore (ObjDesc, ResDesc);
-        ObjStackTop--;
+
+        AmlObjStackPop (1);     /* Remove top entry */
 
         FUNCTION_STATUS_EXIT (Status);
         return Status;
@@ -640,7 +645,7 @@ AmlExecMonadic2 (
              * No need to LocalDeleteObject() first since TOS is an ACPI_HANDLE.
              */
 
-            ObjStack[ObjStackTop] = (void *) ObjDesc;
+            AmlObjStackSetValue (STACK_TOP, ObjDesc);
         }
         
         ObjDesc->Type = (UINT8) TYPE_Number;
@@ -651,8 +656,10 @@ AmlExecMonadic2 (
     /*  DefSizeOf   :=  SizeOfOp    SourceObject    */
 
     case AML_SizeOfOp:
+
         switch (ObjDesc->Type)
         {
+
         case TYPE_Buffer:
 
             ObjDesc->Number.Value = ObjDesc->Buffer.Length;
@@ -693,7 +700,8 @@ AmlExecMonadic2 (
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: %s unimplemented\n",
                 (opcode > ACPI_UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
-        ObjStackTop++;  /*  dummy return value  */
+
+        AmlObjStackPush ();  /*  dummy return value  */
 
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
@@ -702,7 +710,7 @@ AmlExecMonadic2 (
     default:
 
         DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic2:internal error: Unknown monadic opcode %02x\n",
+                    "AmlExecMonadic2: Internal error, unknown monadic opcode %02x\n",
                     opcode));
         
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);

@@ -121,6 +121,7 @@
 #include <amlcode.h>
 #include <namespace.h>
 #include <hardware.h>
+#include <events.h>
 
 
 #define _THIS_MODULE        "iefield.c"
@@ -171,13 +172,13 @@ AmlSetupField (
 
     if (!ObjDesc || !RgnDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: internal error - null handle\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - null handle\n"));
         Status = AE_AML_ERROR;
     }
 
     else if (TYPE_Region != RgnDesc->Type)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Needed Region, found %d %s\n",
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Needed Region, found %d %s\n",
                         RgnDesc->Type, NsTypeNames[RgnDesc->Type]));
         Status = AE_AML_ERROR;
     }
@@ -192,7 +193,7 @@ AmlSetupField (
             (FieldBitWidth != 16) && 
             (FieldBitWidth != 32))
         {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: internal error - bad width %d\n", FieldBitWidth));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Internal error - bad width %d\n", FieldBitWidth));
             Status = AE_AML_ERROR;
         }
     }
@@ -225,11 +226,11 @@ AmlSetupField (
                 /* Evaluate the Address opcode */
 
                 if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK && 
-                    (Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop])) == AE_OK)
+                    (Status = AmlGetRvalue (AmlObjStackGetTopPtr ())) == AE_OK)
                 {
-                    /* Capture the address */
+                    /* Pull the address off the stack */
 
-                    ObjValDesc = ObjStack[ObjStackTop];
+                    ObjValDesc = AmlObjStackRemoveValue (STACK_TOP);
 
 
                     if (!ObjValDesc ||
@@ -246,6 +247,10 @@ AmlSetupField (
                     {
                         RgnDesc->Region.Address = ObjValDesc->Number.Value;
                     }
+
+                    /* Free ObjValDesc, it was allocated by AmlDoOpcode */
+
+                    CmFree (ObjValDesc);
                 }
 
                 if (AE_OK == Status)
@@ -253,11 +258,11 @@ AmlSetupField (
                     /* Evaluate the Length opcode */
 
                     if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK &&
-                        (Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop])) == AE_OK)
+                        (Status = AmlGetRvalue (AmlObjStackGetTopPtr ())) == AE_OK)
                     {
-                        /* Capture the length */
+                        /* Pull the length off the stack */
 
-                        ObjValDesc = ObjStack[ObjStackTop];
+                        ObjValDesc = AmlObjStackRemoveValue (STACK_TOP);
 
                         if (!ObjValDesc ||
                             ObjValDesc->Type != (UINT8) TYPE_Number)
@@ -279,6 +284,10 @@ AmlSetupField (
                              */
                             RgnDesc->Region.DataValid = 1;
                         }
+
+                        /* Free ObjValDesc, it was allocated by AmlDoOpcode */
+
+                        CmFree (ObjValDesc);
                     }
                 }
             }
@@ -323,6 +332,7 @@ AmlSetupField (
 }
 
 
+
 /*****************************************************************************
  * 
  * FUNCTION:    AmlReadField
@@ -348,12 +358,7 @@ AmlReadField (
     UINT32                  Address;
     UINT32                  LocalValue = 0;
     INT32                   FieldByteWidth;
-    void *                  PhysicalAddrPtr = NULL;
-    UINT8                   PciBus = 0;
-    UINT8                  DevFunc = 0;
-    UINT8                   PciReg = 0;
-    UINT8                   PciExcep = 0;
-
+    
 
     FUNCTION_TRACE ("AmlReadField");
 
@@ -374,7 +379,7 @@ AmlReadField (
         return Status;
     }
 
-    /* SetupFld validated RgnDesc and FieldBitWidth  */
+    /* SetupField validated RgnDesc and FieldBitWidth  */
 
     if (!Value)
     {
@@ -405,140 +410,27 @@ AmlReadField (
     }
 
 
-    switch(RgnDesc->Region.SpaceId)
+    /* Invoke the appropriate AddressSpace/OpRegion handler */
+
+    Status = EvAddressSpaceDispatch (RgnDesc->Region.SpaceId, ADDRESS_SPACE_READ, 
+                                        Address, FieldBitWidth, Value);
+
+    if (Status == AE_NOT_IMPLEMENTED)
     {
-
-    case REGION_SystemMemory:
-
-        /* System memory defined to be in first Mbyte  */
-        /* XXX:  Is this true on all OS/platform combinations??  */
-        /* RBM:  Do we need to worry about this in protected mode?? */
-
-        if (Address & 0xFFF00000UL)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: **** Implementation limitation - SystemMemory address %08lx over 1MB\n", Address));
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-
-        /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
-
-        /* 
-         * XXX: This may be too high an overhead to do every time.
-         * Probably should have a mapping cached.
-         */
-
-        PhysicalAddrPtr = OsdMapMemory ((void *) Address, 4);
-
-        switch (FieldBitWidth)
-        {
-        /* System memory width */
-
-        case 8:
-            *Value = (UINT32)* (UINT8 *) PhysicalAddrPtr;
-            break;
-
-        case 16:
-            *Value = (UINT32)* (UINT16 *) PhysicalAddrPtr;
-            break;
-
-        case 32:
-            *Value = * (UINT32 *) PhysicalAddrPtr;
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: Invalid SystemMemory width %d\n", FieldBitWidth));
-            OsdUnMapMemory (PhysicalAddrPtr, 4);
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-
-        OsdUnMapMemory (PhysicalAddrPtr, 4);
-        break;
-
-    case REGION_SystemIO:
-        switch (FieldBitWidth)
-        {
-        /* I/O Port width */
-
-        case 8:
-            *Value = (UINT32) OsdIn8 ((UINT16) Address);
-            break;
-
-        case 16:
-            *Value = (UINT32) OsdIn16 ((UINT16) Address);
-            break;
-
-        case 32:
-            *Value = OsdIn32 ((UINT16) Address);
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: Invalid SystemIO width %d\n", FieldBitWidth));
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-        break;
-
-    case REGION_PCIConfig:
-        PciBus = (UINT8) (Address >> 16);
-        DevFunc = (UINT8) (Address >> 8);
-        PciReg = (UINT8) ((Address >> 2) & 0x3f);
-        *Value = 0;
-
-        switch (FieldBitWidth)
-        {
-        /* PCI Register width */
-
-        case 8:
-            PciExcep = OsdReadPciCfgByte (PciBus, DevFunc, PciReg, (UINT8 *) Value);
-            break;
-
-        case 16:
-            PciExcep = OsdReadPciCfgWord (PciBus, DevFunc, PciReg, (UINT16 *) Value);
-            break;
-
-        case 32:
-            PciExcep = OsdReadPciCfgDword (PciBus, DevFunc, PciReg, Value);
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlReadField: Invalid PCIConfig width %d\n", FieldBitWidth));
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-        if (PciExcep)
-        {
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-        break;
-
-    case REGION_EmbeddedControl:
-    case REGION_SMBus:
-
-        /* XXX - Actual read should happen here */
-
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: **** OpRegion type %s not implemented\n",
                 RegionTypes[RgnDesc->Region.SpaceId]));
-        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-        return AE_AML_ERROR;
+    }
 
-    default:
+    else if (Status == AE_EXIST)
+    {
         DEBUG_PRINT (ACPI_ERROR, ("AmlReadField: **** Unknown OpRegion SpaceID %d\n",
                 RgnDesc->Region.SpaceId));
-        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-        return AE_AML_ERROR;
     }
 
     DEBUG_PRINT (TRACE_OPREGION, ("AmlReadField: Returned value=%08lx \n", *Value));
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    FUNCTION_STATUS_EXIT (Status);
+    return Status;
 }
 
 
@@ -566,11 +458,6 @@ AmlWriteField (
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Address;
     INT32                   FieldByteWidth;
-    void                    *PhysicalAddrPtr = NULL;
-    UINT8                   PciBus = 0;
-    UINT8                   DevFunc = 0;
-    UINT8                   PciReg = 0;
-    UINT8                   PciExcep = 0;
 
 
     FUNCTION_TRACE ("AmlWriteField");
@@ -607,128 +494,27 @@ AmlWriteField (
                 Value, RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
     }
 
+    /* Invoke the appropriate AddressSpace/OpRegion handler */
 
-    /*  switch on region SpaceID    */
+    Status = EvAddressSpaceDispatch (RgnDesc->Region.SpaceId, ADDRESS_SPACE_WRITE, 
+                                        Address, FieldBitWidth, &Value);
 
-    switch(RgnDesc->Region.SpaceId)
+    if (Status == AE_NOT_IMPLEMENTED)
     {
-     
-    case REGION_SystemMemory:
-
-        /* TBD:  Is this an issue in protected mode?  !!! */
-
-        if (Address & 0xFFF00000UL)
-        {
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: Implementation limitation - SystemMemory address %08lx over 1MB\n", Address));
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
-        }
-
-
-        /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
-
-        /* XXX: This may be too high an overhead to do every time.
-         * Probably should have a mapping cached.
-         */
-
-        PhysicalAddrPtr = OsdMapMemory ((void *) Address, 4);
-                
-        switch (FieldBitWidth)
-        {
-        case 8:
-            *(UINT8 *) PhysicalAddrPtr = (UINT8) Value;
-            break;
-
-        case 16:
-            *(UINT16 *) PhysicalAddrPtr = (UINT16) Value;
-            break;
-
-        case 32:
-            *(UINT32 *) PhysicalAddrPtr = Value;
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: Invalid SystemMemory width %d\n", FieldBitWidth));
-            OsdUnMapMemory (PhysicalAddrPtr, 4);
-            Status = AE_AML_ERROR;
-        }
-
-        OsdUnMapMemory (PhysicalAddrPtr, 4);
-        break;
-
-    case REGION_SystemIO:
-        switch (FieldBitWidth)
-        {
-        case 8:
-            OsdOut8 ((UINT16) Address, (UINT8) Value);
-            break;
-
-        case 16:
-            OsdOut16 ((UINT16) Address, (UINT16) Value);
-            break;
-
-        case 32:
-            OsdOut32 ((UINT16) Address, Value);
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: Invalid SystemIO width %d\n", FieldBitWidth));
-            Status = AE_AML_ERROR;
-        }
-        break;
-
-    case REGION_PCIConfig:
-        PciBus = (UINT8) (Address >> 16);
-        DevFunc = (UINT8) (Address >> 8);
-        PciReg = (UINT8) ((Address >> 2) & 0x3f);
-
-        switch (FieldBitWidth)
-        {
-        case 8:
-            PciExcep = OsdWritePciCfgByte (PciBus, DevFunc, PciReg, *(UINT8 *)&Value);
-            break;
-
-        case 16:
-            PciExcep = OsdWritePciCfgWord (PciBus, DevFunc, PciReg, *(UINT16 *)&Value);
-            break;
-
-        case 32:
-            PciExcep = OsdWritePciCfgDword (PciBus, DevFunc, PciReg, Value);
-            break;
-
-        default:
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlWriteField: Invalid PCIConfig width %d\n", FieldBitWidth));
-            Status = AE_AML_ERROR;
-        }
-
-        if (PciExcep)
-        {
-            Status = AE_AML_ERROR;
-        }
-        break;
-
-    case REGION_EmbeddedControl:
-    case REGION_SMBus:
-
-        /* XXX - Actual write should happen here */
-
         DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** OpRegion type %s not implemented\n",
                         RegionTypes[RgnDesc->Region.SpaceId]));
-        Status = AE_AML_ERROR;
+    }
 
-    default:
+    else if (Status == AE_EXIST)
+    {
         DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** Unknown OpRegion SpaceID %d\n",
                         RgnDesc->Region.SpaceId));
-        Status = AE_AML_ERROR;
     }
 
     FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
+
 
 /*****************************************************************************
  * 
@@ -994,7 +780,7 @@ AmlSetNamedFieldValue (
 
     if (!NamedField)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlSetNamedFieldValue: internal error - null handle\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlSetNamedFieldValue: Internal error - null handle\n"));
     }
     else
     {
@@ -1020,6 +806,7 @@ AmlSetNamedFieldValue (
  ****************************************************************************/
 
 ACPI_STATUS
+
 AmlGetNamedFieldValue (
     ACPI_HANDLE             NamedField, 
     UINT32                  *Value)
@@ -1032,12 +819,12 @@ AmlGetNamedFieldValue (
 
     if (!NamedField)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: internal error - null handle\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: Internal error - null handle\n"));
     }
 
     else if (!Value)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: internal error - null pointer\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetNamedFieldValue: Internal error - null pointer\n"));
     }
 
     else

@@ -84,6 +84,7 @@
  * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
  * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
+
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
  * PARTICULAR PURPOSE. 
@@ -165,12 +166,13 @@ AmlExecCreateField (
     ACPI_OBJECT_INTERNAL    *SrcDesc = NULL;
     ACPI_STATUS             Status;
     char                    *OpName = NULL;
-    INT32                   NumOperands;
+    UINT32                  NumOperands;
     UINT16                  BitCount;
     UINT32                  BitOffset;
-    UINT8       			bTypeFound;
-    char        			TypeFound[20];
-    char        			*TypeFoundPtr = NULL;
+    UINT32                  StackIndex;
+    UINT8                   TypeFound;
+    char                    TypeName[20];
+    char                    *TypeFoundPtr = NULL;
 
 
 
@@ -178,7 +180,7 @@ AmlExecCreateField (
     FUNCTION_TRACE ("AmlExecCreateField");
 
 
-    /*  DefCreateField := CreateFieldOp SourceBuff BitIndex NumBits NameString  */
+    /* DefCreateField := CreateFieldOp SourceBuff BitIndex NumBits NameString  */
 
     if (AML_CreateFieldOp == opcode)
     {
@@ -188,8 +190,10 @@ AmlExecCreateField (
     }
 
     
-    /*  Create[Bit|Byte|DWord|Word]Field    */
-    /*  DefCreate*Field := Create*FieldOp SourceBuff [Bit|Byte]Index NameString */
+    /* 
+     * Create[Bit|Byte|DWord|Word]Field
+     * DefCreate*Field := Create*FieldOp SourceBuff [Bit|Byte]Index NameString
+     */
 
     else
     {
@@ -200,81 +204,94 @@ AmlExecCreateField (
 
     if (Status != AE_OK)
     {
-        /*  invalid parameters on object stack  */
+        /* Invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
         FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
+    /* Get pointers to everything that is now on the object stack */
+
     AmlDumpObjStack (MODE_Exec, OpName, NumOperands, "after AmlPrepObjStack");
 
-    ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* result */
+    StackIndex = 0;
+    ResDesc = AmlObjStackGetValue (StackIndex++);           /* result */
     
     if (AML_CreateFieldOp == opcode)
     {
-        CntDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* count */
+        CntDesc = AmlObjStackGetValue (StackIndex++);           /* count */
     }
 
-    OffDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* offset */
-    SrcDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];          /* source */
-    ObjStackTop += NumOperands - 1;
+    OffDesc = AmlObjStackGetValue (StackIndex++);           /* offset */
+    SrcDesc = AmlObjStackGetValue (StackIndex++);           /* source */
 
     /* If ResDesc is a Name, it will be a direct name pointer after AmlPrepObjStack() */
     
     if (!IS_NS_HANDLE (ResDesc))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("%s: destination must be a Name\n", OpName));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField (%s): destination must be a Name\n", OpName));
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
+
+    /*
+     * Setup the Bit offsets and counts, according to the opcode
+     */
+
     switch (opcode)
     {
 
-
-    /*  DefCreateBitField   :=  CreateBitFieldOp    SourceBuff  BitIndex    NameString  */
+    /* DefCreateBitField   :=  CreateBitFieldOp    SourceBuff  BitIndex    NameString  */
 
     case AML_BitFieldOp:
+
         BitOffset = OffDesc->Number.Value;              /* offset is in bits */
         BitCount = 1;                                   /* field is a bit */
         break;
 
 
-    /*  DefCreateByteField  :=  CreateByteFieldOp   SourceBuff  ByteIndex   NameString  */
+    /* DefCreateByteField  :=  CreateByteFieldOp   SourceBuff  ByteIndex   NameString  */
 
     case AML_ByteFieldOp:
+
         BitOffset = 8 * OffDesc->Number.Value;          /* offset is in bytes */
         BitCount = 8;                                   /* field is a Byte */
         break;
 
 
-    /*  DefCreateWordField  :=  CreateWordFieldOp   SourceBuff  ByteIndex   NameString  */
+    /* DefCreateWordField  :=  CreateWordFieldOp   SourceBuff  ByteIndex   NameString  */
 
     case AML_WordFieldOp:
+
         BitOffset = 8 * OffDesc->Number.Value;          /* offset is in bytes */
         BitCount = 16;                                  /* field is a Word */
         break;
 
 
-    /*  DefCreateDWordField :=  CreateDWordFieldOp  SourceBuff  ByteIndex   NameString  */
+    /* DefCreateDWordField :=  CreateDWordFieldOp  SourceBuff  ByteIndex   NameString  */
 
     case AML_DWordFieldOp:
+
         BitOffset = 8 * OffDesc->Number.Value;          /* offset is in bytes */
         BitCount = 32;                                  /* field is a DWord */
         break;
 
 
-    /*  DefCreateField  :=  CreateFieldOp   SourceBuff  BitIndex    NumBits NameString  */
+    /* DefCreateField  :=  CreateFieldOp   SourceBuff  BitIndex    NumBits NameString  */
 
     case AML_CreateFieldOp:
+
         BitOffset = OffDesc->Number.Value;              /* offset is in bits */
         BitCount = (UINT16) CntDesc->Number.Value;      /* as is count */
         break;
 
+
     default:
+
         DEBUG_PRINT (ACPI_ERROR, (
-                "AmlExecCreateField:internal error: Unknown field creation opcode %02x\n",
+                "AmlExecCreateField: Internal error - unknown field creation opcode %02x\n",
                 opcode));
         FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
@@ -282,12 +299,18 @@ AmlExecCreateField (
     } /* switch */
 
 
+
+    /*
+     * Setup field according to the object type
+     */
+
     switch (SrcDesc->Type)
     {
     
-    /*  SourceBuff  :=  TermArg=>Buffer */
+    /* SourceBuff  :=  TermArg=>Buffer */
 
     case TYPE_Buffer:
+
         if (BitOffset + (UINT32) BitCount > 8 * (UINT32) SrcDesc->Buffer.Length)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
@@ -310,18 +333,20 @@ AmlExecCreateField (
         OffDesc->FieldUnit.Sequence     = SrcDesc->Buffer.Sequence;
         break;
 
-    default:
-        bTypeFound = SrcDesc->Type;
 
-        if ((bTypeFound > (UINT8) TYPE_Lvalue) ||
-            (BadType == NsTypeNames[bTypeFound]))
+    default:
+
+        TypeFound = SrcDesc->Type;
+
+        if ((TypeFound > (UINT8) TYPE_Lvalue) ||
+            (BadType == NsTypeNames[TypeFound]))
         {
-            sprintf (TypeFound, "encoding %d", bTypeFound);
-            TypeFoundPtr = TypeFound;
+            sprintf (TypeName, "encoding %d", TypeFound);
+            TypeFoundPtr = TypeName;
         }
         else
         {
-            TypeFoundPtr = NsTypeNames[bTypeFound];
+            TypeFoundPtr = NsTypeNames[TypeFound];
         }
 
         DEBUG_PRINT (ACPI_ERROR, (
@@ -335,9 +360,9 @@ AmlExecCreateField (
 
     if (AML_CreateFieldOp == opcode)
     {
-        /*  delete object descriptor unique to CreateField  */
+        /* Delete object descriptor unique to CreateField  */
 
-        OsdFree (CntDesc);
+        CmFree (CntDesc);
         CntDesc = NULL;
     }
 
@@ -353,6 +378,7 @@ AmlExecCreateField (
 
     switch (NsGetType (ResDesc))                /* Type of Name's existing value */
     {
+
     case TYPE_Alias:
     case TYPE_BankField:
     case TYPE_DefField:
@@ -367,15 +393,23 @@ AmlExecCreateField (
         NsSetValue (ResDesc, NULL, TYPE_Any);
         break;
 
+
     default:
+
         break;
     }
+
 
     /* Store constructed field descriptor in result location */
     
     Status = AmlExecStore (OffDesc, ResDesc);
-    ObjStackTop -= NumOperands - 1;
-    
+
+    /* Pop off everything from the stack */
+
+    AmlObjStackPop (NumOperands - 1);
+    AmlObjStackClearTop ();
+
+
     FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
@@ -415,7 +449,7 @@ AmlExecFatal (void)
 
     if (Status != AE_OK)
     {
-        /*  invalid parameters on object stack  */
+        /* invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_FatalOp, 3);
         FUNCTION_STATUS_EXIT (Status);
@@ -425,11 +459,11 @@ AmlExecFatal (void)
     AmlDumpObjStack (MODE_Exec, LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepObjStack");
 
 
-    /*  DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
+    /* DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
 
-    ArgDesc  = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
-    CodeDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
-    TypeDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
+    ArgDesc  = AmlObjStackGetValue (0);
+    CodeDesc = AmlObjStackGetValue (1);
+    TypeDesc = AmlObjStackGetValue (2);
 
     DEBUG_PRINT (ACPI_INFO,
                 ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
@@ -480,7 +514,7 @@ AmlExecIndex (void)
 
     if (Status != AE_OK)
     {
-        /*  invalid parameters on object stack  */
+        /* invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_IndexOp, 3);
     }
@@ -489,9 +523,9 @@ AmlExecIndex (void)
     {
         AmlDumpObjStack (MODE_Exec, ShortOps[AML_IndexOp], 3, "after AmlPrepObjStack");
 
-        ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
-        IdxDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
-        PkgDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
+        ResDesc = AmlObjStackGetValue (0);
+        IdxDesc = AmlObjStackGetValue (1);
+        PkgDesc = AmlObjStackGetValue (2);
 
         if (IdxDesc->Number.Value < 0 || 
             IdxDesc->Number.Value >= (UINT32) PkgDesc->Package.Count)
@@ -515,10 +549,12 @@ AmlExecIndex (void)
 
         if (AE_OK == Status)
         {
-            OsdFree (IdxDesc);
+            CmFree (IdxDesc);
         }
 
-        ObjStackTop -= 2;
+        /* Pop and clear two stack entries */
+
+        AmlObjStackPop (2);
     }
 
     FUNCTION_STATUS_EXIT (Status);
@@ -571,7 +607,7 @@ AmlExecMatch (void)
 
     if (Status != AE_OK)
     {
-        /*  invalid parameters on object stack  */
+        /* invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_MatchOp, 6);
         FUNCTION_STATUS_EXIT (Status);
@@ -580,12 +616,12 @@ AmlExecMatch (void)
 
     AmlDumpObjStack (MODE_Exec, ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
 
-    StartDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
-    V2Desc    = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
-    Op2Desc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
-    V1Desc    = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 3];
-    Op1Desc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 4];
-    PkgDesc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 5];
+    StartDesc = AmlObjStackGetValue (0);
+    V2Desc    = AmlObjStackGetValue (1);
+    Op2Desc   = AmlObjStackGetValue (2);
+    V1Desc    = AmlObjStackGetValue (3);
+    Op1Desc   = AmlObjStackGetValue (4);
+    PkgDesc   = AmlObjStackGetValue (5);
 
     /* Validate match comparison sub-opcodes */
     
@@ -635,10 +671,14 @@ AmlExecMatch (void)
          */
         switch (Op1Desc->Number.Value)
         {
-        case MATCH_MTR:   /*  always true */
+
+        case MATCH_MTR:   /* always true */
+
             break;
 
-        case MATCH_MEQ:   /*  true if equal   */
+
+        case MATCH_MEQ:   /* true if equal   */
+
             if (PkgDesc->Package.Elements[Look]->Number.Value
                  != V1Desc->Number.Value)
             {
@@ -646,7 +686,9 @@ AmlExecMatch (void)
             }
             break;
 
-        case MATCH_MLE:   /*  true if less than or equal  */
+
+        case MATCH_MLE:   /* true if less than or equal  */
+
             if (PkgDesc->Package.Elements[Look]->Number.Value
                  > V1Desc->Number.Value)
             {
@@ -654,7 +696,9 @@ AmlExecMatch (void)
             }
             break;
 
-        case MATCH_MLT:   /*  true if less than   */
+
+        case MATCH_MLT:   /* true if less than   */
+
             if (PkgDesc->Package.Elements[Look]->Number.Value
                  >= V1Desc->Number.Value)
             {
@@ -662,7 +706,9 @@ AmlExecMatch (void)
             }
             break;
 
-        case MATCH_MGE:   /*  true if greater than or equal   */
+
+        case MATCH_MGE:   /* true if greater than or equal   */
+
             if (PkgDesc->Package.Elements[Look]->Number.Value
                  < V1Desc->Number.Value)
             {
@@ -670,7 +716,9 @@ AmlExecMatch (void)
             }
             break;
 
-        case MATCH_MGT:   /*  true if greater than    */
+
+        case MATCH_MGT:   /* true if greater than    */
+
             if (PkgDesc->Package.Elements[Look]->Number.Value
                  <= V1Desc->Number.Value)
             {
@@ -678,17 +726,23 @@ AmlExecMatch (void)
             }
             break;
 
-        default:    /*  undefined   */
+
+        default:    /* undefined   */
+
             continue;
         }
  
         
         switch(Op2Desc->Number.Value)
         {
+
         case MATCH_MTR:
+
             break;
 
+
         case MATCH_MEQ:
+
             if (PkgDesc->Package.Elements[Look]->Number.Value
                  != V2Desc->Number.Value)
             {
@@ -696,7 +750,9 @@ AmlExecMatch (void)
             }
             break;
 
+
         case MATCH_MLE:
+
             if (PkgDesc->Package.Elements[Look]->Number.Value
                  > V2Desc->Number.Value)
             {
@@ -704,7 +760,9 @@ AmlExecMatch (void)
             }
             break;
 
+
         case MATCH_MLT:
+
             if (PkgDesc->Package.Elements[Look]->Number.Value
                  >= V2Desc->Number.Value)
             {
@@ -712,7 +770,9 @@ AmlExecMatch (void)
             }
             break;
 
+
         case MATCH_MGE:
+
             if (PkgDesc->Package.Elements[Look]->Number.Value
                  < V2Desc->Number.Value)
             {
@@ -720,7 +780,9 @@ AmlExecMatch (void)
             }
             break;
 
+
         case MATCH_MGT:
+
             if (PkgDesc->Package.Elements[Look]->Number.Value
                  <= V2Desc->Number.Value)
             {
@@ -728,7 +790,9 @@ AmlExecMatch (void)
             }
             break;
 
+
         default:
+
             continue;
         }
 
@@ -741,13 +805,17 @@ AmlExecMatch (void)
     PkgDesc->Type = (UINT8) TYPE_Number;
     PkgDesc->Number.Value = MatchValue;
 
-    OsdFree (StartDesc);
-    OsdFree (V2Desc);
-    OsdFree (Op2Desc);
-    OsdFree (V1Desc);
-    OsdFree (Op1Desc);
+    /* Free the operands */
+
+    CmFree (StartDesc);
+    CmFree (V2Desc);
+    CmFree (Op2Desc);
+    CmFree (V1Desc);
+    CmFree (Op1Desc);
     
-    ObjStackTop -= 5;          /* Remove operands */
+    /* Remove operands from the object stack */
+
+    AmlObjStackPop (5);          
 
     FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;

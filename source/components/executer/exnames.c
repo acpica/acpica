@@ -136,9 +136,11 @@
  * FUNCTION:    AmlAllocateNameString
  *
  * PARAMETERS:  PrefixCount         - Count of parent levels. Special cases:
- *                                    -1  => root
- *                                    0   => none
+ *                                    (-1) = root,  0 = none
  *              NumNameSegs         - count of 4-character name segments
+ *
+ * RETURN:      A pointer to the allocated string segment.  This segment must
+ *              be deleted by the caller.
  *
  * DESCRIPTION: Ensure allocated name string is long enough,
  *              and set up prefix if any.
@@ -177,7 +179,12 @@ AmlAllocateNameString (
     }
 
 
-    NameString = OsdAllocate ((ACPI_SIZE) SizeNeeded);
+    /* 
+     * Allocate a buffer for the name.
+     * This buffer must be deleted by the caller!
+     */
+
+    NameString = CmAllocate ((ACPI_SIZE) SizeNeeded);
     if (!NameString)
     {
         /* Allocation failure  */
@@ -195,6 +202,7 @@ AmlAllocateNameString (
     {
         *TempPtr++ = AML_RootPrefix;
     }
+
     else
     {
         while (PrefixCount--)
@@ -276,20 +284,29 @@ AmlDecodePackageLength (
 {
     INT32                   NumBytes = 0;
 
+
     FUNCTION_TRACE ("AmlDecodePackageLength");
 
 
     if (LastPkgLen < PKG_Type1)
+    {
         NumBytes = 1;
-    
+    }
+
     else if (LastPkgLen < PKG_Type2)
+    {
         NumBytes = 2;
-    
+    }
+
     else if (LastPkgLen < PKG_Type3)
+    {
         NumBytes = 3;
-    
+    }
+
     else if (LastPkgLen < PKG_Type4)
+    {
         NumBytes = 4;
+    }
 
     FUNCTION_EXIT;
     return NumBytes;
@@ -426,11 +443,14 @@ AmlDoName (
     INT32                   NumSegments;
     INT32                   PrefixCount = 0;
     UINT8                   Prefix = 0;
-    ACPI_HANDLE             handle;
+    ACPI_HANDLE             Handle;
     INT32                   MethodFlags;
     INT32                   ArgCount;
-    INT32                   StackBeforeArgs;
+    INT32                   PreviousStackTop;
+    INT32                   CurrentStackTop;
+    UINT32                  StackOffset;
     METHOD_INFO             *MethodPtr;
+    ACPI_HANDLE             MethodScope;
     char                    *NameString = NULL;
 
 
@@ -439,8 +459,8 @@ AmlDoName (
 
 BREAKPOINT3;
 
-    if (TYPE_DefField == DataType || 
-        TYPE_BankField == DataType || 
+    if (TYPE_DefField == DataType    || 
+        TYPE_BankField == DataType   || 
         TYPE_IndexField == DataType)
     {   
         /* Disallow prefixes for types associated with field names */
@@ -465,6 +485,7 @@ BREAKPOINT3;
             /* Examine first character of name for root or parent prefix operators */
 
         case AML_RootPrefix:
+
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("RootPrefix: %x\n", Prefix));
 
@@ -475,26 +496,34 @@ BREAKPOINT3;
             PrefixCount = -1;
             break;
 
+
         case AML_ParentPrefix:
+
             do
             {
                 AmlConsumeStreamBytes (1, &Prefix);
                 DEBUG_PRINT (TRACE_LOAD, ("ParentPrefix: %x\n", Prefix));
 
                 ++PrefixCount;
+
             } while (AmlPeekOp () == AML_ParentPrefix);
             
             break;
 
+
         default:
+
             break;
         }
+
+
 
         switch (AmlPeekOp ())
         {
             /* Examine first character of name for name segment prefix operator */
             
         case AML_DualNamePrefix:
+
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("DualNamePrefix: %x\n", Prefix));
 
@@ -516,7 +545,9 @@ BREAKPOINT3;
 
             break;
 
+
         case AML_MultiNamePrefixOp:
+
             AmlConsumeStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("MultiNamePrefix: %x\n", Prefix));
 
@@ -550,6 +581,7 @@ BREAKPOINT3;
 
             break;
 
+
         case 0: 
             
             /* NullName valid as of 8-12-98 ASL/AML Grammar Update */
@@ -572,6 +604,7 @@ BREAKPOINT3;
 
             break;
 
+
         default:
 
             /* Name segment string */
@@ -589,28 +622,29 @@ BREAKPOINT3;
         }   /* Switch (PeekOp ())    */
     }
 
+
     if (AE_OK == Status)
     {
         /* All prefixes have been handled, and the name is in NameString */
 
-        LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
+        AmlObjStackDeleteValue (STACK_TOP);
 
         Status = NsLookup (CurrentScope->Scope, NameString, DataType, LoadExecMode, 
-                                    NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) &ObjStack[ObjStackTop]);
+                                    NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) AmlObjStackGetTopPtr ());
 
-        /* Help view ObjStack during debugging */
+        /* Get return value from the lookup */
 
-        handle = ObjStack[ObjStackTop];
+        Handle = AmlObjStackGetValue (STACK_TOP);
 
         /* TBD: another global to remove!! */
         /* Globally set this handle for use later */
 
         if (MODE_Load1 == LoadExecMode)
         {
-            LastMethod = handle;
+            LastMethod = Handle;
         }
 
-        if (MODE_Exec == LoadExecMode && !ObjStack[ObjStackTop])
+        if (MODE_Exec == LoadExecMode && !Handle)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlDoName: Name Lookup Failure\n"));
             Status = AE_AML_ERROR;
@@ -621,7 +655,7 @@ BREAKPOINT3;
             /* Not first pass load */
 
             if (TYPE_Any == DataType && 
-                TYPE_Method == NsGetType (ObjStack[ObjStackTop]))
+                TYPE_Method == NsGetType (Handle))
             {   
                 /* 
                  * Method reference call 
@@ -631,7 +665,7 @@ BREAKPOINT3;
                  * byte of the Method's AML.
                  */
 
-                MethodPtr = (METHOD_INFO *) NsGetValue (ObjStack[ObjStackTop]);
+                MethodPtr = (METHOD_INFO *) NsGetValue (Handle);
                 if (MethodPtr)
                 {   
                     /* MethodPtr valid   */
@@ -649,11 +683,12 @@ BREAKPOINT3;
                     {   
                         /* MethodPtr points at valid method  */
                         
-                        ArgCount = (MethodFlags & METHOD_ARG_COUNT_MASK)
-                                                >> METHOD_ARG_COUNT_SHIFT;
-                        StackBeforeArgs = ObjStackTop;
+                        ArgCount = (MethodFlags & METHOD_ARG_COUNT_MASK) >> METHOD_ARG_COUNT_SHIFT;
 
-                        if (((Status = AmlObjPushIfExec (MODE_Exec)) == AE_OK) &&
+                        PreviousStackTop = AmlObjStackLevel ();
+                        MethodScope = AmlObjStackGetValue (STACK_TOP);
+
+                        if (((Status = AmlObjStackPushIfExec (MODE_Exec)) == AE_OK) &&
                              (ArgCount > 0))
                         {   
                             /* Get all arguments */
@@ -677,15 +712,14 @@ BREAKPOINT3;
                                      */
                                     if (MODE_Exec == LoadExecMode)
                                     {
-                                        Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **)
-                                            &ObjStack[ObjStackTop]);
+                                        Status = AmlGetRvalue (AmlObjStackGetTopPtr ());
                                     }
 
                                     if (AE_OK == Status)
                                     {
                                         /* Make room for the next argument */
 
-                                        Status = AmlObjPushIfExec (LoadExecMode);
+                                        Status = AmlObjStackPushIfExec (LoadExecMode);
                                     }
                                 } 
                             }
@@ -696,39 +730,43 @@ BREAKPOINT3;
                             /* Execution mode  */
                             /* Mark end of arg list */
 
-                            LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
-                            ObjStack[ObjStackTop] = NULL;
+                            AmlObjStackDeleteValue (STACK_TOP);
 
                             /* Establish Method's scope as current */
 
-                            NsPushMethodScope ((ACPI_HANDLE) ObjStack[StackBeforeArgs]);
+                            NsPushMethodScope (MethodScope);
+                            CurrentStackTop = AmlObjStackLevel ();
+                            StackOffset = CurrentStackTop - PreviousStackTop;
 
-                            DEBUG_PRINT (TRACE_LOAD,
-                                        ("Calling %4.4s, StackBeforeArgs %d  ObjStackTop %d\n",
-                                        ObjStack[StackBeforeArgs], StackBeforeArgs,
-                                        ObjStackTop));
+                            DEBUG_PRINT (TRACE_LOAD, ("Calling %4.4s, PreviousTOS=%d  CurrentTOS=%d\n",
+                                            MethodScope, PreviousStackTop, CurrentStackTop));
 
                             AmlDumpObjStack (LoadExecMode, "AmlDoName", ACPI_INT_MAX, "Method Arguments");
 
                             /* Execute the Method, passing the stacked args */
                             
-                            Status = AmlExecuteMethod (
-                                        MethodPtr->Offset + 1, MethodPtr->Length - 1,
-                                        (ACPI_OBJECT_INTERNAL **) &ObjStack[StackBeforeArgs + 1]);
+                            Status = AmlExecuteMethod (MethodPtr->Offset + 1, MethodPtr->Length - 1,
+                                                        AmlObjStackGetPtr (StackOffset -1));
 
-                            DEBUG_PRINT (TRACE_LOAD,
-                                    ("AmlExec Status=%s, StackBeforeArgs %d  ObjStackTop %d\n",
-                                    ExceptionNames[Status], StackBeforeArgs, ObjStackTop));
+                            CurrentStackTop = AmlObjStackLevel ();
+
+                            DEBUG_PRINT (TRACE_LOAD, ("After AmlExecuteMethod, PreviousTOS=%d  CurrentTOS=%d\n",
+                                            PreviousStackTop, CurrentStackTop));
 
                             if (AE_RETURN_VALUE == Status)
                             {
-                                /* Recover returned value */
+                                /* 
+                                 * Move the returned value from the top of the stack to
+                                 * below the method args.
+                                 */
 
-                                if (StackBeforeArgs < ObjStackTop)
+                                if (PreviousStackTop < CurrentStackTop)
                                 {
-                                    LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[StackBeforeArgs]);
-                                    ObjStack[StackBeforeArgs] = ObjStack[ObjStackTop];
-                                    ObjStackTop--;
+                                    StackOffset = CurrentStackTop - PreviousStackTop;
+
+                                    AmlObjStackDeleteValue (StackOffset);
+                                    AmlObjStackSetValue (StackOffset, AmlObjStackGetValue (STACK_TOP));
+                                    AmlObjStackPop (1);
                                 }
 
                                 Status = AE_OK;
@@ -743,24 +781,30 @@ BREAKPOINT3;
 
                         /* Clean up object stack */
                         
-                        DEBUG_PRINT (TRACE_LOAD,
-                                ("AmlDoName: Cleaning up object stack (%d elements)\n",
-                                ObjStackTop - StackBeforeArgs));
+                        DEBUG_PRINT (TRACE_LOAD, ("AmlDoName: Cleaning up object stack (%d elements)\n",
+                                        CurrentStackTop - PreviousStackTop));
 
-                        while (ObjStackTop > StackBeforeArgs)
+                        for (CurrentStackTop = AmlObjStackLevel (); 
+                             CurrentStackTop > PreviousStackTop;
+                             CurrentStackTop--)
                         {
-                            LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
+                            AmlObjStackDeleteValue (STACK_TOP);
 
                             /* Zero out the slot and move on */
 
-                            ObjStack[ObjStackTop] = NULL;
-                            ObjStackTop--;
+                            AmlObjStackPop (1);
                         }
-                    }
-                } 
-            }
-        } 
-    }
+
+                    } /* Else - valid method ptr */
+
+                } /* Has a non-zero method ptr */
+
+            } /* Reference to a control method */
+
+        } /* Second pass load or execute mode */
+    
+    } /* Status AE_OK */
+
 
     else if (AE_PENDING == Status && PrefixCount != 0)
     {
@@ -781,9 +825,12 @@ BREAKPOINT3;
         Status = AE_AML_ERROR;
     }
 
+
+    /* Cleanup */
+
     if (NameString)
     {
-        OsdFree (NameString);
+        CmFree (NameString);
     }
 
     FUNCTION_STATUS_EXIT (Status);

@@ -666,6 +666,7 @@ AmlDumpObjStack (
     INT32                   NumLevels, 
     char                    *Note)
 {
+    UINT32                  CurrentStackTop;
     ACPI_OBJECT_INTERNAL    **EntryDesc;
 
     
@@ -682,11 +683,13 @@ AmlDumpObjStack (
         Note = "?";
     }
 
-    DEBUG_PRINT (ACPI_INFO,
-                ("*******************AmlDumpObjStack***********************\n"));
+    CurrentStackTop = AmlObjStackLevel ();
+
+    DEBUG_PRINT (ACPI_INFO, ("*************AmlDumpObjStack, TOS=%d******************\n", 
+                                CurrentStackTop));
     DEBUG_PRINT (ACPI_INFO, ("%s: %s\n", Ident, Note));
 
-    for (EntryDesc = (ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop] ;
+    for (EntryDesc = AmlObjStackGetPtr (STACK_TOP);
           /* exit condition at bottom of loop */ ;
           --EntryDesc, --NumLevels)
     {
@@ -707,8 +710,8 @@ AmlDumpObjStack (
          *  - the entire stack has been dumped.
          */
         if ((AE_OK != AmlDumpObjStackEntry (*EntryDesc) &&
-            (ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop] != EntryDesc) || 
-            (ACPI_OBJECT_INTERNAL **) &ObjStack[0] == EntryDesc)
+            AmlObjStackGetPtr (STACK_TOP)    != EntryDesc) || 
+            AmlObjStackGetPtr (STACK_BOTTOM) == EntryDesc)
         {
             break;
         }
