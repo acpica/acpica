@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.34 $
+ *              $Revision: 1.36 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -773,7 +773,7 @@ AcpiDbDisplayOpcode (
         /* Just get the opcode name and print it */
 
         Opc = AcpiPsGetOpcodeInfo (Op->Opcode);
-        DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
+        AcpiOsPrintf ("%s", Opc->Name);
 
 
 #ifndef PARSER_ONLY
