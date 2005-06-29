@@ -605,28 +605,31 @@ NsLookup (
     }
 
 
-    /* 
-     * If entry is a type which opens a scope,
-     * push the new scope on the scope stack.
-     */
-
-    if (NsOpensScope (TypeToCheckFor))
+    if (!(Flags & NS_DONT_OPEN_SCOPE))
     {
-        /*  8-12-98 ASL Grammar Update supports null NamePath   */
+        /* 
+         * If entry is a type which opens a scope,
+         * push the new scope on the scope stack.
+         */
 
-        if (NullNamePath)
+        if (NsOpensScope (TypeToCheckFor))
         {
-            ScopeToPush = ThisEntry;
-        }
-        else
-        {
-            ScopeToPush = ThisEntry->Scope;
-        }
+            /*  8-12-98 ASL Grammar Update supports null NamePath   */
 
-        Status = NsScopeStackPush (ScopeToPush, Type);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
+            if (NullNamePath)
+            {
+                ScopeToPush = ThisEntry;
+            }
+            else
+            {
+                ScopeToPush = ThisEntry->Scope;
+            }
+
+            Status = NsScopeStackPush (ScopeToPush, Type);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
         }
     }
 
