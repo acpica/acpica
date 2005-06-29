@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -602,6 +602,7 @@ AcpiPsParseLoop (
     UINT16                  Opcode;
     ACPI_PARSE_OBJECT       PreOp;
     ACPI_PARSE_STATE        *ParserState;
+    UINT8                   *AmlOpStart;
 
 
     FUNCTION_TRACE_PTR ("PsParseLoop", WalkState);
@@ -667,8 +668,9 @@ AcpiPsParseLoop (
         {
             /* Get the next opcode from the AML stream */
 
-            AmlOffset = ParserState->Aml - ParserState->AmlStart;
-            Opcode    = AcpiPsPeekOpcode (ParserState);
+            AmlOpStart = ParserState->Aml;
+            AmlOffset  = ParserState->Aml - ParserState->AmlStart;
+            Opcode     = AcpiPsPeekOpcode (ParserState);
 
             /*
              * First cut to determine what we have found:
@@ -775,13 +777,10 @@ AcpiPsParseLoop (
                          * because we don't have enough info in the first pass
                          * to parse them correctly.
                          *
-                         * Backup to beginning of OpRegion declaration (2 for
-                         * Opcode, 4 for name)
-                         *
                          * BodyLength is unknown until we parse the body
                          */
 
-                        DeferredOp->Data    = ParserState->Aml - 6;
+                        DeferredOp->Data    = AmlOpStart;
                         DeferredOp->Length  = 0;
                     }
                 }
@@ -806,14 +805,12 @@ AcpiPsParseLoop (
                     (Op->Opcode == AML_DWORD_FIELD_OP))
                  {
                     /*
-                     * Backup to beginning of CreateXXXfield declaration (1 for
-                     * Opcode)
-                     *
+                     * Backup to beginning of CreateXXXfield declaration 
                      * BodyLength is unknown until we parse the body
                      */
                     DeferredOp = (ACPI_PARSE2_OBJECT *) Op;
 
-                    DeferredOp->Data    = ParserState->Aml -1;
+                    DeferredOp->Data    = AmlOpStart;
                     DeferredOp->Length  = 0;
                 }
 
