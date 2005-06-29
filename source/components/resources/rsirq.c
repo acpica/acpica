@@ -5,7 +5,7 @@
  *                      AcpiRsIrqStream
  *                      AcpiRsExtendedIrqResource
  *                      AcpiRsExtendedIrqStream
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -594,7 +594,7 @@ AcpiRsExtendedIrqStream (
     UINT16                  *LengthField;
     UINT8                   Temp8 = 0;
     UINT8                   Index;
-    UINT8                   *TempPointer = NULL;
+    NATIVE_CHAR             *TempPointer = NULL;
 
 
     FUNCTION_TRACE ("RsExtendedIrqStream");
@@ -655,11 +655,10 @@ AcpiRsExtendedIrqStream (
      */
     if (0 != LinkedList->Data.ExtendedIrq.ResourceSourceStringLength)
     {
-        Temp8 = (UINT8) LinkedList->Data.ExtendedIrq.ResourceSourceIndex;
-
-        *Buffer = Temp8;
+        *Buffer = (UINT8) LinkedList->Data.ExtendedIrq.ResourceSourceIndex;
         Buffer += 1;
-        TempPointer = Buffer;
+
+        TempPointer = (NATIVE_CHAR *) Buffer;
 
         /*
          * Copy the string

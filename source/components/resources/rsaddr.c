@@ -4,7 +4,7 @@
  *                       AcpiRsAddress16Stream
  *                       AcpiRsAddress32Resource
  *                       AcpiRsAddress32Stream
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -381,7 +381,7 @@ AcpiRsAddress16Stream (
     UINT8                   *Buffer = *OutputBuffer;
     UINT8                   *LengthField;
     UINT8                   Temp8;
-    UINT8                   *TempPointer = NULL;
+    NATIVE_CHAR             *TempPointer = NULL;
     UINT32                  ActualBytes;
 
 
@@ -493,7 +493,7 @@ AcpiRsAddress16Stream (
         *Buffer = Temp8;
         Buffer += 1;
 
-        TempPointer = Buffer;
+        TempPointer = (NATIVE_CHAR *) Buffer;
 
         /*
          * Copy the string
@@ -784,7 +784,7 @@ AcpiRsAddress32Stream (
     UINT8                   *Buffer;
     UINT16                  *LengthField;
     UINT8                   Temp8;
-    UINT8                   *TempPointer;
+    NATIVE_CHAR             *TempPointer;
 
 
     FUNCTION_TRACE ("RsAddress32Stream");
@@ -906,7 +906,7 @@ AcpiRsAddress32Stream (
 
         Buffer += 1;
 
-        TempPointer = Buffer;
+        TempPointer = (NATIVE_CHAR *) Buffer;
 
         /*
          * Copy the string
