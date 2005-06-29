@@ -393,6 +393,10 @@ PsCreateWalkState (
 
     WalkState->Origin           = Origin;
 
+    /* Init the method args/local */
+
+    PsxMthStackInit (WalkState);
+
     /* Put the new state at the head of the walk list */
 
     PsPushWalkState (WalkState, WalkList);
