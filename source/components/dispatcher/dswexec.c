@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.114 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -690,6 +690,14 @@ AcpiDsExecEndOp (
 
                 Status = AcpiDsEvalDataObjectOperands (WalkState, Op, NULL);
                 break;
+            }
+
+            /* Done with this result state (Now that operand stack is built) */
+
+            Status = AcpiDsResultStackPop (WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                goto Cleanup;
             }
 
             /*
