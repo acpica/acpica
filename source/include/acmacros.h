@@ -363,5 +363,23 @@
 
 
 
+#ifndef ACPI_DEBUG
+
+#define ADD_OBJECT_NAME(a,b)
+
+#else
+
+
+/*
+ * 1) Set name to blanks
+ * 2) Copy the object name
+ */
+
+#define ADD_OBJECT_NAME(a,b)            MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
+	                                    STRNCPY (a->Common.Name, Gbl_NsTypeNames[b], sizeof (a->Common.Name))
+	
+#endif
+
+
 
 #endif /* MACROS_H */
