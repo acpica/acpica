@@ -214,31 +214,9 @@ DsMethodDataInit (
 }
 
 
-
 /*****************************************************************************
  * 
- * FUNCTION:    DsMethodDataPush
- *
- * PARAMETERS:  None.
- *
- * RETURN:      Push the method stack.
- *
- ****************************************************************************/
-
-ACPI_STATUS
-DsMethodDataPush (
-    ACPI_OBJECT_INTERNAL    **Params)
-{
-    FUNCTION_TRACE ("DsMethodDataPush");
-
-
-    return_ACPI_STATUS (AE_OK);
-}
-
-
-/*****************************************************************************
- * 
- * FUNCTION:    DsMethodDataDeleteArgs
+ * FUNCTION:    DsMethodDataDeleteAll
  *
  * PARAMETERS:  None
  *
@@ -250,15 +228,19 @@ DsMethodDataPush (
  ****************************************************************************/
 
 ACPI_STATUS
-DsMethodDataDeleteArgs (
+DsMethodDataDeleteAll (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  Index;
     ACPI_OBJECT_INTERNAL    *Object;
 
 
-    FUNCTION_TRACE ("DsMethodDataDeleteArgs");
+    FUNCTION_TRACE ("DsMethodDataDeleteAll");
 
+
+    /* Delete the locals */
+
+    DEBUG_PRINT (ACPI_INFO, ("MethodDeleteAll: Deleting local variables in %p\n", WalkState));
 
     for (Index = 0; Index < MTH_NUM_LOCALS; Index++)
     {
@@ -272,6 +254,11 @@ DsMethodDataDeleteArgs (
             CmRemoveReference (Object);
         }
     }
+
+
+    /* Delete the arguments */
+
+    DEBUG_PRINT (ACPI_INFO, ("MethodDeleteAll: Deleting arguments in %p\n", WalkState));
 
     for (Index = 0; Index < MTH_NUM_ARGS; Index++)
     {

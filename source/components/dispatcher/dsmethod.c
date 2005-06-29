@@ -154,7 +154,7 @@ DsParseMethod (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *Op;
     NAME_TABLE_ENTRY        *Entry;
-    ACPI_TABLE_DESC         *TableDesc;
+    ACPI_OWNER_ID           OwnerId;
 
 
     FUNCTION_TRACE ("DsParseMethod");
@@ -203,13 +203,9 @@ DsParseMethod (
     }
 
 
-    /* Get a handle to the parent ACPI table */
+    /* Get a new OwnerId for objects created by this method */
 
-    Status = TbHandleToObject (Entry->TableId, &TableDesc);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    OwnerId = CmAllocateOwnerId (OWNER_TYPE_METHOD);
 
 	/*
 	 * Make a first pass walk to add newly declared items to the namespace.
@@ -219,11 +215,12 @@ DsParseMethod (
 	 */
 
     PsWalkParsedAml (Op->Value.Arg, Op, ObjDesc, Entry->Scope, NULL, NULL,
-                        TableDesc, DsLoad1BeginOp, DsLoad1EndOp);
+                        OwnerId, DsLoad1BeginOp, DsLoad1EndOp);
 
     /* Install the parsed tree in the method object */
 
     ObjDesc->Method.ParserOp = Op;
+    ObjDesc->Method.OwningId = OwnerId;
 
     DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle, Op));
