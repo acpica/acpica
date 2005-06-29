@@ -269,7 +269,7 @@ PsxCallControlMethod (
                         ThisWalkState->PrevOp, ThisWalkState));
     BREAKPOINT3;
 
-    /* Move this code to the ParseAml procedure? */
+    /* TBD: Move this code to the ParseAml procedure? */
 
     /*
      * PrevOp points to the METHOD_CALL Op.
@@ -322,8 +322,11 @@ PsxCallControlMethod (
     for (i = 0; i < NumArgs; i++)
     {
         CmDeleteInternalObject (ThisWalkState->Operands [i]);
-        PsxObjStackPop (1, ThisWalkState);
     }
+
+    /* Clear the operand stack */
+
+    ThisWalkState->NumOperands = 0;
 
     /* The next op will be the beginning of the method */
 
