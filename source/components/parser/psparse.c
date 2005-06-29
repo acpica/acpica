@@ -249,16 +249,16 @@ PsGetOpcodeSize (
  *
  ******************************************************************************/
 
-INT32
+UINT16
 PsPeekOpcode (
     ACPI_PARSE_STATE        *ParserState)
 {
     UINT8                   *Aml;
-    INT32                   Opcode;
+    UINT16                  Opcode;
 
 
     Aml = ParserState->Aml;
-    Opcode = (INT32) GET8 (Aml);
+    Opcode = (UINT16) GET8 (Aml);
 
     Aml++;
 
@@ -279,7 +279,7 @@ PsPeekOpcode (
     {
         /* Extended opcode */
 
-        Opcode = (Opcode << 8) | GET8 (Aml);
+        Opcode = (UINT16) ((Opcode << 8) | GET8 (Aml));
         Aml++;
     }
 
@@ -348,13 +348,13 @@ PsParseLoop (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_OP         *Op;            /* current op */
-    char                    *Args;          /* current op next argument */
+    char                    *Args = NULL;   /* current op next argument */
+    ACPI_OP_INFO            *Opc;
+    ACPI_GENERIC_OP         *Arg = NULL;
+    ACPI_DEFERRED_OP        *DeferredOp;
     UINT32                  ArgCount;       /* push for fixed or variable arguments */
     ACPI_PTRDIFF            AmlOffset;
-    INT32                   Opcode;
-    ACPI_OP_INFO            *Opc;
-    ACPI_GENERIC_OP         *Arg;
-    ACPI_DEFERRED_OP        *DeferredOp;
+    UINT16                  Opcode;
  
 
     FUNCTION_TRACE_PTR ("PsParseLoop", ParserState);

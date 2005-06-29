@@ -160,7 +160,7 @@ PsGetArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!OpInfo->HasArgs)
+    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -215,7 +215,7 @@ PsAppendArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!OpInfo->HasArgs)
+    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -635,8 +635,8 @@ PsFindName (
 ACPI_GENERIC_OP*
 PsFind (
     ACPI_GENERIC_OP         *Scope, 
-    UINT8                   *Path,
-    UINT32                  Opcode,
+    char                    *Path,
+    UINT16                  Opcode,
     UINT32                  Create)
 {
     UINT32                  segCount;
@@ -747,7 +747,15 @@ PsFind (
             {
                 /* Create a new Scope level */
 
-                Op = PsAllocOp (segCount ? AML_ScopeOp : Opcode);
+                if (segCount)
+                {
+                    Op = PsAllocOp (AML_ScopeOp);
+                }
+                else
+                {
+                    Op = PsAllocOp (Opcode);
+                }
+
                 if (Op)
                 {
                     PsSetName (Op, Name);

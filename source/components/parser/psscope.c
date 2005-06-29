@@ -161,8 +161,8 @@ BOOLEAN
 PsHasCompletedScope (
     ACPI_PARSE_STATE        *ParserState)
 {
-    return (ParserState->Aml >= ParserState->Scope->ArgEnd ||
-            !ParserState->Scope->ArgCount);
+    return (BOOLEAN) ((ParserState->Aml >= ParserState->Scope->ArgEnd ||
+                        !ParserState->Scope->ArgCount));
 }
 
 
