@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -119,7 +120,7 @@
 #include "amlcode.h"
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("psutils");
+        MODULE_NAME         ("psutils")
 
 
 #define PARSEOP_GENERIC     0x01
@@ -145,10 +146,10 @@
 
 void
 AcpiPsInitOp (
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT16                  Opcode)
 {
-    ACPI_OP_INFO             *AmlOp;
+    ACPI_OPCODE_INFO        *AmlOp;
 
 
     Op->DataType = ACPI_DESC_TYPE_PARSER;
@@ -175,11 +176,11 @@ AcpiPsInitOp (
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP*
+ACPI_PARSE_OBJECT*
 AcpiPsAllocOp (
     UINT16                  Opcode)
 {
-    ACPI_GENERIC_OP         *Op = NULL;
+    ACPI_PARSE_OBJECT       *Op = NULL;
     UINT32                  Size;
     UINT8                   Flags;
 
@@ -188,30 +189,30 @@ AcpiPsAllocOp (
 
     if (AcpiPsIsDeferredOp (Opcode))
     {
-        Size = sizeof (ACPI_EXTENDED_OP);
+        Size = sizeof (ACPI_PARSE2_OBJECT);
         Flags = PARSEOP_DEFERRED;
     }
 
     else if (AcpiPsIsNamedOp (Opcode))
     {
-        Size = sizeof (ACPI_EXTENDED_OP);
+        Size = sizeof (ACPI_PARSE2_OBJECT);
         Flags = PARSEOP_NAMED;
     }
 
     else if (AcpiPsIsBytelistOp (Opcode))
     {
-        Size = sizeof (ACPI_EXTENDED_OP);
+        Size = sizeof (ACPI_PARSE2_OBJECT);
         Flags = PARSEOP_BYTELIST;
     }
 
     else
     {
-        Size = sizeof (ACPI_GENERIC_OP);
+        Size = sizeof (ACPI_PARSE_OBJECT);
         Flags = PARSEOP_GENERIC;
     }
 
 
-    if (Size == sizeof (ACPI_GENERIC_OP))
+    if (Size == sizeof (ACPI_PARSE_OBJECT))
     {
         /*
          * The generic op is by far the most common (16 to 1), and therefore
@@ -239,7 +240,7 @@ AcpiPsAllocOp (
 
             /* Clear the previously used Op */
 
-            MEMSET (Op, 0, sizeof (ACPI_GENERIC_OP));
+            MEMSET (Op, 0, sizeof (ACPI_PARSE_OBJECT));
 
             DEBUG_PRINT (TRACE_PARSE,
                             ("PsAllocOp: Op %p from Parse Cache\n", Op));
@@ -265,8 +266,8 @@ AcpiPsAllocOp (
             AcpiGbl_ExtParseCacheDepth--;
             AcpiGbl_ExtParseCacheHits++;
 
-            Op = (ACPI_GENERIC_OP *) AcpiGbl_ExtParseCache;
-            AcpiGbl_ExtParseCache = (ACPI_EXTENDED_OP *) Op->Next;
+            Op = (ACPI_PARSE_OBJECT *) AcpiGbl_ExtParseCache;
+            AcpiGbl_ExtParseCache = (ACPI_PARSE2_OBJECT *) Op->Next;
 
             if (Op->DataType == 0xFF)
             {
@@ -275,14 +276,13 @@ AcpiPsAllocOp (
 
             /* Clear the previously used Op */
 
-            MEMSET (Op, 0, sizeof (ACPI_EXTENDED_OP));
+            MEMSET (Op, 0, sizeof (ACPI_PARSE2_OBJECT));
 
             DEBUG_PRINT (TRACE_PARSE,
                             ("PsAllocOp: Op %p from ExtParse Cache\n", Op));
         }
         AcpiCmReleaseMutex (ACPI_MTX_CACHES);
     }
-
 
 
     /* Allocate a new Op if necessary */
@@ -318,7 +318,7 @@ AcpiPsAllocOp (
 
 void
 AcpiPsFreeOp (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
 
 
@@ -337,7 +337,7 @@ AcpiPsFreeOp (
 
             /* Clear the previously used Op */
 
-            MEMSET (Op, 0, sizeof (ACPI_GENERIC_OP));
+            MEMSET (Op, 0, sizeof (ACPI_PARSE_OBJECT));
             Op->Flags = PARSEOP_IN_CACHE;
 
             AcpiCmAcquireMutex (ACPI_MTX_CACHES);
@@ -361,14 +361,14 @@ AcpiPsFreeOp (
 
             /* Clear the previously used Op */
 
-            MEMSET (Op, 0, sizeof (ACPI_EXTENDED_OP));
+            MEMSET (Op, 0, sizeof (ACPI_PARSE2_OBJECT));
             Op->Flags = PARSEOP_IN_CACHE;
 
             AcpiCmAcquireMutex (ACPI_MTX_CACHES);
             AcpiGbl_ExtParseCacheDepth++;
 
-            Op->Next = (ACPI_GENERIC_OP *) AcpiGbl_ExtParseCache;
-            AcpiGbl_ExtParseCache = (ACPI_EXTENDED_OP *) Op;
+            Op->Next = (ACPI_PARSE_OBJECT *) AcpiGbl_ExtParseCache;
+            AcpiGbl_ExtParseCache = (ACPI_PARSE2_OBJECT *) Op;
 
             AcpiCmReleaseMutex (ACPI_MTX_CACHES);
             return;
@@ -400,7 +400,7 @@ void
 AcpiPsDeleteParseCache (
     void)
 {
-    ACPI_GENERIC_OP         *Next;
+    ACPI_PARSE_OBJECT       *Next;
 
 
     FUNCTION_TRACE ("PsDeleteParseCache");
@@ -426,7 +426,7 @@ AcpiPsDeleteParseCache (
 
         Next = AcpiGbl_ExtParseCache->Next;
         AcpiCmFree (AcpiGbl_ExtParseCache);
-        AcpiGbl_ExtParseCache = (ACPI_EXTENDED_OP *) Next;
+        AcpiGbl_ExtParseCache = (ACPI_PARSE2_OBJECT *) Next;
         AcpiGbl_ExtParseCacheDepth--;
     }
 
@@ -454,7 +454,7 @@ AcpiPsDeleteParseCache (
 
 BOOLEAN
 AcpiPsIsLeadingChar (
-    INT32                   c)
+    UINT32                  c)
 {
     return ((BOOLEAN) (c == '_' || (c >= 'A' && c <= 'Z')));
 }
@@ -465,7 +465,7 @@ AcpiPsIsLeadingChar (
  */
 BOOLEAN
 AcpiPsIsPrefixChar (
-    INT32                   c)
+    UINT32                  c)
 {
     return ((BOOLEAN) (c == '\\' || c == '^'));
 }
@@ -530,7 +530,7 @@ AcpiPsIsNamespaceOp (
  * TBD: [Restructure] Need a better way than this brute force approach!
  */
 BOOLEAN
-AcpiPsIsNamedObjectOp (
+AcpiPsIsNodeOp (
     UINT16                  Opcode)
 {
     return ((BOOLEAN)
@@ -586,7 +586,12 @@ AcpiPsIsDeferredOp (
     UINT16                  Opcode)
 {
     return ((BOOLEAN)
-           (Opcode == AML_METHOD_OP ||
+           (Opcode == AML_METHOD_OP         ||
+            Opcode == AML_CREATE_FIELD_OP   ||
+            Opcode == AML_BIT_FIELD_OP      ||
+            Opcode == AML_BYTE_FIELD_OP     ||
+            Opcode == AML_WORD_FIELD_OP     ||
+            Opcode == AML_DWORD_FIELD_OP    ||
             Opcode == AML_REGION_OP));
 }
 
@@ -637,15 +642,14 @@ AcpiPsIsCreateFieldOp (
  * Cast an acpi_op to an acpi_extended_op if possible
  */
 
-/* TBD: This is very inefficient, fix */ 
-ACPI_EXTENDED_OP *
+/* TBD: This is very inefficient, fix */
+ACPI_PARSE2_OBJECT *
 AcpiPsToExtendedOp (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    return ((AcpiPsIsDeferredOp (Op->Opcode) || AcpiPsIsNamedOp (Op->Opcode) || AcpiPsIsBytelistOp (Op->Opcode)) 
-            ? ( (ACPI_EXTENDED_OP *) Op) : NULL);
+    return ((AcpiPsIsDeferredOp (Op->Opcode) || AcpiPsIsNamedOp (Op->Opcode) || AcpiPsIsBytelistOp (Op->Opcode))
+            ? ( (ACPI_PARSE2_OBJECT *) Op) : NULL);
 }
-
 
 
 /*
@@ -653,9 +657,9 @@ AcpiPsToExtendedOp (
  */
 UINT32
 AcpiPsGetName (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_EXTENDED_OP        *Named = AcpiPsToExtendedOp (Op);
+    ACPI_PARSE2_OBJECT      *Named = AcpiPsToExtendedOp (Op);
 
     return (Named ? Named->Name : 0);
 }
@@ -666,10 +670,10 @@ AcpiPsGetName (
  */
 void
 AcpiPsSetName (
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  name)
 {
-    ACPI_EXTENDED_OP        *Named = AcpiPsToExtendedOp (Op);
+    ACPI_PARSE2_OBJECT      *Named = AcpiPsToExtendedOp (Op);
 
     if (Named)
     {
