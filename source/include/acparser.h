@@ -226,17 +226,20 @@ PsxExecEndOp (
 ACPI_STATUS
 PsxCreateField (
     ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region);
+    ACPI_HANDLE             Region,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 PsxCreateBankField (
     ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region);
+    ACPI_HANDLE             Region,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 PsxCreateIndexField (
     ACPI_GENERIC_OP         *Op,
-    ACPI_HANDLE             Region);
+    ACPI_HANDLE             Region,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /* psxload - Parser/Interpreter interface, namespace load callbacks */
@@ -580,6 +583,7 @@ PsWalkParsedAml (
     ACPI_GENERIC_OP         *StartOp,
     ACPI_GENERIC_OP         *EndOp,
     ACPI_OBJECT_INTERNAL    *MthDesc,
+	NAME_TABLE_ENTRY		*StartScope,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     INTERPRETER_CALLBACK    DescendingCallback,
