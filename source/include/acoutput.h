@@ -188,8 +188,8 @@
 
 /* Defaults for DebugLevel, debug and normal */
 
-#define DEBUG_DEFAULT               0x0000001D  /* errors, warnings, success (OK) */
-#define NORMAL_DEFAULT              0x0000001D  /* errors, warnings, success (OK) */
+#define DEBUG_DEFAULT               (ACPI_OK | ACPI_WARN | ACPI_ERROR | TRACE_TABLES | TRACE_IO)
+#define NORMAL_DEFAULT              (ACPI_OK | ACPI_WARN | ACPI_ERROR)
 
 
 /* Misc defines */
