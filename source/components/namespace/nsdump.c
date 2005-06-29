@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  *****************************************************************************/
 
@@ -281,7 +281,7 @@ AcpiNsDumpOneObject (
 
     /* Indent the object according to the level */
 
-    AcpiOsPrintf ("%2d%*s", Level - 1, Level * 2, " ");
+    AcpiOsPrintf ("%2d%*s", (UINT32) Level - 1, (int) Level * 2, " ");
 
     /* Check the node type and name */
 
