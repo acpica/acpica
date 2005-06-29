@@ -244,7 +244,7 @@ HwObtainSleepTypeRegisterData (
     FUNCTION_TRACE ("HwObtainSleepTypeRegisterData");
 
 
-    ObjDesc = CmCreateInternalObject (TYPE_Any);
+    ObjDesc = CmCreateInternalObject (ACPI_TYPE_Any);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -289,9 +289,9 @@ HwObtainSleepTypeRegisterData (
                 }
             }
 
-            if (ObjDesc->Common.Type != TYPE_Package ||
-                 (ObjDesc->Package.Elements[0])->Common.Type != TYPE_Number ||
-                 (ObjDesc->Package.Elements[1])->Common.Type != TYPE_Number)
+            if (ObjDesc->Common.Type != ACPI_TYPE_Package ||
+                 (ObjDesc->Package.Elements[0])->Common.Type != ACPI_TYPE_Number ||
+                 (ObjDesc->Package.Elements[1])->Common.Type != ACPI_TYPE_Number)
             {   
                 /* Invalid _Sx_ package type or value  */
                 
@@ -299,9 +299,9 @@ HwObtainSleepTypeRegisterData (
 
                 DEBUG_PRINT (ACPI_INFO,  ("Expected Values:"));
                 DEBUG_PRINT (ACPI_INFO,
-                            ("  Package == %02x", TYPE_Package));
+                            ("  Package == %02x", ACPI_TYPE_Package));
                 DEBUG_PRINT (ACPI_INFO,
-                            ("  Number  == %02x", TYPE_Number));
+                            ("  Number  == %02x", ACPI_TYPE_Number));
 
                 DEBUG_PRINT (ACPI_INFO, ("Actual Values:"));
                 DEBUG_PRINT (ACPI_INFO,
