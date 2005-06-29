@@ -149,6 +149,91 @@ OsThreadId (void)
 
 /******************************************************************************
  * 
+ * FUNCTION:    OsLocalWaitSemaphore
+ *
+ * PARAMETERS:  Semaphore           - OSD semaphore to wait on
+ *              Timeout             - Max time to wait
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Implements a semaphore wait with a check to see if the 
+ *              semaphore is available immediately.  If it is not, the 
+ *              interpreter is released.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+OsLocalWaitSemaphore (
+    ACPI_HANDLE             Semaphore,
+    UINT32                  Timeout)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("OsLocalWaitSemaphore");
+
+    Status = OsdWaitSemaphore (Semaphore, 1, 0);
+    if (ACPI_SUCCESS (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    if (Status == AE_TIME)
+    {
+        /* We must wait, so unlock the interpreter */
+
+        AmlExitInterpreter ();
+
+        Status = OsdWaitSemaphore (Semaphore, 1, Timeout);
+
+        /* Reacquire the interpreter */
+
+        AmlEnterInterpreter ();
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    OsDoStall
+ *
+ * PARAMETERS:  HowLong             - The amount of time to stall
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Suspend running thread for specified amount of time.
+ *
+ ******************************************************************************/
+
+void
+OsDoStall (
+    UINT32                  HowLong)
+{
+
+    if (HowLong > 1000) /* 1 millisecond */
+    {
+        /* Since this thread will sleep, we must release the interpreter */
+
+        AmlExitInterpreter ();
+
+        OsdSleepUsec (HowLong);
+
+        /* And now we must get the interpreter again */
+
+        AmlEnterInterpreter ();
+    }
+
+    else
+    {
+        OsdSleepUsec (HowLong);
+    }
+}
+
+
+/******************************************************************************
+ * 
  * FUNCTION:    OsDoSuspend
  *
  * PARAMETERS:  HowLong             - The amount of time to suspend
@@ -163,13 +248,21 @@ void
 OsDoSuspend (
     UINT32                  HowLong)
 {
+    /* Since this thread will sleep, we must release the interpreter */
+
+    AmlExitInterpreter ();
+
     OsdSleep ((UINT16) (HowLong / (UINT32) 1000), (UINT16) (HowLong % (UINT32) 1000));
+
+    /* And now we must get the interpreter again */
+
+    AmlEnterInterpreter ();
 }
 
 
 /******************************************************************************
  * 
- * FUNCTION:    OsAcquireOpRqst
+ * FUNCTION:    OsAcquireMutex
  *
  * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
  *              *ObjDesc            - The object descriptor for this op
@@ -180,40 +273,22 @@ OsDoSuspend (
  *              within the AML.  This function will cause a lock to be generated
  *              for the Mutex pointed to by ObjDesc.
  *
- *             TBD: Timeout is being ignored for now since this is single threaded.
- *
  ******************************************************************************/
 
 ACPI_STATUS
-OsAcquireOpRqst (
+OsAcquireMutex (
     ACPI_OBJECT_INTERNAL    *TimeDesc, 
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
-    UINT16                  CurrentId;
     ACPI_STATUS             Status = AE_OK;
 
 
 
-    FUNCTION_TRACE ("OsAcquireOpRqst");
+    FUNCTION_TRACE ("OsAcquireMutex");
 
     if (ObjDesc)
     {
-        if (ObjDesc->Mutex.LockCount == 0)
-        {
-            ObjDesc->Mutex.ThreadId = OsThreadId ();
-        }
-    
-        else if (ObjDesc->Mutex.ThreadId != (CurrentId = OsThreadId ()))
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attempted to acquire a resource owned "
-                    "by thread %02Xh\n", CurrentId, ObjDesc->Mutex.ThreadId));
-            Status = AE_SHARE;
-        }
-
-        if (AE_OK == Status)
-        {
-            ObjDesc->Mutex.LockCount++;
-        }
+        Status = OsLocalWaitSemaphore (ObjDesc->Mutex.Semaphore, TimeDesc->Number.Value);
     }
 
     return_ACPI_STATUS (Status);
@@ -222,7 +297,7 @@ OsAcquireOpRqst (
 
 /******************************************************************************
  * 
- * FUNCTION:    OsReleaseOpRqst
+ * FUNCTION:    OsReleaseMutex
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
@@ -236,35 +311,18 @@ OsAcquireOpRqst (
  ******************************************************************************/
 
 ACPI_STATUS
-OsReleaseOpRqst (
+OsReleaseMutex (
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
-    UINT16                  CurrentId;
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("OsReleaseOpRqst");
+    FUNCTION_TRACE ("OsReleaseMutex");
 
     
     if (ObjDesc)
     {
-        if (ObjDesc->Mutex.LockCount == 0)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("Attempting to Release a Mutex that is not locked\n"));
-            Status = AE_ERROR;
-        }
-    
-        else if (ObjDesc->Mutex.ThreadId != (CurrentId = OsThreadId ()))
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attempted to release a Mutex owned "
-                        "by thread %02Xh\n", CurrentId, ObjDesc->Mutex.ThreadId));
-            Status = AE_SHARE;
-        }
-    
-        if (AE_OK == Status)
-        {
-            ObjDesc->Mutex.LockCount--;
-        }
+        Status = OsdSignalSemaphore (ObjDesc->Mutex.Semaphore, 1);
     }
 
     return_ACPI_STATUS (Status);
@@ -273,37 +331,39 @@ OsReleaseOpRqst (
 
 /******************************************************************************
  * 
- * FUNCTION:    OsSignalOpRqst
+ * FUNCTION:    OsSignalEvent
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
  * RETURN:      AE_OK
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
- *              within the AML.  This will signal when an event has been posted.
- *              if this occures prior to a wait then the wait will succeed.
- *              if a wait occures without a signal then the wait will fail
- *              because the signal will never occur.
+ *              within the AML.  
  *
  ******************************************************************************/
 
 ACPI_STATUS
-OsSignalOpRqst (
+OsSignalEvent (
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
+    ACPI_STATUS             Status = AE_OK;
 
+
+    FUNCTION_TRACE ("OsSignalEvent");
+
+    
     if (ObjDesc)
     {
-        ObjDesc->Event.SignalCount++;
+        Status = OsdSignalSemaphore (ObjDesc->Event.Semaphore, 1);
     }
 
-    return (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
 /******************************************************************************
  * 
- * FUNCTION:    OsWaitOpRqst
+ * FUNCTION:    OsWaitEvent
  *
  * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
  *              *ObjDesc            - The object descriptor for this op
@@ -312,70 +372,60 @@ OsSignalOpRqst (
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
  *              within the AML.  This operation is a request to wait for an event.
- *              In a single thread OS,  if the signal for this event has
- *              already occured then dec the signal count and return success.
- *              If the signal has not already occured then it never will
- *              because the wait would have to give the processor over to a
- *              new process and that can't happen in a single threaded OS.
  *
  *              TBD: Timeout is being ignored for the current implementation.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-OsWaitOpRqst (
+OsWaitEvent (
     ACPI_OBJECT_INTERNAL    *TimeDesc, 
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
+    FUNCTION_TRACE ("OsWaitEvent");
+
+
     if (ObjDesc)
     {
-        if (0 == ObjDesc->Event.SignalCount)
-        {
-            /* Error for single threaded OS */
-        
-            DEBUG_PRINT (ACPI_ERROR, ("Waiting for a signal that has not occured.  In a single threaded"
-                    "\nOperating System the signal would never be received.\n"));
-            Status = AE_ERROR;
-        }
-    
-        else
-        {
-            ObjDesc->Event.SignalCount--;
-        }
+        Status = OsLocalWaitSemaphore (ObjDesc->Event.Semaphore, TimeDesc->Number.Value);
     }
+
   
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
 /******************************************************************************
  * 
- * FUNCTION:    OsResetOpRqst
+ * FUNCTION:    OsResetEvent
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
- *              within the AML.  Current implementation is for single thread
- *              OS only.  This will reset the total signal count for this
- *              event to 0.
+ *              within the AML.  
  *
  ******************************************************************************/
 
 ACPI_STATUS
-OsResetOpRqst (
+OsResetEvent (
     ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
+    void                    *TempSemaphore;
 
 
-    if (ObjDesc)
+    /* We are going to simply delete the existing semaphore and create a new one! */
+
+    Status = OsdCreateSemaphore (1, &TempSemaphore);
+    if (ACPI_SUCCESS (Status))
     {
-        ObjDesc->Event.SignalCount = 0;
+        OsdDeleteSemaphore (ObjDesc->Mutex.Semaphore);
+        ObjDesc->Mutex.Semaphore = TempSemaphore;
     }
 
     return (Status);
