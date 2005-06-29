@@ -119,6 +119,7 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
+#include <dispatch.h>
 #include <interp.h>
 #include <namesp.h>
 #include <tables.h>
@@ -305,7 +306,7 @@ AmlGetRvalueFromObject (
 
             /* Get the local from the method's state info */
 
-            Status = PsxMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackPtr);
+            Status = DsMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackPtr);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -336,7 +337,7 @@ AmlGetRvalueFromObject (
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
 
             CmDeleteInternalObject (StackDesc);     /* Delete the Lvalue */
-            Status = PsxMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackPtr);
+            Status = DsMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackPtr);
 
             /* Get the argument from the method's state info */
 
