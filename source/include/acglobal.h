@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.163 $
+ *       $Revision: 1.165 $
  *
  *****************************************************************************/
 
@@ -219,15 +219,22 @@ ACPI_EXTERN ACPI_TABLE_HEADER          *AcpiGbl_DSDT;
 ACPI_EXTERN FACS_DESCRIPTOR            *AcpiGbl_FACS;
 ACPI_EXTERN ACPI_COMMON_FACS            AcpiGbl_CommonFACS;
 /*
- * Since there may be multiple SSDTs and PSDTS, a single pointer is not
+ * Since there may be multiple SSDTs and PSDTs, a single pointer is not
  * sufficient; Therefore, there isn't one!
  */
 
 
+/* The root table can be either an RSDT or an XSDT */
+
+ACPI_EXTERN UINT8                       AcpiGbl_RootTableType;
+#define     ACPI_TABLE_TYPE_RSDT        'R'
+#define     ACPI_TABLE_TYPE_XSDT        'X'
+
+
 /*
- * Handle both ACPI 1.0 and ACPI 2.0 Integer widths
- * If we are running a method that exists in a 32-bit ACPI table.
- * Use only 32 bits of the Integer for conversion.
+ * Handle both ACPI 1.0 and ACPI 2.0 Integer widths:
+ * If we are executing a method that exists in a 32-bit ACPI table,
+ * use only the lower 32 bits of the (internal) 64-bit Integer.
  */
 ACPI_EXTERN UINT8                       AcpiGbl_IntegerBitWidth;
 ACPI_EXTERN UINT8                       AcpiGbl_IntegerByteWidth;
@@ -254,7 +261,14 @@ ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_MutexInfo[NUM_MUTEX];
  ****************************************************************************/
 
 
-ACPI_EXTERN ACPI_MEMORY_LIST            AcpiGbl_MemoryLists[ACPI_NUM_MEM_LISTS];
+ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_GlobalList;
+ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_NsNodeList;
+
+ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_StateCache;
+ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_PsNodeCache;
+ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_PsNodeExtCache;
+ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_OperandCache;
+
 ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_DeviceNotify;
 ACPI_EXTERN ACPI_OBJECT_NOTIFY_HANDLER  AcpiGbl_SystemNotify;
 ACPI_EXTERN ACPI_EXCEPTION_HANDLER      AcpiGbl_ExceptionHandler;
@@ -319,6 +333,7 @@ ACPI_EXTERN ACPI_SIZE                   AcpiGbl_LowestStackPointer;
 ACPI_EXTERN UINT32                      AcpiGbl_DeepestNesting;
 #endif
 
+
 /*****************************************************************************
  *
  * Interpreter globals
@@ -340,6 +355,7 @@ ACPI_EXTERN UINT8                       AcpiGbl_CmSingleStep;
  ****************************************************************************/
 
 ACPI_EXTERN ACPI_PARSE_OBJECT          *AcpiGbl_ParsedNamespaceRoot;
+
 
 /*****************************************************************************
  *
@@ -370,7 +386,6 @@ ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeLock;
  * Debugger globals
  *
  ****************************************************************************/
-
 
 ACPI_EXTERN UINT8                       AcpiGbl_DbOutputFlags;
 
@@ -425,6 +440,5 @@ ACPI_EXTERN UINT32                      AcpiGbl_SizeOfNodeEntries;
 ACPI_EXTERN UINT32                      AcpiGbl_SizeOfAcpiObjects;
 
 #endif /* ACPI_DEBUGGER */
-
 
 #endif /* __ACGLOBAL_H__ */
