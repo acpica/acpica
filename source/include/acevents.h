@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.68 $
+ *       $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -141,7 +141,7 @@ AcpiEvFixedEventDispatch (
 
 
 /*
- * Evglock - Global Lock support
+ * Evmisc
  */
 
 ACPI_STATUS
@@ -155,6 +155,23 @@ AcpiEvReleaseGlobalLock(
 ACPI_STATUS
 AcpiEvInitGlobalLockHandler (
     void);
+
+UINT32
+AcpiEvGetGpeRegisterIndex (
+    UINT32                  GpeNumber);
+
+UINT32
+AcpiEvGetGpeNumberIndex (
+    UINT32                  GpeNumber);
+
+ACPI_STATUS
+AcpiEvQueueNotifyRequest (
+    ACPI_NAMESPACE_NODE     *Node,
+    UINT32                  NotifyValue);
+
+void
+AcpiEvNotifyDispatch (
+    void                    *Context);
 
 
 /*
@@ -176,20 +193,6 @@ AcpiEvGpeDispatch (
 UINT32
 AcpiEvGpeDetect (
     void);
-
-
-/*
- * Evnotify - Device Notify handling and dispatch
- */
-
-ACPI_STATUS
-AcpiEvQueueNotifyRequest (
-    ACPI_NAMESPACE_NODE     *Node,
-    UINT32                  NotifyValue);
-
-void
-AcpiEvNotifyDispatch (
-    void                    *Context);
 
 /*
  * Evregion - Address Space handling

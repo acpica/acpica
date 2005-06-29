@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.111 $
+ *       $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -284,18 +284,18 @@ ACPI_EXTERN ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
 ACPI_EXTERN ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventHandlers[ACPI_NUM_FIXED_EVENTS];
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeObjHandle;
 ACPI_EXTERN UINT32                      AcpiGbl_GpeRegisterCount;
-ACPI_EXTERN ACPI_GPE_REGISTERS         *AcpiGbl_GpeRegisters;
-ACPI_EXTERN ACPI_GPE_LEVEL_INFO        *AcpiGbl_GpeInfo;
+ACPI_EXTERN UINT32                      AcpiGbl_GpeNumberMax;
+ACPI_EXTERN ACPI_GPE_REGISTER_INFO     *AcpiGbl_GpeRegisterInfo;
+ACPI_EXTERN ACPI_GPE_NUMBER_INFO       *AcpiGbl_GpeNumberInfo;
 
 /*
- * Gpe validation and translation table
- * Indexed by the GPE number, returns GPE_INVALID if the GPE is not supported.
- * Otherwise, returns a valid index into the global GPE table.
+ * GPE translation table
+ * Indexed by the GPE number, returns a valid index into the global GPE tables.
  *
  * This table is needed because the GPE numbers supported by block 1 do not
  * have to be contiguous with the GPE numbers supported by block 0.
  */
-ACPI_EXTERN UINT8                       AcpiGbl_GpeValid [ACPI_NUM_GPE];
+ACPI_EXTERN ACPI_GPE_INDEX_INFO        *AcpiGbl_GpeNumberToIndex;
 
 /* AcpiEvent counter for debug only */
 
