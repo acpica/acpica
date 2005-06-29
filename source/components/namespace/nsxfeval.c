@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.9 $
+ *              $Revision: 1.12 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,6 +120,7 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -231,11 +232,11 @@ AcpiEvaluateObjectTyped (
  * FUNCTION:    AcpiEvaluateObject
  *
  * PARAMETERS:  Handle              - Object handle (optional)
- *              *Pathname           - Object pathname (optional)
- *              **ExternalParams    - List of parameters to pass to method,
+ *              Pathname            - Object pathname (optional)
+ *              ExternalParams      - List of parameters to pass to method,
  *                                    terminated by NULL.  May be NULL
  *                                    if no parameters are being passed.
- *              *ReturnBuffer       - Where to put method's return value (if
+ *              ReturnBuffer        - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
  *
  * RETURN:      Status
@@ -254,6 +255,7 @@ AcpiEvaluateObject (
     ACPI_BUFFER             *ReturnBuffer)
 {
     ACPI_STATUS             Status;
+    ACPI_STATUS             Status2;
     ACPI_OPERAND_OBJECT     **InternalParams = NULL;
     ACPI_OPERAND_OBJECT     *InternalReturnObj = NULL;
     ACPI_SIZE               BufferSpaceNeeded;
@@ -288,7 +290,7 @@ AcpiEvaluateObject (
         for (i = 0; i < ExternalParams->Count; i++)
         {
             Status = AcpiUtCopyEobjectToIobject (&ExternalParams->Pointer[i],
-                                                &InternalParams[i]);
+                                                 &InternalParams[i]);
             if (ACPI_FAILURE (Status))
             {
                 AcpiUtDeleteInternalObjectList (InternalParams);
@@ -422,15 +424,22 @@ AcpiEvaluateObject (
         }
     }
 
-    /* Delete the return and parameter objects */
-
     if (InternalReturnObj)
     {
-        /*
-         * Delete the internal return object. (Or at least
-         * decrement the reference count by one)
+        /* 
+         * Delete the internal return object.  NOTE: Interpreter
+         * must be locked to avoid race condition.
          */
-        AcpiUtRemoveReference (InternalReturnObj);
+        Status2 = AcpiExEnterInterpreter ();
+        if (ACPI_SUCCESS (Status2))
+        {
+            /*
+             * Delete the internal return object. (Or at least
+             * decrement the reference count by one)
+             */
+            AcpiUtRemoveReference (InternalReturnObj);
+            AcpiExExitInterpreter ();
+        }
     }
 
     /*
@@ -551,7 +560,6 @@ AcpiNsGetDeviceCallback (
     ACPI_NATIVE_UINT        i;
 
 
-
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
     {
@@ -617,7 +625,7 @@ AcpiNsGetDeviceCallback (
 
             for (i = 0; i < Cid->Count; i++)
             {
-                if (ACPI_STRNCMP (Cid->Id[i].Value, Info->Hid, 
+                if (ACPI_STRNCMP (Cid->Id[i].Value, Info->Hid,
                                         sizeof (ACPI_COMPATIBLE_ID)) != 0)
                 {
                     ACPI_MEM_FREE (Cid);
