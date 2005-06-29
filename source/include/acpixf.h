@@ -105,16 +105,6 @@
 #define LEGACY_MODE             2
 
 
-/*  AcpiEnable() Flags bitmask options   */
-/* TBD: Obsolete? */
-
-#define ACPI_TABLES_REQUIRED            0x01
-#define HW_OVERRIDE_SUPPORTED           0x02
-#define PROGRAM_SCI_LEVEL_SENSITIVITY   0x04
-#define DISABLE_KNOWN_EVENTS            0x08
-#define	LOAD_ACPI_NAMESPACE             0x10
-
-
 /*
  * Common Data Structures used by the interfaces
  */
@@ -123,40 +113,21 @@ typedef struct
 {
     UINT32              Length;         // Length in bytes of the buffer;
     char                *BufferPtr;     // pointer to buffer
-} APIBuffer;
+} ACPI_BUFFER;
 
 typedef struct _AcpiSysInfo 
 {
     INT32               DebugLevel;
     INT32               DebugLayer;
-} AcpiSysInfo;
+} ACPI_SYS_INFO;
 
 typedef struct 
 {
     UINT32              HardwareId;
+    UINT32              UniqueId;
     UINT32              Address;
     UINT32              CurrentStatus;
 } ACPI_DEVICE_INFO;
-
-/*
- *  TBD:This must be moved to the datatypes.h file
- *  Table types.  These values are passed to the table related APIs
- */
-
-typedef enum {
-    RSDPTR_Ord    = 0,
-    APIC_Ord,
-    DSDT_Ord,
-    FACP_Ord,
-    FACS_Ord,
-    PSDT_Ord,
-    RSDT_Ord,
-    SSDT_Ord,
-    SBDT_Ord
-} AcpiTableType;
-
-
-
 
 
 /*
@@ -216,7 +187,7 @@ AcpiGetTableHeader (
 ACPI_STATUS
 AcpiGetTable (
     AcpiTableType       TableType,
-    APIBuffer           *RetBuffer);
+    ACPI_BUFFER         *RetBuffer);
 
 ACPI_STATUS
 AcpiNameToHandle (
@@ -237,7 +208,7 @@ AcpiPathnameToHandle (
 ACPI_STATUS
 AcpiHandleToPathname (
     NsHandle            Handle,
-    APIBuffer           *OutPathBuffer);
+    ACPI_BUFFER         *OutPathBuffer);
 
 ACPI_STATUS
 AcpiGetNextObject (
@@ -313,21 +284,21 @@ AcpiDisable (
 ACPI_STATUS
 AcpiGetCurrentResources(
     NsHandle            DeviceHandle,
-    APIBuffer           *RetBuffer);
+    ACPI_BUFFER         *RetBuffer);
 
 ACPI_STATUS
 AcpiGetPossibleResources(
     NsHandle            DeviceHandle,
-    APIBuffer           *RetBuffer);
+    ACPI_BUFFER         *RetBuffer);
 
 ACPI_STATUS
 AcpiSetCurrentResources (
     NsHandle            DeviceHandle,
-    APIBuffer           *InBuffer);
+    ACPI_BUFFER         *InBuffer);
 
 ACPI_STATUS
 AcpiGetSystemInfo(
-    APIBuffer           *OutBuffer);
+    ACPI_BUFFER         *OutBuffer);
 
 
 
