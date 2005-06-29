@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -465,16 +465,9 @@ AcpiAmlDumpOperand (
 
     case ACPI_TYPE_REGION:
 
-        if (EntryDesc->Region.SpaceId >= NUM_REGION_TYPES)
-        {
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Region **** Unknown ID=0x%X",
-                                EntryDesc->Region.SpaceId));
-        }
-        else
-        {
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Region %s",
-                AcpiGbl_RegionTypes[EntryDesc->Region.SpaceId]));
-        }
+        DEBUG_PRINT_RAW (ACPI_INFO, ("Region %s (%X)",
+            AcpiCmGetRegionName (EntryDesc->Region.SpaceId),
+            EntryDesc->Region.SpaceId));
 
         /*
          * If the address and length have not been evaluated,

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfldio - Aml Field I/O
- *              $Revision: 1.28 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -152,7 +152,7 @@ AcpiAmlReadFieldData (
 {
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *RgnDesc = NULL;
-    ACPI_INTEGER            Address;
+    ACPI_PHYSICAL_ADDRESS   Address;
     UINT32                  LocalValue = 0;
     UINT32                  FieldByteWidth;
 
@@ -191,21 +191,11 @@ AcpiAmlReadFieldData (
               (ObjDesc->Field.Offset * FieldByteWidth) +
               FieldByteOffset;
 
-
-    if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
-    {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("AmlReadFieldData: **** Unknown OpRegion SpaceID %d at %08lx width %d\n",
-            RgnDesc->Region.SpaceId, Address, FieldBitWidth));
-    }
-
-    else
-    {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("AmlReadFieldData: OpRegion %s at %08lx width %d\n",
-            AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId], Address,
-            FieldBitWidth));
-    }
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("AmlReadFieldData: Region %s(%X) at %08lx width %d\n",
+        AcpiCmGetRegionName (RgnDesc->Region.SpaceId), 
+        RgnDesc->Region.SpaceId, Address,
+        FieldBitWidth));
 
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
@@ -216,14 +206,16 @@ AcpiAmlReadFieldData (
     if (Status == AE_NOT_IMPLEMENTED)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlReadFieldData: **** OpRegion type %s not implemented\n",
-            AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId]));
+            ("AmlReadFieldData: **** Region %s(%X) not implemented\n",
+            AcpiCmGetRegionName (RgnDesc->Region.SpaceId), 
+            RgnDesc->Region.SpaceId));
     }
 
     else if (Status == AE_NOT_EXIST)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlReadFieldData: **** Unknown OpRegion SpaceID %d\n",
+            ("AmlReadFieldData: **** Region %s(%X) has no handler\n",
+            AcpiCmGetRegionName (RgnDesc->Region.SpaceId), 
             RgnDesc->Region.SpaceId));
     }
 
@@ -454,7 +446,7 @@ Cleanup:
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlWriteFieldData (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  FieldByteOffset,
@@ -463,7 +455,7 @@ AcpiAmlWriteFieldData (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *RgnDesc = NULL;
-    ACPI_INTEGER            Address;
+    ACPI_PHYSICAL_ADDRESS   Address;
     UINT32                  FieldByteWidth;
 
 
@@ -493,20 +485,11 @@ AcpiAmlWriteFieldData (
               (ObjDesc->Field.Offset * FieldByteWidth) +
               FieldByteOffset;
 
-
-    if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
-    {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("AmlWriteField: **** Store %lx in unknown OpRegion SpaceID %d at %p width %d ** \n",
-            Value, RgnDesc->Region.SpaceId, Address, FieldBitWidth));
-    }
-    else
-    {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("AmlWriteField: Store %lx in OpRegion %s at %p width %d\n",
-            Value, AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId], Address,
-            FieldBitWidth));
-    }
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("AmlWriteField: Store %lx in Region %s(%X) at %p width %d\n",
+        Value, AcpiCmGetRegionName (RgnDesc->Region.SpaceId), 
+        RgnDesc->Region.SpaceId, Address,
+        FieldBitWidth));
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
@@ -516,14 +499,16 @@ AcpiAmlWriteFieldData (
     if (Status == AE_NOT_IMPLEMENTED)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlWriteField: **** OpRegion type %s not implemented\n",
-            AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId]));
+            ("AmlWriteField: **** Region type %s(%X) not implemented\n",
+            AcpiCmGetRegionName (RgnDesc->Region.SpaceId),
+            RgnDesc->Region.SpaceId));
     }
 
     else if (Status == AE_NOT_EXIST)
     {
         DEBUG_PRINT (ACPI_ERROR,
-            ("AmlWriteField: **** Unknown OpRegion SpaceID %x\n",
+            ("AmlWriteField: **** Region type %s(%X) does not have a handler\n",
+            AcpiCmGetRegionName (RgnDesc->Region.SpaceId),
             RgnDesc->Region.SpaceId));
     }
 
@@ -545,7 +530,7 @@ AcpiAmlWriteFieldData (
  *
  ****************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlWriteFieldDataWithUpdateRule (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  Mask,
