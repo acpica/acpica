@@ -125,8 +125,24 @@
 typedef void*               ACPI_MUTEX;
 typedef UINT32              ACPI_MUTEX_HANDLE;
 
+
+/* 
+ * An ACPI_HANDLE (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
+ * such as on apObjStack, where a pointer to an ACPI_OBJECT_INTERNAL can also
+ * appear.  This macro is used to distinguish them.
+ *
+ * The DataType field is the first field in both structures.
+ */
+
 #define DESC_TYPE_NTE       0xEE
 #define DESC_TYPE_ACPI_OBJ  0xAA
+
+#define VALID_DESCRIPTOR_TYPE(d,t)  (((NAME_TABLE_ENTRY *)d)->DataType == t)
+
+
+/* Macro to test the object type */
+
+#define VALID_OBJECT_TYPE(d,t)      (((ACPI_OBJECT_INTERNAL *)d)->Common.Type == (UINT8)t)
 
 /*
  * Predefined handles for the mutex objects used within the subsystem
