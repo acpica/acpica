@@ -464,7 +464,7 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
         Excep = S_ERROR;
     }
 
-    else if (Region != (NsHandle)(Type = NsValType (Region)))
+    else if (Region != (NsHandle)(Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("PrepDefFieldValue: Needed Region, found %d %s\n",
                     Type, NsTypeNames[Type]));
@@ -523,7 +523,7 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 
         ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
-        ObjDesc->Field.Container  = NsValPtr (Region);
+        ObjDesc->Field.Container  = NsGetValue (Region);
 
 
         DEBUG_PRINT (ACPI_INFO, ("PrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
@@ -546,7 +546,7 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
          * handle is on TOS, preserving the current type of that nte.
          */
         NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
-                    (UINT8) NsValType ((NsHandle) ObjStack[ObjStackTop]));
+                    (UINT8) NsGetType ((NsHandle) ObjStack[ObjStackTop]));
     }
 
     return Excep;
@@ -592,7 +592,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
         DEBUG_PRINT (ACPI_ERROR, ("PrepBankFieldValue: null Region\n"));
         Excep = S_ERROR;
     }
-    else if (Region != (NsHandle) (Type = NsValType (Region)))
+    else if (Region != (NsHandle) (Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("PrepBankFieldValue: Needed Region, found %d %s\n",
                         Type, NsTypeNames[Type]));
@@ -643,8 +643,8 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
         ObjDesc->BankField.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->BankField.Offset     = (UINT32) FldPos / 8;
         ObjDesc->BankField.BankVal    = BankVal;
-        ObjDesc->BankField.Container  = NsValPtr (Region);
-        ObjDesc->BankField.BankSelect = NsValPtr (BankReg);
+        ObjDesc->BankField.Container  = NsGetValue (Region);
+        ObjDesc->BankField.BankSelect = NsGetValue (BankReg);
 
 
         DEBUG_PRINT (ACPI_INFO, ("PrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
@@ -662,7 +662,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
          * handle is on TOS, preserving the current type of that nte.
          */
         NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
-                    (UINT8) NsValType ((NsHandle) ObjStack[ObjStackTop]));
+                    (UINT8) NsGetType ((NsHandle) ObjStack[ObjStackTop]));
     }
 
 
@@ -768,7 +768,7 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
          * handle is on TOS, preserving the current type of that nte.
          */
         NsSetValue ((NsHandle) ObjStack[ObjStackTop], ObjDesc,
-                    (UINT8) NsValType ((NsHandle) ObjStack[ObjStackTop]));
+                    (UINT8) NsGetType ((NsHandle) ObjStack[ObjStackTop]));
     }
 
     return Excep;
