@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.104 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "acinterp.h"
 #include "amlcode.h"
 #include "actables.h"
 
@@ -240,7 +239,7 @@ AcpiNsLocal (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiNsGetInternalNameLength (
     ACPI_NAMESTRING_INFO    *Info)
 {
@@ -304,8 +303,6 @@ AcpiNsGetInternalNameLength (
                     4 + Info->NumCarats;
 
     Info->NextExternalChar = NextExternalChar;
-
-    return (AE_OK);
 }
 
 
@@ -330,7 +327,7 @@ AcpiNsBuildInternalName (
     NATIVE_CHAR             *InternalName = Info->InternalName;
     NATIVE_CHAR             *ExternalName = Info->NextExternalChar;
     NATIVE_CHAR             *Result = NULL;
-    UINT32                  i;
+    NATIVE_UINT             i;
 
 
     ACPI_FUNCTION_TRACE ("NsBuildInternalName");
@@ -358,7 +355,6 @@ AcpiNsBuildInternalName (
             Result = &InternalName[3];
         }
     }
-
     else
     {
         /*
@@ -391,7 +387,6 @@ AcpiNsBuildInternalName (
         }
     }
 
-
     /* Build the name (minus path separators) */
 
     for (; NumSegments; NumSegments--)
@@ -409,7 +404,7 @@ AcpiNsBuildInternalName (
             {
                 /* Convert the character to uppercase and save it */
 
-                Result[i] = (char) ACPI_TOUPPER (*ExternalName);
+                Result[i] = (char) ACPI_TOUPPER ((int) *ExternalName);
                 ExternalName++;
             }
         }
@@ -435,12 +430,12 @@ AcpiNsBuildInternalName (
     if (Info->FullyQualified)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "returning [%p] (abs) \"\\%s\"\n",
-            InternalName, &InternalName[0]));
+            InternalName, InternalName));
     }
     else
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "returning [%p] (rel) \"%s\"\n",
-            InternalName, &InternalName[2]));
+            InternalName, InternalName));
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -532,12 +527,12 @@ AcpiNsExternalizeName (
     UINT32                  *ConvertedNameLength,
     char                    **ConvertedName)
 {
-    UINT32                  PrefixLength = 0;
-    UINT32                  NamesIndex = 0;
-    UINT32                  NumSegments = 0;
-    UINT32                  i = 0;
-    UINT32                  j = 0;
-    UINT32                  RequiredLength;
+    NATIVE_UINT             PrefixLength = 0;
+    NATIVE_UINT             NamesIndex = 0;
+    NATIVE_UINT             NumSegments = 0;
+    NATIVE_UINT             i = 0;
+    NATIVE_UINT             j = 0;
+    NATIVE_UINT             RequiredLength;
 
 
     ACPI_FUNCTION_TRACE ("NsExternalizeName");
@@ -573,6 +568,9 @@ AcpiNsExternalizeName (
             PrefixLength = i;
         }
 
+        break;
+
+    default:
         break;
     }
 
@@ -670,7 +668,7 @@ AcpiNsExternalizeName (
 
     if (ConvertedNameLength)
     {
-        *ConvertedNameLength = RequiredLength;
+        *ConvertedNameLength = (UINT32) RequiredLength;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -965,17 +963,17 @@ AcpiNsFindParentName (
         if (ParentNode)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Parent of %p [%4.4s] is %p [%4.4s]\n",
-                ChildNode,  (char *) &ChildNode->Name,
-                ParentNode, (char *) &ParentNode->Name));
+                ChildNode,  ChildNode->Name.Ascii,
+                ParentNode, ParentNode->Name.Ascii));
 
-            if (ParentNode->Name)
+            if (ParentNode->Name.Integer)
             {
-                return_VALUE (ParentNode->Name);
+                return_VALUE ((ACPI_NAME) ParentNode->Name.Integer);
             }
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "unable to find parent of %p (%4.4s)\n",
-            ChildNode, (char *) &ChildNode->Name));
+            ChildNode, ChildNode->Name.Ascii));
     }
 
     return_VALUE (ACPI_UNKNOWN_NAME);
@@ -1010,7 +1008,7 @@ AcpiNsExistDownstreamSibling (
         return (FALSE);
     }
 
-    if (Node->Name)
+    if (Node->Name.Integer)
     {
         return (TRUE);
     }
