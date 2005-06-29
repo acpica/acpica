@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -169,7 +169,7 @@ AcpiInstallFixedEventHandler (
 
     if (NULL != AcpiGbl_FixedEventHandlers[Event].Handler)
     {
-        Status = AE_EXIST;
+        Status = AE_ALREADY_EXISTS;
         goto Cleanup;
     }
 
@@ -327,7 +327,7 @@ AcpiInstallNotifyHandler (
             ((HandlerType == ACPI_DEVICE_NOTIFY) &&
               AcpiGbl_DrvNotify.Handler))
         {
-            Status = AE_EXIST;
+            Status = AE_ALREADY_EXISTS;
             goto UnlockAndExit;
         }
 
@@ -379,7 +379,7 @@ AcpiInstallNotifyHandler (
                 ((HandlerType == ACPI_DEVICE_NOTIFY) &&
                   ObjDesc->Device.DrvHandler))
             {
-                Status = AE_EXIST;
+                Status = AE_ALREADY_EXISTS;
                 goto UnlockAndExit;
             }
         }
@@ -630,7 +630,7 @@ AcpiInstallGpeHandler (
 
     if (AcpiGbl_GpeInfo[GpeNumber].Handler)
     {
-        Status = AE_EXIST;
+        Status = AE_ALREADY_EXISTS;
         goto Cleanup;
     }
 
