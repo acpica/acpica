@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -891,7 +891,7 @@ AcpiExCommonBufferSetup (
         return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
 
-    /* 
+    /*
      * Create "actual" field byte count (minimum number of bytes that
      * must be read), then convert to datum count (minimum number
      * of datum-sized units that must be read)
