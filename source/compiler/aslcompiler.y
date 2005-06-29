@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -950,7 +950,7 @@ ParameterTypePackage
     | ObjectTypeKeyword             {$$ = $1;}
     | '{' 
         ParameterTypePackageList 
-      '}'                           {$$ = $2}
+      '}'                           {$$ = $2;}
     ;
 
 OptionalParameterTypePackage
