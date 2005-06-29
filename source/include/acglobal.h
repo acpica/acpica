@@ -131,6 +131,8 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
 
 /* Misc Globals */
 
+
+ACPI_EXTERN BOOLEAN     GlobalLockSet;
 ACPI_EXTERN INT32       Capabilities;
 ACPI_EXTERN INT32       NameStringSize;
 ACPI_EXTERN char        *NameString;    /* Runtime AML error message communication */
