@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.18 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -150,6 +150,68 @@ static char *
 AbGetFile (
     char                    *Filename,
     UINT32                  *FileSize);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtHexCharToValue
+ *
+ * PARAMETERS:  HexChar         - Hex character in Ascii
+ *
+ * RETURN:      The binary value of the hex character
+ *
+ * DESCRIPTION: Perform ascii-to-hex translation
+ *
+ ******************************************************************************/
+
+static UINT8
+UtHexCharToValue (
+    int                     HexChar,
+    UINT8                   *OutBinary)
+{
+
+    if (HexChar >= 0x30 && HexChar <= 0x39)
+    {
+        *OutBinary = (UINT8) (HexChar - 0x30);
+        return (1);
+    }
+
+    else if (HexChar >= 0x41 && HexChar <= 0x46)
+    {
+        *OutBinary = (UINT8) (HexChar - 0x37);
+        return (1);
+    }
+
+    else if (HexChar >= 0x61 && HexChar <= 0x66)
+    {
+        *OutBinary = (UINT8) (HexChar - 0x57);
+        return (1);
+    }
+    return (0);
+}
+
+static UINT8
+AbHexByteToBinary (
+    char                    *HexString,
+    char                    *OutBinary)
+{
+    UINT8                   Local1;
+    UINT8                   Local2;
+
+
+    if (!UtHexCharToValue (HexString[0], &Local1))
+    {
+        return (0);
+    }
+    if (!UtHexCharToValue (HexString[1], &Local2))
+    {
+        return (0);
+    }
+
+    *OutBinary = (UINT8) ((Local1 << 4) | Local2);
+    return (2);
+
+}
 
 
 /******************************************************************************
@@ -642,11 +704,12 @@ AbExtractAmlFile (
     char                    *File2Path)
 {
     char                    *Table;
-    long                    Value;
+    char                    Value;
     UINT32                  i;
-    char                    *End;
     FILE                    *FileHandle;
     FILE                    *FileOutHandle;
+    UINT32                  Count = 0;
+    int                     Scanned;
 
 
     /* Open in/out files. input is in text mode, output is in binary mode */
@@ -658,7 +721,7 @@ AbExtractAmlFile (
         return -1;
     }
 
-    FileOutHandle = fopen (File2Path, "wb");
+    FileOutHandle = fopen (File2Path, "w+b");
     if (!FileOutHandle)
     {
         printf ("Could not open %s\n", File2Path);
@@ -699,46 +762,46 @@ AbExtractAmlFile (
                 Table = strchr (Buffer, ':');
                 if (!Table)
                 {
-                    printf ("Could not convert table\n");
-                    return 0;
+                    /* No colon, all done */
+                    goto Exit;
                 }
 
                 Table += 2; /* Eat the colon + space */
 
-                /* Convert up to 16 bytes per input line */
-
                 for (i = 0; i < 16; i++)
                 {
-                    /* Convert next integer from ASCII to binary, eats the space */
-
-                    Value = strtoul (Table, &End, 16);
-                    if (End == Table)
+                    Scanned = AbHexByteToBinary (Table, &Value);
+                    if (!Scanned)
                     {
-                        /*
-                         * No conversion was performed, all done.  If other tables
-                         * follow this one, this is where we will exit.
-                         */
-                        return 0;
+                        goto Exit;
                     }
 
                     Table += 3; /* Go past this hex byte and space */
 
                     /* Write the converted (binary) byte */
 
-                    fwrite (&(char *) Value, 1, 1, FileOutHandle);
+                    fwrite (&Value, 1, 1, FileOutHandle);
+                    Count++;
                 }
             }
 
             /* No more lines, EOF, all done */
 
-            return (0);
+            goto Exit;
         }
     }
 
     /* Searched entire file, no match to table signature */
 
     printf ("Could not match table signature\n");
+    fclose (FileHandle);
     return -1;
+
+Exit:
+    printf ("%d (0x%X) bytes written to %s\n", Count, Count, File2Path);
+    fclose (FileHandle);
+    fclose (FileOutHandle);
+    return 0;
 }
 
 
