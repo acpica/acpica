@@ -227,8 +227,8 @@ Cleanup:
 
     /* Always delete both operands */
 
-    CmDeleteInternalObject (ValDesc);
-    CmDeleteInternalObject (ObjDesc);
+    CmRemoveReference (ValDesc);
+    CmRemoveReference (ObjDesc);
     
 
     return_ACPI_STATUS (Status);
@@ -555,7 +555,7 @@ AmlExecDyadic2R (
          */
         if (RetDesc2->Common.ReferenceCount == 1)
         {
-            CmDeleteInternalObject (RetDesc2);
+            CmRemoveReference (RetDesc2);
         }
     }
 
@@ -572,8 +572,8 @@ Cleanup:
 
     /* Always delete the operands */
 
-    CmDeleteInternalObject (ObjDesc);
-    CmDeleteInternalObject (ObjDesc2);
+    CmRemoveReference (ObjDesc);
+    CmRemoveReference (ObjDesc2);
 
 
     /* Delete return object on error */
@@ -582,14 +582,14 @@ Cleanup:
     {
         /* On failure, delete the result ops */
 
-        CmDeleteInternalObject (ResDesc);
-        CmDeleteInternalObject (ResDesc2);
+        CmRemoveReference (ResDesc);
+        CmRemoveReference (ResDesc2);
 
         if (RetDesc)
         {
             /* And delete ther internal return object */
 
-            CmDeleteInternalObject (RetDesc);
+            CmRemoveReference (RetDesc);
             RetDesc = NULL;
         }
     }
@@ -704,15 +704,15 @@ Cleanup:
 
     /* Delete params */
 
-    CmDeleteInternalObject (TimeDesc);
-    CmDeleteInternalObject (ObjDesc);
+    CmRemoveReference (TimeDesc);
+    CmRemoveReference (ObjDesc);
 
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status) &&
         (RetDesc))
     {
-        CmDeleteInternalObject (RetDesc);
+        CmRemoveReference (RetDesc);
         RetDesc = NULL;
     }
 
@@ -858,8 +858,8 @@ Cleanup:
 
     /* Always delete operands */
 
-    CmDeleteInternalObject (ObjDesc);
-    CmDeleteInternalObject (ObjDesc2);
+    CmRemoveReference (ObjDesc);
+    CmRemoveReference (ObjDesc2);
 
  
     /* Delete return object on error */
@@ -867,7 +867,7 @@ Cleanup:
     if (ACPI_FAILURE (Status) &&
         (RetDesc))
     {
-        CmDeleteInternalObject (RetDesc);
+        CmRemoveReference (RetDesc);
         RetDesc = NULL;
     }
 

@@ -195,9 +195,9 @@ Cleanup:
 
     /* Free the operands */
 
-    CmDeleteInternalObject (ArgDesc);
-    CmDeleteInternalObject (CodeDesc);
-    CmDeleteInternalObject (TypeDesc);
+    CmRemoveReference (ArgDesc);
+    CmRemoveReference (CodeDesc);
+    CmRemoveReference (TypeDesc);
 
 
     /* If we get back from the OS call, we might as well keep going. */
@@ -267,7 +267,7 @@ AmlExecIndex (
 
     /* Create the internal return object */
 
-    RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
+    RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Reference);
     if (!RetDesc)
     {
         Status = AE_NO_MEMORY;
@@ -290,15 +290,15 @@ AmlExecIndex (
             goto Cleanup;
         }
 
-        if ((ResDesc->Common.Type == INTERNAL_TYPE_Lvalue) &&
-            (ResDesc->Lvalue.OpCode == AML_ZeroOp))
+        if ((ResDesc->Common.Type == INTERNAL_TYPE_Reference) &&
+            (ResDesc->Reference.OpCode == AML_ZeroOp))
         {
             /* 
              * There is no actual result descriptor (the ZeroOp Result descriptor is a placeholder),
              * so just delete the placeholder and return a reference to the package element
              */
 
-            CmDeleteInternalObject (ResDesc);
+            CmRemoveReference (ResDesc);
         }
 
         else
@@ -313,22 +313,22 @@ AmlExecIndex (
              * we are after.
              */
 
-            TmpDesc                      = ObjDesc->Package.Elements[IdxDesc->Number.Value];
-            RetDesc->Lvalue.OpCode       = AML_IndexOp;
-            RetDesc->Lvalue.TargetType   = TmpDesc->Common.Type;
-            RetDesc->Lvalue.Object       = TmpDesc;
+            TmpDesc                         = ObjDesc->Package.Elements[IdxDesc->Number.Value];
+            RetDesc->Reference.OpCode       = AML_IndexOp;
+            RetDesc->Reference.TargetType   = TmpDesc->Common.Type;
+            RetDesc->Reference.Object       = TmpDesc;
 
             Status = AmlExecStore (RetDesc, ResDesc);
-            RetDesc->Lvalue.Object       = NULL;
+            RetDesc->Reference.Object       = NULL;
         }
 
         /*
          * The local return object must always be a reference to the package element,
          * not the element itself.
          */
-        RetDesc->Lvalue.OpCode       = AML_IndexOp;
-        RetDesc->Lvalue.TargetType   = ACPI_TYPE_Package;
-        RetDesc->Lvalue.Where        = &ObjDesc->Package.Elements[IdxDesc->Number.Value];
+        RetDesc->Reference.OpCode       = AML_IndexOp;
+        RetDesc->Reference.TargetType   = ACPI_TYPE_Package;
+        RetDesc->Reference.Where        = &ObjDesc->Package.Elements[IdxDesc->Number.Value];
     }
 
     else
@@ -346,10 +346,10 @@ AmlExecIndex (
          * TBD - possible dangling reference: if the package vector changes
          * TBD - before this pointer is used, the results may be surprising.
          */
-        RetDesc->Lvalue.OpCode       = AML_IndexOp;
-        RetDesc->Lvalue.TargetType   = ACPI_TYPE_Buffer;
-        RetDesc->Lvalue.Object       = ObjDesc;
-        RetDesc->Lvalue.Offset       = IdxDesc->Number.Value;
+        RetDesc->Reference.OpCode       = AML_IndexOp;
+        RetDesc->Reference.TargetType   = ACPI_TYPE_Buffer;
+        RetDesc->Reference.Object       = ObjDesc;
+        RetDesc->Reference.Offset       = IdxDesc->Number.Value;
 
         Status = AmlExecStore (RetDesc, ResDesc);
     }
@@ -359,18 +359,18 @@ Cleanup:
 
     /* Always delete operands */
 
-    CmDeleteInternalObject (ObjDesc);
-    CmDeleteInternalObject (IdxDesc);
+    CmRemoveReference (ObjDesc);
+    CmRemoveReference (IdxDesc);
 
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status))
     {
-        CmDeleteInternalObject (ResDesc);
+        CmRemoveReference (ResDesc);
 
         if (RetDesc)
         {
-            CmDeleteInternalObject (RetDesc);
+            CmRemoveReference (RetDesc);
             RetDesc = NULL;
         }
     }
@@ -644,12 +644,12 @@ Cleanup:
 
     /* Free the operands */
 
-    CmDeleteInternalObject (StartDesc);
-    CmDeleteInternalObject (V2Desc);
-    CmDeleteInternalObject (Op2Desc);
-    CmDeleteInternalObject (V1Desc);
-    CmDeleteInternalObject (Op1Desc);
-    CmDeleteInternalObject (PkgDesc);
+    CmRemoveReference (StartDesc);
+    CmRemoveReference (V2Desc);
+    CmRemoveReference (Op2Desc);
+    CmRemoveReference (V1Desc);
+    CmRemoveReference (Op1Desc);
+    CmRemoveReference (PkgDesc);
 
     
     /* Delete return object on error */
@@ -657,7 +657,7 @@ Cleanup:
     if (ACPI_FAILURE (Status) &&
         (RetDesc))
     {
-        CmDeleteInternalObject (RetDesc);
+        CmRemoveReference (RetDesc);
         RetDesc = NULL;
     }
 

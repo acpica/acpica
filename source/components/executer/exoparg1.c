@@ -156,7 +156,7 @@ AmlGetObjectReference (
 
     if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
     {
-        if (ObjDesc->Common.Type != INTERNAL_TYPE_Lvalue)
+        if (ObjDesc->Common.Type != INTERNAL_TYPE_Reference)
         {
             *RetDesc = NULL;
             Status = AE_TYPE;
@@ -167,24 +167,24 @@ AmlGetObjectReference (
          * Not a Name -- an indirect name pointer would have
          * been converted to a direct name pointer in AmlResolveOperands
          */
-        switch (ObjDesc->Lvalue.OpCode)
+        switch (ObjDesc->Reference.OpCode)
         {
         case AML_LocalOp:
 
-            *RetDesc = (void *) DsMthStackGetNte (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset));
+            *RetDesc = (void *) DsMethodDataGetNte (MTH_TYPE_LOCAL, (ObjDesc->Reference.Offset));
             break;
 
 
         case AML_ArgOp:
 
-            *RetDesc = (void *) DsMthStackGetNte (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset));
+            *RetDesc = (void *) DsMethodDataGetNte (MTH_TYPE_ARG, (ObjDesc->Reference.Offset));
             break;
 
 
         default:
 
-            DEBUG_PRINT (ACPI_ERROR, ("AmlGetObjectReference: (Internal) Unknown Lvalue subtype %02x\n",
-                            ObjDesc->Lvalue.OpCode));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetObjectReference: (Internal) Unknown Reference subtype %02x\n",
+                            ObjDesc->Reference.OpCode));
             *RetDesc = NULL;
             Status = AE_AML_INTERNAL;
             goto Cleanup;
@@ -314,7 +314,7 @@ Cleanup:
 
     /* Always delete the operand */
 
-    CmDeleteInternalObject (ObjDesc);
+    CmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -492,7 +492,7 @@ AmlExecMonadic2R (
 
             /* Must delete the result descriptor since there is no reference being returned */
 
-            CmDeleteInternalObject (ResDesc);
+            CmRemoveReference (ResDesc);
             goto Cleanup;
         }
 
@@ -549,7 +549,7 @@ AmlExecMonadic2R (
 
     case AML_DebugOp:
     
-        /* Lvalue, returning an Lvalue */
+        /* Reference, returning an Reference */
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: DebugOp should never get here!\n"));
         return_ACPI_STATUS (AE_OK);
@@ -596,16 +596,16 @@ AmlExecMonadic2R (
 Cleanup:
     /* Always delete the operand object */
 
-    CmDeleteInternalObject (ObjDesc);
+    CmRemoveReference (ObjDesc);
 
     /* Delete return object(s) on error */
 
     if (ACPI_FAILURE (Status))
     {
-        CmDeleteInternalObject (ResDesc);     /* Result descriptor */
+        CmRemoveReference (ResDesc);     /* Result descriptor */
         if (RetDesc)
         {
-            CmDeleteInternalObject (RetDesc);
+            CmRemoveReference (RetDesc);
             RetDesc = NULL;
         }
     }
@@ -692,10 +692,10 @@ AmlExecMonadic2 (
     case AML_IncrementOp:
 
         /* 
-         * Since we are expecting an Lvalue on the top of the stack, it
+         * Since we are expecting an Reference on the top of the stack, it
          * can be either an NTE or an internal object.
          *
-         * TBD: This may be the prototype code for all cases where an Lvalue
+         * TBD: This may be the prototype code for all cases where an Reference
          * is expected!! 10/99
          */
 
@@ -707,25 +707,25 @@ AmlExecMonadic2 (
        else
        {
             /* 
-             * Duplicate the Lvalue in a new object so that we can resolve it
-             * without destroying the original Lvalue object
+             * Duplicate the Reference in a new object so that we can resolve it
+             * without destroying the original Reference object
              */
         
-            RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
+            RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Reference);
             if (!RetDesc)
             {
               Status = AE_NO_MEMORY;
                goto Cleanup;
             }
 
-            RetDesc->Lvalue.OpCode = ObjDesc->Lvalue.OpCode;
-            RetDesc->Lvalue.Offset = ObjDesc->Lvalue.Offset;
-            RetDesc->Lvalue.Object = ObjDesc->Lvalue.Object;
+            RetDesc->Reference.OpCode = ObjDesc->Reference.OpCode;
+            RetDesc->Reference.Offset = ObjDesc->Reference.Offset;
+            RetDesc->Reference.Object = ObjDesc->Reference.Object;
         }
         
 
         /* 
-         * Convert the RetDesc Lvalue to a Number
+         * Convert the RetDesc Reference to a Number
          * (This deletes the original RetDesc)
          */
     
@@ -751,7 +751,7 @@ AmlExecMonadic2 (
 
         Status = AmlExecStore (RetDesc, ObjDesc);
 
-        /* Objdesc was just deleted (because it is an Lvalue) */
+        /* Objdesc was just deleted (because it is an Reference) */
 
         ObjDesc = NULL;
 
@@ -762,13 +762,13 @@ AmlExecMonadic2 (
 
     case AML_TypeOp:
         
-        if (INTERNAL_TYPE_Lvalue == ObjDesc->Common.Type)
+        if (INTERNAL_TYPE_Reference == ObjDesc->Common.Type)
         {
             /* 
              * Not a Name -- an indirect name pointer would have
              * been converted to a direct name pointer in AmlResolveOperands
              */
-            switch (ObjDesc->Lvalue.OpCode)
+            switch (ObjDesc->Reference.OpCode)
             {
             case AML_ZeroOp: 
             case AML_OneOp: 
@@ -792,26 +792,26 @@ AmlExecMonadic2 (
 
                 /* Get the type of this reference (index into another object) */
 
-                Type = ObjDesc->Lvalue.TargetType;
+                Type = ObjDesc->Reference.TargetType;
                 break;
 
 
             case AML_LocalOp:
 
-                Type = DsMthStackGetType (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset));
+                Type = DsMethodDataGetType (MTH_TYPE_LOCAL, (ObjDesc->Reference.Offset));
                 break;
 
 
             case AML_ArgOp:
 
-                Type = DsMthStackGetType (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset));
+                Type = DsMethodDataGetType (MTH_TYPE_ARG, (ObjDesc->Reference.Offset));
                 break;
 
 
             default:
 
-                DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x\n",
-                                ObjDesc->Lvalue.OpCode));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2/TypeOp:internal error: Unknown Reference subtype %02x\n",
+                                ObjDesc->Reference.OpCode));
                 Status = AE_AML_INTERNAL;
                 goto Cleanup;
             }
@@ -820,7 +820,7 @@ AmlExecMonadic2 (
         else
         {
             /* 
-             * Since we passed AmlResolveOperands("l") and it's not an Lvalue,
+             * Since we passed AmlResolveOperands("l") and it's not an Reference,
              * it must be a direct name pointer. 
              */
             Type = NsGetType ((ACPI_HANDLE) ObjDesc);
@@ -924,19 +924,19 @@ AmlExecMonadic2 (
         {
             /* Must dereference the local/arg reference first */
 
-            switch (ObjDesc->Lvalue.OpCode)
+            switch (ObjDesc->Reference.OpCode)
             {
                 /* Set ObjDesc to the value of the local/arg */
 
             case AML_LocalOp:
 
-                DsMthStackGetValue (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset), &ObjDesc);
+                DsMethodDataGetValue (MTH_TYPE_LOCAL, (ObjDesc->Reference.Offset), &ObjDesc);
                 break;
 
 
             case AML_ArgOp:
 
-                DsMthStackGetValue (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset), &ObjDesc);
+                DsMethodDataGetValue (MTH_TYPE_ARG, (ObjDesc->Reference.Offset), &ObjDesc);
                 break;
             }
         }
@@ -953,8 +953,8 @@ AmlExecMonadic2 (
         {   /* This must be a reference object produced by the Index ASL operation */
             /* Must be an lvalue, make sure opcode is correct */
 
-            if ((ObjDesc->Lvalue.OpCode != AML_IndexOp) &&
-                (ObjDesc->Lvalue.OpCode != AML_RefOfOp))
+            if ((ObjDesc->Reference.OpCode != AML_IndexOp) &&
+                (ObjDesc->Reference.OpCode != AML_RefOfOp))
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: DerefOf, invalid obj ref %p\n", ObjDesc));
 
@@ -963,11 +963,11 @@ AmlExecMonadic2 (
             }
 
 
-            switch (ObjDesc->Lvalue.OpCode)
+            switch (ObjDesc->Reference.OpCode)
             {
             case AML_IndexOp:
 
-                if (ObjDesc->Lvalue.TargetType == ACPI_TYPE_Buffer)
+                if (ObjDesc->Reference.TargetType == ACPI_TYPE_Buffer)
                 {
                     RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
                     if (!RetDesc)
@@ -976,20 +976,20 @@ AmlExecMonadic2 (
                         goto Cleanup;
                     }
 
-                    TmpDesc = ObjDesc->Lvalue.Object;
-                    RetDesc->Number.Value = TmpDesc->Buffer.Pointer[ObjDesc->Lvalue.Offset];
+                    TmpDesc = ObjDesc->Reference.Object;
+                    RetDesc->Number.Value = TmpDesc->Buffer.Pointer[ObjDesc->Reference.Offset];
 
                     /* TBD: (see below) Don't add an additional ref! */
                 }
-                else if (ObjDesc->Lvalue.TargetType == ACPI_TYPE_Package)
+                else if (ObjDesc->Reference.TargetType == ACPI_TYPE_Package)
                 {
-                    RetDesc = *(ObjDesc->Lvalue.Where);
+                    RetDesc = *(ObjDesc->Reference.Where);
                 }
                 
                 else
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: DerefOf, Unknown TargetType %X in obj %p\n", 
-                                    ObjDesc->Lvalue.TargetType, ObjDesc));
+                                    ObjDesc->Reference.TargetType, ObjDesc));
                     Status = AE_AML_OPERAND_TYPE;
                     goto Cleanup;
                 }
@@ -999,7 +999,7 @@ AmlExecMonadic2 (
 
             case AML_RefOfOp:
            
-                RetDesc = ObjDesc->Lvalue.Object;
+                RetDesc = ObjDesc->Reference.Object;
                 break;
             }
         }
@@ -1026,7 +1026,7 @@ Cleanup:
 
     if (ObjDesc)
     {
-        CmDeleteInternalObject (ObjDesc);
+        CmRemoveReference (ObjDesc);
     }
 
     /* Delete return object on error */
@@ -1034,7 +1034,7 @@ Cleanup:
     if (ACPI_FAILURE (Status) &&
         (RetDesc))
     {
-        CmDeleteInternalObject (RetDesc);
+        CmRemoveReference (RetDesc);
         RetDesc = NULL;
     }
 
