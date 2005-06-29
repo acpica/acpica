@@ -561,24 +561,30 @@ CmDeleteInternalObj (
                                 Object, Object->Event.Semaphore));
 
         OsdDeleteSemaphore (Object->Event.Semaphore);
+        Object->Event.Semaphore = NULL;
         break;
 
 
     case ACPI_TYPE_Method:
 
-
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Method %p, ParserOp %p\n", 
                                 Object, Object->Method.ParserOp));
 
-/* TBD: Remove ifdef when RPARSER is obsoleted */
+        /* Delete parse tree if it exists */
 
-#ifndef _RPARSER
         if (Object->Method.ParserOp)
         {
             PsDeleteParseTree (Object->Method.ParserOp);
             Object->Method.ParserOp = NULL;
         }
-#endif
+
+        /* Delete semaphore if it exists */
+
+        if (Object->Method.Semaphore)
+        {
+            OsdDeleteSemaphore (Object->Method.Semaphore);
+            Object->Method.Semaphore = NULL;
+        }
 
         break;
 
@@ -589,7 +595,7 @@ CmDeleteInternalObj (
            (!VALID_DESCRIPTOR_TYPE (Object->Lvalue.Object, DESC_TYPE_NTE)))
         {   
             DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Lvalue: %p\n", 
-                                Object->Lvalue.Object));
+                                    Object->Lvalue.Object));
             CmDeleteInternalObj (Object->Lvalue.Object);
         }
         break;
