@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.36 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -646,7 +646,6 @@ AslLocalAllocate (unsigned int Size);
 %type <n> ConstExprTerm
 
 %type <n> BufferTerm
-%type <n> BufferData
 %type <n> ByteList
 %type <n> ByteListTail
 %type <n> DWordList
@@ -2816,8 +2815,8 @@ AslLocalAllocate (unsigned int Size)
     Mem = _CmCallocate (Size, 0, "", 0);
     if (!Mem)
     {
-        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION, 
-                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, 
+        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
+                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                         Gbl_InputByteCount, Gbl_CurrentColumn,
                         Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
         exit (1);
