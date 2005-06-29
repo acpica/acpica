@@ -14,15 +14,17 @@
  | FILENAME: acpinmsp.c - functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.2 $
- | $Date: 2005/06/29 18:15:18 $
+ | $Revision: 1.3 $
+ | $Date: 2005/06/29 18:15:20 $
  | $Log: nsaccess.c,v $
- | Revision 1.2  2005/06/29 18:15:18  aystarik
- | Detabified.
+ | Revision 1.3  2005/06/29 18:15:20  aystarik
+ |
  |
  | 
- | date	99.01.12.00.18.00;	author grsmith1;	state Exp;
+ | date	99.01.13.22.24.00;	author grsmith1;	state Exp;
  |
+ * 
+ * 3     1/13/99 2:24p Grsmith1
  * 
  * 2     1/11/99 4:18p Grsmith1
  * Detabified.
@@ -360,6 +362,7 @@ static int TRACE = 1;   /* set non-zero to enable some flow tracing
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
+#include "acpiasm.h"
 #include "acpiosd.h"
 #include "aml.h"
 #include "acpinmsp.h"
@@ -1799,9 +1802,9 @@ NsHandle hGetParentHandle(NsHandle hLook)
          * XXX - BUG - initial extent.  It won't work if we are in an appendage.
          */
 
-// REMOVED FOR FLAT MODEL.
-//      if (sPtrSelector(nThis->nChildScope) == sPtrSelector(nLook)
-
+/* REMOVED FOR FLAT MODEL.
+      if (sPtrSelector(nThis->nChildScope) == sPtrSelector(nLook)
+*/
             
         if (nThis->nChildScope <= nLook
          && nLook < nThis->nChildScope + TABLSIZE)
@@ -2359,7 +2362,7 @@ vNsDumpTable(
                 if (debug_level() > 0)
                     fprintf_bu(iLstFileHandle, LOGFILE, " C:%p P:%p",
                             nThis->nChildScope, nThis->nParentScope);
-//              fprintf_bu(iLstFileHandle, LOGFILE, "\n");
+/*              fprintf_bu(iLstFileHandle, LOGFILE, "\n"); */
             }
             else
             {
@@ -2373,7 +2376,7 @@ vNsDumpTable(
                 if (debug_level() > 0)
                     fprintf_bu(iLstFileHandle, LOGFILE, " C:%p P:%p V:%p",
                             nThis->nChildScope, nThis->nParentScope, nThis->pVal);
-//              fprintf_bu(iLstFileHandle, LOGFILE, "\n");
+/*              fprintf_bu(iLstFileHandle, LOGFILE, "\n");a*/
 #if 0
                 /* debug code used to show parents */
                 if (IndexField == iType && 0 == iSize && 0 == iLevel
