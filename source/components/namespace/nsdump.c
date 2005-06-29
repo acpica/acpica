@@ -400,6 +400,7 @@ NsDumpTables (NsHandle SearchBase, INT32 MaxDepth)
          * there is nothing to dump.
          */
         DEBUG_PRINT (TRACE_TABLES, ("NsDumpTables: name space not initialized!\n"));
+        FUNCTION_EXIT;
         return;
     }
 
@@ -413,6 +414,7 @@ NsDumpTables (NsHandle SearchBase, INT32 MaxDepth)
 
 
     NsDumpObjects (TYPE_Any, MaxDepth, SearchHandle);
+    FUNCTION_EXIT;
 }
 
 
@@ -436,6 +438,7 @@ NsDumpEntry (NsHandle Handle)
     NsDumpOneObject (Handle, 1, NULL);
     
     DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpEntry %p\n", Handle));
+    FUNCTION_EXIT;
 }
 
 
