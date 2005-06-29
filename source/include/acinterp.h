@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
- * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.79 $
+ * 
+ * Name: interpreter.h - Interpreter subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -9,609 +9,645 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
  * reserved.
  *
  * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
  *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
  *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
+ * the above copyright and patent license is granted only if the following 
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
  *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
  * Intel Code.
  *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
  *
  *****************************************************************************/
 
-#ifndef __ACINTERP_H__
-#define __ACINTERP_H__
+
+#ifndef __AML_H__
+#define __AML_H__
 
 
-#define WALK_OPERANDS       &(WalkState->Operands [WalkState->NumOperands -1])
+#define AML_END_OF_BLOCK    -1
 
-
-/* Interpreter constants */
-
-#define AML_END_OF_BLOCK            -1
-#define PUSH_PKG_LENGTH             1
-#define DO_NOT_PUSH_PKG_LENGTH      0
-
-
-#define STACK_TOP                   0
-#define STACK_BOTTOM                (UINT32) -1
-
-/* Constants for global "WhenToParseMethods" */
-
-#define METHOD_PARSE_AT_INIT        0x0
-#define METHOD_PARSE_JUST_IN_TIME   0x1
-#define METHOD_DELETE_AT_COMPLETION 0x2
-
-
-ACPI_STATUS
-AcpiAmlResolveOperands (
-    UINT16                  Opcode,
-    ACPI_OPERAND_OBJECT     **StackPtr,
-    ACPI_WALK_STATE         *WalkState);
+#include <datatypes.h>
+#include <acpiobj.h>            /* For NsType data type only !! */
 
 
 /*
- * amxface - External interpreter interfaces
+ * CheckTrash macros
+ * define _CHECK_TRASH to enable trash tracing
  */
 
-ACPI_STATUS
-AcpiAmlLoadTable (
-    ACPI_TABLE_TYPE         TableId);
+#ifndef _CHECK_TRASH
 
-ACPI_STATUS
-AcpiAmlExecuteMethod (
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObjDesc);
+/* Usual case: discard calls to these functions */
+
+#define CheckTrash(a)
+#define CheckTrashA(a,b,c,d,e,f,g,h)
+
+#else 
+
+extern void CheckTrash(char *Where);
+extern void CheckTrashA(char *Where,
+                unsigned long *pulP, unsigned long ulC1, unsigned long ulC2,
+                int *piP, int iC1, int iC2, void *nNt);
+#endif
 
 
-/*
- * amfield - ACPI AML (p-code) execution - field manipulation
+/* What are these ?? TBD */
+
+extern INT32        OBJECT_DESCRIPTOR_PER_AMLPRIV;
+extern INT32        OBJECT_DESCRIPTOR_IS_VOID;
+
+
+
+/* Macros to allocate and deallocate structures */
+/* GET RID OF THESE, confusing!! TBD!! */
+
+#define  NEW(type)   ((type *)OsdCallocate (sizeof(type)))
+#ifdef DELETE
+#undef DELETE
+#endif
+#define  DELETE(ptr) OsdFree ((void *)(ptr)), (ptr) = 0
+
+/* 
+ * Macro to test for out-of-range subscript
+ * No parens needed around aArray in expansion since the actual parameter
+ * must be the name of a declared array and cannot be an expression.
+ * Cast of iSubscript to int required by broken IC386 compiler.
+ */
+
+#define OUTRANGE(Subscript, Array) \
+    (sizeof(Array[0]) == 0 || (int)(Subscript) < 0 \
+     || (int)(Subscript) >= sizeof(Array)/sizeof(Array[0]))
+
+
+/* Object Stack */
+
+#ifdef __ISIDATA_C__
+void            *ObjStack[AML_EXPR_MAX_NEST];  /* values are NsHandle or ObjHandle */
+INT32           ObjStackTop = 0;
+
+#else
+extern void     *ObjStack[];  /* values are NsHandle or ObjHandle */
+extern INT32    ObjStackTop;
+#endif
+
+
+#define PUSH_PKG_LENGTH         1
+#define DO_NOT_PUSH_PKG_LENGTH  0
+
+
+/* 
+ * Method Stack, containing locals and args
+ * per level, 0-7 are Local# and 8-14 are Arg#
+ */
+
+#define LCLBASE             0
+#define NUMLCL              8
+#define ARGBASE             (LCLBASE+NUMLCL)
+#define NUMARG              7
+
+extern OBJECT_DESCRIPTOR    *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG];
+extern INT32                MethodStackTop;
+
+
+/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+ * Functions which Load/Dump/Execute Interpreted Data
+ * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+ */
+
+INT32
+DoMatchOp (
+    OpMode              iLE);
+
+void
+DoOpByte (
+    INT32               nl, 
+    UINT16              op, 
+    OpMode              iLE);
+
+
+/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+ * Functions which Load/Dump/Execute Names
+ * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+ */
+
+char *
+LastFQN (void);
+
+void
+AllocateNameString (
+    INT32               PrefixCount,
+    INT32               NSeg);
+
+INT32
+NcOK (
+    INT32               c);
+
+void
+GenLabel (
+    char                *Name);
+
+/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+ * Functions which Load/Dump/Execute Atoms
+ * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+ */
+
+/* |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+ * Functions which Load/Dump/Execute Expressions
+ * |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
  */
 
 
-ACPI_STATUS
-AcpiAmlReadField (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength,
-    UINT32                  ByteLength,
-    UINT32                  DatumLength,
-    UINT32                  BitGranularity,
-    UINT32                  ByteGranularity);
+INT32
+DoOpCode (
+    OpMode              iLE);
 
-ACPI_STATUS
-AcpiAmlWriteField (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength,
-    UINT32                  ByteLength,
-    UINT32                  DatumLength,
-    UINT32                  BitGranularity,
-    UINT32                  ByteGranularity);
+INT32
+DoCode (
+    OpMode              iLE);
 
-ACPI_STATUS
-AcpiAmlSetupField (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     *RgnDesc,
-    UINT32                  FieldBitWidth);
+UINT32 
+AmlBufSeq (void);
 
-ACPI_STATUS
-AcpiAmlReadFieldData (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT32                  FieldByteOffset,
-    UINT32                  FieldBitWidth,
-    UINT32                  *Value);
-
-ACPI_STATUS
-AcpiAmlAccessNamedField (
-    UINT32                  Mode,
-    ACPI_HANDLE             NamedField,
-    void                    *Buffer,
-    UINT32                  Length);
-
-/*
- * ammisc - ACPI AML (p-code) execution - specific opcodes
- */
-
-ACPI_STATUS
-AcpiAmlExecCreateField (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlExecReconfiguration (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlExecFatal (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlExecIndex (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-ACPI_STATUS
-AcpiAmlExecMatch (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-ACPI_STATUS
-AcpiAmlExecCreateMutex (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlExecCreateProcessor (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_HANDLE             ProcessorNTE);
-
-ACPI_STATUS
-AcpiAmlExecCreatePowerResource (
-    ACPI_PARSE_OBJECT       *Op,
-    ACPI_HANDLE             ProcessorNTE);
-
-ACPI_STATUS
-AcpiAmlExecCreateRegion (
-    UINT8                   *AmlPtr,
-    UINT32                  AcpiAmlLength,
-    UINT32                  RegionSpace,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlExecCreateEvent (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlExecCreateAlias (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlExecCreateMethod (
-    UINT8                   *AmlPtr,
-    UINT32                  AcpiAmlLength,
-    UINT32                  MethodFlags,
-    ACPI_HANDLE             Method);
+INT32
+DoPkg (
+    NsType              Type, 
+    OpMode              iLE);
 
 
-/*
- * amprep - ACPI AML (p-code) execution - prep utilities
- */
+INT32
+DoDefinitionBlock (
+    char                *name, 
+    UINT8               *addr, 
+    INT32               len,
+    LogHandle           iLstHandle, 
+    OSD_FILE            *fAsmF);
 
-ACPI_STATUS
-AcpiAmlPrepDefFieldValue (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_HANDLE             Region,
-    UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
-    UINT32                  FieldPosition,
-    UINT32                  FieldLength);
+void
+AmlMarkPackage (
+    OBJECT_DESCRIPTOR   *pOD);
 
-ACPI_STATUS
-AcpiAmlPrepBankFieldValue (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_HANDLE             Region,
-    ACPI_HANDLE             BankReg,
-    UINT32                  BankVal,
-    UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
-    UINT32                  FieldPosition,
-    UINT32                  FieldLength);
+void
+vAmlMarkObject (
+    OBJECT_DESCRIPTOR   *pOD);
 
-ACPI_STATUS
-AcpiAmlPrepIndexFieldValue (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_HANDLE             IndexReg,
-    ACPI_HANDLE             DataReg,
-    UINT8                   FieldFlags,
-    UINT8                   FieldAttribute,
-    UINT32                  FieldPosition,
-    UINT32                  FieldLength);
+void
+MarkObjectStack (
+    INT32               *piCount);
 
 
-/*
- * amsystem - Interface to OS services
- */
 
-UINT16
-AcpiAmlSystemThreadId (
+
+/* P-code execution Prototypes */
+
+INT32
+GetMethodDepth (void);
+
+INT32
+GetRvalue (
+    OBJECT_DESCRIPTOR   **StackPtr);
+
+INT32
+PrepDefFieldValue (
+    NsHandle            Region, 
+    UINT8               FldFlg, 
+    INT32               FldPos, 
+    INT32               FldLen);
+
+INT32
+PrepBankFieldValue (
+    NsHandle            Region, 
+    NsHandle            BankReg, 
+    UINT32              BankVal,
+    UINT8               FldFlg, 
+    INT32               FldPos, 
+    INT32               FldLen);
+
+INT32
+PrepIndexFieldValue(
+    NsHandle            IndexReg, 
+    NsHandle            DataReg,
+    UINT8               FldFlg, 
+    INT32               FldPos, 
+    INT32               FldLen);
+
+INT32
+PrepStack (
+    char                *Types);
+
+void
+AmlAppendOperandDiag(
+    char                *Name, 
+    INT32               Line, 
+    UINT16              OpCode, 
+    INT32               NOperands);
+
+INT32
+ExecStore (
+    OBJECT_DESCRIPTOR   *op1, 
+    OBJECT_DESCRIPTOR   *res);
+
+INT32
+ExecMonadic1 (
+    UINT16              op);
+
+INT32
+ExecMonadic2R (
+    UINT16              op);
+
+INT32
+ExecMonadic2 (
+    UINT16              op);
+
+INT32
+ExecDyadic1 (
+    UINT16              op);
+
+INT32
+ExecDyadic2R (
+    UINT16              op);
+
+INT32
+ExecDyadic2S (
+    UINT16              op);
+
+INT32
+ExecCreateField (
+    UINT16              op);
+
+INT32
+ExecFatal (void);
+
+INT32
+ExecIndex (void);
+
+INT32
+ExecMatch (void);
+
+INT32
+ExecDyadic2 (
+    UINT16              op);
+
+INT32
+AmlExec (
+    INT32               Offset, 
+    INT32               Len, 
+    OBJECT_DESCRIPTOR   **Params);
+
+void
+MarkMethodValues (
+    INT32               *Count);
+
+INT32
+IsMethodValue (
+    OBJECT_DESCRIPTOR   *pOD);
+
+
+/* I/O Prototypes */
+/* Prototypes */
+
+void
+ClearPkgStack (void);
+
+void
+SetPCodeInput (
+    UINT8               *Base, 
+    INT32               Len);
+
+void
+SetMethod (
+    void                *Object);
+
+INT32
+AmlPrepExec (
+    ptrdiff_t           Offset, 
+    INT32               Len);
+
+ACPI_OBJECT_HANDLE
+PCodeHandle (void);
+
+void
+GetCurrentLoc (
+    meth                *Method);
+
+void
+SetCurrentLoc (
+    meth                *Method);
+
+INT32
+DigitsNeeded (
+    INT32               val, 
+    INT32               base);
+
+void
+LineSet (
+    INT32               n, 
+    OpMode              LoadExecMode);
+
+void
+Indent (
+    INT32               n);
+
+INT32
+PushLen (
+    INT32               len, 
+    OpMode              LoadExecMode);
+
+INT32
+PushExecLen (
+    INT32               len);
+
+INT32
+PushExec (
+    UINT8               *Code, 
+    INT32               Len);
+
+INT32
+PopLen (
+    INT32               NoErrUnder, 
+    OpMode              LoadExecMode);
+
+INT32
+PopExecLen (void);
+
+INT32
+PopExec (void);
+
+INT32
+PkgNested (void);
+
+INT32
+avail (
+    size_t              n);
+
+INT32
+Peek (void);
+
+INT32
+GetPCodeByte (
+    ptrdiff_t           Offset);
+
+INT32
+PeekOp (void);
+
+size_t
+ConsumeAMLStreamBytes (
+    size_t              BytesToGet, 
+    UINT8               *AmlBuffer);
+
+void
+ConsumeAMLPackage (
+    OpMode              LoadExecMode);
+
+void
+DumpAMLBuffer (
+    size_t              Length);
+
+
+INT32
+DumpStackEntry (
+    OBJECT_DESCRIPTOR   *EntryDesc);
+
+void
+DumpStack (
+    OpMode              LoadExecMode, 
+    char                *pcIdent, 
+    INT32               NumLevels, 
+    char                *pcNote);
+        
+INT32
+PushIfExec (
+    OpMode              LoadExecMode);
+
+INT32
+IsInPCodeBlock (
+    UINT8               *Where);
+
+void
+DeleteObject (
+    OBJECT_DESCRIPTOR   **ppOD);
+
+
+/* OS interfaces */
+
+
+void
+DoSuspend(
+    UINT32              Time);
+
+INT32
+DoNotifyOp (
+    OBJECT_DESCRIPTOR   *val, 
+    OBJECT_DESCRIPTOR   *obj);
+
+INT32
+AcquireOpRqst(
+    OBJECT_DESCRIPTOR   *Time, 
+    OBJECT_DESCRIPTOR   *sOb);
+
+INT32
+WaitOpRqst(
+    OBJECT_DESCRIPTOR   *Time, 
+    OBJECT_DESCRIPTOR   *sOb);
+
+INT32
+ReleaseOpRqst(
+    OBJECT_DESCRIPTOR   *sOb);
+
+INT32
+ResetOpRqst(
+    OBJECT_DESCRIPTOR   *sOb);
+
+INT32
+SignalOpRqst(
+    OBJECT_DESCRIPTOR   *sOb);
+
+INT32
+GetGlobalLock(void);
+
+void
+ReleaseGlobalLock(void);
+
+
+
+INT32 
+DoByteConst (
+    OpMode              LoadExecMode, 
+    INT32               LeadSpace);
+
+INT32 
+DoWordConst (
+    OpMode              LoadExecMode, 
+    INT32               LeadSpace);
+
+INT32 
+DoDWordConst (
+    OpMode              LoadExecMode, 
+    INT32               LeadSpace);
+
+INT32 
+DoName (
+    NsType              DataType, 
+    OpMode              LoadExecMode);
+
+
+INT32 
+DoPkgLength (
+    INT32               DoPush, 
+    OpMode              LoadExecMode);
+
+INT32 
+DoFieldFlag (
+    OpMode              LoadExecMode);
+
+INT32 
+GetEncodedPkgLen (
+    INT32               LastPkgLen);
+
+INT32 
+DoType2OpCode (
+    OpMode              LoadExecMode);
+
+
+INT32 
+DoSuperName (
+    OpMode              LoadExecMode, 
+    NsType              Define);
+
+INT32 
+DoRefOpCode (
+    OpMode              LoadExecMode);
+
+INT32 
+DoLiteral (
+    OpMode              LoadExecMode);
+
+char *
+LastFullyQualifiedName (
     void);
 
-ACPI_STATUS
-AcpiAmlSystemDoNotifyOp (
-    ACPI_OPERAND_OBJECT     *Value,
-    ACPI_OPERAND_OBJECT     *ObjDesc);
+INT32 
+DoDataTerm (
+    OpMode              LoadExecMode);
+
+INT32 
+DoType1OpCode (
+    OpMode              LoadExecMode);
+
+INT32
+SetNamedFieldValue (
+    NsHandle            NamedField, 
+    UINT32              Value);
+
+INT32
+GetNamedFieldValue (
+    NsHandle            NamedField, 
+    UINT32              *Value);
+
+INT32
+SetMethodValue (
+    INT32               Index, 
+    OBJECT_DESCRIPTOR   *ObjDesc, 
+    OBJECT_DESCRIPTOR   *ObjDesc2);
+
+INT32
+GetMethodValue (
+    INT32               Index, 
+    OBJECT_DESCRIPTOR   *ObjDesc);
+
+NsType
+GetMethodValTyp (
+    INT32               Index);
 
 void
-AcpiAmlSystemDoSuspend(
-    UINT32                  Time);
+AmlAppendBlockOwner (
+    void                *Owner);
 
-void
-AcpiAmlSystemDoStall (
-    UINT32                  Time);
+void 
+ShowHexValue (
+    INT32               ByteCount, 
+    UINT8               *AmlPtr, 
+    OpMode              LoadExecMode, 
+    INT32               LeadSpace);
 
-ACPI_STATUS
-AcpiAmlSystemAcquireMutex(
-    ACPI_OPERAND_OBJECT     *Time,
-    ACPI_OPERAND_OBJECT     *ObjDesc);
+UINT8 *
+ConsumeAMLByte (
+    size_t              Bytes);
 
-ACPI_STATUS
-AcpiAmlSystemReleaseMutex(
-    ACPI_OPERAND_OBJECT     *ObjDesc);
 
-ACPI_STATUS
-AcpiAmlSystemSignalEvent(
-    ACPI_OPERAND_OBJECT     *ObjDesc);
 
-ACPI_STATUS
-AcpiAmlSystemWaitEvent(
-    ACPI_OPERAND_OBJECT     *Time,
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-ACPI_STATUS
-AcpiAmlSystemResetEvent(
-    ACPI_OPERAND_OBJECT     *ObjDesc);
-
-ACPI_STATUS
-AcpiAmlSystemWaitSemaphore (
-    ACPI_HANDLE             Semaphore,
-    UINT32                  Timeout);
-
-
-/*
- * ammonadic - ACPI AML (p-code) execution, monadic operators
- */
-
-ACPI_STATUS
-AcpiAmlExecMonadic1 (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlExecMonadic2 (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-ACPI_STATUS
-AcpiAmlExecMonadic2R (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-
-/*
- * amdyadic - ACPI AML (p-code) execution, dyadic operators
- */
-
-ACPI_STATUS
-AcpiAmlExecDyadic1 (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlExecDyadic2 (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-ACPI_STATUS
-AcpiAmlExecDyadic2R (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-ACPI_STATUS
-AcpiAmlExecDyadic2S (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
-
-
-/*
- * amresolv  - Object resolution and get value functions
- */
-
-ACPI_STATUS
-AcpiAmlResolveToValue (
-    ACPI_OPERAND_OBJECT     **StackPtr,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlResolveNodeToValue (
-    ACPI_NAMESPACE_NODE     **StackPtr);
-
-ACPI_STATUS
-AcpiAmlResolveObjectToValue (
-    ACPI_OPERAND_OBJECT     **StackPtr,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlGetFieldUnitValue (
-    ACPI_OPERAND_OBJECT     *FieldDesc,
-    ACPI_OPERAND_OBJECT     *ResultDesc);
-
-
-/*
- * amdump - Scanner debug output routines
- */
-
-void
-AcpiAmlShowHexValue (
-    UINT32                  ByteCount,
-    UINT8                   *AmlPtr,
-    UINT32                  LeadSpace);
-
-
-ACPI_STATUS
-AcpiAmlDumpOperand (
-    ACPI_OPERAND_OBJECT     *EntryDesc);
-
-void
-AcpiAmlDumpOperands (
-    ACPI_OPERAND_OBJECT     **Operands,
-    OPERATING_MODE          InterpreterMode,
-    NATIVE_CHAR             *Ident,
-    UINT32                  NumLevels,
-    NATIVE_CHAR             *Note,
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber);
-
-void
-AcpiAmlDumpObjectDescriptor (
-    ACPI_OPERAND_OBJECT     *Object,
-    UINT32                  Flags);
-
-
-void
-AcpiAmlDumpNode (
-    ACPI_NAMESPACE_NODE     *Node,
-    UINT32                  Flags);
-
-
-/*
- * amnames - interpreter/scanner name load/execute
- */
-
-NATIVE_CHAR *
-AcpiAmlAllocateNameString (
-    UINT32                  PrefixCount,
-    UINT32                  NumNameSegs);
-
-UINT32
-AcpiAmlGoodChar (
-    UINT32                  Character);
-
-ACPI_STATUS
-AcpiAmlExecNameSegment (
-    UINT8                   **InAmlAddress,
-    NATIVE_CHAR             *NameString);
-
-ACPI_STATUS
-AcpiAmlGetNameString (
-    OBJECT_TYPE_INTERNAL    DataType,
-    UINT8                   *InAmlAddress,
-    NATIVE_CHAR             **OutNameString,
-    UINT32                  *OutNameLength);
-
-ACPI_STATUS
-AcpiAmlDoName (
-    ACPI_OBJECT_TYPE        DataType,
-    OPERATING_MODE          LoadExecMode);
-
-
-/*
- * amstore - Object store support
- */
-
-ACPI_STATUS
-AcpiAmlExecStore (
-    ACPI_OPERAND_OBJECT     *ValDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlStoreObjectToObject (
-    ACPI_OPERAND_OBJECT     *ValDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiAmlStoreObjectToNode (
-    ACPI_OPERAND_OBJECT     *ValDesc,
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_WALK_STATE         *WalkState);
-
-
-/*
- * amutils - interpreter/scanner utilities
- */
-
-void
-AcpiAmlEnterInterpreter (
-    void);
-
-void
-AcpiAmlExitInterpreter (
-    void);
-
-BOOLEAN
-AcpiAmlValidateObjectType (
-    ACPI_OBJECT_TYPE        Type);
-
-BOOLEAN
-AcpiAmlAcquireGlobalLock (
-    UINT32                  Rule);
-
-ACPI_STATUS
-AcpiAmlReleaseGlobalLock (
-    BOOLEAN                 Locked);
-
-UINT32
-AcpiAmlBufSeq (
-    void);
-
-UINT32
-AcpiAmlDigitsNeeded (
-    UINT32                  Value,
-    UINT32                  Base);
-
-ACPI_STATUS
-AcpiAmlEisaIdToString (
-    UINT32                  NumericId,
-    NATIVE_CHAR             *OutString);
-
-ACPI_STATUS
-AcpiAmlBuildCopyInternalPackageObject (
-    ACPI_OPERAND_OBJECT     *SourceObj,
-    ACPI_OPERAND_OBJECT     *DestObj,
-    ACPI_WALK_STATE         *WalkState);
-
-
-/*
- * amregion - default OpRegion handlers
- */
-
-ACPI_STATUS
-AcpiAmlSystemMemorySpaceHandler (
-    UINT32                  Function,
-    UINT32                  Address,
-    UINT32                  BitWidth,
-    UINT32                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext);
-
-ACPI_STATUS
-AcpiAmlSystemIoSpaceHandler (
-    UINT32                  Function,
-    UINT32                  Address,
-    UINT32                  BitWidth,
-    UINT32                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext);
-
-ACPI_STATUS
-AcpiAmlPciConfigSpaceHandler (
-    UINT32                  Function,
-    UINT32                  Address,
-    UINT32                  BitWidth,
-    UINT32                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext);
-
-ACPI_STATUS
-AcpiAmlEmbeddedControllerSpaceHandler (
-    UINT32                  Function,
-    UINT32                  Address,
-    UINT32                  BitWidth,
-    UINT32                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext);
-
-ACPI_STATUS
-AcpiAmlSmBusSpaceHandler (
-    UINT32                  Function,
-    UINT32                  Address,
-    UINT32                  BitWidth,
-    UINT32                  *Value,
-    void                    *HandlerContext,
-    void                    *RegionContext);
-
-
-#endif /* __INTERP_H__ */
+#endif /* __AML_H__ */
