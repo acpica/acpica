@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  ******************************************************************************/
 
@@ -873,7 +873,7 @@ AcpiRsAddress32Stream (
     /*
      * Set the address translation offset
      */
-    ACPI_MOVE_32_TO_32 (Buffer, 
+    ACPI_MOVE_32_TO_32 (Buffer,
         &LinkedList->Data.Address32.AddressTranslationOffset);
     Buffer += 4;
 
@@ -1322,7 +1322,7 @@ AcpiRsAddress64Stream (
         /*
          * Copy the string
          */
-        ACPI_STRCPY (TempPointer, 
+        ACPI_STRCPY (TempPointer,
             LinkedList->Data.Address64.ResourceSource.StringPtr);
 
         /*

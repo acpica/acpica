@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -161,7 +161,7 @@ AcpiRsGetPrtMethodData (
     /*
      * Execute the method, no parameters
      */
-    Status = AcpiUtEvaluateObject (Handle, "_PRT", ACPI_BTYPE_PACKAGE, 
+    Status = AcpiUtEvaluateObject (Handle, "_PRT", ACPI_BTYPE_PACKAGE,
                 &ObjDesc);
     if (ACPI_FAILURE (Status))
     {

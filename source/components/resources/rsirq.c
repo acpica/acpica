@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  ******************************************************************************/
 
@@ -497,7 +497,7 @@ AcpiRsExtendedIrqResource (
      * we add 1 to the length.
      */
     if (*BytesConsumed >
-        ((ACPI_SIZE) OutputStruct->Data.ExtendedIrq.NumberOfInterrupts * 4) + 
+        ((ACPI_SIZE) OutputStruct->Data.ExtendedIrq.NumberOfInterrupts * 4) +
         (5 + 1))
     {
         /* Dereference the Index */

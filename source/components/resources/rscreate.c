@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -397,7 +397,7 @@ AcpiRsCreatePciRoutingTable (
 
             /*
              * Add to the Length field the length of the string
-             * (add 1 for terminator) 
+             * (add 1 for terminator)
              */
             UserPrt->Length += ObjDesc->String.Length + 1;
             break;
