@@ -165,7 +165,7 @@ EvFindOnePciRootBus (
      * We are looking for all valid _HID objects.
      */
 
-    if ((Entry->Name != *(UINT32 *) METHOD_NAME__HID) ||
+    if (STRNCMP (&Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
         (!ObjDesc))
     {
         return AE_OK;

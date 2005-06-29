@@ -155,47 +155,38 @@ UINT32
 EvSciHandler (void *Context)
 {
     UINT32 InterruptHandled = INTERRUPT_NOT_HANDLED;
-       
-    
-    /* 
-     * CHANGE: if multiple SCI's happen concurrently and only one of them
-     *  is handled, what should be returned?
-     */
-    
 
-    DEBUG_PRINT (TRACE_INTERRUPTS, ("Entered SCI handler\n"));
-
-    if (! READ_ACPI_REGISTER (SCI_EN))
-    {
-        DEBUG_PRINT (TRACE_INTERRUPTS, ("Not an SCI\n"));
-        return INTERRUPT_NOT_HANDLED;
-    }   
-    
-    /* Determine if the SCI was a fixed event ot a GPE. */
-
-    DEBUG_PRINT (TRACE_INTERRUPTS, ("Got an SCI\n"));
-
+    FUNCTION_TRACE("EvSciHandler");
 
     /*
+     * ACPI Enabled?
+     * -------------
+     * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
+     * required to treat the SCI interrupt as sharable, level, active low.
+     */
+    if (!HwRegisterIO (ACPI_READ, MTX_DO_NOT_LOCK, (INT32)SCI_EN))
+    {
+        REPORT_ERROR ("Received and SCI but ACPI is not enabled.");
+        return_VALUE (INTERRUPT_NOT_HANDLED);
+    }
+
+    /*
+     * Fixed Events:
+     * -------------
      * Check for and dispatch any Fixed Events that have occurred
      */
-
-    InterruptHandled &= EvFixedEventDetect ();
-
+    InterruptHandled |= EvFixedEventDetect ();
 
     /*
+     * GPEs:
+     * -----
      * Check for and dispatch any GPEs that have occurred
      */
+    InterruptHandled |= EvGpeDetect ();
 
-    InterruptHandled &= EvGpeDetect ();
-
- 
-    return InterruptHandled;
+    return_VALUE (InterruptHandled);
 }
 
-/* TBD: is this needed?
-#pragma check_stack ()
-*/
 
 /******************************************************************************
  *
@@ -305,13 +296,11 @@ EvRemoveSciHandler (void)
 
 INT32 
 EvSciCount (
-    ACPI_EVENT_TYPE         Event)
+    UINT32                  Event)
 {
     INT32                   Count;
 
-
     FUNCTION_TRACE ("EvSciCount");
-
 
     /* 
      * Elements correspond to counts for TMR, NOT_USED, GBL, 
@@ -381,21 +370,21 @@ EvRestoreAcpiState (void)
 
         /* Now restore the GPEs */
         
-        for (Index = 0; Index < Gbl_FACP->Gpe0BlkLen / 2; Index++)
+        for (Index = 0; Index < DIV_2 (Gbl_FACP->Gpe0BlkLen); Index++)
         {
-            if (OsdIn8 ((Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2)) != Gbl_Gpe0EnableRegisterSave[Index])
+            if (OsdIn8 (Gbl_FACP->Gpe0Blk + DIV_2 (Gbl_FACP->Gpe0BlkLen)) != Gbl_Gpe0EnableRegisterSave[Index])
             {
-                OsdOut8 ((Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2), Gbl_Gpe0EnableRegisterSave[Index]);
+                OsdOut8 ((Gbl_FACP->Gpe0Blk + DIV_2 (Gbl_FACP->Gpe0BlkLen)), Gbl_Gpe0EnableRegisterSave[Index]);
             }
         }
 
         if (Gbl_FACP->Gpe1Blk && Gbl_FACP->Gpe1BlkLen)
         {
-            for (Index = 0; Index < Gbl_FACP->Gpe1BlkLen / 2; Index++)
+            for (Index = 0; Index < DIV_2 (Gbl_FACP->Gpe1BlkLen); Index++)
             {
-                if (OsdIn8 ((Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2)) != Gbl_Gpe1EnableRegisterSave[Index])
+                if (OsdIn8 (Gbl_FACP->Gpe1Blk + DIV_2 (Gbl_FACP->Gpe1BlkLen)) != Gbl_Gpe1EnableRegisterSave[Index])
                 {
-                    OsdOut8 ((Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2), Gbl_Gpe1EnableRegisterSave[Index]);
+                    OsdOut8 ((Gbl_FACP->Gpe1Blk + DIV_2 (Gbl_FACP->Gpe1BlkLen)), Gbl_Gpe1EnableRegisterSave[Index]);
                 }
             }
         }
@@ -431,6 +420,7 @@ EvTerminate (void)
 
 
     /* Free global tables, etc. */
+
 
     if (Gbl_GpeRegisters)
     {
