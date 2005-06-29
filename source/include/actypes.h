@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.150 $
+ *       $Revision: 1.151 $
  *
  *****************************************************************************/
 
@@ -691,7 +691,7 @@ void (*NOTIFY_HANDLER) (
 typedef
 ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
     UINT32                      Function,
-    ACPI_INTEGER                Address,
+    ACPI_PHYSICAL_ADDRESS       Address,
     UINT32                      BitWidth,
     UINT32                      *Value,
     void                        *HandlerContext,
