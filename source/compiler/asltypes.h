@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.27 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -277,12 +277,13 @@ typedef enum
     ASL_FILE_LISTING_OUTPUT,
     ASL_FILE_HEX_OUTPUT,
     ASL_FILE_NAMESPACE_OUTPUT,
-    ASL_FILE_DEBUG_OUTPUT
+    ASL_FILE_DEBUG_OUTPUT,
+    ASL_FILE_ASM_SOURCE_OUTPUT
 
 } ASL_FILE_TYPES;
 
 
-#define ASL_MAX_FILE            8
+#define ASL_MAX_FILE            9
 #define ASL_NUM_FILES           (ASL_MAX_FILE + 1)
 
 
