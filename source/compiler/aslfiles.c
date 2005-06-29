@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.1 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -140,7 +140,8 @@ _FlOpenIncludeFile (
 
     if (!Node)
     {
-        AslErrorMsg (ASL_ERROR_INCLUDE_FILE_OPEN, 0, "Null parse node");
+        AslCommonError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN,
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, "Null parse node");
         return;
     }
 
@@ -150,7 +151,7 @@ _FlOpenIncludeFile (
     IncFile = fopen (Node->Value.String, "r");
     if (!IncFile)
     {
-        AslErrorMsg (ASL_ERROR_INCLUDE_FILE_OPEN, Node->LineNumber, Node->Value.String);
+        AslError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN, Node, Node->Value.String);
         return;
     }
 
@@ -223,7 +224,7 @@ FlOpenInputFile (
     AslCompilerin = Gbl_AslInputFile;
     if (!Gbl_AslInputFile)
     {
-        AslErrorMsg (ASL_ERROR_INPUT_FILE_OPEN, 0, InputFilename);
+        AslCommonError (ASL_ERROR, ASL_MSG_INPUT_FILE_OPEN, 0, 0, InputFilename);
         return (AE_ERROR);
     }
 
@@ -258,7 +259,7 @@ FlOpenAmlOutputFile (
         Gbl_OutputFilename = FlGenerateFilename (InputFilename, ".aml");
         if (!Gbl_OutputFilename)
         {
-            AslError (ASL_ERROR_OUTPUT_FILENAME, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME, 0, 0, NULL);
             return (AE_ERROR);
         }
     }
@@ -268,7 +269,7 @@ FlOpenAmlOutputFile (
 	Gbl_OutputAmlFile = fopen (Gbl_OutputFilename, "w+b");
     if (!Gbl_OutputAmlFile)
     {
-        AslError (ASL_ERROR_OUTPUT_FILE_OPEN, 0);
+        AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME, 0, 0, Gbl_OutputFilename);
         return (AE_ERROR);
     }
 
@@ -296,12 +297,12 @@ FlOpenMiscOutputFiles (
 
     /* Create/Open a combined source output file if asked */
 
-    if (Gbl_SourceOutputFlag)
+    if (Gbl_SourceOutputFlag || Gbl_ListingFlag)
     {
         Gbl_SourceOutputFilename = FlGenerateFilename (InputFilename, ".src");
         if (!Gbl_SourceOutputFilename)
         {
-            AslError (ASL_ERROR_LISTING_FILENAME, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL);
             return (AE_ERROR);
         }
 
@@ -310,9 +311,10 @@ FlOpenMiscOutputFiles (
 	    Gbl_SourceOutputFile = fopen (Gbl_SourceOutputFilename, "w+");
         if (!Gbl_SourceOutputFile)
         {
-            AslError (ASL_ERROR_LISTING_FILE_OPEN, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, Gbl_SourceOutputFilename);
             return (AE_ERROR);
         }
+
     }
 
     /* Create/Open a listing output file if asked */
@@ -322,7 +324,7 @@ FlOpenMiscOutputFiles (
         Gbl_ListingFilename = FlGenerateFilename (InputFilename, ".lst");
         if (!Gbl_ListingFilename)
         {
-            AslError (ASL_ERROR_LISTING_FILENAME, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL);
             return (AE_ERROR);
         }
 
@@ -331,9 +333,12 @@ FlOpenMiscOutputFiles (
 	    Gbl_ListingFile = fopen (Gbl_ListingFilename, "w+");
         if (!Gbl_ListingFile)
         {
-            AslError (ASL_ERROR_LISTING_FILE_OPEN, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, Gbl_ListingFilename);
             return (AE_ERROR);
         }
+
+        AslCompilerSignon (Gbl_ListingFile);
+        AslCompilerFileHeader (Gbl_ListingFile);
     }
 
 
@@ -344,7 +349,7 @@ FlOpenMiscOutputFiles (
         Gbl_HexFilename = FlGenerateFilename (InputFilename, ".hex");
         if (!Gbl_HexFilename)
         {
-            AslError (ASL_ERROR_LISTING_FILENAME, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL);
             return (AE_ERROR);
         }
 
@@ -353,9 +358,12 @@ FlOpenMiscOutputFiles (
 	    Gbl_HexFile = fopen (Gbl_HexFilename, "w+");
         if (!Gbl_HexFile)
         {
-            AslError (ASL_ERROR_LISTING_FILE_OPEN, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, Gbl_HexFilename);
             return (AE_ERROR);
         }
+
+        AslCompilerSignon (Gbl_HexFile);
+        AslCompilerFileHeader (Gbl_HexFile);
     }
 
 
@@ -366,7 +374,7 @@ FlOpenMiscOutputFiles (
         Gbl_NsFilename = FlGenerateFilename (InputFilename, ".nsp");
         if (!Gbl_NsFilename)
         {
-            AslError (ASL_ERROR_LISTING_FILENAME, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL);
             return (AE_ERROR);
         }
 
@@ -375,9 +383,12 @@ FlOpenMiscOutputFiles (
 	    Gbl_NsFile = fopen (Gbl_NsFilename, "w+");
         if (!Gbl_NsFile)
         {
-            AslError (ASL_ERROR_LISTING_FILE_OPEN, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, Gbl_NsFilename);
             return (AE_ERROR);
         }
+
+        AslCompilerSignon (Gbl_NsFile);
+        AslCompilerFileHeader (Gbl_NsFile);
     }
 
 
@@ -388,7 +399,7 @@ FlOpenMiscOutputFiles (
         Gbl_DebugFilename = FlGenerateFilename (InputFilename, ".txt");
         if (!Gbl_DebugFilename)
         {
-            AslError (ASL_ERROR_DEBUG_FILENAME, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME, 0, 0, NULL);
             return (AE_ERROR);
         }
 
@@ -397,15 +408,17 @@ FlOpenMiscOutputFiles (
 	    Gbl_DebugFile = freopen (Gbl_DebugFilename, "w+", stderr);
         if (!Gbl_DebugFile)
         {
-            AslError (ASL_ERROR_DEBUG_FILE_OPEN, 0);
+            AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME, 0, 0, Gbl_DebugFilename);
             return (AE_ERROR);
         }
+
+        AslCompilerSignon (Gbl_DebugFile);
+        AslCompilerFileHeader (Gbl_DebugFile);
     }
 
 
     return (AE_OK);
 }
-
 
 
 /*******************************************************************************
@@ -421,45 +434,76 @@ FlOpenMiscOutputFiles (
  ******************************************************************************/
 
 void
-FlDoHexOutput (void)
+FlCloseListingFile (void)
 {
-    UINT32                  j;
-    UINT8                   FileByte;
-    UINT8                   Buffer[4];
+
+    if (!Gbl_ListingFlag)
+    {
+        return;
+    }
+
+    LsFlushListingBuffer ();
+
+    fprintf (Gbl_ListingFile, "\n\nSummary of errors and warnings\n\n");
+    AePrintErrorLog (Gbl_ListingFile);
+    fprintf (Gbl_ListingFile, "\n\n");
+
+    fclose (Gbl_ListingFile);
+    
+    if (!Gbl_SourceOutputFlag)
+    {
+        fclose (Gbl_SourceOutputFile);
+        unlink (Gbl_SourceOutputFilename);
+    }
+
+}
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
 
+void
+FlCloseSourceOutputFile (void)
+{
+
+    if (!Gbl_SourceOutputFlag)
+    {
+        return;
+    }
+
+    fclose (Gbl_SourceOutputFile);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+FlCloseHexOutputFile (void)
+{
     if (!Gbl_HexOutputFlag)
     {
         return;
     }
 
-
-    /* Start at the beginning of the AML file */
-
-    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
-
-    j = 0;
-    while (fread (&FileByte, 1, 1, Gbl_OutputAmlFile))
-    {
-        /*
-         * Convert each AML byte to hex
-         */
-
-        UtConvertByteToHex (FileByte, Buffer);
-
-        fwrite (Buffer, 4, 1, Gbl_HexFile);
-        fwrite (", ",   2, 1, Gbl_HexFile);
-
-        /* An occasional linefeed improves readability */
-
-        j++;
-        if (j >= 12)
-        {
-            fwrite ("\n", 1, 1, Gbl_HexFile);
-            j = 0;
-        }
-    }
     fclose (Gbl_HexFile);
 }
 
