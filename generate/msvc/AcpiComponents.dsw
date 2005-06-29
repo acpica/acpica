@@ -15,7 +15,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "AcpiExec"=.\AcpiExec\AcpiExec.dsp - Package Owner=<4>
+Project: "AcpiExec"=.\AcpiExec.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -28,22 +28,6 @@ Package=<4>
 ###############################################################################
 
 Project: "Subsystem"=.\Subsystem.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-    begin source code control
-    "$/Acpi Components/Subsystem", CQBAAAAA
-    ..\..\Subsystem
-    end source code control
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "SubsystemRecursive"=.\SubsystemRecursive.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -63,10 +47,6 @@ Project: "app"=..\..\Test\app\Wdm\app.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
-    begin source code control
-    "$/Acpi Components/test/app/wdm", GECAAAAA
-    ..\..\test\app\wdm
-    end source code control
 }}}
 
 Package=<4>
@@ -107,10 +87,6 @@ Global:
 
 Package=<5>
 {{{
-    begin source code control
-    "$/Acpi Components", XPBAAAAA
-    ..\..
-    end source code control
 }}}
 
 Package=<3>
