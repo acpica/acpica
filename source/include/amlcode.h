@@ -217,23 +217,28 @@
 #define AML_IndexFieldOp            0x5b86
 #define AML_BankFieldOp             0x5b87
 
+
 /* Comparison operation codes for MatchOp operator */
 
-typedef enum {
+typedef enum 
+{
     MATCH_MTR                   = 0,
     MATCH_MEQ                   = 1,
     MATCH_MLE                   = 2,
     MATCH_MLT                   = 3,
     MATCH_MGE                   = 4,
     MATCH_MGT                   = 5
-} MatchCompOp;
+
+} AML_MATCH_OPERATOR;
+
 
 /* Field Access Types */
 
 #define ACCESS_TYPE_MASK        0x0f
 #define ACCESS_TYPE_SHIFT       0
 
-typedef enum {
+typedef enum 
+{
     ACCESS_AnyAcc               = 0,
     ACCESS_ByteAcc              = 1,
     ACCESS_WordAcc              = 2,
@@ -241,39 +246,48 @@ typedef enum {
     ACCESS_BlockAcc             = 4,
     ACCESS_SMBSendRecvAcc       = 5,
     ACCESS_SMBQuickAcc          = 6
-} AccessType;
+
+} AML_ACCESS_TYPE;
+
 
 /* Field Lock Rules */
 
 #define LOCK_RULE_MASK          0x10
 #define LOCK_RULE_SHIFT         4
 
-typedef enum {
+typedef enum 
+{
     GLOCK_NeverLock             = 0,
     GLOCK_AlwaysLock            = 1
-} LockRule;
+
+} AML_LOCK_RULE;
+
 
 /* Field Update Rules */
 
 #define UPDATE_RULE_MASK        0x060
 #define UPDATE_RULE_SHIFT       5
 
-typedef enum {
+typedef enum 
+{
     UPDATE_Preserve             = 0,
     UPDATE_WriteAsOnes          = 1,
     UPDATE_WriteAsZeros         = 2
-} UpdateRule;
+
+} AML_UPDATE_RULE;
 
 
 /* Region Space ID values */
 
-typedef enum {
+typedef enum 
+{
     REGION_SystemMemory         = 0,
     REGION_SystemIO             = 1,
     REGION_PCIConfig            = 2,
     REGION_EmbeddedControl      = 3,
     REGION_SMBus                = 4
-} RegionSpace;
+
+} AML_REGION_SPACE;
 
 
 /* bit fields in MethodFlags byte */
@@ -295,10 +309,6 @@ extern char         *UpdateRules[];
 
 
 #else
-
-#ifndef __GNUC__
-#pragma message ("AML Globals defined in this module.")
-#endif
 
 /* Data used in keeping track of fields */
 
@@ -357,14 +367,15 @@ char *UpdateRules[] =
 };
 
 
+
 /* primary decoder */
 
 UINT8 Aml[256] = 
 {
-    /*      x0                      x1                      x2                      x3          */
-    /*      x4                      x5                      x6                      x7          */
-    /*      x8                      x9                      xa                      xb          */
-    /*      xc                      xd                      xe                      xf          */
+/*          x0                      x1                      x2                      x3          */
+/*          x4                      x5                      x6                      x7          */
+/*          x8                      x9                      xa                      xb          */
+/*          xc                      xd                      xe                      xf          */
 /* 0x */    AML_ZeroOp,             AML_OneOp,              AML_UNASSIGNED,         AML_UNASSIGNED,
             AML_UNASSIGNED,         AML_UNASSIGNED,         AML_AliasOp,            AML_UNASSIGNED,
             AML_NameOp,             AML_UNASSIGNED,         AML_ByteOp,             AML_WordOp,
@@ -432,14 +443,15 @@ UINT8 Aml[256] =
 };
 
 
+
 /* prefixed decoder */
 
 UINT16 Pfx[256] = 
 {
-    /*      x0                      x1                      x2                      x3          */
-    /*      x4                      x5                      x6                      x7          */
-    /*      x8                      x9                      xa                      xb          */
-    /*      xc                      xd                      xe                      xf          */
+/*          x0                      x1                      x2                      x3          */
+/*          x4                      x5                      x6                      x7          */
+/*          x8                      x9                      xa                      xb          */
+/*          xc                      xd                      xe                      xf          */
 /* 0x */    AML_UNASSIGNED,         AML_MutexOp,            AML_EventOp,           AML_UNASSIGNED,
             AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
             AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
@@ -507,14 +519,15 @@ UINT16 Pfx[256] =
 };
 
 
+
 /* primary op names */
 
 char *ShortOps[256] = 
 {
-    /*      x0                  x1                  x2                  x3          */
-    /*      x4                  x5                  x6                  x7          */
-    /*      x8                  x9                  xa                  xb          */
-    /*      xc                  xd                  xe                  xf          */
+/*          x0                  x1                  x2                  x3          */
+/*          x4                  x5                  x6                  x7          */
+/*          x8                  x9                  xa                  xb          */
+/*          xc                  xd                  xe                  xf          */
 /* 0x */    "ZeroOp",           "OneOp",            "*ERROR*",          "*ERROR*",
             "*ERROR*",          "*ERROR*",          "AliasOp",          "*ERROR*",
             "NameOp",           "*ERROR*",          "ByteOp",           "WordOp",
@@ -582,14 +595,15 @@ char *ShortOps[256] =
 };
 
 
+
 /* prefixed op names */
 
 char *LongOps[256] = 
 {
-    /*      x0                  x1                      x2                      x3          */
-    /*      x4                  x5                      x6                      x7          */
-    /*      x8                  x9                      xa                      xb          */
-    /*      xc                  xd                      xe                      xf          */
+/*          x0                  x1                  x2                  x3          */
+/*          x4                  x5                  x6                  x7          */
+/*          x8                  x9                  xa                  xb          */
+/*          xc                  xd                  xe                  xf          */
 /* 0x */    "*ERROR*",          "MutexOp",          "EventOp",          "*ERROR*",
             "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
             "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
