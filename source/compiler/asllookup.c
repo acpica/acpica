@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -662,6 +662,12 @@ LkNamespaceLocateBegin (
             sprintf (MsgBuffer, "%s is a %s", Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
 
             AslError (ASL_ERROR, ASL_MSG_NOT_METHOD, Op, MsgBuffer);
+            return (AE_OK);
+        }
+
+        if (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_CONDREFOF)
+        {
+            Op->Asl.Node = Node;
             return (AE_OK);
         }
 
