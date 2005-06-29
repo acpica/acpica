@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -794,7 +794,9 @@ OpnDoLoadTable (
         OpcGenerateAmlOpcode (Next);
     }
 
-#if 0 /* TBD: NOT IMPLEMENTED */
+#ifdef ASL_FUTURE_IMPLEMENTATION
+    
+    /* TBD: NOT IMPLEMENTED */
     /* Fifth child is the [optional] ParameterPathString */
     /* Sixth child is the [optional] ParameterData */
 

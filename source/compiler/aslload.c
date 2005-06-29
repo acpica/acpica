@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -131,7 +131,7 @@
  *
  * FUNCTION:    LdLoadNamespace
  *
- * PARAMETERS:  None
+ * PARAMETERS:  RootOp      - Root of the parse tree
  *
  * RETURN:      Status
  *
@@ -270,7 +270,7 @@ LdLoadFieldElements (
  *
  * FUNCTION:    LdLoadResourceElements
  *
- * PARAMETERS:  Op          - Parent node (Resource Descriptor)
+ * PARAMETERS:  Op              - Parent node (Resource Descriptor)
  *              WalkState       - Current walk state
  *
  * RETURN:      Status
@@ -532,9 +532,8 @@ LdNamespace1Begin (
                 Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
             AslError (ASL_REMARK, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);
 
-            /*
-             * Switch the type to scope, open the new scope
-             */
+            /* Switch the type to scope, open the new scope */
+            
             Node->Type = ACPI_TYPE_LOCAL_SCOPE;
             Status = AcpiDsScopeStackPush (Node, ACPI_TYPE_LOCAL_SCOPE,
                         WalkState);
@@ -546,9 +545,8 @@ LdNamespace1Begin (
 
         default:
 
-            /*
-             * All other types are an error
-             */
+            /* All other types are an error */
+            
             sprintf (MsgBuffer, "%s [%s]", Op->Asl.ExternalName,
                 AcpiUtGetTypeName (Node->Type));
             AslError (ASL_ERROR, ASL_MSG_SCOPE_TYPE, Op, MsgBuffer);

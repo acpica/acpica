@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -150,6 +150,7 @@ UtDisplayConstantOpcodes (
 {
     UINT32              i;
 
+
     printf ("Constant expression opcode information\n\n");
 
     for (i = 0; i < sizeof (AcpiGbl_AmlOpInfo) / sizeof (ACPI_OPCODE_INFO); i++)
@@ -281,7 +282,7 @@ UtHexCharToValue (
  * FUNCTION:    UtConvertByteToHex
  *
  * PARAMETERS:  RawByte         - Binary data
- *              *Buffer         - Pointer to where the hex bytes will be stored
+ *              Buffer          - Pointer to where the hex bytes will be stored
  *
  * RETURN:      Ascii hex byte is stored in Buffer.
  *
@@ -309,7 +310,7 @@ UtConvertByteToHex (
  * FUNCTION:    UtConvertByteToAsmHex
  *
  * PARAMETERS:  RawByte         - Binary data
- *              *Buffer         - Pointer to where the hex bytes will be stored
+ *              Buffer          - Pointer to where the hex bytes will be stored
  *
  * RETURN:      Ascii hex byte is stored in Buffer.
  *
@@ -336,7 +337,8 @@ UtConvertByteToAsmHex (
  *
  * FUNCTION:    DbgPrint
  *
- * PARAMETERS:  Fmt             - Printf format string
+ * PARAMETERS:  Type            - Type of output
+ *              Fmt             - Printf format string
  *              ...             - variable printf list
  *
  * RETURN:      None
@@ -457,7 +459,7 @@ UtGetOpName (
  *
  * FUNCTION:    UtDisplaySummary
  *
- * PARAMETERS:  None
+ * PARAMETERS:  FileID          - ID of outpout file
  *
  * RETURN:      None
  *
@@ -692,7 +694,7 @@ UtPadNameWithUnderscores (
  * PARAMETERS:  Op              - Parent parse node
  *              Name            - Full ExternalName
  *
- * RETURN:      Sets the NameSeg field in parent node
+ * RETURN:      None; Sets the NameSeg field in parent node
  *
  * DESCRIPTION: Extract the last nameseg of the ExternalName and store it
  *              in the NameSeg field of the Op.
@@ -816,12 +818,15 @@ UtDoConstant (
 }
 
 
+/* TBD: use version in ACPI CA main code base? */
+
 /*******************************************************************************
  *
  * FUNCTION:    UtStrtoul64
  *
  * PARAMETERS:  String          - Null terminated string
- *              Terminater      - Where a pointer to the terminating byte is returned
+ *              Terminater      - Where a pointer to the terminating byte is 
+ *                                returned
  *              Base            - Radix of the string
  *
  * RETURN:      Converted value
@@ -829,8 +834,6 @@ UtDoConstant (
  * DESCRIPTION: Convert a string into an unsigned value.
  *
  ******************************************************************************/
-#define NEGATIVE    1
-#define POSITIVE    0
 
 ACPI_STATUS
 UtStrtoul64 (
@@ -862,9 +865,8 @@ UtStrtoul64 (
         return (AE_BAD_PARAMETER);
     }
 
-    /*
-     * skip over any white space in the buffer:
-     */
+    /* Skip over any white space in the buffer: */
+    
     while (isspace (*String) || *String == '\t')
     {
         ++String;
@@ -972,9 +974,8 @@ UtStrtoul64 (
     }
 
 
-    /*
-     * If a minus sign was present, then "the conversion is negated":
-     */
+    /* If a minus sign was present, then "the conversion is negated": */
+    
     if (Sign == NEGATIVE)
     {
         ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;

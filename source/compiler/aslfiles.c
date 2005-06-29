@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -214,7 +214,7 @@ FlFileError (
  *              Filename            - file pathname to open
  *              Mode                - Open mode for fopen
  *
- * RETURN:      File descriptor
+ * RETURN:      None
  *
  * DESCRIPTION: Open a file.
  *              NOTE: Aborts compiler on any error.
@@ -295,7 +295,7 @@ FlReadFile (
  *              Buffer              - Data to write
  *              Length              - Amount of data to write
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Write data to an open file.
  *              NOTE: Aborts compiler on any error.
@@ -365,7 +365,7 @@ FlPrintFile (
  * PARAMETERS:  FileId              - Index into file info array
  *              Offset              - Absolute byte offset in file
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Seek to absolute offset
  *              NOTE: Aborts compiler on any error.
@@ -395,7 +395,7 @@ FlSeekFile (
  *
  * PARAMETERS:  FileId              - Index into file info array
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Close an open file.  Aborts compiler on error
  *
@@ -504,72 +504,6 @@ FlOpenIncludeFile (
     AslPushInputFileStack (IncFile, Op->Asl.Value.String);
 }
 
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-/*******************************************************************************
- *
- * FUNCTION:    FlParseInputPathname
- *
- * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
- *                                    compiled
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Split the input path into a directory and filename part
- *              1) Directory part used to open include files
- *              2) Filename part used to generate output filenames
- *
- ******************************************************************************/
-
-ACPI_STATUS
-FlParseInputPathname (
-    char                    *InputFilename)
-{
-    char                    *Substring;
-
-
-    if (!InputFilename)
-    {
-        return (AE_OK);
-    }
-
-    /* Get the path to the input filename's directory */
-
-    Gbl_DirectoryPath = strdup (InputFilename);
-    if (!Gbl_DirectoryPath)
-    {
-        return (AE_NO_MEMORY);
-    }
-
-    Substring = strrchr (Gbl_DirectoryPath, '\\');
-    if (!Substring)
-    {
-        Substring = strrchr (Gbl_DirectoryPath, '/');
-        if (!Substring)
-        {
-            Substring = strrchr (Gbl_DirectoryPath, ':');
-        }
-    }
-
-    if (!Substring)
-    {
-        Gbl_DirectoryPath[0] = 0;
-        if (Gbl_UseDefaultAmlFilename)
-        {
-            Gbl_OutputFilenamePrefix = strdup (InputFilename);
-        }
-    }
-    else
-    {
-        if (Gbl_UseDefaultAmlFilename)
-        {
-            Gbl_OutputFilenamePrefix = strdup (Substring + 1);
-        }
-        *(Substring+1) = 0;
-    }
-
-    return (AE_OK);
-}
-#endif
 
 /*******************************************************************************
  *
@@ -590,7 +524,6 @@ ACPI_STATUS
 FlOpenInputFile (
     char                    *InputFilename)
 {
-
 
     /* Open the input ASL file, text mode */
 
@@ -849,5 +782,73 @@ FlOpenMiscOutputFiles (
 
     return (AE_OK);
 }
+
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+/*******************************************************************************
+ *
+ * FUNCTION:    FlParseInputPathname
+ *
+ * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
+ *                                    compiled
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Split the input path into a directory and filename part
+ *              1) Directory part used to open include files
+ *              2) Filename part used to generate output filenames
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+FlParseInputPathname (
+    char                    *InputFilename)
+{
+    char                    *Substring;
+
+
+    if (!InputFilename)
+    {
+        return (AE_OK);
+    }
+
+    /* Get the path to the input filename's directory */
+
+    Gbl_DirectoryPath = strdup (InputFilename);
+    if (!Gbl_DirectoryPath)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    Substring = strrchr (Gbl_DirectoryPath, '\\');
+    if (!Substring)
+    {
+        Substring = strrchr (Gbl_DirectoryPath, '/');
+        if (!Substring)
+        {
+            Substring = strrchr (Gbl_DirectoryPath, ':');
+        }
+    }
+
+    if (!Substring)
+    {
+        Gbl_DirectoryPath[0] = 0;
+        if (Gbl_UseDefaultAmlFilename)
+        {
+            Gbl_OutputFilenamePrefix = strdup (InputFilename);
+        }
+    }
+    else
+    {
+        if (Gbl_UseDefaultAmlFilename)
+        {
+            Gbl_OutputFilenamePrefix = strdup (Substring + 1);
+        }
+        *(Substring+1) = 0;
+    }
+
+    return (AE_OK);
+}
+#endif
 
 

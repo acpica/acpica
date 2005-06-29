@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,7 @@
  *
  * PARAMETERS:  InitializerOp     - Start of a subtree of init nodes
  *
- * RETURN:      Valid string length if a string node is found
+ * RETURN:      Valid string length if a string node is found (otherwise 0)
  *
  * DESCRIPTION: In a list of peer nodes, find the first one that contains a
  *              string and return the length of the string.
@@ -200,9 +200,8 @@ RsDoDwordIoDescriptor (
         (UINT16) (ASL_RESDESC_OFFSET (Das.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Das.ResourceType));
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -412,9 +411,8 @@ RsDoDwordMemoryDescriptor (
         (UINT16) (ASL_RESDESC_OFFSET (Das.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Das.ResourceType));
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -627,9 +625,8 @@ RsDoDwordSpaceDescriptor (
         (UINT16) (ASL_RESDESC_OFFSET (Das.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Das.ResourceType));
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -826,9 +823,9 @@ RsDoExtendedIoDescriptor (
     Descriptor->Eas.Length =
         (UINT16) (ASL_RESDESC_OFFSET (Eas.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Eas.ResourceType));
-    /*
-     * Process all child initialization nodes
-     */
+
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -988,9 +985,9 @@ RsDoExtendedMemoryDescriptor (
     Descriptor->Eas.Length =
         (UINT16) (ASL_RESDESC_OFFSET (Eas.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Eas.ResourceType));
-    /*
-     * Process all child initialization nodes
-     */
+    
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -1157,9 +1154,9 @@ RsDoExtendedSpaceDescriptor (
     Descriptor->Eas.Length =
         (UINT16) (ASL_RESDESC_OFFSET (Eas.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Eas.ResourceType));
-    /*
-     * Process all child initialization nodes
-     */
+    
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -1310,9 +1307,9 @@ RsDoQwordIoDescriptor (
     Descriptor->Qas.Length =
         (UINT16) (ASL_RESDESC_OFFSET (Qas.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Qas.ResourceType));
-    /*
-     * Process all child initialization nodes
-     */
+   
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -1512,9 +1509,9 @@ RsDoQwordMemoryDescriptor (
     Descriptor->Qas.Length =
         (UINT16) (ASL_RESDESC_OFFSET (Qas.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Qas.ResourceType));
-    /*
-     * Process all child initialization nodes
-     */
+    
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -1721,9 +1718,9 @@ RsDoQwordSpaceDescriptor (
     Descriptor->Qas.Length =
         (UINT16) (ASL_RESDESC_OFFSET (Qas.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Qas.ResourceType));
-    /*
-     * Process all child initialization nodes
-     */
+   
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -1915,9 +1912,8 @@ RsDoWordIoDescriptor (
         (UINT16) (ASL_RESDESC_OFFSET (Was.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Was.ResourceType));
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -2118,9 +2114,8 @@ RsDoWordBusNumberDescriptor (
         (UINT16) (ASL_RESDESC_OFFSET (Was.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Was.ResourceType));
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -2304,9 +2299,8 @@ RsDoWordSpaceDescriptor (
         (UINT16) (ASL_RESDESC_OFFSET (Was.OptionalFields[0]) -
                   ASL_RESDESC_OFFSET (Was.ResourceType));
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -2526,9 +2520,8 @@ RsDoInterruptDescriptor (
     Rover = ACPI_CAST_PTR (ASL_RESOURCE_DESC,
                 (&(Descriptor->Exx.InterruptNumber[0])));
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -2634,9 +2627,8 @@ RsDoInterruptDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    /*
-     * Add optional ResSourceIndex if present
-     */
+    /* Add optional ResSourceIndex if present */
+    
     if (HasResSourceIndex)
     {
         Rover->U8Item = ResSourceIndex;
@@ -2644,9 +2636,8 @@ RsDoInterruptDescriptor (
         Descriptor->Exx.Length += 1;
     }
 
-    /*
-     * Add optional ResSource string if present
-     */
+    /* Add optional ResSource string if present */
+    
     if (StringLength && ResSourceString)
     {
 
@@ -2707,9 +2698,8 @@ RsDoVendorLargeDescriptor (
     Descriptor->Lgv.DescriptorType  = ACPI_RDESC_TYPE_LARGE_VENDOR;
     Descriptor->Lgv.Length = (UINT16) i;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         Descriptor->Lgv.VendorDefined[i] =
@@ -2754,9 +2744,8 @@ RsDoGeneralRegisterDescriptor (
     Descriptor->Grg.DescriptorType  = ACPI_RDESC_TYPE_GENERAL_REGISTER;
     Descriptor->Grg.Length          = 12;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)

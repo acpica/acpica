@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -300,7 +300,7 @@ TrUpdateNode (
  *
  * PARAMETERS:  Flags               - Flags word to be decoded
  *
- * RETURN:      Name string
+ * RETURN:      Name string. Always returns a valid string pointer.
  *
  * DESCRIPTION: Decode a flags word
  *
@@ -377,7 +377,7 @@ TrGetNodeFlagName (
  * PARAMETERS:  Op                  - An existing parse node
  *              Flags               - New flags word
  *
- * RETURN:      The updated node
+ * RETURN:      The updated parser op
  *
  * DESCRIPTION: Set bits in the node flags word.  Will not clear bits, only set
  *
@@ -1001,9 +1001,8 @@ TrWalkParseTree (
         {
             if (!NodePreviouslyVisited)
             {
-                /*
-                 * Let the callback process the node.
-                 */
+                /* Let the callback process the node. */
+                
                 Status = DescendingCallback (Op, Level, Context);
                 if (ACPI_SUCCESS (Status))
                 {
@@ -1062,10 +1061,8 @@ TrWalkParseTree (
             if ((!Op->Asl.Child) ||
                 (NodePreviouslyVisited))
             {
-                /*
-                 * Let the callback process the node.
-                 *
-                 */
+                /* Let the callback process the node. */
+                
                 Status = AscendingCallback (Op, Level, Context);
                 if (ACPI_FAILURE (Status))
                 {
@@ -1124,9 +1121,8 @@ TrWalkParseTree (
             }
             else
             {
-                /*
-                 * Let the callback process the node.
-                 */
+                /* Let the callback process the node. */
+                
                 Status = DescendingCallback (Op, Level, Context);
                 if (ACPI_SUCCESS (Status))
                 {

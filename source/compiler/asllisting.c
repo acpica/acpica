@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -828,9 +828,8 @@ LsWriteSourceLines (
 
     LsFlushListingBuffer (FileId);
 
-    /*
-     * Read lines and write them as long as we are not caught up
-     */
+    /* Read lines and write them as long as we are not caught up */
+    
     if (Gbl_SourceLine < Gbl_CurrentLine)
     {
         /*
@@ -848,9 +847,8 @@ LsWriteSourceLines (
             FlPrintFile (FileId, "    /*\n");
         }
 
-        /*
-         * Write one line at a time until we have reached the target line #
-         */
+        /* Write one line at a time until we have reached the target line # */
+        
         while ((Gbl_SourceLine < Gbl_CurrentLine) &&
                 LsWriteOneSourceLine (FileId))
         { ; }
@@ -938,7 +936,6 @@ LsWriteNodeToListing (
         }
     }
 
-
     /* These cases do not have a corresponding AML opcode */
 
     switch (Op->Asl.ParseOpcode)
@@ -985,30 +982,26 @@ LsWriteNodeToListing (
 
     case PARSEOP_INCLUDE:
 
-        /*
-         * Flush everything up to and including the include source line
-         */
+        /* Flush everything up to and including the include source line */
+        
         LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber,
             FileId);
 
-        /*
-         * Create a new listing node and push it
-         */
+        /* Create a new listing node and push it */
+        
         LsPushNode (Op->Asl.Child->Asl.Value.String);
         return;
 
 
     case PARSEOP_INCLUDE_END:
 
-        /*
-         * Flush out the rest of the include file
-         */
+        /* Flush out the rest of the include file */
+        
         LsWriteSourceLines (Op->Asl.LineNumber, Op->Asl.LogicalLineNumber,
             FileId);
 
-        /*
-         * Pop off this listing node and go back to the parent file
-         */
+        /* Pop off this listing node and go back to the parent file */
+        
         LsPopNode ();
         return;
 
@@ -1229,9 +1222,8 @@ LsDoHexOutputC (
             FlPrintFile (ASL_FILE_HEX_OUTPUT, "    ");
         }
 
-        /*
-         * Convert each AML byte to hex
-         */
+        /* Convert each AML byte to hex */
+        
         UtConvertByteToHex (FileByte[j], Buffer);
         FlWriteFile (ASL_FILE_HEX_OUTPUT, Buffer, 4);
         FlPrintFile (ASL_FILE_HEX_OUTPUT, ",");
@@ -1311,9 +1303,8 @@ LsDoHexOutputAsm (
             DoComma = FALSE;
         }
 
-        /*
-         * Convert each AML byte to hex
-         */
+        /* Convert each AML byte to hex */
+        
         UtConvertByteToAsmHex (FileByte[j], Buffer);
         FlWriteFile (ASL_FILE_HEX_OUTPUT, Buffer, 4);
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,8 @@
  *
  * FUNCTION:    TrAmlGetNextTempName
  *
- * PARAMETERS:  TempCount       - Current temporary counter. Was originally
+ * PARAMETERS:  Op              - Current parse op
+ *              TempCount       - Current temporary counter. Was originally
  *                                per-module; Currently per method, could be
  *                                expanded to per-scope.
  *

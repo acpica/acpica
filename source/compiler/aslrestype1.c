@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -157,9 +157,8 @@ RsDoDmaDescriptor (
     Descriptor->Dma.DescriptorType  = ACPI_RDESC_TYPE_DMA_FORMAT |
                                         ASL_RDESC_DMA_SIZE;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -303,9 +302,8 @@ RsDoFixedIoDescriptor (
     Descriptor->Iop.DescriptorType  = ACPI_RDESC_TYPE_FIXED_IO_PORT |
                                       ASL_RDESC_FIXED_IO_SIZE;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -376,9 +374,8 @@ RsDoIoDescriptor (
     Descriptor->Iop.DescriptorType  = ACPI_RDESC_TYPE_IO_PORT |
                                       ASL_RDESC_IO_SIZE;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -475,9 +472,8 @@ RsDoIrqDescriptor (
     Descriptor->Irq.DescriptorType  = ACPI_RDESC_TYPE_IRQ_FORMAT |
                                       (ASL_RDESC_IRQ_SIZE + 0x01);
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -568,9 +564,8 @@ RsDoIrqNoFlagsDescriptor (
     Descriptor->Irq.DescriptorType  = ACPI_RDESC_TYPE_IRQ_FORMAT |
                                       ASL_RDESC_IRQ_SIZE;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -639,9 +634,8 @@ RsDoMemory24Descriptor (
     Descriptor->M24.DescriptorType  = ACPI_RDESC_TYPE_MEMORY_24;
     Descriptor->M24.Length = 9;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -731,9 +725,8 @@ RsDoMemory32Descriptor (
     Descriptor->M32.DescriptorType  = ACPI_RDESC_TYPE_MEMORY_32;
     Descriptor->M32.Length = 17;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -823,9 +816,8 @@ RsDoMemory32FixedDescriptor (
     Descriptor->F32.DescriptorType  = ACPI_RDESC_TYPE_FIXED_MEMORY_32;
     Descriptor->F32.Length = 9;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     for (i = 0; InitializerOp; i++)
     {
         switch (i)
@@ -908,9 +900,8 @@ RsDoStartDependentDescriptor (
     Descriptor->Std.DescriptorType  = ACPI_RDESC_TYPE_START_DEPENDENT |
                                       (ASL_RDESC_ST_DEPEND_SIZE + 0x01);
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     State = ACPI_RSTATE_START_DEPENDENT;
     for (i = 0; InitializerOp; i++)
     {
@@ -996,9 +987,8 @@ RsDoStartDependentNoPriDescriptor (
                                       ASL_RDESC_ST_DEPEND_SIZE;
     PreviousRnode = Rnode;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     State = ACPI_RSTATE_START_DEPENDENT;
     while (InitializerOp)
     {
@@ -1011,7 +1001,6 @@ RsDoStartDependentNoPriDescriptor (
          * must keep track of the offset of not only each descriptor, but each
          * element (field) within each descriptor as well.
          */
-
         CurrentByteOffset += RsLinkDescriptorChain (&PreviousRnode, NextRnode);
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
@@ -1052,9 +1041,8 @@ RsDoVendorSmallDescriptor (
     Descriptor = Rnode->Buffer;
     Descriptor->Smv.DescriptorType  = ACPI_RDESC_TYPE_SMALL_VENDOR;
 
-    /*
-     * Process all child initialization nodes
-     */
+    /* Process all child initialization nodes */
+    
     InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     for (i = 0; InitializerOp; i++)
     {

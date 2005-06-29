@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -189,7 +189,7 @@ AeAddToErrorLog (
  *
  * FUNCTION:    AePrintException
  *
- * PARAMETERS:  Where           - Where to send the message
+ * PARAMETERS:  FileId          - ID of output file
  *              Enode           - Error node to print
  *              Header          - Additional text before each message
  *
@@ -426,7 +426,7 @@ AePrintErrorLog (
  *              Filename            - source filename
  *              ExtraMessage        - additional error message
  *
- * RETURN:      New error node for this error
+ * RETURN:      None
  *
  * DESCRIPTION: Create a new error node and add it to the error log
  *
@@ -601,10 +601,11 @@ AslCoreSubsystemError (
  *
  * PARAMETERS:  CompilerMessage         - Error message from the parser
  *
- * RETURN:      Status?
+ * RETURN:      Status (0 for now)
  *
  * DESCRIPTION: Report an error situation discovered in a production
- *               NOTE: don't change the name of this function.
+ *              NOTE: don't change the name of this function, it is called
+ *              from the auto-generated parser.
  *
  ******************************************************************************/
 

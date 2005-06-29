@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfold - Constant folding
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -344,9 +344,8 @@ OpcAmlConstantWalk (
         return (AE_OK);
     }
 
-    /*
-     * Set the walk type based on the reduction used for this op
-     */
+    /* Set the walk type based on the reduction used for this op */
+    
     if (Op->Asl.CompileFlags & NODE_IS_TERM_ARG)
     {
         /* Op is a TermArg, constant folding is merely optional */
@@ -420,9 +419,8 @@ OpcAmlConstantWalk (
         OriginalParentOp = Op->Common.Parent;
         Op->Common.Parent = RootOp;
 
-        /*
-         * Hand off the subtree to the AML interpreter
-         */
+        /* Hand off the subtree to the AML interpreter */
+        
         Status = TrWalkParseTree (Op, ASL_WALK_VISIT_TWICE,
                     OpcAmlEvaluationWalk1, OpcAmlEvaluationWalk2, WalkState);
         Op->Common.Parent = OriginalParentOp;

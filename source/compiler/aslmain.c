@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -133,8 +133,10 @@ BOOLEAN                 AslToFile = TRUE;
 BOOLEAN                 DoCompile = TRUE;
 BOOLEAN                 DoSignon = TRUE;
 
-char                    hex[] = {'0','1','2','3','4','5','6','7',
-                                 '8','9','A','B','C','D','E','F'};
+char                    hex[] = 
+{
+    '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+};
 
 
 /*******************************************************************************
@@ -721,9 +723,8 @@ main (
         Gbl_OutputFilenamePrefix = Prefix;
     }
 
-    /*
-     * AML Disassembly (Optional)
-     */
+    /* AML Disassembly (Optional) */
+    
     if (Gbl_DisasmFlag || Gbl_GetAllTables)
     {
         /* ACPI CA subsystem initialization */

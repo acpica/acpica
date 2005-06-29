@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,14 @@
         ACPI_MODULE_NAME    ("aslopcodes")
 
 
+/* UUID support */
+
+static UINT8 OpcMapToUUID[16] = 
+{
+    6,4,2,0,11,9,16,14,19,21,24,26,28,30,32,34
+};
+
+
 /*******************************************************************************
  *
  * FUNCTION:    OpcAmlOpcodeWalk
@@ -207,9 +215,10 @@ OpcSetOptimalIntegerSize (
 {
 
 #if 0
-    TBD: - we don't want to optimize integers in the block header, but the
-    code below does not work correctly.
-
+    /* 
+     * TBD: - we don't want to optimize integers in the block header, but the
+     * code below does not work correctly.
+     */
     if (Op->Asl.Parent &&
         Op->Asl.Parent->Asl.Parent &&
        (Op->Asl.Parent->Asl.Parent->Asl.ParseOpcode == PARSEOP_DEFINITIONBLOCK))
@@ -544,11 +553,9 @@ OpcDoEisaId (
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Convert UUID string to 16-byte buffer
  *
  ******************************************************************************/
-
-static UINT8 OpcMapToUUID[16] = {6,4,2,0,11,9,16,14,19,21,24,26,28,30,32,34};
 
 static void
 OpcDoUuId (

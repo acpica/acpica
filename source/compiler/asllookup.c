@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -351,7 +351,7 @@ LsDoOneNamespaceObject (
  *
  * PARAMETERS:  None
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Walk the namespace an display information about each node
  *              in the tree.  Information is written to the optional
@@ -529,6 +529,7 @@ LkCheckFieldRange (
     UINT32                  AccessBitWidth)
 {
     UINT32                  FieldEndBitOffset;
+
 
     /*
      * Check each field unit against the region size.  The entire
@@ -954,9 +955,8 @@ LkNamespaceLocateBegin (
         }
     }
 
-    /*
-     * 3) Check for an ASL Field definition
-     */
+    /* 3) Check for an ASL Field definition */
+    
     else if ((Op->Asl.Parent) &&
             ((Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_FIELD)     ||
              (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_BANKFIELD)))

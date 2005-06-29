@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -201,7 +201,7 @@ LnPackageLengthWalk (
  *
  * FUNCTION:    CgGetPackageLenByteCount
  *
- * PARAMETERS:  Op            - Parse node
+ * PARAMETERS:  Op              - Parse node
  *              PackageLength   - Length to be encoded
  *
  * RETURN:      Required length of the package length encoding
@@ -253,7 +253,7 @@ CgGetPackageLenByteCount (
  *
  * FUNCTION:    CgGenerateAmlOpcodeLength
  *
- * PARAMETERS:  Op        - Parse node whose AML opcode lengths will be
+ * PARAMETERS:  Op          - Parse node whose AML opcode lengths will be
  *                            calculated
  *
  * RETURN:      None.
