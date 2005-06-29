@@ -23,7 +23,7 @@ CFG=AslCompiler_Linux - Win32 Debug
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""$/Acpi/source_linux/compiler", CRIAAAAA"
+# PROP Scc_ProjName ""$/Acpi/source/compiler", CRIAAAAA"
 # PROP Scc_LocalPath "..\.."
 CPP=cl.exe
 MTL=midl.exe
@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /Gz /W3 /GX /O2 /I "$(OutDir)\..\\" /I "..\..\source_Linux\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "DEFINE_ALTERNATE_TYPES" /FR /FD /c
+# ADD CPP /nologo /Gz /W3 /GX /O2 /I "$(OutDir)\..\\" /I "..\..\source_Linux\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /D "DEFINE_ALTERNATE_TYPES" /FR /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
@@ -74,7 +74,7 @@ PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /Gz /W4 /Gm /GX /ZI /Od /I "$(OutDir)..\\" /I "..\..\source_Linux\Include" /I "$(OutDir)\..\\" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "DEFINE_ALTERNATE_TYPES" /FR /FD /GZ /c
+# ADD CPP /nologo /Gz /W4 /Gm /GX /ZI /Od /I "$(OutDir)..\\" /I "..\..\source_Linux\Include" /I "$(OutDir)\..\\" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /D "DEFINE_ALTERNATE_TYPES" /FR /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
@@ -114,10 +114,6 @@ SOURCE=..\..\source_linux\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utcache.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source_linux\components\utilities\utcopy.c
 # End Source File
 # Begin Source File
@@ -142,15 +138,7 @@ SOURCE=..\..\source_linux\components\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utmutex.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source_linux\components\utilities\utobject.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -295,10 +283,6 @@ SOURCE=..\..\source_linux\compiler\aslutils.c
 # Begin Source File
 
 SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\PARSER\psargs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psloop.c
 # End Source File
 # Begin Source File
 
@@ -508,10 +492,6 @@ SOURCE=..\..\source_linux\COMPONENTS\disassembler\dmnames.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\SOURCE\COMPONENTS\disassembler\dmobject.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source_linux\COMPONENTS\disassembler\dmopcode.c
 # End Source File
 # Begin Source File
@@ -570,14 +550,14 @@ SOURCE=..\..\source_linux\compiler\asltypes.h
 # End Group
 # Begin Source File
 
-SOURCE=../../source_Linux/compiler/aslcompiler.l
+SOURCE=../../source/compiler/aslcompiler.l
 
 !IF  "$(CFG)" == "AslCompiler_Linux - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler_Linux/$(InputName).l.c
 ProjDir=.
-InputPath=../../source_Linux/compiler/aslcompiler.l
+InputPath=../../source/compiler/aslcompiler.l
 InputName=aslcompiler
 
 "$(ProjDir)/AslCompiler_Linux/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -590,7 +570,7 @@ InputName=aslcompiler
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler_Linux/$(InputName).l.c
 ProjDir=.
-InputPath=../../source_Linux/compiler/aslcompiler.l
+InputPath=../../source/compiler/aslcompiler.l
 InputName=aslcompiler
 
 "$(ProjDir)/AslCompiler_Linux/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -603,7 +583,7 @@ InputName=aslcompiler
 # End Source File
 # Begin Source File
 
-SOURCE=../../source_linux/compiler/aslcompiler.y
+SOURCE=../../source/compiler/aslcompiler.y
 
 !IF  "$(CFG)" == "AslCompiler_Linux - Win32 Release"
 
@@ -611,7 +591,7 @@ SOURCE=../../source_linux/compiler/aslcompiler.y
 # Begin Custom Build - Building parser from $(InputPath) to $(ProjDir)/AslCompiler_Linux/$(InputName).y.c
 WkspDir=.
 ProjDir=.
-InputPath=../../source_linux/compiler/aslcompiler.y
+InputPath=../../source/compiler/aslcompiler.y
 InputName=aslcompiler
 
 BuildCmds= \
@@ -630,7 +610,7 @@ BuildCmds= \
 # Begin Custom Build - Building parser from $(InputPath) to $(ProjDir)/AslCompiler_Linux/$(InputName).y.c
 WkspDir=.
 ProjDir=.
-InputPath=../../source_linux/compiler/aslcompiler.y
+InputPath=../../source/compiler/aslcompiler.y
 InputName=aslcompiler
 
 BuildCmds= \
