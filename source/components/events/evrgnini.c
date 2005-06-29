@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.42 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -290,7 +290,6 @@ AcpiEvPciConfigRegionSetup (
      *  First get device and function numbers from the _ADR object
      *  in the parent's scope.
      */
-    ACPI_ASSERT (RegionObj->Region.Node);
     Node = AcpiNsGetParentObject (RegionObj->Region.Node);
 
 
@@ -304,8 +303,8 @@ AcpiEvPciConfigRegionSetup (
      */
     if (ACPI_SUCCESS (Status))
     {
-        PciId->Device = LOWORD (Temp);
-        PciId->Function = HIWORD (Temp);
+        PciId->Device = HIWORD (Temp);
+        PciId->Function = LOWORD (Temp);
     }
 
     /*
@@ -452,8 +451,6 @@ AcpiEvInitializeRegion (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
-    ACPI_ASSERT (RegionObj->Region.Node);
 
     Node = AcpiNsGetParentObject (RegionObj->Region.Node);
     SpaceId = RegionObj->Region.SpaceId;
