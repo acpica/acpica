@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource.h - ASL resource descriptors
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -447,31 +447,31 @@ RsAllocateResourceNode (
 
     void
 RsCreateBitField (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     char                    *Name,
     UINT32                  ByteOffset,
     UINT32                  BitOffset);
 
 void
 RsCreateByteField (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     char                    *Name,
     UINT32                  ByteOffset);
 
 void
 RsSetFlagBits (
     UINT8                   *Flags,
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT8                   Position,
     UINT8                   Default);
 
-ASL_PARSE_NODE *
+ACPI_PARSE_OBJECT *
 RsCompleteNodeAndGetNext (
-    ASL_PARSE_NODE          *Node);
+    ACPI_PARSE_OBJECT       *Op);
 
 ASL_RESOURCE_NODE *
 RsDoOneResourceDescriptor (
-    ASL_PARSE_NODE          *DescriptorTypeNode,
+    ACPI_PARSE_OBJECT       *DescriptorTypeOp,
     UINT32                  CurrentByteOffset);
 
 UINT32
@@ -486,67 +486,67 @@ RsLinkDescriptorChain (
 
 ASL_RESOURCE_NODE *
 RsDoDmaDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoEndDependentDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoFixedIoDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoInterruptDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoIoDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoIrqDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoIrqNoFlagsDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoMemory24Descriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoMemory32Descriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoMemory32FixedDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoStartDependentDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoStartDependentNoPriDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoVendorSmallDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 
@@ -556,42 +556,42 @@ RsDoVendorSmallDescriptor (
 
 ASL_RESOURCE_NODE *
 RsDoDwordIoDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoDwordMemoryDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoQwordIoDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoQwordMemoryDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoWordIoDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoWordBusNumberDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoVendorLargeDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 ASL_RESOURCE_NODE *
 RsDoGeneralRegisterDescriptor (
-    ASL_PARSE_NODE          *Node,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset);
 
 
