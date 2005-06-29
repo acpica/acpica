@@ -680,15 +680,27 @@ PsFind (
 
 
         case '^':
+
+            /* Go up to the next valid scoping Op (method, scope, etc.) */
+
             if (PsGetParent (Scope))
             {
                 Scope = PsGetParent (Scope);
             }
+
             break;
         }
 
         unprefixed = 0;
         Path++;
+
+        /*
+         * TBD: Somebody puts a path separator after a carat!!
+         */
+        if (GET8 (Path) == '.')
+        {
+            Path++;
+        }
     }
 
     /* get name segment count */
