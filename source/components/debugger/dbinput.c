@@ -200,6 +200,7 @@ enum AmlDebuggerCommands
     CMD_STOP,
     CMD_TABLES,
     CMD_TERMINATE,
+    CMD_THREADS,
     CMD_TREE,
     CMD_UNLOAD 
 };
@@ -249,6 +250,7 @@ COMMAND_INFO                Commands[] =
     "STOP",         0,
     "TABLES",       0,
     "TERMINATE",    0,
+    "THREADS",      3,
     "TREE",         0,
     "UNLOAD",       0,
     NULL,           0
@@ -293,6 +295,7 @@ DbDisplayHelp (void)
     OsdPrintf ("Stats [Memory|Misc|Objects|Tables]  Display namespace and memory statistics\n");
     OsdPrintf ("Tables                              Display info about loaded ACPI tables\n");
     OsdPrintf ("Terminate                           Delete namespace and all internal objects\n");
+    OsdPrintf ("Thread <Threads><Loops><NamePath>   Spawn threads to execute method(s)\n");
     OsdPrintf ("Unload                              Unload an ACPI table\n");
     OsdPrintf ("! <CommandNumber>                   Execute command from history buffer\n");
     OsdPrintf ("!!                                  Execute last command again\n");
@@ -731,6 +734,10 @@ DbCommandDispatch (
 //        AcpiInitialize (NULL);
         break;
 
+    case CMD_THREADS:
+        DbCreateExecutionThreads (Args[1], Args[2], Args[3]);
+        break;
+
     case CMD_TREE:
         DbDisplayCallingTree ();
         break;
@@ -798,9 +805,9 @@ DbExecuteThread (
         Gbl_MethodExecuting = FALSE;
         Gbl_StepToNextCall = FALSE;
 
-        CmAcquireMutex (MTX_DEBUGGER);
+        CmAcquireMutex (MTX_DEBUG_CMD_READY);
         Status = DbCommandDispatch (LineBuf, NULL, NULL);
-        CmReleaseMutex (MTX_DEBUG_COMMAND);
+        CmReleaseMutex (MTX_DEBUG_CMD_COMPLETE);
     }
 }
 
@@ -883,10 +890,13 @@ DbUserCommands (
 
         if (Gbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
         {
-            /* Signal the debug thread that we have a command to execute */
+            /* 
+             * Signal the debug thread that we have a command to execute,
+             * and wait for the command to complete.
+             */
 
-            CmReleaseMutex (MTX_DEBUGGER);
-            CmAcquireMutex (MTX_DEBUG_COMMAND);
+            CmReleaseMutex (MTX_DEBUG_CMD_READY);
+            CmAcquireMutex (MTX_DEBUG_CMD_COMPLETE);
         }
 
         else

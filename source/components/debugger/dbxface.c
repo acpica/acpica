@@ -196,9 +196,6 @@ DbSingleStep (
     case OPTYPE_NAMED_OBJECT:
         switch (Op->Opcode)
         {
-/*
-        case AML_MethodOp:
-*/
         case AML_NAMEPATH_OP:
             return (AE_OK);
             break;
@@ -298,8 +295,38 @@ DbSingleStep (
     Status = AE_CTRL_TRUE;
     while (Status == AE_CTRL_TRUE)
     {
-        CmReleaseMutex (MTX_DEBUG_COMMAND);
-        CmAcquireMutex (MTX_DEBUGGER);
+        if (Gbl_DebuggerConfiguration == DEBUGGER_MULTI_THREADED)
+        {
+            /* Handshake with the front-end that gets user command lines */
+
+            CmReleaseMutex (MTX_DEBUG_CMD_COMPLETE);
+            CmAcquireMutex (MTX_DEBUG_CMD_READY);
+        }
+
+        else
+        {
+            /* Single threaded, we must get a command line ourselves */
+
+            /* Force output to console until a command is entered */
+
+            DbSetOutputDestination (DB_CONSOLE_OUTPUT);
+
+            /* Different prompt if method is executing */
+
+            if (!Gbl_MethodExecuting)
+            {
+                OsdPrintf ("%1c ", DB_COMMAND_PROMPT);
+            }
+            else
+            {
+                OsdPrintf ("%1c ", DB_EXECUTE_PROMPT);
+            }
+
+            /* Get the user input line */
+
+            OsdGetLine (LineBuf);
+        }
+
         Status = DbCommandDispatch (LineBuf, WalkState, Op);
     }
 
@@ -333,14 +360,26 @@ DbInitialize (void)
 
     Buffer = OsdAllocate (BUFFER_SIZE);
 
-//    setvbuf (stdin, NULL, _IONBF, 0);
+    /* Initial scope is the root */
+
     ScopeBuf [0] = '\\';
     ScopeBuf [1] =  0;
 
+
+    /*
+     * If configured for multi-thread support, the debug executor runs in
+     * a separate thread so that the front end can be in another address
+     * space, environment, or even another machine.
+     */
+
     if (Gbl_DebuggerConfiguration & DEBUGGER_MULTI_THREADED)
     {
-        CmAcquireMutex (MTX_DEBUG_COMMAND);
-        CmAcquireMutex (MTX_DEBUGGER);
+        /* These were created with one unit, grab it */
+
+        CmAcquireMutex (MTX_DEBUG_CMD_COMPLETE);
+        CmAcquireMutex (MTX_DEBUG_CMD_READY);
+
+        /* Create the debug execution thread to execute commands */
 
         OsdQueueForExecution (0, DbExecuteThread, NULL);
     }
