@@ -553,7 +553,11 @@ DsExecEndOp (
         if ((WalkState->Origin->Opcode == AML_MethodOp) &&
             (WalkState->Origin != Op))
         {
-            DsLoad2EndOp (WalkState, Op);
+            Status = DsLoad2EndOp (WalkState, Op);
+            if (ACPI_FAILURE (Status))
+            {
+                break;
+            }
         }
 
         switch (Op->Opcode)
@@ -564,7 +568,6 @@ DsExecEndOp (
                             Op));
 
             Status = DsEvalRegionOperands (WalkState, Op);
-
 
             break;
 
