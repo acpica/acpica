@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.113 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -315,7 +315,7 @@ AcpiNsDumpOneObject (
     AcpiOsPrintf (" %4.4s %-12s %p",
             (char *) &ThisNode->Name, AcpiUtGetTypeName (Type), ThisNode);
 
-    ObjDesc = ThisNode->Object;
+    ObjDesc = AcpiNsGetAttachedObject (ThisNode);
 
     switch (Info->DisplayType)
     {
@@ -408,7 +408,8 @@ AcpiNsDumpOneObject (
             break;
 
         case ACPI_TYPE_BUFFER_FIELD:
-            if (ObjDesc->BufferField.BufferObj)
+            if (ObjDesc->BufferField.BufferObj &&
+                ObjDesc->BufferField.BufferObj->Buffer.Node)
             {
                 AcpiOsPrintf (" Buf [%4.4s]",
                         (char *) &ObjDesc->BufferField.BufferObj->Buffer.Node->Name);
@@ -523,7 +524,7 @@ AcpiNsDumpOneObject (
 
     /* If there is an attached object, display it */
 
-    ObjDesc = ThisNode->Object;
+    ObjDesc = AcpiNsGetAttachedObject (ThisNode);
 
     /* Dump attached objects */
 
