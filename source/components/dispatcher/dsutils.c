@@ -461,11 +461,12 @@ PsxCreateOperands (
                     goto Cleanup;
                 }
 
-                if (DataType == INTERNAL_TYPE_Lvalue)
+                if ((Arg->Parent->Opcode == AML_METHODCALL) &&
+                    (DataType == INTERNAL_TYPE_Lvalue))
                 {
                     /* 
+                     * Since we are invoking a method,
                      * Constants, Local variables, and method arguments must be resolved here,
-                     * especially if we are processing arguments to a method invocation
                      */
 
                     Status = AmlGetRvalue (&ObjDesc);
