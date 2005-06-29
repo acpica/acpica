@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.29 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -268,11 +268,9 @@ AcpiEvGpeDetect (
 
             ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
                 "GPE pair: Status %8.8X%8.8X = %02X, Enable %8.8X%8.8X = %02X\n",
-                ACPI_HIDWORD (ACPI_GET_ADDRESS (GpeRegisterInfo->StatusAddress.Address)),
-                ACPI_LODWORD (ACPI_GET_ADDRESS (GpeRegisterInfo->StatusAddress.Address)),
+                ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeRegisterInfo->StatusAddress.Address)),
                 GpeRegisterInfo->Status,
-                ACPI_HIDWORD (ACPI_GET_ADDRESS (GpeRegisterInfo->EnableAddress.Address)),
-                ACPI_LODWORD (ACPI_GET_ADDRESS (GpeRegisterInfo->EnableAddress.Address)),
+                ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeRegisterInfo->EnableAddress.Address)),
                 GpeRegisterInfo->Enable));
 
             /* First check if there is anything active at all in this register */
@@ -459,6 +457,20 @@ AcpiEvGpeDispatch (
         /* Invoke the installed handler (at interrupt level) */
 
         GpeEventInfo->Handler (GpeEventInfo->Context);
+
+        /* It is now safe to clear level-triggered events. */
+
+        if (GpeEventInfo->Flags & ACPI_EVENT_LEVEL_TRIGGERED)
+        {
+            Status = AcpiHwClearGpe (GpeEventInfo);
+            if (ACPI_FAILURE (Status))
+            {
+                ACPI_REPORT_ERROR ((
+                    "AcpiEvGpeDispatch: Unable to clear GPE[%2X]\n",
+                    GpeNumber));
+                return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
+            }
+        }
     }
     else if (GpeEventInfo->MethodNode)
     {
@@ -469,13 +481,16 @@ AcpiEvGpeDispatch (
         Status = AcpiHwDisableGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to disable GPE[%2X]\n",
+            ACPI_REPORT_ERROR ((
+                "AcpiEvGpeDispatch: Unable to disable GPE[%2X]\n",
                 GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
 
-        /* Execute the method associated with the GPE. */
-
+        /* 
+         * Execute the method associated with the GPE
+         * NOTE: Level-triggered GPEs are cleared after the method completes.
+         */
         if (ACPI_FAILURE (AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
                                 AcpiEvAsynchExecuteGpeMethod,
                                 GpeEventInfo)))
@@ -495,25 +510,13 @@ AcpiEvGpeDispatch (
 
         /*
          * Disable the GPE.  The GPE will remain disabled until the ACPI
-         * Core Subsystem is restarted, or the handler is reinstalled.
+         * Core Subsystem is restarted, or a handler is installed.
          */
         Status = AcpiHwDisableGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to disable GPE[%2X]\n",
-                GpeNumber));
-            return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
-        }
-    }
-
-    /* It is now safe to clear level-triggered events. */
-
-    if (GpeEventInfo->Flags & ACPI_EVENT_LEVEL_TRIGGERED)
-    {
-        Status = AcpiHwClearGpe (GpeEventInfo);
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_REPORT_ERROR (("AcpiEvGpeDispatch: Unable to clear GPE[%2X]\n",
+            ACPI_REPORT_ERROR ((
+                "AcpiEvGpeDispatch: Unable to disable GPE[%2X]\n",
                 GpeNumber));
             return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
         }
