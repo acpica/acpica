@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acefi.h - OS specific defines, etc.
- *       $Revision: 1.2 $
+ *       $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -123,14 +123,14 @@
 #include <efistdarg.h>
 #include <efilib.h>
 
-#undef UINT8;
-#undef BOOLEAN;
-#undef UCHAR;
-#undef UINT16;
-#undef INT32;
-#undef UINT32;
-#undef INT64;
-#undef UINT64;
+#undef UINT8
+#undef BOOLEAN
+#undef UCHAR
+#undef UINT16
+#undef INT32
+#undef UINT32
+#undef INT64
+#undef UINT64
 
 
 #endif /* __ACEFI_H__ */
