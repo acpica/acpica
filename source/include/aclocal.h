@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.79 $
+ *       $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -716,6 +716,7 @@ typedef struct acpi_init_walk_info
 
 typedef struct acpi_device_walk_info
 {
+    UINT32                  Flags;
     UINT16                  DeviceCount;
     UINT16                  Num_STA;
     UINT16                  Num_INI;
@@ -747,7 +748,6 @@ typedef struct AcpiWalkInfo
 
 #define PCI_ROOT_HID_STRING         "PNP0A03"
 #define PCI_ROOT_HID_VALUE          0x030AD041       /* EISAID("PNP0A03") */
-
 
 
 /* Sleep states */
