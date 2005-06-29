@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.68 $
+ *       $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -265,7 +265,7 @@
 #define MEMSET(d,s,n)   memset((d), (s), (NATIVE_INT)(n))
 #define TOUPPER         toupper
 #define TOLOWER         tolower
-
+#define IS_XDIGIT       isxdigit
 
 /******************************************************************************
  *
