@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -212,9 +212,9 @@ AeDoDivideCheck (void)
  * even though the underlying OSD HW access functions don't do
  * anything.
  */
-
+RSDP_DESCRIPTOR             LocalRSDP;
 FADT_DESCRIPTOR_REV1        LocalFADT;
-ACPI_COMMON_FACS            LocalFACS;
+FACS_DESCRIPTOR_REV1        LocalFACS;
 
 #ifdef _IA16
 ACPI_STATUS
@@ -290,7 +290,7 @@ main (
 
     /* Init globals */
 
-    AcpiDbgLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
+    AcpiDbgLevel = NORMAL_DEFAULT;
     AcpiDbgLayer = 0xFFFFFFFF;
 
 
@@ -376,7 +376,13 @@ main (
             goto enterloop;
         }
 
-        /* Build a fake FADT so we can test the hardware/event init */
+        /* Build an RSDT */
+
+        LocalRSDP.Revision = 1;
+        AcpiGbl_RSDP = &LocalRSDP;
+
+
+        /* Build a FADT so we can test the hardware/event init */
 
         MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
         MEMCPY (&LocalFADT.header.Signature, FADT_SIG, 4);
@@ -405,14 +411,25 @@ main (
         Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFADT);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load localFADT, %s\n", AcpiFormatException (Status));
+            printf ("**** Could not load local FADT, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
+        /* Build a FACS */
 
-        AcpiGbl_FACS = &LocalFACS;
+        MEMSET (&LocalFACS, 0, sizeof (FACS_DESCRIPTOR_REV1));
+        MEMCPY (&LocalFACS.Signature, FACS_SIG, 4);
+        LocalFACS.Length = sizeof (FACS_DESCRIPTOR_REV1);
 
-        /* TBD:
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFACS);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not load local FACS, %s\n", AcpiFormatException (Status));
+            goto enterloop;
+        }
+
+        /* 
+         * TBD:
          * Need a way to call this after the "LOAD" command
          */
         Status = AeInstallHandlers ();
