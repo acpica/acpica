@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmath - Integer math support routines
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  ******************************************************************************/
 
@@ -420,7 +420,7 @@ AcpiUtDivide (
         *OutRemainder = *InDividend % *InDivisor;
     }
 
-    return_ACPI_STATUS (AE_OK)
+    return_ACPI_STATUS (AE_OK);
 }
 
 #endif
