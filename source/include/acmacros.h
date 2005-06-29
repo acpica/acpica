@@ -122,11 +122,11 @@
  */
 
 #ifndef LOWORD
-#define LOWORD(l)                       ((UINT16)(UINT32)(l))
+#define LOWORD(l)                       ((UINT16)(NATIVE_UINT)(l))
 #endif
 
 #ifndef HIWORD
-#define HIWORD(l)                       ((UINT16)((((UINT32)(l)) >> 16) & 0xFFFF))
+#define HIWORD(l)                       ((UINT16)((((NATIVE_UINT)(l)) >> 16) & 0xFFFF))
 #endif  
 
 #ifndef LOBYTE
@@ -174,6 +174,13 @@
 #define MUL_16(a)                       ((a)<<4)
 #define MOD_16(a)                       ((a)&0x0F)
 
+
+
+#ifdef IA64
+#define ALIGN64(bc)                     char Align[bc];
+#else
+#define ALIGN64(bc)
+#endif
 
 /* Assert macros */
 
