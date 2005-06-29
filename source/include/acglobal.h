@@ -243,10 +243,8 @@ ACPI_EXTERN UINT16                      Gbl_NextMethodOwnerId;
 ACPI_EXTERN UINT8                       Gbl_DebuggerConfiguration;
 ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockAcquired;
 ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockSet; /* TBD: OBSOLETE?? */
-ACPI_EXTERN BOOLEAN                     Gbl_MethodExecuting;
 ACPI_EXTERN BOOLEAN                     Gbl_StepToNextCall;
 ACPI_EXTERN BOOLEAN                     Gbl_AcpiHardwarePresent;
-ACPI_EXTERN BOOLEAN                     Gbl_DbTerminateThreads;
 
 
 ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_DrvNotify;
@@ -371,6 +369,15 @@ ACPI_EXTERN UINT32                      Gbl_EventCount[NUM_FIXED_EVENTS];
 #endif
 
 
+
+/*****************************************************************************
+ * 
+ * Debugger globals 
+ *
+ ****************************************************************************/
+
+ACPI_EXTERN BOOLEAN                     Gbl_MethodExecuting;
+ACPI_EXTERN BOOLEAN                     Gbl_DbTerminateThreads;
 
 
 
