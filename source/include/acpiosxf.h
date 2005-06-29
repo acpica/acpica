@@ -343,9 +343,9 @@ AcpiOsWritePciConfiguration (
  */
 void
 AcpiOsDerivePciId(
-    ACPI_HANDLE	            rhandle,
+    ACPI_HANDLE             rhandle,
     ACPI_HANDLE             chandle,
-    ACPI_PCI_ID	            **PciId);
+    ACPI_PCI_ID             **PciId);
 
 /*
  * Miscellaneous
