@@ -251,13 +251,13 @@
 #define OP_INFO_ENTRY(Opcode,Flags,Name,PArgs,IArgs)     {Opcode,Flags,PArgs,IArgs}
 #endif
 
-
+#define ARG_TYPE_WIDTH                  5
 #define ARG_1(x)                        (x)
-#define ARG_2(x)                        ((x) << 4)
-#define ARG_3(x)                        ((x) << 8)
-#define ARG_4(x)                        ((x) << 12)
-#define ARG_5(x)                        ((x) << 16)
-#define ARG_6(x)                        ((x) << 20)
+#define ARG_2(x)                        ((x) << (1 * ARG_TYPE_WIDTH))
+#define ARG_3(x)                        ((x) << (2 * ARG_TYPE_WIDTH))
+#define ARG_4(x)                        ((x) << (3 * ARG_TYPE_WIDTH))
+#define ARG_5(x)                        ((x) << (4 * ARG_TYPE_WIDTH))
+#define ARG_6(x)                        ((x) << (5 * ARG_TYPE_WIDTH))
 
 #define ARGI_LIST1(a)                    (ARG_1(a))
 #define ARGI_LIST2(a,b)                  (ARG_1(b)|ARG_2(a))
@@ -273,8 +273,8 @@
 #define ARGP_LIST5(a,b,c,d,e)            (ARG_1(a)|ARG_2(b)|ARG_3(c)|ARG_4(d)|ARG_5(e))
 #define ARGP_LIST6(a,b,c,d,e,f)          (ARG_1(a)|ARG_2(b)|ARG_3(c)|ARG_4(d)|ARG_5(e)|ARG_6(f))
 
-#define GET_CURRENT_ARG_TYPE(List)      (List & 0xF)
-#define INCREMENT_ARG_LIST(List)        (List >>= 4)
+#define GET_CURRENT_ARG_TYPE(List)      (List & 0x1F)
+#define INCREMENT_ARG_LIST(List)        (List >>= ARG_TYPE_WIDTH)
 
 
 
