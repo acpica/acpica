@@ -12,6 +12,8 @@
 
 #define WIN_DS_REGISTER     0x0030
 
+/* Globals */
+
 char        * Why;
 char        WhyBuf [WHYBUF_SIZE];
 INT32       AcpiHook = 0;
@@ -21,6 +23,7 @@ INT32       __AcpiLibInitStatus = 0;
 /* Debug switch */
 
 INT32 DebugLevel = 0x7FFFFFFF;
+
 
 INT32
 debug_level (void)
@@ -88,8 +91,10 @@ Kinc_warning (char *a, INT32 b)
 }
 
 void
-KFatalError (char * a, char * b)
+KFatalError (char * a, char * b, ...)
 {
+    /* Optional parameters (...) not implemented */
+
 
     OsdPrintf (NULL, "*** Fatal Error %s: %s\n", a, b);
     return;
@@ -112,6 +117,70 @@ RestoreOFT (void)
 }
 
 void
+SetNotSupported (void)
+{
+    OsdPrintf (NULL, "SetNotSupported called, not supported **********\n");
+    return;
+}
+
+void 
+DisplayTable (void *Header, INT32 DisplayBitFlags)
+{
+    OsdPrintf (NULL, "DisplayTable called, not supported **********\n");
+    return;
+}
+
+void
+FunctionTrace (char * FileName, char * FunctionName)
+{
+
+    OsdPrintf (NULL, "Enter Module: %10s, Function: %s\n", FileName, FunctionName);
+}
+
+
+LogHandle
+GetMasterLogHandle (void)
+{
+
+/*  return NO_LOG_HANDLE; */
+
+    return 1; /* stdout; TEMPORARY!!! */
+}
+
+
+/* Interrupt handlers */
+
+UINT32
+InstallInterruptHandler (
+    UINT8               InterruptNumber,
+    INT32               (* Isr)(void),
+    UINT8               InterruptTaskFlag,
+    UINT32 *            ExceptPtr)
+{
+
+	UINT32 RetVal;
+
+
+    OsdPrintf (NULL, "InstallInterruptHandler called, not supported **********\n");
+
+    RetVal = (UINT32) OsdInstallInterruptHandler ((UINT32) InterruptNumber, 
+                                                    Isr, ExceptPtr);
+
+	
+	return(RetVal);
+
+}
+
+INT32
+RemoveInterruptHandler (UINT32 Key)
+{
+
+    OsdPrintf (NULL, "RemoveInterruptHandler called, not supported **********\n");
+    return 0;
+}
+
+
+void
 DumpBuf (UINT8 *Buffer, size_t Count, INT32 Flags, LogHandle LogFile,
             INT32 iLogFlags)
 {
@@ -121,8 +190,8 @@ DumpBuf (UINT8 *Buffer, size_t Count, INT32 Flags, LogHandle LogFile,
 
 
     /*
-     Nasty little dump buffer routine!
-    */
+     * Nasty little dump buffer routine!
+     */
     while (i <= Count)
     {
         /* Print current offset */
@@ -140,8 +209,9 @@ DumpBuf (UINT8 *Buffer, size_t Count, INT32 Flags, LogHandle LogFile,
             OsdPrintf (NULL, "%02X ", Buffer[i + j]);
         }
 
-        /* Print the ASCII equivalent characters
-           But watch out for the bad unprintable ones...
+        /* 
+         * Print the ASCII equivalent characters
+         * But watch out for the bad unprintable ones...
          */
 
         for (j = 0; j < 16; j++)
@@ -174,116 +244,4 @@ cleanup:
 
 }
 
-void
-SetNotSupported (void)
-{
-    OsdPrintf (NULL, "SetNotSupported called, not supported **********\n");
-    return;
-}
-
-void 
-DisplayTable (void *Header, INT32 DisplayBitFlags)
-{
-    OsdPrintf (NULL, "DisplayTable called, not supported **********\n");
-    return;
-}
-
-void
-FunctionTrace (char * FileName, char * FunctionName)
-{
-
-    OsdPrintf (NULL, "Enter Module: %10s, Function: %s\n", FileName, FunctionName);
-}
-
-
-LogHandle
-GetMasterLogHandle (void)
-{
-
-/*  return NO_LOG_HANDLE; */
-
-    return 1; /* stdout; */
-}
-
-
-/* Pointer stuff, must get rid of this eventually */
-
-size_t
-PtrOffset (void *Ptr)
-{
-
-    OsdPrintf (NULL, "PtrOffset called, not supported **********\n");
-    return (size_t) Ptr;
-}
-
-/***********OBSOLETE
-selector
-PtrSelector (void *Ptr)
-{
-
-    OsdPrintf (NULL, "PtrSelector called, not supported **********\n");
-    return (selector) WIN_DS_REGISTER;
-}
-
-void *
-BuildPtr (selector Seg, size_t Offset)
-{
-
-    OsdPrintf (NULL, "BuildPtr called, not supported **********\n");
-    return (void *) Offset;
-}
-selector
-ebds (void)
-{
-    return 0;
-}
-
-******************/
-
-void *
-PHYStoFP (UINT32 phys)
-{
-
-    OsdPrintf (NULL, "PHYStoFP called, not supported **********\n");
-    return 0;
-}
-
-UINT32
-FPtoPHYS (void *fp)
-{
-
-    OsdPrintf (NULL, "FPtoPHYS called, not supported **********\n");
-    return 0;
-}
-
-/* Interrupt handlers */
-
-UINT32
-InstallInterruptHandler (
-    UINT8               InterruptNumber,
-    INT32               (* Isr)(void),
-    UINT8               InterruptTaskFlag,
-    UINT32 *            ExceptPtr)
-{
-
-	UINT32 RetVal;
-
-
-    OsdPrintf (NULL, "InstallInterruptHandler called, not supported **********\n");
-
-    RetVal = (UINT32) OsdInstallInterruptHandler ((UINT32) InterruptNumber, 
-                                                    Isr, ExceptPtr);
-
-	
-	return(RetVal);
-
-}
-
-INT32
-RemoveInterruptHandler (UINT32 Key)
-{
-
-    OsdPrintf (NULL, "RemoveInterruptHandler called, not supported **********\n");
-    return 0;
-}
 
