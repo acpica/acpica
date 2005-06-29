@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -141,10 +141,10 @@
  *
  * DESCRIPTION: Create and initialize a new internal object.
  *
- * NOTE:        We always allocate the worst-case object descriptor because 
- *              these objects are cached, and we want them to be 
- *              one-size-satisifies-any-request.  This in itself may not be 
- *              the most memory efficient, but the efficiency of the object 
+ * NOTE:        We always allocate the worst-case object descriptor because
+ *              these objects are cached, and we want them to be
+ *              one-size-satisifies-any-request.  This in itself may not be
+ *              the most memory efficient, but the efficiency of the object
  *              cache should more than make up for this!
  *
  ******************************************************************************/
@@ -642,7 +642,7 @@ AcpiCmGetSimpleObjectSize (
  *
  * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -701,10 +701,10 @@ AcpiCmGetElementLength (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This function is called to determine the space required to 
+ * DESCRIPTION: This function is called to determine the space required to
  *              contain a package object for return to an API user.
  *
- *              This is moderately complex since a package contains other 
+ *              This is moderately complex since a package contains other
  *              objects including packages.
  *
  ******************************************************************************/
@@ -743,7 +743,6 @@ AcpiCmGetPackageObjectSize (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiCmGetObjectSize
@@ -751,7 +750,7 @@ AcpiCmGetPackageObjectSize (
  * PARAMETERS:  *InternalObject     - Pointer to the object we are examining
  *              *RetLength          - Where the length will be returned
  *
- * RETURN:      Status 
+ * RETURN:      Status
  *
  * DESCRIPTION: This function is called to determine the space required to
  *              contain an object for return to an API user.

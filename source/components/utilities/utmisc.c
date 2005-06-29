@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  ******************************************************************************/
 
@@ -383,14 +383,14 @@ AcpiCmAcquireMutex (
             if (i == MutexId)
             {
                 DEBUG_PRINT (ACPI_ERROR,
-                        ("Mutex [%s] already acquired by this thread\n", 
+                        ("Mutex [%s] already acquired by this thread\n",
                         AcpiCmGetMutexName (MutexId)));
 
                 return (AE_ALREADY_ACQUIRED);
             }
 
             DEBUG_PRINT (ACPI_ERROR,
-                    ("Invalid acquire order: owns [%s], wants [%s]\n", 
+                    ("Invalid acquire order: owns [%s], wants [%s]\n",
                     AcpiCmGetMutexName (i), AcpiCmGetMutexName (MutexId)));
 
             return (AE_ACQUIRE_DEADLOCK);
@@ -449,12 +449,12 @@ AcpiCmReleaseMutex (
 
 
     /*
-     * Mutex must be acquired in order to release it! 
+     * Mutex must be acquired in order to release it!
      */
     if (!AcpiGbl_AcpiMutexInfo[MutexId].Locked)
     {
         DEBUG_PRINT (ACPI_ERROR,
-                ("Mutex [%s] is not acquired, cannot release\n", 
+                ("Mutex [%s] is not acquired, cannot release\n",
                 AcpiCmGetMutexName (MutexId)));
 
         return (AE_NOT_ACQUIRED);
@@ -478,7 +478,7 @@ AcpiCmReleaseMutex (
             }
 
             DEBUG_PRINT (ACPI_ERROR,
-                    ("Invalid release order: owns [%s], releasing [%s]\n", 
+                    ("Invalid release order: owns [%s], releasing [%s]\n",
                     AcpiCmGetMutexName (i), AcpiCmGetMutexName (MutexId)));
 
             return (AE_RELEASE_DEADLOCK);
@@ -571,7 +571,6 @@ AcpiCmCreatePkgStateAndPush (
     ACPI_GENERIC_STATE       *State;
 
 
-
     State = AcpiCmCreatePkgState (InternalObject, ExternalObject, Index);
     if (!State)
     {
@@ -582,7 +581,6 @@ AcpiCmCreatePkgStateAndPush (
     AcpiCmPushGenericState (StateList, State);
     return (AE_OK);
 }
-
 
 
 /*******************************************************************************
@@ -800,11 +798,10 @@ AcpiCmCreatePkgState (
     State->Pkg.SourceObject = (ACPI_OPERAND_OBJECT *) InternalObject;
     State->Pkg.DestObject   = ExternalObject;
     State->Pkg.Index        = Index;
-    State->Pkg.NumPackages  = 1; 
+    State->Pkg.NumPackages  = 1;
 
     return_PTR (State);
 }
-
 
 
 /*******************************************************************************
@@ -1075,11 +1072,11 @@ AcpiCmWalkPackageTree (
     while (State)
     {
         ThisIndex        = State->Pkg.Index;
-        ThisSourceObj    = (ACPI_OPERAND_OBJECT *) 
+        ThisSourceObj    = (ACPI_OPERAND_OBJECT *)
                             State->Pkg.SourceObject->Package.Elements[ThisIndex];
 
         /*
-         * Check for 
+         * Check for
          * 1) An uninitialized package element.  It is completely
          *      legal to declare a package and leave it uninitialized
          * 2) Not an internal object - can be a namespace node instead
@@ -1112,7 +1109,7 @@ AcpiCmWalkPackageTree (
                  */
                 AcpiCmDeleteGenericState (State);
                 State = AcpiCmPopGenericState (&StateList);
-                
+
 
                 /* Finished when there are no more states */
 
@@ -1147,7 +1144,7 @@ AcpiCmWalkPackageTree (
             }
 
 
-            /* 
+            /*
              * The callback above returned a new target package object.
              */
 
@@ -1170,7 +1167,6 @@ AcpiCmWalkPackageTree (
     return (AE_AML_INTERNAL);
 
 }
-
 
 
 /*******************************************************************************
