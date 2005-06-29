@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -216,7 +216,7 @@ AcpiExLoadOp (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
-            TableHeader.Signature));
+            (char*)TableHeader.Signature));
         Status = AE_BAD_SIGNATURE;
         goto Cleanup;
     }
