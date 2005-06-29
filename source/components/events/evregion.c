@@ -239,6 +239,96 @@ AcpiEvFindPciRootBuses (
     return (AE_OK);
 }
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEvInitOneDevice
+ *
+ * PARAMETERS:  The usual "I'm a namespace callback" stuff
+ *
+ * RETURN:      ACPI_STATUS
+ *
+ * DESCRIPTION: This is called once per device soon after ACPI is enabled
+ *              to initialize each device. It determines if the device is
+ *              present, and if so, calls _INI.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiEvInitOneDevice (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_STATUS             Status;
+    ACPI_OBJECT_INTERNAL   *RetObj;
+
+
+    FUNCTION_TRACE ("AcpiEvInitOneDevice");
+
+    /*
+     * Run _STA to determine if we can run _INI on the device.
+     */
+    Status = AcpiNsEvaluateRelative(ObjHandle, "_STA", NULL, &RetObj);
+    if (AE_NOT_FOUND == Status)
+    {
+         /* No _STA means device is present */
+    }
+    else if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+    else if (RetObj)
+    {
+        if (ACPI_TYPE_NUMBER != RetObj->Common.Type)
+        {
+            Status = AE_AML_OPERAND_TYPE;
+            goto Cleanup;
+        }
+
+        /*
+         * if _STA "present" bit not set, we're done.
+         */
+        if (!(RetObj->Number.Value & 1))
+        {
+            goto Cleanup;
+        }
+    }
+    
+    /*
+     * The device is present. Run _INI.
+     */
+
+    Status = AcpiNsEvaluateRelative(ObjHandle, "_INI", NULL, NULL);
+
+Cleanup:
+
+    AcpiCmRemoveReference (RetObj);
+    return_ACPI_STATUS (Status);
+}
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEvInitDevices
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      ACPI_STATUS
+ *
+ * DESCRIPTION: This initializes all ACPI devices.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiEvInitDevices (
+    void)
+{
+    AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                        FALSE, AcpiEvInitOneDevice, NULL, NULL);
+
+    return (AE_OK);
+}
+
 
 /**************************************************************************
  *
