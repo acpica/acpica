@@ -448,7 +448,7 @@ DsMethodDataSetEntry (
 
     /* Increment ref count so object can't be deleted while installed */
 
-    CmUpdateObjectReference (Object, REF_INCREMENT);
+    CmAddReference (Object);
     
     /* Install the object into the stack entry */
 
@@ -659,7 +659,7 @@ DsMethodDataGetValue (
      */
 
     *DestDesc = Object;
-    CmUpdateObjectReference (Object, REF_INCREMENT);
+    CmAddReference (Object);
 
     return_ACPI_STATUS (AE_OK);
 }
