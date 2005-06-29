@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.3 $
+ *       $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,10 +117,13 @@
 #ifndef __ACWIN_H__
 #define __ACWIN_H__
 
+/*! [Begin] no source code translation (Keep the include) */
+
 /* Windows uses VC */
 #ifdef _MSC_VER
 #include "acmsvc.h"
 #endif
+/*! [End] no source code translation !*/
 
 #define ACPI_OS_NAME                "Windows"
 
@@ -140,8 +143,8 @@
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)   __asm {int level}
 #define BREAKPOINT3             __asm {int 3}
-#define disable()               __asm {cli}
-#define enable()                __asm {sti}
+#define acpi_disable_irqs()     __asm {cli}
+#define acpi_enable_irqs()      __asm {sti}
 #define halt()                  __asm {hlt}
 #define wbinvd()                __asm {WBINVD}
 

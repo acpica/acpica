@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acintel.h - VC specific defines, etc.
- *       $Revision: 1.10 $
+ *       $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,22 +117,7 @@
 #ifndef __ACINTEL_H__
 #define __ACINTEL_H__
 
-
-#define COMPILER_DEPENDENT_INT64   __int64
-#define COMPILER_DEPENDENT_UINT64  unsigned __int64
-
-/*
- * Calling conventions:
- *
- * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
- * ACPI_EXTERNAL_XFACE      - External ACPI interfaces
- * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
- * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
- */
-#define ACPI_SYSTEM_XFACE
-#define ACPI_EXTERNAL_XFACE
-#define ACPI_INTERNAL_XFACE
-#define ACPI_INTERNAL_VAR_XFACE
+#define COMPILER_DEPENDENT_UINT64   unsigned __int64
 
 /*
  * Math helper functions
@@ -148,8 +133,8 @@
     n <<= 1; \
 }
 
-/* remark 981 - operands evaluated in no particular order */
-#pragma warning(disable:981)
+
+#pragma warning(disable:810)
 
 /* warn C4100: unreferenced formal parameter */
 #pragma warning(disable:4100)
@@ -165,12 +150,5 @@
  * doesn't, so this is proprocessed away.
  */
 #define ACPI_PRINTF_LIKE_FUNC
-
-/* Some compilers complain about unused variables. Sometimes we don't want to
- * use all the variables (most specifically for _THIS_MODULE). This allow us
- * to to tell the compiler warning in a per-variable manner that a variable
- * is unused. However, MSVC doesn't do this.
- */
-#define ACPI_UNUSED_VAR
 
 #endif /* __ACINTEL_H__ */

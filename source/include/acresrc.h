@@ -1,6 +1,7 @@
 /******************************************************************************
  *
- * Name: resource.h - Resource Manager function prototypes
+ * Name: acresrc.h - Resource Manager function prototypes
+ *       $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -8,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -114,52 +115,50 @@
  *
  *****************************************************************************/
 
-#ifndef __RESOURCE_H__
-#define __RESOURCE_H__
+#ifndef __ACRESRC_H__
+#define __ACRESRC_H__
 
-#include "actypes.h"
-#include "acobject.h"
 
 /*
  *  Function prototypes called from Acpi* APIs
  */
 
 ACPI_STATUS
-AcpiRsGetPRTMethodData (
+AcpiRsGetPrtMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer);
 
 
 ACPI_STATUS
-AcpiRsGetCRSMethodData (
+AcpiRsGetCrsMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
-AcpiRsGetPRSMethodData (
+AcpiRsGetPrsMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
-AcpiRsSetSRSMethodData (
+AcpiRsSetSrsMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiRsCreateResourceList (
-    ACPI_OBJECT_INTERNAL    *ByteStreamBuffer,
+    ACPI_OPERAND_OBJECT     *ByteStreamBuffer,
     UINT8                   *OutputBuffer,
     UINT32                  *OutputBufferLength);
 
 ACPI_STATUS
 AcpiRsCreateByteStream (
-    RESOURCE                *LinkedListBuffer,
+    ACPI_RESOURCE           *LinkedListBuffer,
     UINT8                   *OutputBuffer,
-    UINT32                  *OutputBufferLength);
+    ACPI_SIZE               *OutputBufferLength);
 
 ACPI_STATUS
 AcpiRsCreatePciRoutingTable (
-    ACPI_OBJECT_INTERNAL    *MethodReturnObject,
+    ACPI_OPERAND_OBJECT     *MethodReturnObject,
     UINT8                   *OutputBuffer,
     UINT32                  *OutputBufferLength);
 
@@ -170,10 +169,10 @@ AcpiRsCreatePciRoutingTable (
 
 void
 AcpiRsDumpResourceList (
-    RESOURCE                *Resource);
+    ACPI_RESOURCE           *Resource);
 
 void
-AcpiRsDumpIRQList (
+AcpiRsDumpIrqList (
     UINT8                   *RouteTable);
 
 ACPI_STATUS
@@ -186,12 +185,17 @@ ACPI_STATUS
 AcpiRsCalculateListLength (
     UINT8                   *ByteStreamBuffer,
     UINT32                  ByteStreamBufferLength,
-    UINT32                  *SizeNeeded);
+    ACPI_SIZE               *SizeNeeded);
 
 ACPI_STATUS
 AcpiRsCalculateByteStreamLength (
-    RESOURCE                *LinkedListBuffer,
-    UINT32                  *SizeNeeded);
+    ACPI_RESOURCE           *LinkedListBuffer,
+    ACPI_SIZE               *SizeNeeded);
+
+ACPI_STATUS
+AcpiRsCalculatePciRoutingTableLength (
+    ACPI_OPERAND_OBJECT     *PackageObject,
+    ACPI_SIZE               *BufferSizeNeeded);
 
 ACPI_STATUS
 AcpiRsByteStreamToList (
@@ -201,192 +205,207 @@ AcpiRsByteStreamToList (
 
 ACPI_STATUS
 AcpiRsListToByteStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT32                  ByteStreamSizeNeeded,
     UINT8                   **OutputBuffer);
 
 ACPI_STATUS
 AcpiRsIoResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsFixedIoResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsIoStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsFixedIoStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsIrqResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsIrqStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsDmaResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsDmaStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsAddress16Resource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsAddress16Stream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsAddress32Resource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsAddress32Stream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
-AcpiRsStartDependentFunctionsResource (
+AcpiRsAddress64Resource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
-AcpiRsEndDependentFunctionsResource (
+AcpiRsAddress64Stream (
+    ACPI_RESOURCE           *LinkedList,
+    UINT8                   **OutputBuffer,
+    ACPI_SIZE               *BytesConsumed);
+
+ACPI_STATUS
+AcpiRsStartDependFnsResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
-AcpiRsStartDependentFunctionsStream (
-    RESOURCE                *LinkedList,
+AcpiRsEndDependFnsResource (
+    UINT8                   *ByteStreamBuffer,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
-AcpiRsEndDependentFunctionsStream (
-    RESOURCE                *LinkedList,
+AcpiRsStartDependFnsStream (
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
+
+ACPI_STATUS
+AcpiRsEndDependFnsStream (
+    ACPI_RESOURCE           *LinkedList,
+    UINT8                   **OutputBuffer,
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsMemory24Resource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsMemory24Stream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsMemory32RangeResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize
-);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsFixedMemory32Resource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsMemory32RangeStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsFixedMemory32Stream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsExtendedIrqResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsExtendedIrqStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsEndTagResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsEndTagStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsVendorResource (
     UINT8                   *ByteStreamBuffer,
-    UINT32                  *BytesConsumed,
+    ACPI_SIZE               *BytesConsumed,
     UINT8                   **OutputBuffer,
-    UINT32                  *StructureSize);
+    ACPI_SIZE               *StructureSize);
 
 ACPI_STATUS
 AcpiRsVendorStream (
-    RESOURCE                *LinkedList,
+    ACPI_RESOURCE           *LinkedList,
     UINT8                   **OutputBuffer,
-    UINT32                  *BytesConsumed);
+    ACPI_SIZE               *BytesConsumed);
 
+UINT8
+AcpiRsGetResourceType (
+    UINT8                   ResourceStartByte);
 
-#endif  /*__RESOURCE_H__ */
+#endif  /* __ACRESRC_H__ */

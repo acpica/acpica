@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.22 $
+ *       $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -130,14 +130,12 @@
  * the tree (for whatever reason), and for control method execution.
  */
 
-#define ACPI_NEXT_OP_DOWNWARD       1
-#define ACPI_NEXT_OP_UPWARD         2
+#define NEXT_OP_DOWNWARD    1
+#define NEXT_OP_UPWARD      2
 
-#define ACPI_WALK_NON_METHOD        0
-#define ACPI_WALK_METHOD            1
-#define ACPI_WALK_METHOD_RESTART    2
-#define ACPI_WALK_CONST_REQUIRED    3
-#define ACPI_WALK_CONST_OPTIONAL    4
+#define WALK_NON_METHOD     0
+#define WALK_METHOD         1
+#define WALK_METHOD_RESTART 2
 
 typedef struct acpi_walk_state
 {
@@ -150,8 +148,6 @@ typedef struct acpi_walk_state
     UINT8                   ReturnUsed;
     UINT8                   WalkType;
     UINT16                  Opcode;                             /* Current AML opcode */
-    UINT8                   ScopeDepth;
-    UINT8                   Reserved1;
     UINT32                  ArgCount;                           /* push for fixed or var args */
     UINT32                  AmlOffset;
     UINT32                  ArgTypes;
@@ -162,16 +158,16 @@ typedef struct acpi_walk_state
 
 
     UINT8                   *AmlLastWhile;
-    struct acpi_node        Arguments[ACPI_METHOD_NUM_ARGS];    /* Control method arguments */
+    struct acpi_node        Arguments[MTH_NUM_ARGS];            /* Control method arguments */
     union acpi_operand_obj  **CallerReturnDesc;
     ACPI_GENERIC_STATE      *ControlState;                      /* List of control states (nested IFs) */
-    struct acpi_node        LocalVariables[ACPI_METHOD_NUM_LOCALS];     /* Control method locals */
+    struct acpi_node        LocalVariables[MTH_NUM_LOCALS];     /* Control method locals */
     struct acpi_node        *MethodCallNode;                    /* Called method Node*/
     ACPI_PARSE_OBJECT       *MethodCallOp;                      /* MethodCall Op if running a method */
     union acpi_operand_obj  *MethodDesc;                        /* Method descriptor if running a method */
     struct acpi_node        *MethodNode;                        /* Method Node if running a method */
     ACPI_PARSE_OBJECT       *Op;                                /* Current parser op */
-    union acpi_operand_obj  *Operands[ACPI_OBJ_NUM_OPERANDS+1];      /* Operands passed to the interpreter (+1 for NULL terminator) */
+    union acpi_operand_obj  *Operands[OBJ_NUM_OPERANDS+1];      /* Operands passed to the interpreter (+1 for NULL terminator) */
     const ACPI_OPCODE_INFO  *OpInfo;                            /* Info on current opcode */
     ACPI_PARSE_OBJECT       *Origin;                            /* Start of walk [Obsolete] */
     union acpi_operand_obj  **Params;
@@ -197,15 +193,10 @@ typedef struct acpi_walk_state
 typedef struct acpi_init_walk_info
 {
     UINT16                  MethodCount;
-    UINT16                  DeviceCount;
     UINT16                  OpRegionCount;
     UINT16                  FieldCount;
-    UINT16                  BufferCount;
-    UINT16                  PackageCount;
     UINT16                  OpRegionInit;
     UINT16                  FieldInit;
-    UINT16                  BufferInit;
-    UINT16                  PackageInit;
     UINT16                  ObjectCount;
     ACPI_TABLE_DESC         *TableDesc;
 
@@ -243,7 +234,7 @@ typedef struct acpi_get_devices_info
 {
     ACPI_WALK_CALLBACK      UserFunction;
     void                    *Context;
-    char                    *Hid;
+    NATIVE_CHAR             *Hid;
 
 } ACPI_GET_DEVICES_INFO;
 

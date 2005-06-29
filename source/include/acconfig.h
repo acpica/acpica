@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.83 $
+ *       $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,9 +125,9 @@
  *****************************************************************************/
 
 /*
- * ACPI_DEBUG           - This switch enables all the debug facilities of the 
- *                        ACPI subsystem.  This includes the DEBUG_PRINT output 
- *                        statements.  When disabled, all DEBUG_PRINT 
+ * ACPI_DEBUG           - This switch enables all the debug facilities of the
+ *                        ACPI subsystem.  This includes the DEBUG_PRINT output
+ *                        statements.  When disabled, all DEBUG_PRINT
  *                        statements are compiled out.
  *
  * ACPI_APPLICATION     - Use this switch if the subsystem is going to be run
@@ -201,8 +201,8 @@
 #define DEBUGGER_THREADING          DEBUGGER_MULTI_THREADED
 #endif
 
-/* 
- * Should the subystem abort the loading of an ACPI table if the 
+/*
+ * Should the subystem abort the loading of an ACPI table if the
  * table checksum is incorrect?
  */
 #define ACPI_CHECKSUM_ABORT         FALSE

@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
- * Name: tables.h - ACPI table management
+ * Name: actables.h - ACPI table management
+ *       $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -114,12 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __TABLES_H__
-#define __TABLES_H__
-
-#include "actypes.h"
-#include "actables.h"
-
+#ifndef __ACTABLES_H__
+#define __ACTABLES_H__
 
 
 /* Used in AcpiTbMapAcpiTable for size parameter if table header is to be used */
@@ -127,25 +123,35 @@
 #define SIZE_IN_HEADER          0
 
 
-
 ACPI_STATUS
 AcpiTbHandleToObject (
     UINT16                  TableId,
     ACPI_TABLE_DESC         **TableDesc);
 
-
 /*
- * AcpiTbfac - FACP, FACS utilities
+ * tbconvrt - Table conversion routines
  */
 
 ACPI_STATUS
-AcpiTbGetTableFacs (
-    char                    *BufferPtr,
+AcpiTbConvertToXsdt (
+    ACPI_TABLE_DESC         *TableInfo,
+    UINT32                  *NumberOfTables);
+
+ACPI_STATUS
+AcpiTbConvertTableFadt (
+    void);
+
+ACPI_STATUS
+AcpiTbBuildCommonFacs (
     ACPI_TABLE_DESC         *TableInfo);
 
+UINT32
+AcpiTbGetTableCount (
+    RSDP_DESCRIPTOR         *RSDP,
+    ACPI_TABLE_HEADER       *RSDT);
 
 /*
- * AcpiTbget - Table "get" routines
+ * tbget - Table "get" routines
  */
 
 ACPI_STATUS
@@ -156,33 +162,61 @@ AcpiTbGetTablePtr (
 
 ACPI_STATUS
 AcpiTbGetTable (
-    void                    *PhysicalAddress,
-    char                    *BufferPtr,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
+    ACPI_TABLE_HEADER       *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
+ACPI_STATUS
+AcpiTbVerifyRsdp (
+    ACPI_PHYSICAL_ADDRESS   RSDP_PhysicalAddress);
+
+ACPI_STATUS
+AcpiTbGetTableFacs (
+    ACPI_TABLE_HEADER       *BufferPtr,
+    ACPI_TABLE_DESC         *TableInfo);
+
+ACPI_PHYSICAL_ADDRESS
+AcpiTbGetRsdtAddress (
+    void);
+
+ACPI_STATUS
+AcpiTbValidateRsdt (
+    ACPI_TABLE_HEADER       *TablePtr);
+
+ACPI_STATUS
+AcpiTbGetTablePointer (
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
+    UINT32                  Flags,
+    UINT32                  *Size,
+    ACPI_TABLE_HEADER       **TablePtr);
 
 /*
- * AcpiTbgetall - Get all firmware ACPI tables
+ * tbgetall - Get all firmware ACPI tables
  */
 
 ACPI_STATUS
 AcpiTbGetAllTables (
     UINT32                  NumberOfTables,
-    char                    *BufferPtr);
+    ACPI_TABLE_HEADER       *BufferPtr);
 
 
 /*
- * AcpiTbinstall - Table installation
+ * tbinstall - Table installation
  */
 
 ACPI_STATUS
 AcpiTbInstallTable (
-    char                    *TablePtr,
+    ACPI_TABLE_HEADER       *TablePtr,
+    ACPI_TABLE_DESC         *TableInfo);
+
+ACPI_STATUS
+AcpiTbMatchSignature (
+    NATIVE_CHAR             *Signature,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 AcpiTbRecognizeTable (
-    char                    *TablePtr,
+    ACPI_TABLE_HEADER       *TablePtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
@@ -192,7 +226,7 @@ AcpiTbInitTableDescriptor (
 
 
 /*
- * AcpiTbremove - Table removal and deletion
+ * tbremove - Table removal and deletion
  */
 
 void
@@ -203,8 +237,12 @@ void
 AcpiTbDeleteAcpiTable (
     ACPI_TABLE_TYPE         Type);
 
-ACPI_TABLE_DESC *
+void
 AcpiTbDeleteSingleTable (
+    ACPI_TABLE_DESC         *TableDesc);
+
+ACPI_TABLE_DESC *
+AcpiTbUninstallTable (
     ACPI_TABLE_DESC         *TableDesc);
 
 void
@@ -213,36 +251,40 @@ AcpiTbFreeAcpiTablesOfType (
 
 
 /*
- * AcpiTbrsd - RSDP, RSDT utilities
+ * tbrsd - RSDP, RSDT utilities
  */
 
 ACPI_STATUS
 AcpiTbGetTableRsdt (
     UINT32                  *NumberOfTables);
 
-char *
+UINT8 *
 AcpiTbScanMemoryForRsdp (
-    char                    *StartAddress,
+    UINT8                   *StartAddress,
     UINT32                  Length);
 
 ACPI_STATUS
 AcpiTbFindRsdp (
-    ACPI_TABLE_DESC         *TableInfo);
+    ACPI_TABLE_DESC         *TableInfo,
+    UINT32                  Flags);
 
 
 /*
- * AcpiTbutils - common table utilities
+ * tbutils - common table utilities
  */
 
-BOOLEAN
-AcpiTbSystemTablePointer (
-    void                    *Where);
+ACPI_STATUS
+AcpiTbFindTable (
+    NATIVE_CHAR             *Signature,
+    NATIVE_CHAR             *OemId,
+    NATIVE_CHAR             *OemTableId,
+    ACPI_TABLE_HEADER       **TablePtr);
 
 ACPI_STATUS
 AcpiTbMapAcpiTable (
-    void                    *PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     UINT32                  *Size,
-    void                    **LogicalAddress);
+    ACPI_TABLE_HEADER       **LogicalAddress);
 
 ACPI_STATUS
 AcpiTbVerifyTableChecksum (
@@ -258,4 +300,4 @@ AcpiTbValidateTableHeader (
     ACPI_TABLE_HEADER       *TableHeader);
 
 
-#endif /* __TABLES_H__ */
+#endif /* __ACTABLES_H__ */

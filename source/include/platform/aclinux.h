@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.7 $
+ *       $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,8 +117,11 @@
 #ifndef __ACLINUX_H__
 #define __ACLINUX_H__
 
-
 #define ACPI_OS_NAME                "Linux"
+
+#define ACPI_USE_SYSTEM_CLIBRARY
+
+#ifdef __KERNEL__
 
 #include <linux/config.h>
 #include <linux/string.h>
@@ -126,6 +129,18 @@
 #include <linux/ctype.h>
 #include <asm/system.h>
 #include <asm/atomic.h>
+#include <asm/div64.h>
+
+#define strtoul simple_strtoul
+
+#else
+
+#include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#endif
 
 /* Linux uses GCC */
 
@@ -134,9 +149,5 @@
 #undef DEBUGGER_THREADING
 #define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
 
-/* Linux ia32 can't do int64 well */
-#ifndef _IA64
-#define ACPI_NO_INTEGER64_SUPPORT
-#endif
 
 #endif /* __ACLINUX_H__ */

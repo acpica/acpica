@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmsvc.h - VC specific defines, etc.
- *       $Revision: 1.4 $
+ *       $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -119,6 +119,25 @@
 
 #define COMPILER_DEPENDENT_UINT64   unsigned __int64
 
+/*
+ * Math helper functions
+ */
+#define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32) \
+{                           \
+    _asm mov    edx, n_hi   \
+    _asm mov    eax, n_lo   \
+    _asm div    d32         \
+    _asm mov    q32, eax    \
+    _asm mov    r32, edx    \
+}
+
+#define ACPI_SHIFT_RIGHT_64(n_hi, n_lo) \
+{                           \
+    _asm shr    n_hi, 1     \
+    _asm rcr    n_lo, 1     \
+}
+
+
 /* warn C4100: unreferenced formal parameter */
 #pragma warning(disable:4100)
 
@@ -128,5 +147,10 @@
 /* warn C4706: assignment within conditional expression */
 #pragma warning(disable:4706)
 
+/* This macro is used to tag functions as "printf-like" because
+ * some compilers can catch printf format string problems. MSVC
+ * doesn't, so this is proprocessed away.
+ */
+#define ACPI_PRINTF_LIKE_FUNC
 
 #endif /* __ACMSVC_H__ */
