@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.25 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,6 +117,7 @@
 
 
 #include "acpisrc.h"
+#include "acapps.h"
 
 
 /* Globals */
@@ -152,30 +153,30 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
     /* Declarations first */
 
-    "UINT32_BIT  ",     "unsigned int",
+    "UINT32_BIT  ",     "unsigned int",     REPLACE_SUBSTRINGS,
 
-    "UINT32      ",     "unsigned int",
-    "UINT16        ",   "unsigned short",
-    "UINT8        ",    "unsigned char",
-    "BOOLEAN      ",    "unsigned char",
+    "UINT32      ",     "unsigned int",     REPLACE_SUBSTRINGS,
+    "UINT16        ",   "unsigned short",   REPLACE_SUBSTRINGS,
+    "UINT8        ",    "unsigned char",    REPLACE_SUBSTRINGS,
+    "BOOLEAN      ",    "unsigned char",    REPLACE_SUBSTRINGS,
 
     /* Now do embedded typecasts */
 
-    "UINT32",           "unsigned int",
-    "UINT16",           "unsigned short",
-    "UINT8",            "unsigned char",
-    "BOOLEAN",          "unsigned char",
+    "UINT32",           "unsigned int",     REPLACE_SUBSTRINGS,
+    "UINT16",           "unsigned short",   REPLACE_SUBSTRINGS,
+    "UINT8",            "unsigned char",    REPLACE_SUBSTRINGS,
+    "BOOLEAN",          "unsigned char",    REPLACE_SUBSTRINGS,
 
-    "INT32  ",          "int    ",
-    "INT32",            "int",
-    "INT16",            "short",
-    "INT8",             "char",
+    "INT32  ",          "int    ",          REPLACE_SUBSTRINGS,
+    "INT32",            "int",              REPLACE_SUBSTRINGS,
+    "INT16",            "short",            REPLACE_SUBSTRINGS,
+    "INT8",             "char",             REPLACE_SUBSTRINGS,
 
     /* Put back anything we broke (such as anything with _INT32_ in it) */
 
-    "_int_",            "_INT32_",
-    "_unsigned int_",   "_UINT32_",
-    NULL,               NULL
+    "_int_",            "_INT32_",          REPLACE_SUBSTRINGS,
+    "_unsigned int_",   "_UINT32_",         REPLACE_SUBSTRINGS,
+    NULL,               NULL,               0
 };
 
 
@@ -187,7 +188,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" *  Copyright (C) 2000, 2001 R. Byron Moore\n"
+" *  Copyright (C) 2000 - 2002, R. Byron Moore\n"
 " *\n"
 " *  This program is free software; you can redistribute it and/or modify\n"
 " *  it under the terms of the GNU General Public License as published by\n"
@@ -209,161 +210,249 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Declarations first */
 
-    "UINT32_BIT  ",             "u32         ",
+    "UINT32_BIT  ",             "u32         ",             REPLACE_WHOLE_WORD,
 
-    "UINT32      ",             "u32         ",
-    "UINT16      ",             "u16         ",
-    "UINT8       ",             "u8          ",
-    "BOOLEAN     ",             "u8          ",
+    "UINT64      ",             "u64         ",             REPLACE_WHOLE_WORD,
+    "UINT32      ",             "u32         ",             REPLACE_WHOLE_WORD,
+    "UINT16      ",             "u16         ",             REPLACE_WHOLE_WORD,
+    "UINT8       ",             "u8          ",             REPLACE_WHOLE_WORD,
+    "BOOLEAN     ",             "u8          ",             REPLACE_WHOLE_WORD,
 
     /* Now do embedded typecasts */
 
-    "UINT32",                   "u32",
-    "UINT16",                   "u16",
-    "UINT8",                    "u8",
-    "BOOLEAN",                  "u8",
+    "UINT64",                   "u64",                      REPLACE_WHOLE_WORD,
+    "UINT32",                   "u32",                      REPLACE_WHOLE_WORD,
+    "UINT16",                   "u16",                      REPLACE_WHOLE_WORD,
+    "UINT8",                    "u8",                       REPLACE_WHOLE_WORD,
+    "BOOLEAN",                  "u8",                       REPLACE_WHOLE_WORD,
 
-    "INT32  ",                  "s32    ",
-    "INT32",                    "s32",
-    "INT16  ",                  "s16    ",
-    "INT8   ",                  "s8     ",
-    "INT16",                    "s16",
-    "INT8",                     "s8",
+    "INT64  ",                  "s64    ",                  REPLACE_WHOLE_WORD,
+    "INT64",                    "s64",                      REPLACE_WHOLE_WORD,
+    "INT32  ",                  "s32    ",                  REPLACE_WHOLE_WORD,
+    "INT32",                    "s32",                      REPLACE_WHOLE_WORD,
+    "INT16  ",                  "s16    ",                  REPLACE_WHOLE_WORD,
+    "INT8   ",                  "s8     ",                  REPLACE_WHOLE_WORD,
+    "INT16",                    "s16",                      REPLACE_WHOLE_WORD,
+    "INT8",                     "s8",                       REPLACE_WHOLE_WORD,
 
     /* Put back anything we broke (such as anything with _INTxx_ in it) */
 
-    "_s32_",                    "_INT32_",
-    "_u32_",                    "_UINT32_",
-    "_s16_",                    "_INT16_",
-    "_u16_",                    "_UINT16_",
-    "_s8_",                     "_INT8_",
-    "_u8_",                     "_UINT8_",
+/* No longer needed?
 
-    /*"ACPI_STATUS  ",            "acpi_status  ",*/
+    "_s32_",                    "_INT32_",          REPLACE_SUBSTRINGS,
+    "_u32_",                    "_UINT32_",          REPLACE_SUBSTRINGS,
+    "_s16_",                    "_INT16_",          REPLACE_SUBSTRINGS,
+    "_u16_",                    "_UINT16_",          REPLACE_SUBSTRINGS,
+    "_s8_",                     "_INT8_",          REPLACE_SUBSTRINGS,
+    "_u8_",                     "_UINT8_",          REPLACE_SUBSTRINGS,
+*/
+
+NULL,                       NULL,                       0};
+
+ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
+
     /*"ACPI_IO_ADDRESS  ",        "acpi_io_address  ",*/
     /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address  ",*/
     /*"NATIVE_UINT  ",            "native_uint  ",*/
     /*"NATIVE_INT  ",             "native_int  ",*/
-    /*"NATIVE_CHAR  ",            "native_char  ",*/
-    "ACPI_NAME  ",              "acpi_name  ",
-    "ACPI_STRING  ",            "acpi_string  ",
-    "ACPI_HANDLE  ",            "acpi_handle  ",
-    "ACPI_INTEGER  ",           "acpi_integer  ",
-    "ACPI_OBJECT_TYPE  ",       "acpi_object_type  ",
-    "ACPI_OBJECT_TYPE8  ",      "acpi_object_type8  ",
-    "OPERATING_MODE  ",         "operating_mode  ",
-    "ACPI_EVENT_STATUS  ",      "acpi_event_status  ",
-    "ACPI_OWNER_ID  ",          "acpi_owner_id  ",
-    "ACPI_TABLE_TYPE  ",        "acpi_table_type  ",
+    /*"char         ",            "native_char  ",*/
 
-    "ACPI_NAMESPACE_NODE",      "acpi_namespace_node",
-    "ACPI_OPERAND_OBJECT",      "acpi_operand_object",
-    "ACPI_GENERIC_STATE",       "acpi_generic_state",
-    "ACPI_WALK_STATE",          "acpi_walk_state",
-    "ACPI_GPE_LEVEL_INFO",      "acpi_gpe_level_info",
-    "ACPI_PARSE_OBJECT",        "acpi_parse_object",
-    "ACPI_WALK_LIST",           "acpi_walk_list",
-    "ACPI_PARSE_STATE",         "acpi_parse_state",
-    "ACPI_BUFFER",              "acpi_buffer",
-    "ACPI_OBJECT_LIST",         "acpi_object_list",
-    "ACPI_OPCODE_INFO",         "acpi_opcode_info",
-    "PREDEFINED_NAMES",         "predefined_names",
-    "DB_METHOD_INFO",           "db_method_info",
-    "ACPI_PARSE2_OBJECT",       "acpi_parse2_object",
-    "ACPI_PARSE_DOWNWARDS",     "acpi_parse_downwards",
-    "ACPI_PARSE_UPWARDS",       "acpi_parse_upwards",
-    "ACPI_GENERIC_ADDRESS",     "acpi_generic_address",
-    "PCI_ROUTING_TABLE",        "pci_routing_table",
-    "ACPI_RESOURCE_DATA",       "acpi_resource_data",
-    "ACPI_RESOURCE_IRQ",        "acpi_resource_irq",
-    "ACPI_RESOURCE_DMA",        "acpi_resource_dma",
-    "ACPI_RESOURCE_START_DPF",  "acpi_resource_start_dpf",
-    "ACPI_RESOURCE_IO",         "acpi_resource_io",
-    "ACPI_RESOURCE_FIXED_IO",   "acpi_resource_fixed_io",
-    "ACPI_RESOURCE_VENDOR",     "acpi_resource_vendor",
-    "ACPI_RESOURCE_MEM24",      "acpi_resource_mem24",
-    "ACPI_RESOURCE_MEM32",      "acpi_resource_mem32",
-    "ACPI_RESOURCE_FIXED_MEM32","acpi_resource_fixed_mem32",
-    "ACPI_RESOURCE_TYPE",       "acpi_resource_type",
-    "ACPI_MEMORY_ATTRIBUTE",	"acpi_memory_attribute",
-    "ACPI_IO_ATTRIBUTE",	"acpi_io_attribute",
-    "ACPI_BUS_ATTRIBUTE",	"acpi_bus_attribute",
-    "ACPI_RESOURCE_ATTRIBUTE",	"acpi_resource_attribute",
-    "ACPI_RESOURCE_SOURCE",	"acpi_resource_source",
-    "ACPI_RESOURCE_ADDRESS16",  "acpi_resource_address16",
-    "ACPI_RESOURCE_ADDRESS32",  "acpi_resource_address32",
-    "ACPI_RESOURCE_ADDRESS64",  "acpi_resource_address64",
-    "ACPI_RESOURCE_EXT_IRQ",    "acpi_resource_ext_irq",
-    "ACPI_RESOURCE",            "acpi_resource",    /* Must be last resource desc */
-    "ACPI_SYSTEM_INFO",         "acpi_system_info",
-    "ACPI_TABLE_DESC",          "acpi_table_desc",
-    "XSDT_DESCRIPTOR",          "xsdt_descriptor",
-    "FADT_DESCRIPTOR_REV071",   "fadt_descriptor_rev071",
-    "FADT_DESCRIPTOR_REV1",     "fadt_descriptor_rev1",
-    "FADT_DESCRIPTOR_REV2",     "fadt_descriptor_rev2",
-    "ACPI_COMMON_FACS",         "acpi_common_facs",
-    "FACS_DESCRIPTOR_REV071",   "facs_descriptor_rev071",
-    "FACS_DESCRIPTOR_REV1",     "facs_descriptor_rev1",
-    "FACS_DESCRIPTOR_REV2",     "facs_descriptor_rev2",
-    "ACPI_TABLE_HEADER",        "acpi_table_header",
-    "ACPI_PKG_INFO",            "acpi_pkg_info",
-    "ACPI_EVENT_TYPE",          "acpi_event_type",
-    "ACPI_DEVICE_INFO",         "acpi_device_info",
-    "ACPI_PCI_ID",              "acpi_pci_id",
-    "ACPI_MEM_SPACE_CONTEXT",   "acpi_mem_space_context",
-    "ACPI_OBJ_INFO_HEADER",     "acpi_obj_info_header",
+    "ACPI_ADR_SPACE_HANDLER",
+    "ACPI_ADR_SPACE_SETUP",
+    "ACPI_ADR_SPACE_TYPE",
+    "ACPI_AML_OPERANDS",
+    "ACPI_BIT_REGISTER_INFO",
+    "ACPI_BUFFER",
+    "ACPI_BUS_ATTRIBUTE",
+    "ACPI_COMMON_FACS",
+    "ACPI_COMMON_STATE",
+    "ACPI_CONTROL_STATE",
+    "ACPI_CREATE_FIELD_INFO",
+    "ACPI_DB_METHOD_INFO",
+    "ACPI_DEBUG_MEM_BLOCK",
+    "ACPI_DEBUG_MEM_HEADER",
+    "ACPI_DEBUG_PRINT_INFO",
+    "ACPI_DESCRIPTOR",
+    "ACPI_DEVICE_ID",
+    "ACPI_DEVICE_INFO",
+    "ACPI_DEVICE_WALK_INFO",
+    "ACPI_EVENT_HANDLER",
+    "ACPI_EVENT_STATUS",
+    "ACPI_EVENT_TYPE",
+    "ACPI_FIELD_INFO",
+    "ACPI_FIND_CONTEXT",
+    "ACPI_FIXED_EVENT_HANDLER",
+    "ACPI_FIXED_EVENT_INFO",
+    "ACPI_GENERIC_ADDRESS",
+    "ACPI_GENERIC_STATE",
+    "ACPI_GET_DEVICES_INFO",
+    "ACPI_GPE_BLOCK_INFO",
+    "ACPI_GPE_HANDLER",
+    "ACPI_GPE_INDEX_INFO",
+    "ACPI_GPE_LEVEL_INFO",
+    "ACPI_GPE_NUMBER_INFO",
+    "ACPI_GPE_REGISTER_INFO",
+    "ACPI_GPE_REGISTERS",
+    "ACPI_HANDLE",
+    "ACPI_INIT_HANDLER",
+    "ACPI_INIT_WALK_INFO",
+    "ACPI_INTEGER",
+    "ACPI_INTEGRITY_INFO",
+    "ACPI_INTERPRETER_MODE",
+    "ACPI_IO_ADDRESS",
+    "ACPI_IO_ATTRIBUTE",
+    "ACPI_MEM_SPACE_CONTEXT",
+    "ACPI_MEMORY_ATTRIBUTE",
+    "ACPI_MEMORY_LIST",
+    "ACPI_MUTEX",
+    "ACPI_MUTEX_HANDLE",
+    "ACPI_MUTEX_INFO",
+    "ACPI_NAME",
+    "ACPI_NAMESPACE_NODE",
+    "ACPI_NAMESTRING_INFO",
+    "ACPI_NOTIFY_HANDLER",
+    "ACPI_NOTIFY_INFO",
+    "ACPI_NS_SEARCH_DATA",
+    "ACPI_OBJ_INFO_HEADER",
+    "ACPI_OBJECT",
+    "ACPI_OBJECT_ADDR_HANDLER",
+    "ACPI_OBJECT_BANK_FIELD",
+    "ACPI_OBJECT_BUFFER",
+    "ACPI_OBJECT_BUFFER_FIELD",
+    "ACPI_OBJECT_CACHE_LIST",
+    "ACPI_OBJECT_COMMON",
+    "ACPI_OBJECT_DATA",
+    "ACPI_OBJECT_DEVICE",
+    "ACPI_OBJECT_EVENT",
+    "ACPI_OBJECT_EXTRA",
+    "ACPI_OBJECT_FIELD_COMMON",
+    "ACPI_OBJECT_HANDLER",
+    "ACPI_OBJECT_INDEX_FIELD",
+    "ACPI_OBJECT_INTEGER",
+    "ACPI_OBJECT_LIST",
+    "ACPI_OBJECT_METHOD",
+    "ACPI_OBJECT_MUTEX",
+    "ACPI_OBJECT_NOTIFY_COMMON",
+    "ACPI_OBJECT_NOTIFY_HANDLER",
+    "ACPI_OBJECT_PACKAGE",
+    "ACPI_OBJECT_POWER_RESOURCE",
+    "ACPI_OBJECT_PROCESSOR",
+    "ACPI_OBJECT_REFERENCE",
+    "ACPI_OBJECT_REGION",
+    "ACPI_OBJECT_REGION_FIELD",
+    "ACPI_OBJECT_STRING",
+    "ACPI_OBJECT_THERMAL_ZONE",
+    "ACPI_OBJECT_TYPE",
+    "ACPI_OBJECT_TYPE8",
+    "ACPI_OP_WALK_INFO",
+    "ACPI_OPCODE_INFO",
+    "ACPI_OPERAND_OBJECT",
+    "ACPI_OWNER_ID",
+    "ACPI_PARSE_DOWNWARDS",
+    "ACPI_PARSE_OBJ_ASL",
+    "ACPI_PARSE_OBJ_COMMON",
+    "ACPI_PARSE_OBJ_NAMED",
+    "ACPI_PARSE_OBJECT",
+    "ACPI_PARSE_STATE",
+    "ACPI_PARSE_UPWARDS",
+    "ACPI_PARSE_VALUE",
+    "ACPI_PARSE2_OBJECT",
+    "ACPI_PCI_ID",
+    "ACPI_PCI_ROUTING_TABLE",
+    "ACPI_PHYSICAL_ADDRESS",
+    "ACPI_PKG_CALLBACK",
+    "ACPI_PKG_INFO",
+    "ACPI_PKG_STATE",
+    "ACPI_POINTER",
+    "ACPI_PREDEFINED_NAMES",
+    "ACPI_PSCOPE_STATE",
+    "ACPI_RESOURCE",
+    "ACPI_RESOURCE_ADDRESS16",
+    "ACPI_RESOURCE_ADDRESS32",
+    "ACPI_RESOURCE_ADDRESS64",
+    "ACPI_RESOURCE_ATTRIBUTE",
+    "ACPI_RESOURCE_DATA",
+    "ACPI_RESOURCE_DMA",
+    "ACPI_RESOURCE_END_TAG",
+    "ACPI_RESOURCE_EXT_IRQ",
+    "ACPI_RESOURCE_FIXED_IO",
+    "ACPI_RESOURCE_FIXED_MEM32",
+    "ACPI_RESOURCE_IO",
+    "ACPI_RESOURCE_IRQ",
+    "ACPI_RESOURCE_MEM24",
+    "ACPI_RESOURCE_MEM32",
+    "ACPI_RESOURCE_SOURCE",
+    "ACPI_RESOURCE_START_DPF",
+    "ACPI_RESOURCE_TYPE",
+    "ACPI_RESOURCE_VENDOR",
+    "ACPI_RESULT_VALUES",
+    "ACPI_SCOPE_STATE",
+    "ACPI_SIGNAL_FATAL_INFO",
+    "ACPI_SIZE",
+    "ACPI_STATUS",
+    "ACPI_STRING",
+    "ACPI_SYSTEM_INFO",
+    "ACPI_TABLE_DESC",
+    "ACPI_TABLE_HEADER",
+    "ACPI_TABLE_INFO",
+    "ACPI_TABLE_TYPE",
+    "ACPI_TABLE_TYPE",
+    "ACPI_THREAD_STATE",
+    "ACPI_UPDATE_STATE",
+    "ACPI_WALK_CALLBACK",
+    "ACPI_WALK_INFO",
+    "ACPI_WALK_LIST",
+    "ACPI_WALK_STATE",
+    "ASL_ANALYSIS_WALK_INFO",
+    "ASL_DMA_FORMAT_DESC",
+    "ASL_DWORD_ADDRESS_DESC",
+    "ASL_END_DEPENDENT_DESC",
+    "ASL_END_TAG_DESC",
+    "ASL_ERROR_MSG",
+    "ASL_EVENT_INFO",
+    "ASL_EXTENDED_XRUPT_DESC",
+    "ASL_FILE_INFO",
+    "ASL_FIXED_IO_PORT_DESC",
+    "ASL_FIXED_MEMORY_32_DESC",
+    "ASL_GENERAL_REGISTER_DESC",
+    "ASL_IO_PORT_DESC",
+    "ASL_IRQ_FORMAT_DESC",
+    "ASL_IRQ_NOFLAGS_DESC",
+    "ASL_LARGE_VENDOR_DESC",
+    "ASL_LISTING_NODE",
+    "ASL_MAPPING_ENTRY",
+    "ASL_MEMORY_24_DESC",
+    "ASL_MEMORY_32_DESC",
+    "ASL_METHOD_INFO",
+    "ASL_QWORD_ADDRESS_DESC",
+    "ASL_RESERVED_INFO",
+    "ASL_RESOURCE_DESC",
+    "ASL_RESOURCE_NODE",
+    "ASL_SMALL_VENDOR_DESC",
+    "ASL_START_DEPENDENT_DESC",
+    "ASL_START_DEPENDENT_NOPRIO_DESC",
+    "ASL_WALK_CALLBACK",
+    "ASL_WORD_ADDRESS_DESC",
+    "FACS_DESCRIPTOR_REV071",
+    "FACS_DESCRIPTOR_REV1",
+    "FACS_DESCRIPTOR_REV2",
+    "FADT_DESCRIPTOR_REV071",
+    "FADT_DESCRIPTOR_REV1",
+    "FADT_DESCRIPTOR_REV2",
+    "RSDP_DESCRIPTOR",
+    "UINT64_OVERLAY",
+    "UINT64_STRUCT",
+    "XSDT_DESCRIPTOR",
 
-    /* Typecasts */
+    NULL,
+};
 
-    "ACPI_STATUS",              "acpi_status",
 
-    /*"ACPI_IO_ADDRESS)",         "acpi_io_address)",*/
-    /*"ACPI_PHYSICAL_ADDRESS)",   "acpi_physical_address)",*/
-    /*"NATIVE_UINT)",             "native_uint)",*/
-    /*"NATIVE_INT)",              "native_int)",*/
-    /*"NATIVE_CHAR)",             "native_char)",*/
-    "ACPI_NAME)",               "acpi_name)",
-    "ACPI_STRING)",             "acpi_string)",
-    "ACPI_HANDLE)",             "acpi_handle)",
-    "ACPI_INTEGER)",            "acpi_integer)",
-    "ACPI_OBJECT_TYPE)",        "acpi_object_type)",
-    "ACPI_OBJECT_TYPE8)",       "acpi_object_type8)",
-    "OPERATING_MODE)",          "operating_mode)",
-    "ACPI_EVENT_STATUS)",       "acpi_event_status)",
-    "ACPI_OWNER_ID)",           "acpi_owner_id)",
-    "ACPI_TABLE_TYPE)",         "acpi_table_type)",
-    "ACPI_RESOURCE)",           "acpi_resource)",
+ACPI_IDENTIFIER_TABLE       LinuxEliminateMacros[] = {
 
-    /*"ACPI_IO_ADDRESS;",         "acpi_io_address;",*/
-    /*"ACPI_PHYSICAL_ADDRESS;",   "acpi_physical_address;",*/
-    /*"NATIVE_UINT;",             "native_uint;",*/
-    /*"NATIVE_INT;",              "native_int;",*/
-    /*"NATIVE_CHAR;",             "native_char;",*/
-    "ACPI_NAME;",               "acpi_name;",
-    "ACPI_STRING;",             "acpi_string;",
-    "ACPI_HANDLE;",             "acpi_handle;",
-    "ACPI_INTEGER;",            "acpi_integer;",
-    "ACPI_OBJECT_TYPE;",        "acpi_object_type;",
-    "ACPI_OBJECT_TYPE8;",       "acpi_object_type8;",
-    "OPERATING_MODE;",          "operating_mode;",
-    "ACPI_EVENT_STATUS;",       "acpi_event_status;",
-    "ACPI_OWNER_ID;",           "acpi_owner_id;",
-    "ACPI_TABLE_TYPE;",         "acpi_table_type;",
-    "ACPI_RESOURCE;",           "acpi_resource;",
-
-    /*
-     * Function return values.
-     * This is fragile. We have to put these in to get it to compile, BUT
-     * we can't put all tokens here, because that will break strings where
-     * we want to convert FOO but not FOO_MAX_LEN, for example.
-     */
-    "ACPI_OWNER_ID",           "acpi_owner_id",
-    "ACPI_OBJECT_TYPE8",       "acpi_object_type8",
-    "ACPI_HANDLE",             "acpi_handle",
-    "ACPI_NAME",               "acpi_name",
-    "ACPI_OBJECT",             "acpi_object",
-
-    NULL,                       NULL
+    "ACPI_GET_ADDRESS",
+    "ACPI_VALID_ADDRESS",
+    NULL
 };
 
 
@@ -387,11 +476,14 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxHeader,
     FLG_NO_CARRIAGE_RETURNS | FLG_LOWERCASE_DIRNAMES,
 
+    LinuxLowerCase,
+
     /* C source files */
 
     LinuxDataTypes,
     LinuxLineIdentifiers,
     NULL,
+    LinuxEliminateMacros,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
      CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS | CVT_SPACES_TO_TABS8),
@@ -401,6 +493,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxDataTypes,
     NULL,
     LinuxConditionalIdentifiers,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
      CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS| CVT_SPACES_TO_TABS8),
@@ -418,9 +511,10 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
 
     NULL,
     FLG_DEFAULT_FLAGS,
-
+    NULL,
     /* C source files */
 
+    NULL,
     NULL,
     NULL,
     NULL,
@@ -428,6 +522,7 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
 
     /* C header files */
 
+    NULL,
     NULL,
     NULL,
     NULL,
@@ -439,9 +534,11 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
     NULL,
     FLG_NO_FILE_OUTPUT,
+    NULL,
 
     /* C source files */
 
+    NULL,
     NULL,
     NULL,
     NULL,
@@ -449,6 +546,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
     /* C header files */
 
+    NULL,
     NULL,
     NULL,
     NULL,
@@ -464,15 +562,17 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
+#if 0
+    "1999 - 2002, Intel Corp",      "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
+    "1999, Intel Corp",             "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
+    "  All rights\n * reserved.",    "\n * All rights reserved.",     REPLACE_WHOLE_WORD,
+    "Copyright (C) 2000, 2001",     "Copyright (C) 2000 - 2002",      REPLACE_WHOLE_WORD,
+#endif
 
-    "2000, 2001, Intel Corp",     "2000, 2001, Intel Corp",
-    "ACPI_TYPE_INTEGER",     "ACPI_TYPE_INTEGER",
-    "ARGI_INTEGER",          "ARGI_INTEGER",
-    "ARGP_INTEGER",          "ARGP_INTEGER",
-    "ACPI_BTYPE_INTEGER",    "ACPI_BTYPE_INTEGER",
-    "ACPI_OBJECT_INTEGER",   "ACPI_OBJECT_INTEGER",
-    "->Integer",             "->Integer",
-    NULL,                   NULL
+    "NATIVE CHAR *",         "char *",           REPLACE_WHOLE_WORD,
+    "NATIVE CHAR ",          "char        ",     REPLACE_WHOLE_WORD,
+    "char",                  "char",             REPLACE_WHOLE_WORD,
+    NULL,                    NULL, 0
 };
 
 
@@ -480,10 +580,12 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
 
     NULL,
     FLG_DEFAULT_FLAGS,
+    NULL,
 
     /* C source files */
 
     CustomReplacements,
+    NULL,
     NULL,
     NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
@@ -491,6 +593,7 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
     /* C header files */
 
     CustomReplacements,
+    NULL,
     NULL,
     NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
@@ -540,7 +643,6 @@ AsExaminePaths (
         return 0;
     }
 
-
     if (!stricmp (Source, Target))
     {
         printf ("Target path is the same as the source path, overwrite?\n");
@@ -555,7 +657,6 @@ AsExaminePaths (
 
         Gbl_Overwrite = TRUE;
     }
-
     else
     {
         Status = stat (Target, &Gbl_StatBuf);
@@ -641,7 +742,7 @@ AsDisplayUsage (void)
  *
  ******************************************************************************/
 
-int
+int ACPI_SYSTEM_XFACE
 main (
     NATIVE_UINT             argc,
     char                    *argv[])
@@ -664,7 +765,7 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "lcsuvyd")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "lcsuvyd")) != EOF) switch(j)
     {
     case 'l':
         /* Linux code generation */
@@ -716,7 +817,7 @@ main (
     }
 
 
-    SourcePath = argv[optind];
+    SourcePath = argv[AcpiGbl_Optind];
     if (!SourcePath)
     {
         printf ("Missing source path\n");
@@ -724,7 +825,7 @@ main (
         return -1;
     }
 
-    TargetPath = argv[optind+1];
+    TargetPath = argv[AcpiGbl_Optind+1];
 
     if (!ConversionTable)
     {
@@ -735,7 +836,6 @@ main (
         printf ("Source code statistics only\n");
         ConversionTable = &StatsConversionTable;
     }
-
     else if (!TargetPath)
     {
         TargetPath = SourcePath;
@@ -745,7 +845,6 @@ main (
     {
         ConversionTable->SourceFunctions &= ~CVT_REMOVE_DEBUG_MACROS;
     }
-
 
     /* Check source and target paths and files */
 
@@ -762,12 +861,13 @@ main (
 
         AsProcessTree (ConversionTable, SourcePath, TargetPath);
     }
-
     else
     {
         /* Process a single file */
 
-        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_HEADER);
+        /* TBD: Need to differentiate between source and header files !! */
+
+        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_SOURCE);
     }
 
     /* Always display final summary and stats */

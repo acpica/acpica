@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.34 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -232,7 +232,6 @@ AsCheckAndSkipLiterals (
         }
     }
 
-
     if (TotalLines)
     {
         (*TotalLines) += NewLines;
@@ -270,7 +269,6 @@ AsCheckForBraces (
         {
             TotalLines++;
         }
-
         else if (!(strncmp (" if", SubBuffer, 3)))
         {
             SubBuffer += 2;
@@ -286,7 +284,6 @@ AsCheckForBraces (
                 printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
             }
         }
-
         else if (!(strncmp (" else if", SubBuffer, 8)))
         {
             SubBuffer += 7;
@@ -302,8 +299,6 @@ AsCheckForBraces (
                 printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
             }
         }
-
-
         else if (!(strncmp (" else", SubBuffer, 5)))
         {
             SubBuffer += 4;
@@ -457,7 +452,6 @@ AsReplaceHeader (
     HdrLength = strlen (NewHeader);
     memmove (SubBuffer + HdrLength, SubBuffer, Length);
     memmove (SubBuffer, NewHeader, HdrLength);
-
 }
 
 
@@ -491,7 +485,6 @@ AsReplaceString (
     SubBuffer = Buffer;
     SubString1 = Buffer;
 
-
     while (SubString1)
     {
         /* Find the target string */
@@ -501,7 +494,6 @@ AsReplaceString (
         {
             return ReplaceCount;
         }
-
 
         /*
          * Check for translation escape string -- means to ignore
@@ -541,7 +533,6 @@ AsReplaceString (
                 }
             }
 
-
             SubBuffer = AsReplaceData (SubString1, TargetLength, Replacement, ReplacementLength);
             ReplaceCount++;
         }
@@ -577,7 +568,6 @@ AsLowerCaseString (
     SubBuffer = Buffer;
     SubString1 = Buffer;
 
-
     while (SubString1)
     {
         /* Find the target string */
@@ -588,12 +578,10 @@ AsLowerCaseString (
             return LowerCaseCount;
         }
 
-
         /*
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
-
         SubString2 = strstr (SubBuffer, "/*!");
 
         if ((SubString2) &&
@@ -725,10 +713,8 @@ AsMixedCaseToUnderscores (
          * to
          *      <LowerCase><Underscore><LowerCase>
          */
-
         else if ((islower (SubBuffer[0]) || isdigit (SubBuffer[0])) &&
                  (isupper (SubBuffer[1])))
-
         {
             if (isdigit (SubBuffer[0]))
             {
@@ -741,14 +727,12 @@ AsMixedCaseToUnderscores (
                     SubBuffer++;
                     continue;
                 }
-
             }
 
             /*
              * Matched the pattern.
              * Find the end of this identifier (token)
              */
-
             TokenEnd = SubBuffer;
             while ((isalnum (*TokenEnd)) || (*TokenEnd == '_'))
             {
@@ -780,7 +764,6 @@ AsMixedCaseToUnderscores (
 
                 SubString++;
             }
-
 
             if (!Length)
             {
@@ -860,7 +843,6 @@ AsLowerCaseIdentifiers (
                 {
                     SubBuffer++;
                 }
-
                 else if (SubBuffer[0] == '\"')
                 {
                     SubBuffer++;
@@ -879,7 +861,6 @@ AsLowerCaseIdentifiers (
          * Only lower case if we have an upper followed by a lower
          * This leaves the all-uppercase things (macros, etc.) intact
          */
-
         if ((isupper (SubBuffer[0])) &&
             (islower (SubBuffer[1])))
         {
@@ -889,7 +870,6 @@ AsLowerCaseIdentifiers (
 
         SubBuffer++;
     }
-
 }
 
 
@@ -960,13 +940,11 @@ AsBracesOnSameLine (
             {
                 BlockBegin = FALSE;
             }
-
             else
             {
                 /*
                  * Backup to previous non-whitespace
                  */
-
                 Beginning = SubBuffer - 1;
                 while ((*Beginning == ' ')   ||
                        (*Beginning == '\n'))
@@ -1182,7 +1160,6 @@ AsRemoveConditionalCompile (
         }
         SubString++;
 
-
         /* Find the "#ifxxxx" */
 
         IfPtr = strstr (SubString, "#if");
@@ -1214,7 +1191,6 @@ AsRemoveConditionalCompile (
             (EndifPtr > ElsePtr))
         {
             /* This #ifdef contains an #else clause */
-
             /* Find end of this line */
 
             SubBuffer = AsSkipPastChar (ElsePtr, '\n');
@@ -1243,7 +1219,6 @@ AsRemoveConditionalCompile (
         }
 
         /* Remove the ... #endif part */
-
         /* Find end of this line */
 
         SubBuffer = AsSkipPastChar (EndifPtr, '\n');
@@ -1258,6 +1233,83 @@ AsRemoveConditionalCompile (
         memmove (SubString, SubBuffer, StrLength+1);
 
         SubBuffer = SubString;
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveMacro
+ *
+ * DESCRIPTION: Remove every line that contains the keyword.  Does not
+ *              skip comments.
+ *
+ ******************************************************************************/
+
+void
+AsRemoveMacro (
+    char                    *Buffer,
+    char                    *Keyword)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    int                     StrLength;
+    int                     NestLevel;
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+
+    while (SubString)
+    {
+        SubString = strstr (SubBuffer, Keyword);
+
+        if (SubString)
+        {
+            SubBuffer = SubString;
+
+            /* Find start of the macro parameters */
+
+            while (*SubString != '(')
+            {
+                SubString++;
+            }
+            SubString++;
+
+            StrLength = strlen (SubBuffer);
+            Gbl_MadeChanges = TRUE;
+
+            memmove (SubBuffer, SubString, StrLength+1);
+            SubString = SubBuffer;
+
+            NestLevel = 1;
+            while (*SubString)
+            {
+                if (*SubString == '(')
+                {
+                    NestLevel++;
+                }
+                else if (*SubString == ')')
+                {
+                    NestLevel--;
+                }
+
+                SubString++;
+
+                if (NestLevel == 0)
+                {
+                    break;
+                }
+            }
+
+
+            StrLength = strlen (SubString);
+            Gbl_MadeChanges = TRUE;
+
+            memmove (SubString-1, SubString, StrLength+1);
+            SubBuffer = SubString;
+        }
     }
 }
 
@@ -1388,13 +1440,11 @@ AsRemoveEmptyBlocks (
                     AnotherPassRequired = TRUE;
                     continue;
                 }
-
             }
 
             SubBuffer++;
         }
     }
-
 
     if (BlockCount)
     {
@@ -1429,7 +1479,6 @@ AsTabify4 (
         {
             Column = 0;
         }
-
         else
         {
             Column++;
@@ -1485,7 +1534,6 @@ AsTabify4 (
                 SpaceCount = 0;
             }
         }
-
         else
         {
             SpaceCount = 0;
@@ -1552,19 +1600,16 @@ AsTabify8 (
              * continuation line (which was indented correctly for tabs=4) would
              * get indented off the screen if we just blindly converted to tabs.
              */
-
             ThisColumnStart = FirstNonBlank - SubBuffer;
 
             if (LastLineTabCount == 0)
             {
                 ThisTabCount = 0;
             }
-
             else if (ThisColumnStart == LastLineColumnStart)
             {
                 ThisTabCount = LastLineTabCount -1;
             }
-
             else
             {
 
@@ -1574,7 +1619,6 @@ AsTabify8 (
 
         Column++;
 
-
         /* Check if we are in a comment */
 
         if ((SubBuffer[0] == '*') &&
@@ -1582,7 +1626,6 @@ AsTabify8 (
         {
             SpaceCount = 0;
             SubBuffer += 2;
-
 
             if (*SubBuffer == '\n')
             {
@@ -1668,8 +1711,6 @@ AsTabify8 (
             Column = 0;
             SpaceCount = 0;
         }
-
-
         else
         {
             /* Another space */
@@ -1772,7 +1813,6 @@ AsCountLines (
         SubBuffer = EndOfLine + 1;
     }
 
-
     if (LongLineCount)
     {
         VERBOSE_PRINT (("%d Lines longer than 80 found in %s\n", LongLineCount, Filename));
@@ -1854,6 +1894,7 @@ AsCountNonAnsiComments (
     }
 }
 
+
 /******************************************************************************
  *
  * FUNCTION:    AsCountSourceLines
@@ -1920,7 +1961,6 @@ AsCountSourceLines (
 
     CommentCount -= LINES_IN_LEGAL_HEADER;
 
-
     Gbl_SourceLines += LineCount;
     Gbl_WhiteLines += WhiteCount;
     Gbl_CommentLines += CommentCount;
@@ -1964,12 +2004,10 @@ AsUppercaseTokens (
                 TokenEnd++;
             }
 
-
             for (i = 0; i < (TokenEnd - SubBuffer); i++)
             {
                 if ((islower (SubBuffer[i])) &&
                     (isupper (SubBuffer[i+1])))
-
                 {
 
                     SubString = TokenEnd;
@@ -1986,7 +2024,6 @@ AsUppercaseTokens (
 
                         SubString++;
                     }
-
 
                     if (!Length)
                     {
