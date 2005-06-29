@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -706,6 +706,7 @@ AcpiPsParseLoop (
 
     ParserState = WalkState->ParserState;
 
+#ifndef PARSER_ONLY
     if (WalkState->WalkType & WALK_METHOD_RESTART)
     {
         /* We are restarting a preempted control method */
@@ -745,6 +746,7 @@ AcpiPsParseLoop (
             ArgTypes = WalkState->PrevArgTypes;
         }
     }
+#endif
 
     /*
      * Iterative parsing loop, while there is more aml to process:
