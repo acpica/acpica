@@ -121,8 +121,8 @@
 #include <amlcode.h>
 #include <namespace.h>
 
-#define _THIS_MODULE        "isutils.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("isutils");
 
 
 
