@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.8 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,7 @@
 #include "acnamesp.h"
 #include "achware.h"
 
-#define _COMPONENT          HARDWARE
+#define _COMPONENT          ACPI_HARDWARE
         MODULE_NAME         ("hwsleep")
 
 
@@ -286,8 +286,9 @@ AcpiEnterSleepState (
 
     AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
     AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
-    AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1_CONTROL,
-        (1 << AcpiHwGetBitShift (SLP_EN_MASK)));
+    /* one system won't work with this, one won't work without */
+    /*AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1_CONTROL,
+        (1 << AcpiHwGetBitShift (SLP_EN_MASK)));*/
 
     enable();
 
