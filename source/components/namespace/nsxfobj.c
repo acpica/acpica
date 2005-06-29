@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  ******************************************************************************/
 
@@ -183,7 +183,6 @@ AcpiEvaluateObject (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-
         /*
          * Convert each external object in the list to an
          * internal object
@@ -192,7 +191,6 @@ AcpiEvaluateObject (
         {
             Status = AcpiUtCopyEobjectToIobject (&ExternalParams->Pointer[i],
                                                 &InternalParams[i]);
-
             if (ACPI_FAILURE (Status))
             {
                 AcpiUtDeleteInternalObjectList (InternalParams);
@@ -201,7 +199,6 @@ AcpiEvaluateObject (
         }
         InternalParams[ExternalParams->Count] = NULL;
     }
-
 
     /*
      * Three major cases:
@@ -217,7 +214,6 @@ AcpiEvaluateObject (
          */
         Status = AcpiNsEvaluateByName (Pathname, InternalParams, &InternalReturnObj);
     }
-
     else if (!Handle)
     {
         /*
@@ -229,7 +225,6 @@ AcpiEvaluateObject (
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Both Handle and Pathname are NULL\n"));
         }
-
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Handle is NULL and Pathname is relative\n"));
@@ -237,7 +232,6 @@ AcpiEvaluateObject (
 
         Status = AE_BAD_PARAMETER;
     }
-
     else
     {
         /*
@@ -253,7 +247,6 @@ AcpiEvaluateObject (
              */
             Status = AcpiNsEvaluateByHandle (Handle, InternalParams, &InternalReturnObj);
         }
-
         else
         {
            /*
@@ -269,7 +262,6 @@ AcpiEvaluateObject (
      * If we are expecting a return value, and all went well above,
      * copy the return value to an external object.
      */
-
     if (ReturnBuffer)
     {
         UserBufferLength = ReturnBuffer->Length;
@@ -277,18 +269,15 @@ AcpiEvaluateObject (
 
         if (InternalReturnObj)
         {
-            if (VALID_DESCRIPTOR_TYPE (InternalReturnObj, ACPI_DESC_TYPE_NAMED))
+            if (ACPI_GET_DESCRIPTOR_TYPE (InternalReturnObj) == ACPI_DESC_TYPE_NAMED)
             {
                 /*
-                 * If we got an Node as a return object,
-                 * this means the object we are evaluating
-                 * has nothing interesting to return (such
-                 * as a mutex, etc.)  We return an error
-                 * because these types are essentially
-                 * unsupported by this interface.  We
-                 * don't check up front because this makes
-                 * it easier to add support for various
-                 * types at a later date if necessary.
+                 * If we received a NS Node as a return object, this means that
+                 * the object we are evaluating has nothing interesting to 
+                 * return (such as a mutex, etc.)  We return an error because 
+                 * these types are essentially unsupported by this interface.  
+                 * We don't check up front because this makes it easier to add 
+                 * support for various types at a later date if necessary.
                  */
                 Status = AE_TYPE;
                 InternalReturnObj = NULL;   /* No need to delete an Node */
@@ -322,7 +311,6 @@ AcpiEvaluateObject (
                         ReturnBuffer->Length = BufferSpaceNeeded;
                         Status = AE_BUFFER_OVERFLOW;
                     }
-
                     else
                     {
                         /*
@@ -336,7 +324,6 @@ AcpiEvaluateObject (
             }
         }
     }
-
 
     /* Delete the return and parameter objects */
 
@@ -416,11 +403,9 @@ AcpiGetNextObject (
             goto UnlockAndExit;
         }
     }
-
-    /* Non-null handle, ignore the parent */
-
     else
     {
+        /* Non-null handle, ignore the parent */
         /* Convert and validate the handle */
 
         ChildNode = AcpiNsMapHandleToNode (Child);
@@ -430,7 +415,6 @@ AcpiGetNextObject (
             goto UnlockAndExit;
         }
     }
-
 
     /* Internal function does the real work */
 
@@ -547,7 +531,6 @@ AcpiGetParent (
         return (AE_NULL_ENTRY);
     }
 
-
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Convert and validate the handle */
@@ -558,7 +541,6 @@ AcpiGetParent (
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
     }
-
 
     /* Get the parent entry */
 
@@ -716,7 +698,6 @@ AcpiNsGetDeviceCallback (
         {
             return (AE_OK);
         }
-
         else if (ACPI_FAILURE (Status))
         {
             return (AE_CTRL_DEPTH);
@@ -729,7 +710,6 @@ AcpiNsGetDeviceCallback (
             {
                 return (AE_OK);
             }
-
             else if (ACPI_FAILURE (Status))
             {
                 return (AE_CTRL_DEPTH);
@@ -852,7 +832,6 @@ AcpiAttachData (
     {
         return (AE_BAD_PARAMETER);
     }
-
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
