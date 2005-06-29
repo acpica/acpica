@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.166 $
+ *              $Revision: 1.167 $
  *
  *****************************************************************************/
 
@@ -285,6 +285,10 @@ const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
     {"_REV",    ACPI_TYPE_INTEGER,          "2"},
     {"_OS_",    ACPI_TYPE_STRING,           ACPI_OS_NAME},
     {"_GL_",    ACPI_TYPE_MUTEX,            "0"},
+
+#if defined (ACPI_NO_METHOD_EXECUTION) || defined (ACPI_CONSTANT_EVAL_ONLY)
+    {"_OSI",    ACPI_TYPE_METHOD,           "1"},
+#endif
     {NULL,      ACPI_TYPE_ANY,              NULL}              /* Table terminator */
 };
 
