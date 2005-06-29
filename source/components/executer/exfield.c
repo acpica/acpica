@@ -117,7 +117,7 @@
 #define __IEFIELD_C__
 
 #include <acpi.h>
-#include <parser.h>
+#include <dispatch.h>
 #include <interp.h>
 #include <amlcode.h>
 #include <namesp.h>
@@ -208,7 +208,7 @@ AmlSetupField (
     if (0 == RgnDesc->Region.DataValid)
     {
 
-        Status = PsxGetRegionData (RgnDesc);
+        Status = DsGetRegionData (RgnDesc);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
