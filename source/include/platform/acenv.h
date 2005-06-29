@@ -390,9 +390,13 @@ typedef char *va_list;
 #define wbinvd()
 
 /*! [Begin] no source code translation */
+#include <asm/pal.h>
 
 /* PAL_HALT[_LIGHT] */
 #define halt() ia64_pal_halt_light()
+
+/* PAL_HALT */
+#define safe_halt() ia64_pal_halt(1)
 
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
     do { \
