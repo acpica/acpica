@@ -207,7 +207,28 @@ EvAddressSpaceDispatch (
 
 ACPI_STATUS
 EvGetAddressSpaceHandler (
-    ACPI_OBJECT_INTERNAL *RegionObj);
+    ACPI_OBJECT_INTERNAL    *RegionObj);
+
+void *
+EvAddrHandlerHelper (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context);
+
+ACPI_STATUS
+EvWalkNamespace (
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             StartObject, 
+    UINT32                  MaxDepth,
+    WALK_CALLBACK           UserFunction, 
+    void                    *Context, 
+    void                    **ReturnValue);
+
+void
+EvDisassociateRegionAndHandler(
+    ACPI_OBJECT_INTERNAL    *HandlerObj,
+    ACPI_OBJECT_INTERNAL    *RegionObj);
+
 
 /* Debug stuff */
 
