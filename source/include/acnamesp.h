@@ -264,7 +264,8 @@ NsDumpTables (
 
 void
 NsDumpEntry (
-    ACPI_HANDLE             Handle);
+    ACPI_HANDLE             Handle,
+    UINT32                  DebugLevel);
 
 ACPI_STATUS
 NsDumpPathname (
@@ -391,7 +392,7 @@ NsAttachMethod (
     UINT8                   *PcodeAddr, 
     UINT32                  PcodeLength);
 
-void
+ACPI_STATUS
 NsAttachObject (
     ACPI_HANDLE             ObjHandle, 
     ACPI_HANDLE             Value, 
