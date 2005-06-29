@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.73 $
+ *       $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -141,7 +141,7 @@ AcpiEvFixedEventDetect (
 
 UINT32
 AcpiEvFixedEventDispatch (
-    UINT32                  AcpiEvent);
+    UINT32                  Event);
 
 
 /*
@@ -176,14 +176,6 @@ AcpiEvQueueNotifyRequest (
 void
 AcpiEvNotifyDispatch (
     void                    *Context);
-
-UINT32
-AcpiEvGetFixedStatusRegisterId (
-    UINT32                  Event);
-
-UINT32
-AcpiEvGetFixedEnableRegisterId (
-    UINT32                  Event);
 
 
 /*
