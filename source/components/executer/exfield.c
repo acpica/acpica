@@ -117,6 +117,7 @@
 #define __IEFIELD_C__
 
 #include <acpi.h>
+#include <parser.h>
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
@@ -158,13 +159,14 @@
  *
  ****************************************************************************/
 
+
+
 ACPI_STATUS
 AmlSetupField (
     ACPI_OBJECT_INTERNAL    *ObjDesc, 
     ACPI_OBJECT_INTERNAL    *RgnDesc, 
     INT32                   FieldBitWidth)
 {
-    ACPI_OBJECT_INTERNAL    *ObjValDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     INT32                   FieldByteWidth;
 
@@ -209,105 +211,11 @@ AmlSetupField (
          */
         if (0 == RgnDesc->Region.DataValid)
         {
-            /* 
-             * Address and length have not been previously evaluated
-             * save PCode and PCodeLen on package stack
-             */
 
-            Status = AmlPkgPushExecLength (0L);
-
-            if (AE_OK == Status)
-            {   
-                /*
-                 * PCode and PCodeLen preserved on package stack
-                 * Point to Address opcode in AML stream
-                 */
-
-                if (!RgnDesc->Region.Method)
-                {
-                    REPORT_ERROR ("AmlSetupField: Region Method subobject does not exist");
-                    return_ACPI_STATUS (AE_EXIST);
-                }
-
-                AmlSetCurrentLocation (RgnDesc->Region.Method);
-
-                /* Evaluate the Address opcode */
-
-                if ((Status = AmlDoOpCode (IMODE_Execute)) == AE_OK && 
-                    (Status = AmlGetRvalue (AmlObjStackGetTopPtr ())) == AE_OK)
-                {
-                    /* Pull the address off the stack */
-
-                    ObjValDesc = AmlObjStackRemoveValue (STACK_TOP);
-
-
-                    if (!ObjValDesc ||
-                        ObjValDesc->Common.Type != (UINT8) ACPI_TYPE_Number)
-                    {
-                        DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Address "
-                                    "ObjValDesc = %p, ObjValDesc->Common.Type = %02Xh, Number = %02Xh\n",
-                                    ObjValDesc, ObjValDesc->Common.Type, (UINT8) ACPI_TYPE_Number));
-
-                        Status = AE_AML_ERROR;
-                    }
-
-                    else
-                    {
-                        RgnDesc->Region.Address = ObjValDesc->Number.Value;
-                    }
-
-                    /* Free ObjValDesc, it was allocated by AmlDoOpcode */
-
-                    CmDeleteInternalObject (ObjValDesc);
-                }
-
-                if (AE_OK == Status)
-                {   
-                    /* Evaluate the Length opcode */
-
-                    if ((Status = AmlDoOpCode (IMODE_Execute)) == AE_OK &&
-                        (Status = AmlGetRvalue (AmlObjStackGetTopPtr ())) == AE_OK)
-                    {
-                        /* Pull the length off the stack */
-
-                        ObjValDesc = AmlObjStackRemoveValue (STACK_TOP);
-
-                        if (!ObjValDesc ||
-                            ObjValDesc->Common.Type != (UINT8) ACPI_TYPE_Number)
-                        {
-
-                            DEBUG_PRINT (ACPI_ERROR, ("AmlSetupField: Malformed Region/Length \n"));
-                            Status = AE_AML_ERROR;
-                        }
-
-                        else
-                        {
-                            /* Region Length valid */
-
-                            RgnDesc->Region.Length = ObjValDesc->Number.Value;
-
-                            /* 
-                             * Remember that both Address and Length
-                             * have been successfully evaluated and saved.
-                             */
-                            RgnDesc->Region.DataValid = 1;
-                        }
-
-                        /* Free ObjValDesc, it was allocated by AmlDoOpcode */
-
-                        CmDeleteInternalObject (ObjValDesc);
-                    }
-                }
-            }
-
-            if (AE_OK == Status)
-            {
-                /*  restore PCode and PCodeLen  */
-
-                Status = AmlPkgPopExec ();
-            }
+            Status = PsxGetRegionData (RgnDesc);
         }
     }
+
 
     if (AE_OK == Status)
     {
@@ -374,7 +282,7 @@ AmlAccessNamedField (
     UINT32                  ByteFieldLength;
 
 
-    FUNCTION_TRACE ("AmlAccessNamedField");
+    FUNCTION_TRACE_PTR ("AmlAccessNamedField", NamedField);
 
 
     /* Get the attached field object */
@@ -422,6 +330,7 @@ AmlAccessNamedField (
     ByteGranularity = BitGranularity / 8;
 
     /* Check if request is too large for the field, and silently truncate if necessary */
+
     /* TBD: should an error be returned in this case? */
 
     ByteFieldLength = (UINT32) (ObjDesc->FieldUnit.Length + 7) / 8;
@@ -509,7 +418,7 @@ AmlSetNamedFieldValue (
     ACPI_STATUS             Status = AE_AML_ERROR;
 
 
-    FUNCTION_TRACE ("AmlSetNamedFieldValue");
+    FUNCTION_TRACE_PTR ("AmlSetNamedFieldValue", NamedField);
 
 
     if (!NamedField)
@@ -549,7 +458,7 @@ AmlGetNamedFieldValue (
     ACPI_STATUS             Status = AE_AML_ERROR;
 
 
-    FUNCTION_TRACE ("AmlGetNamedFieldValue");
+    FUNCTION_TRACE_PTR ("AmlGetNamedFieldValue", NamedField);
 
 
     if (!NamedField)
