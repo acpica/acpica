@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  ******************************************************************************/
 
@@ -178,7 +178,7 @@ AcpiDsIsResultUsed (
          * NOTE: this is optional because the ASL language does not actually
          * support this behavior.
          */
-        if ((AcpiGbl_EnableInterpeterSlack) &&
+        if ((AcpiGbl_EnableInterpreterSlack) &&
             (WalkState->ParserState.Aml >= WalkState->ParserState.AmlEnd))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, 
