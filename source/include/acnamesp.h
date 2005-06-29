@@ -199,6 +199,35 @@ NsLookup (
 
 
 /*
+ * Table allocation/deallocation - nsalloc
+ */
+
+NAME_TABLE_ENTRY *
+NsAllocateNameTable (
+    INT32                   NteEntries);
+
+ACPI_STATUS
+NsDeleteNamespace (
+    void);
+
+void
+NsDeleteValue (
+    ACPI_HANDLE             Object);
+
+void
+NsDeleteScope (
+    ACPI_HANDLE             Scope);
+
+void
+NsDeleteAcpiTables (
+    void);
+
+void
+NsDeleteAcpiTable (
+    ACPI_TABLE_TYPE         Type);
+
+
+/*
  * Namespace modification - nsmodify
  */
 
@@ -434,10 +463,6 @@ NsGetTableFacs (
 /*
  * Utility functions - nsutils
  */
-
-NAME_TABLE_ENTRY *
-NsAllocateNteDesc (
-    INT32                   Size);
 
 UINT8
 NsChecksum (
