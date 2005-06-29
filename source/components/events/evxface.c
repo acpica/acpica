@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.132 $
+ *              $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -608,7 +608,7 @@ AcpiInstallGpeHandler (
     void                    *Context)
 {
     ACPI_STATUS             Status;
-    UINT32                  GpeNumberIndex;
+    ACPI_GPE_NUMBER_INFO    *GpeNumberInfo;
 
 
     ACPI_FUNCTION_TRACE ("AcpiInstallGpeHandler");
@@ -623,8 +623,8 @@ AcpiInstallGpeHandler (
 
     /* Ensure that we have a valid GPE number */
 
-    GpeNumberIndex = AcpiEvGetGpeNumberIndex (GpeNumber);
-    if (GpeNumberIndex == ACPI_GPE_INVALID)
+    GpeNumberInfo = AcpiEvGetGpeNumberInfo (GpeNumber);
+    if (!GpeNumberInfo)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -637,7 +637,7 @@ AcpiInstallGpeHandler (
 
     /* Make sure that there isn't a handler there already */
 
-    if (AcpiGbl_GpeNumberInfo[GpeNumberIndex].Handler)
+    if (GpeNumberInfo->Handler)
     {
         Status = AE_ALREADY_EXISTS;
         goto Cleanup;
@@ -645,9 +645,9 @@ AcpiInstallGpeHandler (
 
     /* Install the handler */
 
-    AcpiGbl_GpeNumberInfo[GpeNumberIndex].Handler = Handler;
-    AcpiGbl_GpeNumberInfo[GpeNumberIndex].Context = Context;
-    AcpiGbl_GpeNumberInfo[GpeNumberIndex].Type    = (UINT8) Type;
+    GpeNumberInfo->Handler = Handler;
+    GpeNumberInfo->Context = Context;
+    GpeNumberInfo->Type    = (UINT8) Type;
 
     /* Clear the GPE (of stale events), the enable it */
 
@@ -685,7 +685,7 @@ AcpiRemoveGpeHandler (
     ACPI_GPE_HANDLER        Handler)
 {
     ACPI_STATUS             Status;
-    UINT32                  GpeNumberIndex;
+    ACPI_GPE_NUMBER_INFO    *GpeNumberInfo;
 
 
     ACPI_FUNCTION_TRACE ("AcpiRemoveGpeHandler");
@@ -700,8 +700,8 @@ AcpiRemoveGpeHandler (
 
     /* Ensure that we have a valid GPE number */
 
-    GpeNumberIndex = AcpiEvGetGpeNumberIndex (GpeNumber);
-    if (GpeNumberIndex == ACPI_GPE_INVALID)
+    GpeNumberInfo = AcpiEvGetGpeNumberInfo (GpeNumber);
+    if (!GpeNumberInfo)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -722,7 +722,7 @@ AcpiRemoveGpeHandler (
 
     /* Make sure that the installed handler is the same */
 
-    if (AcpiGbl_GpeNumberInfo[GpeNumberIndex].Handler != Handler)
+    if (GpeNumberInfo->Handler != Handler)
     {
         (void) AcpiHwEnableGpe (GpeNumber);
         Status = AE_BAD_PARAMETER;
@@ -731,8 +731,8 @@ AcpiRemoveGpeHandler (
 
     /* Remove the handler */
 
-    AcpiGbl_GpeNumberInfo[GpeNumberIndex].Handler = NULL;
-    AcpiGbl_GpeNumberInfo[GpeNumberIndex].Context = NULL;
+    GpeNumberInfo->Handler = NULL;
+    GpeNumberInfo->Context = NULL;
 
 
 Cleanup:
