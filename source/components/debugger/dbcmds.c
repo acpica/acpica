@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  ******************************************************************************/
 
@@ -633,7 +633,6 @@ AcpiDbDisassembleMethod (
     ACPI_WALK_STATE         *WalkState;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *Method;
-
 
 
     Method = AcpiDbConvertToNode (Name);
