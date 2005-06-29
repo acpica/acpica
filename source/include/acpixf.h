@@ -421,6 +421,18 @@ AcpiGetIrqRoutingTable  (
  */
 
 ACPI_STATUS
+AcpiGetRegister (
+    UINT32                  RegisterId,
+    UINT32                  *ReturnValue,
+    UINT32                  Flags);
+
+ACPI_STATUS
+AcpiPutRegister (
+    UINT32                  RegisterId,
+    UINT32                  Value,
+    UINT32                  Flags);
+
+ACPI_STATUS
 AcpiSetFirmwareWakingVector (
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress);
 
@@ -428,17 +440,23 @@ ACPI_STATUS
 AcpiGetFirmwareWakingVector (
     ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
 
+ACPI_STATUS
+AcpiGetSleepTypeData (
+    UINT8                   SleepState,
+    UINT8                   *Slp_TypA,
+    UINT8                   *Slp_TypB);
 
 ACPI_STATUS
 AcpiEnterSleepStatePrep (
-    UINT8 SleepState);
+    UINT8                   SleepState);
 
 ACPI_STATUS
 AcpiEnterSleepState (
-    UINT8 SleepState);
+    UINT8                   SleepState);
 
 ACPI_STATUS
 AcpiLeaveSleepState (
-    UINT8 SleepState);
+    UINT8                   SleepState);
+
 
 #endif /* __ACXFACE_H__ */
