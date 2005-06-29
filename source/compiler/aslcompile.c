@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.60 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -263,6 +263,20 @@ AslCompilerFileHeader (
     }
 }
 
+void
+FlushSourceCode (void)
+{
+    ACPI_STATUS             Status;
+    char                    Buffer;
+
+    while (Status = FlReadFile (ASL_FILE_INPUT, &Buffer, 1) != AE_ERROR)
+    {
+        InsertLineBuffer ((int) Buffer);
+    }
+    ResetCurrentLineBuffer ();
+
+}
+
 
 /*******************************************************************************
  *
@@ -310,6 +324,16 @@ CmDoCompile (void)
     AslCompilerparse();
     UtEndEvent (i++);
 
+    FlushSourceCode ();
+
+    /* Did the parse tree get successfully constructed? */
+
+    if (!RootNode)
+    {
+        CmCleanupAndExit ();
+        return -1;
+    }
+
     OpcGetIntegerWidth (RootNode);
 
     /* Pre-process parse tree for any operator transforms */
@@ -323,6 +347,18 @@ CmDoCompile (void)
     DbgPrint (ASL_DEBUG_OUTPUT, "\nGenerating AML opcodes\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
     UtEndEvent (i++);
+
+    /*
+     * Now that the input is parsed, we can open the AML output file.
+     * Note: by default, the name of this file comes from the table descriptor
+     * within the input file.
+     */
+    Status = FlOpenAmlOutputFile (Gbl_OutputFilenamePrefix);
+    if (ACPI_FAILURE (Status))
+    {
+        AePrintErrorLog (ASL_FILE_STDERR);
+        return -1;
+    }
 
     /* Interpret and generate all compile-time constants */
 
@@ -423,17 +459,6 @@ CmDoCompile (void)
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
     UtEndEvent (i++);
 
-    /*
-     * Now that the input is parsed, we can open the AML output file.
-     * Note: by default, the name of this file comes from the table descriptor
-     * within the input file.
-     */
-    Status = FlOpenAmlOutputFile (Gbl_OutputFilenamePrefix);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (ASL_FILE_STDERR);
-        return -1;
-    }
 
     /* Code generation - emit the AML */
 
@@ -442,6 +467,17 @@ CmDoCompile (void)
     UtEndEvent (i++);
 
     UtBeginEvent (i, "Write optional output files");
+    CmDoOutputFiles ();
+    UtEndEvent (i++);
+
+    UtEndEvent (13);
+    CmCleanupAndExit ();
+    return 0;
+}
+
+void
+CmDoOutputFiles (void)
+{
 
     /* Create listings and hex files */
 
@@ -451,11 +487,6 @@ CmDoCompile (void)
     /* Dump the namespace to the .nsp file if requested */
 
     LsDisplayNamespace ();
-    UtEndEvent (i++);
-
-    UtEndEvent (13);
-    CmCleanupAndExit ();
-    return 0;
 }
 
 
@@ -550,6 +581,11 @@ CmCleanupAndExit (void)
     if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
     {
         unlink (Gbl_Files[ASL_FILE_AML_OUTPUT].Filename);
+    }
+
+    if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
+    {
+        printf ("\nMaximum error count (%d) exceeded.\n", ASL_MAX_ERROR_COUNT);
     }
 
     UtDisplaySummary (ASL_FILE_STDOUT);

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -250,7 +250,7 @@ AnMapEtypeToBtype (
 
     /* Try the standard ACPI data types */
 
-    if (Etype <= ACPI_TYPE_MAX)
+    if (Etype <= ACPI_TYPE_EXTERNAL_MAX)
     {
         /*
          * This switch statement implements the allowed operand conversion
@@ -293,20 +293,22 @@ AnMapEtypeToBtype (
 
     switch (Etype)
     {
-    case INTERNAL_TYPE_REGION_FIELD:
-    case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_INDEX_FIELD:
+    case ACPI_TYPE_LOCAL_REGION_FIELD:
+    case ACPI_TYPE_LOCAL_BANK_FIELD:
+    case ACPI_TYPE_LOCAL_INDEX_FIELD:
 
         /* Named fields can be either Integer/Buffer/String */
 
         return (ACPI_BTYPE_COMPUTE_DATA);
 
-    case INTERNAL_TYPE_ALIAS:
+    case ACPI_TYPE_LOCAL_ALIAS:
+
         return (ACPI_BTYPE_INTEGER);
 
 
-    case INTERNAL_TYPE_RESOURCE:
-    case INTERNAL_TYPE_RESOURCE_FIELD:
+    case ACPI_TYPE_LOCAL_RESOURCE:
+    case ACPI_TYPE_LOCAL_RESOURCE_FIELD:
+
         return (ACPI_BTYPE_REFERENCE);
 
     default:
@@ -381,7 +383,7 @@ AnFormatBtype (
         return;
     }
 
-    for (Type = 1; Type < ACPI_TYPE_MAX; Type++)
+    for (Type = 1; Type < ACPI_TYPE_EXTERNAL_MAX; Type++)
     {
         if (Btype & 0x00000001)
         {
@@ -394,7 +396,6 @@ AnFormatBtype (
         }
         Btype >>= 1;
     }
-
 
     if (Btype & 0x00000001)
     {
@@ -1493,8 +1494,8 @@ AnOperandTypecheckWalkEnd (
                      * These named fields are supported at compile-time only;
                      * the names are not passed to the interpreter (via the AML).
                      */
-                    if ((ArgOp->Asl.Node->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
-                        (ArgOp->Asl.Node->Type == INTERNAL_TYPE_RESOURCE))
+                    if ((ArgOp->Asl.Node->Type == ACPI_TYPE_LOCAL_RESOURCE_FIELD) ||
+                        (ArgOp->Asl.Node->Type == ACPI_TYPE_LOCAL_RESOURCE))
                     {
                         AslError (ASL_ERROR, ASL_MSG_RESOURCE_FIELD, ArgOp, NULL);
                     }
