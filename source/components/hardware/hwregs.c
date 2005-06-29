@@ -15,15 +15,18 @@
  | control and status registers.
  |__________________________________________________________________________
  |
- | $Revision: 1.10 $
- | $Date: 2005/06/29 16:54:10 $
+ | $Revision: 1.11 $
+ | $Date: 2005/06/29 16:54:11 $
  | $Log: hwregs.c,v $
- | Revision 1.10  2005/06/29 16:54:10  aystarik
- | New version of DEBUG_PRINT
+ | Revision 1.11  2005/06/29 16:54:11  aystarik
+ | Header cleanup;  Split debug switch into component_id and level
  |
  | 
- | date	99.04.02.22.40.00;	author rmoore1;	state Exp;
+ | date	99.04.05.23.09.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 11    4/05/99 4:09p Rmoore1
+ * Header cleanup;  Split debug switch into component_id and level
  * 
  * 10    4/02/99 2:40p Rmoore1
  * New version of DEBUG_PRINT
@@ -53,77 +56,6 @@
  * 
  * 1     1/11/99 2:07p Rmoore1
  * Hardware Specific Modules
-// 
-//    Rev 1.18   15 Jan 1998 14:40:50   kdbranno
-// Added function headers and comments
-// 
-//    Rev 1.17   24 Dec 1997 14:10:12   kdbranno
-// Quieted chatter from iC386
-// 
-//    Rev 1.16   11 Dec 1997 09:09:34   calingle
-// added code to ClearAllAcpiChipsetStatusBits to clear bits
-// in GPE Block 0 and (if it exists) GPE Block 1.
-// 
-//    Rev 1.15   08 Dec 1997 17:08:20   kdbranno
-// Added #include "acpipriv.h"
-// 
-//    Rev 1.14   05 Dec 1997 09:36:36   kdbranno
-// Fixed up so it compiles with clean with iRMX.
-// 
-//    Rev 1.13   26 Nov 1997 14:47:18   nburke
-// Added a conditional vFunctionHello call to every function in the file.
-// 
-//    Rev 1.12   26 Nov 1997 11:00:54   kdbranno
-// Changed references to ACPI_REGISTER_READ and ACPI_REGISTER_WRITE to ACPI_READ and ACPI_WRITE.
-// Added function ClearAllAcpiChipsetStatusBits.
-// 
-//    Rev 1.11   25 Sep 1997 11:14:44   calingle
-// Added support for general purpose event register read and 
-// write for GPE1.
-// 
-//    Rev 1.10   25 Sep 1997 08:56:28   calingle
-// Fixed a possible precedence bug in GPE0_EN_BLOCK case
-// statement.
-// 
-//    Rev 1.9   24 Sep 1997 09:15:52   calingle
-// Updated AcpiRegisterIO () to support General Purpose Events by
-// adding cases to the switch statemene for GPE0 Enable and 
-// GPE0 Status blocks.  This only allows for the GPE0 register since
-// the ACPI spec is not clear on how to tell which Register a given
-// General Purpose Device is attached.  Since the PIIX4 and PIIX6 are
-// only supporting 1 register this is low risk for now.  Once it is
-// determined how to tell where a device is attached it should be
-// easy to add the needed code to support this update.
-// 
-//    Rev 1.8   03 Sep 1997 14:51:02   kdbranno
-// Changed most register references from 16 bit to 32 bit since that's what the
-// ACPI specification defines.
-// 
-//    Rev 1.7   16 Jul 1997 16:59:18   kdbranno
-// casted enum to INT32 for brain dead iC386 tool.
-// 
-//    Rev 1.6   15 Jul 1997 10:14:12   kdbranno
-// Changed &= to |= at one point in iAcpiReadWriteRegister
-// 
-//    Rev 1.5   30 Jun 1997 12:43:08   kdbranno
-// Turned off stack checking for DOS (there isn't any anyway for iRMX).  Fixed a
-// problem where the status bits were being inadvertently cleared by writing 1's
-// to preserve bits that already had 1's in them.  Writing a 1 clears a status
-// bit.  The code was changed to write 0's to all bits except for the requested
-// bit.
-// 
-//    Rev 1.4   09 Jun 1997 13:14:26   kdbranno
-// changed casting of first parameter to OsdOut16.  Now casts correctly.
-//
-//    Rev 1.3   15 May 1997 11:18:56   kdbranno
-// Fixed bug in wAcpiRegisterIO ('=' became '==').  Changed inword/outword to
-// OsdIn16/OsdOut16.
-//
-//    Rev 1.2   16 Apr 1997 19:35:48   kdbranno
-// Redesigned and completed implementation of ACPI register access functions
-//
-//    Rev 1.1   16 Apr 1997 15:08:28   kdbranno
-// Changed include brackets to quotes for .h files from ACPILIB
 //
 //    Rev 1.0   Apr 14 1997 14:10:58   kdbranno
 // Initial revision.
@@ -132,13 +64,15 @@
 */
 
 #define __DVREGS_C__
-#define _THIS_MODULE        "dvregs.c"
 
 #include <acpi.h>
 #include <acpirio.h>
 #include <acpipriv.h>
-
 #include <stdarg.h>
+
+
+#define _THIS_MODULE        "dvregs.c"
+#define _COMPONENT          DEVICE_MANAGER
 
 
 #pragma check_stack (off)
@@ -273,7 +207,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                     
                     if (Value)
                     {
-                        DEBUG_PRINT (DV_INFO, ("About to write %04X to %04X\n", (UINT16) Value, 
+                        DEBUG_PRINT (ACPI_INFO, ("About to write %04X to %04X\n", (UINT16) Value, 
                                     (UINT16) FACP->Pm1aEvtBlk));
                         OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) Value);
                         
@@ -332,7 +266,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                     Value          &= Mask;
                     RegisterValue  |= Value;
 
-                    DEBUG_PRINT (DV_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
+                    DEBUG_PRINT (ACPI_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
                                 (UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2)));
 
                     OsdOut16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2), 
@@ -457,7 +391,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                 Value          &= Mask;
                 RegisterValue  |= Value;
 
-                DEBUG_PRINT (DV_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
+                DEBUG_PRINT (ACPI_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
                             (UINT16) FACP->Pm2CntBlk));
 
                 OsdOut16 ((UINT16) FACP->Pm2CntBlk, (UINT16) RegisterValue);
@@ -526,7 +460,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
                 /* This write will put the iAction state into the General Purpose */
                 /* Enable Register indexed by the value in Mask */
 
-                DEBUG_PRINT (DV_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
+                DEBUG_PRINT (ACPI_INFO, ("About to write %04X to %04X\n", (UINT16) RegisterValue, 
                             (UINT16) GpeReg));
 
                 OsdOut8 ((UINT16) GpeReg, (UINT8) RegisterValue);
@@ -571,7 +505,7 @@ ClearAllAcpiChipsetStatusBits (void)
     FUNCTION_TRACE ("ClearAllAcpiChipsetStatusBits");
 
 
-    DEBUG_PRINT (DV_INFO, ("About to write %04X to %04X\n", 
+    DEBUG_PRINT (ACPI_INFO, ("About to write %04X to %04X\n", 
                     ALL_FIXED_STS_BITS, (UINT16) FACP->Pm1aEvtBlk));
 
     OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
