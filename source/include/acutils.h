@@ -117,9 +117,6 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#include "acobject.h"
-#include "acpiosd.h"
-
 
 #define REF_INCREMENT       (UINT16) 0
 #define REF_DECREMENT       (UINT16) 1
@@ -462,6 +459,43 @@ ACPI_STATUS
 CmDeleteInternalObjectList (
     ACPI_OBJECT_INTERNAL    **ObjList);
 
+
+/*
+ * CmEval - object evaluation
+ */
+
+/* Method name strings */
+
+#define METHOD_NAME__HID        "_HID"
+#define METHOD_NAME__UID        "_UID"
+#define METHOD_NAME__ADR        "_ADR"
+#define METHOD_NAME__STA        "_STA"
+#define METHOD_NAME__REG        "_REG"
+#define METHOD_NAME__SEG        "_SEG"
+#define METHOD_NAME__BBN        "_BBN"
+
+
+
+ACPI_STATUS
+CmEvaluateNumericObject (
+    char                    *MethodName, 
+    NAME_TABLE_ENTRY        *AcpiDevice, 
+    UINT32                  *Address);
+
+ACPI_STATUS
+CmExecute_HID (
+    NAME_TABLE_ENTRY        *AcpiDevice, 
+    DEVICE_ID               *Hid);
+
+ACPI_STATUS 
+CmExecute_STA (
+    NAME_TABLE_ENTRY        *AcpiDevice, 
+    UINT32                  *StatusFlags);
+
+ACPI_STATUS
+CmExecute_UID (
+    NAME_TABLE_ENTRY        *AcpiDevice, 
+    DEVICE_ID               *Uid);
 
 
 /*
