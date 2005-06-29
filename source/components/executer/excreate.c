@@ -709,6 +709,8 @@ AmlExecCreateRegion (
 
     /* Decode the RegionSpace */
 
+/* TBD: March2000: Is this check still necessary? */
+
     if (RegionSpace >= NUM_REGION_TYPES)
     {
         DEBUG_PRINT (TRACE_LOAD, ("AmlDoNamedObject: Type out of range [*???*]\n"));
