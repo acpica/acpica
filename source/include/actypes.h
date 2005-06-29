@@ -820,6 +820,9 @@ typedef struct _resource_tag
     RESOURCE_DATA           Data;
 } RESOURCE;
 
+#define RESOURCE_LENGTH             12
+#define RESOURCE_LENGTH_NO_DATA     8
+
 /*
  * END: Definitions for Resource Attributes
  */
