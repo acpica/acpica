@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.1 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -120,11 +120,36 @@
 
 #include "acpi.h"
 #include "acinterp.h"
+#include "acparser.h"
 #include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("exoparg3")
+
+
+/*!
+ * Naming convention for AML interpreter execution routines.
+ *
+ * The routines that begin execution of AML opcodes are named with a common
+ * convention based upon the number of arguments, the number of target operands,
+ * and whether or not a value is returned:
+ *
+ *      AcpiExOpcode_xA_yT_zR
+ *
+ * Where:  
+ *
+ * xA - ARGUMENTS:    The number of arguments (input operands) that are 
+ *                    required for this opcode type (1 through 6 args).
+ * yT - TARGETS:      The number of targets (output operands) that are required 
+ *                    for this opcode type (0, 1, or 2 targets).
+ * zR - RETURN VALUE: Indicates whether this opcode type returns a value 
+ *                    as the function return (0 or 1).
+ *
+ * The AcpiExOpcode* functions are called via the Dispatcher component with 
+ * fully resolved operands.
+!*/
+
 
 
 /*******************************************************************************
@@ -148,7 +173,7 @@ AcpiExOpcode_3A_0T_0R (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExOpcode_3A_0T_0R");
+    FUNCTION_TRACE_STR ("ExOpcode_3A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     switch (WalkState->Opcode)
@@ -194,12 +219,6 @@ AcpiExOpcode_3A_0T_0R (
 
 Cleanup:
 
-    /* Always delete operands */
-
-    AcpiUtRemoveReference (Operand[0]);
-    AcpiUtRemoveReference (Operand[1]);
-    AcpiUtRemoveReference (Operand[2]);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -228,7 +247,7 @@ AcpiExOpcode_3A_1T_1R (
     UINT32                  Length;
 
 
-    FUNCTION_TRACE ("ExOpcode_3A_1T_1R");
+    FUNCTION_TRACE_STR ("ExOpcode_3A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
 
@@ -272,7 +291,8 @@ AcpiExOpcode_3A_1T_1R (
             Buffer = ACPI_MEM_CALLOCATE (Length + 1);
             if (!Buffer)
             {
-                return (AE_NO_MEMORY);
+                Status = AE_NO_MEMORY;
+                goto Cleanup;
             }
 
             /* Copy the portion requested */
@@ -298,18 +318,11 @@ AcpiExOpcode_3A_1T_1R (
         break;
     }
 
-
     /* Store the result in the target */
 
     Status = AcpiExStore (ReturnDesc, Operand[3], WalkState);
 
 Cleanup:
-
-    /* Always delete operands */
-
-    AcpiUtRemoveReference (Operand[0]);
-    AcpiUtRemoveReference (Operand[1]);
-    AcpiUtRemoveReference (Operand[2]);
 
     /* Delete return object on error */
 
