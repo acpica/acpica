@@ -260,9 +260,6 @@ ACPI_EXTERN UINT32                      Gbl_PsFindCount;
 #define NUM_NS_TYPES                    INTERNAL_TYPE_Invalid+1
 #define NUM_PREDEFINED_NAMES            9
 
-/* Scope stack head */
-
-ACPI_EXTERN SCOPE_STACK                *Gbl_CurrentScope;
 
 ACPI_EXTERN NAME_TABLE_ENTRY            Gbl_RootObjStruct;
 ACPI_EXTERN NAME_TABLE_ENTRY           *Gbl_RootObject;
