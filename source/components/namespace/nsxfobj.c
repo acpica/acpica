@@ -420,14 +420,9 @@ AcpiGetNextObject (
 
     if (!Child)
     {
-        if (Parent == ACPI_ROOT_OBJECT)
-        {
-            ThisEntry = (NAME_TABLE_ENTRY *) Gbl_RootObject;
-        }
-
         /* Start search at the beginning of the specified scope */
 
-        else if (!(ThisEntry = NsConvertHandleToEntry (Parent)))
+        if (!(ThisEntry = NsConvertHandleToEntry (Parent)))
         {
             return AE_BAD_PARAMETER;
         }
