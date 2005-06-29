@@ -124,24 +124,18 @@ FIXED_EVENT_HANDLER		FixedEventHandlers[NUM_EVENTS];
 UINT32					SciHandle;
 extern INT32            OriginalMode;
 
+/* Status bits. */
+
+#define PMTIMER_STATUS					1
+#define GLOBAL_STATUS					32
+#define POWER_BUTTON_STATUS				256
+#define SLEEP_BUTTON_STATUS				512
+
 /* Interrupt handler return values */
 
 #define INTERRUPT_HANDLED               0x01
 #define INTERRUPT_NOT_HANDLED           0x02
 #define INTERRUPT_ERROR                 0x03
-
-/* 
- * Use the macros below + the function AcpiClearStatusBit for
- * accessing and manipulating status/enable bits for various events.
- *  
- * IMPORTANT: SCI handler must be installed or the enable bit will not be
- * modified. 
- */
-#define READ_ENABLE_BIT(name,buf)               AcpiReadStatusEnableBit(name, ENABLE, buf)
-#define READ_STATUS_BIT(name,buf)               AcpiReadStatusEnableBit(name, STATUS, buf)
-#define READ_GEN_ENABLE_BIT(name,buf,offset)    AcpiReadStatusEnableBit(name, ENABLE, buf, offset)
-#define READ_GEN_STATUS_BIT(name,buf,offset)    AcpiReadStatusEnableBit(name, STATUS, buf, offset)
-
 
 /* 
  * elements correspond to counts for
