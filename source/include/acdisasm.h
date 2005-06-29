@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.12 $
+ *       $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -388,6 +388,12 @@ AcpiDmWordDescriptor (
 void
 AcpiDmDwordDescriptor (
     ASL_DWORD_ADDRESS_DESC  *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+void
+AcpiDmExtendedDescriptor (
+    ASL_EXTENDED_ADDRESS_DESC  *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
