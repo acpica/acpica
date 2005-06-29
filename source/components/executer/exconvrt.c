@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -491,9 +491,9 @@ AcpiExConvertToString (
 {
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     UINT8                   *NewBuf;
+    UINT32                  i;
     UINT32                  StringLength = 0;
     UINT16                  Base = 16;
-    UINT32                  i;
     UINT8                   Separator = ',';
 
 
@@ -556,6 +556,8 @@ AcpiExConvertToString (
 
     case ACPI_TYPE_BUFFER:
 
+        /* Setup string length, base, and separator */
+
         switch (Type)
         {
         case ACPI_EXPLICIT_CONVERT_DECIMAL: /* Used by ToDecimalString operator */
@@ -564,9 +566,27 @@ AcpiExConvertToString (
              * decimal values separated by commas."
              */
             Base = 10;
-            StringLength = ObjDesc->Buffer.Length; /* 4 chars for each decimal */
 
-            /*lint -fallthrough */
+            /*
+             * Calculate the final string length.  Individual string values
+             * are variable length (include separator for each)
+             */
+            for (i = 0; i < ObjDesc->Buffer.Length; i++)
+            {
+                if (ObjDesc->Buffer.Pointer[i] >= 100)
+                {
+                    StringLength += 4;
+                }
+                else if (ObjDesc->Buffer.Pointer[i] >= 10)
+                {
+                    StringLength += 3;
+                }
+                else
+                {
+                    StringLength += 2;
+                }
+            }
+            break;
 
         case ACPI_IMPLICIT_CONVERT_HEX:
             /*
@@ -574,60 +594,59 @@ AcpiExConvertToString (
              *"The entire contents of the buffer are converted to a string of
              * two-character hexadecimal numbers, each separated by a space."
              */
-            if (Type == ACPI_IMPLICIT_CONVERT_HEX)
-            {
-                Separator = ' ';
-            }
-
-            /*lint -fallthrough */
+            Separator = ' ';
+            StringLength = (ObjDesc->Buffer.Length * 3);
+            break;
 
         case ACPI_EXPLICIT_CONVERT_HEX:     /* Used by ToHexString operator */
             /*
              * From ACPI: "If Data is a buffer, it is converted to a string of
              * hexadecimal values separated by commas."
              */
-            StringLength += (ObjDesc->Buffer.Length * 3);
-            if (StringLength > ACPI_MAX_STRING_CONVERSION)  /* ACPI limit */
-            {
-                return_ACPI_STATUS (AE_AML_STRING_LIMIT);
-            }
-
-            /* Create a new string object and string buffer */
-
-            ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) StringLength -1);
-            if (!ReturnDesc)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
-
-            NewBuf = ReturnDesc->Buffer.Pointer;
-
-            /*
-             * Convert buffer bytes to hex or decimal values
-             * (separated by commas)
-             */
-            for (i = 0; i < ObjDesc->Buffer.Length; i++)
-            {
-                NewBuf += AcpiExConvertToAscii (
-                            (ACPI_INTEGER) ObjDesc->Buffer.Pointer[i], Base,
-                            NewBuf, 1);
-                *NewBuf++ = Separator; /* each separated by a comma or space */
-            }
-
-            /* Null terminate the string (overwrites final comma from above) */
-
-            NewBuf--;
-            *NewBuf = 0;
-
-            /* Recalculate length */
-
-            ReturnDesc->String.Length = (UINT32) 
-                ACPI_STRLEN (ReturnDesc->String.Pointer);
+            StringLength = (ObjDesc->Buffer.Length * 3);
             break;
 
         default:
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
+
+        /* 
+         * Perform the conversion.
+         * (-1 because of extra separator included in StringLength from above)
+         */
+        StringLength--;
+        if (StringLength > ACPI_MAX_STRING_CONVERSION)  /* ACPI limit */
+        {
+            return_ACPI_STATUS (AE_AML_STRING_LIMIT);
+        }
+
+        /* 
+         * Create a new string object and string buffer
+         */
+        ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) StringLength);
+        if (!ReturnDesc)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        NewBuf = ReturnDesc->Buffer.Pointer;
+
+        /*
+         * Convert buffer bytes to hex or decimal values
+         * (separated by commas or spaces)
+         */
+        for (i = 0; i < ObjDesc->Buffer.Length; i++)
+        {
+            NewBuf += AcpiExConvertToAscii (
+                        (ACPI_INTEGER) ObjDesc->Buffer.Pointer[i], Base,
+                        NewBuf, 1);
+            *NewBuf++ = Separator; /* each separated by a comma or space */
+        }
+
+        /* Null terminate the string (overwrites final comma/space from above) */
+
+        NewBuf--;
+        *NewBuf = 0;
         break;
 
     default:
