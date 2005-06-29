@@ -118,6 +118,7 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
+#include <dispatch.h>
 #include <namesp.h>
 #include <interp.h>
 
@@ -645,7 +646,7 @@ PsCreateWalkState (
 
     /* Init the method args/local */
 
-    PsxMthStackInit (WalkState);
+    DsMthStackInit (WalkState);
 
     /* Put the new state at the head of the walk list */
 
