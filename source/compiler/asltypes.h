@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -155,8 +155,8 @@
 typedef struct asl_method_info
 {
     UINT8                   NumArguments;
-    UINT8                   LocalInitialized[MTH_NUM_LOCALS];
-    UINT8                   ArgInitialized[MTH_NUM_ARGS];
+    UINT8                   LocalInitialized[ACPI_METHOD_NUM_LOCALS];
+    UINT8                   ArgInitialized[ACPI_METHOD_NUM_ARGS];
     UINT32                  NumReturnNoValue;
     UINT32                  NumReturnWithValue;
     ACPI_PARSE_OBJECT       *Op;

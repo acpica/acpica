@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.80 $
+ *              $Revision: 1.83 $
  *
  ******************************************************************************/
 
@@ -413,7 +413,7 @@ AcpiDbDecodeInternalObject (
 
     if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND)
     {
-        AcpiOsPrintf ("%p", ObjDesc);
+        AcpiOsPrintf (" %p", ObjDesc);
         return;
     }
 
@@ -456,7 +456,7 @@ AcpiDbDecodeInternalObject (
 
     default:
 
-        AcpiOsPrintf ("%p", ObjDesc);
+        AcpiOsPrintf (" %p", ObjDesc);
         break;
     }
 }
@@ -480,8 +480,8 @@ AcpiDbDecodeNode (
 {
 
 
-    AcpiOsPrintf ("<Node>            Name %4.4s Type-%s",
-        Node->Name.Ascii, AcpiUtGetTypeName (Node->Type));
+    AcpiOsPrintf ("<Node>            Name %4.4s",
+        Node->Name.Ascii);
 
     if (Node->Flags & ANOBJ_METHOD_ARG)
     {
@@ -795,7 +795,7 @@ AcpiDbDisplayLocals (void)
     Node = WalkState->MethodNode;
     AcpiOsPrintf ("Local Variables for method [%4.4s]:\n", Node->Name.Ascii);
 
-    for (i = 0; i < MTH_NUM_LOCALS; i++)
+    for (i = 0; i < ACPI_METHOD_NUM_LOCALS; i++)
     {
         ObjDesc = WalkState->LocalVariables[i].Object;
         AcpiOsPrintf ("Local%d: ", i);
@@ -843,7 +843,7 @@ AcpiDbDisplayArguments (void)
     AcpiOsPrintf ("Method [%4.4s] has %X arguments, max concurrency = %X\n",
             Node->Name.Ascii, NumArgs, Concurrency);
 
-    for (i = 0; i < NumArgs; i++)
+    for (i = 0; i < ACPI_METHOD_NUM_ARGS; i++)
     {
         ObjDesc = WalkState->Arguments[i].Object;
         AcpiOsPrintf ("Arg%d: ", i);

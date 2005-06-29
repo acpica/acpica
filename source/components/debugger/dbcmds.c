@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.89 $
+ *              $Revision: 1.91 $
  *
  ******************************************************************************/
 
@@ -412,7 +412,6 @@ AcpiDbSetMethodCallBreakpoint (
         return;
     }
 
-
     AcpiGbl_StepToNextCall = TRUE;
 }
 
@@ -702,7 +701,7 @@ AcpiDbSetMethodData (
 
         /* Set a method argument */
 
-        if (Index > MTH_MAX_ARG)
+        if (Index > ACPI_METHOD_MAX_ARG)
         {
             AcpiOsPrintf ("Arg%d - Invalid argument name\n", Index);
             return;
@@ -724,7 +723,7 @@ AcpiDbSetMethodData (
 
         /* Set a method local */
 
-        if (Index > MTH_MAX_LOCAL)
+        if (Index > ACPI_METHOD_MAX_LOCAL)
         {
             AcpiOsPrintf ("Local%d - Invalid local variable name\n", Index);
             return;
@@ -1053,7 +1052,7 @@ ErrorExit:
  *
  * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Display the resource objects associated with a device.
  *
  ******************************************************************************/
 
