@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.103 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -230,18 +230,19 @@ UINT8                       AcpiGbl_NsProperties[] =
     NSP_NORMAL,                 /* 21 Alias            */
     NSP_NORMAL,                 /* 22 Notify           */
     NSP_NORMAL,                 /* 23 Address Handler  */
-    NSP_NORMAL,                 /* 24 DefFieldDefn     */
-    NSP_NORMAL,                 /* 25 BankFieldDefn    */
-    NSP_NORMAL,                 /* 26 IndexFieldDefn   */
-    NSP_NORMAL,                 /* 27 If               */
-    NSP_NORMAL,                 /* 28 Else             */
-    NSP_NORMAL,                 /* 29 While            */
-    NSP_NEWSCOPE,               /* 30 Scope            */
-    NSP_LOCAL,                  /* 31 DefAny           */
-    NSP_NORMAL,                 /* 32 Method Arg       */
-    NSP_NORMAL,                 /* 33 Method Local     */
-    NSP_NORMAL,                 /* 34 Extra            */
-    NSP_NORMAL                  /* 35 Invalid          */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 24 Resource         */
+    NSP_NORMAL,                 /* 25 DefFieldDefn     */
+    NSP_NORMAL,                 /* 26 BankFieldDefn    */
+    NSP_NORMAL,                 /* 27 IndexFieldDefn   */
+    NSP_NORMAL,                 /* 28 If               */
+    NSP_NORMAL,                 /* 29 Else             */
+    NSP_NORMAL,                 /* 30 While            */
+    NSP_NEWSCOPE,               /* 31 Scope            */
+    NSP_LOCAL,                  /* 32 DefAny           */
+    NSP_NORMAL,                 /* 33 Method Arg       */
+    NSP_NORMAL,                 /* 34 Method Local     */
+    NSP_NORMAL,                 /* 35 Extra            */
+    NSP_NORMAL                  /* 36 Invalid          */
 };
 
 
@@ -348,18 +349,19 @@ static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 21 */ "Alias",
     /* 22 */ "Notify",
     /* 23 */ "AddrHndlr",
-    /* 24 */ "DefFldDfn",
-    /* 25 */ "BnkFldDfn",
-    /* 26 */ "IdxFldDfn",
-    /* 27 */ "If",
-    /* 28 */ "Else",
-    /* 29 */ "While",
-    /* 30 */ "Scope",
-    /* 31 */ "DefAny",
-    /* 32 */ "MethodArg",
-    /* 33 */ "MethodLcl",
-    /* 34 */ "Extra",
-    /* 35 */ "Invalid"
+    /* 24 */ "Resource",
+    /* 25 */ "DefFldDfn",
+    /* 26 */ "BnkFldDfn",
+    /* 27 */ "IdxFldDfn",
+    /* 28 */ "If",
+    /* 29 */ "Else",
+    /* 30 */ "While",
+    /* 31 */ "Scope",
+    /* 32 */ "DefAny",
+    /* 33 */ "MethodArg",
+    /* 34 */ "MethodLcl",
+    /* 35 */ "Extra",
+    /* 36 */ "Invalid"
 };
 
 
@@ -569,7 +571,6 @@ AcpiCmInitGlobals (
 
 
     FUNCTION_TRACE ("CmInitGlobals");
-
 
 
     /* ACPI table structure */
