@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.102 $
+ *       $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -521,15 +521,6 @@ ACPI_STATUS
 AcpiUtExecute_UID (
     ACPI_NAMESPACE_NODE     *DeviceNode,
     ACPI_DEVICE_ID          *Uid);
-
-
-/*
- * UtError - exception interfaces
- */
-
-NATIVE_CHAR *
-AcpiUtFormatException (
-    ACPI_STATUS             Status);
 
 
 /*
