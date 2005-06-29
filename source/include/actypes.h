@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.199 $
+ *       $Revision: 1.200 $
  *
  *****************************************************************************/
 
@@ -560,7 +560,7 @@ typedef UINT32                          ACPI_EVENT_TYPE;
 #define ACPI_EVENT_RTC                  (ACPI_EVENT_TYPE) 5
 #define ACPI_EVENT_GENERAL              (ACPI_EVENT_TYPE) 6
 #define ACPI_EVENT_MAX                  6
-#define ACPI_NUM_FIXED_EVENTS           (ACPI_EVENT_TYPE) 7
+#define ACPI_NUM_FIXED_EVENTS           7
 
 #define ACPI_GPE_INVALID                0xFF
 #define ACPI_GPE_MAX                    0xFF
@@ -622,6 +622,7 @@ typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 #define ACPI_ADR_SPACE_SMBUS            (ACPI_ADR_SPACE_TYPE) 4
 #define ACPI_ADR_SPACE_CMOS             (ACPI_ADR_SPACE_TYPE) 5
 #define ACPI_ADR_SPACE_PCI_BAR_TARGET   (ACPI_ADR_SPACE_TYPE) 6
+#define ACPI_ADR_SPACE_DATA_TABLE       (ACPI_ADR_SPACE_TYPE) 7
 
 
 /*
