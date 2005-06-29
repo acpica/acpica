@@ -220,11 +220,13 @@ NsSetup (void)
             {
 
             case ACPI_TYPE_Number:
+
                 ObjDesc->Number.Value = (UINT32) STRTOUL (InitVal->Val, NULL, 10);
                 break;
 
 
             case ACPI_TYPE_String:
+
                 ObjDesc->String.Length = (UINT16) STRLEN (InitVal->Val);
 
                 /* 
@@ -244,8 +246,23 @@ NsSetup (void)
 
 
             case ACPI_TYPE_Mutex:
+
                 ObjDesc->Mutex.SyncLevel = (UINT16) STRTOUL (InitVal->Val, NULL, 10);
-                ObjDesc->Mutex.Semaphore = 0;
+                Status = OsdCreateSemaphore (1, &ObjDesc->Mutex.Semaphore);
+                if (ACPI_FAILURE (Status))
+                {
+                    return_ACPI_STATUS (Status);
+                }
+
+                if (STRCMP (InitVal->Name, "_GL_") == 0)
+                {
+                    /* We just created the mutex for the global lock, save it */
+
+                    Gbl_GlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
+                }
+
+                /* TBD: These fields may be obsolete */
+
                 ObjDesc->Mutex.LockCount = 0;
                 ObjDesc->Mutex.ThreadId  = 0;
                 break;
