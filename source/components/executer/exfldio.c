@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -309,10 +309,11 @@ AcpiExReadFieldDatum (
         Address = RgnDesc->Region.Address + ObjDesc->CommonField.BaseByteOffset +
                     FieldDatumByteOffset;
 
-        DEBUG_PRINTP (TRACE_BFIELD, ("Region %s(%X) at %08lx width %X\n",
+        DEBUG_PRINTP (TRACE_BFIELD, ("Region %s(%X) width %X base:off %X:%X at %08lX\n",
             AcpiUtGetRegionName (RgnDesc->Region.SpaceId),
-            RgnDesc->Region.SpaceId, Address,
-            ObjDesc->CommonField.AccessBitWidth));
+            RgnDesc->Region.SpaceId, ObjDesc->CommonField.AccessBitWidth,
+            ObjDesc->CommonField.BaseByteOffset, FieldDatumByteOffset,
+            Address));
 
 
         /* Invoke the appropriate AddressSpace/OpRegion handler */
@@ -695,7 +696,7 @@ AcpiExWriteFieldDatum (
                     FieldDatumByteOffset;
 
         DEBUG_PRINTP (TRACE_BFIELD, 
-            ("Store %lx in Region %s(%X) at %p width %X\n",
+            ("Store %X in Region %s(%X) at %p width %X\n",
             Value, AcpiUtGetRegionName (RgnDesc->Region.SpaceId),
             RgnDesc->Region.SpaceId, Address, ObjDesc->CommonField.AccessBitWidth));
 
@@ -762,6 +763,9 @@ AcpiExWriteFieldDatumWithUpdateRule (
     UINT32                  CurrentValue;
 
 
+    FUNCTION_TRACE ("ExWriteFieldDatumWithUpdateRule");
+
+
     /* Start with the new bits  */
 
     MergedValue = FieldValue;
@@ -816,7 +820,7 @@ AcpiExWriteFieldDatumWithUpdateRule (
             DEBUG_PRINT (ACPI_ERROR,
                 ("WriteWithUpdateRule: Unknown UpdateRule setting: %x\n",
                 ObjDesc->CommonField.UpdateRule));
-            return (AE_AML_OPERAND_VALUE);
+            return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
             break;
         }
     }
@@ -827,7 +831,10 @@ AcpiExWriteFieldDatumWithUpdateRule (
     Status = AcpiExWriteFieldDatum (ObjDesc, FieldDatumByteOffset, 
                     MergedValue);
 
-    return (Status);
+    DEBUG_PRINTP (TRACE_BFIELD, ("Mask %X DatumOffset %X Value %X, MergedValue %X\n",
+        Mask, FieldDatumByteOffset, FieldValue, MergedValue));
+
+    return_ACPI_STATUS (Status);
 }
 
 
