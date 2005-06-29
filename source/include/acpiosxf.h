@@ -326,50 +326,62 @@ AcpiOsMemOut32 (
 
 
 /*
- * Standard access to PCI configuration space
+ * PCI configuration space access
  */
 
 ACPI_STATUS
 AcpiOsReadPciCfgByte (
+    UINT32                  Seg,
     UINT32                  Bus,
-    UINT32                  DeviceFunction,
-    UINT32                  Register,
+    UINT32                  Dev,
+    UINT32                  Func,
+    UINT32                  Reg,
     UINT8                   *Value);
 
 ACPI_STATUS
 AcpiOsReadPciCfgWord (
+    UINT32                  Seg,
     UINT32                  Bus,
-    UINT32                  DeviceFunction,
-    UINT32                  Register,
+    UINT32                  Dev,
+    UINT32                  Func,
+    UINT32                  Reg,
     UINT16                  *Value);
 
 ACPI_STATUS
 AcpiOsReadPciCfgDword (
+    UINT32                  Seg,
     UINT32                  Bus,
-    UINT32                  DeviceFunction,
-    UINT32                  Register,
+    UINT32                  Dev,
+    UINT32                  Func,
+    UINT32                  Reg,
     UINT32                  *Value);
 
 ACPI_STATUS
 AcpiOsWritePciCfgByte (
+    UINT32                  Seg,
     UINT32                  Bus,
-    UINT32                  DeviceFunction,
-    UINT32                  Register,
+    UINT32                  Dev,
+    UINT32                  Func,
+    UINT32                  Reg,
     UINT8                   Value);
 
 ACPI_STATUS
 AcpiOsWritePciCfgWord (
+    UINT32                  Seg,
     UINT32                  Bus,
-    UINT32                  DeviceFunction,
-    UINT32                  Register,
+    UINT32                  Dev,
+    UINT32                  Func,
+    UINT32                  Reg,
     UINT16                  Value);
 
 
 ACPI_STATUS
 AcpiOsWritePciCfgDword (
+    UINT32                  Seg,
     UINT32                  Bus,
-    UINT32                  DeviceFunction,
-    UINT32                  Register,
+    UINT32                  Dev,
+    UINT32                  Func,
+    UINT32                  Reg,
     UINT32                  Value);
 
 
