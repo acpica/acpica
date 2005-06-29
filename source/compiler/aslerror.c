@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -116,7 +116,6 @@
  *****************************************************************************/
 
 
-
 #include "AslCompiler.h"
 
 
@@ -154,16 +153,15 @@ char                        *AslErrorLevel [] = {
 };
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -173,7 +171,6 @@ AeAddToErrorLog (
 {
     ASL_ERROR_MSG           *Next;
     ASL_ERROR_MSG           *Prev;
-
 
 
     if (!Gbl_ErrorLog)
@@ -196,7 +193,7 @@ AeAddToErrorLog (
     Prev = NULL;
     Next = Gbl_ErrorLog;
 
-    while ((Next) && 
+    while ((Next) &&
            (Next->LogicalLineNumber <= Enode->LogicalLineNumber))
     {
         Prev = Next;
@@ -220,13 +217,13 @@ AeAddToErrorLog (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -255,15 +252,15 @@ AePrintException (
 
     if (Enode->MessageId == 0)
     {
-        fprintf (Where, "%s\n", 
+        fprintf (Where, "%s\n",
                     Enode->Message);
     }
 
     else
     {
-        fprintf (Where, "%s %04.4d - %s %s\n", 
+        fprintf (Where, "%s %04.4d - %s %s\n",
                     AslErrorLevel[Enode->Level],
-                    Enode->MessageId + ((Enode->Level+1) * 1000), 
+                    Enode->MessageId + ((Enode->Level+1) * 1000),
                     AslMessages[Enode->MessageId],
                     Enode->Message);
     }
@@ -272,13 +269,13 @@ AePrintException (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -289,7 +286,6 @@ AePrintErrorLog (
     ASL_ERROR_MSG           *Enode = Gbl_ErrorLog;
 
 
-
     while (Enode)
     {
         AePrintException (Where, Enode);
@@ -298,16 +294,15 @@ AePrintErrorLog (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -324,7 +319,6 @@ AslCommonError (
     UINT32                  MessageSize;
     char                    *MessageBuffer;
     ASL_ERROR_MSG           *Enode;
-
 
 
     if (ExtraMessage)
@@ -366,16 +360,15 @@ AslCommonError (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -387,7 +380,7 @@ AslError (
     char                    *ExtraMessage)
 {
 
-    AslCommonError (Level, MessageId, 
+    AslCommonError (Level, MessageId,
                     Node->LineNumber, Node->LogicalLineNumber,
                     Node->Filename, ExtraMessage);
 }
@@ -395,11 +388,11 @@ AslError (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
  * DESCRIPTION: Report an error situation discovered in a production
  *               NOTE: don't change the name of this function.
@@ -416,16 +409,15 @@ AslCompilererror (
 
     Length = strlen (Gbl_InputFilename);
 
-	sprintf (MsgBuffer, "%s\n%*s %s\n", 
-                Gbl_CurrentLineBuffer, 
-                Gbl_CurrentColumn + 9 + Length, "^", 
+	sprintf (MsgBuffer, "%s\n%*s %s\n",
+                Gbl_CurrentLineBuffer,
+                Gbl_CurrentColumn + 9 + Length, "^",
                 CompilerMessage);
 
-    AslCommonError (ASL_ERROR, ASL_MSG_NULL, Gbl_CurrentLineNumber, 
+    AslCommonError (ASL_ERROR, ASL_MSG_NULL, Gbl_CurrentLineNumber,
                     Gbl_LogicalLineNumber, Gbl_InputFilename, MsgBuffer);
-    
+
 	return 0;
 }
-
 
 

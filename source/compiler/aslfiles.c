@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -119,18 +119,15 @@
 #include "AslCompiler.h"
 
 
-
-
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -139,7 +136,7 @@ FlOpenLocalFile (
     char                    *LocalName,
     char                    *Mode)
 {
-    
+
     strcpy (StringBuffer, Gbl_DirectoryPath);
     strcat (StringBuffer, LocalName);
 
@@ -150,13 +147,13 @@ FlOpenLocalFile (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -169,7 +166,7 @@ FlOpenIncludeFile (
     if (!Node)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_INCLUDE_FILE_OPEN,
-                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, 
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                     Gbl_InputFilename, " - Null parse node");
         return;
     }
@@ -196,13 +193,13 @@ FlOpenIncludeFile (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -236,13 +233,13 @@ FlGenerateFilename (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -283,7 +280,7 @@ FlOpenInputFile (
     }
 
     else
-    {   
+    {
         *(Substring+1) = 0;
     }
 
@@ -293,13 +290,13 @@ FlOpenInputFile (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -336,16 +333,15 @@ FlOpenAmlOutputFile (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -482,13 +478,13 @@ FlOpenMiscOutputFiles (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -508,7 +504,7 @@ FlCloseListingFile (void)
     fprintf (Gbl_ListingOutputFile, "\n\n");
 
     fclose (Gbl_ListingOutputFile);
-    
+
     if (!Gbl_SourceOutputFlag)
     {
         fclose (Gbl_SourceOutputFile);
@@ -520,13 +516,13 @@ FlCloseListingFile (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -545,13 +541,13 @@ FlCloseSourceOutputFile (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -565,7 +561,5 @@ FlCloseHexOutputFile (void)
 
     fclose (Gbl_HexOutputFile);
 }
-
-
 
 

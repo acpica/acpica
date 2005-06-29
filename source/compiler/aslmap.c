@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,6 @@
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
 #include "amlcode.h"
-
 
 
 ASL_RESERVED_INFO               ReservedMethods[] = {
@@ -242,8 +241,7 @@ ASL_RESERVED_INFO               ReservedMethods[] = {
 };
 
 
-
-/* 
+/*
  * TBD:
  * AccessAttrib
  * AccessType
@@ -268,7 +266,7 @@ ASL_RESERVED_INFO               ReservedMethods[] = {
  *
  ******************************************************************************/
 
-ASL_MAPPING_ENTRY AslKeywordMapping [] = 
+ASL_MAPPING_ENTRY AslKeywordMapping [] =
 {
 
 /* ACCESSAS */                  OP_TABLE_ENTRY (AML_ACCESSFIELD_OP,         0,                  0),
@@ -520,11 +518,8 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 };
 
 
-
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("aslmap")
-
-
 
 
 #include "amlcode.h"
@@ -561,7 +556,6 @@ AcpiAmlValidateObjectType (
 
     return (TRUE);
 }
-
 
 
 /*******************************************************************************
@@ -812,6 +806,5 @@ AcpiDsMapNamedOpcodeToDataType (
 
     return (DataType);
 }
-
 
 

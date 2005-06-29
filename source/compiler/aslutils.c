@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.6 $
+ * Module Name: aslutils -- compiler utilities
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -123,16 +123,15 @@
 extern const char * const       yytname[];
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -146,8 +145,9 @@ UtLocalCalloc (
     Allocated = calloc (Size, 1);
     if (!Allocated)
     {
-        AslError (ASL_ERROR_MEMORY_ALLOCATION, 0);
-        /*TBD: Abort */
+        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
+            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, Gbl_InputFilename, NULL);
+        exit (1);
     }
 
     return Allocated;
@@ -156,13 +156,13 @@ UtLocalCalloc (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -178,8 +178,9 @@ UtLocalRealloc (
     Allocated = (char *) realloc (Previous, ValidSize + AdditionalSize);
     if (!Allocated)
     {
-        AslError (ASL_ERROR_MEMORY_ALLOCATION, 0);
-        /*TBD: Abort */
+        AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
+            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, Gbl_InputFilename, NULL);
+        exit (1);
     }
 
     /* Zero out the new part of the buffer */
@@ -191,13 +192,13 @@ UtLocalRealloc (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -219,16 +220,41 @@ UtHexCharToValue (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:
+ *
+ * PARAMETERS:
+ *
+ * RETURN:
+ *
+ * DESCRIPTION:
+ *
+ ******************************************************************************/
+
+void
+UtConvertByteToHex (
+    UINT8                   RawByte,
+    UINT8                   *Buffer)
+{
+
+    Buffer[0] = '0';
+    Buffer[1] = 'x';
+
+    Buffer[2] = hex[(RawByte >> 4) & 0xF];
+    Buffer[3] = hex[RawByte & 0xF];
+}
+
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -250,16 +276,15 @@ DbgPrint (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -272,25 +297,25 @@ UtPrintFormattedName (
 {
 
 
-    DbgPrint ("%*s %-16.16s", (4 * Level), " ", yytname[ParseOpcode-255]);
-        
+    DbgPrint ("%*s %-16.16s", (3 * Level), " ", yytname[ParseOpcode-255]);
+
     
     if (Level < TEXT_OFFSET)
     {
-        DbgPrint ("%*s", (TEXT_OFFSET - Level) * 4, " ");
+        DbgPrint ("%*s", (TEXT_OFFSET - Level) * 3, " ");
     }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -300,7 +325,6 @@ UtGetOpName (
 {
     return (char *) yytname [ParseOpcode - 255];
 }
-
 
 
 /*******************************************************************************
@@ -321,28 +345,30 @@ UtDisplaySummary (
 {
 
 
-    printf ("Compilation complete. %d Errors %d Warnings\n", ErrorCount, WarningCount);
-    printf ("ASL Input: %d lines, %d bytes, %d keywords\n", 
+    printf ("Compilation complete. %d Errors %d Warnings\n",
+                Gbl_ExceptionCount[ASL_ERROR],
+                Gbl_ExceptionCount[ASL_WARNING]);
+
+    printf ("ASL Input: %d lines, %d bytes, %d keywords\n",
                 Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
 
-    if ((ErrorCount == 0) || (Gbl_IgnoreErrors))
+    if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
-        printf ("AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n", 
+        printf ("AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
                     Gbl_OutputFilename, Gbl_TableLength, TotalNamedObjects, TotalExecutableOpcodes);
     }
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -354,7 +380,6 @@ UtAttachNamepathToOwner (
     ACPI_STATUS             Status;
 
 
-
     Node->ExternalName = NameNode->Value.String;
 
     Status = AcpiNsInternalizeName (NameNode->Value.String, &Node->Namepath);
@@ -364,179 +389,5 @@ UtAttachNamepathToOwner (
     }
 
 }
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-void
-_UtOpenIncludeFile (
-    ASL_PARSE_NODE          *Node)
-{
-    FILE                    *IncFile;
-
-
-    printf ("Open include: path %s\n", Node->Value.String);
-
-    IncFile = fopen (Node->Value.String, "r");
-    if (IncFile)
-    {
-        AslErrorMsg (ASL_ERROR_INCLUDE_FILE_OPEN, Node->LineNumber, Node->Value.String);
-        return;
-    }
-
-
-    printf ("Include files not supported yet\n");
-    //AslCompilerin = IncFile;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-char *
-AslGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix)
-{
-    char                    *Position;
-    char                    *NewFilename;
-
-
-    NewFilename = UtLocalCalloc (strlen (InputFilename) + strlen (Suffix));
-    strcpy (NewFilename, InputFilename);
-
-    Position = strrchr (NewFilename, '.');
-    if (Position)
-    {
-        *Position = 0;
-        strcat (Position, Suffix);
-    }
-
-    else
-    {
-        strcat (NewFilename, Suffix);
-    }
-
-    return NewFilename;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    
- *
- * PARAMETERS:  
- *
- * RETURN:      
- *
- * DESCRIPTION: 
- *
- ******************************************************************************/
-
-ACPI_STATUS
-UtOpenAllFiles (
-    char                    *InputFilename)
-{
-
-
-    /* Open the input ASL file, text mode */
-
-	Gbl_AslInputFile = fopen (InputFilename, "r");
-    AslCompilerin = Gbl_AslInputFile;
-    if (!Gbl_AslInputFile)
-    {
-        AslErrorMsg (ASL_ERROR_INPUT_FILE_OPEN, 0, InputFilename);
-        return (AE_ERROR);
-    }
-
-
-    /* Create the output AML filename */
-
-    Gbl_OutputFilename = AslGenerateFilename (InputFilename, ".aml");
-    if (!Gbl_OutputFilename)
-    {
-        AslError (ASL_ERROR_OUTPUT_FILENAME, 0);
-        return (AE_ERROR);
-    }
-
-
-    /* Open the output AML file in binary mode */
-
-	Gbl_OutputAmlFile = fopen (Gbl_OutputFilename, "w+b");
-    if (!Gbl_OutputAmlFile)
-    {
-        AslError (ASL_ERROR_OUTPUT_FILE_OPEN, 0);
-        return (AE_ERROR);
-    }
-
-
-    /* Create/Open a listing output file if asked */
-
-    if (Gbl_ListingFlag)
-    {
-        Gbl_ListingFilename = AslGenerateFilename (InputFilename, ".lst");
-        if (!Gbl_ListingFilename)
-        {
-            AslError (ASL_ERROR_LISTING_FILENAME, 0);
-            return (AE_ERROR);
-        }
-
-        /* Open the debug file, text mode */
-
-	    Gbl_ListingFile = fopen (Gbl_ListingFilename, "w+");
-        if (!Gbl_ListingFile)
-        {
-            AslError (ASL_ERROR_LISTING_FILE_OPEN, 0);
-            return (AE_ERROR);
-        }
-    }
-
-    /* Create/Open a debug output file if asked */
-
-    if (Gbl_DebugFlag)
-    {
-        Gbl_DebugFilename = AslGenerateFilename (InputFilename, ".txt");
-        if (!Gbl_DebugFilename)
-        {
-            AslError (ASL_ERROR_DEBUG_FILENAME, 0);
-            return (AE_ERROR);
-        }
-
-        /* Open the debug file, text mode */
-
-	    Gbl_DebugFile = freopen (Gbl_DebugFilename, "w+", stderr);
-        if (!Gbl_DebugFile)
-        {
-            AslError (ASL_ERROR_DEBUG_FILE_OPEN, 0);
-            return (AE_ERROR);
-        }
-    }
-
-
-    return (AE_OK);
-}
-
-
-
-
 
 

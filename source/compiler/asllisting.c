@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -123,16 +123,15 @@
 #include "acparser.h"
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -166,16 +165,15 @@ LsPushNode (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -198,17 +196,15 @@ LsPopNode (void)
 }
 
 
- 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -217,12 +213,12 @@ LsCheckException (
     UINT32                  LineNumber)
 {
 
-    if ((!Gbl_NextError) || 
+    if ((!Gbl_NextError) ||
         (LineNumber < Gbl_NextError->LogicalLineNumber ))
     {
         return;
     }
- 
+
     fprintf (Gbl_ListingOutputFile, "\n[****AslException****]\n");
 
     AePrintException (Gbl_ListingOutputFile, Gbl_NextError);
@@ -234,13 +230,13 @@ LsCheckException (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -300,13 +296,13 @@ LsFlushListingBuffer (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -350,16 +346,15 @@ LsWriteListingHexBytes (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -392,7 +387,7 @@ LsWriteOneSourceLine (void)
 
         if (FileByte == '\n')
         {
-            /* 
+            /*
              * Check if an error occurred on this source line during the compile.
              * If so, we print the error message after the source line.
              */
@@ -407,13 +402,13 @@ LsWriteOneSourceLine (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -421,7 +416,6 @@ void
 LsFinishSourceListing (void)
 {
     UINT32              Actual = 1;
-
 
 
     if (!Gbl_ListingFlag)
@@ -442,13 +436,13 @@ LsFinishSourceListing (void)
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -465,7 +459,7 @@ LsWriteSourceLines (
     LsFlushListingBuffer ();
 
     /*
-     * Read lines and write them as long as we are not caught up 
+     * Read lines and write them as long as we are not caught up
      */
     if (Gbl_SourceLine < Gbl_CurrentLine)
     {
@@ -486,13 +480,13 @@ LsWriteSourceLines (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -529,7 +523,7 @@ LsWriteNodeToListing (
         LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber);
 
         /*
-         * Create a new listing node and push it 
+         * Create a new listing node and push it
          */
 
         LsPushNode (Node->Child->Value.String);
@@ -541,7 +535,7 @@ LsWriteNodeToListing (
          */
         LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber);
 
-        /* 
+        /*
          * Pop off this listing node and go back to the parent file
          */
         LsPopNode ();
@@ -552,7 +546,7 @@ LsWriteNodeToListing (
     /*
      * Otherwise, we look at the AML opcode because we can
      * switch on the opcode type, getting an entire class
-     * at once 
+     * at once
      */
 
     OpInfo = AcpiPsGetOpcodeInfo (Node->AmlOpcode);
@@ -585,7 +579,7 @@ LsWriteNodeToListing (
             LsWriteSourceLines (Node->EndLine, Node->EndLogicalLine);
             break;
 
-        default: 
+        default:
             LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber);
             break;
         }
@@ -600,16 +594,15 @@ LsWriteNodeToListing (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -622,7 +615,6 @@ LsDoHexOutput (void)
     UINT8                   BufChar;
     UINT8                   FileByte[HEX_CHARS_PER_LINE];
     UINT8                   Buffer[4];
-
 
 
     if (!Gbl_HexOutputFlag)
@@ -681,6 +673,5 @@ LsDoHexOutput (void)
     fprintf  (Gbl_HexOutputFile, "\n");
     fclose (Gbl_HexOutputFile);
 }
-
 
 

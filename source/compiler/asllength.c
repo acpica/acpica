@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -126,17 +126,15 @@
         MODULE_NAME         ("asllength")
 
 
-
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -154,16 +152,15 @@ LnInitLengthsWalk (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -175,7 +172,7 @@ LnPackageLengthWalk (
 {
 
 
-    /* 
+    /*
      * generate the subtree length and
      * bubble it up to the parent
      */
@@ -183,9 +180,9 @@ LnPackageLengthWalk (
     if ((Node->Parent) &&
         (Node->ParseOpcode != DEFAULT_ARG))
     {
-        Node->Parent->AmlSubtreeLength += (Node->AmlLength + 
+        Node->Parent->AmlSubtreeLength += (Node->AmlLength +
                                             Node->AmlOpcodeLength +
-                                            Node->AmlPkgLenBytes + 
+                                            Node->AmlPkgLenBytes +
                                             Node->AmlSubtreeLength);
     }
 }
@@ -193,13 +190,13 @@ LnPackageLengthWalk (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -227,13 +224,13 @@ LnAdjustLengthToRoot (
 
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -243,12 +240,12 @@ CgGetPackageLenByteCount (
     UINT32                  PackageLength)
 {
 
-    /* 
+    /*
      * Determine the number of bytes required to encode the package length
      * Note: the package length includes the number of bytes used to encode
      * the package length, so we must account for this also.
      */
-    if (PackageLength <= (0x0000003F - 1)) 
+    if (PackageLength <= (0x0000003F - 1))
     {
         return (1);
     }
@@ -275,16 +272,15 @@ CgGetPackageLenByteCount (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -335,16 +331,15 @@ CgGenerateAmlOpcodeLength (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    
+ * FUNCTION:
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -354,7 +349,6 @@ CgGenerateAmlLengths (
 {
     char                    *Buffer;
     ACPI_STATUS             Status;
-    
 
 
     switch (Node->AmlOpcode)
@@ -363,17 +357,17 @@ CgGenerateAmlLengths (
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 1;
         return;
-    
+
     case AML_RAW_DATA_WORD:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 2;
         return;
-    
+
     case AML_RAW_DATA_DWORD:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 4;
         return;
-    
+
     case AML_RAW_DATA_QWORD:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 8;
@@ -423,8 +417,8 @@ CgGenerateAmlLengths (
         Node->Flags |= NODE_NAME_INTERNALIZED;
 
         Node->AmlLength = strlen (Buffer);
-        
-        /* 
+
+        /*
          * Check for single backslash reference to root,
          * make it a null terminated string in the AML
          */
@@ -462,7 +456,5 @@ CgGenerateAmlLengths (
         break;
     }
 }
-
-
 
 

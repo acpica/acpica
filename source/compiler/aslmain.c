@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -116,7 +116,6 @@
  *****************************************************************************/
 
 
-
 #define _DECLARE_GLOBALS
 
 #include "AslCompiler.h"
@@ -129,17 +128,17 @@ char                     hex[] = {'0','1','2','3','4','5','6','7',
 
 /*******************************************************************************
  *
- * FUNCTION:    Usage 
+ * FUNCTION:    Usage
  *
  * PARAMETERS:  None
- *  
- * RETURN:      None      
+ *
+ * RETURN:      None
  *
  * DESCRIPTION: Display help message
  *
  ******************************************************************************/
 
-void 
+void
 Usage (
     void)
 {
@@ -154,14 +153,13 @@ Usage (
 }
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    main    
+ * FUNCTION:    main
  *
  * PARAMETERS:  Standard argc/argv
  *
- * RETURN:      Program termination code 
+ * RETURN:      Program termination code
  *
  * DESCRIPTION: C main routine for the Asl Compiler
  *
@@ -170,7 +168,7 @@ Usage (
 
 int
 main (
-    int                 argc, 
+    int                 argc,
     char                **argv)
 {
     UINT32              j;
@@ -269,6 +267,5 @@ main (
 
     return (Status);
 }
-
 
 
