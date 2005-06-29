@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Name: internal.h - Internal data types used across the ACPI subsystem
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,7 +117,7 @@
 #ifndef _ACPI_INTERNAL_H
 #define _ACPI_INTERNAL_H
 
-#include <config.h>
+#include "config.h"
 
 
 #define WAIT_FOREVER            ((UINT32) -1)
@@ -137,7 +137,7 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
 
 
 /*****************************************************************************
- * 
+ *
  * Mutex typedefs and structs
  *
  ****************************************************************************/
@@ -145,8 +145,8 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
 
 /*
  * Predefined handles for the mutex objects used within the subsystem
- * All mutex objects are automatically created by CmMutexInitialize.
- * NOTE: any changes here must be reflected in the Gbl_MutexNames table also!
+ * All mutex objects are automatically created by AcpiCmMutexInitialize.
+ * NOTE: any changes here must be reflected in the AcpiGbl_MutexNames table also!
  */
 
 #define MTX_HARDWARE            0
@@ -172,7 +172,7 @@ typedef UINT32                  ACPI_MUTEX_HANDLE;
 
 /* Names for the mutexes used in the subsystem */
 
-static char                 *Gbl_MutexNames[] =
+static char                 *AcpiGbl_MutexNames[] =
 {
     "MTX_Hardware",
     "MTX_Memory",
@@ -210,9 +210,9 @@ typedef struct AcpiMutexInfo
 #define MTX_LOCK                1
 
 
-typedef UINT16                  ACPI_OWNER_ID;       
+typedef UINT16                  ACPI_OWNER_ID;
 #define OWNER_TYPE_TABLE        0x0
-#define OWNER_TYPE_METHOD       0x1  
+#define OWNER_TYPE_METHOD       0x1
 #define FIRST_METHOD_ID         0x0000
 #define FIRST_TABLE_ID          0x8000
 
@@ -221,7 +221,7 @@ typedef UINT16                  ACPI_OWNER_ID;
 #define TABLE_ID_DSDT           (ACPI_OWNER_ID) 0xD1D1
 
 /*****************************************************************************
- * 
+ *
  * Namespace typedefs and structs
  *
  ****************************************************************************/
@@ -229,16 +229,16 @@ typedef UINT16                  ACPI_OWNER_ID;
 
 /* Operational modes of the AML interpreter/scanner */
 
-typedef enum 
+typedef enum
 {
-    IMODE_LoadPass1 = 0x01,
-    IMODE_LoadPass2 = 0x02,
-    IMODE_Execute   = 0x0E
+    IMODE_LOAD_PASS1 = 0x01,
+    IMODE_LOAD_PASS2 = 0x02,
+    IMODE_EXECUTE   = 0x0E
 
 } OPERATING_MODE;
 
 
-/* 
+/*
  * Typedef nte (name table entry) is private to avoid global
  * impact in the event of changes to it.  The externally-known type ACPI_HANDLE
  * is actually an (nte *).  If an external program needs to extract a field
@@ -278,7 +278,7 @@ typedef struct NameTableEntry
     /* Align on 16-byte boundary for memory dump readability */
 /*
     DEBUG_ONLY_MEMBERS (
-    char                    *FillDebug) 
+    char                    *FillDebug)
 */
 } NAME_TABLE_ENTRY;
 
@@ -315,7 +315,7 @@ typedef struct AcpiTableDesc
 } ACPI_TABLE_DESC;
 
 
-typedef struct 
+typedef struct
 {
     char                    *SearchFor;
     ACPI_HANDLE             *List;
@@ -353,12 +353,12 @@ typedef struct
 
 
 /*****************************************************************************
- * 
- * Event typedefs and structs
+ *
+ * AcpiEvent typedefs and structs
  *
  ****************************************************************************/
 
-/* 
+/*
  * Entry in the AddressSpace (AKA Operation Region) table
  */
 
@@ -372,7 +372,7 @@ typedef struct
 
 /* Values and addresses of the GPE registers (both banks) */
 
-typedef struct 
+typedef struct
 {
     UINT8                   Status;         /* Current value of status reg */
     UINT8                   Enable;         /* Current value of enable reg */
@@ -404,8 +404,8 @@ typedef struct
 
 typedef struct
 {
-	FIXED_EVENT_HANDLER		Handler;		/* Address of handler. */
-	void					*Context;		/* Context to be passed to handler */
+    FIXED_EVENT_HANDLER     Handler;        /* Address of handler. */
+    void                    *Context;       /* Context to be passed to handler */
 
 } FIXED_EVENT_INFO;
 
@@ -426,7 +426,7 @@ typedef struct
 
 
 /*****************************************************************************
- * 
+ *
  * Parser typedefs and structs
  *
  ****************************************************************************/
@@ -460,7 +460,7 @@ typedef union acpi_op_value
     UINT8                   *Buffer;        /* buffer or string */
     char                    *Name;          /* NULL terminated string */
     struct acpi_generic_op  *Arg;           /* arguments and contained ops */
-    NAME_TABLE_ENTRY        *Entry;         /* entry in interpreter namespace tbl */ 
+    NAME_TABLE_ENTRY        *Entry;         /* entry in interpreter namespace tbl */
 
 } ACPI_OP_VALUE;
 
@@ -564,7 +564,7 @@ typedef struct acpi_parse_scope
 
 
 /*****************************************************************************
- * 
+ *
  * Generic "state" object for stacks
  *
  ****************************************************************************/
@@ -574,7 +574,7 @@ typedef struct acpi_parse_scope
 #define CONTROL_CONDITIONAL_EXECUTING         0xC1
 #define CONTROL_PREDICATE_EXECUTING           0xC2
 #define CONTROL_PREDICATE_FALSE               0xC3
-#define CONTROL_PREDICATE_TRUE                0xC4 
+#define CONTROL_PREDICATE_TRUE                0xC4
 
 
 
@@ -583,7 +583,7 @@ typedef struct acpi_parse_scope
     UINT8                   Flags; \
     UINT16                  Value; \
     UINT16                  State; \
-    UINT16                  Eval;  \
+    UINT16                  AcpiEval;  \
     void                    *Next; \
 
 typedef struct acpi_common_state
@@ -604,7 +604,7 @@ typedef struct acpi_update_state
 
 /*
  * Control state - one per if/else and while constructs.
- * Allows nesting of these constructs 
+ * Allows nesting of these constructs
  */
 typedef struct acpi_control_state
 {
@@ -639,7 +639,7 @@ typedef union acpi_gen_state
 
 
 /*****************************************************************************
- * 
+ *
  * Tree walking typedefs and structs
  *
  ****************************************************************************/
@@ -668,7 +668,7 @@ typedef struct acpi_walk_state
     ACPI_GENERIC_OP         *PrevOp;                            /* Last op that was processed */
     ACPI_GENERIC_OP         *NextOp;                            /* next op to be processed */
     ACPI_GENERIC_STATE      *ControlState;                      /* List of control states (nested IFs) */
-	ACPI_GENERIC_STATE		*ScopeInfo;							/* Stack of nested scopes */
+    ACPI_GENERIC_STATE      *ScopeInfo;                         /* Stack of nested scopes */
     union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
     union AcpiObjInternal   *MethodDesc;                        /* Method descriptor if running a method */
     ACPI_GENERIC_OP         *MethodCallOp;                      /* MethodCall Op if running a method */
@@ -701,7 +701,7 @@ ACPI_STATUS (*INTERPRETER_CALLBACK) (
 
 
 
-/* Info used by PsInitObjects */
+/* Info used by AcpiPsInitObjects */
 
 typedef struct InitWalkInfo
 {
@@ -723,7 +723,7 @@ typedef struct AcpiWalkInfo
 
 
 /*****************************************************************************
- * 
+ *
  * Debug
  *
  ****************************************************************************/
@@ -737,7 +737,7 @@ typedef struct AcpiWalkInfo
 #define MEM_CALLOC          1
 #define MAX_MODULE_NAME     16
 
-typedef struct AllocationInfo 
+typedef struct AllocationInfo
 {
     struct AllocationInfo   *Previous;
     struct AllocationInfo   *Next;
