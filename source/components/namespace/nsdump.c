@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -305,7 +305,7 @@ AcpiNsDumpOneObject (
 
     if (!AcpiCmValidAcpiName (ThisNode->Name))
     {
-        REPORT_WARNING ("Invalid Name");
+        REPORT_WARNING (("Invalid ACPI Name 0x%X\n", ThisNode->Name));
     }
 
     /*
