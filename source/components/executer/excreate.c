@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -984,11 +984,14 @@ AcpiAmlExecCreatePowerResource (
  *
  * FUNCTION:    AcpiAmlExecCreateMethod
  *
- * PARAMETERS:  InterpreterMode     - Current running mode (load1/Load2/Exec)
+ * PARAMETERS:  AmlPtr          - First byte of the method's AML
+ *              AmlLength       - AML byte count for this method
+ *              MethodFlags     - AML method flag byte
+ *              Method          - Method NTE
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Create a new mutex object
+ * DESCRIPTION: Create a new method object
  *
  ****************************************************************************/
 
@@ -1029,9 +1032,8 @@ AcpiAmlExecCreateMethod (
                                             METHOD_FLAGS_ARG_COUNT);
 
     /*
-     * Get the concurrency count
-     * If required, a semaphore will be created for this method when it is
-     * parsed.
+     * Get the concurrency count.  If required, a semaphore will be 
+     * created for this method when it is parsed.
      *
      * TBD: [Future]  for APCI 2.0, there will be a SyncLevel value, not
      * just a flag
@@ -1042,6 +1044,7 @@ AcpiAmlExecCreateMethod (
     {
         ObjDesc->Method.Concurrency = 1;
     }
+
     else
     {
         ObjDesc->Method.Concurrency = INFINITE_CONCURRENCY;
@@ -1052,7 +1055,7 @@ AcpiAmlExecCreateMethod (
     Status = AcpiNsAttachObject (Method, ObjDesc, (UINT8) ACPI_TYPE_METHOD);
     if (ACPI_FAILURE (Status))
     {
-        AcpiCmFree (ObjDesc);
+        AcpiCmDeleteObjectDesc (ObjDesc);
     }
 
     return_ACPI_STATUS (Status);
