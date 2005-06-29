@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -164,6 +164,7 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
      * NOTE: We ignore AE_ALREADY_EXISTS because this means that a handler
      * has already been installed (via AcpiInstallAddressSpaceHandler)
      */
+
     Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
                                              ACPI_ADR_SPACE_SYSTEM_MEMORY,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
@@ -191,6 +192,14 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
         return_ACPI_STATUS (Status);
     }
 
+    Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
+                                             ACPI_ADR_SPACE_DATA_TABLE,
+                                             ACPI_DEFAULT_HANDLER, NULL, NULL);
+    if ((ACPI_FAILURE (Status)) &&
+        (Status != AE_ALREADY_EXISTS))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     return_ACPI_STATUS (AE_OK);
 }
