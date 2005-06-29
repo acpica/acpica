@@ -122,6 +122,7 @@
 #include <namesp.h>
 #include <events.h>
 #include <parser.h>
+#include <dispatch.h>
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cminit");
@@ -464,6 +465,7 @@ CmSubsystemShutdown (void)
 
     CmDeleteGenericStateCache ();
     CmDeleteObjectCache ();
+    DsDeleteWalkStateCache ();
 
     /* Close the Parser */
 
