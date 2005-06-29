@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I "..\..\components\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -55,7 +55,7 @@ LINK32=xilink6.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy executable to acpi/components/libraries
-PostBuild_Cmds=copy bin\acpibin.exe ..\..\..\libraries\acpibin.exe
+PostBuild_Cmds=copy bin\acpibin.exe ..\..\\libraries\acpibin.exe
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AcpiBin - Win32 Debug"
@@ -72,7 +72,7 @@ PostBuild_Cmds=copy bin\acpibin.exe ..\..\..\libraries\acpibin.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "..\..\components\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -85,7 +85,7 @@ LINK32=xilink6.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy executable to acpi/components/libraries
-PostBuild_Cmds=copy bin\acpibin.exe ..\..\..\libraries\acpibin.exe
+PostBuild_Cmds=copy bin\acpibin.exe ..\..\libraries\acpibin.exe
 # End Special Build Tool
 
 !ENDIF 
@@ -102,11 +102,11 @@ PostBuild_Cmds=copy bin\acpibin.exe ..\..\..\libraries\acpibin.exe
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\Tools\AcpiBin\abcompare.c
+SOURCE=..\..\components\tools\AcpiBin\abcompare.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Tools\AcpiBin\abmain.c
+SOURCE=..\..\components\tools\AcpiBin\abmain.c
 # End Source File
 # End Group
 # Begin Group "Common"
@@ -114,7 +114,11 @@ SOURCE=..\..\Tools\AcpiBin\abmain.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\Common\getopt.c
+SOURCE=..\..\components\Common\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\components\os_interfaces\oswinxf.c
 # End Source File
 # End Group
 # Begin Group "Utils"
@@ -122,28 +126,24 @@ SOURCE=..\..\Common\getopt.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\core\utils\cmdebug.c
+SOURCE=..\..\components\core\utils\cmdebug.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\core\utils\cmglobal.c
+SOURCE=..\..\components\core\utils\cmglobal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\core\utils\cmutils.c
+SOURCE=..\..\components\core\utils\cmutils.c
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=..\..\os_interfaces\oswinxf.c
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\..\Tools\AcpiBin\acpibin.h
+SOURCE=..\..\components\tools\AcpiBin\acpibin.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
