@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -268,7 +268,7 @@ AcpiEvNotifyDispatch (
  *
  **************************************************************************/
 
-void
+static void
 AcpiEvGlobalLockThread (
     void                    *Context)
 {
@@ -297,7 +297,7 @@ AcpiEvGlobalLockThread (
  *
  **************************************************************************/
 
-UINT32
+static UINT32
 AcpiEvGlobalLockHandler (
     void                    *Context)
 {

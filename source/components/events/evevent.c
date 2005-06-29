@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -556,7 +556,7 @@ AcpiEvGpeInitialize (void)
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiEvSaveMethodInfo (
     ACPI_HANDLE             ObjHandle,
     UINT32                  Level,
@@ -681,31 +681,6 @@ AcpiEvInitGpeControlMethods (void)
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiEvGpeCleanup
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Cleanup in preparation for unload.
- *
- ******************************************************************************/
-
-void
-AcpiEvGpeCleanup (void)
-{
-    FUNCTION_TRACE ("EvGpeCleanup");
-
-
-    AcpiCmFree (AcpiGbl_GpeRegisters);
-    AcpiCmFree (AcpiGbl_GpeInfo);
-
-    return_VOID;
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AcpiEvGpeDetect
  *
  * PARAMETERS:  None
@@ -794,7 +769,7 @@ AcpiEvGpeDetect (void)
  *
  ******************************************************************************/
 
-void
+static void
 AcpiEvAsynchExecuteGpeMethod (
     void                    *Context)
 {
