@@ -333,7 +333,7 @@ UnlockAndExit:
  * FUNCTION:    NsLookup
  *
  * PARAMETERS:  PrefixScope     - Search scope if name is not fully qualified
- *              Name            - Name to be entered, in internal format
+ *              Pathname            - Name to be entered, in internal format
  *                                as represented in the AML stream
  *              Type            - Type associated with name
  *              InterpreterMode - IMODE_LoadPass2 => add name if not found
@@ -351,23 +351,24 @@ UnlockAndExit:
 ACPI_STATUS
 NsLookup (
     ACPI_GENERIC_STATE      *ScopeInfo,
-    char                    *Name, 
+    char                    *Pathname, 
     ACPI_OBJECT_TYPE        Type, 
     OPERATING_MODE          InterpreterMode,
 	UINT32					Flags,
     ACPI_WALK_STATE			*WalkState,
     NAME_TABLE_ENTRY        **RetEntry)
 {
-    NAME_TABLE_ENTRY        *PrefixScope;
     ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *PrefixScope;
     NAME_TABLE_ENTRY        *EntryToSearch = NULL;
     NAME_TABLE_ENTRY        *ThisEntry = NULL;
     NAME_TABLE_ENTRY        *ScopeToPush = NULL;
     UINT32                  NumSegments;
+    UINT32                  i;
+    ACPI_NAME               SimpleName;
+    BOOLEAN                 NullNamePath = FALSE;
     ACPI_OBJECT_TYPE        TypeToCheckFor;
     ACPI_OBJECT_TYPE        ThisSearchType;
-    UINT32                  i;
-    BOOLEAN                 NullNamePath = FALSE;
 
 
     FUNCTION_TRACE ("NsLookup");
@@ -451,7 +452,7 @@ NsLookup (
 
     /* Examine the name pointer */
 
-    if (!Name)
+    if (!Pathname)
     {
         /*  8-12-98 ASL Grammar Update supports null NamePath   */
 
@@ -459,7 +460,7 @@ NsLookup (
         NumSegments = 0;
         ThisEntry = Gbl_RootObject;
 
-        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Null Name (Zero segments),  Flags=%x\n", Flags));
+        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Null Pathname (Zero segments),  Flags=%x\n", Flags));
     }
 
     else
@@ -467,7 +468,7 @@ NsLookup (
         /* 
          * Valid name pointer (Internal name format)
          *
-         * Check for prefixes.  As represented in the AML stream, a Name consists
+         * Check for prefixes.  As represented in the AML stream, a Pathname consists
          * of an optional scope prefix followed by a segment part.
          *
          * If present, the scope prefix is either a RootPrefix (in which case the
@@ -481,19 +482,19 @@ NsLookup (
          *    segments and the segments themselves.
          */
 
-        if (*Name == AML_RootPrefix)
+        if (*Pathname == AML_RootPrefix)
         {
-            /* Name is fully qualified, look in root name table */
+            /* Pathname is fully qualified, look in root name table */
         
             EntryToSearch = Gbl_RootObject->Scope;
-            Name++;                 /* point to segment part */
+            Pathname++;                 /* point to segment part */
 
             DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching from root [%p]\n", 
                                         EntryToSearch));
 
             /* Direct reference to root, "\" */
 
-            if (!(*Name))
+            if (!(*Pathname))
             {
                 *RetEntry = Gbl_RootObject;
                 return_ACPI_STATUS (AE_OK);
@@ -502,7 +503,7 @@ NsLookup (
     
         else
         {
-            /* Name is relative to current scope, start there */
+            /* Pathname is relative to current scope, start there */
         
             EntryToSearch = PrefixScope;
 
@@ -511,12 +512,12 @@ NsLookup (
 
             /* Handle up-prefix (carat).  More than one prefix is supported */
 
-            while (*Name == AML_ParentPrefix)
+            while (*Pathname == AML_ParentPrefix)
             {
             
                 /* Point to segment part or next ParentPrefix */
 
-                Name++;     
+                Pathname++;     
 
                 /*  Backup to the parent's scope  */
             
@@ -537,31 +538,31 @@ NsLookup (
 
         /* Examine the name prefix opcode, if any, to determine the number of segments */
 
-        if (*Name == AML_DualNamePrefix)
+        if (*Pathname == AML_DualNamePrefix)
         {
             NumSegments = 2;
-            Name++;                             /* point to first segment */
+            Pathname++;                             /* point to first segment */
 
-            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Dual Name (2 segments, Flags=%X)\n", Flags));
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Dual Pathname (2 segments, Flags=%X)\n", Flags));
         }
     
-        else if (*Name == AML_MultiNamePrefixOp)
+        else if (*Pathname == AML_MultiNamePrefixOp)
         {
-            NumSegments = (INT32)* (UINT8 *) ++Name;
-            Name++;                             /* point to first segment */
+            NumSegments = (INT32)* (UINT8 *) ++Pathname;
+            Pathname++;                             /* point to first segment */
         
-            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Multi Name (%d Segments, Flags=%X) \n", NumSegments, Flags));
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Multi Pathname (%d Segments, Flags=%X) \n", NumSegments, Flags));
         }
 
         else
         {
             /* 
              * No Dual or Multi prefix, hence there is only one
-             * segment and Name is already pointing to it.
+             * segment and Pathname is already pointing to it.
              */
             NumSegments = 1;
 
-            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Simple Name (1 segment, Flags=%X)\n", Flags));
+            DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Simple Pathname (1 segment, Flags=%X)\n", Flags));
         }
 
 
@@ -570,7 +571,7 @@ NsLookup (
         DEBUG_PRINT (TRACE_NAMES, ("NsLookup: ["));
         for (i = 0; i < NumSegments; i++)
         {
-            DEBUG_PRINT_RAW (TRACE_NAMES, ("%4.4s/", &Name[i * 4]));
+            DEBUG_PRINT_RAW (TRACE_NAMES, ("%4.4s/", &Pathname[i * 4]));
         }
         DEBUG_PRINT_RAW (TRACE_NAMES, ("]\n"));
     }
@@ -594,7 +595,8 @@ NsLookup (
             ThisSearchType = Type;
         }
 
-        Status = NsSearchAndEnter (*(UINT32 *) Name, WalkState, EntryToSearch, InterpreterMode,
+        STORE32TO32 (&SimpleName, Pathname);
+        Status = NsSearchAndEnter (SimpleName, WalkState, EntryToSearch, InterpreterMode,
                                     ThisSearchType, Flags, &ThisEntry);
         if (Status != AE_OK)
         {
@@ -629,7 +631,7 @@ NsLookup (
 
             REPORT_WARNING ("Type mismatch");
             DEBUG_PRINT (ACPI_WARN, ("NsLookup: %4.4s, type 0x%X, checking for type 0x%X\n", 
-                                        Name, ThisEntry->Type, TypeToCheckFor));
+                                        &SimpleName, ThisEntry->Type, TypeToCheckFor));
         }
 
         /*
@@ -696,7 +698,7 @@ NsLookup (
         }
 
         EntryToSearch = ThisEntry->Scope;
-        Name += ACPI_NAME_SIZE;                 /* point to next name segment */
+        Pathname += ACPI_NAME_SIZE;                 /* point to next name segment */
     }
 
 
