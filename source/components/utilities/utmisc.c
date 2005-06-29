@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  ******************************************************************************/
 
@@ -199,7 +199,6 @@ AcpiUtSetIntegerWidth (
         AcpiGbl_IntegerByteWidth = 8;
     }
 }
-
 
 
 #ifdef ACPI_DEBUG_OUTPUT

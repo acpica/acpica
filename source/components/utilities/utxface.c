@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -309,7 +309,7 @@ AcpiEnableSubsystem (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Completes namespace initialization by initializing device 
+ * DESCRIPTION: Completes namespace initialization by initializing device
  *              objects and executing AML code for Regions, buffers, etc.
  *
  ******************************************************************************/
