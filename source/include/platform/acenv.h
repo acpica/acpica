@@ -182,6 +182,8 @@
 #define STRTOUL(d,s,n)          strtoul((char *) (d), (char **) (s), (n))
 #define MEMCPY                  memcpy
 #define MEMSET                  memset
+#define TOUPPER                 toupper
+#define TOLOWER                 tolower
 
 
 /******************************************************************************
@@ -224,18 +226,20 @@ typedef char *va_list;
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)           _strstr((char *) (s1), (char *) (s2))
-#define STRUPR(s)               __strupr((char *) (s))
-#define STRLEN(s)               _strlen((char *) (s))
-#define STRCPY(d,s)             _strcpy((char *) (d), (char *) (s))
-#define STRNCPY(d,s,n)          _strncpy((char *) (d), (char *) (s), (n))
-#define STRNCMP(d,s,n)          _strncmp((char *) (d), (char *) (s), (n))
-#define STRCMP(d,s)             _strcmp((char *) (d), (char *) (s))
-#define STRCAT(d,s)             _strcat((char *) (d), (char *) (s))
-#define STRNCAT(d,s,n)          _strncat((char *) (d), (char *) (s), (n))
-#define STRTOUL(d,s,n)          _strtoul((char *) (d), (char **) (s), (n))
-#define MEMCPY                  _memcpy
-#define MEMSET                  _memset
+#define STRSTR(s1,s2)           CmStrstr    ((char *) (s1), (char *) (s2))
+#define STRUPR(s)               CmStrupr    ((char *) (s))
+#define STRLEN(s)               CmStrlen    ((char *) (s))
+#define STRCPY(d,s)             CmStrcpy    ((char *) (d), (char *) (s))
+#define STRNCPY(d,s,n)          CmStrncpy   ((char *) (d), (char *) (s), (n))
+#define STRNCMP(d,s,n)          CmStrncmp   ((char *) (d), (char *) (s), (n))
+#define STRCMP(d,s)             CmStrcmp    ((char *) (d), (char *) (s))
+#define STRCAT(d,s)             CmStrcat    ((char *) (d), (char *) (s))
+#define STRNCAT(d,s,n)          CmStrncat   ((char *) (d), (char *) (s), (n))
+#define STRTOUL(d,s,n)          CmStrtoul   ((char *) (d), (char **) (s), (n))
+#define MEMCPY(d,s,n)           CmMemcpy    ((void *) (d), (const void *) (s), (n))
+#define MEMSET(d,v,n)           CmMemset    ((void *) (d), (v), (n))
+#define TOUPPER                 CmToUpper
+#define TOLOWER                 CmToLower
 
 #endif /* LOCAL_CLIB_FUNCTIONS */
 
