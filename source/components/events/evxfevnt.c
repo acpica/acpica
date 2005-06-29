@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: evapievt - External Interfaces, ACPI event disable/enable
+ * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *****************************************************************************/
 
 
-#define __EVAPIEVT_C__
+#define __EVXFEVNT_C__
 
 #include "acpi.h"
 #include "hardware.h"
@@ -124,7 +124,7 @@
 #include "interp.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evapievt");
+        MODULE_NAME         ("evxfevnt");
 
 
 
@@ -153,7 +153,7 @@ AcpiEnable (void)
 
     /* Make sure we've got ACPI tables */
 
-    if (!Acpi_GblDSDT)
+    if (!AcpiGbl_DSDT)
     {
         DEBUG_PRINT (ACPI_WARN, ("No ACPI tables present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
@@ -167,14 +167,14 @@ AcpiEnable (void)
         return_ACPI_STATUS (AE_ERROR);
     }
 
-    Acpi_GblOriginalMode = AcpiHwGetMode();
+    AcpiGbl_OriginalMode = AcpiHwGetMode();
 
     /*
      * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
      * done prior to enabling SCIs to prevent interrupts from occuring
      * before handers are installed.
      */
- 
+
     if (ACPI_FAILURE (AcpiEvFixedEventInitialize ()))
     {
         DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize fixed events.\n"));
@@ -237,7 +237,7 @@ AcpiDisable (void)
 
     /* Restore original mode  */
 
-    if (AE_OK != AcpiHwSetMode (Acpi_GblOriginalMode))
+    if (AE_OK != AcpiHwSetMode (AcpiGbl_OriginalMode))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Unable to transition to original mode"));
         return_ACPI_STATUS (AE_ERROR);
@@ -315,7 +315,7 @@ AcpiEnableEvent (
 
         /* Enable the requested fixed event (by writing a one to the enable register bit) */
 
-        AcpiHwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 1);
+        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
         break;
 
 
@@ -324,7 +324,7 @@ AcpiEnableEvent (
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -409,7 +409,7 @@ AcpiDisableEvent (
 
         /* Disable the requested fixed event (by writing a zero to the enable register bit) */
 
-        AcpiHwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 0);
+        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 0);
         break;
 
 
@@ -418,7 +418,7 @@ AcpiDisableEvent (
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -500,7 +500,7 @@ AcpiClearEvent (
 
         /* Clear the requested fixed event (By writing a one to the status register bit) */
 
-        AcpiHwRegisterIO (ACPI_WRITE, TRUE, RegisterId, 1);
+        AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
         break;
 
 
@@ -509,7 +509,7 @@ AcpiClearEvent (
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -601,7 +601,7 @@ AcpiGetEventStatus (
 
         /* Get the status of the requested fixed event */
 
-        *EventStatus = AcpiHwRegisterIO (ACPI_READ, TRUE, RegisterId);
+        *EventStatus = AcpiHwRegisterAccess (ACPI_READ, TRUE, RegisterId);
         break;
 
 
@@ -610,7 +610,7 @@ AcpiGetEventStatus (
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (Acpi_GblGpeValid[Event] == GPE_INVALID))
+            (AcpiGbl_GpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }

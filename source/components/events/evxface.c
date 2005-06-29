@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: evapi - External interfaces for ACPI events
+ * Module Name: evxface - External interfaces for ACPI events
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *****************************************************************************/
 
 
-#define __EVAPI_C__
+#define __EVXFACE_C__
 
 #include "acpi.h"
 #include "hardware.h"
@@ -124,7 +124,7 @@
 #include "interp.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evapi");
+        MODULE_NAME         ("evxface");
 
 
 
@@ -167,7 +167,7 @@ AcpiInstallFixedEventHandler (
 
     /* Don't allow two handlers. */
 
-    if (NULL != Acpi_GblFixedEventHandlers[Event].Handler)
+    if (NULL != AcpiGbl_FixedEventHandlers[Event].Handler)
     {
         Status = AE_EXIST;
         goto Cleanup;
@@ -176,17 +176,17 @@ AcpiInstallFixedEventHandler (
 
     /* Install the handler before enabling the event - just in case... */
 
-    Acpi_GblFixedEventHandlers[Event].Handler = Handler;
-    Acpi_GblFixedEventHandlers[Event].Context = Context;
+    AcpiGbl_FixedEventHandlers[Event].Handler = Handler;
+    AcpiGbl_FixedEventHandlers[Event].Context = Context;
 
-    if (1 != AcpiHwRegisterIO (ACPI_WRITE, MTX_LOCK, Event + TMR_EN, 1))
+    if (1 != AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, Event + TMR_EN, 1))
     {
         DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
 
         /* Remove the handler */
 
-        Acpi_GblFixedEventHandlers[Event].Handler = NULL;
-        Acpi_GblFixedEventHandlers[Event].Context = NULL;
+        AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
+        AcpiGbl_FixedEventHandlers[Event].Context = NULL;
 
         Status = AE_ERROR;
         goto Cleanup;
@@ -236,7 +236,7 @@ AcpiRemoveFixedEventHandler (
 
     /* Disable the event before removing the handler - just in case... */
 
-    if (0 != AcpiHwRegisterIO (ACPI_WRITE, MTX_LOCK, Event + TMR_EN, 0))
+    if (0 != AcpiHwRegisterAccess (ACPI_WRITE, MTX_LOCK, Event + TMR_EN, 0))
     {
         DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
         Status = AE_ERROR;
@@ -245,8 +245,8 @@ AcpiRemoveFixedEventHandler (
 
     /* Remove the handler */
 
-    Acpi_GblFixedEventHandlers[Event].Handler = NULL;
-    Acpi_GblFixedEventHandlers[Event].Context = NULL;
+    AcpiGbl_FixedEventHandlers[Event].Handler = NULL;
+    AcpiGbl_FixedEventHandlers[Event].Context = NULL;
 
     DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %d.\n", Event));
 
@@ -320,8 +320,8 @@ AcpiInstallNotifyHandler (
          *  Make sure the handler is not already installed.
          */
 
-        if (((HandlerType == ACPI_SYSTEM_NOTIFY) && Acpi_GblSysNotify.Handler) ||
-            ((HandlerType == ACPI_DEVICE_NOTIFY) && Acpi_GblDrvNotify.Handler))
+        if (((HandlerType == ACPI_SYSTEM_NOTIFY) && AcpiGbl_SysNotify.Handler) ||
+            ((HandlerType == ACPI_DEVICE_NOTIFY) && AcpiGbl_DrvNotify.Handler))
         {
             Status = AE_EXIST;
             goto UnlockAndExit;
@@ -329,16 +329,16 @@ AcpiInstallNotifyHandler (
 
         if (HandlerType == ACPI_SYSTEM_NOTIFY)
         {
-            Acpi_GblSysNotify.Nte = ObjEntry;
-            Acpi_GblSysNotify.Handler = Handler;
-            Acpi_GblSysNotify.Context = Context;
+            AcpiGbl_SysNotify.Nte = ObjEntry;
+            AcpiGbl_SysNotify.Handler = Handler;
+            AcpiGbl_SysNotify.Context = Context;
         }
 
         else
         {
-            Acpi_GblDrvNotify.Nte = ObjEntry;
-            Acpi_GblDrvNotify.Handler = Handler;
-            Acpi_GblDrvNotify.Context = Context;
+            AcpiGbl_DrvNotify.Nte = ObjEntry;
+            AcpiGbl_DrvNotify.Handler = Handler;
+            AcpiGbl_DrvNotify.Context = Context;
         }
 
 
@@ -583,7 +583,7 @@ AcpiInstallGpeHandler (
 
     /* Ensure that we have a valid GPE number */
 
-    if (Acpi_GblGpeValid[GpeNumber] == GPE_INVALID)
+    if (AcpiGbl_GpeValid[GpeNumber] == GPE_INVALID)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -592,7 +592,7 @@ AcpiInstallGpeHandler (
 
     /* Make sure that there isn't a handler there already */
 
-    if (Acpi_GblGpeInfo[GpeNumber].Handler)
+    if (AcpiGbl_GpeInfo[GpeNumber].Handler)
     {
         Status = AE_EXIST;
         goto Cleanup;
@@ -600,9 +600,9 @@ AcpiInstallGpeHandler (
 
     /* Install the handler */
 
-    Acpi_GblGpeInfo[GpeNumber].Handler = Handler;
-    Acpi_GblGpeInfo[GpeNumber].Context = Context;
-    Acpi_GblGpeInfo[GpeNumber].Type = (UINT8) Type;
+    AcpiGbl_GpeInfo[GpeNumber].Handler = Handler;
+    AcpiGbl_GpeInfo[GpeNumber].Context = Context;
+    AcpiGbl_GpeInfo[GpeNumber].Type = (UINT8) Type;
 
     /* Clear the GPE (of stale events), the enable it */
 
@@ -648,7 +648,7 @@ AcpiRemoveGpeHandler (
 
     /* Ensure that we have a valid GPE number */
 
-    if (Acpi_GblGpeValid[GpeNumber] == GPE_INVALID)
+    if (AcpiGbl_GpeValid[GpeNumber] == GPE_INVALID)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -661,7 +661,7 @@ AcpiRemoveGpeHandler (
 
     /* Make sure that the installed handler is the same */
 
-    if (Acpi_GblGpeInfo[GpeNumber].Handler != Handler)
+    if (AcpiGbl_GpeInfo[GpeNumber].Handler != Handler)
     {
         AcpiHwEnableGpe (GpeNumber);
         Status = AE_BAD_PARAMETER;
@@ -670,8 +670,8 @@ AcpiRemoveGpeHandler (
 
     /* Remove the handler */
 
-    Acpi_GblGpeInfo[GpeNumber].Handler = NULL;
-    Acpi_GblGpeInfo[GpeNumber].Context = NULL;
+    AcpiGbl_GpeInfo[GpeNumber].Handler = NULL;
+    AcpiGbl_GpeInfo[GpeNumber].Context = NULL;
 
 Cleanup:
     AcpiCmReleaseMutex (MTX_EVENTS);

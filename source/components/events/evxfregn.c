@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: evapirgn - External Interfaces, ACPI Operation Regions and
+ * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
  *
  *****************************************************************************/
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __EVAPIRGN_C__
+#define __EVXFREGN_C__
 
 #include "acpi.h"
 #include "hardware.h"
@@ -124,7 +124,7 @@
 #include "interp.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evapirgn");
+        MODULE_NAME         ("evxfregn");
 
 
 /******************************************************************************
@@ -190,7 +190,7 @@ AcpiInstallAddressSpaceHandler (
     if ((ObjEntry->Type != ACPI_TYPE_DEVICE)     &&
         (ObjEntry->Type != ACPI_TYPE_PROCESSOR)  &&
         (ObjEntry->Type != ACPI_TYPE_THERMAL)    &&
-        (ObjEntry != Acpi_GblRootObject))
+        (ObjEntry != AcpiGbl_RootObject))
     {
         Status = AE_BAD_PARAMETER;
         goto UnlockAndExit;
@@ -312,7 +312,7 @@ AcpiInstallAddressSpaceHandler (
     }
 
     DEBUG_PRINT (TRACE_OPREGION, ("Installing address handler for %s on Device 0x%p (0x%p)\n",
-                    Acpi_GblRegionTypes[SpaceId], ObjEntry, ObjDesc));
+                    AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
     /*
      *  Now we can install the handler
@@ -448,7 +448,7 @@ AcpiRemoveAddressSpaceHandler (
              *  Got it, first dereference this in the Regions
              */
             DEBUG_PRINT (TRACE_OPREGION, ("Removing address handler 0x%p (0x%p) for %s on Device 0x%p (0x%p)\n",
-                            HandlerObj, Handler, Acpi_GblRegionTypes[SpaceId], ObjEntry, ObjDesc));
+                            HandlerObj, Handler, AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
             RegionObj = HandlerObj->AddrHandler.RegionList;
 
@@ -501,7 +501,7 @@ AcpiRemoveAddressSpaceHandler (
      */
     DEBUG_PRINT (TRACE_OPREGION,
         ("Unable to remove address handler 0x%p for %s on Device nte 0x%p, obj 0x%p\n",
-        Handler, Acpi_GblRegionTypes[SpaceId], ObjEntry, ObjDesc));
+        Handler, AcpiGbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
     Status = AE_NOT_EXIST;
 
