@@ -120,7 +120,7 @@
 #include <hardware.h>
 
 
-#define _COMPONENT          DEVICE_MANAGER
+#define _COMPONENT          HARDWARE
         MODULE_NAME         ("hwmode");
 
 
