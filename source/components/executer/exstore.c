@@ -117,6 +117,7 @@
 #define __IEXECUTE_C__
 
 #include <acpi.h>
+#include <parser.h>
 #include <interpreter.h>
 #include <amlcode.h>
 #include <namespace.h>
@@ -215,7 +216,7 @@ AmlExecStore (
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
-        DUMP_STACK (IMODE_Execute, "AmlExecStore", 2, "target not Lvalue");
+        DUMP_OPERANDS (&DestDesc, IMODE_Execute, "AmlExecStore", 2, "target not Lvalue");
 
         return_ACPI_STATUS (AE_AML_ERROR);
     }
@@ -553,7 +554,7 @@ AmlExecStore (
                 DestDesc->FieldUnit.Sequence
                     != DestDesc->FieldUnit.Container->Buffer.Sequence))
             {
-                NsDumpPathname (TempHandle, "AmlExecStore/FieldUnit: Bad container in ", 
+                DUMP_PATHNAME (TempHandle, "AmlExecStore/FieldUnit: Bad container in ", 
                                 ACPI_ERROR, _COMPONENT);
                 DUMP_ENTRY (TempHandle, ACPI_ERROR);
 
@@ -747,7 +748,7 @@ AmlExecStore (
     case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
     case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-        Status = AmlMthStackSetValue (MTH_TYPE_LOCAL, (DestDesc->Lvalue.OpCode - AML_Local0),
+        Status = PsxMthStackSetValue (MTH_TYPE_LOCAL, (DestDesc->Lvalue.OpCode - AML_Local0),
                                         ValDesc, DestDesc);
         break;
 
@@ -755,7 +756,7 @@ AmlExecStore (
     case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
     case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-        Status = AmlMthStackSetValue (MTH_TYPE_ARG, (DestDesc->Lvalue.OpCode - AML_Arg0), 
+        Status = PsxMthStackSetValue (MTH_TYPE_ARG, (DestDesc->Lvalue.OpCode - AML_Arg0), 
                                         ValDesc, DestDesc);
         break;
 

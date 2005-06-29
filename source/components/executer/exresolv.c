@@ -314,10 +314,10 @@ AmlGetRvalueFromObject (
             MvIndex = Opcode - AML_Local0;
 
             DEBUG_PRINT (ACPI_INFO,
-                            ("AmlGetRvalueFromObject: [Local%d] before AmlMthStackGetValue %p %p %08lx \n",
+                            ("AmlGetRvalueFromObject: [Local%d] before PsxMthStackGetValue %p %p %08lx \n",
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
 
-            Status = AmlMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackDesc);
+            Status = PsxMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackDesc);
 
             DEBUG_PRINT (ACPI_INFO,
                         ("AmlGetRvalueFromObject: [Local%d] after MSGV Status=%s %p %p %08lx \n",
@@ -341,10 +341,10 @@ AmlGetRvalueFromObject (
             MvIndex = Opcode - AML_Arg0;
 
             DEBUG_PRINT (TRACE_EXEC,
-                            ("AmlGetRvalueFromObject: [Arg%d] before AmlMthStackGetValue %p %p %08lx \n",
+                            ("AmlGetRvalueFromObject: [Arg%d] before PsxMthStackGetValue %p %p %08lx \n",
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
 
-            Status = AmlMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackDesc);
+            Status = PsxMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackDesc);
     
             DEBUG_PRINT (TRACE_EXEC,
                             ("AmlGetRvalueFromObject: [Arg%d] MSGV returned %s %p %p %08lx \n",
@@ -587,7 +587,7 @@ AmlGetRvalueFromEntry (
                  * Convert it to an object.
                  */
 
-                if (AE_OK != (Status = AmlObjStackPush ()))             /* ObjStack */
+                if (AE_OK != (Status = PsxObjStackPush ()))             /* ObjStack */
                 {
                     return_ACPI_STATUS (Status);
                 }
@@ -596,18 +596,18 @@ AmlGetRvalueFromEntry (
                     AE_OK == (Status = AmlDoPkg (ACPI_TYPE_Package, IMODE_Execute)) &&
                     AE_OK == (Status = AmlPkgPopExec ()))                           /* PkgStack */
                 {
-                    NsAttachObject ((ACPI_HANDLE) StackEntry, AmlObjStackGetValue (0),
+                    NsAttachObject ((ACPI_HANDLE) StackEntry, PsxObjStackGetValue (0),
                                     (UINT8) ACPI_TYPE_Package);
 
                     /* Refresh local value pointer to reflect newly set value */
                 
                     ValDesc = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
-                    AmlObjStackPop (1);
+                    PsxObjStackPop (1);
                 }
             
                 else
                 {
-                    AmlObjStackPop (1);
+                    PsxObjStackPop (1);
                     return_ACPI_STATUS (Status);
                 }
             }
@@ -674,7 +674,7 @@ AmlGetRvalueFromEntry (
                  * points to a buffer definition in the AML stream.
                  * Convert it to an object.
                  */
-                if (AE_OK != (Status = AmlObjStackPush ()))                /* ObjStack */
+                if (AE_OK != (Status = PsxObjStackPush ()))                /* ObjStack */
                 {
                     return_ACPI_STATUS (Status);
                 }
@@ -683,18 +683,18 @@ AmlGetRvalueFromEntry (
                     AE_OK == (Status = AmlDoPkg (ACPI_TYPE_Buffer, IMODE_Execute)) &&
                     AE_OK == (Status = AmlPkgPopExec ()))                           /* PkgStack */
                 {
-                    NsAttachObject ((ACPI_HANDLE) StackEntry, AmlObjStackGetValue (0),
+                    NsAttachObject ((ACPI_HANDLE) StackEntry, PsxObjStackGetValue (0),
                                     (UINT8) ACPI_TYPE_Buffer);
                 
                     /* Refresh local value pointer to reflect newly set value */
                 
                     ValDesc = NsGetAttachedObject ((ACPI_HANDLE) StackEntry);
-                    AmlObjStackPop (1);
+                    PsxObjStackPop (1);
                 }
             
                 else
                 {
-                    AmlObjStackPop (1);
+                    PsxObjStackPop (1);
                     return_ACPI_STATUS (Status);
                 }
             }
@@ -940,6 +940,11 @@ AmlGetRvalueFromEntry (
             
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
+
+
+    DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromEntry: at DefField Entry=%p ValDesc=%p Type=%X\n", 
+                    StackEntry, ValDesc, EntryType));
+BREAKPOINT3;
 
         ObjDesc->Number.Value = TempVal;
         break;
