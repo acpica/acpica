@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -1207,6 +1207,26 @@ AnSemanticAnalysisWalkEnd (
                     break;
                 }
 
+                if (ArgNode->ParseOpcode == INTEGER)
+                {
+                    /*
+                     * This is the case where an original reference to a resource
+                     * descriptor field has been replaced by an (Integer) offset.
+                     * These named fields are supported at compile-time only;
+                     * the names are not passed to the interpreter (via the AML).
+                     */
+                    if (ArgNode->NsNode->Type == INTERNAL_TYPE_RESOURCE)
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_FIELD, ArgNode, NULL);
+                    }
+
+                    else
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgNode, NULL);
+                    }
+                    break;
+                }
+
                 if ((ArgNode->ParseOpcode == METHODCALL) ||
                     (ArgNode->ParseOpcode == DEREFOF))
                 {
@@ -1234,7 +1254,6 @@ AnSemanticAnalysisWalkEnd (
                 case LOCAL7:
 
                     /* TBD: implement analysis of current value (type) of the local */
-
                     /* For now, just treat any local as a typematch */
 
                     //ThisNodeBtype = RequiredBtypes;
