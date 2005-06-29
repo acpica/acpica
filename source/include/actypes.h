@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.213 $
+ *       $Revision: 1.214 $
  *
  *****************************************************************************/
 
@@ -249,7 +249,8 @@ typedef char                            NATIVE_CHAR;
 
 #ifdef DEFINE_ALTERNATE_TYPES
 /*
- * Types used only in translated source
+ * Types used only in translated source, defined here to enable
+ * cross-platform compilation only.
  */
 typedef INT32                           s32;
 typedef UINT8                           u8;
