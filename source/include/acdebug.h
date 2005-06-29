@@ -124,8 +124,6 @@
 #define DB_EXECUTE_PROMPT      '%'
 
 
-extern UINT8                    *DsdtPtr;
-extern UINT32                   DsdtLength;
 extern int                      optind;
 extern char                     *optarg;
 extern UINT8                    *AmlPtr;
