@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.104 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -128,8 +128,7 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exresolv")
-
+        ACPI_MODULE_NAME    ("exresolv")
 
 
 /*******************************************************************************
@@ -155,7 +154,7 @@ AcpiExResolveToValue (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("ExResolveToValue", StackPtr);
+    ACPI_FUNCTION_TRACE_PTR ("ExResolveToValue", StackPtr);
 
 
     if (!StackPtr || !*StackPtr)
@@ -192,7 +191,7 @@ AcpiExResolveToValue (
         }
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Resolved object %p\n", *StackPtr));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Resolved object %p\n", *StackPtr));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -224,7 +223,7 @@ AcpiExResolveObjectToValue (
     UINT16                  Opcode;
 
 
-    FUNCTION_TRACE ("ExResolveObjectToValue");
+    ACPI_FUNCTION_TRACE ("ExResolveObjectToValue");
 
 
     StackDesc = *StackPtr;
@@ -278,7 +277,7 @@ AcpiExResolveObjectToValue (
             AcpiUtRemoveReference (StackDesc);
             *StackPtr = ObjDesc;
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "[Arg/Local %d] ValueObj is %p\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Arg/Local %d] ValueObj is %p\n",
                 StackDesc->Reference.Offset, ObjDesc));
             break;
 
@@ -396,8 +395,21 @@ AcpiExResolveObjectToValue (
 
         break; /* case INTERNAL_TYPE_REFERENCE */
 
+
+    case ACPI_TYPE_BUFFER:
+
+        Status = AcpiDsGetBufferArguments (StackDesc);
+        break;
+
+
+    case ACPI_TYPE_PACKAGE:
+
+        Status = AcpiDsGetPackageArguments (StackDesc);
+        break;
+
+
     /*
-     * These cases may never happen here, but just in case.. 
+     * These cases may never happen here, but just in case..
      */
     case ACPI_TYPE_BUFFER_FIELD:
     case INTERNAL_TYPE_REGION_FIELD:
@@ -407,7 +419,7 @@ AcpiExResolveObjectToValue (
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "FieldRead SourceDesc=%p Type=%X\n",
             StackDesc, StackDesc->Common.Type));
 
-        Status = AcpiExReadDataFromField (StackDesc, &ObjDesc);
+        Status = AcpiExReadDataFromField (WalkState, StackDesc, &ObjDesc);
         *StackPtr = (void *) ObjDesc;
         break;
 
