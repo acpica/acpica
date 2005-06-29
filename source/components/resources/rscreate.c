@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  ******************************************************************************/
 
@@ -176,7 +176,7 @@ AcpiRsCreateResourceList (
                 &ListSizeNeeded);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Status=%X ListSizeNeeded=%X\n",
-        Status, ListSizeNeeded));
+        Status, (UINT32) ListSizeNeeded));
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -200,7 +200,7 @@ AcpiRsCreateResourceList (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer %p Length %X\n",
-            OutputBuffer->Pointer, OutputBuffer->Length));
+            OutputBuffer->Pointer, (UINT32) OutputBuffer->Length));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -260,7 +260,7 @@ AcpiRsCreatePciRoutingTable (
         return_ACPI_STATUS (Status);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "BufferSizeNeeded = %X\n", BufferSizeNeeded));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "BufferSizeNeeded = %X\n", (UINT32) BufferSizeNeeded));
 
     /* Validate/Allocate/Clear caller buffer */
 
@@ -311,14 +311,14 @@ AcpiRsCreatePciRoutingTable (
         /*
          * 1) First subobject:  Dereference the Address
          */
-        if (ACPI_TYPE_INTEGER == (*SubObjectList)->Common.Type)
+        if (ACPI_GET_OBJECT_TYPE (*SubObjectList) == ACPI_TYPE_INTEGER)
         {
             UserPrt->Address = (*SubObjectList)->Integer.Value;
         }
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Need Integer, found %s\n",
-                AcpiUtGetTypeName ((*SubObjectList)->Common.Type)));
+                AcpiUtGetObjectTypeName (*SubObjectList)));
             return_ACPI_STATUS (AE_BAD_DATA);
         }
 
@@ -327,14 +327,14 @@ AcpiRsCreatePciRoutingTable (
          */
         SubObjectList++;
 
-        if (ACPI_TYPE_INTEGER == (*SubObjectList)->Common.Type)
+        if (ACPI_GET_OBJECT_TYPE (*SubObjectList) == ACPI_TYPE_INTEGER)
         {
             UserPrt->Pin = (UINT32) (*SubObjectList)->Integer.Value;
         }
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Need Integer, found %s\n",
-                AcpiUtGetTypeName ((*SubObjectList)->Common.Type)));
+                AcpiUtGetObjectTypeName (*SubObjectList)));
             return_ACPI_STATUS (AE_BAD_DATA);
         }
 
@@ -343,7 +343,7 @@ AcpiRsCreatePciRoutingTable (
          */
         SubObjectList++;
 
-        switch ((*SubObjectList)->Common.Type)
+        switch (ACPI_GET_OBJECT_TYPE (*SubObjectList))
         {
         case INTERNAL_TYPE_REFERENCE:
 
@@ -393,7 +393,7 @@ AcpiRsCreatePciRoutingTable (
         default:
 
            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Need Integer, found %s\n",
-                AcpiUtGetTypeName ((*SubObjectList)->Common.Type)));
+                AcpiUtGetObjectTypeName (*SubObjectList)));
            return_ACPI_STATUS (AE_BAD_DATA);
         }
 
@@ -406,14 +406,14 @@ AcpiRsCreatePciRoutingTable (
          */
         SubObjectList++;
 
-        if (ACPI_TYPE_INTEGER == (*SubObjectList)->Common.Type)
+        if (ACPI_GET_OBJECT_TYPE (*SubObjectList) == ACPI_TYPE_INTEGER)
         {
             UserPrt->SourceIndex = (UINT32) (*SubObjectList)->Integer.Value;
         }
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Need Integer, found %s\n",
-                AcpiUtGetTypeName ((*SubObjectList)->Common.Type)));
+                AcpiUtGetObjectTypeName (*SubObjectList)));
             return_ACPI_STATUS (AE_BAD_DATA);
         }
 
@@ -423,7 +423,7 @@ AcpiRsCreatePciRoutingTable (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer %p Length %X\n",
-            OutputBuffer->Pointer, OutputBuffer->Length));
+            OutputBuffer->Pointer, (UINT32) OutputBuffer->Length));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -470,7 +470,7 @@ AcpiRsCreateByteStream (
                 &ByteStreamSizeNeeded);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "ByteStreamSizeNeeded=%X, %s\n",
-        ByteStreamSizeNeeded, AcpiFormatException (Status)));
+        (UINT32) ByteStreamSizeNeeded, AcpiFormatException (Status)));
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -494,7 +494,7 @@ AcpiRsCreateByteStream (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "OutputBuffer %p Length %X\n",
-            OutputBuffer->Pointer, OutputBuffer->Length));
+            OutputBuffer->Pointer, (UINT32) OutputBuffer->Length));
     return_ACPI_STATUS (AE_OK);
 }
 
