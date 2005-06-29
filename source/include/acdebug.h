@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.40 $
+ *       $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -288,6 +288,14 @@ AcpiDbSetScope (
 
 void
 AcpiDbFindReferences (
+    NATIVE_CHAR             *ObjectArg);
+
+void
+AcpiDbDisplayLocks (void);
+
+
+void
+AcpiDbDisplayResources (
     NATIVE_CHAR             *ObjectArg);
 
 
