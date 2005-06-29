@@ -370,7 +370,7 @@ ACPI_STATUS
 PsxInitObjectFromOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
-    UINT32                  Opcode,
+    UINT16                  Opcode,
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
@@ -416,12 +416,12 @@ PsxResolveOperands (
 
 ACPI_OBJECT_TYPE
 PsxMapOpcodeToDataType (
-    UINT32                  Opcode,
+    UINT16                  Opcode,
     UINT32                  *OutFlags);
 
 ACPI_OBJECT_TYPE 
 PsxMapNamedOpcodeToDataType (
-    UINT32                  Opcode);
+    UINT16                  Opcode);
 
 
 
@@ -440,7 +440,7 @@ UINT8 *
 PsGetNextPackageEnd (
     ACPI_PARSE_STATE        *ParserState);
 
-UINT8 *
+char *
 PsGetNextNamestring (
     ACPI_PARSE_STATE        *ParserState);
 
@@ -472,11 +472,11 @@ PsGetNextArg (
 
 ACPI_OP_INFO *
 PsGetOpcodeInfo (
-    INT32                   Opcode);
+    UINT16                  Opcode);
 
 char *
 PsGetOpcodeName (
-    INT32                   Opcode);
+    UINT16                  Opcode);
 
 
 /* psparse - top level parsing routines */
@@ -504,7 +504,7 @@ PsParseTable (
     INTERPRETER_CALLBACK    AscendingCallback,
     ACPI_GENERIC_OP         **RootObject);
 
-INT32
+UINT16
 PsPeekOpcode (
     ACPI_PARSE_STATE        *state);
 
@@ -554,8 +554,8 @@ PsAppendArg(
 ACPI_GENERIC_OP*
 PsFind (
     ACPI_GENERIC_OP         *Scope, 
-    UINT8                   *Path,
-    UINT32                  Opcode,
+    char                    *Path,
+    UINT16                  Opcode,
     UINT32                  Create);
 
 ACPI_GENERIC_OP *
@@ -640,11 +640,11 @@ PsxResultStackClear (
 void
 PsInitOp (
     ACPI_GENERIC_OP         *op,
-    UINT32                  opcode);
+    UINT16                  opcode);
 
 ACPI_GENERIC_OP * 
 PsAllocOp (
-    UINT32                  opcode);
+    UINT16                  opcode);
 
 BOOLEAN
 PsIsLeadingChar (
@@ -656,23 +656,23 @@ PsIsPrefixChar (
 
 BOOLEAN
 PsIsNamedOp (
-    UINT32                  opcode);
+    UINT16                  opcode);
 
 BOOLEAN
 PsIsNamedObjectOp (
-    UINT32                  opcode);
+    UINT16                  opcode);
 
 BOOLEAN
 PsIsDeferredOp (
-    UINT32                  opcode);
+    UINT16                  opcode);
 
 BOOLEAN
 PsIsBytelistOp(
-    UINT32                  opcode);
+    UINT16                  opcode);
 
 BOOLEAN
 PsIsFieldOp(
-    UINT32                  opcode);
+    UINT16                  opcode);
 
 ACPI_NAMED_OP*
 PsToNamedOp(
