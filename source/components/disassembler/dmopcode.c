@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.80 $
+ *              $Revision: 1.83 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -149,7 +149,7 @@ AcpiDmMethodFlags (
     /* The next Op contains the flags */
 
     Op = AcpiPsGetDepthNext (NULL, Op);
-    Flags = Op->Common.Value.Integer8;
+    Flags = (UINT8) Op->Common.Value.Integer;
     Args = Flags & 0x07;
 
     /* Mark the Op as completed */
@@ -200,7 +200,7 @@ AcpiDmFieldFlags (
     /* The next Op contains the flags */
 
     Op = AcpiPsGetDepthNext (NULL, Op);
-    Flags = Op->Common.Value.Integer8;
+    Flags = (UINT8) Op->Common.Value.Integer;
 
     /* Mark the Op as completed */
 
@@ -274,7 +274,7 @@ AcpiDmRegionFlags (
     Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
 
     AcpiOsPrintf (", ");
-    AcpiDmAddressSpace (Op->Common.Value.Integer8);
+    AcpiDmAddressSpace ((UINT8) Op->Common.Value.Integer);
 }
 
 
@@ -335,13 +335,13 @@ AcpiDmMatchKeyword (
 {
 
 
-    if (Op->Common.Value.Integer32 >= ACPI_NUM_MATCH_OPS)
+    if (((UINT32) Op->Common.Value.Integer) >= ACPI_NUM_MATCH_OPS)
     {
         AcpiOsPrintf ("/* Unknown Match Keyword encoding */");
     }
     else
     {
-        AcpiOsPrintf ("%s", (char *) AcpiGbl_MatchOps[Op->Common.Value.Integer32]);
+        AcpiOsPrintf ("%s", (char *) AcpiGbl_MatchOps[(ACPI_SIZE) Op->Common.Value.Integer]);
     }
 }
 
@@ -388,8 +388,7 @@ AcpiDmDisassembleOneOp (
         break;
     }
 
-
-    /* op and arguments */
+    /* The op and arguments */
 
     switch (Op->Common.AmlOpcode)
     {
@@ -419,7 +418,7 @@ AcpiDmDisassembleOneOp (
 
     case AML_BYTE_OP:
 
-        AcpiOsPrintf ("0x%2.2X", (UINT32) Op->Common.Value.Integer8);
+        AcpiOsPrintf ("0x%2.2X", (UINT32) Op->Common.Value.Integer);
         break;
 
 
@@ -427,11 +426,11 @@ AcpiDmDisassembleOneOp (
 
         if (Op->Common.DisasmOpcode == ACPI_DASM_EISAID)
         {
-            AcpiDmEisaId (Op->Common.Value.Integer32);
+            AcpiDmEisaId ((UINT32) Op->Common.Value.Integer);
         }
         else
         {
-            AcpiOsPrintf ("0x%4.4X", (UINT32) Op->Common.Value.Integer16);
+            AcpiOsPrintf ("0x%4.4X", (UINT32) Op->Common.Value.Integer);
         }
         break;
 
@@ -440,11 +439,11 @@ AcpiDmDisassembleOneOp (
 
         if (Op->Common.DisasmOpcode == ACPI_DASM_EISAID)
         {
-            AcpiDmEisaId (Op->Common.Value.Integer32);
+            AcpiDmEisaId ((UINT32) Op->Common.Value.Integer);
         }
         else
         {
-            AcpiOsPrintf ("0x%8.8X", Op->Common.Value.Integer32);
+            AcpiOsPrintf ("0x%8.8X", (UINT32) Op->Common.Value.Integer);
         }
         break;
 
@@ -522,10 +521,10 @@ AcpiDmDisassembleOneOp (
     case AML_INT_NAMEDFIELD_OP:
 
         Length = AcpiDmDumpName ((char *) &Op->Named.Name);
-        AcpiOsPrintf (",%*.s  %d", (int) (5 - Length), " ", Op->Common.Value.Integer32);
+        AcpiOsPrintf (",%*.s  %d", (int) (5 - Length), " ", (UINT32) Op->Common.Value.Integer);
         AcpiDmCommaIfFieldMember (Op);
 
-        Info->BitOffset += Op->Common.Value.Integer32;
+        Info->BitOffset += (UINT32) Op->Common.Value.Integer;
         break;
 
 
@@ -533,7 +532,7 @@ AcpiDmDisassembleOneOp (
 
         /* Offset() -- Must account for previous offsets */
 
-        Offset = Op->Common.Value.Integer32;
+        Offset = (UINT32) Op->Common.Value.Integer;
         Info->BitOffset += Offset;
 
         if (Info->BitOffset % 8 == 0)
@@ -552,9 +551,9 @@ AcpiDmDisassembleOneOp (
     case AML_INT_ACCESSFIELD_OP:
 
         AcpiOsPrintf ("AccessAs (%s, ",
-            AcpiGbl_AccessTypes [Op->Common.Value.Integer32 >> 8]);
+            AcpiGbl_AccessTypes [(UINT32) Op->Common.Value.Integer >> 8]);
 
-        AcpiDmDecodeAttribute ((UINT8) Op->Common.Value.Integer32);
+        AcpiDmDecodeAttribute ((UINT8) Op->Common.Value.Integer);
         AcpiOsPrintf (")");
         AcpiDmCommaIfFieldMember (Op);
         break;
