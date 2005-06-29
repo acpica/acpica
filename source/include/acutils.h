@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.139 $
+ *       $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -191,6 +191,8 @@ NATIVE_CHAR *
 AcpiUtGetMutexName (
     UINT32                  MutexId);
 
+#endif
+
 NATIVE_CHAR *
 AcpiUtGetTypeName (
     ACPI_OBJECT_TYPE        Type);
@@ -198,9 +200,6 @@ AcpiUtGetTypeName (
 NATIVE_CHAR *
 AcpiUtGetObjectTypeName (
     ACPI_OPERAND_OBJECT     *ObjDesc);
-
-#endif
-
 
 NATIVE_CHAR *
 AcpiUtGetRegionName (
