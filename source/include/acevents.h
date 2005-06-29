@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.85 $
+ *       $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -186,6 +186,10 @@ ACPI_STATUS
 AcpiEvWalkGpeList (
     ACPI_GPE_CALLBACK       GpeWalkCallback);
 
+BOOLEAN
+AcpiEvValidGpeEvent (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
 ACPI_GPE_EVENT_INFO *
 AcpiEvGetGpeEventInfo (
     UINT32                  GpeNumber,
@@ -197,11 +201,12 @@ AcpiEvGpeInitialize (
 
 UINT32
 AcpiEvGpeDispatch (
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT32                  GpeNumber);
 
 UINT32
 AcpiEvGpeDetect (
-    ACPI_GPE_BLOCK_INFO     *GpeBlockListHead);
+    ACPI_GPE_XRUPT_INFO     *GpeXruptList);
 
 /*
  * Evregion - Address Space handling
