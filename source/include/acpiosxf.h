@@ -30,7 +30,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -142,6 +142,16 @@ typedef
 void (*OSD_EXECUTION_CALLBACK) (
     void                    *Context);
 
+/*
+ * Initialization and shutdown.  (Optional)
+ */
+ACPI_STATUS
+OsdInitialize (
+	void);
+
+ACPI_STATUS
+OsdTerminate (
+	void);
 
 /*
  * Synchronization primitived
@@ -301,6 +311,7 @@ OsdWritePciCfgWord (
     UINT32                  DeviceFunction, 
     UINT32                  Register, 
     UINT16                  Value);
+
 
 ACPI_STATUS 
 OsdWritePciCfgDword (
