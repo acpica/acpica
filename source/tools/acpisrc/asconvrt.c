@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -440,11 +440,18 @@ AsMixedCaseToUnderscores (
                  (isupper (SubBuffer[1])))
 
         {
+            /*
+             * Matched the pattern.
+             * Find the end of this identifier (token)
+             */
+
             TokenEnd = SubBuffer;
             while ((isalnum (*TokenEnd)) || (*TokenEnd == '_'))
             {
                 TokenEnd++;
             }
+
+            /* Force the UpperCase letter (#2) to lower case */
 
             SubBuffer[1] = (char) tolower (SubBuffer[1]);
 
@@ -454,6 +461,11 @@ AsMixedCaseToUnderscores (
 
             while (*SubString != '\n')
             {
+                /* 
+                 * If we have at least two trailing spaces, we can get rid of 
+                 * one to make up for the newly inserted underscore.  This will
+                 * help preserve the alignment of the text
+                 */
                 if ((SubString[0] == ' ') &&
                     (SubString[1] == ' '))
                 {
@@ -575,50 +587,47 @@ AsBracesOnSameLine (
     UINT32                  Length;
     char                    *SubBuffer = Buffer;
     char                    *Beginning;
-    char                    *StartOfThisLine;
-    char                    Tmp;
+    BOOLEAN                 FunctionBegin = TRUE;
 
 
     while (*SubBuffer)
     {
+        if (!strncmp ("\n}", SubBuffer, 2))
+        {
+            FunctionBegin = TRUE;
+        }
+
+        /* Move every standalone brace up to the previous line */
+
         if (*SubBuffer == '{')
         {
-            /*
-             * Backup to previous non-whitespace
-             */
-
-            Beginning = SubBuffer - 1;
-            while ((*Beginning == ' ')   ||
-                   (*Beginning == '\n'))
+            if (FunctionBegin)
             {
-                Beginning--;
+                FunctionBegin = FALSE;
             }
 
-            StartOfThisLine = Beginning;
-            while (*StartOfThisLine != '\n')
-            {
-                StartOfThisLine--;
-            }
-
-            Beginning++;
-            Tmp = *Beginning;
-            *Beginning = 0;
-
-            if ((strstr (StartOfThisLine, " if"))   ||
-                (strstr (StartOfThisLine, " for"))  ||
-                (strstr (StartOfThisLine, " else")) ||
-                (strstr (StartOfThisLine, " while")))
-            {
-                SubBuffer++;
-                Length = strlen (SubBuffer);
-                memmove (Beginning + 2, SubBuffer, Length+3);
-
-                memmove (Beginning, " {", 2);
-                /* memmove (Beginning, " {\n", 3); */
-            }
             else
             {
-                *Beginning = Tmp;
+                /*
+                 * Backup to previous non-whitespace
+                 */
+
+                Beginning = SubBuffer - 1;
+                while ((*Beginning == ' ')   ||
+                       (*Beginning == '\n'))
+                {
+                    Beginning--;
+                }
+
+
+                Beginning++;
+                *Beginning = 0;
+
+                SubBuffer++;
+                Length = strlen (SubBuffer);
+
+                memmove (Beginning + 2, SubBuffer, Length+3);
+                memmove (Beginning, " {", 2);
             }
         }
 
@@ -1007,6 +1016,21 @@ AsTabify4 (
             Column++;
         }
 
+        /* Ignore comments */
+
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*'))
+        {
+            SubBuffer = strstr (SubBuffer, "*/");
+            if (!SubBuffer)
+            {
+                return;
+            }
+
+            SubBuffer += 2;
+            continue;
+        }
+
         /* Ignore quoted strings */
 
         if (*SubBuffer == '\"')
@@ -1067,6 +1091,7 @@ AsTabify8 (
 {
     char                    *SubBuffer = Buffer;
     char                    *NewSubBuffer;
+    char                    *CommentEnd = NULL;
     UINT32                  SpaceCount = 0;
     UINT32                  Column = 0;
     UINT32                  TabCount = 0;
@@ -1082,6 +1107,7 @@ AsTabify8 (
         if (*SubBuffer == '\n')
         {
             Column = 0;
+            SpaceCount = 0;
             TabCount = 0;
             SubBuffer++;
             continue;
@@ -1091,11 +1117,20 @@ AsTabify8 (
         {
             if (!FirstNonBlank)
             {
+                /* Find the first non-blank character on this line */
+
                 FirstNonBlank = SubBuffer;
                 while (*FirstNonBlank == ' ')
                 {
                     FirstNonBlank++;
                 }
+
+                /*
+                 * This mechanism limits the difference in tab counts from 
+                 * line to line.  It helps avoid the situation where a second
+                 * continuation line (which was indented correctly for tabs=4) would
+                 * get indented off the screen if we just blindly converted to tabs.
+                 */
 
                 ThisColumnStart = FirstNonBlank - SubBuffer;
 
@@ -1120,8 +1155,65 @@ AsTabify8 (
         }
 
 
+        if (CommentEnd)
+        {
+            if (SubBuffer == CommentEnd)
+            {
+                SpaceCount = 0;
+                SubBuffer += 2;
+                CommentEnd = NULL;
+            }
+        }
+
+        /* Ignore comments */
+
+        if ((SubBuffer[0] == '/') &&
+            (SubBuffer[1] == '*'))
+        {
+            CommentEnd = strstr (SubBuffer, "*/");
+            if (!CommentEnd)
+            {
+                return;
+            }
+
+            /* Toss the rest of this line or single-line comment */
+
+            while ((SubBuffer < CommentEnd) &&
+                   (*SubBuffer != '\n'))
+            {
+                SubBuffer++;
+            }
+
+            if (*SubBuffer == '\n')
+            {
+                if (TabCount > 0)
+                {
+                    LastLineTabCount = TabCount;
+                }
+                FirstNonBlank = NULL;
+                LastLineColumnStart = ThisColumnStart;
+            }
+
+            SpaceCount = 0;
+            continue;
+        }
+
+        /* Ignore quoted strings */
+
+        if ((!CommentEnd) && (*SubBuffer == '\"'))
+        {
+            SubBuffer++;
+            SubBuffer = AsSkipPastChar (SubBuffer, '\"');
+            if (!SubBuffer)
+            {
+                return;
+            }
+            SpaceCount = 0;
+        }
+
         if (*SubBuffer != ' ')
         {
+            /* Not a space, skip to end of line */
 
             SubBuffer = AsSkipUntilChar (SubBuffer, '\n');
             if (!SubBuffer)
@@ -1138,30 +1230,35 @@ AsTabify8 (
             TabCount = 0;
             Column = 0;
             SpaceCount = 0;
-            SubBuffer++;
-            continue;
         }
 
 
-        SpaceCount++;
-
-        if (SpaceCount >= 4)
+        else
         {
-            SpaceCount = 0;
+            /* Another space */
 
-            NewSubBuffer = SubBuffer - 4;
+            SpaceCount++;
 
-            if (TabCount <= ThisTabCount ? (ThisTabCount +1) : 0)
+            if (SpaceCount >= 4)
             {
-                NewSubBuffer++;
-                *NewSubBuffer = '\t';
-                SubBuffer++;
-                TabCount++;
+                /* Replace this group of spaces with a tab character */
+
+                SpaceCount = 0;
+
+                NewSubBuffer = SubBuffer - 3;
+
+                if (TabCount <= ThisTabCount ? (ThisTabCount +1) : 0)
+                {
+                    *NewSubBuffer = '\t';
+                    NewSubBuffer++;
+                    SubBuffer++;
+                    TabCount++;
+                }
+
+                memmove (NewSubBuffer, SubBuffer, strlen (SubBuffer) + 1);
+                SubBuffer = NewSubBuffer;
+                continue;
             }
-
-            memmove ((NewSubBuffer + 1), SubBuffer, strlen (SubBuffer) + 1);
-            SubBuffer = NewSubBuffer;
-
         }
 
         SubBuffer++;
