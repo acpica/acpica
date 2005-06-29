@@ -183,6 +183,14 @@ SOURCE=..\..\components\compiler\aslcompile.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\components\compiler\aslcompiler.l.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\components\compiler\aslcompiler.y.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\components\compiler\aslerror.c
 # End Source File
 # Begin Source File
@@ -241,14 +249,6 @@ SOURCE=..\..\components\compiler\asltree.c
 
 SOURCE=..\..\components\compiler\aslutils.c
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\components\compiler\aslcompiler.l.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\components\compiler\aslcompiler.y.c
-# End Source File
 # End Group
 # Begin Group "Parser"
 
@@ -292,6 +292,14 @@ SOURCE=..\..\components\os_interfaces\oswinxf.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=..\..\components\compiler\aslcompiler.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\components\compiler\aslcompiler.y.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\components\compiler\aslglobal.h
 # End Source File
 # Begin Source File
@@ -301,14 +309,6 @@ SOURCE=..\..\components\compiler\aslresource.h
 # Begin Source File
 
 SOURCE=..\..\components\compiler\asltypes.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\components\compiler\aslcompiler.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\components\compiler\aslcompiler.y.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
