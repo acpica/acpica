@@ -127,6 +127,17 @@
         MODULE_NAME         ("dsfield");
 
 
+/*
+ * Field flags: Bits 00 - 03 : AccessType (AnyAcc, ByteAcc, etc.)
+ *                   04      : LockRule (1 == Lock)
+ *                   05 - 06 : UpdateRule
+ */
+
+#define FIELD_ACCESS_TYPE_MASK      0x0F
+#define FIELD_LOCK_RULE_MASK        0x10
+#define FIELD_UPDATE_RULE_MASK      0x60
+
+
 
 /*****************************************************************************
  *
@@ -152,6 +163,7 @@ DsCreateField (
     NAME_TABLE_ENTRY        *Entry;
     char                    Buffer[5];
     UINT8                   FieldFlags;
+    UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
 
 
@@ -183,7 +195,10 @@ DsCreateField (
 
         case AML_ACCESSFIELD_OP:
 
-            /* TBD: Arg->Value.Integer contains both AccessType and AccessAttrib */
+            /* Get a new AccessType and AccessAttribute for all entries (until end or another AccessAs keyword) */
+
+            AccessAttribute = (UINT8) Arg->Value.Integer;
+            FieldFlags      = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) || ((UINT8) (Arg->Value.Integer >> 8)));
             break;
 
 
@@ -201,7 +216,7 @@ DsCreateField (
 
             /* Initialize an object for the new NTE that is on the object stack */
 
-            Status = AmlPrepDefFieldValue (Entry, Region, FieldFlags, FieldBitPosition, Arg->Value.Size);
+            Status = AmlPrepDefFieldValue (Entry, Region, FieldFlags, AccessAttribute, FieldBitPosition, Arg->Value.Size);
 
             /* Keep track of bit position for the *next* field */
 
@@ -242,6 +257,7 @@ DsCreateBankField (
     UINT32                  BankValue;
     char                    Buffer[5];
     UINT8                   FieldFlags;
+    UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
 
     
@@ -289,7 +305,10 @@ DsCreateBankField (
 
         case AML_ACCESSFIELD_OP:
 
-            /* TBD: Arg->Value.Integer contains both AccessType and AccessAttrib */
+            /* Get a new AccessType and AccessAttribute for all entries (until end or another AccessAs keyword) */
+
+            AccessAttribute = (UINT8) Arg->Value.Integer;
+            FieldFlags      = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) || ((UINT8) (Arg->Value.Integer >> 8)));
             break;
 
 
@@ -307,7 +326,7 @@ DsCreateBankField (
 
             /* Initialize an object for the new NTE that is on the object stack */
 
-            Status = AmlPrepBankFieldValue (Entry, Region, BankReg, BankValue, FieldFlags, FieldBitPosition, Arg->Value.Size);
+            Status = AmlPrepBankFieldValue (Entry, Region, BankReg, BankValue, FieldFlags, AccessAttribute, FieldBitPosition, Arg->Value.Size);
 
             /* Keep track of bit position for the *next* field */
 
@@ -349,6 +368,7 @@ DsCreateIndexField (
     NAME_TABLE_ENTRY        *IndexReg;
     NAME_TABLE_ENTRY        *DataReg;
     UINT8                   FieldFlags;
+    UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
 
     
@@ -401,7 +421,10 @@ DsCreateIndexField (
 
         case AML_ACCESSFIELD_OP:
 
-            /* TBD: Arg->Value.Integer contains both AccessType and AccessAttrib */
+            /* Get a new AccessType and AccessAttribute for all entries (until end or another AccessAs keyword) */
+
+            AccessAttribute = (UINT8) Arg->Value.Integer;
+            FieldFlags      = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) || ((UINT8) (Arg->Value.Integer >> 8)));
             break;
 
 
@@ -419,7 +442,7 @@ DsCreateIndexField (
 
             /* Initialize an object for the new NTE that is on the object stack */
 
-            Status = AmlPrepIndexFieldValue (Entry, IndexReg, DataReg, FieldFlags, FieldBitPosition, Arg->Value.Size);
+            Status = AmlPrepIndexFieldValue (Entry, IndexReg, DataReg, FieldFlags, AccessAttribute, FieldBitPosition, Arg->Value.Size);
 
             /* Keep track of bit position for the *next* field */
 
