@@ -304,11 +304,6 @@ AmlExecIndex (
         else
         {
             /* 
-             * TBD - possible dangling reference: if the package vector changes
-             * TBD - before this pointer is used, the results may be surprising.
-             */
-
-            /* 
              * Each element of the package is an internal object.  Get the one
              * we are after.
              */
@@ -342,10 +337,6 @@ AmlExecIndex (
             goto Cleanup;
         }
 
-        /* 
-         * TBD - possible dangling reference: if the package vector changes
-         * TBD - before this pointer is used, the results may be surprising.
-         */
         RetDesc->Reference.OpCode       = AML_IndexOp;
         RetDesc->Reference.TargetType   = ACPI_TYPE_BufferField;
         RetDesc->Reference.Object       = ObjDesc;
