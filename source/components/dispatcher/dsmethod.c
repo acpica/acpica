@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -241,15 +241,12 @@ AcpiDsParseMethod (
     OwnerId = AcpiCmAllocateOwnerId (OWNER_TYPE_METHOD);
     ObjDesc->Method.OwningId = OwnerId;
 
-    DEBUGGER_EXEC (AcpiDbGenerateStatistics (Op, 1));
-
     DEBUG_PRINT (ACPI_INFO,
         ("DsParseMethod: **** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
         &((ACPI_NAMESPACE_NODE *)ObjHandle)->Name, ObjHandle, Op));
 
     /* Install the parsed tree in the method object */
     /* TBD: [Restructure] Obsolete field? */
-
 
     AcpiPsDeleteParseTree (Op);
 
