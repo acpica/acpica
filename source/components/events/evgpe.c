@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -251,7 +251,7 @@ AcpiEvGpeDetect (
             /* Read the Status Register */
 
             Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue,
-                        &GpeRegisterInfo->StatusAddress, 0);
+                        &GpeRegisterInfo->StatusAddress);
             GpeRegisterInfo->Status = (UINT8) InValue;
             if (ACPI_FAILURE (Status))
             {
@@ -261,7 +261,7 @@ AcpiEvGpeDetect (
             /* Read the Enable Register */
 
             Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &InValue,
-                        &GpeRegisterInfo->EnableAddress, 0);
+                        &GpeRegisterInfo->EnableAddress);
             GpeRegisterInfo->Enable = (UINT8) InValue;
             if (ACPI_FAILURE (Status))
             {

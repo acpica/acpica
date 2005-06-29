@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -745,14 +745,14 @@ AcpiEvCreateGpeInfoBlocks (
          * by writing a '0'.
          */
         Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0x00,
-                    &ThisRegister->EnableAddress, 0);
+                    &ThisRegister->EnableAddress);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
         }
 
         Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0xFF,
-                    &ThisRegister->StatusAddress, 0);
+                    &ThisRegister->StatusAddress);
         if (ACPI_FAILURE (Status))
         {
             goto ErrorExit;
