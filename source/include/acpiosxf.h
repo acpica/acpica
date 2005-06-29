@@ -365,12 +365,12 @@ AcpiOsDerivePciId(
 BOOLEAN
 AcpiOsReadable (
     void                    *Pointer,
-    UINT32                  Length);
+    ACPI_SIZE               Length);
 
 BOOLEAN
 AcpiOsWritable (
     void                    *Pointer,
-    UINT32                  Length);
+    ACPI_SIZE               Length);
 
 UINT32
 AcpiOsGetTimer (
