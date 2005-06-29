@@ -772,9 +772,10 @@ AmlExecStore (
         
         /*
          * TBD: Type conversion support required.
-         * BUGBUG:  This is broken.  Storing into a package element the value
-         *          must be converted to the same type as the package element
-         *          then stored.
+         * 
+         * Storing into a package element -- the value
+         * must be converted to the same type as the package element
+         * then stored.
          *
          * Actually, storing to a package is not so simple.  The source must be
          *  evaluated and converted to the type of the destination and then the
@@ -788,90 +789,87 @@ AmlExecStore (
              *  element within the package that is to be modified.
              */
             TmpDesc = *(DestDesc->Reference.Where);
-            
-            /*
-             * If the TmpDesc is NULL, that means an uninitialized package
-             *  has been used as a destination, therefore, we must create
-             *  the destination element to match the type of the sourc element
-             */
-            if (!TmpDesc)
-            {
-                TmpDesc = CmCreateInternalObject (ValDesc->Common.Type);
-                *(DestDesc->Reference.Where) = TmpDesc;
-            }
-
-            /*
-             * If the Destination element is a package, we will delete
-             *  that object and construct a new one.
-             */
             if (TmpDesc)
             {
-                if(ACPI_TYPE_Package == TmpDesc->Common.Type)
+                /*
+                 * If the Destination element is a package, we will delete
+                 *  that object and construct a new one.
+                 *
+                 * TBD: Should both the src and dest be required to be packages?
+                 *       && (ValDesc->Common.Type == ACPI_TYPE_Package)
+                 */
+                if (TmpDesc->Common.Type == ACPI_TYPE_Package)
                 {
                     /* Take away the reference for being part of a package and delete  */
 
                     CmRemoveReference (TmpDesc);
+                    CmRemoveReference (TmpDesc);
 
-                    /* 
-                     * Now create the new object for storage 
-                     * and build the new package to match the original
-                     */
-                    TmpDesc = CmCreateInternalObject (ACPI_TYPE_Package);
-                    if (TmpDesc)
-                    {
-                        Status = CmBuildCopyInternalPackageObject (ValDesc, TmpDesc);
-                        if (AE_OK == Status)
-                        {
-                            /*
-                             * Increment the ref count and point the destination
-                             *  object's where element to our newly built package.
-                             */ 
-                            *(DestDesc->Reference.Where) = TmpDesc;
-                        }
+                    TmpDesc = NULL;
+                }
+            }
 
-                        else
-                        {
-                            /* 
-                             * An error occurred when copying the internal object
-                             *  so delete the reference.
-                             */
-                            CmRemoveReference (TmpDesc);
-                        }
-                    }
-
-                    else
-                    {
-                        Status = AE_NO_MEMORY;
-                    }
+            if (!TmpDesc)
+            {
+                /*
+                 * If the TmpDesc is NULL, that means an uninitialized package
+                 * has been used as a destination, therefore, we must create
+                 * the destination element to match the type of the source element
+                 * NOTE: ValDesc can be of any type.
+                 */
+                TmpDesc = CmCreateInternalObject (ValDesc->Common.Type);
+                if (!TmpDesc)
+                {
+                    Status = AE_NO_MEMORY;
+                    goto Cleanup;
                 }
 
-                else
+                /*
+                 * If the source is a package, copy the source to the new dest
+                 */
+                if (ACPI_TYPE_Package == TmpDesc->Common.Type)
                 {
-                    /* 
-                     * The destination element is not a package, so
-                     *  we need to convert the contents of the source
-                     *  (ValDesc) and copy into the destination (TmpDesc)
-                     */
-                    Status = CmCopyInternalSimpleObject(ValDesc, TmpDesc);
-                    if (AE_OK != Status)
+                    Status = CmBuildCopyInternalPackageObject (ValDesc, TmpDesc);
+                    if (ACPI_SUCCESS (Status))
+                    {
+                        /* Add a ref for being part of the parent package */
+
+                        CmAddReference (TmpDesc);               
+                    }
+                    else
                     {
                         /* 
                          * An error occurred when copying the internal object
                          *  so delete the reference.
                          */
-                        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Unable to copy the internal object\n"));
-                        Status = AE_AML_OPERAND_TYPE;
+                        CmRemoveReference (TmpDesc);
+                        TmpDesc = NULL;
+                        goto Cleanup;
                     }
-
                 }
+
+
+                *(DestDesc->Reference.Where) = TmpDesc;     /* Install new object into the package */
             }
-            else
+
+            if (ACPI_TYPE_Package != TmpDesc->Common.Type)
             {
                 /* 
-                 * There is no destination storage
+                 * The destination element is not a package, so
+                 *  we need to convert the contents of the source
+                 *  (ValDesc) and copy into the destination (TmpDesc)
                  */
-                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Reference Destination is NULL\n"));
-                Status = AE_NO_MEMORY;
+                Status = CmCopyInternalSimpleObject(ValDesc, TmpDesc);
+                if (ACPI_FAILURE (Status))
+                {
+                    /* 
+                     * An error occurrered when copying the internal object
+                     *  so delete the reference.
+                     */
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Unable to copy the internal object\n"));
+                    Status = AE_AML_OPERAND_TYPE;
+                }
+
             }
 
             break;
@@ -1041,7 +1039,10 @@ AmlExecStore (
 
 
 
-    /* Cleanup */
+
+Cleanup:
+
+    /* Cleanup and exit*/
 
     if (DeleteDestDesc)
     {
