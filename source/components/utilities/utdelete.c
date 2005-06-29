@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmdelete - object deletion and reference count utilities
- *              $Revision: 1.58 $
+ *              $Revision: 1.63 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -190,7 +190,7 @@ AcpiCmDeleteInternalObj (
     case ACPI_TYPE_PACKAGE:
 
         DEBUG_PRINT (ACPI_INFO,
-            ("CmDeleteInternalObj: **** Package of count %d\n",
+            ("CmDeleteInternalObj: **** Package of count %X\n",
             Object->Package.Count));
 
         /*
@@ -210,6 +210,7 @@ AcpiCmDeleteInternalObj (
             ("CmDeleteInternalObj: ***** Mutex %p, Semaphore %p\n",
             Object, Object->Mutex.Semaphore));
 
+        AcpiAmlUnlinkMutex (Object);
         AcpiOsDeleteSemaphore (Object->Mutex.Semaphore);
         break;
 
@@ -392,7 +393,7 @@ AcpiCmDeleteInternalObjectList (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiCmUpdateRefCount (
     ACPI_OPERAND_OBJECT     *Object,
     UINT32                  Action)
@@ -423,7 +424,7 @@ AcpiCmUpdateRefCount (
         Object->Common.ReferenceCount = NewCount;
 
         DEBUG_PRINT (ACPI_INFO,
-            ("CmUpdateRefCount: Obj %p Refs=%d, [Incremented]\n",
+            ("CmUpdateRefCount: Obj %p Refs=%X, [Incremented]\n",
             Object, NewCount));
         break;
 
@@ -433,7 +434,7 @@ AcpiCmUpdateRefCount (
         if (Count < 1)
         {
             DEBUG_PRINT (ACPI_INFO,
-                ("CmUpdateRefCount: Obj %p Refs=%d, can't decrement! (Set to 0)\n",
+                ("CmUpdateRefCount: Obj %p Refs=%X, can't decrement! (Set to 0)\n",
                 Object, NewCount));
 
             NewCount = 0;
@@ -444,14 +445,14 @@ AcpiCmUpdateRefCount (
             NewCount--;
 
             DEBUG_PRINT (ACPI_INFO,
-                ("CmUpdateRefCount: Obj %p Refs=%d, [Decremented]\n",
+                ("CmUpdateRefCount: Obj %p Refs=%X, [Decremented]\n",
                 Object, NewCount));
         }
 
         if (Object->Common.Type == ACPI_TYPE_METHOD)
         {
             DEBUG_PRINT (ACPI_INFO,
-                ("CmUpdateRefCount: Method Obj %p Refs=%d, [Decremented]\n",
+                ("CmUpdateRefCount: Method Obj %p Refs=%X, [Decremented]\n",
                 Object, NewCount));
         }
 
@@ -467,7 +468,7 @@ AcpiCmUpdateRefCount (
     case REF_FORCE_DELETE:
 
         DEBUG_PRINT (ACPI_INFO,
-            ("CmUpdateRefCount: Obj %p Refs=%d, Force delete! (Set to 0)\n",
+            ("CmUpdateRefCount: Obj %p Refs=%X, Force delete! (Set to 0)\n",
             Object, Count));
 
         NewCount = 0;
@@ -479,7 +480,7 @@ AcpiCmUpdateRefCount (
     default:
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("CmUpdateRefCount: Unknown action (%d)\n", Action));
+            ("CmUpdateRefCount: Unknown action (%X)\n", Action));
         break;
     }
 
@@ -493,7 +494,7 @@ AcpiCmUpdateRefCount (
     {
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("CmUpdateRefCount: **** AE_ERROR **** Invalid Reference Count (0x%X) in object %p\n\n",
+            ("CmUpdateRefCount: **** AE_ERROR **** Invalid Reference Count (%X) in object %p\n\n",
             Count, Object));
     }
 
@@ -789,7 +790,7 @@ AcpiCmRemoveReference (
         return_VOID;
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%d\n",
+    DEBUG_PRINT (ACPI_INFO, ("CmRemoveReference: Obj %p Refs=%X\n",
                                 Object, Object->Common.ReferenceCount));
 
     /*
