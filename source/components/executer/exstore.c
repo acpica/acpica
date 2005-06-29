@@ -436,8 +436,15 @@ AmlStoreObjectToNTE (
                  *  Free the current buffer, then allocate a buffer
                  *  large enough to hold the value
                  */
-                if (DestDesc->String.Pointer)
+                if ( DestDesc->String.Pointer &&
+                    !TbSystemTablePointer (DestDesc->String.Pointer))
+                {
+                    /*
+                     *  Only free if not a pointer into the DSDT
+                     */
+
                     CmFree(DestDesc->String.Pointer);
+                }
                 DestDesc->String.Pointer = CmAllocate ((ACPI_SIZE) (Length + 1));
                 DestDesc->String.Length = Length;
                 MEMCPY(DestDesc->String.Pointer, Buffer, Length);
