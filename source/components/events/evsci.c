@@ -154,7 +154,7 @@
 UINT32 
 EvSciHandler (void *Context)
 {
-    UINT32 InterruptHandled;
+    UINT32 InterruptHandled = 0;
 
     FUNCTION_TRACE("EvSciHandler");
 
