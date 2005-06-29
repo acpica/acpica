@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.83 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -529,7 +529,6 @@ AcpiUtCopyEsimpleToIsimple (
     FUNCTION_TRACE ("UtCopyEsimpleToIsimple");
 
 
-
     /*
      * Simple types supported are: String, Buffer, Integer
      */
@@ -568,8 +567,8 @@ AcpiUtCopyEsimpleToIsimple (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        MEMCPY (InternalObject->String.Pointer, 
-                ExternalObject->String.Pointer, 
+        MEMCPY (InternalObject->String.Pointer,
+                ExternalObject->String.Pointer,
                 ExternalObject->String.Length);
 
         InternalObject->String.Length  = ExternalObject->String.Length;
@@ -584,8 +583,8 @@ AcpiUtCopyEsimpleToIsimple (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        MEMCPY (InternalObject->Buffer.Pointer, 
-                ExternalObject->Buffer.Pointer, 
+        MEMCPY (InternalObject->Buffer.Pointer,
+                ExternalObject->Buffer.Pointer,
                 ExternalObject->Buffer.Length);
 
         InternalObject->Buffer.Length  = ExternalObject->Buffer.Length;
@@ -702,18 +701,8 @@ AcpiUtCopyEobjectToIobject (
     if (ExternalObject->Type == ACPI_TYPE_PACKAGE)
     {
         /*
-         * Package objects contain other objects (which can be objects)
-         * buildpackage does it all
-         *
-         * TBD: Package conversion must be completed and tested
-         * NOTE: this code converts packages as input parameters to
-         * control methods only.  This is a very, very rare case.
+         * Packages as external input to control methods are not supported,
          */
-/*
-        Status = AcpiUtCopyEpackageToIpackage(InternalObject,
-                                                  RetBuffer->Pointer,
-                                                  &RetBuffer->Length);
-*/
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Packages as parameters not implemented!\n"));
 
