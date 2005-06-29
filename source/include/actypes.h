@@ -213,24 +213,11 @@ typedef void            OSD_FILE;
 
 
 /*
- * Debug/Error reporting table definition
- */
-
-typedef struct
-{
-    char            *Key;
-    char            Level;
-    char            *Description;
-    char            *Description2;
-
-} ST_KEY_DESC_TABLE;
-
-
-/*
  *  Table types.  These values are passed to the table related APIs
  */
 
-typedef enum {
+typedef enum 
+{
     RSDPTR_Ord    = 0,
     APIC_Ord,
     DSDT_Ord,
@@ -240,41 +227,25 @@ typedef enum {
     RSDT_Ord,
     SSDT_Ord,
     SBDT_Ord
-} AcpiTableType;
+
+} ACPI_TABLE_TYPE;
 
 
 
-/* Operational mode of AML scanner */
+/* ACPI_HANDLE is actually an (nte *) for now! */
 
-typedef enum {
-    MODE_Load    = 0,
-    MODE_Exec    = 1,
-    MODE_Load1   = 2
-} OpMode;
-
-
-/* Control method information struct */
-
-typedef struct
-{
-   ptrdiff_t            Offset;      /* offset to MethodFlags in AML pcode block */
-   UINT32               Length;      /* length of method code including MethodFlags */
-
-} METHOD_INFO;
-
-/* NsHandle is actually an nte * */
-
-typedef void*           NsHandle;
+typedef void*           ACPI_HANDLE;
 
 
 /* 
  * Types associated with names
  * Values correspond to the definition of the ObjectType operator.
  * Must coordinate with NsProperties and NsTypeNames in acpinmsp.c
- * The NsType type is also used in OBJECT_DESCRIPTOR defined in amlpriv.h
+ * The ACPI_OBJECT_TYPE type is also used in OBJECT_DESCRIPTOR defined in amlpriv.h
  */
 
-typedef enum {
+typedef enum 
+{
    TYPE_Any              =  0,
    TYPE_Number           =  1, /* Byte/Word/Dword/Zero/One/Ones */
    TYPE_String           =  2,
@@ -309,84 +280,9 @@ typedef enum {
    TYPE_Scope            = 34, /* Name, multiple NamedObject */
    TYPE_DefAny           = 35, /* type is Any, suppress search of enclosing scopes */
    TYPE_Lvalue           = 36  /* Arg#, Local#, Name, Debug; used only in descriptors */
-} NsType;
 
+} ACPI_OBJECT_TYPE;
 
-
-
-/* 
- * Typedef nte (name table entry) is private to acpinmsp.c to avoid global
- * impact in the event of changes to it.  The externally-known type NsHandle
- * is actually an (nte *).  If an external program needs to extract a field
- * from the nte, it should use an access function defined in acpinmsp.c
- *
- * If you need an access function not provided herein, add it to this module
- * rather than exporting the nte typedef.
- *
- * (nte *) are actually used in two different and not entirely compatible
- * ways: as pointer to an individual nte and as pointer to an entire name
- * table (which is an array of nte, sometimes referred to as a scope).  In
- * the latter case, the specific nte pointed to may be unused; however its
- * ParentScope member will be valid.
- */
-
-typedef struct NAME_TABLE_ENTRY
-{
-    UINT32                  Name;           /* Name segment, always 4 chars per ACPI spec.
-                                             * NameSeg must be the first field in the nte
-                                             * -- see the IsNsHandle macro in acpinmsp.h
-                                             */
-    struct NAME_TABLE_ENTRY *Scope;         /* Scope owned by this name */
-    struct NAME_TABLE_ENTRY *ParentScope;   /* Previous level of names */
-    struct NAME_TABLE_ENTRY *ParentEntry;   /* Actual parent NTE */
-    struct NAME_TABLE_ENTRY *NextEntry;     /* Next within this scope */
-    struct NAME_TABLE_ENTRY *PrevEntry;     /* Previous within this scope */
-    NsType                  Type;           /* Type associated with this name */
-    void                    *Value;         /* Pointer to value associated with this name */
-
-} NAME_TABLE_ENTRY;
-
-#define ENTRY_NOT_FOUND     NULL
-#define INVALID_HANDLE      0
-#define NULL_HANDLE         INVALID_HANDLE
-
-
-/* Stack of currently-open scopes, and pointer to top of that stack */
-
-typedef struct
-{
-    NAME_TABLE_ENTRY        *Scope;
-    /* 
-     * Type of scope, typically the same as the type of its parent's entry 
-     * (but not the same as the type of its parent's scope).
-     */
-    NsType                  Type;   
-} SCOPE_STACK;    
-
-
-typedef struct 
-{
-    char                    *SearchFor;
-    NsHandle                *List;
-    INT32                   *Count;
-} FIND_CONTEXT;
-
-
-typedef struct
-{
-    NAME_TABLE_ENTRY        *PreviousEntry;
-    NAME_TABLE_ENTRY        *NameTable;
-    UINT32                  Position;
-    BOOLEAN                 TableFull;
-} NS_SEARCH_DATA;
-
-
-typedef struct
-{
-    char                    *Name;
-    NsType                  Type;
-    char                    *Val;
-} PREDEFINED_NAMES;
 
 
 /*
@@ -415,14 +311,14 @@ void (*OPREGION_HANDLER) (
 
 typedef
 void * (*WALK_CALLBACK) (
-    NsHandle        ObjHandle,
+    ACPI_HANDLE     ObjHandle,
     UINT32          NestingLevel,
     void            *Context);
 
 
 /* Fixed event types */
 
-enum 
+typedef enum 
 {
     EVENT_PMTIMER = 0,
     /* 
@@ -436,37 +332,53 @@ enum
     EVENT_RTC, 
     EVENT_GENERAL,
     NUM_FIXED_EVENTS
-};
+
+} ACPI_EVENT_TYPE;
 
 
-/* Values and addresses of the GPE registers (both banks) */
+/*
+ * Miscellaneous common Data Structures used by the interfaces
+ */
 
 typedef struct 
 {
-    UINT8           Status;         /* Current value of status reg */
-    UINT8           Enable;         /* Current value of enable reg */
-    UINT16          StatusAddr;     /* Address of status reg */
-    UINT16          EnableAddr;     /* Address of enable reg */
+    UINT32                  Length;         // Length in bytes of the buffer;
+    char                    *BufferPtr;     // pointer to buffer
 
-} GPE_REGISTERS;
+} ACPI_BUFFER;
+
+typedef struct _AcpiSysInfo 
+{
+    INT32                   DebugLevel;
+    INT32                   DebugLayer;
+
+} ACPI_SYS_INFO;
+
+typedef struct 
+{
+    UINT32                  HardwareId;
+    UINT32                  UniqueId;
+    UINT32                  Address;
+    UINT32                  CurrentStatus;
+
+} ACPI_DEVICE_INFO;
 
 
-#define GPE_LEVEL_TRIGGERED         1
-#define GPE_EDGE_TRIGGERED          2
 
-
-/* Information about each particular GPE level */
+/* Control method information struct */
+/* Not really public, but appears in the ACPI_OBJECT definition */
 
 typedef struct
 {
-    UINT8           Type;           /* Level or Edge */
-    NsHandle        MethodHandle;   /* Method handle for direct (fast) execution */
-    GPE_HANDLER     Handler;        /* Address of handler, if any */
-    void            *Context;       /* Context to be passed to handler */
+   ptrdiff_t            Offset;      /* offset to MethodFlags in AML pcode block */
+   UINT32               Length;      /* length of method code including MethodFlags */
 
-} GPE_LEVEL_INFO;
+} METHOD_INFO;
 
 
+/* TBD: remove! */
+
+#include <internal.h>
 
 
 #endif /* DATATYPES_H */
