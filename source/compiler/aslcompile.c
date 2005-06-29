@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -552,7 +552,7 @@ CmCleanupAndExit (void)
 
     /* Close all open files */
 
-    for (i = 2; i < ASL_MAX_FILE; i++)
+    for (i = 2; i < ASL_MAX_FILE_TYPE; i++)
     {
         FlCloseFile (i);
     }
