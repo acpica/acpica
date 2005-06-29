@@ -172,6 +172,10 @@ RegionHandler (
 		
     printf ("Received an OpRegion request\n");
 
+
+    /* Temp only */
+    return AE_OK;
+
 	/*
 	 * If the object is not a region, simply return
 	 */
@@ -422,68 +426,6 @@ AeInstallHandlers (void)
 }
 
 
-/****************************************************************************
- *
- * FUNCTION:    TbDeleteAcpiTables
- *
- * PARAMETERS:  None.
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Placeholder, required for linking
- *
- ***************************************************************************/
-
-void
-TbDeleteAcpiTables (void)
-{
-
-}
-
-
-/*****************************************************************************
- * 
- * FUNCTION:    TbSystemTablePointer
- *
- * PARAMETERS:  *Where              - Pointer to be examined
- *
- * RETURN:      TRUE if Where is within the AML stream (in one of the ACPI
- *              system tables such as the DSDT or an SSDT.)
- *              FALSE otherwise
- *
- ****************************************************************************/
-
-BOOLEAN
-TbSystemTablePointer (
-    void                    *Where)
-{
-
-
-    /* No function trace, called too often! */
-
-
-    /* Ignore null pointer */
-
-    if (!Where)
-    {
-        return (FALSE);
-    }
-
-
-    /* Check for a pointer within the DSDT */
-
-    if (IS_IN_ACPI_TABLE (Where, Gbl_DSDT))
-    {
-        return (TRUE);
-    }
-
-
-
-
-    return (FALSE);
-}
-
-
 
 
 /******************************************************************************
@@ -510,10 +452,12 @@ AdSecondPassParse (
     UINT32                  BaseAmlOffset;
 
 
-    printf ("Pass two parse ....\n");
+    /* Walk entire tree */
 
     while (Op)
     {
+        /* We are looking for control methods */
+
         if (Op->Opcode == AML_MethodOp)
         {
             Method = (ACPI_DEFERRED_OP *) Op;
@@ -577,55 +521,6 @@ AdGetTables (
     return Status;
 }
 
-
-/******************************************************************************
- * 
- * FUNCTION:    AdParseTable
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Parse all supported tables
- *
- *****************************************************************************/
-
-ACPI_STATUS
-AdParseTables (void)
-{
-    ACPI_STATUS             Status;
-
-
-    if (!DsdtPtr)
-    {
-        return AE_NOT_EXIST;
-    }
-
-
-    AmlPtr = DsdtPtr + sizeof (ACPI_TABLE_HEADER);
-    AmlLength = DsdtLength - sizeof (ACPI_TABLE_HEADER);
-
-
-//    Status = PsParseTable (PcodeAddr, PcodeLength, PsxLoadBeginOp, PsxLoadEndOp, NULL);
-
-//    Status = PsParseTable (AmlPtr, AmlLength, PsxLoadBeginOp, PsxLoadEndOp, &root);
-
-
-    Status = NsSetup ();
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
-
-    Status = PsxLoadTable (AmlPtr, AmlLength);
-    if (ACPI_SUCCESS (Status))
-    {
-        Status = AdSecondPassParse (root);
-    }
-
-    return Status;
-}
 
 
 
