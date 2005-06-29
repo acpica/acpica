@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.38 $
+ *       $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@ AcpiDsObjStackPopObject (
 /* dsopcode - support for late evaluation */
 
 ACPI_STATUS
-AcpiDsGetFieldUnitArguments (
+AcpiDsGetBufferFieldArguments (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
 ACPI_STATUS
@@ -393,7 +393,7 @@ AcpiDsCreateNode (
 /* dsregn - Parser/Interpreter interface - Op Region parsing */
 
 ACPI_STATUS
-AcpiDsEvalFieldUnitOperands (
+AcpiDsEvalBufferFieldOperands (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
 
