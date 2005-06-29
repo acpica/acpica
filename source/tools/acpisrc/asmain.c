@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.37 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -117,6 +117,7 @@
 
 
 #include "acpisrc.h"
+#include "acapps.h"
 
 
 /* Globals */
@@ -254,18 +255,24 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address  ",*/
     /*"NATIVE_UINT  ",            "native_uint  ",*/
     /*"NATIVE_INT  ",             "native_int  ",*/
-    /*"NATIVE_CHAR  ",            "native_char  ",*/
+    /*"char         ",            "native_char  ",*/
 
     "ACPI_ADR_SPACE_HANDLER",
     "ACPI_ADR_SPACE_SETUP",
+    "ACPI_ADR_SPACE_TYPE",
+    "ACPI_AML_OPERANDS",
+    "ACPI_BIT_REGISTER_INFO",
     "ACPI_BUFFER",
     "ACPI_BUS_ATTRIBUTE",
     "ACPI_COMMON_FACS",
     "ACPI_COMMON_STATE",
     "ACPI_CONTROL_STATE",
+    "ACPI_CREATE_FIELD_INFO",
+    "ACPI_DB_METHOD_INFO",
     "ACPI_DEBUG_MEM_BLOCK",
     "ACPI_DEBUG_MEM_HEADER",
     "ACPI_DEBUG_PRINT_INFO",
+    "ACPI_DESCRIPTOR",
     "ACPI_DEVICE_ID",
     "ACPI_DEVICE_INFO",
     "ACPI_DEVICE_WALK_INFO",
@@ -273,43 +280,93 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     "ACPI_EVENT_STATUS",
     "ACPI_EVENT_TYPE",
     "ACPI_FIELD_INFO",
+    "ACPI_FIND_CONTEXT",
+    "ACPI_FIXED_EVENT_HANDLER",
     "ACPI_FIXED_EVENT_INFO",
     "ACPI_GENERIC_ADDRESS",
     "ACPI_GENERIC_STATE",
     "ACPI_GET_DEVICES_INFO",
+    "ACPI_GPE_BLOCK_INFO",
     "ACPI_GPE_HANDLER",
+    "ACPI_GPE_INDEX_INFO",
     "ACPI_GPE_LEVEL_INFO",
+    "ACPI_GPE_NUMBER_INFO",
+    "ACPI_GPE_REGISTER_INFO",
     "ACPI_GPE_REGISTERS",
     "ACPI_HANDLE",
-    "ACPI_INTEGER",
+    "ACPI_INIT_HANDLER",
     "ACPI_INIT_WALK_INFO",
+    "ACPI_INTEGER",
+    "ACPI_INTEGRITY_INFO",
+    "ACPI_INTERPRETER_MODE",
+    "ACPI_IO_ADDRESS",
     "ACPI_IO_ATTRIBUTE",
     "ACPI_MEM_SPACE_CONTEXT",
     "ACPI_MEMORY_ATTRIBUTE",
+    "ACPI_MEMORY_LIST",
     "ACPI_MUTEX",
+    "ACPI_MUTEX_HANDLE",
     "ACPI_MUTEX_INFO",
     "ACPI_NAME",
+    "ACPI_NAME_UNION",
     "ACPI_NAMESPACE_NODE",
     "ACPI_NAMESTRING_INFO",
     "ACPI_NOTIFY_HANDLER",
     "ACPI_NOTIFY_INFO",
+    "ACPI_NS_SEARCH_DATA",
     "ACPI_OBJ_INFO_HEADER",
     "ACPI_OBJECT",
+    "ACPI_OBJECT_ADDR_HANDLER",
+    "ACPI_OBJECT_BANK_FIELD",
+    "ACPI_OBJECT_BUFFER",
+    "ACPI_OBJECT_BUFFER_FIELD",
+    "ACPI_OBJECT_CACHE_LIST",
+    "ACPI_OBJECT_COMMON",
+    "ACPI_OBJECT_DATA",
+    "ACPI_OBJECT_DEVICE",
+    "ACPI_OBJECT_EVENT",
+    "ACPI_OBJECT_EXTRA",
+    "ACPI_OBJECT_FIELD_COMMON",
+    "ACPI_OBJECT_HANDLER",
+    "ACPI_OBJECT_INDEX_FIELD",
+    "ACPI_OBJECT_INTEGER",
     "ACPI_OBJECT_LIST",
+    "ACPI_OBJECT_METHOD",
+    "ACPI_OBJECT_MUTEX",
+    "ACPI_OBJECT_NOTIFY_COMMON",
+    "ACPI_OBJECT_NOTIFY_HANDLER",
+    "ACPI_OBJECT_PACKAGE",
+    "ACPI_OBJECT_POWER_RESOURCE",
+    "ACPI_OBJECT_PROCESSOR",
+    "ACPI_OBJECT_REFERENCE",
+    "ACPI_OBJECT_REGION",
+    "ACPI_OBJECT_REGION_FIELD",
+    "ACPI_OBJECT_STRING",
+    "ACPI_OBJECT_THERMAL_ZONE",
     "ACPI_OBJECT_TYPE",
     "ACPI_OBJECT_TYPE8",
+    "ACPI_OP_WALK_INFO",
     "ACPI_OPCODE_INFO",
     "ACPI_OPERAND_OBJECT",
     "ACPI_OWNER_ID",
     "ACPI_PARSE_DOWNWARDS",
+    "ACPI_PARSE_OBJ_ASL",
+    "ACPI_PARSE_OBJ_COMMON",
+    "ACPI_PARSE_OBJ_NAMED",
     "ACPI_PARSE_OBJECT",
     "ACPI_PARSE_STATE",
     "ACPI_PARSE_UPWARDS",
     "ACPI_PARSE_VALUE",
     "ACPI_PARSE2_OBJECT",
     "ACPI_PCI_ID",
+    "ACPI_PCI_ROUTING_TABLE",
+    "ACPI_PHYSICAL_ADDRESS",
+    "ACPI_PKG_CALLBACK",
     "ACPI_PKG_INFO",
     "ACPI_PKG_STATE",
+    "ACPI_POINTER",
+    "ACPI_POINTERS",
+    "ACPI_PREDEFINED_NAMES",
     "ACPI_PSCOPE_STATE",
     "ACPI_RESOURCE",
     "ACPI_RESOURCE_ADDRESS16",
@@ -318,6 +375,7 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     "ACPI_RESOURCE_ATTRIBUTE",
     "ACPI_RESOURCE_DATA",
     "ACPI_RESOURCE_DMA",
+    "ACPI_RESOURCE_END_TAG",
     "ACPI_RESOURCE_EXT_IRQ",
     "ACPI_RESOURCE_FIXED_IO",
     "ACPI_RESOURCE_FIXED_MEM32",
@@ -331,6 +389,8 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     "ACPI_RESOURCE_VENDOR",
     "ACPI_RESULT_VALUES",
     "ACPI_SCOPE_STATE",
+    "ACPI_SIGNAL_FATAL_INFO",
+    "ACPI_SIZE",
     "ACPI_STATUS",
     "ACPI_STRING",
     "ACPI_SYSTEM_INFO",
@@ -339,28 +399,63 @@ ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
     "ACPI_TABLE_INFO",
     "ACPI_TABLE_TYPE",
     "ACPI_TABLE_TYPE",
+    "ACPI_THREAD_STATE",
     "ACPI_UPDATE_STATE",
     "ACPI_WALK_CALLBACK",
     "ACPI_WALK_INFO",
     "ACPI_WALK_LIST",
     "ACPI_WALK_STATE",
-    "DB_METHOD_INFO",
+    "ASL_ANALYSIS_WALK_INFO",
+    "ASL_DMA_FORMAT_DESC",
+    "ASL_DWORD_ADDRESS_DESC",
+    "ASL_END_DEPENDENT_DESC",
+    "ASL_END_TAG_DESC",
+    "ASL_ERROR_MSG",
+    "ASL_EVENT_INFO",
+    "ASL_EXTENDED_XRUPT_DESC",
+    "ASL_FILE_INFO",
+    "ASL_FIXED_IO_PORT_DESC",
+    "ASL_FIXED_MEMORY_32_DESC",
+    "ASL_GENERAL_REGISTER_DESC",
+    "ASL_IO_PORT_DESC",
+    "ASL_IRQ_FORMAT_DESC",
+    "ASL_IRQ_NOFLAGS_DESC",
+    "ASL_LARGE_VENDOR_DESC",
+    "ASL_LISTING_NODE",
+    "ASL_MAPPING_ENTRY",
+    "ASL_MEMORY_24_DESC",
+    "ASL_MEMORY_32_DESC",
+    "ASL_METHOD_INFO",
+    "ASL_QWORD_ADDRESS_DESC",
+    "ASL_RESERVED_INFO",
+    "ASL_RESOURCE_DESC",
+    "ASL_RESOURCE_NODE",
+    "ASL_SMALL_VENDOR_DESC",
+    "ASL_START_DEPENDENT_DESC",
+    "ASL_START_DEPENDENT_NOPRIO_DESC",
+    "ASL_WALK_CALLBACK",
+    "ASL_WORD_ADDRESS_DESC",
     "FACS_DESCRIPTOR_REV071",
     "FACS_DESCRIPTOR_REV1",
     "FACS_DESCRIPTOR_REV2",
     "FADT_DESCRIPTOR_REV071",
     "FADT_DESCRIPTOR_REV1",
     "FADT_DESCRIPTOR_REV2",
-    "FIND_CONTEXT",
-    "NS_SEARCH_DATA",
-    "OPERATING_MODE",
-    "ACPI_PCI_ROUTING_TABLE",
-    "PREDEFINED_NAMES",
+    "RSDP_DESCRIPTOR",
+    "UINT32_STRUCT",
     "UINT64_OVERLAY",
     "UINT64_STRUCT",
     "XSDT_DESCRIPTOR",
 
     NULL,
+};
+
+
+ACPI_IDENTIFIER_TABLE       LinuxEliminateMacros[] = {
+
+    "ACPI_GET_ADDRESS",
+    "ACPI_VALID_ADDRESS",
+    NULL
 };
 
 
@@ -391,6 +486,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxDataTypes,
     LinuxLineIdentifiers,
     NULL,
+    LinuxEliminateMacros,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
      CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS | CVT_SPACES_TO_TABS8),
@@ -400,6 +496,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxDataTypes,
     NULL,
     LinuxConditionalIdentifiers,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
      CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS| CVT_SPACES_TO_TABS8),
@@ -423,10 +520,12 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
     NULL,
     NULL,
     NULL,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
+    NULL,
     NULL,
     NULL,
     NULL,
@@ -445,10 +544,12 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
     NULL,
     NULL,
     NULL,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES),
 
     /* C header files */
 
+    NULL,
     NULL,
     NULL,
     NULL,
@@ -464,12 +565,17 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
-
+#if 0
     "1999 - 2002, Intel Corp",      "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
     "1999, Intel Corp",             "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
     "  All rights\n * reserved.",    "\n * All rights reserved.",     REPLACE_WHOLE_WORD,
     "Copyright (C) 2000, 2001",     "Copyright (C) 2000 - 2002",      REPLACE_WHOLE_WORD,
-    NULL,                   NULL, 0
+#endif
+
+    "NATIVE CHAR *",         "char *",           REPLACE_WHOLE_WORD,
+    "NATIVE CHAR ",          "char        ",     REPLACE_WHOLE_WORD,
+    "char",                  "char",             REPLACE_WHOLE_WORD,
+    NULL,                    NULL, 0
 };
 
 
@@ -484,11 +590,13 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
     CustomReplacements,
     NULL,
     NULL,
+    NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
     CustomReplacements,
+    NULL,
     NULL,
     NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
@@ -538,7 +646,6 @@ AsExaminePaths (
         return 0;
     }
 
-
     if (!stricmp (Source, Target))
     {
         printf ("Target path is the same as the source path, overwrite?\n");
@@ -553,7 +660,6 @@ AsExaminePaths (
 
         Gbl_Overwrite = TRUE;
     }
-
     else
     {
         Status = stat (Target, &Gbl_StatBuf);
@@ -639,7 +745,7 @@ AsDisplayUsage (void)
  *
  ******************************************************************************/
 
-int
+int ACPI_SYSTEM_XFACE
 main (
     NATIVE_UINT             argc,
     char                    *argv[])
@@ -662,7 +768,7 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "lcsuvyd")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "lcsuvyd")) != EOF) switch(j)
     {
     case 'l':
         /* Linux code generation */
@@ -714,7 +820,7 @@ main (
     }
 
 
-    SourcePath = argv[optind];
+    SourcePath = argv[AcpiGbl_Optind];
     if (!SourcePath)
     {
         printf ("Missing source path\n");
@@ -722,7 +828,7 @@ main (
         return -1;
     }
 
-    TargetPath = argv[optind+1];
+    TargetPath = argv[AcpiGbl_Optind+1];
 
     if (!ConversionTable)
     {
@@ -733,7 +839,6 @@ main (
         printf ("Source code statistics only\n");
         ConversionTable = &StatsConversionTable;
     }
-
     else if (!TargetPath)
     {
         TargetPath = SourcePath;
@@ -743,7 +848,6 @@ main (
     {
         ConversionTable->SourceFunctions &= ~CVT_REMOVE_DEBUG_MACROS;
     }
-
 
     /* Check source and target paths and files */
 
@@ -760,7 +864,6 @@ main (
 
         AsProcessTree (ConversionTable, SourcePath, TargetPath);
     }
-
     else
     {
         /* Process a single file */
