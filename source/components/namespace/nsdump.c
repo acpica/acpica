@@ -204,28 +204,28 @@ NsDumpOneObject (
     void                    *Context,
     void                    **ReturnValue)
 {
-    UINT32                  DownstreamSiblingMask = 0;
-    INT32                   LevelTmp;
-    UINT32                  WhichBit;
+    ACPI_WALK_INFO          *Info = (ACPI_WALK_INFO *) Context;
     NAME_TABLE_ENTRY        *Appendage = NULL;
     NAME_TABLE_ENTRY        *ThisEntry;
-    UINT32                  Size = 0;
     UINT8                   *Value;
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     ACPI_OBJECT_TYPE        ObjType;
     ACPI_OBJECT_TYPE        Type;
-    UINT32                  DbLevel = (UINT32) Context;
     UINT32                  BytesToDump;
+    UINT32                  DownstreamSiblingMask = 0;
+    INT32                   LevelTmp;
+    UINT32                  WhichBit;
+    UINT32                  Size = 0;
 
 
-    ThisEntry = NsConvertHandleToEntry(ObjHandle);
+    ThisEntry = NsConvertHandleToEntry (ObjHandle);
 
     LevelTmp    = Level;
     Type        = ThisEntry->Type;
     WhichBit    = 1;
 
 
-    if (!(DebugLevel & DbLevel))
+    if (!(DebugLevel & Info->DebugLevel))
     {
         return AE_OK;
     }
@@ -235,6 +235,15 @@ NsDumpOneObject (
         DEBUG_PRINT (ACPI_INFO, ("Null object handle\n"));
         return AE_OK;
     }
+
+    /* Check if the owner matches */
+
+    if ((Info->OwnerId != ACPI_UINT32_MAX) &&
+        (Info->OwnerId != ThisEntry->TableId))
+    {
+        return AE_OK;
+    }
+
 
     /* Indent the object according to the level */
 
@@ -492,11 +501,13 @@ Cleanup:
  * FUNCTION:    NsDumpObjects 
  *
  * PARAMETERS:  Type                - Object type to be dumped
- *              MaxDepth            - Maximum depth of dump.  Use INT_MAX
+ *              MaxDepth            - Maximum depth of dump.  Use ACPI_UINT32_MAX
  *                                    for an effectively unlimited depth.
+ *              OwnerId             - Dump only objects owned by this ID.  Use
+ *                                    ACPI_UINT32_MAX to match all owners.
  *              StartHandle         - Where in namespace to start/end search
  *
- * DESCRIPTION: Dump typed objects
+ * DESCRIPTION: Dump typed objects within the loaded namespace.
  *              Uses NsWalkNamespace in conjunction with NsDumpOneObject.
  *
  ***************************************************************************/
@@ -504,12 +515,18 @@ Cleanup:
 void
 NsDumpObjects (
     ACPI_OBJECT_TYPE        Type, 
-    INT32                   MaxDepth, 
+    UINT32                  MaxDepth, 
+    UINT32                  OwnerId,
     ACPI_HANDLE             StartHandle)
 {
+    ACPI_WALK_INFO          Info;
 
-    AcpiWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, 
-                        (void *) TRACE_TABLES, NULL);
+
+    Info.DebugLevel = TRACE_TABLES;
+    Info.OwnerId = OwnerId;
+
+    NsWalkNamespace (Type, StartHandle, MaxDepth, NS_WALK_NO_UNLOCK, NsDumpOneObject, 
+                        (void *) &Info, NULL);
 }
 
 
@@ -583,7 +600,8 @@ NsDumpRootDevices (void)
     AcpiGetHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
-    AcpiWalkNamespace (ACPI_TYPE_Device, SysBusHandle, ACPI_INT32_MAX, NsDumpOneDevice, NULL, NULL);
+    NsWalkNamespace (ACPI_TYPE_Device, SysBusHandle, ACPI_INT32_MAX, NS_WALK_NO_UNLOCK, 
+                        NsDumpOneDevice, NULL, NULL);
 }
 
 
@@ -630,7 +648,7 @@ NsDumpTables (
     }
 
 
-    NsDumpObjects (ACPI_TYPE_Any, MaxDepth, SearchHandle);
+    NsDumpObjects (ACPI_TYPE_Any, MaxDepth, ACPI_UINT32_MAX, SearchHandle);
     return_VOID;
 }
 
