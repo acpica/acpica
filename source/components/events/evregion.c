@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.132 $
+ *              $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -126,9 +126,10 @@
         ACPI_MODULE_NAME    ("evregion")
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvInstallDefaultAddressSpaceHandlers
+ * FUNCTION:    AcpiEvInitAddressSpaces
  *
  * PARAMETERS:
  *
@@ -139,13 +140,13 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvInstallDefaultAddressSpaceHandlers (
+AcpiEvInitAddressSpaces (
     void)
 {
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvInstallDefaultAddressSpaceHandlers");
+    ACPI_FUNCTION_TRACE ("EvInitAddressSpaces");
 
 
     /*
@@ -450,7 +451,7 @@ AcpiEvAddressSpaceDispatch (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvDisassociateRegionFromHandler
+ * FUNCTION:    AcpiEvDetachRegion
  *
  * PARAMETERS:  RegionObj       - Region Object
  *              AcpiNsIsLocked  - Namespace Region Already Locked?
@@ -463,7 +464,7 @@ AcpiEvAddressSpaceDispatch (
  ******************************************************************************/
 
 void
-AcpiEvDisassociateRegionFromHandler(
+AcpiEvDetachRegion(
     ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsIsLocked)
 {
@@ -476,7 +477,7 @@ AcpiEvDisassociateRegionFromHandler(
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvDisassociateRegionFromHandler");
+    ACPI_FUNCTION_TRACE ("EvDetachRegion");
 
 
     RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
@@ -605,7 +606,7 @@ AcpiEvDisassociateRegionFromHandler(
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvAssociateRegionAndHandler
+ * FUNCTION:    AcpiEvAttachRegion
  *
  * PARAMETERS:  HandlerObj      - Handler Object
  *              RegionObj       - Region Object
@@ -619,7 +620,7 @@ AcpiEvDisassociateRegionFromHandler(
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvAssociateRegionAndHandler (
+AcpiEvAttachRegion (
     ACPI_OPERAND_OBJECT     *HandlerObj,
     ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsIsLocked)
@@ -628,7 +629,7 @@ AcpiEvAssociateRegionAndHandler (
     ACPI_STATUS             Status2;
 
 
-    ACPI_FUNCTION_TRACE ("EvAssociateRegionAndHandler");
+    ACPI_FUNCTION_TRACE ("EvAttachRegion");
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
@@ -816,12 +817,12 @@ AcpiEvAddrHandlerHelper (
      *
      *  First disconnect region for any previous handler (if any)
      */
-    AcpiEvDisassociateRegionFromHandler (ObjDesc, FALSE);
+    AcpiEvDetachRegion (ObjDesc, FALSE);
 
     /*
      *  Then connect the region to the new handler
      */
-    Status = AcpiEvAssociateRegionAndHandler (HandlerObj, ObjDesc, FALSE);
+    Status = AcpiEvAttachRegion (HandlerObj, ObjDesc, FALSE);
 
     return (Status);
 }

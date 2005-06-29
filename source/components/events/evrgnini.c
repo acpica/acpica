@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.53 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -120,11 +120,9 @@
 #include "acpi.h"
 #include "acevents.h"
 #include "acnamesp.h"
-#include "acinterp.h"
-#include "amlcode.h"
 
 #define _COMPONENT          ACPI_EVENTS
-        MODULE_NAME         ("evrgnini")
+        ACPI_MODULE_NAME    ("evrgnini")
 
 
 /*******************************************************************************
@@ -149,7 +147,10 @@ AcpiEvSystemMemoryRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
+    ACPI_OPERAND_OBJECT     *RegionDesc = (ACPI_OPERAND_OBJECT *) Handle;
+    ACPI_MEM_SPACE_CONTEXT  *LocalRegionContext;
+
+    ACPI_FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
 
 
     if (Function == ACPI_REGION_DEACTIVATE)
@@ -165,12 +166,18 @@ AcpiEvSystemMemoryRegionSetup (
 
     /* Activate.  Create a new context */
 
-    *RegionContext = ACPI_MEM_CALLOCATE (sizeof (ACPI_MEM_SPACE_CONTEXT));
-    if (!(*RegionContext))
+    LocalRegionContext = ACPI_MEM_CALLOCATE (sizeof (ACPI_MEM_SPACE_CONTEXT));
+    if (!(LocalRegionContext))
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    /* Save the region length and address for use in the handler */
+
+    LocalRegionContext->Length  = RegionDesc->Region.Length;
+    LocalRegionContext->Address = RegionDesc->Region.Address;
+
+    *RegionContext = LocalRegionContext;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -197,7 +204,7 @@ AcpiEvIoSpaceRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    FUNCTION_TRACE ("EvIoSpaceRegionSetup");
+    ACPI_FUNCTION_TRACE ("EvIoSpaceRegionSetup");
 
 
     if (Function == ACPI_REGION_DEACTIVATE)
@@ -246,7 +253,7 @@ AcpiEvPciConfigRegionSetup (
     ACPI_DEVICE_ID          ObjectHID;
 
 
-    FUNCTION_TRACE ("EvPciConfigRegionSetup");
+    ACPI_FUNCTION_TRACE ("EvPciConfigRegionSetup");
 
 
     HandlerObj = RegionObj->Region.AddrHandler;
@@ -298,13 +305,13 @@ AcpiEvPciConfigRegionSetup (
     Status = AcpiUtEvaluateNumericObject (METHOD_NAME__ADR, Node, &Temp);
 
     /*
-     *  The default is zero, since the allocation above zeroed the data, just
-     *  do nothing on failures.
+     *  The default is zero, and since the allocation above zeroed 
+     *  the data, just do nothing on failure.
      */
     if (ACPI_SUCCESS (Status))
     {
-        PciId->Device = HIWORD (Temp);
-        PciId->Function = LOWORD (Temp);
+        PciId->Device   = ACPI_HIWORD (ACPI_LODWORD (Temp));
+        PciId->Function = ACPI_LOWORD (ACPI_LODWORD (Temp));
     }
 
     /*
@@ -330,12 +337,17 @@ AcpiEvPciConfigRegionSetup (
             Status = AcpiUtExecute_HID (Node, &ObjectHID);
             if (ACPI_SUCCESS (Status))
             {
-                if (!(STRNCMP (ObjectHID.Buffer, PCI_ROOT_HID_STRING,
+                if (!(ACPI_STRNCMP (ObjectHID.Buffer, PCI_ROOT_HID_STRING,
                                     sizeof (PCI_ROOT_HID_STRING))))
                 {
-                    AcpiInstallAddressSpaceHandler ((ACPI_HANDLE) Node,
+                    Status = AcpiInstallAddressSpaceHandler ((ACPI_HANDLE) Node,
                                         ACPI_ADR_SPACE_PCI_CONFIG,
                                         ACPI_DEFAULT_HANDLER, NULL, NULL);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        ACPI_REPORT_ERROR (("Could not install handler for %4.4s, %s\n",
+                            Node->Name.Ascii, AcpiFormatException (Status)));
+                    }
                     break;
                 }
             }
@@ -354,7 +366,7 @@ AcpiEvPciConfigRegionSetup (
     Status = AcpiUtEvaluateNumericObject (METHOD_NAME__SEG, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
-        PciId->Segment = LOWORD (Temp);
+        PciId->Segment = ACPI_LOWORD (Temp);
     }
 
     /*
@@ -363,7 +375,7 @@ AcpiEvPciConfigRegionSetup (
     Status = AcpiUtEvaluateNumericObject (METHOD_NAME__BBN, Node, &Temp);
     if (ACPI_SUCCESS (Status))
     {
-        PciId->Bus = LOWORD (Temp);
+        PciId->Bus = ACPI_LOWORD (Temp);
     }
 
     *RegionContext = PciId;
@@ -396,7 +408,7 @@ AcpiEvPciBarRegionSetup (
     void                    **RegionContext)
 {
 
-    FUNCTION_TRACE ("EvPciBarRegionSetup");
+    ACPI_FUNCTION_TRACE ("EvPciBarRegionSetup");
 
 
     return_ACPI_STATUS (AE_OK);
@@ -428,7 +440,7 @@ AcpiEvCmosRegionSetup (
     void                    **RegionContext)
 {
 
-    FUNCTION_TRACE ("EvCmosRegionSetup");
+    ACPI_FUNCTION_TRACE ("EvCmosRegionSetup");
 
 
     return_ACPI_STATUS (AE_OK);
@@ -457,7 +469,7 @@ AcpiEvDefaultRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    FUNCTION_TRACE ("EvDefaultRegionSetup");
+    ACPI_FUNCTION_TRACE ("EvDefaultRegionSetup");
 
 
     if (Function == ACPI_REGION_DEACTIVATE)
@@ -509,7 +521,7 @@ AcpiEvInitializeRegion (
     ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    FUNCTION_TRACE_U32 ("EvInitializeRegion", AcpiNsLocked);
+    ACPI_FUNCTION_TRACE_U32 ("EvInitializeRegion", AcpiNsLocked);
 
 
     if (!RegionObj)
@@ -566,7 +578,7 @@ AcpiEvInitializeRegion (
         if (ObjDesc)
         {
             /*
-             *  can only be a handler if the object exists
+             * Can only be a handler if the object exists
              */
             switch (Node->Type)
             {
@@ -583,6 +595,10 @@ AcpiEvInitializeRegion (
             case ACPI_TYPE_THERMAL:
 
                 HandlerObj = ObjDesc->ThermalZone.AddrHandler;
+                break;
+
+            default:
+                /* Ignore other objects */
                 break;
             }
 
@@ -601,8 +617,8 @@ AcpiEvInitializeRegion (
                     /*
                      *  Found it! Now update the region and the handler
                      */
-                    AcpiEvAssociateRegionAndHandler (HandlerObj, RegionObj,
-                            AcpiNsLocked);
+                    Status = AcpiEvAttachRegion (HandlerObj, RegionObj,
+                                AcpiNsLocked);
 
                     return_ACPI_STATUS (AE_OK);
                 }
