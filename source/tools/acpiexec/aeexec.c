@@ -507,7 +507,7 @@ AdSecondPassParse (
     ACPI_GENERIC_OP         *Root)
 {
     ACPI_GENERIC_OP         *Op = Root;
-    ACPI_DEFERRED_OP        *Method;
+    ACPI_EXTENDED_OP        *Method;
     ACPI_GENERIC_OP         *SearchOp;
     ACPI_GENERIC_OP         *StartOp;
     ACPI_STATUS             Status = AE_OK;
@@ -522,8 +522,8 @@ AdSecondPassParse (
 
         if (Op->Opcode == AML_METHOD_OP)
         {
-            Method = (ACPI_DEFERRED_OP *) Op;
-            Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0,
+            Method = (ACPI_EXTENDED_OP *) Op;
+            Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
                         NULL, NULL, NULL, NULL, NULL);
 
 
@@ -543,7 +543,7 @@ AdSecondPassParse (
         {
             /* TBD: this isn't quite the right thing to do! */
 
-            // Method = (ACPI_DEFERRED_OP *) Op;
+            // Method = (ACPI_EXTENDED_OP *) Op;
             // Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength);
         }
 
