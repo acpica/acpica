@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -275,7 +275,7 @@ AcpiHwObtainSleepTypeRegisterData (
 
     if (!ObjDesc)
     {
-        REPORT_ERROR ("Missing Sleep State object");
+        REPORT_ERROR (("Missing Sleep State object\n"));
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
 
@@ -289,7 +289,7 @@ AcpiHwObtainSleepTypeRegisterData (
     {
         /* Must be a package */
 
-        REPORT_ERROR ("Sleep State object is not of type Package");
+        REPORT_ERROR (("Sleep State object is not of type Package\n"));
         Status = AE_ERROR;
     }
 
@@ -297,7 +297,7 @@ AcpiHwObtainSleepTypeRegisterData (
     {
         /* Must have at least two elements */
 
-        REPORT_ERROR ("Sleep State package does not have at least two elements");
+        REPORT_ERROR (("Sleep State package does not have at least two elements\n"));
         Status = AE_ERROR;
     }
 
@@ -308,7 +308,7 @@ AcpiHwObtainSleepTypeRegisterData (
     {
         /* Must have two  */
 
-        REPORT_ERROR ("Sleep State package elements are not both of type Number");
+        REPORT_ERROR (("Sleep State package elements are not both of type Number\n"));
         Status = AE_ERROR;
     }
 
