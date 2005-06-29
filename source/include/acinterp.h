@@ -129,6 +129,8 @@
 #define DO_NOT_PUSH_PKG_LENGTH  0
 
 
+#define STACK_TOP               0
+
 /*
  * iefield - ACPI AML (p-code) execution - field manipulation
  */
@@ -251,6 +253,33 @@ ACPI_STATUS
 AmlObjPushIfExec (
     OPERATING_MODE          LoadExecMode);
 
+void *
+AmlObjStackPopValue (
+    void);
+
+ACPI_STATUS
+AmlObjStackPop (
+    UINT32                  StackEntries);
+
+void *
+AmlObjStackGetValue (
+    UINT32                  OffsetFromStackTop);
+
+void
+AmlObjStackSetValue (
+    void                    *StackEntry);
+
+ACPI_OBJECT_INTERNAL **
+AmlObjGetStackTopPtr (
+    void);
+
+void
+AmlObjClearStackTop (
+    void);
+
+void *
+AmlObjStackRemoveValue (
+    UINT32                  OffsetFromStackTop);
 
 
 /*
@@ -528,6 +557,76 @@ AmlDoFieldElement (
 ACPI_STATUS
 AmlDoPkg (
     ACPI_OBJECT_TYPE        Type, 
+    OPERATING_MODE          LoadExecMode);
+
+
+/*
+ * idopkobj - typed package routines for misc types
+ */
+
+ACPI_STATUS
+AmlDoPackagePkg (
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoDevicePkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoPowerPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoProcessorPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoMethodPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoBufferPkg (
+    OPERATING_MODE          LoadExecMode);
+
+
+/*
+ * idopkfld - typed package routines for field types
+ */
+
+ACPI_STATUS
+AmlDoDefFieldPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoBankFieldPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoIndexFieldPkg (
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
+
+
+/*
+ * idopkctl - typed package routines for control types
+ */
+
+ACPI_STATUS
+AmlDoWhilePkg (
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoIfPkg (
+    OPERATING_MODE          LoadExecMode);
+
+ACPI_STATUS
+AmlDoElsePkg (
     OPERATING_MODE          LoadExecMode);
 
 
