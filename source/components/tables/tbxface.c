@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.28 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@
 
 ACPI_STATUS
 AcpiLoadTables (
-    void                    *RsdpPhysicalAddress)
+    ACPI_PHYSICAL_ADDRESS   RsdpPhysicalAddress)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  NumberOfTables = 0;
@@ -232,7 +232,7 @@ AcpiLoadTable (
 
     /* Copy the table to a local buffer */
 
-    Status = AcpiTbGetTable (NULL, TablePtr, &TableInfo);
+    Status = AcpiTbGetTable (0, TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -481,7 +481,7 @@ AcpiGetTable (
         /*
          *  RSD PTR is the only "table" without a header
          */
-        RetBufLen = sizeof (ROOT_SYSTEM_DESCRIPTOR_POINTER);
+        RetBufLen = sizeof (RSDP_DESCRIPTOR);
     }
     else
     {
