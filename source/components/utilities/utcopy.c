@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -215,30 +215,6 @@ AcpiUtCopyIsimpleToEsimple (
          */
         switch (InternalObject->Reference.Opcode)
         {
-        case AML_ZERO_OP:
-
-            ExternalObject->Type          = ACPI_TYPE_INTEGER;
-            ExternalObject->Integer.Value = 0;
-            break;
-
-        case AML_ONE_OP:
-
-            ExternalObject->Type          = ACPI_TYPE_INTEGER;
-            ExternalObject->Integer.Value = 1;
-            break;
-
-        case AML_ONES_OP:
-
-            ExternalObject->Type          = ACPI_TYPE_INTEGER;
-            ExternalObject->Integer.Value = ACPI_INTEGER_MAX;
-            break;
-
-        case AML_REVISION_OP:
-
-            ExternalObject->Type          = ACPI_TYPE_INTEGER;
-            ExternalObject->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
-            break;
-
         case AML_INT_NAMEPATH_OP:
 
             /* For namepath, return the object handle ("reference") */
