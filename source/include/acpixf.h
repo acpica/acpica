@@ -303,15 +303,15 @@ AcpiRemoveNotifyHandler (
     NOTIFY_HANDLER          Handler);
 
 ACPI_STATUS
-AcpiInstallOpRegionHandler (
-    UINT32                  OpRegion, 
-    OPREGION_HANDLER        Handler, 
+AcpiInstallAddressSpaceHandler (
+    UINT32                  SpaceId, 
+    ADDRESS_SPACE_HANDLER   Handler, 
     void                    *Context);
 
 ACPI_STATUS
-AcpiRemoveOpRegionHandler (
-    UINT32                  OpRegion, 
-    OPREGION_HANDLER        Handler);
+AcpiRemoveAddressSpaceHandler (
+    UINT32                  SpaceId, 
+    ADDRESS_SPACE_HANDLER   Handler);
 
 
 
