@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -150,7 +150,6 @@ Options (
     printf ("    -a               Create AML in a assembler source code file (*.asm)\n");
     printf ("    -c               Create AML in a C source code file (*.c)\n");
     printf ("    -h               Additional help and compiler debug options\n");
-    printf ("    -i               Ignore errors, always create AML output file(s)\n");
     printf ("    -l               Create listing file (mixed ASL source and AML) (*.lst)\n");
     printf ("    -n               Create namespace file (*.nsp)\n");
     printf ("    -o <name>        Specify filename prefix for all output files\n");
@@ -191,6 +190,7 @@ HelpMessage (
     printf ("\nCompiler Debug Options:\n");
     printf ("    -d <p|t|b>       Create compiler debug/trace file (*.txt)\n");
     printf ("                             Types: Parse/Tree/Both\n");
+    printf ("    -i               Ignore errors, always create AML output file(s)\n");
     printf ("    -p               Parse only, no output generation\n");
     printf ("    -x               Display compile times\n");
     printf ("    -v <trace level> Set debug level for trace output\n");
