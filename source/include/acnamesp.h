@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.126 $
+ *       $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -372,16 +372,12 @@ AcpiNsGetObjectValue (
 
 
 /*
- * Parent/Child/Peer utility functions - nsfamily
+ * Parent/Child/Peer utility functions
  */
 
 ACPI_NAME
 AcpiNsFindParentName (
     ACPI_NAMESPACE_NODE     *NodeToSearch);
-
-BOOLEAN
-AcpiNsExistDownstreamSibling (
-    ACPI_NAMESPACE_NODE     *ThisNode);
 
 
 /*
@@ -488,8 +484,8 @@ AcpiNsSearchNode (
 void
 AcpiNsInstallNode (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMESPACE_NODE     *ParentNode,    /* Parent */
-    ACPI_NAMESPACE_NODE     *Node,      /* New Child*/
+    ACPI_NAMESPACE_NODE     *ParentNode,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_OBJECT_TYPE        Type);
 
 
@@ -512,6 +508,14 @@ AcpiNsGetType (
 UINT32
 AcpiNsLocal (
     ACPI_OBJECT_TYPE        Type);
+
+void
+AcpiNsReportError (
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber,
+    UINT32                  ComponentId,
+    char                    *InternalName,
+    ACPI_STATUS             LookupStatus);
 
 ACPI_STATUS
 AcpiNsBuildInternalName (
