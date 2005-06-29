@@ -168,8 +168,8 @@ AcpiDsScopeStackClear (
 
 ACPI_STATUS
 AcpiDsCallControlMethod (
-    ACPI_WALK_LIST          *WalkList,
-    ACPI_WALK_STATE         *ThisWalkState,
+    ACPI_THREAD_STATE       *Thread,
+    ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
 {
     return (AE_OK);
