@@ -625,6 +625,10 @@ SOURCE=..\..\Subsystem\Resources\rsdma.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Resources\rsdump.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Resources\rseirq.c
 # End Source File
 # Begin Source File
