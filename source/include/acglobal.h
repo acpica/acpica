@@ -213,8 +213,8 @@ extern      ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES];
  * (The table maps local handles to the real OS handles)
  */
 ACPI_EXTERN ACPI_MUTEX                  Gbl_AcpiMutexTable [NUM_MTX];
-
-extern ACPI_INIT_DATA Gbl_AcpiInitData;
+ACPI_EXTERN BOOLEAN                     Gbl_AcpiMutexLocked [NUM_MTX];
+extern      ACPI_INIT_DATA              Gbl_AcpiInitData;
 
 
 /*****************************************************************************
@@ -235,11 +235,15 @@ ACPI_EXTERN INT32                       Gbl_EdgeLevelSave;
 ACPI_EXTERN INT32                       Gbl_IrqEnableSave;
 ACPI_EXTERN UINT32                      Gbl_RsdpOriginalLocation; 
 ACPI_EXTERN ACPI_HANDLE                 Gbl_GlobalLockSemaphore;
-
+ACPI_EXTERN BOOLEAN                     Gbl_Shutdown;
+ACPI_EXTERN BOOLEAN                     Gbl_MethodExecuting;
+ACPI_EXTERN BOOLEAN                     Gbl_StepToNextCall;
+ACPI_EXTERN ACPI_WALK_STATE            *Gbl_BreakpointWalk;
 
 extern      UINT32                      Gbl_SystemFlags;
 extern      UINT32                      Gbl_StartupFlags;
 extern      char                       *Gbl_ExceptionNames[];
+extern      char                       *Gbl_MutexNames[];
 extern      char                       *Gbl_AcpiCaVersion;
 
 ACPI_EXTERN ACPI_OBJECT_NotifyHandler   Gbl_DrvNotify;
@@ -284,27 +288,6 @@ ACPI_EXTERN	ALLOCATION_INFO	           *Gbl_TailAllocPtr;
  *
  ****************************************************************************/
 
-#ifdef _RPARSER
-
-/* 
- * Package stack.  used for keeping track of nested AML packages. Grows upwards. 
- * 
- */
-extern      INT32                       Gbl_PkgStackLevel;
-extern      INT32                       Gbl_PkgStack_Len[AML_PKG_MAX_NEST];
-extern      UINT8                      *Gbl_PkgStack_Code[AML_PKG_MAX_NEST];
-
-/* Object stack */
-
-ACPI_EXTERN void                       *Gbl_ObjStack[AML_EXPR_MAX_NEST];
-ACPI_EXTERN INT32                       Gbl_ObjStackTop;
-
-/* Method stack - contains arguments and locals */
-
-ACPI_EXTERN	INT32                       Gbl_MethodStackTop;
-ACPI_EXTERN	METHOD_STACK                *Gbl_MthStackHead;
-
-#endif
 
 ACPI_EXTERN UINT32                      Gbl_WhenToParseMethods;
 ACPI_EXTERN ACPI_WALK_LIST             *Gbl_CurrentWalkList;
