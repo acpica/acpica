@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.35 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -204,8 +204,8 @@ main (
 
     /* Init globals */
 
-    Buffer = malloc (BUFFER_SIZE);
-    AcpiDbgLevel = NORMAL_DEFAULT | TRACE_TABLES;
+    AcpiGbl_DbBuffer = malloc (BUFFER_SIZE);
+    AcpiDbgLevel = NORMAL_DEFAULT | ACPI_LV_TABLES;
     AcpiDbgLayer = 0xFFFFFFFF;
 
 
@@ -224,21 +224,21 @@ main (
     while ((j = getopt (argc, argv, "?dgijl:o:sv")) != EOF) switch(j)
     {
     case 'd':
-        opt_disasm = TRUE;
-        opt_stats = TRUE;
+        AcpiGbl_DbOpt_disasm = TRUE;
+        AcpiGbl_DbOpt_stats = TRUE;
         break;
 
     case 'g':
-        opt_tables = TRUE;
-        Filename = NULL;
+        AcpiGbl_DbOpt_tables = TRUE;
+        AcpiGbl_DbFilename = NULL;
         break;
 
     case 'i':
-        opt_ini_methods = FALSE;
+        AcpiGbl_DbOpt_ini_methods = FALSE;
         break;
 
     case 'j':
-        opt_parse_jit = TRUE;
+        AcpiGbl_DbOpt_parse_jit = TRUE;
         break;
 
     case 'l':
@@ -252,11 +252,11 @@ main (
         break;
 
     case 's':
-        opt_stats = TRUE;
+        AcpiGbl_DbOpt_stats = TRUE;
         break;
 
     case 'v':
-        AcpiDbgLevel |= TRACE_INIT;
+        AcpiDbgLevel |= ACPI_LV_INIT;
         break;
 
     case '?':
@@ -273,7 +273,7 @@ main (
 
     InitFlags = (ACPI_NO_HARDWARE_INIT | ACPI_NO_ACPI_ENABLE | ACPI_NO_EVENT_INIT);
 
-    if (!opt_ini_methods)
+    if (!AcpiGbl_DbOpt_ini_methods)
     {
         InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
     }
@@ -282,11 +282,11 @@ main (
 
     if (argv[optind])
     {
-        opt_tables = TRUE;
-        Filename = argv[optind];
+        AcpiGbl_DbOpt_tables = TRUE;
+        AcpiGbl_DbFilename = argv[optind];
 
 
-        Status = AcpiDbLoadAcpiTable (Filename);
+        Status = AcpiDbLoadAcpiTable (AcpiGbl_DbFilename);
         if (ACPI_FAILURE (Status))
         {
             printf ("**** Could not load input table, %s\n", AcpiFormatException (Status));
