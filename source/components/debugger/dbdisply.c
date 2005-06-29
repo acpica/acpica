@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.85 $
+ *              $Revision: 1.87 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -1015,6 +1015,40 @@ AcpiDbDisplayArgumentObject (
     AcpiOsPrintf ("ArgObj:    ");
     AcpiDbDisplayInternalObject (ObjDesc, WalkState);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbDisplayGpes
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display the GPE structures
+ *
+ ******************************************************************************/
+
+void
+AcpiDbDisplayGpes (void)
+{
+    ACPI_GPE_BLOCK_INFO     *GpeBlock;
+    UINT32                  i = 0;
+
+
+    GpeBlock = AcpiGbl_GpeBlockListHead;
+    while (GpeBlock)
+    {
+        AcpiOsPrintf ("Block %d\n", i);
+        AcpiOsPrintf ("    Registers: %d\n", GpeBlock->RegisterCount);
+        AcpiOsPrintf ("    GPE range: %d to %d\n", GpeBlock->BlockBaseNumber, 
+                        GpeBlock->BlockBaseNumber + (GpeBlock->RegisterCount * 8));
+        i++;
+
+        GpeBlock = GpeBlock->Next;
+    }
+}
+
 
 #endif /* ACPI_DEBUGGER */
 
