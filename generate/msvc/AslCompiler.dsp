@@ -23,8 +23,8 @@ CFG=AslCompiler - Win32 Debug
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""
-# PROP Scc_LocalPath ""
+# PROP Scc_ProjName ""$/Acpi/source/compiler", CRIAAAAA"
+# PROP Scc_LocalPath "..\.."
 CPP=xicl6.exe
 MTL=midl.exe
 RSC=rc.exe
@@ -123,11 +123,11 @@ SOURCE=..\..\source\components\utilities\utglobal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utobject.c
+SOURCE=..\..\source\components\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\components\utilities\utmisc.c
+SOURCE=..\..\source\components\utilities\utobject.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -258,15 +258,6 @@ SOURCE=..\..\source\compiler\aslrestype1.c
 # Begin Source File
 
 SOURCE=..\..\source\compiler\aslrestype2.c
-
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
-
-# SUBTRACT CPP /FA<none>
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
