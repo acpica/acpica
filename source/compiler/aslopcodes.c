@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.28 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -430,6 +430,17 @@ OpcGenerateAmlOpcode (
         Node->Child->ParseOpcode = DEFAULT_ARG;
         Node->Child->Peer->ParseOpcode = DEFAULT_ARG;
         break;
+
+    case PACKAGE:
+        /*
+         * The variable-length package has a different opcode
+         */
+        if ((Node->Child->ParseOpcode != DEFAULT_ARG) &&
+            (Node->Child->ParseOpcode != INTEGER)     &&
+            (Node->Child->ParseOpcode != BYTECONST))
+        {
+            Node->AmlOpcode = AML_VAR_PACKAGE_OP;
+        }
     }
 
     return;
