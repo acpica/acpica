@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -408,8 +408,11 @@ AcpiNsDumpOneObject (
             break;
 
         case ACPI_TYPE_BUFFER_FIELD:
-            AcpiOsPrintf (" Buf [%4.4s]",
-                    (char *) &ObjDesc->BufferField.BufferObj->Buffer.Node->Name);
+            if (ObjDesc->BufferField.BufferObj)
+            {
+                AcpiOsPrintf (" Buf [%4.4s]",
+                        (char *) &ObjDesc->BufferField.BufferObj->Buffer.Node->Name);
+            }
             break;
 
         case INTERNAL_TYPE_REGION_FIELD:
