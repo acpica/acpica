@@ -708,14 +708,14 @@ AmlDumpNameTableEntry (
     }
 
 
-    OsdPrintf ("%20s : %4.4s\n",    "Name", &Entry->Name);
-    OsdPrintf ("%20s : %s\n",       "Type", Gbl_NsTypeNames [Entry->Type]);
-    OsdPrintf ("%20s : 0x%X\n",     "Flags", Entry->Flags);
-    OsdPrintf ("%20s : 0x%p\n",     "Attached Object", Entry->Object);
-    OsdPrintf ("%20s : 0x%p\n",     "Scope", Entry->Scope);
-    OsdPrintf ("%20s : 0x%p\n",     "Parent", Entry->ParentEntry);
-    OsdPrintf ("%20s : 0x%p\n",     "Next", Entry->NextEntry);
-    OsdPrintf ("%20s : 0x%p\n",     "Previous", Entry->PrevEntry);
+    OsdPrintf ("%20s : %4.4s\n",    "Name",             &Entry->Name);
+    OsdPrintf ("%20s : %s\n",       "Type",             CmGetTypeName (Entry->Type));
+    OsdPrintf ("%20s : 0x%X\n",     "Flags",            Entry->Flags);
+    OsdPrintf ("%20s : 0x%p\n",     "Attached Object",  Entry->Object);
+    OsdPrintf ("%20s : 0x%p\n",     "Scope",            Entry->Scope);
+    OsdPrintf ("%20s : 0x%p\n",     "Parent",           Entry->ParentEntry);
+    OsdPrintf ("%20s : 0x%p\n",     "Next",             Entry->NextEntry);
+    OsdPrintf ("%20s : 0x%p\n",     "Previous",         Entry->PrevEntry);
 }
 
 
