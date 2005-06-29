@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -524,8 +524,8 @@ AcpiExConvertToString (
     ACPI_OPERAND_OBJECT     *RetDesc;
     UINT8                   *NewBuf;
     UINT8                   *Pointer;
-    UINT32                  i;
     UINT32                  StringLength;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE_PTR ("ExConvertToString", ObjDesc);
