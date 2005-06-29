@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.3 $
+ *       $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -197,10 +197,6 @@ AcpiDmValidateName (
 UINT32
 AcpiDmDumpName (
     char                    *Name);
-
-void
-AcpiDmString (
-    char                    *String);
 
 void
 AcpiDmUnicode (
