@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -204,9 +204,9 @@ AcpiTbScanMemoryForRsdp (
         {
             /* If so, we have found the RSDP */
 
-		DEBUG_PRINTP (ACPI_INFO,
-		("RSDP located at physical address %p\n",MemRover));
-		return_PTR (MemRover);
+            DEBUG_PRINTP (ACPI_INFO,
+                ("RSDP located at physical address %p\n",MemRover));
+            return_PTR (MemRover);
         }
     }
 
