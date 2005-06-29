@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -369,8 +369,8 @@ LdNamespace1Begin (
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
     ACPI_STATUS             Status;
-    ACPI_OBJECT_TYPE8       ObjectType;
-    ACPI_OBJECT_TYPE8       ActualObjectType = ACPI_TYPE_ANY;
+    ACPI_OBJECT_TYPE        ObjectType;
+    ACPI_OBJECT_TYPE        ActualObjectType = ACPI_TYPE_ANY;
     NATIVE_CHAR             *Path;
     UINT32                  Flags = NS_NO_UPSEARCH;
     ASL_PARSE_NODE          *Arg;
@@ -495,7 +495,7 @@ LdNamespace1Begin (
 
     if (ActualObjectType != ACPI_TYPE_ANY)
     {
-        NsNode->Type = ActualObjectType;
+        NsNode->Type = (UINT8) ActualObjectType;
         NsNode->OwnerId = ASL_EXTERNAL_METHOD;
     }
 
@@ -532,7 +532,7 @@ LdNamespace1End (
     void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
-    ACPI_OBJECT_TYPE8       ObjectType;
+    ACPI_OBJECT_TYPE        ObjectType;
 
 
     PROC_NAME ("LdNamespace1End");

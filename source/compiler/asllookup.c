@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.45 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -397,7 +397,7 @@ LkCrossReferenceNamespace (void)
  *              namespace.
  *
  * NOTE: ASL references to named fields within resource descriptors are
- *       resolve to integer values here.  Therefore, this step is an
+ *       resolved to integer values here.  Therefore, this step is an
  *       important part of the code generation.  We don't know that the
  *       name refers to a resource descriptor until now.
  *
@@ -412,11 +412,12 @@ LkNamespaceLocateBegin (
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
     ACPI_STATUS             Status;
-    ACPI_OBJECT_TYPE8       ObjectType;
+    ACPI_OBJECT_TYPE        ObjectType;
     NATIVE_CHAR             *Path;
     UINT8                   PassedArgs;
     ASL_PARSE_NODE          *Next;
     ASL_PARSE_NODE          *OwningPsNode;
+    ASL_PARSE_NODE          *SpaceIdNode;
     UINT32                  MinimumLength;
     UINT32                  Temp;
     const ACPI_OPCODE_INFO  *OpInfo;
@@ -680,27 +681,29 @@ LkNamespaceLocateBegin (
     }
 
 
-    /* 3) Check for an ASL Field definition */
-
+    /*
+     * 3) Check for an ASL Field definition 
+     */
     else if ((PsNode->Parent) &&
             ((PsNode->Parent->ParseOpcode == FIELD)     ||
-             (PsNode->Parent->ParseOpcode == BANKFIELD) ||
-             (PsNode->Parent->ParseOpcode == INDEXFIELD)))
+             (PsNode->Parent->ParseOpcode == BANKFIELD)))
     {
         /*
          * Offset checking for fields.  If the parent operation region has a
          * constant length (known at compile time), we can check fields
          * defined in that region against the region length.  This will catch
          * fields and field units that cannot possibly fit within the region.
+         *
+         * Note: Index fields do not directly reference an operation region,
+         * thus they are not included in this check.
          */
         if (PsNode == PsNode->Parent->Child)
         {
             /*
              * This is the first child of the field node, which is
              * the name of the region.  Get the parse node for the
-             * region -- which contains the length of the regoin.
+             * region -- which contains the length of the region.
              */
-
             OwningPsNode = (ASL_PARSE_NODE *) NsNode->Object;
             PsNode->Parent->ExtraValue = MUL_8 (OwningPsNode->Value.Integer32);
 
@@ -708,30 +711,60 @@ LkNamespaceLocateBegin (
 
             switch (PsNode->Parent->Value.Integer8)
             {
-            case ACCESS_ANY_ACC:
-            case ACCESS_BYTE_ACC:
+            case AML_FIELD_ACCESS_ANY:
+            case AML_FIELD_ACCESS_BYTE:
+            case AML_FIELD_ACCESS_BUFFER:
             default:
                 MinimumLength = 1;
                 break;
 
-            case ACCESS_WORD_ACC:
+            case AML_FIELD_ACCESS_WORD:
                 MinimumLength = 2;
                 break;
 
-            case ACCESS_DWORD_ACC:
+            case AML_FIELD_ACCESS_DWORD:
                 MinimumLength = 4;
                 break;
 
-            case ACCESS_QWORD_ACC:
+            case AML_FIELD_ACCESS_QWORD:
                 MinimumLength = 8;
                 break;
             }
 
-            /* Is the region at least as big as the access width? */
-
-            if (OwningPsNode->Value.Integer32 < MinimumLength)
+            /*
+             * Is the region at least as big as the access width?
+             * Note: DataTableRegions have 0 length
+             */
+            if ((OwningPsNode->Value.Integer32) &&
+                (OwningPsNode->Value.Integer32 < MinimumLength))
             {
                 AslError (ASL_ERROR, ASL_MSG_FIELD_ACCESS_WIDTH, PsNode, NULL);
+            }
+
+            /*
+             * Check EC/CMOS/SMBUS fields to make sure that the correct 
+             * access type is used (BYTE for EC/CMOS, BUFFER for SMBUS)
+             */
+            SpaceIdNode = OwningPsNode->Child->Peer;
+            switch (SpaceIdNode->Value.Integer32)
+            {
+            case REGION_EC:
+            case REGION_CMOS:
+
+                if (PsNode->Parent->Value.Integer8 != AML_FIELD_ACCESS_BYTE)
+                {
+                    AslError (ASL_ERROR, ASL_MSG_REGION_BYTE_ACCESS, PsNode, NULL);
+                }
+
+                break;
+
+            case REGION_SMBUS:
+
+                if (PsNode->Parent->Value.Integer8 != AML_FIELD_ACCESS_BUFFER)
+                {
+                    AslError (ASL_ERROR, ASL_MSG_REGION_BUFFER_ACCESS, PsNode, NULL);
+                }
+                break;
             }
         }
 
