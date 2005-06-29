@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -480,12 +480,12 @@ AfGetAllTables (
 
 
     ACPI_FUNCTION_TRACE ("AfGetAllTables");
+                  
 
     if (AcpiGbl_DbOpt_verbose)
     {
         AcpiOsPrintf ("Number of tables: %d\n", (UINT32) NumberOfTables);
     }
-
 
     /*
      * Loop through all table pointers found in RSDT.
@@ -527,8 +527,9 @@ AfGetAllTables (
         return_ACPI_STATUS (Status);
     }
 
-    /* No need to get the FACS, but here is the code if needed */
-#if 0
+    /* 
+     * Get the FACS 
+     */
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl),
                         sizeof (ACPI_TABLE_HEADER));
     AcpiGbl_FACS = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
@@ -551,7 +552,6 @@ AfGetAllTables (
 
     TableInfo.Type          = ACPI_TABLE_FADT;
     TableInfo.Pointer       = (void *) AcpiGbl_FADT;
-    TableInfo.BasePointer   = (void *) AcpiGbl_FADT;
     TableInfo.Length        = (ACPI_SIZE) AcpiTblHeader.Length;
     TableInfo.Allocation    = ACPI_MEM_ALLOCATED;
 
@@ -560,11 +560,10 @@ AfGetAllTables (
     AcpiTbInitTableDescriptor (TableInfo.Type, &TableInfo);
 
     AcpiTbBuildCommonFacs (&TableInfo);
-#endif
 
-
-    /* Get the DSDT */
-
+    /*
+     * Get the DSDT 
+     */
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XDsdt), sizeof (ACPI_TABLE_HEADER));
     AcpiGbl_DSDT = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
     if (!AcpiGbl_DSDT)
@@ -722,7 +721,7 @@ AfFindDsdt(
         goto ErrorExit;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_OK, "ACPI Tables successfully loaded\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_OK, "ACPI Tables successfully acquired\n"));
 
     if (AcpiGbl_DSDT)
     {
