@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -407,7 +407,7 @@ AcpiEvGpeInitialize (void)
 {
     NATIVE_UINT_MAX32       i;
     NATIVE_UINT_MAX32       j;
-    NATIVE_UINT             GpeBlock;
+    UINT32                  GpeBlock;
     UINT32                  GpeRegister;
     UINT32                  GpeNumberIndex;
     UINT32                  GpeNumber;
@@ -592,14 +592,14 @@ AcpiEvGpeInitialize (void)
 
             GpeRegister++;
         }
-
+	/* %u */
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d: %X registers at %8.8X%8.8X\n",
-            GpeBlock, AcpiGbl_GpeBlockInfo[0].RegisterCount,
+            (INT32) GpeBlock, AcpiGbl_GpeBlockInfo[0].RegisterCount,
             ACPI_HIDWORD (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address),
             ACPI_LODWORD (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address)));
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d Range GPE #%2.2X to GPE #%2.2X\n",
-            GpeBlock, 
+            (INT32) GpeBlock, 
             AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber,
             AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber +
                 ((AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount * 8) -1)));
