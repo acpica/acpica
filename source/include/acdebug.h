@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.51 $
+ *       $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -149,6 +149,7 @@ extern UINT8                    AcpiGbl_DbOutputFlags;
 extern UINT32                   AcpiGbl_DbDebugLevel;
 extern UINT32                   AcpiGbl_DbConsoleDebugLevel;
 extern ACPI_TABLE_HEADER        *AcpiGbl_DbTablePtr;
+extern ACPI_NAMESPACE_NODE      *AcpiGbl_DbScopeNode;
 
 /*
  * Statistic globals
