@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -1133,7 +1133,6 @@ AnOperandTypecheckWalkEnd (
     ASL_PARSE_NODE          *ArgNode;
     UINT32                  ArgType;
     UINT32                  ThisNodeBtype;
-    UINT32                  AcpiEtype;
     UINT32                  OpcodeClass;
     UINT32                  i;
     UINT32                  CommonBtypes;
@@ -1326,9 +1325,7 @@ AnOperandTypecheckWalkEnd (
              */
             else if (!CommonBtypes)
             {
-                /* TBD: Can an implicit conversion be performed? */
-
-                AcpiEtype = AnMapBtypeToEtype (ThisNodeBtype);
+                /* No match -- this is a type mismatch error */
 
                 AnFormatBtype (StringBuffer, ThisNodeBtype);
                 AnFormatBtype (StringBuffer2, RequiredBtypes);
