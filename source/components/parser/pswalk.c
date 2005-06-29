@@ -189,7 +189,7 @@ PsGetNextWalkOp (
 
         switch (Status)
         {
-        case AE_TERMINATE:
+        case AE_CTRL_TERMINATE:
 
             /* 
              * A control method was terminated via a RETURN statement.
@@ -202,7 +202,7 @@ PsGetNextWalkOp (
             break;
 
 
-        case AE_FALSE:
+        case AE_CTRL_FALSE:
 
             /*
              * Either an IF/WHILE Predicate was false or we encountered a BREAK opcode
@@ -307,7 +307,7 @@ PsGetNextWalkOp (
 
         switch (Status)
         {
-        case AE_FALSE:
+        case AE_CTRL_FALSE:
 
             /*
              * Either an IF/WHILE Predicate was false or we encountered a BREAK opcode
@@ -327,16 +327,16 @@ PsGetNextWalkOp (
             break;
 
 
-        case AE_TRUE:
+        case AE_CTRL_TRUE:
 
             /* 
              * Predicate of a WHILE was true and the loop just completed an execution.
              * Go back to the start of the loop and reevaluate the predicate.
              */
 
-            Op = WalkState->ControlState->PredicateOp;      /* Points to the predicate */
+            Op = WalkState->ControlState->Control.PredicateOp;      /* Points to the predicate */
 
-            WalkState->ControlState->Exec = CONTROL_PREDICATE_EXECUTING;
+            WalkState->ControlState->Common.State = CONTROL_PREDICATE_EXECUTING;
 
             WalkState->PrevOp       = Op->Parent;
             WalkState->NextOp       = Op;                   /* Evaluate the predicate again (next) */
@@ -346,7 +346,7 @@ PsGetNextWalkOp (
             break;
 
 
-        case AE_TERMINATE:
+        case AE_CTRL_TERMINATE:
 
             /* 
              * A control method was terminated via a RETURN statement.
@@ -465,7 +465,7 @@ PsWalkLoop (
         /* 
          * A TRUE exception means that an ELSE was detected, but the IF predicate evaluated TRUE.
          */
-        if (Status == AE_TRUE)
+        if (Status == AE_CTRL_TRUE)
         {
             /*
              * Ignore the entire ELSE block by moving on to the the next opcode.
@@ -482,7 +482,7 @@ PsWalkLoop (
 
         /* A PENDING exception means that a control method invocation has been detected */
 
-        if (Status == AE_PENDING)
+        if (Status == AE_CTRL_PENDING)
         {
             /* Transfer control to the called control method */
 
