@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.86 $
+ *              $Revision: 1.97 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,8 +125,9 @@
 #include "acdebug.h"
 
 #define _COMPONENT          ACPI_DISPATCHER
-        MODULE_NAME         ("dsutils")
+        ACPI_MODULE_NAME    ("dsutils")
 
+#ifndef ACPI_NO_METHOD_EXECUTION
 
 /*******************************************************************************
  *
@@ -150,7 +151,7 @@ AcpiDsIsResultUsed (
     const ACPI_OPCODE_INFO  *ParentInfo;
 
 
-    FUNCTION_TRACE_PTR ("DsIsResultUsed", Op);
+    ACPI_FUNCTION_TRACE_PTR ("DsIsResultUsed", Op);
 
 
     /* Must have both an Op and a Result Object */
@@ -167,7 +168,7 @@ AcpiDsIsResultUsed (
      * method is parsed separately)  However, a method that is
      * invoked from another method has a parent.
      */
-    if (!Op->Parent)
+    if (!Op->Common.Parent)
     {
         return_VALUE (FALSE);
     }
@@ -175,7 +176,7 @@ AcpiDsIsResultUsed (
     /*
      * Get info on the parent.  The root Op is AML_SCOPE
      */
-    ParentInfo = AcpiPsGetOpcodeInfo (Op->Parent->Opcode);
+    ParentInfo = AcpiPsGetOpcodeInfo (Op->Common.Parent->Common.AmlOpcode);
     if (ParentInfo->Class == AML_CLASS_UNKNOWN)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown parent opcode. Op=%p\n", Op));
@@ -192,7 +193,7 @@ AcpiDsIsResultUsed (
     {
     case AML_CLASS_CONTROL:
 
-        switch (Op->Parent->Opcode)
+        switch (Op->Common.Parent->Common.AmlOpcode)
         {
         case AML_RETURN_OP:
 
@@ -207,11 +208,16 @@ AcpiDsIsResultUsed (
              * If we are executing the predicate AND this is the predicate op,
              * we will use the return value
              */
-            if ((WalkState->ControlState->Common.State == CONTROL_PREDICATE_EXECUTING) &&
+            if ((WalkState->ControlState->Common.State == ACPI_CONTROL_PREDICATE_EXECUTING) &&
                 (WalkState->ControlState->Control.PredicateOp == Op))
             {
                 goto ResultUsed;
             }
+            break;
+
+        default:
+            /* Ignore other control opcodes */
+            break;
         }
 
         /* The general control opcode returns no result */
@@ -230,8 +236,12 @@ AcpiDsIsResultUsed (
 
     case AML_CLASS_NAMED_OBJECT:
 
-        if ((Op->Parent->Opcode == AML_REGION_OP)       ||
-            (Op->Parent->Opcode == AML_DATA_REGION_OP))
+        if ((Op->Common.Parent->Common.AmlOpcode == AML_REGION_OP)       ||
+            (Op->Common.Parent->Common.AmlOpcode == AML_DATA_REGION_OP)  ||
+            (Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP)      ||
+            (Op->Common.Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP)  ||
+            (Op->Common.Parent->Common.AmlOpcode == AML_BUFFER_OP)       ||
+            (Op->Common.Parent->Common.AmlOpcode == AML_INT_EVAL_SUBTREE_OP))
         {
             /*
              * These opcodes allow TermArg(s) as operands and therefore
@@ -243,27 +253,28 @@ AcpiDsIsResultUsed (
         goto ResultNotUsed;
 
 
-    /*
-     * In all other cases. the parent will actually use the return
-     * object, so keep it.
-     */
     default:
+
+        /*
+         * In all other cases. the parent will actually use the return
+         * object, so keep it.
+         */
         goto ResultUsed;
     }
 
 
 ResultUsed:
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Result of [%s] used by Parent [%s] Op=%p\n",
-            AcpiPsGetOpcodeName (Op->Opcode),
-            AcpiPsGetOpcodeName (Op->Parent->Opcode), Op));
+            AcpiPsGetOpcodeName (Op->Common.AmlOpcode),
+            AcpiPsGetOpcodeName (Op->Common.Parent->Common.AmlOpcode), Op));
 
     return_VALUE (TRUE);
 
 
 ResultNotUsed:
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Result of [%s] not used by Parent [%s] Op=%p\n",
-            AcpiPsGetOpcodeName (Op->Opcode),
-            AcpiPsGetOpcodeName (Op->Parent->Opcode), Op));
+            AcpiPsGetOpcodeName (Op->Common.AmlOpcode),
+            AcpiPsGetOpcodeName (Op->Common.Parent->Common.AmlOpcode), Op));
 
     return_VALUE (FALSE);
 
@@ -297,7 +308,7 @@ AcpiDsDeleteResultIfNotUsed (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("DsDeleteResultIfNotUsed", ResultObj);
+    ACPI_FUNCTION_TRACE_PTR ("DsDeleteResultIfNotUsed", ResultObj);
 
 
     if (!Op)
@@ -330,6 +341,89 @@ AcpiDsDeleteResultIfNotUsed (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiDsResolveOperands
+ *
+ * PARAMETERS:  WalkState           - Current walk state with operands on stack
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Resolve all operands to their values.  Used to prepare
+ *              arguments to a control method invocation (a call from one
+ *              method to another.)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsResolveOperands (
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT32                  i;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE_PTR ("DsResolveOperands", WalkState);
+
+
+    /*
+     * Attempt to resolve each of the valid operands
+     * Method arguments are passed by value, not by reference
+     */
+    for (i = 0; i < WalkState->NumOperands; i++)
+    {
+        Status = AcpiExResolveToValue (&WalkState->Operands[i], WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            break;
+        }
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsClearOperands
+ *
+ * PARAMETERS:  WalkState           - Current walk state with operands on stack
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Clear all operands on the current walk state operand stack.
+ *
+ ******************************************************************************/
+
+void
+AcpiDsClearOperands (
+    ACPI_WALK_STATE         *WalkState)
+{
+    UINT32                  i;
+
+
+    ACPI_FUNCTION_TRACE_PTR ("AcpiDsClearOperands", WalkState);
+
+
+    /*
+     * Remove a reference on each operand on the stack
+     */
+    for (i = 0; i < WalkState->NumOperands; i++)
+    {
+        /*
+         * Remove a reference to all operands, including both
+         * "Arguments" and "Targets".
+         */
+        AcpiUtRemoveReference (WalkState->Operands[i]);
+        WalkState->Operands[i] = NULL;
+    }
+
+    WalkState->NumOperands = 0;
+    return_VOID;
+}
+#endif
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiDsCreateOperand
  *
  * PARAMETERS:  WalkState
@@ -356,24 +450,23 @@ AcpiDsCreateOperand (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_PARSE_OBJECT       *ParentOp;
     UINT16                  Opcode;
-    OPERATING_MODE          InterpreterMode;
+    ACPI_INTERPRETER_MODE   InterpreterMode;
     const ACPI_OPCODE_INFO  *OpInfo;
-    char                    *Name;
 
 
-    FUNCTION_TRACE_PTR ("DsCreateOperand", Arg);
+    ACPI_FUNCTION_TRACE_PTR ("DsCreateOperand", Arg);
 
 
     /* A valid name must be looked up in the namespace */
 
-    if ((Arg->Opcode == AML_INT_NAMEPATH_OP) &&
-        (Arg->Value.String))
+    if ((Arg->Common.AmlOpcode == AML_INT_NAMEPATH_OP) &&
+        (Arg->Common.Value.String))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Getting a name: Arg=%p\n", Arg));
 
         /* Get the entire name string from the AML stream */
 
-        Status = AcpiExGetNameString (ACPI_TYPE_ANY, Arg->Value.Buffer,
+        Status = AcpiExGetNameString (ACPI_TYPE_ANY, Arg->Common.Value.Buffer,
                         &NameString, &NameLength);
 
         if (ACPI_FAILURE (Status))
@@ -392,37 +485,37 @@ AcpiDsCreateOperand (
          * IMODE_EXECUTE) in order to support the creation of
          * namespace objects during the execution of control methods.
          */
-        ParentOp = Arg->Parent;
-        OpInfo = AcpiPsGetOpcodeInfo (ParentOp->Opcode);
+        ParentOp = Arg->Common.Parent;
+        OpInfo = AcpiPsGetOpcodeInfo (ParentOp->Common.AmlOpcode);
         if ((OpInfo->Flags & AML_NSNODE) &&
-            (ParentOp->Opcode != AML_INT_METHODCALL_OP) &&
-            (ParentOp->Opcode != AML_REGION_OP) &&
-            (ParentOp->Opcode != AML_INT_NAMEPATH_OP))
+            (ParentOp->Common.AmlOpcode != AML_INT_METHODCALL_OP) &&
+            (ParentOp->Common.AmlOpcode != AML_REGION_OP) &&
+            (ParentOp->Common.AmlOpcode != AML_INT_NAMEPATH_OP))
         {
             /* Enter name into namespace if not found */
 
-            InterpreterMode = IMODE_LOAD_PASS2;
+            InterpreterMode = ACPI_IMODE_LOAD_PASS2;
         }
 
         else
         {
             /* Return a failure if name not found */
 
-            InterpreterMode = IMODE_EXECUTE;
+            InterpreterMode = ACPI_IMODE_EXECUTE;
         }
 
         Status = AcpiNsLookup (WalkState->ScopeInfo, NameString,
                                 ACPI_TYPE_ANY, InterpreterMode,
-                                NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE,
+                                ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE,
                                 WalkState,
-                                (ACPI_NAMESPACE_NODE **) &ObjDesc);
+                                ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE, &ObjDesc));
         /*
          * The only case where we pass through (ignore) a NOT_FOUND
          * error is for the CondRefOf opcode.
          */
         if (Status == AE_NOT_FOUND)
         {
-            if (ParentOp->Opcode == AML_COND_REF_OF_OP)
+            if (ParentOp->Common.AmlOpcode == AML_COND_REF_OF_OP)
             {
                 /*
                  * For the Conditional Reference op, it's OK if
@@ -430,7 +523,7 @@ AcpiDsCreateOperand (
                  * indicate this to the interpreter, set the
                  * object to the root
                  */
-                ObjDesc = (ACPI_OPERAND_OBJECT  *) AcpiGbl_RootNode;
+                ObjDesc = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, AcpiGbl_RootNode);
                 Status = AE_OK;
             }
 
@@ -441,13 +534,12 @@ AcpiDsCreateOperand (
                  * very serious error at this point
                  */
                 Status = AE_AML_NAME_NOT_FOUND;
-
-                Name = NULL;
-                AcpiNsExternalizeName (ACPI_UINT32_MAX, NameString, NULL, &Name);
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                        "Object name [%s] was not found in namespace\n", Name));
-                ACPI_MEM_FREE (Name);
             }
+        }
+
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_REPORT_NSERROR (NameString, Status);
         }
 
         /* Free the namestring created above */
@@ -468,7 +560,7 @@ AcpiDsCreateOperand (
         {
             return_ACPI_STATUS (Status);
         }
-        DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
+        ACPI_DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
     }
 
 
@@ -476,13 +568,13 @@ AcpiDsCreateOperand (
     {
         /* Check for null name case */
 
-        if (Arg->Opcode == AML_INT_NAMEPATH_OP)
+        if (Arg->Common.AmlOpcode == AML_INT_NAMEPATH_OP)
         {
             /*
              * If the name is null, this means that this is an
              * optional result parameter that was not specified
-             * in the original ASL.  Create an Reference for a
-             * placeholder
+             * in the original ASL.  Create a Zero Constant for a
+             * placeholder.  (Store to a constant is a Noop.)
              */
             Opcode = AML_ZERO_OP;       /* Has no arguments! */
 
@@ -491,13 +583,13 @@ AcpiDsCreateOperand (
 
         else
         {
-            Opcode = Arg->Opcode;
+            Opcode = Arg->Common.AmlOpcode;
         }
 
         /* Get the object type of the argument */
 
         OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-        if (OpInfo->ObjectType == INTERNAL_TYPE_INVALID)
+        if (OpInfo->ObjectType == ACPI_TYPE_INVALID)
         {
             return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
         }
@@ -507,7 +599,8 @@ AcpiDsCreateOperand (
             ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
                 "Argument previously created, already stacked \n"));
 
-            DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1], WalkState));
+            ACPI_DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (
+                WalkState->Operands [WalkState->NumOperands - 1], WalkState));
 
             /*
              * Use value that was already previously returned
@@ -525,7 +618,6 @@ AcpiDsCreateOperand (
                 return_ACPI_STATUS (Status);
             }
         }
-
         else
         {
             /* Create an ACPI_INTERNAL_OBJECT for the argument */
@@ -545,7 +637,7 @@ AcpiDsCreateOperand (
                 AcpiUtDeleteObjectDesc (ObjDesc);
                 return_ACPI_STATUS (Status);
             }
-       }
+        }
 
         /* Put the operand object on the object stack */
 
@@ -555,7 +647,7 @@ AcpiDsCreateOperand (
             return_ACPI_STATUS (Status);
         }
 
-        DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
+        ACPI_DEBUGGER_EXEC (AcpiDbDisplayArgumentObject (ObjDesc, WalkState));
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -586,7 +678,7 @@ AcpiDsCreateOperands (
     UINT32                  ArgCount = 0;
 
 
-    FUNCTION_TRACE_PTR ("DsCreateOperands", FirstArg);
+    ACPI_FUNCTION_TRACE_PTR ("DsCreateOperands", FirstArg);
 
 
     /* For all arguments in the list... */
@@ -605,7 +697,7 @@ AcpiDsCreateOperands (
 
         /* Move on to next argument, if any */
 
-        Arg = Arg->Next;
+        Arg = Arg->Common.Next;
         ArgCount++;
     }
 
@@ -618,52 +710,11 @@ Cleanup:
      * pop everything off of the operand stack and delete those
      * objects
      */
-    AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
+    (void) AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "While creating Arg %d - %s\n",
         (ArgCount + 1), AcpiFormatException (Status)));
     return_ACPI_STATUS (Status);
 }
 
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiDsResolveOperands
- *
- * PARAMETERS:  WalkState           - Current walk state with operands on stack
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Resolve all operands to their values.  Used to prepare
- *              arguments to a control method invocation (a call from one
- *              method to another.)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiDsResolveOperands (
-    ACPI_WALK_STATE         *WalkState)
-{
-    UINT32                  i;
-    ACPI_STATUS             Status = AE_OK;
-
-
-    FUNCTION_TRACE_PTR ("DsResolveOperands", WalkState);
-
-
-    /*
-     * Attempt to resolve each of the valid operands
-     * Method arguments are passed by value, not by reference
-     */
-    for (i = 0; i < WalkState->NumOperands; i++)
-    {
-        Status = AcpiExResolveToValue (&WalkState->Operands[i], WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            break;
-        }
-    }
-
-    return_ACPI_STATUS (Status);
-}
 
