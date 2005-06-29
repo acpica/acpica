@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.78 $
+ *       $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -351,6 +351,7 @@
 #define ARGI_COMPLEXOBJ             0x13    /* Buffer, String, or package (Used by INDEX op only) */
 #define ARGI_REF_OR_STRING          0x14    /* Reference or String (Used by DEREFOF op only) */
 #define ARGI_REGION_OR_FIELD        0x15    /* Used by LOAD op only */
+#define ARGI_DATAREFOBJ             0x16
 
 /* Note: types above can expand to 0x1F maximum */
 
