@@ -483,7 +483,9 @@ PsFetchName (
 
     if (io)
     {
-        Name = GET32 (*Path);
+        /* Get the name from the path pointer */
+
+        STORE32TO32 (&Name, *Path);
         *Path += 4;
     }
 
