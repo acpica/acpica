@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -288,8 +288,6 @@ AcpiPsCompleteThisOp (
     FUNCTION_TRACE_PTR ("PsCompleteThisOp", Op);
 
 
-
-
     /* Delete this op and the subtree below it if asked to */
 
     if (((WalkState->ParseFlags & ACPI_PARSE_TREE_MASK) == ACPI_PARSE_DELETE_TREE) &&
@@ -307,7 +305,7 @@ AcpiPsCompleteThisOp (
 
             switch (ParentInfo->Class)
             {
-            case AML_CLASS_CONTROL: 
+            case AML_CLASS_CONTROL:
                 break;
 
             case AML_CLASS_CREATE:
