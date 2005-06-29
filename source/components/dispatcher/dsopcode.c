@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -279,18 +279,9 @@ AcpiDsGetBufferFieldArguments (
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] BufferField JIT Init\n",
         (char *) &Node->Name));
 
+    /* Execute the AML code for the TermArg arguments */
 
     Status = AcpiDsExecuteArguments (Node, ExtraDesc);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /*
-     * The secondary object is no longer needed since the buffer field is
-     * now initialized
-     */
-    AcpiNsDetachSecondary (ObjDesc);
     return_ACPI_STATUS (Status);
 }
 
