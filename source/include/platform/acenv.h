@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Name: acenv.h - Generation environment specific items
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -118,13 +118,13 @@
 #define __ACENV_H__
 
 
-/* 
+/*
  * define SYSTEM_CLIB_FUNCTIONS if linking to an actual C library.
  * Otherwise, local versions of the string and memory functions will be used.
  */
 
 /******************************************************************************
- * 
+ *
  * Using native C library functions
  *
  *****************************************************************************/
@@ -133,11 +133,11 @@
 /*
  * Standard C library headers.
  * We want to keep these to a minimum.
- * 
+ *
  * The ACPI subsystem only uses low level functions that do not call OS
  * system services and may therefore be inlined in the code.
  *
- * It may be necessary to tailor these include files to the target 
+ * It may be necessary to tailor these include files to the target
  * generation environment.
  *
  *
@@ -151,7 +151,7 @@
  *              strlen
  *              strncmp
  *              strncat
- *              strncpy 
+ *              strncpy
  *
  * stdlib.h:    strtoul
  *
@@ -187,7 +187,7 @@
 
 
 /******************************************************************************
- * 
+ *
  * Not using native C library, use local implementations
  *
  *****************************************************************************/
@@ -212,7 +212,7 @@ typedef char *va_list;
  */
 
 #define  _AUPBND                (sizeof(int) - 1)
-#define  _ADNBND                (sizeof(int) - 1) 
+#define  _ADNBND                (sizeof(int) - 1)
 
 /*
  * Variable argument list macro definitions
@@ -220,7 +220,7 @@ typedef char *va_list;
 
 #define _Bnd(X, bnd)            (((sizeof(X)) + (bnd)) & (~(bnd)))
 #define va_arg(ap, T)           (*(T *)(((ap) += ((_Bnd(T, _AUPBND))) - (_Bnd(T, _ADNBND)))))
-#define va_end(ap)              (void)0 
+#define va_end(ap)              (void)0
 #define va_start(ap, A)         (void) ((ap) = (((char *)&(A)) + (_Bnd(A, _AUPBND))))
 
 #endif /* va_arg */
@@ -244,9 +244,8 @@ typedef char *va_list;
 #endif /* LOCAL_CLIB_FUNCTIONS */
 
 
-
 /******************************************************************************
- * 
+ *
  * Assembly code macros
  *
  *****************************************************************************/
@@ -314,7 +313,7 @@ typedef char *va_list;
 
 /*
  * A brief explanation as GNU inline assembly is a bit hairy
- *  %0 is the output parameter in EAX ("=a") 
+ *  %0 is the output parameter in EAX ("=a")
  *  %1 and %2 are the input parameters in ECX ("c") and an immediate value ("i") respectively
  *  All actual register references are preceded with "%%" as in "%%edx"
  *  Immediate values in the assembly are preceded by "$" as in "$0x1"
@@ -353,7 +352,7 @@ typedef char *va_list;
 #define halt()
 
 #define ASM_AcquireGL(GLptr, Acq)
-#define ASM_ReleaseGL(GLptr, Acq) 
+#define ASM_ReleaseGL(GLptr, Acq)
 
 #endif
 
@@ -361,13 +360,12 @@ typedef char *va_list;
 #undef causeinterrupt
 #undef BREAKPOINT3
 #define causeinterrupt(level)
-#define BREAKPOINT3   
-#endif         
-
+#define BREAKPOINT3
+#endif
 
 
 /******************************************************************************
- * 
+ *
  * Compiler-specific
  *
  *****************************************************************************/
@@ -376,7 +374,6 @@ typedef char *va_list;
 #pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
 #pragma warning(disable:4127)   /* warning C4127: conditional expression is constant */
 #endif
-
 
 
 #endif /* __ACENV_H__ */

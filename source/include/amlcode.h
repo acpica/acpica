@@ -1,8 +1,8 @@
 
 /******************************************************************************
- * 
+ *
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
- *                   Declarations and definitions contained herein are derived 
+ *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
  *
  *****************************************************************************/
@@ -40,9 +40,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -50,11 +50,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -88,7 +88,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -258,8 +258,6 @@
 #define AML_METHODCALL_OP           (UINT16) 0x0035
 
 
-
-
 /*
  * argument types
  */
@@ -286,7 +284,7 @@
 #define ARG_NONE                    0x0
 
 /*
- * Argument types for the AML Parser 
+ * Argument types for the AML Parser
  * Each field in the ArgTypes UINT32 is 5 bits, allowing for a maximum of 6 arguments.
  * There can be up to 31 unique argument types
  */
@@ -330,7 +328,6 @@
 #define ARGI_DDBHANDLE              0x0E
 
 #define ARGI_INVALID_OPCODE         0xFFFFFFFF
-
 
 
 /*
@@ -389,11 +386,9 @@
 #define OPTYPE_BOGUS                21
 
 
-
-
 /* Comparison operation codes for MatchOp operator */
 
-typedef enum 
+typedef enum
 {
     MATCH_MTR                   = 0,
     MATCH_MEQ                   = 1,
@@ -412,7 +407,7 @@ typedef enum
 #define ACCESS_TYPE_MASK        0x0f
 #define ACCESS_TYPE_SHIFT       0
 
-typedef enum 
+typedef enum
 {
     ACCESS_ANY_ACC              = 0,
     ACCESS_BYTE_ACC             = 1,
@@ -430,7 +425,7 @@ typedef enum
 #define LOCK_RULE_MASK          0x10
 #define LOCK_RULE_SHIFT         4
 
-typedef enum 
+typedef enum
 {
     GLOCK_NEVER_LOCK            = 0,
     GLOCK_ALWAYS_LOCK           = 1
@@ -443,7 +438,7 @@ typedef enum
 #define UPDATE_RULE_MASK        0x060
 #define UPDATE_RULE_SHIFT       5
 
-typedef enum 
+typedef enum
 {
     UPDATE_PRESERVE             = 0,
     UPDATE_WRITE_AS_ONES        = 1,
@@ -469,15 +464,15 @@ typedef enum
 
 /* External declarations of the AML tables */
 
-extern UINT8                    Acpi_GblAml             [NUM_OPCODES];
-extern UINT16                   Acpi_GblPfx             [NUM_OPCODES];
-extern char                     *Acpi_GblShortOps       [NUM_OPCODES];
-extern char                     *Acpi_GblLongOps        [NUM_OPCODES];
-extern char                     *Acpi_GblRegionTypes    [NUM_REGION_TYPES];
-extern char                     *Acpi_GblMatchOps       [NUM_MATCH_OPS];
-extern char                     *Acpi_GblAccessTypes    [NUM_ACCESS_TYPES];
-extern char                     *Acpi_GblUpdateRules    [NUM_UPDATE_RULES];
-extern char                     *Acpi_GblFENames        [NUM_FIELD_NAMES];
+extern UINT8                    AcpiGbl_Aml             [NUM_OPCODES];
+extern UINT16                   AcpiGbl_Pfx             [NUM_OPCODES];
+extern char                     *AcpiGbl_ShortOps       [NUM_OPCODES];
+extern char                     *AcpiGbl_LongOps        [NUM_OPCODES];
+extern char                     *AcpiGbl_RegionTypes    [NUM_REGION_TYPES];
+extern char                     *AcpiGbl_MatchOps       [NUM_MATCH_OPS];
+extern char                     *AcpiGbl_AccessTypes    [NUM_ACCESS_TYPES];
+extern char                     *AcpiGbl_UpdateRules    [NUM_UPDATE_RULES];
+extern char                     *AcpiGbl_FENames        [NUM_FIELD_NAMES];
 
 
 /*
@@ -488,18 +483,17 @@ extern char                     *Acpi_GblFENames        [NUM_FIELD_NAMES];
 
 /* Data used in keeping track of fields */
 
-char            *Acpi_GblFENames[NUM_FIELD_NAMES] = 
-{ 
-    "skip", 
-    "?access?" 
+char            *AcpiGbl_FENames[NUM_FIELD_NAMES] =
+{
+    "skip",
+    "?access?"
 };              /* FE = Field Element */
-
 
 
 /* Region type decoding */
 
-char *Acpi_GblRegionTypes[NUM_REGION_TYPES] = 
-{   
+char *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
+{
     "SystemMemory",
     "SystemIO",
     "PCIConfig",
@@ -508,22 +502,22 @@ char *Acpi_GblRegionTypes[NUM_REGION_TYPES] =
 };
 
 
-char *Acpi_GblMatchOps[NUM_MATCH_OPS] = 
-{   
-    "Error", 
-    "MTR", 
-    "MEQ", 
-    "MLE", 
-    "MLT", 
-    "MGE", 
-    "MGT" 
+char *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
+{
+    "Error",
+    "MTR",
+    "MEQ",
+    "MLE",
+    "MLT",
+    "MGE",
+    "MGT"
 };
 
 
 /* Access type decoding */
 
-char *Acpi_GblAccessTypes[NUM_ACCESS_TYPES] = 
-{   
+char *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
+{
     "AnyAcc",
     "ByteAcc",
     "WordAcc",
@@ -536,14 +530,12 @@ char *Acpi_GblAccessTypes[NUM_ACCESS_TYPES] =
 
 /* Update rule decoding */
 
-char *Acpi_GblUpdateRules[NUM_UPDATE_RULES] = 
-{   
+char *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
+{
     "Preserve",
     "WriteAsOnes",
     "WriteAsZeros"
 };
-
-
 
 
 #endif /* DEFINE_AML_GLOBALS */
