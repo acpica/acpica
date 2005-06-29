@@ -21,21 +21,11 @@
 #ifndef _ACPIOBJ_H
 #define _ACPIOBJ_H
 
-#include <stddef.h>
+#include <datatypes.h>
 
 /*
  * Some necessary typedefs
  */
-
-typedef struct
-{
-   ptrdiff_t   Offset;      /* offset to MethodFlags in AML pcode block */
-   long        Length;      /* length of method code including MethodFlags */
-} meth;
-
-/* NsHandle is actually an nte *, which is private to acpinmsp.c */
-
-typedef void * NsHandle;
 
 
 /* 
@@ -98,27 +88,27 @@ typedef enum {
 
 typedef union od                /* OBJECT DESCRIPTOR */
 {
-    BYTE            ValType;        /* See NsType in acpinmsp.h for values */
+    UINT8           ValType;        /* See NsType in acpinmsp.h for values */
 
     struct
     {
-        BYTE        ValType;
-        BYTE        Reserved1;
-        WORD        Reserved2;
-        DWORD       Number;
-        DWORD       Reserved3;
+        UINT8       ValType;
+        UINT8       Reserved1;
+        UINT16      Reserved2;
+        UINT32      Number;
+        UINT32      Reserved3;
         void        *Reserved4;
         void        *Reserved5;
     } Number;
 
     struct
     {
-        BYTE        ValType;
-        BYTE        Reserved1;
-        WORD        StrLen;         /* # of bytes in string, excluding trailing null */
-        DWORD       Reserved2;
-        DWORD       Reserved3;
-        BYTE        *String;        /* points to the string value in the AML stream
+        UINT8       ValType;
+        UINT8       Reserved1;
+        UINT16      StrLen;         /* # of bytes in string, excluding trailing null */
+        UINT32      Reserved2;
+        UINT32      Reserved3;
+        UINT8       *String;        /* points to the string value in the AML stream
                                      * or in allocated space
                                      */
         void        *Reserved4;
@@ -126,22 +116,22 @@ typedef union od                /* OBJECT DESCRIPTOR */
 
     struct
     {
-        BYTE        ValType;
-        BYTE        Reserved1;
-        WORD        BufLen;         /* # of bytes in buffer */
-        DWORD       Reserved2;
-        DWORD       Sequence;       /* Sequential count of buffers created */
-        BYTE        *Buffer;        /* points to the buffer in allocated space */
+        UINT8       ValType;
+        UINT8       Reserved1;
+        UINT16      BufLen;         /* # of bytes in buffer */
+        UINT32      Reserved2;
+        UINT32      Sequence;       /* Sequential count of buffers created */
+        UINT8       *Buffer;        /* points to the buffer in allocated space */
         void        *Reserved4;
     } Buffer;
 
     struct
     {
-        BYTE        ValType;
-        BYTE        Reserved1;
-        WORD        PkgCount;       /* # of elements in package */
-        DWORD       Reserved2;
-        DWORD       Reserved3;
+        UINT8       ValType;
+        UINT8       Reserved1;
+        UINT16      PkgCount;       /* # of elements in package */
+        UINT32      Reserved2;
+        UINT32      Reserved3;
         union od    **PackageElems; /* Addr of an allocated array of pointers
                                      * to the OBJECT_DESCRIPTORs representing
                                      * the elements
@@ -152,112 +142,112 @@ typedef union od                /* OBJECT DESCRIPTOR */
     struct
     {
         /* Using WORD_BIT instead of BYTE_BIT here because the wDatLen field
-         * is larger than a BYTE.  It is possible that some implementations
+         * is larger than a UINT8.  It is possible that some implementations
          * may map this in an unexpected way -- see code and comments in
          * amlexec.c:iPrep*FieldValue() -- but it works properly in IC386
          * and in MS Visual C++
          */
-        WORD_BIT    ValType     : 8;
-        WORD_BIT    Access      : 4;
-        WORD_BIT    LockRule    : 1;
-        WORD_BIT    UpdateRule  : 2;
-        WORD_BIT    Reserved1   : 1;
-        WORD_BIT    DatLen      :13;    /* # of bits in buffer */
-        WORD_BIT    BitOffset   : 3;
-        DWORD       Offset;         /* Byte offset within containing object */
-        DWORD       ConSeq;         /* Container's sequence number */
+        UINT16_BIT  ValType     : 8;
+        UINT16_BIT  Access      : 4;
+        UINT16_BIT  LockRule    : 1;
+        UINT16_BIT  UpdateRule  : 2;
+        UINT16_BIT  Reserved1   : 1;
+        UINT16_BIT  DatLen      :13;    /* # of bits in buffer */
+        UINT16_BIT  BitOffset   : 3;
+        UINT32      Offset;         /* Byte offset within containing object */
+        UINT32      ConSeq;         /* Container's sequence number */
         union od    *Container;     /* Containing object (Buffer) */
         void        *Reserved3;
     } FieldUnit;
 
     struct
     {
-        BYTE        ValType;
-        BYTE        Reserved1;
-        WORD        Reserved2;
-        DWORD       Reserved3;
-        DWORD       Reserved4;
+        UINT8       ValType;
+        UINT8       Reserved1;
+        UINT16      Reserved2;
+        UINT32      Reserved3;
+        UINT32      Reserved4;
         NsHandle    Device;
         void        *Reserved5;
     } Device;
 
     struct
     {
-        BYTE        ValType;
-        BYTE        Reserved1;
-        WORD        SignalCount;
-        DWORD       Semaphore;
-        WORD        LockCount;
-        WORD        ThreadId;
+        UINT8       ValType;
+        UINT8       Reserved1;
+        UINT16      SignalCount;
+        UINT32      Semaphore;
+        UINT16      LockCount;
+        UINT16      ThreadId;
         void        *Reserved4;
         void        *Reserved5;
     } Event;
 
     struct
     {
-        BYTE        ValType;
-        BYTE        NumParam;
-        WORD        Length;
-        DWORD       AmlOffset;
-        DWORD       Reserved3;
-        BYTE        *AmlBase;
+        UINT8       ValType;
+        UINT8       NumParam;
+        UINT16      Length;
+        UINT32      AmlOffset;
+        UINT32      Reserved3;
+        UINT8       *AmlBase;
         void        *Reserved4;
     } Method;
 
     struct
     {
-        BYTE        ValType;
-        BYTE        SyncLevel;
-        WORD        Reserved2;
-        DWORD       Semaphore;
-        WORD        LockCount;
-        WORD        ThreadId;
+        UINT8       ValType;
+        UINT8       SyncLevel;
+        UINT16      Reserved2;
+        UINT32      Semaphore;
+        UINT16      LockCount;
+        UINT16      ThreadId;
         void        *Reserved4;
         void        *Reserved5;
     } Mutex;
 
     struct
     {
-        BYTE        ValType;
-        BYTE        SpaceId;
-        WORD        AdrLenValid;    /* 1 => dAddress & dLength have been set
+        UINT8       ValType;
+        UINT8       SpaceId;
+        UINT16      AdrLenValid;    /* 1 => dAddress & dLength have been set
                                      * 0 => dAddress & dLength have not been set,
                                      *        and should be obtained via sAdrLoc
                                      */
-        DWORD       Address;
-        DWORD       Length;
+        UINT32      Address;
+        UINT32      Length;
         meth        AdrLoc;         /* Loc of 1st (address) OpCode in AML stream */
     } Region;
 
     struct
     {
-        BYTE        ValType;
-        BYTE        Reserved1;
-        WORD        Reserved2;
-        DWORD       Reserved3;
-        DWORD       Reserved4;
+        UINT8       ValType;
+        UINT8       Reserved1;
+        UINT16      Reserved2;
+        UINT32      Reserved3;
+        UINT32      Reserved4;
         NsHandle    PowerResource;
         void        *Reserved5;
     } PowerResource;
 
     struct
     {
-        BYTE        ValType;
-        BYTE        Reserved1;
-        WORD        Reserved2;
-        DWORD       Reserved3;
-        DWORD       Reserved4;
+        UINT8       ValType;
+        UINT8       Reserved1;
+        UINT16      Reserved2;
+        UINT32      Reserved3;
+        UINT32      Reserved4;
         NsHandle    Processor;
         void        *Reserved5;
     } Processor;
 
     struct
     {
-        BYTE        ValType;
-        BYTE        Reserved1;
-        WORD        Reserved2;
-        DWORD       Reserved3;
-        DWORD       Reserved4;
+        UINT8       ValType;
+        UINT8       Reserved1;
+        UINT16      Reserved2;
+        UINT32      Reserved3;
+        UINT32      Reserved4;
         NsHandle    ThermalZone;
         void        *Reserved5;
     } ThermalZone;
@@ -266,15 +256,15 @@ typedef union od                /* OBJECT DESCRIPTOR */
     {
         /* See comments in sFieldUnit re use of WORD_BIT */
 
-        WORD_BIT    ValType     : 8;
-        WORD_BIT    Access      : 4;
-        WORD_BIT    LockRule    : 1;
-        WORD_BIT    UpdateRule  : 2;
-        WORD_BIT    Reserved1   : 1;
-        WORD_BIT    DatLen      :13;    /* # of bits in buffer */
-        WORD_BIT    BitOffset   : 3;
-        DWORD       Offset;         /* Byte offset within containing object */
-        DWORD       Reserved2;
+        UINT16_BIT  ValType     : 8;
+        UINT16_BIT  Access      : 4;
+        UINT16_BIT  LockRule    : 1;
+        UINT16_BIT  UpdateRule  : 2;
+        UINT16_BIT  Reserved1   : 1;
+        UINT16_BIT  DatLen      :13;    /* # of bits in buffer */
+        UINT16_BIT  BitOffset   : 3;
+        UINT32      Offset;         /* Byte offset within containing object */
+        UINT32      Reserved2;
         union od    *Container;     /* Containing object */
         void        *Reserved3;
     } Field;
@@ -283,15 +273,15 @@ typedef union od                /* OBJECT DESCRIPTOR */
     {
         /* See comments in sFieldUnit re use of WORD_BIT */
 
-        WORD_BIT    ValType     : 8;
-        WORD_BIT    Access      : 4;
-        WORD_BIT    LockRule    : 1;
-        WORD_BIT    UpdateRule  : 2;
-        WORD_BIT    Reserved1   : 1;
-        WORD_BIT    DatLen      :13;    /* # of bits in buffer */
-        WORD_BIT    BitOffset   : 3;
-        DWORD       Offset;         /* Byte offset within containing object */
-        DWORD       BankVal;        /* Value to store into pBankSelect */
+        UINT16_BIT  ValType     : 8;
+        UINT16_BIT  Access      : 4;
+        UINT16_BIT  LockRule    : 1;
+        UINT16_BIT  UpdateRule  : 2;
+        UINT16_BIT  Reserved1   : 1;
+        UINT16_BIT  DatLen      :13;    /* # of bits in buffer */
+        UINT16_BIT  BitOffset   : 3;
+        UINT32      Offset;         /* Byte offset within containing object */
+        UINT32      BankVal;        /* Value to store into pBankSelect */
         union od    *Container;     /* Containing object */
         NsHandle    BankSelect;     /* Bank select register */
     } BankField;
@@ -300,15 +290,15 @@ typedef union od                /* OBJECT DESCRIPTOR */
     {
         /* See comments in sFieldUnit re use of WORD_BIT */
 
-        WORD_BIT    ValType     : 8;
-        WORD_BIT    Access      : 4;
-        WORD_BIT    LockRule    : 1;
-        WORD_BIT    UpdateRule  : 2;
-        WORD_BIT    Reserved1   : 1;
-        WORD_BIT    DatLen      :13;    /* # of bits in buffer */
-        WORD_BIT    BitOffset   : 3;
-        DWORD       IndexVal;       /* Value to store into Index register */
-        DWORD       Reserved2;      /* No container pointer needed since the index
+        UINT16_BIT  ValType     : 8;
+        UINT16_BIT  Access      : 4;
+        UINT16_BIT  LockRule    : 1;
+        UINT16_BIT  UpdateRule  : 2;
+        UINT16_BIT  Reserved1   : 1;
+        UINT16_BIT  DatLen      :13;    /* # of bits in buffer */
+        UINT16_BIT  BitOffset   : 3;
+        UINT32      IndexVal;       /* Value to store into Index register */
+        UINT32      Reserved2;      /* No container pointer needed since the index
                                      * and data register definitions will define
                                      * how to access the respective registers
                                      */
@@ -318,13 +308,13 @@ typedef union od                /* OBJECT DESCRIPTOR */
 
     struct
     {
-        BYTE        ValType;
-        BYTE        OpCode;         /* Arg#, Local#, IndexOp, NameOp,
+        UINT8       ValType;
+        UINT8       OpCode;         /* Arg#, Local#, IndexOp, NameOp,
                                      * ZeroOp, OneOp, OnesOp, Debug1 => DebugOp
                                      */
-        WORD        Reserved1;
-        DWORD       Reserved2;
-        DWORD       Reserved3;
+        UINT16      Reserved1;
+        UINT32      Reserved2;
+        UINT32      Reserved3;
         void        *Ref;           /* bOpCode  Use of pvRef field
                                      * -------  ----------------------------
                                      * NameOp   NsHandle for referenced name
