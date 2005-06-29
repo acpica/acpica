@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.82 $
+ *              $Revision: 1.85 $
  *
  ******************************************************************************/
 
@@ -259,7 +259,7 @@ AcpiDsIsResultUsed (
 
 ResultUsed:
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Result of [%s] used by Parent [%s] Op=%p\n",
-            AcpiPsGetOpcodeName (Op->Opcode), 
+            AcpiPsGetOpcodeName (Op->Opcode),
             AcpiPsGetOpcodeName (Op->Parent->Opcode), Op));
 
     return_VALUE (TRUE);
@@ -363,6 +363,7 @@ AcpiDsCreateOperand (
     UINT16                  Opcode;
     OPERATING_MODE          InterpreterMode;
     const ACPI_OPCODE_INFO  *OpInfo;
+    char                    *Name;
 
 
     FUNCTION_TRACE_PTR ("DsCreateOperand", Arg);
@@ -420,11 +421,6 @@ AcpiDsCreateOperand (
                                 NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE,
                                 WalkState,
                                 (ACPI_NAMESPACE_NODE **) &ObjDesc);
-
-        /* Free the namestring created above */
-
-        ACPI_MEM_FREE (NameString);
-
         /*
          * The only case where we pass through (ignore) a NOT_FOUND
          * error is for the CondRefOf opcode.
@@ -451,12 +447,17 @@ AcpiDsCreateOperand (
                  */
                 Status = AE_AML_NAME_NOT_FOUND;
 
-                /* TBD: Externalize NameString and print */
-
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
-                        "Object name was not found in namespace\n"));
+                Name = NULL;
+                AcpiNsExternalizeName (ACPI_UINT32_MAX, NameString, NULL, &Name);
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                        "Object name [%s] was not found in namespace\n", Name));
+                ACPI_MEM_FREE (Name);
             }
         }
+
+        /* Free the namestring created above */
+
+        ACPI_MEM_FREE (NameString);
 
         /* Check status from the lookup */
 
@@ -491,10 +492,6 @@ AcpiDsCreateOperand (
             Opcode = AML_ZERO_OP;       /* Has no arguments! */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Null namepath: Arg=%p\n", Arg));
-            /*
-             * TBD: [Investigate] anything else needed for the
-             * zero op lvalue?
-             */
         }
 
         else
@@ -662,11 +659,6 @@ AcpiDsResolveOperands (
     /*
      * Attempt to resolve each of the valid operands
      * Method arguments are passed by value, not by reference
-     */
-
-    /*
-     * TBD: [Investigate] Note from previous parser:
-     *   RefOf problem with AcpiExResolveToValue() conversion.
      */
     for (i = 0; i < WalkState->NumOperands; i++)
     {
