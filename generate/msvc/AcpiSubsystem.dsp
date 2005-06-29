@@ -42,7 +42,7 @@ RSC=rc.exe
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Gz /MT /W3 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /YX /FD /c
+# ADD CPP /nologo /Gz /MT /W3 /GX /O2 /I "..\..\Subsystem\include" /I "\98ddk\inc\win98" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /YX /FD /c
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -66,7 +66,7 @@ RSC=rc.exe
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 # ADD BASE CPP /nologo /W3 /GX /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /ZI /GZ /c
-# ADD CPP /nologo /Gz /MT /W3 /GX /Z7 /Od /I "..\..\Subsystem\include" /I "\98ddk\inc\win98" /D "_WINDOWS" /D "ACPILIB_GEN" /D "DRIVER" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_DEBUG" /D "FLAT_MODEL" /FR /FD /c
+# ADD CPP /nologo /Gz /MT /W3 /GX /Z7 /Od /I "..\..\Subsystem\include" /I "\98ddk\inc\win98" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "ACPI_DEBUG" /D "_DEBUG" /FR /FD /c
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -92,7 +92,7 @@ PostBuild_Cmds=copy bin\acpilib.lib ..\..\libraries\acpilib.lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\acpiinit.c
+SOURCE=..\..\Subsystem\Common\cmalloc.c
 
 !IF  "$(CFG)" == "Subsystem - Win32 Release"
 
@@ -105,16 +105,7 @@ SOURCE=..\..\Subsystem\Common\acpiinit.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Common\cmalloc.c
-
-!IF  "$(CFG)" == "Subsystem - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "Subsystem - Win32 Debug"
-
-# ADD CPP /W3 /Z7
-
-!ENDIF 
-
+SOURCE=..\..\Subsystem\Common\cmapi.c
 # End Source File
 # Begin Source File
 
@@ -154,6 +145,14 @@ SOURCE=..\..\Subsystem\Common\cmglobal.c
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Common\cminit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Common\cmobject.c
 # End Source File
 # Begin Source File
 
@@ -575,6 +574,10 @@ SOURCE=..\..\Subsystem\NameSpace\nsutils.c
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Resources\rsapi.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Resources\rsutils.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
