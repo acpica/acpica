@@ -465,7 +465,7 @@ DsBuildInternalSimpleObj (
         if (!Op->NameTableEntry)
         {
             Status = NsLookup (WalkState->ScopeInfo, Op->Value.String, ACPI_TYPE_Any, IMODE_Execute, 
-                                        NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, &((NAME_TABLE_ENTRY *) Op->NameTableEntry));
+                                        NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, (NAME_TABLE_ENTRY **)&(Op->NameTableEntry));
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
