@@ -290,7 +290,7 @@ DbDisplayHelp (void)
     OsdPrintf ("Owner <OwnerId> [Depth]             Display loaded namespace by object owner\n");
     OsdPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
     OsdPrintf ("Quit or Exit                        Exit this command\n");
-    OsdPrintf ("Stats                               Display namespace and memory statistics\n");
+    OsdPrintf ("Stats [Memory|Misc|Objects|Tables]  Display namespace and memory statistics\n");
     OsdPrintf ("Tables                              Display info about loaded ACPI tables\n");
     OsdPrintf ("Terminate                           Delete namespace and all internal objects\n");
     OsdPrintf ("Unload                              Unload an ACPI table\n");
@@ -698,7 +698,7 @@ DbCommandDispatch (
         break;
 
     case CMD_STATS:
-        DbDisplayStatistics ();
+        DbDisplayStatistics (Args[1]);
         break;
 
     case CMD_STOP:
