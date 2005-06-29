@@ -654,3 +654,52 @@ _CmAllocateObjectDesc (
     return_VALUE (NewDesc);
 }
 
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    CmInitStaticObject
+ *
+ * PARAMETERS:  ObjDesc             - Pointer to a "static" object - on stack
+ *                                    or in the data segment.
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Initialize a static object.  Sets flags to disallow dynamic
+ *              deletion of the object.
+ *
+ ****************************************************************************/
+
+void
+CmInitStaticObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
+{
+
+    FUNCTION_TRACE_PTR ("CmInitStaticObject", ObjDesc);
+
+
+    if (!ObjDesc)
+    {
+        return_VOID;
+    }
+
+
+    /*
+     * Clear the entire descriptor 
+     */
+    memset ((void *) ObjDesc, 0, sizeof (ACPI_OBJECT_INTERNAL));
+
+
+    /*
+     * Initialize the header fields
+     * 1) This is an ACPI_OBJECT_INTERNAL descriptor
+     * 2) The size is the full object (worst case)
+     * 3) The flags field indicates static allocation 
+     */
+
+    ObjDesc->Common.DataType = DESC_TYPE_ACPI_OBJ;
+    ObjDesc->Common.Size = sizeof (ACPI_OBJECT_INTERNAL);
+    ObjDesc->Common.Flags = AO_STATIC_ALLOCATION;
+
+    return_VOID;
+}
+
