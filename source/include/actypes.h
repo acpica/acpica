@@ -23,12 +23,59 @@
 
 #ifdef FLAT_MODEL
 
+/* 
+ * Data types - Fixed across all compilation models
+ * 
+ * BOOLEAN	    Logical Boolean. 1 byte value containing a 0 for FALSE or a 1 for TRUE.  Other values are undefined.
+ * INT	        Signed value. (4 bytes on IA-32, 8 bytes on IA-64)
+ * UINT	        Unsigned value. (4 bytes on IA-32, 8 bytes on IA-64)
+ * INT8	        1 byte signed value
+ * UINT8	    1 byte unsigned value
+ * INT16	    2 byte signed value
+ * UINT16	    2 byte unsigned value
+ * INT32	    4 byte signed value
+ * UINT32	    4 byte unsigned value
+ * UINT64	    8 byte unsigned value.
+ * UCHAR	    Character. 1 byte unsigned value. 
+ * WCHAR	    Wide Character. 2 byte unsigned value. 
+ * VOID	        Undeclared type
+ */
+
+/* 
+ * Need a 32-bit vs. 64-bit section !!! 
+ * Get rid of FLAT_MODEL !!!
+ */
+
+/*  IA-32 type definitions */
+
+typedef unsigned char   BOOLEAN;
+typedef int             INT;
+typedef unsigned int    UINT;
+typedef char            INT8;
+typedef unsigned char   UINT8;
+typedef short           INT16;
+typedef unsigned short  UINT16;
+typedef int             INT32;
+typedef unsigned int    UINT32;
+typedef unsigned char   UCHAR;
+typedef void            VOID;
+
+/* Not supported */
+
+#define UINT64 
+#define WCHAR
+
+
+    /* We want to obsolete these !!!!*/
+
     #define BYTE    	unsigned char
     #define WORD    	unsigned short
     #define DWORD   	unsigned long
-    #define BOOLEAN 	unsigned char
+    /* #define BOOLEAN 	unsigned char */
     #define BYTE_BIT   	BYTE
     #define NATIVE_WORD	WORD
+
+/* We want to obsolete everything that is NOT flat model */
 
 #else                                             	/* ! RMX   */
     #pragma pack(1)
