@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -137,6 +137,7 @@
 
 #define FILE_TYPE_SOURCE                    1
 #define FILE_TYPE_HEADER                    2
+#define FILE_TYPE_ALL                       3
 
 
 #define CVT_COUNT_TABS                      0x00000001
@@ -378,3 +379,14 @@ AsCheckForDirectory (
     struct _finddata_t      *FindInfo,
     char                    **SourcePath,
     char                    **TargetPath);
+
+BOOLEAN
+AsMatchExactWord (
+    char                    *Word,
+    UINT32                  WordLength);
+
+void
+AsPrint (
+    char                    *Message,
+    UINT32                  Count,
+    char                    *Filename);
