@@ -672,6 +672,11 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
     FUNCTION_TRACE ("EvInitializeRegion");
 
 
+    if (!RegionObj)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
     ACPI_ASSERT(RegionObj->Region.Nte);
 
     Nte = RegionObj->Region.Nte->ParentEntry;
