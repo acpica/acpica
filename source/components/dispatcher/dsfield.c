@@ -233,6 +233,8 @@ PsxCreateBankField (
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
     ACPI_GENERIC_OP         *Arg;
+    NAME_TABLE_ENTRY        *BankReg;
+    UINT32                  BankValue;
     char                    Buffer[5];
     UINT8                   FieldFlags;
     UINT32                  FieldBitPosition = 0;
@@ -240,19 +242,32 @@ PsxCreateBankField (
     
     FUNCTION_TRACE_PTR ("PsxCreateBankField", Op);
 
-    /*
-     *TBD: not implemented for correct BANK FIELD operands!
-     */
+
+    /* First arg is the Bank Register */
 
     Arg = Op->Value.Arg;
 
-    /* First arg is the field flags */
+    Status = NsLookup (Gbl_CurrentScope->Scope, Arg->Value.String, INTERNAL_TYPE_BankFieldDefn, IMODE_LoadPass1, 
+                                NS_NO_UPSEARCH, &BankReg);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
-    FieldFlags = (UINT8) Arg->Value.Integer;
+    /* Second arg is the BankValue */
+    
     Arg = Arg->Next;
+    BankValue = Arg->Value.Integer;
+
+
+    /* Next arg is the field flags */
+
+    Arg = Arg->Next;
+    FieldFlags = (UINT8) Arg->Value.Integer;
 
     /* Each remaining arg is a Named Field */
 
+    Arg = Arg->Next;
     while (Arg)
     {
         switch (Arg->Opcode)
@@ -285,9 +300,7 @@ PsxCreateBankField (
 
             /* Initialize an object for the new NTE that is on the object stack */
 
-            /* TBD: change to BANK FIELD interface! */
-
-            Status = AmlPrepDefFieldValue (Region, FieldFlags, FieldBitPosition, Arg->Value.Size);
+            Status = AmlPrepBankFieldValue (Region, BankReg, BankValue, FieldFlags, FieldBitPosition, Arg->Value.Size);
 
             /* Keep track of bit position for the *next* field */
 
