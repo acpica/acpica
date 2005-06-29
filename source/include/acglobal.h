@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.128 $
+ *       $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -252,7 +252,7 @@ ACPI_EXTERN ACPI_NAMESPACE_NODE        *AcpiGbl_RootNode;
 extern const UINT8                      AcpiGbl_NsProperties[NUM_NS_TYPES];
 extern const ACPI_PREDEFINED_NAMES      AcpiGbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
 
-#ifdef ACPI_DEBUG
+#ifdef ACPI_DEBUG_OUTPUT
 ACPI_EXTERN UINT32                      AcpiGbl_CurrentNodeCount;
 ACPI_EXTERN UINT32                      AcpiGbl_CurrentNodeSize;
 ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentNodeCount;
@@ -336,7 +336,7 @@ ACPI_EXTERN BOOLEAN                     AcpiGbl_DbOpt_verbose;
 #endif
 
 
-#ifdef ENABLE_DEBUGGER
+#ifdef ACPI_DEBUGGER
 
 extern      BOOLEAN                     AcpiGbl_MethodExecuting;
 extern      BOOLEAN                     AcpiGbl_DbTerminateThreads;
@@ -378,7 +378,7 @@ ACPI_EXTERN UINT32                      AcpiGbl_SizeOfMethodTrees;
 ACPI_EXTERN UINT32                      AcpiGbl_SizeOfNodeEntries;
 ACPI_EXTERN UINT32                      AcpiGbl_SizeOfAcpiObjects;
 
-#endif /* ENABLE_DEBUGGER */
+#endif /* ACPI_DEBUGGER */
 
 
 #endif /* __ACGLOBAL_H__ */
