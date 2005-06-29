@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
         MODULE_NAME         ("psargs")
 
 
-UINT32
+static UINT32
 AcpiPsPkgLengthEncodingSize (
     UINT32                  FirstByte)
 {
@@ -152,7 +152,7 @@ AcpiPsPkgLengthEncodingSize (
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 xxxAcpiPsGetNextPackageLength (
     ACPI_PARSE_STATE        *ParserState)
 {

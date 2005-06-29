@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -121,7 +122,7 @@
 #include "amlcode.h"
 
 #define _COMPONENT          PARSER
-        MODULE_NAME         ("pstree");
+        MODULE_NAME         ("pstree")
 
 
 /*******************************************************************************
@@ -137,13 +138,13 @@
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+ACPI_PARSE_OBJECT *
 AcpiPsGetArg (
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Argn)
 {
-    ACPI_GENERIC_OP         *Arg = NULL;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_PARSE_OBJECT       *Arg = NULL;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
     /* Get the info structure for this opcode */
@@ -193,11 +194,11 @@ AcpiPsGetArg (
 
 void
 AcpiPsAppendArg (
-    ACPI_GENERIC_OP         *Op,
-    ACPI_GENERIC_OP         *Arg)
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *Arg)
 {
-    ACPI_GENERIC_OP         *PrevArg;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_PARSE_OBJECT       *PrevArg;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
     if (!Op)
@@ -269,11 +270,11 @@ AcpiPsAppendArg (
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+ACPI_PARSE_OBJECT *
 AcpiPsGetChild (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *Child = NULL;
+    ACPI_PARSE_OBJECT       *Child = NULL;
 
 
     switch (Op->Opcode)
@@ -332,14 +333,14 @@ AcpiPsGetChild (
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+ACPI_PARSE_OBJECT *
 AcpiPsGetDepthNext (
-    ACPI_GENERIC_OP         *Origin,
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Origin,
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *Next = NULL;
-    ACPI_GENERIC_OP         *Parent;
-    ACPI_GENERIC_OP         *Arg;
+    ACPI_PARSE_OBJECT       *Next = NULL;
+    ACPI_PARSE_OBJECT       *Parent;
+    ACPI_PARSE_OBJECT       *Arg;
 
 
     if (!Op)
@@ -410,9 +411,9 @@ AcpiPsGetDepthNext (
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
+static ACPI_PARSE_OBJECT *
 AcpiPsFetchPrefix (
-    ACPI_GENERIC_OP         *Scope,
+    ACPI_PARSE_OBJECT       *Scope,
     NATIVE_CHAR             **Path,
     UINT32                  io)
 {
@@ -467,7 +468,7 @@ AcpiPsFetchPrefix (
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiPsFetchName (
     NATIVE_CHAR             **Path,
     UINT32                  io)
