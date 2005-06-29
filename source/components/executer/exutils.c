@@ -158,7 +158,7 @@ AmlAppendOperandDiag(
                     (OpCode > ACPI_UCHAR_MAX)
                         ? LongOps[OpCode & 0x00ff]
                         : ShortOps[OpCode],
-                    MthDesc.Method.Offset));
+                    MthDesc.Method.Pcode));
 
     if (GetDebugLevel () > 0)
     {
