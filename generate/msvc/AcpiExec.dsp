@@ -735,6 +735,10 @@ SOURCE=..\..\source\Include\platform\acmsvc.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\include\acnames.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\Include\acnamesp.h
 # End Source File
 # Begin Source File
