@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.35 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #include "acevents.h"
 #include "actables.h"
 
-#define _COMPONENT          DISPATCHER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsopcode")
 
 
@@ -420,7 +420,7 @@ AcpiDsEvalFieldUnitOperands (
     ACPI_PARSE_OBJECT       *NextOp;
     UINT32                  Offset;
     UINT32                  BitOffset;
-    UINT16                  BitCount;
+    UINT32                  BitCount;
 
 
     ACPI_OPERAND_OBJECT     *ResDesc = NULL;
@@ -516,7 +516,7 @@ AcpiDsEvalFieldUnitOperands (
 
     /* DefCreateBitField */
 
-    case AML_BIT_FIELD_OP:
+    case AML_CREATE_BIT_FIELD_OP:
 
         /* Offset is in bits, Field is a bit */
 
@@ -527,7 +527,7 @@ AcpiDsEvalFieldUnitOperands (
 
     /* DefCreateByteField */
 
-    case AML_BYTE_FIELD_OP:
+    case AML_CREATE_BYTE_FIELD_OP:
 
         /* Offset is in bytes, field is a byte */
 
@@ -538,7 +538,7 @@ AcpiDsEvalFieldUnitOperands (
 
     /* DefCreateWordField  */
 
-    case AML_WORD_FIELD_OP:
+    case AML_CREATE_WORD_FIELD_OP:
 
         /* Offset is in bytes, field is a word */
 
@@ -549,12 +549,23 @@ AcpiDsEvalFieldUnitOperands (
 
     /* DefCreateDWordField */
 
-    case AML_DWORD_FIELD_OP:
+    case AML_CREATE_DWORD_FIELD_OP:
 
         /* Offset is in bytes, field is a dword */
 
         BitOffset = 8 * Offset;
         BitCount = 32;
+        break;
+
+
+    /* DefCreateQWordField */
+
+    case AML_CREATE_QWORD_FIELD_OP:
+
+        /* Offset is in bytes, field is a dword */
+
+        BitOffset = 8 * Offset;
+        BitCount = 64;
         break;
 
 
@@ -565,7 +576,7 @@ AcpiDsEvalFieldUnitOperands (
         /* Offset is in bits, count is in bits */
 
         BitOffset = Offset;
-        BitCount = (UINT16) CntDesc->Integer.Value;
+        BitCount = (UINT32) CntDesc->Integer.Value;
         break;
 
 
@@ -590,12 +601,12 @@ AcpiDsEvalFieldUnitOperands (
 
     case ACPI_TYPE_BUFFER:
 
-        if (BitOffset + (UINT32) BitCount >
+        if ((BitOffset + BitCount) >
             (8 * (UINT32) SrcDesc->Buffer.Length))
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
-                 BitOffset + (UINT32) BitCount,
+                 BitOffset + BitCount,
                  8 * (UINT32) SrcDesc->Buffer.Length));
             Status = AE_AML_BUFFER_LIMIT;
             goto Cleanup;
@@ -607,10 +618,10 @@ AcpiDsEvalFieldUnitOperands (
         FieldDesc->FieldUnit.Access       = (UINT8) ACCESS_ANY_ACC;
         FieldDesc->FieldUnit.LockRule     = (UINT8) GLOCK_NEVER_LOCK;
         FieldDesc->FieldUnit.UpdateRule   = (UINT8) UPDATE_PRESERVE;
-        FieldDesc->FieldUnit.Length       = BitCount;
+        FieldDesc->FieldUnit.Length       = (UINT16) BitCount;
         FieldDesc->FieldUnit.BitOffset    = (UINT8) (BitOffset % 8);
         FieldDesc->FieldUnit.Offset       = DIV_8 (BitOffset);
-        FieldDesc->FieldUnit.Container    = SrcDesc;
+        FieldDesc->FieldUnit.ContainerObj = SrcDesc;
 
         /* Reference count for SrcDesc inherits FieldDesc count */
 
@@ -626,7 +637,7 @@ AcpiDsEvalFieldUnitOperands (
 
         if ((SrcDesc->Common.Type > (UINT8) INTERNAL_TYPE_REFERENCE) || !AcpiCmValidObjectType (SrcDesc->Common.Type)) /* TBD: This line MUST be a single line until AcpiSrc can handle it (block deletion) */
         {
-            
+
 
             DEBUG_PRINT (ACPI_ERROR,
                 ("AmlExecCreateField: Tried to create field in invalid object type %X\n",

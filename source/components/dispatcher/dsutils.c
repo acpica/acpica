@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.48 $
+ *              $Revision: 1.54 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -124,7 +124,7 @@
 #include "acnamesp.h"
 #include "acdebug.h"
 
-#define _COMPONENT          PARSER
+#define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dsutils")
 
 
@@ -241,6 +241,24 @@ AcpiDsIsResultUsed (
 
     case OPTYPE_NAMED_OBJECT:   /* Scope, method, etc. */
 
+        /*
+         * These opcodes allow TermArg(s) as operands and therefore
+         * method calls.  The result is used.
+         */
+        if ((Op->Parent->Opcode == AML_REGION_OP)               ||
+            (Op->Parent->Opcode == AML_CREATE_FIELD_OP)         ||
+            (Op->Parent->Opcode == AML_CREATE_BIT_FIELD_OP)     ||
+            (Op->Parent->Opcode == AML_CREATE_BYTE_FIELD_OP)    ||
+            (Op->Parent->Opcode == AML_CREATE_WORD_FIELD_OP)    ||
+            (Op->Parent->Opcode == AML_CREATE_DWORD_FIELD_OP)   ||
+            (Op->Parent->Opcode == AML_CREATE_QWORD_FIELD_OP))
+        {
+            DEBUG_PRINT (TRACE_DISPATCH,
+                ("DsIsResultUsed: Result used, [Region or CreateField] opcode=%X Op=%X\n",
+                Op->Opcode, Op));
+            return_VALUE (TRUE);
+        }
+
         DEBUG_PRINT (TRACE_DISPATCH,
             ("DsIsResultUsed: Result not used, Parent opcode=%X Op=%X\n",
             Op->Opcode, Op));
@@ -311,7 +329,7 @@ AcpiDsDeleteResultIfNotUsed (
          *  to ResultObj)
          */
 
-        Status = AcpiDsResultStackPop (&ObjDesc, WalkState);
+        Status = AcpiDsResultPop (&ObjDesc, WalkState);
         if (ACPI_SUCCESS (Status))
         {
             AcpiCmRemoveReference (ResultObj);
@@ -341,7 +359,8 @@ AcpiDsDeleteResultIfNotUsed (
 ACPI_STATUS
 AcpiDsCreateOperand (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       *Arg)
+    ACPI_PARSE_OBJECT       *Arg,
+    UINT32                  ArgIndex)
 {
     ACPI_STATUS             Status = AE_OK;
     NATIVE_CHAR             *NameString;
@@ -513,7 +532,7 @@ AcpiDsCreateOperand (
              * by the evaluation of this argument
              */
 
-            Status = AcpiDsResultStackPop (&ObjDesc, WalkState);
+            Status = AcpiDsResultPopFromBottom (&ObjDesc, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 /*
@@ -584,20 +603,17 @@ AcpiDsCreateOperands (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_PARSE_OBJECT       *Arg;
-    UINT32                  ArgsPushed = 0;
+    UINT32                  ArgCount = 0;
 
 
     FUNCTION_TRACE_PTR ("DsCreateOperands", FirstArg);
 
-    Arg = FirstArg;
-
-
     /* For all arguments in the list... */
 
+    Arg = FirstArg;
     while (Arg)
     {
-
-        Status = AcpiDsCreateOperand (WalkState, Arg);
+        Status = AcpiDsCreateOperand (WalkState, Arg, ArgCount);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -605,12 +621,12 @@ AcpiDsCreateOperands (
 
         DEBUG_PRINT (TRACE_DISPATCH,
             ("DsCreateOperands: Arg #%d (%p) done, Arg1=%p\n",
-            ArgsPushed, Arg, FirstArg));
+            ArgCount, Arg, FirstArg));
 
         /* Move on to next argument, if any */
 
         Arg = Arg->Next;
-        ArgsPushed++;
+        ArgCount++;
     }
 
     return_ACPI_STATUS (Status);
@@ -623,11 +639,11 @@ Cleanup:
      * objects
      */
 
-    AcpiDsObjStackPopAndDelete (ArgsPushed, WalkState);
+    AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
 
     DEBUG_PRINT (ACPI_ERROR,
         ("DsCreateOperands: Error while creating Arg %d - %s\n",
-        (ArgsPushed+1), AcpiCmFormatException (Status)));
+        (ArgCount + 1), AcpiCmFormatException (Status)));
     return_ACPI_STATUS (Status);
 }
 
@@ -728,7 +744,7 @@ AcpiDsMapOpcodeToDataType (
         case AML_WORD_OP:
         case AML_DWORD_OP:
 
-            DataType = ACPI_TYPE_NUMBER;
+            DataType = ACPI_TYPE_INTEGER;
             break;
 
 
@@ -882,8 +898,8 @@ AcpiDsMapNamedOpcodeToDataType (
         DataType = ACPI_TYPE_PROCESSOR;
         break;
 
-    case AML_DEF_FIELD_OP:                          /* DefFieldOp */
-        DataType = INTERNAL_TYPE_DEF_FIELD_DEFN;
+    case AML_FIELD_OP:                              /* FieldOp */
+        DataType = INTERNAL_TYPE_FIELD_DEFN;
         break;
 
     case AML_INDEX_FIELD_OP:                        /* IndexFieldOp */
