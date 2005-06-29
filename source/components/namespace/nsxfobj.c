@@ -197,8 +197,7 @@ AcpiEvaluateObject (
                                 ObjectLength);      /* Actual objects */
         if (!ParamPtr)
         {
-            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-            return AE_NO_MEMORY;
+            return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
         ObjectPtr = (ACPI_OBJECT_INTERNAL *) ((UINT8 *) ParamPtr + ParamLength);
@@ -210,6 +209,7 @@ AcpiEvaluateObject (
         for (i = 0; i < Count; i++)
         {
             ParamPtr[i] = &ObjectPtr[i];
+            ObjectPtr[i].Common.Flags = AO_STATIC_ALLOCATION;
         }
         ParamPtr[Count] = NULL;                 
 
@@ -222,8 +222,7 @@ AcpiEvaluateObject (
             if (ACPI_FAILURE (Status))
             {
                 CmDeleteInternalObjectList (ParamPtr);
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
+                return_ACPI_STATUS (Status);
             }
         }
     }
@@ -362,13 +361,14 @@ Cleanup:
             }
 
 
-            /* Now delete the internal return object */
-            /* Only the package type has internal objects that require deletion */
+            /*
+             * Delete the internal return object.  Not the object itself, but
+             * any subobjects that are contained therein.
+             */
 
-            if (ReturnPtr->Type == TYPE_Package)
-            {
-                CmDeleteInternalPackageObject (ReturnPtr);
-            }
+            ReturnPtr->Common.Flags = AO_STATIC_ALLOCATION;
+            CmDeleteInternalObject (ReturnPtr);
+
         }
 
         else
@@ -380,8 +380,7 @@ Cleanup:
     }
 
     DEBUG_MEMSTAT;
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 /****************************************************************************
@@ -665,8 +664,7 @@ AcpiWalkNamespace (
         (!MaxDepth)             || 
         (!UserFunction))
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /* Special case for the namespace root object */
@@ -715,8 +713,7 @@ AcpiWalkNamespace (
                     *ReturnValue = UserReturnVal;
                 }
 
-                FUNCTION_STATUS_EXIT (AE_OK);
-                return AE_OK;
+                return_ACPI_STATUS (AE_OK);
             }
 
             /* Go down another level in the namespace if we are allowed to */
@@ -748,8 +745,7 @@ AcpiWalkNamespace (
     }
 
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;                   /* Complete walk, not terminated by user function */
+    return_ACPI_STATUS (AE_OK);                   /* Complete walk, not terminated by user function */
 }
 
 
@@ -887,8 +883,7 @@ AcpiSetFirmwareWakingVector (
 {
     FUNCTION_TRACE ("AcpiSetFirmwareWakingVector");
     
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return (AE_OK);
+    return_ACPI_STATUS ((AE_OK));
 }
 
 
@@ -913,7 +908,6 @@ AcpiGetFirmwareWakingVector (
     FUNCTION_TRACE ("AcpiGetFirmwareWakingVector");
 
     
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return (AE_OK);
+    return_ACPI_STATUS ((AE_OK));
 }
 
