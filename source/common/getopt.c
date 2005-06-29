@@ -1,8 +1,3 @@
-/* ::[[ @(#) getopt.c 1.5 89/03/11 05:40:23 ]]:: */
-#ifndef LINT
-static char sccsid[]="::[[ @(#) getopt.c 1.5 89/03/11 05:40:23 ]]::";
-#endif
-
 /*
  * Here's something you've all been waiting for:  the AT&T public domain
  * source for getopt(3).  It is the code which was given out at the 1985
