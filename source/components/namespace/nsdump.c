@@ -132,6 +132,8 @@ NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
     char            *Buffer;
 
 
+    /* Do this only if the requested debug level and component are enabled */
+
     if (!(DebugLevel & Level) || !(DebugLayer & Component))
     {
         return AE_OK;
@@ -143,9 +145,12 @@ NsDumpPathname (NsHandle Handle, char *Msg, UINT32 Level, UINT32 Component)
         return AE_NO_MEMORY;
     }
 
+    /* Convert handle to a full pathname and print it (with supplied message) */
+
+BREAKPOINT3;
     if (ACPI_SUCCESS (NsHandleToPathname (Handle, PATHNAME_MAX, Buffer)))
     {
-        OsdPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
+        OsdPrintf (NULL, "%s %s (%p)\n", Msg, Buffer, Handle);
     }
 
     OsdFree (Buffer);
