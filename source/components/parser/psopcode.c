@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser opcode information table
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -805,15 +805,6 @@ AcpiPsGetOpcodeInfo (
         {
             OpInfo = &AmlOpInfo [AmlLongOpInfoIndex [LowerOpcode]];
         }
-        break;
-
-
-    case AML_LNOT_OP:
-
-        /* This case is for the bogus opcodes LNOTEQUAL, LLESSEQUAL, LGREATEREQUAL */
-        /* TBD: [Investigate] remove this case? */
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Bad multi-byte opcode=%X\n", Opcode));
         break;
 
 
