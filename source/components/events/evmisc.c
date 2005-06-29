@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -239,19 +239,18 @@ AcpiEvQueueNotifyRequest (
         break;
     }
 
-
     /*
      * Get the notify object attached to the device Node
      */
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
     {
-
         /* We have the notify object, Get the right handler */
 
         switch (Node->Type)
         {
         case ACPI_TYPE_DEVICE:
+
             if (NotifyValue <= MAX_SYS_NOTIFY)
             {
                 HandlerObj = ObjDesc->Device.SysHandler;
@@ -262,7 +261,9 @@ AcpiEvQueueNotifyRequest (
             }
             break;
 
+
         case ACPI_TYPE_THERMAL:
+
             if (NotifyValue <= MAX_SYS_NOTIFY)
             {
                 HandlerObj = ObjDesc->ThermalZone.SysHandler;
@@ -281,7 +282,6 @@ AcpiEvQueueNotifyRequest (
         (AcpiGbl_DrvNotify.Handler && (NotifyValue > MAX_SYS_NOTIFY))  ||
         HandlerObj)
     {
-
         NotifyInfo = AcpiUtCreateGenericState ();
         if (!NotifyInfo)
         {
@@ -431,7 +431,6 @@ AcpiEvGlobalLockHandler (
     void                    *Context)
 {
     BOOLEAN                 Acquired = FALSE;
-    void                    *GlobalLock;
 
 
     /*
@@ -439,8 +438,7 @@ AcpiEvGlobalLockHandler (
      * If we don't get it now, it will be marked pending and we will
      * take another interrupt when it becomes free.
      */
-    GlobalLock = AcpiGbl_FACS->GlobalLock;
-    ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (AcpiGbl_CommonFACS.GlobalLock, Acquired);
     if (Acquired)
     {
         /* Got the lock, now wake all threads waiting for it */
@@ -513,7 +511,6 @@ AcpiEvAcquireGlobalLock (
 {
     ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 Acquired = FALSE;
-    void                    *GlobalLock;
 
 
     FUNCTION_TRACE ("EvAcquireGlobalLock");
@@ -530,24 +527,16 @@ AcpiEvAcquireGlobalLock (
 
     AcpiGbl_GlobalLockThreadCount++;
 
-    /* If we (OS side) have the hardware lock already, we are done */
+    /* If we (OS side vs. BIOS side) have the hardware lock already, we are done */
 
     if (AcpiGbl_GlobalLockAcquired)
     {
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Only if the FACS is valid */
-
-    if (!AcpiGbl_FACS)
-    {
-        return_ACPI_STATUS (AE_OK);
-    }
-
     /* We must acquire the actual hardware lock */
 
-    GlobalLock = AcpiGbl_FACS->GlobalLock;
-    ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (AcpiGbl_CommonFACS.GlobalLock, Acquired);
     if (Acquired)
     {
        /* We got the lock */
@@ -586,7 +575,6 @@ void
 AcpiEvReleaseGlobalLock (void)
 {
     BOOLEAN                 Pending = FALSE;
-    void                    *GlobalLock;
 
 
     FUNCTION_TRACE ("EvReleaseGlobalLock");
@@ -612,8 +600,7 @@ AcpiEvReleaseGlobalLock (void)
      * No more threads holding lock, we can do the actual hardware
      * release
      */
-    GlobalLock = AcpiGbl_FACS->GlobalLock;
-    ACPI_RELEASE_GLOBAL_LOCK (GlobalLock, Pending);
+    ACPI_RELEASE_GLOBAL_LOCK (AcpiGbl_CommonFACS.GlobalLock, Pending);
     AcpiGbl_GlobalLockAcquired = FALSE;
 
     /*
