@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -362,6 +362,7 @@ AcpiDsCreateOperand (
     UINT16                  Opcode;
     UINT32                  Flags;
     OPERATING_MODE          InterpreterMode;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
     FUNCTION_TRACE_PTR ("DsCreateOperand", Arg);
@@ -396,7 +397,8 @@ AcpiDsCreateOperand (
          * namespace objects during the execution of control methods.
          */
         ParentOp = Arg->Parent;
-        if ((AcpiPsIsNodeOp (ParentOp->Opcode)) &&
+        OpInfo = AcpiPsGetOpcodeInfo (ParentOp->Opcode);
+        if ((OpInfo->Flags & AML_NSNODE) &&
             (ParentOp->Opcode != AML_INT_METHODCALL_OP) &&
             (ParentOp->Opcode != AML_REGION_OP) &&
             (ParentOp->Opcode != AML_INT_NAMEPATH_OP))
