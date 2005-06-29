@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbhistry - debugger HISTORY command
- *              $Revision: 1.15 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,20 +116,12 @@
 
 
 #include "acpi.h"
-#include "acparser.h"
-#include "acdispat.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "acparser.h"
-#include "acevents.h"
-#include "acinterp.h"
 #include "acdebug.h"
-#include "actables.h"
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbhistry")
+#define _COMPONENT          ACPI_DEBUGGER
+        ACPI_MODULE_NAME    ("dbhistry")
 
 
 #define HI_NO_HISTORY       0
@@ -145,11 +137,11 @@ typedef struct HistoryInfo
 } HISTORY_INFO;
 
 
-HISTORY_INFO                HistoryBuffer[HISTORY_SIZE];
-UINT16                      LoHistory = 0;
-UINT16                      NumHistory = 0;
-UINT16                      NextHistoryIndex = 0;
-UINT32                      NextCmdNum = 1;
+HISTORY_INFO                AcpiGbl_HistoryBuffer[HISTORY_SIZE];
+UINT16                      AcpiGbl_LoHistory = 0;
+UINT16                      AcpiGbl_NumHistory = 0;
+UINT16                      AcpiGbl_NextHistoryIndex = 0;
+UINT32                      AcpiGbl_NextCmdNum = 1;
 
 
 /*******************************************************************************
@@ -169,37 +161,35 @@ AcpiDbAddToHistory (
     NATIVE_CHAR             *CommandLine)
 {
 
-
     /* Put command into the next available slot */
 
-    STRCPY (HistoryBuffer[NextHistoryIndex].Command, CommandLine);
-    HistoryBuffer[NextHistoryIndex].CmdNum = NextCmdNum;
+    ACPI_STRCPY (AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].Command, CommandLine);
+
+    AcpiGbl_HistoryBuffer[AcpiGbl_NextHistoryIndex].CmdNum = AcpiGbl_NextCmdNum;
 
     /* Adjust indexes */
 
-    if ((NumHistory == HISTORY_SIZE) &&
-        (NextHistoryIndex == LoHistory))
+    if ((AcpiGbl_NumHistory == HISTORY_SIZE) &&
+        (AcpiGbl_NextHistoryIndex == AcpiGbl_LoHistory))
     {
-        LoHistory++;
-        if (LoHistory >= HISTORY_SIZE)
+        AcpiGbl_LoHistory++;
+        if (AcpiGbl_LoHistory >= HISTORY_SIZE)
         {
-            LoHistory = 0;
+            AcpiGbl_LoHistory = 0;
         }
     }
 
-    NextHistoryIndex++;
-    if (NextHistoryIndex >= HISTORY_SIZE)
+    AcpiGbl_NextHistoryIndex++;
+    if (AcpiGbl_NextHistoryIndex >= HISTORY_SIZE)
     {
-        NextHistoryIndex = 0;
+        AcpiGbl_NextHistoryIndex = 0;
     }
 
-
-    NextCmdNum++;
-    if (NumHistory < HISTORY_SIZE)
+    AcpiGbl_NextCmdNum++;
+    if (AcpiGbl_NumHistory < HISTORY_SIZE)
     {
-        NumHistory++;
+        AcpiGbl_NumHistory++;
     }
-
 }
 
 
@@ -222,13 +212,14 @@ AcpiDbDisplayHistory (void)
     UINT16                  HistoryIndex;
 
 
-    HistoryIndex = LoHistory;
+    HistoryIndex = AcpiGbl_LoHistory;
 
     /* Dump entire history buffer */
 
-    for (i = 0; i < NumHistory; i++)
+    for (i = 0; i < AcpiGbl_NumHistory; i++)
     {
-        AcpiOsPrintf ("%ld  %s\n", HistoryBuffer[HistoryIndex].CmdNum, HistoryBuffer[HistoryIndex].Command);
+        AcpiOsPrintf ("%ld  %s\n", AcpiGbl_HistoryBuffer[HistoryIndex].CmdNum,
+                                   AcpiGbl_HistoryBuffer[HistoryIndex].Command);
 
         HistoryIndex++;
         if (HistoryIndex >= HISTORY_SIZE)
@@ -263,25 +254,24 @@ AcpiDbGetFromHistory (
 
     if (CommandNumArg == NULL)
     {
-        CmdNum = NextCmdNum - 1;
+        CmdNum = AcpiGbl_NextCmdNum - 1;
     }
 
     else
     {
-        CmdNum = STRTOUL (CommandNumArg, NULL, 0);
+        CmdNum = ACPI_STRTOUL (CommandNumArg, NULL, 0);
     }
-
 
     /* Search history buffer */
 
-    HistoryIndex = LoHistory;
-    for (i = 0; i < NumHistory; i++)
+    HistoryIndex = AcpiGbl_LoHistory;
+    for (i = 0; i < AcpiGbl_NumHistory; i++)
     {
-        if (HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
+        if (AcpiGbl_HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
         {
             /* Found the commnad, return it */
 
-            return (HistoryBuffer[HistoryIndex].Command);
+            return (AcpiGbl_HistoryBuffer[HistoryIndex].Command);
         }
 
 
