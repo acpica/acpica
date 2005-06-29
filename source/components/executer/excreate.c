@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -873,10 +873,7 @@ AcpiAmlExecCreateRegion (
          * Should this return an error, or should we just keep
          * going?  How do we handle the OEM region handlers?
          */
-
-        DEBUG_PRINT (TRACE_LOAD,
-            ("AmlDoNode: Type out of range [*???*]\n"));
-        REPORT_WARNING ("Unable to decode the RegionSpace");
+        REPORT_WARNING (("Invalid AddressSpace type %X\n", RegionSpace));
     }
 
     DEBUG_PRINT (TRACE_LOAD, ("AmlDoNode: Region Type [%s]\n",

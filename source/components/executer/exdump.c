@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -165,7 +165,7 @@ AcpiAmlShowHexValue (
 
     if (!AmlPtr)
     {
-        REPORT_ERROR ("AmlShowHexValue: null pointer");
+        REPORT_ERROR (("AmlShowHexValue: null pointer\n"));
     }
 
     /*
@@ -375,7 +375,6 @@ AcpiAmlDumpOperand (
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown opcode=%X\n",
                 EntryDesc->Reference.OpCode));
-            REPORT_ERROR ("AmlDumpOperand: Unknown AML Opcode");
             break;
 
         }
@@ -608,7 +607,6 @@ AcpiAmlDumpOperand (
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown Type 0x%X\n",
             EntryDesc->Common.Type));
-        REPORT_ERROR ("AmlDumpOperand: Unknown Type");
 
         /* Back up to previous entry */
 
