@@ -735,7 +735,7 @@ AmlAccessNamedField (
     UINT32                  Mask = 0;
     UINT32                  dValue = 0;
     UINT32                  OldVal = 0;
-    BOOLEAN                 Locked;
+    BOOLEAN                 Locked = FALSE;
 
 
 
