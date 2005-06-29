@@ -346,7 +346,7 @@ CmExecute_UID (
                                         &((NAME_TABLE_ENTRY *) AcpiDevice)->Name, Status));
         }
 
-	    return (Status);
+        return (Status);
     }
 
     /* Did we get a return object? */
@@ -392,7 +392,7 @@ CmExecute_UID (
 
     CmRemoveReference (ObjDesc);
 
-	return (Status);
+    return (Status);
 }  
 
 /****************************************************************************
