@@ -117,12 +117,11 @@
 #ifndef __ENVIRONMENT_H__
 #define __ENVIRONMENT_H__
 
+
 /* 
- * Comment this line out if linking to an actual C library.
+ * define SYSTEM_CLIB_FUNCTIONS if linking to an actual C library.
  * Otherwise, local versions of the string and memory functions will be used.
  */
-#define LOCAL_CLIB_FUNCTIONS       1
-
 
 /******************************************************************************
  * 
@@ -130,7 +129,7 @@
  *
  *****************************************************************************/
 
-#ifndef LOCAL_CLIB_FUNCTIONS
+#ifdef SYSTEM_CLIB_FUNCTIONS
 /*
  * Standard C library headers.
  * We want to keep these to a minimum.
