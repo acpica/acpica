@@ -157,9 +157,11 @@ AcpiInitialize (void)
     CmInitGlobals ();
 
     /* Install the default OpRegion handlers */
+/*
+    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemMemory, AmlSystemMemorySpaceHandler, NULL);
+    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemIO, AmlSystemIoSpaceHandler, NULL);
+*/
 
-    AcpiInstallAddressSpaceHandler (RootObject, REGION_SystemMemory, AmlSystemMemorySpaceHandler, NULL);
-    AcpiInstallAddressSpaceHandler (RootObject, REGION_SystemIO, AmlSystemIoSpaceHandler, NULL);
 /*
     Can't be any defaults till a device appears.
 
@@ -195,8 +197,6 @@ AcpiTerminate (void)
     FUNCTION_TRACE ("AcpiTerminate");
     DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
 
-    DEBUG_MEMSTAT;
-
 
     /* Close the Namespace */
 
@@ -212,7 +212,6 @@ AcpiTerminate (void)
 
     /* Debug only - display leftover memory allocation, if any */
 
-    DEBUG_MEMSTAT;
     CmDumpCurrentAllocations (ACPI_UINT_MAX, NULL);
     BREAKPOINT3;
 
@@ -280,7 +279,7 @@ AcpiGetSystemInfo (
 
     /* System flags (ACPI capabilities) */
 
-    InfoPtr->Flags              = SystemFlags;
+    InfoPtr->Flags              = Gbl_SystemFlags;
 
     /* Timer resolution - 24 or 32 bits  */
     
@@ -301,7 +300,7 @@ AcpiGetSystemInfo (
     InfoPtr->NumTableTypes = NUM_ACPI_TABLES;
     for (i = 0; i < NUM_ACPI_TABLES; i++);
     {
-        InfoPtr->TableInfo[i].Count = AcpiTables[i].Count;
+        InfoPtr->TableInfo[i].Count = Gbl_AcpiTables[i].Count;
     }
 
     return_ACPI_STATUS (AE_OK);
