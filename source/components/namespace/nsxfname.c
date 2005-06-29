@@ -129,7 +129,6 @@
 #define _THIS_MODULE        "nsapinam.c"
 #define _COMPONENT          NAMESPACE
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiLoadNamespace
@@ -148,6 +147,7 @@ AcpiLoadNamespace (
     void)
 {
     ACPI_STATUS             Status;
+    ACPI_HANDLE             BusHandle;
 
 
     FUNCTION_TRACE ("AcpiLoadNameSpace");
@@ -160,7 +160,6 @@ AcpiLoadNamespace (
         DEBUG_PRINT (ACPI_ERROR, ("DSDT is not in memory\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
-
 
     /*
      * Now that the tables are loaded, finish some other initialization
@@ -212,6 +211,27 @@ BREAKPOINT3;
     AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemMemory, AmlSystemMemorySpaceHandler, NULL);
     AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemIO, AmlSystemIoSpaceHandler, NULL);
 
+    Status = AcpiPathnameToHandle("\\_SB_.PCI0", &BusHandle);
+    if(Status == AE_OK)
+    {
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, AmlPciConfigSpaceHandler, (void *)0);
+    }
+    Status = AcpiPathnameToHandle("\\_SB_.PCI0.PCI3", &BusHandle);
+    if(Status == AE_OK)
+    {
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, AmlPciConfigSpaceHandler, (void *)3);
+    }
+    Status = AcpiPathnameToHandle("\\_SB_.PCI1", &BusHandle);
+    if(Status == AE_OK)
+    {
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, AmlPciConfigSpaceHandler, (void *)1);
+    }
+    Status = AcpiPathnameToHandle("\\_SB_.PCI2", &BusHandle);
+    if(Status == AE_OK)
+    {
+        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, AmlPciConfigSpaceHandler, (void *)2);
+    }
+
     return_ACPI_STATUS (Status);
 }
 
@@ -252,7 +272,7 @@ AcpiNameToHandle (
 
     if (Name == NS_ROOT)
     {
-        *RetHandle = Gbl_RootObject;
+        *RetHandle = NsConvertEntryToHandle(Gbl_RootObject);
         return AE_OK;
     }
 
@@ -280,7 +300,7 @@ AcpiNameToHandle (
     {
         if (ThisEntry->Name == Name)
         {
-            *RetHandle = ThisEntry;
+            *RetHandle = NsConvertEntryToHandle(ThisEntry);
             return AE_OK;
         }
 
@@ -359,6 +379,8 @@ AcpiPathnameToHandle (
     ACPI_STRING             Pathname, 
     ACPI_HANDLE             *RetHandle)
 {
+    NAME_TABLE_ENTRY     *TmpNte;
+    ACPI_STATUS     Status;
 
     if (!RetHandle || !Pathname)
     {
@@ -369,12 +391,19 @@ AcpiPathnameToHandle (
 
     if (strcmp (Pathname, NS_ROOT_PATH) == 0)
     {
-        *RetHandle = Gbl_RootObject;
+        *RetHandle = NsConvertEntryToHandle(Gbl_RootObject);
         return AE_OK;
     }
 
-    *RetHandle = NULL;
-    return (NsGetHandle (Pathname, NS_ALL, RetHandle));
+    /*
+     *  Find the Nte and convert to the user format
+     */
+    TmpNte = NULL;
+    Status = NsGetNte (Pathname, NS_ALL, &TmpNte);
+
+   *RetHandle = NsConvertEntryToHandle(TmpNte);
+
+    return (Status);
 }
 
 
@@ -438,7 +467,7 @@ AcpiHandleToPathname (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetDeviceInfo (
+AcpiGetObjectInfo (
     ACPI_HANDLE             Device, 
     ACPI_DEVICE_INFO        *Info)
 {
@@ -458,11 +487,21 @@ AcpiGetDeviceInfo (
     }
 
     if (!(DeviceEntry = NsConvertHandleToEntry (Device)))
-   {
+    {
         return AE_BAD_PARAMETER;
     }
 
+    Info->Type = DeviceEntry->Type;
+    Info->Name = DeviceEntry->Name;
+    Info->Parent = NsConvertEntryToHandle(DeviceEntry->ParentEntry);
 
+    if (DeviceEntry->Type != TYPE_Device)
+    {
+        /*
+         *  We're done, get out
+         */
+        return AE_OK;
+    }
     Info->Valid = 0;
 
     /* Execute the _HID method and save the result */
