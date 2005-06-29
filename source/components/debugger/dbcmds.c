@@ -133,6 +133,86 @@
 extern int					opt_verbose;
 
 
+/******************************************************************************
+ * 
+ * FUNCTION:    DbSetMethodBreakpoint
+ *
+ * PARAMETERS:  Location            - AML offset of breakpoint
+ *              Op                  - Current Op (from parse walk)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Set a breakpoint in a control method at the specified 
+ *              AML offset
+ *
+ *****************************************************************************/
+
+void
+DbSetMethodBreakpoint (
+    char                    *Location,
+    ACPI_GENERIC_OP         *Op)
+{
+    UINT32                  Address;
+
+
+    if (!Op)
+    {
+        OsdPrintf ("There is no method currently executing\n");
+        return;
+    }
+
+    /* Get and verify the breakpoint address */
+
+    Address = STRTOUL (Location, NULL, 0);
+    if (Address <= Op->AmlOffset)
+    {
+        OsdPrintf ("Breakpoint 0x%X is beyond current address 0x%X\n", Address, Op->AmlOffset);
+    }
+
+    /* Just save the breakpoint in a global */
+
+    Gbl_MethodBreakpoint = Address;
+    OsdPrintf ("Breakpoint set at AML offset 0x%X\n", Address);
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisassembleAml
+ *
+ * PARAMETERS:  Statements          - Number of statements to disassemble
+ *              Op                  - Current Op (from parse walk)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Lookup a name in the ACPI namespace
+ *
+ *****************************************************************************/
+
+void
+DbDisassembleAml (
+    char                    *Statements,
+    ACPI_GENERIC_OP         *Op)
+{
+    UINT32                  NumStatements = 8;
+
+
+    if (!Op)
+    {
+        OsdPrintf ("There is no method currently executing\n");
+        return;
+    }
+
+    if (Statements)
+    {
+        NumStatements = STRTOUL (Statements, NULL, 0);
+    }
+
+
+    DbDisplayOp (Op, NumStatements);
+}
+
 
 /******************************************************************************
  * 
@@ -273,7 +353,12 @@ DbDecodeAndDisplayObject (
     CmDumpBuffer ((void *) Entry, sizeof (NAME_TABLE_ENTRY), ACPI_UINT32_MAX);
     AmlDumpNameTableEntry (Entry, 1);
 
-
+    if (Entry->Object)
+    {
+        OsdPrintf ("\nAttached Object (0x%X):\n", Entry->Object);
+        CmDumpBuffer (Entry->Object, sizeof (ACPI_OBJECT_INTERNAL), ACPI_UINT32_MAX);
+        AmlDumpObjectDescriptor (Entry->Object, 1);
+    }
 }
 
 
@@ -844,7 +929,11 @@ DbExecute (
 
     /* Display a return object, if any */
 
-    DbDumpObject (LocalBuf, &ReturnObj);
+    if (ReturnObj.Length)
+    {
+        OsdPrintf ("Execution of %s returned object %p\n", LocalBuf, ReturnObj.Pointer);
+        DbDumpObject (ReturnObj.Pointer, 1);
+    }
 }
 
 
