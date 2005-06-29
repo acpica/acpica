@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.65 $
+ *       $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -179,12 +179,18 @@
 #define ACPI_STORE_ADDRESS(a,b)         ((a)=(b))
 #define ACPI_VALID_ADDRESS(a)           (a)
 #endif
+
  /*
   * Extract a byte of data using a pointer.  Any more than a byte and we
   * get into potential aligment issues -- see the STORE macros below
   */
 #define GET8(addr)                      (*(UINT8*)(addr))
 
+/* Pointer arithmetic */
+
+
+#define POINTER_ADD(t,a,b)              (t *) ((NATIVE_UINT)(a) + (NATIVE_UINT)(b))
+#define POINTER_DIFF(a,b)               ((UINT32) ((NATIVE_UINT)(a) - (NATIVE_UINT)(b)))
 
 /*
  * Macros for moving data around to/from buffers that are possibly unaligned.
@@ -379,6 +385,26 @@
 
 
 /*
+ * Build a GAS structure from earlier ACPI table entries (V1.0 and 0.71 extensions)
+ *
+ * 1) Address space
+ * 2) Length in bytes -- convert to length in bits
+ * 3) Bit offset is zero
+ * 4) Reserved field is zero
+ * 5) Expand address to 64 bits
+ */
+#define ASL_BUILD_GAS_FROM_ENTRY(a,b,c,d)   {a.AddressSpaceId = (UINT8) d;\
+                                             a.RegisterBitWidth = (UINT8) MUL_8 (b);\
+                                             a.RegisterBitOffset = 0;\
+                                             a.Reserved = 0;\
+                                             ACPI_STORE_ADDRESS (a.Address,c);}
+
+/* ACPI V1.0 entries -- address space is always I/O */
+
+#define ASL_BUILD_GAS_FROM_V1_ENTRY(a,b,c)  ASL_BUILD_GAS_FROM_ENTRY(a,b,c,ACPI_ADR_SPACE_SYSTEM_IO)
+
+
+/*
  * Reporting macros that are never compiled out
  */
 
@@ -421,7 +447,7 @@
 
 /* Buffer dump macros */
 
-#define DUMP_BUFFER(a,b)                AcpiCmDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
+#define DUMP_BUFFER(a,b)                AcpiUtDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
 
 /*
  * Debug macros that are conditionally compiled
@@ -471,8 +497,8 @@
 
 /* Stack and buffer dumping */
 
-#define DUMP_STACK_ENTRY(a)             AcpiAmlDumpOperand(a)
-#define DUMP_OPERANDS(a,b,c,d,e)        AcpiAmlDumpOperands(a,b,c,d,e,_THIS_MODULE,__LINE__)
+#define DUMP_STACK_ENTRY(a)             AcpiExDumpOperand(a)
+#define DUMP_OPERANDS(a,b,c,d,e)        AcpiExDumpOperands(a,b,c,d,e,_THIS_MODULE,__LINE__)
 
 
 #define DUMP_ENTRY(a,b)                 AcpiNsDumpEntry (a,b)
@@ -599,6 +625,75 @@
 #define ADD_OBJECT_NAME(a,b)
 
 #endif
+
+
+/*
+ * Memory allocation tracking (DEBUG ONLY)
+ */
+
+#ifndef ACPI_DEBUG_TRACK_ALLOCATIONS
+
+#define AcpiUtAddElementToAllocList(a,b,c,d,e,f)
+#define AcpiUtDeleteElementFromAllocList(a,b,c,d)
+#define AcpiUtDumpCurrentAllocations(a,b)
+#define AcpiUtDumpAllocationInfo()
+
+#define DECREMENT_OBJECT_METRICS(a)
+#define INCREMENT_OBJECT_METRICS(a)
+#define INITIALIZE_ALLOCATION_METRICS()
+#define DECREMENT_NAME_TABLE_METRICS(a)
+#define INCREMENT_NAME_TABLE_METRICS(a)
+
+#else
+
+#define INITIALIZE_ALLOCATION_METRICS() \
+    AcpiGbl_CurrentObjectCount = 0; \
+    AcpiGbl_CurrentObjectSize = 0; \
+    AcpiGbl_RunningObjectCount = 0; \
+    AcpiGbl_RunningObjectSize = 0; \
+    AcpiGbl_MaxConcurrentObjectCount = 0; \
+    AcpiGbl_MaxConcurrentObjectSize = 0; \
+    AcpiGbl_CurrentAllocSize = 0; \
+    AcpiGbl_CurrentAllocCount = 0; \
+    AcpiGbl_RunningAllocSize = 0; \
+    AcpiGbl_RunningAllocCount = 0; \
+    AcpiGbl_MaxConcurrentAllocSize = 0; \
+    AcpiGbl_MaxConcurrentAllocCount = 0; \
+    AcpiGbl_CurrentNodeCount = 0; \
+    AcpiGbl_CurrentNodeSize = 0; \
+    AcpiGbl_MaxConcurrentNodeCount = 0
+
+
+#define DECREMENT_OBJECT_METRICS(a) \
+    AcpiGbl_CurrentObjectCount--; \
+    AcpiGbl_CurrentObjectSize -= a
+
+#define INCREMENT_OBJECT_METRICS(a) \
+    AcpiGbl_CurrentObjectCount++; \
+    AcpiGbl_RunningObjectCount++; \
+    if (AcpiGbl_MaxConcurrentObjectCount < AcpiGbl_CurrentObjectCount) \
+    { \
+        AcpiGbl_MaxConcurrentObjectCount = AcpiGbl_CurrentObjectCount; \
+    } \
+    AcpiGbl_RunningObjectSize += a; \
+    AcpiGbl_CurrentObjectSize += a; \
+    if (AcpiGbl_MaxConcurrentObjectSize < AcpiGbl_CurrentObjectSize) \
+    { \
+        AcpiGbl_MaxConcurrentObjectSize = AcpiGbl_CurrentObjectSize; \
+    }
+
+#define DECREMENT_NAME_TABLE_METRICS(a) \
+    AcpiGbl_CurrentNodeCount--; \
+    AcpiGbl_CurrentNodeSize -= (a)
+
+#define INCREMENT_NAME_TABLE_METRICS(a) \
+    AcpiGbl_CurrentNodeCount++; \
+    AcpiGbl_CurrentNodeSize+= (a); \
+    if (AcpiGbl_MaxConcurrentNodeCount < AcpiGbl_CurrentNodeCount) \
+    { \
+        AcpiGbl_MaxConcurrentNodeCount = AcpiGbl_CurrentNodeCount; \
+    }
+#endif /* ACPI_DEBUG_TRACK_ALLOCATIONS */
 
 
 #endif /* ACMACROS_H */

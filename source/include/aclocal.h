@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.113 $
+ *       $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -134,7 +134,6 @@ typedef UINT32                          ACPI_MUTEX_HANDLE;
 #define ACPI_DESC_TYPE_NAMED            0xAA
 
 
-
 /*****************************************************************************
  *
  * Mutex typedefs and structs
@@ -144,7 +143,7 @@ typedef UINT32                          ACPI_MUTEX_HANDLE;
 
 /*
  * Predefined handles for the mutex objects used within the subsystem
- * All mutex objects are automatically created by AcpiCmMutexInitialize.
+ * All mutex objects are automatically created by AcpiUtMutexInitialize.
  *
  * The acquire/release ordering protocol is implied via this list.  Mutexes
  * with a lower value must be acquired before mutexes with a higher value.
@@ -203,9 +202,12 @@ typedef struct AcpiMutexInfo
     ACPI_MUTEX                  Mutex;
     UINT32                      UseCount;
     UINT32                      OwnerId;
-    BOOLEAN                     Locked;
 
 } ACPI_MUTEX_INFO;
+
+/* This owner ID means that the mutex is not in use (unlocked) */
+
+#define ACPI_MUTEX_NOT_ACQUIRED         (UINT32) (-1)
 
 
 /* Lock flag parameter for various interfaces */
@@ -223,7 +225,6 @@ typedef UINT16                          ACPI_OWNER_ID;
 /* TBD: [Restructure] get rid of the need for this! */
 
 #define TABLE_ID_DSDT                   (ACPI_OWNER_ID) 0x8000
-
 
 
 /*****************************************************************************
@@ -324,14 +325,10 @@ typedef struct
 /*
  * Predefined Namespace items
  */
-#define ACPI_MAX_ADDRESS_SPACE          255
-#define ACPI_NUM_ADDRESS_SPACES         256
-
-
 typedef struct
 {
     NATIVE_CHAR             *Name;
-    ACPI_OBJECT_TYPE        Type;
+    ACPI_OBJECT_TYPE8       Type;
     NATIVE_CHAR             *Val;
 
 } PREDEFINED_NAMES;
@@ -342,7 +339,6 @@ typedef struct
 
 #define ACPI_COPY_TYPE_SIMPLE           0
 #define ACPI_COPY_TYPE_PACKAGE          1
-
 
 
 /*****************************************************************************
@@ -375,10 +371,10 @@ typedef struct
 
 typedef struct
 {
-    ADDRESS_SPACE_HANDLER   Handler;
+    ACPI_ADR_SPACE_HANDLER  Handler;
     void                    *Context;
 
-} ACPI_ADDRESS_SPACE_INFO;
+} ACPI_ADR_SPACE_INFO;
 
 
 /* Values and addresses of the GPE registers (both banks) */
@@ -405,7 +401,7 @@ typedef struct
     UINT8                   Type;           /* Level or Edge */
 
     ACPI_HANDLE             MethodHandle;   /* Method handle for direct (fast) execution */
-    GPE_HANDLER             Handler;        /* Address of handler, if any */
+    ACPI_GPE_HANDLER        Handler;        /* Address of handler, if any */
     void                    *Context;       /* Context to be passed to handler */
 
 } ACPI_GPE_LEVEL_INFO;
@@ -415,7 +411,7 @@ typedef struct
 
 typedef struct
 {
-    FIXED_EVENT_HANDLER     Handler;        /* Address of handler. */
+    ACPI_EVENT_HANDLER      Handler;        /* Address of handler. */
     void                    *Context;       /* Context to be passed to handler */
 
 } ACPI_FIXED_EVENT_INFO;
@@ -510,7 +506,6 @@ typedef struct acpi_control_state
 /*
  * Scope state - current scope during namespace lookups
  */
-
 typedef struct acpi_scope_state
 {
     ACPI_STATE_COMMON
@@ -549,7 +544,6 @@ typedef struct acpi_result_values
  * Notify info - used to pass info to the deferred notify
  * handler/dispatcher.
  */
-
 typedef struct acpi_notify_info
 {
     ACPI_STATE_COMMON
@@ -593,7 +587,6 @@ ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
  * Parser typedefs and structs
  *
  ****************************************************************************/
-
 
 #define ACPI_OP_CLASS_MASK              0x1F
 #define ACPI_OP_ARGS_MASK               0x20
@@ -846,54 +839,65 @@ typedef struct acpi_parse_state
 #define ACPI_WRITE                      2
 
 
-/* Plug and play */
+/*****************************************************************************
+ *
+ * Resource descriptors
+ *
+ ****************************************************************************/
 
-/* Pnp and ACPI data */
 
-#define VERSION_NO                      0x01
-#define LOGICAL_DEVICE_ID               0x02
-#define COMPATIBLE_DEVICE_ID            0x03
-#define IRQ_FORMAT                      0x04
-#define DMA_FORMAT                      0x05
-#define START_DEPENDENT_TAG             0x06
-#define END_DEPENDENT_TAG               0x07
-#define IO_PORT_DESCRIPTOR              0x08
-#define FIXED_LOCATION_IO_DESCRIPTOR    0x09
-#define RESERVED_TYPE0                  0x0A
-#define RESERVED_TYPE1                  0x0B
-#define RESERVED_TYPE2                  0x0C
-#define RESERVED_TYPE3                  0x0D
-#define SMALL_VENDOR_DEFINED            0x0E
-#define END_TAG                         0x0F
+/* ResourceType values */
 
-/* Pnp and ACPI data */
+#define RESOURCE_TYPE_MEMORY_RANGE              0
+#define RESOURCE_TYPE_IO_RANGE                  1
+#define RESOURCE_TYPE_BUS_NUMBER_RANGE          2
 
-#define MEMORY_RANGE_24                 0x81
-#define ISA_MEMORY_RANGE                0x81
-#define LARGE_VENDOR_DEFINED            0x84
-#define EISA_MEMORY_RANGE               0x85
-#define MEMORY_RANGE_32                 0x85
-#define FIXED_EISA_MEMORY_RANGE         0x86
-#define FIXED_MEMORY_RANGE_32           0x86
+/* Resource descriptor types and masks */
 
-/* ACPI only data */
+#define RESOURCE_DESC_TYPE_LARGE                0x80
+#define RESOURCE_DESC_TYPE_SMALL                0x00
 
-#define DWORD_ADDRESS_SPACE             0x87
-#define WORD_ADDRESS_SPACE              0x88
-#define EXTENDED_IRQ                    0x89
-#define QWORD_ADDRESS_SPACE             0x8A
+#define RESOURCE_DESC_TYPE_MASK                 0x80
+#define RESOURCE_DESC_SMALL_MASK                0x78        /* Only bits 6:3 contain the type */
 
-/* MUST HAVES */
 
-#define DEVICE_ID_LENGTH                0x09
+/*
+ * Small resource descriptor types
+ * Note: The 3 length bits (2:0) must be zero
+ */
+#define RESOURCE_DESC_IRQ_FORMAT                0x20
+#define RESOURCE_DESC_DMA_FORMAT                0x28
+#define RESOURCE_DESC_START_DEPENDENT           0x30
+#define RESOURCE_DESC_END_DEPENDENT             0x38
+#define RESOURCE_DESC_IO_PORT                   0x40
+#define RESOURCE_DESC_FIXED_IO_PORT             0x48
+#define RESOURCE_DESC_SMALL_VENDOR              0x70
+#define RESOURCE_DESC_END_TAG                   0x78
+
+/*
+ * Large resource descriptor types
+ */
+
+#define RESOURCE_DESC_MEMORY_24                 0x81
+#define RESOURCE_DESC_GENERAL_REGISTER          0x82
+#define RESOURCE_DESC_LARGE_VENDOR              0x84
+#define RESOURCE_DESC_MEMORY_32                 0x85
+#define RESOURCE_DESC_FIXED_MEMORY_32           0x86
+#define RESOURCE_DESC_DWORD_ADDRESS_SPACE       0x87
+#define RESOURCE_DESC_WORD_ADDRESS_SPACE        0x88
+#define RESOURCE_DESC_EXTENDED_XRUPT            0x89
+#define RESOURCE_DESC_QWORD_ADDRESS_SPACE       0x8A
+
+
+/* String version of device HIDs and UIDs */
+
+#define ACPI_DEVICE_ID_LENGTH                   0x09
 
 typedef struct
 {
-    NATIVE_CHAR             Buffer[DEVICE_ID_LENGTH];
+    NATIVE_CHAR             Buffer[ACPI_DEVICE_ID_LENGTH];
 
-} DEVICE_ID;
-
-
+} ACPI_DEVICE_ID;
 
 
 /*****************************************************************************
@@ -911,18 +915,18 @@ typedef struct
 #define MEM_CALLOC                      1
 #define MAX_MODULE_NAME                 16
 
-typedef struct AllocationInfo
+typedef struct AcpiAllocationInfo
 {
-    struct AllocationInfo   *Previous;
-    struct AllocationInfo   *Next;
-    void                    *Address;
-    UINT32                  Size;
-    UINT32                  Component;
-    UINT32                  Line;
-    NATIVE_CHAR             Module[MAX_MODULE_NAME];
-    UINT8                   AllocType;
+    struct AcpiAllocationInfo   *Previous;
+    struct AcpiAllocationInfo   *Next;
+    void                        *Address;
+    UINT32                      Size;
+    UINT32                      Component;
+    UINT32                      Line;
+    NATIVE_CHAR                 Module[MAX_MODULE_NAME];
+    UINT8                       AllocType;
 
-} ALLOCATION_INFO;
+} ACPI_ALLOCATION_INFO;
 
 #endif
 
