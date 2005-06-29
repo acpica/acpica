@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -254,7 +254,8 @@ main (
 
 #ifdef _DEBUG
 #if ACPI_MACHINE_WIDTH != 16
-    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CrtSetDbgFlag(0));
+    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF | 
+                    _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
 #endif
 #endif
 
