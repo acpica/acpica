@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: amresop - AML Interpreter operand/object resolution
- *              $Revision: 1.24 $
+ * Module Name: exresop - AML Interpreter operand/object resolution
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __AMRESOP_C__
+#define __EXRESOP_C__
 
 #include "acpi.h"
 #include "amlcode.h"
@@ -128,12 +128,12 @@
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("amresop")
+        MODULE_NAME         ("exresop")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlCheckObjectType
+ * FUNCTION:    AcpiExCheckObjectType
  *
  * PARAMETERS:  TypeNeeded          Object type needed
  *              ThisType            Actual object type
@@ -146,7 +146,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlCheckObjectType (
+AcpiExCheckObjectType (
     ACPI_OBJECT_TYPE        TypeNeeded,
     ACPI_OBJECT_TYPE        ThisType,
     void                    *Object)
@@ -160,17 +160,15 @@ AcpiAmlCheckObjectType (
         return (AE_OK);
     }
 
-
     if (TypeNeeded != ThisType)
     {
         DEBUG_PRINT (ACPI_INFO,
-            ("AmlResolveOperands: Needed [%s], found [%s] %p\n",
-            AcpiCmGetTypeName (TypeNeeded),
-            AcpiCmGetTypeName (ThisType), Object));
+            ("ExCheckObjectType: Needed [%s], found [%s] %p\n",
+            AcpiUtGetTypeName (TypeNeeded),
+            AcpiUtGetTypeName (ThisType), Object));
 
         return (AE_AML_OPERAND_TYPE);
     }
-
 
     return (AE_OK);
 }
@@ -178,7 +176,7 @@ AcpiAmlCheckObjectType (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlResolveOperands
+ * FUNCTION:    AcpiExResolveOperands
  *
  * PARAMETERS:  Opcode              Opcode being interpreted
  *              StackPtr            Top of operand stack
@@ -196,7 +194,7 @@ AcpiAmlCheckObjectType (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiAmlResolveOperands (
+AcpiExResolveOperands (
     UINT16                  Opcode,
     ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState)
@@ -204,14 +202,14 @@ AcpiAmlResolveOperands (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status = AE_OK;
     UINT8                   ObjectType;
-    ACPI_HANDLE             TempHandle;
+    void                    *TempNode;
     UINT32                  ArgTypes;
     ACPI_OPCODE_INFO        *OpInfo;
     UINT32                  ThisArgType;
     ACPI_OBJECT_TYPE        TypeNeeded;
 
 
-    FUNCTION_TRACE_U32 ("AmlResolveOperands", Opcode);
+    FUNCTION_TRACE_U32 ("ExResolveOperands", Opcode);
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
@@ -224,31 +222,30 @@ AcpiAmlResolveOperands (
     ArgTypes = OpInfo->RuntimeArgs;
     if (ArgTypes == ARGI_INVALID_OPCODE)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlResolveOperands: Internal error - %X is not a valid AML opcode\n", Opcode));
+        DEBUG_PRINTP (ACPI_ERROR, ("Internal - %X is not a valid AML opcode\n", 
+            Opcode));
 
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    DEBUG_PRINT (TRACE_EXEC,
-        ("AmlResolveOperands: Opcode %X OperandTypes=%X \n",
+    DEBUG_PRINTP (TRACE_EXEC, ("Opcode %X OperandTypes=%X \n",
         Opcode, ArgTypes));
 
 
-   /*
-     * Normal exit is with *Types == '\0' at end of string.
+    /*
+     * Normal exit is with (ArgTypes == 0) at end of argument list.
      * Function will return an exception from within the loop upon
-     * finding an entry which is not, and cannot be converted
-     * to, the required type; if stack underflows; or upon
-     * finding a NULL stack entry (which "should never happen").
+     * finding an entry which is not (or cannot be converted
+     * to) the required type; if stack underflows; or upon
+     * finding a NULL stack entry (which should not happen).
      */
 
     while (GET_CURRENT_ARG_TYPE (ArgTypes))
     {
         if (!StackPtr || !*StackPtr)
         {
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveOperands: Internal error - null stack entry at %X\n", StackPtr));
+            DEBUG_PRINTP (ACPI_ERROR, ("Internal - null stack entry at %X\n", 
+                StackPtr));
 
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
@@ -274,10 +271,9 @@ AcpiAmlResolveOperands (
 
             /* Check for bad ACPI_OBJECT_TYPE */
 
-            if (!AcpiAmlValidateObjectType (ObjectType))
+            if (!AcpiExValidateObjectType (ObjectType))
             {
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlResolveOperands: Bad operand object type [%X]\n",
+                DEBUG_PRINTP (ACPI_ERROR, ("Bad operand object type [%X]\n",
                     ObjectType));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -365,7 +361,7 @@ AcpiAmlResolveOperands (
                 goto NextOperand;
             }
 
-            Status = AcpiAmlCheckObjectType (INTERNAL_TYPE_REFERENCE,
+            Status = AcpiExCheckObjectType (INTERNAL_TYPE_REFERENCE,
                             ObjectType, ObjDesc);
             if (ACPI_FAILURE (Status))
             {
@@ -380,9 +376,9 @@ AcpiAmlResolveOperands (
                  * it on the stack
                  */
 
-                TempHandle = ObjDesc->Reference.Object;
-                AcpiCmRemoveReference (ObjDesc);
-                (*StackPtr) = TempHandle;
+                TempNode = ObjDesc->Reference.Object;
+                AcpiUtRemoveReference (ObjDesc);
+                (*StackPtr) = TempNode;
             }
 
             goto NextOperand;
@@ -412,7 +408,7 @@ AcpiAmlResolveOperands (
          * Resolve this object to a value
          */
 
-        Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+        Status = AcpiExResolveToValue (StackPtr, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -481,14 +477,14 @@ AcpiAmlResolveOperands (
              * Need an operand of type ACPI_TYPE_INTEGER,
              * But we can implicitly convert from a STRING or BUFFER
              */
-            Status = AcpiAmlConvertToInteger (StackPtr, WalkState);
+            Status = AcpiExConvertToInteger (StackPtr, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
                 {
-                    DEBUG_PRINT (ACPI_INFO,
-                        ("AmlResolveOperands: Needed [Integer/String/Buffer], found [%s] %p\n",
-                        AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                    DEBUG_PRINTP (ACPI_INFO,
+                        ("Needed [Integer/String/Buffer], found [%s] %p\n",
+                        AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                 }
@@ -506,14 +502,14 @@ AcpiAmlResolveOperands (
              * Need an operand of type ACPI_TYPE_BUFFER,
              * But we can implicitly convert from a STRING or INTEGER
              */
-            Status = AcpiAmlConvertToBuffer (StackPtr, WalkState);
+            Status = AcpiExConvertToBuffer (StackPtr, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
                 {
-                    DEBUG_PRINT (ACPI_INFO,
-                        ("AmlResolveOperands: Needed [Integer/String/Buffer], found [%s] %p\n",
-                        AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                    DEBUG_PRINTP (ACPI_INFO,
+                        ("Needed [Integer/String/Buffer], found [%s] %p\n",
+                        AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                 }
@@ -531,14 +527,14 @@ AcpiAmlResolveOperands (
              * Need an operand of type ACPI_TYPE_STRING,
              * But we can implicitly convert from a BUFFER or INTEGER
              */
-            Status = AcpiAmlConvertToString (StackPtr, WalkState);
+            Status = AcpiExConvertToString (StackPtr, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
                 {
-                    DEBUG_PRINT (ACPI_INFO,
-                        ("AmlResolveOperands: Needed [Integer/String/Buffer], found [%s] %p\n",
-                        AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                    DEBUG_PRINTP (ACPI_INFO,
+                        ("Needed [Integer/String/Buffer], found [%s] %p\n",
+                        AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                 }
@@ -558,9 +554,9 @@ AcpiAmlResolveOperands (
                 (ACPI_TYPE_STRING != (*StackPtr)->Common.Type) &&
                 (ACPI_TYPE_BUFFER != (*StackPtr)->Common.Type))
             {
-                DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveOperands: Needed [Integer/String/Buffer], found [%s] %p\n",
-                    AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                DEBUG_PRINTP (ACPI_INFO,
+                    ("Needed [Integer/String/Buffer], found [%s] %p\n",
+                    AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
@@ -585,9 +581,9 @@ AcpiAmlResolveOperands (
                 ((*StackPtr)->Common.Type != ACPI_TYPE_PACKAGE) &&
                 ((*StackPtr)->Common.Type != INTERNAL_TYPE_REFERENCE))
             {
-                DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveOperands: Needed [Buf/Str/Pkg/Ref], found [%s] %p\n",
-                    AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                DEBUG_PRINTP (ACPI_INFO,
+                    ("Needed [Buf/Str/Pkg/Ref], found [%s] %p\n",
+                    AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
@@ -599,8 +595,8 @@ AcpiAmlResolveOperands (
             {
                 if (!(*StackPtr)->Reference.Node)
                 {
-                    DEBUG_PRINT (ACPI_INFO,
-                        ("AmlResolveOperands: Needed [Node Reference], found [%p]\n",
+                    DEBUG_PRINTP (ACPI_INFO,
+                        ("Needed [Node Reference], found [%p]\n",
                         *StackPtr));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -612,14 +608,15 @@ AcpiAmlResolveOperands (
 
         case ARGI_COMPLEXOBJ:
 
-            /* Need a buffer or package */
+            /* Need a buffer or package or (ACPI 2.0) String */
 
             if (((*StackPtr)->Common.Type != ACPI_TYPE_BUFFER) &&
+                ((*StackPtr)->Common.Type != ACPI_TYPE_STRING) &&
                 ((*StackPtr)->Common.Type != ACPI_TYPE_PACKAGE))
             {
-                DEBUG_PRINT (ACPI_INFO,
-                    ("AmlResolveOperands: Needed [Buf/Pkg], found [%s] %p\n",
-                    AcpiCmGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
+                DEBUG_PRINTP (ACPI_INFO,
+                    ("Needed [Buf/Pkg], found [%s] %p\n",
+                    AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
@@ -631,8 +628,8 @@ AcpiAmlResolveOperands (
 
             /* Unknown type */
 
-            DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveOperands: Internal error - Unknown ARGI type %X\n",
+            DEBUG_PRINTP (ACPI_ERROR,
+                ("Internal - Unknown ARGI type %X\n",
                 ThisArgType));
 
             return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -643,7 +640,7 @@ AcpiAmlResolveOperands (
          * Make sure that the original object was resolved to the
          * required object type (Simple cases only).
          */
-        Status = AcpiAmlCheckObjectType (TypeNeeded,
+        Status = AcpiExCheckObjectType (TypeNeeded,
                         (*StackPtr)->Common.Type, *StackPtr);
         if (ACPI_FAILURE (Status))
         {

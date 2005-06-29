@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.39 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -228,7 +228,7 @@ AcpiDsCreateField (
              * the object stack
              */
 
-            Status = AcpiAmlPrepRegionFieldValue (Node, RegionNode, FieldFlags,
+            Status = AcpiExPrepRegionFieldValue (Node, RegionNode, FieldFlags,
                             FieldBitPosition, Arg->Value.Size);
             if (ACPI_FAILURE (Status))
             {
@@ -359,7 +359,7 @@ AcpiDsCreateBankField (
              * the object stack
              */
 
-            Status = AcpiAmlPrepBankFieldValue (Node, RegionNode, RegisterNode,
+            Status = AcpiExPrepBankFieldValue (Node, RegionNode, RegisterNode,
                             BankValue, FieldFlags, FieldBitPosition,
                             Arg->Value.Size);
             if (ACPI_FAILURE (Status))
@@ -487,7 +487,7 @@ AcpiDsCreateIndexField (
              * the object stack
              */
 
-            Status = AcpiAmlPrepIndexFieldValue (Node, IndexRegisterNode,
+            Status = AcpiExPrepIndexFieldValue (Node, IndexRegisterNode,
                             DataRegisterNode, FieldFlags,
                             FieldBitPosition, Arg->Value.Size);
             if (ACPI_FAILURE (Status))
@@ -503,8 +503,7 @@ AcpiDsCreateIndexField (
 
         default:
 
-            DEBUG_PRINT (ACPI_ERROR,
-                ("DsEnterIndexField: Invalid opcode in field list: %X\n",
+            DEBUG_PRINTP (ACPI_ERROR, ("Invalid opcode in field list: %X\n",
                 Arg->Opcode));
             Status = AE_AML_ERROR;
             break;
