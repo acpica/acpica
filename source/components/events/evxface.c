@@ -152,7 +152,7 @@ AcpiEnable (void)
         /*  ACPI tables are not available   */
 
         DEBUG_PRINT (ACPI_WARN, ("No ACPI tables present!\n"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_NO_ACPI_TABLES);
         return AE_NO_ACPI_TABLES;
     }
 
@@ -167,7 +167,7 @@ AcpiEnable (void)
         /* TBD: verify input file specified */
 
         DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported!\n"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_ERROR);
         return AE_ERROR;
     }
 
@@ -178,7 +178,7 @@ AcpiEnable (void)
         /* Unable to install SCI handler */
 
         DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_ERROR);
         return AE_ERROR;
     }
     
@@ -193,7 +193,7 @@ AcpiEnable (void)
             /*  Unable to transition to ACPI Mode   */
 
             DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
-            FUNCTION_EXIT;;
+            FUNCTION_STATUS_EXIT (AE_ERROR);
             return AE_ERROR;    
         }
         else
@@ -208,7 +208,7 @@ AcpiEnable (void)
             /* Unable to initialize GPEs. */
         
             DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize general purpose events.\n"));
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_ERROR);
             return AE_ERROR;
         }
     
@@ -216,7 +216,7 @@ AcpiEnable (void)
 
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 
 }
@@ -263,7 +263,7 @@ AcpiDisable (void)
         
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -297,7 +297,7 @@ AcpiInstallFixedEventHandler (
 
     if (Event >= NUM_FIXED_EVENTS)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
     
@@ -305,7 +305,7 @@ AcpiInstallFixedEventHandler (
 
     if (NULL != FixedEventHandlers[Event])
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_EXIST);
         return AE_EXIST;
     }
     
@@ -317,13 +317,13 @@ AcpiInstallFixedEventHandler (
     {
         DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
         FixedEventHandlers[Event] = NULL;
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_ERROR);
         return AE_ERROR;
     }
 
     DEBUG_PRINT (ACPI_INFO, ("Enabled fixed event %d.  Handler: %x\n", Event, Handler));    
     
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -353,7 +353,7 @@ AcpiRemoveFixedEventHandler (
 
     if (Event >= NUM_FIXED_EVENTS)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
     
@@ -362,14 +362,14 @@ AcpiRemoveFixedEventHandler (
     if (0 != AcpiRegisterIO (ACPI_WRITE, Event + TMR_EN, 0))
     {
         DEBUG_PRINT (ACPI_WARN, ("Could not write to fixed event enable register.\n"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_ERROR);
         return AE_ERROR;
     }
 
     FixedEventHandlers[Event] = NULL;    
     DEBUG_PRINT (ACPI_INFO, ("Disabled fixed event %d.\n", Event));    
     
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -402,7 +402,7 @@ AcpiInstallGpeHandler (
 
     if (!Handler || (GpeNumber >= GpeRegisterCount))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -413,7 +413,7 @@ AcpiInstallGpeHandler (
 
     if (GpeInfo[GpeNumber].Handler)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_EXIST);
         return AE_EXIST;
     }
 
@@ -428,7 +428,7 @@ AcpiInstallGpeHandler (
 
     HwEnableGpe (GpeNumber);
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -458,7 +458,7 @@ AcpiRemoveGpeHandler (
 
     if (!Handler || (GpeNumber >= GpeRegisterCount))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -469,7 +469,7 @@ AcpiRemoveGpeHandler (
 
     if (GpeInfo[GpeNumber].Handler != Handler)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -485,7 +485,7 @@ AcpiRemoveGpeHandler (
     GpeInfo[GpeNumber].Context = NULL;
 
  
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -521,7 +521,7 @@ AcpiInstallNotifyHandler (
 
     if (!Handler)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -530,7 +530,7 @@ AcpiInstallNotifyHandler (
 
     if (!(ObjEntry = NsConvertHandleToEntry (Device)))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -542,7 +542,7 @@ AcpiInstallNotifyHandler (
     if ((ObjEntry->Type != TYPE_Device) &&
         (ObjEntry->Type != TYPE_Thermal))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -552,7 +552,7 @@ AcpiInstallNotifyHandler (
     ObjDesc = ObjEntry->Value;
     if (ObjDesc->Device.Handler)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_EXIST);
         return AE_EXIST;
     }
 
@@ -568,7 +568,7 @@ AcpiInstallNotifyHandler (
     ObjDesc->Device.Context = Context;
 
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -602,7 +602,7 @@ AcpiRemoveNotifyHandler (
 
     if (!Handler)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -611,7 +611,7 @@ AcpiRemoveNotifyHandler (
 
     if (!(ObjEntry = NsConvertHandleToEntry (Device)))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -623,7 +623,7 @@ AcpiRemoveNotifyHandler (
     if ((ObjEntry->Type != TYPE_Device) &&
         (ObjEntry->Type != TYPE_Thermal))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -633,7 +633,7 @@ AcpiRemoveNotifyHandler (
     ObjDesc = ObjEntry->Value;
     if (ObjDesc->Device.Handler != Handler)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -649,16 +649,16 @@ AcpiRemoveNotifyHandler (
     ObjDesc->Device.Context = NULL;
 
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiInstallOpRegionHandler
+ * FUNCTION:    AcpiInstallAddressSpaceHandler
  *
- * PARAMETERS:  OpRegion        - The OpRegion ID
+ * PARAMETERS:  SpaceId         - The address space ID
  *              Handler         - Address of the handler
  *              Context         - Value passed to the handler on each GPE
  *
@@ -669,33 +669,51 @@ AcpiRemoveNotifyHandler (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiInstallOpRegionHandler (
-    UINT32                  OpRegion, 
-    OPREGION_HANDLER        Handler, 
+AcpiInstallAddressSpaceHandler (
+    UINT32                  SpaceId, 
+    ADDRESS_SPACE_HANDLER   Handler, 
     void                    *Context)
 {
-    FUNCTION_TRACE ("AcpiInstallOpRegionHandler");
+    FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
 
 
     /* Parameter validation */
 
-    if (!Handler)
+    if ((!Handler) ||
+        (SpaceId > ACPI_MAX_ADDRESS_SPACE))
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
 
-    FUNCTION_EXIT;
+    /* TBD: Mutex */
+
+
+    /* Check for an existing handler */
+
+    if (AddressSpaces[SpaceId].Handler)
+    {
+        FUNCTION_STATUS_EXIT (AE_EXIST);
+        return AE_EXIST;
+    }
+
+    /* Install the handler */
+
+    AddressSpaces[SpaceId].Handler = Handler;
+    AddressSpaces[SpaceId].Context = Context;
+
+
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiRemoveOpRegionHandler
+ * FUNCTION:    AcpiRemoveAddressSpaceHandler
  *
- * PARAMETERS:  OpRegion        - The OpRegion ID
+ * PARAMETERS:  SpaceId         - The address space ID
  *              Handler         - Address of the handler
  *
  * RETURN:      Status
@@ -705,22 +723,38 @@ AcpiInstallOpRegionHandler (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRemoveOpRegionHandler (
-    UINT32                  OpRegion, 
-    OPREGION_HANDLER        Handler)
+AcpiRemoveAddressSpaceHandler (
+    UINT32                  SpaceId, 
+    ADDRESS_SPACE_HANDLER   Handler)
 {
-    FUNCTION_TRACE ("AcpiRemoveOpRegionHandler");
+    FUNCTION_TRACE ("AcpiRemoveAddressSpaceHandler");
 
 
     /* Parameter validation */
 
-    if (!Handler)
+    if ((!Handler) ||
+        (SpaceId > ACPI_MAX_ADDRESS_SPACE))
     {
-       FUNCTION_EXIT;
-       return AE_BAD_PARAMETER;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
     }
 
+    /* TBD: Mutex */
 
-    FUNCTION_EXIT;
+    /* Make sure that the installed handler is the same */
+
+    if (AddressSpaces[SpaceId].Handler != Handler)
+    {
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
+        return AE_BAD_PARAMETER;
+    }
+
+    /* Remove the handler */
+
+    AddressSpaces[SpaceId].Handler = NULL;
+    AddressSpaces[SpaceId].Context = NULL;
+
+
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
