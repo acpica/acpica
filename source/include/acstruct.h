@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.17 $
+ *       $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -130,12 +130,14 @@
  * the tree (for whatever reason), and for control method execution.
  */
 
-#define ACPI_NEXT_OP_DOWNWARD    1
-#define ACPI_NEXT_OP_UPWARD      2
+#define ACPI_NEXT_OP_DOWNWARD       1
+#define ACPI_NEXT_OP_UPWARD         2
 
-#define ACPI_WALK_NON_METHOD     0
-#define ACPI_WALK_METHOD         1
-#define ACPI_WALK_METHOD_RESTART 2
+#define ACPI_WALK_NON_METHOD        0
+#define ACPI_WALK_METHOD            1
+#define ACPI_WALK_METHOD_RESTART    2
+#define ACPI_WALK_CONST_REQUIRED    3
+#define ACPI_WALK_CONST_OPTIONAL    4
 
 typedef struct acpi_walk_state
 {
