@@ -2,6 +2,7 @@
 /******************************************************************************
  * 
  * Module Name: asmain - Main module for the acpi source processor utility
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -341,7 +342,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    "char ",             "INT8 ",
+    "ACPI_NAMESPACE_NODE*", "ACPI_NAMESPACE_NODE *", 
     NULL,               NULL
 };
 
