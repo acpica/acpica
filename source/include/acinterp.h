@@ -124,36 +124,39 @@
 
 /* Interpreter constants */
 
-#define AML_END_OF_BLOCK        -1
-#define PUSH_PKG_LENGTH         1
-#define DO_NOT_PUSH_PKG_LENGTH  0
+#define AML_END_OF_BLOCK            -1
+#define PUSH_PKG_LENGTH             1
+#define DO_NOT_PUSH_PKG_LENGTH      0
 
 
-#define STACK_TOP               0
-#define STACK_BOTTOM            (UINT32) -1
+#define STACK_TOP                   0
+#define STACK_BOTTOM                (UINT32) -1
 
 
 /* For AmlMthStackSetValue */
 
-#define MTH_TYPE_LOCAL      0
-#define MTH_TYPE_ARG        1
+#define MTH_TYPE_LOCAL              0
+#define MTH_TYPE_ARG                1
 
 
 
-/* New interfaces */
-
-ACPI_STATUS
-AmlExecCreateMutex (
-    OPERATING_MODE          InterpreterMode);
+/*
+ * iapi - External interpreter interfaces
+ */
 
 ACPI_STATUS
-AmlExecCreateRegion (
-    UINT8                   *AmlPtr,
-    UINT32                  AmlLength,
-    OPERATING_MODE          InterpreterMode);
+AmlLoadTable (
+    ACPI_TABLE_TYPE         TableId);
 
 ACPI_STATUS
-AmlExecCreateEvent (void);
+AmlExecuteMethod (
+    ACPI_OBJECT_INTERNAL    *MthDesc,
+    ACPI_OBJECT_INTERNAL    **Params);
+
+
+/*
+ * iefield - ACPI AML (p-code) execution - field manipulation
+ */
 
 
 ACPI_STATUS
@@ -189,89 +192,6 @@ AmlReadFieldData (
     UINT32                  FieldBitWidth,
     UINT32                  *Value);
 
-
-
-#include <parser.h> /* Temp */
-
-ACPI_STATUS
-AmlBeginScopeForPass1 (
-    UINT8                   *PcodeAddr, 
-    ACPI_PARSE_STATE        *state,
-    ACPI_GENERIC_OP         *op);
-
-ACPI_STATUS
-AmlEndScopeForPass1 (
-    UINT8                    *PcodeAddr, 
-    ACPI_PARSE_STATE        *state,
-    ACPI_GENERIC_OP         *op);
-
-ACPI_STATUS
-AmlBeginScopeForPass2 (
-    UINT8                   *PcodeAddr, 
-    ACPI_PARSE_STATE        *state,
-    ACPI_GENERIC_OP         *op);
-
-ACPI_STATUS
-AmlEndScopeForPass2 (
-    UINT8                   *PcodeAddr, 
-    ACPI_PARSE_STATE        *state,
-    ACPI_GENERIC_OP         *op);
-
-ACPI_STATUS
-AmlBeginScopeForExecution (
-    UINT8                   *PcodeAddr, 
-    ACPI_PARSE_STATE        *state,
-    ACPI_GENERIC_OP         *op);
-
-ACPI_STATUS
-AmlEndScopeForExecution (
-    UINT8                   *PcodeAddr, 
-    ACPI_PARSE_STATE        *state,
-    ACPI_GENERIC_OP         *op);
-
-
-
-ACPI_STATUS
-AmlCreateOperands (
-    ACPI_PARSE_STATE        *state,
-    ACPI_GENERIC_OP         *op);
-
-
-ACPI_OBJECT_TYPE
-AmlMapDataOpcodeToDataType (
-    UINT32                  Opcode);
-
-ACPI_OBJECT_TYPE 
-PsMapOpcodeToDataType (
-    UINT32                  Opcode);
-
-void
-AmlEnterOperandsIntoNamespace (
-    ACPI_PARSE_STATE        *state,
-    ACPI_GENERIC_OP         *op,
-    ACPI_HANDLE             Region);
-
-
-/*
- * iapi - External interpreter interfaces
- */
-
-ACPI_STATUS
-AmlLoadTable (
-    ACPI_TABLE_TYPE         TableId);
-
-ACPI_STATUS
-AmlExecuteMethod (
-    UINT8                   *Pcode, 
-    UINT32                  Length, 
-    ACPI_OBJECT_INTERNAL    **Params);
-
-
-/*
- * iefield - ACPI AML (p-code) execution - field manipulation
- */
-
-
 ACPI_STATUS
 AmlAccessNamedField (
     INT32                   Mode, 
@@ -299,6 +219,31 @@ AmlGetNamedFieldValue (
 ACPI_STATUS
 AmlExecCreateField (
     UINT16                  Opcode);
+
+ACPI_STATUS
+AmlExecCreateMutex (
+    OPERATING_MODE          InterpreterMode);
+
+ACPI_STATUS
+AmlExecCreateRegion (
+    UINT8                   *AmlPtr,
+    UINT32                  AmlLength,
+    OPERATING_MODE          InterpreterMode);
+
+ACPI_STATUS
+AmlExecCreateEvent (
+    void);
+
+ACPI_STATUS
+AmlExecCreateAlias (
+    void);
+
+ACPI_STATUS
+AmlExecCreateMethod (
+    UINT8                   *AmlPtr,
+    UINT32                  AmlLength,
+    UINT32                  MethodFlags,
+    ACPI_HANDLE             Method);
 
 ACPI_STATUS
 AmlExecFatal (
@@ -559,9 +504,8 @@ AmlExecStore (
     ACPI_OBJECT_INTERNAL    *res);
 
 ACPI_STATUS
-AmlExecute (
-    UINT8                   *Pcode, 
-    UINT32                  Length, 
+PsxExecute (
+    ACPI_OBJECT_INTERNAL    *MthDesc,
     ACPI_OBJECT_INTERNAL    **Params);
 
 
@@ -707,146 +651,6 @@ AmlDumpObjectDescriptor (
 #define AmlDumpObjStack(a,b,c,d)    _AmlDumpObjStack(a,b,c,d,_THIS_MODULE,__LINE__)
 
 
-/*
- * idoexpr - interpreter/scanner expression load/execute
- */
-
-ACPI_STATUS
-AmlDoCodeBlock (
-    OPERATING_MODE          InterpreterMode);
-
-ACPI_STATUS
-AmlDoDataTerm (
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoCode (
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoDefinitionBlock (
-    UINT8                   *Address, 
-    INT32                   Length);
-    
-ACPI_STATUS
-AmlDoFieldElement (
-    ACPI_OBJECT_TYPE        DataType, 
-    FIELD_INFO              *FieldInfo,
-    OPERATING_MODE          LoadExecMode);
-
-
-/*
- * isdopkg - interpreter/scanner AML package load/execute
- */
-
-ACPI_STATUS
-AmlDoPkg (
-    ACPI_OBJECT_TYPE        Type, 
-    OPERATING_MODE          LoadExecMode);
-
-
-/*
- * idopkobj - typed package routines for misc types
- */
-
-ACPI_STATUS
-AmlDoPackagePkg (
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoDevicePkg (
-    ACPI_OBJECT_TYPE        DataType, 
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoPowerPkg (
-    ACPI_OBJECT_TYPE        DataType, 
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoProcessorPkg (
-    ACPI_OBJECT_TYPE        DataType, 
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoMethodPkg (
-    ACPI_OBJECT_TYPE        DataType, 
-    UINT32                  PkgLength,
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoBufferPkg (
-    OPERATING_MODE          LoadExecMode);
-
-
-/*
- * idopkfld - typed package routines for field types
- */
-
-ACPI_STATUS
-AmlDoDefFieldPkg (
-    ACPI_OBJECT_TYPE        DataType, 
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoBankFieldPkg (
-    ACPI_OBJECT_TYPE        DataType, 
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoIndexFieldPkg (
-    ACPI_OBJECT_TYPE        DataType, 
-    OPERATING_MODE          LoadExecMode);
-
-
-/*
- * idopkctl - typed package routines for control types
- */
-
-ACPI_STATUS
-AmlDoWhilePkg (
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoIfPkg (
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoElsePkg (
-    OPERATING_MODE          LoadExecMode);
-
-
-/*
- * isdoname - interpreter/scanner named object load/execute
- */
-
-ACPI_STATUS
-AmlDoNameSpaceModifier (
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoNamedObject (
-    OPERATING_MODE          LoadExecMode);
-
-
-/*
- * isidata - interpreter/scanner interpreted data load/execute
- */
-
-ACPI_STATUS 
-AmlDoFieldFlag (
-    FIELD_INFO              *FieldInfo,
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoMatchOp (
-    OPERATING_MODE          LoadExecMode);
-
-void
-AmlDoOpByte (
-    UINT16                  Opcode, 
-    OPERATING_MODE          LoadExecMode);
-
 
 /*
  * isnames - interpreter/scanner name load/execute
@@ -866,82 +670,27 @@ AmlGoodName (
     UINT32                  Name);
 
 ACPI_STATUS
-AmlDoSeg (
-    char                    *NameString,
-    OPERATING_MODE          LoadExecMode);
+AmlExecNameSegment (
+    UINT8                   **InAmlAddress,
+    char                    *NameString);
+
+ACPI_STATUS
+AmlGetNameString (
+    ACPI_OBJECT_TYPE        DataType, 
+    UINT8                   *InAmlAddress,
+    char                    **OutNameString,
+    UINT32                  *OutNameLength)  ; 
 
 INT32 
 AmlDecodePackageLength (
     INT32                   LastPkgLen);
+
 
 ACPI_STATUS
 AmlDoName (
     ACPI_OBJECT_TYPE        DataType, 
     OPERATING_MODE          LoadExecMode);
 
-
-/*
- * isdoop - interpreter/scanner expression(opcode) load/execute
- */
-
-ACPI_STATUS
-AmlDoOpCode (
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoRefOpCode (
-    OPERATING_MODE          LoadExecMode);
-
-
-/*
- * isdoopt1 - interpreter/scanner expression(opcode) load/execute
- */
-
-ACPI_STATUS
-AmlDoType1OpCode (
-    OPERATING_MODE          LoadExecMode);
-
-
-/*
- * isdoopt2 - interpreter/scanner expression(opcode) load/execute
- */
-
-ACPI_STATUS 
-AmlDoType2OpCode (
-    OPERATING_MODE          LoadExecMode);
-    
-
-/*
- * isrdata - interpreter/scanner raw data load/execute
- */
-
-void 
-AmlShowHexValue (
-    INT32                   ByteCount, 
-    UINT8                   *AmlPtr, 
-    OPERATING_MODE          LoadExecMode, 
-    INT32                   LeadSpace);
-
-ACPI_STATUS
-AmlDoPkgLength (
-    INT32                   DoPush, 
-    UINT32                  *ReturnLength,
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlDoByteConst (
-    OPERATING_MODE          LoadExecMode, 
-    INT32                   LeadSpace);
-
-ACPI_STATUS
-AmlDoWordConst (
-    OPERATING_MODE          LoadExecMode, 
-    INT32                   LeadSpace);
-
-ACPI_STATUS
-AmlDoDWordConst (
-    OPERATING_MODE          LoadExecMode, 
-    INT32                   LeadSpace);
 
 
 /*
