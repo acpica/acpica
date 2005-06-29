@@ -560,7 +560,11 @@ SOURCE=..\..\Subsystem\Parser\psxfield.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Parser\psxload.c
+SOURCE=..\..\Subsystem\Parser\psxload1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Parser\psxload2.c
 # End Source File
 # Begin Source File
 
