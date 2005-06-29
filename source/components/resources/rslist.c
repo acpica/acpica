@@ -3,7 +3,7 @@
  *
  * Module Name: rslist - AcpiRsByteStreamToList
  *                       AcpiListToByteStream
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@ AcpiRsByteStreamToList (
     UINT32                  ByteStreamBufferLength,
     UINT8                   **OutputBuffer)
 {
-    ACPI_STATUS             Status = AE_UNKNOWN_STATUS;
+    ACPI_STATUS             Status;
     UINT32                  BytesParsed = 0;
     UINT8                   ResourceType = 0;
     UINT32                  BytesConsumed = 0;
@@ -264,7 +264,7 @@ AcpiRsByteStreamToList (
                  * If we get here, everything is out of sync,
                  *  so exit with an error
                  */
-                return_ACPI_STATUS (AE_ERROR);
+                return_ACPI_STATUS (AE_AML_ERROR);
                 break;
             }
         }
@@ -373,11 +373,11 @@ AcpiRsByteStreamToList (
                  * If we get here, everything is out of sync,
                  *  so exit with an error
                  */
-                return_ACPI_STATUS (AE_ERROR);
+                return_ACPI_STATUS (AE_AML_ERROR);
                 break;
 
             } /* switch */
-        }  /* if(ResourceType & 0x80) */
+        }  /* end else */
 
         /*
          * Update the return value and counter
@@ -394,15 +394,15 @@ AcpiRsByteStreamToList (
          */
         *Buffer += StructureSize;
 
-    } /*  while (BytesParsed < ByteStreamBufferLength &&
-          FALSE == EndTagProcessed)  */
+    } /*  end while */
 
     /*
      * Check the reason for exiting the while loop
      */
-    if (ByteStreamBufferLength != BytesParsed || TRUE != EndTagProcessed)
+    if (!(ByteStreamBufferLength == BytesParsed) ||
+         (TRUE != EndTagProcessed))
     {
-        return_ACPI_STATUS (AE_ERROR);
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -437,7 +437,7 @@ AcpiRsListToByteStream (
     UINT32                  ByteStreamSizeNeeded,
     UINT8                   **OutputBuffer)
 {
-    ACPI_STATUS             Status = AE_UNKNOWN_STATUS;
+    ACPI_STATUS             Status;
     UINT8                   *Buffer = *OutputBuffer;
     UINT32                  BytesConsumed = 0;
     BOOLEAN                 Done = FALSE;

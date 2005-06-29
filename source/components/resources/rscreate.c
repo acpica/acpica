@@ -4,7 +4,7 @@
  * Module Name: rscreate - AcpiRsCreateResourceList
  *                         AcpiRsCreatePciRoutingTable
  *                         AcpiRsCreateByteStream
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -154,7 +154,7 @@ AcpiRsCreateResourceList (
     UINT32                  *OutputBufferLength)
 {
 
-    ACPI_STATUS             Status = AE_UNKNOWN_STATUS;
+    ACPI_STATUS             Status;
     UINT8                   *ByteStreamStart = NULL;
     UINT32                  ListSizeNeeded = 0;
     UINT32                  ByteStreamBufferLength = 0;
@@ -165,15 +165,10 @@ AcpiRsCreateResourceList (
     DEBUG_PRINT (VERBOSE_INFO, ("RsCreateResourceList: ByteStreamBuffer = %p\n",
                  ByteStreamBuffer));
 
-    /*
-     * Validate parameters:
-     */
-    if (!ByteStreamBuffer ||
-       (!OutputBuffer && 0 != *OutputBufferLength))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
+	    /*
+	     * Params already validated, so we don't re-validate here
+	     */
+    
     ByteStreamBufferLength = ByteStreamBuffer->Buffer.Length;
     ByteStreamStart = ByteStreamBuffer->Buffer.Pointer;
 
@@ -270,107 +265,18 @@ AcpiRsCreatePciRoutingTable (
     UINT32                  BufferSizeNeeded = 0;
     UINT32                  NumberOfElements = 0;
     UINT32                  Index = 0;
-    UINT8                   TableIndex = 0;
-    BOOLEAN                 NameFound = FALSE;
     PCI_ROUTING_TABLE       *UserPrt = NULL;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("RsCreatePciRoutingTable");
 
     /*
-     * Validate parameters:
+     * Params already validated, so we don't re-validate here
      */
-    if (!PackageObject ||
-       (!OutputBuffer && 0 != *OutputBufferLength))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
 
-    /*
-     * Calculate the buffer size needed for the routing table.
-     */
-    NumberOfElements = PackageObject->Package.Count;
-
-    /*
-     * Calculate the size of the return buffer.
-     * The base size is the number of elements * the sizes of the
-     * structures.  Additional space for the strings is added below.
-     * The minus one is to subtract the size of the UINT8 Source[1]
-     * member because it is added below.
-     *
-     * NOTE: The NumberOfElements is incremented by one to add an end
-     * table structure that is essentially a structure of zeros.
-     */
-    BufferSizeNeeded = (NumberOfElements + 1) *
-                       (sizeof (PCI_ROUTING_TABLE) - 1);
-
-    /*
-     * But each PRT_ENTRY structure has a pointer to a string and
-     * the size of that string must be found.
-     */
-    TopObjectList = PackageObject->Package.Elements;
-
-    for (Index = 0; Index < NumberOfElements; Index++)
-    {
-        /*
-         * Dereference the sub-package
-         */
-        PackageElement = *TopObjectList;
-
-        /*
-         * The SubObjectList will now point to an array of the
-         * four IRQ elements: Address, Pin, Source and SourceIndex
-         */
-        SubObjectList = PackageElement->Package.Elements;
-
-        /*
-         * Scan the IrqTableElements for the Source Name String
-         */
-        NameFound = FALSE;
-
-        for (TableIndex = 0; TableIndex < 4 && !NameFound; TableIndex++)
-        {
-            if (ACPI_TYPE_STRING == (*SubObjectList)->Common.Type)
-            {
-                NameFound = TRUE;
-            }
-
-            else
-            {
-                /*
-                 * Look at the next element
-                 */
-                SubObjectList++;
-            }
-        }
-
-        /*
-         * Was a String type found?
-         */
-        if (TRUE == NameFound)
-        {
-            /*
-             * The length String.Length field includes the
-             * terminating NULL
-             */
-            BufferSizeNeeded += (*SubObjectList)->String.Length;
-            BufferSizeNeeded = ROUND_UP_TO_32BITS (BufferSizeNeeded);
-        }
-
-        else
-        {
-            /*
-             * If no name was found, then this is a NULL, which is
-             *  translated as a UINT32 zero.
-             */
-            BufferSizeNeeded += sizeof(UINT32);
-        }
-
-        /*
-         * Point to the next ACPI_OBJECT_INTERNAL
-         */
-        TopObjectList++;
-    }
+    Status = AcpiRsCalculatePciRoutingTableLength(PackageObject,
+                                                  &BufferSizeNeeded);
 
     DEBUG_PRINT (VERBOSE_INFO,
         ("RsCreatePciRoutingTable: BufferSizeNeeded = %d\n",
@@ -569,7 +475,7 @@ AcpiRsCreateByteStream (
     UINT8                   *OutputBuffer,
     UINT32                  *OutputBufferLength)
 {
-    ACPI_STATUS             Status = AE_UNKNOWN_STATUS;
+    ACPI_STATUS             Status;
     UINT32                  ByteStreamSizeNeeded = 0;
 
 
@@ -580,15 +486,8 @@ AcpiRsCreateByteStream (
         LinkedListBuffer));
 
     /*
-     * Validate parameters:
-     */
-    if (!LinkedListBuffer ||
-       (!OutputBuffer && 0 != *OutputBufferLength))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    /*
+     * Params already validated, so we don't re-validate here
+     *
      * Pass the LinkedListBuffer into a module that can calculate
      * the buffer size needed for the byte stream.
      */

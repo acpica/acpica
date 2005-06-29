@@ -9,7 +9,7 @@
  *                       AcpiRsEndDependentFunctionsResource
  *                       AcpiRsStartDependentFunctionsStream
  *                       AcpiRsEndDependentFunctionsStream
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -516,7 +516,7 @@ AcpiRsStartDependentFunctionsResource (
 
         if (3 == OutputStruct->Data.StartDependentFunctions.CompatibilityPriority)
         {
-            return_ACPI_STATUS (AE_ERROR);
+            return_ACPI_STATUS (AE_AML_ERROR);
         }
 
         /*
@@ -527,7 +527,7 @@ AcpiRsStartDependentFunctionsResource (
 
         if (3 == OutputStruct->Data.StartDependentFunctions.PerformanceRobustness)
         {
-            return_ACPI_STATUS (AE_ERROR);
+            return_ACPI_STATUS (AE_AML_ERROR);
         }
     }
 

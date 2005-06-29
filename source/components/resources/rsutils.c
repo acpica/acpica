@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -131,7 +131,7 @@
  *
  * FUNCTION:    AcpiRsGetPrtMethodData
  *
- * PARAMETERS:  DeviceHandle    - a handle to the containing object
+ * PARAMETERS:  Handle          - a handle to the containing object
  *              RetBuffer       - a pointer to a buffer structure for the
  *                                  results
  *
@@ -152,23 +152,14 @@ AcpiRsGetPrtMethodData (
 {
     ACPI_OBJECT_INTERNAL    *RetObj;
     ACPI_STATUS             Status;
-    UINT32                  BufferSpaceNeeded = RetBuffer->Length;
+    UINT32                  BufferSpaceNeeded;
 
 
     FUNCTION_TRACE ("RsGetPrtMethodData");
 
+    /* already validated params, so we won't repeat here */
 
-    /*
-     *  Must have a valid handle and buffer, So we have to have a handle
-     *  a return buffer structure and if there is a non-zero buffer length
-     *  we also need a valid pointer in the buffer
-     */
-    if ((!Handle)               ||
-        (!RetBuffer)            ||
-        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
+    BufferSpaceNeeded = RetBuffer->Length;
 
     /*
      *  Execute the method, no parameters
@@ -230,7 +221,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiRsGetCrsMethodData
  *
- * PARAMETERS:  DeviceHandle    - a handle to the containing object
+ * PARAMETERS:  Handle          - a handle to the containing object
  *              RetBuffer       - a pointer to a buffer structure for the
  *                                  results
  *
@@ -256,18 +247,7 @@ AcpiRsGetCrsMethodData (
 
     FUNCTION_TRACE ("RsGetCrsMethodData");
 
-
-    /*
-     *  Must have a valid handle and buffer, So we have to have a handle
-     *  a return buffer structure and if there is a non-zero buffer length
-     *  we also need a valid pointer in the buffer
-     */
-    if ((!Handle)               ||
-        (!RetBuffer)            ||
-        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
+    /* already validated params, so we won't repeat here */
 
     /*
      *  Execute the method, no parameters
@@ -307,9 +287,11 @@ AcpiRsGetCrsMethodData (
                                    RetBuffer->Pointer,
                                    &BufferSpaceNeeded);
 
+    
+
     if (ACPI_SUCCESS (Status))
     {
-        AcpiRsDumpResourceList((RESOURCE *)RetBuffer->Pointer);
+        DUMP_RESOURCE_LIST(RetBuffer->Pointer);
     }
 
     /*
@@ -333,7 +315,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiRsGetPrsMethodData
  *
- * PARAMETERS:  DeviceHandle    - a handle to the containing object
+ * PARAMETERS:  Handle          - a handle to the containing object
  *              RetBuffer       - a pointer to a buffer structure for the
  *                                  results
  *
@@ -359,18 +341,7 @@ AcpiRsGetPrsMethodData (
 
     FUNCTION_TRACE ("RsGetPrsMethodData");
 
-
-    /*
-     *  Must have a valid handle and buffer, So we have to have a handle
-     *  a return buffer structure and if there is a non-zero buffer length
-     *  we also need a valid pointer in the buffer
-     */
-    if ((!Handle)               ||
-        (!RetBuffer)            ||
-        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
+    /* already validated params, so we won't repeat here */
 
     /*
      *  Execute the method, no parameters
@@ -431,9 +402,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiRsSetSrsMethodData
  *
- * PARAMETERS:  DeviceHandle    - a handle to the containing object
- *              *MethodName     - Name of method to execute, If NULL, the
- *                                handle is the object to execute
+ * PARAMETERS:  Handle          - a handle to the containing object
  *              InBuffer        - a pointer to a buffer structure of the
  *                                  parameter
  *
@@ -460,16 +429,7 @@ AcpiRsSetSrsMethodData (
 
     FUNCTION_TRACE ("RsSetSrsMethodData");
 
-    /*
-     *  Must have a valid handle and buffer
-     */
-    if ((!Handle)       ||
-        (!InBuffer)           ||
-        (!InBuffer->Pointer)  ||
-        (!InBuffer->Length))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
+    /* already validated params, so we won't repeat here */
 
     /*
      * The InBuffer parameter will point to a linked list of
@@ -513,11 +473,7 @@ AcpiRsSetSrsMethodData (
 
     if (ACPI_FAILURE (Status))
     {
-        /*
-         *  Failed the call
-         */
-        AcpiCmFree (ByteStream);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     /*
@@ -546,6 +502,9 @@ AcpiRsSetSrsMethodData (
     /*
      *  Clean up and return the status from AcpiNsEvaluateRelative
      */
+
+Cleanup:
+
     AcpiCmFree (ByteStream);
     return_ACPI_STATUS (Status);
 }

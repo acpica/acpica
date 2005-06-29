@@ -4,7 +4,7 @@
  *                       AcpiRsAddress16Stream
  *                       AcpiRsAddress32Resource
  *                       AcpiRsAddress32Stream
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -156,8 +156,8 @@ AcpiRsAddress16Resource (
 {
     UINT8                   *Buffer = ByteStreamBuffer;
     RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
-    UINT16                  Temp16 = 0;
-    UINT8                   Temp8 = 0;
+    UINT16                  Temp16;
+    UINT8                   Temp8;
     UINT32                  Index;
     UINT32                  StructSize = sizeof(ADDRESS16_RESOURCE) +
                                          RESOURCE_LENGTH_NO_DATA;
@@ -187,7 +187,7 @@ AcpiRsAddress16Resource (
     /* Values 0-2 are valid */
     if (Temp8 > 2)
     {
-        return_ACPI_STATUS (AE_ERROR);
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
     OutputStruct->Data.Address16.ResourceType = Temp8 & 0x03;
@@ -380,7 +380,7 @@ AcpiRsAddress16Stream (
 {
     UINT8                   *Buffer = *OutputBuffer;
     UINT8                   *LengthField;
-    UINT8                   Temp8 = 0;
+    UINT8                   Temp8;
     UINT8                   *TempPointer = NULL;
     UINT32                  ActualBytes;
 
@@ -554,16 +554,22 @@ AcpiRsAddress32Resource (
     UINT8                   **OutputBuffer,
     UINT32                  *StructureSize)
 {
-    UINT8                   *Buffer = ByteStreamBuffer;
-    RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
-    UINT16                  Temp16 = 0;
-    UINT8                   Temp8 = 0;
-    UINT32                  StructSize = sizeof (ADDRESS32_RESOURCE) +
-                                         RESOURCE_LENGTH_NO_DATA;
+    UINT8                   *Buffer;
+    RESOURCE                *OutputStruct;
+    UINT16                  Temp16;
+    UINT8                   Temp8;
+    UINT32                  StructSize;
     UINT32                  Index;
 
 
     FUNCTION_TRACE ("RsAddress32Resource");
+
+    Buffer = ByteStreamBuffer;
+
+    OutputStruct = (RESOURCE *) *OutputBuffer;
+
+    StructSize = sizeof (ADDRESS32_RESOURCE) +
+                 RESOURCE_LENGTH_NO_DATA;
 
     /*
      * Point past the Descriptor to get the number of bytes consumed
@@ -584,7 +590,7 @@ AcpiRsAddress32Resource (
     /* Values 0-2 are valid */
     if(Temp8 > 2)
     {
-        return_ACPI_STATUS (AE_ERROR);
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
     OutputStruct->Data.Address32.ResourceType = Temp8 & 0x03;
@@ -775,13 +781,15 @@ AcpiRsAddress32Stream (
     UINT8                   **OutputBuffer,
     UINT32                  *BytesConsumed)
 {
-    UINT8                   *Buffer = *OutputBuffer;
+    UINT8                   *Buffer;
     UINT16                  *LengthField;
-    UINT8                   Temp8 = 0;
-    UINT8                   *TempPointer = NULL;
+    UINT8                   Temp8;
+    UINT8                   *TempPointer;
 
 
     FUNCTION_TRACE ("RsAddress32Stream");
+
+    Buffer = *OutputBuffer;
 
     /*
      * The descriptor field is static
