@@ -242,9 +242,15 @@ TbRecognizeTable (
     {
         if (!STRNCMP (TableHeader->Signature, Gbl_AcpiTableData[i].Signature, Gbl_AcpiTableData[i].SigLength))
         {
+            /* Found a signature match, get the pertinent info from the TableData structure */
+
             TableType       = i;
             TableGlobalPtr  = Gbl_AcpiTableData[i].GlobalPtr;
             Status          = Gbl_AcpiTableData[i].Status;
+
+            /* Set the appropriate global pointer to point to the newly recognized table */
+
+            *TableGlobalPtr = TableInfo->Pointer;
             break;
         }
     }
