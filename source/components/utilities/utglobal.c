@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.141 $
+ *              $Revision: 1.142 $
  *
  *****************************************************************************/
 
@@ -360,11 +360,14 @@ AcpiUtHexToAsciiChar (
 
 /******************************************************************************
  *
- * Table globals
+ * Table name globals
  *
  * NOTE: This table includes ONLY the ACPI tables that the subsystem consumes.
  * it is NOT an exhaustive list of all possible ACPI tables.  All ACPI tables
  * that are not used by the subsystem are simply ignored.
+ *
+ * Do NOT add any table to this list that is not consumed directly by this
+ * subsystem.
  *
  ******************************************************************************/
 
@@ -374,15 +377,15 @@ ACPI_TABLE_DESC             AcpiGbl_AcpiTables[NUM_ACPI_TABLES];
 
 ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
 {
-    /***********    Name,    Signature,  Signature size,    How many allowed?,   Supported?  Global typed pointer */
+    /***********    Name,   Signature, Global typed pointer     Signature size,      How many allowed?,   */
 
-    /* RSDP 0 */ {RSDP_NAME, RSDP_SIG, sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
-    /* DSDT 1 */ {DSDT_SIG,  DSDT_SIG, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_DSDT},
-    /* FADT 2 */ {FADT_SIG,  FADT_SIG, sizeof (FADT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_FADT},
-    /* FACS 3 */ {FACS_SIG,  FACS_SIG, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      (void **) &AcpiGbl_FACS},
-    /* PSDT 4 */ {PSDT_SIG,  PSDT_SIG, sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
-    /* SSDT 5 */ {SSDT_SIG,  SSDT_SIG, sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE, AE_OK,      NULL},
-    /* XSDT 6 */ {XSDT_SIG,  XSDT_SIG, sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE,   AE_OK,      NULL},
+    /* RSDP 0 */ {RSDP_NAME, RSDP_SIG, NULL,                    sizeof (RSDP_SIG)-1, ACPI_TABLE_SINGLE},
+    /* DSDT 1 */ {DSDT_SIG,  DSDT_SIG, (void **) &AcpiGbl_DSDT, sizeof (DSDT_SIG)-1, ACPI_TABLE_SINGLE},
+    /* FADT 2 */ {FADT_SIG,  FADT_SIG, (void **) &AcpiGbl_FADT, sizeof (FADT_SIG)-1, ACPI_TABLE_SINGLE},
+    /* FACS 3 */ {FACS_SIG,  FACS_SIG, (void **) &AcpiGbl_FACS, sizeof (FACS_SIG)-1, ACPI_TABLE_SINGLE},
+    /* PSDT 4 */ {PSDT_SIG,  PSDT_SIG, NULL,                    sizeof (PSDT_SIG)-1, ACPI_TABLE_MULTIPLE},
+    /* SSDT 5 */ {SSDT_SIG,  SSDT_SIG, NULL,                    sizeof (SSDT_SIG)-1, ACPI_TABLE_MULTIPLE},
+    /* XSDT 6 */ {XSDT_SIG,  XSDT_SIG, NULL,                    sizeof (RSDT_SIG)-1, ACPI_TABLE_SINGLE},
 };
 
 
