@@ -280,53 +280,53 @@ AmlDumpOperand (
 
     switch (EntryDesc->Common.Type)
     {
-    case INTERNAL_TYPE_Lvalue:
+    case INTERNAL_TYPE_Reference:
 
-        switch (EntryDesc->Lvalue.OpCode)
+        switch (EntryDesc->Reference.OpCode)
         {
         case AML_ZeroOp:
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Zero\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Reference: Zero\n"));
             break;
 
 
         case AML_OneOp:
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: One\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Reference: One\n"));
             break;
 
 
         case AML_OnesOp:
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Ones\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Reference: Ones\n"));
             break;
 
 
         case AML_DebugOp:
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Debug\n"));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Reference: Debug\n"));
             break;
 
 
         case AML_NameOp:
 
-            DUMP_PATHNAME (EntryDesc->Lvalue.Object, "Lvalue: Name: ", 
+            DUMP_PATHNAME (EntryDesc->Reference.Object, "Reference: Name: ", 
                             ACPI_INFO, _COMPONENT);
-            DUMP_ENTRY (EntryDesc->Lvalue.Object, ACPI_INFO);
+            DUMP_ENTRY (EntryDesc->Reference.Object, ACPI_INFO);
             break;
 
 
         case AML_IndexOp:
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Index %p\n",
-                        EntryDesc->Lvalue.Object));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Reference: Index %p\n",
+                        EntryDesc->Reference.Object));
             break;
 
 
         case AML_ArgOp:
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Arg%d",
-                        EntryDesc->Lvalue.Offset));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Reference: Arg%d",
+                        EntryDesc->Reference.Offset));
 
             if (ACPI_TYPE_Number == EntryDesc->Common.Type)
             {
@@ -342,8 +342,8 @@ AmlDumpOperand (
 
         case AML_LocalOp:
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue: Local%d",
-                        EntryDesc->Lvalue.Offset));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Reference: Local%d",
+                        EntryDesc->Reference.Offset));
 
             if (ACPI_TYPE_Number == EntryDesc->Common.Type)
             {
@@ -359,15 +359,15 @@ AmlDumpOperand (
 
 
         case AML_NAMEPATH_OP:
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Lvalue.Nte->Name %x\n",
-                        EntryDesc->Lvalue.Nte->Name));
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Reference.Nte->Name %x\n",
+                        EntryDesc->Reference.Nte->Name));
             break;
         
         default:
 
             /*  unknown opcode  */
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown opcode=%X\n", EntryDesc->Lvalue.OpCode)); 
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown opcode=%X\n", EntryDesc->Reference.OpCode)); 
             REPORT_ERROR ("AmlDumpOperand: Unknown AML Opcode");
             break;
 
@@ -716,6 +716,8 @@ AmlDumpNameTableEntry (
     OsdPrintf ("%20s : %4.4s\n",    "Name",             &Entry->Name);
     OsdPrintf ("%20s : %s\n",       "Type",             CmGetTypeName (Entry->Type));
     OsdPrintf ("%20s : 0x%X\n",     "Flags",            Entry->Flags);
+    OsdPrintf ("%20s : 0x%X\n",     "Owner Id",         Entry->TableId);
+    OsdPrintf ("%20s : 0x%X\n",     "Reference Count",  Entry->ReferenceCount);
     OsdPrintf ("%20s : 0x%p\n",     "Attached Object",  Entry->Object);
     OsdPrintf ("%20s : 0x%p\n",     "Scope",            Entry->Scope);
     OsdPrintf ("%20s : 0x%p\n",     "Parent",           Entry->ParentEntry);
@@ -922,11 +924,11 @@ AmlDumpObjectDescriptor (
 	    break;
 
 
-	case INTERNAL_TYPE_Lvalue:
+	case INTERNAL_TYPE_Reference:
 
-		OsdPrintf ("%20s : %s\n",   "Type", "Lvalue");
-	    OsdPrintf ("%20s : 0x%X\n", "OpCode", ObjDesc->Lvalue.OpCode);
-	    OsdPrintf ("%20s : 0x%p\n", "ObjDesc", ObjDesc->Lvalue.Object);
+		OsdPrintf ("%20s : %s\n",   "Type", "Reference");
+	    OsdPrintf ("%20s : 0x%X\n", "OpCode", ObjDesc->Reference.OpCode);
+	    OsdPrintf ("%20s : 0x%p\n", "ObjDesc", ObjDesc->Reference.Object);
 		break;
 
 
