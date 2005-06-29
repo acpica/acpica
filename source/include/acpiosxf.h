@@ -221,6 +221,27 @@ AcpiOsSignalSemaphore (
     ACPI_HANDLE             Handle,
     UINT32                  Units);
 
+ACPI_STATUS
+AcpiOsCreateLock (
+    ACPI_HANDLE             *OutHandle);
+
+void
+AcpiOsDeleteLock (
+    ACPI_HANDLE             Handle);
+
+void
+AcpiOsAcquireLock (
+    ACPI_HANDLE             Handle,
+    UINT32                  Flags);
+
+void
+AcpiOsReleaseLock (
+    ACPI_HANDLE             Handle,
+    UINT32                  Flags);
+
+#define ACPI_NON_HANDLER    1
+#define ACPI_HANDLER        0
+
 
 /*
  * Memory allocation and mapping
