@@ -389,7 +389,7 @@ AmlExecNameSegment (
 
 ACPI_STATUS
 AmlGetNameString (
-    ACPI_OBJECT_TYPE        DataType, 
+    OBJECT_TYPE_INTERNAL    DataType, 
     UINT8                   *InAmlAddress,
     char                    **OutNameString,
     UINT32                  *OutNameLength)   
