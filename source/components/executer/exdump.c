@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.158 $
+ *              $Revision: 1.159 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,6 @@ AcpiExDumpOperand (
     UINT32                  i;
     ACPI_OPERAND_OBJECT     **Element;
     UINT16                  ElementIndex;
-
 
 
     ACPI_FUNCTION_NAME ("ExDumpOperand")
