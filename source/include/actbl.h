@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.35 $
+ *       $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -125,10 +125,11 @@
 #define RSDP_SIG            "RSD PTR "              /* RSDT Pointer signature */
 #define APIC_SIG            "APIC"                  /* Multiple APIC Description Table */
 #define DSDT_SIG            "DSDT"                  /* Differentiated System Description Table */
-#define FACP_SIG            "FACP"                  /* Fixed ACPI Description Table */
+#define FADT_SIG            "FACP"                  /* Fixed ACPI Description Table */
 #define FACS_SIG            "FACS"                  /* Firmware ACPI Control Structure */
 #define PSDT_SIG            "PSDT"                  /* Persistent System Description Table */
 #define RSDT_SIG            "RSDT"                  /* Root System Description Table */
+#define XSDT_SIG            "XSDT"                  /* Extended  System Description Table */
 #define SSDT_SIG            "SSDT"                  /* Secondary System Description Table */
 #define SBST_SIG            "SBST"                  /* Smart Battery Specification Table */
 #define SPIC_SIG            "SPIC"                  /* iosapic table */
@@ -158,10 +159,14 @@ typedef struct  /* Root System Descriptor Pointer */
     NATIVE_CHAR             Signature [8];          /* contains "RSD PTR " */
     UINT8                   Checksum;               /* to make sum of struct == 0 */
     NATIVE_CHAR             OemId [6];              /* OEM identification */
-    UINT8                   Reserved;               /* reserved - must be zero */
-    UINT32                  RsdtPhysicalAddress;    /* physical address of RSDT */
+    UINT8                   Revision;               /* Must be 0 for 1.0, 2 for 2.0 */
+    UINT32                  RsdtPhysicalAddress;    /* 32-bit physical address of RSDT */
+    UINT32                  Length;                 /* XSDT Length in bytes including hdr */
+    UINT64                  XsdtPhysicalAddress;    /* 64-bit physical address of XSDT */
+    UINT8                   ExtendedChecksum;       /* Checksum of entire table */
+    NATIVE_CHAR             Reserved [3];           /* reserved field must be 0 */
 
-} ROOT_SYSTEM_DESCRIPTOR_POINTER;
+} RSDP_DESCRIPTOR;
 
 
 typedef struct  /* ACPI common table header */
@@ -178,6 +183,26 @@ typedef struct  /* ACPI common table header */
     UINT32                  AslCompilerRevision;    /* ASL compiler revision number */
 
 } ACPI_TABLE_HEADER;
+
+
+
+
+
+
+
+
+typedef struct
+{
+    ACPI_TABLE_HEADER       Header;                 /* Table header */
+    UINT64                  TableOffsetEntry [1];   /* Array of pointers to other */
+                                                    /* tables' headers */
+} XSDT_DESCRIPTOR;
+
+
+
+
+
+
 
 
 typedef struct  /* APIC Table */
