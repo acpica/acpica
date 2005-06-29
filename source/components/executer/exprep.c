@@ -166,7 +166,7 @@ AmlResolveOperands (
     OpInfo = PsGetOpcodeInfo (Opcode);
     if (!OpInfo)
     {
-        return_ACPI_STATUS (AE_AML_BAD_OPCODE)
+        return_ACPI_STATUS (AE_AML_BAD_OPCODE);
     }
 
 
@@ -235,7 +235,7 @@ AmlResolveOperands (
                 OpInfo = PsGetOpcodeInfo (Opcode);
                 if (!OpInfo)
                 {
-                    return_ACPI_STATUS (AE_AML_BAD_OPCODE)
+                    return_ACPI_STATUS (AE_AML_BAD_OPCODE);
                 }
 
 
