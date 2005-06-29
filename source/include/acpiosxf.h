@@ -1,9 +1,9 @@
 
 /******************************************************************************
  *
- * Name: acpiosxf.h - All interfaces to the OS-dependent layer.  These
- *                    interfaces must be implemented by the OS-dependent
- *                    front-end to the ACPI subsystem.
+ * Name: acpiosd.h - All interfaces to the OS-dependent layer.  These
+ *                   interfaces must be implemented by the OS-dependent
+ *                   front-end to the ACPI subsystem.
  *
  *****************************************************************************/
 
@@ -12,8 +12,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -124,15 +124,12 @@
 #include "actypes.h"
 
 
-/* Priorities for AcpiOsQueueForExecution */
+/* Priorities for AcpiOsdQueueForExecution */
 
-#define OSD_PRIORITY_GPE    1
-#define OSD_PRIORITY_HIGH   2
-#define OSD_PRIORITY_MED    3
-#define OSD_PRIORITY_LO     4
-
-#define ACPI_NO_UNIT_LIMIT  ((UINT32) -1)
-#define ACPI_MUTEX_SEM      1
+#define OSD_PRIORITY_HIGH   1
+#define OSD_PRIORITY_MED    2
+#define OSD_PRIORITY_LO     3
+#define OSD_PRIORITY_GPE    OSD_PRIORITY_HIGH
 
 
 /*
@@ -153,11 +150,11 @@ void (*OSD_EXECUTION_CALLBACK) (
  */
 
 ACPI_STATUS
-AcpiOsInitialize (
+AcpiOsdInitialize (
     void);
 
 ACPI_STATUS
-AcpiOsTerminate (
+AcpiOsdTerminate (
     void);
 
 /*
@@ -165,23 +162,22 @@ AcpiOsTerminate (
  */
 
 ACPI_STATUS
-AcpiOsCreateSemaphore (
-    UINT32                  MaxUnits,
+AcpiOsdCreateSemaphore (
     UINT32                  InitialUnits,
     ACPI_HANDLE             *OutHandle);
 
 ACPI_STATUS
-AcpiOsDeleteSemaphore (
+AcpiOsdDeleteSemaphore (
     ACPI_HANDLE             Handle);
 
 ACPI_STATUS
-AcpiOsWaitSemaphore (
+AcpiOsdWaitSemaphore (
     ACPI_HANDLE             Handle,
     UINT32                  Units,
     UINT32                  Timeout);
 
 ACPI_STATUS
-AcpiOsSignalSemaphore (
+AcpiOsdSignalSemaphore (
     ACPI_HANDLE             Handle,
     UINT32                  Units);
 
@@ -190,25 +186,25 @@ AcpiOsSignalSemaphore (
  */
 
 void *
-AcpiOsAllocate (
+AcpiOsdAllocate (
     UINT32                  Size);
 
 void *
-AcpiOsCallocate (
+AcpiOsdCallocate (
     UINT32                  Size);
 
 void
-AcpiOsFree (
+AcpiOsdFree (
     void *                  Memory);
 
 ACPI_STATUS
-AcpiOsMapMemory (
-    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
+AcpiOsdMapMemory (
+    void                    *PhysicalAddress,
     UINT32                  Length,
     void                    **LogicalAddress);
 
 void
-AcpiOsUnmapMemory (
+AcpiOsdUnMapMemory (
     void                    *LogicalAddress,
     UINT32                  Length);
 
@@ -218,13 +214,13 @@ AcpiOsUnmapMemory (
  */
 
 ACPI_STATUS
-AcpiOsInstallInterruptHandler (
+AcpiOsdInstallInterruptHandler (
     UINT32                  InterruptNumber,
     OSD_HANDLER             ServiceRoutine,
     void                    *Context);
 
 ACPI_STATUS
-AcpiOsRemoveInterruptHandler (
+AcpiOsdRemoveInterruptHandler (
     UINT32                  InterruptNumber,
     OSD_HANDLER             ServiceRoutine);
 
@@ -234,18 +230,18 @@ AcpiOsRemoveInterruptHandler (
  */
 
 ACPI_STATUS
-AcpiOsQueueForExecution (
+AcpiOsdQueueForExecution (
     UINT32                  Priority,
     OSD_EXECUTION_CALLBACK  Function,
     void                    *Context);
 
 void
-AcpiOsSleep (
+AcpiOsdSleep (
     UINT32                  Seconds,
     UINT32                  Milliseconds);
 
 void
-AcpiOsSleepUsec (
+AcpiOsdSleepUsec (
     UINT32                  Microseconds);
 
 /*
@@ -253,62 +249,31 @@ AcpiOsSleepUsec (
  */
 
 UINT8
-AcpiOsIn8 (
+AcpiOsdIn8 (
     ACPI_IO_ADDRESS         InPort);
 
 
 UINT16
-AcpiOsIn16 (
+AcpiOsdIn16 (
     ACPI_IO_ADDRESS         InPort);
 
 UINT32
-AcpiOsIn32 (
+AcpiOsdIn32 (
     ACPI_IO_ADDRESS         InPort);
 
 void
-AcpiOsOut8 (
+AcpiOsdOut8 (
     ACPI_IO_ADDRESS         OutPort,
     UINT8                   Value);
 
 void
-AcpiOsOut16 (
+AcpiOsdOut16 (
     ACPI_IO_ADDRESS         OutPort,
     UINT16                  Value);
 
 void
-AcpiOsOut32 (
+AcpiOsdOut32 (
     ACPI_IO_ADDRESS         OutPort,
-    UINT32                  Value);
-
-/*
- * Platform/Hardware independent physical memory interfaces
- */
-
-UINT8
-AcpiOsMemIn8 (
-    ACPI_PHYSICAL_ADDRESS   InAddr);
-
-UINT16
-AcpiOsMemIn16 (
-    ACPI_PHYSICAL_ADDRESS   InAddr);
-
-UINT32
-AcpiOsMemIn32 (
-    ACPI_PHYSICAL_ADDRESS   InAddr);
-
-void
-AcpiOsMemOut8 (
-    ACPI_PHYSICAL_ADDRESS   OutAddr,
-    UINT8                   Value);
-
-void
-AcpiOsMemOut16 (
-    ACPI_PHYSICAL_ADDRESS   OutAddr,
-    UINT16                  Value);
-
-void
-AcpiOsMemOut32 (
-    ACPI_PHYSICAL_ADDRESS   OutAddr,
     UINT32                  Value);
 
 
@@ -317,35 +282,35 @@ AcpiOsMemOut32 (
  */
 
 ACPI_STATUS
-AcpiOsReadPciCfgByte (
+AcpiOsdReadPciCfgByte (
     UINT32                  Bus,
     UINT32                  DeviceFunction,
     UINT32                  Register,
     UINT8                   *Value);
 
 ACPI_STATUS
-AcpiOsReadPciCfgWord (
+AcpiOsdReadPciCfgWord (
     UINT32                  Bus,
     UINT32                  DeviceFunction,
     UINT32                  Register,
     UINT16                  *Value);
 
 ACPI_STATUS
-AcpiOsReadPciCfgDword (
+AcpiOsdReadPciCfgDword (
     UINT32                  Bus,
     UINT32                  DeviceFunction,
     UINT32                  Register,
     UINT32                  *Value);
 
 ACPI_STATUS
-AcpiOsWritePciCfgByte (
+AcpiOsdWritePciCfgByte (
     UINT32                  Bus,
     UINT32                  DeviceFunction,
     UINT32                  Register,
     UINT8                   Value);
 
 ACPI_STATUS
-AcpiOsWritePciCfgWord (
+AcpiOsdWritePciCfgWord (
     UINT32                  Bus,
     UINT32                  DeviceFunction,
     UINT32                  Register,
@@ -353,7 +318,7 @@ AcpiOsWritePciCfgWord (
 
 
 ACPI_STATUS
-AcpiOsWritePciCfgDword (
+AcpiOsdWritePciCfgDword (
     UINT32                  Bus,
     UINT32                  DeviceFunction,
     UINT32                  Register,
@@ -365,19 +330,20 @@ AcpiOsWritePciCfgDword (
  */
 
 ACPI_STATUS
-AcpiOsBreakpoint (
-    NATIVE_CHAR             *Message);
+AcpiOsdBreakpoint (
+    char                    *Message);
 
 BOOLEAN
-AcpiOsReadable (
+AcpiOsdReadable (
     void                    *Pointer,
     UINT32                  Length);
 
 
 BOOLEAN
-AcpiOsWritable (
+AcpiOsdWritable (
     void                    *Pointer,
     UINT32                  Length);
+
 
 
 /*
@@ -385,13 +351,13 @@ AcpiOsWritable (
  */
 
 INT32
-AcpiOsPrintf (
-    const NATIVE_CHAR       *Format,
+AcpiOsdPrintf (
+    const char              *Format,
     ...);
 
 INT32
-AcpiOsVprintf (
-    const NATIVE_CHAR       *Format,
+AcpiOsdVprintf (
+    const char              *Format,
     va_list                 Args);
 
 /*
@@ -399,8 +365,8 @@ AcpiOsVprintf (
  */
 
 UINT32
-AcpiOsGetLine (
-    NATIVE_CHAR             *Buffer);
+AcpiOsdGetLine (
+    char                    *Buffer);
 
 
 /*
@@ -408,11 +374,11 @@ AcpiOsGetLine (
  */
 
 void
-AcpiOsDbgAssert(
+AcpiOsdDbgAssert(
     void                    *FailedAssertion,
     void                    *FileName,
     UINT32                  LineNumber,
-    NATIVE_CHAR             *Message);
+    char                    *Message);
 
 
 #endif /* __ACPIOSD_H__ */

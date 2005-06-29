@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
+ * Module Name: parser.h - AML Parser subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -114,8 +114,10 @@
  *****************************************************************************/
 
 
-#ifndef __ACPARSER_H__
-#define __ACPARSER_H__
+#ifndef _PARSER_H_
+#define _PARSER_H_
+
+
 
 
 #define OP_HAS_RETURN_VALUE         1
@@ -127,6 +129,7 @@
 /* maximum virtual address */
 
 #define ACPI_MAX_AML                ((UINT8 *)(~0UL))
+
 
 
 #define PARSE_DELETE_TREE           1
@@ -141,9 +144,11 @@ AcpiPsxLoadTable (
 
 ACPI_STATUS
 AcpiPsxExecute (
-    ACPI_NAMED_OBJECT       *MethodEntry,
+    NAME_TABLE_ENTRY        *MethodEntry,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
+
+
 
 
 BOOLEAN
@@ -159,6 +164,7 @@ AcpiPsIsNamespaceOp (
  * Parser interfaces
  *
  *****************************************************************************/
+
 
 
 /* psargs - Parse AML opcode arguments */
@@ -239,6 +245,7 @@ AcpiPsPeekOpcode (
     ACPI_PARSE_STATE        *state);
 
 
+
 /* psscope - Scope stack management routines */
 
 
@@ -302,6 +309,7 @@ AcpiPsGetDepthNext (
     ACPI_GENERIC_OP         *Op);
 
 
+
 /* pswalk - parse tree walk routines */
 
 ACPI_STATUS
@@ -309,7 +317,7 @@ AcpiPsWalkParsedAml (
     ACPI_GENERIC_OP         *StartOp,
     ACPI_GENERIC_OP         *EndOp,
     ACPI_OBJECT_INTERNAL    *MthDesc,
-    ACPI_NAME_TABLE         *StartScope,
+    NAME_TABLE_ENTRY        *StartScope,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     ACPI_OWNER_ID           OwnerId,
@@ -321,6 +329,7 @@ AcpiPsGetNextWalkOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     INTERPRETER_CALLBACK    AscendingCallback);
+
 
 
 /* psutils - parser utilities */
@@ -415,4 +424,6 @@ AcpiPsShow (
     ACPI_GENERIC_OP         *op);
 
 
-#endif /* __ACPARSER_H__ */
+
+
+#endif /* _PARSER_H_ */

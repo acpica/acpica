@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: acxface.h - External interfaces to the ACPI subsystem
+ * Name: acapi.h - external interfaces to the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -115,11 +115,11 @@
  *****************************************************************************/
 
 
-#ifndef __ACXFACE_H__
-#define __ACXFACE_H__
+#ifndef __ACAPI_H__
+#define __ACAPI_H__
 
 #include "actypes.h"
-#include "actbl.h"
+#include "actables.h"
 
 /*
  * Global interfaces
@@ -339,7 +339,7 @@ AcpiSetCurrentResources (
     ACPI_BUFFER             *InBuffer);
 
 ACPI_STATUS
-AcpiGetIrqRoutingTable  (
+AcpiGetIRQRoutingTable  (
     ACPI_HANDLE             BusDeviceHandle,
     ACPI_BUFFER             *RetBuffer);
 
@@ -387,4 +387,4 @@ AcpiProcessorSleep (
     UINT32                  *PmTimerTicks);
 
 
-#endif /* __ACXFACE_H__ */
+#endif /* __ACAPI_H__ */

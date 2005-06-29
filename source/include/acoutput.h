@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: acoutput.h -- debug output
+ * Name: output.h -- debug output
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __ACOUTPUT_H__
-#define __ACOUTPUT_H__
+#ifndef _OUTPUT_H
+#define _OUTPUT_H
 
 /*
  * Debug levels and component IDs.  These are used to control the
@@ -212,4 +212,4 @@
 #define CHARS_PER_LINE              16          /* used in DumpBuf function */
 
 
-#endif /* __ACOUTPUT_H__ */
+#endif /* _OUTPUT_H */

@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: acmacros.h - C macros for the entire subsystem.
+ * Name: macros.h - C macros for the entire subsystem.
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __ACMACROS_H__
-#define __ACMACROS_H__
+#ifndef __MACROS_H__
+#define __MACROS_H__
 
 /*
  * Data manipulation macros
@@ -167,13 +167,13 @@
  * Otherwise, we have to move one byte at a time.
  */
 
+//#define _HW_ALIGNMENT_SUPPORT
 #ifdef _HW_ALIGNMENT_SUPPORT
 
 /* The hardware supports unaligned transfers, just do the move */
 
-#define MOVE_UNALIGNED16_TO_16(d,s)     *(UINT16*)(d) = *(UINT16*)(s)
-#define MOVE_UNALIGNED32_TO_32(d,s)     *(UINT32*)(d) = *(UINT32*)(s)
-#define MOVE_UNALIGNED16_TO_32(d,s)     *(UINT32*)(d) = *(UINT16*)(s)
+#define STORE16(d,s)                    *(UINT16*)(d) = *(UINT16*)(s)
+#define STORE32(d,s)                    *(UINT32*)(d) = *(UINT32*)(s)
 
 #else
 /*
@@ -182,17 +182,22 @@
  * the destination (or both) is/are unaligned.
  */
 
-#define MOVE_UNALIGNED16_TO_16(d,s)     {((char *)(d))[0] = ((char *)(s))[0];\
+#define STORE16(d,s)                    {((char *)(d))[0] = ((char *)(s))[0];\
                                          ((char *)(d))[1] = ((char *)(s))[1];}
 
-#define MOVE_UNALIGNED32_TO_32(d,s)     {((char *)(d))[0] = ((char *)(s))[0];\
+#define STORE32(d,s)                    {((char *)(d))[0] = ((char *)(s))[0];\
                                          ((char *)(d))[1] = ((char *)(s))[1];\
                                          ((char *)(d))[2] = ((char *)(s))[2];\
                                          ((char *)(d))[3] = ((char *)(s))[3];}
 
-#define MOVE_UNALIGNED16_TO_32(d,s)     {(*(UINT32*)(d)) = 0; MOVE_UNALIGNED16_TO_16(d,s);}
-
 #endif
+
+/* Helper macros */
+
+#define STORE16TO16(d,s)                STORE16(d,s)
+#define STORE16TO32(d,s)                {(*(UINT32*)(d)) = 0; STORE16(d,s);}
+#define STORE32TO32(d,s)                STORE32(d,s)
+
 
 
 /*
@@ -240,19 +245,29 @@
 
 
 /*
- * An ACPI_HANDLE (which is actually an ACPI_NAMED_OBJECT*) can appear in some contexts,
+ * An ACPI_HANDLE (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
  * such as on apObjStack, where a pointer to an ACPI_OBJECT_INTERNAL can also
  * appear.  This macro is used to distinguish them.
  *
  * The DataType field is the first field in both structures.
  */
 
-#define VALID_DESCRIPTOR_TYPE(d,t)      (((ACPI_NAMED_OBJECT*)d)->DataType == t)
+#define VALID_DESCRIPTOR_TYPE(d,t)      (((NAME_TABLE_ENTRY *)d)->DataType == t)
 
 
 /* Macro to test the object type */
 
 #define IS_THIS_OBJECT_TYPE(d,t)        (((ACPI_OBJECT_INTERNAL *)d)->Common.Type == (UINT8)t)
+
+
+/*
+ * There is an (nte *) prefix to each name table, containing either a NULL
+ * pointer or the address of the next array of nte's in the scope.
+ *
+ * This macro extracts a pointer to the NEXT table in the chain.
+ */
+#define NEXTSEG(NameTbl)                ((NAME_TABLE_ENTRY **)NameTbl)[-1]
+
 
 
 /*
@@ -306,6 +321,10 @@
 
 #define GET_CURRENT_ARG_TYPE(List)      (List & 0x1F)
 #define INCREMENT_ARG_LIST(List)        (List >>= ARG_TYPE_WIDTH)
+
+
+
+
 
 
 /*
@@ -397,7 +416,7 @@
 #define DUMP_ENTRY(a,b)                 AcpiNsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                AcpiNsDumpTables(a,b)
 #define DUMP_PATHNAME(a,b,c,d)          AcpiNsDumpPathname(a,b,c,d)
-#define BREAK_MSG(a)                    AcpiOsBreakpoint (a)
+#define BREAK_MSG(a)                    AcpiOsdBreakpoint (a)
 
 /*
  * Generate INT3 on ACPI_ERROR (Debug only!)
@@ -405,7 +424,7 @@
 
 #define ERROR_BREAK
 #ifdef  ERROR_BREAK
-#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) AcpiOsBreakpoint("Fatal error encountered\n")
+#define BREAK_ON_ERROR(lvl)             if ((lvl)&ACPI_ERROR) AcpiOsdBreakpoint("Fatal error encountered\n")
 #else
 #define BREAK_ON_ERROR(lvl)
 #endif
@@ -420,7 +439,7 @@
 
 #define PARAM_LIST(pl)                  pl
 
-#define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer))
+#define TEST_DEBUG_SWITCH(lvl)          if (((lvl) & DebugLevel) && (_COMPONENT & DebugLayer))
 
 #define DEBUG_PRINT(lvl,fp)             TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintPrefix (_THIS_MODULE,__LINE__);\
@@ -434,10 +453,10 @@
 /* Assert macros */
 
 #define ACPI_ASSERT(exp)                if(!(exp)) \
-                                            AcpiOsDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
+                                            AcpiOsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
 
 #define DEBUG_ASSERT(msg, exp)          if(!(exp)) \
-                                            AcpiOsDbgAssert(#exp, __FILE__, __LINE__, msg)
+                                            AcpiOsdDbgAssert(#exp, __FILE__, __LINE__, msg)
 
 
 #else
@@ -506,9 +525,10 @@
  */
 
 #define ADD_OBJECT_NAME(a,b)            MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
-                                        STRNCPY (a->Common.Name, AcpiGbl_NsTypeNames[b], sizeof (a->Common.Name))
+                                        STRNCPY (a->Common.Name, Acpi_GblNsTypeNames[b], sizeof (a->Common.Name))
 
 #endif
 
 
-#endif /* ACMACROS_H */
+
+#endif /* MACROS_H */

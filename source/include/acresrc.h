@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acresrc.h - Resource Manager function prototypes
+ * Name: resource.h - Resource Manager function prototypes
  *
  *****************************************************************************/
 
@@ -114,32 +114,34 @@
  *
  *****************************************************************************/
 
-#ifndef __ACRESRC_H__
-#define __ACRESRC_H__
+#ifndef __RESOURCE_H__
+#define __RESOURCE_H__
 
+#include "actypes.h"
+#include "acobject.h"
 
 /*
  *  Function prototypes called from Acpi* APIs
  */
 
 ACPI_STATUS
-AcpiRsGetPrtMethodData (
+AcpiRsGetPRTMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer);
 
 
 ACPI_STATUS
-AcpiRsGetCrsMethodData (
+AcpiRsGetCRSMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
-AcpiRsGetPrsMethodData (
+AcpiRsGetPRSMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
-AcpiRsSetSrsMethodData (
+AcpiRsSetSRSMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer);
 
@@ -171,7 +173,7 @@ AcpiRsDumpResourceList (
     RESOURCE                *Resource);
 
 void
-AcpiRsDumpIrqList (
+AcpiRsDumpIRQList (
     UINT8                   *RouteTable);
 
 ACPI_STATUS
@@ -387,4 +389,4 @@ AcpiRsVendorStream (
     UINT32                  *BytesConsumed);
 
 
-#endif  /* __ACRESRC_H__ */
+#endif  /*__RESOURCE_H__ */

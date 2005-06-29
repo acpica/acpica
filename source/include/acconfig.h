@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Name: config.h - Global configuration constants
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -120,7 +120,7 @@
 
 
 /******************************************************************************
- * 
+ *
  * Compile-time options
  *
  *****************************************************************************/
@@ -131,14 +131,14 @@
  *                          When disabled, all DEBUG_PRINT statements are compiled out.
  *
  * ACPI_APPLICATION     - Use this switch if the subsystem is going to be run
- *                          at the application level.  
- * 
+ *                          at the application level.
+ *
  */
 
 
 
 /******************************************************************************
- * 
+ *
  * Subsystem Constants
  *
  *****************************************************************************/
@@ -157,7 +157,7 @@
 /*
  * How and when control methods will be parsed
  * The default action is to parse all methods at table load time to verify them, but delete the parse trees
- * to conserve memory.  Methods are parsed just in time before execution and the parse tree is deleted 
+ * to conserve memory.  Methods are parsed just in time before execution and the parse tree is deleted
  * when execution completes.
  */
 #define METHOD_PARSE_AT_INIT        0x0     /* Parse at table init, never delete the method parse tree */
@@ -176,11 +176,11 @@
 #define MAX_OBJECT_CACHE_DEPTH      32          /* Interpreter operand objects */
 #define MAX_WALK_CACHE_DEPTH        2           /* Objects for parse tree walks (method execution) */
 
-/* 
+/*
  * NameSpace Table size
  *
  * All tables are the same size to simplify the implementation.
- * Tables may be extended by allocating additional tables that 
+ * Tables may be extended by allocating additional tables that
  * are in turn linked together to form a chain of tables.
  */
 
@@ -194,7 +194,7 @@
 
 /* Maximum count for a semaphore object */
 
-#define MAX_SEMAPHORE_COUNT         256 
+#define MAX_SEMAPHORE_COUNT         256
 
 
 /* Max reference count (for debug only) */
@@ -207,7 +207,7 @@
 #define SYSMEM_REGION_WINDOW_SIZE   4096
 
 
-/* 
+/*
  * Debugger threading model
  * Use single threaded if the entire subsystem is contained in an application
  * Use multiple threaded when the the subsystem is running in the kernel.
@@ -229,12 +229,12 @@
 
 
 /******************************************************************************
- * 
+ *
  * ACPI Specification constants (Do not change unless the specification changes)
  *
  *****************************************************************************/
 
-/* 
+/*
  * Method info (in WALK_STATE), containing local variables and argumetns
  */
 
@@ -262,7 +262,7 @@
 
 #define LO_RSDP_WINDOW_BASE         (void *) 0
 #define HI_RSDP_WINDOW_BASE         (void *) 0xE0000
-#define LO_RSDP_WINDOW_SIZE         0x400           
+#define LO_RSDP_WINDOW_SIZE         0x400
 #define HI_RSDP_WINDOW_SIZE         0x20000
 #define RSDP_SCAN_STEP              16
 

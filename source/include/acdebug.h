@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Name: debugger.h - ACPI/AML debugger
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -127,14 +127,14 @@
 extern int                      optind;
 extern char                     *optarg;
 extern UINT8                    *AmlPtr;
-extern UINT32                   AmlLength;
+extern UINT32                   AcpiAmlLength;
 
 extern BOOLEAN                  opt_tables;
 extern BOOLEAN                  opt_disasm;
 extern BOOLEAN                  opt_stats;
 extern BOOLEAN                  opt_parse_jit;
-extern BOOLEAN					opt_verbose;
-   
+extern BOOLEAN                  opt_verbose;
+
 
 extern char                     *Args[DB_MAX_ARGS];
 extern char                     LineBuf[80];
@@ -143,11 +143,11 @@ extern char                     DebugFilename[40];
 extern BOOLEAN                  OutputToFile;
 extern char                     *Buffer;
 extern char                     *Filename;
-extern char					    *INDENT_STRING;
-extern UINT32                   Gbl_MethodBreakpoint;
-extern UINT8                    Gbl_DbOutputFlags;
-extern UINT32                   Gbl_DbDebugLevel;
-extern UINT32                   Gbl_DbConsoleDebugLevel;
+extern char                     *INDENT_STRING;
+extern UINT32                   Acpi_GblMethodBreakpoint;
+extern UINT8                    Acpi_GblDbOutputFlags;
+extern UINT32                   Acpi_GblDbDebugLevel;
+extern UINT32                   Acpi_GblDbConsoleDebugLevel;
 
 extern UINT32                   NumNames;
 extern UINT32                   NumMethods;
@@ -201,247 +201,288 @@ typedef struct ArgumentInfo
 #define DBTEST_OUTPUT_LEVEL(lvl)        if (opt_verbose)
 
 #define VERBOSE_PRINT(fp)               DBTEST_OUTPUT_LEVEL(lvl) {\
-                                            OsdPrintf PARAM_LIST(fp);}
+                                            AcpiOsdPrintf PARAM_LIST(fp);}
 
 #define EX_NO_SINGLE_STEP       1
 #define EX_SINGLE_STEP          2
 
 
-INT32
-DbMatchArgument (
-    char                    *UserArgument,
-    ARGUMENT_INFO           *Arguments);
-
-void
-DbDumpNamespaceByOwner (
-    char                    *OwnerArg,
-    char                    *DepthArg);
-
-void
-DbDisplayTableInfo (
-    char                    *TableArg);
-
-void
-DbUnloadAcpiTable (
-    char                    *TableArg,
-    char                    *InstanceArg);
+/* Prototypes */
 
 
-void
-DbGenerateStatistics (
-    ACPI_GENERIC_OP         *Root,
-    BOOLEAN                 IsMethod);
-
-void
-DbAddToHistory (
-    char                    *CommandLine);
-
-void
-DbDisplayHistory (void);
-
-char *
-DbGetFromHistory (
-    char                    *CommandNumArg);
-
-void
-DbDisplayArgumentObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
-
-ACPI_STATUS
-DbDisplayObjects (
-    char                    *ObjTypeArg,
-    char                    *DisplayCountArg);
-
-ACPI_STATUS
-DbFindNameInNamespace (
-    char                    *NameArg);
-void
-DbSetOutputDestination (
-    INT32                   Where);
-    
-void
-DbSetMethodCallBreakpoint (
-    ACPI_GENERIC_OP         *Op);
+/*
+ * dbapi - external debugger interfaces
+ */
 
 int
-DbInitialize (void);
+AcpiDbInitialize (
+    void);
 
 ACPI_STATUS
-DbCommandDispatch (
-    char                    *InputBuffer,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op);
-
-void
-DbExecuteThread (
-    void                    *Context);
-
-ACPI_STATUS
-DbUserCommands (
-    char                    Prompt,
-    ACPI_GENERIC_OP         *Op);
-
-NAME_TABLE_ENTRY *
-DbLocalNsLookup (
-    char                    *Name);
-
-ACPI_STATUS
-DbExecuter (
-    char                    Prompt,
-    ACPI_GENERIC_OP         *Op);
-
-void
-DbPrepNamestring (
-    char                    *Name);
-
-void
-DbDisplayMethodInfo (
-    ACPI_GENERIC_OP         *Op);
-
-ACPI_STATUS
-DbSecondPassParse (
-    ACPI_GENERIC_OP         *Root);
-
-ACPI_STATUS
-DbSingleStep (
+AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
     UINT8                   OpType);
 
-void
-DbDisassembleAml (
-    char                    *Statements,
-    ACPI_GENERIC_OP         *Op);
+
+/*
+ * dbcmds - debug commands and output routines
+ */
+
 
 void
-DbDecodeAndDisplayObject (
-    char                    *Target,
-    char                    *OutputType);
+AcpiDbDisplayTableInfo (
+    char                    *TableArg);
 
 void
-DbDisplayResultObject (
-    ACPI_OBJECT_INTERNAL    *RetDesc);
-
-ACPI_STATUS
-DbDisplayStatistics (
-    char                    *TypeArg);
+AcpiDbUnloadAcpiTable (
+    char                    *TableArg,
+    char                    *InstanceArg);
 
 void
-DbSetMethodBreakpoint (
+AcpiDbSetMethodBreakpoint (
     char                    *Location,
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op);
 
 void
-DbSendNotify (
-    char                    *Name,
-    UINT32                  Value);
-
-void
-DbSetMethodData (
-    char                    *TypeArg,
-    char                    *IndexArg,
-    char                    *ValueArg);
-
-void
-DbDumpBuffer (
-    UINT32                  Address);
-
-void
-DbDumpObject (
-    ACPI_OBJECT             *ObjDesc,
-    UINT32                  Level);
-
-ACPI_STATUS
-DbDisplayAllMethods (
-    char                    *DisplayCountArg);
-
-void 
-DbDisplayInternalObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
-
-ACPI_STATUS
-DbLoadAcpiTable (
-    char                    *Filename);
-
-void
-DbDisplayArguments (void);
-
-void
-DbDisplayLocals (void);
-
-void
-DbDisplayResults (void);
-
-void
-DbDisplayCallingTree (void);
-
-void
-DbDisplayOp (
-    ACPI_GENERIC_OP         *origin,
-    UINT32                  NumOpcodes);
-
-INT32
-DbSafeSprintf (
-    char                    *Buffer,
-    INT32                   BufferSize,
-    INT32                   ExpandedSize,
-    char                    *Format,
-    ...);
-
-INT32
-DbSprintName (
-    char                    *Buffer, 
-    UINT32                  BufferSize, 
-    UINT32                  Name);
-
-INT32
-DbSprintNamestring (
-    char                    *BufferStart, 
-    INT32                   BufferSize, 
-    UINT8                   *Name);
-
-INT32
-DbSprintPath (
-    char                    *BufferStart,
-    UINT32                  BufferSize,
+AcpiDbSetMethodCallBreakpoint (
     ACPI_GENERIC_OP         *Op);
 
-INT32
-DbSprintOp (
-    char                    *BufferStart, 
-    UINT32                  BufferSize, 
+void
+AcpiDbDisassembleAml (
+    char                    *Statements,
     ACPI_GENERIC_OP         *Op);
 
-
 void
-DbDumpNamespace (
+AcpiDbDumpNamespace (
     char                    *StartArg,
     char                    *DepthArg);
 
 void
-DbExecute (
+AcpiDbDumpNamespaceByOwner (
+    char                    *OwnerArg,
+    char                    *DepthArg);
+
+void
+AcpiDbSendNotify (
+    char                    *Name,
+    UINT32                  Value);
+
+void
+AcpiDbSetMethodData (
+    char                    *TypeArg,
+    char                    *IndexArg,
+    char                    *ValueArg);
+
+ACPI_STATUS
+AcpiDbDisplayObjects (
+    char                    *ObjTypeArg,
+    char                    *DisplayCountArg);
+
+ACPI_STATUS
+AcpiDbFindNameInNamespace (
+    char                    *NameArg);
+
+void
+AcpiDbSetScope (
+    char                    *Name);
+
+
+/*
+ * dbdisasm - AML disassembler
+ */
+
+void
+AcpiDbDisplayOp (
+    ACPI_GENERIC_OP         *origin,
+    UINT32                  NumOpcodes);
+
+void
+AcpiDbDisplayNamestring (
+    char                    *Name);
+
+void
+AcpiDbDisplayPath (
+    ACPI_GENERIC_OP         *Op);
+
+void
+AcpiDbDisplayOpcode (
+    ACPI_GENERIC_OP         *Op);
+
+
+
+/*
+ * dbdisply - debug display commands
+ */
+
+
+void
+AcpiDbDisplayMethodInfo (
+    ACPI_GENERIC_OP         *Op);
+
+void
+AcpiDbDecodeAndDisplayObject (
+    char                    *Target,
+    char                    *OutputType);
+
+void
+AcpiDbDisplayResultObject (
+    ACPI_OBJECT_INTERNAL    *RetDesc);
+
+ACPI_STATUS
+AcpiDbDisplayAllMethods (
+    char                    *DisplayCountArg);
+
+void
+AcpiDbDisplayInternalObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+void
+AcpiDbDisplayArguments (
+    void);
+
+void
+AcpiDbDisplayLocals (
+    void);
+
+void
+AcpiDbDisplayResults (
+    void);
+
+void
+AcpiDbDisplayCallingTree (
+    void);
+
+void
+AcpiDbDisplayArgumentObject (
+    ACPI_OBJECT_INTERNAL    *ObjDesc);
+
+
+/*
+ * dbexec - debugger control method execution
+ */
+
+void
+AcpiDbExecute (
     char                    *Name,
     char                    **Args,
     UINT32                  Flags);
 
 void
-DbSetScope (
-    char                    *Name);
+AcpiDbCreateExecutionThreads (
+    char                    *NumThreadsArg,
+    char                    *NumLoopsArg,
+    char                    *MethodNameArg);
+
+
+
+/*
+ * dbfileio - Debugger file I/O commands
+ */
+
+OBJECT_TYPE_INTERNAL
+AcpiDbMatchArgument (
+    char                    *UserArgument,
+    ARGUMENT_INFO           *Arguments);
+
 
 void
-DbCloseDebugFile (
+AcpiDbCloseDebugFile (
     void);
 
 void
-DbOpenDebugFile (
+AcpiDbOpenDebugFile (
+    char                    *Name);
+
+ACPI_STATUS
+AcpiDbLoadAcpiTable (
+    char                    *Filename);
+
+
+/*
+ * dbhistry - debugger HISTORY command
+ */
+
+void
+AcpiDbAddToHistory (
+    char                    *CommandLine);
+
+void
+AcpiDbDisplayHistory (void);
+
+char *
+AcpiDbGetFromHistory (
+    char                    *CommandNumArg);
+
+
+/*
+ * dbinput - user front-end to the AML debugger
+ */
+
+ACPI_STATUS
+AcpiDbCommandDispatch (
+    char                    *InputBuffer,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op);
+
+void
+AcpiDbExecuteThread (
+    void                    *Context);
+
+ACPI_STATUS
+AcpiDbUserCommands (
+    char                    Prompt,
+    ACPI_GENERIC_OP         *Op);
+
+
+
+
+/*
+ * dbstats - Generation and display of ACPI table statistics
+ */
+
+void
+AcpiDbGenerateStatistics (
+    ACPI_GENERIC_OP         *Root,
+    BOOLEAN                 IsMethod);
+
+
+ACPI_STATUS
+AcpiDbDisplayStatistics (
+    char                    *TypeArg);
+
+
+
+/*
+ * dbutils - AML debugger utilities
+ */
+
+void
+AcpiDbSetOutputDestination (
+    INT32                   Where);
+
+void
+AcpiDbDumpBuffer (
+    UINT32                  Address);
+
+void
+AcpiDbDumpObject (
+    ACPI_OBJECT             *ObjDesc,
+    UINT32                  Level);
+
+void
+AcpiDbPrepNamestring (
     char                    *Name);
 
 
+ACPI_STATUS
+AcpiDbSecondPassParse (
+    ACPI_GENERIC_OP         *Root);
 
-
-
-
+NAME_TABLE_ENTRY *
+AcpiDbLocalNsLookup (
+    char                    *Name);
 
 
 

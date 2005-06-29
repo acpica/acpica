@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: acevents.h - Event subcomponent prototypes and defines
+ * Name: events.h - AcpiEvent subcomponent prototypes and defines
  *
  *****************************************************************************/
 
@@ -114,8 +114,27 @@
  *
  *****************************************************************************/
 
-#ifndef __ACEVENTS_H__
-#define __ACEVENTS_H__
+#ifndef __EVENTS_H__
+#define __EVENTS_H__
+
+
+
+/* Status bits. */
+
+#define STATUS_PMTIMER                  0x0001
+#define STATUS_GLOBAL                   0x0020
+#define STATUS_POWER_BUTTON             0x0100
+#define STATUS_SLEEP_BUTTON             0x0200
+#define STATUS_RTC_ALARM                0x0400
+
+/* Enable bits. */
+
+#define ENABLE_PMTIMER                  0x0001
+#define ENABLE_GLOBAL                   0x0020
+#define ENABLE_POWER_BUTTON             0x0100
+#define ENABLE_SLEEP_BUTTON             0x0200
+#define ENABLE_RTC_ALARM                0x0400
+
 
 
 /*
@@ -281,6 +300,11 @@ AcpiEvTerminate (
     void);
 
 
+
+
+
+
+
 /* Debug support */
 
 #ifdef ACPI_DEBUG
@@ -289,7 +313,7 @@ INT32
 AcpiEvSciCount (
     UINT32                  AcpiEvent);
 
-#define DEBUG_INCREMENT_EVENT_COUNT(a)   AcpiGbl_EventCount[a]++;
+#define DEBUG_INCREMENT_EVENT_COUNT(a)   Acpi_GblEventCount[a]++;
 
 #else
 
@@ -297,4 +321,4 @@ AcpiEvSciCount (
 #endif
 
 
-#endif  /* __ACEVENTS_H__  */
+#endif  /*  __EVENTS_H__   */

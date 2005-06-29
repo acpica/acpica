@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: actbl.h - Table data structures defined in ACPI specification
+ * Name: actables.h - Table data structures defined in ACPI specification
  *
  *****************************************************************************/
 
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __ACTBL_H__
-#define __ACTBL_H__
+#ifndef __ACTABLES_H__
+#define __ACTABLES_H__
 
 
 /*
@@ -237,6 +237,8 @@ typedef struct  /* Smart Battery Description Table */
 } SMART_BATTERY_DESCRIPTION_TABLE;
 
 
+
+
 /*
  * ACPI Table information.  We save the table address, length,
  * and type of memory allocation (mapped or allocated) for each
@@ -249,6 +251,8 @@ typedef struct  /* Smart Battery Description Table */
 
 #define ACPI_TABLE_SINGLE       0
 #define ACPI_TABLE_MULTIPLE     1
+
+
 
 
 /* Data about each known table type */
@@ -265,6 +269,7 @@ typedef struct _AcpiTableSupport
 } ACPI_TABLE_SUPPORT;
 
 
+
 /*
  * Get the architecture-specific tables
  */
@@ -276,4 +281,4 @@ typedef struct _AcpiTableSupport
 #endif
 
 
-#endif /* __ACTBL_H__ */
+#endif /* __ACTABLES_H__ */

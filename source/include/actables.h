@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Name: actables.h - ACPI table management
+ * Name: tables.h - ACPI table management
  *
  *****************************************************************************/
 
@@ -114,13 +114,18 @@
  *
  *****************************************************************************/
 
-#ifndef __ACTABLES_H__
-#define __ACTABLES_H__
+#ifndef __TABLES_H__
+#define __TABLES_H__
+
+#include "actypes.h"
+#include "actables.h"
+
 
 
 /* Used in AcpiTbMapAcpiTable for size parameter if table header is to be used */
 
 #define SIZE_IN_HEADER          0
+
 
 
 ACPI_STATUS
@@ -253,4 +258,4 @@ AcpiTbValidateTableHeader (
     ACPI_TABLE_HEADER       *TableHeader);
 
 
-#endif /* __ACTABLES_H__ */
+#endif /* __TABLES_H__ */
