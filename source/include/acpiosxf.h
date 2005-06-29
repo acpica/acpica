@@ -20,15 +20,17 @@
  | These interfaces must be implemented by the OS-dependent front-end
  | to the ACPI subsystem.
  |
- | $Revision: 1.13 $
- | $Date: 2005/06/29 19:59:49 $
+ | $Revision: 1.14 $
+ | $Date: 2005/06/29 19:59:50 $
  | $Log: acpiosxf.h,v $
- | Revision 1.13  2005/06/29 19:59:49  aystarik
- | Small hack to get the osd part compiling.
+ | Revision 1.14  2005/06/29 19:59:50  aystarik
+ |
  |
  | 
- | date	99.04.06.16.42.00;	author grsmith1;	state Exp;
+ | date	99.04.06.20.40.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 14    4/06/99 1:40p Rmoore1
  * 
  * 13    4/06/99 9:42a Grsmith1
  * Small hack to get the osd part compiling.
@@ -53,41 +55,41 @@
 
 /* File I/O */
 
-#define LogHandle void*
+//#define LogHandle void*
 
 OSD_FILE *
 OsdOpen (
-    const char *    filename, 
-    const char *    mode);
+    const char      *filename, 
+    const char      *mode);
 
 INT32 
 OsdClose (
-    OSD_FILE *      stream);
+    OSD_FILE        *stream);
 
 UINT32 
 OsdRead (
-    void *          buffer, 
+    void            *buffer, 
     UINT32          size, 
     UINT32          count, 
-    OSD_FILE *      stream);
+    OSD_FILE        *stream);
 
 UINT32 
 OsdWrite (
-    const void *    buffer, 
+    const void      *buffer, 
     UINT32          size, 
     UINT32          count, 
-    OSD_FILE *      stream); 
+    OSD_FILE        *stream); 
 
 INT32 
 OsdPrintf (
-    OSD_FILE *      stream, 
-    const char *    format, 
+    OSD_FILE        *stream, 
+    const char      *format, 
     ...);
 
 INT32
 OsdVprintf (
-    OSD_FILE *      stream, 
-    const char *    format, 
+    OSD_FILE        *stream, 
+    const char      *format, 
     va_list         args);
 
 INT32 
@@ -130,7 +132,11 @@ UINT32
 OsdInstallInterruptHandler (
     UINT32          InterruptNumber,
     INT32           (* Isr)(void),
-    UINT32          * ExceptPtr);
+    UINT32          *ExceptPtr);
+
+void
+OsdRemoveInterruptHandler (
+    UINT32          Handle);
 
 
 /* Scheduling */
@@ -144,13 +150,6 @@ void
 OsdSleepUsec (
     UINT32          microseconds);
 
-
-
-/* Misc */
-
-INT32 
-OsdAssert (
-    void *);
 
 
 /*
@@ -190,22 +189,46 @@ OsdOut32 (
  */
 
 UINT8 
-OsdReadPciCfgByte (INT32, INT32, INT32, UINT8 *);
+OsdReadPciCfgByte (
+    INT32           Bus, 
+    INT32           DeviceFunction, 
+    INT32           Register, 
+    UINT8           *Value);
 
 UINT8 
-OsdReadPciCfgWord (INT32, INT32, INT32, UINT16 *);
+OsdReadPciCfgWord (
+    INT32           Bus, 
+    INT32           DeviceFunction, 
+    INT32           Register, 
+    UINT16          *Value);
 
 UINT8 
-OsdReadPciCfgDword (INT32, INT32, INT32, UINT32 *);
+OsdReadPciCfgDword (
+    INT32           Bus, 
+    INT32           DeviceFunction, 
+    INT32           Register, 
+    UINT32          *Value);
 
 UINT8 
-OsdWritePciCfgByte (INT32, INT32, INT32, UINT8);
+OsdWritePciCfgByte (
+    INT32           Bus, 
+    INT32           DeviceFunction, 
+    INT32           Register, 
+    UINT8           Value);
 
 UINT8 
-OsdWritePciCfgWord (INT32, INT32, INT32, UINT16);
+OsdWritePciCfgWord (
+    INT32           Bus, 
+    INT32           DeviceFunction, 
+    INT32           Register, 
+    UINT16          Value);
 
 UINT8 
-OsdWritePciCfgDword (INT32, INT32, INT32, UINT32);
+OsdWritePciCfgDword (
+    INT32           Bus, 
+    INT32           DeviceFunction, 
+    INT32           Register, 
+    UINT32          Value);
 
 
 
