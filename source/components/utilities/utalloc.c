@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -670,6 +670,10 @@ AcpiUtDumpAllocations (
 
                 case ACPI_DESC_TYPE_STATE_NOTIFY:
                     AcpiOsPrintf ("NOTIFY StateObj");
+                    break;
+
+                case ACPI_DESC_TYPE_STATE_THREAD:
+                    AcpiOsPrintf ("THREAD StateObj");
                     break;
                 }
 
