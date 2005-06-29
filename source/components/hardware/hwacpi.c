@@ -151,7 +151,7 @@ AcpiHwSetMode (
     {
         /* BIOS should have disabled ALL fixed and GP events */
 
-        AcpiOsdOut8 (AcpiGbl_FACP->SmiCmd, AcpiGbl_FACP->AcpiEnable);
+        AcpiOsOut8 (AcpiGbl_FACP->SmiCmd, AcpiGbl_FACP->AcpiEnable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable ACPI mode\n"));
     }
 
@@ -162,7 +162,7 @@ AcpiHwSetMode (
          * enable bits to default
          */
 
-        AcpiOsdOut8 (AcpiGbl_FACP->SmiCmd, AcpiGbl_FACP->AcpiDisable);
+        AcpiOsOut8 (AcpiGbl_FACP->SmiCmd, AcpiGbl_FACP->AcpiDisable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable Legacy (non-ACPI) mode\n"));
     }
 
@@ -271,7 +271,6 @@ AcpiHwGetModeCapabilities (void)
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiHwPmtTicks
@@ -291,7 +290,7 @@ AcpiHwPmtTicks (void)
 
     FUNCTION_TRACE ("AcpiPmtTicks");
 
-    Ticks = AcpiOsdIn32 (AcpiGbl_FACP->PmTmrBlk);
+    Ticks = AcpiOsIn32 (AcpiGbl_FACP->PmTmrBlk);
 
     return_VALUE (Ticks);
 }
