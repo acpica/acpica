@@ -27,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -148,24 +148,24 @@ AmlAppendOperandDiag(
     UINT16                  OpCode, 
     INT32                   NumOperands)
 {
-    METHOD_INFO             Method;
+    ACPI_OBJECT_INTERNAL    MthDesc;
 
 
-    AmlGetCurrentLocation (&Method);
+    AmlGetCurrentLocation (&MthDesc);
 
     DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
                     FileName, LineNum,
                     (OpCode > ACPI_UCHAR_MAX)
-                        ? LongOps[OpCode & 0x00ff]
-                        : ShortOps[OpCode],
-                    Method.Offset));
+                        ? Gbl_LongOps[OpCode & 0x00ff]
+                        : Gbl_ShortOps[OpCode],
+                    MthDesc.Method.Pcode));
 
     if (GetDebugLevel () > 0)
     {
-        DUMP_STACK (MODE_Exec,
+        DUMP_STACK (IMODE_Execute,
                       (OpCode > ACPI_UCHAR_MAX)
-                      ? LongOps[OpCode & 0x00ff]
-                      : ShortOps[OpCode],
+                      ? Gbl_LongOps[OpCode & 0x00ff]
+                      : Gbl_ShortOps[OpCode],
                       NumOperands,
                       "after PrepStack failed");
     }
@@ -192,7 +192,7 @@ UINT32
 AmlBufSeq (void)
 {
     
-    return ++BufSeq;
+    return ++Gbl_BufSeq;
 }
 
 
@@ -213,7 +213,7 @@ AmlBufSeq (void)
 
 BOOLEAN
 AmlAcquireGlobalLock (
-    UINT16                  Rule)
+    UINT32                  Rule)
 {
     BOOLEAN                 Locked = FALSE;
 
@@ -223,7 +223,7 @@ AmlAcquireGlobalLock (
 
     /*  Only attempt lock if the Rule says so */
     
-    if (Rule == (UINT16) GLOCK_AlwaysLock)
+    if (Rule == (UINT32) GLOCK_AlwaysLock)
     {   
         /*  OK to get the lock   */
         
@@ -237,13 +237,12 @@ AmlAcquireGlobalLock (
 
         else
         {
-            GlobalLockSet = TRUE;
+            Gbl_GlobalLockSet = TRUE;
             Locked = TRUE;
         }
     }
 
-    FUNCTION_EXIT;
-    return Locked;
+    return_VALUE (Locked);
 }
 
 
@@ -274,12 +273,12 @@ AmlReleaseGlobalLock (
     {
         /* Double check against the global flag */
 
-        if (GlobalLockSet)
+        if (Gbl_GlobalLockSet)
         {
             /* OK, now release the lock */
 
             OsReleaseGlobalLock ();
-            GlobalLockSet = FALSE;
+            Gbl_GlobalLockSet = FALSE;
         }
 
         else
@@ -291,8 +290,7 @@ AmlReleaseGlobalLock (
     }
 
 
-    FUNCTION_EXIT;
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
 /******************************************************************************
@@ -330,8 +328,7 @@ AmlDigitsNeeded (
         { ; }
     }
 
-    FUNCTION_EXIT;
-    return NumDigits;
+    return_VALUE (NumDigits);
 }
 
 

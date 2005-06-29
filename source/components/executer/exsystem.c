@@ -404,11 +404,11 @@ OsGetGlobalLock(void)
     ACPI_STATUS         Status = AE_OK;
 
 
-    if (FACS)
+    if (Gbl_FACS)
     {
         /* Only if the FACS is valid */
 
-        GlobalLockReg = FACS->GlobalLock;
+        GlobalLockReg = Gbl_FACS->GlobalLock;
 
         if (GlobalLockReg & GL_OWNED)
         {
@@ -422,7 +422,7 @@ OsGetGlobalLock(void)
         {
             /* Its not owned so take ownership and return AE_OK */
         
-            FACS->GlobalLock |= GL_OWNED;
+            Gbl_FACS->GlobalLock |= GL_OWNED;
             Status = AE_OK;
         }
     }
@@ -443,8 +443,8 @@ void
 OsReleaseGlobalLock (void)
 {
     
-    if (FACS)
+    if (Gbl_FACS)
     {
-        FACS->GlobalLock &= 0xFFFFFFFF ^ GL_OWNED;
+        Gbl_FACS->GlobalLock &= 0xFFFFFFFF ^ GL_OWNED;
     }
 }
