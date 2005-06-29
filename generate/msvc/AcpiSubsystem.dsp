@@ -534,10 +534,6 @@ SOURCE=..\..\Subsystem\Parser\psutils.c
 
 SOURCE=..\..\Subsystem\Parser\pswalk.c
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Parser\pswstate.c
-# End Source File
 # End Group
 # Begin Group "Debugger"
 
