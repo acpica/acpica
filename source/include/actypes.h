@@ -183,56 +183,56 @@ typedef unsigned int        ACPI_SIZE;
  */
 
 #ifndef LOWORD
-#define LOWORD(l)       ((UINT16)(UINT32)(l))
+#define LOWORD(l)           ((UINT16)(UINT32)(l))
 #endif
 
 #ifndef HIWORD
-#define HIWORD(l)       ((UINT16)((((UINT32)(l)) >> 16) & 0xFFFF))
+#define HIWORD(l)           ((UINT16)((((UINT32)(l)) >> 16) & 0xFFFF))
 #endif  
 
 #ifndef LOBYTE
-#define LOBYTE(l)       ((UINT8)(UINT16)(l))
+#define LOBYTE(l)           ((UINT8)(UINT16)(l))
 #endif
 
 #ifndef HIBYTE
-#define HIBYTE(l)       ((UINT8)((((UINT16)(l)) >> 8) & 0xFF))
+#define HIBYTE(l)           ((UINT8)((((UINT16)(l)) >> 8) & 0xFF))
 #endif
 
-#define BIT0(x)         ((((x) & 0x01) > 0) ? 1 : 0)
-#define BIT1(x)         ((((x) & 0x02) > 0) ? 1 : 0)
-#define BIT2(x)         ((((x) & 0x04) > 0) ? 1 : 0)
-#define BIT3(x)         ((((x) & 0x08) > 0) ? 1 : 0)
-#define BIT4(x)         ((((x) & 0x10) > 0) ? 1 : 0)
-#define BIT5(x)         ((((x) & 0x20) > 0) ? 1 : 0)
-#define BIT6(x)         ((((x) & 0x40) > 0) ? 1 : 0)
-#define BIT7(x)         ((((x) & 0x80) > 0) ? 1 : 0)
+#define BIT0(x)             ((((x) & 0x01) > 0) ? 1 : 0)
+#define BIT1(x)             ((((x) & 0x02) > 0) ? 1 : 0)
+#define BIT2(x)             ((((x) & 0x04) > 0) ? 1 : 0)
+#define BIT3(x)             ((((x) & 0x08) > 0) ? 1 : 0)
+#define BIT4(x)             ((((x) & 0x10) > 0) ? 1 : 0)
+#define BIT5(x)             ((((x) & 0x20) > 0) ? 1 : 0)
+#define BIT6(x)             ((((x) & 0x40) > 0) ? 1 : 0)
+#define BIT7(x)             ((((x) & 0x80) > 0) ? 1 : 0)
 
-#define LOW_BASE(w)     ((UINT16) ((w) & 0x0000FFFF))
-#define MID_BASE(b)     ((UINT8) (((b) & 0x00FF0000) >> 16))
-#define HI_BASE(b)      ((UINT8) (((b) & 0xFF000000) >> 24))
-#define LOW_LIMIT(w)    ((UINT16) ((w) & 0x0000FFFF))
-#define HI_LIMIT(b)     ((UINT8) (((b) & 0x00FF0000) >> 16))
+#define LOW_BASE(w)         ((UINT16) ((w) & 0x0000FFFF))
+#define MID_BASE(b)         ((UINT8) (((b) & 0x00FF0000) >> 16))
+#define HI_BASE(b)          ((UINT8) (((b) & 0xFF000000) >> 24))
+#define LOW_LIMIT(w)        ((UINT16) ((w) & 0x0000FFFF))
+#define HI_LIMIT(b)         ((UINT8) (((b) & 0x00FF0000) >> 16))
 
 
 /*
  * Fast power-of-two math for non-optimized compilers
  */
 
-#define DIV_2(a)        ((a)>>1)
-#define MUL_2(a)        ((a)<<1)
-#define MOD_2(a)        ((a)&0x01)
+#define DIV_2(a)            ((a)>>1)
+#define MUL_2(a)            ((a)<<1)
+#define MOD_2(a)            ((a)&0x01)
 
-#define DIV_4(a)        ((a)>>2)
-#define MUL_4(a)        ((a)<<2)
-#define MOD_4(a)        ((a)&0x03)
+#define DIV_4(a)            ((a)>>2)
+#define MUL_4(a)            ((a)<<2)
+#define MOD_4(a)            ((a)&0x03)
 
-#define DIV_8(a)        ((a)>>3)
-#define MUL_8(a)        ((a)<<3)
-#define MOD_8(a)        ((a)&0x07)
+#define DIV_8(a)            ((a)>>3)
+#define MUL_8(a)            ((a)<<3)
+#define MOD_8(a)            ((a)&0x07)
 
-#define DIV_16(a)       ((a)>>4)
-#define MUL_16(a)       ((a)<<4)
-#define MOD_16(a)       ((a)&0x0F)
+#define DIV_16(a)           ((a)>>4)
+#define MUL_16(a)           ((a)<<4)
+#define MOD_16(a)           ((a)&0x0F)
 
 
 /* 
@@ -242,15 +242,15 @@ typedef unsigned int        ACPI_SIZE;
 #ifdef FALSE
 #undef FALSE
 #endif
-#define FALSE           (1 == 0)
+#define FALSE               (1 == 0)
 
 #ifdef TRUE
 #undef TRUE
 #endif
-#define TRUE            (1 == 1)
+#define TRUE                (1 == 1)
 
 #ifndef NULL
-#define NULL            (void *)0
+#define NULL                (void *) 0
 #endif
 
 
@@ -258,38 +258,32 @@ typedef unsigned int        ACPI_SIZE;
  * Local datatypes 
  */
 
+
+
 /* Types specific to the OS-independent subsystem interfaces */
 
-typedef INT32           ACPI_STATUS;
-
-/* Types specific to the OS-dependent interface */
-
-typedef void            OSD_FILE;
+typedef UINT32              ACPI_STATUS;
+typedef UINT32              ACPI_NAME;
+typedef INT8                ACPI_STRING;
+typedef void*               ACPI_HANDLE;    /* Actually a ptr to an NTE */
 
 
 /*
  *  Table types.  These values are passed to the table related APIs
  */
 
-typedef enum 
-{
-    RSDPTR_Ord    = 0,
-    APIC_Ord,
-    DSDT_Ord,
-    FACP_Ord,
-    FACS_Ord,
-    PSDT_Ord,
-    RSDT_Ord,
-    SSDT_Ord,
-    SBDT_Ord
+typedef UINT32              ACPI_TABLE_TYPE;
 
-} ACPI_TABLE_TYPE;
-
-
-
-/* ACPI_HANDLE is actually an (nte *) for now! */
-
-typedef void*           ACPI_HANDLE;
+#define TABLE_RSDPTR        (ACPI_TABLE_TYPE) 0
+#define TABLE_APIC          (ACPI_TABLE_TYPE) 1
+#define TABLE_DSDT          (ACPI_TABLE_TYPE) 2
+#define TABLE_FACP          (ACPI_TABLE_TYPE) 3
+#define TABLE_FACS          (ACPI_TABLE_TYPE) 4
+#define TABLE_PSDT          (ACPI_TABLE_TYPE) 5
+#define TABLE_RSDT          (ACPI_TABLE_TYPE) 6
+#define TABLE_SSDT          (ACPI_TABLE_TYPE) 7
+#define TABLE_SBDT          (ACPI_TABLE_TYPE) 8
+#define ACPI_TABLE_MAX      8
 
 
 /* 
@@ -299,46 +293,67 @@ typedef void*           ACPI_HANDLE;
  * The ACPI_OBJECT_TYPE type is also used in OBJECT_DESCRIPTOR defined in amlpriv.h
  */
 
-typedef enum 
-{
-   TYPE_Any              =  0,
-   TYPE_Number           =  1, /* Byte/Word/Dword/Zero/One/Ones */
-   TYPE_String           =  2,
-   TYPE_Buffer           =  3,
-   TYPE_Package          =  4, /* ByteConst, multiple DataTerm/Constant/SuperName */
-   TYPE_FieldUnit        =  5,
-   TYPE_Device           =  6, /* Name, multiple NamedObject */
-   TYPE_Event            =  7,
-   TYPE_Method           =  8, /* Name, ByteConst, multiple Code */
-   TYPE_Mutex            =  9,
-   TYPE_Region           = 10,
-   TYPE_Power            = 11, /* Name,ByteConst,WordConst,multi NamedObject */
-   TYPE_Processor        = 12, /* Name,ByteConst,DWordConst,ByteConst,multi NmO */
-   TYPE_Thermal          = 13, /* Name, multiple NamedObject */
-   TYPE_Alias            = 14,
+typedef UINT32              ACPI_OBJECT_TYPE;
 
+#define TYPE_Any            (ACPI_OBJECT_TYPE) 0
+#define TYPE_Number         (ACPI_OBJECT_TYPE) 1  /* Byte/Word/Dword/Zero/One/Ones */
+#define TYPE_String         (ACPI_OBJECT_TYPE) 2
+#define TYPE_Buffer         (ACPI_OBJECT_TYPE) 3
+#define TYPE_Package        (ACPI_OBJECT_TYPE) 4  /* ByteConst, multiple DataTerm/Constant/SuperName */
+#define TYPE_FieldUnit      (ACPI_OBJECT_TYPE) 5
+#define TYPE_Device         (ACPI_OBJECT_TYPE) 6  /* Name, multiple NamedObject */
+#define TYPE_Event          (ACPI_OBJECT_TYPE) 7
+#define TYPE_Method         (ACPI_OBJECT_TYPE) 8  /* Name, ByteConst, multiple Code */
+#define TYPE_Mutex          (ACPI_OBJECT_TYPE) 9
+#define TYPE_Region         (ACPI_OBJECT_TYPE) 10
+#define TYPE_Power          (ACPI_OBJECT_TYPE) 11 /* Name,ByteConst,WordConst,multi NamedObject */
+#define TYPE_Processor      (ACPI_OBJECT_TYPE) 12 /* Name,ByteConst,DWordConst,ByteConst,multi NmO */
+#define TYPE_Thermal        (ACPI_OBJECT_TYPE) 13 /* Name, multiple NamedObject */
+#define TYPE_Alias          (ACPI_OBJECT_TYPE) 14
+#define ACPI_TYPE_MAX       14
     /* 
      * The remaining values do not relate to the ObjectType operator and are
-     * used for various internal purposes.  A gap is provided in case more
-     * official ObjectType's are added in the future.  Also, values exceeding
-     * the largest ObjectType need to not overlap with defined AML opcodes.
+     * used for various internal purposes only.  A gap is provided in case more
+     * official ObjectTypes are added in the future.  Also, values exceeding
+     * the largest ObjectType must not overlap with defined AML opcodes.
      */
-   TYPE_DefField         = 25,
-   TYPE_BankField        = 26,
-   TYPE_IndexField       = 27,
-   TYPE_DefFieldDefn     = 28, /* Name, ByteConst, multiple FieldElement */
-   TYPE_BankFieldDefn    = 29, /* 2 Name,DWordConst,ByteConst,multi FieldElement */
-   TYPE_IndexFieldDefn   = 30, /* 2 Name, ByteConst, multiple FieldElement */
-   TYPE_If               = 31, /* OpCode, multiple Code */
-   TYPE_Else             = 32, /* multiple Code */
-   TYPE_While            = 33, /* OpCode, multiple Code */
-   TYPE_Scope            = 34, /* Name, multiple NamedObject */
-   TYPE_DefAny           = 35, /* type is Any, suppress search of enclosing scopes */
-   TYPE_Lvalue           = 36,  /* Arg#, Local#, Name, Debug; used only in descriptors */
+#define TYPE_DefField       (ACPI_OBJECT_TYPE) 25
+#define TYPE_BankField      (ACPI_OBJECT_TYPE) 26
+#define TYPE_IndexField     (ACPI_OBJECT_TYPE) 27
+#define TYPE_DefFieldDefn   (ACPI_OBJECT_TYPE) 28 /* Name, ByteConst, multiple FieldElement */
+#define TYPE_BankFieldDefn  (ACPI_OBJECT_TYPE) 29 /* 2 Name,DWordConst,ByteConst,multi FieldElement */
+#define TYPE_IndexFieldDefn (ACPI_OBJECT_TYPE) 30 /* 2 Name, ByteConst, multiple FieldElement */
+#define TYPE_If             (ACPI_OBJECT_TYPE) 31 /* OpCode, multiple Code */
+#define TYPE_Else           (ACPI_OBJECT_TYPE) 32 /* multiple Code */
+#define TYPE_While          (ACPI_OBJECT_TYPE) 33 /* OpCode, multiple Code */
+#define TYPE_Scope          (ACPI_OBJECT_TYPE) 34 /* Name, multiple NamedObject */
+#define TYPE_DefAny         (ACPI_OBJECT_TYPE) 35 /* type is Any, suppress search of enclosing scopes */
+#define TYPE_Lvalue         (ACPI_OBJECT_TYPE) 36 /* Arg#, Local#, Name, Debug; used only in descriptors */
+#define INTERNAL_TYPE_MAX   36
 
-   TYPE_Invalid          = 0xFF
+#define TYPE_Invalid        (ACPI_OBJECT_TYPE) 0xFF
 
-} ACPI_OBJECT_TYPE;
+
+/* 
+ * Fixed event types 
+ */
+
+typedef UINT32              ACPI_EVENT_TYPE;
+
+#define EVENT_PMTIMER       (ACPI_EVENT_TYPE) 0
+    /* 
+     * There's no bus master event so index 1 is used for IRQ's that are not
+     * handled by the SCI handler 
+     */
+#define EVENT_NOT_USED      (ACPI_EVENT_TYPE) 1
+#define EVENT_GLOBAL        (ACPI_EVENT_TYPE) 2
+#define EVENT_POWER_BUTTON  (ACPI_EVENT_TYPE) 3
+#define EVENT_SLEEP_BUTTON  (ACPI_EVENT_TYPE) 4
+#define EVENT_RTC           (ACPI_EVENT_TYPE) 5
+#define EVENT_GENERAL       (ACPI_EVENT_TYPE) 6
+#define ACPI_EVENT_MAX      6
+#define NUM_FIXED_EVENTS    (ACPI_EVENT_TYPE) 7
+
 
 
 /* 
@@ -347,36 +362,41 @@ typedef enum
 
 typedef union AcpiObj 
 {
-    UINT32                      Type;       /* See definition of NsType for values */
+    ACPI_OBJECT_TYPE            Type;   /* See definition of NsType for values */
     struct
     {
-        UINT32                  Type;
-        UINT32                  Value;          /* The actual number */
+        ACPI_OBJECT_TYPE            Type;
+        UINT32                      Value;      /* The actual number */
     } Number;
 
     struct
     {
-        UINT32                  Type;
-        UINT32                  Length;         /* # of bytes in string, excluding trailing null */
-        UINT8                   *Pointer;       /* points to the string value */
+        ACPI_OBJECT_TYPE            Type;
+        UINT32                      Length;     /* # of bytes in string, excluding trailing null */
+        UINT8                       *Pointer;   /* points to the string value */
     } String;
 
     struct
     {
-        UINT32                  Type;
-        UINT32                  Length;         /* # of bytes in buffer */
-        UINT8                   *Pointer;       /* points to the buffer */
+        ACPI_OBJECT_TYPE            Type;
+        UINT32                      Length;     /* # of bytes in buffer */
+        UINT8                       *Pointer;   /* points to the buffer */
     } Buffer;
 
     struct
     {
-        UINT32                  Type;
-        UINT32                  Count;          /* # of elements in package */
-        union AcpiObj           *Elements;      /* Pointer to an array of ACPI_OBJECTs */
+        ACPI_OBJECT_TYPE            Type;
+        UINT32                      Count;      /* # of elements in package */
+        union AcpiObj               *Elements;  /* Pointer to an array of ACPI_OBJECTs */
     } Package;
 
 } ACPI_OBJECT, *PACPI_OBJECT;
 
+
+
+/*
+ * List of objects, used as a parameter list for control method evaluation 
+ */
 
 typedef struct AcpiObjList
 {
@@ -384,6 +404,7 @@ typedef struct AcpiObjList
     ACPI_OBJECT             *Pointer;
 
 } ACPI_OBJECT_LIST, *PACPI_OBJECT_LIST;
+
 
 
 /*
@@ -399,10 +420,14 @@ typedef struct
 
 typedef struct _AcpiSysInfo 
 {
-    INT32                   DebugLevel;
-    INT32                   DebugLayer;
+    UINT32                  Flags;
+    UINT32                  TimerResolution;
+    UINT32                  Reserved1;
+    UINT32                  Reserved2;
+    UINT32                  DebugLevel;
+    UINT32                  DebugLayer;
 
-} ACPI_SYS_INFO;
+} ACPI_SYSTEM_INFO;
 
 
 /*
@@ -412,48 +437,30 @@ typedef struct _AcpiSysInfo
 
 typedef 
 UINT32 (*FIXED_EVENT_HANDLER) (
-    void            *Context);
+    void                    *Context);
 
 typedef
 void (*GPE_HANDLER) (
-    void            *Context);
+    void                    *Context);
 
 typedef
 void (*NOTIFY_HANDLER) (
-    UINT32          Value,
-    void            *Context);
+    UINT32                  Value,
+    void                    *Context);
 
 
 typedef
 void (*OPREGION_HANDLER) (
-    void            *Context);
+    void                    *Context);
 
 
 typedef
 void * (*WALK_CALLBACK) (
-    ACPI_HANDLE     ObjHandle,
-    UINT32          NestingLevel,
-    void            *Context);
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context);
 
 
-/* Fixed event types */
-
-typedef enum 
-{
-    EVENT_PMTIMER = 0,
-    /* 
-     * There's no bus master event so index 1 is used for IRQ's that are not
-     * handled by the SCI handler 
-     */
-    EVENT_NOT_USED,
-    EVENT_GLOBAL, 
-    EVENT_POWER_BUTTON, 
-    EVENT_SLEEP_BUTTON, 
-    EVENT_RTC, 
-    EVENT_GENERAL,
-    NUM_FIXED_EVENTS
-
-} ACPI_EVENT_TYPE;
 
 /* Interrupt handler return values (must be unique bits) */
 
@@ -465,10 +472,10 @@ typedef enum
 
 /* Structure and flags for AcpiGetDeviceInfo */
 
-#define ACPI_VALID_HID      0x1
-#define ACPI_VALID_UID      0x2
-#define ACPI_VALID_ADR      0x4
-#define ACPI_VALID_STA      0x8
+#define ACPI_VALID_HID          0x1
+#define ACPI_VALID_UID          0x2
+#define ACPI_VALID_ADR          0x4
+#define ACPI_VALID_STA          0x8
 
 typedef struct 
 {
@@ -482,7 +489,7 @@ typedef struct
 
 
 /* Control method information struct */
-/* Not really public, but appears in the ACPI_OBJECT definition */
+/* Not really public, but appears in the ACPI_OBJECT_INTERNAL definition */
 
 typedef struct
 {
