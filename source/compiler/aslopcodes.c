@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.41 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -155,6 +155,40 @@ OpcAmlOpcodeWalk (
 
 /*******************************************************************************
  *
+ * FUNCTION:    OpcGetIntegerWidth
+ *
+ * PARAMETERS:  Op          - DEFINITION BLOCK op
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Extract integer width from the table revision
+ *
+ ******************************************************************************/
+
+void
+OpcGetIntegerWidth (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *Child;
+
+    if (!Op)
+    {
+        return;
+    }
+
+    Child = Op->Asl.Child;
+    Child = Child->Asl.Next;
+    Child = Child->Asl.Next;
+
+    /* Use the revision to set the integer width */
+
+    AcpiUtSetIntegerWidth (Child->Asl.Value.Integer8);
+}
+
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    OpcSetOptimalIntegerSize
  *
  * PARAMETERS:  Op        - A parse tree node
@@ -175,25 +209,36 @@ OpcSetOptimalIntegerSize (
 
     /* Check for the special AML integers first */
 
-    if (Op->Asl.Value.Integer == 0)
+    if (Gbl_IntegerOptimizationFlag)
     {
-        Op->Asl.AmlOpcode = AML_ZERO_OP;
-        return 1;
-    }
-    if (Op->Asl.Value.Integer == 1)
-    {
-        Op->Asl.AmlOpcode = AML_ONE_OP;
-        return 1;
-    }
+        if (Op->Asl.Value.Integer == 0)
+        {
+            Op->Asl.AmlOpcode = AML_ZERO_OP;
+            return 1;
+        }
+        if (Op->Asl.Value.Integer == 1)
+        {
+            Op->Asl.AmlOpcode = AML_ONE_OP;
+            return 1;
+        }
 
-    /* TBD: add check for table width (32 or 64) */
+        /* Check for table integer width (32 or 64) */
 
-    if (Op->Asl.Value.Integer == ACPI_INTEGER_MAX)
-    {
-        Op->Asl.AmlOpcode = AML_ONES_OP;
-        return 1;
+        if (AcpiGbl_IntegerByteWidth == 4)
+        {
+            if (Op->Asl.Value.Integer == ACPI_UINT32_MAX)
+            {
+                Op->Asl.AmlOpcode = AML_ONES_OP;
+                return 1;
+            }
+        }
+        else if (Op->Asl.Value.Integer == ACPI_INTEGER_MAX)
+        {
+            Op->Asl.AmlOpcode = AML_ONES_OP;
+            return 1;
+        }
     }
-  
+ 
     /* Find the best fit */
 
     if (Op->Asl.Value.Integer <= ACPI_UINT8_MAX)
@@ -344,7 +389,32 @@ OpcDoUnicode (
  * RETURN:      None
  *
  *
- * DESCRIPTION: Convert a string EISA ID to numeric representation
+ * DESCRIPTION: Convert a string EISA ID to numeric representation.  See the
+ *              Pnp BIOS Specification for details.  Here is an excerpt:
+ *
+ *              A seven character ASCII representation of the product 
+ *              identifier compressed into a 32-bit identifier.  The seven
+ *              character ID consists of a three character manufacturer code,
+ *              a three character hexadecimal product identifier, and a one
+ *              character hexadecimal revision number.  The manufacturer code
+ *              is a 3 uppercase character code that is compressed into 3 5-bit
+ *              values as follows:
+ *                  1) Find hex ASCII value for each letter
+ *                  2) Subtract 40h from each ASCII value
+ *                  3) Retain 5 least signficant bits for each letter by
+ *                     discarding upper 3 bits because they are always 0.
+ *                  4) Compressed code = concatenate 0 and the 3 5-bit values
+ *
+ *              The format of the compressed product identifier is as follows:
+ *              Byte 0: Bit 7       - Reserved (0)
+ *                      Bits 6-2:   - 1st character of compressed mfg code
+ *                      Bits 1-0    - Upper 2 bits of 2nd character of mfg code
+ *              Byte 1: Bits 7-5    - Lower 3 bits of 2nd character of mfg code
+ *                      Bits 4-0    - 3rd character of mfg code
+ *              Byte 2: Bits 7-4    - 1st hex digit of product number
+ *                      Bits 3-0    - 2nd hex digit of product number
+ *              Byte 3: Bits 7-4    - 3st hex digit of product number
+ *                      Bits 3-0    - Hex digit of the revision number
  *
  ******************************************************************************/
 
@@ -352,39 +422,82 @@ void
 OpcDoEisaId (
     ACPI_PARSE_OBJECT       *Op)
 {
-    UINT32                  id;
-    UINT32                  SwappedId;
-    UINT8                   *InString;
+    UINT32                  EisaId = 0;
+    UINT32                  BigEndianId;
+    NATIVE_CHAR             *InString; 
+    ACPI_STATUS             Status = AE_OK;
+    NATIVE_UINT             i;
 
 
-    InString = (UINT8 *) Op->Asl.Value.String;
+    InString = (NATIVE_CHAR *) Op->Asl.Value.String;
 
-    /* Create ID big-endian first */
+    /* 
+     * The EISAID string must be exactly 7 characters and of the form
+     * "LLLXXXX" -- 3 letters and 4 hex digits (e.g., "PNP0001")
+     */
+    if (ACPI_STRLEN (InString) != 7)
+    {
+        Status = AE_BAD_PARAMETER;
+    }
+    else 
+    {
+        /* Check all 7 characters for correct format */
 
-    id = 0;
-    id |= (UINT32) (InString[0] - '@') << 26;
-    id |= (UINT32) (InString[1] - '@') << 21;
-    id |= (UINT32) (InString[2] - '@') << 16;
+        for (i = 0; i < 7; i++)
+        {
+            /* First 3 characters must be letters */
 
-    id |= (UtHexCharToValue (InString[3])) << 12;
-    id |= (UtHexCharToValue (InString[4])) << 8;
-    id |= (UtHexCharToValue (InString[5])) << 4;
-    id |=  UtHexCharToValue (InString[6]);
+            if (i < 3)
+            {
+                if (!isalpha (InString[i]))
+                {
+                    Status = AE_BAD_PARAMETER;
+                }
+            }
 
-    /* swap to little-endian  */
+            /* Last 4 characters must be hex digits */
 
-    SwappedId  =  (id & 0xFF) << 24;
-    SwappedId |= ((id >> 8) & 0xFF) << 16;
-    SwappedId |= ((id >> 16) & 0xFF) << 8;
-    SwappedId |=  (id >> 24) & 0xFF;
+            else if (!isxdigit (InString[i]))
+            {
+                Status = AE_BAD_PARAMETER;
+            }
+        }
+    }
 
-    Op->Asl.Value.Integer32 = SwappedId;
+    if (ACPI_FAILURE (Status))
+    {
+        AslError (ASL_ERROR, ASL_MSG_INVALID_EISAID, Op, Op->Asl.Value.String);
+    }
+    else
+    {
+        /* Create ID big-endian first (bits are contiguous) */
 
-    /* Op is now an integer */
+        BigEndianId  =  (UINT32) (InString[0] - 0x40) << 26 |
+                        (UINT32) (InString[1] - 0x40) << 21 |
+                        (UINT32) (InString[2] - 0x40) << 16 |
+
+                        (UtHexCharToValue (InString[3])) << 12 |
+                        (UtHexCharToValue (InString[4])) << 8  |
+                        (UtHexCharToValue (InString[5])) << 4  |
+                         UtHexCharToValue (InString[6]);
+
+        /* Swap to little-endian to get final ID (see function header) */
+
+        EisaId = AcpiUtDwordByteSwap (BigEndianId);
+    }
+
+    /* 
+     * Morph the Op into an integer, regardless of whether there
+     * was an error in the EISAID string
+     */
+    Op->Asl.Value.Integer32 = EisaId;
 
     Op->Asl.CompileFlags &= ~NODE_COMPILE_TIME_CONST;
     Op->Asl.ParseOpcode = PARSEOP_INTEGER;
     (void) OpcSetOptimalIntegerSize (Op);
+
+    /* Op is now an integer */
+
     UtSetParseOpName (Op);
 }
 
