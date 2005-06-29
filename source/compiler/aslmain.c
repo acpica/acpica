@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -486,7 +486,7 @@ main (
     {
         printf ("\n");
         Usage ();
-        return -1;
+        return 0;
     }
 
     if ((optind + 1) < argc)
@@ -504,7 +504,7 @@ main (
     }
 
     Status = CmDoCompile ();
-    return (Status);
+    return (0);
 }
 
 
