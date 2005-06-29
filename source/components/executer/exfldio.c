@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfldio - Aml Field I/O
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -572,7 +572,7 @@ AcpiAmlWriteFieldDataWithUpdateRule (
 
         /* Check if update rule needs to be applied (not if mask is all ones) */
 
-        if (((1UL << BitGranularity) -1) & ~Mask)
+        if (((1 << BitGranularity) -1) & ~Mask)
         {
             /*
              * Read the current contents of the byte/word/dword containing
