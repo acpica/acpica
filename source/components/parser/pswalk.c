@@ -419,12 +419,16 @@ PsWalkLoop (
 
         /* 
          * A TRUE exception means that an ELSE was detected, but the IF predicate evaluated TRUE.
-         * Simply ignore the entire ELSE block by moving on the the next opcode.
          */
         if (Status == AE_TRUE)
         {
-            Op = Op->Next;
-            continue;
+            /*
+             * Ignore the entire ELSE block by moving on to the the next opcode.
+             * And we do that by simply going up in the tree (either to the next sibling
+             * or to the parent) from here.
+             */
+          
+            WalkState->NextOpInfo = NEXT_OP_UPWARD;
         }
 
         /* Get the next node (op) in the depth-first walk */
