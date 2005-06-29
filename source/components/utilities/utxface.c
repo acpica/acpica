@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -274,7 +274,11 @@ AcpiEnableSubsystem (
     {
         DEBUG_PRINT (TRACE_EXEC, ("[Init] Going into ACPI mode\n"));
 
-        AcpiEnable ();
+        Status = AcpiEnable ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /*
