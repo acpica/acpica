@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -451,7 +451,7 @@ AcpiEvGpeInitialize (void)
      * If EITHER the register length OR the block address are zero, then that
      * particular block is not supported.
      */
-    if (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth && AcpiGbl_FADT->XGpe0Blk.Address)
+    if (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth && ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address))
     {
         /* GPE block 0 exists (has length and address > 0) */
 
@@ -459,7 +459,7 @@ AcpiEvGpeInitialize (void)
         AcpiGbl_GpeNumberMax                    = ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[0].RegisterCount) - 1;
     }
 
-    if (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth && AcpiGbl_FADT->XGpe1Blk.Address)
+    if (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth && ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address))
     {
         /* GPE block 1 exists (has length and address > 0) */
 
