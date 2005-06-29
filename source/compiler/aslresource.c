@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -245,6 +245,131 @@ RsCompleteNodeAndGetNext (
 
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+RsDoOneResourceDescriptor (
+    ASL_PARSE_NODE          *DescriptorTypeNode,
+    ASL_RESOURCE_DESC       **DescriptorPtr,
+    UINT32                  CurrentByteOffset)
+{
+
+
+
+    /* Determine type of resource */
+
+    switch (DescriptorTypeNode->ParseOpcode)
+    {
+    case DMA:
+        RsDoDmaDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case DWORDIO:
+        RsDoDwordIoDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case DWORDMEMORY:
+        RsDoDwordMemoryDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case ENDDEPENDENTFN:
+        RsDoEndDependentDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case FIXEDIO:
+        RsDoFixedIoDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case INTERRUPT:
+        RsDoInterruptDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case IO:
+        RsDoIoDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case IRQ:
+        RsDoIrqDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case IRQNOFLAGS:
+        RsDoIrqNoFlagsDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case MEMORY24:
+        RsDoMemory24Descriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case MEMORY32:
+        RsDoMemory32Descriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case MEMORY32FIXED:
+        RsDoMemory32FixedDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case QWORDIO:
+        RsDoQwordIoDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case QWORDMEMORY:
+        RsDoQwordMemoryDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case REGISTER:
+        break;
+
+    case STARTDEPENDENTFN:
+        RsDoStartDependentDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case STARTDEPENDENTFN_NOPRI:
+        RsDoStartDependentNoPriDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case VENDORLONG:
+        break;
+
+    case VENDORSHORT:
+        break;
+
+    case WORDBUSNUMBER:
+        RsDoWordBusNumberDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    case WORDIO:
+        RsDoWordIoDescriptor (DescriptorTypeNode, DescriptorPtr, CurrentByteOffset);
+        break;
+
+    default:
+        printf ("Unknown resource descriptor type [%s]\n", 
+                    DescriptorTypeNode->ParseOpName);
+        break;
+    }
+
+
+
+    /* 
+     * Mark original node as unused, but head of a resource descriptor.
+     * This allows the resource to be installed in the namespace so that
+     * references to the descriptor can be resolved.
+     */
+    DescriptorTypeNode->ParseOpcode = DEFAULT_ARG;
+    DescriptorTypeNode->Flags = NODE_IS_RESOURCE_DESC;
+
+
+}
+
 
 /*******************************************************************************
  *
@@ -260,14 +385,15 @@ RsCompleteNodeAndGetNext (
 
 void
 CgDoResourceTemplate (
-    ASL_PARSE_NODE              *Node)
+    ASL_PARSE_NODE          *Node)
 {
-    ASL_PARSE_NODE              *BufferLengthNode;
-    ASL_PARSE_NODE              *BufferNode;
-    ASL_PARSE_NODE              *DescriptorTypeNode;
-    ASL_RESOURCE_DESC           *StartOfDescriptor;
-    ASL_RESOURCE_DESC           *Descriptor;
-    UINT32                      ValidDataLength;
+    ASL_PARSE_NODE          *BufferLengthNode;
+    ASL_PARSE_NODE          *BufferNode;
+    ASL_PARSE_NODE          *DescriptorTypeNode;
+    ASL_RESOURCE_DESC       *StartOfDescriptor;
+    ASL_RESOURCE_DESC       *Descriptor;
+    UINT32                  ValidDataLength;
+    UINT32                  CurrentByteOffset;
 
 
     /* Allocate a worst-case descriptor */
@@ -293,106 +419,15 @@ CgDoResourceTemplate (
 
     while (DescriptorTypeNode)
     {
-        /* Determine type of resource */
-
-        switch (DescriptorTypeNode->ParseOpcode)
-        {
-        case DMA:
-            RsDoDmaDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case DWORDIO:
-            RsDoDwordIoDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case DWORDMEMORY:
-            RsDoDwordMemoryDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case ENDDEPENDENTFN:
-            RsDoEndDependentDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case FIXEDIO:
-            RsDoFixedIoDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case INTERRUPT:
-            RsDoInterruptDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case IO:
-            CgDoIoDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case IRQ:
-            RsDoIrqDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case IRQNOFLAGS:
-            RsDoIrqNoFlagsDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case MEMORY24:
-            RsDoMemory24Descriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case MEMORY32:
-            RsDoMemory32Descriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case MEMORY32FIXED:
-            RsDoMemory32FixedDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case QWORDIO:
-            RsDoQwordIoDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case QWORDMEMORY:
-            RsDoQwordMemoryDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case REGISTER:
-            break;
-
-        case STARTDEPENDENTFN:
-            RsDoStartDependentDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case STARTDEPENDENTFN_NOPRI:
-            RsDoStartDependentNoPriDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case VENDORLONG:
-            break;
-
-        case VENDORSHORT:
-            break;
-
-        case WORDBUSNUMBER:
-            CgDoWordBusNumberDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        case WORDIO:
-            RsDoWordIoDescriptor (DescriptorTypeNode, &Descriptor);
-            break;
-
-        default:
-            printf ("Unknown resource descriptor type [%s]\n", 
-                        DescriptorTypeNode->ParseOpName);
-            break;
-        }
-
-
-
-        /* 
-         * Mark original node as unused, but head of a resource descriptor.
-         * This allows the resource to be installed in the namespace so that
-         * references to the descriptor can be resolved.
+        /*
+         * Update current byte offset to indicate the number of bytes from the
+         * start of the buffer.  Buffer can include multiple descriptors, we
+         * must keep track of the offset of not only each descriptor, but each
+         * element (field) within each descriptor as well.
          */
-        DescriptorTypeNode->ParseOpcode = DEFAULT_ARG;
-        DescriptorTypeNode->Flags = NODE_IS_RESOURCE_DESC;
+        CurrentByteOffset = ASL_PTR_DIFF (StartOfDescriptor, Descriptor);
+
+        RsDoOneResourceDescriptor (DescriptorTypeNode, &Descriptor, CurrentByteOffset);
 
 
         /* Get the next descriptor in the list */
@@ -403,7 +438,7 @@ CgDoResourceTemplate (
             ValidDataLength = (((char *) Descriptor) - ((char *) StartOfDescriptor));
 
             StartOfDescriptor = UtLocalRealloc (StartOfDescriptor, 
-                                    ValidDataLength + DEFAULT_RESOURCE_DESC_SIZE);
+                                    ValidDataLength, DEFAULT_RESOURCE_DESC_SIZE);
 
             Descriptor = (ASL_RESOURCE_DESC *) (((char *) StartOfDescriptor) + ValidDataLength);
         }
