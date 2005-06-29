@@ -277,7 +277,7 @@ AmlDumpObjStackEntry (
          * This usually indicates that something serious is wrong -- since most (if not all) 
          * code that dumps the stack expects something to be there! 
          */
-        DEBUG_PRINT (ACPI_ERROR, ("AmlDumpObjStackEntry: *** Error: Null stack entry ptr\n"));
+        DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: *** Possible error: Null stack entry ptr\n"));
         return_ACPI_STATUS (AE_OK);
     }
 
