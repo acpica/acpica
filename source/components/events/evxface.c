@@ -867,14 +867,15 @@ AcpiInstallAddressSpaceHandler (
         goto UnlockAndExit;
     }
 
-    HandlerObj->AddrHandler.SpaceId     = (UINT16) SpaceId;
-    HandlerObj->AddrHandler.Hflags      = Flags;
-    HandlerObj->AddrHandler.Link        = ObjDesc->Device.AddrHandler;
-    HandlerObj->AddrHandler.RegionList  = NULL;
-    HandlerObj->AddrHandler.Nte         = ObjEntry;
-    HandlerObj->AddrHandler.Handler     = Handler;
-    HandlerObj->AddrHandler.Context     = Context;
-
+    HandlerObj->AddrHandler.SpaceId             = (UINT16) SpaceId;
+    HandlerObj->AddrHandler.Hflags              = Flags;
+    HandlerObj->AddrHandler.Link                = ObjDesc->Device.AddrHandler;
+    HandlerObj->AddrHandler.RegionList          = NULL;
+    HandlerObj->AddrHandler.Nte                 = ObjEntry;
+    HandlerObj->AddrHandler.Handler             = Handler;
+    HandlerObj->AddrHandler.Context             = NULL;
+    HandlerObj->AddrHandler.InstallTimeContext  = Context;
+    HandlerObj->AddrHandler.RegionSetupFunction = RegInit;
 
     /*
      *  Now walk the namespace finding all of the regions this
