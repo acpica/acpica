@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -527,10 +527,13 @@ TrDoSwitch (
             }
             else
             {
-                /* the IF is a child of previous IF */
-
+                /* 
+                 * The IF is a child of previous IF/ELSE.  It 
+                 * is therefore without peer.
+                 */
                 CurrentParentNode->Child = Conditional;
                 Conditional->Parent      = CurrentParentNode;
+                Conditional->Peer        = NULL;
             }
         }
 
