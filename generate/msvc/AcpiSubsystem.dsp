@@ -24,7 +24,7 @@ CFG=Subsystem - Win32 Debug
 # Begin Project
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi Components/Subsystem", CQBAAAAA"
-# PROP Scc_LocalPath "."
+# PROP Scc_LocalPath "..\.."
 CPP=cl.exe
 RSC=rc.exe
 
