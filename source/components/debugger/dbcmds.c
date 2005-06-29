@@ -137,23 +137,23 @@
 
 ARGUMENT_INFO               DbObjectTypes [] = 
 {
-    "ANY",
-    "NUMBERS",
-    "STRINGS",
-    "BUFFERS",
-    "PACKAGES",
-    "FIELDS",
-    "DEVICES",
-    "EVENTS",
-    "METHODS",
-    "MUTEXES",
-    "REGIONS",
-    "POWERRESOURCES",
-    "PROCESSORS",
-    "THERMALZONES",
-    "BUFFERFIELDS",
-    "DDBHANDLES",
-    NULL            /* Must be null terminated */
+    {"ANY"},
+    {"NUMBERS"},
+    {"STRINGS"},
+    {"BUFFERS"},
+    {"PACKAGES"},
+    {"FIELDS"},
+    {"DEVICES"},
+    {"EVENTS"},
+    {"METHODS"},
+    {"MUTEXES"},
+    {"REGIONS"},
+    {"POWERRESOURCES"},
+    {"PROCESSORS"},
+    {"THERMALZONES"},
+    {"BUFFERFIELDS"},
+    {"DDBHANDLES"},
+    {NULL}           /* Must be null terminated */
 };
 
 
