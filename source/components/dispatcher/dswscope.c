@@ -154,7 +154,7 @@ NsPushCurrentScope (nte *NewScope, NsType Type)
             REPORT_WARNING (&KDT[1]);
         }
 
-        if (CurrentScope < &ScopeStack[MAXNEST-1])   /* check for overflow */
+        if (CurrentScope < &ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
         {
             /*  no Scope stack overflow */
 
@@ -162,14 +162,14 @@ NsPushCurrentScope (nte *NewScope, NsType Type)
             CurrentScope->Scope = NewScope;
             CurrentScope->Type = Type;
 
-            if (CurrentScope->Scope == Root)
+            if (CurrentScope->Scope == RootObject->Scope)
             {
                 NsCurrentSize = NsRootSize;
             }
         
             else
             {
-                NsCurrentSize = TABLSIZE;
+                NsCurrentSize = NS_DEFAULT_TABLE_SIZE;
             }
         }
     
@@ -202,18 +202,18 @@ NsPushMethodScope (NsHandle NewScope)
 
 
     if (!NewScope || 
-       (nte *) 0 == ((nte *) NewScope)->ChildScope)
+       (nte *) 0 == ((nte *) NewScope)->Scope)
     {
-        /*  NewScope or NewScope->ChildScope invalid    */
+        /*  NewScope or NewScope->Scope invalid    */
 
         REPORT_ERROR (&KDT[3]);
     }
 
     else
     {
-        if (CurrentScope < &ScopeStack[MAXNEST-1])   /* check for overflow */
+        if (CurrentScope < &ScopeStack[MAX_SCOPE_NESTING-1])   /* check for overflow */
         {
-            NsPushCurrentScope (((nte *) NewScope)->ChildScope, TYPE_Method);
+            NsPushCurrentScope (((nte *) NewScope)->Scope, TYPE_Method);
         }
     
         else
@@ -264,13 +264,13 @@ NsPopCurrent (NsType Type)
     {
         CurrentScope--;
 
-        if (Root == CurrentScope->Scope)
+        if (RootObject->Scope == CurrentScope->Scope)
         {
             NsCurrentSize = NsRootSize;
         }
         else
         {
-            NsCurrentSize = TABLSIZE;
+            NsCurrentSize = NS_DEFAULT_TABLE_SIZE;
         }
 
         Count++;
