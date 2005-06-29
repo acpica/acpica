@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -360,8 +360,8 @@ AcpiNsInstallNode (
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Delete all children of the parent object. Deletes a
- *              "scope".
+ * DESCRIPTION: Delete all children of the parent object. In other words,
+ *              deletes a "scope".
  *
  ******************************************************************************/
 
@@ -445,7 +445,7 @@ AcpiNsDeleteChildren (
  * RETURN:      None.
  *
  * DESCRIPTION: Delete a subtree of the namespace.  This includes all objects
- *              stored within the subtree.  Scope tables are deleted also
+ *              stored within the subtree.
  *
  ******************************************************************************/
 
@@ -478,6 +478,11 @@ AcpiNsDeleteNamespaceSubtree (
         if (ChildNode)
         {
             /* Found a child node - detach any attached object */
+
+            if (ChildNode->Name == 'NGIS')
+            {
+                AcpiOsPrintf ("found SIGN\n");
+            }
 
             AcpiNsDetachObject (ChildNode);
 
