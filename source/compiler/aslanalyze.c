@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -1392,14 +1392,18 @@ AnOperandTypecheckWalkEnd (
     switch (Op->Asl.AmlOpcode)
     {
     case AML_IF_OP:
-    case AML_RETURN_OP:
     case AML_WHILE_OP:
+    case AML_RETURN_OP:
 
         if (ArgOp->Asl.ParseOpcode == PARSEOP_METHODCALL)
         {
             /* The lone arg is a method call, check it */
 
             RequiredBtypes = AnMapArgTypeToBtype (ARGI_INTEGER);
+            if (Op->Asl.AmlOpcode == AML_RETURN_OP)
+            {
+                RequiredBtypes = 0xFFFFFFFF;
+            }
 
             ThisNodeBtype = AnGetBtype (ArgOp);
             if (ThisNodeBtype == ACPI_UINT32_MAX)
