@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  *****************************************************************************/
 
@@ -453,12 +453,6 @@ AcpiExOpcode_1A_1T_1R (
                  * return FALSE
                  */
                 ReturnDesc->Integer.Value = 0;
-
-                /*
-                 * Must delete the result descriptor since there is no reference
-                 * being returned
-                 */
-                AcpiUtRemoveReference (Operand[1]);
                 goto Cleanup;
             }
 
@@ -498,6 +492,8 @@ AcpiExOpcode_1A_1T_1R (
         {
             return_ACPI_STATUS (Status);
         }
+
+        /* It is possible that the Store already produced a return object */
 
         if (!WalkState->ResultObj)
         {
