@@ -221,7 +221,7 @@ PsxDeleteResultIfNotUsed (
      * be deleted when it is used as an operand later.
      */
 
-    switch (ParentInfo->Type)
+    switch (ParentInfo->Flags & OP_INFO_TYPE)
     {
     /*
      * In these cases, the parent will never use the return object, so delete it 
@@ -284,7 +284,7 @@ PsxCreateOperand (
     ACPI_OBJECT_TYPE        DataType; 
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *ParentOp;
-    UINT32                  Opcode;
+    UINT16                  Opcode;
     UINT32                  Flags;
     OPERATING_MODE          InterpreterMode;
 
@@ -301,7 +301,7 @@ PsxCreateOperand (
 
         /* Get the entire name string from the AML stream */
 
-        Status = AmlGetNameString (ACPI_TYPE_Any, Arg->Value.String, &NameString, &NameLength);
+        Status = AmlGetNameString (ACPI_TYPE_Any, Arg->Value.Buffer, &NameString, &NameLength);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -580,7 +580,7 @@ PsxResolveOperands (
 
 ACPI_OBJECT_TYPE
 PsxMapOpcodeToDataType (
-    UINT32                  Opcode,
+    UINT16                  Opcode,
     UINT32                  *OutFlags)
 {
     ACPI_OBJECT_TYPE        DataType = INTERNAL_TYPE_Invalid;
@@ -596,7 +596,7 @@ PsxMapOpcodeToDataType (
         return DataType;
     }
 
-    switch (OpInfo->Type)
+    switch (OpInfo->Flags & OP_INFO_TYPE)
     {
 
     case OPTYPE_LITERAL:
@@ -721,7 +721,7 @@ PsxMapOpcodeToDataType (
 
 ACPI_OBJECT_TYPE 
 PsxMapNamedOpcodeToDataType (
-    UINT32                  Opcode)
+    UINT16                  Opcode)
 {
     ACPI_OBJECT_TYPE        DataType; 
 
