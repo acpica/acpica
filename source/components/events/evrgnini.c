@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace / OpRegion init
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -238,7 +238,7 @@ AcpiEvIoSpaceRegionSetup (
  *
  * DESCRIPTION: Do any prep work for region handling
  *
- * MUTEX:       Assumes namespace is locked
+ * MUTEX:       Assumes namespace is not locked
  *
  ****************************************************************************/
 
@@ -308,8 +308,6 @@ AcpiEvPciConfigRegionSetup (
     Node = AcpiNsGetParentObject (RegionObj->Region.Node);
 
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-
     /* AcpiEvaluate the _ADR object */
 
     Status = AcpiCmEvaluateNumericObject (METHOD_NAME__ADR, Node, &Temp);
@@ -355,7 +353,6 @@ AcpiEvPciConfigRegionSetup (
 
     *RegionContext = PciContext;
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     RegionObj->Region.Flags |= AOPOBJ_INITIALIZED;
 
@@ -454,7 +451,7 @@ AcpiEvInitializeRegion (
     SpaceId = RegionObj->Region.SpaceId;
 
     RegionObj->Region.AddrHandler = NULL;
-    RegionObj->Region.REGMethod = NULL;
+    RegionObj->Region.Extra->Extra.Method_REG = NULL;
     RegionObj->Region.Flags &= ~(AOPOBJ_INITIALIZED);
 
     /*
@@ -469,7 +466,7 @@ AcpiEvInitializeRegion (
          *  definition.  This will be executed when the handler is attached
          *  or removed
          */
-        RegionObj->Region.REGMethod = MethodNode;
+        RegionObj->Region.Extra->Extra.Method_REG = MethodNode;
     }
 
     /*
