@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  ******************************************************************************/
 
@@ -417,8 +417,8 @@ AcpiDbDecodeInternalObject (
     {
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf (" %.8X%.8X", ACPI_HIDWORD (ObjDesc->Integer.Value),
-                                   ACPI_LODWORD (ObjDesc->Integer.Value));
+        AcpiOsPrintf (" %8.8X%8.8X", ACPI_HIDWORD (ObjDesc->Integer.Value),
+                                     ACPI_LODWORD (ObjDesc->Integer.Value));
         break;
 
 
