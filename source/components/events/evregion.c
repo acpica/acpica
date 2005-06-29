@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -394,7 +394,7 @@ AcpiEvAddressSpaceDispatch (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiEvDisassociateRegionAndHandler
+ * FUNCTION:    AcpiEvDisassociateRegionFromHandler
  *
  * PARAMETERS:  HandlerObj      - Handler Object
  *              RegionObj       - Region Object
@@ -418,7 +418,7 @@ AcpiEvDisassociateRegionFromHandler(
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("EvDisassociateRegionAndHandler");
+    FUNCTION_TRACE ("EvDisassociateRegionFromHandler");
 
 
     /*
