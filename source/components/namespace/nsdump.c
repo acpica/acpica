@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -520,6 +520,10 @@ AcpiNsDumpOneObject (
             break;
         }
         break;
+
+    default:
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "\n"));
+        break;
     }
 
     /* If debug turned off, done */
@@ -829,6 +833,7 @@ AcpiNsDumpEntry (
 
     Info.DebugLevel = DebugLevel;
     Info.OwnerId = ACPI_UINT32_MAX;
+    Info.DisplayType = ACPI_DISPLAY_SUMMARY;
 
     AcpiNsDumpOneObject (Handle, 1, &Info, NULL);
 }
