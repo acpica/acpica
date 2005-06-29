@@ -2,6 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -121,7 +122,7 @@
 #include "accommon.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evevent");
+        MODULE_NAME         ("evevent")
 
 
 /******************************************************************************

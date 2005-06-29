@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbhistry - debugger HISTORY command
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbhistry");
+        MODULE_NAME         ("dbhistry")
 
 
 typedef struct HistoryInfo

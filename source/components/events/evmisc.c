@@ -2,6 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -121,7 +122,7 @@
 #include "achware.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evmisc");
+        MODULE_NAME         ("evmisc")
 
 
 /**************************************************************************
@@ -211,7 +212,7 @@ AcpiEvNotifyDispatch (
 
 
     /*
-     * Get the notify object which must be attached to the device NTE
+     * Get the notify object which must be attached to the device Named Object
      */
 
     ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Device);

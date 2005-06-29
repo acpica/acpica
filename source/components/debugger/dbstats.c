@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbstats");
+        MODULE_NAME         ("dbstats")
 
 ARGUMENT_INFO               AcpiDbStatTypes [] =
 {

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.24 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbdisasm");
+        MODULE_NAME         ("dbdisasm")
 
 
 #define MAX_SHOW_ENTRY      128
@@ -227,29 +227,29 @@ AcpiPsDisplayObjectPathname (
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *Nte;
+    ACPI_NAMED_OBJECT       *NameDesc;
     NATIVE_CHAR             Buffer[MAX_SHOW_ENTRY];
     UINT32                  BufferSize = MAX_SHOW_ENTRY;
 
 
     AcpiOsPrintf ("  (Path ");
 
-    /* Just get the NTE out of the Op object */
+    /* Just get the NamedObject out of the Op object */
 
-    Nte = Op->AcpiNamedObject;
-    if (!Nte)
+    NameDesc = Op->AcpiNamedObject;
+    if (!NameDesc)
     {
         /*
-         * No NTE, so we can't get the pathname since the object
+         * No Named obj,  so we can't get the pathname since the object
          * is not in the namespace.  This can happen during single
          * stepping where a dynamic named object is *about* to be created.
          */
         return (AE_OK);
     }
 
-    /* Convert NTE/handle to a full pathname */
+    /* Convert NamedDesc/handle to a full pathname */
 
-    Status = AcpiNsHandleToPathname (Nte, &BufferSize, Buffer);
+    Status = AcpiNsHandleToPathname (NameDesc, &BufferSize, Buffer);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("****Could not get pathname****)");

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.25 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbxface");
+        MODULE_NAME         ("dbxface")
 
 
 /******************************************************************************
@@ -303,7 +303,9 @@ AcpiDbSingleStep (
     }
 
 
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    /* TBD: [Investigate] what are the namespace locking issues here */
+
+    /* AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE); */
 
     /* Go into the command loop and await next user command */
 
@@ -346,7 +348,7 @@ AcpiDbSingleStep (
         Status = AcpiDbCommandDispatch (LineBuf, WalkState, Op);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    /* AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE); */
 
 
     /* User commands complete, continue execution of the interrupted method */

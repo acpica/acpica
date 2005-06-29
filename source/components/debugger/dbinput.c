@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.43 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbinput");
+        MODULE_NAME         ("dbinput")
 
 
 /*
@@ -144,7 +144,7 @@ BOOLEAN                 OutputToFile = FALSE;
 
 
 UINT32                  AcpiGbl_DbDebugLevel = 0x0FFFFFFF;
-UINT32                  AcpiGbl_DbConsoleDebugLevel = DEBUG_DEFAULT;
+UINT32                  AcpiGbl_DbConsoleDebugLevel = NORMAL_DEFAULT | TRACE_TABLES;
 UINT8                   AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
 
 

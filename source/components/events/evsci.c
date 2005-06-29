@@ -2,6 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
+ *              $Revision: 1.59 $
  *
  ******************************************************************************/
 
@@ -122,7 +123,7 @@
 
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evsci");
+        MODULE_NAME         ("evsci")
 
 
 /*

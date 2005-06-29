@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbexec");
+        MODULE_NAME         ("dbexec")
 
 
 typedef struct dbmethodinfo

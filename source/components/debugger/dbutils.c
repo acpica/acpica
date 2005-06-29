@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.25 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbutils");
+        MODULE_NAME         ("dbutils")
 
 
 /******************************************************************************
@@ -411,7 +411,7 @@ AcpiDbLocalNsLookup (
 {
     NATIVE_CHAR             *InternalPath;
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *Entry = NULL;
+    ACPI_NAMED_OBJECT       *NameDesc = NULL;
 
 
     AcpiDbPrepNamestring (Name);
@@ -431,7 +431,7 @@ AcpiDbLocalNsLookup (
     /* Use the root scope for the start of the search */
 
     Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
-                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
+                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &NameDesc);
 
     if (ACPI_FAILURE (Status))
     {
@@ -441,7 +441,7 @@ AcpiDbLocalNsLookup (
 
     AcpiCmFree (InternalPath);
 
-    return (Entry);
+    return (NameDesc);
 }
 
 

@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -124,8 +125,16 @@
 #include "acinterp.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evxfevnt");
+        MODULE_NAME         ("evxfevnt")
 
+
+ACPI_STATUS
+AcpiEvFindPciRootBuses (
+    void);
+
+ACPI_STATUS
+AcpiEvInitDevices (
+    void);
 
 /**************************************************************************
  *
@@ -158,6 +167,21 @@ AcpiEnable (void)
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
+    /* Init the hardware */
+
+    /*
+     * With the advent of a 3-pass parser, we need to be
+     *  prepared to execute on initialized HW before the
+     *  namespace has completed its load.
+     */
+
+    Status = AcpiCmHardwareInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+
     /* Make sure the BIOS supports ACPI mode */
 
     if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
@@ -165,6 +189,8 @@ AcpiEnable (void)
         DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported!\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
+
+
 
     AcpiGbl_OriginalMode = AcpiHwGetMode();
 
@@ -174,34 +200,38 @@ AcpiEnable (void)
      * before handers are installed.
      */
 
-    if (ACPI_FAILURE (AcpiEvFixedEventInitialize ()))
+    Status = AcpiEvFixedEventInitialize ();
+    if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize fixed events.\n"));
-        return_ACPI_STATUS (AE_ERROR);
+        return_ACPI_STATUS (Status);
     }
 
-    if (ACPI_FAILURE (AcpiEvGpeInitialize()))
+    Status = AcpiEvGpeInitialize ();
+    if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_FATAL,
             ("Unable to initialize general purpose events.\n"));
-        return_ACPI_STATUS (AE_ERROR);
+        return_ACPI_STATUS (Status);
     }
 
     /* Install the SCI handler */
 
-    if (ACPI_FAILURE (AcpiEvInstallSciHandler ()))
+    Status = AcpiEvInstallSciHandler ();
+    if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_FATAL,
             ("Unable to install System Control Interrupt Handler\n"));
-        return_ACPI_STATUS (AE_ERROR);
+        return_ACPI_STATUS (Status);
     }
 
     /* Transition to ACPI mode */
 
-    if (AE_OK != AcpiHwSetMode (SYS_MODE_ACPI))
+    Status = AcpiHwSetMode (SYS_MODE_ACPI);
+    if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
-        return_ACPI_STATUS (AE_ERROR);
+        return_ACPI_STATUS (Status);
     }
 
     DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
@@ -211,6 +241,31 @@ AcpiEnable (void)
     AcpiEvInitGpeControlMethods ();
 
     Status = AcpiEvInitGlobalLockHandler ();
+
+    /* Call _INI on all devices */
+
+    AcpiEvInitDevices ();
+
+
+
+    /*
+     * Perform additional initialization that may cause control methods
+     * to be executed
+     * 
+     * It may be wise to move this code to a new interface
+     */
+
+
+    /*
+     *  Install PCI config space handler for all PCI root bridges.  A PCI root
+     *  bridge is found by searching for devices containing a HID with the value
+     *  EISAID("PNP0A03")
+     */
+
+    //AcpiEvFindPciRootBuses ();
+
+
+
 
     return_ACPI_STATUS (Status);
 }
@@ -232,16 +287,19 @@ AcpiEnable (void)
 ACPI_STATUS
 AcpiDisable (void)
 {
+    ACPI_STATUS             Status;
+
 
     FUNCTION_TRACE ("AcpiDisable");
 
 
     /* Restore original mode  */
 
-    if (AE_OK != AcpiHwSetMode (AcpiGbl_OriginalMode))
+    Status = AcpiHwSetMode (AcpiGbl_OriginalMode);
+    if (ACPI_FAILURE (Status))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Unable to transition to original mode"));
-        return_ACPI_STATUS (AE_ERROR);
+        return_ACPI_STATUS (Status);
     }
 
     /* Unload the SCI interrupt handler  */
@@ -249,7 +307,7 @@ AcpiDisable (void)
     AcpiEvRemoveSciHandler ();
     AcpiEvRestoreAcpiState ();
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 

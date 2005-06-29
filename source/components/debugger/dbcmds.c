@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbcmds");
+        MODULE_NAME         ("dbcmds")
 
 
 /* These object types map directly to the ACPI_TYPES */

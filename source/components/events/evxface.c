@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -124,7 +125,7 @@
 #include "acinterp.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evxface");
+        MODULE_NAME         ("evxface")
 
 
 /******************************************************************************
@@ -335,14 +336,14 @@ AcpiInstallNotifyHandler (
 
         if (HandlerType == ACPI_SYSTEM_NOTIFY)
         {
-            AcpiGbl_SysNotify.Nte = ObjEntry;
+            AcpiGbl_SysNotify.NameDesc = ObjEntry;
             AcpiGbl_SysNotify.Handler = Handler;
             AcpiGbl_SysNotify.Context = Context;
         }
 
         else
         {
-            AcpiGbl_DrvNotify.Nte = ObjEntry;
+            AcpiGbl_DrvNotify.NameDesc = ObjEntry;
             AcpiGbl_DrvNotify.Handler = Handler;
             AcpiGbl_DrvNotify.Context = Context;
         }
@@ -398,7 +399,7 @@ AcpiInstallNotifyHandler (
             goto UnlockAndExit;
         }
 
-        /* Attach new object to the NTE */
+        /* Attach new object to the Named Object */
 
         Status = AcpiNsAttachObject (Device, ObjDesc, (UINT8) ObjEntry->Type);
 
@@ -420,7 +421,7 @@ AcpiInstallNotifyHandler (
         goto UnlockAndExit;
     }
 
-    NotifyObj->NotifyHandler.Nte = ObjEntry;
+    NotifyObj->NotifyHandler.NameDesc = ObjEntry;
     NotifyObj->NotifyHandler.Handler = Handler;
     NotifyObj->NotifyHandler.Context = Context;
 
@@ -719,7 +720,7 @@ AcpiAcquireGlobalLock (
     AcpiAmlExitInterpreter ();
 
     *OutHandle = 0;
-    return Status;
+    return (Status);
 }
 
 
@@ -744,7 +745,7 @@ AcpiReleaseGlobalLock (
     /* TBD: [Restructure] Validate handle */
 
     AcpiEvReleaseGlobalLock ();
-    return AE_OK;
+    return (AE_OK);
 }
 
 
