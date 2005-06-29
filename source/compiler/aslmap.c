@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -231,6 +231,7 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_BST",     0,      ASL_RSVD_RETURN_VALUE},
     {"_BTM",     1,      ASL_RSVD_RETURN_VALUE},    /* Acpi 3.0 */
     {"_BTP",     1,      0},
+    {"_CBA",     0,      ASL_RSVD_RETURN_VALUE},    /* Acpi 3.0 */
     {"_CID",     0,      ASL_RSVD_RETURN_VALUE},
     {"_CRS",     0,      ASL_RSVD_RETURN_VALUE},
     {"_CRT",     0,      ASL_RSVD_RETURN_VALUE},
