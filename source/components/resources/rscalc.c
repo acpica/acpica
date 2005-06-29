@@ -2,7 +2,7 @@
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  ******************************************************************************/
 
@@ -975,7 +975,7 @@ AcpiRsCalculatePciRoutingTableLength (
 
         /* Round up the size since each element must be aligned */
 
-    	TempSizeNeeded = ROUND_UP_TO_32BITS (TempSizeNeeded);
+        TempSizeNeeded = ROUND_UP_TO_32BITS (TempSizeNeeded);
 
         /*
          * Point to the next ACPI_OPERAND_OBJECT
