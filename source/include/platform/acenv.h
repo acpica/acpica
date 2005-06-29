@@ -180,8 +180,8 @@
 #define STRCAT(d,s)             strcat((char *) (d), (char *) (s))
 #define STRNCAT(d,s,n)          strncat((char *) (d), (char *) (s), (n))
 #define STRTOUL(d,s,n)          strtoul((char *) (d), (char **) (s), (n))
-#define MEMCPY                  memcpy
-#define MEMSET                  memset
+#define MEMCPY(d,s,n)           memcpy(d, s, (size_t) n)
+#define MEMSET(d,s,n)           memset(d, s, (size_t) n)
 #define TOUPPER                 toupper
 #define TOLOWER                 tolower
 
