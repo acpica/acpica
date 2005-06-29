@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.37 $
+ *       $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -189,7 +189,7 @@ typedef struct acpi_generic_address
     UINT8                   AddressSpaceId;         /* Address space where struct or register exists. */
     UINT8                   RegisterBitWidth;       /* Size in bits of given register */
     UINT8                   RegisterBitOffset;      /* Bit offset within the register */
-    UINT8                   Reserved;               /* Must be 0 */
+    UINT8                   AccessWidth;            /* Minimum Access size (ACPI 3.0) */
     UINT64                  Address;                /* 64-bit address of struct or register */
 
 } ACPI_GENERIC_ADDRESS;
