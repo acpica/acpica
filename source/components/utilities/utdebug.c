@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmdebug - Debug print routines
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -373,7 +373,7 @@ FunctionValueExit (
     UINT32                  LineNumber,
     UINT32                  ComponentId,
     NATIVE_CHAR             *FunctionName,
-    NATIVE_UINT             Value)
+    ACPI_INTEGER            Value)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,

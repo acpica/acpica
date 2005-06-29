@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.29 $
+ * $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -454,7 +454,7 @@ AcpiCmMemcpy (
 void *
 AcpiCmMemset (
     void                    *Dest,
-    UINT32                  Value,
+    NATIVE_UINT             Value,
     NATIVE_UINT             Count)
 {
     NATIVE_CHAR             *New = (NATIVE_CHAR *) Dest;
@@ -770,7 +770,7 @@ UINT32
 AcpiCmStrtoul (
     const NATIVE_CHAR       *String,
     NATIVE_CHAR             **Terminator,
-    UINT32                  Base)
+    NATIVE_UINT             Base)
 {
     UINT32                  converted = 0;
     UINT32                  index;
