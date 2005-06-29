@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.34 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -465,13 +465,9 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    "2000, 2001, Intel Corp",     "2000, 2001, Intel Corp",     REPLACE_WHOLE_WORD,
-    "ACPI_TYPE_INTEGER",     "ACPI_TYPE_INTEGER",               REPLACE_WHOLE_WORD,
-    "ARGI_INTEGER",          "ARGI_INTEGER",                    REPLACE_WHOLE_WORD,
-    "ARGP_INTEGER",          "ARGP_INTEGER",                    REPLACE_WHOLE_WORD,
-    "ACPI_BTYPE_INTEGER",    "ACPI_BTYPE_INTEGER",              REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT_INTEGER",   "ACPI_OBJECT_INTEGER",             REPLACE_WHOLE_WORD,
-    "->Integer",             "->Integer",                       REPLACE_WHOLE_WORD,
+    "1999 - 2002, Intel Corp",      "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
+    "1999, Intel Corp",             "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
+    "  All rights\n * reserved.",    "\n * All rights reserved.",     REPLACE_WHOLE_WORD,
     NULL,                   NULL, 0
 };
 
