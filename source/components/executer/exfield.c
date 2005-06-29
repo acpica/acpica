@@ -226,11 +226,11 @@ AmlSetupField (
                 /* Evaluate the Address opcode */
 
                 if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK && 
-                    (Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop])) == AE_OK)
+                    (Status = AmlGetRvalue (AmlObjGetStackTopPtr ())) == AE_OK)
                 {
-                    /* Capture the address */
+                    /* Pull the address off the stack */
 
-                    ObjValDesc = ObjStack[ObjStackTop];
+                    ObjValDesc = AmlObjStackRemoveValue (STACK_TOP);
 
 
                     if (!ObjValDesc ||
@@ -250,7 +250,6 @@ AmlSetupField (
 
                     /* Free ObjValDesc, it was allocated by AmlDoOpcode */
 
-                    ObjStack[ObjStackTop] = NULL;
                     CmFree (ObjValDesc);
                 }
 
@@ -259,11 +258,11 @@ AmlSetupField (
                     /* Evaluate the Length opcode */
 
                     if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK &&
-                        (Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop])) == AE_OK)
+                        (Status = AmlGetRvalue (AmlObjGetStackTopPtr ())) == AE_OK)
                     {
-                        /* Capture the length */
+                        /* Pull the length off the stack */
 
-                        ObjValDesc = ObjStack[ObjStackTop];
+                        ObjValDesc = AmlObjStackRemoveValue (STACK_TOP);
 
                         if (!ObjValDesc ||
                             ObjValDesc->Type != (UINT8) TYPE_Number)
@@ -288,7 +287,6 @@ AmlSetupField (
 
                         /* Free ObjValDesc, it was allocated by AmlDoOpcode */
 
-                        ObjStack[ObjStackTop] = NULL;
                         CmFree (ObjValDesc);
                     }
                 }
