@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.72 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -472,6 +472,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
 /*    {"FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"FADT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT},
     {"FADT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT},
+    {"FADT_DESCRIPTOR_REV2_MINUS",       SRC_TYPE_STRUCT},
     {"RSDP_DESCRIPTOR",                  SRC_TYPE_STRUCT},
 /*    {"RSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"RSDT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT},
@@ -627,7 +628,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
-    {"(c) 1999 - 2004",      "(c) 1999 - 2005",         REPLACE_WHOLE_WORD},
+    {"(c) 1999 - 2005",      "(c) 1999 - 2005",         REPLACE_WHOLE_WORD},
 
 #if 0
     "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",         REPLACE_WHOLE_WORD,
