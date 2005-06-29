@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@ AslCompilerSignon (
 
 
     /* Set line prefix depending on the destination file type */
-    
+
     switch (FileId)
     {
     case ASL_FILE_ASM_SOURCE_OUTPUT:
@@ -210,7 +210,7 @@ AslCompilerFileHeader (
 
 
     /* Set line prefix depending on the destination file type */
-    
+
     switch (FileId)
     {
     case ASL_FILE_ASM_SOURCE_OUTPUT:
@@ -676,10 +676,10 @@ CmCleanupAndExit (
     if (Gbl_NsLookupCount)
     {
         DbgPrint (ASL_DEBUG_OUTPUT, "\n\nMiscellaneous compile statistics\n\n");
-        DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Total Namespace searches", 
+        DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Total Namespace searches",
             Gbl_NsLookupCount);
         DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Time per search",
-            ((UINT32) (AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) * 
+            ((UINT32) (AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) *
                 1000) / Gbl_NsLookupCount);
     }
 

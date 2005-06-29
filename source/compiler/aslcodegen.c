@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -176,7 +176,7 @@ CgAmlWriteWalk (
 {
 
     /* Debug output */
-    
+
     DbgPrint (ASL_TREE_OUTPUT,
         "%5.5d [%2d]", Op->Asl.LogicalLineNumber, Level);
     UtPrintFormattedName (Op->Asl.ParseOpcode, Level);
@@ -212,7 +212,7 @@ CgAmlWriteWalk (
                 Op->Asl.LineNumber);
 
     /* Generate the AML for this node */
-    
+
     CgWriteNode (Op);
     return (AE_OK);
 }

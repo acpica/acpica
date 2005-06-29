@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -781,7 +781,7 @@ AnMethodAnalysisWalkBegin (
         TotalMethods++;
 
         /* Create and init method info */
-        
+
         MethodInfo       = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
         MethodInfo->Next = WalkInfo->MethodStack;
         MethodInfo->Op = Op;
@@ -1072,7 +1072,7 @@ AnMethodAnalysisWalkBegin (
             }
 
             /* Typechecking for _HID */
-            
+
             else if (!ACPI_STRCMP (METHOD_NAME__HID, ReservedMethods[i].Name))
             {
                 /* Examine the second operand to typecheck it */
@@ -1463,19 +1463,19 @@ AnCheckMethodReturnValue (
     if (OwningOp->Asl.CompileFlags & NODE_METHOD_NO_RETVAL)
     {
         /* Method NEVER returns a value */
-        
+
         AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, Op, Op->Asl.ExternalName);
     }
     else if (OwningOp->Asl.CompileFlags & NODE_METHOD_SOME_NO_RETVAL)
     {
         /* Method SOMETIMES returns a value, SOMETIMES not */
-        
+
         AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, Op, Op->Asl.ExternalName);
     }
     else if (!(ThisNodeBtype & RequiredBtypes))
     {
         /* Method returns a value, but the type is wrong */
-        
+
         AnFormatBtype (StringBuffer, ThisNodeBtype);
         AnFormatBtype (StringBuffer2, RequiredBtypes);
 
