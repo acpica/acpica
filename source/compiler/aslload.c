@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -391,6 +391,7 @@ LdNamespace1Begin (
         return (Status);
 
     default:
+
         /* All other opcodes go below */
         break;
     }
@@ -412,7 +413,7 @@ LdNamespace1Begin (
 
     if (Op->Asl.ParseOpcode == PARSEOP_NAME)
     {
-        Arg = Op->Asl.Child;    /* Get the NameSeg/NameString node */
+        Arg = Op->Asl.Child;        /* Get the NameSeg/NameString node */
         Arg = Arg->Asl.Next;        /* First peer is the object to be associated with the name */
 
         /* Get the data type associated with the named object, not the name itself */
