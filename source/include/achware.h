@@ -305,6 +305,18 @@ HwObtainSleepTypeRegisterData (
     UINT8                   *Slp_TypB);
 
 
+/* C state Prototypes */
+
+ACPI_STATUS
+HwSetIa32CxState(NATIVE_UINT PBlkAddress, UINT32 State);
+
+ACPI_STATUS
+HwSetIa32CxHandler(UINT32 State, ACPI_SET_C_STATE_HANDLER ReturnHandler);
+
+ACPI_STATUS
+HwGetIa32CxHandler(UINT32 State, ACPI_SET_C_STATE_HANDLER *ReturnHandler);
+
+
 /* Throttling Prototypes */
 
 void 
