@@ -131,6 +131,10 @@ ACPI_STATUS
 AcpiEvFindPciRootBuses (
     void);
 
+ACPI_STATUS
+AcpiEvInitDevices (
+    void);
+
 /**************************************************************************
  *
  * FUNCTION:    AcpiEnable
@@ -236,6 +240,10 @@ AcpiEnable (void)
     AcpiEvInitGpeControlMethods ();
 
     Status = AcpiEvInitGlobalLockHandler ();
+
+    /* Call _INI on all devices */
+
+    AcpiEvInitDevices ();
 
 
 
