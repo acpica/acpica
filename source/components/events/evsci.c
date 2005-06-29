@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  ******************************************************************************/
 
@@ -159,6 +159,8 @@ AcpiEvSciXruptHandler (
      */
     InterruptHandled |= AcpiEvFixedEventDetect ();
 
+/* TBD: What if there are no GPEs defined? */
+
     /*
      * GPEs:
      * Check for and dispatch any GPEs that have occurred
@@ -185,7 +187,7 @@ UINT32 ACPI_SYSTEM_XFACE
 AcpiEvGpeXruptHandler (
     void                    *Context)
 {
-    ACPI_GPE_BLOCK_INFO     **GpeBlockList = Context;
+    ACPI_GPE_XRUPT_INFO     *GpeXruptList = Context;
     UINT32                  InterruptHandled = ACPI_INTERRUPT_NOT_HANDLED;
 
 
@@ -201,7 +203,7 @@ AcpiEvGpeXruptHandler (
      * GPEs:
      * Check for and dispatch any GPEs that have occurred
      */
-    InterruptHandled |= AcpiEvGpeDetect (*GpeBlockList);
+    InterruptHandled |= AcpiEvGpeDetect (GpeXruptList->GpeBlockListHead);
 
     return_VALUE (InterruptHandled);
 }
@@ -229,7 +231,7 @@ AcpiEvInstallSciHandler (void)
 
 
     Status = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
-                        AcpiEvSciXruptHandler, &AcpiGbl_GpeBlockListHead);
+                        AcpiEvSciXruptHandler, AcpiGbl_GpeXruptListHead);
     return_ACPI_STATUS (Status);
 }
 
