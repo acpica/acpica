@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -206,13 +206,17 @@ OpcSetOptimalIntegerSize (
     ACPI_PARSE_OBJECT       *Op)
 {
 
+/*
+    TBD: - we don't want to optimize integers in the block header, but the 
+    code below does not work correctly.
+
     if (Op->Asl.Parent &&
         Op->Asl.Parent->Asl.Parent &&
         (Op->Asl.Parent->Asl.Parent->Asl.ParseOpcode == PARSEOP_DEFINITIONBLOCK))
     {
         return 0;
     }
-
+*/
 
     /*
      * Check for the special AML integers first - Zero, One, Ones.
