@@ -14,15 +14,18 @@
  | FILENAME: amlopsys.c
  |__________________________________________________________________________
  |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 17:56:37 $
+ | $Revision: 1.7 $
+ | $Date: 2005/06/29 17:56:38 $
  | $Log: exsystem.c,v $
- | Revision 1.6  2005/06/29 17:56:37  aystarik
- | Changed to generic 64-bit friendly data types
+ | Revision 1.7  2005/06/29 17:56:38  aystarik
+ | New names for I/O and PCI OSD interfaces
  |
  | 
- | date	99.02.20.00.33.00;	author rmoore1;	state Exp;
+ | date	99.03.10.00.08.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 7     3/09/99 4:08p Rmoore1
+ * New names for I/O and PCI OSD interfaces
  * 
  * 6     2/19/99 4:33p Rmoore1
  * Changed to generic 64-bit friendly data types
@@ -73,7 +76,9 @@
 #include "amlexec.h"
 #include "amlpriv.h"
 #include "amlopsys.h"
-#include <bu.h>
+#include "acpiosd.h"
+#include "bu.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -125,6 +130,7 @@ ThreadId (VOID)
 INT32
 DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
+
     fprintf_bu (LstFileHandle, LOGFILE,
                 "NotifyOp: %s %s ", NsTypeNames[ObjDesc->ValType],
                 NsFullyQualifiedName (ObjDesc->Device.Device));
@@ -179,7 +185,7 @@ DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
 VOID
 DoSuspend (UINT32 HowLong)
 {
-    bsleep ((UINT16) (HowLong / (UINT32) 1000), (UINT16) (HowLong % (UINT32) 1000));
+    OsdSleep ((UINT16) (HowLong / (UINT32) 1000), (UINT16) (HowLong % (UINT32) 1000));
 }
 
 
@@ -187,7 +193,7 @@ DoSuspend (UINT32 HowLong)
  * 
  * FUNCTION:    AcquireOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *TimeDesc - The 'time to delay' object descriptor
+ * PARAMETERS:  OBJECT_DESCRIPTOR *TimeDesc  - The 'time to delay' object descriptor
  *              OBJECT_DESCRIPTOR *ObjDesc   - The object descriptor for this op
  *
  * RETURN:      S_SUCCESS/S_ERROR
@@ -324,7 +330,7 @@ SignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  ******************************************************************************/
 
 INT32
-WaitOpRqst(OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
+WaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
     INT32       RetVal = S_SUCCESS;
 
