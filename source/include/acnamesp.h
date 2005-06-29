@@ -421,6 +421,14 @@ NsScopeStackClear (
  * Utility functions - nsutils
  */
 
+BOOLEAN
+NsValidRootPrefix (
+    char                    Prefix);
+
+BOOLEAN
+NsValidPathSeparator (
+    char                    Sep);
+
 ACPI_OBJECT_TYPE
 NsGetType (
     ACPI_HANDLE             ObjHandle);

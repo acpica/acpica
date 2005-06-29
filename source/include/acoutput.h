@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
- * Name: acoutput.h -- debug output
- *       $Revision: 1.67 $
+ * 
+ * Name: output.h -- debug output
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,8 +114,8 @@
  *
  *****************************************************************************/
 
-#ifndef __ACOUTPUT_H__
-#define __ACOUTPUT_H__
+#ifndef _OUTPUT_H
+#define _OUTPUT_H
 
 /*
  * Debug levels and component IDs.  These are used to control the
@@ -128,30 +128,27 @@
 #define GLOBAL                      0x00000001
 #define COMMON                      0x00000002
 #define PARSER                      0x00000004
-#define DISPATCHER                  0x00000008
-#define INTERPRETER                 0x00000010
-#define NAMESPACE                   0x00000020
-#define RESOURCE_MANAGER            0x00000040
-#define TABLE_MANAGER               0x00000080
-#define EVENT_HANDLING              0x00000100
-#define HARDWARE                    0x00000200
-#define MISCELLANEOUS               0x00000400
-#define OS_DEPENDENT                0x00000800
+#define INTERPRETER                 0x00000008
+#define NAMESPACE                   0x00000010
+#define RESOURCE_MANAGER            0x00000020
+#define TABLE_MANAGER               0x00000040
+#define EVENT_HANDLING              0x00000080
+#define HARDWARE                    0x00000100
+#define MISCELLANEOUS               0x00000200
+#define OS_DEPENDENT                0x00000400
 
-#define BUS_MANAGER                 0x00001000
+#define BUS_MANAGER                 0x00000800
 
-#define PROCESSOR_CONTROL           0x00002000
-#define SYSTEM_CONTROL              0x00004000
-#define THERMAL_CONTROL             0x00008000
-#define POWER_CONTROL               0x00010000
+#define PROCESSOR_CONTROL           0x00001000
+#define SYSTEM_CONTROL              0x00002000
+#define THERMAL_CONTROL             0x00004000
+#define POWER_CONTROL               0x00008000
 
-#define EMBEDDED_CONTROLLER         0x00020000
-#define BATTERY                     0x00040000
+#define EMBEDDED_CONTROLLER         0x00010000
+#define BATTERY                     0x00020000
 
 #define DEBUGGER                    0x00100000
 #define ALL_COMPONENTS              0x001FFFFF
-
-#define COMPONENT_DEFAULT           (ALL_COMPONENTS)
 
 
 /* Exception level -- used in the global "DebugLevel" */
@@ -168,24 +165,25 @@
 /* Trace level -- also used in the global "DebugLevel" */
 
 #define TRACE_PARSE                 0x00000100
-#define TRACE_DISPATCH              0x00000200
-#define TRACE_LOAD                  0x00000400
-#define TRACE_EXEC                  0x00000800
-#define TRACE_NAMES                 0x00001000
-#define TRACE_OPREGION              0x00002000
-#define TRACE_BFIELD                0x00004000
-#define TRACE_TRASH                 0x00008000
-#define TRACE_TABLES                0x00010000
-#define TRACE_FUNCTIONS             0x00020000
-#define TRACE_VALUES                0x00040000
-#define TRACE_OBJECTS               0x00080000
-#define TRACE_ALLOCATIONS           0x00100000
-#define TRACE_RESOURCES             0x00200000
-#define TRACE_IO                    0x00400000
-#define TRACE_INTERRUPTS            0x00800000
-#define TRACE_USER_REQUESTS         0x01000000
-#define TRACE_PACKAGE               0x02000000
-#define TRACE_MUTEX                 0x04000000
+#define TRACE_LOAD                  0x00000200
+#define TRACE_OPCODE                0x00000400
+#define TRACE_STACK                 0x00000800
+#define TRACE_EXEC                  0x00001000
+#define TRACE_NAMES                 0x00002000
+#define TRACE_OPREGION              0x00004000
+#define TRACE_BFIELD                0x00008000
+#define TRACE_TRASH                 0x00010000
+#define TRACE_TABLES                0x00020000
+#define TRACE_FUNCTIONS             0x00040000
+#define TRACE_VALUES                0x00080000
+#define TRACE_OBJECTS               0x00100000
+#define TRACE_ALLOCATIONS           0x00200000
+#define TRACE_RESOURCES             0x00400000
+#define TRACE_IO                    0x00800000
+#define TRACE_INTERRUPTS            0x01000000
+#define TRACE_USER_REQUESTS         0x02000000
+#define TRACE_PACKAGE               0x04000000
+#define TRACE_MUTEX                 0x08000000
 
 #define TRACE_ALL                   0x0FFFFF00
 
@@ -197,14 +195,14 @@
 #define VERBOSE_TABLES              0x40000000
 #define VERBOSE_EVENTS              0x80000000
 
-#define VERBOSE_ALL                 0xF0000000
+#define VERBOSE_ALL                 0x70000000
 
 
 /* Defaults for DebugLevel, debug and normal */
 
-#define DEBUG_DEFAULT               (ACPI_OK | ACPI_WARN | ACPI_ERROR | ACPI_DEBUG_OBJECT)
+#define DEBUG_DEFAULT               (ACPI_OK | ACPI_WARN | ACPI_ERROR | ACPI_DEBUG_OBJECT | TRACE_TABLES | TRACE_IO)
 #define NORMAL_DEFAULT              (ACPI_OK | ACPI_WARN | ACPI_ERROR | ACPI_DEBUG_OBJECT)
-#define DEBUG_ALL                   (VERBOSE_AML_DISASSEMBLE | TRACE_ALL | ACPI_ALL)
+
 
 /* Misc defines */
 
@@ -214,4 +212,4 @@
 #define CHARS_PER_LINE              16          /* used in DumpBuf function */
 
 
-#endif /* __ACOUTPUT_H__ */
+#endif /* _OUTPUT_H */

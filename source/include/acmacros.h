@@ -195,12 +195,6 @@
 #undef DEBUG_ASSERT
 #endif
 
-#ifdef _RPARSER
-#define RPARSER_ONLY(s)                 s;
-#else
-#define RPARSER_ONLY(s)
-#endif
-
 
 /* Register read/write Macros */
 
