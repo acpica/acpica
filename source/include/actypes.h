@@ -264,7 +264,7 @@ typedef unsigned int        ACPI_SIZE;
 
 typedef UINT32              ACPI_STATUS;
 typedef UINT32              ACPI_NAME;
-typedef INT8                ACPI_STRING;
+typedef char*               ACPI_STRING;
 typedef void*               ACPI_HANDLE;    /* Actually a ptr to an NTE */
 
 
@@ -417,6 +417,16 @@ typedef struct
     void                    *Pointer;       /* pointer to buffer */
 
 } ACPI_BUFFER;
+
+
+/*
+ * Structure and flags for AcpiGetSystemInfo
+ */
+
+#define SYS_MODE_ACPI       0x0001
+#define SYS_MODE_LEGACY     0x0002
+#define SYS_MODES_MASK      0x0003
+
 
 typedef struct _AcpiSysInfo 
 {
