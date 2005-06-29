@@ -165,7 +165,7 @@ AcpiEvFindOnePciRootBus (
     if (STRNCMP ((INT8 *)&Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
         (!ObjDesc))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -181,7 +181,7 @@ AcpiEvFindOnePciRootBus (
 
         if (ObjDesc->Number.Value != PCI_ROOT_HID_VALUE)
         {
-            return AE_OK;
+            return (AE_OK);
         }
 
         break;
@@ -191,14 +191,14 @@ AcpiEvFindOnePciRootBus (
         if (STRNCMP (ObjDesc->String.Pointer, PCI_ROOT_HID_STRING,
                      sizeof (PCI_ROOT_HID_STRING)))
         {
-            return AE_OK;
+            return (AE_OK);
         }
 
         break;
 
     default:
 
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -212,7 +212,7 @@ AcpiEvFindOnePciRootBus (
                                              ADDRESS_SPACE_PCI_CONFIG,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -236,7 +236,7 @@ AcpiEvFindPciRootBuses (
     AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                         FALSE, AcpiEvFindOnePciRootBus, NULL, NULL);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -463,9 +463,10 @@ AcpiEvAddressSpaceDispatch (
         }
 
         /*
-         *  Save the returned context for use in all accesses to the region
+         *  Save the returned context for use in all accesses to 
+         *  this particular region.
          */
-        HandlerDesc->AddrHandler.Context = RegionContext;
+        RegionObj->Region.RegionContext = RegionContext;
     }
 
     /*
@@ -488,10 +489,12 @@ AcpiEvAddressSpaceDispatch (
     }
 
     /*
-     *  Invoke the handler.
+     *  Invoke the handler.  The RegionContext will contain
+     *  address handler's context and possibly some other information
+     *  (e.g. for PCI address handlers.
      */
     Status = Handler (Function, Address, BitWidth, Value,
-                      HandlerDesc->AddrHandler.Context);
+                      RegionObj->Region.RegionContext);
 
     if (ACPI_FAILURE (Status))
     {

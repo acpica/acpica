@@ -365,11 +365,17 @@ AcpiEvPciConfigRegionSetup (
         PciContext->Bus = Temp;
     }
 
+    /*
+     * Finally, include the original Handler context in the newly created PciContext 
+     */
+    PciContext->HandlerContext = HandlerContext;
+
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     *ReturnContext = PciContext;
 
     RegionObj->Region.RegionFlags |= REGION_INITIALIZED;
+    
     return_ACPI_STATUS (AE_OK);
 }
 
