@@ -210,14 +210,14 @@ AmlExecDyadic1 (
                 DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic1/NotifyOp: unexpected notify object type %d\n",
                                 ObjDesc->Common.Type));
                 
-                Status = AE_AML_ERROR;
+                Status = AE_AML_OPERAND_TYPE;
             }
         }
         break;
 
     default:
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic1: Unknown dyadic opcode %02x\n", Opcode));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_OPCODE;
     }
 
 
@@ -419,7 +419,7 @@ AmlExecDyadic2R (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R/DivideOp: Divide by zero\n"));
             REPORT_ERROR ("AmlExecDyadic2R/DivideOp: Divide by zero");
-            Status = AE_AML_ERROR;
+            Status = AE_AML_DIVIDE_BY_ZERO;
             goto Cleanup;
         }
 
@@ -476,7 +476,7 @@ AmlExecDyadic2R (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R/ConcatOp: operand type mismatch %d %d\n",
                             ObjDesc->Common.Type, ObjDesc2->Common.Type));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
         }
 
@@ -498,7 +498,7 @@ AmlExecDyadic2R (
             if (!NewBuf)
             {
                 REPORT_ERROR ("AmlExecDyadic2R/ConcatOp: String allocation failure");
-                Status = AE_AML_ERROR;
+                Status = AE_NO_MEMORY;
                 goto Cleanup;
             }
             
@@ -528,16 +528,18 @@ AmlExecDyadic2R (
             {
                 /* Only bail out if the buffer is small */
                 
+                /* TBD: what is the point of this code? */
+
                 if (ObjDesc->Buffer.Length + ObjDesc2->Buffer.Length < 1024)
                 {
                     REPORT_ERROR ("AmlExecDyadic2R/ConcatOp: Buffer allocation failure");
-                    return_ACPI_STATUS (AE_AML_ERROR);
+                    return_ACPI_STATUS (AE_NO_MEMORY);
                 }
 
                 DEBUG_PRINT (ACPI_ERROR, (
                             "AmlExecDyadic2R/ConcatOp: Buffer allocation failure %d\n",
                             ObjDesc->Buffer.Length + ObjDesc2->Buffer.Length));
-                Status = AE_AML_ERROR;
+                Status = AE_NO_MEMORY;
                 goto Cleanup;
             }
 
@@ -559,7 +561,7 @@ AmlExecDyadic2R (
     default:
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2R: Unknown dyadic opcode %02x\n", Opcode));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
 
@@ -695,7 +697,7 @@ AmlExecDyadic2S (
 
     if (!TimeDesc || !ObjDesc)
     {
-        Status = AE_AML_ERROR;
+        Status = AE_AML_NO_OPERAND;
         goto Cleanup;
     }
 
@@ -737,6 +739,7 @@ AmlExecDyadic2S (
         Status = AE_NO_MEMORY;
         goto Cleanup;
     }
+    RetDesc->Number.Value = 0;              /* Default return value is FALSE, operation did not time out */
 
     
     /* Examine the opcode */
@@ -752,7 +755,7 @@ AmlExecDyadic2S (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2S/AcquireOp: Needed Mutex, found %d\n",
                             ObjDesc->Common.Type));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
         }
 
@@ -768,7 +771,7 @@ AmlExecDyadic2S (
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2S/WaitOp: Needed Event, found %d\n",
                             ObjDesc->Common.Type));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
         }
 
@@ -780,7 +783,7 @@ AmlExecDyadic2S (
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2S: Unknown dyadic synchronization opcode %02x\n",
                         Opcode));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
 
@@ -790,11 +793,7 @@ AmlExecDyadic2S (
     if (Status == AE_TIME)
     {
         RetDesc->Number.Value = (UINT32)(-1);   /* TRUE, operation timed out */
-    }
-
-    else
-    {
-        RetDesc->Number.Value = 0;              /* FALSE, operation did not time out */
+        Status = AE_OK;
     }
 
 
@@ -929,7 +928,7 @@ AmlExecDyadic2 (
     default:
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2: Unknown dyadic opcode %02x\n", Opcode));
-        Status = AE_AML_ERROR;
+        Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
         break;
     }
