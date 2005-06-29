@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.40 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -141,8 +141,8 @@
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X208"
-#define CompilerCreatorRevision     0x00020208  /* Acpi 2.0, Version# */
+#define CompilerVersion             "X2011"
+#define CompilerCreatorRevision     0x02002011  /* Acpi 2.0, Version# */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000 Intel Corporation"
@@ -165,7 +165,7 @@
 #define ASL_PTR_ADD(a,b)            ((UINT8 *)(a) = ((UINT8 *)(a) + (b)))
 #define ASL_GET_CHILD_NODE(a)       (a)->Child
 #define ASL_GET_PEER_NODE(a)        (a)->Peer
-#define OP_TABLE_ENTRY(a,b,c)       {b,a,c}
+#define OP_TABLE_ENTRY(a,b,c,d)     {b,d,a,c}
 
 
 #define ASL_PARSE_OPCODE_BASE       ACCESSAS        /* First Lex type */
@@ -242,8 +242,15 @@ AslPushInputFileStack (
 int
 AslCompilererror(char *s);
 
+#define ASL_DEBUG_OUTPUT    0
+#define ASL_PARSE_OUTPUT    1
+#define ASL_TREE_OUTPUT     2
+
+
+
 int
 DbgPrint (
+    UINT32                  Type,
     char                    *Format,
     ...);
 
@@ -280,6 +287,8 @@ AslCommonError (
     UINT8                   MessageId,
     UINT32                  CurrentLineNumber,
     UINT32                  LogicalLineNumber,
+    UINT32                  LogicalByteOffset,
+    UINT32                  Column,
     char                    *Filename,
     char                    *ExtraMessage);
 
@@ -411,6 +420,7 @@ CgWriteNode (
 
 void
 TrWalkParseTree (
+    ASL_PARSE_NODE          *Node,
     UINT32                  Visitation,
     ASL_WALK_CALLBACK       DescendingCallback,
     ASL_WALK_CALLBACK       AscendingCallback,
@@ -494,6 +504,31 @@ AnSemanticAnalysisWalkEnd (
     ASL_PARSE_NODE          *Node,
     UINT32                  Level,
     void                    *Context);
+
+void
+AnMethodAnalysisWalkBegin (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+void
+AnMethodAnalysisWalkEnd (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+void
+AnMethodTypingWalkBegin (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
+void
+AnMethodTypingWalkEnd (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context);
+
 
 /*
  * aslfiles - File I/O support
