@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -184,7 +184,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" *  Copyright (C) 2000 R. Byron Moore\n"
+" *  Copyright (C) 2000, 2001 R. Byron Moore\n"
 " *\n"
 " *  This program is free software; you can redistribute it and/or modify\n"
 " *  it under the terms of the GNU General Public License as published by\n"
@@ -337,9 +337,14 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    "1999, Intel Corp.  All rights\n * reserved",
-    "1999, 2000, Intel Corp.\n * All rights reserved",
-    NULL,               NULL
+    "2000, 2001, Intel Corp",     "2000, 2001, Intel Corp",
+    "ACPI_TYPE_INTEGER",     "ACPI_TYPE_INTEGER",
+    "ARGI_INTEGER",          "ARGI_INTEGER",
+    "ARGP_INTEGER",          "ARGP_INTEGER",
+    "ACPI_BTYPE_INTEGER",    "ACPI_BTYPE_INTEGER",
+    "ACPI_OBJECT_INTEGER",   "ACPI_OBJECT_INTEGER",
+    "->Integer",             "->Integer",
+    NULL,                   NULL
 };
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpibinh - Include file for AcpiBin utility
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -155,7 +155,6 @@ extern char                     *optarg;
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_TerseMode, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_CompareMode, FALSE);
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_DumpMode, FALSE);
-
 
 
 /* Prototypes */

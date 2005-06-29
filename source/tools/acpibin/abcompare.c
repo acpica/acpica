@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -146,7 +146,6 @@ AbValidateHeader (
 
     return TRUE;
 }
-
 
 
 /******************************************************************************
@@ -377,8 +376,6 @@ AbDumpAmlFile (
 
 FILE                        *DebugFile = NULL;
 UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
-
-
 
 
 void *

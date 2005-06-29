@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.27 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -267,10 +267,10 @@ main (
 
         /* Need a fake FADT so that the hardware component is happy */
 
-        LocalFADT.XGpe0Blk.Address       = 0x70;
-        LocalFADT.XPm1aEvtBlk.Address    = 0x80;
-        LocalFADT.XPm1aCntBlk.Address    = 0x90;
-        LocalFADT.XPmTmrBlk.Address      = 0xA0;
+        ACPI_STORE_ADDRESS (LocalFADT.XGpe0Blk.Address, 0x70);
+        ACPI_STORE_ADDRESS (LocalFADT.XPm1aEvtBlk.Address, 0x80);
+        ACPI_STORE_ADDRESS (LocalFADT.XPm1aCntBlk.Address, 0x90);
+        ACPI_STORE_ADDRESS (LocalFADT.XPmTmrBlk.Address, 0xA0);
 
         LocalFADT.Gpe0BlkLen    = 8;
         LocalFADT.Pm1EvtLen     = 4;
@@ -286,15 +286,23 @@ main (
          */
         AeInstallHandlers ();
 
-        AcpiEnableSubsystem (ACPI_NO_HARDWARE_INIT |
-                             ACPI_NO_ACPI_ENABLE   |
-                             ACPI_NO_EVENT_INIT);
+        Status = AcpiEnableSubsystem (ACPI_NO_HARDWARE_INIT   |
+                                        ACPI_NO_ACPI_ENABLE   |
+                                        ACPI_NO_EVENT_INIT);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not EnableSubsystem, %s\n", AcpiCmFormatException (Status));
+            goto enterloop;
+        }
+
     }
 
 #ifdef _IA16
     else
     {
-        Status = AdFindDsdt (NULL, NULL);
+#include "16bit.h"
+
+        Status = AfFindDsdt (NULL, NULL);
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
@@ -303,18 +311,32 @@ main (
 
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load namespace, %s\n", AcpiCmFormatException (Status));
+            printf ("**** Could not load ACPI tables, %s\n", AcpiCmFormatException (Status));
             goto enterloop;
         }
 
+
+        Status = AcpiNsLoadNamespace ();
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not load ACPI namespace, %s\n", AcpiCmFormatException (Status));
+            goto enterloop;
+        }
 
         /* TBD:
          * Need a way to call this after the "LOAD" command
          */
         AeInstallHandlers ();
 
-        AcpiEnableSubsystem (0);
-    }
+        Status = AcpiEnableSubsystem (ACPI_NO_HARDWARE_INIT   |
+                                        ACPI_NO_ACPI_ENABLE   |
+                                        ACPI_NO_EVENT_INIT);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not EnableSubsystem, %s\n", AcpiCmFormatException (Status));
+            goto enterloop;
+        }
+     }
 #endif
 
 enterloop:
