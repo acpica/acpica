@@ -1,8 +1,7 @@
 
 /******************************************************************************
- *
- * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.115 $
+ * 
+ * Module Name: ievalue - ACPI AML (p-code) execution - get value routines
  *
  *****************************************************************************/
 
@@ -10,376 +9,984 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * reserved.
  *
  * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
  *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
  *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
+ * the above copyright and patent license is granted only if the following 
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
- * make.
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
  *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
  * Intel Code.
  *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
  *
  *****************************************************************************/
 
-#define __EXRESOLV_C__
 
-#include "acpi.h"
-#include "amlcode.h"
-#include "acdispat.h"
-#include "acinterp.h"
+#define __IEVALUE_C__
 
-
-#define _COMPONENT          ACPI_EXECUTER
-        ACPI_MODULE_NAME    ("exresolv")
+#include <acpi.h>
+#include <interpreter.h>
+#include <amlcode.h>
+#include <namespace.h>
+#include <string.h>
 
 
-/*******************************************************************************
+#define _THIS_MODULE        "ievalue.c"
+#define _COMPONENT          INTERPRETER
+
+static ST_KEY_DESC_TABLE KDT[] = {
+    {"0000", '1', "AmlGetRvalue: Descriptor Allocation Failure", "AmlGetRvalue: Descriptor Allocation Failure"},
+    {NULL, 'I', NULL, NULL}
+};
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlIsMethodValue
  *
- * FUNCTION:    AcpiExResolveToValue
+ * PARAMETERS:  *ObjDesc 
  *
- * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can
- *                                    be either an (ACPI_OPERAND_OBJECT *)
- *                                    or an ACPI_HANDLE.
- *              WalkState           - Current method state
+ * RETURN:      TRUE if the descriptor is the value of an Arg or
+ *              Local in a currently-active Method, else FALSE
+ *
+ * DESCRIPTION: Test if object is the value of an Arg or Local in a currently
+ *              active method.
+ *
+ ****************************************************************************/
+
+BOOLEAN
+AmlIsMethodValue (OBJECT_DESCRIPTOR *ObjDesc)
+{
+    INT32           MethodNestLevel;
+    INT32           Index;
+
+
+    FUNCTION_TRACE ("AmlIsMethodValue");
+
+
+    /* For each active Method */
+    
+    for (MethodNestLevel = MethodStackTop; MethodNestLevel >= 0; --MethodNestLevel)
+    {
+        /* For each possible Arg and Local */
+        
+        for (Index = 0; Index < (ARGBASE + NUMARG); ++Index)
+        {
+            if (ObjDesc == MethodStack[MethodNestLevel][Index])
+            {
+                FUNCTION_EXIT;
+                return TRUE;
+            }
+        }
+    }
+
+    FUNCTION_EXIT;
+    return FALSE;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlGetFieldUnitValue
+ *
+ * PARAMETERS:  *FieldDesc          - Pointer to a FieldUnit
+ *              *ResultDesc         - Pointer to an empty descriptor
+ *                                    which will become a Number
+ *                                    containing the field's value.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Convert Reference objects to values
+ * DESCRIPTION: Retrieve the value from a FieldUnit
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiExResolveToValue (
-    ACPI_OPERAND_OBJECT     **StackPtr,
-    ACPI_WALK_STATE         *WalkState)
+AmlGetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS         Status = AE_AML_ERROR;
+    UINT32              Mask;
+    UINT8               *Location = NULL;
+    BOOLEAN             Locked = FALSE;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExResolveToValue", StackPtr);
+    FUNCTION_TRACE ("AmlGetFieldUnitValue");
+
+
+    if (!FieldDesc)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - null field pointer\n"));
+    }
+
+    else if (!FieldDesc->FieldUnit.Container)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - null container pointer\n"));
+    }
+
+    else if (TYPE_Buffer != FieldDesc->FieldUnit.Container->ValType)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - container is not a Buffer\n"));
+    }
+
+    else if (FieldDesc->FieldUnit.ConSeq
+                != FieldDesc->FieldUnit.Container->Buffer.Sequence)
+    {
+        DEBUG_PRINT (ACPI_ERROR, (
+                "AmlGetFieldUnitValue: internal error - stale Buffer [%lx != %lx]\n",
+                FieldDesc->FieldUnit.ConSeq,
+                FieldDesc->FieldUnit.Container->Buffer.Sequence));
+    }
+
+    else if (!ResultDesc)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: internal error - null result pointer\n"));
+    }
+
+    else 
+    {
+        /* Input parameters are valid  */
+
+        Status = AE_OK;
+
+        /* Get the global lock if needed */
+
+        Locked = AmlAcquireGlobalLock (FieldDesc->FieldUnit.LockRule);
+    }
+
+    if (AE_OK == Status)
+    {   
+        /* Input parameters valid and global lock possibly acquired  */
+
+        if (FieldDesc->FieldUnit.DatLen + FieldDesc->FieldUnit.BitOffset > 32)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: implementation limitation: Field exceeds UINT32\n"));
+            Status = AE_AML_ERROR;
+        }
+    }
+
+    if (AE_OK == Status)
+    {   
+        /* Field location is (base of buffer) + (byte offset) */
+    
+        Location = FieldDesc->FieldUnit.Container->Buffer.Buffer
+                    + FieldDesc->FieldUnit.Offset;
+
+        /* Construct Mask with as many 1 bits as the field width */
+    
+        Mask = ((UINT32) 1 << FieldDesc->FieldUnit.DatLen) - (UINT32) 1;
+
+        ResultDesc->Number.ValType = (UINT8) TYPE_Number;
+
+        /* Shift the word containing the field, and mask the value */
+    
+        ResultDesc->Number.Number
+            = *(UINT32 *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
+
+        DEBUG_PRINT (ACPI_INFO,
+            ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
+            FieldDesc->FieldUnit.Container->Buffer.Buffer,
+            FieldDesc->FieldUnit.Offset,
+            FieldDesc->FieldUnit.BitOffset,
+            FieldDesc->FieldUnit.DatLen,
+            Location, Mask, ResultDesc->Number.Number));
+    }
+
+    /* Release global lock if we acquired it earlier */
+
+    AmlReleaseGlobalLock (Locked);
+
+
+    FUNCTION_EXIT;
+    return Status;
+}
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlGetRvalue
+ *
+ * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can 
+ *                                    be either an (OBJECT_DESCRIPTOR *)
+ *                                    or an NsHandle.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Convert Lvalue entries on ObjStack to rvalues
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AmlGetRvalue (OBJECT_DESCRIPTOR **StackPtr)
+{
+    NsHandle            TempHandle = NULL;
+    OBJECT_DESCRIPTOR   *ObjDesc = NULL;
+    ACPI_STATUS         Status = AE_OK;
+    UINT8				MvIndex = 0;
+    BOOLEAN             Locked;
+
+
+    FUNCTION_TRACE ("AmlGetRvalue");
 
 
     if (!StackPtr || !*StackPtr)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Internal - null pointer\n"));
-        return_ACPI_STATUS (AE_AML_NO_OPERAND);
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null pointer\n"));
+        FUNCTION_EXIT;
+        return AE_AML_ERROR;
     }
 
-    /*
-     * The entity pointed to by the StackPtr can be either
-     * 1) A valid ACPI_OPERAND_OBJECT, or
-     * 2) A ACPI_NAMESPACE_NODE (NamedObj)
-     */
-    if (ACPI_GET_DESCRIPTOR_TYPE (*StackPtr) == ACPI_DESC_TYPE_OPERAND)
+    switch ((*StackPtr)->ValType)
     {
-        Status = AcpiExResolveObjectToValue (StackPtr, WalkState);
-        if (ACPI_FAILURE (Status))
+    case TYPE_Lvalue:
+
+        switch ((*StackPtr)->Lvalue.OpCode)
         {
-            return_ACPI_STATUS (Status);
-        }
-    }
 
-    /*
-     * Object on the stack may have changed if AcpiExResolveObjectToValue()
-     * was called (i.e., we can't use an _else_ here.)
-     */
-    if (ACPI_GET_DESCRIPTOR_TYPE (*StackPtr) == ACPI_DESC_TYPE_NAMED)
-    {
-        Status = AcpiExResolveNodeToValue (
-                        ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE, StackPtr),
-                        WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Resolved object %p\n", *StackPtr));
-    return_ACPI_STATUS (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExResolveObjectToValue
- *
- * PARAMETERS:  StackPtr        - Pointer to a stack location that contains a
- *                                ptr to an internal object.
- *              WalkState       - Current method state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Retrieve the value from an internal object.  The Reference type
- *              uses the associated AML opcode to determine the value.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExResolveObjectToValue (
-    ACPI_OPERAND_OBJECT     **StackPtr,
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_OPERAND_OBJECT     *StackDesc;
-    void                    *TempNode;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    UINT16                  Opcode;
-
-
-    ACPI_FUNCTION_TRACE ("ExResolveObjectToValue");
-
-
-    StackDesc = *StackPtr;
-
-    /* This is an ACPI_OPERAND_OBJECT  */
-
-    switch (ACPI_GET_OBJECT_TYPE (StackDesc))
-    {
-    case INTERNAL_TYPE_REFERENCE:
-
-        Opcode = StackDesc->Reference.Opcode;
-
-        switch (Opcode)
-        {
-        case AML_NAME_OP:
-
-            /*
-             * Convert indirect name ptr to a direct name ptr.
-             * Then, AcpiExResolveNodeToValue can be used to get the value
-             */
-            TempNode = StackDesc->Reference.Object;
-
-            /* Delete the Reference Object */
-
-            AcpiUtRemoveReference (StackDesc);
-
-            /* Put direct name pointer onto stack and exit */
-
-            (*StackPtr) = TempNode;
+        case AML_NameOp:
+            
+            /* Convert indirect name ptr to direct name ptr */
+            
+            TempHandle = (*StackPtr)->Lvalue.Ref;
+            OsdFree (*StackPtr);
+            (*StackPtr) = TempHandle;
+            Status = AE_OK;
             break;
 
+        case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
+        case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
 
-        case AML_LOCAL_OP:
-        case AML_ARG_OP:
+            MvIndex = (*StackPtr)->Lvalue.OpCode - AML_Local0;
 
-            /*
-             * Get the local from the method's state info
-             * Note: this increments the local's object reference count
-             */
-            Status = AcpiDsMethodDataGetValue (Opcode,
-                            StackDesc->Reference.Offset, WalkState, &ObjDesc);
-            if (ACPI_FAILURE (Status))
+            DEBUG_PRINT (ACPI_INFO,
+                        ("AmlGetRvalue:Lcl%d: before AmlGetMethodValue %p %p %08lx \n",
+                        MvIndex,
+                        StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
+
+            Status = AmlGetMethodValue (LCLBASE + (*StackPtr)->Lvalue.OpCode - AML_Local0,
+                                    *StackPtr);
+
+            DEBUG_PRINT (ACPI_INFO,
+                        ("AmlGetRvalue:Lcl%d: iGMV Status=%s %p %p %08lx \n",
+                        MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
+                        *(UINT32 *)* StackPtr));
+            
+            if (TYPE_Number == (*StackPtr)->ValType)
             {
-                return_ACPI_STATUS (Status);
-            }
-
-            /*
-             * Now we can delete the original Reference Object and
-             * replace it with the resolve value
-             */
-            AcpiUtRemoveReference (StackDesc);
-            *StackPtr = ObjDesc;
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Arg/Local %d] ValueObj is %p\n",
-                StackDesc->Reference.Offset, ObjDesc));
-            break;
-
-
-        case AML_INDEX_OP:
-
-            switch (StackDesc->Reference.TargetType)
-            {
-            case ACPI_TYPE_BUFFER_FIELD:
-
-                /* Just return - leave the Reference on the stack */
-                break;
-
-
-            case ACPI_TYPE_PACKAGE:
-
-                ObjDesc = *StackDesc->Reference.Where;
-                if (ObjDesc)
-                {
-                    /*
-                     * Valid obj descriptor, copy pointer to return value
-                     * (i.e., dereference the package index)
-                     * Delete the ref object, increment the returned object
-                     */
-                    AcpiUtRemoveReference (StackDesc);
-                    AcpiUtAddReference (ObjDesc);
-                    *StackPtr = ObjDesc;
-                }
-                else
-                {
-                    /*
-                     * A NULL object descriptor means an unitialized element of
-                     * the package, can't dereference it
-                     */
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                        "Attempt to deref an Index to NULL pkg element Idx=%p\n",
-                        StackDesc));
-                    Status = AE_AML_UNINITIALIZED_ELEMENT;
-                }
-                break;
-
-
-            default:
-
-                /* Invalid reference object */
-
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Unknown TargetType %X in Index/Reference obj %p\n",
-                    StackDesc->Reference.TargetType, StackDesc));
-                Status = AE_AML_INTERNAL;
-                break;
+                /* Value is a Number */
+                
+                DEBUG_PRINT (ACPI_INFO,
+                            ("[%ld] \n", (*StackPtr)->Number.Number));
             }
             break;
 
+        case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
+        case AML_Arg4: case AML_Arg5: case AML_Arg6:
 
-        case AML_REF_OF_OP:
-        case AML_DEBUG_OP:
+            DEBUG_PRINT (TRACE_EXEC,
+                        ("AmlGetRvalue:Arg%d: before AmlGetMethodValue %p %p %08lx \n",
+                        MvIndex = (*StackPtr)->Lvalue.OpCode - AML_Arg0,
+                        StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
 
-            /* Just leave the object as-is */
+            Status = AmlGetMethodValue (ARGBASE + (*StackPtr)->Lvalue.OpCode - AML_Arg0,
+                                    *StackPtr);
+        
+            DEBUG_PRINT (TRACE_EXEC,
+                        ("AmlGetRvalue:Arg%d: iGMV returned %s %p %p %08lx \n",
+                        MvIndex, ExceptionNames[Status], StackPtr, *StackPtr,
+                        *(UINT32 *)* StackPtr));
+
+            if (TYPE_Number == (*StackPtr)->ValType)
+            {
+                /* Value is a Number */
+                
+                DEBUG_PRINT (ACPI_INFO,
+                            ("[%ld] \n", (*StackPtr)->Number.Number));
+            }
 
             break;
 
+        case AML_ZeroOp:
+            (*StackPtr)->ValType = (UINT8) TYPE_Number;
+            (*StackPtr)->Number.Number = 0;
+            Status = AE_OK;
+            break;
+
+        case AML_OneOp:
+            (*StackPtr)->ValType = (UINT8) TYPE_Number;
+            (*StackPtr)->Number.Number = 1;
+            Status = AE_OK;
+            break;
+
+        case AML_OnesOp:
+            (*StackPtr)->ValType = (UINT8) TYPE_Number;
+            (*StackPtr)->Number.Number = 0xFFFFFFFF;
+            Status = AE_OK;
+            break;
 
         default:
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Unknown Lvalue subtype %02x\n",
+                            (*StackPtr)->Lvalue.OpCode));
+            Status = AE_AML_ERROR;
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference opcode %X in %p\n",
-                Opcode, StackDesc));
-            Status = AE_AML_INTERNAL;
-            break;
+        }   /* switch ((*StackPtr)->Lvalue.OpCode) */
+
+        if (AE_OK != Status)
+        {
+            FUNCTION_EXIT;
+            return Status;
         }
+
         break;
 
+    case TYPE_FieldUnit:
+        ObjDesc = AllocateObjectDesc (&KDT[0]);
+        if (!ObjDesc)
+        {   
+            /*  descriptor allocation failure   */
+            
+            FUNCTION_EXIT;
+            return AE_NO_MEMORY;
+        }
 
-    case ACPI_TYPE_BUFFER:
-
-        Status = AcpiDsGetBufferArguments (StackDesc);
-        break;
-
-
-    case ACPI_TYPE_PACKAGE:
-
-        Status = AcpiDsGetPackageArguments (StackDesc);
-        break;
-
-
-    /*
-     * These cases may never happen here, but just in case..
-     */
-    case ACPI_TYPE_BUFFER_FIELD:
-    case INTERNAL_TYPE_REGION_FIELD:
-    case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_INDEX_FIELD:
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "FieldRead SourceDesc=%p Type=%X\n",
-            StackDesc, ACPI_GET_OBJECT_TYPE (StackDesc)));
-
-        Status = AcpiExReadDataFromField (WalkState, StackDesc, &ObjDesc);
+        if ((Status = AmlGetFieldUnitValue (*StackPtr, ObjDesc)) != AE_OK)
+        {
+            OsdFree (ObjDesc);
+            ObjDesc = NULL;
+        }
+        
         *StackPtr = (void *) ObjDesc;
+        FUNCTION_EXIT;
+        return Status;
+
+    case TYPE_BankField:
+        ObjDesc = AllocateObjectDesc (&KDT[0]);
+        if (!ObjDesc)
+        {   
+            /*  descriptor allocation failure   */
+            
+            FUNCTION_EXIT;
+            return AE_NO_MEMORY;
+        }
+
+        if ((Status = AmlGetFieldUnitValue (*StackPtr, ObjDesc)) != AE_OK)
+        {
+            OsdFree(ObjDesc);
+            ObjDesc = NULL;
+        }
+
+        *StackPtr = (void *) ObjDesc;
+        FUNCTION_EXIT;
+        return Status;
         break;
+
+    /* XXX - may need to handle IndexField, and DefField someday */
 
     default:
         break;
+
+    }   /* switch ((*StackPtr)->ValType) */
+
+
+
+    if (IS_NS_HANDLE (*StackPtr))       /* direct name ptr */
+    {
+        OBJECT_DESCRIPTOR   *ValDesc = NULL;
+                
+            
+
+        DEBUG_PRINT (TRACE_EXEC,
+                    ("AmlGetRvalue: found direct name ptr \n"));
+
+        ValDesc = (OBJECT_DESCRIPTOR *) NsGetValue ((NsHandle)* StackPtr);
+
+        DEBUG_PRINT (TRACE_EXEC,
+                    ("AmlGetRvalue: NsGetValue(%p) returned Val=%p\n", *StackPtr, ValDesc));
+
+        switch (NsGetType ((NsHandle)* StackPtr))
+        {
+            UINT32          TempVal;
+
+        case TYPE_Package:
+
+            /* 
+             * ValDesc should point to either an OBJECT_DESCRIPTOR of
+             * type Package, or an initialization in the AML stream.
+             */
+            if (!ValDesc)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue/Package: internal error - null ValuePtr\n"));
+                DEBUG_PRINT (TRACE_EXEC,
+                            ("leave AmlGetRvalue: NULL Package ValuePtr ==> AE_AML_ERROR\n"));
+
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            if (AML_PackageOp == *(UINT8 *) ValDesc)
+            {
+                /* 
+                 * The value pointer in the name table entry
+                 * points to a package definition in the AML stream.
+                 * Convert it to an object.
+                 */
+
+                if (AE_OK != (Status = AmlPushIfExec (MODE_Exec)))             /* ObjStack */
+                {
+                    FUNCTION_EXIT;
+                    return Status;
+                }
+
+                if (AE_OK == (Status = AmlPushExec ((UINT8 *) ValDesc + 1, 0L)) && /*PkgStack*/
+                    AE_OK == (Status = AmlDoPkg (TYPE_Package, MODE_Exec)) &&
+                    AE_OK == (Status = AmlPopExec ()))                 /* PkgStack */
+                {
+                    NsSetValue ((NsHandle)* StackPtr,
+                                    ObjStack[ObjStackTop],
+                                    (UINT8) TYPE_Package);
+
+                    /* Refresh local value pointer to reflect newly set value */
+                    
+                    ValDesc = (OBJECT_DESCRIPTOR *) NsGetValue ((NsHandle)* StackPtr);
+                    ObjStackTop--;
+                }
+                
+                else
+                {
+                    ObjStackTop--;
+                    FUNCTION_EXIT;
+                    return Status;
+                }
+            }
+            
+            if (!ValDesc || (TYPE_Package != ValDesc->ValType))
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue:internal error - Bad package value\n"));
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            if (!ObjDesc)
+            {   
+                /*  descriptor allocation failure   */
+                
+                FUNCTION_EXIT;
+                return AE_NO_MEMORY;
+            }
+
+            memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
+            break;
+
+        case TYPE_String:
+
+            /* XXX - Is there a problem here if the nte points to an AML definition? */
+            
+            if (TYPE_String != ValDesc->ValType)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - Bad string value\n"));
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            if (!ObjDesc)
+            {   
+                /*  descriptor allocation failure   */
+
+                FUNCTION_EXIT;
+                return AE_NO_MEMORY;
+            }
+
+            memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
+            break;
+
+        case TYPE_Buffer:
+            if (!ValDesc)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null Buffer ValuePtr\n"));
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            if (AML_BufferOp == *(UINT8 *) ValDesc)
+            {
+                /* 
+                 * The value pointer in the name table entry
+                 * points to a buffer definition in the AML stream.
+                 * Convert it to an object.
+                 */
+                if (AE_OK != (Status = AmlPushIfExec (MODE_Exec)))                /* ObjStack */
+                {
+                    FUNCTION_EXIT;
+                    return Status;
+                }
+
+                if (AE_OK == (Status = AmlPushExec ((UINT8 *) ValDesc + 1, 0L)) &&   /*PkgStack*/
+                    AE_OK == (Status = AmlDoPkg (TYPE_Buffer, MODE_Exec)) &&
+                    AE_OK == (Status = AmlPopExec ()))                     /* PkgStack */
+                {
+                    NsSetValue ((NsHandle) *StackPtr,
+                                    ObjStack[ObjStackTop],
+                                    (UINT8) TYPE_Buffer);
+                    
+                    /* Refresh local value pointer to reflect newly set value */
+                    
+                    ValDesc = (OBJECT_DESCRIPTOR *) NsGetValue ((NsHandle)* StackPtr);
+                    ObjStackTop--;
+                }
+                
+                else
+                {
+                    ObjStackTop--;
+                    FUNCTION_EXIT;
+                    return Status;
+                }
+            }
+            
+            if (!ValDesc || (TYPE_Buffer != ValDesc->ValType))
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Bad buffer value\n"));
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            if (!ObjDesc)
+            {   
+                /*  descriptor allocation failure   */
+                
+                FUNCTION_EXIT;
+                return AE_NO_MEMORY;
+            }
+
+            memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
+
+            /* Assign a new sequence number */
+            
+            ObjDesc->Buffer.Sequence = AmlBufSeq();
+            
+            DEBUG_PRINT (TRACE_BFIELD,
+                        ("AmlGetRvalue: new Buffer descriptor seq %ld @ %p \n",
+                        ObjDesc->Buffer.Sequence, ObjDesc));
+
+            break;
+
+        case TYPE_Number:
+            DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalue: case Number \n"));
+
+            if (!ValDesc)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null Number ValuePtr\n"));
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            if (TYPE_Number == ValDesc->ValType)
+            {
+                ObjDesc = AllocateObjectDesc (&KDT[0]);
+                if (!ObjDesc)
+                {   
+                    /*  descriptor allocation failure   */
+                    
+                    FUNCTION_EXIT;
+                    return AE_NO_MEMORY;
+                }
+                
+                memcpy ((void *) ObjDesc, (void *) ValDesc, sizeof (*ObjDesc));
+            }
+            
+            else
+            {
+                /* 
+                 * nte type is Number, but it does not point to a Number,
+                 * so it had better point to a Literal in the AML stream.
+                 */
+                if (!AmlIsInPCodeBlock ((UINT8 *) ValDesc))
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue/Number: internal error - not a Number\n"));
+                    FUNCTION_EXIT;
+                    return AE_AML_ERROR;
+                }
+
+                ObjDesc = AllocateObjectDesc (&KDT[0]);
+                if (!ObjDesc)
+                {   
+                    /*  descriptor allocation failure   */
+                    
+                    FUNCTION_EXIT;
+                    return AE_NO_MEMORY;
+                }
+                
+                switch (*(UINT8 *) ValDesc)
+                {
+                case AML_ZeroOp:
+                    ObjDesc->Number.Number = 0;
+                    break;
+
+                case AML_OneOp:
+                    ObjDesc->Number.Number = 1;
+                    break;
+
+                case AML_OnesOp:
+                    ObjDesc->Number.Number = 0xFFFFFFFF;
+                    break;
+
+                case AML_ByteOp:
+                    ObjDesc->Number.Number = (UINT32)((UINT8 *) ValDesc)[1];
+                    break;
+
+                /* 
+                 *  XXX - WordOp and DWordOp will not work properly if the
+                 *  XXX - processor's endianness does not match the AML's.
+                 */
+                case AML_WordOp:
+                    ObjDesc->Number.Number = (UINT32)*(UINT16 *)&((UINT8 *) ValDesc)[1];
+                    break;
+
+                case AML_DWordOp:
+                    ObjDesc->Number.Number = *(UINT32 *)&((UINT8 *) ValDesc)[1];
+                    break;
+
+                default:
+                    OsdFree (ObjDesc);
+                    DEBUG_PRINT (ACPI_ERROR, (
+                            "AmlGetRvalue/Number: internal error - expected AML number, found %02x\n",
+                            *(UINT8 *) ValDesc));
+                    FUNCTION_EXIT;
+                    return AE_AML_ERROR;
+                
+                }   /* switch */
+                
+                ObjDesc->Number.ValType = (UINT8) TYPE_Number;
+            }
+            break;
+
+        case TYPE_DefField:
+
+            /* 
+             * XXX - Implementation limitation: Fields are implemented as type
+             * XXX - Number, but they really are supposed to be type Buffer.
+             * XXX - The two are interchangeable only for lengths <= 32 bits.
+             */
+            Status = AmlGetNamedFieldValue ((NsHandle)* StackPtr, &TempVal);
+            if (AE_OK != Status)
+            {
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            if (!ObjDesc)
+            {   
+                /*  descriptor allocation failure   */
+                
+                FUNCTION_EXIT;
+                return AE_NO_MEMORY;
+            }
+
+            ObjDesc->Number.ValType = (UINT8) TYPE_Number;
+            ObjDesc->Number.Number = TempVal;
+            break;
+
+        case TYPE_BankField:
+            if (!ValDesc)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null BankField ValuePtr\n"));
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            if (TYPE_BankField != ValDesc->ValType)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlGetRvalue/BankField:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                        *StackPtr, TYPE_BankField, ValDesc->ValType, ValDesc));
+                
+                AmlAppendBlockOwner (ValDesc);
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+
+            /* Get the global lock if needed */
+
+            Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
+            {
+
+                /* Set Index value to select proper Data register */
+                /* perform the update */
+            
+                Status = AmlSetNamedFieldValue (ValDesc->BankField.BankSelect,
+                                               ValDesc->BankField.BankVal);
+            }
+            AmlReleaseGlobalLock (Locked);
+
+
+            if (AE_OK != Status)
+            {
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+            
+            /* Read Data value */
+            
+            Status = AmlGetNamedFieldValue ((NsHandle) ValDesc->BankField.Container, &TempVal);
+            if (AE_OK != Status)
+            {
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            if (!ObjDesc)
+            {
+                /*  descriptor allocation failure   */
+
+                FUNCTION_EXIT;
+                return AE_NO_MEMORY;
+            }
+
+            ObjDesc->Number.ValType = (UINT8) TYPE_Number;
+            ObjDesc->Number.Number = TempVal;
+            break;
+
+
+        case TYPE_IndexField:
+            if (!ValDesc)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null IndexField ValuePtr\n"));
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            if (TYPE_IndexField != ValDesc->ValType)
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlGetRvalue/IndexField: internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                        *StackPtr, TYPE_IndexField, ValDesc->ValType, ValDesc));
+                
+                AmlAppendBlockOwner (ValDesc);
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            /* Set Index value to select proper Data register */
+            /* Get the global lock if needed */
+
+            Locked = AmlAcquireGlobalLock (ObjDesc->FieldUnit.LockRule);
+            {
+                /* perform the update */
+                
+                Status = AmlSetNamedFieldValue (ValDesc->IndexField.Index,
+                                                ValDesc->IndexField.IndexVal);
+            }
+            AmlReleaseGlobalLock (Locked);
+
+            if (AE_OK != Status)
+            {
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            /* Read Data value */
+            
+            Status = AmlGetNamedFieldValue (ValDesc->IndexField.Data, &TempVal);
+            if (AE_OK != Status)
+            {
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            if (!ObjDesc)
+            {
+                /*  descriptor allocation failure   */
+
+                FUNCTION_EXIT;
+                return AE_NO_MEMORY;
+            }
+
+            ObjDesc->Number.ValType = (UINT8) TYPE_Number;
+            ObjDesc->Number.Number = TempVal;
+            break;
+
+        case TYPE_FieldUnit:
+            if (!ValDesc)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: internal error - null FieldUnit ValuePtr\n"));
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+            }
+
+            if (ValDesc->ValType != (UINT8) NsGetType ((NsHandle)* StackPtr))
+            {
+                DEBUG_PRINT (ACPI_ERROR, (
+                        "AmlGetRvalue/FieldUnit:internal error - Name %4.4s type %d does not match value-type %d at %p\n",
+                          *StackPtr, NsGetType ((NsHandle)* StackPtr),
+                          ValDesc->ValType, ValDesc));
+                
+                AmlAppendBlockOwner (ValDesc);
+                FUNCTION_EXIT;
+                return AE_AML_ERROR;
+                break;
+            }
+
+            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            if (!ObjDesc)
+            {
+                /*  descriptor allocation failure   */
+
+                FUNCTION_EXIT;
+                return AE_NO_MEMORY;
+            }
+
+            if ((Status = AmlGetFieldUnitValue (ValDesc, ObjDesc)) != AE_OK)
+            {
+                OsdFree (ObjDesc);
+                FUNCTION_EXIT;
+                return Status;
+            }
+
+            break;
+
+        /* cases which just return the name as the rvalue */
+        
+        case TYPE_Device:
+            FUNCTION_EXIT;
+            return AE_OK;
+            break;
+
+
+
+        case TYPE_Method:        /* XXX - unimplemented, handled elsewhere */
+        case TYPE_Power:         /* XXX - unimplemented, may not be needed */
+        case TYPE_Processor:     /* XXX - unimplemented, may not be needed */
+        case TYPE_Thermal:       /* XXX - unimplemented, may not be needed */
+        case TYPE_Event:         /* XXX - unimplemented, may not be needed */
+        case TYPE_Mutex:         /* XXX - unimplemented, may not be needed */
+        case TYPE_Region:        /* XXX - unimplemented, may not be needed */
+
+        case TYPE_Any:
+            DEBUG_PRINT (TRACE_EXEC, ("case %s \n",
+                        NsTypeNames[NsGetType ((NsHandle)* StackPtr)]));
+          
+#ifdef HACK
+            DEBUG_PRINT (ACPI_WARN,
+                        ("** AmlGetRvalue: Fetch from [%s] not implemented, using value 0\n",
+                        NsTypeNames[NsGetType ((NsHandle)* StackPtr)]));
+            
+            ObjDesc = AllocateObjectDesc (&KDT[0]);
+            if (!ObjDesc)
+            {
+                /*  descriptor allocation failure   */
+                
+                FUNCTION_EXIT;
+                return AE_NO_MEMORY;
+            }
+
+            ObjDesc->Number.ValType = (UINT8) Number;
+            ObjDesc->Number.Number = 0x0;
+            break;
+#else
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlGetRvalue: Fetch from [%s] not implemented\n",
+                    NsTypeNames[NsGetType ((NsHandle)* StackPtr)]));
+            
+            FUNCTION_EXIT;
+            return AE_AML_ERROR;
+#endif /* HACK */
+
+        default:
+
+            DEBUG_PRINT (TRACE_EXEC, 
+                        ("AmlGetRvalue: case default handle type unexpected: AE_AML_ERROR \n"));
+
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Unknown NsType %d\n",
+                            NsGetType ((NsHandle)* StackPtr)));
+            FUNCTION_EXIT;
+            return AE_AML_ERROR;
+        }
+
+        *StackPtr = (void *) ObjDesc;
     }
 
-    return_ACPI_STATUS (Status);
+    DEBUG_PRINT (TRACE_EXEC, ("leave AmlGetRvalue: AE_OK\n"));
+
+    FUNCTION_EXIT;
+    return AE_OK;
 }
 
 
