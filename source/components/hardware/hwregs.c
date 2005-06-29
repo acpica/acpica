@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  ******************************************************************************/
 
@@ -126,7 +126,6 @@
         ACPI_MODULE_NAME    ("hwregs")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiHwClearAcpiStatus
@@ -161,7 +160,7 @@ AcpiHwClearAcpiStatus (void)
         return_VOID;
     }
 
-    AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_STATUS, 
+    AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_STATUS,
             ACPI_BITMASK_ALL_FIXED_STATUS);
 
     /* Clear the fixed events */
@@ -200,7 +199,7 @@ AcpiHwClearAcpiStatus (void)
  *
  * RETURN:      Status - ACPI status
  *
- * DESCRIPTION: Obtain the SLP_TYPa and SLP_TYPb values for the requested sleep 
+ * DESCRIPTION: Obtain the SLP_TYPa and SLP_TYPb values for the requested sleep
  *              state.
  *
  ******************************************************************************/
@@ -439,7 +438,7 @@ AcpiHwBitRegisterWrite (
         /*
          * Status Registers are different from the rest.  Clear by
          * writing 1, writing 0 has no effect.  So, the only relevent
-         * information is the single bit we're interested in, all others should 
+         * information is the single bit we're interested in, all others should
          * be written as 0 so they will be left unchanged
          */
         Value = ACPI_REGISTER_PREPARE_BITS (Value, BitRegInfo->BitPosition, BitRegInfo->AccessBitMask);
@@ -470,7 +469,7 @@ AcpiHwBitRegisterWrite (
         ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM1 control: Read %X\n", RegisterValue));
 
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition, BitRegInfo->AccessBitMask, Value);
-        
+
         AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId,
                 (UINT16) RegisterValue);
         break;
