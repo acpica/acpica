@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.153 $
+ *       $Revision: 1.154 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 #define ACPI_INIT_GLOBAL(a,b) a
 #endif
 
-/* 
+/*
  * Keep local copies of these FADT-based registers.  NOTE: These globals
  * are first in this file for alignment reasons on 64-bit systems.
  */
