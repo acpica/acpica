@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.50 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acdebug.h"
+#include "actables.h"
 #include "aecommon.h"
 
 #include <stdio.h>
@@ -138,6 +139,131 @@ UINT32                      AcpiDsdtLength;
 
 DEBUG_REGIONS               Regions;
 RSDP_DESCRIPTOR             LocalRsdp;
+
+
+/*
+ * We need a local FADT so that the hardware subcomponent will function,
+ * even though the underlying OSD HW access functions don't do
+ * anything.
+ */
+RSDP_DESCRIPTOR             LocalRSDP;
+FADT_DESCRIPTOR_REV1        LocalFADT;
+FACS_DESCRIPTOR_REV1        LocalFACS;
+RSDT_DESCRIPTOR_REV1        LocalRSDT;
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeBuildLocalTables
+ *
+ * PARAMETERS:
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AeBuildLocalTables (void)
+{
+    /* Build an RSDP */
+
+    MEMSET (&LocalRSDP, 0, sizeof (RSDP_DESCRIPTOR));
+    MEMCPY (&LocalRSDP.Signature, RSDP_SIG, 8);
+    LocalRSDP.Revision = 1;
+    LocalRSDP.RsdtPhysicalAddress = ACPI_TO_INTEGER (&LocalRSDT);
+
+    AcpiGbl_RSDP = &LocalRSDP;
+
+
+    /* Build an RSDT */
+
+    MEMSET (&LocalRSDT, 0, sizeof (LocalRSDT));
+    MEMCPY (&LocalRSDT.Header.Signature, RSDT_SIG, 4);
+    LocalRSDT.Header.Length = sizeof (RSDT_DESCRIPTOR_REV1);
+
+
+    LocalRSDT.TableOffsetEntry[0] = ACPI_TO_INTEGER (&LocalFADT);
+
+    /* Build a FADT so we can test the hardware/event init */
+
+    MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
+    MEMCPY (&LocalFADT.Header.Signature, FADT_SIG, 4);
+
+    LocalFADT.FirmwareCtrl      = ACPI_TO_INTEGER (&LocalFACS);
+    LocalFADT.Header.Revision   = 1;
+    LocalFADT.Header.Length     = sizeof (FADT_DESCRIPTOR_REV1);
+    LocalFADT.Gpe0BlkLen        = 8;
+    LocalFADT.Gpe1BlkLen        = 12;
+    LocalFADT.Gpe1Base          = 64;
+
+    LocalFADT.Pm1EvtLen         = 4;
+    LocalFADT.Pm1CntLen         = 4;
+    LocalFADT.PmTmLen           = 8;
+
+    LocalFADT.Gpe0Blk           = 0x12340000;
+    LocalFADT.Gpe1Blk           = 0x12341110;
+
+    LocalFADT.Pm1aEvtBlk        = 0x1234aaa0;
+    LocalFADT.Pm1bEvtBlk        = 0;
+    LocalFADT.PmTmrBlk          = 0xA0;
+    LocalFADT.Pm1aCntBlk        = 0xB0;
+
+    /* Complete the FADT with the checksum */
+
+    LocalFADT.Header.Checksum = (UINT8) (0 - AcpiTbChecksum (&LocalFADT, LocalFADT.Header.Length));
+
+    /* Build a FACS */
+
+    MEMSET (&LocalFACS, 0, sizeof (FACS_DESCRIPTOR_REV1));
+    MEMCPY (&LocalFACS.Signature, FACS_SIG, 4);
+    LocalFACS.Length = sizeof (FACS_DESCRIPTOR_REV1);
+
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeInstallTables
+ *
+ * PARAMETERS:
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AeInstallTables (void)
+{
+    ACPI_STATUS             Status;
+
+
+#if 0
+    Status = AcpiLoadTables ();
+#endif
+
+    Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFADT);
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("**** Could not load local FADT, %s\n", AcpiFormatException (Status));
+        return (Status);
+    }
+
+    Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFACS);
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("**** Could not load local FACS, %s\n", AcpiFormatException (Status));
+        return (Status);
+    }
+
+    return (Status);
+}
+
 
 
 /******************************************************************************
@@ -159,10 +285,8 @@ AeLocalGetRootPointer (
     ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
 {
 
-    STRCPY (LocalRsdp.Signature, RSDP_SIG);
-    LocalRsdp.Revision = 1;
-
-    return (AE_NOT_FOUND);
+    *RsdpPhysicalAddress = ACPI_TO_INTEGER (&LocalRSDP);
+    return (AE_OK);
 }
 
 
@@ -257,13 +381,14 @@ AeRegionHandler (
             return AE_NO_MEMORY;
         }
 
-        RegionElement->Buffer = AcpiOsCallocate (Length);
+        RegionElement->Buffer = AcpiOsAllocate (Length);
         if (!RegionElement->Buffer)
         {
             AcpiOsFree (RegionElement);
             return AE_NO_MEMORY;
         }
 
+        MEMSET (RegionElement->Buffer, 0, Length);
         RegionElement->Address      = BaseAddress;
         RegionElement->Length       = Length;
         RegionElement->NextRegion   = NULL;
@@ -446,6 +571,9 @@ AeNotifyHandler (
  *
  *****************************************************************************/
 
+ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 0x80};
+#define AEXEC_NUM_REGIONS   5
+
 ACPI_STATUS
 AeInstallHandlers (void)
 {
@@ -464,21 +592,21 @@ AeInstallHandlers (void)
             AcpiFormatException (Status));
     }
 
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < AEXEC_NUM_REGIONS; i++)
     {
         Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode,
-                        (ACPI_ADR_SPACE_TYPE) i, AeRegionHandler);
+                        SpaceId[i], AeRegionHandler);
 
         /* Install handler at the root object.
          * TBD: all default handlers should be installed here!
          */
         Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
-                        (ACPI_ADR_SPACE_TYPE) i, AeRegionHandler, AeRegionInit, NULL);
+                        SpaceId[i], AeRegionHandler, AeRegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Could not install an OpRegion handler for %s space(%d), %s\n",
-                AcpiUtGetRegionName((UINT8) i), i, AcpiFormatException (Status)));
+                AcpiUtGetRegionName((UINT8) SpaceId[i]), SpaceId[i], AcpiFormatException (Status)));
             return (Status);
         }
     }

@@ -186,6 +186,13 @@ getopt (
     char                    **argv,
     char                    *opts);
 
+ACPI_STATUS
+AeBuildLocalTables (
+    void);
+
+ACPI_STATUS
+AeInstallTables (
+    void);
 
 void
 AeDumpNamespace (
