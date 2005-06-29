@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -611,6 +611,9 @@ LsWriteNodeToListing (
          */
         LsPopNode ();
         return;
+
+    case DEFAULT_ARG:
+        return;
     }
 
 
@@ -652,12 +655,15 @@ LsWriteNodeToListing (
         }
         break;
 
-
-    case AML_CLASS_UNKNOWN:
+    case AML_CLASS_EXECUTE:
+    case AML_CLASS_CREATE:
     default:
 
         LsWriteSourceLines (Node->LineNumber, Node->LogicalLineNumber);
         break;
+
+    case AML_CLASS_UNKNOWN:
+        break; 
     }
 }
 
