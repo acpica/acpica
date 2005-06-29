@@ -197,7 +197,7 @@ HwGetMode (void)
     FUNCTION_TRACE ("HwGetMode");
 
     
-    if (READ_ACPI_REGISTER (SCI_EN))
+    if (HwRegisterIO (ACPI_READ, MTX_LOCK, (INT32)SCI_EN))
     {
         return_VALUE (SYS_MODE_ACPI);
     }
