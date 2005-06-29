@@ -518,6 +518,15 @@ NsExecuteControlMethod (
      */
     Status = AmlExecuteMethod (ObjDesc, Params, ReturnObjDesc);
 
+    /*
+     * Cleanup.  We must delete everything in the namespace that was created by
+     * the execution of this method.
+     */
+
+    if (MethodEntry->Scope)
+    {
+        NsDeleteNamespace (MethodEntry);
+    }
 
     /* TBD: remove vestiges of old parser */
 
