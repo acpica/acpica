@@ -113,14 +113,14 @@
  *
  * This macro extracts a pointer to the NEXT table in the chain.
  */
-#define NEXTSEG(NameTbl) ((nte **)NameTbl)[-1]
+#define NEXTSEG(NameTbl) ((NAME_TABLE_ENTRY **)NameTbl)[-1]
 
 /* 
- * An NsHandle (which is actually an nte *) can appear in some contexts,
+ * An NsHandle (which is actually an NAME_TABLE_ENTRY *) can appear in some contexts,
  * such as on apObjStack, where a pointer to an OBJECT_DESCRIPTOR can also
  * appear.  This macro is used to distinguish them.
  *
- * The first byte of an nte is a character of the name segment, which will
+ * The first byte of an NAME_TABLE_ENTRY is a character of the name segment, which will
  * be accepted by NcOK().  The first byte of an OBJECT_DESCRIPTOR is the
  * ValTyp field, whose (UINT8) value comes from the NsType enumeration.
  * Valid NsType values must not include any character acceptable in a name.
@@ -151,64 +151,6 @@
 
 
 
-/* TBD: MOVE! */
-
-ACPI_STATUS
-NsEvaluateByHandle (
-    NsHandle            Handle, 
-    OBJECT_DESCRIPTOR   *ReturnObject,
-    OBJECT_DESCRIPTOR   **Params);
-
-ACPI_STATUS
-NsEvaluateByName (
-    char                *Pathname, 
-    OBJECT_DESCRIPTOR   *ReturnObject,
-    OBJECT_DESCRIPTOR   **Params);
-
-ACPI_STATUS
-NsEvaluateRelative (
-    NsHandle            Handle, 
-    char                *Pathname, 
-    OBJECT_DESCRIPTOR   *ReturnObject,
-    OBJECT_DESCRIPTOR   **Params);
-
-
-ACPI_STATUS
-NsExecuteControlMethod (
-    nte                 *MethodNte, 
-    OBJECT_DESCRIPTOR   **Params);
-
-ACPI_STATUS
-NsGetObjectValue (
-    nte                 *ObjectNte);
-
-
-/*
- * ACPI Table functions - nstables
- */
-
-ACPI_STATUS
-NsFindRootSystemDescriptorPointer (
-    ROOT_SYSTEM_DESCRIPTOR_POINTER  ** RSDP,
-    OSD_FILE                        *InputFile);
-
-INT32
-NsVerifyTableChecksum (
-    void                *TableHeader, 
-    INT32               DisplayBitFlags);
-
-ACPI_STATUS
-NsGetTable (
-    UINT32              PhysicalAddress, 
-    OSD_FILE            *InputFile,
-    void *              *Table);
-
-ACPI_STATUS
-NsGetFACS (
-    OSD_FILE            *InputFile,
-    void *              *Table);
-
-
 /*
  * Top-level namespace access - nsaccess
  */
@@ -234,6 +176,81 @@ NsDeleteSubtree (
     NsHandle            StartHandle);
 
 
+/* 
+ * Namespace dump/print utilities - nsdump
+ */
+
+void
+NsDumpTables (
+    NsHandle            SearchBase, 
+    INT32               MaxDepth);
+
+void
+NsDumpEntry (
+    NsHandle            Handle);
+
+ACPI_STATUS
+NsDumpPathname (
+    NsHandle            Handle, 
+    char                *Msg, 
+    UINT32              Level, 
+    UINT32              Component);
+
+
+/*
+ * Namespace evaluation functions - nseval
+ */
+
+ACPI_STATUS
+NsEvaluateByHandle (
+    NAME_TABLE_ENTRY    *ObjectNte, 
+    OBJECT_DESCRIPTOR   *ReturnObject,
+    OBJECT_DESCRIPTOR   **Params);
+
+ACPI_STATUS
+NsEvaluateByName (
+    char                *Pathname, 
+    OBJECT_DESCRIPTOR   *ReturnObject,
+    OBJECT_DESCRIPTOR   **Params);
+
+ACPI_STATUS
+NsEvaluateRelative (
+    NAME_TABLE_ENTRY    *ObjectNte, 
+    char                *Pathname, 
+    OBJECT_DESCRIPTOR   *ReturnObject,
+    OBJECT_DESCRIPTOR   **Params);
+
+
+ACPI_STATUS
+NsExecuteControlMethod (
+    NAME_TABLE_ENTRY    *MethodNte, 
+    OBJECT_DESCRIPTOR   **Params);
+
+ACPI_STATUS
+NsGetObjectValue (
+    NAME_TABLE_ENTRY    *ObjectNte);
+
+
+/*
+ * Parent/Child/Peer utility functions - nsfamily
+ */
+
+char *
+NsFindParentName (
+    NAME_TABLE_ENTRY    *EntryToSearch, 
+    INT32               Trace);
+
+INT32
+NsExistDownstreamSibling (
+    NAME_TABLE_ENTRY    *ThisEntry, 
+    INT32               Size, 
+    NAME_TABLE_ENTRY    *Appendage);
+
+NsHandle 
+NsGetParentHandle (
+    NsHandle            Look);
+
+
 /*
  * Scope manipulation - nsscope
  */
@@ -244,7 +261,7 @@ NsOpensScope (
 
 char *
 NsNameOfScope (
-    nte                 *EntryToSearch);
+    NAME_TABLE_ENTRY    *EntryToSearch);
 
 char *
 NsNameOfCurrentScope (
@@ -270,7 +287,7 @@ NsSetValue (
 
 BOOLEAN
 NsPatternMatch (
-    nte                 *ObjEntry, 
+    NAME_TABLE_ENTRY    *ObjEntry, 
     char                *SearchFor);
         
 void *
@@ -281,7 +298,7 @@ NsNameCompare (
 
 void
 NsLowFindNames (
-    nte                 *ThisEntry, 
+    NAME_TABLE_ENTRY    *ThisEntry, 
     char                *SearchFor,
     INT32               *Count, 
     NsHandle            List[], 
@@ -312,23 +329,23 @@ NsFindValue (
     INT32               MaxDepth);
 
 /*
- * Namespace searching and entry
+ * Namespace searching and entry - nssearch
  */
 
 
 ACPI_STATUS
 NsSearchAndEnter (
     char                *NamSeg, 
-    nte                 *NameTbl, 
+    NAME_TABLE_ENTRY    *NameTbl, 
     OpMode              LoadMode, 
     NsType              Type,
-    nte *               *RetNte);
+    NAME_TABLE_ENTRY    **RetNte);
 
 void
 NsInitializeTable (
-    nte                 *NewTbl, 
-    nte                 *ParentScope, 
-    nte                 *ParentEntry);
+    NAME_TABLE_ENTRY    *NewTbl, 
+    NAME_TABLE_ENTRY    *ParentScope, 
+    NAME_TABLE_ENTRY    *ParentEntry);
 
 /*
  * Scope Stack manipulation - nsstack
@@ -336,7 +353,7 @@ NsInitializeTable (
 
 void
 NsPushCurrentScope (
-    nte                 *NewScope, 
+    NAME_TABLE_ENTRY    *NewScope, 
     NsType              Type);
 
 void
@@ -349,50 +366,36 @@ NsPopCurrent (
 
 
 /*
- * Parent/Child/Peer utility functions - nsfamily
+ * ACPI Table functions - nstables
  */
-
-char *
-NsFindParentName (
-    nte                 *EntryToSearch, 
-    INT32               Trace);
-
-INT32
-NsExistDownstreamSibling (
-    nte                 *ThisEntry, 
-    INT32               Size, 
-    nte                 *Appendage);
-
-NsHandle 
-NsGetParentHandle (
-    NsHandle            Look);
-
-
-/* 
- * Namespace dump/print utilities - nsdump
- */
-
-void
-NsDumpTables (
-    NsHandle            SearchBase, 
-    INT32               MaxDepth);
-
-void
-NsDumpEntry (
-    NsHandle            Handle);
 
 ACPI_STATUS
-NsDumpPathname (
-    NsHandle            Handle, 
-    char                *Msg, 
-    UINT32              Level, 
-    UINT32              Component);
+NsFindRootSystemDescriptorPointer (
+    ROOT_SYSTEM_DESCRIPTOR_POINTER  ** RSDP,
+    OSD_FILE                        *InputFile);
+
+INT32
+NsVerifyTableChecksum (
+    void                *TableHeader, 
+    INT32               DisplayBitFlags);
+
+ACPI_STATUS
+NsGetTable (
+    UINT32              PhysicalAddress, 
+    OSD_FILE            *InputFile,
+    void *              *Table);
+
+ACPI_STATUS
+NsGetFACS (
+    OSD_FILE            *InputFile,
+    void *              *Table);
+
 
 /*
  * Utility functions - nsutils
  */
 
-nte *
+NAME_TABLE_ENTRY *
 NsAllocateNteDesc (
     INT32               Size);
 
@@ -425,6 +428,9 @@ INT32
 NsMarkNS(
     void);
 
+NAME_TABLE_ENTRY *
+NsConvertHandleToEntry (
+    NsHandle            Handle);
 
 
 /*

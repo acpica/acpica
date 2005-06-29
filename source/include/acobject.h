@@ -100,75 +100,82 @@
 
 #include <datatypes.h>
 
-/*
- * Some necessary typedefs
- */
-
-
-
 /* 
  * All variants of the OBJECT_DESCRIPTOR are defined with the same
  * sequence of field types, with fields that are not used in a particular
  * variant being named "Reserved".  This is not strictly necessary, but
  * may in some circumstances simplify understanding if these structures
  * need to be displayed in a debugger having limited (or no) support for
- * union types.  It also simplifies some debug code in vNsDumpTable() which
- * dumps multi-level values: fetching sBuffer.pbBuffer suffices to pick up
+ * union types.  It also simplifies some debug code in NsDumpTable() which
+ * dumps multi-level values: fetching Buffer.Buffer suffices to pick up
  * the value or next level for any of several types.
  */
 
+/*
+ * The basic union is
+ *   UINT32
+ *   UINT32
+ *   UINT32
+ *   Pointer
+ *   Pointer
+ *   Pointer
+ */
 
-typedef union od                /* OBJECT DESCRIPTOR */
+typedef union od                    /* OBJECT DESCRIPTOR */
 {
-    UINT8           ValType;        /* See NsType in acpinmsp.h for values */
+    UINT8               ValType;        /* See definition of NsType for values */
 
     struct
     {
-        UINT8       ValType;
-        UINT8       Reserved1;
-        UINT16      Reserved2;
-        UINT32      Number;
-        UINT32      Reserved3;
-        void        *Reserved4;
-        void        *Reserved5;
+        UINT8           ValType;
+        UINT8           Reserved1;
+        UINT16          Reserved2;
+        UINT32          Number;
+        UINT32          Reserved3;
+        void            *Reserved_p1;
+        void            *Reserved_p2;
+        void            *Reserved_p3;
     } Number;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       Reserved1;
-        UINT16      StrLen;         /* # of bytes in string, excluding trailing null */
-        UINT32      Reserved2;
-        UINT32      Reserved3;
-        UINT8       *String;        /* points to the string value in the AML stream
-                                     * or in allocated space
-                                     */
-        void        *Reserved4;
+        UINT8           ValType;
+        UINT8           Reserved1;
+        UINT16          StrLen;         /* # of bytes in string, excluding trailing null */
+        UINT32          Reserved2;
+        UINT32          Reserved3;
+        UINT8           *String;        /* points to the string value in the AML stream
+                                         * or in allocated space
+                                         */
+        void            *Reserved_p2;
+        void            *Reserved_p3;
     } String;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       Reserved1;
-        UINT16      BufLen;         /* # of bytes in buffer */
-        UINT32      Reserved2;
-        UINT32      Sequence;       /* Sequential count of buffers created */
-        UINT8       *Buffer;        /* points to the buffer in allocated space */
-        void        *Reserved4;
+        UINT8           ValType;
+        UINT8           Reserved1;
+        UINT16          BufLen;         /* # of bytes in buffer */
+        UINT32          Reserved2;
+        UINT32          Sequence;       /* Sequential count of buffers created */
+        UINT8           *Buffer;        /* points to the buffer in allocated space */
+        void            *Reserved_p2;
+        void            *Reserved_p3;
     } Buffer;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       Reserved1;
-        UINT16      PkgCount;       /* # of elements in package */
-        UINT32      Reserved2;
-        UINT32      Reserved3;
-        union od    **PackageElems; /* Addr of an allocated array of pointers
-                                     * to the OBJECT_DESCRIPTORs representing
-                                     * the elements
-                                     */
-        union od    **NextElement;  /* used only while initializing */
+        UINT8           ValType;
+        UINT8           Reserved1;
+        UINT16          PkgCount;       /* # of elements in package */
+        UINT32          Reserved2;
+        UINT32          Reserved3;
+        union od        **PackageElems; /* Addr of an allocated array of pointers
+                                         * to the OBJECT_DESCRIPTORs representing
+                                         * the elements
+                                         */
+        union od        **NextElement;  /* used only while initializing */
+        void            *Reserved_p3;
     } Package;
 
     struct
@@ -179,180 +186,191 @@ typedef union od                /* OBJECT DESCRIPTOR */
          * amlexec.c:iPrep*FieldValue() -- but it works properly in IC386
          * and in MS Visual C++
          */
-        UINT16_BIT  ValType     : 8;
-        UINT16_BIT  Access      : 4;
-        UINT16_BIT  LockRule    : 1;
-        UINT16_BIT  UpdateRule  : 2;
-        UINT16_BIT  Reserved1   : 1;
-        UINT16_BIT  DatLen      :13;    /* # of bits in buffer */
-        UINT16_BIT  BitOffset   : 3;
-        UINT32      Offset;         /* Byte offset within containing object */
-        UINT32      ConSeq;         /* Container's sequence number */
-        union od    *Container;     /* Containing object (Buffer) */
-        void        *Reserved3;
+        UINT16_BIT      ValType     : 8;
+        UINT16_BIT      Access      : 4;
+        UINT16_BIT      LockRule    : 1;
+        UINT16_BIT      UpdateRule  : 2;
+        UINT16_BIT      Reserved1   : 1;
+        UINT16_BIT      DatLen      :13;    /* # of bits in buffer */
+        UINT16_BIT      BitOffset   : 3;
+        UINT32          Offset;             /* Byte offset within containing object */
+        UINT32          ConSeq;             /* Container's sequence number */
+        union od        *Container;         /* Containing object (Buffer) */
+        void            *Reserved_p2;
+        void            *Reserved_p3;
     } FieldUnit;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       Reserved1;
-        UINT16      Reserved2;
-        UINT32      Reserved3;
-        UINT32      Reserved4;
-        NsHandle    Device;
-        void        *Reserved5;
+        UINT8           ValType;
+        UINT8           Reserved1;
+        UINT16          Reserved2;
+        UINT32          Reserved3;
+        UINT32          Reserved4;
+        NsHandle        Device;
+        NOTIFY_HANDLER  Handler;
+        void            *Context;
     } Device;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       Reserved1;
-        UINT16      SignalCount;
-        UINT32      Semaphore;
-        UINT16      LockCount;
-        UINT16      ThreadId;
-        void        *Reserved4;
-        void        *Reserved5;
+        UINT8           ValType;
+        UINT8           Reserved1;
+        UINT16          SignalCount;
+        UINT32          Semaphore;
+        UINT16          LockCount;
+        UINT16          ThreadId;
+        void            *Reserved_p1;
+        void            *Reserved_p2;
+        void            *Reserved_p3;
     } Event;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       NumParam;
-        UINT16      Length;
-        UINT32      AmlOffset;
-        UINT32      Reserved3;
-        UINT8       *AmlBase;
-        void        *Reserved4;
+        UINT8           ValType;
+        UINT8           NumParam;
+        UINT16          Length;
+        UINT32          AmlOffset;
+        UINT32          Reserved3;
+        UINT8           *AmlBase;
+        void            *Reserved4;
     } Method;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       SyncLevel;
-        UINT16      Reserved2;
-        UINT32      Semaphore;
-        UINT16      LockCount;
-        UINT16      ThreadId;
-        void        *Reserved4;
-        void        *Reserved5;
+        UINT8           ValType;
+        UINT8           SyncLevel;
+        UINT16          Reserved2;
+        UINT32          Semaphore;
+        UINT16          LockCount;
+        UINT16          ThreadId;
+        void            *Reserved_p1;
+        void            *Reserved_p2;
+        void            *Reserved_p3;
     } Mutex;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       SpaceId;
-        UINT16      AdrLenValid;    /* 1 => dAddress & dLength have been set
-                                     * 0 => dAddress & dLength have not been set,
-                                     *        and should be obtained via sAdrLoc
-                                     */
-        UINT32      Address;
-        UINT32      Length;
-        meth        AdrLoc;         /* Loc of 1st (address) OpCode in AML stream */
+        UINT8           ValType;
+        UINT8           SpaceId;
+        UINT16          AdrLenValid;    /* 1 => Address & Length have been set
+                                         * 0 => Address & Length have not been set,
+                                         *        and should be obtained via AdrLoc
+                                         */
+        UINT32          Address;
+        UINT32          Length;
+        METHOD_INFO     AdrLoc;         /* Loc of 1st (address) OpCode in AML stream */
     } Region;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       Reserved1;
-        UINT16      Reserved2;
-        UINT32      Reserved3;
-        UINT32      Reserved4;
-        NsHandle    PowerResource;
-        void        *Reserved5;
+        UINT8           ValType;
+        UINT8           Reserved1;
+        UINT16          Reserved2;
+        UINT32          Reserved3;
+        UINT32          Reserved4;
+        NsHandle        PowerResource;
+        void            *Reserved_p2;
+        void            *Reserved_p3;
     } PowerResource;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       Reserved1;
-        UINT16      Reserved2;
-        UINT32      Reserved3;
-        UINT32      Reserved4;
-        NsHandle    Processor;
-        void        *Reserved5;
+        UINT8           ValType;
+        UINT8           Reserved1;
+        UINT16          Reserved2;
+        UINT32          Reserved3;
+        UINT32          Reserved4;
+        NsHandle        Processor;
+        void            *Reserved_p2;
+        void            *Reserved_p3;
     } Processor;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       Reserved1;
-        UINT16      Reserved2;
-        UINT32      Reserved3;
-        UINT32      Reserved4;
-        NsHandle    ThermalZone;
-        void        *Reserved5;
+        UINT8           ValType;
+        UINT8           Reserved1;
+        UINT16          Reserved2;
+        UINT32          Reserved3;
+        UINT32          Reserved4;
+        NsHandle        ThermalZone;
+        NOTIFY_HANDLER  Handler;
+        void            *Context;
     } ThermalZone;
 
     struct
     {
-        /* See comments in sFieldUnit re use of WORD_BIT */
+        /* See comments in FieldUnit about use of WORD_BIT */
 
-        UINT16_BIT  ValType     : 8;
-        UINT16_BIT  Access      : 4;
-        UINT16_BIT  LockRule    : 1;
-        UINT16_BIT  UpdateRule  : 2;
-        UINT16_BIT  Reserved1   : 1;
-        UINT16_BIT  DatLen      :13;    /* # of bits in buffer */
-        UINT16_BIT  BitOffset   : 3;
-        UINT32      Offset;         /* Byte offset within containing object */
-        UINT32      Reserved2;
-        union od    *Container;     /* Containing object */
-        void        *Reserved3;
+        UINT16_BIT      ValType     : 8;
+        UINT16_BIT      Access      : 4;
+        UINT16_BIT      LockRule    : 1;
+        UINT16_BIT      UpdateRule  : 2;
+        UINT16_BIT      Reserved1   : 1;
+        UINT16_BIT      DatLen      :13;    /* # of bits in buffer */
+        UINT16_BIT      BitOffset   : 3;
+        UINT32          Offset;             /* Byte offset within containing object */
+        UINT32          Reserved2;
+        union od        *Container;         /* Containing object */
+        void            *Reserved_p2;
+        void            *Reserved_p3;
     } Field;
 
     struct
     {
-        /* See comments in sFieldUnit re use of WORD_BIT */
+        /* See comments in sFieldUnit about use of WORD_BIT */
 
-        UINT16_BIT  ValType     : 8;
-        UINT16_BIT  Access      : 4;
-        UINT16_BIT  LockRule    : 1;
-        UINT16_BIT  UpdateRule  : 2;
-        UINT16_BIT  Reserved1   : 1;
-        UINT16_BIT  DatLen      :13;    /* # of bits in buffer */
-        UINT16_BIT  BitOffset   : 3;
-        UINT32      Offset;         /* Byte offset within containing object */
-        UINT32      BankVal;        /* Value to store into pBankSelect */
-        union od    *Container;     /* Containing object */
-        NsHandle    BankSelect;     /* Bank select register */
+        UINT16_BIT      ValType     : 8;
+        UINT16_BIT      Access      : 4;
+        UINT16_BIT      LockRule    : 1;
+        UINT16_BIT      UpdateRule  : 2;
+        UINT16_BIT      Reserved1   : 1;
+        UINT16_BIT      DatLen      :13;    /* # of bits in buffer */
+        UINT16_BIT      BitOffset   : 3;
+        UINT32          Offset;             /* Byte offset within containing object */
+        UINT32          BankVal;            /* Value to store into pBankSelect */
+        union od        *Container;         /* Containing object */
+        NsHandle        BankSelect;         /* Bank select register */
+        void            *Reserved_p3;
     } BankField;
 
     struct
     {
-        /* See comments in sFieldUnit re use of WORD_BIT */
+        /* See comments in FieldUnit about use of WORD_BIT */
 
-        UINT16_BIT  ValType     : 8;
-        UINT16_BIT  Access      : 4;
-        UINT16_BIT  LockRule    : 1;
-        UINT16_BIT  UpdateRule  : 2;
-        UINT16_BIT  Reserved1   : 1;
-        UINT16_BIT  DatLen      :13;    /* # of bits in buffer */
-        UINT16_BIT  BitOffset   : 3;
-        UINT32      IndexVal;       /* Value to store into Index register */
-        UINT32      Reserved2;      /* No container pointer needed since the index
-                                     * and data register definitions will define
-                                     * how to access the respective registers
-                                     */
-        NsHandle    Index;          /* Index register */
-        NsHandle    Data;           /* Data register */
+        UINT16_BIT      ValType     : 8;
+        UINT16_BIT      Access      : 4;
+        UINT16_BIT      LockRule    : 1;
+        UINT16_BIT      UpdateRule  : 2;
+        UINT16_BIT      Reserved1   : 1;
+        UINT16_BIT      DatLen      :13;    /* # of bits in buffer */
+        UINT16_BIT      BitOffset   : 3;
+        UINT32          IndexVal;           /* Value to store into Index register */
+        UINT32          Reserved2;          /* No container pointer needed since the index
+                                             * and data register definitions will define
+                                             * how to access the respective registers
+                                             */
+        NsHandle        Index;              /* Index register */
+        NsHandle        Data;               /* Data register */
+        void            *Reserved_p3;
     } IndexField;
 
     struct
     {
-        UINT8       ValType;
-        UINT8       OpCode;         /* Arg#, Local#, IndexOp, NameOp,
-                                     * ZeroOp, OneOp, OnesOp, Debug1 => DebugOp
-                                     */
-        UINT16      Reserved1;
-        UINT32      Reserved2;
-        UINT32      Reserved3;
-        void        *Ref;           /* bOpCode  Use of pvRef field
-                                     * -------  ----------------------------
-                                     * NameOp   NsHandle for referenced name
-                                     * IndexOp  OBJECT_DESCRIPTOR **
-                                     */
-        void        *Reserved4;
+        UINT8           ValType;
+        UINT8           OpCode;             /* Arg#, Local#, IndexOp, NameOp,
+                                             * ZeroOp, OneOp, OnesOp, Debug1 => DebugOp
+                                             */
+        UINT16          Reserved1;
+        UINT32          Reserved2;
+        UINT32          Reserved3;
+        void            *Ref;               /* bOpCode  Use of pvRef field
+                                             * -------  ----------------------------
+                                             * NameOp   NsHandle for referenced name
+                                             * IndexOp  OBJECT_DESCRIPTOR **
+                                             */
+        void            *Reserved_p2;
+        void            *Reserved_p3;
     } Lvalue;
 
 } OBJECT_DESCRIPTOR;
