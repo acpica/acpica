@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - ACPI 1.0 tables
- *       $Revision: 1.29 $
+ *       $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,9 +122,9 @@
 /*
  * ACPI 1.0 Root System Description Table (RSDT)
  */
-typedef struct rsdt_descriptor_rev1
+typedef struct
 {
-    ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
+    ACPI_TABLE_HEADER       Header;                 /* ACPI Table header */
     UINT32                  TableOffsetEntry [1];   /* Array of pointers to other */
                                                     /* ACPI tables */
 } RSDT_DESCRIPTOR_REV1;
@@ -133,7 +133,7 @@ typedef struct rsdt_descriptor_rev1
 /*
  * ACPI 1.0 Firmware ACPI Control Structure (FACS)
  */
-typedef struct facs_descriptor_rev1
+typedef struct
 {
     char                    Signature[4];           /* ACPI Signature */
     UINT32                  Length;                 /* Length of structure, in bytes */
@@ -150,9 +150,9 @@ typedef struct facs_descriptor_rev1
 /*
  * ACPI 1.0 Fixed ACPI Description Table (FADT)
  */
-typedef struct fadt_descriptor_rev1
+typedef struct
 {
-    ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
+    ACPI_TABLE_HEADER       Header;                 /* ACPI Table header */
     UINT32                  FirmwareCtrl;           /* Physical address of FACS */
     UINT32                  Dsdt;                   /* Physical address of DSDT */
     UINT8                   Model;                  /* System Interrupt Model */
@@ -202,7 +202,7 @@ typedef struct fadt_descriptor_rev1
     UINT32_BIT              TmrValExt       : 1;    /* The tmr_val width is 32 bits (0 = 24 bits) */
     UINT32_BIT              Reserved5       : 23;   /* Reserved - must be zero */
 
-} FADT_DESCRIPTOR_REV1;
+}  FADT_DESCRIPTOR_REV1;
 
 #pragma pack()
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.153 $
+ *       $Revision: 1.150 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -140,7 +140,6 @@ typedef struct acpi_pkg_info
     ACPI_SIZE               Length;
     UINT32                  ObjectSpace;
     UINT32                  NumPackages;
-
 } ACPI_PKG_INFO;
 
 #define REF_INCREMENT       (UINT16) 0
@@ -287,7 +286,7 @@ AcpiUtMemcpy (
 void *
 AcpiUtMemset (
     void                    *Dest,
-    ACPI_NATIVE_UINT        Value,
+    NATIVE_UINT             Value,
     ACPI_SIZE               Count);
 
 int

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.156 $
+ *       $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -156,25 +156,21 @@ ACPI_STATUS
 AcpiExConvertToInteger (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **ResultDesc,
-    UINT32                  Flags);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExConvertToBuffer (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_OPERAND_OBJECT     **ResultDesc);
+    ACPI_OPERAND_OBJECT     **ResultDesc,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExConvertToString (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     **ResultDesc,
-    UINT32                  Type);
-
-/* Types for ->String conversion */
-
-#define ACPI_EXPLICIT_BYTE_COPY         0x00000000
-#define ACPI_EXPLICIT_CONVERT_HEX       0x00000001
-#define ACPI_IMPLICIT_CONVERT_HEX       0x00000002
-#define ACPI_EXPLICIT_CONVERT_DECIMAL   0x00000003
+    UINT32                  Base,
+    UINT32                  MaxLength,
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExConvertToTargetType (
@@ -186,19 +182,12 @@ AcpiExConvertToTargetType (
 UINT32
 AcpiExConvertToAscii (
     ACPI_INTEGER            Integer,
-    UINT16                  Base,
-    UINT8                   *String,
-    UINT8                   MaxLength);
+    UINT32                  Base,
+    UINT8                   *String);
 
 /*
  * exfield - ACPI AML (p-code) execution - field manipulation
  */
-
-ACPI_STATUS
-AcpiExCommonBufferSetup (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT32                  BufferLength,
-    UINT32                  *DatumCount);
 
 ACPI_STATUS
 AcpiExExtractFromField (
@@ -247,17 +236,15 @@ void
 AcpiExGetBufferDatum(
     ACPI_INTEGER            *Datum,
     void                    *Buffer,
-    UINT32                  BufferLength,
     UINT32                  ByteGranularity,
-    UINT32                  BufferOffset);
+    UINT32                  Offset);
 
 void
 AcpiExSetBufferDatum (
     ACPI_INTEGER            MergedDatum,
     void                    *Buffer,
-    UINT32                  BufferLength,
     UINT32                  ByteGranularity,
-    UINT32                  BufferOffset);
+    UINT32                  Offset);
 
 ACPI_STATUS
 AcpiExReadDataFromField (
@@ -320,19 +307,11 @@ AcpiExDoConcatenate (
     ACPI_OPERAND_OBJECT     **ActualReturnDesc,
     ACPI_WALK_STATE         *WalkState);
 
-ACPI_STATUS
-AcpiExDoLogicalNumericOp (
-    UINT16                  Opcode,
-    ACPI_INTEGER            Integer0,
-    ACPI_INTEGER            Integer1,
-    BOOLEAN                 *LogicalResult);
-
-ACPI_STATUS
+BOOLEAN
 AcpiExDoLogicalOp (
     UINT16                  Opcode,
-    ACPI_OPERAND_OBJECT     *Operand0,
-    ACPI_OPERAND_OBJECT     *Operand1,
-    BOOLEAN                 *LogicalResult);
+    ACPI_INTEGER            Operand0,
+    ACPI_INTEGER            Operand1);
 
 ACPI_INTEGER
 AcpiExDoMathOp (
@@ -459,7 +438,7 @@ AcpiExSystemDoNotifyOp (
 
 ACPI_STATUS
 AcpiExSystemDoSuspend(
-    ACPI_INTEGER            Time);
+    UINT32                  Time);
 
 ACPI_STATUS
 AcpiExSystemDoStall (
@@ -496,10 +475,6 @@ AcpiExSystemWaitSemaphore (
 /*
  * exmonadic - ACPI AML (p-code) execution, monadic operators
  */
-
-ACPI_STATUS
-AcpiExOpcode_0A_0T_1R (
-    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExOpcode_1A_0T_0R (
@@ -559,13 +534,12 @@ AcpiExResolveObjectToValue (
 
 
 /*
- * exdump - Interpreter debug output routines
+ * exdump - Scanner debug output routines
  */
 
 void
 AcpiExDumpOperand (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT32                  Depth);
+    ACPI_OPERAND_OBJECT     *EntryDesc);
 
 void
 AcpiExDumpOperands (
@@ -659,11 +633,8 @@ ACPI_STATUS
 AcpiExStoreObjectToNode (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_NAMESPACE_NODE     *Node,
-    ACPI_WALK_STATE         *WalkState,
-    UINT8                   ImplicitConversion);
+    ACPI_WALK_STATE         *WalkState);
 
-#define ACPI_IMPLICIT_CONVERSION        TRUE
-#define ACPI_NO_IMPLICIT_CONVERSION     FALSE
 
 /*
  * exstoren

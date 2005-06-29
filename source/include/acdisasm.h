@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.14 $
+ *       $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,14 +125,6 @@
 #define BLOCK_BRACE             2
 #define BLOCK_COMMA_LIST        4
 
-typedef struct acpi_external_list
-{
-    char                        *Path;
-    struct acpi_external_list   *Next;
-
-} ACPI_EXTERNAL_LIST;
-
-extern ACPI_EXTERNAL_LIST       *AcpiGbl_ExternalList;
 extern const char               *AcpiGbl_IoDecode[2];
 extern const char               *AcpiGbl_WordDecode[4];
 extern const char               *AcpiGbl_ConsumeDecode[2];
@@ -234,6 +226,10 @@ void
 AcpiDmDecodeInternalObject (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
+void
+AcpiDmDecodeNode (
+    ACPI_NAMESPACE_NODE     *Node);
+
 UINT32
 AcpiDmBlockType (
     ACPI_PARSE_OBJECT       *Op);
@@ -277,34 +273,6 @@ AcpiDmCommaIfListMember (
 
 void
 AcpiDmCommaIfFieldMember (
-    ACPI_PARSE_OBJECT       *Op);
-
-
-/*
- * dmobject
- */
-
-void
-AcpiDmDecodeNode (
-    ACPI_NAMESPACE_NODE     *Node);
-
-void
-AcpiDmDisplayInternalObject (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState);
-
-void
-AcpiDmDisplayArguments (
-    ACPI_WALK_STATE         *WalkState);
-
-void
-AcpiDmDisplayLocals (
-    ACPI_WALK_STATE         *WalkState);
-
-void
-AcpiDmDumpMethodInfo (
-    ACPI_STATUS             Status,
-    ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op);
 
 
@@ -388,12 +356,6 @@ AcpiDmWordDescriptor (
 void
 AcpiDmDwordDescriptor (
     ASL_DWORD_ADDRESS_DESC  *Resource,
-    UINT32                  Length,
-    UINT32                  Level);
-
-void
-AcpiDmExtendedDescriptor (
-    ASL_EXTENDED_ADDRESS_DESC  *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
@@ -486,13 +448,5 @@ AcpiDmVendorSmallDescriptor (
     UINT32                  Length,
     UINT32                  Level);
 
-
-/*
- * dmutils
- */
-
-void
-AcpiDmAddToExternalList (
-    char                    *Path);
 
 #endif  /* __ACDISASM_H__ */

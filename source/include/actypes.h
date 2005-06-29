@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.250 $
+ *       $Revision: 1.244 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -131,34 +131,21 @@
 #define ACPI_ASCII_MAX                  0x7F
 
 
-#ifdef DEFINE_ALTERNATE_TYPES
-/*
- * Types used only in translated source, defined here to enable
- * cross-platform compilation only.
- */
-typedef int                             s32;
-typedef unsigned char                   u8;
-typedef unsigned short                  u16;
-typedef unsigned int                    u32;
-typedef COMPILER_DEPENDENT_UINT64       u64;
-
-#endif
-
 
 /*
  * Data types - Fixed across all compilation models (16/32/64)
  *
- * BOOLEAN          Logical Boolean.
- * INT8             8-bit  (1 byte) signed value
- * UINT8            8-bit  (1 byte) unsigned value
- * INT16            16-bit (2 byte) signed value
- * UINT16           16-bit (2 byte) unsigned value
- * INT32            32-bit (4 byte) signed value
- * UINT32           32-bit (4 byte) unsigned value
- * INT64            64-bit (8 byte) signed value
- * UINT64           64-bit (8 byte) unsigned value
- * ACPI_NATIVE_INT  32-bit on IA-32, 64-bit on IA-64 signed value
- * ACPI_NATIVE_UINT 32-bit on IA-32, 64-bit on IA-64 unsigned value
+ * BOOLEAN      Logical Boolean.
+ * INT8         8-bit  (1 byte) signed value
+ * UINT8        8-bit  (1 byte) unsigned value
+ * INT16        16-bit (2 byte) signed value
+ * UINT16       16-bit (2 byte) unsigned value
+ * INT32        32-bit (4 byte) signed value
+ * UINT32       32-bit (4 byte) unsigned value
+ * INT64        64-bit (8 byte) signed value
+ * UINT64       64-bit (8 byte) unsigned value
+ * NATIVE_INT   32-bit on IA-32, 64-bit on IA-64 signed value
+ * NATIVE_UINT  32-bit on IA-32, 64-bit on IA-64 unsigned value
  */
 
 #ifndef ACPI_MACHINE_WIDTH
@@ -166,9 +153,6 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
 #endif
 
 #if ACPI_MACHINE_WIDTH == 64
-
-/*! [Begin] no source code translation (keep the typedefs) */
-
 /*
  * 64-bit type definitions
  */
@@ -180,12 +164,13 @@ typedef unsigned int                    UINT32;
 typedef COMPILER_DEPENDENT_INT64        INT64;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
-/*! [End] no source code translation !*/
+typedef INT64                           NATIVE_INT;
+typedef UINT64                          NATIVE_UINT;
 
-typedef INT64                           ACPI_NATIVE_INT;
-typedef UINT64                          ACPI_NATIVE_UINT;
+typedef UINT32                          NATIVE_UINT_MAX32;
+typedef UINT64                          NATIVE_UINT_MIN32;
 
-typedef UINT64                          ACPI_TABLE_PTR;
+typedef UINT64                          ACPI_TBLPTR;
 typedef UINT64                          ACPI_IO_ADDRESS;
 typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 typedef UINT64                          ACPI_SIZE;
@@ -197,8 +182,6 @@ typedef UINT64                          ACPI_SIZE;
 
 
 #elif ACPI_MACHINE_WIDTH == 16
-
-/*! [Begin] no source code translation (keep the typedefs) */
 
 /*
  * 16-bit type definitions
@@ -217,12 +200,13 @@ typedef struct
 
 } UINT64;
 
-/*! [End] no source code translation !*/
+typedef UINT16                          NATIVE_UINT;
+typedef INT16                           NATIVE_INT;
 
-typedef UINT16                          ACPI_NATIVE_UINT;
-typedef INT16                           ACPI_NATIVE_INT;
+typedef UINT16                          NATIVE_UINT_MAX32;
+typedef UINT32                          NATIVE_UINT_MIN32;
 
-typedef UINT32                          ACPI_TABLE_PTR;
+typedef UINT32                          ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 typedef char                            *ACPI_PHYSICAL_ADDRESS;
 typedef UINT16                          ACPI_SIZE;
@@ -242,8 +226,6 @@ typedef UINT16                          ACPI_SIZE;
 
 #elif ACPI_MACHINE_WIDTH == 32
 
-/*! [Begin] no source code translation (keep the typedefs) */
-
 /*
  * 32-bit type definitions (default)
  */
@@ -255,12 +237,13 @@ typedef unsigned int                    UINT32;
 typedef COMPILER_DEPENDENT_INT64        INT64;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
-/*! [End] no source code translation !*/
+typedef INT32                           NATIVE_INT;
+typedef UINT32                          NATIVE_UINT;
 
-typedef INT32                           ACPI_NATIVE_INT;
-typedef UINT32                          ACPI_NATIVE_UINT;
+typedef UINT32                          NATIVE_UINT_MAX32;
+typedef UINT32                          NATIVE_UINT_MIN32;
 
-typedef UINT64                          ACPI_TABLE_PTR;
+typedef UINT64                          ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 typedef UINT32                          ACPI_SIZE;
@@ -279,24 +262,40 @@ typedef UINT32                          ACPI_SIZE;
  * Miscellaneous common types
  */
 typedef UINT32                          UINT32_BIT;
-typedef ACPI_NATIVE_UINT                ACPI_PTRDIFF;
+typedef NATIVE_UINT                     ACPI_PTRDIFF;
+typedef char                            NATIVE_CHAR;
+
+
+#ifdef DEFINE_ALTERNATE_TYPES
+/*
+ * Types used only in translated source, defined here to enable
+ * cross-platform compilation only.
+ */
+typedef INT32                           s32;
+typedef UINT8                           u8;
+typedef UINT16                          u16;
+typedef UINT32                          u32;
+typedef UINT64                          u64;
+#endif
+/*! [End] no source code translation !*/
+
 
 /*
  * Pointer overlays to avoid lots of typecasting for
  * code that accepts both physical and logical pointers.
  */
-typedef union acpi_pointers
+typedef union acpi_ptrs
 {
     ACPI_PHYSICAL_ADDRESS       Physical;
     void                        *Logical;
-    ACPI_TABLE_PTR              Value;
+    ACPI_TBLPTR                 Value;
 
 } ACPI_POINTERS;
 
-typedef struct acpi_pointer
+typedef struct AcpiPointer
 {
     UINT32                      PointerType;
-    union acpi_pointers         Pointer;
+    union acpi_ptrs             Pointer;
 
 } ACPI_POINTER;
 
@@ -342,21 +341,21 @@ typedef UINT32                          ACPI_NAME;      /* 4-byte ACPI name */
 typedef char*                           ACPI_STRING;    /* Null terminated ASCII string */
 typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an Node */
 
-typedef struct uint64_struct
+typedef struct
 {
     UINT32                      Lo;
     UINT32                      Hi;
 
 } UINT64_STRUCT;
 
-typedef union uint64_overlay
+typedef union
 {
     UINT64                      Full;
     UINT64_STRUCT               Part;
 
 } UINT64_OVERLAY;
 
-typedef struct uint32_struct
+typedef struct
 {
     UINT32                      Lo;
     UINT32                      Hi;
@@ -671,7 +670,6 @@ typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 #define ACPI_ADR_SPACE_CMOS             (ACPI_ADR_SPACE_TYPE) 5
 #define ACPI_ADR_SPACE_PCI_BAR_TARGET   (ACPI_ADR_SPACE_TYPE) 6
 #define ACPI_ADR_SPACE_DATA_TABLE       (ACPI_ADR_SPACE_TYPE) 7
-#define ACPI_ADR_SPACE_FIXED_HARDWARE   (ACPI_ADR_SPACE_TYPE) 127
 
 
 /*
@@ -709,7 +707,7 @@ typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 /*
  * External ACPI object definition
  */
-typedef union acpi_object
+typedef union AcpiObj
 {
     ACPI_OBJECT_TYPE            Type;   /* See definition of AcpiNsType for values */
     struct
@@ -743,7 +741,7 @@ typedef union acpi_object
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      Count;      /* # of elements in package */
-        union acpi_object           *Elements;  /* Pointer to an array of ACPI_OBJECTs */
+        union AcpiObj               *Elements;  /* Pointer to an array of ACPI_OBJECTs */
     } Package;
 
     struct
@@ -767,7 +765,7 @@ typedef union acpi_object
 /*
  * List of objects, used as a parameter list for control method evaluation
  */
-typedef struct acpi_object_list
+typedef struct AcpiObjList
 {
     UINT32                      Count;
     ACPI_OBJECT                 *Pointer;
@@ -782,7 +780,7 @@ typedef struct acpi_object_list
 #define ACPI_ALLOCATE_BUFFER        (ACPI_SIZE) (-1)
 #define ACPI_ALLOCATE_LOCAL_BUFFER  (ACPI_SIZE) (-2)
 
-typedef struct acpi_buffer
+typedef struct
 {
     ACPI_SIZE                   Length;         /* Length in bytes of the buffer */
     void                        *Pointer;       /* pointer to buffer */
@@ -810,7 +808,7 @@ typedef struct acpi_buffer
 /*
  * ACPI Table Info.  One per ACPI table _type_
  */
-typedef struct acpi_table_info
+typedef struct AcpiTableInfo
 {
     UINT32                      Count;
 
@@ -820,7 +818,7 @@ typedef struct acpi_table_info
 /*
  * System info returned by AcpiGetSystemInfo()
  */
-typedef struct acpi_system_info
+typedef struct _AcpiSysInfo
 {
     UINT32                      AcpiCaVersion;
     UINT32                      Flags;
@@ -917,10 +915,9 @@ ACPI_STATUS (*ACPI_WALK_CALLBACK) (
     ACPI_NAME                   Name            /* ACPI object Name */
 
 
-typedef struct acpi_obj_info_header
+typedef struct
 {
     ACPI_COMMON_OBJ_INFO;
-
 } ACPI_OBJ_INFO_HEADER;
 
 
@@ -938,24 +935,22 @@ typedef struct
 
 /* Context structs for address space handlers */
 
-typedef struct acpi_pci_id
+typedef struct
 {
     UINT16                      Segment;
     UINT16                      Bus;
     UINT16                      Device;
     UINT16                      Function;
-
 } ACPI_PCI_ID;
 
 
-typedef struct acpi_mem_space_context
+typedef struct
 {
     UINT32                      Length;
     ACPI_PHYSICAL_ADDRESS       Address;
     ACPI_PHYSICAL_ADDRESS       MappedPhysicalAddress;
     UINT8                       *MappedLogicalAddress;
     ACPI_SIZE                   MappedLength;
-
 } ACPI_MEM_SPACE_CONTEXT;
 
 
@@ -1043,7 +1038,7 @@ typedef struct acpi_mem_space_context
 /*
  *  Structures used to describe device resources
  */
-typedef struct acpi_resource_irq
+typedef struct
 {
     UINT32                      EdgeLevel;
     UINT32                      ActiveHighLow;
@@ -1053,7 +1048,7 @@ typedef struct acpi_resource_irq
 
 } ACPI_RESOURCE_IRQ;
 
-typedef struct ACPI_RESOURCE_DMA
+typedef struct
 {
     UINT32                      Type;
     UINT32                      BusMaster;
@@ -1063,7 +1058,7 @@ typedef struct ACPI_RESOURCE_DMA
 
 } ACPI_RESOURCE_DMA;
 
-typedef struct acpi_resource_start_dpf
+typedef struct
 {
     UINT32                      CompatibilityPriority;
     UINT32                      PerformanceRobustness;
@@ -1075,7 +1070,7 @@ typedef struct acpi_resource_start_dpf
  * needed because it has no fields
  */
 
-typedef struct acpi_resource_io
+typedef struct
 {
     UINT32                      IoDecode;
     UINT32                      MinBaseAddress;
@@ -1085,27 +1080,27 @@ typedef struct acpi_resource_io
 
 } ACPI_RESOURCE_IO;
 
-typedef struct acpi_resource_fixed_io
+typedef struct
 {
     UINT32                      BaseAddress;
     UINT32                      RangeLength;
 
 } ACPI_RESOURCE_FIXED_IO;
 
-typedef struct acpi_resource_vendor
+typedef struct
 {
     UINT32                      Length;
     UINT8                       Reserved[1];
 
 } ACPI_RESOURCE_VENDOR;
 
-typedef struct acpi_resource_end_tag
+typedef struct
 {
     UINT8                       Checksum;
 
 } ACPI_RESOURCE_END_TAG;
 
-typedef struct acpi_resource_mem24
+typedef struct
 {
     UINT32                      ReadWriteAttribute;
     UINT32                      MinBaseAddress;
@@ -1115,7 +1110,7 @@ typedef struct acpi_resource_mem24
 
 } ACPI_RESOURCE_MEM24;
 
-typedef struct acpi_resource_mem32
+typedef struct
 {
     UINT32                      ReadWriteAttribute;
     UINT32                      MinBaseAddress;
@@ -1125,7 +1120,7 @@ typedef struct acpi_resource_mem32
 
 } ACPI_RESOURCE_MEM32;
 
-typedef struct acpi_resource_fixed_mem32
+typedef struct
 {
     UINT32                      ReadWriteAttribute;
     UINT32                      RangeBaseAddress;
@@ -1133,28 +1128,28 @@ typedef struct acpi_resource_fixed_mem32
 
 } ACPI_RESOURCE_FIXED_MEM32;
 
-typedef struct acpi_memory_attribute
+typedef struct
 {
     UINT16                      CacheAttribute;
     UINT16                      ReadWriteAttribute;
 
 } ACPI_MEMORY_ATTRIBUTE;
 
-typedef struct acpi_io_attribute
+typedef struct
 {
     UINT16                      RangeAttribute;
     UINT16                      Reserved;
 
 } ACPI_IO_ATTRIBUTE;
 
-typedef struct acpi_bus_attribute
+typedef struct
 {
     UINT16                      Reserved1;
     UINT16                      Reserved2;
 
 } ACPI_BUS_ATTRIBUTE;
 
-typedef union acpi_resource_attribute
+typedef union
 {
     ACPI_MEMORY_ATTRIBUTE       Memory;
     ACPI_IO_ATTRIBUTE           Io;
@@ -1162,7 +1157,7 @@ typedef union acpi_resource_attribute
 
 } ACPI_RESOURCE_ATTRIBUTE;
 
-typedef struct acpi_resource_source
+typedef struct
 {
     UINT32                      Index;
     UINT32                      StringLength;
@@ -1170,7 +1165,7 @@ typedef struct acpi_resource_source
 
 } ACPI_RESOURCE_SOURCE;
 
-typedef struct acpi_resource_address16
+typedef struct
 {
     UINT32                      ResourceType;
     UINT32                      ProducerConsumer;
@@ -1187,7 +1182,7 @@ typedef struct acpi_resource_address16
 
 } ACPI_RESOURCE_ADDRESS16;
 
-typedef struct acpi_resource_address32
+typedef struct
 {
     UINT32                      ResourceType;
     UINT32                      ProducerConsumer;
@@ -1204,7 +1199,7 @@ typedef struct acpi_resource_address32
 
 } ACPI_RESOURCE_ADDRESS32;
 
-typedef struct acpi_resource_address64
+typedef struct
 {
     UINT32                      ResourceType;
     UINT32                      ProducerConsumer;
@@ -1221,7 +1216,7 @@ typedef struct acpi_resource_address64
 
 } ACPI_RESOURCE_ADDRESS64;
 
-typedef struct acpi_resource_ext_irq
+typedef struct
 {
     UINT32                      ProducerConsumer;
     UINT32                      EdgeLevel;
@@ -1254,7 +1249,7 @@ typedef struct acpi_resource_ext_irq
 
 typedef UINT32                          ACPI_RESOURCE_TYPE;
 
-typedef union acpi_resource_data
+typedef union
 {
     ACPI_RESOURCE_IRQ           Irq;
     ACPI_RESOURCE_DMA           Dma;
@@ -1273,7 +1268,7 @@ typedef union acpi_resource_data
 
 } ACPI_RESOURCE_DATA;
 
-typedef struct acpi_resource
+typedef struct AcpiResource
 {
     ACPI_RESOURCE_TYPE          Id;
     UINT32                      Length;
