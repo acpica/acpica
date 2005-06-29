@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.7 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -121,13 +121,15 @@
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    FlOpenLocalFile
  *
- * PARAMETERS:
+ * PARAMETERS:  LocalName           - Single filename (not a pathname)
+ *              Mode                - Open mode for fopen
  *
- * RETURN:
+ * RETURN:      File descriptor
  *
- * DESCRIPTION:
+ * DESCRIPTION: Build a complete pathname for the input filename and open or
+ *              create the file.
  *
  ******************************************************************************/
 
@@ -145,15 +147,16 @@ FlOpenLocalFile (
 
 }
 
+
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    FlOpenIncludeFile
  *
- * PARAMETERS:
+ * PARAMETERS:  Node        - Parse node for the INCLUDE ASL statement
  *
- * RETURN:
+ * RETURN:      None.
  *
- * DESCRIPTION:
+ * DESCRIPTION: Open an include file and push it on the input file stack.
  *
  ******************************************************************************/
 
@@ -162,6 +165,9 @@ FlOpenIncludeFile (
     ASL_PARSE_NODE          *Node)
 {
     FILE                    *IncFile;
+
+
+    /* Node must be valid */
 
     if (!Node)
     {
@@ -178,6 +184,8 @@ FlOpenIncludeFile (
           Gbl_LogicalLineNumber++;
     }
 
+    /* Prepend the directory pathname and open the include file */
+
     DbgPrint ("\nOpen include file: path %s\n\n", Node->Value.String);
     IncFile = FlOpenLocalFile (Node->Value.String, "r");
     if (!IncFile)
@@ -187,19 +195,23 @@ FlOpenIncludeFile (
     }
 
 
+    /* Push the include file on the open input file stack */
+
     AslPushInputFileStack (IncFile, Node->Value.String);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    FlGenerateFilename
  *
- * PARAMETERS:
+ * PARAMETERS:  InputFilename       - Original ASL source filename
+ *              Suffix              - New extension.
  *
- * RETURN:
+ * RETURN:      New filename containing the original base + the new suffix
  *
- * DESCRIPTION:
+ * DESCRIPTION: Generate a new filename from the ASL source filename and a new
+ *              extension.  Used to create the *.LST, *.TXT, etc. files.
  *
  ******************************************************************************/
 
@@ -212,18 +224,27 @@ FlGenerateFilename (
     char                    *NewFilename;
 
 
+    /* Copy the original filename to a new buffer */
+
     NewFilename = UtLocalCalloc (strlen (InputFilename) + strlen (Suffix));
     strcpy (NewFilename, InputFilename);
+
+    /* Try to find the last dot in the filename */
 
     Position = strrchr (NewFilename, '.');
     if (Position)
     {
+        /* Tack on the new suffix */
+
         *Position = 0;
         strcat (Position, Suffix);
     }
 
     else
     {
+        /* No dot, add one and then the suffix */
+
+        strcat (NewFilename, ".");
         strcat (NewFilename, Suffix);
     }
 
@@ -233,13 +254,16 @@ FlGenerateFilename (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    FlOpenInputFile
  *
- * PARAMETERS:
+ * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
+ *                                    compiled
  *
- * RETURN:
+ * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Open the specified input file, and save the directory path to
+ *              the file so that include files and new files can be opened in
+ *              the same directory.
  *
  ******************************************************************************/
 
@@ -252,7 +276,7 @@ FlOpenInputFile (
 
     /* Open the input ASL file, text mode */
 
-	Gbl_AslInputFile = fopen (InputFilename, "r");
+    Gbl_AslInputFile = fopen (InputFilename, "r");
     AslCompilerin = Gbl_AslInputFile;
     if (!Gbl_AslInputFile)
     {
@@ -290,13 +314,14 @@ FlOpenInputFile (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    FlOpenAmlOutputFile
  *
- * PARAMETERS:
+ * PARAMETERS:  InputFilename       - The user-specified ASL source file
  *
- * RETURN:
+ * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Create the output filename (*.AML) and open the file.  The file
+ *              is created in the same directory as the parent input file.
  *
  ******************************************************************************/
 
@@ -322,7 +347,7 @@ FlOpenAmlOutputFile (
 
     /* Open the output AML file in binary mode */
 
-	Gbl_AmlOutputFile = fopen (Gbl_OutputFilename, "w+b");
+    Gbl_AmlOutputFile = fopen (Gbl_OutputFilename, "w+b");
     if (!Gbl_AmlOutputFile)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_OUTPUT_FILENAME, 0, 0, NULL, Gbl_OutputFilename);
@@ -335,13 +360,14 @@ FlOpenAmlOutputFile (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    FlOpenMiscOutputFiles
  *
- * PARAMETERS:
+ * PARAMETERS:  InputFilename       - The user-specified ASL source file
  *
- * RETURN:
+ * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Create and open the various output files needed, depending on
+ *              the command line options
  *
  ******************************************************************************/
 
@@ -349,6 +375,7 @@ ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename)
 {
+
 
     /* Create/Open a combined source output file if asked */
 
@@ -363,7 +390,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the debug file, text mode */
 
-	    Gbl_SourceOutputFile = fopen (Gbl_SourceOutputFilename, "w+");
+        Gbl_SourceOutputFile = fopen (Gbl_SourceOutputFilename, "w+");
         if (!Gbl_SourceOutputFile)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, Gbl_SourceOutputFilename);
@@ -385,7 +412,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the debug file, text mode */
 
-	    Gbl_ListingOutputFile = fopen (Gbl_ListingOutputFilename, "w+");
+        Gbl_ListingOutputFile = fopen (Gbl_ListingOutputFilename, "w+");
         if (!Gbl_ListingOutputFile)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, Gbl_ListingOutputFilename);
@@ -410,7 +437,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the debug file, text mode */
 
-	    Gbl_HexOutputFile = fopen (Gbl_HexOutputFilename, "w+");
+        Gbl_HexOutputFile = fopen (Gbl_HexOutputFilename, "w+");
         if (!Gbl_HexOutputFile)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, Gbl_HexOutputFilename);
@@ -435,7 +462,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the debug file, text mode */
 
-	    Gbl_NamespaceOutputFile = fopen (Gbl_NamespaceOutputFilename, "w+");
+        Gbl_NamespaceOutputFile = fopen (Gbl_NamespaceOutputFilename, "w+");
         if (!Gbl_NamespaceOutputFile)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_LISTING_FILENAME, 0, 0, NULL, Gbl_NamespaceOutputFilename);
@@ -460,7 +487,7 @@ FlOpenMiscOutputFiles (
 
         /* Open the debug file, text mode */
 
-	    Gbl_DebugOutputFile = freopen (Gbl_DebugOutputFilename, "w+", stderr);
+        Gbl_DebugOutputFile = freopen (Gbl_DebugOutputFilename, "w+", stderr);
         if (!Gbl_DebugOutputFile)
         {
             AslCommonError (ASL_ERROR, ASL_MSG_DEBUG_FILENAME, 0, 0, NULL, Gbl_DebugOutputFilename);
@@ -478,13 +505,13 @@ FlOpenMiscOutputFiles (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    FlCloseListingFile
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Close the listing file if the option was specified
  *
  ******************************************************************************/
 
@@ -497,32 +524,42 @@ FlCloseListingFile (void)
         return;
     }
 
+    /* Flush any final AML in the buffer */
+
     LsFlushListingBuffer ();
+
+    /* Print a summary of the compile exceptions */
 
     fprintf (Gbl_ListingOutputFile, "\n\nSummary of errors and warnings\n\n");
     AePrintErrorLog (Gbl_ListingOutputFile);
     fprintf (Gbl_ListingOutputFile, "\n\n");
+    UtDisplaySummary (Gbl_ListingOutputFile);
+    fprintf (Gbl_ListingOutputFile, "\n\n");
+
+    /* Close the listing file */
 
     fclose (Gbl_ListingOutputFile);
 
+    /*
+     * TBD: SourceOutput should be .TMP, then rename if we want to keep it?
+     */
     if (!Gbl_SourceOutputFlag)
     {
         fclose (Gbl_SourceOutputFile);
         unlink (Gbl_SourceOutputFilename);
     }
-
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    FlCloseSourceOutputFile
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Close the combined source file if the option was specified
  *
  ******************************************************************************/
 
@@ -541,13 +578,13 @@ FlCloseSourceOutputFile (void)
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    FlCloseHexOutputFile
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Close the hex file if the option was specified
  *
  ******************************************************************************/
 

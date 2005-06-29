@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.22 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -142,8 +142,16 @@ char                        *AslMessages [] = {
     "Mixed return types in method",
     "Cannot find/access object",
     "Nested comment found",
-    "Reserved method has wrong argument count:",
+    "Reserved method has too many arguments:",
+    "Reserved method has too few arguments:",
     "Reserved method must return a value:",
+    "Too many arguments:",
+    "Too few arguments:",
+    "Called method returns no value:",
+    "Called method may not always return a value:",
+    "Internal compiler error:",
+    "Invalid backwards offset",
+    "Unknown reserved name:",
 };
 
 
@@ -155,13 +163,15 @@ char                        *AslErrorLevel [] = {
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AeAddToErrorLog
  *
- * PARAMETERS:
+ * PARAMETERS:  Enode       - An error node to add to the log
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Add a new error node to the error log.  The error log is
+ *              ordered by the "logical" line number (cumulative line number
+ *              including all include files.)
  *
  ******************************************************************************/
 
@@ -217,13 +227,14 @@ AeAddToErrorLog (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AePrintException
  *
- * PARAMETERS:
+ * PARAMETERS:  Where       - Where to send the message
+ *              Enode       - Error node to print
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Print the contents of an error node.
  *
  ******************************************************************************/
 
@@ -270,13 +281,13 @@ AePrintException (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AePrintErrorLog
  *
- * PARAMETERS:
+ * PARAMETERS:  Where           - Where to print the error log
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Print the entire contents of the error log
  *
  ******************************************************************************/
 
@@ -297,13 +308,18 @@ AePrintErrorLog (
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AslCommonError
  *
- * PARAMETERS:
+ * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
+ *              MessageId           - Index into global message buffer
+ *              CurrentLineNumber   - Actual file line number
+ *              LogicalLineNumber   - Cumulative line number
+ *              Filename            - source filename
+ *              ExtraMessage        - additional error message
  *
- * RETURN:
+ * RETURN:      New error node for this error
  *
- * DESCRIPTION:
+ * DESCRIPTION: Create a new error node and add it to the error log
  *
  ******************************************************************************/
 
@@ -342,14 +358,9 @@ AslCommonError (
     AeAddToErrorLog (Enode);
 
 
-    /*
-     * TBD: output errors immediately or wait and do the
-     * list all at once?
-     */
-//    AePrintException (stderr, Enode);
     if (Gbl_DebugFlag)
     {
-        /* stderr was a file, print error on stdout also */
+        /* stderr is a file, send error to it immediately */
 
         AePrintException (stderr, Enode);
     }
@@ -357,19 +368,38 @@ AslCommonError (
 
     Gbl_ExceptionCount[Level]++;
 
+    if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
+    {
+
+        AePrintErrorLog (stdout);
+        if (Gbl_DebugFlag)
+        {
+            /* Print error summary to the debug file */
+
+            AePrintErrorLog (stderr);
+        }
+        printf ("\nMaximum error count (%d) exceeded.\n", ASL_MAX_ERROR_COUNT);
+        CmCleanupAndExit ();
+    }
+
+
     return Enode;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AslError
  *
- * PARAMETERS:
+ * PARAMETERS:  Level               - Seriousness (Warning/error, etc.)
+ *              MessageId           - Index into global message buffer
+ *              Node                - Parse node where error happened
+ *              ExtraMessage        - additional error message
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Main error reporting routine for the ASL compiler (all code
+ *              except the parser.)
  *
  ******************************************************************************/
 
@@ -381,19 +411,27 @@ AslError (
     char                    *ExtraMessage)
 {
 
-    AslCommonError (Level, MessageId,
-                    Node->LineNumber, Node->LogicalLineNumber,
-                    Node->Filename, ExtraMessage);
+    if (Node)
+    {
+        AslCommonError (Level, MessageId, Node->LineNumber,
+                        Node->LogicalLineNumber, Node->Filename, ExtraMessage);
+    }
+
+    else
+    {
+        AslCommonError (Level, MessageId, 0,
+                        0, NULL, ExtraMessage);
+    }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    AslCompilererror
  *
- * PARAMETERS:
+ * PARAMETERS:  CompilerMessage
  *
- * RETURN:
+ * RETURN:      Status?
  *
  * DESCRIPTION: Report an error situation discovered in a production
  *               NOTE: don't change the name of this function.
@@ -410,15 +448,25 @@ AslCompilererror (
 
     Length = strlen (Gbl_InputFilename);
 
-	sprintf (MsgBuffer, "%s\n%*s %s\n",
-                Gbl_CurrentLineBuffer,
-                Gbl_CurrentColumn + 9 + Length, "^",
-                CompilerMessage);
+    if ((strlen (Gbl_CurrentLineBuffer) +
+         strlen (CompilerMessage) +
+         Length + Gbl_CurrentColumn + 9) >= ASL_MSG_BUFFER_SIZE)
+    {
+        strcpy (MsgBuffer, "Message Buffer Overflow");
+    }
+
+    else
+    {
+        sprintf (MsgBuffer, "%s\n%*s %s\n",
+                    Gbl_CurrentLineBuffer,
+                    Gbl_CurrentColumn + 14 + Length, "^",
+                    CompilerMessage);
+    }
 
     AslCommonError (ASL_ERROR, ASL_MSG_NULL, Gbl_CurrentLineNumber,
                     Gbl_LogicalLineNumber, Gbl_InputFilename, MsgBuffer);
 
-	return 0;
+    return 0;
 }
 
 

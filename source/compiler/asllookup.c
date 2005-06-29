@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.9 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -131,13 +131,14 @@
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LsDoOneNamespaceObject
  *
- * PARAMETERS:
+ * PARAMETERS:  ACPI_WALK_CALLBACK
  *
- * RETURN:
+ * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Dump a namespace object to the namespace output file.
+ *              Called during the walk of the namespace to dump all objects.
  *
  ****************************************************************************/
 
@@ -164,13 +165,15 @@ LsDoOneNamespaceObject (
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LsDisplayNamespace
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Walk the namespace an display information about each node
+ *              in the tree.  Information is written to the optional
+ *              namespace output file.
  *
  ****************************************************************************/
 
@@ -185,6 +188,8 @@ LsDisplayNamespace (void)
         return (AE_OK);
     }
 
+    /* File header */
+
     fprintf (Gbl_NamespaceOutputFile, "Contents of ACPI Namespace\n\n");
     fprintf (Gbl_NamespaceOutputFile, "Count  Depth    Name - Type\n\n");
 
@@ -194,20 +199,27 @@ LsDisplayNamespace (void)
                                 ACPI_UINT32_MAX, FALSE, LsDoOneNamespaceObject,
                                 NULL, NULL);
 
-
     return (AE_OK);
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LkCrossReferenceNamespace
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
- * RETURN:
+ * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Perform a cross reference check of the parse tree against the
+ *              namespace.  Every named referenced within the parse tree
+ *              should be get resolved with a namespace lookup.  If not, the
+ *              original reference in the ASL code is invalid -- i.e., refers
+ *              to a non-existent object.
+ *
+ * NOTE:  The ASL "External" operator causes the name to be inserted into the
+ *        namespace so that references to the external name will be resolved
+ *        correctly here.
  *
  ****************************************************************************/
 
@@ -216,13 +228,16 @@ LkCrossReferenceNamespace (void)
 {
     ACPI_WALK_STATE         *WalkState;
     ACPI_WALK_LIST          WalkList;
-//    ACPI_STATUS             Status;
 
 
     DbgPrint ("\nCreating namespace\n\n");
 
-    WalkList.WalkState = NULL;
+    /*
+     * Create a new walk state for use when looking up names
+     * within the namespace (Passed as context to the callbacks)
+     */
 
+    WalkList.WalkState = NULL;
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
     if (!WalkState)
     {
@@ -230,9 +245,10 @@ LkCrossReferenceNamespace (void)
     }
 
 
-    TgWalkParseTree (ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
-                        LkNamespaceLocateEnd, WalkState);
+    /* Walk the entire parse tree */
 
+    TrWalkParseTree (ASL_WALK_VISIT_TWICE, LkNamespaceLocateBegin,
+                        LkNamespaceLocateEnd, WalkState);
 
     return AE_OK;
 }
@@ -240,13 +256,20 @@ LkCrossReferenceNamespace (void)
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LkNamespaceLocateBegin
  *
- * PARAMETERS:
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Descending callback used during the loading of ACPI tables.
+ * DESCRIPTION: Descending callback used during cross-reference.  For named
+ *              object references, attempt to locate the name in the
+ *              namespace.
+ *
+ * NOTE: ASL references to named fields within resource descriptors are
+ *       resolve to integer values here.  Therefore, this step is an
+ *       important part of the code generation.  We don't know that the
+ *       name refers to a resource descriptor until now.
  *
  ****************************************************************************/
 
@@ -261,22 +284,23 @@ LkNamespaceLocateBegin (
     ACPI_STATUS             Status;
     OBJECT_TYPE_INTERNAL    DataType;
     NATIVE_CHAR             *Path;
-    UINT32                  LengthDelta;
+    UINT8                   PassedArgs;
+    ASL_PARSE_NODE          *Next;
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
-        ("Load1BeginOp: PsNode %p\n", PsNode));
+        ("NamespaceLocateBegin: PsNode %p\n", PsNode));
 
 
     /* We are only interested in opcodes that have an associated name */
 
     if ((!AcpiPsIsNamedOp (PsNode->AmlOpcode)) &&
         (PsNode->ParseOpcode != NAMESTRING) &&
-        (PsNode->ParseOpcode != NAMESEG))
+        (PsNode->ParseOpcode != NAMESEG)    &&
+        (PsNode->ParseOpcode != METHODCALL))
     {
         return (AE_OK);
     }
-
 
     if (AcpiPsIsNamedOp (PsNode->AmlOpcode))
     {
@@ -293,7 +317,7 @@ LkNamespaceLocateBegin (
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
-        ("Load1BeginOp: Type=%x\n", DataType));
+        ("NamespaceLocateBegin: Type=%x\n", DataType));
 
 
     /*
@@ -328,23 +352,83 @@ LkNamespaceLocateBegin (
 
         free (PsNode->Value.String);
 
-
-        LengthDelta = PsNode->AmlLength;
-
         PsNode->ParseOpcode     = INTEGER;
         PsNode->AmlOpcode       = AML_DWORD_OP;
         PsNode->Value.Integer   = (UINT64) NsNode->OwnerId;
 
-        PsNode->AmlLength = CgSetOptimalIntegerSize (PsNode);
+        PsNode->AmlLength       = OpcSetOptimalIntegerSize (PsNode);
+    }
 
-        LengthDelta = LengthDelta - PsNode->AmlLength;
-        LengthDelta--; /* Minus one more for opcode length (now 1, was 0) */
+    /*
+     * There are two types of method invocation:
+     * 1) Invocation with arguments -- the parser recognizes this as a METHODCALL
+     * 2) Invocation with no arguments --the parser cannot determine that this is a method
+     *    invocation, therefore we have to figure it out here.
+     */
+    else if ((((PsNode->ParseOpcode == NAMESTRING) || (PsNode->ParseOpcode == NAMESEG)) &&
+        (NsNode->Type == ACPI_TYPE_METHOD) &&
+        (PsNode->Parent) &&
+        (PsNode->Parent->ParseOpcode != METHOD))   ||
 
+        (PsNode->ParseOpcode == METHODCALL))
+    {
+        /*
+         * This is a method invocation, with or without arguments.
+         * Count the number of arguments, each appears as a child
+         * under the parent node
+         */
+        PassedArgs = 0;
+        Next = PsNode->Child;
+        while (Next)
+        {
+            PassedArgs++;
+            Next = Next->Peer;
+        }
 
         /*
-         * Must adjust all package lengths to the root
+         * Check the parsed arguments with the number expected by the
+         * method declaration itself
          */
-//        LnAdjustLengthToRoot (PsNode, LengthDelta);
+        if (PassedArgs != NsNode->OwnerId)
+        {
+            sprintf (MsgBuffer, "%s requires %d", PsNode->ExternalName,
+                        NsNode->OwnerId);
+
+            if (PassedArgs < NsNode->OwnerId)
+            {
+                AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_LO, PsNode, MsgBuffer);
+            }
+            else
+            {
+                AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_HI, PsNode, MsgBuffer);
+            }
+        }
+
+        /*
+         * Check if the method caller expects this method to return a value and
+         * if the method in fact returns a value.
+         */
+
+        if (!(PsNode->Flags & NODE_RESULT_NOT_USED))
+        {
+            /* 1) Result from the method is used (method is a TermArg) */
+
+            if (NsNode->Flags & ANOBJ_METHOD_NO_RETVAL)
+            {
+                /*
+                 * 2) Method NEVER returns a value
+                 */
+                AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, PsNode, PsNode->ExternalName);
+            }
+
+            else if (NsNode->Flags & ANOBJ_METHOD_SOME_NO_RETVAL)
+            {
+                /*
+                 * 2) Method SOMETIMES returns a value, SOMETIMES not
+                 */
+                AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, PsNode, PsNode->ExternalName);
+            }
+        }
     }
 
     PsNode->NsNode = NsNode;
@@ -355,14 +439,14 @@ LkNamespaceLocateBegin (
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LkNamespaceLocateEnd
  *
- * PARAMETERS:
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ascending callback used during the loading of the namespace,
- *              both control methods and everything else.
+ * DESCRIPTION: Ascending callback used during cross reference.  We only
+ *              need to worry about scope management here.
  *
  ****************************************************************************/
 
@@ -410,7 +494,7 @@ LkNamespaceLocateEnd (
     {
 
         DEBUG_PRINT (TRACE_DISPATCH,
-            ("Load1EndOp/%s: Popping scope for Op %p\n",
+            ("NamespaceLocateEnd/%s: Popping scope for Op %p\n",
             AcpiCmGetTypeName (DataType), PsNode));
 
 
@@ -419,7 +503,6 @@ LkNamespaceLocateEnd (
     }
 
     return (AE_OK);
-
 }
 
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.7 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -133,13 +133,16 @@
 
 /*******************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LdLoadNamespace
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
- * RETURN:
+ * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Perform a walk of the parse tree that in turn loads all of the
+ *              named ASL/AML objects into the namespace.  The namespace is
+ *              constructed in order to resolve named references and references
+ *              to named fields within resource templates/descriptors.
  *
  ******************************************************************************/
 
@@ -148,13 +151,14 @@ LdLoadNamespace (void)
 {
     ACPI_WALK_STATE         *WalkState;
     ACPI_WALK_LIST          WalkList;
-//    ACPI_STATUS             Status;
 
 
     DbgPrint ("\nCreating namespace\n\n");
 
-    WalkList.WalkState = NULL;
 
+    /* Create a new walk state */
+
+    WalkList.WalkState = NULL;
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
     if (!WalkState)
     {
@@ -162,13 +166,13 @@ LdLoadNamespace (void)
     }
 
 
-//    AcpiDbgLevel = 0xFFFFFFFF;
-    TgWalkParseTree (ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
+    /* Perform the walk of the parse tree */
+
+    TrWalkParseTree (ASL_WALK_VISIT_TWICE, LdNamespace1Begin,
                         LdNamespace1End, WalkState);
 
 
-    /* Dump the namespace if requested */
-//    AcpiDbgLevel = TRACE_TABLES;
+    /* Dump the namespace if debug is enabled */
 
     AcpiNsDumpTables (NS_ALL, ACPI_UINT32_MAX);
 
@@ -180,11 +184,13 @@ LdLoadNamespace (void)
  *
  * FUNCTION:    LdLoadFieldElements
  *
- * PARAMETERS:
+ * PARAMETERS:  PsNode          - Parent node (Field)
+ *              WalkState       - Current walk state
  *
- * RETURN:
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Enter the named elements of the field (children of the parent)
+ *              into the namespace.
  *
  ******************************************************************************/
 
@@ -196,6 +202,8 @@ LdLoadFieldElements (
     ASL_PARSE_NODE          *Child = NULL;
     ACPI_NAMESPACE_NODE     *NsNode;
 
+
+    /* Get the first named field element */
 
     switch (PsNode->AmlOpcode)
     {
@@ -212,6 +220,8 @@ LdLoadFieldElements (
         break;
     }
 
+
+    /* Enter all elements into the namespace */
 
     while (Child)
     {
@@ -239,13 +249,19 @@ LdLoadFieldElements (
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LdLoadResourceElements
  *
- * PARAMETERS:
+ * PARAMETERS:  PsNode          - Parent node (Resource Descriptor)
+ *              WalkState       - Current walk state
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION:
+ * DESCRIPTION: Enter the named elements of the resource descriptor (children
+ *              of the parent) into the namespace.
+ *
+ * NOTE: In the real AML namespace, these named elements never exist.  But
+ *       we simply use the namespace here as a symbol table so we can look
+ *       them up as they are referenced.
  *
  ****************************************************************************/
 
@@ -311,15 +327,17 @@ LdLoadResourceElements (
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LdNamespace1Begin
  *
- * PARAMETERS:
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Descending callback used during the loading of ACPI tables.
+ * DESCRIPTION: Descending callback used during the parse tree walk.  If this
+ *              is a named AML opcode, enter into the namespace
  *
  ****************************************************************************/
+
 
 ACPI_STATUS
 LdNamespace1Begin (
@@ -410,9 +428,22 @@ LdNamespace1Begin (
         return (Status);
     }
 
-
     PsNode->NsNode = NsNode;
 
+
+    if (PsNode->ParseOpcode == METHOD)
+    {
+        NsNode->OwnerId = PsNode->Extra;
+
+        if (PsNode->Flags & NODE_METHOD_NO_RETVAL)
+        {
+            NsNode->Flags |= ANOBJ_METHOD_NO_RETVAL;
+        }
+        if (PsNode->Flags & NODE_METHOD_SOME_NO_RETVAL)
+        {
+            NsNode->Flags |= ANOBJ_METHOD_SOME_NO_RETVAL;
+        }
+   }
 
     return (Status);
 }
@@ -420,22 +451,22 @@ LdNamespace1Begin (
 
 /*****************************************************************************
  *
- * FUNCTION:
+ * FUNCTION:    LdNamespace1End
  *
- * PARAMETERS:
+ * PARAMETERS:  ASL_WALK_CALLBACK
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Ascending callback used during the loading of the namespace,
- *              both control methods and everything else.
+ *              We only need to worry about managing the scope stack here.
  *
  ****************************************************************************/
 
 ACPI_STATUS
 LdNamespace1End (
-    ASL_PARSE_NODE              *PsNode,
-    UINT32                      Level,
-    void                        *Context)
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  Level,
+    void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     OBJECT_TYPE_INTERNAL    DataType;
@@ -480,7 +511,6 @@ LdNamespace1End (
     }
 
     return (AE_OK);
-
 }
 
 
