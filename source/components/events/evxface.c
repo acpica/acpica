@@ -889,7 +889,7 @@ AcpiInstallAddressSpaceHandler (
      *  Now walk the namespace finding all of the regions this
      *  handler will manage.
      *
-     *  We start at the device and search the branch until toward
+     *  We start at the device and search the branch toward
      *  the leaf nodes until either the leaf is encountered or
      *  a device is detected that has an address handler of the
      *  same type.
