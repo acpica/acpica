@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -298,14 +298,14 @@ AcpiUtDeleteGenericCache (
  * Each memory allocation is tracked via a doubly linked list.  Each
  * element contains the caller's component, module name, function name, and
  * line number.  AcpiUtAllocate and AcpiUtCallocate call
- * AcpiUtAddElementToAllocList to add an element to the list; deletion
+ * AcpiUtTrackAllocation to add an element to the list; deletion
  * occurs in the body of AcpiUtFree.
  */
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtSearchAllocList
+ * FUNCTION:    AcpiUtFindAllocation
  *
  * PARAMETERS:  Address             - Address of allocated memory
  *
@@ -316,7 +316,7 @@ AcpiUtDeleteGenericCache (
  ******************************************************************************/
 
 ACPI_DEBUG_MEM_BLOCK *
-AcpiUtSearchAllocList (
+AcpiUtFindAllocation (
     UINT32                  ListId,
     void                    *Address)
 {
@@ -351,7 +351,7 @@ AcpiUtSearchAllocList (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtAddElementToAllocList
+ * FUNCTION:    AcpiUtTrackAllocation
  *
  * PARAMETERS:  Address             - Address of allocated memory
  *              Size                - Size of the allocation
@@ -367,7 +367,7 @@ AcpiUtSearchAllocList (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiUtAddElementToAllocList (
+AcpiUtTrackAllocation (
     UINT32                  ListId,
     ACPI_DEBUG_MEM_BLOCK    *Address,
     UINT32                  Size,
@@ -381,7 +381,7 @@ AcpiUtAddElementToAllocList (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("UtAddElementToAllocList", Address);
+    FUNCTION_TRACE_PTR ("UtTrackAllocation", Address);
 
 
     if (ListId > ACPI_MEM_LIST_MAX)
@@ -397,10 +397,10 @@ AcpiUtAddElementToAllocList (
      * This will catch several kinds of problems.
      */
 
-    Element = AcpiUtSearchAllocList (ListId, Address);
+    Element = AcpiUtFindAllocation (ListId, Address);
     if (Element)
     {
-        REPORT_ERROR (("UtAddElementToAllocList: Address already present in list! (%p)\n",
+        REPORT_ERROR (("UtTrackAllocation: Address already present in list! (%p)\n",
             Address));
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Element %p Address %p\n", Element, Address));
@@ -438,7 +438,7 @@ UnlockAndExit:
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtDeleteElementFromAllocList
+ * FUNCTION:    AcpiUtRemoveAllocation
  *
  * PARAMETERS:  Address             - Address of allocated memory
  *              Component           - Component type of caller
@@ -452,7 +452,7 @@ UnlockAndExit:
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiUtDeleteElementFromAllocList (
+AcpiUtRemoveAllocation (
     UINT32                  ListId,
     ACPI_DEBUG_MEM_BLOCK    *Address,
     UINT32                  Component,
@@ -462,7 +462,7 @@ AcpiUtDeleteElementFromAllocList (
     ACPI_MEMORY_LIST        *MemList;
 
 
-    FUNCTION_TRACE ("UtDeleteElementFromAllocList");
+    FUNCTION_TRACE ("UtRemoveAllocation");
 
 
     if (ListId > ACPI_MEM_LIST_MAX)
@@ -476,7 +476,7 @@ AcpiUtDeleteElementFromAllocList (
         /* No allocations! */
 
         _REPORT_ERROR (Module, Line, Component,
-                ("UtDeleteElementFromAllocList: Empty allocation list, nothing to free!\n"));
+                ("UtRemoveAllocation: Empty allocation list, nothing to free!\n"));
 
         return_ACPI_STATUS (AE_OK);
     }
@@ -766,7 +766,7 @@ AcpiUtAllocate (
         return_PTR (NULL);
     }
 
-    Status = AcpiUtAddElementToAllocList (ACPI_MEM_LIST_GLOBAL, Address, Size,
+    Status = AcpiUtTrackAllocation (ACPI_MEM_LIST_GLOBAL, Address, Size,
                     MEM_MALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
@@ -832,7 +832,7 @@ AcpiUtCallocate (
         return_PTR (NULL);
     }
 
-    Status = AcpiUtAddElementToAllocList (ACPI_MEM_LIST_GLOBAL, Address, Size,
+    Status = AcpiUtTrackAllocation (ACPI_MEM_LIST_GLOBAL, Address, Size,
                         MEM_CALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
@@ -890,7 +890,7 @@ AcpiUtFree (
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].TotalFreed++;
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].CurrentTotalSize -= DebugBlock->Size;
 
-    AcpiUtDeleteElementFromAllocList (ACPI_MEM_LIST_GLOBAL, DebugBlock,
+    AcpiUtRemoveAllocation (ACPI_MEM_LIST_GLOBAL, DebugBlock,
             Component, Module, Line);
     AcpiOsFree (DebugBlock);
 
