@@ -119,6 +119,10 @@ Project: "AcpiSubsystem_Linux"=.\AcpiSubsystem_Linux.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/generate/msvc", SVBAAAAA
+    .
+    end source code control
 }}}
 
 Package=<4>
@@ -131,6 +135,10 @@ Project: "AslCompiler"=.\AslCompiler.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/source/compiler", CRIAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<4>
