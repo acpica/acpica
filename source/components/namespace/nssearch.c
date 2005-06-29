@@ -9,91 +9,110 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
  * reserved.
  *
  * 2. License
- * 
- * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
- * copy of the source code appearing in this file ("Covered Code") a license 
- * under Intel's copyrights in the base code distributed originally by Intel 
- * ("Original Intel Code") to copy, make derivatives, distribute, use and 
- * display any portion of the Covered Code in any form; and
  *
- * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
- * license (without the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell, 
- * offer to sell, and import the Covered Code and derivative works thereof 
- * solely to the minimum extent necessary to exercise the above copyright 
- * license, and in no event shall the patent license extend to any additions to
- * or modifications of the Original Intel Code.  No other license or right is 
- * granted directly or by implication, estoppel or otherwise;
+ * 2.1. This is your license from Intel Corp. under its intellectual property
+ * rights.  You may have additional license terms from the party that provided
+ * you this software, covering your right to use that party's intellectual
+ * property rights.
  *
- * the above copyright and patent license is granted only if the following 
+ * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
+ * copy of the source code appearing in this file ("Covered Code") an
+ * irrevocable, perpetual, worldwide license under Intel's copyrights in the
+ * base code distributed originally by Intel ("Original Intel Code") to copy,
+ * make derivatives, distribute, use and display any portion of the Covered
+ * Code in any form, with the right to sublicense such rights; and
+ *
+ * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
+ * license (with the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell,
+ * offer to sell, and import the Covered Code and derivative works thereof
+ * solely to the minimum extent necessary to exercise the above copyright
+ * license, and in no event shall the patent license extend to any additions
+ * to or modifications of the Original Intel Code.  No other license or right
+ * is granted directly or by implication, estoppel or otherwise;
+ *
+ * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
  * 3. Conditions 
  *
- * 3.1. Redistribution of source code of any substantial portion of the Covered 
- * Code or modification must include the above Copyright Notice, the above 
- * License, this list of Conditions, and the following Disclaimer and Export 
- * Compliance provision.  In addition, Licensee must cause all Covered Code to 
- * which Licensee contributes to contain a file documenting the changes 
- * Licensee made to create that Covered Code and the date of any change.  
- * Licensee must include in that file the documentation of any changes made by
- * any predecessor Licensee.  Licensee must include a prominent statement that
- * the modification is derived, directly or indirectly, from Original Intel 
- * Code.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification with rights to further distribute source must include
+ * the above Copyright Notice, the above License, this list of Conditions,
+ * and the following Disclaimer and Export Compliance provision.  In addition,
+ * Licensee must cause all Covered Code to which Licensee contributes to
+ * contain a file documenting the changes Licensee made to create that Covered
+ * Code and the date of any change.  Licensee must include in that file the
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * must include a prominent statement that the modification is derived,
+ * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution in binary form of any substantial portion of the Covered 
- * Code or modification must reproduce the above Copyright Notice, and the 
- * following Disclaimer and Export Compliance provision in the documentation 
- * and/or other materials provided with the distribution.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification without rights to further distribute source must
+ * include the following Disclaimer and Export Compliance provision in the
+ * documentation and/or other materials provided with distribution.  In
+ * addition, Licensee may not authorize further sublicense of source of any
+ * portion of the Covered Code, and must include terms to the effect that the
+ * license from Licensee to its licensee is limited to the intellectual
+ * property embodied in the software Licensee provides to its licensee, and
+ * not to intellectual property embodied in modifications its licensee may
+ * make.
  *
- * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * 3.3. Redistribution of Executable. Redistribution in executable form of any
+ * substantial portion of the Covered Code or modification must reproduce the
+ * above Copyright Notice, and the following Disclaimer and Export Compliance
+ * provision in the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * 3.4. Intel retains all right, title, and interest in and to the Original
  * Intel Code.
  *
- * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
- * Intel shall be used in advertising or otherwise to promote the sale, use or 
- * other dealings in products derived from or relating to the Covered Code 
+ * 3.5. Neither the name Intel nor any other trademark owned or controlled by
+ * Intel shall be used in advertising or otherwise to promote the sale, use or
+ * other dealings in products derived from or relating to the Covered Code
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
  * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this 
- * software or system incorporating such software without first obtaining any 
- * required license or other approval from the U. S. Department of Commerce or 
- * any other agency or department of the United States Government.  In the 
- * event Licensee exports any such software from the United States or re-
- * exports any such software from a foreign destination, Licensee shall ensure
- * that the distribution and export/re-export of the software is in compliance 
- * with all laws, regulations, orders, or other restrictions of the U.S. Export 
- * Administration Regulations. Licensee agrees that neither it nor any of its 
- * subsidiaries will export/re-export any technical data, process, software, or 
- * service, directly or indirectly, to any country for which the United States 
- * government or any agency thereof requires an export license, other 
- * governmental approval, or letter of assurance, without first obtaining such
- * license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this
+ * software or system incorporating such software without first obtaining any
+ * required license or other approval from the U. S. Department of Commerce or
+ * any other agency or department of the United States Government.  In the
+ * event Licensee exports any such software from the United States or
+ * re-exports any such software from a foreign destination, Licensee shall
+ * ensure that the distribution and export/re-export of the software is in
+ * compliance with all laws, regulations, orders, or other restrictions of the
+ * U.S. Export Administration Regulations. Licensee agrees that neither it nor
+ * any of its subsidiaries will export/re-export any technical data, process,
+ * software, or service, directly or indirectly, to any country for which the
+ * United States government or any agency thereof requires an export license,
+ * other governmental approval, or letter of assurance, without first obtaining
+ * such license, approval or letter.
  *
  *****************************************************************************/
-
 
 #define __NSSEARCH_C__
 
@@ -103,8 +122,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "nssearch.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nssearch");
 
 
 
@@ -127,7 +146,7 @@
 
 ACPI_STATUS
 NsSearchOnly (
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
     ACPI_OBJECT_TYPE        Type, 
     NAME_TABLE_ENTRY        **RetEntry, 
@@ -135,19 +154,21 @@ NsSearchOnly (
 {
     UINT32                  Position;
     UINT32                  Tries;
-    char                    *ScopeName;
 
 
     FUNCTION_TRACE ("NsSearchOnly");
 
     /* Debug only */
 
-    DEBUG_EXEC (ScopeName = NsNameOfScope (NameTable));
-    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Searching %s [%p]\n",
-                        ScopeName, NameTable));
-    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type %d)\n",
-                        EntryName, Type));
-    DEBUG_EXEC (OsdFree (ScopeName));
+    {
+        DEBUG_EXEC (char *ScopeName = NsNameOfScope (NameTable));
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Searching %s [%p]\n",
+                            ScopeName, NameTable));
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type %d)\n",
+                            &EntryName, Type));
+        DEBUG_EXEC (CmFree (ScopeName));
+    }
+
 
     /* 
      * Name tables are built (and subsequently dumped) in the
@@ -181,7 +202,7 @@ NsSearchOnly (
     {
         /* Search for name in table */
 
-        if (NameTable[Position].Name == *(UINT32 *) EntryName)
+        if (NameTable[Position].Name == EntryName)
         {
             /* 
              * Found matching entry.  Capture type if appropriate before
@@ -193,9 +214,10 @@ NsSearchOnly (
              * looking up the Region in which the field will be defined
              */
 
-            if (TYPE_DefFieldDefn == Type || TYPE_BankFieldDefn == Type)
+            if ((INTERNAL_TYPE_DefFieldDefn == Type) || 
+                (INTERNAL_TYPE_BankFieldDefn == Type))
             {
-                Type = TYPE_Region;
+                Type = ACPI_TYPE_Region;
             }
 
             /* 
@@ -205,20 +227,19 @@ NsSearchOnly (
              * stored in the entry is Any (i.e. unknown), save the actual type.
              */
 
-            if (Type != TYPE_Scope && 
-                Type != TYPE_DefAny &&
-                Type != TYPE_IndexFieldDefn && 
-                NameTable[Position].Type == TYPE_Any)
+            if (Type != INTERNAL_TYPE_Scope && 
+                Type != INTERNAL_TYPE_DefAny &&
+                Type != INTERNAL_TYPE_IndexFieldDefn && 
+                NameTable[Position].Type == ACPI_TYPE_Any)
             {
                 NameTable[Position].Type = Type;
             }
 
             DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (actual type %d) found at %p\n", 
-                            EntryName, NameTable[Position].Type, &NameTable[Position]));
+                            &EntryName, NameTable[Position].Type, &NameTable[Position]));
             
             *RetEntry = &NameTable[Position];
-            FUNCTION_STATUS_EXIT (AE_OK);
-            return AE_OK;
+            return_ACPI_STATUS (AE_OK);
         }
 
         if (RetInfo)
@@ -255,7 +276,7 @@ NsSearchOnly (
     /* Searched entire table, not found */
 
     DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (type %d) not found at %p\n", 
-                                EntryName, Type, &NameTable[Position]));
+                                &EntryName, Type, &NameTable[Position]));
 
 
     if (RetInfo)
@@ -267,8 +288,7 @@ NsSearchOnly (
         RetInfo->NameTable  = NameTable;
     }
 
-    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-    return AE_NOT_FOUND;
+    return_ACPI_STATUS (AE_NOT_FOUND);
 }
 
 
@@ -300,7 +320,7 @@ NsSearchOnly (
 
 ACPI_STATUS
 NsSearchParentTree (
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
     ACPI_OBJECT_TYPE        Type, 
     NAME_TABLE_ENTRY        **RetEntry)
@@ -323,20 +343,20 @@ NsSearchParentTree (
         NameTable[0].ParentScope)
     {
         ParentScope = NameTable[0].ParentScope;
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %.4s\n", EntryName));
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %4.4s\n", 
+                                    &EntryName));
 
         /* Search parents until found or we have backed up to the root */
 
         while (ParentScope)
         {
             /* Search parent scope */
-            /* TBD: Why TYPE_Any? */
+            /* TBD: Why ACPI_TYPE_Any? */
 
-            Status = NsSearchOnly (EntryName, ParentScope, TYPE_Any, RetEntry, NULL);
+            Status = NsSearchOnly (EntryName, ParentScope, ACPI_TYPE_Any, RetEntry, NULL);
             if (Status == AE_OK)
             {
-                FUNCTION_STATUS_EXIT (Status);
-                return Status;
+                return_ACPI_STATUS (Status);
             }
 
             /* Not found here, go up another level (until we reach the root) */
@@ -355,18 +375,18 @@ NsSearchParentTree (
 
         if (!NameTable[0].ParentScope)
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] has no parent\n", EntryName));
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] has no parent\n", 
+                                        &EntryName));
         }
 
         else if (NsLocal (Type))
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%.4s] (type %d) is local (no search)\n", 
-                                        EntryName, Type));
+            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] (type %d) is local (no search)\n", 
+                                        &EntryName, Type));
         }
     }
 
-    FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-    return AE_NOT_FOUND;
+    return_ACPI_STATUS (AE_NOT_FOUND);
 }
 
 
@@ -423,7 +443,7 @@ NsCreateAndLinkNewTable (
 
     /* Allocate and chain an appendage to the filled table */
     
-    NewTable = NsAllocateNteDesc (NS_TABLE_SIZE);
+    NewTable = NsAllocateNameTable (NS_TABLE_SIZE);
     if (!NewTable)
     {
         REPORT_ERROR ("Name Table appendage allocation failure");
@@ -443,8 +463,7 @@ NsCreateAndLinkNewTable (
                 NewTable, ParentScope, NameTable->Scope));
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -500,7 +519,7 @@ void
 NsInitializeEntry (
     NAME_TABLE_ENTRY        *NameTable, 
     UINT32                  Position, 
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     ACPI_OBJECT_TYPE        Type, 
     NAME_TABLE_ENTRY        *PreviousEntry)
 {
@@ -514,7 +533,8 @@ NsInitializeEntry (
     
     /*  first or second pass load mode, NameTable valid   */
 
-    NewEntry->Name          = *(UINT32 *) EntryName;
+    NewEntry->DataType      = DESC_TYPE_NTE;
+    NewEntry->Name          = EntryName;
     NewEntry->ParentScope   = NameTable[0].ParentScope;
     NewEntry->ParentEntry   = NameTable[0].ParentEntry;
 
@@ -537,9 +557,9 @@ NsInitializeEntry (
      * order to define fields in it, we have a forward reference.
      */
 
-    if ((TYPE_Any == Type) || 
-        (TYPE_DefFieldDefn == Type) || 
-        (TYPE_BankFieldDefn == Type))
+    if ((ACPI_TYPE_Any == Type) || 
+        (INTERNAL_TYPE_DefFieldDefn == Type) || 
+        (INTERNAL_TYPE_BankFieldDefn == Type))
     {
         /* 
          * We don't want to abort here, however!
@@ -548,7 +568,7 @@ NsInitializeEntry (
          */
 
         DEBUG_PRINT (ACPI_INFO, ("[%4.4s] is a forward reference into the namespace\n",
-                        EntryName));
+                        &EntryName));
 
     }
 
@@ -557,9 +577,10 @@ NsInitializeEntry (
      * looking up the Region in which the field will be defined
      */
 
-    if ((TYPE_DefFieldDefn == Type) || (TYPE_BankFieldDefn == Type))
+    if ((INTERNAL_TYPE_DefFieldDefn == Type) || 
+        (INTERNAL_TYPE_BankFieldDefn == Type))
     {
-        Type = TYPE_Region;
+        Type = ACPI_TYPE_Region;
     }
 
     /* 
@@ -569,17 +590,17 @@ NsInitializeEntry (
      * the entry.
      */
 
-    if ((Type != TYPE_Scope) && 
-        (Type != TYPE_DefAny) && 
-        (Type != TYPE_IndexFieldDefn))
+    if ((Type != INTERNAL_TYPE_Scope) && 
+        (Type != INTERNAL_TYPE_DefAny) && 
+        (Type != INTERNAL_TYPE_IndexFieldDefn))
     {
         NewEntry->Type = Type;
     }
 
-    DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %.4s added to %p at %p\n", 
-                                EntryName, NameTable, NewEntry));
+    DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %4.4s added to %p at %p\n", 
+                                &EntryName, NameTable, NewEntry));
     
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -587,9 +608,9 @@ NsInitializeEntry (
  *
  * FUNCTION:    NsSearchAndEnter
  *
- * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
+ * PARAMETERS:  EntryName           - Ascii ACPI name to search for (4 chars)
  *              *NameTable          - Starting table where search will begin
- *              LoadMode            - Add names only in MODE_Loadx.  Otherwise,
+ *              InterpreterMode     - Add names only in MODE_LoadPassX.  Otherwise,
  *                                    search only.
  *              Type                - Object type to match
  *              **RetEntry          - Where the matched NTE is returned
@@ -601,16 +622,16 @@ NsInitializeEntry (
  *              Type is not Any and the type previously stored in the
  *              entry was Any (i.e. unknown), update the stored type.
  *
- *              In MODE_Exec, search only.
+ *              In IMODE_Execute, search only.
  *              In other modes, search and add if not found.
  *
  ***************************************************************************/
 
 ACPI_STATUS
 NsSearchAndEnter (
-    char                    *EntryName, 
+    UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable,
-    OPERATING_MODE          LoadMode, 
+    OPERATING_MODE          InterpreterMode, 
     ACPI_OBJECT_TYPE        Type, 
     UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry)
@@ -628,23 +649,18 @@ NsSearchAndEnter (
     if (!NameTable || !EntryName || !RetEntry)
     {
         REPORT_ERROR ("NsSearchAndEnter: bad parameter");
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
 
     /* Name must consist of printable characters */
 
-    if (!AmlGoodChar ((INT32) EntryName[0]) || 
-        !AmlGoodChar ((INT32) EntryName[1]) || 
-        !AmlGoodChar ((INT32) EntryName[2]) || 
-        !AmlGoodChar ((INT32) EntryName[3]))
+    if (!AmlGoodName (EntryName))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** bad name %08lx *** \n", 
-                                    *(UINT32 *) EntryName));
+        DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** Bad char in name: %08lx *** \n", 
+                                    EntryName));
 
-        FUNCTION_STATUS_EXIT (AE_BAD_CHARACTER);
-        return AE_BAD_CHARACTER;
+        return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
 
 
@@ -656,8 +672,7 @@ NsSearchAndEnter (
     {
         /* Either found it or there was an error -- finished either way */
 
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
 
@@ -669,7 +684,7 @@ NsSearchAndEnter (
      * and during the execution phase.
      */
 
-    if ((LoadMode != MODE_Load1) &&
+    if ((InterpreterMode != IMODE_LoadPass1) &&
         (Flags == NS_SEARCH_PARENT))
     {
         /* Not found in table - search parent tree according to ACPI specification */
@@ -677,8 +692,7 @@ NsSearchAndEnter (
         Status = NsSearchParentTree (EntryName, NameTable, Type, RetEntry);
         if (Status == AE_OK)
         {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
+            return_ACPI_STATUS (Status);
         }
     }
 
@@ -687,13 +701,12 @@ NsSearchAndEnter (
      * In execute mode, just search, never add names.  Exit now.
      */
 
-    if (LoadMode == MODE_Exec)
+    if (InterpreterMode == IMODE_Execute)
     {
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %.4s Not found in %p [Not adding]\n", 
-                                    EntryName, NameTable));
+        DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %4.4s Not found in %p [Not adding]\n", 
+                                    &EntryName, NameTable));
     
-        FUNCTION_STATUS_EXIT (AE_NOT_FOUND);
-        return AE_NOT_FOUND;
+        return_ACPI_STATUS (AE_NOT_FOUND);
     }
 
 
@@ -715,8 +728,7 @@ NsSearchAndEnter (
         Status = NsCreateAndLinkNewTable (NameTable);
         if (Status != AE_OK)
         {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
+            return_ACPI_STATUS (Status);
         }
 
         /* Point to the first slot in the new table */
@@ -735,8 +747,6 @@ NsSearchAndEnter (
                         SearchInfo.PreviousEntry);
     *RetEntry = &NameTable[Position];
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
-
 

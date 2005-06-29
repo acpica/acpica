@@ -121,10 +121,11 @@
 #include <amlcode.h>
 #include <namespace.h>
 #include <interpreter.h>
+#include <tables.h>
 
 
-#define _THIS_MODULE        "nsobject.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsobject");
 
 
 
@@ -186,7 +187,7 @@ NsAttachObject (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
     
-    if (!IS_NS_HANDLE (Handle))
+    if (!VALID_DESCRIPTOR_TYPE (Handle, DESC_TYPE_NTE))
     {
         /* Not a name handle */
 
@@ -210,12 +211,22 @@ NsAttachObject (
     Flags = ThisEntry->Flags;
     Flags &= ~NTE_AML_ATTACHMENT;
 
+
+    /* If null object, we will just install it */
+
+    if (!Object)
+    {
+        ObjDesc = NULL;
+        ObjType = ACPI_TYPE_Any;
+    }
+
     /*
-     * If the object is an NTE with an attached object, we will use that object
+     * If the object is an NTE with an attached object, 
+     * we will use that (attached) object
      */
 
-    if (IS_NS_HANDLE (Object) && 
-        ((NAME_TABLE_ENTRY *) Object)->Object)
+    else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE) && 
+            ((NAME_TABLE_ENTRY *) Object)->Object)
     {
         /* 
          * Value passed is a name handle and that name has a non-null value.
@@ -245,22 +256,20 @@ NsAttachObject (
         ObjDesc = (ACPI_OBJECT_INTERNAL *) Object;
 
 
-        /* Set the type if given, or if it can be discerned */
+        /* If a valid type (non-ANY) was given, just use it */
 
         if (ACPI_TYPE_Any != Type)
         {
             ObjType = (ACPI_OBJECT_TYPE) Type;
         }
 
-        else if (!Object)
-        {
-            ObjType = ACPI_TYPE_Any;
-        }
+    
+        /* Type is TYPE_Any, we must try to determinte the actual type of the object */
 
         /*
          * Check if value points into the AML code
          */
-        else if (NsIsInSystemTable (Object))
+        else if (TbSystemTablePointer (Object))
         {
             /* Object points into the AML stream.  Set a flag bit in the NTE to indicate this */
     
@@ -338,13 +347,13 @@ NsAttachObject (
                 NsDumpPathname (Handle, "NsAttachObject confused: setting bogus type for  ", 
                                 ACPI_INFO, _COMPONENT);
 
-                if (NsIsInSystemTable (Object))
+                if (TbSystemTablePointer (Object))
                 {
                     DEBUG_PRINT (ACPI_INFO,
                                 ("AML-stream code %02x\n", *(UINT8 *) Object));
                 }
         
-                else if (IS_NS_HANDLE (Object))
+                else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
                 {
                     NsDumpPathname (Object, "name ", ACPI_INFO, _COMPONENT);
                 }
@@ -533,8 +542,8 @@ NsDetachObject (
 
     /* Not every value is an object allocated via CmCallocate, must check */
 
-    if (!NsIsInSystemTable (ObjDesc)) /*&&
-        !IS_NS_HANDLE      (ObjDesc))*/
+    if (!TbSystemTablePointer (ObjDesc)) /*&&
+        !VALID_DESCRIPTOR_TYPE      (ObjDesc, DESC_TYPE_NTE))*/
     {
 
         /* Delete the object (and all subobjects) */

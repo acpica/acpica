@@ -122,8 +122,9 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "nsnames.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsnames");
+
 
 #define PATH_SEPARATOR      '.'
 
