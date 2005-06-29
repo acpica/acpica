@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  ******************************************************************************/
 
@@ -191,6 +191,7 @@ enum AcpiAmlDebuggerCommands
     CMD_LIST,
     CMD_LOAD,
     CMD_LOCALS,
+    CMD_LOCKS,
     CMD_METHODS,
     CMD_NAMESPACE,
     CMD_NOTIFY,
@@ -200,6 +201,7 @@ enum AcpiAmlDebuggerCommands
     CMD_PREFIX,
     CMD_QUIT,
     CMD_REFERENCES,
+    CMD_RESOURCES,
     CMD_RESULTS,
     CMD_SET,
     CMD_STATS,
@@ -243,6 +245,7 @@ COMMAND_INFO                Commands[] =
     {"LIST",         0},
     {"LOAD",         1},
     {"LOCALS",       0},
+    {"LOCKS",        0},
     {"METHODS",      0},
     {"NAMESPACE",    0},
     {"NOTIFY",       2},
@@ -252,6 +255,7 @@ COMMAND_INFO                Commands[] =
     {"PREFIX",       0},
     {"QUIT",         0},
     {"REFERENCES",   1},
+    {"RESOURCES",    1},
     {"RESULTS",      0},
     {"SET",          3},
     {"STATS",        0},
@@ -316,6 +320,7 @@ AcpiDbDisplayHelp (
         AcpiOsPrintf ("Help                                This help screen\n");
         AcpiOsPrintf ("History                             Display command history buffer\n");
         AcpiOsPrintf ("Level [<DebugLevel>] [console]      Get/Set debug level for file or console\n");
+        AcpiOsPrintf ("Locks                               Current status of internal mutexes\n");
         AcpiOsPrintf ("Quit or Exit                        Exit this command\n");
         AcpiOsPrintf ("Stats [Allocations|Memory|Misc\n");
         AcpiOsPrintf ("       |Objects|Tables]             Display namespace and memory statistics\n");
@@ -338,6 +343,7 @@ AcpiDbDisplayHelp (
         AcpiOsPrintf ("Owner <OwnerId> [Depth]             Display loaded namespace by object owner\n");
         AcpiOsPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
         AcpiOsPrintf ("References <Addr>                   Find all references to object at addr\n");
+        AcpiOsPrintf ("Resources xxx                       Get and display resources\n");
         AcpiOsPrintf ("Terminate                           Delete namespace and all internal objects\n");
         AcpiOsPrintf ("Thread <Threads><Loops><NamePath>   Spawn threads to execute method(s)\n");
         return;
@@ -729,6 +735,10 @@ AcpiDbCommandDispatch (
         }
         break;
 
+    case CMD_LOCKS:
+        AcpiDbDisplayLocks ();
+        break;
+
     case CMD_LOCALS:
         AcpiDbDisplayLocals ();
         break;
@@ -764,6 +774,10 @@ AcpiDbCommandDispatch (
 
     case CMD_REFERENCES:
         AcpiDbFindReferences (Args[1]);
+        break;
+
+    case CMD_RESOURCES:
+        AcpiDbDisplayResources (Args[1]);
         break;
 
     case CMD_RESULTS:
@@ -811,7 +825,8 @@ AcpiDbCommandDispatch (
     case CMD_QUIT:
         if (Op)
         {
-            return (AE_AML_ERROR);
+            AcpiOsPrintf ("Method execution terminated\n");
+            return (AE_CTRL_TERMINATE);
         }
 
         if (!OutputToFile)
