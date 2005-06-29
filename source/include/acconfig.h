@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.42 $
+ *       $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,9 @@
 #ifdef _LINUX
 #define ACPI_OS_NAME                "Linux"
 #else
+#ifndef ACPI_OS_NAME
 #define ACPI_OS_NAME                "Intel ACPI/CA Core Subsystem"
+#endif
 #endif
 
 
