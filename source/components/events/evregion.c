@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.135 $
+ *              $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvInitAddressSpaces
+ * FUNCTION:    AcpiEvInstallDefaultAddressSpaceHandlers
  *
  * PARAMETERS:
  *
@@ -139,13 +139,13 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvInitAddressSpaces (
+AcpiEvInstallDefaultAddressSpaceHandlers (
     void)
 {
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvInitAddressSpaces");
+    ACPI_FUNCTION_TRACE ("EvInstallDefaultAddressSpaceHandlers");
 
 
     /*
@@ -309,10 +309,9 @@ AcpiEvAddressSpaceDispatch (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    void                    *Value)
+    ACPI_INTEGER            *Value)
 {
     ACPI_STATUS             Status;
-    ACPI_STATUS             Status2;
     ACPI_ADR_SPACE_HANDLER  Handler;
     ACPI_ADR_SPACE_SETUP    RegionSetup;
     ACPI_OPERAND_OBJECT     *HandlerDesc;
@@ -372,11 +371,7 @@ AcpiEvAddressSpaceDispatch (
 
         /* Re-enter the interpreter */
 
-        Status2 = AcpiExEnterInterpreter ();
-        if (ACPI_FAILURE (Status2))
-        {
-            return_ACPI_STATUS (Status2);
-        }
+        AcpiExEnterInterpreter ();
 
         /*
          *  Init routine may fail
@@ -438,11 +433,7 @@ AcpiEvAddressSpaceDispatch (
          * We just returned from a non-default handler, we must re-enter the
          * interpreter
          */
-        Status2 = AcpiExEnterInterpreter ();
-        if (ACPI_FAILURE (Status2))
-        {
-            return_ACPI_STATUS (Status2);
-        }
+        AcpiExEnterInterpreter ();
     }
 
     return_ACPI_STATUS (Status);
@@ -450,7 +441,7 @@ AcpiEvAddressSpaceDispatch (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvDetachRegion
+ * FUNCTION:    AcpiEvDisassociateRegionFromHandler
  *
  * PARAMETERS:  RegionObj       - Region Object
  *              AcpiNsIsLocked  - Namespace Region Already Locked?
@@ -463,7 +454,7 @@ AcpiEvAddressSpaceDispatch (
  ******************************************************************************/
 
 void
-AcpiEvDetachRegion(
+AcpiEvDisassociateRegionFromHandler(
     ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsIsLocked)
 {
@@ -476,13 +467,13 @@ AcpiEvDetachRegion(
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvDetachRegion");
+    ACPI_FUNCTION_TRACE ("EvDisassociateRegionFromHandler");
 
 
     RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
     if (!RegionObj2)
     {
-        return_VOID;
+        return;
     }
     RegionContext = RegionObj2->Extra.RegionContext;
 
@@ -533,13 +524,7 @@ AcpiEvDetachRegion(
             /*
              *  Now stop region accesses by executing the _REG method
              */
-            Status = AcpiEvExecuteRegMethod (RegionObj, 0);
-            if (ACPI_FAILURE (Status))
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s from region _REG, [%s]\n",
-                    AcpiFormatException (Status),
-                    AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
-            }
+            AcpiEvExecuteRegMethod (RegionObj, 0);
 
             if (AcpiNsIsLocked)
             {
@@ -605,7 +590,7 @@ AcpiEvDetachRegion(
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvAttachRegion
+ * FUNCTION:    AcpiEvAssociateRegionAndHandler
  *
  * PARAMETERS:  HandlerObj      - Handler Object
  *              RegionObj       - Region Object
@@ -619,16 +604,15 @@ AcpiEvDetachRegion(
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvAttachRegion (
+AcpiEvAssociateRegionAndHandler (
     ACPI_OPERAND_OBJECT     *HandlerObj,
     ACPI_OPERAND_OBJECT     *RegionObj,
     BOOLEAN                 AcpiNsIsLocked)
 {
-    ACPI_STATUS             Status;
-    ACPI_STATUS             Status2;
+    ACPI_STATUS     Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvAttachRegion");
+    ACPI_FUNCTION_TRACE ("EvAssociateRegionAndHandler");
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
@@ -653,22 +637,14 @@ AcpiEvAttachRegion (
      */
     if (AcpiNsIsLocked)
     {
-        Status2 = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-        if (ACPI_FAILURE (Status2))
-        {
-            return_ACPI_STATUS (Status2);
-        }
+        AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     }
 
     Status = AcpiEvExecuteRegMethod (RegionObj, 1);
 
     if (AcpiNsIsLocked)
     {
-        Status2 = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-        if (ACPI_FAILURE (Status2))
-        {
-            return_ACPI_STATUS (Status2);
-        }
+        (void) AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     }
 
     return_ACPI_STATUS (Status);
@@ -753,7 +729,7 @@ AcpiEvAddrHandlerHelper (
     /*
      *  Devices are handled different than regions
      */
-    if (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_DEVICE)
+    if (ObjDesc->Common.Type == ACPI_TYPE_DEVICE)
     {
         /*
          *  See if this guy has any handlers
@@ -816,12 +792,12 @@ AcpiEvAddrHandlerHelper (
      *
      *  First disconnect region for any previous handler (if any)
      */
-    AcpiEvDetachRegion (ObjDesc, FALSE);
+    AcpiEvDisassociateRegionFromHandler (ObjDesc, FALSE);
 
     /*
      *  Then connect the region to the new handler
      */
-    Status = AcpiEvAttachRegion (HandlerObj, ObjDesc, FALSE);
+    Status = AcpiEvAssociateRegionAndHandler (HandlerObj, ObjDesc, FALSE);
 
     return (Status);
 }

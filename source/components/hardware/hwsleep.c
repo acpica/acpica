@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.46 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -146,13 +146,11 @@ AcpiSetFirmwareWakingVector (
 
     if (AcpiGbl_CommonFACS.VectorWidth == 32)
     {
-        *(ACPI_CAST_PTR (UINT32, AcpiGbl_CommonFACS.FirmwareWakingVector))
-                = (UINT32) PhysicalAddress;
+        *(UINT32 *) AcpiGbl_CommonFACS.FirmwareWakingVector = (UINT32) PhysicalAddress;
     }
     else
     {
-        *AcpiGbl_CommonFACS.FirmwareWakingVector
-                = PhysicalAddress;
+        *AcpiGbl_CommonFACS.FirmwareWakingVector = PhysicalAddress;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -190,13 +188,11 @@ AcpiGetFirmwareWakingVector (
 
     if (AcpiGbl_CommonFACS.VectorWidth == 32)
     {
-        *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS)
-            *(ACPI_CAST_PTR (UINT32, AcpiGbl_CommonFACS.FirmwareWakingVector));
+        *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS) *(UINT32 *) AcpiGbl_CommonFACS.FirmwareWakingVector;
     }
     else
     {
-        *PhysicalAddress =
-            *AcpiGbl_CommonFACS.FirmwareWakingVector;
+        *PhysicalAddress = *AcpiGbl_CommonFACS.FirmwareWakingVector;
     }
 
     return_ACPI_STATUS (AE_OK);
@@ -233,7 +229,7 @@ AcpiEnterSleepStatePrep (
     /*
      * _PSW methods could be run here to enable wake-on keyboard, LAN, etc.
      */
-    Status = AcpiGetSleepTypeData (SleepState,
+    Status = AcpiHwGetSleepTypeData (SleepState,
                     &AcpiGbl_SleepTypeA, &AcpiGbl_SleepTypeB);
     if (ACPI_FAILURE (Status))
     {
@@ -297,7 +293,7 @@ AcpiEnterSleepState (
     if ((AcpiGbl_SleepTypeA > ACPI_SLEEP_TYPE_MAX) ||
         (AcpiGbl_SleepTypeB > ACPI_SLEEP_TYPE_MAX))
     {
-        ACPI_REPORT_ERROR (("Sleep values out of range: A=%X B=%X\n",
+        ACPI_REPORT_ERROR (("Sleep values out of range: A=%x B=%x\n",
             AcpiGbl_SleepTypeA, AcpiGbl_SleepTypeB));
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
@@ -308,7 +304,7 @@ AcpiEnterSleepState (
 
     /* Clear wake status */
 
-    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_LOCK);
+    Status = AcpiHwBitRegisterWrite (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_LOCK);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -320,13 +316,7 @@ AcpiEnterSleepState (
         return_ACPI_STATUS (Status);
     }
 
-    /* Disable BM arbitration */
-
-    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 1, ACPI_MTX_LOCK);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    /* TBD: Disable arbitration here? */
 
     Status = AcpiHwDisableNonWakeupGpes();
     if (ACPI_FAILURE (Status))
@@ -393,12 +383,7 @@ AcpiEnterSleepState (
      */
     if (SleepState > ACPI_STATE_S3)
     {
-        /*
-         * We wait so long to allow chipsets that poll this reg very slowly to
-         * still read the right value. Ideally, this entire block would go
-         * away entirely.
-         */
-        AcpiOsStall (10000000);
+        AcpiOsStall (1000000);
 
         Status = AcpiHwRegisterWrite (ACPI_MTX_LOCK, ACPI_REGISTER_PM1_CONTROL,
                     SleepEnableRegInfo->AccessBitMask);
@@ -410,9 +395,9 @@ AcpiEnterSleepState (
 
     /* Wait until we enter sleep state */
 
-    do
+    do 
     {
-        Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue, ACPI_MTX_LOCK);
+        Status = AcpiHwBitRegisterRead (ACPI_BITREG_WAKE_STATUS, &InValue, ACPI_MTX_LOCK);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -478,13 +463,6 @@ AcpiLeaveSleepState (
     /* _WAK returns stuff - do we want to look at it? */
 
     Status = AcpiHwEnableNonWakeupGpes();
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Disable BM arbitration */
-    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 0, ACPI_MTX_LOCK);
 
     return_ACPI_STATUS (Status);
 }

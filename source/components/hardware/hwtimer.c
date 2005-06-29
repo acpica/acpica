@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.18 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -116,10 +116,9 @@
  *****************************************************************************/
 
 #include "acpi.h"
-#include "achware.h"
 
 #define _COMPONENT          ACPI_HARDWARE
-        MODULE_NAME         ("hwtimer")
+        ACPI_MODULE_NAME    ("hwtimer")
 
 
 /******************************************************************************
@@ -138,7 +137,7 @@ ACPI_STATUS
 AcpiGetTimerResolution (
     UINT32                  *Resolution)
 {
-    FUNCTION_TRACE ("AcpiGetTimerResolution");
+    ACPI_FUNCTION_TRACE ("AcpiGetTimerResolution");
 
 
     if (!Resolution)
@@ -175,7 +174,10 @@ ACPI_STATUS
 AcpiGetTimer (
     UINT32                  *Ticks)
 {
-    FUNCTION_TRACE ("AcpiGetTimer");
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE ("AcpiGetTimer");
 
 
     if (!Ticks)
@@ -183,10 +185,9 @@ AcpiGetTimer (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiOsReadPort ((ACPI_IO_ADDRESS)
-        ACPI_GET_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address), Ticks, 32);
+    Status = AcpiHwLowLevelRead (32, Ticks, &AcpiGbl_FADT->XPmTmrBlk, 0);
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -228,7 +229,7 @@ AcpiGetTimerDuration (
     ACPI_INTEGER            OutQuotient;
 
 
-    FUNCTION_TRACE ("AcpiGetTimerDuration");
+    ACPI_FUNCTION_TRACE ("AcpiGetTimerDuration");
 
 
     if (!TimeElapsed)

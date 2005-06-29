@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.130 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -126,6 +126,7 @@
         ACPI_MODULE_NAME    ("evxface")
 
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiInstallFixedEventHandler
@@ -174,6 +175,7 @@ AcpiInstallFixedEventHandler (
         Status = AE_ALREADY_EXISTS;
         goto Cleanup;
     }
+
 
     /* Install the handler before enabling the event */
 
@@ -802,16 +804,14 @@ ACPI_STATUS
 AcpiReleaseGlobalLock (
     UINT32                  Handle)
 {
-    ACPI_STATUS             Status;
-
 
     if (Handle != AcpiGbl_GlobalLockHandle)
     {
         return (AE_NOT_ACQUIRED);
     }
 
-    Status = AcpiEvReleaseGlobalLock ();
-    return (Status);
+    AcpiEvReleaseGlobalLock ();
+    return (AE_OK);
 }
 
 

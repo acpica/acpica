@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.61 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -272,7 +272,7 @@ AcpiEvQueueNotifyRequest (
     }
 
     /*
-     * Get the notify object attached to the NS Node
+     * Get the notify object attached to the device Node
      */
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
@@ -282,23 +282,29 @@ AcpiEvQueueNotifyRequest (
         switch (Node->Type)
         {
         case ACPI_TYPE_DEVICE:
-        case ACPI_TYPE_THERMAL:
-        case ACPI_TYPE_PROCESSOR:
-        case ACPI_TYPE_POWER:
 
             if (NotifyValue <= ACPI_MAX_SYS_NOTIFY)
             {
-                HandlerObj = ObjDesc->CommonNotify.SysHandler;
+                HandlerObj = ObjDesc->Device.SysHandler;
             }
             else
             {
-                HandlerObj = ObjDesc->CommonNotify.DrvHandler;
+                HandlerObj = ObjDesc->Device.DrvHandler;
             }
             break;
 
-        default:
-            /* All other types are not supported */
-            return (AE_TYPE);
+
+        case ACPI_TYPE_THERMAL:
+
+            if (NotifyValue <= ACPI_MAX_SYS_NOTIFY)
+            {
+                HandlerObj = ObjDesc->ThermalZone.SysHandler;
+            }
+            else
+            {
+                HandlerObj = ObjDesc->ThermalZone.DrvHandler;
+            }
+            break;
         }
     }
 
@@ -331,8 +337,7 @@ AcpiEvQueueNotifyRequest (
     {
         /* There is no per-device notify handler for this device */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "No notify handler for [%4.4s] node %p\n", Node->Name.Ascii, Node));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "No notify handler for node %p \n", Node));
     }
 
     return (Status);
@@ -428,8 +433,6 @@ static void ACPI_SYSTEM_XFACE
 AcpiEvGlobalLockThread (
     void                    *Context)
 {
-    ACPI_STATUS             Status;
-
 
     /* Signal threads that are waiting for the lock */
 
@@ -437,12 +440,8 @@ AcpiEvGlobalLockThread (
     {
         /* Send sufficient units to the semaphore */
 
-        Status = AcpiOsSignalSemaphore (AcpiGbl_GlobalLockSemaphore,
+        AcpiOsSignalSemaphore (AcpiGbl_GlobalLockSemaphore,
                                 AcpiGbl_GlobalLockThreadCount);
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_REPORT_ERROR (("Could not signal Global Lock semaphore\n"));
-        }
     }
 }
 
@@ -464,7 +463,6 @@ AcpiEvGlobalLockHandler (
     void                    *Context)
 {
     BOOLEAN                 Acquired = FALSE;
-    ACPI_STATUS             Status;
 
 
     /*
@@ -481,15 +479,8 @@ AcpiEvGlobalLockHandler (
 
         /* Run the Global Lock thread which will signal all waiting threads */
 
-        Status = AcpiOsQueueForExecution (OSD_PRIORITY_HIGH,
-                        AcpiEvGlobalLockThread, Context);
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_REPORT_ERROR (("Could not queue Global Lock thread, %s\n",
-                AcpiFormatException (Status)));
-
-            return (ACPI_INTERRUPT_NOT_HANDLED);
-        }
+        AcpiOsQueueForExecution (OSD_PRIORITY_HIGH, AcpiEvGlobalLockThread,
+                                    Context);
     }
 
     return (ACPI_INTERRUPT_HANDLED);
@@ -548,7 +539,7 @@ AcpiEvInitGlobalLockHandler (void)
 
 ACPI_STATUS
 AcpiEvAcquireGlobalLock (
-    UINT16                  Timeout)
+    UINT32                  Timeout)
 {
     ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 Acquired = FALSE;
@@ -557,14 +548,12 @@ AcpiEvAcquireGlobalLock (
     ACPI_FUNCTION_TRACE ("EvAcquireGlobalLock");
 
 
-#ifndef ACPI_APPLICATION
     /* Make sure that we actually have a global lock */
 
     if (!AcpiGbl_GlobalLockPresent)
     {
         return_ACPI_STATUS (AE_NO_GLOBAL_LOCK);
     }
-#endif
 
     /* One more thread wants the global lock */
 
@@ -584,7 +573,7 @@ AcpiEvAcquireGlobalLock (
     {
        /* We got the lock */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Acquired the HW Global Lock\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Acquired the HW Global Lock\n"));
 
         AcpiGbl_GlobalLockAcquired = TRUE;
         return_ACPI_STATUS (AE_OK);
@@ -594,7 +583,7 @@ AcpiEvAcquireGlobalLock (
      * Did not get the lock.  The pending bit was set above, and we must now
      * wait until we get the global lock released interrupt.
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Waiting for the HW Global Lock\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Waiting for the HW Global Lock\n"));
 
     /*
      * Acquire the global lock semaphore first.
@@ -653,7 +642,7 @@ AcpiEvReleaseGlobalLock (void)
      */
     if (Pending)
     {
-        Status = AcpiSetRegister (ACPI_BITREG_GLOBAL_LOCK_RELEASE, 1, ACPI_MTX_LOCK);
+        Status = AcpiHwBitRegisterWrite (ACPI_BITREG_GLOBAL_LOCK_RELEASE, 1, ACPI_MTX_LOCK);
     }
 
     return_ACPI_STATUS (Status);
@@ -668,75 +657,16 @@ AcpiEvReleaseGlobalLock (void)
  *
  * RETURN:      none
  *
- * DESCRIPTION: Disable events and free memory allocated for table storage.
+ * DESCRIPTION: free memory allocated for table storage.
  *
  ******************************************************************************/
 
 void
 AcpiEvTerminate (void)
 {
-    ACPI_NATIVE_UINT        i;
-    ACPI_STATUS             Status;
-
 
     ACPI_FUNCTION_TRACE ("EvTerminate");
 
-
-    if (AcpiGbl_EventsInitialized)
-    {
-        /*
-         * Disable all event-related functionality.
-         * In all cases, on error, print a message but obviously we don't abort.
-         */
-
-        /*
-         * Disable all fixed events
-         */
-        for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
-        {
-            Status = AcpiDisableEvent ((UINT32) i, ACPI_EVENT_FIXED, 0);
-            if (ACPI_FAILURE (Status))
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not disable fixed event %d\n", (UINT32) i));
-            }
-        }
-
-        /*
-         * Disable all GPEs
-         */
-        for (i = 0; i < AcpiGbl_GpeNumberMax; i++)
-        {
-            if (AcpiEvGetGpeNumberIndex ((UINT32)i) != ACPI_GPE_INVALID)
-            {
-                Status = AcpiHwDisableGpe((UINT32) i);
-                if (ACPI_FAILURE (Status))
-                {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not disable GPE %d\n", (UINT32) i));
-                }
-            }
-        }
-
-        /*
-         * Remove SCI handler
-         */
-        Status = AcpiEvRemoveSciHandler ();
-        if (ACPI_FAILURE(Status))
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not remove SCI handler\n"));
-        }
-    }
-
-    /*
-     * Return to original mode if necessary
-     */
-    if (AcpiGbl_OriginalMode == ACPI_SYS_MODE_LEGACY)
-    {
-        Status = AcpiDisable ();
-        if (ACPI_FAILURE (Status))
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "AcpiDisable failed\n"));
-        }
-    }
 
     /*
      * Free global tables, etc.

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.59 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -184,11 +184,11 @@ AcpiHwSetMode (
     UINT32                  Mode)
 {
 
-    ACPI_STATUS             Status;
-    UINT32                  Retry;
+    ACPI_STATUS             Status = AE_NO_HARDWARE_RESPONSE;
 
 
     ACPI_FUNCTION_TRACE ("HwSetMode");
+
 
     switch (Mode)
     {
@@ -196,8 +196,7 @@ AcpiHwSetMode (
 
         /* BIOS should have disabled ALL fixed and GP events */
 
-        Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd,
-                        (ACPI_INTEGER) AcpiGbl_FADT->AcpiEnable, 8);
+        Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, AcpiGbl_FADT->AcpiEnable, 8);
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Attempting to enable ACPI mode\n"));
         break;
 
@@ -207,8 +206,7 @@ AcpiHwSetMode (
          * BIOS should clear all fixed status bits and restore fixed event
          * enable bits to default
          */
-        Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd,
-                    (ACPI_INTEGER) AcpiGbl_FADT->AcpiDisable, 8);
+        Status = AcpiOsWritePort (AcpiGbl_FADT->SmiCmd, AcpiGbl_FADT->AcpiDisable, 8);
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                     "Attempting to enable Legacy (non-ACPI) mode\n"));
         break;
@@ -222,22 +220,14 @@ AcpiHwSetMode (
         return_ACPI_STATUS (Status);
     }
 
-    /*
-     * Some hardware takes a LONG time to switch modes. Give them 3 sec to
-     * do so, but allow faster systems to proceed more quickly.
-     */
-    Retry = 3000;
-    while (Retry)
-    {
-        Status = AE_NO_HARDWARE_RESPONSE;
+    /* Give the platform some time to react */
 
-        if (AcpiHwGetMode() == Mode) {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n", Mode));
-            Status = AE_OK;
-            break;
-        }
-        AcpiOsStall(1000);
-        Retry--;
+    AcpiOsStall (20000);
+
+    if (AcpiHwGetMode () == Mode)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n", Mode));
+        Status = AE_OK;
     }
 
     return_ACPI_STATUS (Status);
@@ -266,7 +256,7 @@ AcpiHwGetMode (void)
 
     ACPI_FUNCTION_TRACE ("HwGetMode");
 
-    Status = AcpiGetRegister (ACPI_BITREG_SCI_ENABLE, &Value, ACPI_MTX_LOCK);
+    Status = AcpiHwBitRegisterRead (ACPI_BITREG_SCI_ENABLE, &Value, ACPI_MTX_LOCK);
     if (ACPI_FAILURE (Status))
     {
         return_VALUE (ACPI_SYS_MODE_LEGACY);
