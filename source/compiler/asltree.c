@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -813,12 +813,12 @@ TrLinkChildNode (
 
 void
 TrWalkParseTree (
+    ASL_PARSE_NODE          *Node,
     UINT32                  Visitation,
     ASL_WALK_CALLBACK       DescendingCallback,
     ASL_WALK_CALLBACK       AscendingCallback,
     void                    *Context)
 {
-    ASL_PARSE_NODE          *Node;
     UINT32                  Level;
     BOOLEAN                 NodePreviouslyVisited;
 
@@ -831,7 +831,6 @@ TrWalkParseTree (
 
     Level = 0;
     NodePreviouslyVisited = FALSE;
-    Node = RootNode;
 
     switch (Visitation)
     {

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -149,6 +149,7 @@ typedef struct asl_parse_node
     struct asl_parse_node       *Parent;
     struct asl_parse_node       *Peer;
     struct asl_parse_node       *Child;
+    struct asl_parse_node       *ParentMethod;
     ACPI_NAMESPACE_NODE         *NsNode;
     union asl_node_value        Value;
     char                        *Filename;
@@ -185,7 +186,7 @@ typedef struct asl_parse_node
 #define NODE_METHOD_NO_RETVAL       0x0100
 #define NODE_METHOD_SOME_NO_RETVAL  0x0200
 #define NODE_RESULT_NOT_USED        0x0400
-
+#define NODE_METHOD_TYPED           0x0800
 
 /* Keeps information about individual control methods */
 
@@ -197,6 +198,7 @@ typedef struct asl_method_info
     UINT32                  NumReturnWithValue;
     ASL_PARSE_NODE          *Node;
     struct asl_method_info  *Next;
+    UINT8                   HasBeenTyped;
 
 } ASL_METHOD_INFO;
 
@@ -321,6 +323,7 @@ typedef enum
     ASL_MSG_UNKNOWN_RESERVED_NAME,
     ASL_MSG_NAME_EXISTS,
     ASL_MSG_INVALID_TYPE,
+    ASL_MSG_MULTIPLE_TYPES,
 
 } ASL_MESSAGE_IDS;
 
