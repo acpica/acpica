@@ -3,7 +3,7 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.42 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@
 ACPI_STATUS
 AcpiExResolveObject (
     ACPI_OPERAND_OBJECT     **SourceDescPtr,
-    ACPI_OBJECT_TYPE8       TargetType,
+    ACPI_OBJECT_TYPE        TargetType,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OPERAND_OBJECT     *SourceDesc = *SourceDescPtr;
@@ -182,34 +182,32 @@ AcpiExResolveObject (
          * are all essentially the same.  This case handles the 
          * "interchangeable" types Integer, String, and Buffer. 
          */
+        if (SourceDesc->Common.Type == INTERNAL_TYPE_REFERENCE)
+        {
+            /* Resolve a reference object first */
 
-        /* TBD: FIX - check for source==REF, resolve, then check type */
+            Status = AcpiExResolveToValue (SourceDescPtr, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                break;
+            }
+        }
 
         /*
-         * If SourceDesc is not a valid type, try to resolve it to one.
+         * Must have a Integer, Buffer, or String
          */
         if ((SourceDesc->Common.Type != ACPI_TYPE_INTEGER)     &&
             (SourceDesc->Common.Type != ACPI_TYPE_BUFFER)      &&
             (SourceDesc->Common.Type != ACPI_TYPE_STRING))
         {
             /*
-             * Initially not a valid type, convert
+             * Conversion successful but still not a valid type
              */
-            Status = AcpiExResolveToValue (SourceDescPtr, WalkState);
-            if (ACPI_SUCCESS (Status) &&
-                (SourceDesc->Common.Type != ACPI_TYPE_INTEGER)     &&
-                (SourceDesc->Common.Type != ACPI_TYPE_BUFFER)      &&
-                (SourceDesc->Common.Type != ACPI_TYPE_STRING))
-            {
-                /*
-                 * Conversion successful but still not a valid type
-                 */
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Cannot assign type %s to %s (must be type Int/Str/Buf)\n",
-                    AcpiUtGetTypeName ((*SourceDescPtr)->Common.Type),
-                    AcpiUtGetTypeName (TargetType)));
-                Status = AE_AML_OPERAND_TYPE;
-            }
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Cannot assign type %s to %s (must be type Int/Str/Buf)\n",
+                AcpiUtGetTypeName (SourceDesc->Common.Type),
+                AcpiUtGetTypeName (TargetType)));
+            Status = AE_AML_OPERAND_TYPE;
         }
         break;
 
