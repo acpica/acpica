@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.23 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -11,8 +11,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -144,7 +144,6 @@ copy (void);
 %}
 
 
-
 LeadNameChar                [A-Za-z_]
 DigitChar                   [0-9]
 HexDigitChar                [A-Fa-f0-9]
@@ -160,7 +159,7 @@ NameSeg                     {LeadNameChar}|{NameSeg1}|{NameSeg2}|{NameSeg3}
 NameString                  {RootChar}|{RootChar}{NamePath}|[\^]+{NamePath}|{NonEmptyNamePath}
 NamePath                    {NonEmptyNamePath}?
 NonEmptyNamePath            {NameSeg}{NamePathTail}*
-NamePathTail                [.]{NameSeg}  
+NamePathTail                [.]{NameSeg}
 
 %%
 
@@ -169,15 +168,14 @@ NamePathTail                [.]{NameSeg}
 [ \t]                       { copy(); count (0); }
 
 
-
-"/*"			            { copy(); comment(); }
+"/*"                        { copy(); comment(); }
 "//"                        { copy(); comment2(); }
 
-\"([^\"]|(\\\"))*\"	        { literal (); return STRING_LITERAL; }
+\"([^\"]|(\\\"))*\"         { literal (); return STRING_LITERAL; }
 
 
 0[xX]{HexDigitChar}+ |
-{DigitChar}+                { AslCompilerlval.i = (UINT32) strtoul((char *)AslCompilertext, (char **) 0, 0);
+{DigitChar}+                { AslCompilerlval.i = UtStrtoul64 ((char *) AslCompilertext, NULL, 0);
                                 copy(); count (1); return (INTEGER); }
 
 "Include"                   { copy(); count (1); return (INCLUDE); }
@@ -189,7 +187,7 @@ NamePathTail                [.]{NameSeg}
 "One"                       { copy(); count (1); return (ONE); }
 "Zero"                      { copy(); count (1); return (ZERO); }
 "Revision"                  { copy(); count (1); return (REVISION); }
-                                
+
 "Offset"                    { copy(); count (1); return (OFFSET); }
 "AccessAs"                  { copy(); count (1); return (ACCESSAS); }
 "BankField"                 { copy(); count (2); return (BANKFIELD); }
@@ -449,51 +447,49 @@ NamePathTail                [.]{NameSeg}
 "AddressRangeACPI"          { copy(); count (0); return (ADDRESSTYPE_ACPI); }
 
 
-
-"{"			                { copy(); count (0); return('{'); }
-"}"			                { copy(); count (0); return('}'); }
-","			                { copy(); count (0); return(','); }
-"("			                { copy(); count (0); return('('); }
-")"			                { copy(); count (0); return(')'); }
+"{"                         { copy(); count (0); return('{'); }
+"}"                         { copy(); count (0); return('}'); }
+","                         { copy(); count (0); return(','); }
+"("                         { copy(); count (0); return('('); }
+")"                         { copy(); count (0); return(')'); }
 
 
 {NameSeg}                   { char *s;
                                 copy(); count (0);
-			                    s=malloc (ACPI_NAME_SIZE + 1);
+                                s=malloc (ACPI_NAME_SIZE + 1);
                                 if (strcmp (AslCompilertext, "\\"))
                                 {
                                     strcpy (s, "____");
                                     strupr (AslCompilertext);
                                 }
-			                    memcpy (s, AslCompilertext, strlen (AslCompilertext));
-			                    AslCompilerlval.s = s;
+                                memcpy (s, AslCompilertext, strlen (AslCompilertext));
+                                AslCompilerlval.s = s;
                                 DbgPrint ("NameSeg: %s\n", s);
                                 return (NAMESEG); }
 
 {NameString}                { char *s;
                                 copy(); count (0);
-			                    s=malloc (strlen (AslCompilertext)+1);
+                                s=malloc (strlen (AslCompilertext)+1);
                                 strupr (AslCompilertext);
-			                    strcpy (s, AslCompilertext);
-			                    s[strlen (AslCompilertext)] = 0;
-			                    AslCompilerlval.s = s;
+                                strcpy (s, AslCompilertext);
+                                s[strlen (AslCompilertext)] = 0;
+                                AslCompilerlval.s = s;
                                 DbgPrint ("NameString: %s\n", s);
                                 return (NAMESTRING); }
 
 "*" |
-"/"                         { copy(); count (1); 
+"/"                         { copy(); count (1);
                                 AslCompilererror ("parse error, expecting ASL keyword or name");}
 
-.                           { copy(); count (1); 
+.                           { copy(); count (1);
                                 AslCompilererror ("invalid character, expecting ASL keyword or name");}
 
-<<EOF>>                     { if (AslPopInputFileStack ()) 
-                                yyterminate(); 
-                              else 
+<<EOF>>                     { if (AslPopInputFileStack ())
+                                yyterminate();
+                              else
                                 return (INCLUDE_END);};
 
 %%
-
 
 
 typedef struct asl_file_node
@@ -507,7 +503,6 @@ typedef struct asl_file_node
 } ASL_FILE_NODE;
 
 ASL_FILE_NODE               *InputStack = NULL;
-
 
 
 /*******************************************************************************
@@ -543,7 +538,7 @@ copy (void)
  *
  * RETURN:      none
  *
- * DESCRIPTION: copy the character to the combined source output file 
+ * DESCRIPTION: copy the character to the combined source output file
  *              (if option is in effect).
  *
  ******************************************************************************/
@@ -579,12 +574,12 @@ AslPopInputFileStack (void)
 {
     ASL_FILE_NODE           *Fnode;
     FILE                    *InputFile = NULL;
-  
+
 
     Fnode = InputStack;
     DbgPrint ("\nPop InputFile Stack, Fnode %p\n\n", Fnode);
 
-    
+
     if (!Fnode)
     {
         return -1;
@@ -625,7 +620,7 @@ AslPopInputFileStack (void)
  * PARAMETERS:  InputFile           - Open file pointer
  *              Filename            - Name of the file
  *
- * RETURN:      None   
+ * RETURN:      None
  *
  * DESCRIPTION: Push the InputFile onto the file stack, and point the parser
  *              to this file.  Called when an include file is successfully
@@ -640,10 +635,10 @@ AslPushInputFileStack (
 {
     ASL_FILE_NODE           *Fnode;
     YY_BUFFER_STATE         State;
-      
+
 
     /* Save the current state in an Fnode */
-          
+
     Fnode = UtLocalCalloc (sizeof (ASL_FILE_NODE));
 
     Fnode->File                 = yyin;
@@ -674,7 +669,7 @@ AslPushInputFileStack (
 
 /*******************************************************************************
  *
- * FUNCTION:    ResetCurrentLineBuffer  
+ * FUNCTION:    ResetCurrentLineBuffer
  *
  * PARAMETERS:  None
  *
@@ -689,10 +684,10 @@ ResetCurrentLineBuffer (
     void)
 {
 
-	Gbl_CurrentColumn = 0;
-	Gbl_CurrentLineNumber++;
-	Gbl_LogicalLineNumber++;
-	Gbl_LineBufPtr = Gbl_CurrentLineBuffer;
+    Gbl_CurrentColumn = 0;
+    Gbl_CurrentLineNumber++;
+    Gbl_LogicalLineNumber++;
+    Gbl_LineBufPtr = Gbl_CurrentLineBuffer;
 }
 
 
@@ -724,12 +719,12 @@ InsertLineBuffer (
 
     /* Insert the character into the line buffer */
 
-	*Gbl_LineBufPtr = SourceChar;
+    *Gbl_LineBufPtr = SourceChar;
     Gbl_LineBufPtr++;
 
     if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
     {
-        printf ("DoOneChar: Line buffer overflow (%d) at line %d\n", 
+        printf ("DoOneChar: Line buffer overflow (%d) at line %d\n",
                     ASL_LINE_BUFFER_SIZE, Gbl_CurrentLineNumber);
         ResetCurrentLineBuffer ();
     }
@@ -765,11 +760,11 @@ InsertLineBuffer (
  *
  ******************************************************************************/
 
-void 
+void
 count (
     int                 Type)
 {
-	int                 i;
+    int                 i;
 
 
     switch (Type)
@@ -785,12 +780,12 @@ count (
     }
 
 
-	for (i = 0; yytext[i] != 0; i++)
-	{
+    for (i = 0; yytext[i] != 0; i++)
+    {
         InsertLineBuffer (yytext[i]);
         Gbl_InputByteCount++;
-		*Gbl_LineBufPtr = 0;
-	}
+        *Gbl_LineBufPtr = 0;
+    }
 }
 
 
@@ -808,7 +803,7 @@ count (
  *
  ******************************************************************************/
 
-void 
+void
 DoOneChar (
     int                     SourceChar)
 {
@@ -841,7 +836,7 @@ DoOneChar (
 void
 comment (void)
 {
-	char                c;
+    char                c;
     char                c1 = 0;
 
 
@@ -849,7 +844,7 @@ loop:
 
     /* Eat chars until end-of-comment */
 
-	while ((c = input()) != '*' && c != 0)
+    while ((c = input()) != '*' && c != 0)
     {
         DoOneChar (c);
         c1 = c;
@@ -861,22 +856,21 @@ loop:
      */
     if ((c1 == '/') && (c == '*'))
     {
-        AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT, 
-                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, 
+        AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT,
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                     Gbl_InputFilename, NULL);
     }
-
 
 
     /* Comment is closed only if the NEXT character is a slash */
 
     DoOneChar (c);
 
-	if ((c1 = input()) != '/' && c != 0)
-	{
-		unput(c1);
-		goto loop;
-	}
+    if ((c1 = input()) != '/' && c != 0)
+    {
+        unput(c1);
+        goto loop;
+    }
 
     DoOneChar (c1);
 }
@@ -897,10 +891,10 @@ loop:
 void
 comment2 (void)
 {
-	char                c;
+    char                c;
 
 
-	while ((c = input()) != '\n' && c != 0)
+    while ((c = input()) != '\n' && c != 0)
     {
         DoOneChar (c);
     }

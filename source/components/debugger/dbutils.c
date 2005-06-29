@@ -1,10 +1,9 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
- * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.18 $
+ * Module Name: dbutils - AML debugger utilities
+ *              $Revision: 1.34 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -116,315 +115,351 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
+#include "acpi.h"
+#include "acparser.h"
 #include "amlcode.h"
-
 #include "acnamesp.h"
+#include "acparser.h"
+#include "acevents.h"
+#include "acinterp.h"
+#include "acdebug.h"
+#include "acdispat.h"
+
+
+#ifdef ENABLE_DEBUGGER
+
+#define _COMPONENT          DEBUGGER
+        MODULE_NAME         ("dbutils")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcAmlOpcodeWalk
+ * FUNCTION:    AcpiDbSetOutputDestination
  *
- * PARAMETERS:  ASL_WALK_CALLBACK
+ * PARAMETERS:  OutputFlags         - Current flags word
  *
  * RETURN:      None
  *
- * DESCRIPTION: Parse tree walk to generate both the AML opcodes and the AML
- *              operands.
+ * DESCRIPTION: Set the current destination for debugger output.  Alos sets
+ *              the debug output level accordingly.
  *
  ******************************************************************************/
 
 void
-OpcAmlOpcodeWalk (
-    ASL_PARSE_NODE          *Node,
-    UINT32                  Level,
-    void                    *Context)
+AcpiDbSetOutputDestination (
+    UINT32                  OutputFlags)
 {
 
-    OpcGenerateAmlOpcode (Node);
-    OpnGenerateAmlOperands (Node);
-}
+    AcpiGbl_DbOutputFlags = (UINT8) OutputFlags;
 
-
-/*******************************************************************************
- *
- * FUNCTION:    OpcSetOptimalIntegerSize
- *
- * PARAMETERS:  Node        - A parse tree node
- *
- * RETURN:      Integer width, in bytes.  Also sets the node AML opcode to the
- *              optimal integer AML prefix opcode.
- *
- * DESCRIPTION: Determine the optimal AML encoding of an integer.  All leading
- *              zeros can be truncated to squeeze the integer into the
- *              minimal number of AML bytes.
- *
- ******************************************************************************/
-
-UINT32
-OpcSetOptimalIntegerSize (
-    ASL_PARSE_NODE          *Node)
-{
-
-
-    if (Node->Value.Integer <= ACPI_UINT8_MAX)
+    if (OutputFlags & DB_REDIRECTABLE_OUTPUT)
     {
-        Node->AmlOpcode = AML_BYTE_OP;
-        return 1;
+        if (OutputToFile)
+        {
+            AcpiDbgLevel = AcpiGbl_DbDebugLevel;
+        }
     }
-
-    else if (Node->Value.Integer <= ACPI_UINT16_MAX)
-    {
-        Node->AmlOpcode = AML_WORD_OP;
-        return 2;
-    }
-
-    else if (Node->Value.Integer <= ACPI_UINT32_MAX)
-    {
-        Node->AmlOpcode = AML_DWORD_OP;
-        return 4;
-    }
-
     else
     {
-        Node->AmlOpcode = AML_QWORD_OP;
-        return 8;
+        AcpiDbgLevel = AcpiGbl_DbConsoleDebugLevel;
     }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcDoAccessAs
+ * FUNCTION:    AcpiDbDumpBuffer
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  Address             - Pointer to the buffer
  *
  * RETURN:      None
  *
- * DESCRIPTION: Implement the ACCESS_AS ASL keyword.
+ * DESCRIPTION: Print a portion of a buffer
  *
  ******************************************************************************/
 
 void
-OpcDoAccessAs (
-    ASL_PARSE_NODE              *Node)
+AcpiDbDumpBuffer (
+    UINT32                  Address)
 {
-    ASL_PARSE_NODE              *Next;
 
+    AcpiOsPrintf ("\nLocation %X:\n", Address);
 
-    Node->AmlOpcodeLength = 1;
-    Next = Node->Child;
-
-    /* First child is the access type */
-
-    Next->AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->ParseOpcode = RAW_DATA;
-
-    /* Second child is the optional access attribute */
-
-    Next = Next->Peer;
-    if (Next->ParseOpcode == DEFAULT_ARG)
-    {
-        Next->Value.Integer = 0;
-    }
-    Next->AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->ParseOpcode = RAW_DATA;
+    AcpiDbgLevel |= TRACE_TABLES;
+    AcpiCmDumpBuffer ((UINT8 *) Address, 64, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcDoUnicode
+ * FUNCTION:    AcpiDbDumpObject
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  ObjDesc         - External ACPI object to dump
+ *              Level           - Nesting level.
  *
  * RETURN:      None
  *
- * DESCRIPTION: Implement the UNICODE ASL "macro".  Convert the input string
- *              to a unicode buffer.
+ * DESCRIPTION: Dump the contents of an ACPI external object
  *
  ******************************************************************************/
 
 void
-OpcDoUnicode (
-    ASL_PARSE_NODE              *Node)
+AcpiDbDumpObject (
+    ACPI_OBJECT             *ObjDesc,
+    UINT32                  Level)
 {
-    ASL_PARSE_NODE              *InitializerNode;
-    UINT32                      Length;
-    UINT32                      Count;
-    UINT32                      i;
-    UINT8                       *AsciiString;
-    UINT16                      *UnicodeString;
-    ASL_PARSE_NODE              *BufferLengthNode;
+    UINT32                  i;
 
 
-    /* Opcode and package length first */
-    /* Buffer Length is next, followed by the initializer list */
-
-    BufferLengthNode = Node->Child;
-    InitializerNode = BufferLengthNode->Peer;
-
-
-    AsciiString = InitializerNode->Value.String;
-
-
-    Count = strlen (AsciiString);
-    Length = (Count * 2)  + sizeof (UINT16);
-    UnicodeString = UtLocalCalloc (Length);
-
-    for (i = 0; i < Count; i++)
+    if (!ObjDesc)
     {
-        UnicodeString[i] = AsciiString[i];
+        AcpiOsPrintf ("[Null Object]\n");
+        return;
     }
 
-    free (AsciiString);
+    for (i = 0; i < Level; i++)
+    {
+        AcpiOsPrintf ("  ");
+    }
 
-    /*
-     * Just set the buffer size node to be the buffer length, regardless
-     * of whether it was previously an integer or a default_arg placeholder
-     */
+    switch (ObjDesc->Type)
+    {
+    case ACPI_TYPE_ANY:
 
-    BufferLengthNode->ParseOpcode   = INTEGER;
-    BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
-    BufferLengthNode->Value.Integer = Length;
-
-    OpcSetOptimalIntegerSize (BufferLengthNode);
+        AcpiOsPrintf ("[Object Reference]  Value: %p\n", ObjDesc->Reference.Handle);
+        break;
 
 
-    InitializerNode->Value.Pointer  = UnicodeString;
-    InitializerNode->AmlOpcode      = AML_RAW_DATA_BUFFER;
-    InitializerNode->AmlLength      = Length;
-    InitializerNode->ParseOpcode    = RAW_DATA;
+    case ACPI_TYPE_NUMBER:
+        AcpiOsPrintf ("[Number]  Value: %ld (%lX)\n", ObjDesc->Number.Value, ObjDesc->Number.Value);
+        break;
+
+
+    case ACPI_TYPE_STRING:
+
+        AcpiOsPrintf ("[String]  Value: ");
+        for (i = 0; i < ObjDesc->String.Length; i++)
+        {
+            AcpiOsPrintf ("%c", ObjDesc->String.Pointer[i]);
+        }
+        AcpiOsPrintf ("\n");
+        break;
+
+
+    case ACPI_TYPE_BUFFER:
+
+        AcpiOsPrintf ("[Buffer]  Value: ");
+        AcpiCmDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
+        break;
+
+
+    case ACPI_TYPE_PACKAGE:
+
+        AcpiOsPrintf ("[Package]  Contains %d Elements: \n", ObjDesc->Package.Count);
+
+        for (i = 0; i < ObjDesc->Package.Count; i++)
+        {
+            AcpiDbDumpObject (&ObjDesc->Package.Elements[i], Level+1);
+        }
+        break;
+
+
+    case INTERNAL_TYPE_REFERENCE:
+        AcpiOsPrintf ("[Object Reference]  Value: %p\n", ObjDesc->Reference.Handle);
+        break;
+
+    case ACPI_TYPE_PROCESSOR:
+        AcpiOsPrintf ("[Processor]\n");
+        break;
+
+    case ACPI_TYPE_POWER:
+        AcpiOsPrintf ("[Power Resource]\n");
+        break;
+
+    default:
+
+        AcpiOsPrintf ("[Unknown Type] %X \n", ObjDesc->Type);
+        break;
+    }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcDoEisaId
+ * FUNCTION:    AcpiDbPrepNamestring
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  Name            - String to prepare
  *
  * RETURN:      None
  *
- *
- * DESCRIPTION: Convert a string EISA ID to numeric representation
+ * DESCRIPTION: Translate all forward slashes and dots to backslashes.
  *
  ******************************************************************************/
 
 void
-OpcDoEisaId (
-    ASL_PARSE_NODE          *Node)
+AcpiDbPrepNamestring (
+    NATIVE_CHAR             *Name)
 {
-    UINT32                  id;
-    UINT32                  SwappedId;
-    NATIVE_CHAR             *InString;
 
 
-    InString = Node->Value.String;
+    if (!Name)
+    {
+        return;
+    }
 
-    /* Create ID big-endian first */
+    STRUPR (Name);
 
-    id = 0;
-    id |= (InString[0] - '@') << 26;
-    id |= (InString[1] - '@') << 21;
-    id |= (InString[2] - '@') << 16;
+    /* Convert a leading forward slash to a backslash */
 
-    id |= (UtHexCharToValue (InString[3])) << 12;
-    id |= (UtHexCharToValue (InString[4])) << 8;
-    id |= (UtHexCharToValue (InString[5])) << 4;
-    id |= UtHexCharToValue (InString[6]);
+    if (*Name == '/')
+    {
+        *Name = '\\';
+    }
 
-    /* swap to little-endian  */
+    /* Ignore a leading backslash, this is the root prefix */
 
-    SwappedId = (id & 0xFF) << 24;
-    SwappedId |= ((id >> 8) & 0xFF) << 16;
-    SwappedId |= ((id >> 16) & 0xFF) << 8;
-    SwappedId |= (id >> 24) & 0xFF;
+    if (*Name == '\\')
+    {
+        Name++;
+    }
 
-    Node->Value.Integer32 = SwappedId;
+    /* Convert all slash path separators to dots */
 
-    /* Node is now an integer */
+    while (*Name)
+    {
+        if ((*Name == '/') ||
+            (*Name == '\\'))
+        {
+            *Name = '.';
+        }
 
-    Node->ParseOpcode = INTEGER;
-    OpcSetOptimalIntegerSize (Node);
+        Name++;
+    }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcGenerateAmlOpcode
+ * FUNCTION:    AcpiDbSecondPassParse
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  Root            - Root of the parse tree
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Generate the AML opcode associated with the node and its
- *              parse (lex/flex) keyword opcode.  Essentially implements
- *              a mapping between the parse opcodes and the actual AML opcodes.
+ * DESCRIPTION: Second pass parse of the ACPI tables.  We need to wait until
+ *              second pass to parse the control methods
  *
  ******************************************************************************/
 
-void
-OpcGenerateAmlOpcode (
-    ASL_PARSE_NODE          *Node)
+ACPI_STATUS
+AcpiDbSecondPassParse (
+    ACPI_PARSE_OBJECT       *Root)
 {
+    ACPI_PARSE_OBJECT       *Op = Root;
+    ACPI_PARSE2_OBJECT      *Method;
+    ACPI_PARSE_OBJECT       *SearchOp;
+    ACPI_PARSE_OBJECT       *StartOp;
+    ACPI_STATUS             Status = AE_OK;
+    UINT32                  BaseAmlOffset;
 
-    UINT16                  Index = Node->ParseOpcode;
 
+    AcpiOsPrintf ("Pass two parse ....\n");
 
-    Index = Node->ParseOpcode - ASL_PARSE_OPCODE_BASE;
-
-
-    Node->AmlOpcode = AslKeywordMapping[Index].AmlOpcode;
-    Node->Flags |= AslKeywordMapping[Index].Flags;
-
-    if (!Node->Value.Integer)
+    while (Op)
     {
-        Node->Value.Integer = AslKeywordMapping[Index].Value;
+        if (Op->Opcode == AML_METHOD_OP)
+        {
+            Method = (ACPI_PARSE2_OBJECT *) Op;
+            Status = AcpiPsParseAml (Op, Method->Data, Method->Length, 0,
+                        NULL, NULL, NULL, AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
+
+
+            BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
+            StartOp = (Method->Value.Arg)->Next;
+            SearchOp = StartOp;
+
+            while (SearchOp)
+            {
+                SearchOp->AmlOffset += BaseAmlOffset;
+                SearchOp = AcpiPsGetDepthNext (StartOp, SearchOp);
+            }
+
+        }
+
+        if (Op->Opcode == AML_REGION_OP)
+        {
+            /* TBD: [Investigate] this isn't quite the right thing to do! */
+            /*
+             *
+             * Method = (ACPI_DEFERRED_OP *) Op;
+             * Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength);
+             */
+        }
+
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        Op = AcpiPsGetDepthNext (Root, Op);
     }
 
-
-    /* Special handling for some opcodes */
-
-    switch (Node->ParseOpcode)
-    {
-    case INTEGER:
-        /*
-         * Set the opcode based on the size of the integer
-         */
-        OpcSetOptimalIntegerSize (Node);
-        break;
-
-    case OFFSET:
-        Node->AmlOpcodeLength = 1;
-        break;
-
-    case ACCESSAS:
-        OpcDoAccessAs (Node);
-        break;
-
-    case EISAID:
-        OpcDoEisaId (Node);
-        break;
-
-    case UNICODE:
-        OpcDoUnicode (Node);
-        break;
-
-    case INCLUDE:
-        Node->Child->ParseOpcode = DEFAULT_ARG;
-        Gbl_HasIncludeFiles = TRUE;
-        break;
-
-    case EXTERNAL:
-        Node->Child->ParseOpcode = DEFAULT_ARG;
-        Node->Child->Peer->ParseOpcode = DEFAULT_ARG;
-        break;
-    }
-
-    return;
+    return (Status);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbLocalNsLookup
+ *
+ * PARAMETERS:  Name            - Name to lookup
+ *
+ * RETURN:      Pointer to a namespace node
+ *
+ * DESCRIPTION: Lookup a name in the ACPI namespace
+ *
+ ******************************************************************************/
+
+ACPI_NAMESPACE_NODE *
+AcpiDbLocalNsLookup (
+    NATIVE_CHAR             *Name)
+{
+    NATIVE_CHAR             *InternalPath;
+    ACPI_STATUS             Status;
+    ACPI_NAMESPACE_NODE     *Node = NULL;
+
+
+    AcpiDbPrepNamestring (Name);
+
+    /* Build an internal namestring */
+
+    Status = AcpiNsInternalizeName (Name, &InternalPath);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Invalid namestring: %s\n", Name);
+        return (NULL);
+    }
+
+    /* Lookup the name */
+
+    /* TBD: [Investigate] what scope do we use? */
+    /* Use the root scope for the start of the search */
+
+    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
+                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Node);
+
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiCmFormatException (Status));
+    }
+
+
+    AcpiCmFree (InternalPath);
+
+    return (Node);
+}
+
+
+#endif /* ENABLE_DEBUGGER */
 
 

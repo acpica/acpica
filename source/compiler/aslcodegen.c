@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -188,17 +188,17 @@ CgAmlWriteWalk (
     DbgPrint ("%5.5d [%d]", Node->LogicalLineNumber, Level);
     UtPrintFormattedName (Node->ParseOpcode, Level);
 
-	if (Node->ParseOpcode == NAMESEG    ||
-		Node->ParseOpcode == NAMESTRING ||
+    if (Node->ParseOpcode == NAMESEG    ||
+        Node->ParseOpcode == NAMESTRING ||
         Node->ParseOpcode == METHODCALL)
-	{
-		DbgPrint ("%10.32s      ", Node->ExternalName);
-	}
+    {
+        DbgPrint ("%10.32s      ", Node->ExternalName);
+    }
 
-	else
-	{
-		DbgPrint ("                ");
-	}
+    else
+    {
+        DbgPrint ("                ");
+    }
 
     DbgPrint ("Val-%08X POp-%04X AOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X PSubLen-%04X Node-%08X Chld-%08X Paren-%08X Flags-%04X\n",
                 Node->Value.Integer32,
@@ -209,9 +209,9 @@ CgAmlWriteWalk (
                 Node->AmlLength,
                 Node->AmlSubtreeLength,
                 Node->Parent ? Node->Parent->AmlSubtreeLength : 0,
-				Node,
-				Node->Child,
-				Node->Parent,
+                Node,
+                Node->Child,
+                Node->Parent,
                 Node->Flags);
 
 

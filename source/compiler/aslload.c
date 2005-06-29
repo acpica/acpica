@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -129,7 +129,6 @@
 
 #define _COMPONENT          DISPATCHER
         MODULE_NAME         ("aslload")
-
 
 
 /*******************************************************************************
@@ -257,7 +256,7 @@ LdLoadFieldElements (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Enter the named elements of the resource descriptor (children 
+ * DESCRIPTION: Enter the named elements of the resource descriptor (children
  *              of the parent) into the namespace.
  *
  * NOTE: In the real AML namespace, these named elements never exist.  But

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.25 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -11,8 +11,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -132,7 +132,7 @@
 
 
 /*
- * Next statement is important - this makes everything public so that 
+ * Next statement is important - this makes everything public so that
  * we can access some of the parser tables from other modules
  */
 #define static
@@ -146,7 +146,7 @@ AslLocalAllocate (unsigned int Size);
 /*
  * The windows version of bison defines this incorrectly as "32768" (Not negative).
  * Using a custom (edited binary) version of bison that defines YYFLAG as YYFBAD
- * instead (#define	YYFBAD		32768), so we can define it correctly here.
+ * instead (#define YYFBAD      32768), so we can define it correctly here.
  *
  * The problem is that if YYFLAG is positive, the extended syntax error messages
  * are disabled.
@@ -163,9 +163,9 @@ AslLocalAllocate (unsigned int Size);
  */
 
 %union {
-	UINT64          i;
-	char            *s;
-	ASL_PARSE_NODE  *n;
+    UINT64          i;
+    char            *s;
+    ASL_PARSE_NODE  *n;
 }
 
 /*
@@ -473,7 +473,6 @@ AslLocalAllocate (unsigned int Size);
 %type <n> OptionalAccessAttribTerm
 
 
-
 /* Named Objects */
 
 %type <n> BankFieldTerm
@@ -552,7 +551,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> LGreaterTerm
 %type <n> LGreaterEqualTerm
 %type <n> LLessTerm
-%type <n> LLessEqualTerm 
+%type <n> LLessEqualTerm
 %type <n> LNotTerm
 %type <n> LNotEqualTerm
 %type <n> LoadTableTerm
@@ -706,9 +705,9 @@ AslLocalAllocate (unsigned int Size);
 %type <n> OptionalType
 %type <n> OptionalType_Last
 %type <n> OptionalTranslationType_Last
-%type <n> OptionalStringData 
-%type <n> OptionalNameString 
-%type <n> OptionalNameString_First 
+%type <n> OptionalStringData
+%type <n> OptionalNameString
+%type <n> OptionalNameString_First
 %type <n> OptionalNameString_Last
 %type <n> OptionalAddressRange
 
@@ -730,14 +729,13 @@ AslLocalAllocate (unsigned int Size);
  */
 
 
-
 /*
  * Blocks, Data, and Opcodes
  */
 
 ASLCode
     : DefinitionBlockTerm
-    | error                         {YYABORT; $$ = NULL}                             
+    | error                         {YYABORT; $$ = NULL}
     ;
 
 DefinitionBlockTerm
@@ -809,7 +807,7 @@ IntegerData
     | Integer                       {}
     | ConstTerm                     {}
     ;
-    
+
 StringData
     : Type2StringOpcode             {}
     | String                        {}
@@ -870,7 +868,7 @@ TermArg
     | LocalTerm                     {}
     ;
 
-Target 
+Target
     :                               {$$ = TrCreateLeafNode (ZERO)}       /* Placeholder is a ZeroOp object */
     | ','                           {$$ = TrCreateLeafNode (ZERO)}       /* Placeholder is a ZeroOp object */
     | ',' SuperName                 {$$ = TrSetNodeFlags ($2, NODE_IS_TARGET)}
@@ -976,7 +974,7 @@ Type3Opcode
     : EISAIDTerm                    {}
     ;
 
-/* Obsolete 
+/* Obsolete
 Type4Opcode
     : ConcatTerm                    {}
     | ToDecimalStringTerm           {}
@@ -1002,8 +1000,8 @@ Type6Opcode
 IncludeTerm
     : INCLUDE '('                   {$$ = TrCreateLeafNode (INCLUDE)}
         String  ')'                 {$$ = TrLinkChildren ($<n>3,1,$4);FlOpenIncludeFile ($4);}
-        TermList        
-        IncludeEndTerm              {$$ = TrLinkPeerNodes (3,$<n>3,$7,$8)}                     
+        TermList
+        IncludeEndTerm              {$$ = TrLinkPeerNodes (3,$<n>3,$7,$8)}
     ;
 
 IncludeEndTerm
@@ -1025,19 +1023,18 @@ ExternalTerm
     ;
 
 
-
 /******* Named Objects *******************************************************/
 
 
 BankFieldTerm
     : BANKFIELD '('                 {$$ = TrCreateLeafNode (BANKFIELD)}
         NameString
-        NameStringItem 
-        TermArgItem 
-        ',' AccessTypeKeyword 
-        ',' LockRuleKeyword 
+        NameStringItem
+        TermArgItem
+        ',' AccessTypeKeyword
+        ',' LockRuleKeyword
         ',' UpdateRuleKeyword
-        ')' '{' 
+        ')' '{'
             FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,7,$4,$5,$6,$8,$10,$12,$15)}
     | BANKFIELD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1045,14 +1042,14 @@ BankFieldTerm
 
 FieldUnitList
     :                               {$$ = NULL}
-    | FieldUnit 
+    | FieldUnit
         FieldUnitListTail           {$$ = TrLinkPeerNode ($1,$2)}
     ;
 
 FieldUnitListTail
     :                               {$$ = NULL}
     | ','                           {$$ = NULL}  /* Allows a trailing comma at list end */
-    | ',' FieldUnit 
+    | ',' FieldUnit
             FieldUnitListTail       {$$ = TrLinkPeerNode ($2,$3)}
     ;
 
@@ -1064,7 +1061,7 @@ FieldUnit
 
 FieldUnitEntry
     : ',' AmlPackageLengthTerm      {$$ = TrCreateNode (RESERVED_BYTES,1,$2)}
-    | NameSeg ',' 
+    | NameSeg ','
         AmlPackageLengthTerm        {$$ = TrLinkChildNode ($1,$3)}
     ;
 
@@ -1087,7 +1084,7 @@ AccessAsTerm
 
 CreateBitFieldTerm
     : CREATEBITFIELD '('            {$$ = TrCreateLeafNode (CREATEBITFIELD)}
-        TermArg 
+        TermArg
         TermArgItem
         NameStringItem
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1097,9 +1094,9 @@ CreateBitFieldTerm
 
 CreateByteFieldTerm
     : CREATEBYTEFIELD '('           {$$ = TrCreateLeafNode (CREATEBYTEFIELD)}
-        TermArg 
-        TermArgItem 
-        NameStringItem 
+        TermArg
+        TermArgItem
+        NameStringItem
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CREATEBYTEFIELD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1107,9 +1104,9 @@ CreateByteFieldTerm
 
 CreateDWordFieldTerm
     : CREATEDWORDFIELD '('          {$$ = TrCreateLeafNode (CREATEDWORDFIELD)}
-        TermArg 
-        TermArgItem 
-        NameStringItem 
+        TermArg
+        TermArgItem
+        NameStringItem
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CREATEDWORDFIELD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1117,10 +1114,10 @@ CreateDWordFieldTerm
 
 CreateFieldTerm
     : CREATEFIELD '('               {$$ = TrCreateLeafNode (CREATEFIELD)}
-        TermArg 
-        TermArgItem 
-        TermArgItem 
-        NameStringItem 
+        TermArg
+        TermArgItem
+        TermArgItem
+        NameStringItem
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$5,$6,$7)}
     | CREATEFIELD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1128,9 +1125,9 @@ CreateFieldTerm
 
 CreateQWordFieldTerm
     : CREATEQWORDFIELD '('          {$$ = TrCreateLeafNode (CREATEQWORDFIELD)}
-        TermArg 
-        TermArgItem 
-        NameStringItem 
+        TermArg
+        TermArgItem
+        NameStringItem
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CREATEQWORDFIELD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1138,9 +1135,9 @@ CreateQWordFieldTerm
 
 CreateWordFieldTerm
     : CREATEWORDFIELD '('           {$$ = TrCreateLeafNode (CREATEWORDFIELD)}
-        TermArg 
-        TermArgItem 
-        NameStringItem 
+        TermArg
+        TermArgItem
+        NameStringItem
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | CREATEWORDFIELD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1148,10 +1145,10 @@ CreateWordFieldTerm
 
 DataRegionTerm
     : DATATABLEREGION '('           {$$ = TrCreateLeafNode (DATATABLEREGION)}
-        NameString 
-        TermArgItem 
-        TermArgItem 
-        TermArgItem 
+        NameString
+        TermArgItem
+        TermArgItem
+        TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$5,$6,$7)}
     | DATATABLEREGION '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1160,7 +1157,7 @@ DataRegionTerm
 DeviceTerm
     : DEVICE '('                    {$$ = TrCreateLeafNode (DEVICE)}
         NameString
-        ')' '{' 
+        ')' '{'
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | DEVICE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1176,11 +1173,11 @@ EventTerm
 
 FieldTerm
     : FIELD '('                     {$$ = TrCreateLeafNode (FIELD)}
-        NameString 
-        ',' AccessTypeKeyword 
-        ',' LockRuleKeyword 
+        NameString
+        ',' AccessTypeKeyword
+        ',' LockRuleKeyword
         ',' UpdateRuleKeyword
-        ')' '{' 
+        ')' '{'
             FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,5,$4,$6,$8,$10,$13)}
     | FIELD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1188,12 +1185,12 @@ FieldTerm
 
 IndexFieldTerm
     : INDEXFIELD '('                {$$ = TrCreateLeafNode (INDEXFIELD)}
-        NameString 
-        NameStringItem 
-        ',' AccessTypeKeyword 
-        ',' LockRuleKeyword 
+        NameString
+        NameStringItem
+        ',' AccessTypeKeyword
+        ',' LockRuleKeyword
         ',' UpdateRuleKeyword
-        ')' '{' 
+        ')' '{'
             FieldUnitList '}'       {$$ = TrLinkChildren ($<n>3,6,$4,$5,$7,$9,$11,$14)}
     | INDEXFIELD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1205,7 +1202,7 @@ MethodTerm
         OptionalByteConstExpr
         OptionalSerializeRuleKeyword
         OptionalByteConstExpr
-        ')' '{' 
+        ')' '{'
             TermList '}'            {$$ = TrLinkChildren ($<n>3,5,$4,$5,$6,$7,$10)}
     | METHOD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1213,7 +1210,7 @@ MethodTerm
 
 MutexTerm
     : MUTEX '('                     {$$ = TrCreateLeafNode (MUTEX)}
-        NameString 
+        NameString
         ',' ByteConstExpr
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | MUTEX '('
@@ -1222,10 +1219,10 @@ MutexTerm
 
 OpRegionTerm
     : OPERATIONREGION '('           {$$ = TrCreateLeafNode (OPERATIONREGION)}
-        NameString  
-        ',' OpRegionSpaceIdTerm  
-        TermArgItem  
-        TermArgItem 
+        NameString
+        ',' OpRegionSpaceIdTerm
+        TermArgItem
+        TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$7,$8)}
     | OPERATIONREGION '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1238,10 +1235,10 @@ OpRegionSpaceIdTerm
 
 PowerResTerm
     : POWERRESOURCE '('             {$$ = TrCreateLeafNode (POWERRESOURCE)}
-        NameString 
-        ',' ByteConstExpr 
+        NameString
+        ',' ByteConstExpr
         ',' WordConstExpr
-        ')' '{' 
+        ')' '{'
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,4,$4,$6,$8,$11)}
     | POWERRESOURCE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1249,11 +1246,11 @@ PowerResTerm
 
 ProcessorTerm
     : PROCESSOR '('                 {$$ = TrCreateLeafNode (PROCESSOR)}
-        NameString 
+        NameString
         ',' ByteConstExpr
         OptionalDWordConstExpr
         OptionalByteConstExpr
-        ')' '{' 
+        ')' '{'
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,5,$4,$6,$7,$8,$11)}
     | PROCESSOR '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1262,12 +1259,11 @@ ProcessorTerm
 ThermalZoneTerm
     : THERMALZONE '('               {$$ = TrCreateLeafNode (THERMALZONE)}
         NameString
-        ')' '{' 
+        ')' '{'
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | THERMALZONE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
-
 
 
 /******* Namespace modifiers *************************************************/
@@ -1275,8 +1271,8 @@ ThermalZoneTerm
 
 AliasTerm
     : ALIAS '('                     {$$ = TrCreateLeafNode (ALIAS)}
-        NameString 
-        NameStringItem 
+        NameString
+        NameStringItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | ALIAS '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1284,8 +1280,8 @@ AliasTerm
 
 NameTerm
     : NAME '('                      {$$ = TrCreateLeafNode (NAME)}
-        NameString 
-        ',' DataObject 
+        NameString
+        ',' DataObject
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | NAME '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1294,12 +1290,11 @@ NameTerm
 ScopeTerm
     : SCOPE '('                     {$$ = TrCreateLeafNode (SCOPE)}
         NameString
-        ')' '{' 
+        ')' '{'
             ObjectList '}'          {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | SCOPE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
-
 
 
 /******* Type 1 opcodes *******************************************************/
@@ -1319,8 +1314,8 @@ ContinueTerm
 
 FatalTerm
     : FATAL '('                     {$$ = TrCreateLeafNode (FATAL)}
-        ByteConstExpr 
-        ',' DWordConstExpr 
+        ByteConstExpr
+        ',' DWordConstExpr
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$6,$7)}
     | FATAL '('
@@ -1331,11 +1326,11 @@ IfElseTerm
     : IfTerm ElseTerm               {$$ = TrLinkPeerNode ($1,$2)}
     ;
 
-IfTerm 
+IfTerm
     : IF '('                        {$$ = TrCreateLeafNode (IF)}
         TermArg
-        ')' '{' 
-            TermList '}' 
+        ')' '{'
+            TermList '}'
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | IF '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1344,19 +1339,19 @@ IfTerm
 ElseTerm
     :                               {$$ = NULL}
     | ELSE '{'                      {$$ = TrCreateLeafNode (ELSE)}
-        TermList '}' 
+        TermList '}'
                                     {$$ = TrLinkChildren ($<n>3,1,$4)}
 
     | ELSEIF '{'                    {$$ = TrCreateLeafNode (ELSEIF)}
-        TermList '}' 
-        ElseTerm 
+        TermList '}'
+        ElseTerm
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     ;
 
 LoadTerm
     : LOAD '('                      {$$ = TrCreateLeafNode (LOAD)}
-        NameString 
-        ',' SuperName 
+        NameString
+        ',' SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | LOAD '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1366,9 +1361,9 @@ NoOpTerm
     : NOOP                          {$$ = TrCreateNode (NOOP, 0)}
     ;
 
-NotifyTerm 
+NotifyTerm
     : NOTIFY '('                    {$$ = TrCreateLeafNode (NOTIFY)}
-        SuperName 
+        SuperName
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | NOTIFY '('
@@ -1426,8 +1421,8 @@ StallTerm
 SwitchTerm
     : SWITCH '('                    {$$ = TrCreateLeafNode (SWITCH)}
         TermArg
-        ')' '{' 
-            CaseTermList '}' 
+        ')' '{'
+            CaseTermList '}'
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | SWITCH '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1436,37 +1431,37 @@ SwitchTerm
 CaseTermList
     :                               {}
     | CaseTerm                      {}
-    | DefaultTerm 
+    | DefaultTerm
         DefaultTermList             {}
-    | CaseTerm 
+    | CaseTerm
         CaseTermList                {}
     ;
 
 DefaultTermList
     :                               {}
     | CaseTerm                      {}
-    | CaseTerm 
+    | CaseTerm
         DefaultTermList             {}
     ;
 
 CaseTerm
     : CASE '('                      {$$ = TrCreateLeafNode (CASE)}
         DataObject
-        ')' '{' 
-            TermList '}' 
+        ')' '{'
+            TermList '}'
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | CASE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
 
 DefaultTerm
-    : DEFAULT '{'                   {$$ = TrCreateLeafNode (DEFAULT)}  
-        TermList '}' 
+    : DEFAULT '{'                   {$$ = TrCreateLeafNode (DEFAULT)}
+        TermList '}'
                                     {$$ = TrLinkChildren ($<n>3,1,$4)}
     ;
 
 UnloadTerm
-    : UNLOAD '('                    {$$ = TrCreateLeafNode (UNLOAD)}  
+    : UNLOAD '('                    {$$ = TrCreateLeafNode (UNLOAD)}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | UNLOAD '('
@@ -1474,9 +1469,9 @@ UnloadTerm
     ;
 
 WhileTerm
-    : WHILE '('                     {$$ = TrCreateLeafNode (WHILE)}  
+    : WHILE '('                     {$$ = TrCreateLeafNode (WHILE)}
         TermArg
-        ')' '{' TermList '}' 
+        ')' '{' TermList '}'
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | WHILE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -1486,17 +1481,17 @@ WhileTerm
 /******* Type 2 opcodes *******************************************************/
 
 AcquireTerm
-    : ACQUIRE '('                   {$$ = TrCreateLeafNode (ACQUIRE)}  
-        SuperName 
+    : ACQUIRE '('                   {$$ = TrCreateLeafNode (ACQUIRE)}
+        SuperName
         ',' WordConstExpr
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | ACQUIRE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
-    
+
 AddTerm
-    : ADD '('                       {$$ = TrCreateLeafNode (ADD)}  
-        TermArg 
+    : ADD '('                       {$$ = TrCreateLeafNode (ADD)}
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1505,8 +1500,8 @@ AddTerm
     ;
 
 AndTerm
-    : AND '('                       {$$ = TrCreateLeafNode (AND)}  
-        TermArg 
+    : AND '('                       {$$ = TrCreateLeafNode (AND)}
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1515,8 +1510,8 @@ AndTerm
     ;
 
 ConcatTerm
-    : CONCATENATE '('               {$$ = TrCreateLeafNode (CONCATENATE)}  
-        TermArg 
+    : CONCATENATE '('               {$$ = TrCreateLeafNode (CONCATENATE)}
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1525,8 +1520,8 @@ ConcatTerm
     ;
 
 ConcatResTerm
-    : CONCATENATERESTEMPLATE '('        {$$ = TrCreateLeafNode (CONCATENATERESTEMPLATE)}  
-        TermArg 
+    : CONCATENATERESTEMPLATE '('        {$$ = TrCreateLeafNode (CONCATENATERESTEMPLATE)}
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1535,7 +1530,7 @@ ConcatResTerm
     ;
 
 CondRefOfTerm
-    : CONDREFOF '('                 {$$ = TrCreateLeafNode (CONDREFOF)}  
+    : CONDREFOF '('                 {$$ = TrCreateLeafNode (CONDREFOF)}
         SuperName
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
@@ -1544,8 +1539,8 @@ CondRefOfTerm
     ;
 
 CopyTerm
-    : COPY '('                      {$$ = TrCreateLeafNode (COPY)}  
-        TermArg 
+    : COPY '('                      {$$ = TrCreateLeafNode (COPY)}
+        TermArg
         ',' CopyTarget
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$6)}
     | COPY '('
@@ -1559,15 +1554,15 @@ CopyTarget
     ;
 
 DecTerm
-    : DECREMENT '('                 {$$ = TrCreateLeafNode (DECREMENT)}  
+    : DECREMENT '('                 {$$ = TrCreateLeafNode (DECREMENT)}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | DECREMENT '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
-    
+
 DerefOfTerm
-    : DEREFOF '('                   {$$ = TrCreateLeafNode (DEREFOF)}  
+    : DEREFOF '('                   {$$ = TrCreateLeafNode (DEREFOF)}
         TermArg
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | DEREFOF '('
@@ -1575,8 +1570,8 @@ DerefOfTerm
     ;
 
 DivideTerm
-    : DIVIDE '('                    {$$ = TrCreateLeafNode (DIVIDE)}  
-        TermArg 
+    : DIVIDE '('                    {$$ = TrCreateLeafNode (DIVIDE)}
+        TermArg
         TermArgItem
         Target
         Target
@@ -1586,7 +1581,7 @@ DivideTerm
     ;
 
 FindSetLeftBitTerm
-    : FINDSETLEFTBIT '('            {$$ = TrCreateLeafNode (FINDSETLEFTBIT)}  
+    : FINDSETLEFTBIT '('            {$$ = TrCreateLeafNode (FINDSETLEFTBIT)}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
@@ -1595,7 +1590,7 @@ FindSetLeftBitTerm
     ;
 
 FindSetRightBitTerm
-    : FINDSETRIGHTBIT '('           {$$ = TrCreateLeafNode (FINDSETRIGHTBIT)}  
+    : FINDSETRIGHTBIT '('           {$$ = TrCreateLeafNode (FINDSETRIGHTBIT)}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
@@ -1604,7 +1599,7 @@ FindSetRightBitTerm
     ;
 
 FromBCDTerm
-    : FROMBCD '('                   {$$ = TrCreateLeafNode (FROMBCD)}  
+    : FROMBCD '('                   {$$ = TrCreateLeafNode (FROMBCD)}
         TermArg
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
@@ -1613,7 +1608,7 @@ FromBCDTerm
     ;
 
 IncTerm
-    : INCREMENT '('                 {$$ = TrCreateLeafNode (INCREMENT)}  
+    : INCREMENT '('                 {$$ = TrCreateLeafNode (INCREMENT)}
         SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,1,$4)}
     | INCREMENT '('
@@ -1621,8 +1616,8 @@ IncTerm
     ;
 
 IndexTerm
-    : INDEX '('                     {$$ = TrCreateLeafNode (INDEX)}  
-        TermArg 
+    : INDEX '('                     {$$ = TrCreateLeafNode (INDEX)}
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1631,8 +1626,8 @@ IndexTerm
     ;
 
 LAndTerm
-    : LAND '('                      {$$ = TrCreateLeafNode (LAND)}  
-        TermArg 
+    : LAND '('                      {$$ = TrCreateLeafNode (LAND)}
+        TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LAND '('
@@ -1641,7 +1636,7 @@ LAndTerm
 
 LEqualTerm
     : LEQUAL '('                    {$$ = TrCreateLeafNode (LEQUAL)}
-        TermArg 
+        TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LEQUAL '('
@@ -1650,7 +1645,7 @@ LEqualTerm
 
 LGreaterTerm
     : LGREATER '('                  {$$ = TrCreateLeafNode (LGREATER)}
-        TermArg 
+        TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LGREATER '('
@@ -1659,7 +1654,7 @@ LGreaterTerm
 
 LGreaterEqualTerm
     : LGREATEREQUAL '('             {$$ = TrCreateLeafNode (LGREATEREQUAL)}
-        TermArg 
+        TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LGREATEREQUAL '('
@@ -1668,7 +1663,7 @@ LGreaterEqualTerm
 
 LLessTerm
     : LLESS '('                     {$$ = TrCreateLeafNode (LLESS)}
-        TermArg 
+        TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LLESS '('
@@ -1677,7 +1672,7 @@ LLessTerm
 
 LLessEqualTerm
     : LLESSEQUAL '('                {$$ = TrCreateLeafNode (LLESSEQUAL)}
-        TermArg 
+        TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LLESSEQUAL '('
@@ -1694,7 +1689,7 @@ LNotTerm
 
 LNotEqualTerm
     : LNOTEQUAL '('                 {$$ = TrCreateLeafNode (LNOTEQUAL)}
-        TermArg 
+        TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LNOTEQUAL '('
@@ -1703,8 +1698,8 @@ LNotEqualTerm
 
 LoadTableTerm
     : LOADTABLE '('                 {$$ = TrCreateLeafNode (LOADTABLE)}
-        TermArg 
-        TermArgItem 
+        TermArg
+        TermArgItem
         TermArgItem
         OptionalListTermArg
         OptionalListTermArg
@@ -1716,7 +1711,7 @@ LoadTableTerm
 
 LOrTerm
     : LOR '('                       {$$ = TrCreateLeafNode (LOR)}
-        TermArg 
+        TermArg
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | LOR '('
@@ -1725,11 +1720,11 @@ LOrTerm
 
 MatchTerm
     : MATCH '('                     {$$ = TrCreateLeafNode (MATCH)}
-        TermArg 
-        ',' MatchOpKeyword 
-        TermArgItem 
-        ',' MatchOpKeyword 
-        TermArgItem 
+        TermArg
+        ',' MatchOpKeyword
+        TermArgItem
+        ',' MatchOpKeyword
+        TermArgItem
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$7,$9,$10,$11)}
     | MATCH '('
@@ -1738,8 +1733,8 @@ MatchTerm
 
 MidTerm
     : MID '('                       {$$ = TrCreateLeafNode (MID)}
-        TermArg 
-        TermArgItem 
+        TermArg
+        TermArgItem
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$5,$6,$7)}
@@ -1749,7 +1744,7 @@ MidTerm
 
 ModTerm
     : MOD '('                       {$$ = TrCreateLeafNode (MOD)}
-        TermArg 
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1759,7 +1754,7 @@ ModTerm
 
 MultiplyTerm
     : MULTIPLY '('                  {$$ = TrCreateLeafNode (MULTIPLY)}
-        TermArg 
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1769,7 +1764,7 @@ MultiplyTerm
 
 NAndTerm
     : NAND '('                      {$$ = TrCreateLeafNode (NAND)}
-        TermArg 
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1779,7 +1774,7 @@ NAndTerm
 
 NOrTerm
     : NOR '('                       {$$ = TrCreateLeafNode (NOR)}
-        TermArg 
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1806,7 +1801,7 @@ ObjectTypeTerm
 
 OrTerm
     : OR '('                        {$$ = TrCreateLeafNode (OR)}
-        TermArg 
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1828,7 +1823,7 @@ RefOfTerm
 
 ShiftLeftTerm
     : SHIFTLEFT '('                 {$$ = TrCreateLeafNode (SHIFTLEFT)}
-        TermArg 
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1838,7 +1833,7 @@ ShiftLeftTerm
 
 ShiftRightTerm
     : SHIFTRIGHT '('                {$$ = TrCreateLeafNode (SHIFTRIGHT)}
-        TermArg 
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1856,7 +1851,7 @@ SizeOfTerm
 
 StoreTerm
     : STORE '('                     {$$ = TrCreateLeafNode (STORE)}
-        TermArg 
+        TermArg
         ',' SuperName
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,TrSetNodeFlags ($6, NODE_IS_TARGET))}
     | STORE '('
@@ -1865,7 +1860,7 @@ StoreTerm
 
 SubtractTerm
     : SUBTRACT '('                  {$$ = TrCreateLeafNode (SUBTRACT)}
-        TermArg 
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
@@ -1930,7 +1925,7 @@ ToStringTerm
 
 WaitTerm
     : WAIT '('                      {$$ = TrCreateLeafNode (WAIT)}
-        SuperName 
+        SuperName
         TermArgItem
         ')'                         {$$ = TrLinkChildren ($<n>3,2,$4,$5)}
     | WAIT '('
@@ -1939,14 +1934,13 @@ WaitTerm
 
 XOrTerm
     : XOR '('                       {$$ = TrCreateLeafNode (XOR)}
-        TermArg 
+        TermArg
         TermArgItem
         Target
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$5,$6)}
     | XOR '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
-
 
 
 /******* Keywords *************************************************************/
@@ -1999,7 +1993,7 @@ UpdateRuleKeyword
     | UPDATERULE_ZEROS              {$$ = TrCreateLeafNode (UPDATERULE_ZEROS)}
     ;
 
-    
+
 RegionSpaceKeyword
     : UserDefRegionSpace            {}
     | REGIONSPACE_IO                {$$ = TrCreateLeafNode (REGIONSPACE_IO)}
@@ -2127,7 +2121,6 @@ AddressKeyword
     | ADDRESSTYPE_ACPI              {$$ = TrCreateLeafNode (ADDRESSTYPE_ACPI)}
     ;
 
-   
 
 /******* Miscellaneous Types **************************************************/
 
@@ -2184,16 +2177,16 @@ QWordConst
     ;
 
 Integer
-    : INTEGER                       {$$ = TrCreateValuedLeafNode (INTEGER, (void *) AslCompilerlval.i)}
+    : INTEGER                       {$$ = TrCreateValuedLeafNode (INTEGER, AslCompilerlval.i)}
     ;
 
 String
-    : STRING_LITERAL                {$$ = TrCreateValuedLeafNode (STRING_LITERAL, AslCompilerlval.s)}
+    : STRING_LITERAL                {$$ = TrCreateValuedLeafNode (STRING_LITERAL, (ACPI_INTEGER) AslCompilerlval.s)}
     ;
 
 ConstTerm
     : ConstExprTerm                 {}
-    | REVISION                      {$$ = TrCreateLeafNode (REVISION)}           
+    | REVISION                      {$$ = TrCreateLeafNode (REVISION)}
     ;
 
 ByteConstExpr
@@ -2233,7 +2226,7 @@ ConstExprTerm
 BufferTerm
     : BUFFER '('                    {$$ = TrCreateLeafNode (BUFFER)}
         OptionalTermArg
-        ')' '{' 
+        ')' '{'
             BufferData '}'          {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | BUFFER '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -2246,34 +2239,34 @@ BufferData
 
 ByteList
     :     {$$ = NULL}
-    | ByteConstExpr 
+    | ByteConstExpr
         ByteListTail                {$$ = TrLinkPeerNode ($1,$2)}
     ;
 
 ByteListTail
     :                               {$$ = NULL}
     |  ','                          {$$ = NULL}   /* Allows a trailing comma at list end */
-    |  ',' ByteConstExpr 
+    |  ',' ByteConstExpr
          ByteListTail               {$$ = TrLinkPeerNode ($2,$3)}
     ;
 
 DWordList
     :                               {$$ = NULL}
-    | DWordConstExpr 
+    | DWordConstExpr
         DWordListTail               {$$ = TrLinkPeerNode ($1,$2)}
     ;
 
 DWordListTail
     :                               {$$ = NULL}
     | ','                           {$$ = NULL}   /* Allows a trailing comma at list end */
-    | ',' DWordConstExpr 
+    | ',' DWordConstExpr
         DWordListTail               {$$ = TrLinkPeerNode ($2,$3)}
     ;
 
 PackageTerm
     : PACKAGE '('                   {$$ = TrCreateLeafNode (PACKAGE)}
         PackageLengthTerm
-        ')' '{' 
+        ')' '{'
             PackageList '}'         {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | PACKAGE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -2287,14 +2280,14 @@ PackageLengthTerm
 
 PackageList
     :                               {$$ = NULL}
-    | PackageElement 
+    | PackageElement
         PackageListTail             {$$ = TrLinkPeerNode ($1,$2)}
     ;
 
 PackageListTail
     :                               {$$ = NULL}
     | ','                           {$$ = NULL}   /* Allows a trailing comma at list end */
-    | ',' PackageElement 
+    | ',' PackageElement
         PackageListTail             {$$ = TrLinkPeerNode ($2,$3)}
     ;
 
@@ -2304,7 +2297,7 @@ PackageElement
     ;
 
 EISAIDTerm
-    : EISAID '(' 
+    : EISAID '('
         StringData ')'              {$$ = TrUpdateNode (EISAID, $3)}
     | EISAID '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -2314,10 +2307,9 @@ EISAIDTerm
 /******* Resources and Memory ***********************************************/
 
 
-
 ResourceTemplateTerm
     : RESOURCETEMPLATE '(' ')'
-        '{' 
+        '{'
         ResourceMacroList '}'       {$$ = TrCreateNode (RESOURCETEMPLATE,3,
                                         TrCreateLeafNode (DEFAULT_ARG),
                                         TrCreateLeafNode (DEFAULT_ARG),$5)}
@@ -2333,7 +2325,7 @@ UnicodeTerm
 
 ResourceMacroList
     :                               {$$ = NULL}
-    | ResourceMacroTerm 
+    | ResourceMacroTerm
         ResourceMacroList           {$$ = TrLinkPeerNode ($1,$2)}
     ;
 
@@ -2363,8 +2355,8 @@ ResourceMacroTerm
 
 DMATerm
     : DMA '('                       {$$ = TrCreateLeafNode (DMA)}
-        DMATypeKeyword 
-        ',' BusMasterKeyword 
+        DMATypeKeyword
+        ',' BusMasterKeyword
         ',' XferTypeKeyword
         OptionalNameString_Last
         ')' '{'
@@ -2379,11 +2371,11 @@ DWordIOTerm
         OptionalMinType
         OptionalMaxType
         OptionalDecodeType
-        OptionalRangeType 
-        ',' DWordConstExpr 
-        ',' DWordConstExpr 
-        ',' DWordConstExpr 
-        ',' DWordConstExpr 
+        OptionalRangeType
+        ',' DWordConstExpr
+        ',' DWordConstExpr
+        ',' DWordConstExpr
+        ',' DWordConstExpr
         ',' DWordConstExpr
         OptionalByteConstExpr
         OptionalStringData
@@ -2401,12 +2393,12 @@ DWordMemoryTerm
         OptionalDecodeType
         OptionalMinType
         OptionalMaxType
-        OptionalMemType 
-        ',' ReadWriteKeyword 
-        ',' DWordConstExpr 
-        ',' DWordConstExpr 
-        ',' DWordConstExpr 
-        ',' DWordConstExpr 
+        OptionalMemType
+        ',' ReadWriteKeyword
+        ',' DWordConstExpr
+        ',' DWordConstExpr
+        ',' DWordConstExpr
+        ',' DWordConstExpr
         ',' DWordConstExpr
         OptionalByteConstExpr
         OptionalStringData
@@ -2419,7 +2411,7 @@ DWordMemoryTerm
     ;
 
 EndDependentFnTerm
-    : ENDDEPENDENTFN '(' 
+    : ENDDEPENDENTFN '('
         ')'                         {$$ = TrCreateLeafNode (ENDDEPENDENTFN)}
     | ENDDEPENDENTFN '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -2427,7 +2419,7 @@ EndDependentFnTerm
 
 FixedIOTerm
     : FIXEDIO '('                   {$$ = TrCreateLeafNode (FIXEDIO)}
-        WordConstExpr 
+        WordConstExpr
         ',' ByteConstExpr
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,3,$4,$6,$7)}
@@ -2438,9 +2430,9 @@ FixedIOTerm
 InterruptTerm
     : INTERRUPT '('                 {$$ = TrCreateLeafNode (INTERRUPT)}
         OptionalResourceType_First
-        InterruptTypeKeyword 
+        InterruptTypeKeyword
         ',' InterruptLevel
-        OptionalShareType     
+        OptionalShareType
         OptionalByteConstExpr
         OptionalStringData
         OptionalNameString_Last
@@ -2452,10 +2444,10 @@ InterruptTerm
 
 IOTerm
     : IO '('                        {$$ = TrCreateLeafNode (IO)}
-        IODecodeKeyword 
-        ',' WordConstExpr 
-        ',' WordConstExpr 
-        ',' ByteConstExpr 
+        IODecodeKeyword
+        ',' WordConstExpr
+        ',' WordConstExpr
+        ',' ByteConstExpr
         ',' ByteConstExpr
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$13)}
@@ -2466,7 +2458,7 @@ IOTerm
 IRQNoFlagsTerm
     : IRQNOFLAGS '('                {$$ = TrCreateLeafNode (IRQNOFLAGS)}
         OptionalNameString_First
-        ')' '{' 
+        ')' '{'
             ByteList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | IRQNOFLAGS '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -2474,11 +2466,11 @@ IRQNoFlagsTerm
 
 IRQTerm
     : IRQ '('                       {$$ = TrCreateLeafNode (IRQ)}
-        InterruptTypeKeyword 
+        InterruptTypeKeyword
         ',' InterruptLevel
-        OptionalShareType     
+        OptionalShareType
         OptionalNameString_Last
-        ')' '{' 
+        ')' '{'
             ByteList '}'            {$$ = TrLinkChildren ($<n>3,5,$4,$6,$7,$8,$11)}
     | IRQ '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
@@ -2486,10 +2478,10 @@ IRQTerm
 
 Memory24Term
     : MEMORY24 '('                  {$$ = TrCreateLeafNode (MEMORY24)}
-        ReadWriteKeyword 
-        ',' WordConstExpr 
-        ',' WordConstExpr 
-        ',' WordConstExpr 
+        ReadWriteKeyword
+        ',' WordConstExpr
+        ',' WordConstExpr
+        ',' WordConstExpr
         ',' WordConstExpr
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$13)}
@@ -2499,8 +2491,8 @@ Memory24Term
 
 Memory32FixedTerm
     : MEMORY32FIXED '('             {$$ = TrCreateLeafNode (MEMORY32FIXED)}
-        ReadWriteKeyword 
-        ',' DWordConstExpr 
+        ReadWriteKeyword
+        ',' DWordConstExpr
         ',' DWordConstExpr
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$8,$9)}
@@ -2510,10 +2502,10 @@ Memory32FixedTerm
 
 Memory32Term
     : MEMORY32 '('                  {$$ = TrCreateLeafNode (MEMORY32)}
-        ReadWriteKeyword 
-        ',' DWordConstExpr 
-        ',' DWordConstExpr 
-        ',' DWordConstExpr 
+        ReadWriteKeyword
+        ',' DWordConstExpr
+        ',' DWordConstExpr
+        ',' DWordConstExpr
         ',' DWordConstExpr
         OptionalNameString_Last
         ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$8,$10,$12,$13)}
@@ -2527,11 +2519,11 @@ QWordIOTerm
         OptionalMinType
         OptionalMaxType
         OptionalDecodeType
-        OptionalRangeType 
-        ',' QWordConstExpr 
-        ',' QWordConstExpr 
-        ',' QWordConstExpr 
-        ',' QWordConstExpr 
+        OptionalRangeType
+        ',' QWordConstExpr
+        ',' QWordConstExpr
+        ',' QWordConstExpr
+        ',' QWordConstExpr
         ',' QWordConstExpr
         OptionalByteConstExpr
         OptionalStringData
@@ -2549,12 +2541,12 @@ QWordMemoryTerm
         OptionalDecodeType
         OptionalMinType
         OptionalMaxType
-        OptionalMemType 
-        ',' ReadWriteKeyword 
-        ',' QWordConstExpr 
-        ',' QWordConstExpr 
-        ',' QWordConstExpr 
-        ',' QWordConstExpr 
+        OptionalMemType
+        ',' ReadWriteKeyword
+        ',' QWordConstExpr
+        ',' QWordConstExpr
+        ',' QWordConstExpr
+        ',' QWordConstExpr
         ',' QWordConstExpr
         OptionalByteConstExpr
         OptionalStringData
@@ -2568,9 +2560,9 @@ QWordMemoryTerm
 
 RegisterTerm
     : REGISTER '('                  {$$ = TrCreateLeafNode (REGISTER)}
-        AddressSpaceKeyword 
-        ',' ByteConstExpr 
-        ',' ByteConstExpr 
+        AddressSpaceKeyword
+        ',' ByteConstExpr
+        ',' ByteConstExpr
         ',' QWordConstExpr
         ')'                         {$$ = TrLinkChildren ($<n>3,4,$4,$6,$8,$10)}
     | REGISTER '('
@@ -2579,50 +2571,50 @@ RegisterTerm
 
 StartDependentFnTerm
     : STARTDEPENDENTFN '('          {$$ = TrCreateLeafNode (STARTDEPENDENTFN)}
-        ByteConstExpr 
+        ByteConstExpr
         ',' ByteConstExpr
-        ')' '{' 
+        ')' '{'
         ResourceMacroList '}'       {$$ = TrLinkChildren ($<n>3,3,$4,$6,$9)}
     | STARTDEPENDENTFN '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
-                
+
 StartDependentFnNoPriTerm
     : STARTDEPENDENTFN_NOPRI '('     {$$ = TrCreateLeafNode (STARTDEPENDENTFN_NOPRI)}
-        ')' '{' 
+        ')' '{'
         ResourceMacroList '}'       {$$ = TrLinkChildren ($<n>3,1,$6)}
     | STARTDEPENDENTFN_NOPRI '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
-               
+
 VendorLongTerm
     : VENDORLONG '('                {$$ = TrCreateLeafNode (VENDORLONG)}
         OptionalNameString_First
-        ')' '{' 
+        ')' '{'
             ByteList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | VENDORLONG '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
-        
+
 VendorShortTerm
     : VENDORSHORT '('               {$$ = TrCreateLeafNode (VENDORSHORT)}
         OptionalNameString_First
-        ')' '{' 
+        ')' '{'
             ByteList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7)}
     | VENDORSHORT '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
-        
+
 WordBusNumberTerm
     : WORDBUSNUMBER '('             {$$ = TrCreateLeafNode (WORDBUSNUMBER)}
         OptionalResourceType_First
         OptionalMinType
         OptionalMaxType
-        OptionalDecodeType 
-        ',' WordConstExpr 
-        ',' WordConstExpr 
-        ',' WordConstExpr 
-        ',' WordConstExpr 
+        OptionalDecodeType
+        ',' WordConstExpr
+        ',' WordConstExpr
+        ',' WordConstExpr
+        ',' WordConstExpr
         ',' WordConstExpr
         OptionalByteConstExpr
         OptionalStringData
@@ -2638,11 +2630,11 @@ WordIOTerm
         OptionalMinType
         OptionalMaxType
         OptionalDecodeType
-        OptionalRangeType 
-        ',' WordConstExpr 
-        ',' WordConstExpr 
-        ',' WordConstExpr 
-        ',' WordConstExpr 
+        OptionalRangeType
+        ',' WordConstExpr
+        ',' WordConstExpr
+        ',' WordConstExpr
+        ',' WordConstExpr
         ',' WordConstExpr
         OptionalByteConstExpr
         OptionalStringData
@@ -2655,20 +2647,17 @@ WordIOTerm
     ;
 
 
-
-
 /******* Object References ***********************************************/
 
 
 NameString
     : NameSeg                       {}
-    | NAMESTRING                    {$$ = TrCreateValuedLeafNode (NAMESTRING, AslCompilerlval.s)}
+    | NAMESTRING                    {$$ = TrCreateValuedLeafNode (NAMESTRING, (ACPI_INTEGER) AslCompilerlval.s)}
     ;
 
-NameSeg 
-    : NAMESEG                       {$$ = TrCreateValuedLeafNode (NAMESEG, AslCompilerlval.s)}
+NameSeg
+    : NAMESEG                       {$$ = TrCreateValuedLeafNode (NAMESEG, (ACPI_INTEGER) AslCompilerlval.s)}
     ;
-
 
 
 /******* Helper rules ****************************************************/
@@ -2728,13 +2717,13 @@ OptionalMinType
     | ',' MinKeyword                {$$ = $2}
     ;
 
-OptionalNameString 
+OptionalNameString
     :                               {$$ = NULL}
     | ','                           {$$ = NULL}
     | ',' NameString                {$$ = $2}
     ;
 
-OptionalNameString_Last 
+OptionalNameString_Last
     :                               {$$ = NULL}
     | ','                           {$$ = NULL}
     | ',' NameString                {$$ = $2}
@@ -2767,7 +2756,7 @@ OptionalShareType
     | ',' ShareTypeKeyword          {$$ = $2}
     ;
 
-OptionalStringData 
+OptionalStringData
     :                               {$$ = NULL}
     | ','                           {$$ = NULL}
     | ',' StringData                {$$ = $2}
@@ -2795,7 +2784,6 @@ OptionalTranslationType_Last
     | ','                           {$$ = NULL}
     | ',' TranslationKeyword        {$$ = $2}
     ;
-
 
 
 TermArgItem

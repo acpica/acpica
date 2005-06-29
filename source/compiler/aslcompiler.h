@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.35 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -154,7 +154,6 @@
 #define CompilerCreatorId           "IASL"
 
 
-
 /*
  * Macros
  */
@@ -184,11 +183,9 @@
 #define AML_DEFAULT_ARG_OP          (UINT16) 0xDDDD
 
 
-
 /* TBD: Is this a real opcode? */
 
 #define AML_CONCAT_TPL_OP           (UINT16) 0x00FE
-
 
 
 /*******************************************************************************
@@ -202,23 +199,21 @@ void
 end_stmt (void);
 
 
-
-
 /* parser */
 
-int                      
+int
 AslCompilerparse( void);
 
 ASL_PARSE_NODE *
 AslDoError (void);
 
-int      
+int
 AslCompilererror(char* s);
 
-int      
+int
 AslCompilerlex();
 
-char     
+char
 *AslCompilertext;
 
 /* aslmain */
@@ -360,23 +355,6 @@ RsDoResourceTemplate (
     ASL_PARSE_NODE          *Node);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void
 CgGenerateAmlOutput (void);
 void
@@ -410,7 +388,6 @@ CgAmlWriteWalk (
     void                    *Context);
 
 
-
 void
 CgGenerateOutput(
     void);
@@ -424,9 +401,7 @@ CgWriteNode (
     ASL_PARSE_NODE          *Node);
 
 
-
-
-/* 
+/*
  * asltree - parse tree support
  */
 
@@ -466,7 +441,7 @@ TrCreateLeafNode (
 ASL_PARSE_NODE *
 TrCreateValuedLeafNode (
     UINT32                  ParseOpcode,
-    void                    *Value);
+    ACPI_INTEGER            Value);
 
 ASL_PARSE_NODE *
 TrLinkChildren (
@@ -517,7 +492,7 @@ AnSemanticAnalysisWalkEnd (
     void                    *Context);
 
 /*
- * aslfiles - File I/O support 
+ * aslfiles - File I/O support
  */
 
 void
@@ -629,6 +604,12 @@ UtCheckIntegerRange (
     ASL_PARSE_NODE          *Node,
     UINT32                  LowValue,
     UINT32                  HighValue);
+
+ACPI_INTEGER
+UtStrtoul64 (
+    NATIVE_CHAR             *String,
+    NATIVE_CHAR             **Terminator,
+    UINT32                  Base);
 
 
 /* Find */

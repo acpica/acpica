@@ -1,10 +1,10 @@
-
-/******************************************************************************
+/*******************************************************************************
  *
- * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.18 $
+ * Module Name: evsci - System Control Interrupt configuration and
+ *                      legacy to ACPI mode state transition functions
+ *              $Revision: 1.68 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -63,6 +63,7 @@
  * license from Licensee to its licensee is limited to the intellectual
  * property embodied in the software Licensee provides to its licensee, and
  * not to intellectual property embodied in modifications its licensee may
+
  * make.
  *
  * 3.3. Redistribution of Executable. Redistribution in executable form of any
@@ -115,316 +116,321 @@
  *
  *****************************************************************************/
 
-
-#include "AslCompiler.h"
-#include "AslCompiler.y.h"
-#include "amlcode.h"
-
+#include "acpi.h"
 #include "acnamesp.h"
+#include "achware.h"
+#include "acevents.h"
+
+
+#define _COMPONENT          EVENT_HANDLING
+        MODULE_NAME         ("evsci")
+
+
+/*
+ * Elements correspond to counts for TMR, NOT_USED, GBL, PWR_BTN, SLP_BTN, RTC,
+ * and GENERAL respectively.  These counts are modified by the ACPI interrupt
+ * handler.
+ *
+ * TBD: [Investigate] Note that GENERAL should probably be split out into
+ * one element for each bit in the GPE registers
+ */
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcAmlOpcodeWalk
+ * FUNCTION:    AcpiEvSciHandler
  *
- * PARAMETERS:  ASL_WALK_CALLBACK
+ * PARAMETERS:  Context   - Calling Context
  *
- * RETURN:      None
+ * RETURN:      Status code indicates whether interrupt was handled.
  *
- * DESCRIPTION: Parse tree walk to generate both the AML opcodes and the AML
- *              operands.
+ * DESCRIPTION: Interrupt handler that will figure out what function or
+ *              control method to call to deal with a SCI.  Installed
+ *              using BU interrupt support.
  *
  ******************************************************************************/
 
-void
-OpcAmlOpcodeWalk (
-    ASL_PARSE_NODE          *Node,
-    UINT32                  Level,
-    void                    *Context)
+static UINT32
+AcpiEvSciHandler (void *Context)
 {
+    UINT32                  InterruptHandled = INTERRUPT_NOT_HANDLED;
 
-    OpcGenerateAmlOpcode (Node);
-    OpnGenerateAmlOperands (Node);
+
+    FUNCTION_TRACE("EvSciHandler");
+
+
+    /*
+     * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
+     * required to treat the SCI interrupt as sharable, level, active low.
+     */
+    if (!AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_DO_NOT_LOCK, SCI_EN))
+    {
+        /* ACPI is not enabled;  this interrupt cannot be for us */
+
+        return_VALUE (INTERRUPT_NOT_HANDLED);
+    }
+
+    /*
+     * Fixed AcpiEvents:
+     * -------------
+     * Check for and dispatch any Fixed AcpiEvents that have occurred
+     */
+    InterruptHandled |= AcpiEvFixedEventDetect ();
+
+    /*
+     * GPEs:
+     * -----
+     * Check for and dispatch any GPEs that have occurred
+     */
+    InterruptHandled |= AcpiEvGpeDetect ();
+
+    return_VALUE (InterruptHandled);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    OpcSetOptimalIntegerSize
+ * FUNCTION:    AcpiEvInstallSciHandler
  *
- * PARAMETERS:  Node        - A parse tree node
+ * PARAMETERS:  none
  *
- * RETURN:      Integer width, in bytes.  Also sets the node AML opcode to the
- *              optimal integer AML prefix opcode.
+ * RETURN:      Status
  *
- * DESCRIPTION: Determine the optimal AML encoding of an integer.  All leading
- *              zeros can be truncated to squeeze the integer into the
- *              minimal number of AML bytes.
+ * DESCRIPTION: Installs SCI handler.
  *
  ******************************************************************************/
 
 UINT32
-OpcSetOptimalIntegerSize (
-    ASL_PARSE_NODE          *Node)
+AcpiEvInstallSciHandler (void)
 {
+    UINT32                  Except = AE_OK;
 
 
-    if (Node->Value.Integer <= ACPI_UINT8_MAX)
+    FUNCTION_TRACE ("EvInstallSciHandler");
+
+
+    Except = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
+                                            AcpiEvSciHandler,
+                                            NULL);
+
+    return_ACPI_STATUS (Except);
+}
+
+
+/******************************************************************************
+
+ *
+ * FUNCTION:    AcpiEvRemoveSciHandler
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      E_OK if handler uninstalled OK, E_ERROR if handler was not
+ *              installed to begin with
+ *
+ * DESCRIPTION: Restores original status of all fixed event enable bits and
+ *              removes SCI handler.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvRemoveSciHandler (void)
+{
+    FUNCTION_TRACE ("EvRemoveSciHandler");
+
+#if 0
+    /* TBD:[Investigate] Figure this out!!  Disable all events first ???  */
+
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (TMR_FIXED_EVENT))
     {
-        Node->AmlOpcode = AML_BYTE_OP;
-        return 1;
+        AcpiEventDisableEvent (TMR_FIXED_EVENT);
     }
 
-    else if (Node->Value.Integer <= ACPI_UINT16_MAX)
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (GBL_FIXED_EVENT))
     {
-        Node->AmlOpcode = AML_WORD_OP;
-        return 2;
+        AcpiEventDisableEvent (GBL_FIXED_EVENT);
     }
 
-    else if (Node->Value.Integer <= ACPI_UINT32_MAX)
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (PWR_BTN_FIXED_EVENT))
     {
-        Node->AmlOpcode = AML_DWORD_OP;
-        return 4;
+        AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
     }
 
-    else
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (SLP_BTN_FIXED_EVENT))
     {
-        Node->AmlOpcode = AML_QWORD_OP;
-        return 8;
+        AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
     }
+
+    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (RTC_FIXED_EVENT))
+    {
+        AcpiEventDisableEvent (RTC_FIXED_EVENT);
+    }
+
+    OriginalFixedEnableBitStatus = 0;
+
+#endif
+
+    AcpiOsRemoveInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
+                                    AcpiEvSciHandler);
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcDoAccessAs
+ * FUNCTION:    AcpiEvSciCount
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  Event       Event that generated an SCI.
  *
- * RETURN:      None
+ * RETURN:      Number of SCI's for requested event since last time
+ *              SciOccured() was called for this event.
  *
- * DESCRIPTION: Implement the ACCESS_AS ASL keyword.
- *
- ******************************************************************************/
-
-void
-OpcDoAccessAs (
-    ASL_PARSE_NODE              *Node)
-{
-    ASL_PARSE_NODE              *Next;
-
-
-    Node->AmlOpcodeLength = 1;
-    Next = Node->Child;
-
-    /* First child is the access type */
-
-    Next->AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->ParseOpcode = RAW_DATA;
-
-    /* Second child is the optional access attribute */
-
-    Next = Next->Peer;
-    if (Next->ParseOpcode == DEFAULT_ARG)
-    {
-        Next->Value.Integer = 0;
-    }
-    Next->AmlOpcode = AML_RAW_DATA_BYTE;
-    Next->ParseOpcode = RAW_DATA;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    OpcDoUnicode
- *
- * PARAMETERS:  Node        - Parse node
- *
- * RETURN:      None
- *
- * DESCRIPTION: Implement the UNICODE ASL "macro".  Convert the input string
- *              to a unicode buffer.
+ * DESCRIPTION: Checks to see if SCI has been generated from requested source
+ *              since the last time this function was called.
  *
  ******************************************************************************/
 
-void
-OpcDoUnicode (
-    ASL_PARSE_NODE              *Node)
+#ifdef ACPI_DEBUG
+
+UINT32
+AcpiEvSciCount (
+    UINT32                  Event)
 {
-    ASL_PARSE_NODE              *InitializerNode;
-    UINT32                      Length;
-    UINT32                      Count;
-    UINT32                      i;
-    UINT8                       *AsciiString;
-    UINT16                      *UnicodeString;
-    ASL_PARSE_NODE              *BufferLengthNode;
+    UINT32                  Count;
 
-
-    /* Opcode and package length first */
-    /* Buffer Length is next, followed by the initializer list */
-
-    BufferLengthNode = Node->Child;
-    InitializerNode = BufferLengthNode->Peer;
-
-
-    AsciiString = InitializerNode->Value.String;
-
-
-    Count = strlen (AsciiString);
-    Length = (Count * 2)  + sizeof (UINT16);
-    UnicodeString = UtLocalCalloc (Length);
-
-    for (i = 0; i < Count; i++)
-    {
-        UnicodeString[i] = AsciiString[i];
-    }
-
-    free (AsciiString);
+    FUNCTION_TRACE ("EvSciCount");
 
     /*
-     * Just set the buffer size node to be the buffer length, regardless
-     * of whether it was previously an integer or a default_arg placeholder
+     * Elements correspond to counts for TMR, NOT_USED, GBL,
+     * PWR_BTN, SLP_BTN, RTC, and GENERAL respectively.
      */
 
-    BufferLengthNode->ParseOpcode   = INTEGER;
-    BufferLengthNode->AmlOpcode     = AML_DWORD_OP;
-    BufferLengthNode->Value.Integer = Length;
+    if (Event >= NUM_FIXED_EVENTS)
+    {
+        Count = (UINT32) -1;
+    }
+    else
+    {
+        Count = AcpiGbl_EventCount[Event];
+    }
 
-    OpcSetOptimalIntegerSize (BufferLengthNode);
-
-
-    InitializerNode->Value.Pointer  = UnicodeString;
-    InitializerNode->AmlOpcode      = AML_RAW_DATA_BUFFER;
-    InitializerNode->AmlLength      = Length;
-    InitializerNode->ParseOpcode    = RAW_DATA;
+    return_VALUE (Count);
 }
+
+#endif
 
 
 /*******************************************************************************
  *
- * FUNCTION:    OpcDoEisaId
+ * FUNCTION:    AcpiEvRestoreAcpiState
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  none
  *
- * RETURN:      None
+ * RETURN:      none
  *
- *
- * DESCRIPTION: Convert a string EISA ID to numeric representation
+ * DESCRIPTION: Restore the original ACPI state of the machine
  *
  ******************************************************************************/
 
 void
-OpcDoEisaId (
-    ASL_PARSE_NODE          *Node)
+AcpiEvRestoreAcpiState (void)
 {
-    UINT32                  id;
-    UINT32                  SwappedId;
-    NATIVE_CHAR             *InString;
+    UINT32                  Index;
 
 
-    InString = Node->Value.String;
+    FUNCTION_TRACE ("EvRestoreAcpiState");
 
-    /* Create ID big-endian first */
 
-    id = 0;
-    id |= (InString[0] - '@') << 26;
-    id |= (InString[1] - '@') << 21;
-    id |= (InString[2] - '@') << 16;
+    /* Restore the state of the chipset enable bits. */
 
-    id |= (UtHexCharToValue (InString[3])) << 12;
-    id |= (UtHexCharToValue (InString[4])) << 8;
-    id |= (UtHexCharToValue (InString[5])) << 4;
-    id |= UtHexCharToValue (InString[6]);
+    if (AcpiGbl_RestoreAcpiChipset == TRUE)
+    {
+        /* Restore the fixed events */
 
-    /* swap to little-endian  */
+        if (AcpiHwRegisterRead (ACPI_MTX_LOCK, PM1_EN) !=
+                AcpiGbl_Pm1EnableRegisterSave)
+        {
+            AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1_EN,
+                AcpiGbl_Pm1EnableRegisterSave);
+        }
 
-    SwappedId = (id & 0xFF) << 24;
-    SwappedId |= ((id >> 8) & 0xFF) << 16;
-    SwappedId |= ((id >> 16) & 0xFF) << 8;
-    SwappedId |= (id >> 24) & 0xFF;
 
-    Node->Value.Integer32 = SwappedId;
+        /* Ensure that all status bits are clear */
 
-    /* Node is now an integer */
+        AcpiHwClearAcpiStatus ();
 
-    Node->ParseOpcode = INTEGER;
-    OpcSetOptimalIntegerSize (Node);
+
+        /* Now restore the GPEs */
+
+        for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe0BlkLen); Index++)
+        {
+            if (AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index) !=
+                    AcpiGbl_Gpe0EnableRegisterSave[Index])
+            {
+                AcpiHwRegisterWrite (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index,
+                    AcpiGbl_Gpe0EnableRegisterSave[Index]);
+            }
+        }
+
+        /* GPE 1 present? */
+
+        if (AcpiGbl_FADT->Gpe1BlkLen)
+        {
+            for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe1BlkLen); Index++)
+            {
+                if (AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index) !=
+                    AcpiGbl_Gpe1EnableRegisterSave[Index])
+                {
+                    AcpiHwRegisterWrite (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index,
+                        AcpiGbl_Gpe1EnableRegisterSave[Index]);
+                }
+            }
+        }
+
+        if (AcpiHwGetMode() != AcpiGbl_OriginalMode)
+        {
+            AcpiHwSetMode (AcpiGbl_OriginalMode);
+        }
+    }
+
+    return_VOID;
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    OpcGenerateAmlOpcode
+ * FUNCTION:    AcpiEvTerminate
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  none
  *
- * RETURN:      None
+ * RETURN:      none
  *
- * DESCRIPTION: Generate the AML opcode associated with the node and its
- *              parse (lex/flex) keyword opcode.  Essentially implements
- *              a mapping between the parse opcodes and the actual AML opcodes.
+ * DESCRIPTION: free memory allocated for table storage.
  *
  ******************************************************************************/
 
 void
-OpcGenerateAmlOpcode (
-    ASL_PARSE_NODE          *Node)
+AcpiEvTerminate (void)
 {
 
-    UINT16                  Index = Node->ParseOpcode;
+    FUNCTION_TRACE ("EvTerminate");
 
 
-    Index = Node->ParseOpcode - ASL_PARSE_OPCODE_BASE;
+    /*
+     * Free global tables, etc.
+     */
 
-
-    Node->AmlOpcode = AslKeywordMapping[Index].AmlOpcode;
-    Node->Flags |= AslKeywordMapping[Index].Flags;
-
-    if (!Node->Value.Integer)
+    if (AcpiGbl_GpeRegisters)
     {
-        Node->Value.Integer = AslKeywordMapping[Index].Value;
+        AcpiCmFree (AcpiGbl_GpeRegisters);
     }
 
-
-    /* Special handling for some opcodes */
-
-    switch (Node->ParseOpcode)
+    if (AcpiGbl_GpeInfo)
     {
-    case INTEGER:
-        /*
-         * Set the opcode based on the size of the integer
-         */
-        OpcSetOptimalIntegerSize (Node);
-        break;
-
-    case OFFSET:
-        Node->AmlOpcodeLength = 1;
-        break;
-
-    case ACCESSAS:
-        OpcDoAccessAs (Node);
-        break;
-
-    case EISAID:
-        OpcDoEisaId (Node);
-        break;
-
-    case UNICODE:
-        OpcDoUnicode (Node);
-        break;
-
-    case INCLUDE:
-        Node->Child->ParseOpcode = DEFAULT_ARG;
-        Gbl_HasIncludeFiles = TRUE;
-        break;
-
-    case EXTERNAL:
-        Node->Child->ParseOpcode = DEFAULT_ARG;
-        Node->Child->Peer->ParseOpcode = DEFAULT_ARG;
-        break;
+        AcpiCmFree (AcpiGbl_GpeInfo);
     }
 
-    return;
+    return_VOID;
 }
 
 

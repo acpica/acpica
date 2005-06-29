@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -120,7 +120,6 @@
 #include "AslCompiler.y.h"
 
 #include <ctype.h>
-
 
 
 /*******************************************************************************
@@ -262,7 +261,7 @@ AnSemanticAnalysisWalkBegin (
     case METHOD:
 
         /*
-         * Create and init method info 
+         * Create and init method info
          */
 
         MethodInfo = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
@@ -295,7 +294,7 @@ AnSemanticAnalysisWalkBegin (
         RegisterNumber = (Node->AmlOpcode & 0x000F);
 
         /*
-         * If the local is being used as a target, mark the local 
+         * If the local is being used as a target, mark the local
          * initialized
          */
 
@@ -305,7 +304,7 @@ AnSemanticAnalysisWalkBegin (
 
         }
 
-        /* 
+        /*
          * Otherwise, this is a reference, check if the local
          * has been previously initialized.
          */
@@ -330,7 +329,7 @@ AnSemanticAnalysisWalkBegin (
             AslError (ASL_ERROR, ASL_MSG_INTERNAL, Node, "No parent method");
             return;
         }
-        
+
         RegisterNumber = (Node->AmlOpcode & 0x000F) - 8;
 
         /* Simply check the arg number against the method num args */
@@ -377,7 +376,7 @@ AnSemanticAnalysisWalkBegin (
 
 /*******************************************************************************
  *
- * FUNCTION:    AnLastStatementIsReturn 
+ * FUNCTION:    AnLastStatementIsReturn
  *
  * PARAMETERS:  Node            - A method node
  *
@@ -481,8 +480,8 @@ AnSemanticAnalysisWalkEnd (
         /*
          * If there are any RETURN() statements with no value, or there is a
          * control path that allows the method to exit without a return value,
-         * we mark the method as a method that does not return a value.  This 
-         * knowledge can be used to check method invocations that expect a 
+         * we mark the method as a method that does not return a value.  This
+         * knowledge can be used to check method invocations that expect a
          * returned value.
          */
 

@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: aslcompile - top level compile module
- *              $Revision: 1.8 $
+ * Module Name: asltypes.h - compiler data types and struct definitions
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -116,249 +116,203 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
-#include "acnamesp.h"
-#include "acdebug.h"
-
-#include <time.h>
-
-
-struct tm                   *NewTime;
-time_t                      Aclock;
-
-
-/*
- * Stubs to simplify linkage to the
- * ACPI Namespace Manager (Unused functions).
- */
-
-void
-AcpiTbDeleteAcpiTables (void)
-{
-}
-
-
-BOOLEAN
-AcpiTbSystemTablePointer (
-    void                    *Where)
-{
-    return FALSE;
-
-}
-
-void
-AcpiAmlDumpOperands (
-    ACPI_OPERAND_OBJECT     **Operands,
-    OPERATING_MODE          InterpreterMode,
-    NATIVE_CHAR             *Ident,
-    UINT32                  NumLevels,
-    NATIVE_CHAR             *Note,
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber)
-{
-}
-
-ACPI_STATUS
-AcpiAmlDumpOperand (
-    ACPI_OPERAND_OBJECT     *EntryDesc)
-{
-    return AE_OK;
-}
+#ifndef __ASLTYPES_H
+#define __ASLTYPES_H
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AslCompilerSignon
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Display compiler signon
+ * Structure definitions
  *
  ******************************************************************************/
 
-void
-AslCompilerSignon (
-    FILE                    *Where)
+
+/* Value union for the parse node */
+
+typedef union asl_node_value
 {
+    UINT64                      Integer;        /* Generic integer is largest integer */
+    UINT64                      Integer64;
+    UINT32                      Integer32;
+    UINT16                      Integer16;
+    UINT8                       Integer8;
+    void                        *Pointer;
+    char                        *String;
 
-    time (&Aclock);
-    NewTime = localtime (&Aclock);
-
-    fprintf (Where, "\n%s [Version %s, %s]\n\n", CompilerId, CompilerVersion, __DATE__);
-
-}
+} ASL_NODE_VALUE;
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AslCompilerFileHeader
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Header used at the beginning of output files
- *
- ******************************************************************************/
+/* The parse node is the fundamental element of the parse tree */
 
-void
-AslCompilerFileHeader (
-    FILE                    *Where)
+typedef struct asl_parse_node
 {
+    struct asl_parse_node       *Parent;
+    struct asl_parse_node       *Peer;
+    struct asl_parse_node       *Child;
+    ACPI_NAMESPACE_NODE         *NsNode;
+    union asl_node_value        Value;
+    char                        *Filename;
+    char                        *ExternalName;
+    char                        *Namepath;
+    UINT32                      LineNumber;
+    UINT32                      LogicalLineNumber;
+    UINT32                      EndLine;
+    UINT32                      EndLogicalLine;
+    UINT16                      AmlOpcode;
+    UINT16                      ParseOpcode;
+    UINT32                      AmlLength;
+    UINT32                      AmlSubtreeLength;
+    UINT8                       AmlOpcodeLength;
+    UINT8                       AmlPkgLenBytes;
+    UINT16                      Flags;
+    UINT8                       Extra;
+    char                        ParseOpName[12];
+    char                        AmlOpName[12];
 
-    fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime));
+} ASL_PARSE_NODE;
 
-}
+/* Node flags for the ASL_PARSE_NODE */
+
+#define NODE_VISITED                0x0001
+#define NODE_AML_PACKAGE            0x0002
+#define NODE_IS_TARGET              0x0004
+#define NODE_IS_RESOURCE_DESC       0x0008
+#define NODE_IS_RESOURCE_FIELD      0x0010
+#define NODE_HAS_NO_EXIT            0x0020
+#define NODE_IF_HAS_NO_EXIT         0x0040
+#define NODE_NAME_INTERNALIZED      0x0080
+#define NODE_METHOD_NO_RETURN_VAL   0x0100
+#define NODE_RESULT_NOT_USED        0x0200
 
 
-/*******************************************************************************
- *
- * FUNCTION:    CmDoCompile
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status (0 = OK)
- *
- * DESCRIPTION: This procedure performs the entire compile
- *
- ******************************************************************************/
+/* Keeps information about individual control methods */
 
-int
-CmDoCompile (void)
+typedef struct asl_method_info
 {
-    ACPI_STATUS             Status;
+    UINT8                   NumArguments;
+    UINT8                   LocalInitialized[8];
+    UINT32                  NumReturnNoValue;
+    UINT32                  NumReturnWithValue;
+    struct asl_method_info  *Next;
+
+} ASL_METHOD_INFO;
 
 
-    /* Open the required input and output files */
+/* Parse tree walk info for control method analysis */
 
-    Status = FlOpenInputFile (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
-    Status = FlOpenMiscOutputFiles (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
+typedef struct asl_analysis_walk_info
+{
+    ASL_METHOD_INFO         *MethodStack;
+
+} ASL_ANALYSIS_WALK_INFO;
 
 
-    /* ACPI CA subsystem initialization */
+/* An entry in the ParseOpcode to AmlOpcode mapping table */
 
-    AcpiCmInitGlobals ();
-    AcpiCmMutexInitialize ();
-    AcpiNsRootInitialize ();
+typedef struct asl_mapping_entry
+{
+    UINT32                      Value;
+    UINT16                      AmlOpcode;
+    UINT8                       Flags;
 
-    /* Build the parse tree */
-
-    AslCompilerparse();
-
-
-    /* Generate AML opcodes corresponding to the parse tokens */
-
-    DbgPrint ("\nGenerating AML opcodes\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
-
-    /* Calculate all AML package lengths */
-
-    DbgPrint ("\nGenerating Package lengths\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
-
-    if (Gbl_ParseOnlyFlag)
-    {
-        AePrintErrorLog (stdout);
-        if (Gbl_DebugFlag)
-        {
-            /* Print error summary to the debug file */
-
-            AePrintErrorLog (stderr);
-        }
-        UtDisplaySummary ();
-        return 0;
-    }
+} ASL_MAPPING_ENTRY;
 
 
-    /* Semantic error checking */
+/* An entry in the Reserved Name information table */
 
-    AnalysisWalkInfo.MethodStack = NULL;
+#define ASL_RSVD_RETURN_VALUE   0x01
 
-    DbgPrint ("\nSemantic analysis\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
-                        AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
+typedef struct
+{
+    char                        *Name;
+    UINT8                       NumArguments;
+    UINT8                       Flags;
 
-
-    /* Namespace loading */
-
-    LdLoadNamespace ();
-
-
-    /* Namespace lookup */
-
-    LkCrossReferenceNamespace ();
-
-    /* Calculate all AML package lengths */
-
-    DbgPrint ("\nGenerating Package lengths\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
+} ASL_RESERVED_INFO;
 
 
-    /*
-     * Now that the input is parsed, we can open the AML output file.
-     * Note: by default, the name of this file comes from the table descriptor
-     * within the input file.
-     */
-    Status = FlOpenAmlOutputFile (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
+/* Parse tree walk info structure */
+
+typedef struct asl_walk_info
+{
+    ASL_PARSE_NODE              **NodePtr;
+    UINT32                      *LevelPtr;
+
+} ASL_WALK_INFO;
 
 
-    /* Code generation - emit the AML */
+/* An entry in the exception list, one for each error/warning */
 
-    CgGenerateAmlOutput ();
+typedef struct asl_error_msg
+{
+    UINT32                      LineNumber;
+    UINT32                      LogicalLineNumber;
+    UINT32                      Column;
+    char                        *Message;
+    struct asl_error_msg        *Next;
+    char                        *Filename;
+    UINT8                       MessageId;
+    UINT8                       Level;
 
-
-    AePrintErrorLog (stdout);
-    if (Gbl_DebugFlag)
-    {
-        /* Print error summary to the debug file */
-
-        AePrintErrorLog (stderr);
-    }
-
-    /* Dump the AML as hex if requested */
-
-    LsDoHexOutput ();
-
-    /* Dump the namespace to the .nsp file if requested */
-
-    LsDisplayNamespace ();
+} ASL_ERROR_MSG;
 
 
-    /* Close all open files */
+/* An entry in the listing file stack (for include files) */
 
-    FlCloseListingFile ();
-    FlCloseSourceOutputFile ();
-    FlCloseHexOutputFile ();
+typedef struct asl_listing_node
+{
+    char                        *Filename;
+    UINT32                      LineNumber;
+    struct asl_listing_node     *Next;
 
-    fclose (Gbl_AmlOutputFile);
-
-    if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
-    {
-        unlink (Gbl_OutputFilename);
-    }
-
-    UtDisplaySummary ();
+} ASL_LISTING_NODE;
 
 
-    return 0;
-}
+/* Callback interface for a parse tree walk */
+
+typedef
+void (*ASL_WALK_CALLBACK) (
+    ASL_PARSE_NODE              *Node,
+    UINT32                      Level,
+    void                        *Context);
 
 
+#define ASL_ERROR               0
+#define ASL_WARNING             1
+
+
+typedef enum
+{
+    ASL_MSG_NULL = 0,
+    ASL_MSG_MEMORY_ALLOCATION,
+    ASL_MSG_INPUT_FILE_OPEN,
+    ASL_MSG_OUTPUT_FILENAME,
+    ASL_MSG_OUTPUT_FILE_OPEN,
+    ASL_MSG_LISTING_FILENAME,
+    ASL_MSG_LISTING_FILE_OPEN,
+    ASL_MSG_DEBUG_FILENAME,
+    ASL_MSG_DEBUG_FILE_OPEN,
+    ASL_MSG_INCLUDE_FILE_OPEN,
+    ASL_MSG_ENCODING_LENGTH,
+    ASL_MSG_INVALID_PRIORITY,
+    ASL_MSG_INVALID_PERFORMANCE,
+    ASL_MSG_LOCAL_INIT,
+    ASL_MSG_ARG_INVALID,
+    ASL_MSG_UNSUPPORTED,
+    ASL_MSG_RESERVED_WORD,
+    ASL_MSG_BUFFER_LENGTH,
+    ASL_MSG_PACKAGE_LENGTH,
+    ASL_MSG_RETURN_TYPES,
+    ASL_MSG_NOT_FOUND,
+    ASL_MSG_NESTED_COMMENT,
+    ASL_MSG_RESERVED_ARG_COUNT,
+    ASL_MSG_RESERVED_RETURN_VALUE,
+    ASL_MSG_ARG_COUNT_HI,
+    ASL_MSG_ARG_COUNT_LO,
+    ASL_MSG_NO_RETVAL,
+    ASL_MSG_INTERNAL,
+
+} ASL_MESSAGE_IDS;
+
+
+#endif  /* __ASLTYPES_H */

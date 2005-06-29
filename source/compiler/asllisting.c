@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -221,7 +221,7 @@ LsPopNode (void)
  *
  * DESCRIPTION: Check if there is an exception for this line, and if there is,
  *              put it in the listing immediately.  Handles multiple errors
- *              per line.  Gbl_NextError points to the next error in the 
+ *              per line.  Gbl_NextError points to the next error in the
  *              sorted (by line #) list of compile errors/warnings.
  *
  ******************************************************************************/
@@ -240,7 +240,7 @@ LsCheckException (
 
     /* Handle multiple errors per line */
 
-    while (Gbl_NextError && 
+    while (Gbl_NextError &&
           (LineNumber >= Gbl_NextError->LogicalLineNumber))
     {
         fprintf (Gbl_ListingOutputFile, "\n[****AslException****]\n");
@@ -256,7 +256,7 @@ LsCheckException (
 
 /*******************************************************************************
  *
- * FUNCTION:    LsFlushListingBuffer 
+ * FUNCTION:    LsFlushListingBuffer
  *
  * PARAMETERS:  None
  *
@@ -293,9 +293,8 @@ LsFlushListingBuffer (void)
     {
         fprintf (Gbl_ListingOutputFile, ".");
     }
-    fprintf (Gbl_ListingOutputFile, "    ");
 
-    //fprintf (Gbl_ListingOutputFile, "%*s    ", ((16 - Gbl_CurrentHexColumn) * 3) + 1, "XX");
+    fprintf (Gbl_ListingOutputFile, "    ");
 
 
     /* Write the ASCII character associated with each of the bytes */
@@ -412,12 +411,12 @@ LsWriteOneSourceLine (void)
 
     if (Gbl_HasIncludeFiles)
     {
-        /* 
-         * This file contains "include" statements, print the current 
+        /*
+         * This file contains "include" statements, print the current
          * filename and line number within the current file
          */
 
-        fprintf (Gbl_ListingOutputFile, "%12s %5d....", 
+        fprintf (Gbl_ListingOutputFile, "%12s %5d....",
                     Gbl_ListingNode->Filename, Gbl_ListingNode->LineNumber);
     }
     else
@@ -460,8 +459,8 @@ LsWriteOneSourceLine (void)
  *
  * RETURN:      None
  *
- * DESCRIPTION: Cleanup routine for the listing file.  Flush the hex AML 
- *              listing buffer, and flush out any remaining lines in the 
+ * DESCRIPTION: Cleanup routine for the listing file.  Flush the hex AML
+ *              listing buffer, and flush out any remaining lines in the
  *              source input file.
  *
  ******************************************************************************/
@@ -554,7 +553,7 @@ LsWriteSourceLines (
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Write "a node" to the listing file.  This means to 
+ * DESCRIPTION: Write "a node" to the listing file.  This means to
  *              1) Write out all of the source text associated with the node
  *              2) Write out all of the AML bytes associated with the node
  *              3) Write any compiler exceptions associated with the node

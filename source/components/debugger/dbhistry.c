@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
- * Module Name: aslcompile - top level compile module
- *              $Revision: 1.8 $
+ * Module Name: dbhistry - debugger HISTORY command
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -116,249 +115,187 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
+#include "acpi.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "amlcode.h"
 #include "acnamesp.h"
+#include "acparser.h"
+#include "acevents.h"
+#include "acinterp.h"
 #include "acdebug.h"
+#include "actables.h"
 
-#include <time.h>
+#ifdef ENABLE_DEBUGGER
+
+#define _COMPONENT          DEBUGGER
+        MODULE_NAME         ("dbhistry")
 
 
-struct tm                   *NewTime;
-time_t                      Aclock;
+#define HI_NO_HISTORY       0
+#define HI_RECORD_HISTORY   1
+#define HISTORY_SIZE        20
 
 
-/*
- * Stubs to simplify linkage to the
- * ACPI Namespace Manager (Unused functions).
- */
-
-void
-AcpiTbDeleteAcpiTables (void)
+typedef struct HistoryInfo
 {
-}
+    NATIVE_CHAR             Command[80];
+    UINT32                  CmdNum;
+
+} HISTORY_INFO;
 
 
-BOOLEAN
-AcpiTbSystemTablePointer (
-    void                    *Where)
-{
-    return FALSE;
-
-}
-
-void
-AcpiAmlDumpOperands (
-    ACPI_OPERAND_OBJECT     **Operands,
-    OPERATING_MODE          InterpreterMode,
-    NATIVE_CHAR             *Ident,
-    UINT32                  NumLevels,
-    NATIVE_CHAR             *Note,
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber)
-{
-}
-
-ACPI_STATUS
-AcpiAmlDumpOperand (
-    ACPI_OPERAND_OBJECT     *EntryDesc)
-{
-    return AE_OK;
-}
+HISTORY_INFO                HistoryBuffer[HISTORY_SIZE];
+UINT16                      LoHistory = 0;
+UINT16                      NumHistory = 0;
+UINT16                      NextHistoryIndex = 0;
+UINT32                      NextCmdNum = 1;
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AslCompilerSignon
+ * FUNCTION:    AcpiDbAddToHistory
  *
- * PARAMETERS:  None
+ * PARAMETERS:  CommandLine     - Command to add
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display compiler signon
+ * DESCRIPTION: Add a command line to the history buffer.
  *
  ******************************************************************************/
 
 void
-AslCompilerSignon (
-    FILE                    *Where)
+AcpiDbAddToHistory (
+    NATIVE_CHAR             *CommandLine)
 {
 
-    time (&Aclock);
-    NewTime = localtime (&Aclock);
 
-    fprintf (Where, "\n%s [Version %s, %s]\n\n", CompilerId, CompilerVersion, __DATE__);
+    /* Put command into the next available slot */
 
-}
+    STRCPY (HistoryBuffer[NextHistoryIndex].Command, CommandLine);
+    HistoryBuffer[NextHistoryIndex].CmdNum = NextCmdNum;
 
+    /* Adjust indexes */
 
-/*******************************************************************************
- *
- * FUNCTION:    AslCompilerFileHeader
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Header used at the beginning of output files
- *
- ******************************************************************************/
-
-void
-AslCompilerFileHeader (
-    FILE                    *Where)
-{
-
-    fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime));
-
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    CmDoCompile
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status (0 = OK)
- *
- * DESCRIPTION: This procedure performs the entire compile
- *
- ******************************************************************************/
-
-int
-CmDoCompile (void)
-{
-    ACPI_STATUS             Status;
-
-
-    /* Open the required input and output files */
-
-    Status = FlOpenInputFile (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
+    if ((NumHistory == HISTORY_SIZE) &&
+        (NextHistoryIndex == LoHistory))
     {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
-    Status = FlOpenMiscOutputFiles (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
-
-
-    /* ACPI CA subsystem initialization */
-
-    AcpiCmInitGlobals ();
-    AcpiCmMutexInitialize ();
-    AcpiNsRootInitialize ();
-
-    /* Build the parse tree */
-
-    AslCompilerparse();
-
-
-    /* Generate AML opcodes corresponding to the parse tokens */
-
-    DbgPrint ("\nGenerating AML opcodes\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
-
-    /* Calculate all AML package lengths */
-
-    DbgPrint ("\nGenerating Package lengths\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
-
-    if (Gbl_ParseOnlyFlag)
-    {
-        AePrintErrorLog (stdout);
-        if (Gbl_DebugFlag)
+        LoHistory++;
+        if (LoHistory >= HISTORY_SIZE)
         {
-            /* Print error summary to the debug file */
-
-            AePrintErrorLog (stderr);
+            LoHistory = 0;
         }
-        UtDisplaySummary ();
-        return 0;
     }
 
-
-    /* Semantic error checking */
-
-    AnalysisWalkInfo.MethodStack = NULL;
-
-    DbgPrint ("\nSemantic analysis\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
-                        AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
-
-
-    /* Namespace loading */
-
-    LdLoadNamespace ();
-
-
-    /* Namespace lookup */
-
-    LkCrossReferenceNamespace ();
-
-    /* Calculate all AML package lengths */
-
-    DbgPrint ("\nGenerating Package lengths\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
-
-
-    /*
-     * Now that the input is parsed, we can open the AML output file.
-     * Note: by default, the name of this file comes from the table descriptor
-     * within the input file.
-     */
-    Status = FlOpenAmlOutputFile (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
+    NextHistoryIndex++;
+    if (NextHistoryIndex >= HISTORY_SIZE)
     {
-        AePrintErrorLog (stderr);
-        return -1;
+        NextHistoryIndex = 0;
     }
 
 
-    /* Code generation - emit the AML */
-
-    CgGenerateAmlOutput ();
-
-
-    AePrintErrorLog (stdout);
-    if (Gbl_DebugFlag)
+    NextCmdNum++;
+    if (NumHistory < HISTORY_SIZE)
     {
-        /* Print error summary to the debug file */
-
-        AePrintErrorLog (stderr);
+        NumHistory++;
     }
 
-    /* Dump the AML as hex if requested */
-
-    LsDoHexOutput ();
-
-    /* Dump the namespace to the .nsp file if requested */
-
-    LsDisplayNamespace ();
-
-
-    /* Close all open files */
-
-    FlCloseListingFile ();
-    FlCloseSourceOutputFile ();
-    FlCloseHexOutputFile ();
-
-    fclose (Gbl_AmlOutputFile);
-
-    if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
-    {
-        unlink (Gbl_OutputFilename);
-    }
-
-    UtDisplaySummary ();
-
-
-    return 0;
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbDisplayHistory
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display the contents of the history buffer
+ *
+ ******************************************************************************/
+
+void
+AcpiDbDisplayHistory (void)
+{
+    NATIVE_UINT             i;
+    UINT16                  HistoryIndex;
+
+
+    HistoryIndex = LoHistory;
+
+    /* Dump entire history buffer */
+
+    for (i = 0; i < NumHistory; i++)
+    {
+        AcpiOsPrintf ("%ld  %s\n", HistoryBuffer[HistoryIndex].CmdNum, HistoryBuffer[HistoryIndex].Command);
+
+        HistoryIndex++;
+        if (HistoryIndex >= HISTORY_SIZE)
+        {
+            HistoryIndex = 0;
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbGetFromHistory
+ *
+ * PARAMETERS:  CommandNumArg           - String containing the number of the
+ *                                        command to be retrieved
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Get a command from the history buffer
+ *
+ ******************************************************************************/
+
+NATIVE_CHAR *
+AcpiDbGetFromHistory (
+    NATIVE_CHAR             *CommandNumArg)
+{
+    NATIVE_UINT             i;
+    UINT16                  HistoryIndex;
+    UINT32                  CmdNum;
+
+
+    if (CommandNumArg == NULL)
+    {
+        CmdNum = NextCmdNum - 1;
+    }
+
+    else
+    {
+        CmdNum = STRTOUL (CommandNumArg, NULL, 0);
+    }
+
+
+    /* Search history buffer */
+
+    HistoryIndex = LoHistory;
+    for (i = 0; i < NumHistory; i++)
+    {
+        if (HistoryBuffer[HistoryIndex].CmdNum == CmdNum)
+        {
+            /* Found the commnad, return it */
+
+            return (HistoryBuffer[HistoryIndex].Command);
+        }
+
+
+        HistoryIndex++;
+        if (HistoryIndex >= HISTORY_SIZE)
+        {
+            HistoryIndex = 0;
+        }
+    }
+
+    AcpiOsPrintf ("Invalid history number: %d\n", HistoryIndex);
+    return (NULL);
+}
+
+
+#endif /* ENABLE_DEBUGGER */
 

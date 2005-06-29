@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -394,13 +394,13 @@ AslError (
 
     if (Node)
     {
-        AslCommonError (Level, MessageId, Node->LineNumber, 
+        AslCommonError (Level, MessageId, Node->LineNumber,
                         Node->LogicalLineNumber, Node->Filename, ExtraMessage);
     }
 
     else
     {
-        AslCommonError (Level, MessageId, 0, 
+        AslCommonError (Level, MessageId, 0,
                         0, NULL, ExtraMessage);
     }
 }
@@ -429,8 +429,8 @@ AslCompilererror (
 
     Length = strlen (Gbl_InputFilename);
 
-    if ((strlen (Gbl_CurrentLineBuffer) + 
-         strlen (CompilerMessage) + 
+    if ((strlen (Gbl_CurrentLineBuffer) +
+         strlen (CompilerMessage) +
          Length + Gbl_CurrentColumn + 9) >= ASL_MSG_BUFFER_SIZE)
     {
         strcpy (MsgBuffer, "Message Buffer Overflow");
@@ -438,7 +438,7 @@ AslCompilererror (
 
     else
     {
-	    sprintf (MsgBuffer, "%s\n%*s %s\n",
+        sprintf (MsgBuffer, "%s\n%*s %s\n",
                     Gbl_CurrentLineBuffer,
                     Gbl_CurrentColumn + 14 + Length, "^",
                     CompilerMessage);
@@ -447,7 +447,7 @@ AslCompilererror (
     AslCommonError (ASL_ERROR, ASL_MSG_NULL, Gbl_CurrentLineNumber,
                     Gbl_LogicalLineNumber, Gbl_InputFilename, MsgBuffer);
 
-	return 0;
+    return 0;
 }
 
 

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -11,8 +11,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -117,7 +117,6 @@
  *****************************************************************************/
 
 
-
 #ifndef __ASLGLOBAL_H
 #define __ASLGLOBAL_H
 
@@ -136,7 +135,7 @@
 
 
 /*
- * Parser and other externals 
+ * Parser and other externals
  */
 extern int                      yydebug;
 extern FILE                     *AslCompilerin;
@@ -233,7 +232,6 @@ EXTERN FILE                     *DebugFile; /* Placeholder for oswinxf only */
 EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
 EXTERN ACPI_TABLE_HEADER        TableHeader;
 EXTERN ASL_RESERVED_INFO        ReservedMethods[];
-
 
 
 /* Scratch buffers */

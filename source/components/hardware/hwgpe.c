@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
- * Module Name: aslcompile - top level compile module
- *              $Revision: 1.8 $
+ * Module Name: hwgpe - Low level GPE enable/disable/clear functions
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -115,250 +114,187 @@
  *
  *****************************************************************************/
 
-
-#include "AslCompiler.h"
+#include "acpi.h"
+#include "achware.h"
 #include "acnamesp.h"
-#include "acdebug.h"
+#include "acevents.h"
 
-#include <time.h>
-
-
-struct tm                   *NewTime;
-time_t                      Aclock;
+#define _COMPONENT          HARDWARE
+        MODULE_NAME         ("hwgpe")
 
 
-/*
- * Stubs to simplify linkage to the
- * ACPI Namespace Manager (Unused functions).
- */
-
-void
-AcpiTbDeleteAcpiTables (void)
-{
-}
-
-
-BOOLEAN
-AcpiTbSystemTablePointer (
-    void                    *Where)
-{
-    return FALSE;
-
-}
-
-void
-AcpiAmlDumpOperands (
-    ACPI_OPERAND_OBJECT     **Operands,
-    OPERATING_MODE          InterpreterMode,
-    NATIVE_CHAR             *Ident,
-    UINT32                  NumLevels,
-    NATIVE_CHAR             *Note,
-    NATIVE_CHAR             *ModuleName,
-    UINT32                  LineNumber)
-{
-}
-
-ACPI_STATUS
-AcpiAmlDumpOperand (
-    ACPI_OPERAND_OBJECT     *EntryDesc)
-{
-    return AE_OK;
-}
-
-
-/*******************************************************************************
+/******************************************************************************
  *
- * FUNCTION:    AslCompilerSignon
+ * FUNCTION:    AcpiHwEnableGpe
  *
- * PARAMETERS:  None
+ * PARAMETERS:  GpeNumber       - The GPE
  *
  * RETURN:      None
  *
- * DESCRIPTION: Display compiler signon
+ * DESCRIPTION: Enable a single GPE.
  *
  ******************************************************************************/
 
 void
-AslCompilerSignon (
-    FILE                    *Where)
+AcpiHwEnableGpe (
+    UINT32                  GpeNumber)
 {
-
-    time (&Aclock);
-    NewTime = localtime (&Aclock);
-
-    fprintf (Where, "\n%s [Version %s, %s]\n\n", CompilerId, CompilerVersion, __DATE__);
-
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AslCompilerFileHeader
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Header used at the beginning of output files
- *
- ******************************************************************************/
-
-void
-AslCompilerFileHeader (
-    FILE                    *Where)
-{
-
-    fprintf (Where, "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime));
-
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    CmDoCompile
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status (0 = OK)
- *
- * DESCRIPTION: This procedure performs the entire compile
- *
- ******************************************************************************/
-
-int
-CmDoCompile (void)
-{
-    ACPI_STATUS             Status;
-
-
-    /* Open the required input and output files */
-
-    Status = FlOpenInputFile (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
-    Status = FlOpenMiscOutputFiles (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
-
-
-    /* ACPI CA subsystem initialization */
-
-    AcpiCmInitGlobals ();
-    AcpiCmMutexInitialize ();
-    AcpiNsRootInitialize ();
-
-    /* Build the parse tree */
-
-    AslCompilerparse();
-
-
-    /* Generate AML opcodes corresponding to the parse tokens */
-
-    DbgPrint ("\nGenerating AML opcodes\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, OpcAmlOpcodeWalk, NULL);
-
-    /* Calculate all AML package lengths */
-
-    DbgPrint ("\nGenerating Package lengths\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
-
-    if (Gbl_ParseOnlyFlag)
-    {
-        AePrintErrorLog (stdout);
-        if (Gbl_DebugFlag)
-        {
-            /* Print error summary to the debug file */
-
-            AePrintErrorLog (stderr);
-        }
-        UtDisplaySummary ();
-        return 0;
-    }
-
-
-    /* Semantic error checking */
-
-    AnalysisWalkInfo.MethodStack = NULL;
-
-    DbgPrint ("\nSemantic analysis\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_TWICE, AnSemanticAnalysisWalkBegin,
-                        AnSemanticAnalysisWalkEnd, &AnalysisWalkInfo);
-
-
-    /* Namespace loading */
-
-    LdLoadNamespace ();
-
-
-    /* Namespace lookup */
-
-    LkCrossReferenceNamespace ();
-
-    /* Calculate all AML package lengths */
-
-    DbgPrint ("\nGenerating Package lengths\n\n");
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
-    TrWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
-
+    UINT8                   InByte;
+    UINT32                  RegisterIndex;
+    UINT8                   BitMask;
 
     /*
-     * Now that the input is parsed, we can open the AML output file.
-     * Note: by default, the name of this file comes from the table descriptor
-     * within the input file.
+     * Translate GPE number to index into global registers array.
      */
-    Status = FlOpenAmlOutputFile (Gbl_InputFilename);
-    if (ACPI_FAILURE (Status))
-    {
-        AePrintErrorLog (stderr);
-        return -1;
-    }
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
 
+    /*
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
 
-    /* Code generation - emit the AML */
-
-    CgGenerateAmlOutput ();
-
-
-    AePrintErrorLog (stdout);
-    if (Gbl_DebugFlag)
-    {
-        /* Print error summary to the debug file */
-
-        AePrintErrorLog (stderr);
-    }
-
-    /* Dump the AML as hex if requested */
-
-    LsDoHexOutput ();
-
-    /* Dump the namespace to the .nsp file if requested */
-
-    LsDisplayNamespace ();
-
-
-    /* Close all open files */
-
-    FlCloseListingFile ();
-    FlCloseSourceOutputFile ();
-    FlCloseHexOutputFile ();
-
-    fclose (Gbl_AmlOutputFile);
-
-    if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
-    {
-        unlink (Gbl_OutputFilename);
-    }
-
-    UtDisplaySummary ();
-
-
-    return 0;
+    /*
+     * Read the current value of the register, set the appropriate bit
+     * to enable the GPE, and write out the new register.
+     */
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr,
+                (UINT8)(InByte | BitMask));
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwDisableGpe
+ *
+ * PARAMETERS:  GpeNumber       - The GPE
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Disable a single GPE.
+ *
+ ******************************************************************************/
+
+void
+AcpiHwDisableGpe (
+    UINT32                  GpeNumber)
+{
+    UINT8                   InByte;
+    UINT32                  RegisterIndex;
+    UINT8                   BitMask;
+
+    /*
+     * Translate GPE number to index into global registers array.
+     */
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
+
+    /*
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
+
+    /*
+     * Read the current value of the register, clear the appropriate bit,
+     * and write out the new register value to disable the GPE.
+     */
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr,
+                (UINT8)(InByte & ~BitMask));
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwClearGpe
+ *
+ * PARAMETERS:  GpeNumber       - The GPE
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Clear a single GPE.
+ *
+ ******************************************************************************/
+
+void
+AcpiHwClearGpe (
+    UINT32                  GpeNumber)
+{
+    UINT32                  RegisterIndex;
+    UINT8                   BitMask;
+
+    /*
+     * Translate GPE number to index into global registers array.
+     */
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
+
+    /*
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
+
+    /*
+     * Write a one to the appropriate bit in the status register to
+     * clear this GPE.
+     */
+    AcpiOsOut8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr, BitMask);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwGetGpeStatus
+ *
+ * PARAMETERS:  GpeNumber       - The GPE
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Return the status of a single GPE.
+ *
+ ******************************************************************************/
+
+void
+AcpiHwGetGpeStatus (
+    UINT32                  GpeNumber,
+    ACPI_EVENT_STATUS       *EventStatus)
+{
+    UINT8                   InByte = 0;
+    UINT32                  RegisterIndex = 0;
+    UINT8                   BitMask = 0;
+
+    if (!EventStatus)
+    {
+        return;
+    }
+
+    (*EventStatus) = 0;
+
+    /*
+     * Translate GPE number to index into global registers array.
+     */
+    RegisterIndex = AcpiGbl_GpeValid[GpeNumber];
+
+    /*
+     * Figure out the bit offset for this GPE within the target register.
+     */
+    BitMask = AcpiGbl_DecodeTo8bit [MOD_8 (GpeNumber)];
+
+    /*
+     * Enabled?:
+     */
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].EnableAddr);
+
+    if (BitMask & InByte)
+    {
+        (*EventStatus) |= ACPI_EVENT_FLAG_ENABLED;
+    }
+
+    /*
+     * Set?
+     */
+    InByte = AcpiOsIn8 (AcpiGbl_GpeRegisters[RegisterIndex].StatusAddr);
+
+    if (BitMask & InByte)
+    {
+        (*EventStatus) |= ACPI_EVENT_FLAG_SET;
+    }
+}
