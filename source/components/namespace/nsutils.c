@@ -107,14 +107,6 @@
 
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", 'W', "NsGetType: Null handle", "NsGetType: Null handle"},
-    {"0001", 'W', "NsGetValue: Null handle", "NsGetValue: Null handle"},
-    {NULL, 'I', NULL, NULL}
-};
-
-
-
 /******************************************************************************
  *
  * FUNCTION:    NsChecksum
@@ -129,11 +121,13 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ******************************************************************************/
 
 UINT8
-NsChecksum (void *Buffer, UINT32 Length)
+NsChecksum (
+    void                    *Buffer, 
+    UINT32                  Length)
 {
-    UINT8       *limit;
-    UINT8       *rover;
-    UINT8       sum = 0;
+    UINT8                   *limit;
+    UINT8                   *rover;
+    UINT8                   sum = 0;
 
 
     if (Buffer && Length)
@@ -164,16 +158,17 @@ NsChecksum (void *Buffer, UINT32 Length)
  ***************************************************************************/
 
 NAME_TABLE_ENTRY *
-NsAllocateNteDesc (INT32 NteCount)
+NsAllocateNteDesc (
+    INT32                   NteCount)
 {
-    NAME_TABLE_ENTRY    *NewNteDesc = NULL;
-    size_t              AllocSize;
+    NAME_TABLE_ENTRY        *NewNteDesc = NULL;
+    ACPI_SIZE               AllocSize;
 
 
     FUNCTION_TRACE ("AllocateNteDesc");
 
 
-    AllocSize = (size_t) NteCount * sizeof (NAME_TABLE_ENTRY);
+    AllocSize = (ACPI_SIZE) NteCount * sizeof (NAME_TABLE_ENTRY);
 
     
     /* Allow room for link to appendage */
@@ -208,8 +203,9 @@ NsAllocateNteDesc (INT32 NteCount)
  *
  ***************************************************************************/
 
-NsType
-NsGetType (NsHandle handle)
+ACPI_OBJECT_TYPE
+NsGetType (
+    ACPI_HANDLE             handle)
 {
     FUNCTION_TRACE ("NsGetType");
 
@@ -218,7 +214,7 @@ NsGetType (NsHandle handle)
     {
         /*  Handle invalid  */
 
-        REPORT_WARNING (&KDT[0]);
+        REPORT_WARNING ("NsGetType: Null handle");
         FUNCTION_EXIT;
         return TYPE_Any;
     }
@@ -239,7 +235,8 @@ NsGetType (NsHandle handle)
  ***************************************************************************/
 
 void *
-NsGetValue (NsHandle handle)
+NsGetValue (
+    ACPI_HANDLE             handle)
 {
     FUNCTION_TRACE ("NsGetValue");
 
@@ -248,7 +245,7 @@ NsGetValue (NsHandle handle)
     {
         /* handle invalid */
 
-        REPORT_WARNING (&KDT[1]);
+        REPORT_WARNING ("NsGetValue: Null handle");
         FUNCTION_EXIT;
         return NULL;
     }
@@ -270,17 +267,18 @@ NsGetValue (NsHandle handle)
  ****************************************************************************/
 
 INT32
-IsNsValue (OBJECT_DESCRIPTOR *ObjDesc)
+IsNsValue (
+    ACPI_OBJECT             *ObjDesc)
 {
-    NsHandle        RetHandle;
+    ACPI_HANDLE             RetHandle;
 
 
     FUNCTION_TRACE ("IsNsValue");
 
-    RetHandle = NsFindValue (ObjDesc, NS_ALL, INT_MAX);
+    RetHandle = NsFindValue (ObjDesc, NS_ALL, ACPI_INT_MAX);
 
     FUNCTION_EXIT;
-    return (RetHandle != (NsHandle) 0);
+    return (RetHandle != (ACPI_HANDLE) 0);
 }
 
 
@@ -296,7 +294,8 @@ IsNsValue (OBJECT_DESCRIPTOR *ObjDesc)
  ***************************************************************************/
 
 INT32
-NsLocal (NsType Type)
+NsLocal (
+    ACPI_OBJECT_TYPE        Type)
 {
     FUNCTION_TRACE ("NsLocal");
 
@@ -305,7 +304,7 @@ NsLocal (NsType Type)
     {
         /*  type code out of range  */
 
-        REPORT_WARNING (&KDT[1]);
+        REPORT_WARNING ("NsLocal: Type code out of range");
         FUNCTION_EXIT;
         return 0;
     }
@@ -329,13 +328,16 @@ NsLocal (NsType Type)
  ****************************************************************************/
 
 char *
-NsInternalizeName (char *DottedName)
+NsInternalizeName (
+    char                    *DottedName)
 {
-    char            *Result = NULL;
-    static char     *IN = NULL;
-    static size_t   INsize = 0;
-    size_t          i;
+    char                    *Result = NULL;
+    static char             *IN = NULL;
+    static ACPI_SIZE        INsize = 0;
+    ACPI_SIZE               i;
 
+
+    /* TBD: remove static variables above !! */
 
     FUNCTION_TRACE ("NsInternalizeName");
 
@@ -403,7 +405,8 @@ NsInternalizeName (char *DottedName)
  ****************************************************************************/
 
 NAME_TABLE_ENTRY *
-NsConvertHandleToEntry (NsHandle Handle)
+NsConvertHandleToEntry (
+    ACPI_HANDLE             Handle)
 {
 
     /* 
@@ -446,7 +449,8 @@ static INT32    NumStaticBlocks = 0;
  ***************************************************************************/
 
 void
-RegisterStaticBlockPtr (void **BlkPtr)
+RegisterStaticBlockPtr (
+    void                    **BlkPtr)
 {
 
 
@@ -457,7 +461,7 @@ RegisterStaticBlockPtr (void **BlkPtr)
 
     else
     {
-        REPORT_WARNING (&KDT[1]);
+        REPORT_WARNING ("Too many static blocks");
     }
 }
 
@@ -473,9 +477,10 @@ RegisterStaticBlockPtr (void **BlkPtr)
  ***************************************************************************/
 
 void
-MarkStaticBlocks (INT32 *Count)
+MarkStaticBlocks (
+    INT32                   *Count)
 {
-    INT32           i;
+    INT32                   i;
 
 
     for (i = 0; i < NumStaticBlocks; i++)
@@ -509,7 +514,10 @@ MarkStaticBlocks (INT32 *Count)
  ***************************************************************************/
 
 static void
-NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
+NsMarkNT (
+    nte                 *ThisEntry, 
+    INT32               Size, 
+    INT32               *Count)
 {
     nte                 *Appendage;
 
@@ -545,12 +553,12 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
 
             switch (NsGetType (ThisEntry))
             {
-                OBJECT_DESCRIPTOR       *ptrVal;
+                ACPI_OBJECT             *ptrVal;
                 meth                    *Method;
 
 
             case String:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
+                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
                 
                 /* 
                  * Check for the value pointer in the name table entry
@@ -571,7 +579,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
                 break;
 
             case Buffer:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
+                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
                 
                 /* 
                  * Check for the value pointer in the name table entry
@@ -587,7 +595,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
                 break;
 
             case Package:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
+                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
                 
                 /* 
                  * Check for the value pointer in the name table entry
@@ -613,7 +621,7 @@ NsMarkNT (nte *ThisEntry, INT32 Size, INT32 *Count)
             case FieldUnit:
             case IndexField:
             case Region:
-                ptrVal = (OBJECT_DESCRIPTOR *) NsGetValue (ThisEntry);
+                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
                 if (ptrVal)
                 {
                     AmlMarkObject (ptrVal);
