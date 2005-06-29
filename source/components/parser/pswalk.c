@@ -118,6 +118,7 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
+#include <dispatch.h>
 #include <namesp.h>
 #include <interp.h>
 
@@ -441,7 +442,7 @@ PsWalkLoop (
         {
             /* Transfer control to the called control method */
 
-            Status = PsxCallControlMethod (WalkList, WalkState, Op);
+            Status = DsCallControlMethod (WalkList, WalkState, Op);
 
             /* If the method call worked, a new walk state was created -- get it */
 
@@ -486,6 +487,7 @@ PsWalkParsedAml (
     ACPI_GENERIC_OP         *StartOp,
     ACPI_GENERIC_OP         *EndOp,
     ACPI_OBJECT_INTERNAL    *MthDesc,
+	NAME_TABLE_ENTRY		*StartScope,
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     INTERPRETER_CALLBACK    DescendingCallback,
@@ -525,9 +527,21 @@ PsWalkParsedAml (
     PrevWalkList = Gbl_CurrentWalkList;
     Gbl_CurrentWalkList = &WalkList;
 
-    /* Init arguments if this is a control method */
+	if (MthDesc)
+	{
+		/* Push start scope on scope stack and make it current  */
 
-    PsxMthStackInitArgs (Params, MTH_NUM_ARGS);
+		Status = NsScopeStackPush (StartScope, ACPI_TYPE_Method, WalkState);
+		if (ACPI_FAILURE (Status))
+		{
+			return_ACPI_STATUS (Status);
+		}
+
+		/* Init arguments if this is a control method */
+		/* TBD: add walkstate as a param */
+
+		DsMthStackInitArgs (Params, MTH_NUM_ARGS);
+	}
 
     Op = StartOp;
     Status = AE_OK;
@@ -569,9 +583,13 @@ PsWalkParsedAml (
                 Status = OsdSignalSemaphore (WalkState->MethodDesc->Method.Semaphore, 1);
             }
 
+			/* Reset the current scope to the beginning of scope stack */
+
+			NsScopeStackClear (WalkState);
+
             /* Delete all arguments and locals */
 
-            PsxMthStackDeleteArgs (WalkState);      
+            DsMthStackDeleteArgs (WalkState);      
 
             /* Delete the parse tree if asked to */
 
@@ -599,7 +617,7 @@ PsWalkParsedAml (
              * The object is deleted 
              */
 
-            PsxRestartControlMethod (WalkState, ReturnDesc);
+            DsRestartControlMethod (WalkState, ReturnDesc);
 
             /* Get the next Op to process */
 
