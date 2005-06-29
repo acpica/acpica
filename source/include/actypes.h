@@ -570,6 +570,7 @@ typedef struct
     ACPI_COMMON_OBJ_INFO;
 } ACPI_OBJ_INFO_HEADER;
 
+
 typedef struct 
 {
     ACPI_COMMON_OBJ_INFO;
@@ -582,6 +583,17 @@ typedef struct
     UINT32                      Address;            /*  _ADR value if any */
     UINT32                      CurrentStatus;      /*  _STA value */
 } ACPI_DEVICE_INFO;
+
+
+
+/* Info used by PsInitObjects */
+
+typedef struct InitWalkInfo
+{
+    UINT32                  MethodCount;
+    UINT32                  OpRegionCount;
+
+} INIT_WALK_INFO;
 
 
 
