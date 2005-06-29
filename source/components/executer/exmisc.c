@@ -134,7 +134,7 @@
  * 
  * FUNCTION:    AmlExecCreateField
  *
- * PARAMETERS:  opcode              - The opcode to be executed
+ * PARAMETERS:  Opcode              - The opcode to be executed
  *
  * RETURN:      Status
  *
@@ -160,7 +160,7 @@
 
 ACPI_STATUS
 AmlExecCreateField (
-    UINT16                  opcode)
+    UINT16                  Opcode)
 {
     ACPI_OBJECT_INTERNAL    *ResDesc = NULL;
     ACPI_OBJECT_INTERNAL    *CntDesc = NULL;
@@ -184,11 +184,10 @@ AmlExecCreateField (
 
     /* DefCreateField := CreateFieldOp SourceBuff BitIndex NumBits NameString  */
 
-    if (AML_CreateFieldOp == opcode)
+    if (AML_CreateFieldOp == Opcode)
     {
         Status = AmlPrepObjStack ("lnnb");
         NumOperands = 4;
-        OpName = Gbl_LongOps[opcode & 0x00ff];
     }
 
     
@@ -201,25 +200,25 @@ AmlExecCreateField (
     {
         Status = AmlPrepObjStack ("lnb");
         NumOperands = 3;
-        OpName = Gbl_ShortOps[opcode];
     }
 
     if (Status != AE_OK)
     {
         /* Invalid parameters on object stack  */
 
-        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
+        AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, NumOperands);
         return_ACPI_STATUS (Status);
     }
 
     /* Get pointers to everything that is now on the object stack */
 
+    OpName = PsGetOpcodeName (Opcode);
     AmlDumpObjStack (IMODE_Execute, OpName, NumOperands, "after AmlPrepObjStack");
 
     StackIndex = 0;
     ResDesc = AmlObjStackGetValue (StackIndex++);           /* result */
     
-    if (AML_CreateFieldOp == opcode)
+    if (AML_CreateFieldOp == Opcode)
     {
         CntDesc = AmlObjStackGetValue (StackIndex++);           /* count */
     }
@@ -242,7 +241,7 @@ AmlExecCreateField (
      * Setup the Bit offsets and counts, according to the opcode
      */
 
-    switch (opcode)
+    switch (Opcode)
     {
 
     /* DefCreateBitField   :=  CreateBitFieldOp    SourceBuff  BitIndex    NameString  */
@@ -294,7 +293,7 @@ AmlExecCreateField (
 
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlExecCreateField: Internal error - unknown field creation opcode %02x\n",
-                opcode));
+                Opcode));
         return_ACPI_STATUS (AE_AML_ERROR);
 
     } /* switch */
@@ -373,7 +372,7 @@ AmlExecCreateField (
     } /* switch */
 
 
-    if (AML_CreateFieldOp == opcode)
+    if (AML_CreateFieldOp == Opcode)
     {
         /* Delete object descriptor unique to CreateField  */
 
@@ -402,7 +401,7 @@ AmlExecCreateField (
     case INTERNAL_TYPE_DefField:
     case INTERNAL_TYPE_IndexField:
 
-        NsDumpPathname (ResDesc, "AmlExecCreateField: clobber ", TRACE_BFIELD, _COMPONENT);
+        DUMP_PATHNAME (ResDesc, "AmlExecCreateField: clobber ", TRACE_BFIELD, _COMPONENT);
 
         DUMP_ENTRY (ResDesc, TRACE_BFIELD);
         DUMP_STACK_ENTRY (NsGetAttachedObject (ResDesc));
@@ -917,7 +916,7 @@ AmlExecFatal (void)
         return_ACPI_STATUS (Status);
     }
 
-    AmlDumpObjStack (IMODE_Execute, Gbl_LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, PsGetOpcodeName (AML_FatalOp), 3, "after AmlPrepObjStack");
 
 
     /* DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
@@ -981,7 +980,7 @@ AmlExecIndex (void)
 
     else
     {
-        AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[AML_IndexOp], 3, "after AmlPrepObjStack");
+        AmlDumpObjStack (IMODE_Execute, PsGetOpcodeName (AML_IndexOp), 3, "after AmlPrepObjStack");
 
         ResDesc = AmlObjStackGetValue (0);
         IdxDesc = AmlObjStackGetValue (1);
@@ -1075,7 +1074,7 @@ AmlExecMatch (void)
 
     /* Get the parameters from the object stack */
 
-    AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, PsGetOpcodeName (AML_MatchOp), 6, "after AmlPrepObjStack");
 
     StartDesc = AmlObjStackGetValue (0);
     V2Desc    = AmlObjStackGetValue (1);
