@@ -14,15 +14,18 @@
  | FILENAME: acpi.h - Publics and external data for ACPI.LIB
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 19:58:21 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 19:58:22 $
  | $Log: acpi.h,v $
- | Revision 1.5  2005/06/29 19:58:21  aystarik
- | Anti-Polish clean up
+ | Revision 1.6  2005/06/29 19:58:22  aystarik
+ | Moved major table-size constants to here
  |
  | 
- | date	99.02.12.18.26.00;	author rmosgrov;	state Exp;
+ | date	99.03.12.00.17.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 6     3/11/99 4:17p Rmoore1
+ * Moved major table-size constants to here
  * 
  * 5     2/12/99 10:26a Rmosgrov
  * Anti-Polish clean up
@@ -89,36 +92,46 @@
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
-
-/*
- * This is used to generate the physical to logical mappings.
- * TBD: Probably not a good idea.
+/* 
+ * All scary-looking constants should go here!!! 
+ * 
+ * Some of these should be fixed or at least made run-time configurable.
+ *
  */
 
-#define MAX_ACPI_TABLE_SIZE         49152
+/*
+ * AML Interpreter
+ */
 
+#define MAX_ACPI_TABLE_SIZE         49152   /* For phys to logical mapping */
+#define AML_PKG_MAX_NEST            100     /* Max depth of package nesting */
+#define AML_METHOD_MAX_NEST         10      /* Max depth of nested method calls */
+#define INITIAL_NAME_BUF_SIZE       32
 
+/* 
+ * NameSpace Table sizes
+ * 
+ * If USE_HASHING is #defined, these must be prime numbers and
+ * should be large enough that the tables never get terribly full.
+ *
+ * The root NT was made bigger than others in the possibly erroneous
+ * expectation that there might be quite a few entries in the root.
+ */
 
-#ifndef ACPILIB_GEN
-    #include <amlpub.h>
-    #include <amlscan.h>
-    #include <acpitype.h>
-    #include <acpievnt.h>
-    #include <acpilgcy.h>
-    #include <acpinmsp.h>
-    #include <acpipmt.h>
-    #include <acpislwa.h>
-    #include <acpitbls.h>
-    #include <acpirio.h>
-    #include <debuglvl.h>
-    #include <device.h>
-    #include <display.h>
-    #include <exmethod.h>
-    #include <scilast.h>
+#ifdef USE_HASHING
+#define ROOTSIZE                    101     /* # of slots in root table */
+#define TABLSIZE                    53      /* # of slots per table below the root */
+
 #else
-    #include "acpitype.h"
-#endif  
+#define ROOTSIZE                    40      /* initial # of slots in root table */
+#define TABLSIZE                    20      /* initial # of slots per table below the root */
+#endif
 
+#define MAXNEST                     15      /* Max nesting of name scopes, used for sizing stacks */
+
+
+
+#include "acpitype.h"
 
 #ifdef DEFINE_ACPI_GLOBALS
     #define ACPI_EXTERN
@@ -150,6 +163,12 @@ ACPI_EXTERN ACPI_TABLE_HEADER                   * PSDT;
 
 ACPI_EXTERN ACPI_TABLE_HEADER                   * SSDT;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
+
+
+/*
+ * Common macros
+ */
+
 
 
 #endif /* __ACPI_H__ */
