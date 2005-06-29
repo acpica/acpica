@@ -191,19 +191,19 @@ AmlPrepDefFieldValue (
         DUMP_STACK (MODE_Exec, "AmlPrepDefFieldValue", 2, "case DefField");
 
 
-        ObjDesc->ValType = (UINT8) TYPE_DefField;
-        if (TYPE_DefField != ObjDesc->Field.ValType)
+        ObjDesc->Type = (UINT8) TYPE_DefField;
+        if (TYPE_DefField != ObjDesc->Field.Type)
         {
             /* 
              * The C implementation has done something which is technically legal
-             * but unexpected:  the ValType field which was defined as a UINT8 did
+             * but unexpected:  the Type field which was defined as a UINT8 did
              * not map to the same structure offset as the one which was defined
              * as a WORD_BIT -- see comments in the definition of the FieldUnit
              * variant of ACPI_OBJECT_INTERNAL
              *
              * Log some evidence to facilitate porting the code.
              */
-            ObjDesc->Field.ValType = 0x005a;
+            ObjDesc->Field.Type = 0x005a;
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlPrepDefFieldValue: **** Internal Failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
@@ -216,12 +216,12 @@ AmlPrepDefFieldValue (
 
     if (AE_OK == Status)
     {   
-        /* ObjDesc, Region, and ObjDesc->Field.ValType valid    */
+        /* ObjDesc, Region, and ObjDesc->Field.Type valid    */
 
         ObjDesc->Field.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
         ObjDesc->Field.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
         ObjDesc->Field.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-        ObjDesc->Field.DatLen     = (UINT16) FldLen;
+        ObjDesc->Field.Length     = (UINT16) FldLen;
 
         /* TBD: - should use width of data register, not hardcoded 8 */
 
@@ -319,12 +319,12 @@ AmlPrepBankFieldValue (
 
         DUMP_STACK (MODE_Exec, "AmlPrepBankFieldValue", 2, "case BankField");
 
-        ObjDesc->ValType = (UINT8) TYPE_BankField;
-        if (TYPE_BankField != ObjDesc->BankField.ValType)
+        ObjDesc->Type = (UINT8) TYPE_BankField;
+        if (TYPE_BankField != ObjDesc->BankField.Type)
         {
             /* See comments in AmlPrepDefFieldValue() re unexpected C behavior */
 
-            ObjDesc->BankField.ValType = 0x005a;
+            ObjDesc->BankField.Type = 0x005a;
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlPrepBankFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
@@ -343,7 +343,7 @@ AmlPrepBankFieldValue (
         ObjDesc->BankField.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
         ObjDesc->BankField.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
         ObjDesc->BankField.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-        ObjDesc->BankField.DatLen     = (UINT16) FldLen;
+        ObjDesc->BankField.Length     = (UINT16) FldLen;
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
@@ -351,7 +351,7 @@ AmlPrepBankFieldValue (
 
         ObjDesc->BankField.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->BankField.Offset     = (UINT32) FldPos / 8;
-        ObjDesc->BankField.BankVal    = BankVal;
+        ObjDesc->BankField.Value      = BankVal;
         ObjDesc->BankField.Container  = NsGetValue (Region);
         ObjDesc->BankField.BankSelect = NsGetValue (BankReg);
 
@@ -429,12 +429,12 @@ AmlPrepIndexFieldValue (
     {   
         /* ObjDesc, IndexRegion, and DataReg valid  */
 
-        ObjDesc->ValType = (UINT8) TYPE_IndexField;
-        if (TYPE_IndexField != ObjDesc->IndexField.ValType)
+        ObjDesc->Type = (UINT8) TYPE_IndexField;
+        if (TYPE_IndexField != ObjDesc->IndexField.Type)
         {
             /* See comments in AmlPrepDefFieldValue() re unexpected C behavior */
         
-            ObjDesc->IndexField.ValType = 0x005a;
+            ObjDesc->IndexField.Type = 0x005a;
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlPrepIndexFieldValue: internal failure %p %02x %02x %02x %02x\n",
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
@@ -453,14 +453,14 @@ AmlPrepIndexFieldValue (
         ObjDesc->IndexField.Access        = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
         ObjDesc->IndexField.LockRule      = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
         ObjDesc->IndexField.UpdateRule    = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-        ObjDesc->IndexField.DatLen        = (UINT16) FldLen;
+        ObjDesc->IndexField.Length        = (UINT16) FldLen;
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
         DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepIndexFieldValue: hard 8 **\n"));
 
         ObjDesc->IndexField.BitOffset = (UINT16) FldPos % 8;
-        ObjDesc->IndexField.IndexVal  = (UINT32) FldPos / 8;
+        ObjDesc->IndexField.Value     = (UINT32) FldPos / 8;
         ObjDesc->IndexField.Index     = IndexReg;
         ObjDesc->IndexField.Data      = DataReg;
 
