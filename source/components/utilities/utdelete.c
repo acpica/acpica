@@ -203,7 +203,7 @@ CmDeleteInternalSimpleObject (
 
     CmFree (Object);
 
-    FUNCTION_VALUE_EXIT (Object);
+    return_VOID;
 }
 
 
@@ -233,8 +233,7 @@ CmDeleteInternalPackageObject (
 
     if (Object->Package.Count == 0)
     {
-        FUNCTION_EXIT;
-        return;
+        return_VOID;
     }
 
     for (i = 0; i < Object->Package.Count; i++)
@@ -272,7 +271,7 @@ CmDeleteInternalPackageObject (
 
     CmFree (Object->Package.Elements);
 
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -328,8 +327,7 @@ CmDeleteInternalObjectList (
 
     CmFree (ObjList);
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }
 
 
