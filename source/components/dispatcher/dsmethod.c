@@ -117,12 +117,11 @@
 #define __PSXMETHD_C__
 
 #include <acpi.h>
-#include <interpreter.h>
 #include <amlcode.h>
+#include <parser.h>
+#include <interpreter.h>
 #include <namespace.h>
 
-#include <parser.h>
-#include <psopcode.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psxmethd");
@@ -173,7 +172,7 @@ PsxParseMethod (
 
     /* Allocate a new parser op to be the root of the parsed method tree */
 
-    Op = PsAllocOp (AML_METHOD);
+    Op = PsAllocOp (AML_MethodOp);
     if (!Op)
     {
         return AE_NO_MEMORY;
@@ -182,32 +181,33 @@ PsxParseMethod (
     /* Init new op with the method name and pointer back to the NTE */
 
     PsSetName (Op, Entry->Name);
-    Op->Entry = Entry;
+    Op->ResultObj = Entry;
 
-    /* Parse the method, creating a parse tree */
+    /* Open a new scope */
 
-    NsPushCurrentScope (Entry->Scope, ACPI_TYPE_Method);
-
-    Status = PsParseAml (Op, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength);
-
-
-    /* 
-     * Walk the method parse tree to enter any named objects declared within the
-     * method into the namespace.  Don't include the method op in the walk.
-     */
-
-    /* TBD: OR just have begin/end ignore the method op the second time down? */
-
-    Op->Opcode = 0xFFFF;  /* AML_INVALID_OPCODE */
-    PsWalkParsedAml (Op, PsxLoadBeginMethodOp, PsxLoadEndOp);
-    Op->Opcode = AML_METHOD;
-
-    NsPopCurrent (ACPI_TYPE_Any);
-
+    Status = NsScopeStackPush (Entry->Scope, ACPI_TYPE_Method);
     if (ACPI_FAILURE (Status))
     {
         return Status;
     }
+
+    /* Parse the method, creating a parse tree */
+
+    Status = PsParseAml (Op, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength);
+    if (ACPI_FAILURE (Status))
+    {
+        return Status;
+    }
+
+    /* 
+     * Walk the method parse tree to enter any named objects declared within the
+     * method into the namespace.  Don't include the method op in the walk --
+     * Just set the opcode to NOOP temporarily
+     */
+    PsWalkParsedAml (PsGetChild (Op), Op, NULL, NULL, PsxLoadBeginMethodOp, PsxLoadEndOp);
+
+    NsScopeStackPop (ACPI_TYPE_Any);
+
 
     /* Install the parsed tree in the method object */
 

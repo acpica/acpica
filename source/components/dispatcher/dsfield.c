@@ -117,12 +117,11 @@
 #define __PSXFIELD_C__
 
 #include <acpi.h>
-#include <interpreter.h>
 #include <amlcode.h>
+#include <parser.h>
+#include <interpreter.h>
 #include <namespace.h>
 
-#include <parser.h>
-#include <psopcode.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psxfield");
@@ -149,6 +148,7 @@ PsxCreateField (
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
     ACPI_GENERIC_OP         *Arg;
+    NAME_TABLE_ENTRY        *Entry;
     char                    Buffer[5];
     UINT8                   FieldFlags;
     UINT32                  FieldBitPosition = 0;
@@ -187,10 +187,8 @@ PsxCreateField (
             *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
             Buffer[4] = 0;
 
-            AmlObjStackDeleteValue (STACK_TOP);
-
             Status = NsLookup (Gbl_CurrentScope->Scope, Buffer, INTERNAL_TYPE_DefField, IMODE_LoadPass1, 
-                                        NS_NO_UPSEARCH, (NAME_TABLE_ENTRY **) AmlObjStackGetTopPtr ());
+                                        NS_NO_UPSEARCH, &Entry);
             if (ACPI_FAILURE (Status))
             {
                 break;
@@ -198,7 +196,7 @@ PsxCreateField (
 
             /* Initialize an object for the new NTE that is on the object stack */
 
-            Status = AmlPrepDefFieldValue (Region, FieldFlags, FieldBitPosition, Arg->Value.Size);
+            Status = AmlPrepDefFieldValue (Entry, Region, FieldFlags, FieldBitPosition, Arg->Value.Size);
 
             /* Keep track of bit position for the *next* field */
 
@@ -234,6 +232,7 @@ PsxCreateBankField (
     ACPI_STATUS             Status = AE_AML_ERROR;
     ACPI_GENERIC_OP         *Arg;
     NAME_TABLE_ENTRY        *BankReg;
+    NAME_TABLE_ENTRY        *Entry;
     UINT32                  BankValue;
     char                    Buffer[5];
     UINT8                   FieldFlags;
@@ -289,10 +288,8 @@ PsxCreateBankField (
             *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
             Buffer[4] = 0;
 
-            AmlObjStackDeleteValue (STACK_TOP);
-
             Status = NsLookup (Gbl_CurrentScope->Scope, Buffer, INTERNAL_TYPE_DefField, IMODE_LoadPass1, 
-                                        NS_NO_UPSEARCH, (NAME_TABLE_ENTRY **) AmlObjStackGetTopPtr ());
+                                        NS_NO_UPSEARCH, &Entry);
             if (ACPI_FAILURE (Status))
             {
                 break;
@@ -300,7 +297,7 @@ PsxCreateBankField (
 
             /* Initialize an object for the new NTE that is on the object stack */
 
-            Status = AmlPrepBankFieldValue (Region, BankReg, BankValue, FieldFlags, FieldBitPosition, Arg->Value.Size);
+            Status = AmlPrepBankFieldValue (Entry, Region, BankReg, BankValue, FieldFlags, FieldBitPosition, Arg->Value.Size);
 
             /* Keep track of bit position for the *next* field */
 
@@ -336,6 +333,7 @@ PsxCreateIndexField (
 {
     ACPI_STATUS             Status;
     ACPI_GENERIC_OP         *Arg;
+    NAME_TABLE_ENTRY        *Entry;
     char                    Buffer[5];
     NAME_TABLE_ENTRY        *IndexReg;
     NAME_TABLE_ENTRY        *DataReg;
@@ -379,8 +377,6 @@ PsxCreateIndexField (
 
     /* Each remaining arg is a Named Field */
 
-    AmlObjStackDeleteValue (STACK_TOP);
-
     Arg = Arg->Next;
     while (Arg)
     {
@@ -403,10 +399,8 @@ PsxCreateIndexField (
             *(UINT32 *) Buffer = (((ACPI_NAMED_OP *)Arg)->Name);
             Buffer[4] = 0;
 
-            AmlObjStackDeleteValue (STACK_TOP);
-
             Status = NsLookup (Gbl_CurrentScope->Scope, Buffer, INTERNAL_TYPE_IndexField, IMODE_LoadPass1, 
-                                        NS_NO_UPSEARCH, (NAME_TABLE_ENTRY **) AmlObjStackGetTopPtr ());
+                                        NS_NO_UPSEARCH, &Entry);
             if (ACPI_FAILURE (Status))
             {
                 break;
@@ -414,7 +408,7 @@ PsxCreateIndexField (
 
             /* Initialize an object for the new NTE that is on the object stack */
 
-            Status = AmlPrepIndexFieldValue (IndexReg, DataReg, FieldFlags, FieldBitPosition, Arg->Value.Size);
+            Status = AmlPrepIndexFieldValue (Entry, IndexReg, DataReg, FieldFlags, FieldBitPosition, Arg->Value.Size);
 
             /* Keep track of bit position for the *next* field */
 

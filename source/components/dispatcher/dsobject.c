@@ -117,12 +117,10 @@
 #define __PSXOBJ_C__
 
 #include <acpi.h>
-#include <interpreter.h>
 #include <amlcode.h>
-#include <namespace.h>
-
 #include <parser.h>
-#include <psopcode.h>
+#include <interpreter.h>
+#include <namespace.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psxobj");
@@ -199,7 +197,7 @@ PsxBuildInternalPackageObj (
 {
     ACPI_GENERIC_OP         *Arg;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("PsxBuildInternalPackageObj");
@@ -242,7 +240,7 @@ PsxBuildInternalPackageObj (
     Arg = Arg->Next;
     while (Arg)
     {
-        if (Arg->Opcode == AML_PACKAGE)
+        if (Arg->Opcode == AML_PackageOp)
         {
             Status = PsxBuildInternalPackageObj (Arg, ObjDesc->Package.NextElement);
         }
@@ -282,7 +280,7 @@ PsxBuildInternalObject (
     ACPI_STATUS             Status;
 
 
-    if (Op->Opcode == AML_PACKAGE)
+    if (Op->Opcode == AML_PackageOp)
     {
         Status = PsxBuildInternalPackageObj (Op, ObjDescPtr);
     }
