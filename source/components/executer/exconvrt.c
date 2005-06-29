@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amconvrt - Object conversion routines
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -521,7 +521,6 @@ AcpiAmlConvertToString (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlConvertToTargetType
@@ -650,6 +649,5 @@ AcpiAmlConvertToTargetType (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
