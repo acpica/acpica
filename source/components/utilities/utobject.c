@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.74 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -182,7 +182,7 @@ AcpiUtCreateInternalObjectDbg (
             return_PTR (NULL);
         }
 
-        SecondObject->Common.Type = INTERNAL_TYPE_EXTRA;
+        SecondObject->Common.Type = ACPI_TYPE_LOCAL_EXTRA;
         SecondObject->Common.ReferenceCount = 1;
 
         /* Link the second object to the first */
@@ -430,7 +430,7 @@ AcpiUtGetSimpleObjectSize (
      * must be accessed bytewise or there may be alignment problems on
      * certain processors
      */
-    switch (InternalObject->Common.Type)
+    switch (ACPI_GET_OBJECT_TYPE (InternalObject))
     {
     case ACPI_TYPE_STRING:
 
@@ -454,19 +454,10 @@ AcpiUtGetSimpleObjectSize (
         break;
 
 
-    case INTERNAL_TYPE_REFERENCE:
+    case ACPI_TYPE_LOCAL_REFERENCE:
 
         switch (InternalObject->Reference.Opcode)
         {
-        case AML_ZERO_OP:
-        case AML_ONE_OP:
-        case AML_ONES_OP:
-        case AML_REVISION_OP:
-
-            /* These Constant opcodes will be resolved to Integers */
-
-            break;
-
         case AML_INT_NAMEPATH_OP:
 
             /*
@@ -480,7 +471,7 @@ AcpiUtGetSimpleObjectSize (
 
             /*
              * No other reference opcodes are supported.
-             * Notably, Locals and Args are not supported, by this may be
+             * Notably, Locals and Args are not supported, but this may be
              * required eventually.
              */
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -495,7 +486,7 @@ AcpiUtGetSimpleObjectSize (
     default:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unsupported type=%X in object %p\n",
-            InternalObject->Common.Type, InternalObject));
+            ACPI_GET_OBJECT_TYPE (InternalObject), InternalObject));
         Status = AE_TYPE;
         break;
     }
@@ -654,7 +645,7 @@ AcpiUtGetObjectSize(
 
 
     if ((ACPI_GET_DESCRIPTOR_TYPE (InternalObject) == ACPI_DESC_TYPE_OPERAND) &&
-        (InternalObject->Common.Type == ACPI_TYPE_PACKAGE))
+        (ACPI_GET_OBJECT_TYPE (InternalObject) == ACPI_TYPE_PACKAGE))
     {
         Status = AcpiUtGetPackageObjectSize (InternalObject, ObjLength);
     }
