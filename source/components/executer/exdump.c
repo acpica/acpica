@@ -277,7 +277,7 @@ AmlDumpObjStackEntry (
         return_ACPI_STATUS (AE_OK);
     }
 
-    if (IS_NS_HANDLE (EntryDesc))
+    if (VALID_DESCRIPTOR_TYPE (EntryDesc, DESC_TYPE_NTE))
     {
         DEBUG_PRINT (ACPI_INFO, ("AmlDumpObjStackEntry: Namespace handle to NTE: \n"));
         DUMP_ENTRY (EntryDesc, ACPI_INFO);
