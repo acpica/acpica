@@ -3,7 +3,7 @@
  *
  * Module Name: amstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -271,7 +271,6 @@ AcpiAmlStoreObject (
     FUNCTION_TRACE ("AmlStoreObject");
 
 
-#ifdef ACPI_ENABLE_IMPLICIT_CONVERSION
     /*
      * Perform the "implicit conversion" of the source to the current type
      * of the target - As per the ACPI specification.
@@ -284,7 +283,6 @@ AcpiAmlStoreObject (
     {
         return_ACPI_STATUS (Status);
     }
-#endif
 
     /*
      * We now have two objects of identical types, and we can perform a
