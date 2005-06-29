@@ -43,15 +43,15 @@
     
 #define REGISTER_BLOCK_MASK     0xFF00
 #define BIT_IN_REGISTER_MASK    0x00FF
-#define PM1_EVT                 0x100
-#define PM1_CONTROL             0x200
-#define PM2_CONTROL             0x300
-#define PM_TIMER                0x400
-#define PROCESSOR_BLOCK         0x500
-#define GPE0_STS_BLOCK          0x600
-#define GPE0_EN_BLOCK           0x700
-#define GPE1_STS_BLOCK          0x800
-#define GPE1_EN_BLOCK           0x900
+#define PM1_EVT                 0x0100
+#define PM1_CONTROL             0x0200
+#define PM2_CONTROL             0x0300
+#define PM_TIMER                0x0400
+#define PROCESSOR_BLOCK         0x0500
+#define GPE0_STS_BLOCK          0x0600
+#define GPE0_EN_BLOCK           0x0700
+#define GPE1_STS_BLOCK          0x0800
+#define GPE1_EN_BLOCK           0x0900
 
 
 enum
@@ -154,13 +154,10 @@ enum
     #define CLEAR           0
 #endif
 
-/* Macros */
+/* Register read/write Macros */
 
-#define AcpiReadRegister(RegisterId) \
-    AcpiRegisterIO (ACPI_READ, (INT32) (RegisterId))
-
-#define AcpiWriteRegister(RegisterId, Value) \
-    AcpiRegisterIO (ACPI_WRITE, (INT32) (RegisterId), Value)
+#define READ_ACPI_REGISTER(RegId)       AcpiRegisterIO (ACPI_READ, (INT32)(RegId))
+#define WRITE_ACPI_REGISTER(RegId,Val)  AcpiRegisterIO (ACPI_WRITE, (INT32) (RegId), Val)
 
 
 
