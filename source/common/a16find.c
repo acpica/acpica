@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.27 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -635,25 +635,28 @@ AfGetRsdt (void)
         return (AE_NO_ACPI_TABLES);
     }
 
-    /*
-     * For RSDP revision 0 or 1, we use the RSDT.
-     * For RSDP revision 2 (and above), we use the XSDT
-     */
-    if (AcpiGbl_RSDP->Revision < 2)
-    {
-        PhysicalAddress = AcpiGbl_RSDP->RsdtPhysicalAddress;
-        TableSignature = RSDT_SIG;
-        SignatureLength = sizeof (RSDT_SIG) -1;
+    /* Use XSDT if it is present */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found ACPI 1.0 RSDP\n"));
-    }
-    else
+    if ((AcpiGbl_RSDP->Revision >= 2) &&
+        ACPI_GET_ADDRESS (AcpiGbl_RSDP->XsdtPhysicalAddress))
     {
         PhysicalAddress = ACPI_GET_ADDRESS (AcpiGbl_RSDP->XsdtPhysicalAddress);
         TableSignature = XSDT_SIG;
         SignatureLength = sizeof (XSDT_SIG) -1;
+        AcpiGbl_RootTableType = ACPI_TABLE_TYPE_XSDT;
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found ACPI 2.0 RSDP\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found XSDT\n"));
+    }
+    else
+    {
+        /* No XSDT, use the RSDT */
+
+        PhysicalAddress = AcpiGbl_RSDP->RsdtPhysicalAddress;
+        TableSignature = RSDT_SIG;
+        SignatureLength = sizeof (RSDT_SIG) -1;
+        AcpiGbl_RootTableType = ACPI_TABLE_TYPE_RSDT;
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found RSDT\n"));
     }
 
     if (AcpiGbl_DbOpt_verbose)
