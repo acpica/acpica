@@ -236,7 +236,7 @@ AmlSetupField (
 
                 /* Evaluate the Address opcode */
 
-                if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK && 
+                if ((Status = AmlDoOpCode (IMODE_Execute)) == AE_OK && 
                     (Status = AmlGetRvalue (AmlObjStackGetTopPtr ())) == AE_OK)
                 {
                     /* Pull the address off the stack */
@@ -268,7 +268,7 @@ AmlSetupField (
                 {   
                     /* Evaluate the Length opcode */
 
-                    if ((Status = AmlDoOpCode (MODE_Exec)) == AE_OK &&
+                    if ((Status = AmlDoOpCode (IMODE_Execute)) == AE_OK &&
                         (Status = AmlGetRvalue (AmlObjStackGetTopPtr ())) == AE_OK)
                     {
                         /* Pull the length off the stack */
