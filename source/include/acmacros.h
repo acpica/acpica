@@ -167,7 +167,6 @@
  * Otherwise, we have to move one byte at a time.
  */
 
-//#define _HW_ALIGNMENT_SUPPORT
 #ifdef _HW_ALIGNMENT_SUPPORT
 
 /* The hardware supports unaligned transfers, just do the move */
