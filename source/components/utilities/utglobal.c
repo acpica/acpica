@@ -159,7 +159,7 @@ UINT32                      Gbl_NestingLevel = 0;
 
 UINT32                      Gbl_SystemFlags = 0;
 UINT32                      Gbl_StartupFlags = 0;
-
+BOOLEAN						Gbl_Shutdown = TRUE;		/* System starts unitialized! */
 
 
 
