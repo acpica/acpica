@@ -133,13 +133,8 @@
  *
  * FUNCTION:    NsParseTable
  *
- * PARAMETERS:  Aml                 - Pointer to the raw AML code to parse
- *              AmlSize             - Length of the AML to parse
- *              DescendingCallback  - Called as each opcode is encountered during
- *                                    descent of the parse tree
- *              AscendingCallback   - Called as each opcode is completed, during
- *                                    ascent of the parse tree
- *              RootObject          - TBD: REMOVE??
+ * PARAMETERS:  TableDesc       - An ACPI table descriptor for table to parse
+ *              Scope           - Where to enter the table into the namespace
  *
  * RETURN:      Status
  *
