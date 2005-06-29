@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.14 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -122,12 +122,33 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <io.h>
 #include <ctype.h>
+#ifdef WIN32
+#include <io.h>
 #include <direct.h>
+#endif
 #include <errno.h>
 
 #include "acpi.h"
+
+
+/* Fixups for non-Win32 compilation */
+#ifndef WIN32
+
+static inline int
+max (int a, int b)
+{
+    return (a > b ? a : b);
+}
+
+#define O_BINARY    0x0
+
+#define mkdir(x) mkdir(x, 0)
+#define stricmp strcasecmp
+
+char * strlwr(char* str);
+
+#endif
 
 
 /* Constants */
@@ -137,6 +158,7 @@
 
 #define FILE_TYPE_SOURCE                    1
 #define FILE_TYPE_HEADER                    2
+#define FILE_TYPE_DIRECTORY                 3
 
 
 #define CVT_COUNT_TABS                      0x00000001
@@ -150,6 +172,7 @@
 #define CVT_REMOVE_DEBUG_MACROS             0x00000100
 #define CVT_TRIM_WHITESPACE                 0x00000200  /* Should be after all line removal */
 #define CVT_REMOVE_EMPTY_BLOCKS             0x00000400  /* Should be after trimming lines */
+#define CVT_REDUCE_TYPEDEFS                 0x00000800
 #define CVT_SPACES_TO_TABS4                 0x40000000  /* Tab conversion should be last */
 #define CVT_SPACES_TO_TABS8                 0x80000000  /* Tab conversion should be last */
 
@@ -174,18 +197,24 @@ extern UINT32                   Gbl_TotalLines;
 extern struct stat              Gbl_StatBuf;
 extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
+extern UINT32                   Gbl_FileType;
 extern BOOLEAN                  Gbl_VerboseMode;
 extern BOOLEAN                  Gbl_BatchMode;
 extern BOOLEAN                  Gbl_MadeChanges;
 extern BOOLEAN                  Gbl_Overwrite;
+extern BOOLEAN                  Gbl_WidenDeclarations;
 
 #define PARAM_LIST(pl)          pl
 #define TERSE_PRINT(a)          if (!Gbl_VerboseMode) printf PARAM_LIST(a)
 #define VERBOSE_PRINT(a)        if (Gbl_VerboseMode) printf PARAM_LIST(a)
 
 
-#define REPLACE_WHOLE_WORD      0
-#define REPLACE_SUBSTRINGS      1
+#define REPLACE_WHOLE_WORD      0x00
+#define REPLACE_SUBSTRINGS      0x01
+#define REPLACE_MASK            0x01
+
+#define EXTRA_INDENT_C          0x02
+#define INDENT_MASK             0x02
 
 
 /* Conversion table structs */
@@ -199,28 +228,43 @@ typedef struct acpi_string_table
 } ACPI_STRING_TABLE;
 
 
+typedef struct acpi_typed_identifier_table
+{
+    char                        *Identifier;
+    UINT8                       Type;
+
+} ACPI_TYPED_IDENTIFIER_TABLE;
+
+#define SRC_TYPE_SIMPLE         0
+#define SRC_TYPE_STRUCT         1
+#define SRC_TYPE_UNION          2
+
+
 typedef struct acpi_identifier_table
 {
     char                        *Identifier;
 
 } ACPI_IDENTIFIER_TABLE;
 
-
 typedef struct acpi_conversion_table
 {
     char                        *NewHeader;
     UINT32                      Flags;
 
-    ACPI_IDENTIFIER_TABLE       *LowerCaseTable;
+    ACPI_TYPED_IDENTIFIER_TABLE *LowerCaseTable;
 
     ACPI_STRING_TABLE           *SourceStringTable;
     ACPI_IDENTIFIER_TABLE       *SourceLineTable;
     ACPI_IDENTIFIER_TABLE       *SourceConditionalTable;
+    ACPI_IDENTIFIER_TABLE       *SourceMacroTable;
+    ACPI_TYPED_IDENTIFIER_TABLE *SourceStructTable;
     UINT32                      SourceFunctions;
 
     ACPI_STRING_TABLE           *HeaderStringTable;
-    ACPI_IDENTIFIER_TABLE      *HeaderLineTable;
-    ACPI_IDENTIFIER_TABLE      *HeaderConditionalTable;
+    ACPI_IDENTIFIER_TABLE       *HeaderLineTable;
+    ACPI_IDENTIFIER_TABLE       *HeaderConditionalTable;
+    ACPI_IDENTIFIER_TABLE       *HeaderMacroTable;
+    ACPI_TYPED_IDENTIFIER_TABLE *HeaderStructTable;
     UINT32                      HeaderFunctions;
 
 } ACPI_CONVERSION_TABLE;
@@ -263,6 +307,11 @@ AsRemoveLine (
     char                    *Keyword);
 
 void
+AsRemoveMacro (
+    char                    *Buffer,
+    char                    *Keyword);
+
+void
 AsCheckForBraces (
     char                    *Buffer,
     char                    *Filename);
@@ -288,6 +337,11 @@ AsBracesOnSameLine (
 void
 AsLowerCaseIdentifiers (
     char                    *Buffer);
+
+void
+AsReduceTypedefs (
+    char                    *Buffer,
+    char                    *Keyword);
 
 void
 AsRemoveDebugMacros (
@@ -325,7 +379,7 @@ AsRemoveConditionalCompile (
     char                    *Buffer,
     char                    *Keyword);
 
-NATIVE_INT
+ACPI_NATIVE_INT
 AsProcessTree (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
@@ -353,21 +407,59 @@ AsConvertFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *FileBuffer,
     char                    *Filename,
-    NATIVE_INT              FileType);
+    ACPI_NATIVE_INT         FileType);
 
-NATIVE_INT
+ACPI_NATIVE_INT
 AsProcessOneFile (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *SourcePath,
     char                    *TargetPath,
     int                     MaxPathLength,
     char                    *Filename,
-    NATIVE_INT              FileType);
+    ACPI_NATIVE_INT         FileType);
 
-NATIVE_INT
+ACPI_NATIVE_INT
 AsCheckForDirectory (
     char                    *SourceDirPath,
     char                    *TargetDirPath,
-    struct _finddata_t      *FindInfo,
+    char                    *Filename,
     char                    **SourcePath,
     char                    **TargetPath);
+
+BOOLEAN
+AsMatchExactWord (
+    char                    *Word,
+    UINT32                  WordLength);
+
+void
+AsPrint (
+    char                    *Message,
+    UINT32                  Count,
+    char                    *Filename);
+
+void
+AsInsertPrefix (
+    char                    *Buffer,
+    char                    *Keyword,
+    UINT8                   Type);
+
+char *
+AsInsertData (
+    char                    *Buffer,
+    char                    *BufferToAdd,
+    UINT32                  LengthToAdd);
+
+char *
+AsRemoveData (
+    char                    *StartPointer,
+    char                    *EndPointer);
+
+void
+AsInsertCarriageReturns (
+    char                    *Buffer);
+
+void
+AsConvertToLineFeeds (
+    char                    *Buffer);
+
+

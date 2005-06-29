@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -141,7 +141,7 @@ UINT32                      AcpiDsdtLength;
 DEBUG_REGIONS               AeRegions;
 RSDP_DESCRIPTOR             LocalRsdp;
 
-unsigned char Ssdt1Code[] = 
+unsigned char Ssdt1Code[] =
 {
     0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "SSDT0..." */
     0x01,0xB8,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
@@ -151,7 +151,7 @@ unsigned char Ssdt1Code[] =
     0x39,0x38,0x00,0x70,0x0A,0x04,0x60,0xA4,  /* 00000028    "98.p..`." */
 };
 
-unsigned char Ssdt2Code[] = 
+unsigned char Ssdt2Code[] =
 {
     0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "SSDT0..." */
     0x01,0xB7,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
