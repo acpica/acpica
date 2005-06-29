@@ -403,128 +403,6 @@ Cleanup:
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiInstallGpeHandler
- *
- * PARAMETERS:  GpeNumber       - The GPE number.  The numbering scheme is 
- *                                bank 0 first, then bank 1.
- *              Handler         - Address of the handler
- *              Context         - Value passed to the handler on each GPE
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Install a handler for a General Purpose Event.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiInstallGpeHandler (
-    UINT32                  GpeNumber, 
-    GPE_HANDLER             Handler, 
-    void                    *Context)
-{
-    ACPI_STATUS             Status = AE_OK;
-
-    
-    FUNCTION_TRACE ("AcpiInstallGpeHandler");
-
-
-    /* Parameter validation */
-
-    if (!Handler || (GpeNumber >= (Gbl_GpeRegisterCount * sizeof(GPE_REGISTERS))))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    CmAcquireMutex (MTX_GP_EVENT);
-
-    /* Make sure that there isn't a handler there already */
-
-    if (Gbl_GpeInfo[GpeNumber].Handler)
-    {
-        Status = AE_EXIST;
-        goto Cleanup;
-    }
-
-
-    /* Install the handler */
-
-    Gbl_GpeInfo[GpeNumber].Handler = Handler;
-    Gbl_GpeInfo[GpeNumber].Context = Context;
-
-
-    /* Now we can enable the GPE */
-
-    HwEnableGpe (GpeNumber);
-
-Cleanup:
-    CmReleaseMutex (MTX_GP_EVENT);
-    return_ACPI_STATUS (Status);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiRemoveGpeHandler
- *
- * PARAMETERS:  GpeNumber       - The event to remove a handler
- *              Handler         - Address of the handler
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Remove a handler for a General Purpose Event.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiRemoveGpeHandler (
-    UINT32                  GpeNumber, 
-    GPE_HANDLER             Handler)
-{
-    ACPI_STATUS             Status = AE_OK;
-
-    
-    FUNCTION_TRACE ("AcpiRemoveGpeHandler");
-
-
-    /* Parameter validation */
-
-    if (!Handler || (GpeNumber >= (Gbl_GpeRegisterCount * sizeof(GPE_REGISTERS))))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    CmAcquireMutex (MTX_GP_EVENT);
-
-    /* Make sure that the installed handler is the same */
-
-    if (Gbl_GpeInfo[GpeNumber].Handler != Handler)
-    {
-        Status = AE_BAD_PARAMETER;
-        goto Cleanup;
-    }
-
-
-    /* Disable the GPE before removing the handler */
-
-    HwDisableGpe (GpeNumber);
-
-
-    /* Remove the handler */
-
-    Gbl_GpeInfo[GpeNumber].Handler = NULL;
-    Gbl_GpeInfo[GpeNumber].Context = NULL;
-
- 
-Cleanup:
-    CmReleaseMutex (MTX_GP_EVENT);
-    return_ACPI_STATUS (Status);
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AcpiInstallNotifyHandler
  *
  * PARAMETERS:  Device          - The device for which notifies will be handled
@@ -1175,3 +1053,223 @@ AcpiRemoveAddressSpaceHandler (
 
     return_ACPI_STATUS (AE_NOT_EXIST);
 }
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiInstallGpeHandler
+ *
+ * PARAMETERS:  GpeNumber       - The GPE number.  The numbering scheme is 
+ *                                bank 0 first, then bank 1.
+ *              Handler         - Address of the handler
+ *              Context         - Value passed to the handler on each GPE
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a handler for a General Purpose Event.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInstallGpeHandler (
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler, 
+    void                    *Context)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+    
+    FUNCTION_TRACE ("AcpiInstallGpeHandler");
+
+
+    /* Parameter validation */
+
+    if (!Handler || (GpeNumber >= (Gbl_GpeRegisterCount * sizeof(GPE_REGISTERS))))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    CmAcquireMutex (MTX_GP_EVENT);
+
+    /* Make sure that there isn't a handler there already */
+
+    if (Gbl_GpeInfo[GpeNumber].Handler)
+    {
+        Status = AE_EXIST;
+        goto Cleanup;
+    }
+
+
+    /* Install the handler */
+
+    Gbl_GpeInfo[GpeNumber].Handler = Handler;
+    Gbl_GpeInfo[GpeNumber].Context = Context;
+
+
+    /* Now we can enable the GPE */
+
+    HwEnableGpe (GpeNumber);
+
+Cleanup:
+    CmReleaseMutex (MTX_GP_EVENT);
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiRemoveGpeHandler
+ *
+ * PARAMETERS:  GpeNumber       - The event to remove a handler
+ *              Handler         - Address of the handler
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Remove a handler for a General Purpose Event.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiRemoveGpeHandler (
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+    
+    FUNCTION_TRACE ("AcpiRemoveGpeHandler");
+
+
+    /* Parameter validation */
+
+    if (!Handler || (GpeNumber >= (Gbl_GpeRegisterCount * sizeof(GPE_REGISTERS))))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    CmAcquireMutex (MTX_GP_EVENT);
+
+    /* Make sure that the installed handler is the same */
+
+    if (Gbl_GpeInfo[GpeNumber].Handler != Handler)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto Cleanup;
+    }
+
+
+    /* Disable the GPE before removing the handler */
+
+    HwDisableGpe (GpeNumber);
+
+
+    /* Remove the handler */
+
+    Gbl_GpeInfo[GpeNumber].Handler = NULL;
+    Gbl_GpeInfo[GpeNumber].Context = NULL;
+
+ 
+Cleanup:
+    CmReleaseMutex (MTX_GP_EVENT);
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEnableGpe
+ *
+ * PARAMETERS:  GpeNumber       - The GPE number
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Enable a single GPE 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEnableGpe (
+    UINT32                  GpeNumber)
+{
+    FUNCTION_TRACE ("AcpiEnableGpe");
+
+    /*
+     * TBD: Make sure this GpeNumber is valid, then pass RegisterIndex/BitIndex
+     *      to HwEnableGpe.
+     *
+     * UINT32                  RegisterIndex;
+     * UINT8                   BitIndex;
+     */
+
+    HwEnableGpe(GpeNumber);
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiDisableGpe
+ *
+ * PARAMETERS:  GpeNumber       - The GPE number
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Disable a single GPE 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDisableGpe (
+    UINT32                  GpeNumber)
+{
+    FUNCTION_TRACE ("AcpiDisableGpe");
+
+    /*
+     * TBD: Make sure this GpeNumber is valid, then pass RegisterIndex/BitIndex
+     *      to HwEnableGpe.
+     *
+     * UINT32                  RegisterIndex;
+     * UINT8                   BitIndex;
+     */
+
+    HwDisableGpe(GpeNumber);
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiClearGpe
+ *
+ * PARAMETERS:  GpeNumber       - The GPE number
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Clear a single GPE 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiClearGpe (
+    UINT32                  GpeNumber)
+{
+    FUNCTION_TRACE ("AcpiClearGpe");
+
+    /*
+     * TBD: Make sure this GpeNumber is valid, then pass RegisterIndex/BitIndex
+     *      to HwEnableGpe.
+     *
+     * UINT32                  RegisterIndex;
+     * UINT8                   BitIndex;
+     */
+
+    HwClearGpe(GpeNumber);
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
