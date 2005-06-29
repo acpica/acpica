@@ -3,7 +3,7 @@
  *
  * Module Name: amstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.28 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -127,10 +127,8 @@
 #include "actables.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amstoren")
-
-
 
 
 /*******************************************************************************
@@ -143,7 +141,7 @@
  *
  * RETURN:      Status, resolved object in SourceDescPtr.
  *
- * DESCRIPTION: Resolve an object.  If the object is a reference, dereference 
+ * DESCRIPTION: Resolve an object.  If the object is a reference, dereference
  *              it and return the actual object in the SourceDescPtr.
  *
  ******************************************************************************/
@@ -179,7 +177,7 @@ AcpiAmlResolveObject (
     case INTERNAL_TYPE_INDEX_FIELD:
 
     /*
-     * Stores into a Field/Region or into a Buffer/String 
+     * Stores into a Field/Region or into a Buffer/String
      * are all essentially the same.
      */
     case ACPI_TYPE_STRING:
@@ -241,8 +239,6 @@ AcpiAmlResolveObject (
 }
 
 
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlStoreObject
@@ -254,7 +250,7 @@ AcpiAmlResolveObject (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: "Store" an object to another object.  This may include 
+ * DESCRIPTION: "Store" an object to another object.  This may include
  *              converting the source type to the target type (implicit
  *              conversion), and a copy of the value of the source to
  *              the target.
@@ -275,6 +271,7 @@ AcpiAmlStoreObject (
     FUNCTION_TRACE ("AmlStoreObject");
 
 
+#ifdef ACPI_ENABLE_IMPLICIT_CONVERSION
     /*
      * Perform the "implicit conversion" of the source to the current type
      * of the target - As per the ACPI specification.
@@ -287,7 +284,7 @@ AcpiAmlStoreObject (
     {
         return_ACPI_STATUS (Status);
     }
-
+#endif
 
     /*
      * We now have two objects of identical types, and we can perform a
@@ -297,8 +294,8 @@ AcpiAmlStoreObject (
     {
     case ACPI_TYPE_ANY:
     case INTERNAL_TYPE_DEF_ANY:
-        
-        /* 
+
+        /*
          * The target namespace node is uninitialized (has no target object),
          * and will take on the type of the source object
          */
