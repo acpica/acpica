@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.107 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -118,13 +118,11 @@
 #define __UTINIT_C__
 
 #include "acpi.h"
-#include "achware.h"
 #include "acnamesp.h"
 #include "acevents.h"
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("utinit")
-
+        ACPI_MODULE_NAME    ("utinit")
 
 
 /*******************************************************************************
@@ -149,8 +147,8 @@ AcpiUtFadtRegisterError (
     ACPI_SIZE               Offset)
 {
 
-    REPORT_WARNING (
-        ("Invalid FADT value %s=%lX at offset %lX FADT=%p\n",
+    ACPI_REPORT_WARNING (
+        ("Invalid FADT value %s=%X at offset %X FADT=%p\n",
         RegisterName, Value, Offset, AcpiGbl_FADT));
 }
 
@@ -260,7 +258,7 @@ void
 AcpiUtTerminate (void)
 {
 
-    FUNCTION_TRACE ("UtTerminate");
+    ACPI_FUNCTION_TRACE ("UtTerminate");
 
 
     /* Free global tables, etc. */
@@ -284,18 +282,18 @@ AcpiUtTerminate (void)
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiUtSubsystemShutdown (void)
 {
 
-    FUNCTION_TRACE ("UtSubsystemShutdown");
+    ACPI_FUNCTION_TRACE ("UtSubsystemShutdown");
 
     /* Just exit if subsystem is already shutdown */
 
     if (AcpiGbl_Shutdown)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "ACPI Subsystem is already terminated\n"));
-        return_ACPI_STATUS (AE_OK);
+        return_VOID;
     }
 
     /* Subsystem appears active, go ahead and shut it down */
@@ -317,7 +315,7 @@ AcpiUtSubsystemShutdown (void)
 
     /* Purge the local caches */
 
-    AcpiPurgeCachedObjects ();
+    (void) AcpiPurgeCachedObjects ();
 
     /* Debug only - display leftover memory allocation, if any */
 
@@ -325,7 +323,7 @@ AcpiUtSubsystemShutdown (void)
     AcpiUtDumpAllocations (ACPI_UINT32_MAX, NULL);
 #endif
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 
