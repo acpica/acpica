@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.95 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -156,14 +156,10 @@ AcpiDsInitOneObject (
     ACPI_OBJECT_TYPE        Type;
     ACPI_STATUS             Status;
     ACPI_INIT_WALK_INFO     *Info = (ACPI_INIT_WALK_INFO *) Context;
-    UINT8                   TableRevision;
 
 
     ACPI_FUNCTION_NAME ("DsInitOneObject");
 
-
-    Info->ObjectCount++;
-    TableRevision = Info->TableDesc->Pointer->Revision;
 
     /*
      * We are only interested in objects owned by the table that
@@ -174,6 +170,8 @@ AcpiDsInitOneObject (
     {
         return (AE_OK);
     }
+
+    Info->ObjectCount++;
 
     /* And even then, we are only interested in a few object types */
 
@@ -207,8 +205,10 @@ AcpiDsInitOneObject (
         /*
          * Set the execution data width (32 or 64) based upon the
          * revision number of the parent ACPI table.
+         * TBD: This is really for possible future support of integer width
+         * on a per-table basis. Currently, we just use a global for the width.
          */
-        if (TableRevision == 1)
+        if (Info->TableDesc->Pointer->Revision == 1)
         {
             ((ACPI_NAMESPACE_NODE *) ObjHandle)->Flags |= ANOBJ_DATA_WIDTH_32;
         }
@@ -236,6 +236,13 @@ AcpiDsInitOneObject (
         AcpiNsDeleteNamespaceSubtree (ObjHandle);
         AcpiNsDeleteNamespaceByOwner (((ACPI_NAMESPACE_NODE *) ObjHandle)->Object->Method.OwningId);
         break;
+
+
+    case ACPI_TYPE_DEVICE:
+
+        Info->DeviceCount++;
+        break;
+
 
     default:
         break;
@@ -279,10 +286,10 @@ AcpiDsInitializeObjects (
         "**** Starting initialization of namespace objects ****\n"));
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK, "Parsing Methods:"));
 
-
     Info.MethodCount    = 0;
     Info.OpRegionCount  = 0;
     Info.ObjectCount    = 0;
+    Info.DeviceCount    = 0;
     Info.TableDesc      = TableDesc;
 
     /* Walk entire namespace from the supplied root */
@@ -291,16 +298,17 @@ AcpiDsInitializeObjects (
                     AcpiDsInitOneObject, &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %x\n", Status));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed, %s\n", 
+            AcpiFormatException (Status)));
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
-        "\n%d Control Methods found and parsed (%d nodes total)\n",
-        Info.MethodCount, Info.ObjectCount));
+        "\nTable [%4.4s] - %d Objects with %d Devices %d Methods %d Regions\n",
+        TableDesc->Pointer->Signature, Info.ObjectCount,
+        Info.DeviceCount, Info.MethodCount, Info.OpRegionCount));
+
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%d Control Methods found\n", Info.MethodCount));
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "%d Op Regions found\n", Info.OpRegionCount));
+        "%d Methods, %d Regions\n", Info.MethodCount, Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -434,7 +442,7 @@ AcpiDsInitObjectFromOp (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unimplemented data type: %x\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unimplemented data type: %X\n",
             ObjDesc->Common.Type));
 
         break;
@@ -683,7 +691,6 @@ AcpiDsBuildInternalPackageObj (
 
 
     /* Find the parent of a possibly nested package */
-
 
     Parent = Op->Common.Parent;
     while ((Parent->Common.AmlOpcode == AML_PACKAGE_OP)     ||
