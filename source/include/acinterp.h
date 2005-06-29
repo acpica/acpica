@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.116 $
+ *       $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -208,52 +208,49 @@ AcpiExInsertIntoField (
     UINT32                  BufferLength);
 
 ACPI_STATUS
-AcpiExSetupField (
+AcpiExSetupRegion (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT32                  FieldByteOffset);
+    UINT32                  FieldDatumByteOffset);
 
 ACPI_STATUS
-AcpiExReadFieldDatum (
+AcpiExAccessRegion (
     ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT32                  FieldByteOffset,
-    UINT32                  *Value);
+    UINT32                  FieldDatumByteOffset,
+    UINT32                  *Value,
+    UINT32                  ReadWrite);
+
+BOOLEAN
+AcpiExRegisterOverflow (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT32                  Value);
 
 ACPI_STATUS
-AcpiExCommonAccessField (
-    UINT32                  Mode,
+AcpiExFieldDatumIo (
     ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT32                  FieldDatumByteOffset,
+    UINT32                  *Value,
+    UINT32                  ReadWrite);
+
+ACPI_STATUS
+AcpiExWriteWithUpdateRule (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT32                  Mask,
+    UINT32                  FieldValue,
+    UINT32                  FieldDatumByteOffset);
+
+void
+AcpiExGetBufferDatum(
+    UINT32                  *Datum,
     void                    *Buffer,
-    UINT32                  BufferLength);
+    UINT32                  ByteGranularity,
+    UINT32                  Offset);
 
-
-ACPI_STATUS
-AcpiExAccessIndexField (
-    UINT32                  Mode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
+void
+AcpiExSetBufferDatum (
+    UINT32                  MergedDatum,
     void                    *Buffer,
-    UINT32                  BufferLength);
-
-ACPI_STATUS
-AcpiExAccessBankField (
-    UINT32                  Mode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength);
-
-ACPI_STATUS
-AcpiExAccessRegionField (
-    UINT32                  Mode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength);
-
-
-ACPI_STATUS
-AcpiExAccessBufferField (
-    UINT32                  Mode,
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    void                    *Buffer,
-    UINT32                  BufferLength);
+    UINT32                  ByteGranularity,
+    UINT32                  Offset);
 
 ACPI_STATUS
 AcpiExReadDataFromField (
