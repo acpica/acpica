@@ -290,8 +290,8 @@ AcpiNsRootInitialize (void)
 
                 if (!ObjDesc->String.Pointer)
                 {
-                    REPORT_ERROR ("Initial value string
-                                    allocation failure");
+                    REPORT_ERROR ("Initial value string"
+                                    "allocation failure");
 
                     AcpiCmRemoveReference (ObjDesc);
                     Status = AE_NO_MEMORY;
@@ -578,8 +578,8 @@ AcpiNsLookup (
                 {
                     /* Current scope has no parent scope */
 
-                    REPORT_ERROR ("NsLookup: Too many parent
-                                    prefixes or scope has no parent");
+                    REPORT_ERROR ("NsLookup: Too many parent"
+                                    "prefixes or scope has no parent");
 
 
                     return_ACPI_STATUS (AE_NOT_FOUND);
