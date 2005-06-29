@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -178,6 +178,7 @@ char                        *AslMessages [] = {
     "Invalid Byte Offset, Bit Offset required",
     "Invalid Bit Offset, Byte Offset required",
     "Opcode is not implemented in compiler AML code generator",
+    "No enclosing While statement",
 };
 
 
