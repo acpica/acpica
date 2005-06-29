@@ -118,7 +118,6 @@
 #define __HARDWARE_H__
 
 
-
 /* Prototypes */
 
 
