@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.125 $
+ *              $Revision: 1.127 $
  *
  ******************************************************************************/
 
@@ -177,8 +177,7 @@ AcpiNsRootInitialize (void)
 
     /* Enter the pre-defined names in the name table */
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("Entering predefined name table entries into namespace\n"));
+    DEBUG_PRINTP (ACPI_INFO, ("Entering predefined entries into namespace\n"));
 
     for (InitVal = AcpiGbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
@@ -188,7 +187,7 @@ AcpiNsRootInitialize (void)
 
         if (ACPI_FAILURE (Status) || (!NewNode)) /* Must be on same line for code converter */
         {
-            DEBUG_PRINT (ACPI_ERROR,
+            DEBUG_PRINTP (ACPI_ERROR, 
                 ("Could not create predefined name %s, %s\n",
                 InitVal->Name, AcpiUtFormatException (Status)));
         }
@@ -238,7 +237,7 @@ AcpiNsRootInitialize (void)
                  * String.Pointers must be allocated buffers!
                  * (makes deletion simpler)
                  */
-                ObjDesc->String.Pointer = AcpiUtAllocate (
+                ObjDesc->String.Pointer = ACPI_MEM_ALLOCATE (
                                                 (ObjDesc->String.Length + 1));
                 if (!ObjDesc->String.Pointer)
                 {
@@ -388,8 +387,7 @@ AcpiNsLookup (
     if ((!ScopeInfo) ||
         (!ScopeInfo->Scope.Node))
     {
-        DEBUG_PRINT (TRACE_NAMES,
-            ("NsLookup: Null scope prefix, using root node (%p)\n",
+        DEBUG_PRINTP (TRACE_NAMES, ("Null scope prefix, using root node (%p)\n",
             AcpiGbl_RootNode));
 
         PrefixNode = AcpiGbl_RootNode;
@@ -440,8 +438,8 @@ AcpiNsLookup (
         NumSegments = 0;
         ThisNode = AcpiGbl_RootNode;
 
-        DEBUG_PRINT (TRACE_NAMES,
-            ("NsLookup: Null Pathname (Zero segments),  Flags=%x\n", Flags));
+        DEBUG_PRINTP (TRACE_NAMES,
+            ("Null Pathname (Zero segments),  Flags=%x\n", Flags));
     }
 
     else
@@ -475,8 +473,7 @@ AcpiNsLookup (
 
             Pathname++;
 
-            DEBUG_PRINT (TRACE_NAMES,
-                ("NsLookup: Searching from root [%p]\n",
+            DEBUG_PRINTP (TRACE_NAMES, ("Searching from root [%p]\n", 
                 CurrentNode));
 
             /* Direct reference to root, "\" */
@@ -494,8 +491,7 @@ AcpiNsLookup (
 
             CurrentNode = PrefixNode;
 
-            DEBUG_PRINT (TRACE_NAMES,
-                ("NsLookup: Searching relative to pfx scope [%p]\n",
+            DEBUG_PRINTP (TRACE_NAMES, ("Searching relative to pfx scope [%p]\n",
                 PrefixNode));
 
             /*
@@ -539,8 +535,8 @@ AcpiNsLookup (
 
             Pathname++;
 
-            DEBUG_PRINT (TRACE_NAMES,
-                ("NsLookup: Dual Pathname (2 segments, Flags=%X)\n", Flags));
+            DEBUG_PRINTP (TRACE_NAMES,
+                ("Dual Pathname (2 segments, Flags=%X)\n", Flags));
         }
 
         else if (*Pathname == AML_MULTI_NAME_PREFIX_OP)
@@ -551,8 +547,8 @@ AcpiNsLookup (
 
             Pathname++;
 
-            DEBUG_PRINT (TRACE_NAMES,
-                ("NsLookup: Multi Pathname (%d Segments, Flags=%X) \n",
+            DEBUG_PRINTP (TRACE_NAMES,
+                ("Multi Pathname (%d Segments, Flags=%X) \n",
                 NumSegments, Flags));
         }
 
@@ -564,8 +560,8 @@ AcpiNsLookup (
              */
             NumSegments = 1;
 
-            DEBUG_PRINT (TRACE_NAMES,
-                ("NsLookup: Simple Pathname (1 segment, Flags=%X)\n", Flags));
+            DEBUG_PRINTP (TRACE_NAMES,
+                ("Simple Pathname (1 segment, Flags=%X)\n", Flags));
         }
 
 #ifdef ACPI_DEBUG
@@ -574,7 +570,7 @@ AcpiNsLookup (
 
         /* Debug only: print the entire name that we are about to lookup */
 
-        DEBUG_PRINT (TRACE_NAMES, ("NsLookup: ["));
+        DEBUG_PRINTP (TRACE_NAMES, ("["));
 
         for (i = 0; i < NumSegments; i++)
         {
@@ -623,8 +619,8 @@ AcpiNsLookup (
             {
                 /* Name not found in ACPI namespace  */
 
-                DEBUG_PRINT (TRACE_NAMES,
-                    ("NsLookup: Name [%4.4s] not found in scope %X\n",
+                DEBUG_PRINTP (TRACE_NAMES, 
+                    ("Name [%4.4s] not found in scope %X\n",
                     &SimpleName, CurrentNode));
             }
 
@@ -680,8 +676,7 @@ AcpiNsLookup (
              * and the next scope has not been allocated.
              */
 
-            DEBUG_PRINT (ACPI_INFO,
-                ("NsLookup: Load mode=%X  ThisNode=%X\n",
+            DEBUG_PRINTP (ACPI_INFO, ("Load mode=%X  ThisNode=%X\n",
                 InterpreterMode, ThisNode));
         }
 
@@ -728,8 +723,7 @@ CheckForNewScopeAndExit:
                 return_ACPI_STATUS (Status);
             }
 
-            DEBUG_PRINT (ACPI_INFO,
-                ("NsLookup: Set global scope to %p\n", ScopeToPush));
+            DEBUG_PRINTP (ACPI_INFO, ("Set global scope to %p\n", ScopeToPush));
         }
     }
 

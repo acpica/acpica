@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.90 $
+ *              $Revision: 1.92 $
  *
  ******************************************************************************/
 
@@ -207,8 +207,7 @@ AcpiNsEvaluateRelative (
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_INFO,
-            ("NsEvaluateRelative: Object [%s] not found [%s]\n",
+        DEBUG_PRINTP (ACPI_INFO, ("Object [%s] not found [%s]\n",
             Pathname, AcpiUtFormatException (Status)));
         goto Cleanup;
     }
@@ -218,22 +217,17 @@ AcpiNsEvaluateRelative (
      * to evaluate it.
      */
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("NsEvaluateRelative: %s [%p] Value %p\n",
+    DEBUG_PRINTP (ACPI_INFO, ("%s [%p] Value %p\n",
         Pathname, Node, Node->Object));
 
     Status = AcpiNsEvaluateByHandle (Node, Params, ReturnObject);
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("NsEvaluateRelative: *** Completed eval of object %s ***\n",
+    DEBUG_PRINTP (ACPI_INFO, ("*** Completed eval of object %s ***\n",
         Pathname));
 
 Cleanup:
 
-    /* Cleanup */
-
-    AcpiUtFree (InternalPath);
-
+    ACPI_MEM_FREE (InternalPath);
     return_ACPI_STATUS (Status);
 }
 
@@ -292,8 +286,7 @@ AcpiNsEvaluateByName (
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_INFO,
-            ("NsEvaluateByName: Object at [%s] was not found, status=%.4X\n",
+        DEBUG_PRINTP (ACPI_INFO, ("Object at [%s] was not found, status=%.4X\n",
             Pathname, Status));
         goto Cleanup;
     }
@@ -303,14 +296,12 @@ AcpiNsEvaluateByName (
      * to evaluate it.
      */
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("NsEvaluateByName: %s [%p] Value %p\n",
+    DEBUG_PRINTP (ACPI_INFO, ("%s [%p] Value %p\n", 
         Pathname, Node, Node->Object));
 
     Status = AcpiNsEvaluateByHandle (Node, Params, ReturnObject);
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("NsEvaluateByName: *** Completed eval of object %s ***\n",
+    DEBUG_PRINTP (ACPI_INFO, ("*** Completed eval of object %s ***\n",
         Pathname));
 
 
@@ -320,7 +311,7 @@ Cleanup:
 
     if (InternalPath)
     {
-        AcpiUtFree (InternalPath);
+        ACPI_MEM_FREE (InternalPath);
     }
 
     return_ACPI_STATUS (Status);
@@ -496,23 +487,20 @@ AcpiNsExecuteControlMethod (
     ObjDesc = AcpiNsGetAttachedObject (MethodNode);
     if (!ObjDesc)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("Control method is undefined (nil value)\n"));
+        DEBUG_PRINTP (ACPI_ERROR, ("No attached method object\n"));
 
         AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         return_ACPI_STATUS (AE_ERROR);
     }
 
 
-    DEBUG_PRINT (ACPI_INFO, ("Control method at Offset %x Length %lx]\n",
-                    ObjDesc->Method.Pcode + 1,
-                    ObjDesc->Method.PcodeLength - 1));
+    DEBUG_PRINTP (ACPI_INFO, ("Control method at Offset %x Length %lx]\n",
+        ObjDesc->Method.Pcode + 1, ObjDesc->Method.PcodeLength - 1));
 
     DUMP_PATHNAME (MethodNode, "NsExecuteControlMethod: Executing",
-                    TRACE_NAMES, _COMPONENT);
+        TRACE_NAMES, _COMPONENT);
 
-    DEBUG_PRINT (TRACE_NAMES,
-        ("At offset %8XH\n", ObjDesc->Method.Pcode + 1));
+    DEBUG_PRINTP (TRACE_NAMES, ("At offset %8XH\n", ObjDesc->Method.Pcode + 1));
 
 
     /*
@@ -658,8 +646,7 @@ AcpiNsGetObjectValue (
         Status = AE_CTRL_RETURN_VALUE;
 
         *ReturnObjDesc = ObjDesc;
-        DEBUG_PRINT (ACPI_INFO,
-            ("NsGetObjectValue: Returning obj %p\n", *ReturnObjDesc));
+        DEBUG_PRINTP (ACPI_INFO, ("Returning obj %p\n", *ReturnObjDesc));
     }
 
     /* Namespace is unlocked */

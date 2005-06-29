@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.54 $
+ *              $Revision: 1.56 $
  *
  ******************************************************************************/
 
@@ -202,8 +202,7 @@ AcpiNsAttachObject (
 
     if (Node->Object == Object)
     {
-        DEBUG_PRINT (TRACE_EXEC,
-            ("NsAttachObject: Obj %p already installed in NameObj %p\n",
+        DEBUG_PRINTP (TRACE_EXEC, ("Obj %p already installed in NameObj %p\n",
             Object, Node));
 
         return_ACPI_STATUS (AE_OK);
@@ -346,7 +345,7 @@ AcpiNsAttachObject (
 
             default:
 
-                DEBUG_PRINT (ACPI_ERROR,
+                DEBUG_PRINTP (ACPI_ERROR,
                     ("AML Opcode/Type [%x] not supported in attach\n",
                     (UINT8) Opcode));
 
@@ -370,21 +369,18 @@ AcpiNsAttachObject (
 
                 if (AcpiTbSystemTablePointer (Object))
                 {
-                    DEBUG_PRINT (ACPI_INFO,
+                    DEBUG_PRINTP (ACPI_INFO,
                         ("AML-stream code %02x\n", *(UINT8 *) Object));
                 }
 
                 else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
                 {
-                    DUMP_PATHNAME (Object,
-                                    "name ", ACPI_INFO,
-                                    _COMPONENT);
+                    DUMP_PATHNAME (Object, "name ", ACPI_INFO, _COMPONENT);
                 }
 
                 else
                 {
-                    DUMP_PATHNAME (Object, "object ",
-                                    ACPI_INFO, _COMPONENT);
+                    DUMP_PATHNAME (Object, "object ", ACPI_INFO, _COMPONENT);
                     DUMP_STACK_ENTRY (Object);
                 }
             }
@@ -394,8 +390,7 @@ AcpiNsAttachObject (
     }
 
 
-    DEBUG_PRINT (TRACE_EXEC,
-        ("NsAttachObject: Installing obj %p into NameObj %p [%4.4s]\n",
+    DEBUG_PRINTP (TRACE_EXEC, ("Installing obj %p into NameObj %p [%4.4s]\n",
         ObjDesc, Node, &Node->Name));
 
 
@@ -471,12 +466,11 @@ AcpiNsDetachObject (
 
     /* Found a valid value */
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("NsDetachObject: Object=%p Value=%p Name %4.4s\n",
+    DEBUG_PRINTP (ACPI_INFO, ("Object=%p Value=%p Name %4.4s\n",
         Node, ObjDesc, &Node->Name));
 
     /*
-     * Not every value is an object allocated via AcpiUtCallocate,
+     * Not every value is an object allocated via ACPI_MEM_CALLOCATE,
      * - must check
      */
 
@@ -513,7 +507,7 @@ AcpiNsGetAttachedObject (
     {
         /* handle invalid */
 
-        DEBUG_PRINT (ACPI_WARN, ("NsGetAttachedObject: Null Node ptr\n"));
+        DEBUG_PRINTP (ACPI_WARN, ("Null Node ptr\n"));
         return_PTR (NULL);
     }
 

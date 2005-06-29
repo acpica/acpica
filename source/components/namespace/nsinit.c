@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.24 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -149,8 +149,8 @@ AcpiNsInitializeObjects (
     FUNCTION_TRACE ("NsInitializeObjects");
 
 
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("NsInitializeObjects: **** Starting initialization of namespace objects ****\n"));
+    DEBUG_PRINTP (TRACE_DISPATCH,
+        ("**** Starting initialization of namespace objects ****\n"));
     DEBUG_PRINT_RAW (ACPI_OK, ("Completing Region and Field initialization:"));
 
 
@@ -168,18 +168,17 @@ AcpiNsInitializeObjects (
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("NsInitializeObjects: WalkNamespace failed! %x\n", Status));
+        DEBUG_PRINTP (ACPI_ERROR, ("WalkNamespace failed! %x\n", Status));
     }
 
     DEBUG_PRINT_RAW (ACPI_OK,
         ("\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n",
         Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit,
         Info.FieldCount, Info.ObjectCount));
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("NsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
-    DEBUG_PRINT (TRACE_DISPATCH,
-        ("NsInitializeObjects: %d Op Regions found\n", Info.OpRegionCount));
+    DEBUG_PRINTP (TRACE_DISPATCH,
+        ("%d Control Methods found\n", Info.MethodCount));
+    DEBUG_PRINTP (TRACE_DISPATCH,
+        ("%d Op Regions found\n", Info.OpRegionCount));
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -224,8 +223,7 @@ AcpiNsInitializeDevices (
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("NsInitializeDevices: WalkNamespace failed! %x\n", Status));
+        DEBUG_PRINTP (ACPI_ERROR, ("WalkNamespace failed! %x\n", Status));
     }
 
 
@@ -401,7 +399,7 @@ AcpiNsInitOneDevice (
      * Run _STA to determine if we can run _INI on the device.
      */
 
-    DEBUG_EXEC(AcpiUtDisplayInitPathname (Node, "_STA  [Method]"));
+    DEBUG_EXEC (AcpiUtDisplayInitPathname (Node, "_STA  [Method]"));
     Status = AcpiUtExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
     {
@@ -415,6 +413,7 @@ AcpiNsInitOneDevice (
     if (!(Flags & 0x01))
     {
         /* don't look at children of a not present device */
+
         return_ACPI_STATUS(AE_CTRL_DEPTH);
     }
 
@@ -422,12 +421,12 @@ AcpiNsInitOneDevice (
     /*
      * The device is present. Run _INI.
      */
-
-    DEBUG_EXEC(AcpiUtDisplayInitPathname (ObjHandle, "_INI  [Method]"));
+    DEBUG_EXEC (AcpiUtDisplayInitPathname (ObjHandle, "_INI  [Method]"));
     Status = AcpiNsEvaluateRelative (ObjHandle, "_INI", NULL, NULL);
     if (AE_NOT_FOUND == Status)
     {
         /* No _INI means device requires no initialization */
+
         Status = AE_OK;
     }
 
@@ -438,10 +437,10 @@ AcpiNsInitOneDevice (
 #ifdef ACPI_DEBUG
         NATIVE_CHAR *ScopeName = AcpiNsGetTablePathname (ObjHandle);
 
-        DEBUG_PRINT (ACPI_WARN, ("%s._INI failed: %s\n",
+        DEBUG_PRINTP (ACPI_WARN, ("%s._INI failed: %s\n",
                 ScopeName, AcpiUtFormatException (Status)));
 
-        AcpiUtFree (ScopeName);
+        ACPI_MEM_FREE (ScopeName);
 #endif
     }
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.69 $
+ *              $Revision: 1.71 $
  *
  ******************************************************************************/
 
@@ -173,14 +173,10 @@ AcpiNsSearchNode (
         ScopeName = AcpiNsGetTablePathname (Node);
         if (ScopeName)
         {
-            DEBUG_PRINT (TRACE_NAMES,
-                ("NsSearchNode: Searching %s [%p]\n",
-                ScopeName, Node));
-            DEBUG_PRINT (TRACE_NAMES,
-                ("NsSearchNode: For %4.4s (type %X)\n",
-                &TargetName, Type));
+            DEBUG_PRINTP (TRACE_NAMES, ("Searching %s [%p] For %4.4s (type %X)\n",
+                ScopeName, Node, &TargetName, Type));
 
-            AcpiUtFree (ScopeName);
+            ACPI_MEM_FREE (ScopeName);
         }
     }
 #endif
@@ -227,8 +223,8 @@ AcpiNsSearchNode (
                 NextNode->Type = (UINT8) Type;
             }
 
-            DEBUG_PRINT (TRACE_NAMES,
-                ("NsSearchNode: Name %4.4s (actual type %X) found at %p\n",
+            DEBUG_PRINTP (TRACE_NAMES, 
+                ("Name %4.4s (actual type %X) found at %p\n",
                 &TargetName, NextNode->Type, NextNode));
 
             *ReturnNode = NextNode;
@@ -255,10 +251,8 @@ AcpiNsSearchNode (
 
     /* Searched entire table, not found */
 
-    DEBUG_PRINT (TRACE_NAMES,
-        ("NsSearchNode: Name %4.4s (type %X) not found at %p\n",
+    DEBUG_PRINTP (TRACE_NAMES, ("Name %4.4s (type %X) not found at %p\n",
         &TargetName, Type, NextNode));
-
 
     return_ACPI_STATUS (AE_NOT_FOUND);
 }
@@ -309,20 +303,18 @@ AcpiNsSearchParentTree (
      * If there is no parent (at the root) or type is "local", we won't be
      * searching the parent tree.
      */
-    if ((AcpiNsLocal (Type))    ||
+    if ((AcpiNsLocal (Type)) ||
         (!ParentNode))
     {
         if (!ParentNode)
         {
-            DEBUG_PRINT (TRACE_NAMES,
-                ("NsSearchParentTree: [%4.4s] has no parent\n",
+            DEBUG_PRINTP (TRACE_NAMES, ("[%4.4s] has no parent\n",
                 &TargetName));
         }
 
         if (AcpiNsLocal (Type))
         {
-            DEBUG_PRINT (TRACE_NAMES,
-                ("NsSearchParentTree: [%4.4s] (type %X) is local (no search)\n",
+            DEBUG_PRINTP (TRACE_NAMES, ("[%4.4s] type %X is local(no search)\n", 
                 &TargetName, Type));
         }
 
@@ -332,15 +324,12 @@ AcpiNsSearchParentTree (
 
     /* Search the parent tree */
 
-    DEBUG_PRINT (TRACE_NAMES,
-        ("NsSearchParentTree: Searching parent for %4.4s\n",
-        &TargetName));
+    DEBUG_PRINTP (TRACE_NAMES, ("Searching parent for %4.4s\n", &TargetName));
 
     /*
      * Search parents until found the target or we have backed up to
      * the root
      */
-
     while (ParentNode)
     {
         /* Search parent scope */
@@ -415,8 +404,7 @@ AcpiNsSearchAndEnter (
 
     if (!Node || !TargetName || !ReturnNode)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("NsSearchAndEnter: Null param:  Table %p Name %p Return %p\n",
+        DEBUG_PRINTP (ACPI_ERROR, ("Null param-  Table %p Name %p Return %p\n",
             Node, TargetName, ReturnNode));
 
         REPORT_ERROR (("NsSearchAndEnter: bad (null) parameter\n"));
@@ -428,8 +416,7 @@ AcpiNsSearchAndEnter (
 
     if (!AcpiUtValidAcpiName (TargetName))
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("NsSearchAndEnter:  *** Bad character in name: %08lx *** \n",
+        DEBUG_PRINTP (ACPI_ERROR, ("*** Bad character in name: %08lx *** \n",
             TargetName));
 
         REPORT_ERROR (("NsSearchAndEnter: Bad character in ACPI Name\n"));
@@ -440,8 +427,7 @@ AcpiNsSearchAndEnter (
     /* Try to find the name in the table specified by the caller */
 
     *ReturnNode = ENTRY_NOT_FOUND;
-    Status = AcpiNsSearchNode (TargetName, Node,
-                                    Type, ReturnNode);
+    Status = AcpiNsSearchNode (TargetName, Node, Type, ReturnNode);
     if (Status != AE_NOT_FOUND)
     {
         /*
@@ -494,8 +480,7 @@ AcpiNsSearchAndEnter (
      */
     if (InterpreterMode == IMODE_EXECUTE)
     {
-        DEBUG_PRINT (TRACE_NAMES,
-            ("NsSearchAndEnter: %4.4s Not found in %p [Not adding]\n",
+        DEBUG_PRINTP (TRACE_NAMES, ("%4.4s Not found in %p [Not adding]\n",
             &TargetName, Node));
 
         return_ACPI_STATUS (AE_NOT_FOUND);
