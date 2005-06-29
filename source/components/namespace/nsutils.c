@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -1006,6 +1006,11 @@ AcpiNsGetParentObject (
     ACPI_NAMESPACE_NODE     *Node)
 {
 
+
+    if (!Node)
+    {
+        return (NULL);
+    }
 
     /*
      * Walk to the end of this peer list.
