@@ -344,6 +344,9 @@ NsLookup (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+   
+    Gbl_NsLookupCount++;
+
     *RetEntry = ENTRY_NOT_FOUND;
     if (!Gbl_RootObject->Scope)
     {
