@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.99 $
+ *       $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -823,14 +823,16 @@ typedef struct acpi_get_devices_info
 #define PM1_STS                     0x0100
 #define PM1_EN                      0x0200
 #define PM1_CONTROL                 0x0300
-#define PM2_CONTROL                 0x0400
-#define PM_TIMER                    0x0500
-#define PROCESSOR_BLOCK             0x0600
-#define GPE0_STS_BLOCK              0x0700
-#define GPE0_EN_BLOCK               0x0800
-#define GPE1_STS_BLOCK              0x0900
-#define GPE1_EN_BLOCK               0x0A00
-#define SMI_CMD_BLOCK               0x0B00
+#define PM1A_CONTROL                0x0400
+#define PM1B_CONTROL                0x0500
+#define PM2_CONTROL                 0x0600
+#define PM_TIMER                    0x0700
+#define PROCESSOR_BLOCK             0x0800
+#define GPE0_STS_BLOCK              0x0900
+#define GPE0_EN_BLOCK               0x0A00
+#define GPE1_STS_BLOCK              0x0B00
+#define GPE1_EN_BLOCK               0x0C00
+#define SMI_CMD_BLOCK               0x0D00
 
 /*
  * Address space bitmasks for mmio or io spaces
