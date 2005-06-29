@@ -100,6 +100,7 @@
 #include <acpi.h>
 #include <acpiobj.h>
 #include <interpreter.h>
+#include <namespace.h>
 
 
 #define _THIS_MODULE        "cmalloc.c"
@@ -235,4 +236,57 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
     return Block;
 }
 
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    LocalDeleteObject
+ *
+ * PARAMETERS:  **ObjDesc           - Descriptor to be deleted
+ *
+ * DESCRIPTION: If the passed descriptor pointer does not point into the
+ *              AML block and is not an NsHandle, free the descriptor.
+ *
+ *              Note that the parameter is the address of the descriptor
+ *              pointer, so that the descriptor pointer can be set to NULL
+ *              after the descriptor is freed.
+ *
+ ****************************************************************************/
+
+void
+LocalDeleteObject (OBJECT_DESCRIPTOR **ObjDesc)
+{
+
+    FUNCTION_TRACE ("LocalDeleteObject");
+    DEBUG_PRINT (ACPI_INFO, ("LocalDeleteObject: %x\n", *ObjDesc));
+
+
+    /*
+     * Be very careful about what we delete
+     */
+
+    /* 
+     * XXX: This is not the best solution!
+     * XXX: And may not work in all cases!!
+     */
+
+
+    if ((OBJECT_DESCRIPTOR **) 0 !=       ObjDesc  &&
+        (OBJECT_DESCRIPTOR *) 0 !=       *ObjDesc  &&
+        !AmlIsInPCodeBlock ((UINT8 *)    *ObjDesc) &&
+        !IS_NS_HANDLE                   (*ObjDesc) &&
+        !AmlIsMethodValue               (*ObjDesc) &&
+        !IsNsValue                      (*ObjDesc))
+    {
+
+        DEBUG_PRINT (ACPI_INFO, ("LocalDeleteObject: Actually deleting %x\n", *ObjDesc));
+
+        OsdFree (*ObjDesc);
+
+        DEBUG_PRINT (ACPI_INFO, ("LocalDeleteObject: Successfully deleted %x\n", *ObjDesc));
+
+    }
+
+    FUNCTION_EXIT;
+}
 
