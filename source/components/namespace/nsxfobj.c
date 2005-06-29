@@ -104,7 +104,6 @@
 #include <methods.h>
 #include <acpiobj.h>
 #include <pnp.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nsapiobj.c"
@@ -113,29 +112,100 @@
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiGetObject
+ * FUNCTION:    AcpiEvaluateObject
  *
- * PARAMETERS:  
+ * PARAMETERS:  Handle              - Object handle (optional)
+ *              *Pathname           - Object pathname (optional)
+ *              *ReturnObject       - Where to put method's return value (if 
+ *                                    any).  If NULL, no value is returned.
+ *              **Params            - List of parameters to pass to
+ *                                    method, terminated by NULL.
+ *                                    Params itself may be NULL
+ *                                    if no parameters are being
+ *                                    passed.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: TBD: Not completely defined, not implemented!
+ * DESCRIPTION: Find and evaluate the given object, passing the given
+ *              parameters if necessary.  One of "Handle" or "Pathname" must
+ *              be valid (non-null)
  *
- ******************************************************************************/
+ ****************************************************************************/
 
 ACPI_STATUS
-AcpiGetObject (char *Pathname, NsHandle *RetHandle)
+AcpiEvaluateObject (
+    ACPI_HANDLE             Handle, 
+    char                    *Pathname, 
+    ACPI_OBJECT             *ReturnObject,
+    ACPI_OBJECT             **Params)
 {
-    if (!RetHandle)
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *ObjEntry;
+
+
+    FUNCTION_TRACE ("AcpiEvaluateObject");
+
+
+    /* Parameter validation */
+
+    if (!Handle)
     {
-        return AE_BAD_PARAMETER;
+        /*
+         *  Handle is optional iff fully qualified pathname is specified
+         */
+        if (!Pathname)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Both Handle and Pathname are NULL\n"));
+            FUNCTION_EXIT;
+            return AE_BAD_PARAMETER;
+        }
+        if ((Pathname[0] != '\\'))
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Handle is NULL and Pathname is relative\n"));
+            FUNCTION_EXIT;
+            return AE_BAD_PARAMETER;
+        }
+    }
+
+    /*
+     *  If fully qualified pathname
+     */ 
+
+    if (Pathname[0] == '\\')
+    {
+        Status = NsEvaluateByName (Pathname, ReturnObject, Params);
+    }
+
+    else
+    {
+        /* These cases require a valid handle */
+
+        if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
+        {
+            FUNCTION_EXIT;
+            return AE_BAD_PARAMETER;
+        }
+
+        /* The null pathname case means the handle is for the object */
+
+        if (!Pathname)
+        {
+            Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
+        }
+
+
+        /* Both Handle and Pathname means we have a path relative to the handle */
+
+        else
+        {
+            Status = NsEvaluateRelative (ObjEntry, Pathname, ReturnObject, Params);
+        }
     }
 
 
-    *RetHandle = RootObject->Scope;
-    return AE_OK;
+    FUNCTION_EXIT;
+    return Status;
 }
-
 
 /****************************************************************************
  *
@@ -155,9 +225,13 @@ AcpiGetObject (char *Pathname, NsHandle *RetHandle)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetNextObject (NsType Type, NsHandle Scope, NsHandle Handle, NsHandle *RetHandle)
+AcpiGetNextObject (
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             Scope, 
+    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             *RetHandle)
 {
-    nte                 *ThisEntry;
+    NAME_TABLE_ENTRY        *ThisEntry;
 
 
     if (!RetHandle)
@@ -184,16 +258,26 @@ AcpiGetNextObject (NsType Type, NsHandle Scope, NsHandle Handle, NsHandle *RetHa
 
         /* Start search at the beginning of the specified scope */
 
-        ThisEntry = (nte *) Scope;
+        if (!(ThisEntry = NsConvertHandleToEntry (Scope)))
+        {
+            return AE_BAD_PARAMETER;
+        }
     }
 
-    /* Valid handle, ignore the scope */
+    /* Non-null handle, ignore the scope */
 
     else
     {
+        /* Convert and validate the handle */
+
+        if (!(ThisEntry = NsConvertHandleToEntry (Handle)))
+        {
+            return AE_BAD_PARAMETER;
+        }
+
         /* Start search at the NEXT object */
 
-        ThisEntry = ((nte *) Handle)->NextEntry;
+        ThisEntry = ThisEntry->NextEntry;
     }
 
 
@@ -255,9 +339,11 @@ AcpiGetNextObject (NsType Type, NsHandle Scope, NsHandle Handle, NsHandle *RetHa
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetParent (NsHandle Handle, NsHandle *RetHandle)
+AcpiGetParent (
+    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             *RetHandle)
 {
-    nte         *Object;
+    NAME_TABLE_ENTRY        *Object;
 
 
     if (!RetHandle)
@@ -265,15 +351,17 @@ AcpiGetParent (NsHandle Handle, NsHandle *RetHandle)
         return AE_BAD_PARAMETER;
     }
 
-    if (!Handle)
+    /* Convert and validate the handle */
+
+    if (!(Object = NsConvertHandleToEntry (Handle)))
     {
         *RetHandle = INVALID_HANDLE;
         return AE_BAD_PARAMETER;
     }
 
+   
     /* Get the parent entry */
 
-    Object = (nte *) Handle;
     *RetHandle = Object->ParentEntry;
 
     /* Return exeption if parent is null */
@@ -304,16 +392,21 @@ AcpiGetParent (NsHandle Handle, NsHandle *RetHandle)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetScope (NsHandle Handle, NsHandle *RetScope)
+AcpiGetScope (
+    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             *RetScope)
 {
-    nte             *Object;
+    NAME_TABLE_ENTRY        *Object;
+
 
     if (!RetScope)
     {
         return AE_BAD_PARAMETER;
     }
 
-    if (!Handle)
+    /* Convert and validate the handle */
+
+    if (!(Object = NsConvertHandleToEntry (Handle)))
     {
         *RetScope = INVALID_HANDLE;
         return AE_BAD_PARAMETER;
@@ -321,7 +414,6 @@ AcpiGetScope (NsHandle Handle, NsHandle *RetScope)
 
     /* Get the scope entry */
 
-    Object = (nte *) Handle;
     *RetScope = Object->Scope;
 
     /* Return exception in the case of no scope */
@@ -352,9 +444,11 @@ AcpiGetScope (NsHandle Handle, NsHandle *RetScope)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetContainingScope (NsHandle Handle, NsHandle *RetHandle)
+AcpiGetContainingScope (
+    ACPI_HANDLE             Handle, 
+    ACPI_HANDLE             *RetHandle)
 {
-    nte         *Object;
+    NAME_TABLE_ENTRY        *Object;
 
 
     if (!RetHandle)
@@ -362,13 +456,13 @@ AcpiGetContainingScope (NsHandle Handle, NsHandle *RetHandle)
         return AE_BAD_PARAMETER;
     }
 
-    if (!Handle)
+    /* Convert and validate the handle */
+
+    if (!(Object = NsConvertHandleToEntry (Handle)))
     {
         *RetHandle = INVALID_HANDLE;
         return AE_BAD_PARAMETER;
     }
-
-    Object = (nte *) Handle;
 
     /* If no parent, we are in the root scope */
 
@@ -390,7 +484,7 @@ AcpiGetContainingScope (NsHandle Handle, NsHandle *RetHandle)
  *
  * FUNCTION:    AcpiWalkNamespace
  *
- * PARAMETERS:  Type                - NsType to search for
+ * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
  *              StartHandle         - Handle in namespace where search begins
  *              MaxDepth            - Depth to which search is to reach
  *              UserFunction        - Called when an object of "Type" is found
@@ -415,15 +509,19 @@ AcpiGetContainingScope (NsHandle Handle, NsHandle *RetHandle)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
-                    WALK_CALLBACK UserFunction, 
-                    void *Context, void **ReturnValue)
+AcpiWalkNamespace (
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             StartHandle, 
+    UINT32                  MaxDepth,
+    WALK_CALLBACK           UserFunction, 
+    void                    *Context, 
+    void                    **ReturnValue)
 {
-    NsHandle            ObjHandle = 0;
-    NsHandle            Scope;
-    NsHandle            NewScope;
-    void                *UserReturnVal;
-    UINT32              Level = 1;
+    ACPI_HANDLE             ObjHandle = 0;
+    ACPI_HANDLE             Scope;
+    ACPI_HANDLE             NewScope;
+    void                    *UserReturnVal;
+    UINT32                  Level = 1;
 
 
     FUNCTION_TRACE ("AcpiWalkNamespace");
@@ -516,6 +614,37 @@ AcpiWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
 
 
 
+/* NON-IMPLEMENTED FUNCTIONS */
+
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiGetObject
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: TBD: Not completely defined, not implemented!
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetObject (
+    char                    *Pathname, 
+    ACPI_HANDLE             *RetHandle)
+{
+
+    if (!RetHandle)
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+
+    *RetHandle = RootObject->Scope;
+    return AE_OK;
+}
+
 
 /****************************************************************************
  *
@@ -530,28 +659,30 @@ AcpiWalkNamespace (NsType Type, NsHandle StartHandle, UINT32 MaxDepth,
  *
  ******************************************************************************/
 
-NsHandle 
-AcpiGetParentHandle (NsHandle ChildHandle)
+ACPI_HANDLE 
+AcpiGetParentHandle (
+    ACPI_HANDLE             ChildHandle)
 {
 
-    return ((NsHandle) NULL);
+    return ((ACPI_HANDLE) NULL);
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsType AcpiValueType
+ * FUNCTION:    ACPI_OBJECT_TYPE AcpiValueType
  *
  * PARAMETERS:  Handle          - the handle of the object to find the type of
  *
- * RETURN:      NsType - type of the Handle
+ * RETURN:      ACPI_OBJECT_TYPE - type of the Handle
  *
  * DESCRIPTION: This routine returns the type associatd with a particular handle
  *
  ******************************************************************************/
 
-NsType 
-AcpiValueType (NsHandle Handle)
+ACPI_OBJECT_TYPE 
+AcpiValueType (
+    ACPI_HANDLE             Handle)
 {
 
     return (TYPE_Any);
@@ -590,7 +721,8 @@ AcpiCurrentScopeName (void)
  ******************************************************************************/
 
 BOOLEAN 
-AcpiIsNameSpaceHandle (NsHandle QueryHandle)
+AcpiIsNameSpaceHandle (
+    ACPI_HANDLE             QueryHandle)
 {
     return (TRUE);
 }
@@ -604,12 +736,13 @@ AcpiIsNameSpaceHandle (NsHandle QueryHandle)
  *
  * RETURN:      TRUE if the value is a valid NS vakue, FALSE otherwise
  *
- * DESCRIPTION: This routine verifies the value is valid for NsType  what is the utility of this? RLM
+ * DESCRIPTION: This routine verifies the value is valid for ACPI_OBJECT_TYPE  what is the utility of this? RLM
  *
  ******************************************************************************/
 
 BOOLEAN 
-AcpiIsNameSpaceValue (NsType Value)
+AcpiIsNameSpaceValue (
+    ACPI_OBJECT_TYPE        Value)
 {
     return (TRUE);
 }
@@ -629,7 +762,8 @@ AcpiIsNameSpaceValue (NsType Value)
  ******************************************************************************/
 
 INT32
-AcpiSetFirmwareWakingVector (UINT32 PhysicalAddress)
+AcpiSetFirmwareWakingVector (
+    UINT32                  PhysicalAddress)
 {
     FUNCTION_TRACE ("AcpiSetFirmwareWakingVector");
     
@@ -653,7 +787,8 @@ AcpiSetFirmwareWakingVector (UINT32 PhysicalAddress)
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetFirmwareWakingVector (UINT32 * PhysicalAddress)
+AcpiGetFirmwareWakingVector (
+    UINT32                  *PhysicalAddress)
 {
     FUNCTION_TRACE ("AcpiGetFirmwareWakingVector");
 
