@@ -846,21 +846,15 @@ Cleanup:
     CmDeleteOperand (&Operands[-2]);
 
     /*
-     * If we have a valid region and we are in load pass two, 
-     * now is the time to initialize the region.
-     * (The object stack is completely cleared.  Not executing, no nested methods)
+     * If we have a valid region, initialize it
      */
     if (ObjDescRegion)
     {      
-        if (IMODE_LoadPass2 == InterpreterMode)
-        {
-            /*
-             *  TBD: Is there anything we can or could do when this fails?
-             *          We need to do something useful with a failure.
-             */
-            (void *) EvInitializeRegion (ObjDescRegion);
-        }
-
+        /*
+         *  TBD: Is there anything we can or could do when this fails?
+         *          We need to do something useful with a failure.
+         */
+        (void *) EvInitializeRegion (ObjDescRegion);
     }
 
     return_ACPI_STATUS (Status);
