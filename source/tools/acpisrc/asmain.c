@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -187,7 +187,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" *  Copyright (C) 2000, 2001 R. Byron Moore\n"
+" *  Copyright (C) 2000 - 2002, R. Byron Moore\n"
 " *\n"
 " *  This program is free software; you can redistribute it and/or modify\n"
 " *  it under the terms of the GNU General Public License as published by\n"
@@ -468,6 +468,7 @@ ACPI_STRING_TABLE           CustomReplacements[] = {
     "1999 - 2002, Intel Corp",      "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
     "1999, Intel Corp",             "1999 - 2002, Intel Corp",     REPLACE_WHOLE_WORD,
     "  All rights\n * reserved.",    "\n * All rights reserved.",     REPLACE_WHOLE_WORD,
+    "Copyright (C) 2000, 2001",     "Copyright (C) 2000 - 2002",      REPLACE_WHOLE_WORD,
     NULL,                   NULL, 0
 };
 
