@@ -334,6 +334,10 @@ SOURCE=..\..\subsystem\Namespace\nswalk.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\subsystem\Namespace\nsxfinit.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\subsystem\Namespace\nsxfname.c
 # End Source File
 # Begin Source File
