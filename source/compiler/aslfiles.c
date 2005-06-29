@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.46 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -147,7 +147,7 @@ AslAbort (void)
         AePrintErrorLog (ASL_FILE_STDERR);
     }
 
-    exit (0);
+    exit (1);
 }
 
 
