@@ -107,13 +107,6 @@
 #define _COMPONENT          NAMESPACE
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "NsSearchTable: null scope passed", "NsSearchTable: null scope passed"},
-    {"0001", '1', "Name Table appendage allocation failure", "Name Table appendage allocation failure"},
-    {"0002", '1', "Unknown reference in name space", "Unknown reference in name space"},
-    {NULL, 'I', NULL, NULL}
-};
-
 
 /****************************************************************************
  *
@@ -133,12 +126,16 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ***************************************************************************/
 
 ACPI_STATUS
-NsSearchOnly (char *EntryName, nte *NameTable, NsType Type, nte **RetEntry, 
-                NS_SEARCH_DATA *RetInfo)
+NsSearchOnly (
+    char                    *EntryName, 
+    NAME_TABLE_ENTRY        *NameTable, 
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        **RetEntry, 
+    NS_SEARCH_DATA          *RetInfo)
 {
-    UINT32              Position;
-    UINT32              Tries;
-    char                *ScopeName;
+    UINT32                  Position;
+    UINT32                  Tries;
+    char                    *ScopeName;
 
 
     FUNCTION_TRACE ("NsSearchOnly");
@@ -305,10 +302,14 @@ NsSearchOnly (char *EntryName, nte *NameTable, NsType Type, nte **RetEntry,
 
 
 ACPI_STATUS
-NsSearchParentTree (char *EntryName, nte *NameTable, NsType Type, nte **RetEntry)
+NsSearchParentTree (
+    char                    *EntryName, 
+    NAME_TABLE_ENTRY        *NameTable, 
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        **RetEntry)
 {
-    ACPI_STATUS         Status;
-    nte                 *ParentScope;
+    ACPI_STATUS             Status;
+    NAME_TABLE_ENTRY        *ParentScope;
 
 
     FUNCTION_TRACE ("NsSearchParentTree");
@@ -391,12 +392,13 @@ NsSearchParentTree (char *EntryName, nte *NameTable, NsType Type, nte **RetEntry
  ***************************************************************************/
 
 ACPI_STATUS
-NsCreateAndLinkNewTable (nte *NameTable)
+NsCreateAndLinkNewTable (
+    NAME_TABLE_ENTRY        *NameTable)
 {
-    nte                 *NewTable;
-    nte                 *ParentScope;
-    nte                 *ParentEntry;
-    ACPI_STATUS         Status = AE_OK;
+    NAME_TABLE_ENTRY        *NewTable;
+    NAME_TABLE_ENTRY        *ParentScope;
+    NAME_TABLE_ENTRY        *ParentEntry;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("NsCreateAndLinkNewTable");
@@ -428,7 +430,7 @@ NsCreateAndLinkNewTable (nte *NameTable)
     NewTable = NsAllocateNteDesc (NS_TABLE_SIZE);
     if (!NewTable)
     {
-        REPORT_ERROR (&KDT[1]);
+        REPORT_ERROR ("Name Table appendage allocation failure");
         Status = AE_NO_MEMORY;
     }
 
@@ -466,7 +468,10 @@ NsCreateAndLinkNewTable (nte *NameTable)
  ***************************************************************************/
 
 void
-NsInitializeTable (nte *NewTable, nte *ParentScope, nte *ParentEntry)
+NsInitializeTable (
+    NAME_TABLE_ENTRY        *NewTable, 
+    NAME_TABLE_ENTRY        *ParentScope, 
+    NAME_TABLE_ENTRY        *ParentEntry)
 {
 
 
@@ -496,10 +501,14 @@ NsInitializeTable (nte *NewTable, nte *ParentScope, nte *ParentEntry)
  ***************************************************************************/
 
 void
-NsInitializeEntry (nte *NameTable, UINT32 Position, char *EntryName, NsType Type, 
-                   nte *PreviousEntry)
+NsInitializeEntry (
+    NAME_TABLE_ENTRY        *NameTable, 
+    UINT32                  Position, 
+    char                    *EntryName, 
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        *PreviousEntry)
 {
-    nte                 *NewEntry;
+    NAME_TABLE_ENTRY        *NewEntry;
 
 
     FUNCTION_TRACE ("NsInitializeEntry");
@@ -540,11 +549,15 @@ NsInitializeEntry (nte *NameTable, UINT32 Position, char *EntryName, NsType Type
         (TYPE_DefFieldDefn == Type) || 
         (TYPE_BankFieldDefn == Type))
     {
-        /*  Unknown reference in name space */
+        /* Unknown reference in name space */
 
-        REPORT_ERROR (&KDT[2]);
+        REPORT_WARNING ("Forward (unknown) reference in name space");
 
-        /* We don't want to abort here, however! */
+        /* 
+         * We don't want to abort here, however!
+         * We will fill in the actual type when the real definition
+         * is found later.
+         */
     }
 
     /* 
@@ -606,12 +619,16 @@ NsInitializeEntry (nte *NameTable, UINT32 Position, char *EntryName, NsType Type
  ***************************************************************************/
 
 ACPI_STATUS
-NsSearchAndEnter (char *EntryName, nte *NameTable,
-                    OpMode LoadMode, NsType Type, nte **RetEntry)
+NsSearchAndEnter (
+    char                    *EntryName, 
+    NAME_TABLE_ENTRY        *NameTable,
+    OPERATING_MODE          LoadMode, 
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        **RetEntry)
 {
-    UINT32              Position;       /* position in table */
-    ACPI_STATUS         Status;
-    NS_SEARCH_DATA      SearchInfo;
+    UINT32                  Position;       /* position in table */
+    ACPI_STATUS             Status;
+    NS_SEARCH_DATA          SearchInfo;
 
 
     FUNCTION_TRACE ("NsSearchAndEnter");
@@ -622,7 +639,7 @@ NsSearchAndEnter (char *EntryName, nte *NameTable,
 
     if (!NameTable || !EntryName || !RetEntry)
     {
-        REPORT_ERROR (&KDT[0]);
+        REPORT_ERROR ("NsSearchAndEnter: bad parameter");
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
@@ -645,7 +662,7 @@ NsSearchAndEnter (char *EntryName, nte *NameTable,
 
     /* Try to find the name in the table specified by the caller */
 
-    *RetEntry = NOTFOUND;
+    *RetEntry = ENTRY_NOT_FOUND;
     Status = NsSearchOnly (EntryName, NameTable, Type, RetEntry, &SearchInfo);
     if (Status != AE_NOT_FOUND)
     {
