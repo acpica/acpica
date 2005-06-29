@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.76 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -706,7 +706,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* THERMALZONE */               OP_TABLE_ENTRY (AML_THERMAL_ZONE_OP,        0,                              NODE_AML_PACKAGE,   0),
 /* TIMER */                     OP_TABLE_ENTRY (AML_TIMER_OP,               0,                              0,                  ACPI_BTYPE_INTEGER),
 /* TOBCD */                     OP_TABLE_ENTRY (AML_TO_BCD_OP,              0,                              0,                  ACPI_BTYPE_INTEGER),
-/* TOBUFFER */                  OP_TABLE_ENTRY (AML_TO_BUFFER_OP,           0,                              0,                  ACPI_BTYPE_COMPUTE_DATA),
+/* TOBUFFER */                  OP_TABLE_ENTRY (AML_TO_BUFFER_OP,           0,                              0,                  ACPI_BTYPE_BUFFER),
 /* TODECIMALSTRING */           OP_TABLE_ENTRY (AML_TO_DECSTRING_OP,        0,                              0,                  ACPI_BTYPE_STRING),
 /* TOHEXSTRING */               OP_TABLE_ENTRY (AML_TO_HEXSTRING_OP,        0,                              0,                  ACPI_BTYPE_STRING),
 /* TOINTEGER */                 OP_TABLE_ENTRY (AML_TO_INTEGER_OP,          0,                              0,                  ACPI_BTYPE_INTEGER),
