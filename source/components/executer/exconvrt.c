@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -322,8 +322,13 @@ AcpiExConvertToBuffer (
         /*
          * Create a new Buffer object
          * Size will be the string length
+         *
+         * NOTE: Add one to the string length to include the null terminator.
+         * The ACPI spec is unclear on this subject, but there is existing
+         * ASL/AML code that depends on the null being transferred to the new
+         * buffer.
          */
-        ReturnDesc = AcpiUtCreateBufferObject ((ACPI_SIZE) ObjDesc->String.Length);
+        ReturnDesc = AcpiUtCreateBufferObject ((ACPI_SIZE) ObjDesc->String.Length + 1);
         if (!ReturnDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
