@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.31 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -148,7 +148,7 @@ CgGenerateAmlOutput (void)
 
     FlSeekFile (ASL_FILE_SOURCE_OUTPUT, 0);
     Gbl_SourceLine = 0;
-    LsPushNode (Gbl_InputFilename);
+    LsPushNode (Gbl_Files[ASL_FILE_INPUT].Filename);
     Gbl_NextError = Gbl_ErrorLog;
 
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
@@ -369,8 +369,8 @@ CgWriteAmlOpcode (
              * The low-order nybble of the length is in the bottom 4 bits
              */
 
-            PkgLenFirstByte = ((Node->AmlPkgLenBytes - 1) << 6) |
-                                (PkgLen.LenBytes[0] & 0x0F);
+            PkgLenFirstByte = (UINT8) (((Node->AmlPkgLenBytes - 1) << 6) |
+                                        (PkgLen.LenBytes[0] & 0x0F));
 
             CgLocalWriteAmlData (&PkgLenFirstByte, 1);
 
@@ -505,12 +505,12 @@ CgCloseTable (void)
 
     while (FlReadFile (ASL_FILE_AML_OUTPUT, &FileByte, 1) == AE_OK)
     {
-        Sum += FileByte;
+        Sum = (signed char) (Sum + FileByte);
     }
 
     /* Re-write the table header with the checksum */
 
-    TableHeader.Checksum = (0 - Sum);
+    TableHeader.Checksum = (UINT8) (0 - Sum);
 
     FlSeekFile (ASL_FILE_AML_OUTPUT, 0);
     CgLocalWriteAmlData (&TableHeader, sizeof (ACPI_TABLE_HEADER));

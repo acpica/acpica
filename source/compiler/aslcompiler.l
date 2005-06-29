@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.34 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -550,7 +550,7 @@ AslPopInputFileStack (void)
 
     /* Reset global line counter and filename */
 
-    Gbl_InputFilename = Fnode->Filename;
+    Gbl_Files[ASL_FILE_INPUT].Filename = Fnode->Filename;
     Gbl_CurrentLineNumber = Fnode->CurrentLineNumber;
 
     /* Point the parser to the popped file */
@@ -598,7 +598,7 @@ AslPushInputFileStack (
     Fnode->Next                 = InputStack;
     Fnode->State                = YY_CURRENT_BUFFER;
     Fnode->CurrentLineNumber    = Gbl_CurrentLineNumber;
-    Fnode->Filename             = Gbl_InputFilename;
+    Fnode->Filename             = Gbl_Files[ASL_FILE_INPUT].Filename;
 
     /* Push it on the stack */
 
@@ -614,7 +614,7 @@ AslPushInputFileStack (
 
     /* Reset the global line count and filename */
 
-    Gbl_InputFilename = Filename;
+    Gbl_Files[ASL_FILE_INPUT].Filename = Filename;
     Gbl_CurrentLineNumber = 1;
     yyin = InputFile;
 }
@@ -695,14 +695,16 @@ InsertLineBuffer (
 
         /* Insert the character into the line buffer */
 
-        *Gbl_LineBufPtr = SourceChar;
+        *Gbl_LineBufPtr = (UINT8) SourceChar;
         Gbl_LineBufPtr++;
 
         if (Gbl_LineBufPtr > (Gbl_CurrentLineBuffer + (ASL_LINE_BUFFER_SIZE - 1)))
         {
             sprintf (MsgBuffer, "Max %d", ASL_LINE_BUFFER_SIZE);
-            AslCommonError (ASL_WARNING, ASL_MSG_LONG_LINE, Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                    Gbl_CurrentLineOffset, Gbl_CurrentColumn, Gbl_InputFilename, MsgBuffer);
+            AslCommonError (ASL_WARNING, ASL_MSG_LONG_LINE, 
+                            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                            Gbl_CurrentLineOffset, Gbl_CurrentColumn, 
+                            Gbl_Files[ASL_FILE_INPUT].Filename, MsgBuffer);
 
 
             ResetCurrentLineBuffer ();
@@ -819,7 +821,7 @@ loop:
 
     /* Eat chars until end-of-comment */
 
-    while ((c = input()) != '*' && c != EOF)
+    while ((c = (char) input()) != '*' && c != EOF)
     {
         DoOneChar (c);
         c1 = c;
@@ -832,8 +834,9 @@ loop:
     if ((c1 == '/') && (c == '*'))
     {
         AslCommonError (ASL_WARNING, ASL_MSG_NESTED_COMMENT,
-                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                    Gbl_InputByteCount, Gbl_CurrentColumn, Gbl_InputFilename, NULL);
+                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                        Gbl_InputByteCount, Gbl_CurrentColumn, 
+                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
     }
 
 
@@ -841,7 +844,7 @@ loop:
 
     DoOneChar (c);
 
-    if ((c1 = input()) != '/' && c1 != EOF)
+    if ((c1 = (char) input()) != '/' && c1 != EOF)
     {
         unput(c1);
         goto loop;
@@ -871,7 +874,7 @@ comment2 (void)
     DoOneChar ('/');
     DoOneChar ('/');
 
-    while ((c = input()) != '\n' && c != EOF)
+    while ((c = (char) input()) != '\n' && c != EOF)
     {
         DoOneChar (c);
     }

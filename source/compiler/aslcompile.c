@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -266,7 +266,8 @@ AslCompilerFileHeader (
     NewTime = localtime (&Aclock);
 
     FlPrintFile (FileId, 
-        "Compilation of \"%s\" - %s\n", Gbl_InputFilename, asctime (NewTime));
+        "Compilation of \"%s\" - %s\n", 
+        Gbl_Files[ASL_FILE_INPUT].Filename, asctime (NewTime));
 
 }
 
@@ -294,7 +295,7 @@ CmDoCompile (void)
 
     /* Open the required input and output files */
 
-    Status = FlOpenInputFile (Gbl_InputFilename);
+    Status = FlOpenInputFile (Gbl_Files[ASL_FILE_INPUT].Filename);
     if (ACPI_FAILURE (Status))
     {
         AePrintErrorLog (ASL_FILE_STDERR);
