@@ -232,7 +232,7 @@ c (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-    switch (Op->Opcode)
+    switch (Op->AmlOpcode)
     {
     case AML_METHOD_OP:
         return BLOCK_BRACE;
@@ -371,7 +371,7 @@ AdSecondPassParse (
 
     while (Op)
     {
-        if (Op->Opcode == AML_METHOD_OP)
+        if (Op->AmlOpcode == AML_METHOD_OP)
         {
             printf (".");
 
@@ -418,7 +418,7 @@ AdSecondPassParse (
 
         }
 
-        if (Op->Opcode == AML_REGION_OP)
+        if (Op->AmlOpcode == AML_REGION_OP)
         {
             /* TBD: Code below isn't quite the right thing to do!
              * Is there any need to parse regions here?
