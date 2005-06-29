@@ -295,7 +295,7 @@ AcpiAmlExecUnloadTable (
     /* TBD: [Errors] Wasn't this done earlier? */
 
     if ((!DdbHandle) ||
-        (!VALID_DESCRIPTOR_TYPE (DdbHandle, DESC_TYPE_ACPI_OBJ)) ||
+        (!VALID_DESCRIPTOR_TYPE (DdbHandle, ACPI_DESC_TYPE_INTERNAL)) ||
         (((ACPI_OBJECT_INTERNAL *)DdbHandle)->Common.Type != INTERNAL_TYPE_REFERENCE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);

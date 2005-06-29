@@ -129,8 +129,6 @@
         MODULE_NAME         ("amfield");
 
 
-
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiAmlSetupField
@@ -292,7 +290,7 @@ AcpiAmlAccessNamedField (
     if (INTERNAL_TYPE_DEF_FIELD != AcpiNsGetType (NamedField))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlAccessNamedField: Name %4.4s type %x is not a defined field\n",
-                        &(((NAME_TABLE_ENTRY *) NamedField)->Name), AcpiNsGetType (NamedField)));
+                        &(((ACPI_NAMED_OBJECT*) NamedField)->Name), AcpiNsGetType (NamedField)));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
@@ -311,7 +309,7 @@ AcpiAmlAccessNamedField (
     {
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlAccessNamedField: Internal error - Name %4.4s type %x does not match value-type %x at %p\n",
-                &(((NAME_TABLE_ENTRY *) NamedField)->Name), AcpiNsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
+                &(((ACPI_NAMED_OBJECT*) NamedField)->Name), AcpiNsGetType (NamedField), ObjDesc->Common.Type, ObjDesc));
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
@@ -375,7 +373,6 @@ AcpiAmlAccessNamedField (
         Status = AE_BAD_PARAMETER;
         break;
     }
-
 
 
     /* Release global lock if we acquired it earlier */

@@ -179,7 +179,6 @@ AcpiAmlExecCreateField (
     UINT8                   TypeFound;
 
 
-
     FUNCTION_TRACE ("AmlExecCreateField");
 
 
@@ -210,14 +209,12 @@ AcpiAmlExecCreateField (
     }
 
 
-
     Offset = OffDesc->Number.Value;
-
 
 
     /* If ResDesc is a Name, it will be a direct name pointer after AcpiAmlResolveOperands() */
 
-    if (!VALID_DESCRIPTOR_TYPE (ResDesc, DESC_TYPE_NTE))
+    if (!VALID_DESCRIPTOR_TYPE (ResDesc, ACPI_DESC_TYPE_NAMED))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField (%s): destination must be a Name(NTE)\n", AcpiPsGetOpcodeName (Opcode)));
         Status = AE_AML_OPERAND_TYPE;
@@ -340,8 +337,7 @@ AcpiAmlExecCreateField (
 
         TypeFound = SrcDesc->Common.Type;
 
-        if ((TypeFound > (UINT8) INTERNAL_TYPE_REFERENCE) ||
-            !AcpiCmValidObjectType (TypeFound))
+        if ((TypeFound > (UINT8) INTERNAL_TYPE_REFERENCE) || !AcpiCmValidObjectType (TypeFound))
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Tried to create field in invalid object type - 0x%X\n",
                             TypeFound));
@@ -404,7 +400,7 @@ AcpiAmlExecCreateField (
 
         /* Set the type to ANY (or the store below will fail) */
 
-        ((NAME_TABLE_ENTRY *) ResDesc)->Type = ACPI_TYPE_ANY;
+        ((ACPI_NAMED_OBJECT*) ResDesc)->Type = ACPI_TYPE_ANY;
 
         break;
 
@@ -427,7 +423,6 @@ AcpiAmlExecCreateField (
     {
         AcpiCmRemoveReference (FieldDesc);
     }
-
 
 
 Cleanup:
@@ -469,8 +464,8 @@ ACPI_STATUS
 AcpiAmlExecCreateAlias (
     ACPI_WALK_STATE         *WalkState)
 {
-    NAME_TABLE_ENTRY        *SrcEntry;
-    NAME_TABLE_ENTRY        *AliasEntry;
+    ACPI_NAMED_OBJECT       *SrcEntry;
+    ACPI_NAMED_OBJECT       *AliasEntry;
     ACPI_STATUS             Status;
 
 
@@ -544,7 +539,9 @@ AcpiAmlExecCreateEvent (
 
     /* Create the actual OS semaphore */
 
-    Status = AcpiOsdCreateSemaphore (1, &ObjDesc->Event.Semaphore);
+    /* TBD: [Investigate] should be created with 0 or 1 units? */
+
+    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 1, &ObjDesc->Event.Semaphore);
     if (ACPI_FAILURE (Status))
     {
         AcpiCmRemoveReference (ObjDesc);
@@ -556,11 +553,10 @@ AcpiAmlExecCreateEvent (
     Status = AcpiNsAttachObject (AcpiDsObjStackGetValue (0, WalkState), ObjDesc, (UINT8) ACPI_TYPE_EVENT);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdDeleteSemaphore (ObjDesc->Event.Semaphore);
+        AcpiOsDeleteSemaphore (ObjDesc->Event.Semaphore);
         AcpiCmRemoveReference (ObjDesc);
         goto Cleanup;
     }
-
 
 
 Cleanup:
@@ -591,7 +587,6 @@ AcpiAmlExecCreateMutex (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
-
     FUNCTION_TRACE_PTR ("AmlExecCreateMutex", WALK_OPERANDS);
 
 
@@ -614,7 +609,7 @@ AcpiAmlExecCreateMutex (
 
     /* Create the actual OS semaphore */
 
-    Status = AcpiOsdCreateSemaphore (1, &ObjDesc->Mutex.Semaphore);
+    Status = AcpiOsCreateSemaphore (1, 1, &ObjDesc->Mutex.Semaphore);
     if (ACPI_FAILURE (Status))
     {
         AcpiCmRemoveReference (ObjDesc);
@@ -629,7 +624,7 @@ AcpiAmlExecCreateMutex (
                                 ObjDesc, (UINT8) ACPI_TYPE_MUTEX);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsdDeleteSemaphore (ObjDesc->Mutex.Semaphore);
+        AcpiOsDeleteSemaphore (ObjDesc->Mutex.Semaphore);
         AcpiCmRemoveReference (ObjDesc);
         goto Cleanup;
     }
@@ -728,7 +723,7 @@ AcpiAmlExecCreateRegion (
 
     /* Install the new region object in the parent NTE */
 
-    ObjDescRegion->Region.Nte = (NAME_TABLE_ENTRY *) Entry;
+    ObjDescRegion->Region.Nte = (ACPI_NAMED_OBJECT*) Entry;
 
     Status = AcpiNsAttachObject (Entry, ObjDescRegion, (UINT8) ACPI_TYPE_REGION);
     if (ACPI_FAILURE (Status))
@@ -832,7 +827,7 @@ AcpiAmlExecCreateProcessor (
 
     /* Second arg is the PBlock Address */
 
-    ObjDesc->Processor.PBLKAddress = (ACPI_IO_ADDRESS) Arg->Value.Integer;
+    ObjDesc->Processor.PblkAddress = (ACPI_IO_ADDRESS) Arg->Value.Integer;
 
     /* Move to next arg and check existence */
 
@@ -845,7 +840,7 @@ AcpiAmlExecCreateProcessor (
 
     /* Third arg is the PBlock Length */
 
-    ObjDesc->Processor.PBLKLength = (UINT8) Arg->Value.Integer;
+    ObjDesc->Processor.PblkLength = (UINT8) Arg->Value.Integer;
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -1002,9 +997,5 @@ AcpiAmlExecCreateMethod (
 
     return_ACPI_STATUS (Status);
 }
-
-
-
-
 
 
