@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.97 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -763,7 +763,7 @@ Cleanup:
         AcpiDsDeleteResultIfNotUsed (Op, WalkState->ResultObj, WalkState);
     }
 
-#if _UNDER_DEVELOPMENT
+#ifdef _UNDER_DEVELOPMENT
 
     if (WalkState->ParserState.Aml == WalkState->ParserState.AmlEnd)
     {
