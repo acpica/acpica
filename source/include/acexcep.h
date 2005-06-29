@@ -1,7 +1,7 @@
 
 /******************************************************************************
  * 
- * Name: excep.h - local exception codes
+ * Name: acpiexcep.h - Exception codes returned by the ACPI subsystem
  *
  *****************************************************************************/
 
@@ -95,8 +95,8 @@
  *****************************************************************************/
 
 
-#ifndef _EXCEP_H
-#define _EXCEP_H
+#ifndef __ACPIEXCEP_H__
+#define __ACPIEXCEP_H__
 
 
 /* 
@@ -131,4 +131,4 @@
 
 
 
-#endif
+#endif /* __ACPIEXCEP_H__ */
