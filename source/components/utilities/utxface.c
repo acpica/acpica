@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.78 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,6 +125,8 @@
 #include "amlcode.h"
 #include "acdebug.h"
 #include "acexcep.h"
+#include "acparser.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -153,7 +155,7 @@ AcpiInitializeSubsystem (
     FUNCTION_TRACE ("AcpiInitializeSubsystem");
 
 
-    AcpiUtInitStackPtrTrace ();
+    DEBUG_EXEC(AcpiUtInitStackPtrTrace ());
 
 
     /* Initialize all globals used by the subsystem */
@@ -238,7 +240,6 @@ AcpiEnableSubsystem (
      * installed unless other handlers have already been
      * installed via the InstallAddressSpaceHandler interface
      */
-
     if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Installing default address space handlers\n"));
@@ -253,7 +254,6 @@ AcpiEnableSubsystem (
     /*
      * We must initialize the hardware before we can enable ACPI.
      */
-
     if (!(Flags & ACPI_NO_HARDWARE_INIT))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI hardware\n"));
@@ -268,7 +268,6 @@ AcpiEnableSubsystem (
     /*
      * Enable ACPI on this platform
      */
-
     if (!(Flags & ACPI_NO_ACPI_ENABLE))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Going into ACPI mode\n"));
@@ -287,7 +286,6 @@ AcpiEnableSubsystem (
      * ANY control methods SAFELY.  Any control method can require ACPI hardware
      * support, so the hardware MUST be initialized before execution!
      */
-
     if (!(Flags & ACPI_NO_EVENT_INIT))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI events\n"));
@@ -299,12 +297,10 @@ AcpiEnableSubsystem (
         }
     }
 
-
     /*
      * Initialize all device objects in the namespace
      * This runs the _STA and _INI methods.
      */
-
     if (!(Flags & ACPI_NO_DEVICE_INIT))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI Devices\n"));
@@ -316,13 +312,11 @@ AcpiEnableSubsystem (
         }
     }
 
-
     /*
      * Initialize the objects that remain uninitialized.  This
      * runs the executable AML that is part of the declaration of OpRegions
      * and Fields.
      */
-
     if (!(Flags & ACPI_NO_OBJECT_INIT))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Initializing ACPI Objects\n"));
@@ -334,8 +328,14 @@ AcpiEnableSubsystem (
         }
     }
 
-    AcpiGbl_StartupFlags |= ACPI_INITIALIZED_OK;
+    /*
+     * Empty the caches (delete the cached objects) on the assumption that
+     * the table load filled them up more than they will be at runtime --
+     * thus wasting non-paged memory.
+     */
+    Status = AcpiPurgeCachedObjects ();
 
+    AcpiGbl_StartupFlags |= ACPI_INITIALIZED_OK;
     return_ACPI_STATUS (Status);
 }
 
@@ -355,27 +355,12 @@ AcpiEnableSubsystem (
 ACPI_STATUS
 AcpiTerminate (void)
 {
-    ACPI_STATUS             Status;
-
-
     FUNCTION_TRACE ("AcpiTerminate");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /* Terminate the AML Debugger if present */
 
     DEBUGGER_EXEC(AcpiGbl_DbTerminateThreads = TRUE);
-
-    /* TBD: [Investigate] This is no longer needed?*/
-/*    AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_READY); */
-
 
     /* Shutdown and free all resources */
 
@@ -387,9 +372,17 @@ AcpiTerminate (void)
     AcpiUtMutexTerminate ();
 
 
+#ifdef ENABLE_DEBUGGER
+
+    /* Shut down the debugger */
+
+    AcpiDbTerminate ();
+#endif
+
     /* Now we can shutdown the OS-dependent layer */
 
     AcpiOsTerminate ();
+
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -454,47 +447,35 @@ AcpiGetSystemInfo (
     FUNCTION_TRACE ("AcpiGetSystemInfo");
 
 
-    /* Ensure that ACPI has been initialized */
+    /* Parameter validation */
 
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    Status = AcpiUtValidateBuffer (OutBuffer);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Validate buffer size or allocate new buffer */
+
+    Status = AcpiUtValidateBufferSize (OutBuffer, sizeof (ACPI_SYSTEM_INFO));
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
     /*
-     *  Must have a valid buffer
+     * Populate the return buffer
      */
-    if ((!OutBuffer)          ||
-        (!OutBuffer->Pointer))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    if (OutBuffer->Length < sizeof (ACPI_SYSTEM_INFO))
-    {
-        /*
-         *  Caller's buffer is too small
-         */
-        OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
-
-        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
-    }
-
-
-    /*
-     *  Set return length and get data
-     */
-    OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
     InfoPtr->AcpiCaVersion      = ACPI_CA_VERSION;
 
     /* System flags (ACPI capabilities) */
 
-    InfoPtr->Flags              = AcpiGbl_SystemFlags;
+    InfoPtr->Flags              = SYS_MODE_ACPI;
 
     /* Timer resolution - 24 or 32 bits  */
+
     if (!AcpiGbl_FADT)
     {
         InfoPtr->TimerResolution = 0;
@@ -530,3 +511,28 @@ AcpiGetSystemInfo (
 }
 
 
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiPurgeCachedObjects
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Empty all caches (delete the cached objects)
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AcpiPurgeCachedObjects (void)
+{
+    FUNCTION_TRACE ("AcpiPurgeCachedObjects");
+
+
+    AcpiUtDeleteGenericStateCache ();
+    AcpiUtDeleteObjectCache ();
+    AcpiDsDeleteWalkStateCache ();
+    AcpiPsDeleteParseCache ();
+
+    return_ACPI_STATUS (AE_OK);
+}

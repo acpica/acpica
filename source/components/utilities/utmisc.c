@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.60 $
+ *              $Revision: 1.62 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -150,24 +150,26 @@ AcpiUtDisplayInitPathname (
     char                    *Path)
 {
     ACPI_STATUS             Status;
-    ACPI_SIZE               Length = 128;
-    char                    Buffer[128];
+    ACPI_BUFFER             Buffer;
 
 
     PROC_NAME ("UtDisplayInitPathname");
 
 
-    Status = AcpiNsHandleToPathname (ObjHandle, &Length, Buffer);
+    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
+
+    Status = AcpiNsHandleToPathname (ObjHandle, &Buffer);
     if (ACPI_SUCCESS (Status))
     {
         if (Path)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s.%s\n", Buffer, Path));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s.%s\n", Buffer.Pointer, Path));
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", Buffer));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "%s\n", Buffer.Pointer));
         }
+        AcpiOsFree (Buffer.Pointer);
     }
 }
 #endif
@@ -1294,7 +1296,6 @@ AcpiUtGetResourceEndTag (
     UINT8                   BufferByte;
     UINT8                   *Buffer;
     UINT8                   *EndBuffer;
-
 
 
     Buffer    = ObjDesc->Buffer.Pointer;
