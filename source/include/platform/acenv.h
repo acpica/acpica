@@ -167,7 +167,11 @@
 #include <linux/kernel.h>
 #include <linux/ctype.h>
 #include <asm/system.h>
+#include <asm/atomic.h>
 
+/* Single threaded */
+
+#define ACPI_APPLICATION
 
 /* Use native Linux string library */
 
@@ -237,20 +241,20 @@ strupr(char *str);
  * We will be linking to the standard Clib functions
  */
 
-#define STRSTR(s1,s2)           strstr((INT8 *) (s1), (INT8 *) (s2))
-#define STRUPR(s)               strupr((INT8 *) (s))
-#define STRLEN(s)               strlen((INT8 *) (s))
-#define STRCPY(d,s)             strcpy((INT8 *) (d), (INT8 *) (s))
-#define STRNCPY(d,s,n)          strncpy((INT8 *) (d), (INT8 *) (s), (n))
-#define STRNCMP(d,s,n)          strncmp((INT8 *) (d), (INT8 *) (s), (n))
-#define STRCMP(d,s)             strcmp((INT8 *) (d), (INT8 *) (s))
-#define STRCAT(d,s)             strcat((INT8 *) (d), (INT8 *) (s))
-#define STRNCAT(d,s,n)          strncat((INT8 *) (d), (INT8 *) (s), (n))
-#define STRTOUL(d,s,n)          strtoul((d), (s), (n))
-#define MEMCPY(d,s,n)           memcpy(d, s, (size_t) n)
-#define MEMSET(d,s,n)           memset(d, s, (size_t) n)
-#define TOUPPER                 toupper
-#define TOLOWER                 tolower
+#define STRSTR(s1,s2)   strstr((char *) (s1), (char *) (s2))
+#define STRUPR(s)       strupr((char *) (s))
+#define STRLEN(s)       strlen((char *) (s))
+#define STRCPY(d,s)     strcpy((char *) (d), (char *) (s))
+#define STRNCPY(d,s,n)  strncpy((char *) (d), (char *) (s), (n))
+#define STRNCMP(d,s,n)  strncmp((char *) (d), (char *) (s), (n))
+#define STRCMP(d,s)     strcmp((char *) (d), (char *) (s))
+#define STRCAT(d,s)     strcat((char *) (d), (char *) (s))
+#define STRNCAT(d,s,n)  strncat((char *) (d), (char *) (s), (n))
+#define STRTOUL(d,s,n)  strtoul((d), (s), (n))
+#define MEMCPY(d,s,n)   memcpy(d, s, (size_t) n)
+#define MEMSET(d,s,n)   memset(d, s, (size_t) n)
+#define TOUPPER         toupper
+#define TOLOWER         tolower
 
 
 /******************************************************************************
@@ -278,37 +282,35 @@ typedef char *va_list;
  * Storage alignment properties
  */
 
-#define  _AUPBND                (sizeof(int) - 1)
-#define  _ADNBND                (sizeof(int) - 1)
+#define  _AUPBND         (sizeof(int) - 1)
+#define  _ADNBND         (sizeof(int) - 1)
 
 /*
  * Variable argument list macro definitions
  */
 
-#define _Bnd(X, bnd)            (((sizeof(X)) + (bnd)) & (~(bnd)))
-#define va_arg(ap, T)           (*(T *)(((ap) += ((_Bnd(T, _AUPBND))) \
-                                    - (_Bnd(T, _ADNBND)))))
-#define va_end(ap)              (void)0
-#define va_start(ap, A)         (void) ((ap) = (((INT8 *)&(A)) \
-                                    + (_Bnd(A, _AUPBND))))
+#define _Bnd(X, bnd)    (((sizeof(X)) + (bnd)) & (~(bnd)))
+#define va_arg(ap, T)  (*(T *)(((ap)+=((_Bnd(T, _AUPBND)))-(_Bnd(T,_ADNBND)))))
+#define va_end(ap)      (void)0
+#define va_start(ap, A) (void)((ap)=(((char*)&(A))+(_Bnd(A,_AUPBND))))
 
 #endif /* va_arg */
 
 
-#define STRSTR(s1,s2)           AcpiCmStrstr    ((INT8 *) (s1), (INT8 *) (s2))
-#define STRUPR(s)               AcpiCmStrupr    ((INT8 *) (s))
-#define STRLEN(s)               AcpiCmStrlen    ((INT8 *) (s))
-#define STRCPY(d,s)             AcpiCmStrcpy    ((INT8 *) (d), (INT8 *) (s))
-#define STRNCPY(d,s,n)          AcpiCmStrncpy   ((INT8 *) (d), (INT8 *) (s), (n))
-#define STRNCMP(d,s,n)          AcpiCmStrncmp   ((INT8 *) (d), (INT8 *) (s), (n))
-#define STRCMP(d,s)             AcpiCmStrcmp    ((INT8 *) (d), (INT8 *) (s))
-#define STRCAT(d,s)             AcpiCmStrcat    ((INT8 *) (d), (INT8 *) (s))
-#define STRNCAT(d,s,n)          AcpiCmStrncat   ((INT8 *) (d), (INT8 *) (s), (n))
-#define STRTOUL(d,s,n)          AcpiCmStrtoul   ((INT8 *) (d), (INT8 **) (s), (n))
-#define MEMCPY(d,s,n)           AcpiCmMemcpy    ((void *) (d), (const void *) (s), (n))
-#define MEMSET(d,v,n)           AcpiCmMemset    ((void *) (d), (v), (n))
-#define TOUPPER                 AcpiCmToUpper
-#define TOLOWER                 AcpiCmToLower
+#define STRSTR(s1,s2)    AcpiCmStrstr  ((char *) (s1), (char *) (s2))
+#define STRUPR(s)        AcpiCmStrupr  ((char *) (s))
+#define STRLEN(s)        AcpiCmStrlen  ((char *) (s))
+#define STRCPY(d,s)      AcpiCmStrcpy  ((char *) (d), (char *) (s))
+#define STRNCPY(d,s,n)   AcpiCmStrncpy ((char *) (d), (char *) (s), (n))
+#define STRNCMP(d,s,n)   AcpiCmStrncmp ((char *) (d), (char *) (s), (n))
+#define STRCMP(d,s)      AcpiCmStrcmp  ((char *) (d), (char *) (s))
+#define STRCAT(d,s)      AcpiCmStrcat  ((char *) (d), (char *) (s))
+#define STRNCAT(d,s,n)   AcpiCmStrncat ((char *) (d), (char *) (s), (n))
+#define STRTOUL(d,s,n)   AcpiCmStrtoul ((char *) (d), (char **)(s),(n))
+#define MEMCPY(d,s,n)    AcpiCmMemcpy  ((void *) (d), (const void *) (s), (n))
+#define MEMSET(d,v,n)    AcpiCmMemset  ((void *) (d), (v), (n))
+#define TOUPPER          AcpiCmToUpper
+#define TOLOWER          AcpiCmToLower
 
 #endif /* ACPI_USE_SYSTEM_CLIBRARY */
 
@@ -342,7 +344,6 @@ typedef char *va_list;
 
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       __asm {     \
         __asm mov           ecx, GLptr              \
-                                                    \
         __asm acq10:                                \
         __asm mov           eax, [ecx]              \
         __asm mov           edx, eax                \
@@ -359,7 +360,6 @@ typedef char *va_list;
 
 #define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       __asm {     \
         __asm mov           ecx, GLptr              \
-                                                    \
         __asm Rel10:                                \
         __asm mov           eax, [ecx]              \
         __asm mov           edx, eax                \
@@ -380,9 +380,72 @@ typedef char *va_list;
 
 #ifdef __GNUC__
 
+
 #ifdef __ia64__
-#define _IA64
-#endif
+
+#define ACPI_ASM_MACROS
+#define causeinterrupt(level)
+#define BREAKPOINT3
+#define disable() __cli()
+#define enable()  __sti()
+#define wbinvd()
+
+/*! [Begin] no source code translation */
+
+/* The instructions sti and hlt are defined in IA64 */
+/* Instruction set reference, but the GCC for some  */
+/* reason doesn't understand them. We still need a  */
+/* working IA64 halt() routine.*/
+
+/* #define halt() \
+__asm__ volatile ("sti   \n" \
+                  "hlt   \n" \
+                  :::"memory")
+*/
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
+    do { \
+    __asm__ volatile ("1:  ld4      r29=%1\n"  \
+        ";;\n"                  \
+        "mov    ar.ccv=r29\n"   \
+        "mov    r2=r29\n"       \
+        "shr.u  r30=r29,1\n"    \
+        "and    r29=-4,r29\n"   \
+        ";;\n"                  \
+        "add    r29=2,r29\n"    \
+        "and    r30=1,r30\n"    \
+        ";;\n"                  \
+        "add    r29=r29,r30\n"  \
+        ";;\n"                  \
+        "cmpxchg4.acq   r30=%1,r29,ar.ccv\n" \
+        ";;\n"                  \
+        "cmp.eq p6,p7=r2,r30\n" \
+        "(p7) br.dpnt.few 1b\n" \
+        "cmp.gt p8,p9=3,r29\n"  \
+        ";;\n"                  \
+        "(p8) mov %0=-1\n"      \
+        "(p9) mov %0=r0\n"      \
+        :"=r"(Acq):"m" __atomic_fool_gcc((GLptr)):"r2","r29","r30","memory"); \
+    } while (0)
+
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq) \
+    do { \
+    __asm__ volatile ("1:  ld4      r29=%1\n" \
+        ";;\n"                  \
+        "mov    ar.ccv=r29\n"   \
+        "mov    r2=r29\n"       \
+        "and    r29=-4,r29\n"   \
+        ";;\n"                  \
+        "cmpxchg4.acq   r30=%1,r29,ar.ccv\n" \
+        ";;\n"                  \
+        "cmp.eq p6,p7=r2,r30\n" \
+        "(p7) br.dpnt.few 1b\n" \
+        "and    %0=1,r2\n"      \
+        ";;\n"                  \
+        :"=r"(Acq):"m" __atomic_fool_gcc((GLptr)):"r2","r29","r30","memory"); \
+    } while (0)
+/*! [End] no source code translation !*/
+
+#else /* DO IA32 */
 
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)
@@ -392,15 +455,15 @@ typedef char *va_list;
 #define halt()    __asm__ __volatile__ ("sti; hlt":::"memory")
 #define wbinvd()
 
-
 /*! [Begin] no source code translation
  *
  * A brief explanation as GNU inline assembly is a bit hairy
  *  %0 is the output parameter in EAX ("=a")
- *  %1 and %2 are the input parameters in ECX ("c") and an immediate value ("i") respectively
+ *  %1 and %2 are the input parameters in ECX ("c")
+ *  and an immediate value ("i") respectively
  *  All actual register references are preceded with "%%" as in "%%edx"
  *  Immediate values in the assembly are preceded by "$" as in "$0x1"
- *  The final asm parameter is the non-output registers altered by the operation
+ *  The final asm parameter are the operation altered non-output registers.
  */
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
     do { \
@@ -430,12 +493,12 @@ typedef char *va_list;
     } while(0)
 /*! [End] no source code translation !*/
 
+#endif /* IA 32 */
 #endif /* __GNUC__ */
 
 
-#ifndef ACPI_ASM_MACROS
-
 /* Unrecognized compiler, use defaults */
+#ifndef ACPI_ASM_MACROS
 
 #define ACPI_ASM_MACROS
 #define causeinterrupt(level)
@@ -443,7 +506,6 @@ typedef char *va_list;
 #define disable()
 #define enable()
 #define halt()
-
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)
 #define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq)
 
@@ -469,8 +531,12 @@ typedef char *va_list;
  *
  *****************************************************************************/
 
-#pragma warning(disable:4100) /* warn C4100: unreferenced formal parameter */
-#pragma warning(disable:4127) /* warn C4127: conditional expression is constant */
+/* warn C4100: unreferenced formal parameter */
+#pragma warning(disable:4100)
+
+/* warn C4127: conditional expression is constant */
+#pragma warning(disable:4127)
+
 #endif
 
 
