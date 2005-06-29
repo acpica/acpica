@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -1380,8 +1380,8 @@ ElseTerm
         TermArg
         ')' '{'
         TermList '}'
-        ElseTerm
-                                    {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
+        ElseTerm                    {$$ = TrLinkChildren ($<n>3,3,$4,$7,$9);}
+
     | PARSEOP_ELSEIF '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
