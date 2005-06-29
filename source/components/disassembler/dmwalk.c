@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.4 $
+ *              $Revision: 1.12 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,12 +124,11 @@
 
 #ifdef ACPI_DISASSEMBLER
 
-#define _COMPONENT          ACPI_DEBUGGER
+#define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dmwalk")
 
 
 #define DB_FULL_OP_INFO     "%5.5X #%4.4hX "
-
 
 
 /*******************************************************************************
@@ -161,7 +160,6 @@ AcpiDmDisassemble (
         return;
     }
 
-    Info.PreviousLevel = 0;
     Info.Level = 0;
     AcpiDmWalkParseTree (Op, AcpiDmDescendingOp, AcpiDmAscendingOp, &Info);
 
@@ -190,7 +188,6 @@ AcpiDmWalkParseTree (
     ASL_WALK_CALLBACK       AscendingCallback,
     void                    *Context)
 {
-//    UINT32                  Level;
     BOOLEAN                 NodePreviouslyVisited;
     ACPI_PARSE_OBJECT       *StartOp = Op;
     ACPI_STATUS             Status;
@@ -213,9 +210,8 @@ AcpiDmWalkParseTree (
         }
         else
         {
-            /*
-             * Let the callback process the node.
-             */
+            /* Let the callback process the node */
+
             Status = DescendingCallback (Op, Info->Level, Context);
             if (ACPI_SUCCESS (Status))
             {
@@ -423,7 +419,7 @@ AcpiDmListType (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: First visitation of a parse object during tree descent.  
+ * DESCRIPTION: First visitation of a parse object during tree descent.
  *              Decode opcode name and begin parameter list(s), if any.
  *
  ******************************************************************************/
@@ -438,13 +434,17 @@ AcpiDmDescendingOp (
     const ACPI_OPCODE_INFO  *OpInfo;
     UINT32                  Name;
     ACPI_PARSE_OBJECT       *NextOp;
+    ACPI_EXTERNAL_LIST      *NextExternal;
 
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
     {
+        /* Ignore this op -- it was handled elsewhere */
+
         return (AE_CTRL_DEPTH);
     }
 
+    /* Level 0 is at the Definition Block level */
 
     if (Level == 0)
     {
@@ -455,7 +455,30 @@ AcpiDmDescendingOp (
 
         if (Op->Common.AmlOpcode == AML_SCOPE_OP)
         {
+            /* This is the beginning of the Definition Block */
+
             AcpiOsPrintf ("{\n");
+
+            /* Emit all External() declarations here */
+
+            if (AcpiGbl_ExternalList)
+            {
+                AcpiOsPrintf ("    /*\n     * These objects were referenced but not defined in this table\n     */\n");
+
+                /* Walk the list of externals (unresolved references) found during parsing */
+
+                while (AcpiGbl_ExternalList)
+                {
+                    AcpiOsPrintf ("    External (%s)\n", AcpiGbl_ExternalList->Path);
+
+                    NextExternal = AcpiGbl_ExternalList->Next;
+                    ACPI_MEM_FREE (AcpiGbl_ExternalList->Path);
+                    ACPI_MEM_FREE (AcpiGbl_ExternalList);
+                    AcpiGbl_ExternalList = NextExternal; 
+                }
+                AcpiOsPrintf ("\n");
+            }
+
             return (AE_OK);
         }
     }
@@ -472,12 +495,17 @@ AcpiDmDescendingOp (
 
     AcpiDmDisassembleOneOp (NULL, Info, Op);
 
-    /*
-     * Start the opcode argument list if necessary
-     */
+    if ((Op->Common.AmlOpcode == AML_NAME_OP) ||
+        (Op->Common.AmlOpcode == AML_RETURN_OP))
+    {
+        Info->Level--;
+    }
+
+    /* Start the opcode argument list if necessary */
+
     OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
 
-    if ((OpInfo->Flags & AML_HAS_ARGS) || 
+    if ((OpInfo->Flags & AML_HAS_ARGS) ||
         (Op->Common.AmlOpcode == AML_EVENT_OP))
     {
         /* This opcode has an argument list */
@@ -487,9 +515,8 @@ AcpiDmDescendingOp (
             AcpiOsPrintf (" (");
         }
 
-        /*
-         * If this is a named opcode, print the associated name value
-         */
+        /* If this is a named opcode, print the associated name value */
+
         if (OpInfo->Flags & AML_NAMED)
         {
             switch (Op->Common.AmlOpcode)
@@ -540,7 +567,6 @@ AcpiDmDescendingOp (
 
                 /* Check for _HID and related EISAID() */
 
-        Info->Level--;
                 AcpiIsEisaId (Op);
                 AcpiOsPrintf (", ");
                 break;
@@ -554,6 +580,8 @@ AcpiDmDescendingOp (
 
             case AML_POWER_RES_OP:
 
+                /* Mark the next two Ops as part of the parameter list */
+
                 AcpiOsPrintf (", ");
                 NextOp = AcpiPsGetDepthNext (NULL, Op);
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
@@ -564,6 +592,8 @@ AcpiDmDescendingOp (
 
 
             case AML_PROCESSOR_OP:
+
+                /* Mark the next three Ops as part of the parameter list */
 
                 AcpiOsPrintf (", ");
                 NextOp = AcpiPsGetDepthNext (NULL, Op);
@@ -612,7 +642,7 @@ AcpiDmDescendingOp (
 
             Info->BitOffset = 0;
 
-            /* Name of the parent OpRegion */
+            /* Name of the parent OperationRegion */
 
             NextOp = AcpiPsGetDepthNext (NULL, Op);
             AcpiDmNamestring (NextOp->Common.Value.Name);
@@ -623,10 +653,13 @@ AcpiDmDescendingOp (
             {
             case AML_BANK_FIELD_OP:
 
+                /* Namestring */
+
                 NextOp = AcpiPsGetDepthNext (NULL, NextOp);
                 AcpiDmNamestring (NextOp->Common.Value.Name);
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 AcpiOsPrintf (", ");
+
 
                 NextOp = NextOp->Common.Next;
                 AcpiDmDisassembleOneOp (NULL, Info, NextOp);
@@ -635,6 +668,8 @@ AcpiDmDescendingOp (
                 break;
 
             case AML_INDEX_FIELD_OP:
+
+                /* Namestring */
 
                 NextOp = AcpiPsGetDepthNext (NULL, NextOp);
                 AcpiDmNamestring (NextOp->Common.Value.Name);
@@ -653,36 +688,33 @@ AcpiDmDescendingOp (
 
         case AML_BUFFER_OP:
 
-            /* The next op is the size or predicate parameter */
+            /* The next op is the size parameter */
 
             NextOp = AcpiPsGetDepthNext (NULL, Op);
-            if (NextOp)
+            if (!NextOp)
             {
-                if (Op->Common.DisasmOpcode == ACPI_DASM_RESOURCE)
-                {
-                    NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
-                    NextOp = NextOp->Common.Next;
-                    AcpiOsPrintf (")\n");
+                /* Single-step support */
 
-#if 0
-                    if (Op->Common.Parent->Common.AmlOpcode == AML_NAME_OP)
-                    {
-                        AcpiDmIndent (Info->Level-1);
-                    }
-                    else
-                    {
-                        AcpiDmIndent (Info->Level);
-                    }
-#endif
-
-                    AcpiDmIndent (Info->Level);
-                    AcpiOsPrintf ("{\n");
-                }
-                else
-                {
-                    NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
-                }
+                return (AE_OK);
             }
+
+            if (Op->Common.DisasmOpcode == ACPI_DASM_RESOURCE)
+            {
+                /*
+                 * We have a resource list.  Don't need to output
+                 * the buffer size Op.  Open up a new block
+                 */
+                NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
+                NextOp = NextOp->Common.Next;
+                AcpiOsPrintf (")\n");
+                AcpiDmIndent (Info->Level);
+                AcpiOsPrintf ("{\n");
+                return (AE_OK);
+            }
+
+            /* Normal Buffer, mark size as in the parameter list */
+
+            NextOp->Common.DisasmFlags |= ACPI_PARSEOP_PARAMLIST;
             return (AE_OK);
 
 
@@ -759,11 +791,15 @@ AcpiDmAscendingOp (
 
     if (Op->Common.DisasmFlags & ACPI_PARSEOP_IGNORE)
     {
+        /* Ignore this op -- it was handled elsewhere */
+
         return (AE_OK);
     }
 
     if ((Level == 0) && (Op->Common.AmlOpcode == AML_SCOPE_OP))
     {
+        /* Indicates the end of the current descriptor block (table) */
+
         AcpiOsPrintf ("}\n\n");
         return (AE_OK);
     }
@@ -894,7 +930,8 @@ AcpiDmAscendingOp (
         }
     }
 
-    if (Op->Common.AmlOpcode == AML_NAME_OP)
+    if ((Op->Common.AmlOpcode == AML_NAME_OP) ||
+        (Op->Common.AmlOpcode == AML_RETURN_OP))
     {
         Info->Level++;
     }
