@@ -156,7 +156,7 @@ NsNameOfScope (
     FUNCTION_TRACE ("NsNameOfScope");
 
 
-    if (!RootObject->Scope || !EntryToSearch)
+    if (!Gbl_RootObject->Scope || !EntryToSearch)
     {
         /* 
          * If the name space has not been initialized,
@@ -225,9 +225,9 @@ NsNameOfCurrentScope (void)
     FUNCTION_TRACE ("NsNameOfCurrentScope");
 
 
-    if (CurrentScope && CurrentScope->Scope)
+    if (Gbl_CurrentScope && Gbl_CurrentScope->Scope)
     {
-        ScopeName = NsNameOfScope (CurrentScope->Scope);
+        ScopeName = NsNameOfScope (Gbl_CurrentScope->Scope);
         return_VALUE (ScopeName);
     }
     
@@ -267,7 +267,7 @@ NsHandleToPathname (
     FUNCTION_TRACE ("NsHandleToPathname");
 
 
-    if (!RootObject->Scope || !TargetHandle)
+    if (!Gbl_RootObject->Scope || !TargetHandle)
     {
         /* 
          * If the name space has not been initialized,
@@ -391,11 +391,12 @@ NsPatternMatch (
  *
  ***************************************************************************/
 
-void *
+ACPI_STATUS
 NsNameCompare (
     ACPI_HANDLE             ObjHandle, 
     UINT32                  Level, 
-    void                    *Context)
+    void                    *Context,
+    void                    **ReturnValue)
 {
     FIND_CONTEXT            *Find = Context;
 
@@ -417,7 +418,7 @@ NsNameCompare (
         ++*(Find->Count);
     }
 
-    return NULL;        /* Don't terminate the walk */
+    return AE_OK;        /* Don't terminate the walk */
 }
 
 
@@ -474,7 +475,7 @@ NsLowFindNames (
 
     /* Walk the namespace and find all matches */
 
-    AcpiWalkNamespace (TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
+    AcpiWalkNamespace (ACPI_TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
 
     if (List)
     {
@@ -523,7 +524,7 @@ NsFindNames (
     FUNCTION_TRACE ("NsFindNames");
 
 
-    if (!RootObject->Scope)
+    if (!Gbl_RootObject->Scope)
     {
         /* 
          * If the name space has not been initialized,
@@ -536,7 +537,7 @@ NsFindNames (
     {
         /* base is root */
 
-        StartHandle = RootObject;
+        StartHandle = Gbl_RootObject;
     }
     
     else if (((NAME_TABLE_ENTRY *) StartHandle)->Scope)
