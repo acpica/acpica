@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -268,11 +268,6 @@ AcpiNsDumpOneObject (
 
 
     if (!(AcpiDbgLevel & Info->DebugLevel))
-    {
-        return (AE_OK);
-    }
-
-    if (!((ACPI_LV_TABLES & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
     {
         return (AE_OK);
     }
