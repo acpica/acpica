@@ -169,8 +169,7 @@ NsEvaluateRelative (
      */
     if (!RelObjEntry) 
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
 
@@ -179,8 +178,7 @@ NsEvaluateRelative (
     Status = NsInternalizeName (Pathname, &InternalPath);
     if (ACPI_FAILURE (Status))
     {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
 
@@ -203,7 +201,7 @@ NsEvaluateRelative (
          */
 
         DEBUG_PRINT (ACPI_INFO, ("NsEvaluateRelative: %s [%p] Value %p\n",
-                                    Pathname, ObjEntry, ObjEntry->Value));
+                                    Pathname, ObjEntry, ObjEntry->Object));
 
         Status = NsEvaluateByHandle (ObjEntry, Params, ReturnObject);
 
@@ -216,8 +214,7 @@ NsEvaluateRelative (
 
     CmFree (InternalPath);
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -260,8 +257,7 @@ NsEvaluateByName (
         Status = NsInternalizeName (Pathname, &InternalPath);
         if (ACPI_FAILURE (Status))
         {
-            FUNCTION_STATUS_EXIT (Status);
-            return Status;
+            return_ACPI_STATUS (Status);
         }
     }
 
@@ -285,7 +281,7 @@ NsEvaluateByName (
          */
 
         DEBUG_PRINT (ACPI_INFO, ("NsEvaluateByName: %s [%p] Value %p\n",
-                                    Pathname, ObjEntry, ObjEntry->Value));
+                                    Pathname, ObjEntry, ObjEntry->Object));
 
         Status = NsEvaluateByHandle (ObjEntry, Params, ReturnObject);
 
@@ -301,8 +297,7 @@ NsEvaluateByName (
         CmFree (InternalPath);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -345,14 +340,12 @@ NsEvaluateByHandle (
          */
 
         DEBUG_PRINT (ACPI_ERROR, ("NsEvaluateByHandle: Name space not initialized - method not defined\n"));
-        FUNCTION_STATUS_EXIT (AE_NO_NAMESPACE);
-        return AE_NO_NAMESPACE;
+        return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
     if (!ObjEntry)
     {
-        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     if (ReturnObject)
@@ -402,7 +395,7 @@ BREAKPOINT3;
         {
             /* Valid return object, copy the returned object that is on the stack */
 
-            (*ReturnObject) = *((ACPI_OBJECT_INTERNAL *) AmlObjStackGetValue (STACK_TOP));            
+            Status = CmCopyInternalObject (AmlObjStackGetValue (STACK_TOP), ReturnObject);
         }
 
         /* 
@@ -430,8 +423,7 @@ BREAKPOINT3;
         Status = AE_OK;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -464,11 +456,10 @@ NsExecuteControlMethod (
 
     /* Verify that there is a method associated with this object */
 
-    if (!MethodEntry->Value)
+    if (!MethodEntry->Object)
     {
         DEBUG_PRINT (ACPI_ERROR, ("Control method is undefined (nil value)\n"));
-        FUNCTION_STATUS_EXIT (AE_ERROR);
-        return AE_ERROR;
+        return_ACPI_STATUS (AE_ERROR);
     }
 
     /* 
@@ -477,8 +468,8 @@ NsExecuteControlMethod (
 
     DEBUG_PRINT (ACPI_INFO,
                 ("Control method at Offset %x Length %lx]\n",
-                ((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
-                ((METHOD_INFO *) MethodEntry->Value)->Length - 1));
+                ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Offset + 1,
+                ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Length - 1));
 
     NsDumpPathname (MethodEntry->Scope, "NsExecuteControlMethod: Setting scope to", 
                     TRACE_NAMES, _COMPONENT);
@@ -495,7 +486,7 @@ NsExecuteControlMethod (
                     TRACE_NAMES, _COMPONENT);
 
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
-                      ((METHOD_INFO *) MethodEntry->Value)->Offset + 1));
+                      ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Offset + 1));
 
     /* Clear both the package and object stacks */
 
@@ -505,8 +496,8 @@ NsExecuteControlMethod (
     /* 
      * Excecute the method via the interpreter
      */
-    Status = AmlExecuteMethod (((METHOD_INFO *) MethodEntry->Value)->Offset + 1,
-                               ((METHOD_INFO *) MethodEntry->Value)->Length - 1,
+    Status = AmlExecuteMethod (((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Offset + 1,
+                               ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Length - 1,
                                Params);
 
     if (AmlPkgStackLevel ())
@@ -539,8 +530,7 @@ NsExecuteControlMethod (
         AmlDumpObjStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -567,18 +557,16 @@ NsGetObjectValue (
     FUNCTION_TRACE ("NsGetObjectValue");
 
 
-    ObjDesc = AllocateObjectDesc ();
+    ObjDesc = CmCreateInternalObject (TYPE_Lvalue);
     if (!ObjDesc)
     {
         /* Descriptor allocation failure */
 
-        FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-        return AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /* Construct a descriptor pointing to the name */
 
-    ObjDesc->Lvalue.Type    = (UINT8) TYPE_Lvalue;
     ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
     ObjDesc->Lvalue.Object  = (void *) ObjectEntry;
 
@@ -609,6 +597,5 @@ NsGetObjectValue (
     }
 
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
