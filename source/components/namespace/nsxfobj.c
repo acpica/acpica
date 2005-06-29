@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  ******************************************************************************/
 
@@ -775,8 +775,8 @@ AcpiGetDeviceCallback (
  *
  * FUNCTION:    AcpiGetDevices
  *
- * PARAMETERS:  HID                 - HID to search for
- *              UserFunction        - Called when an object of "Type" is found
+ * PARAMETERS:  HID                 - HID to search for. Can be NULL.
+ *              UserFunction        - Called when a matching object is found
  *              Context             - Passed to user function
  *              ReturnValue         - Location where return value of
  *                                    UserFunction is put if terminated early
@@ -791,11 +791,8 @@ AcpiGetDeviceCallback (
  *              a non-zero value, the search is terminated immediately and this
  *              value is returned to the caller.
  *
- *              The point of this procedure is to provide a generic namespace
- *              walk routine that can be called from multiple places to
- *              provide multiple services;  the User Function can be tailored
- *              to each task, whether it is a print function, a compare
- *              function, etc.
+ *              This is a wrapper for WalkNamespace, but the callback performs
+ *              additional filtering. Please see AcpiGetDeviceCallback.
  *
  ******************************************************************************/
 
