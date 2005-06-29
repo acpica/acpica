@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.196 $
+ *              $Revision: 1.197 $
  *
  *****************************************************************************/
 
@@ -864,11 +864,6 @@ AcpiUtInitGlobals (
 
     ACPI_FUNCTION_TRACE ("UtInitGlobals");
 
-    /* Runtime configuration */
-
-    AcpiGbl_CreateOsiMethod = TRUE;
-    AcpiGbl_AllMethodsSerialized = FALSE;
-    AcpiGbl_LeaveWakeGpesDisabled = TRUE;
 
     /* Memory allocation and cache lists */
 
