@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  ******************************************************************************/
 
@@ -828,13 +828,11 @@ AcpiHwLowLevelRead (
      * Must have a valid pointer to a GAS structure, and
      * a non-zero address within
      */
-#if 0
     if ((!Reg) ||
         (!ACPI_VALID_ADDRESS (Reg->Address)))
     {
-        return (AE_BAD_PARAMETER);
+        return (AE_OK);
     }
-#endif
     *Value = 0;
 
     /*
@@ -848,7 +846,7 @@ AcpiHwLowLevelRead (
         MemAddress = (ACPI_GET_ADDRESS (Reg->Address) 
                         + (ACPI_PHYSICAL_ADDRESS) Offset);
 
-        Status = AcpiOsReadMemory (MemAddress, &Value, Width);
+        Status = AcpiOsReadMemory (MemAddress, Value, Width);
         break;
 
 
@@ -857,7 +855,7 @@ AcpiHwLowLevelRead (
         IoAddress = (ACPI_IO_ADDRESS) (ACPI_GET_ADDRESS (Reg->Address) 
                                         + (ACPI_PHYSICAL_ADDRESS) Offset);
 
-        Status = AcpiOsReadPort (IoAddress, &Value, Width);
+        Status = AcpiOsReadPort (IoAddress, Value, Width);
         break;
 
 
@@ -870,7 +868,7 @@ AcpiHwLowLevelRead (
         PciRegister    = (UINT16) (ACPI_PCI_REGISTER (ACPI_GET_ADDRESS (Reg->Address))
                                     + Offset);
 
-        Status = AcpiOsReadPciConfiguration  (&PciId, PciRegister, &Value, Width);
+        Status = AcpiOsReadPciConfiguration  (&PciId, PciRegister, Value, Width);
         break;
 
 
@@ -921,13 +919,11 @@ AcpiHwLowLevelWrite (
      * Must have a valid pointer to a GAS structure, and
      * a non-zero address within
      */
-#if 0
     if ((!Reg) ||
         (!ACPI_VALID_ADDRESS (Reg->Address)))
     {
-        return (AE_BAD_PARAMETER);
+        return (AE_OK);
     }
-#endif
     /*
      * Three address spaces supported:
      * Memory, Io, or PCI config.
