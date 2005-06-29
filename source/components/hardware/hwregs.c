@@ -262,7 +262,7 @@ HwObtainSleepTypeRegisterData (
     {   
         /* Sleep state value specified in ACPI namespace tables */
         
-        strncat (SleepState, SleepStateReq, 4);
+        STRNCAT (SleepState, SleepStateReq, 4);
         Status = NsEvaluateByName (SleepState, NULL, ObjDesc);
 
         if (AE_OK == Status)
