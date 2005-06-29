@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.1 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,6 @@
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
 #include "amlcode.h"
-
 #include "acnamesp.h"
 
 
@@ -863,6 +862,7 @@ CgGenerateAmlOperands (
 
     case NAMESEG:
     case NAMESTRING:
+    case METHODCALL:
     case STRING_LITERAL:
         break;
 
