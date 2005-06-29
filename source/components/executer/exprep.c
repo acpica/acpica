@@ -255,9 +255,9 @@ OBSOLETE!
                     DEBUG_EXEC (ObjectTypeName = "Lvalue Ones");
                     break;
             
-                case Debug1:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Debug1\n"));
-                    DEBUG_EXEC (ObjectTypeName = "Lvalue Debug1");
+                case AML_DebugOp:
+                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: DebugObj\n"));
+                    DEBUG_EXEC (ObjectTypeName = "Lvalue DebugObj");
                     break;
             
                 case AML_NameOp:
@@ -270,15 +270,13 @@ OBSOLETE!
                     DEBUG_EXEC (ObjectTypeName = "Lvalue Index");
                     break;
             
-                case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
-                case AML_Arg4: case AML_Arg5: case AML_Arg6:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Arg%d\n", ObjDesc->Lvalue.OpCode - AML_Arg0));
+                case AML_ArgOp:
+                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Arg%d\n", ObjDesc->Lvalue.Offset));
                     DEBUG_EXEC (ObjectTypeName = "Lvalue Argument");
                     break;
             
-                case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
-                case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
-                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Local%d\n", ObjDesc->Lvalue.OpCode - AML_Local0));
+                case AML_LocalOp:
+                    DEBUG_PRINT (ACPI_INFO, ("Lvalue Opcode: Local%d\n", ObjDesc->Lvalue.Offset));
                     DEBUG_EXEC (ObjectTypeName = "Lvalue Local");
                     break;
             
