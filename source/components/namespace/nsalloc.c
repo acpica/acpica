@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.75 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -223,16 +223,17 @@ AcpiNsDeleteNode (
 }
 
 
+#ifdef ACPI_ALPHABETIC_NAMESPACE
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsCompareNames 
+ * FUNCTION:    AcpiNsCompareNames
  *
  * PARAMETERS:  Name1           - First name to compare
  *              Name2           - Second name to compare
  *
  * RETURN:      value from strncmp
  *
- * DESCRIPTION: Compare two ACPI names.  Names that are prefixed with an 
+ * DESCRIPTION: Compare two ACPI names.  Names that are prefixed with an
  *              underscore are forced to be alphabetically first.
  *
  ******************************************************************************/
@@ -271,8 +272,9 @@ AcpiNsCompareNames (
         }
     }
 
-    return (*(INT32 *) ReversedName1 - *(INT32 *) ReversedName2);
+    return (*(int *) ReversedName1 - *(int *) ReversedName2);
 }
+#endif
 
 
 /*******************************************************************************
@@ -305,7 +307,10 @@ AcpiNsInstallNode (
 {
     UINT16                  OwnerId = TABLE_ID_DSDT;
     ACPI_NAMESPACE_NODE     *ChildNode;
+#ifdef ACPI_ALPHABETIC_NAMESPACE
+
     ACPI_NAMESPACE_NODE     *PreviousChildNode;
+#endif
 
 
     ACPI_FUNCTION_TRACE ("NsInstallNode");
@@ -332,6 +337,7 @@ AcpiNsInstallNode (
     }
     else
     {
+#ifdef ACPI_ALPHABETIC_NAMESPACE
         /*
          * Walk the list whilst searching for the the correct
          * alphabetic placement.
@@ -366,7 +372,7 @@ AcpiNsInstallNode (
 
         if (!(Node->Flags & ANOBJ_END_OF_PEER_LIST))
         {
-            /* 
+            /*
              * Loop above terminated without reaching the end-of-list.
              * Insert the new node at the current location
              */
@@ -385,6 +391,20 @@ AcpiNsInstallNode (
                 ParentNode->Child = Node;
             }
         }
+#else
+        while (!(ChildNode->Flags & ANOBJ_END_OF_PEER_LIST))
+        {
+            ChildNode = ChildNode->Peer;
+        }
+
+        ChildNode->Peer = Node;
+
+        /* Clear end-of-list flag */
+
+        ChildNode->Flags &= ~ANOBJ_END_OF_PEER_LIST;
+        Node->Flags     |= ANOBJ_END_OF_PEER_LIST;
+        Node->Peer = ParentNode;
+#endif
     }
 
     /* Init the new entry */
@@ -393,7 +413,7 @@ AcpiNsInstallNode (
     Node->Type = (UINT8) Type;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "%4.4s (%s) added to %4.4s (%s) %p at %p\n",
-        Node->Name.Ascii, AcpiUtGetTypeName (Node->Type), 
+        Node->Name.Ascii, AcpiUtGetTypeName (Node->Type),
         ParentNode->Name.Ascii, AcpiUtGetTypeName (ParentNode->Type), ParentNode, Node));
 
     /*
