@@ -307,7 +307,7 @@ NsDumpOneObject (
         Type = INTERNAL_TYPE_DefAny;                                 /* prints as *ERROR* */
     }
     
-    if (!CmValidAcpiName (*(UINT32 *) &ThisEntry->Name))
+    if (!CmValidAcpiName (ThisEntry->Name))
     {
         REPORT_WARNING ("Invalid Name");
     }
@@ -316,13 +316,8 @@ NsDumpOneObject (
      * Now we can print out the pertinent information
      */
 
-    DEBUG_PRINT_RAW (TRACE_TABLES,
-                (" %4.4s %-9s ", &ThisEntry->Name, CmGetTypeName (Type)));
-
-    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",
-                ThisEntry,
-                ThisEntry->Scope, 
-                ThisEntry->Object));
+    DEBUG_PRINT_RAW (TRACE_TABLES, (" %4.4s %-9s ", &ThisEntry->Name, CmGetTypeName (Type)));
+    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",  ThisEntry, ThisEntry->Scope, ThisEntry->Object));
 
 
     if (!ThisEntry->Object)
