@@ -215,14 +215,14 @@ CmAddElementToAllocList (
     Gbl_RunningAllocCount++;
     if (Gbl_MaxConcurrentAllocCount < Gbl_CurrentAllocCount)
     {
-    	Gbl_MaxConcurrentAllocCount = Gbl_CurrentAllocCount;
+        Gbl_MaxConcurrentAllocCount = Gbl_CurrentAllocCount;
     }
     
     Gbl_CurrentAllocSize += Size;
     Gbl_RunningAllocSize += Size;
     if (Gbl_MaxConcurrentAllocSize < Gbl_CurrentAllocSize)
     {
-    	Gbl_MaxConcurrentAllocSize = Gbl_CurrentAllocSize;
+        Gbl_MaxConcurrentAllocSize = Gbl_CurrentAllocSize;
     }
     
     /* If the head pointer is null, create the first element and fill it in. */
@@ -312,7 +312,7 @@ CmDeleteElementFromAllocList (
     ALLOCATION_INFO         *Element;
     UINT32                  *DwordPtr;
     UINT32                  DwordLen;
-    UINT32					Size;
+    UINT32                  Size;
     UINT32                  i;
     
 
@@ -443,36 +443,36 @@ Cleanup:
 
 void
 CmDumpAllocationInfo (
-	void)
+    void)
 {
     FUNCTION_TRACE ("CmDumpAllocationInfo");
     
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	            ("Current outstanding allocations: %d (%d b, %d Kb)\n",
-    	            Gbl_CurrentAllocCount, Gbl_CurrentAllocSize, Gbl_CurrentAllocSize / 1024));
+                    ("Current outstanding allocations: %d (%d b, %d Kb)\n",
+                    Gbl_CurrentAllocCount, Gbl_CurrentAllocSize, Gbl_CurrentAllocSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-		            ("Maximum concurrent allocations thus far: %d (%d b, %d Kb)\n",
-		            Gbl_MaxConcurrentAllocCount, Gbl_MaxConcurrentAllocSize, Gbl_MaxConcurrentAllocSize / 1024));
-
-	DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	            ("Current number of allocated internal objects: %d (%d b, %d Kb)\n",
-    	            Gbl_CurrentObjectCount, Gbl_CurrentObjectSize, Gbl_CurrentObjectSize / 1024));
+                    ("Maximum concurrent allocations thus far: %d (%d b, %d Kb)\n",
+                    Gbl_MaxConcurrentAllocCount, Gbl_MaxConcurrentAllocSize, Gbl_MaxConcurrentAllocSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	            ("Maximum concurrent number of allocated internal objects: %d (%d b, %d Kb)\n",
-    	            Gbl_MaxConcurrentObjectCount, Gbl_MaxConcurrentObjectSize, Gbl_MaxConcurrentObjectSize / 1024));
+                    ("Current number of allocated internal objects: %d (%d b, %d Kb)\n",
+                    Gbl_CurrentObjectCount, Gbl_CurrentObjectSize, Gbl_CurrentObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	            ("Total number of allocated internal objects: %d (%d b, %d Kb)\n",
-    	            Gbl_RunningObjectCount, Gbl_RunningObjectSize, Gbl_RunningObjectSize / 1024));
+                    ("Maximum concurrent number of allocated internal objects: %d (%d b, %d Kb)\n",
+                    Gbl_MaxConcurrentObjectCount, Gbl_MaxConcurrentObjectSize, Gbl_MaxConcurrentObjectSize / 1024));
 
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-    	            ("Total number of allocations: %d (%d b, %d Kb)\n",
-    	            Gbl_RunningAllocCount, Gbl_RunningAllocSize, Gbl_RunningAllocSize / 1024));
+                    ("Total number of allocated internal objects: %d (%d b, %d Kb)\n",
+                    Gbl_RunningObjectCount, Gbl_RunningObjectSize, Gbl_RunningObjectSize / 1024));
 
-	return_VOID;
+    DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
+                    ("Total number of allocations: %d (%d b, %d Kb)\n",
+                    Gbl_RunningAllocCount, Gbl_RunningAllocSize, Gbl_RunningAllocSize / 1024));
+
+    return_VOID;
 }
 
 
