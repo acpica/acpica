@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  ******************************************************************************/
 
@@ -217,7 +217,7 @@ AcpiRsGetByteStreamLength (
             /*
              * Vendor Defined Resource
              * For a Vendor Specific resource, if the Length is between 1 and 7
-             * it will be created as a Small Resource data type, otherwise it 
+             * it will be created as a Small Resource data type, otherwise it
              * is a Large Resource data type.
              */
             if (LinkedList->Data.VendorSpecific.Length > 7)
@@ -300,7 +300,7 @@ AcpiRsGetByteStreamLength (
         case ACPI_RSTYPE_ADDRESS64:
             /*
              * 64-Bit Address Resource
-             * The base size of this byte stream is 46. If a ResourceSource 
+             * The base size of this byte stream is 46. If a ResourceSource
              * string is not NULL, add 1 for the Index + the length of the null
              * terminated string Resource Source + 1 for the null.
              */
@@ -473,10 +473,10 @@ AcpiRsGetListLength (
 
             /*
              * Resource Source Index and Resource Source are optional elements.
-             * Check the length of the Bytestream.  If it is greater than 43, 
-             * that means that an Index exists and is followed by a null 
-             * terminated string.  Therefore, set the temp variable to the 
-             * length minus the minimum byte stream length plus the byte for 
+             * Check the length of the Bytestream.  If it is greater than 43,
+             * that means that an Index exists and is followed by a null
+             * terminated string.  Therefore, set the temp variable to the
+             * length minus the minimum byte stream length plus the byte for
              * the Index to determine the size of the NULL terminated string.
              */
             if (43 < Temp16)
@@ -512,9 +512,9 @@ AcpiRsGetListLength (
             /*
              * Resource Source Index and Resource Source are optional elements.
              * Check the length of the Bytestream.  If it is greater than 23,
-             * that means that an Index exists and is followed by a null 
-             * terminated string.  Therefore, set the temp variable to the 
-             * length minus the minimum byte stream length plus the byte for 
+             * that means that an Index exists and is followed by a null
+             * terminated string.  Therefore, set the temp variable to the
+             * length minus the minimum byte stream length plus the byte for
              * the Index to determine the size of the NULL terminated string.
              */
             if (23 < Temp16)
@@ -586,7 +586,7 @@ AcpiRsGetListLength (
             BytesConsumed = Temp16 + 3;
 
             /*
-             * Point past the length field and the Interrupt vector flags to 
+             * Point past the length field and the Interrupt vector flags to
              * save off the Interrupt table length to the Temp8 variable.
              */
             Buffer += 3;
@@ -600,7 +600,7 @@ AcpiRsGetListLength (
 
             /*
              * Resource Source Index and Resource Source are optional elements.
-             * Check the length of the Bytestream.  If it is greater than 9, 
+             * Check the length of the Bytestream.  If it is greater than 9,
              * that means that an Index exists and is followed by a null
              * terminated string.  Therefore, set the temp variable to the
              * length minus the minimum byte stream length plus the byte for
