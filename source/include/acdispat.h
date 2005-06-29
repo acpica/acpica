@@ -131,6 +131,7 @@
 
 
 
+
 /* Common interfaces */
 
 ACPI_STATUS
@@ -311,6 +312,10 @@ DsRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    *ReturnDesc);
 
+ACPI_STATUS
+DsTerminateControlMethod (
+    ACPI_WALK_STATE         *WalkState);
+
 
 /* dsobj - Parser/Interpreter interface - object initialization and conversion */
 
@@ -458,6 +463,10 @@ DsResultStackClear (
 ACPI_WALK_STATE *
 DsGetCurrentWalkState (
     ACPI_WALK_LIST          *WalkList);
+
+void
+DsDeleteWalkStateCache (
+    void);
 
 
 
