@@ -200,7 +200,7 @@
  * Debug macros that are conditionally compiled
  */
 
-#ifdef _DEBUG
+#ifdef ACPI_DEBUG
 
 /* Conditional execution */
 
