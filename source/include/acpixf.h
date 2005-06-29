@@ -106,6 +106,7 @@
 
 
 /*  AcpiEnable() Flags bitmask options   */
+/* TBD: Obsolete? */
 
 #define ACPI_TABLES_REQUIRED            0x01
 #define HW_OVERRIDE_SUPPORTED           0x02
@@ -118,51 +119,27 @@
  * Common Data Structures used by the interfaces
  */
 
-typedef struct {
-    UINT32      Length;         // Length in bytes of the buffer;
-    char        *BufferPtr;     // pointer to buffer
+typedef struct 
+{
+    UINT32              Length;         // Length in bytes of the buffer;
+    char                *BufferPtr;     // pointer to buffer
 } APIBuffer;
 
-typedef struct _AcpiSysInfo {
-    INT32   DebugLevel;
-    INT32   DebugLayer;
+typedef struct _AcpiSysInfo 
+{
+    INT32               DebugLevel;
+    INT32               DebugLayer;
 } AcpiSysInfo;
 
-/*
- * Global interfaces
- */
-
-ACPI_STATUS
-AcpiInit (
-    char                *AcpiFile);
-
-/*
- * Interpreter interfaces
- */
-
-ACPI_STATUS
-AcpiExecuteMethod (
-    char                *MethodName, 
-    OBJECT_DESCRIPTOR   *ReturnValue,
-    OBJECT_DESCRIPTOR   **Params);
-
-ACPI_STATUS
-AcpiExecuteRelativeMethod (NsHandle Handle,
-                           char * MethodName,
-                           OBJECT_DESCRIPTOR *ReturnValue,
-                           OBJECT_DESCRIPTOR **Params);
+typedef struct 
+{
+    UINT32              HardwareId;
+    UINT32              Address;
+    UINT32              CurrentStatus;
+} ACPI_DEVICE_INFO;
 
 /*
- * Namespace and enumeration interfaces
- */
-
-ACPI_STATUS
-AcpiLoadNameSpace (
-    INT32               DisplayAmlDuringLoad);
-
-/*
- *  This must be moved to the datatypes.h file
- *
+ *  TBD:This must be moved to the datatypes.h file
  *  Table types.  These values are passed to the table related APIs
  */
 
@@ -177,6 +154,45 @@ typedef enum {
     SSDT_Ord,
     SBDT_Ord
 } AcpiTableType;
+
+
+
+
+
+/*
+ * Global interfaces
+ */
+
+ACPI_STATUS
+AcpiInit (
+    char                *AcpiFile);
+
+
+/*
+ * Interpreter interfaces
+ */
+
+ACPI_STATUS
+AcpiExecuteMethod (
+    char                *MethodName, 
+    OBJECT_DESCRIPTOR   *ReturnValue,
+    OBJECT_DESCRIPTOR   **Params);
+
+ACPI_STATUS
+AcpiExecuteRelativeMethod (
+    NsHandle            Handle,
+    char                *MethodName,
+    OBJECT_DESCRIPTOR   *ReturnValue,
+    OBJECT_DESCRIPTOR   **Params);
+
+
+/*
+ * Namespace and enumeration interfaces
+ */
+
+ACPI_STATUS
+AcpiLoadNameSpace (
+    INT32               DisplayAmlDuringLoad);
 
 ACPI_STATUS
 AcpiLoadTable (
@@ -211,7 +227,7 @@ AcpiNameToHandle (
 ACPI_STATUS
 AcpiHandleToName (
     NsHandle            Handle,
-    UINT32             *RetName);
+    UINT32              *RetName);
 
 ACPI_STATUS
 AcpiPathnameToHandle (
@@ -254,8 +270,14 @@ AcpiWalkNamespace (
     void                *Context, 
     void *              *ReturnValue);
 
+ACPI_STATUS
+AcpiGetDeviceInfo (
+    NsHandle            Device, 
+    ACPI_DEVICE_INFO    *Info);
+
+
 /*
- * Device/hardware interfaces
+ * Hardware (ACPI device) interfaces
  */
 
 ACPI_STATUS
@@ -270,6 +292,7 @@ INT32
 AcpiModeCapabilities (
     void);
 
+
 /*
  * Event / System interfaces
  */
@@ -282,28 +305,36 @@ ACPI_STATUS
 AcpiDisable (
     void);
 
+
 /*
  * Resource related interfaces
  */
 
 ACPI_STATUS
 AcpiGetCurrentResources(
-    NsHandle DeviceHandle,
-    APIBuffer *RetBuffer);
+    NsHandle            DeviceHandle,
+    APIBuffer           *RetBuffer);
 
 ACPI_STATUS
 AcpiGetPossibleResources(
-    NsHandle DeviceHandle,
-    APIBuffer *RetBuffer);
+    NsHandle            DeviceHandle,
+    APIBuffer           *RetBuffer);
 
 ACPI_STATUS
 AcpiSetCurrentResources (
-    NsHandle DeviceHandle,
-    APIBuffer *InBuffer);
+    NsHandle            DeviceHandle,
+    APIBuffer           *InBuffer);
 
 ACPI_STATUS
 AcpiGetSystemInfo(
-    APIBuffer *OutBuffer);
+    APIBuffer           *OutBuffer);
+
+
+
+
+
+
+
 
 /* TBD: these may be obsolete */
 
