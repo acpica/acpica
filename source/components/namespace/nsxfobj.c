@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  ******************************************************************************/
 
@@ -130,7 +130,7 @@
  * FUNCTION:    AcpiGetType
  *
  * PARAMETERS:  Handle          - Handle of object whose type is desired
- *              *RetType        - Where the type will be placed
+ *              RetType         - Where the type will be placed
  *
  * RETURN:      Status
  *

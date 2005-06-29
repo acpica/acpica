@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.130 $
+ *              $Revision: 1.132 $
  *
  ******************************************************************************/
 
@@ -132,14 +132,18 @@
  *
  * FUNCTION:    AcpiNsEvaluateRelative
  *
- * PARAMETERS:  Pathname            - Name of method to execute, If NULL, the
- *                                    handle is the object to execute
- *              Info                - Method info block
+ * PARAMETERS:  Pathname        - Name of method to execute, If NULL, the
+ *                                handle is the object to execute
+ *              Info            - Method info block, contains:
+ *                  ReturnObject    - Where to put method's return value (if
+ *                                    any).  If NULL, no value is returned.
+ *                  Params          - List of parameters to pass to the method,
+ *                                    terminated by NULL.  Params itself may be
+ *                                    NULL if no parameters are being passed.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Find and execute the requested method using the handle as a
- *              scope
+ * DESCRIPTION: Evaluate the object or find and execute the requested method
  *
  * MUTEX:       Locks Namespace
  *
@@ -238,8 +242,8 @@ Cleanup1:
  *
  * FUNCTION:    AcpiNsEvaluateByName
  *
- * PARAMETERS:  Pathname            - Fully qualified pathname to the object
- *              Info                - Contains:
+ * PARAMETERS:  Pathname        - Fully qualified pathname to the object
+ *              Info                - Method info block, contains:
  *                  ReturnObject    - Where to put method's return value (if
  *                                    any).  If NULL, no value is returned.
  *                  Params          - List of parameters to pass to the method,
@@ -248,8 +252,8 @@ Cleanup1:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Find and execute the requested method passing the given
- *              parameters
+ * DESCRIPTION: Evaluate the object or rind and execute the requested method
+ *              passing the given parameters
  *
  * MUTEX:       Locks Namespace
  *
@@ -326,17 +330,21 @@ Cleanup:
  *
  * FUNCTION:    AcpiNsEvaluateByHandle
  *
- * PARAMETERS:  Handle              - Method Node to execute
- *              Params              - List of parameters to pass to the method,
- *                                    terminated by NULL.  Params itself may be
+ * PARAMETERS:  Info            - Method info block, contains:
+ *                  Node            - Method/Object Node to execute
+ *                  Parameters      - List of parameters to pass to the method,
+ *                                    terminated by NULL. Params itself may be
  *                                    NULL if no parameters are being passed.
- *              ParamType           - Type of Parameter list
- *              ReturnObject        - Where to put method's return value (if
- *                                    any).  If NULL, no value is returned.
+ *                  ReturnObject    - Where to put method's return value (if
+ *                                    any). If NULL, no value is returned.
+ *                  ParameterType   - Type of Parameter list
+ *                  ReturnObject    - Where to put method's return value (if
+ *                                    any). If NULL, no value is returned.
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute the requested method passing the given parameters
+ * DESCRIPTION: Evaluate object or execute the requested method passing the
+ *              given parameters
  *
  * MUTEX:       Locks Namespace
  *
@@ -438,7 +446,16 @@ AcpiNsEvaluateByHandle (
  *
  * FUNCTION:    AcpiNsExecuteControlMethod
  *
- * PARAMETERS:  Info            - Method info block (w/params)
+ * PARAMETERS:  Info            - Method info block, contains:
+ *                  Node            - Method Node to execute
+ *                  Parameters      - List of parameters to pass to the method,
+ *                                    terminated by NULL. Params itself may be
+ *                                    NULL if no parameters are being passed.
+ *                  ReturnObject    - Where to put method's return value (if
+ *                                    any). If NULL, no value is returned.
+ *                  ParameterType   - Type of Parameter list
+ *                  ReturnObject    - Where to put method's return value (if
+ *                                    any). If NULL, no value is returned.
  *
  * RETURN:      Status
  *
@@ -448,7 +465,7 @@ AcpiNsEvaluateByHandle (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiNsExecuteControlMethod (
     ACPI_PARAMETER_INFO     *Info)
 {
@@ -510,7 +527,10 @@ AcpiNsExecuteControlMethod (
  *
  * FUNCTION:    AcpiNsGetObjectValue
  *
- * PARAMETERS:  Info            - Method info block (w/params)
+ * PARAMETERS:  Info            - Method info block, contains:
+ *                  Node            - Object's NS node
+ *                  ReturnObject    - Where to put object value (if
+ *                                    any). If NULL, no value is returned.
  *
  * RETURN:      Status
  *
@@ -520,7 +540,7 @@ AcpiNsExecuteControlMethod (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiNsGetObjectValue (
     ACPI_PARAMETER_INFO     *Info)
 {

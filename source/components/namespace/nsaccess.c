@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.187 $
+ *              $Revision: 1.188 $
  *
  ******************************************************************************/
 
@@ -141,7 +141,8 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiNsRootInitialize (void)
+AcpiNsRootInitialize (
+    void)
 {
     ACPI_STATUS                 Status;
     const ACPI_PREDEFINED_NAMES *InitVal = NULL;
@@ -354,7 +355,7 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiNsLookup
  *
- * PARAMETERS:  PrefixNode      - Search scope if name is not fully qualified
+ * PARAMETERS:  ScopeInfo       - Current scope info block
  *              Pathname        - Search pathname, in internal format
  *                                (as represented in the AML stream)
  *              Type            - Type associated with name

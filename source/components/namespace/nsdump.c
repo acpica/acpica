@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.161 $
+ *              $Revision: 1.163 $
  *
  *****************************************************************************/
 
@@ -132,8 +132,10 @@
  *
  * FUNCTION:    AcpiNsPrintPathname
  *
- * PARAMETERS:  NumSegment          - Number of ACPI name segments
+ * PARAMETERS:  NumSegments         - Number of ACPI name segments
  *              Pathname            - The compressed (internal) path
+ *
+ * RETURN:      None
  *
  * DESCRIPTION: Print an object's full namespace pathname
  *
@@ -181,6 +183,8 @@ AcpiNsPrintPathname (
  *              Level               - Desired debug level
  *              Component           - Caller's component ID
  *
+ * RETURN:      None
+ *
  * DESCRIPTION: Print an object's full namespace pathname
  *              Manages allocation/freeing of a pathname buffer
  *
@@ -216,9 +220,12 @@ AcpiNsDumpPathname (
  *
  * FUNCTION:    AcpiNsDumpOneObject
  *
- * PARAMETERS:  Handle              - Node to be dumped
+ * PARAMETERS:  ObjHandle           - Node to be dumped
  *              Level               - Nesting level of the handle
  *              Context             - Passed into WalkNamespace
+ *              ReturnValue         - Not used
+ *
+ * RETURN:      Status
  *
  * DESCRIPTION: Dump a single Node
  *              This procedure is a UserFunction called by AcpiNsWalkNamespace.
@@ -492,8 +499,7 @@ AcpiNsDumpOneObject (
             return (AE_OK);
         }
 
-        AcpiOsPrintf ("(R%d)",
-                ObjDesc->Common.ReferenceCount);
+        AcpiOsPrintf ("(R%d)", ObjDesc->Common.ReferenceCount);
 
         switch (Type)
         {
@@ -661,11 +667,14 @@ Cleanup:
  * FUNCTION:    AcpiNsDumpObjects
  *
  * PARAMETERS:  Type                - Object type to be dumped
+ *              DisplayType         - 0 or ACPI_DISPLAY_SUMMARY
  *              MaxDepth            - Maximum depth of dump. Use ACPI_UINT32_MAX
  *                                    for an effectively unlimited depth.
  *              OwnerId             - Dump only objects owned by this ID.  Use
  *                                    ACPI_UINT32_MAX to match all owners.
  *              StartHandle         - Where in namespace to start/end search
+ *
+ * RETURN:      None
  *
  * DESCRIPTION: Dump typed objects within the loaded namespace.
  *              Uses AcpiNsWalkNamespace in conjunction with AcpiNsDumpOneObject.
@@ -698,12 +707,47 @@ AcpiNsDumpObjects (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiNsDumpEntry
+ *
+ * PARAMETERS:  Handle              - Node to be dumped
+ *              DebugLevel          - Output level
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Dump a single Node
+ *
+ ******************************************************************************/
+
+void
+AcpiNsDumpEntry (
+    ACPI_HANDLE             Handle,
+    UINT32                  DebugLevel)
+{
+    ACPI_WALK_INFO          Info;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    Info.DebugLevel = DebugLevel;
+    Info.OwnerId = ACPI_UINT32_MAX;
+    Info.DisplayType = ACPI_DISPLAY_SUMMARY;
+
+    (void) AcpiNsDumpOneObject (Handle, 1, &Info, NULL);
+}
+
+
+#ifdef _ACPI_ASL_COMPILER
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiNsDumpTables
  *
  * PARAMETERS:  SearchBase          - Root of subtree to be dumped, or
  *                                    NS_ALL to dump the entire namespace
  *              MaxDepth            - Maximum depth of dump.  Use INT_MAX
  *                                    for an effectively unlimited depth.
+ *
+ * RETURN:      None
  *
  * DESCRIPTION: Dump the name space, or a portion of it.
  *
@@ -732,7 +776,7 @@ AcpiNsDumpTables (
 
     if (ACPI_NS_ALL == SearchBase)
     {
-        /*  entire namespace    */
+        /* Entire namespace */
 
         SearchHandle = AcpiGbl_RootNode;
         ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "\\\n"));
@@ -742,36 +786,6 @@ AcpiNsDumpTables (
             ACPI_UINT32_MAX, SearchHandle);
     return_VOID;
 }
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsDumpEntry
- *
- * PARAMETERS:  Handle              - Node to be dumped
- *              DebugLevel          - Output level
- *
- * DESCRIPTION: Dump a single Node
- *
- ******************************************************************************/
-
-void
-AcpiNsDumpEntry (
-    ACPI_HANDLE             Handle,
-    UINT32                  DebugLevel)
-{
-    ACPI_WALK_INFO          Info;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    Info.DebugLevel = DebugLevel;
-    Info.OwnerId = ACPI_UINT32_MAX;
-    Info.DisplayType = ACPI_DISPLAY_SUMMARY;
-
-    (void) AcpiNsDumpOneObject (Handle, 1, &Info, NULL);
-}
-
+#endif
 #endif
 

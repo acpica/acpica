@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  ******************************************************************************/
 
@@ -128,10 +128,10 @@
  *
  * FUNCTION:    AcpiNsSearchNode
  *
- * PARAMETERS:  *TargetName         - Ascii ACPI name to search for
- *              *Node               - Starting node where search will begin
- *              Type                - Object type to match
- *              **ReturnNode        - Where the matched Named obj is returned
+ * PARAMETERS:  TargetName      - Ascii ACPI name to search for
+ *              Node            - Starting node where search will begin
+ *              Type            - Object type to match
+ *              ReturnNode      - Where the matched Named obj is returned
  *
  * RETURN:      Status
  *
@@ -243,10 +243,10 @@ AcpiNsSearchNode (
  *
  * FUNCTION:    AcpiNsSearchParentTree
  *
- * PARAMETERS:  *TargetName         - Ascii ACPI name to search for
- *              *Node               - Starting node where search will begin
- *              Type                - Object type to match
- *              **ReturnNode        - Where the matched Node is returned
+ * PARAMETERS:  TargetName      - Ascii ACPI name to search for
+ *              Node            - Starting node where search will begin
+ *              Type            - Object type to match
+ *              ReturnNode      - Where the matched Node is returned
  *
  * RETURN:      Status
  *
@@ -341,12 +341,12 @@ AcpiNsSearchParentTree (
  *
  * PARAMETERS:  TargetName          - Ascii ACPI name to search for (4 chars)
  *              WalkState           - Current state of the walk
- *              *Node               - Starting node where search will begin
+ *              Node                - Starting node where search will begin
  *              InterpreterMode     - Add names only in ACPI_MODE_LOAD_PASS_x.
  *                                    Otherwise,search only.
  *              Type                - Object type to match
  *              Flags               - Flags describing the search restrictions
- *              **ReturnNode        - Where the Node is returned
+ *              ReturnNode          - Where the Node is returned
  *
  * RETURN:      Status
  *
