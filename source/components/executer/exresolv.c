@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -420,7 +420,6 @@ AcpiAmlResolveObjectToValue (
                 ("AmlResolveObjectToValue: [Arg/Local %d] ValueObj is %p\n",
                 Index, ObjDesc));
             break;
-
 
 
         /*
