@@ -209,7 +209,7 @@ BREAKPOINT3;
  *
  * FUNCTION:    PsxExecute
  *
- * PARAMETERS:  MthDesc             - A method object containing both the AML
+ * PARAMETERS:  ObjDesc             - A method object containing both the AML
  *                                    address and length.
  *              **Params            - List of parameters to pass to method, 
  *                                    terminated by NULL. Params itself may be 
@@ -228,7 +228,7 @@ PsxExecute (
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *MthDesc;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
     UINT8                   *Pcode;
     UINT32                  PcodeLength;
 
@@ -236,20 +236,20 @@ PsxExecute (
     FUNCTION_TRACE ("PsxExecute");
 
 
-    MthDesc     = MethodEntry->Object;
-    Pcode       = MthDesc->Method.Pcode;
-    PcodeLength = MthDesc->Method.PcodeLength;
+    ObjDesc     = MethodEntry->Object;
+    Pcode       = ObjDesc->Method.Pcode;
+    PcodeLength = ObjDesc->Method.PcodeLength;
 
 
 BREAKPOINT3;
 
     /* If method not parsed yet, must parse it first */
 
-    if (!MthDesc->Method.ParserOp)
+    if (!ObjDesc->Method.ParserOp)
     {
 
         DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Parsing Method **** obj=%p\n",
-                        MthDesc));
+                        ObjDesc));
 
         Status = PsxParseMethod (MethodEntry);
 
@@ -261,14 +261,35 @@ BREAKPOINT3;
 
 
     DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Begin Execution **** obj=%p code=%p len=%X\n",
-                    MthDesc, Pcode, PcodeLength));
+                    ObjDesc, Pcode, PcodeLength));
+
+    /* 
+     * If there is a concurrency limit on this method, we need to obtain a unit
+     * from the method semaphore.  This releases the interpreter if we block
+     */
+
+    if (ObjDesc->Method.Semaphore)
+    {
+        Status = OsLocalWaitSemaphore (ObjDesc->Method.Semaphore, WAIT_FOREVER);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
 
     /* Method is parsed and ready to execute */
     /* This is where we really execute the method */
 
-    Status = PsWalkParsedAml (MthDesc->Method.ParserOp, MthDesc->Method.ParserOp, MthDesc, Params,
+    Status = PsWalkParsedAml (ObjDesc->Method.ParserOp, ObjDesc->Method.ParserOp, ObjDesc, Params,
                                 ReturnObjDesc, PsxExecBeginOp, PsxExecEndOp);
     
+    /* Signal completion of the execution of this method if necessary */
+
+    if (ObjDesc->Method.Semaphore)
+    {
+        Status = OsdSignalSemaphore (ObjDesc->Method.Semaphore, 1);
+    }
+
     /* 
      * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been executed,
      * or with Status == AE_PENDING at end of AML block (end of Method code)
@@ -297,8 +318,8 @@ BREAKPOINT3;
 
     if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
     {
-        PsDeleteParseTree (MthDesc->Method.ParserOp);
-        MthDesc->Method.ParserOp = NULL;
+        PsDeleteParseTree (ObjDesc->Method.ParserOp);
+        ObjDesc->Method.ParserOp = NULL;
     }
 
     return_ACPI_STATUS (Status);
