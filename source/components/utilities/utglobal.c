@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.197 $
+ *              $Revision: 1.198 $
  *
  *****************************************************************************/
 
@@ -642,25 +642,36 @@ AcpiUtGetNodeName (
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) Object;
 
 
+    /* Must return a string of exactly 4 characters == ACPI_NAME_SIZE */
+
     if (!Object)
     {
-        return ("NULL NODE");
+        return ("NULL");
     }
 
-    if (Object == ACPI_ROOT_OBJECT)
+    /* Check for Root node */
+
+    if ((Object == ACPI_ROOT_OBJECT) ||
+        (Object == AcpiGbl_RootNode))
     {
-        Node = AcpiGbl_RootNode;
+        return ("\"\\\" ");
     }
+
+    /* Descriptor must be a namespace node */
 
     if (Node->Descriptor != ACPI_DESC_TYPE_NAMED)
     {
-        return ("****");
+        return ("####");
     }
+
+    /* Name must be a valid ACPI name */
 
     if (!AcpiUtValidAcpiName (* (UINT32 *) Node->Name.Ascii))
     {
-        return ("----");
+        return ("????");
     }
+
+    /* Return the name */
 
     return (Node->Name.Ascii);
 }
