@@ -641,44 +641,29 @@ AmlDumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	case TYPE_Number:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Number"));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Number.Reserved1));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Number.Reserved2));
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Number", Object->Number.Number));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Number.Reserved3));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Number.Reserved4));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Number.Reserved5));
 		break;
     
 	case TYPE_String:
 
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "String"));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->String.Reserved1));
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "StrLen", Object->String.StrLen));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->String.Reserved2));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->String.Reserved3));
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "String", Object->String.String));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->String.Reserved4));
 		break;
 
 	case TYPE_Buffer:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Buffer"));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Buffer.Reserved1));
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BufLen", Object->Buffer.BufLen));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Buffer.Reserved2));
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Sequence", Object->Buffer.Sequence));
         DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Buffer", Object->Buffer.Buffer));
-        DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Buffer.Reserved4));
 		break;
         
         
 	case TYPE_Package:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Package"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Package.Reserved1));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "PkgCount", Object->Package.PkgCount));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Package.Reserved2));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Package.Reserved3));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "PackageElems", Object->Package.PackageElems));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "NextElement", Object->Package.NextElement));
 		break;
@@ -689,36 +674,28 @@ AmlDumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->FieldUnit.Access));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->FieldUnit.LockRule));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->FieldUnit.UpdateRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->FieldUnit.Reserved1));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DatLen", Object->FieldUnit.DatLen));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->FieldUnit.BitOffset));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Offset", Object->FieldUnit.Offset));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ConSeq", Object->FieldUnit.ConSeq));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Container", Object->FieldUnit.Container));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->FieldUnit.Reserved3));
 	    break;
         
 	case TYPE_Device:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Device"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Device.Reserved1));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Device.Reserved2));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Device.Reserved3));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Device.Reserved4));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Device", Object->Device.Device));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Device.Reserved5));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Handler", Object->Device.Handler));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Context", Object->Device.Context));
         break;
 
 	case TYPE_Event:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Event"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Event.Reserved1));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SignalCount", Object->Event.SignalCount));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Semaphore", Object->Event.Semaphore));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockCount", Object->Event.LockCount));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ThreadId", Object->Event.ThreadId));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Event.Reserved4));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Event.Reserved5));
 	    break;
 
 	case TYPE_Method:
@@ -727,21 +704,16 @@ AmlDumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "NumParam", Object->Method.NumParam));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Length", Object->Method.Length));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AmlOffset", Object->Method.AmlOffset));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Method.Reserved3));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "AmlBase", Object->Method.AmlBase));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Method.Reserved4));
 	    break;
 	
 	case TYPE_Mutex:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Mutex"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "SyncLevel", Object->Mutex.SyncLevel));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Mutex.Reserved2));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Semaphore", Object->Mutex.Semaphore));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockCount", Object->Mutex.LockCount));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ThreadId", Object->Mutex.ThreadId));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Mutex.Reserved4));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Mutex.Reserved5));
 	    break;
 
 	case TYPE_Region:
@@ -757,34 +729,21 @@ AmlDumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	case TYPE_Power:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "PowerResource"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->PowerResource.Reserved1));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->PowerResource.Reserved2));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->PowerResource.Reserved3));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->PowerResource.Reserved4));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "PowerResource", Object->PowerResource.PowerResource));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->PowerResource.Reserved5));
 	    break;
 
 	case TYPE_Processor:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Processor"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Processor.Reserved1));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Processor.Reserved2));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Processor.Reserved3));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Processor.Reserved4));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Processor", Object->Processor.Processor));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->Processor.Reserved5));
 	    break;
 
 	case TYPE_Thermal:
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "ThermalZone"));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->ThermalZone.Reserved1));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->ThermalZone.Reserved2));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->ThermalZone.Reserved3));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->ThermalZone.Reserved4));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "ThermalZone", Object->ThermalZone.ThermalZone));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved5", Object->ThermalZone.Reserved5));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Handler", Object->ThermalZone.Handler));
+	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %p\n", "Context", Object->ThermalZone.Context));
 	    break;
 
 	case TYPE_BankField:
@@ -793,7 +752,6 @@ AmlDumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->BankField.Access));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->BankField.LockRule));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->BankField.UpdateRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->BankField.Reserved1));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DatLen", Object->BankField.DatLen));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->BankField.BitOffset));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Offset", Object->BankField.Offset));
@@ -808,11 +766,9 @@ AmlDumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Access", Object->IndexField.Access));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "LockRule", Object->IndexField.LockRule));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "UpdateRule", Object->IndexField.UpdateRule));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->IndexField.Reserved1));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "DatLen", Object->IndexField.DatLen));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "BitOffset", Object->IndexField.BitOffset));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "IndexVal", Object->IndexField.IndexVal));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->IndexField.Reserved2));
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Index", Object->IndexField.Index));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Data", Object->IndexField.Data));
 	    break;
@@ -821,11 +777,7 @@ AmlDumpObjectDescriptor (OBJECT_DESCRIPTOR *Object)
 
 		DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %s\n", "ValType", "Lvalue"));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "OpCode", Object->Lvalue.OpCode));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved1", Object->Lvalue.Reserved1));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved2", Object->Lvalue.Reserved2));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved3", Object->Lvalue.Reserved3));
 	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Ref", Object->Lvalue.Ref));
-	    DEBUG_PRINT (TRACE_OBJECTS, ("%20s : %x\n", "Reserved4", Object->Lvalue.Reserved4));
 		break;
 	
 	case TYPE_Alias:
