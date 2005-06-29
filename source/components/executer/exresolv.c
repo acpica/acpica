@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
- *              $Revision: 1.89 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -159,7 +159,7 @@ AcpiAmlGetBufferFieldValue (
 
 
     /*
-     * Parameter validation 
+     * Parameter validation
      */
     if (!ObjDesc)
     {
@@ -199,11 +199,10 @@ AcpiAmlGetBufferFieldValue (
     }
 
 
-
     /* Field location is (base of buffer) + (byte offset) */
 
     Location = ObjDesc->BufferField.BufferObj->Buffer.Pointer
-                + ObjDesc->BufferField.Offset;
+                + ObjDesc->BufferField.ByteOffset;
 
     /*
      * Construct Mask with as many 1 bits as the field width
@@ -240,7 +239,7 @@ AcpiAmlGetBufferFieldValue (
     DEBUG_PRINT (ACPI_INFO,
         ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
         ObjDesc->BufferField.BufferObj->Buffer.Pointer,
-        ObjDesc->BufferField.Offset,
+        ObjDesc->BufferField.ByteOffset,
         ObjDesc->BufferField.BitOffset,
         ObjDesc->BufferField.BitLength,
         Location, Mask, ResultDesc->Integer.Value));
@@ -305,7 +304,7 @@ AcpiAmlResolveToValue (
 
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_NAMED))
     {
-        Status = AcpiAmlResolveNodeToValue ((ACPI_NAMESPACE_NODE **) StackPtr, 
+        Status = AcpiAmlResolveNodeToValue ((ACPI_NAMESPACE_NODE **) StackPtr,
                         WalkState);
         if (ACPI_FAILURE (Status))
         {
@@ -392,7 +391,7 @@ AcpiAmlResolveObjectToValue (
              * Note: this increments the local's object reference count
              */
 
-            Status = AcpiDsMethodDataGetValue (Opcode, 
+            Status = AcpiDsMethodDataGetValue (Opcode,
                             StackDesc->Reference.Offset, WalkState, &ObjDesc);
             if (ACPI_FAILURE (Status))
             {

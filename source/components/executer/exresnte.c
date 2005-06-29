@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresnte - AML Interpreter object resolution
- *              $Revision: 1.33 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -167,7 +167,7 @@ AcpiAmlResolveNodeToValue (
     ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
     ACPI_NAMESPACE_NODE     *Node;
     UINT8                   *AmlPointer = NULL;
-    OBJECT_TYPE_INTERNAL    EntryType;
+    ACPI_OBJECT_TYPE8       EntryType;
     ACPI_INTEGER            TempVal;
     BOOLEAN                 AttachedAmlPointer = FALSE;
     UINT8                   AmlOpcode = 0;
@@ -176,9 +176,8 @@ AcpiAmlResolveNodeToValue (
     FUNCTION_TRACE ("AmlResolveNodeToValue");
 
 
-
     /*
-     * The stack pointer points to a ACPI_NAMESPACE_NODE (Node).  Get the 
+     * The stack pointer points to a ACPI_NAMESPACE_NODE (Node).  Get the
      * object that is attached to the Node.
      */
 
