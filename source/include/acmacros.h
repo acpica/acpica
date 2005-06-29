@@ -182,13 +182,13 @@
  * the destination (or both) is/are unaligned.
  */
 
-#define MOVE_UNALIGNED16_TO_16(d,s)     {((INT8 *)(d))[0] = ((INT8 *)(s))[0];\
-                                         ((INT8 *)(d))[1] = ((INT8 *)(s))[1];}
+#define MOVE_UNALIGNED16_TO_16(d,s)     {((UINT8 *)(d))[0] = ((UINT8 *)(s))[0];\
+                                         ((UINT8 *)(d))[1] = ((UINT8 *)(s))[1];}
 
-#define MOVE_UNALIGNED32_TO_32(d,s)     {((INT8 *)(d))[0] = ((INT8 *)(s))[0];\
-                                         ((INT8 *)(d))[1] = ((INT8 *)(s))[1];\
-                                         ((INT8 *)(d))[2] = ((INT8 *)(s))[2];\
-                                         ((INT8 *)(d))[3] = ((INT8 *)(s))[3];}
+#define MOVE_UNALIGNED32_TO_32(d,s)     {((UINT8 *)(d))[0] = ((UINT8 *)(s))[0];\
+                                         ((UINT8 *)(d))[1] = ((UINT8 *)(s))[1];\
+                                         ((UINT8 *)(d))[2] = ((UINT8 *)(s))[2];\
+                                         ((UINT8 *)(d))[3] = ((UINT8 *)(s))[3];}
 
 #define MOVE_UNALIGNED16_TO_32(d,s)     {(*(UINT32*)(d)) = 0; MOVE_UNALIGNED16_TO_16(d,s);}
 
@@ -199,9 +199,9 @@
  * Fast power-of-two math macros for non-optimized compilers
  */
 
-#define _DIV(value,PowerOf2)            ((value) >> (PowerOf2))
-#define _MUL(value,PowerOf2)            ((value) << (PowerOf2))
-#define _MOD(value,Divisor)             ((value) & ((Divisor) -1))
+#define _DIV(value,PowerOf2)            ((UINT32) ((value) >> (PowerOf2)))
+#define _MUL(value,PowerOf2)            ((UINT32) ((value) << (PowerOf2)))
+#define _MOD(value,Divisor)             ((UINT32) ((value) & ((Divisor) -1)))
 
 #define DIV_2(a)                        _DIV(a,1)
 #define MUL_2(a)                        _MUL(a,1)
@@ -343,7 +343,7 @@
 
 /* Buffer dump macros */
 
-#define DUMP_BUFFER(a,b)                AcpiCmDumpBuffer((INT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
+#define DUMP_BUFFER(a,b)                AcpiCmDumpBuffer((UINT8 *)a,b,DB_BYTE_DISPLAY,_COMPONENT)
 
 /*
  * Debug macros that are conditionally compiled
@@ -366,7 +366,7 @@
 #define FUNCTION_TRACE_U32(a,b)         char * _ProcName = a;\
                                         FunctionTraceU32(_THIS_MODULE,__LINE__,_COMPONENT,a,(UINT32)b)
 #define FUNCTION_TRACE_STR(a,b)         char * _ProcName = a;\
-                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(INT8 *)b)
+                                        FunctionTraceStr(_THIS_MODULE,__LINE__,_COMPONENT,a,(NATIVE_CHAR *)b)
 /*
  * Function exit tracing.
  * WARNING: These macros include a return statement.  This is usually considered
@@ -377,7 +377,7 @@
 #define return_VOID                     {FunctionExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName);return;}
 #define return_ACPI_STATUS(s)           {FunctionStatusExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,s);return(s);}
 #define return_VALUE(s)                 {FunctionValueExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(NATIVE_UINT)s);return(s);}
-#define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(INT8 *)s);return(s);}
+#define return_PTR(s)                   {FunctionPtrExit(_THIS_MODULE,__LINE__,_COMPONENT,_ProcName,(UINT8 *)s);return(s);}
 
 
 /* Conditional execution */
@@ -398,6 +398,7 @@
 #define DUMP_ENTRY(a,b)                 AcpiNsDumpEntry (a,b)
 #define DUMP_TABLES(a,b)                AcpiNsDumpTables(a,b)
 #define DUMP_PATHNAME(a,b,c,d)          AcpiNsDumpPathname(a,b,c,d)
+#define DUMP_RESOURCE_LIST(a)           AcpiRsDumpResourceList(a)
 #define BREAK_MSG(a)                    AcpiOsBreakpoint (a)
 
 /*
@@ -467,6 +468,7 @@
 #define DUMP_ENTRY(a,b)
 #define DUMP_TABLES(a,b)
 #define DUMP_PATHNAME(a,b,c,d)
+#define DUMP_RESOURCE_LIST(a)
 #define DEBUG_PRINT(l,f)
 #define DEBUG_PRINT_RAW(l,f)
 #define BREAK_MSG(a)
@@ -494,12 +496,7 @@
 #endif
 
 
-#ifndef ACPI_DEBUG
-
-#define ADD_OBJECT_NAME(a,b)
-
-#else
-
+#ifdef ACPI_DEBUG
 
 /*
  * 1) Set name to blanks
@@ -509,7 +506,10 @@
 #define ADD_OBJECT_NAME(a,b)            MEMSET (a->Common.Name, ' ', sizeof (a->Common.Name));\
                                         STRNCPY (a->Common.Name, AcpiGbl_NsTypeNames[b], sizeof (a->Common.Name))
 
-#endif
+#else
 
+#define ADD_OBJECT_NAME(a,b)
+
+#endif
 
 #endif /* ACMACROS_H */
