@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.129 $
+ *              $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -135,8 +135,8 @@
  * FUNCTION:    AcpiAmlExecStore
  *
  * PARAMETERS:  *ValDesc            - Value to be stored
- *              *DestDesc           - Where to store it 0 Must be (ACPI_HANDLE)
- *                                    or an ACPI_OPERAND_OBJECT  of type
+ *              *DestDesc           - Where to store it.  Must be an NS node
+ *                                    or an ACPI_OPERAND_OBJECT of type
  *                                    Reference; if the latter the descriptor
  *                                    will be either reused or deleted.
  *
@@ -252,17 +252,22 @@ AcpiAmlExecStore (
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see ACPI Specification
          *
-         * TBD: print known object types "prettier".
          */
         DEBUG_PRINT (ACPI_INFO, ("**** Write to Debug Object: ****: \n"));
 
-        if (ValDesc->Common.Type == ACPI_TYPE_STRING)
+        if (ValDesc->Common.Type != ACPI_TYPE_STRING)
         {
-            DEBUG_PRINT (ACPI_INFO, ("%s\n", ValDesc->String.Pointer));
+            /* TBD: print known object types "prettier". */
+
+            DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("Debug Object: %s 0x%X\n", 
+                            AcpiCmGetTypeName (ValDesc->Common.Type),
+                            ValDesc));
+            DUMP_STACK_ENTRY (ValDesc);
         }
+
         else
         {
-            DUMP_STACK_ENTRY (ValDesc);
+            DEBUG_PRINT_RAW (ACPI_DEBUG_OBJECT, ("%s\n", ValDesc->String.Pointer));
         }
 
         break;
@@ -441,6 +446,10 @@ AcpiAmlStoreObjectToIndex (
 
 
     case ACPI_TYPE_BUFFER_FIELD:
+
+
+        /* TBD: can probably call the generic Buffer/Field routines */
+
         /*
          * Storing into a buffer at a location defined by an Index.
          *
@@ -602,20 +611,21 @@ AcpiAmlStoreObjectToNode (
      */
     switch (TargetType)
     {
-    case INTERNAL_TYPE_DEF_FIELD:
+    case ACPI_TYPE_BUFFER_FIELD:
+    case INTERNAL_TYPE_REGION_FIELD:
+    case INTERNAL_TYPE_BANK_FIELD:
+    case INTERNAL_TYPE_INDEX_FIELD:
 
-        /* Raw data copy for target types Integer/String/Buffer */
-
-        Status = AcpiAmlCopyDataToNamedField (SourceDesc, Node);
+        /*
+         * For fields, copy the source data to the target field.
+         */
+        Status = AcpiAmlWriteDataToField (SourceDesc, TargetDesc);
         break;
 
 
     case ACPI_TYPE_INTEGER:
     case ACPI_TYPE_STRING:
     case ACPI_TYPE_BUFFER:
-    case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_INDEX_FIELD:
-    case ACPI_TYPE_FIELD_UNIT:
 
         /*
          * These target types are all of type Integer/String/Buffer, and
