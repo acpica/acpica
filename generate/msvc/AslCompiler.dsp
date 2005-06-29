@@ -177,6 +177,10 @@ SOURCE=..\..\AslCompiler\aslcodegen.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\AslCompiler\aslcompile.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\AslCompiler\AslCompiler.l.c
 # End Source File
 # Begin Source File
@@ -319,7 +323,7 @@ InputPath=../../AslCompiler/AslCompiler.l
 InputPath=../../AslCompiler/AslCompiler.l
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -o$(InputPath).c $(InputPath)
+	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(InputPath).c $(InputPath)
 
 # End Custom Build
 
