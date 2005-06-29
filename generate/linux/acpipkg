@@ -1,4 +1,12 @@
 #!/bin/bash
+#
+# acpipkg
+#
+# This script generates patches, tars, and executables, for
+# distribution.
+#
+#
+
 pushd ~
 
 DATE=`date +%Y%m%d`
