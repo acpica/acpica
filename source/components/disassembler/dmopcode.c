@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  ******************************************************************************/
 
@@ -114,13 +114,10 @@
  *
  *****************************************************************************/
 
-
 #include "acpi.h"
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdisasm.h"
-#include "acdebug.h"
-
 
 #ifdef ACPI_DISASSEMBLER
 
@@ -444,7 +441,7 @@ AcpiDmDisassembleOneOp (
         {
             AcpiDmEisaId (Op->Common.Value.Integer32);
         }
-        else if ((Op->Common.Value.Integer32 == 0xFFFFFFFF) &&
+        else if ((Op->Common.Value.Integer32 == ACPI_UINT32_MAX) &&
                 (AcpiGbl_DSDT->Revision < 2))
         {
             AcpiOsPrintf ("Ones");
@@ -537,7 +534,7 @@ AcpiDmDisassembleOneOp (
     case AML_INT_NAMEDFIELD_OP:
 
         Length = AcpiDmDumpName ((char *) &Op->Named.Name);
-        AcpiOsPrintf (",%*.s  %d", 5 - Length, " ", Op->Common.Value.Integer32);
+        AcpiOsPrintf (",%*.s  %d", (int) (5 - Length), " ", Op->Common.Value.Integer32);
         AcpiDmCommaIfFieldMember (Op);
 
         Info->BitOffset += Op->Common.Value.Integer32;

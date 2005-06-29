@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  ******************************************************************************/
 
@@ -161,7 +161,6 @@ AcpiDmDisassemble (
         return;
     }
 
-    Info.PreviousLevel = 0;
     Info.Level = 0;
     AcpiDmWalkParseTree (Op, AcpiDmDescendingOp, AcpiDmAscendingOp, &Info);
 
@@ -190,7 +189,6 @@ AcpiDmWalkParseTree (
     ASL_WALK_CALLBACK       AscendingCallback,
     void                    *Context)
 {
-//    UINT32                  Level;
     BOOLEAN                 NodePreviouslyVisited;
     ACPI_PARSE_OBJECT       *StartOp = Op;
     ACPI_STATUS             Status;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  ******************************************************************************/
 
@@ -560,7 +560,7 @@ AcpiDmInterruptDescriptor (
     for (i = 0; i < Resource->TableLength; i++)
     {
         AcpiDmIndent (Level + 1);
-        AcpiOsPrintf ("0x%8.8X,\n", Resource->InterruptNumber[i]);
+        AcpiOsPrintf ("0x%8.8X,\n", (UINT32) Resource->InterruptNumber[i]);
     }
 
     AcpiDmIndent (Level);

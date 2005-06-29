@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  ******************************************************************************/
 
@@ -156,7 +156,7 @@ AcpiDmDisasmByteList (
 
     for (i = 0; i < ByteCount; i++)
     {
-        AcpiOsPrintf ("0x%2.2X", ByteData[i]);
+        AcpiOsPrintf ("0x%2.2X", (UINT32) ByteData[i]);
 
         /* Add comma if there are more bytes to display */
 
@@ -444,7 +444,7 @@ AcpiDmString (
         case '\'':                      /* Single Quote */
         case '\"':                      /* Double Quote */
         case '\\':                      /* Backslash */
-            AcpiOsPrintf ("\\%c", String[i]);
+            AcpiOsPrintf ("\\%c", (int) String[i]);
             break;
 
         default:
@@ -455,13 +455,13 @@ AcpiDmString (
             {
                 /* This is a normal character */
 
-                AcpiOsPrintf ("%c", String[i]);
+                AcpiOsPrintf ("%c", (int) String[i]);
             }
             else
             {
                 /* All others will be Hex escapes */
 
-                AcpiOsPrintf ("\\x%2.2X", String[i]);
+                AcpiOsPrintf ("\\x%2.2X", (INT32) String[i]);
             }
             break;
         }
@@ -504,7 +504,7 @@ AcpiDmUnicode (
 
     for (i = 0; i < (WordCount - 1); i++)
     {
-        AcpiOsPrintf ("%c", WordData[i]);
+        AcpiOsPrintf ("%c", (int) WordData[i]);
     }
 
     AcpiOsPrintf ("\")");
@@ -615,13 +615,13 @@ AcpiDmEisaId (
 
         /* Three Alpha characters (AAA), 5 bits each */
 
-        ((BigEndianId >> 26) & 0x1F) + 0x40,
-        ((BigEndianId >> 21) & 0x1F) + 0x40,
-        ((BigEndianId >> 16) & 0x1F) + 0x40,
+        (int) ((BigEndianId >> 26) & 0x1F) + 0x40,
+        (int) ((BigEndianId >> 21) & 0x1F) + 0x40,
+        (int) ((BigEndianId >> 16) & 0x1F) + 0x40,
 
         /* Numeric part (NNNN) is simply the lower 16 bits */
 
-        (BigEndianId & 0xFFFF));
+        (UINT32) (BigEndianId & 0xFFFF));
 }
 
 #endif

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.1 $
+ *              $Revision: 1.3 $
  *
  ******************************************************************************/
 
@@ -195,7 +195,7 @@ AcpiDmResourceDescriptor (
     UINT8                   *ByteData,
     UINT32                  ByteCount)
 {
-    UINT32                  CurrentByteOffset;
+    NATIVE_UINT             CurrentByteOffset;
     UINT8                   CurrentByte;
     UINT8                   DescriptorId;
     UINT32                  Length;
@@ -224,7 +224,7 @@ AcpiDmResourceDescriptor (
             CurrentByteOffset += 1;
         }
 
-        CurrentByteOffset += Length;
+        CurrentByteOffset += (NATIVE_UINT) Length;
 
         /* Determine type of resource */
 
@@ -294,11 +294,21 @@ AcpiDmResourceDescriptor (
             {
                 /*
                  * Close an open StartDependentDescriptor.  This indicates a missing
-                 * EndDependentDescriptor and we fix it here.
+                 * EndDependentDescriptor.
                  */
                 Level--;
                 DependentFns = FALSE;
-                AcpiDmEndDependentDescriptor (DescriptorBody, Length, Level);
+                AcpiDmIndent (Level);
+                AcpiOsPrintf ("}\n");
+                AcpiDmIndent (Level);
+
+                AcpiOsPrintf ("/*** Missing EndDependentFunctions descriptor */");
+
+                /*
+                 * We could fix the problem, but then the ASL would not match the AML 
+                 * So, we don't do this:
+                 * AcpiDmEndDependentDescriptor (DescriptorBody, Length, Level);
+                 */
             }
             return;
 
@@ -396,7 +406,7 @@ AcpiDmIsResourceDescriptor (
     UINT8                   *ByteData;
     UINT32                  ByteCount;
     ACPI_PARSE_OBJECT       *NextOp;
-    UINT32                  CurrentByteOffset;
+    NATIVE_UINT             CurrentByteOffset;
     UINT8                   CurrentByte;
     UINT8                   DescriptorId;
     UINT32                  Length;
@@ -453,7 +463,7 @@ AcpiDmIsResourceDescriptor (
             CurrentByteOffset += 1;
         }
 
-        CurrentByteOffset += Length;
+        CurrentByteOffset += (NATIVE_UINT) Length;
 
         /* Determine type of resource */
 
