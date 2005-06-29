@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.113 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -239,7 +239,7 @@ AcpiEvInstallXruptHandlers (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiEvFixedEventInitialize (
     void)
 {
@@ -260,8 +260,9 @@ AcpiEvFixedEventInitialize (
 
         if (AcpiGbl_FixedEventInfo[i].EnableRegisterId != 0xFF)
         {
-            Status = AcpiSetRegister (AcpiGbl_FixedEventInfo[i].EnableRegisterId,
-                                    0, ACPI_MTX_LOCK);
+            Status = AcpiSetRegister (
+                        AcpiGbl_FixedEventInfo[i].EnableRegisterId,
+                        0, ACPI_MTX_LOCK);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
@@ -302,8 +303,10 @@ AcpiEvFixedEventDetect (
      * Read the fixed feature status and enable registers, as all the cases
      * depend on their values.  Ignore errors here.
      */
-    (void) AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_STATUS, &FixedStatus);
-    (void) AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_ENABLE, &FixedEnable);
+    (void) AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_STATUS,
+                &FixedStatus);
+    (void) AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_ENABLE,
+                &FixedEnable);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
         "Fixed Event Block: Enable %08X Status %08X\n",
@@ -342,7 +345,7 @@ AcpiEvFixedEventDetect (
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiEvFixedEventDispatch (
     UINT32                  Event)
 {
