@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.143 $
+ *              $Revision: 1.145 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -789,8 +789,8 @@ AcpiUtInitGlobals (
     AcpiGbl_Gpe0EnableRegisterSave      = NULL;
     AcpiGbl_Gpe1EnableRegisterSave      = NULL;
     AcpiGbl_OriginalMode                = SYS_MODE_UNKNOWN;   /*  original ACPI/legacy mode   */
-    AcpiGbl_GpeRegisters                = NULL;
-    AcpiGbl_GpeInfo                     = NULL;
+    AcpiGbl_GpeRegisterInfo             = NULL;
+    AcpiGbl_GpeNumberInfo               = NULL;
 
     /* Namespace */
 
