@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.166 $
+ *              $Revision: 1.167 $
  *
  *****************************************************************************/
 
@@ -755,7 +755,7 @@ AcpiNsDumpEntry (
 }
 
 
-#ifdef _ACPI_ASL_COMPILER
+#ifdef ACPI_ASL_COMPILER
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsDumpTables
