@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -709,7 +709,7 @@ AdDeferredParse (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, Aml,
-                    AmlLength, NULL, NULL, 1);
+                    AmlLength, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -1026,7 +1026,7 @@ AdParseTable (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParsedNamespaceRoot,
-                NULL, AmlStart, AmlLength, NULL, NULL, 1);
+                NULL, AmlStart, AmlLength, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
