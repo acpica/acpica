@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser opcode information table
- *              $Revision: 1.22 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -139,8 +139,6 @@
 #define NUM_EXTENDED_OPCODE         MAX_EXTENDED_OPCODE + 1
 #define MAX_INTERNAL_OPCODE
 #define NUM_INTERNAL_OPCODE         MAX_INTERNAL_OPCODE + 1
-
-
 
 
 /*******************************************************************************
@@ -696,8 +694,11 @@ AcpiPsGetOpcodeName (
 
     /* Always guaranteed to return a valid pointer */
 
-    DEBUG_ONLY_MEMBERS (return Op->Name);
+#ifdef ACPI_DEBUG
+    return (Op->Name);
+#else
     return ("AE_NOT_CONFIGURED");
+#endif
 }
 
 

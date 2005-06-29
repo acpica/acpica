@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -246,7 +246,7 @@ AcpiAmlTruncateFor32bitTable (
     ACPI_WALK_STATE         *WalkState)
 {
 
-    /* 
+    /*
      * Object must be a valid number and we must be executing
      * a control method
      */
