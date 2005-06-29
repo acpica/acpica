@@ -239,7 +239,7 @@ AcpiGetHandle (
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ThisEntry;
-    ACPI_HANDLE             Scope = NULL;
+    NAME_TABLE_ENTRY        *Scope = NULL;
 
     if (!RetHandle || !Pathname)
     {
@@ -247,7 +247,7 @@ AcpiGetHandle (
     }
 
     if (Parent)
-        Scope = Parent->Scope;
+        Scope = ((NAME_TABLE_ENTRY*) Parent)->Scope;
 
     /* Special case for root, since we can't search for it */
 
