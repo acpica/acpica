@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,6 @@
         MODULE_NAME         ("amstorob")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlCopyBufferToBuffer
@@ -151,8 +150,8 @@ AcpiAmlCopyBufferToBuffer (
 {
     UINT32                  Length;
     UINT8                   *Buffer;
-   
-    
+
+
     /*
      * We know that SourceDesc is a buffer by now
      */
@@ -173,7 +172,7 @@ AcpiAmlCopyBufferToBuffer (
 
         TargetDesc->Buffer.Length = Length;
     }
- 
+
     /*
      * Buffer is a static allocation,
      * only place what will fit in the buffer.
@@ -186,7 +185,7 @@ AcpiAmlCopyBufferToBuffer (
         MEMCPY(TargetDesc->Buffer.Pointer, Buffer, Length);
     }
 
-    else 
+    else
     {
         /*
          * Truncate the source, copy only what will fit
@@ -200,8 +199,6 @@ AcpiAmlCopyBufferToBuffer (
 
     return (AE_OK);
 }
-
-
 
 
 /*******************************************************************************
@@ -273,9 +270,6 @@ AcpiAmlCopyStringToString (
 }
 
 
-
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlCopyIntegerToIndexField
@@ -342,7 +336,6 @@ AcpiAmlCopyIntegerToIndexField (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlCopyIntegerToBankField
@@ -369,7 +362,6 @@ AcpiAmlCopyIntegerToBankField (
      * Get the global lock if needed
      */
     Locked = AcpiAmlAcquireGlobalLock (TargetDesc->IndexField.LockRule);
-
 
 
     /*
@@ -406,8 +398,6 @@ AcpiAmlCopyIntegerToBankField (
 
     return (Status);
 }
-
-
 
 
 /*******************************************************************************
@@ -475,8 +465,6 @@ AcpiAmlCopyDataToNamedField (
 }
 
 
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlCopyIntegerToFieldUnit
@@ -500,7 +488,6 @@ AcpiAmlCopyIntegerToFieldUnit (
     UINT32                  Mask;
     UINT32                  NewValue;
     BOOLEAN                 Locked = FALSE;
-
 
 
     FUNCTION_TRACE ("AmlCopyIntegerToFieldUnit");
@@ -589,8 +576,5 @@ AcpiAmlCopyIntegerToFieldUnit (
     DEBUG_PRINT (TRACE_EXEC, ("New Field value %08lx\n", NewValue));
     return_ACPI_STATUS (AE_OK);
 }
-
-
-
 
 

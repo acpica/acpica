@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.66 $
+ * Module Name: amsystem - Interface to OS services
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __EXSYSTEM_C__
+#define __AMSYSTEM_C__
 
 #include "acpi.h"
 #include "acinterp.h"
@@ -123,13 +123,13 @@
 #include "achware.h"
 #include "acevents.h"
 
-#define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exsystem")
+#define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("amsystem")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemWaitSemaphore
+ * FUNCTION:    AcpiAmlSystemWaitSemaphore
  *
  * PARAMETERS:  Semaphore           - OSD semaphore to wait on
  *              Timeout             - Max time to wait
@@ -143,14 +143,14 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemWaitSemaphore (
+AcpiAmlSystemWaitSemaphore (
     ACPI_HANDLE             Semaphore,
     UINT32                  Timeout)
 {
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("ExSystemWaitSemaphore");
+    FUNCTION_TRACE ("AcpiAmlSystemWaitSemaphore");
 
     Status = AcpiOsWaitSemaphore (Semaphore, 1, 0);
     if (ACPI_SUCCESS (Status))
@@ -162,22 +162,17 @@ AcpiExSystemWaitSemaphore (
     {
         /* We must wait, so unlock the interpreter */
 
-        AcpiExExitInterpreter ();
+        AcpiAmlExitInterpreter ();
 
         Status = AcpiOsWaitSemaphore (Semaphore, 1, Timeout);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "*** Thread awake after blocking, %s\n",
-            AcpiFormatException (Status)));
-
         /* Reacquire the interpreter */
 
-        Status = AcpiExEnterInterpreter ();
-        if (ACPI_SUCCESS (Status))
-        {
-            /* Restore the timeout exception */
+        AcpiAmlEnterInterpreter ();
 
-            Status = AE_TIME;
-        }
+        DEBUG_PRINT (TRACE_EXEC,
+            ("*** Thread awake and inside interpreter after blocking, %s\n",
+            AcpiCmFormatException (Status)));
     }
 
     return_ACPI_STATUS (Status);
@@ -186,7 +181,7 @@ AcpiExSystemWaitSemaphore (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemDoStall
+ * FUNCTION:    AcpiAmlSystemDoStall
  *
  * PARAMETERS:  HowLong             - The amount of time to stall
  *
@@ -197,7 +192,7 @@ AcpiExSystemWaitSemaphore (
  ******************************************************************************/
 
 void
-AcpiExSystemDoStall (
+AcpiAmlSystemDoStall (
     UINT32                  HowLong)
 {
 
@@ -205,25 +200,25 @@ AcpiExSystemDoStall (
     {
         /* Since this thread will sleep, we must release the interpreter */
 
-        AcpiExExitInterpreter ();
+        AcpiAmlExitInterpreter ();
 
-        AcpiOsStall (HowLong);
+        AcpiOsSleepUsec (HowLong);
 
         /* And now we must get the interpreter again */
 
-        AcpiExEnterInterpreter ();
+        AcpiAmlEnterInterpreter ();
     }
 
     else
     {
-        AcpiOsSleep (0, (HowLong / 1000) + 1);
+        AcpiOsSleepUsec (HowLong);
     }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemDoSuspend
+ * FUNCTION:    AcpiAmlSystemDoSuspend
  *
  * PARAMETERS:  HowLong             - The amount of time to suspend
  *
@@ -234,25 +229,25 @@ AcpiExSystemDoStall (
  ******************************************************************************/
 
 void
-AcpiExSystemDoSuspend (
+AcpiAmlSystemDoSuspend (
     UINT32                  HowLong)
 {
     /* Since this thread will sleep, we must release the interpreter */
 
-    AcpiExExitInterpreter ();
+    AcpiAmlExitInterpreter ();
 
     AcpiOsSleep ((UINT16) (HowLong / (UINT32) 1000),
                  (UINT16) (HowLong % (UINT32) 1000));
 
     /* And now we must get the interpreter again */
 
-    AcpiExEnterInterpreter ();
+    AcpiAmlEnterInterpreter ();
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemAcquireMutex
+ * FUNCTION:    AcpiAmlSystemAcquireMutex
  *
  * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
  *              *ObjDesc            - The object descriptor for this op
@@ -266,14 +261,14 @@ AcpiExSystemDoSuspend (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemAcquireMutex (
+AcpiAmlSystemAcquireMutex (
     ACPI_OPERAND_OBJECT     *TimeDesc,
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("ExSystemAcquireMutex", ObjDesc);
+    FUNCTION_TRACE_PTR ("AcpiAmlSystemAcquireMutex", ObjDesc);
 
     if (!ObjDesc)
     {
@@ -290,7 +285,7 @@ AcpiExSystemAcquireMutex (
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiExSystemWaitSemaphore (ObjDesc->Mutex.Semaphore,
+    Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Mutex.Semaphore,
                                          (UINT32) TimeDesc->Integer.Value);
     return_ACPI_STATUS (Status);
 }
@@ -298,7 +293,7 @@ AcpiExSystemAcquireMutex (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemReleaseMutex
+ * FUNCTION:    AcpiAmlSystemReleaseMutex
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
@@ -312,13 +307,13 @@ AcpiExSystemAcquireMutex (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemReleaseMutex (
+AcpiAmlSystemReleaseMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExSystemReleaseMutex");
+    FUNCTION_TRACE ("AcpiAmlSystemReleaseMutex");
 
 
     if (!ObjDesc)
@@ -342,7 +337,7 @@ AcpiExSystemReleaseMutex (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemSignalEvent
+ * FUNCTION:    AcpiAmlSystemSignalEvent
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
@@ -354,13 +349,13 @@ AcpiExSystemReleaseMutex (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemSignalEvent (
+AcpiAmlSystemSignalEvent (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExSystemSignalEvent");
+    FUNCTION_TRACE ("AcpiAmlSystemSignalEvent");
 
 
     if (ObjDesc)
@@ -374,7 +369,7 @@ AcpiExSystemSignalEvent (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemWaitEvent
+ * FUNCTION:    AcpiAmlSystemWaitEvent
  *
  * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
  *              *ObjDesc            - The object descriptor for this op
@@ -388,19 +383,19 @@ AcpiExSystemSignalEvent (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemWaitEvent (
+AcpiAmlSystemWaitEvent (
     ACPI_OPERAND_OBJECT     *TimeDesc,
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExSystemWaitEvent");
+    FUNCTION_TRACE ("AcpiAmlSystemWaitEvent");
 
 
     if (ObjDesc)
     {
-        Status = AcpiExSystemWaitSemaphore (ObjDesc->Event.Semaphore,
+        Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Event.Semaphore,
                                              (UINT32) TimeDesc->Integer.Value);
     }
 
@@ -411,7 +406,7 @@ AcpiExSystemWaitEvent (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExSystemResetEvent
+ * FUNCTION:    AcpiAmlSystemResetEvent
  *
  * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
@@ -422,7 +417,7 @@ AcpiExSystemWaitEvent (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiExSystemResetEvent (
+AcpiAmlSystemResetEvent (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;

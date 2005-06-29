@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
- *              $Revision: 1.123 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -130,10 +130,6 @@
         MODULE_NAME         ("amstore")
 
 
-
-
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlExecStore
@@ -179,11 +175,11 @@ AcpiAmlExecStore (
 
     if (VALID_DESCRIPTOR_TYPE (DestDesc, ACPI_DESC_TYPE_NAMED))
     {
-        /* 
+        /*
          * Dest is a namespace node,
-         * Storing an object into a Name "container" 
+         * Storing an object into a Name "container"
          */
-        Status = AcpiAmlStoreObjectToNode (ValDesc, 
+        Status = AcpiAmlStoreObjectToNode (ValDesc,
                     (ACPI_NAMESPACE_NODE *) DestDesc, WalkState);
 
         /* All done, that's it */
@@ -210,7 +206,7 @@ AcpiAmlExecStore (
     }
 
 
-    /* 
+    /*
      * Examine the Reference opcode.  These cases are handled:
      *
      * 1) Store to Name (Change the object associated with a name)
@@ -220,7 +216,7 @@ AcpiAmlExecStore (
      * 5) Store to a constant -- a noop
      */
 
-    switch (RefDesc->Reference.OpCode)
+    switch (RefDesc->Reference.Opcode)
     {
 
     case AML_NAME_OP:
@@ -263,7 +259,7 @@ AcpiAmlExecStore (
          * TBD: print known object types "prettier".
          */
         DEBUG_PRINT (ACPI_INFO, ("**** Write to Debug Object: ****: \n"));
-        
+
         if (ValDesc->Common.Type == ACPI_TYPE_STRING)
         {
             DEBUG_PRINT (ACPI_INFO, ("%s\n", ValDesc->String.Pointer));
@@ -291,7 +287,7 @@ AcpiAmlExecStore (
 
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlExecStore: Internal error - Unknown Reference subtype %02x\n",
-            RefDesc->Reference.OpCode));
+            RefDesc->Reference.Opcode));
 
         /* TBD: [Restructure] use object dump routine !! */
 
@@ -300,8 +296,7 @@ AcpiAmlExecStore (
         Status = AE_AML_INTERNAL;
         break;
 
-    }   /* switch (RefDesc->Reference.OpCode) */
-
+    }   /* switch (RefDesc->Reference.Opcode) */
 
 
     /* Always delete the reference descriptor object */
@@ -392,8 +387,8 @@ AcpiAmlStoreObjectToIndex (
             {
                 /*
                  * If the ObjDesc is NULL, it means that an uninitialized package
-                 * element has been used as a destination (this is OK), therefore, 
-                 * we must create the destination element to match the type of the 
+                 * element has been used as a destination (this is OK), therefore,
+                 * we must create the destination element to match the type of the
                  * source element NOTE: ValDesc can be of any type.
                  */
                 ObjDesc = AcpiCmCreateInternalObject (ValDesc->Common.Type);
@@ -538,9 +533,6 @@ AcpiAmlStoreObjectToIndex (
 }
 
 
-
-
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiAmlStoreObjectToNode
@@ -600,7 +592,7 @@ AcpiAmlStoreObjectToNode (
 
     /*
      * Resolve the source object to an actual value
-     * (If it is a reference object) 
+     * (If it is a reference object)
      */
     Status = AcpiAmlResolveObject (&SourceDesc, TargetType, WalkState);
     if (ACPI_FAILURE (Status))
@@ -610,7 +602,7 @@ AcpiAmlStoreObjectToNode (
 
 
     /*
-     * Do the actual store operation 
+     * Do the actual store operation
      */
     switch (TargetType)
     {
@@ -629,11 +621,11 @@ AcpiAmlStoreObjectToNode (
     case INTERNAL_TYPE_INDEX_FIELD:
     case ACPI_TYPE_FIELD_UNIT:
 
-        /* 
+        /*
          * These target types are all of type Integer/String/Buffer, and
          * therefore support implicit conversion before the store.
-         * 
-         * Copy and/or convert the source object to a new target object 
+         *
+         * Copy and/or convert the source object to a new target object
          */
         Status = AcpiAmlStoreObject (SourceDesc, TargetType, &TargetDesc, WalkState);
         if (ACPI_FAILURE (Status))
@@ -652,14 +644,14 @@ AcpiAmlStoreObjectToNode (
             AcpiCmGetTypeName (TargetDesc->Common.Type),
             AcpiCmGetTypeName (TargetType)));
         break;
-    
+
 
     default:
 
         /* No conversions for all other types.  Just attach the source object */
 
         Status = AcpiNsAttachObject (Node, SourceDesc, SourceDesc->Common.Type);
-        
+
         DEBUG_PRINT (ACPI_INFO,
             ("AmlStoreObjectToNode: Store %s into %s via Attach only\n",
             AcpiCmGetTypeName (SourceDesc->Common.Type),
@@ -670,7 +662,6 @@ AcpiAmlStoreObjectToNode (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*******************************************************************************
@@ -741,10 +732,9 @@ AcpiAmlStoreObjectToObject (
     }
 
 
-
     /*
      * Resolve the source object to an actual value
-     * (If it is a reference object) 
+     * (If it is a reference object)
      */
     Status = AcpiAmlResolveObject (&SourceDesc, DestinationType, WalkState);
     if (ACPI_FAILURE (Status))
@@ -754,7 +744,7 @@ AcpiAmlStoreObjectToObject (
 
 
     /*
-     * Copy and/or convert the source object to the destination object 
+     * Copy and/or convert the source object to the destination object
      */
     Status = AcpiAmlStoreObject (SourceDesc, DestinationType, &DestDesc, WalkState);
 
