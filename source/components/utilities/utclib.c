@@ -1,6 +1,5 @@
-
 /******************************************************************************
- * 
+ *
  * Module Name: cmclib - Local implementation of C library functions
  *
  *****************************************************************************/
@@ -38,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,12 +116,12 @@
 
 #define __CMCLIB_C__
 
-#include <acpi.h>
-#include <events.h>
-#include <hardware.h>
-#include <namesp.h>
-#include <interp.h>
-#include <amlcode.h>
+#include "acpi.h"
+#include "events.h"
+#include "hardware.h"
+#include "namesp.h"
+#include "interp.h"
+#include "amlcode.h"
 
 /*
  * These implementations of standard C Library routines can optionally be
@@ -139,10 +138,9 @@
 #endif
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    strlen  
+ * FUNCTION:    strlen
  *
  * PARAMETERS:  String              - Null terminated string
  *
@@ -154,11 +152,10 @@
 
 
 ACPI_SIZE
-CmStrlen (
+AcpiCmStrlen (
     const char              *String)
 {
     UINT32                  Length = 0;
-
 
 
     /* Count the string until a null is encountered */
@@ -187,12 +184,11 @@ CmStrlen (
  ******************************************************************************/
 
 char *
-CmStrcpy (
-    char                    *DstString, 
+AcpiCmStrcpy (
+    char                    *DstString,
     const char              *SrcString)
 {
     char                    *String = DstString;
-
 
 
     /* Move bytes brute force */
@@ -228,18 +224,18 @@ CmStrcpy (
  ******************************************************************************/
 
 char *
-CmStrncpy (
-    char                    *DstString, 
-    const char              *SrcString, 
+AcpiCmStrncpy (
+    char                    *DstString,
+    const char              *SrcString,
     ACPI_SIZE               Count)
 {
     char                    *String = DstString;
 
 
-
     /* Copy the string */
 
-    for (String = DstString; Count && (Count--, (*String++ = *SrcString++)); )
+    for (String = DstString;
+        Count && (Count--, (*String++ = *SrcString++)); )
     {;}
 
     /* Pad with nulls if necessary */
@@ -270,8 +266,8 @@ CmStrncpy (
  ******************************************************************************/
 
 UINT32
-CmStrcmp (
-    const char              *String1, 
+AcpiCmStrcmp (
+    const char              *String1,
     const char              *String2)
 {
 
@@ -283,7 +279,7 @@ CmStrcmp (
             return 0;
         }
     }
-    
+
 
     return (unsigned char) *String1 - (unsigned char) *String2;
 }
@@ -304,9 +300,9 @@ CmStrcmp (
  ******************************************************************************/
 
 UINT32
-CmStrncmp (
-    const char              *String1, 
-    const char              *String2, 
+AcpiCmStrncmp (
+    const char              *String1,
+    const char              *String2,
     ACPI_SIZE               Count)
 {
 
@@ -319,7 +315,8 @@ CmStrncmp (
         }
     }
 
-    return (Count == -1) ? 0 : ((unsigned char) *String1 - (unsigned char) *String2);
+    return (Count == -1) ? 0 : ((unsigned char) *String1 -
+        (unsigned char) *String2);
 }
 
 
@@ -337,12 +334,11 @@ CmStrncmp (
  ******************************************************************************/
 
 char *
-CmStrcat (
+AcpiCmStrcat (
     char                    *DstString,
     const char              *SrcString)
 {
     char                    *String;
-
 
 
     /* Find end of the destination string */
@@ -375,13 +371,12 @@ CmStrcat (
  ******************************************************************************/
 
 char *
-CmStrncat (
-    char                    *DstString, 
-    const char              *SrcString, 
+AcpiCmStrncat (
+    char                    *DstString,
+    const char              *SrcString,
     ACPI_SIZE               Count)
 {
     char                    *String;
-
 
 
     if (Count)
@@ -423,14 +418,13 @@ CmStrncat (
  ******************************************************************************/
 
 void *
-CmMemcpy (
-    void                    *Dest, 
-    const void              *Src, 
+AcpiCmMemcpy (
+    void                    *Dest,
+    const void              *Src,
     ACPI_SIZE               Count)
 {
     char                    *New = (char *) Dest;
     char                    *Old = (char *) Src;
-
 
 
     while (Count)
@@ -460,13 +454,12 @@ CmMemcpy (
  ******************************************************************************/
 
 void *
-CmMemset (
+AcpiCmMemset (
     void                    *Dest,
     INT32                   Value,
     ACPI_SIZE               Count)
 {
     char                    *New = (char *) Dest;
-
 
 
     while (Count)
@@ -482,8 +475,6 @@ CmMemset (
 
 #define NEGATIVE    1
 #define POSITIVE    0
-
-
 
 
 #define _XA     0x00    /* extra alphabetic - not supported */
@@ -626,7 +617,7 @@ const unsigned char _ctype[257] = {
     _PU,            /* 0x7D   125. '}' */
     _PU,            /* 0x7E   126. '~' */
     _CN,            /* 0x7F   127.     */
-    
+
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  /* 0x80 to 0x8F    */
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  /* 0x90 to 0x9F    */
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  /* 0xA0 to 0xAF    */
@@ -643,21 +634,20 @@ const unsigned char _ctype[257] = {
 #define IS_SPACE(c)  (_ctype[(unsigned char)(c)] & (_SP))
 
 
-
 /*******************************************************************************
  *
- * FUNCTION:    CmToUpper
+ * FUNCTION:    AcpiCmToUpper
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
  * DESCRIPTION: Convert character to uppercase
  *
  ******************************************************************************/
 
 INT32
-CmToUpper (
+AcpiCmToUpper (
     INT32                   c)
 {
 
@@ -667,18 +657,18 @@ CmToUpper (
 
 /*******************************************************************************
  *
- * FUNCTION:    CmToLower
+ * FUNCTION:    AcpiCmToLower
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
- * RETURN:      
+ * RETURN:
  *
  * DESCRIPTION: Convert character to lowercase
  *
  ******************************************************************************/
 
 INT32
-CmToLower (
+AcpiCmToLower (
     INT32                   c)
 {
 
@@ -690,7 +680,7 @@ CmToLower (
  *
  * FUNCTION:    strupr
  *
- * PARAMETERS:  SrcString       - The source string to convert to 
+ * PARAMETERS:  SrcString       - The source string to convert to
  *
  * RETURN:      SrcString
  *
@@ -699,18 +689,17 @@ CmToLower (
  ******************************************************************************/
 
 char *
-CmStrupr (
+AcpiCmStrupr (
     char                    *SrcString)
 {
     char                    *String;
-
 
 
     /* Walk entire string, uppercasing the letters */
 
     for (String = SrcString; *String; )
     {
-        *String = (char) CmToUpper (*String);
+        *String = (char) AcpiCmToUpper (*String);
         String++;
     }
 
@@ -723,10 +712,10 @@ CmStrupr (
  *
  * FUNCTION:    strstr
  *
- * PARAMETERS:  String1       - 
+ * PARAMETERS:  String1       -
  *              String2
  *
- * RETURN:      
+ * RETURN:
  *
  * DESCRIPTION: Checks if String2 occurs in String1. This is not really a
  *              full implementation of strstr, only sufficient for command
@@ -735,15 +724,14 @@ CmStrupr (
  ******************************************************************************/
 
 char *
-CmStrstr (
+AcpiCmStrstr (
     char                    *String1,
     char                    *String2)
 {
     char                    *String;
 
 
-
-    if (CmStrlen (String2) > CmStrlen (String1))
+    if (AcpiCmStrlen (String2) > AcpiCmStrlen (String1))
     {
         return NULL;
     }
@@ -756,7 +744,7 @@ CmStrstr (
         {
             return NULL;
         }
-        
+
         String2++;
         String++;
     }
@@ -768,7 +756,7 @@ CmStrstr (
 
 /*******************************************************************************
  *
- * FUNCTION:    strtoul 
+ * FUNCTION:    strtoul
  *
  * PARAMETERS:  String          - Null terminated string
  *              Terminater      - Where a pointer to the terminating byte is returned
@@ -781,9 +769,9 @@ CmStrstr (
  ******************************************************************************/
 
 UINT32
-CmStrtoul (
-    const char              *String, 
-    char                    **Terminator, 
+AcpiCmStrtoul (
+    const char              *String,
+    char                    **Terminator,
     INT32                   Base)
 {
     UINT32                  converted = 0;
@@ -800,7 +788,7 @@ CmStrtoul (
      * skip over any white space in the buffer:
      */
     StringStart = String;
-    while (IS_SPACE (*String) || *String == '\t') 
+    while (IS_SPACE (*String) || *String == '\t')
     {
         ++String;
     }
@@ -809,19 +797,19 @@ CmStrtoul (
      * The buffer may contain an optional plus or minus sign.
      * If it does, then skip over it but remember what is was:
      */
-    if (*String == '-') 
+    if (*String == '-')
     {
         sign = NEGATIVE;
         ++String;
-    } 
+    }
 
-    else if (*String == '+') 
+    else if (*String == '+')
     {
         ++String;
         sign = POSITIVE;
     }
-    
-    else 
+
+    else
     {
         sign = POSITIVE;
     }
@@ -830,29 +818,29 @@ CmStrtoul (
      * If the input parameter Base is zero, then we need to
      * determine if it is octal, decimal, or hexadecimal:
      */
-    if (Base == 0) 
+    if (Base == 0)
     {
-        if (*String == '0') 
+        if (*String == '0')
         {
-            if (CmToLower (*(++String)) == 'x') 
+            if (AcpiCmToLower (*(++String)) == 'x')
             {
                 Base = 16;
                 ++String;
             }
-            
-            else 
+
+            else
             {
                 Base = 8;
             }
         }
-        
-        else 
+
+        else
         {
             Base = 10;
         }
     }
-    
-    else if (Base < 2 || Base > 36) 
+
+    else if (Base < 2 || Base > 36)
     {
         /*
          * The specified Base parameter is not in the domain of
@@ -869,8 +857,10 @@ CmStrtoul (
     {
         String++;
     }
-    
-    if (Base == 16 && *String == '0' && CmToLower (*(++String)) == 'x')
+
+    if (Base == 16 &&
+        *String == '0' &&
+        AcpiCmToLower (*(++String)) == 'x')
     {
         String++;
     }
@@ -879,28 +869,28 @@ CmStrtoul (
     /*
      * Main loop: convert the string to an unsigned long:
      */
-    while (*String) 
+    while (*String)
     {
-        if (IS_DIGIT (*String)) 
+        if (IS_DIGIT (*String))
         {
             index = *String - '0';
-        } 
+        }
 
-        else 
+        else
         {
-            index = CmToUpper (*String);
-            if (IS_UPPER (index)) 
+            index = AcpiCmToUpper (*String);
+            if (IS_UPPER (index))
             {
                 index = index - 'A' + 10;
-            } 
+            }
 
-            else 
+            else
             {
                 goto done;
             }
         }
 
-        if (index >= Base) 
+        if (index >= Base)
         {
             goto done;
         }
@@ -910,13 +900,13 @@ CmStrtoul (
          */
 
         if (ReturnValue > ((ACPI_UINT32_MAX - (UINT32) index) /
-                            (UINT32) Base)) 
+                            (UINT32) Base))
         {
             Status = AE_ERROR;
             ReturnValue = 0L;           /* reset */
         }
 
-        else 
+        else
         {
             ReturnValue *= Base;
             ReturnValue += index;
@@ -929,9 +919,9 @@ CmStrtoul (
 done:
     /*
      * If appropriate, update the caller's pointer to the next
-     * unconverted character in the buffer. 
+     * unconverted character in the buffer.
      */
-    if (Terminator) 
+    if (Terminator)
     {
         if (converted == 0 && ReturnValue == 0L && String != NULL)
         {
@@ -952,7 +942,7 @@ done:
     /*
      * If a minus sign was present, then "the conversion is negated":
      */
-    if (sign == NEGATIVE) 
+    if (sign == NEGATIVE)
     {
         ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
     }
