@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.48 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          ACPI_PARSER
-        MODULE_NAME         ("psxface")
+        ACPI_MODULE_NAME    ("psxface")
 
 
 /*******************************************************************************
@@ -159,7 +159,7 @@ AcpiPsxExecute (
     ACPI_WALK_STATE         *WalkState;
 
 
-    FUNCTION_TRACE ("PsxExecute");
+    ACPI_FUNCTION_TRACE ("PsxExecute");
 
 
     /* Validate the Node and get the attached object */
@@ -199,7 +199,7 @@ AcpiPsxExecute (
      * 1) Perform the first pass parse of the method to enter any
      * named objects that it creates into the namespace
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "**** Begin Method Parse **** Entry=%p obj=%p\n",
         MethodNode, ObjDesc));
 
@@ -211,20 +211,27 @@ AcpiPsxExecute (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    /*
+     * Get a new OwnerId for objects created by this method.  Namespace
+     * objects (such as Operation Regions) can be created during the
+     * first pass parse.
+     */
+    ObjDesc->Method.OwningId = AcpiUtAllocateOwnerId (ACPI_OWNER_TYPE_METHOD);
+
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT,
+    WalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwningId,
                                     NULL, NULL, NULL);
     if (!WalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, Op, MethodNode, ObjDesc->Method.Pcode, 
-                    ObjDesc->Method.PcodeLength, 1);
+    Status = AcpiDsInitAmlWalk (WalkState, Op, MethodNode, ObjDesc->Method.AmlStart,
+                    ObjDesc->Method.AmlLength, NULL, NULL, 1);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: delete walk state */
+        AcpiDsDeleteWalkState (WalkState);
         return_ACPI_STATUS (Status);
     }
 
@@ -237,7 +244,7 @@ AcpiPsxExecute (
     /*
      * 2) Execute the method.  Performs second pass parse simultaneously
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "**** Begin Method Execution **** Entry=%p obj=%p\n",
         MethodNode, ObjDesc));
 
@@ -251,8 +258,8 @@ AcpiPsxExecute (
 
     /* Init new op with the method name and pointer back to the NS node */
 
-    AcpiPsSetName (Op, MethodNode->Name);
-    Op->Node = MethodNode;
+    AcpiPsSetName (Op, MethodNode->Name.Integer);
+    Op->Common.Node = MethodNode;
 
     /* Create and initialize a new walk state */
 
@@ -263,17 +270,14 @@ AcpiPsxExecute (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    WalkState->Params                       = Params;
-    WalkState->CallerReturnDesc             = ReturnObjDesc;
-    
-    Status = AcpiDsInitAmlWalk (WalkState, Op, MethodNode, ObjDesc->Method.Pcode, 
-                    ObjDesc->Method.PcodeLength, 3);
+    Status = AcpiDsInitAmlWalk (WalkState, Op, MethodNode, ObjDesc->Method.AmlStart,
+                    ObjDesc->Method.AmlLength, Params, ReturnObjDesc, 3);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: delete walk state */
+        AcpiDsDeleteWalkState (WalkState);
         return_ACPI_STATUS (Status);
     }
-    
+
     /*
      * The walk of the parse tree is where we actually execute the method
      */
@@ -290,20 +294,18 @@ AcpiPsxExecute (
         }
     }
 
-
     /*
      * If the method has returned an object, signal this to the caller with
      * a control exception code
      */
     if (*ReturnObjDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Method returned ObjDesc=%X\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Method returned ObjDesc=%p\n",
             *ReturnObjDesc));
-        DUMP_STACK_ENTRY (*ReturnObjDesc);
+        ACPI_DUMP_STACK_ENTRY (*ReturnObjDesc);
 
         Status = AE_CTRL_RETURN_VALUE;
     }
-
 
     return_ACPI_STATUS (Status);
 }
