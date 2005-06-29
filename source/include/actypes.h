@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.236 $
+ *       $Revision: 1.237 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,19 @@
 
 /*! [Begin] no source code translation (keep the typedefs) */
 
+
+
+/*
+ * Data type ranges
+ */
+#define ACPI_UINT8_MAX                  (UINT8)  0xFF
+#define ACPI_UINT16_MAX                 (UINT16) 0xFFFF
+#define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
+#define ACPI_UINT64_MAX                 (UINT64) 0xFFFFFFFFFFFFFFFF
+#define ACPI_ASCII_MAX                  0x7F
+
+
+
 /*
  * Data types - Fixed across all compilation models
  *
@@ -164,7 +177,8 @@ typedef UINT64                          ACPI_SIZE;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000008      /* No hardware alignment support in IA64 */
 #define ACPI_USE_NATIVE_DIVIDE                          /* Native 64-bit integer support */
-#define ACPI_MAX_PTR                    0xFFFFFFFFFFFFFFFF
+#define ACPI_MAX_PTR                    ACPI_UINT64_MAX
+#define ACPI_SIZE_MAX                   ACPI_UINT64_MAX
 
 
 #elif ACPI_MACHINE_WIDTH == 16
@@ -194,12 +208,13 @@ typedef UINT32                          NATIVE_UINT_MIN32;
 typedef UINT32                          ACPI_TBLPTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 typedef char                            *ACPI_PHYSICAL_ADDRESS;
-typedef UINT32                          ACPI_SIZE;
+typedef UINT16                          ACPI_SIZE;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000002
 #define _HW_ALIGNMENT_SUPPORT
 #define ACPI_USE_NATIVE_DIVIDE                          /* No 64-bit integers, ok to use native divide */
-#define ACPI_MAX_PTR                    0xFFFF
+#define ACPI_MAX_PTR                    ACPI_UINT16_MAX
+#define ACPI_SIZE_MAX                   ACPI_UINT16_MAX
 
 /*
  * (16-bit only) internal integers must be 32-bits, so
@@ -233,12 +248,12 @@ typedef UINT32                          ACPI_SIZE;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000004
 #define _HW_ALIGNMENT_SUPPORT
-#define ACPI_MAX_PTR                    0xFFFFFFFF
+#define ACPI_MAX_PTR                    ACPI_UINT32_MAX
+#define ACPI_SIZE_MAX                   ACPI_UINT32_MAX
 
 #else
 #error unknown ACPI_MACHINE_WIDTH
 #endif
-
 
 
 /*
@@ -248,16 +263,6 @@ typedef UINT32                          ACPI_SIZE;
 typedef UINT32                          UINT32_BIT;
 typedef NATIVE_UINT                     ACPI_PTRDIFF;
 typedef char                            NATIVE_CHAR;
-
-
-/*
- * Data type ranges
- */
-#define ACPI_UINT8_MAX                  (UINT8)  0xFF
-#define ACPI_UINT16_MAX                 (UINT16) 0xFFFF
-#define ACPI_UINT32_MAX                 (UINT32) 0xFFFFFFFF
-#define ACPI_UINT64_MAX                 (UINT64) 0xFFFFFFFFFFFFFFFF
-#define ACPI_ASCII_MAX                  0x7F
 
 
 #ifdef DEFINE_ALTERNATE_TYPES
@@ -381,7 +386,7 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_MAX_BCD_DIGITS             16
 #define ACPI_MAX_DECIMAL_DIGITS         19
 
-#ifdef _IA64
+#if ACPI_MACHINE_WIDTH == 64
 #define ACPI_USE_NATIVE_DIVIDE          /* Use compiler native 64-bit divide */
 #endif
 #endif
@@ -955,7 +960,7 @@ typedef struct
     ACPI_PHYSICAL_ADDRESS       Address;
     ACPI_PHYSICAL_ADDRESS       MappedPhysicalAddress;
     UINT8                       *MappedLogicalAddress;
-    UINT32                      MappedLength;
+    ACPI_SIZE                   MappedLength;
 } ACPI_MEM_SPACE_CONTEXT;
 
 
