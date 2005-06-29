@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.151 $
+ *       $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@
 
 /* Version string */
 
-#define ACPI_CA_VERSION                 0x20040402
+#define ACPI_CA_VERSION                 0x20040423
 
 /* Maximum objects in the various object caches */
 
@@ -260,7 +260,7 @@
 
 /* Number of strings associated with the _OSI reserved method */
 
-#define ACPI_NUM_OSI_STRINGS            4
+#define ACPI_NUM_OSI_STRINGS            9
 
 
 /******************************************************************************
