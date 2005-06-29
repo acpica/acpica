@@ -473,7 +473,7 @@ AmlGetRvalueFromObject (
     }   /* switch (StackDesc->Common.Type) */
 
 
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -1141,7 +1141,7 @@ BREAKPOINT3;
 
     *StackPtr = (void *) ObjDesc;
 
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -1166,7 +1166,7 @@ AmlGetRvalue (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AmlGetRvalue");
+    FUNCTION_TRACE_PTR ("AmlGetRvalue", StackPtr);
 
 
     if (!StackPtr || !*StackPtr)
@@ -1183,7 +1183,7 @@ BREAKPOINT3;
      * 2) A NAME_TABLE_ENTRY (nte)
      */
 
-    if (!IS_NS_HANDLE (*StackPtr))       
+    if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_ACPI_OBJ))       
     {
 
         Status = AmlGetRvalueFromObject (StackPtr);
@@ -1194,7 +1194,7 @@ BREAKPOINT3;
      * (i.e., we can't use an _else_ here.)
      */
 
-    if (IS_NS_HANDLE (*StackPtr))       
+    if (VALID_DESCRIPTOR_TYPE (*StackPtr, DESC_TYPE_NTE))       
     {
         Status = AmlGetRvalueFromEntry ((NAME_TABLE_ENTRY **) StackPtr);
     }
