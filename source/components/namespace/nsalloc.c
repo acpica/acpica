@@ -194,6 +194,7 @@ NsDeleteNamespace (
     ACPI_HANDLE             ChildHandle;
     ACPI_HANDLE             Dummy;
     UINT32                  Level;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
     FUNCTION_TRACE ("NsDeleteNamespace");
@@ -216,7 +217,12 @@ NsDeleteNamespace (
         {
             /* Found an object - delete the object within the Value field */
 
-            NsDetachObject (ChildHandle);
+            ObjDesc = NsGetAttachedObject (ChildHandle);
+            if (ObjDesc)
+            {
+                NsDetachObject (ChildHandle);
+                CmDeleteInternalObject (ObjDesc);
+            }
 
             /* Check if this object has any children */
 
