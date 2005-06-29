@@ -202,6 +202,11 @@
 #define MAX_REFERENCE_COUNT         0x200
 
 
+/* Size of cached memory mapping for system memory operation region */
+
+#define SYSMEM_REGION_WINDOW_SIZE   4096
+
+
 /* 
  * Debugger threading model
  * Use single threaded if the entire subsystem is contained in an application
