@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -177,11 +177,9 @@ AslCompilererror(char *s)
 	fprintf (stdout, "%s", Gbl_InputFilename);
 	fprintf (stdout, "%5d: ", Gbl_CurrentLineNumber);
     fprintf (stdout, "%s\n", Gbl_CurrentLineBuffer);
-	fprintf (stdout, "\n%*s", Gbl_CurrentColumn + 7 + Length, "^");
+	fprintf (stdout, "%*s", Gbl_CurrentColumn + 7 + Length, "^");
     fprintf (stdout, "%s\n\n", s);
 
-    if (Gbl_DebugFlag)
-        printf ("Syntax Error - %s ", s);
 
     ErrorCount++;
 	return 0;
