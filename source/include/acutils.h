@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.164 $
+ *       $Revision: 1.166 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -755,6 +755,7 @@ void
 AcpiUtDeleteGenericState (
     ACPI_GENERIC_STATE      *State);
 
+#ifdef ACPI_ENABLE_OBJECT_CACHE
 void
 AcpiUtDeleteGenericStateCache (
     void);
@@ -762,6 +763,7 @@ AcpiUtDeleteGenericStateCache (
 void
 AcpiUtDeleteObjectCache (
     void);
+#endif
 
 /*
  * utmisc
@@ -848,9 +850,11 @@ AcpiUtReleaseToCache (
     UINT32                  ListId,
     void                    *Object);
 
+#ifdef ACPI_ENABLE_OBJECT_CACHE
 void
 AcpiUtDeleteGenericCache (
     UINT32                  ListId);
+#endif
 
 ACPI_STATUS
 AcpiUtValidateBuffer (
