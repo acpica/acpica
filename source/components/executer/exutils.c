@@ -207,58 +207,103 @@ AmlBufSeq (void)
 }
 
 
+
 /*****************************************************************************
- * 
- * FUNCTION:    DeleteObject
  *
- * PARAMETERS:  **ObjDesc           - Descriptor to be deleted
+ * FUNCTION:    AmlAcquireGlobalLock
  *
- * DESCRIPTION: If the passed descriptor pointer does not point into the
- *              AML block and is not an NsHandle, free the descriptor.
+ * PARAMETERS:  Rule            - Lock rule: AlwaysLock, NeverLock
  *
- *              Note that the parameter is the address of the descriptor
- *              pointer, so that the descriptor pointer can be set to NULL
- *              after the descriptor is freed.
+ * RETURN:      TRUE/FALSE indicating whether the lock was actually acquired
+ *
+ * DESCRIPTION: Obtain the global lock and keep track of this fact via two
+ *              methods.  A global variable keeps the state of the lock, and
+ *              the state is returned to the caller.
  *
  ****************************************************************************/
 
-void
-DeleteObject (OBJECT_DESCRIPTOR **ObjDesc)
+BOOLEAN
+AmlAcquireGlobalLock (UINT16 Rule)
 {
-
-    FUNCTION_TRACE ("DeleteObject");
-    DEBUG_PRINT (ACPI_INFO, ("DeleteObject: %x\n", *ObjDesc));
+    BOOLEAN             Locked = FALSE;
 
 
-    /*
-     * Be very careful about what we delete
-     */
-
-    /* 
-     * XXX: This is not the best solution!
-     * XXX: And may not work in all cases!!
-     */
+    FUNCTION_TRACE ("AmlAcquireGlobalLock");
 
 
-    if ((OBJECT_DESCRIPTOR **) 0 !=    ObjDesc  &&
-        (OBJECT_DESCRIPTOR *) 0 !=    *ObjDesc  &&
-        !AmlIsInPCodeBlock ((UINT8 *) *ObjDesc) &&
-        !IS_NS_HANDLE                  (*ObjDesc) &&
-        !AmlIsMethodValue            (*ObjDesc) &&
-        !IsNsValue                   (*ObjDesc))
-    {
+    /*  Only attempt lock if the Rule says so */
+    
+    if (Rule == (UINT16) GLOCK_AlwaysLock)
+    {   
+        /*  OK to get the lock   */
+        
+        if (OsGetGlobalLock () != AE_OK)
+        {
+            /*  
+             * lock ownership failed
+             */
+            DEBUG_PRINT (ACPI_ERROR, ("Get Global Lock Failed!!\n"));
+        }
 
-        DEBUG_PRINT (ACPI_INFO, ("DeleteObject: Actually deleting %x\n", *ObjDesc));
-
-        OsdFree (*ObjDesc);
-
-        DEBUG_PRINT (ACPI_INFO, ("DeleteObject: Successfully deleted %x\n", *ObjDesc));
-
+        else
+        {
+            GlobalLockSet = TRUE;
+            Locked = TRUE;
+        }
     }
 
     FUNCTION_EXIT;
+    return Locked;
 }
 
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AmlReleaseGlobalLock
+ *
+ * PARAMETERS:  LockedByMe      - Return value from corresponding call to
+ *                                AcquireGlobalLock.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Release the global lock if it is locked.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AmlReleaseGlobalLock (BOOLEAN LockedByMe)
+{
+
+    FUNCTION_TRACE ("AmlReleaseGlobalLock");
+
+
+    /* Only attempt unlock if the caller locked it */
+
+    if (LockedByMe)
+    {
+        /* Double check against the global flag */
+
+        if (GlobalLockSet)
+        {
+            /* OK, now release the lock */
+
+            OsReleaseGlobalLock ();
+            GlobalLockSet = FALSE;
+        }
+
+        else
+        {
+            /* Sorry, the lock wasn't set, according to our records */
+
+            DEBUG_PRINT (ACPI_ERROR, ("Global lock was not set\n"));
+        }
+    }
+
+
+    FUNCTION_EXIT;
+    return AE_OK;
+}
 
 #ifdef PLUMBER
 /****************************************************************************
