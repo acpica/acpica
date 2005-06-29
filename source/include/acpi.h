@@ -128,7 +128,6 @@
 #include <acpiexcep.h>      /* Local exception codes */
 #include <config.h>         /* Configuration constants */
 #include <output.h>         /* Error output and Debug macros */
-#include <acpiasm.h>        /* Assembly macros */
 #include <acpitables.h>     /* ACPI table definitions */
 #include <acpiosd.h>        /* Interfaces to OS-dependent part (OSD) */
 #include <acpisubsys.h>     /* External interfaces to this part */
