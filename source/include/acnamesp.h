@@ -14,134 +14,20 @@
  | FILENAME: acpinmsp.h - prototypes for accessing namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.11 $
- | $Date: 2005/06/29 19:49:37 $
+ | $Revision: 1.12 $
+ | $Date: 2005/06/29 19:49:38 $
  | $Log: acnamesp.h,v $
- | Revision 1.11  2005/06/29 19:49:37  aystarik
- | Fixed typo in one of the include statements
+ | Revision 1.12  2005/06/29 19:49:38  aystarik
+ | Added the currently defined Public APIs and removed a lot of the old
+ | source control history
  |
  | 
- | date	99.04.01.17.56.00;	author rmosgrov;	state Exp;
+ | date	99.04.02.18.14.00;	author rmosgrov;	state Exp;
  |
  * 
- * 11    4/01/99 9:56a Rmosgrov
- * Fixed typo in one of the include statements
- * 
- * 10    3/09/99 4:04p Rmoore1
- * 16/32/64-bit common data types
- * 
- * 9     2/16/99 3:36p Rmosgrov
- * 
- * 8     2/16/99 3:04p Rmosgrov
- * 
- * 7     2/16/99 10:15a Rmosgrov
- * 
- * 6     2/12/99 4:22p Rmosgrov
- * 
- * 5     2/12/99 10:26a Rmosgrov
- * Anti-Polish clean up
- * 
- * 4     2/03/99 4:12p Rmoore1
- * Moved definition of NsType to acpiobj.h
- * 
- * 3     1/13/99 10:50a Grsmith1
- * First BeOS compatible check-in.
- * 
- * 2     1/11/99 4:15p Grsmith1
- * 
- * 1     1/11/99 2:10p Rmoore1
- * Subsystem headers
-// 
-//    Rev 1.23   05 Feb 1998 11:56:34   phutchis
-// Added NsPushMethodScope(), IsNsValue(), RegisterStaticBlockPtr(), and
-//   MarkStaticBlocks().
-// 
-//    Rev 1.22   26 Nov 1997 16:19:44   phutchis
-// Code inspection rework:
-//   Made acBadType[] public so other modules can check for it in apcNsTypeNames[].
-// 
-//    Rev 1.21   31 Oct 1997 15:57:30   phutchis
-// Rework from code inspection:
-//   Added/revised comments throughout.
-//   Added #include <stddef.h> to get typedef for ptrdiff_t.
-//   Changed vNsPopCurrent() to NsPopCurrent(), returning the number of frames
-//     popped (or an error indication).
-//   Changed empty formal parameter lists to "(void)".
-//   Changed meth.Offset, and other values which are offsets, from (INT32) to
-//     (ptrdiff_t).
-//   Replaced "INT32 iLoading" parameter of NsEnter() with "OpMode iLE".
-// Removed vReporter() parameter from several functions.
-//   Removed iExistDownstreamSibling() which is now static.
-// 
-//    Rev 1.20   08 Oct 1997 16:32:28   kdbranno
-// Removed define/undefine of OBJECT_DESCRIPTOR.  Added #include of amlpub.h
-// when ACPILIB_GEN is not defined.
-// 
-//    Rev 1.19   24 Sep 1997 15:11:36   phutchis
-// Add function declaration for NsMarkNS().
-// 
-//    Rev 1.18   16 Sep 1997 10:43:00   phutchis
-// Added function NsGetHandle()
-// 
-//    Rev 1.17   04 Aug 1997 16:14:12   kdbranno
-// Added function GetParentHandle.
-// 
-//    Rev 1.16   29 Jul 1997 14:34:28   phutchis
-// Add Params parameter to AcpiExecuteMethod() and iAmlExec()
-// 
-//    Rev 1.15   11 Jul 1997 16:13:58   phutchis
-// Fix problem with ordering of recursive includes
-// 
-//    Rev 1.14   11 Jul 1997 16:07:38   phutchis
-// Add IsNsHandle() macro.
-// 
-//    Rev 1.13   08 Jul 1997 17:03:22   phutchis
-// Add ReturnValue parameter to AcpiExecuteMethod().
-// This requires #include of amlexec.h and amlpriv.h
-// 
-//    Rev 1.12   18 Jun 1997 09:34:42   phutchis
-// Add SearchBase and MaxDepth parameters to NsDumpTables()
-// and NsFindNames()
-// 
-//    Rev 1.11   12 Jun 1997 11:43:52   phutchis
-// Conform function headers to .c file.
-// 
-//    Rev 1.10   12 Jun 1997 09:59:54   phutchis
-// Add parameter to NsFindNames() to enable searching a subtree.
-// 
-//    Rev 1.9   11 Jun 1997 15:51:12   phutchis
-// Add entry point NsFindNames.
-// Add some debug capability.
-// 
-//    Rev 1.8   14 May 1997 16:05:10   kdbranno
-// Removed calloc_bu
-//
-//    Rev 1.7   13 May 1997 18:00:54   phutchis
-// Add guards for uninitialized namespace and hooks for interpreter
-//
-//    Rev 1.6   16 Apr 1997 15:06:52   kdbranno
-// Changed include brackets to quotes for .h files from ACPILIB
-// Removed declarations for "meth" and "nte" and returned them to ACPINMSP.C
-// Changed prototype for iExistDownstreamSibling
-//
-//    Rev 1.5   Apr 14 1997 16:18:50   kdbranno
-// Moved typedef for nte and meth to acpinmsp.h
-//
-//    Rev 1.4   Apr 14 1997 15:51:34   kdbranno
-// Added prototype for iExistDownstreamSibling
-//
-//    Rev 1.3   Apr 14 1997 15:43:00   kdbranno
-// Added DisplayBitFlags parameter to NsDumpTables()
-//
-//    Rev 1.2   14 Mar 1997 17:46:26   phutchis
-// Renamed vNsEnter to NsEnter to correspond to its return value
-// type (handle), and added iLoading parameter.
-//
-//    Rev 1.1   05 Mar 1997 13:29:14   phutchis
-// Added typedefs and function prototypes
-//
-//    Rev 1.0   Feb 28 1997 13:26:18   KBRANNOC
-// Initial revision.
+ * 12    4/02/99 10:14a Rmosgrov
+ * Added the currently defined Public APIs and removed a lot of the old
+ * source control history
  |__________________________________________________________________________
 
 */
@@ -150,7 +36,7 @@
 #define __ACPINMSP_H__
 
 #include "acpiobj.h"
-
+#include "pnp.h"
 
 /* 
  * An NsHandle (which is actually an nte *) can appear in some contexts,
@@ -207,6 +93,9 @@ NsPushMethodScope (NsHandle nNewScope);
 INT32
 AcpiExecuteMethod (char * MethodName, OBJECT_DESCRIPTOR **ReturnValue,
         OBJECT_DESCRIPTOR **Params);
+
+int 
+AcpiInit (char *);
 
 INT32
 AcpiLoadNameSpace  (INT32 DisplayAmlDuringLoad);
@@ -283,5 +172,61 @@ void
 MarkStaticBlocks (INT32 *Count);
 
 #endif /* PLUMBER */
+
+/******************************************************************************
+ *
+ * The following are the publically defined APIs published and exposed to the OSD
+ *
+ ******************************************************************************/
+
+INT32
+AcpiLoadNameSpace (INT32 DisplayAmlDuringLoad);
+NsHandle 
+AcpiLoadTable (NsHandle OpRegion);
+
+INT32 
+AcpiUnLoadTable (NsHandle TableHandle);
+
+NsHandle 
+AcpiLoadTableFromFile (char *FileName);
+
+INT32 
+AcpiEnumerateDevice (NsHandle DeviceHandle, DEVICE_ID *HidPtr, BOOLEAN *EnumPtr);
+
+NsHandle 
+AcpiGetNextSubDevice(NsHandle DeviceHandle, UINT32 Count);
+
+NsHandle 
+AcpiNameToHandle (char *NsName, NsHandle Scope);
+
+char * 
+AcpiHandleToName (NsHandle InHandle);
+
+NsHandle 
+AcpiGetParentHandle (NsHandle ChildHandle);
+
+NsType 
+AcpiValueType (NsHandle Handle);
+
+char * 
+AcpiCurrentScopeName (void);
+
+BOOLEAN 
+AcpiIsNameSpaceHandle (NsHandle QueryHandle);
+
+BOOLEAN 
+AcpiIsNameSpaceValue (NsType Value);
+
+INT32
+AcpiSetFirmwareWakingVector (UINT32 PhysicalAddress);
+
+INT32
+AcpiGetFirmwareWakingVector (UINT32 * PhysicalAddress);
+
+ACPI_TABLE_HEADER * 
+AcpiGetTableHeader (NsHandle Handle);
+
+ACPI_TABLE_HEADER * 
+AcpiGetTable (NsHandle Handle);
 
 #endif /* __ACPINMSP_H__ */
