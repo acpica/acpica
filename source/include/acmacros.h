@@ -447,6 +447,16 @@
 #endif
 
 
+/*
+ * For 16-bit code, we want to shrink some things even though
+ * we are using ACPI_DEBUG to get the debug output
+ */
+#ifdef _IA16
+#undef DEBUG_ONLY_MEMBERS
+#define DEBUG_ONLY_MEMBERS(a)
+#undef OP_INFO_ENTRY
+#define OP_INFO_ENTRY(Opcode,Flags,Name,PArgs,IArgs)     {Opcode,Flags,PArgs,IArgs}
+#endif
 
 
 #ifndef ACPI_DEBUG
