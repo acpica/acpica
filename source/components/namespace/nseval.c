@@ -197,7 +197,6 @@ NsEvaluateRelative (
         goto Cleanup;
     }
 
-
     /* Lookup the name in the namespace */
 
     ScopeInfo.Scope = RelObjEntry->Scope;
@@ -541,33 +540,68 @@ NsGetObjectValue (
     NAME_TABLE_ENTRY        *ObjectEntry,
     ACPI_OBJECT_INTERNAL    **ReturnObjDesc)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_OBJECT_INTERNAL    *ValDesc;
 
 
     FUNCTION_TRACE ("NsGetObjectValue");
 
-
-    /* Create an Lvalue object to contain the object */
-
-    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    /* Construct a descriptor pointing to the name */
-
-    ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
-    ObjDesc->Lvalue.Object  = (void *) ObjectEntry;
-
-    /* 
-     * Use AmlGetRvalue() to get the associated value.  The call to AmlGetRvalue causes 
-     * ObjDesc (allocated above) to always be deleted.
+    /*
+     *  We take the value from certain objects directly
      */
 
-    Status = AmlGetRvalue (&ObjDesc);
+    if ((ObjectEntry->Type == ACPI_TYPE_Processor) ||
+        (ObjectEntry->Type == ACPI_TYPE_Power)) {
 
+        /*
+         *  Create an Lvalue object to contain the object
+         */
+        ObjDesc = CmCreateInternalObject (ObjectEntry->Type);
+        if (!ObjDesc)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        /*
+         *  Get the attached object
+         */
+
+        ValDesc = NsGetAttachedObject (ObjectEntry);
+        if (!ValDesc)
+        {
+            return_ACPI_STATUS (AE_AML_INTERNAL);
+        }
+
+        /*
+         *  Just copy form the original to the return object
+         */
+
+        MEMCPY ((void *) &ObjDesc->Common.FirstNonCommonByte,
+                (void *) &ValDesc->Common.FirstNonCommonByte,
+                (sizeof(ACPI_OBJECT_Common) - sizeof(ObjDesc->Common.FirstNonCommonByte)));
+    } else {
+        
+        /* Create an Lvalue object to contain the object */
+
+        ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
+        if (!ObjDesc)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        /* Construct a descriptor pointing to the name */
+
+        ObjDesc->Lvalue.OpCode  = (UINT8) AML_NameOp;
+        ObjDesc->Lvalue.Object  = (void *) ObjectEntry;
+
+        /* 
+         * Use AmlGetRvalue() to get the associated value.  The call to AmlGetRvalue causes 
+         * ObjDesc (allocated above) to always be deleted.
+         */
+
+        Status = AmlGetRvalue (&ObjDesc);
+    }
     /* 
      * If AmlGetRvalue() succeeded, the return value was placed in ObjDesc.
      */
