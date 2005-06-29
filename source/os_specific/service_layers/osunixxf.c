@@ -221,6 +221,35 @@ AcpiOsPredefinedOverride (
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiOsTableOverride
+ *
+ * PARAMETERS:  ExistingTable   - Header of current table (probably firmware)
+ *              NewTable        - Where an entire new table is returned.
+ *
+ * RETURN:      Status, pointer to new table.  Null pointer returned if no
+ *              table is available to override
+ *
+ * DESCRIPTION: Return a different version of a table if one is available
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsTableOverride (
+    ACPI_TABLE_HEADER       *ExistingTable,
+    ACPI_TABLE_HEADER       **NewTable)
+{
+    if (!ExistingTable || !NewTable)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    *NewTable = NULL;
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsReadable
  *
  * PARAMETERS:  Pointer             - Area to be verified
