@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.61 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -119,7 +119,7 @@
 #include "aslcompiler.h"
 
 #define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslerror")
+        ACPI_MODULE_NAME    ("aslerror")
 
 
 char                        *AslMessages [] = {
@@ -465,7 +465,7 @@ AslCommonError (
 
         /* Keep a copy of the extra message */
 
-        STRCPY (MessageBuffer, ExtraMessage);
+        ACPI_STRCPY (MessageBuffer, ExtraMessage);
     }
 
     /*
