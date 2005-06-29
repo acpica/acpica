@@ -108,15 +108,6 @@
 #define _COMPONENT          NAMESPACE
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", 'I', "Package stack not empty at method exit", "Package stack not empty at method exit"},
-    {"0001", '1', "Method stack not empty at method exit", "Method stack not empty at method exit"},
-    {"0002", 'I', "Object stack not empty at method exit", "Object stack not empty at method exit"},
-    {"0003", '1', "Descriptor Allocation Failure", "Descriptor Allocation Failure"},
-    {NULL, 'I', NULL, NULL}
-};
-
-
 
 /****************************************************************************
  *
@@ -482,21 +473,21 @@ NsExecuteControlMethod (
     {
         /*  Package stack not empty at method exit and should be  */
 
-        REPORT_INFO (&KDT[0]);
+        REPORT_INFO ("Package stack not empty at method exit");
     }
 
     if (AmlGetMethodDepth () > -1)
     {
         /*  Method stack not empty at method exit and should be */
 
-        REPORT_ERROR (&KDT[1]);
+        REPORT_ERROR ("Method stack not empty at method exit");
     }
 
     if (ObjStackTop)
     {
         /* Object stack is not empty at method exit and should be */
 
-        REPORT_INFO (&KDT[2]);
+        REPORT_INFO ("Object stack not empty at method exit");
         AmlDumpStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
     }
 
@@ -533,7 +524,7 @@ NsGetObjectValue (
     FUNCTION_TRACE ("NsGetObjectValue");
 
 
-    ObjDesc = AllocateObjectDesc (&KDT[3]);
+    ObjDesc = AllocateObjectDesc ();
     if (!ObjDesc)
     {
         /* Descriptor allocation failure */

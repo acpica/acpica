@@ -107,14 +107,6 @@
 
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", 'W', "NsGetType: Null handle", "NsGetType: Null handle"},
-    {"0001", 'W', "NsGetValue: Null handle", "NsGetValue: Null handle"},
-    {NULL, 'I', NULL, NULL}
-};
-
-
-
 /******************************************************************************
  *
  * FUNCTION:    NsChecksum
@@ -222,7 +214,7 @@ NsGetType (
     {
         /*  Handle invalid  */
 
-        REPORT_WARNING (&KDT[0]);
+        REPORT_WARNING ("NsGetType: Null handle");
         FUNCTION_EXIT;
         return TYPE_Any;
     }
@@ -253,7 +245,7 @@ NsGetValue (
     {
         /* handle invalid */
 
-        REPORT_WARNING (&KDT[1]);
+        REPORT_WARNING ("NsGetValue: Null handle");
         FUNCTION_EXIT;
         return NULL;
     }
@@ -312,7 +304,7 @@ NsLocal (
     {
         /*  type code out of range  */
 
-        REPORT_WARNING (&KDT[1]);
+        REPORT_WARNING ("NsLocal: Type code out of range");
         FUNCTION_EXIT;
         return 0;
     }
@@ -469,7 +461,7 @@ RegisterStaticBlockPtr (
 
     else
     {
-        REPORT_WARNING (&KDT[1]);
+        REPORT_WARNING ("Too many static blocks");
     }
 }
 

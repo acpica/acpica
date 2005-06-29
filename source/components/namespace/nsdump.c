@@ -106,11 +106,6 @@
 #define _COMPONENT          NAMESPACE
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "Invalid Name", "Invalid Name"},
-    {NULL, 'I', NULL, NULL}
-};
-
 
 /****************************************************************************
  *
@@ -259,7 +254,7 @@ NsDumpOneObject (
     
     if (!AmlGoodChar ((INT32)* (char *) &ThisEntry->Name))
     {
-        REPORT_WARNING (&KDT[0]);
+        REPORT_WARNING ("Invalid Name");
     }
 
     /*

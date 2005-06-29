@@ -107,14 +107,6 @@
 #define _COMPONENT          NAMESPACE
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "NsNameOfScope: allocation failure", "NsNameOfScope: allocation failure"},
-    {"0001", '1', "Current scope pointer trashed", "Current scope pointer trashed"},
-    {"0002", '1', "NsFindNames: allocation failure", "NsFindNames: allocation failure"},
-    {NULL, 'I', NULL, NULL}
-};
-
-
 
 /****************************************************************************
  *
@@ -167,7 +159,7 @@ NsNameOfScope (
     NameBuffer = LocalCallocate (Size + 1);
     if (!NameBuffer)
     {
-        REPORT_ERROR (&KDT[0]);
+        REPORT_ERROR ("NsNameOfScope: allocation failure");
         FUNCTION_EXIT;
         return NULL;
     }
@@ -218,7 +210,7 @@ NsNameOfCurrentScope (void)
         return NsNameOfScope (CurrentScope->Scope);
     }
     
-    REPORT_ERROR (&KDT[1]);
+    REPORT_ERROR ("Current scope pointer trashed");
 
     FUNCTION_EXIT;
     return NULL;
@@ -578,7 +570,7 @@ NsFindNames (
     List = LocalCallocate (Count * sizeof(ACPI_HANDLE));
     if (!List)
     {
-        REPORT_ERROR (&KDT[2]);
+        REPORT_ERROR ("NsFindNames: allocation failure");
         FUNCTION_EXIT;
         return NULL;
     }

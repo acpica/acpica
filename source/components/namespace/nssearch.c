@@ -107,13 +107,6 @@
 #define _COMPONENT          NAMESPACE
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "NsSearchTable: null scope passed", "NsSearchTable: null scope passed"},
-    {"0001", '1', "Name Table appendage allocation failure", "Name Table appendage allocation failure"},
-    {"0002", '1', "Unknown reference in name space", "Unknown reference in name space"},
-    {NULL, 'I', NULL, NULL}
-};
-
 
 /****************************************************************************
  *
@@ -437,7 +430,7 @@ NsCreateAndLinkNewTable (
     NewTable = NsAllocateNteDesc (NS_TABLE_SIZE);
     if (!NewTable)
     {
-        REPORT_ERROR (&KDT[1]);
+        REPORT_ERROR ("Name Table appendage allocation failure");
         Status = AE_NO_MEMORY;
     }
 
@@ -558,7 +551,7 @@ NsInitializeEntry (
     {
         /*  Unknown reference in name space */
 
-        REPORT_ERROR (&KDT[2]);
+        REPORT_ERROR ("Unknown reference in name space");
 
         /* We don't want to abort here, however! */
     }
@@ -642,7 +635,7 @@ NsSearchAndEnter (
 
     if (!NameTable || !EntryName || !RetEntry)
     {
-        REPORT_ERROR (&KDT[0]);
+        REPORT_ERROR ("NsSearchAndEnter: bad parameter");
         FUNCTION_EXIT;
         return AE_BAD_PARAMETER;
     }
