@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.15 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,8 @@ CgGenerateAmlOutput (void)
     }
 
     Gbl_SourceLine = 0;
-    AslGbl_NextError = AslGbl_ErrorLog;
+    LsPushNode (Gbl_InputFilename);
+    Gbl_NextError = Gbl_ErrorLog;
 
     TgWalkParseTree (ASL_WALK_VISIT_DOWNWARD, CgAmlWriteWalk, NULL, NULL);
 
@@ -157,7 +158,7 @@ CgGenerateAmlOutput (void)
     if (Gbl_ListingFlag)
     {
         LsFinishSourceListing ();
-        fprintf (Gbl_ListingFile, "\n\nTable header with final checksum:\n\n");
+        fprintf (Gbl_ListingOutputFile, "\n\nTable header with final checksum:\n\n");
     }
 
     CgCloseTable ();
@@ -242,7 +243,7 @@ CgLocalWriteAmlData (
 
     /* Write the raw data to the AML file */
 
-    fwrite ((char *) Buffer, Length, 1, Gbl_OutputAmlFile);
+    fwrite ((char *) Buffer, Length, 1, Gbl_AmlOutputFile);
 
     /* Write the hex bytes to the listing file (if requested) */
 
@@ -465,6 +466,11 @@ CgWriteTableHeader (
     TableHeader.AslCompilerRevision = CompilerCreatorRevision;
 
 
+    /* Table length.  Checksum zero for now, will rewrite later */
+
+    TableHeader.Length   = Gbl_TableLength;
+    TableHeader.Checksum = 0;
+
     CgLocalWriteAmlData (&TableHeader, sizeof (ACPI_TABLE_HEADER));
 }
 
@@ -488,20 +494,13 @@ CgCloseTable (void)
     UINT8               FileByte;
 
 
-    TableHeader.Length = Gbl_TableLength;
-    TableHeader.Checksum = 0;
-
-    /* Write the header at the start of the file */
-
-    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
-    CgLocalWriteAmlData (&TableHeader, sizeof (ACPI_TABLE_HEADER));
 
     /* Calculate the checksum over the entire file */
 
-    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
+    fseek (Gbl_AmlOutputFile, 0, SEEK_SET);
 
     Sum = 0;
-    while (fread (&FileByte, 1, 1, Gbl_OutputAmlFile))
+    while (fread (&FileByte, 1, 1, Gbl_AmlOutputFile))
     {
         Sum += FileByte;
     }
@@ -510,7 +509,7 @@ CgCloseTable (void)
 
     TableHeader.Checksum = (0 - Sum);
 
-    fseek (Gbl_OutputAmlFile, 0, SEEK_SET);
+    fseek (Gbl_AmlOutputFile, 0, SEEK_SET);
     CgLocalWriteAmlData (&TableHeader, sizeof (ACPI_TABLE_HEADER));
 }
 
@@ -537,7 +536,10 @@ CgWriteNode (
 
     /* TEMP FIX: always check for DEFAULT_ARG */
 
-    if (Node->ParseOpcode == DEFAULT_ARG)
+    if ((Node->ParseOpcode == DEFAULT_ARG)  ||
+        (Node->ParseOpcode == EXTERNAL)     || 
+        (Node->ParseOpcode == INCLUDE)      || 
+        (Node->ParseOpcode == INCLUDE_END))
     {
         return;
     }
