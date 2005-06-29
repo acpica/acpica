@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -125,9 +125,6 @@
 #define _COMPONENT          ACPI_UTILITIES
         MODULE_NAME         ("utinit")
 
-
-#define ACPI_OFFSET(d,o)    ((ACPI_SIZE) &(((d *)0)->o))
-#define ACPI_FADT_OFFSET(o) ACPI_OFFSET (FADT_DESCRIPTOR, o)
 
 
 /*******************************************************************************
