@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  ******************************************************************************/
 
@@ -653,7 +653,7 @@ AcpiRsExtendedIrqStream (
          * Buffer needs to be set to the length of the sting + one for the
          * terminating null
          */
-        Buffer += (ACPI_STRLEN (LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr) + 1);
+        Buffer += (ACPI_SIZE)(ACPI_STRLEN (LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr) + 1);
     }
 
     /*

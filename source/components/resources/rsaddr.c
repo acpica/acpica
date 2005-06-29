@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -488,7 +488,7 @@ AcpiRsAddress16Stream (
          * Buffer needs to be set to the length of the sting + one for the
          *  terminating null
          */
-        Buffer += (ACPI_STRLEN (LinkedList->Data.Address16.ResourceSource.StringPtr) + 1);
+        Buffer += (ACPI_SIZE)(ACPI_STRLEN (LinkedList->Data.Address16.ResourceSource.StringPtr) + 1);
     }
 
     /*
@@ -878,7 +878,7 @@ AcpiRsAddress32Stream (
          * Buffer needs to be set to the length of the sting + one for the
          *  terminating null
          */
-        Buffer += (ACPI_STRLEN (LinkedList->Data.Address32.ResourceSource.StringPtr) + 1);
+        Buffer += (ACPI_SIZE)(ACPI_STRLEN (LinkedList->Data.Address32.ResourceSource.StringPtr) + 1);
     }
 
     /*
@@ -1270,7 +1270,7 @@ AcpiRsAddress64Stream (
          * Buffer needs to be set to the length of the sting + one for the
          *  terminating null
          */
-        Buffer += (ACPI_STRLEN (LinkedList->Data.Address64.ResourceSource.StringPtr) + 1);
+        Buffer += (ACPI_SIZE)(ACPI_STRLEN (LinkedList->Data.Address64.ResourceSource.StringPtr) + 1);
     }
 
     /*

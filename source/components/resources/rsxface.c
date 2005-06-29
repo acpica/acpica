@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.16 $
+ *              $Revision: 1.25 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,12 +118,10 @@
 #define __RSXFACE_C__
 
 #include "acpi.h"
-#include "acinterp.h"
-#include "acnamesp.h"
 #include "acresrc.h"
 
 #define _COMPONENT          ACPI_RESOURCES
-        MODULE_NAME         ("rsxface")
+        ACPI_MODULE_NAME    ("rsxface")
 
 
 /*******************************************************************************
@@ -157,7 +155,7 @@ AcpiGetIrqRoutingTable  (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiGetIrqRoutingTable ");
+    ACPI_FUNCTION_TRACE ("AcpiGetIrqRoutingTable ");
 
 
     /*
@@ -166,11 +164,15 @@ AcpiGetIrqRoutingTable  (
      * we also need a valid pointer in the buffer. If it's a zero buffer length,
      * we'll be returning the needed buffer size, so keep going.
      */
-    if ((!DeviceHandle)         ||
-        (!RetBuffer)            ||
-        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
+    if (!DeviceHandle)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtValidateBuffer (RetBuffer);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
     }
 
     Status = AcpiRsGetPrtMethodData (DeviceHandle, RetBuffer);
@@ -210,7 +212,7 @@ AcpiGetCurrentResources (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiGetCurrentResources");
+    ACPI_FUNCTION_TRACE ("AcpiGetCurrentResources");
 
 
     /*
@@ -219,11 +221,15 @@ AcpiGetCurrentResources (
      * we also need a valid pointer in the buffer. If it's a zero buffer length,
      * we'll be returning the needed buffer size, so keep going.
      */
-    if ((!DeviceHandle)         ||
-        (!RetBuffer)            ||
-        ((RetBuffer->Length) && (!RetBuffer->Pointer)))
+    if (!DeviceHandle)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtValidateBuffer (RetBuffer);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
     }
 
     Status = AcpiRsGetCrsMethodData (DeviceHandle, RetBuffer);
@@ -260,7 +266,7 @@ AcpiGetPossibleResources (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiGetPossibleResources");
+    ACPI_FUNCTION_TRACE ("AcpiGetPossibleResources");
 
 
     /*
@@ -269,14 +275,108 @@ AcpiGetPossibleResources (
      * we also need a valid pointer in the buffer. If it's a zero buffer length,
      * we'll be returning the needed buffer size, so keep going.
      */
-    if ((!DeviceHandle)         ||
-        (!RetBuffer)            ||
-        ((RetBuffer->Length) && (!RetBuffer->Pointer)))
+    if (!DeviceHandle)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    Status = AcpiUtValidateBuffer (RetBuffer);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     Status = AcpiRsGetPrsMethodData (DeviceHandle, RetBuffer);
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiWalkResources
+ *
+ * PARAMETERS:  DeviceHandle    - a handle to the device object for the
+ *                                device we are querying
+ *              Path            - method name of the resources we want
+ *                                (METHOD_NAME__CRS or METHOD_NAME__PRS)
+ *              UserFunction    - called for each resource
+ *              Context         - passed to UserFunction
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Retrieves the current or possible resource list for the
+ *              specified device.  The UserFunction is called once for
+ *              each resource in the list.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiWalkResources (
+    ACPI_HANDLE                     DeviceHandle,
+    char                            *Path,
+    ACPI_WALK_RESOURCE_CALLBACK     UserFunction,
+    void                            *Context)
+{
+    ACPI_STATUS                 Status;
+    ACPI_BUFFER                 Buffer = {ACPI_ALLOCATE_BUFFER, NULL};
+    ACPI_RESOURCE               *Resource;
+
+
+    ACPI_FUNCTION_TRACE ("AcpiWalkResources");
+
+
+    if (!DeviceHandle ||
+        (ACPI_STRNCMP (Path, METHOD_NAME__CRS, sizeof (METHOD_NAME__CRS)) &&
+         ACPI_STRNCMP (Path, METHOD_NAME__PRS, sizeof (METHOD_NAME__PRS))))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiRsGetMethodData (DeviceHandle, Path, &Buffer);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Resource = (ACPI_RESOURCE *) Buffer.Pointer;
+    for (;;)
+    {
+        if (!Resource || Resource->Id == ACPI_RSTYPE_END_TAG)
+        {
+            break;
+        }
+
+        Status = UserFunction (Resource, Context);
+
+        switch (Status)
+        {
+        case AE_OK:
+        case AE_CTRL_DEPTH:
+
+            /* Just keep going */
+            Status = AE_OK;
+            break;
+
+        case AE_CTRL_TERMINATE:
+
+            /* Exit now, with OK stats */
+
+            Status = AE_OK;
+            goto Cleanup;
+
+        default:
+
+            /* All others are valid exceptions */
+
+            goto Cleanup;
+        }
+
+        Resource = ACPI_NEXT_RESOURCE (Resource);
+    }
+
+Cleanup:
+
+    AcpiOsFree (Buffer.Pointer);
     return_ACPI_STATUS (Status);
 }
 
@@ -307,7 +407,7 @@ AcpiSetCurrentResources (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiSetCurrentResources");
+    ACPI_FUNCTION_TRACE ("AcpiSetCurrentResources");
 
 
     /*
@@ -323,4 +423,72 @@ AcpiSetCurrentResources (
 
     Status = AcpiRsSetSrsMethodData (DeviceHandle, InBuffer);
     return_ACPI_STATUS (Status);
+}
+
+
+
+#define ACPI_COPY_FIELD(Out, In, Field)  ((Out)->Field = (In)->Field)
+#define ACPI_COPY_ADDRESS(Out, In)                      \
+    ACPI_COPY_FIELD(Out, In, ResourceType);              \
+    ACPI_COPY_FIELD(Out, In, ProducerConsumer);          \
+    ACPI_COPY_FIELD(Out, In, Decode);                    \
+    ACPI_COPY_FIELD(Out, In, MinAddressFixed);           \
+    ACPI_COPY_FIELD(Out, In, MaxAddressFixed);           \
+    ACPI_COPY_FIELD(Out, In, Attribute);                 \
+    ACPI_COPY_FIELD(Out, In, Granularity);               \
+    ACPI_COPY_FIELD(Out, In, MinAddressRange);           \
+    ACPI_COPY_FIELD(Out, In, MaxAddressRange);           \
+    ACPI_COPY_FIELD(Out, In, AddressTranslationOffset);  \
+    ACPI_COPY_FIELD(Out, In, AddressLength);             \
+    ACPI_COPY_FIELD(Out, In, ResourceSource);
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiResourceToAddress64
+ *
+ * PARAMETERS:  resource                - Pointer to a resource
+ *              out                     - Pointer to the users's return
+ *                                        buffer (a struct
+ *                                        acpi_resource_address64)
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: If the resource is an address16, address32, or address64,
+ *              copy it to the address64 return buffer.  This saves the
+ *              caller from having to duplicate code for different-sized
+ *              addresses.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiResourceToAddress64 (
+    ACPI_RESOURCE               *Resource,
+    ACPI_RESOURCE_ADDRESS64     *Out)
+{
+    ACPI_RESOURCE_ADDRESS16     *Address16;
+    ACPI_RESOURCE_ADDRESS32     *Address32;
+    ACPI_RESOURCE_ADDRESS64     *Address64;
+
+
+    switch (Resource->Id) {
+    case ACPI_RSTYPE_ADDRESS16:
+        Address16 = (ACPI_RESOURCE_ADDRESS16 *) &Resource->Data;
+        ACPI_COPY_ADDRESS(Out, Address16);
+        break;
+
+    case ACPI_RSTYPE_ADDRESS32:
+        Address32 = (ACPI_RESOURCE_ADDRESS32 *) &Resource->Data;
+        ACPI_COPY_ADDRESS(Out, Address32);
+        break;
+
+    case ACPI_RSTYPE_ADDRESS64:
+        Address64 = (ACPI_RESOURCE_ADDRESS64 *) &Resource->Data;
+        ACPI_COPY_ADDRESS(Out, Address64);
+        break;
+
+    default:
+        return (AE_BAD_PARAMETER);
+    }
+
+    return (AE_OK);
 }
