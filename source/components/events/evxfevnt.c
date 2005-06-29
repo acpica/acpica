@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
+ * Module Name: evapievt - External Interfaces, ACPI event disable/enable
  *
  *****************************************************************************/
 
@@ -114,17 +114,18 @@
  *****************************************************************************/
 
 
-#define __EVXFEVNT_C__
+#define __EVAPIEVT_C__
 
 #include "acpi.h"
-#include "achware.h"
-#include "acnamesp.h"
-#include "acevents.h"
+#include "hardware.h"
+#include "namesp.h"
+#include "events.h"
 #include "amlcode.h"
-#include "acinterp.h"
+#include "interp.h"
 
 #define _COMPONENT          EVENT_HANDLING
-        MODULE_NAME         ("evxfevnt");
+        MODULE_NAME         ("evapievt");
+
 
 
 /**************************************************************************
@@ -152,7 +153,7 @@ AcpiEnable (void)
 
     /* Make sure we've got ACPI tables */
 
-    if (!AcpiGbl_DSDT)
+    if (!Acpi_GblDSDT)
     {
         DEBUG_PRINT (ACPI_WARN, ("No ACPI tables present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
@@ -166,46 +167,40 @@ AcpiEnable (void)
         return_ACPI_STATUS (AE_ERROR);
     }
 
-    AcpiGbl_OriginalMode = AcpiHwGetMode();
+    Acpi_GblOriginalMode = AcpiHwGetMode();
 
     /*
      * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
      * done prior to enabling SCIs to prevent interrupts from occuring
      * before handers are installed.
      */
-
-    Status = AcpiEvFixedEventInitialize ();
-    if (ACPI_FAILURE (Status))
+ 
+    if (ACPI_FAILURE (AcpiEvFixedEventInitialize ()))
     {
         DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize fixed events.\n"));
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_ERROR);
     }
 
-    Status = AcpiEvGpeInitialize ();
-    if (ACPI_FAILURE (Status))
+    if (ACPI_FAILURE (AcpiEvGpeInitialize()))
     {
-        DEBUG_PRINT (ACPI_FATAL,
-            ("Unable to initialize general purpose events.\n"));
-        return_ACPI_STATUS (Status);
+        DEBUG_PRINT (ACPI_FATAL, ("Unable to initialize general purpose events.\n"));
+        return_ACPI_STATUS (AE_ERROR);
     }
 
     /* Install the SCI handler */
 
-    Status = AcpiEvInstallSciHandler ();
-    if (ACPI_FAILURE (Status))
+    if (ACPI_FAILURE (AcpiEvInstallSciHandler ()))
     {
-        DEBUG_PRINT (ACPI_FATAL,
-            ("Unable to install System Control Interrupt Handler\n"));
-        return_ACPI_STATUS (Status);
+        DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler\n"));
+        return_ACPI_STATUS (AE_ERROR);
     }
 
     /* Transition to ACPI mode */
 
-    Status = AcpiHwSetMode (SYS_MODE_ACPI);
-    if (ACPI_FAILURE (Status))
+    if (AE_OK != AcpiHwSetMode (SYS_MODE_ACPI))
     {
         DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_ERROR);
     }
 
     DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
@@ -236,19 +231,16 @@ AcpiEnable (void)
 ACPI_STATUS
 AcpiDisable (void)
 {
-    ACPI_STATUS             Status;
-
 
     FUNCTION_TRACE ("AcpiDisable");
 
 
     /* Restore original mode  */
 
-    Status = AcpiHwSetMode (AcpiGbl_OriginalMode);
-    if (ACPI_FAILURE (Status))
+    if (AE_OK != AcpiHwSetMode (Acpi_GblOriginalMode))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Unable to transition to original mode"));
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_ERROR);
     }
 
     /* Unload the SCI interrupt handler  */
@@ -256,7 +248,7 @@ AcpiDisable (void)
     AcpiEvRemoveSciHandler ();
     AcpiEvRestoreAcpiState ();
 
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -290,29 +282,29 @@ AcpiEnableEvent (
     switch (Type)
     {
 
-    case ACPI_EVENT_FIXED:
+    case EVENT_FIXED:
 
         /* Decode the Fixed AcpiEvent */
 
         switch (Event)
         {
-        case ACPI_EVENT_PMTIMER:
+        case EVENT_PMTIMER:
             RegisterId = TMR_EN;
             break;
 
-        case ACPI_EVENT_GLOBAL:
+        case EVENT_GLOBAL:
             RegisterId = GBL_EN;
             break;
 
-        case ACPI_EVENT_POWER_BUTTON:
+        case EVENT_POWER_BUTTON:
             RegisterId = PWRBTN_EN;
             break;
 
-        case ACPI_EVENT_SLEEP_BUTTON:
+        case EVENT_SLEEP_BUTTON:
             RegisterId = SLPBTN_EN;
             break;
 
-        case ACPI_EVENT_RTC:
+        case EVENT_RTC:
             RegisterId = RTC_EN;
             break;
 
@@ -321,21 +313,18 @@ AcpiEnableEvent (
             break;
         }
 
-        /*
-         * Enable the requested fixed event (by writing a one to the
-         * enable register bit)
-         */
+        /* Enable the requested fixed event (by writing a one to the enable register bit) */
 
         AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
         break;
 
 
-    case ACPI_EVENT_GPE:
+    case EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
+            (Acpi_GblGpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -387,29 +376,29 @@ AcpiDisableEvent (
     switch (Type)
     {
 
-    case ACPI_EVENT_FIXED:
+    case EVENT_FIXED:
 
         /* Decode the Fixed AcpiEvent */
 
         switch (Event)
         {
-        case ACPI_EVENT_PMTIMER:
+        case EVENT_PMTIMER:
             RegisterId = TMR_EN;
             break;
 
-        case ACPI_EVENT_GLOBAL:
+        case EVENT_GLOBAL:
             RegisterId = GBL_EN;
             break;
 
-        case ACPI_EVENT_POWER_BUTTON:
+        case EVENT_POWER_BUTTON:
             RegisterId = PWRBTN_EN;
             break;
 
-        case ACPI_EVENT_SLEEP_BUTTON:
+        case EVENT_SLEEP_BUTTON:
             RegisterId = SLPBTN_EN;
             break;
 
-        case ACPI_EVENT_RTC:
+        case EVENT_RTC:
             RegisterId = RTC_EN;
             break;
 
@@ -418,21 +407,18 @@ AcpiDisableEvent (
             break;
         }
 
-        /*
-         * Disable the requested fixed event (by writing a zero to the
-         * enable register bit)
-         */
+        /* Disable the requested fixed event (by writing a zero to the enable register bit) */
 
         AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 0);
         break;
 
 
-    case ACPI_EVENT_GPE:
+    case EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
+            (Acpi_GblGpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -481,29 +467,29 @@ AcpiClearEvent (
     switch (Type)
     {
 
-    case ACPI_EVENT_FIXED:
+    case EVENT_FIXED:
 
         /* Decode the Fixed AcpiEvent */
 
         switch (Event)
         {
-        case ACPI_EVENT_PMTIMER:
+        case EVENT_PMTIMER:
             RegisterId = TMR_STS;
             break;
 
-        case ACPI_EVENT_GLOBAL:
+        case EVENT_GLOBAL:
             RegisterId = GBL_STS;
             break;
 
-        case ACPI_EVENT_POWER_BUTTON:
+        case EVENT_POWER_BUTTON:
             RegisterId = PWRBTN_STS;
             break;
 
-        case ACPI_EVENT_SLEEP_BUTTON:
+        case EVENT_SLEEP_BUTTON:
             RegisterId = SLPBTN_STS;
             break;
 
-        case ACPI_EVENT_RTC:
+        case EVENT_RTC:
             RegisterId = RTC_STS;
             break;
 
@@ -512,21 +498,18 @@ AcpiClearEvent (
             break;
         }
 
-        /*
-         * Clear the requested fixed event (By writing a one to the
-         * status register bit)
-         */
+        /* Clear the requested fixed event (By writing a one to the status register bit) */
 
         AcpiHwRegisterAccess (ACPI_WRITE, TRUE, RegisterId, 1);
         break;
 
 
-    case ACPI_EVENT_GPE:
+    case EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
+            (Acpi_GblGpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
@@ -585,29 +568,29 @@ AcpiGetEventStatus (
     switch (Type)
     {
 
-    case ACPI_EVENT_FIXED:
+    case EVENT_FIXED:
 
         /* Decode the Fixed AcpiEvent */
 
         switch (Event)
         {
-        case ACPI_EVENT_PMTIMER:
+        case EVENT_PMTIMER:
             RegisterId = TMR_STS;
             break;
 
-        case ACPI_EVENT_GLOBAL:
+        case EVENT_GLOBAL:
             RegisterId = GBL_STS;
             break;
 
-        case ACPI_EVENT_POWER_BUTTON:
+        case EVENT_POWER_BUTTON:
             RegisterId = PWRBTN_STS;
             break;
 
-        case ACPI_EVENT_SLEEP_BUTTON:
+        case EVENT_SLEEP_BUTTON:
             RegisterId = SLPBTN_STS;
             break;
 
-        case ACPI_EVENT_RTC:
+        case EVENT_RTC:
             RegisterId = RTC_STS;
             break;
 
@@ -622,12 +605,12 @@ AcpiGetEventStatus (
         break;
 
 
-    case ACPI_EVENT_GPE:
+    case EVENT_GPE:
 
         /* Ensure that we have a valid GPE number */
 
         if ((Event >= NUM_GPE) ||
-            (AcpiGbl_GpeValid[Event] == ACPI_GPE_INVALID))
+            (Acpi_GblGpeValid[Event] == GPE_INVALID))
         {
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
