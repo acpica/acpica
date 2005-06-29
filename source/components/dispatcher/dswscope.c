@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
- *              $Revision: 1.55 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,7 +117,6 @@
 #define __DSWSCOPE_C__
 
 #include "acpi.h"
-#include "acinterp.h"
 #include "acdispat.h"
 
 
@@ -199,9 +198,8 @@ AcpiDsScopeStackPush (
 
     if (!AcpiUtValidObjectType (Type))
     {
-        ACPI_REPORT_WARNING (("DsScopeStackPush: type code out of range\n"));
+        ACPI_REPORT_WARNING (("DsScopeStackPush: Invalid object type: 0x%X\n", Type));
     }
-
 
     /* Allocate a new scope object */
 
@@ -226,25 +224,24 @@ AcpiDsScopeStackPush (
     if (OldScopeInfo)
     {
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC,
-            "[%4.4s] (%10s)",
-            &OldScopeInfo->Scope.Node->Name.Ascii,
+            "[%4.4s] (%s)",
+            OldScopeInfo->Scope.Node->Name.Ascii,
             AcpiUtGetTypeName (OldScopeInfo->Common.Value)));
     }
     else
     {
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC,
-            "[\\___] (%10s)", "ROOT"));
+            "[\\___] (%s)", "ROOT"));
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC,
         ", New scope -> [%4.4s] (%s)\n",
-        &ScopeInfo->Scope.Node->Name.Ascii,
+        ScopeInfo->Scope.Node->Name.Ascii,
         AcpiUtGetTypeName (ScopeInfo->Common.Value)));
 
     /* Push new scope object onto stack */
 
     AcpiUtPushGenericState (&WalkState->ScopeInfo, ScopeInfo);
-
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -289,9 +286,9 @@ AcpiDsScopeStackPop (
     WalkState->ScopeDepth--;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "[%.2d] Popped scope [%4.4s] (%10s), New scope -> ",
+        "[%.2d] Popped scope [%4.4s] (%s), New scope -> ",
         (UINT32) WalkState->ScopeDepth,
-        &ScopeInfo->Scope.Node->Name.Ascii,
+        ScopeInfo->Scope.Node->Name.Ascii,
         AcpiUtGetTypeName (ScopeInfo->Common.Value)));
 
     NewScopeInfo = WalkState->ScopeInfo;
@@ -299,7 +296,7 @@ AcpiDsScopeStackPop (
     {
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC,
             "[%4.4s] (%s)\n",
-            &NewScopeInfo->Scope.Node->Name.Ascii,
+            NewScopeInfo->Scope.Node->Name.Ascii,
             AcpiUtGetTypeName (NewScopeInfo->Common.Value)));
     }
     else
@@ -309,7 +306,6 @@ AcpiDsScopeStackPop (
     }
 
     AcpiUtDeleteGenericState (ScopeInfo);
-
     return_ACPI_STATUS (AE_OK);
 }
 
