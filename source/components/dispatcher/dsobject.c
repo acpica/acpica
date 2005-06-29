@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -271,7 +271,7 @@ AcpiDsBuildInternalBufferObj (
             return (AE_TYPE);
         }
 
-        ByteListLength = ByteList->Common.Value.Integer32;
+        ByteListLength = (UINT32) ByteList->Common.Value.Integer;
     }
 
     /*
