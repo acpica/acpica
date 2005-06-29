@@ -119,7 +119,11 @@ static ST_KEY_DESC_TABLE KDT[] = {
  *
  * FUNCTION:    NsSearchOnly
  *
- * PARAMETERS:  
+ * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
+ *              *NameTable          - Starting table where search will begin
+ *              Type                - Object type to match
+ *              **RetEntry          - Where the matched NTE is returned
+ *              *RetInfo            - Where info about the search is returned
  *
  * RETURN:      Status and return information via NS_SEARCH_DATA
  *
@@ -278,7 +282,10 @@ NsSearchOnly (char *EntryName, nte *NameTable, NsType Type, nte **RetEntry,
  *
  * FUNCTION:    NsSearchParentTree 
  *
- * PARAMETERS:  
+ * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
+ *              *NameTable          - Starting table where search will begin
+ *              Type                - Object type to match
+ *              **RetEntry          - Where the matched NTE is returned
  *
  * RETURN:      Status
  *
@@ -370,7 +377,8 @@ NsSearchParentTree (char *EntryName, nte *NameTable, NsType Type, nte **RetEntry
  *
  * FUNCTION:    NsCreateAndLinkNewTable
  *
- * PARAMETERS:  
+ * PARAMETERS:  *NameTable          - The table that is to be "extended" by
+ *                                    the creation of an appendage table.
  *
  * RETURN:      Status
  *
@@ -442,12 +450,13 @@ NsCreateAndLinkNewTable (nte *NameTable)
 }
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    NsInitializeTable
  *
- * PARAMETERS:  
+ * PARAMETERS:  NewTable            - The new table to be initialized
+ *              ParentScope         - The parent (owner) scope
+ *              ParentEntry         - The NTE for the parent
  *
  * RETURN:      None
  *
@@ -473,7 +482,12 @@ NsInitializeTable (nte *NewTable, nte *ParentScope, nte *ParentEntry)
  *
  * FUNCTION:    NsInitializeEntry
  *
- * PARAMETERS:  
+ * PARAMETERS:  NameTable       - The containing table for the new NTE
+ *              Position        - Position (index) of the new NTE in the table
+ *              EntryName       - ACPI name of the new entry
+ *              Type            - ACPI object type of the new entry
+ *              PreviousEntry   - Link back to the previous entry (can span
+ *                                multiple tables)
  *
  * RETURN:      None
  *
@@ -568,19 +582,16 @@ NsInitializeEntry (nte *NameTable, UINT32 Position, char *EntryName, NsType Type
 }
 
 
-
-
-
-
 /****************************************************************************
  *
  * FUNCTION:    NsSearchAndEnter
  *
- * PARAMETERS:  EntryName          - name segment to find or insert
- *              NameTable         - name table to search
- *              LoadMode        - Add names only in Load mode
- *              Type            - Type associated with name
- *              RetEntry          - Where to return the found NTE
+ * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
+ *              *NameTable          - Starting table where search will begin
+ *              LoadMode            - Add names only in MODE_Loadx.  Otherwise,
+ *                                    search only.
+ *              Type                - Object type to match
+ *              **RetEntry          - Where the matched NTE is returned
  *
  * RETURN:      Status
  *
