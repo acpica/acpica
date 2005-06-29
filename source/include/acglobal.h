@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.146 $
+ *       $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -238,7 +238,8 @@ ACPI_EXTERN BOOLEAN                     AcpiGbl_EventsInitialized;
 extern BOOLEAN                          AcpiGbl_Shutdown;
 extern UINT32                           AcpiGbl_StartupFlags;
 extern const UINT8                      AcpiGbl_DecodeTo8bit[8];
-extern const char                      *AcpiGbl_DbSleepStates[ACPI_S_STATE_COUNT];
+extern const char                      *AcpiGbl_SleepStateNames[ACPI_S_STATE_COUNT];
+extern const char                      *AcpiGbl_HighestDstateNames[4];
 extern const ACPI_OPCODE_INFO           AcpiGbl_AmlOpInfo[AML_NUM_OPCODES];
 extern const char                      *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS];
 
