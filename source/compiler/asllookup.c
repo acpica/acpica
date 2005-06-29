@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.52 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@ LsDoOneNamespaceObject (
     void                    **ReturnValue)
 {
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
-    ASL_PARSE_NODE          *Pnode;
+    ACPI_PARSE_OBJECT       *Op;
 
 
     Gbl_NumNamespaceObjects++;
@@ -159,58 +159,63 @@ LsDoOneNamespaceObject (
                         &Node->Name,
                         AcpiUtGetTypeName (Node->Type));
 
-    Pnode = (ASL_PARSE_NODE *) Node->Object;
+    Op = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
 
-    if (Pnode)
+    if (Op)
     {
-        if (Pnode->ParseOpcode == NAME)
+        if (Op->Asl.ParseOpcode == PARSEOP_NAME)
         {
-            Pnode = Pnode->Child;
+            Op = Op->Asl.Child;
         }
 
         switch (Node->Type)
         {
         case ACPI_TYPE_INTEGER:
 
-            if ((Pnode->ParseOpcode == NAMESEG)  ||
-                (Pnode->ParseOpcode == NAMESTRING))
+            if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
+                (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
-                Pnode = Pnode->Peer;
+                Op = Op->Asl.Next;
             }
 
-            if (Pnode->Value.Integer64 > ACPI_UINT32_MAX)
+            if (Op->Asl.Value.Integer > ACPI_UINT32_MAX)
             {
                 FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X%X]",
-                            ACPI_HIDWORD (Pnode->Value.Integer64), Pnode->Value.Integer32);
+                            ACPI_HIDWORD (Op->Asl.Value.Integer64), Op->Asl.Value.Integer32);
             }
             else
             {
                 FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X]",
-                            Pnode->Value.Integer32);
+                            Op->Asl.Value.Integer32);
             }
             break;
 
 
         case ACPI_TYPE_STRING:
-            if ((Pnode->ParseOpcode == NAMESEG)  ||
-                (Pnode->ParseOpcode == NAMESTRING))
+            if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
+                (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
-                Pnode = Pnode->Peer;
+                Op = Op->Asl.Next;
             }
 
             FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = \"%s\"]",
-                        Pnode->Value.String);
+                        Op->Asl.Value.String);
             break;
 
 
         case INTERNAL_TYPE_REGION_FIELD:
-            if ((Pnode->ParseOpcode == NAMESEG)  ||
-                (Pnode->ParseOpcode == NAMESTRING))
+            if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
+                (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
-                Pnode = Pnode->Child;
+                Op = Op->Asl.Child;
             }
             FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Length = 0x%02X]",
-                        Pnode->Value.Integer32);
+                        Op->Asl.Value.Integer32);
+            break;
+
+
+        default:
+            /* Nothing to do for other types */
             break;
         }
     }
@@ -235,7 +240,8 @@ LsDoOneNamespaceObject (
  ****************************************************************************/
 
 ACPI_STATUS
-LsDisplayNamespace (void)
+LsDisplayNamespace (
+    void)
 {
     ACPI_STATUS             Status;
 
@@ -255,7 +261,7 @@ LsDisplayNamespace (void)
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
                                 ACPI_UINT32_MAX, FALSE, LsDoOneNamespaceObject,
                                 NULL, NULL);
-    return (AE_OK);
+    return (Status);
 }
 
 
@@ -350,7 +356,8 @@ LkObjectExists (
  ****************************************************************************/
 
 ACPI_STATUS
-LkCrossReferenceNamespace (void)
+LkCrossReferenceNamespace (
+    void)
 {
     ACPI_WALK_STATE         *WalkState;
 
@@ -377,6 +384,64 @@ LkCrossReferenceNamespace (void)
 
 /*****************************************************************************
  *
+ * FUNCTION:    LkCheckFieldRange
+ *
+ * PARAMETERS:  RegionBitLength     - Length of entire parent region
+ *              FieldBitOffset      - Start of the field unit (within region)
+ *              FieldBitLength      - Entire length of field unit
+ *              AccessBitWidth      - Access width of the field unit
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Check one field unit to make sure it fits in the parent
+ *              op region.
+ *
+ * Note: AccessBitWidth must be either 8,16,32, or 64
+ *
+ ****************************************************************************/
+
+void
+LkCheckFieldRange (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  RegionBitLength,
+    UINT32                  FieldBitOffset, 
+    UINT32                  FieldBitLength,
+    UINT32                  AccessBitWidth)
+{
+    UINT32                  FieldEndBitOffset;
+
+    /*
+     * Check each field unit against the region size.  The entire
+     * field unit (start offset plus length) must fit within the
+     * region.
+     */
+    FieldEndBitOffset = FieldBitOffset + FieldBitLength;
+
+    if (FieldEndBitOffset > RegionBitLength)
+    {
+        /* Field definition itself is beyond the end-of-region */
+
+        AslError (ASL_ERROR, ASL_MSG_FIELD_UNIT_OFFSET, Op, NULL);
+        return;
+    }
+
+    /* 
+     * Now check that the field plus AccessWidth doesn't go beyond
+     * the end-of-region.  Assumes AccessBitWidth is a power of 2
+     */
+    FieldEndBitOffset = ACPI_ROUND_UP (FieldEndBitOffset, AccessBitWidth);
+
+    if (FieldEndBitOffset > RegionBitLength)
+    {
+        /* Field definition combined with the access is beyond EOR */
+
+        AslError (ASL_ERROR, ASL_MSG_FIELD_UNIT_ACCESS_WIDTH, Op, NULL);
+    }
+}
+
+
+/*****************************************************************************
+ *
  * FUNCTION:    LkNamespaceLocateBegin
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
@@ -396,51 +461,51 @@ LkCrossReferenceNamespace (void)
 
 ACPI_STATUS
 LkNamespaceLocateBegin (
-    ASL_PARSE_NODE          *PsNode,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
-    ACPI_NAMESPACE_NODE     *NsNode;
+    ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        ObjectType;
     NATIVE_CHAR             *Path;
     UINT8                   PassedArgs;
-    ASL_PARSE_NODE          *Next;
-    ASL_PARSE_NODE          *OwningPsNode;
-    ASL_PARSE_NODE          *SpaceIdNode;
+    ACPI_PARSE_OBJECT       *NextOp;
+    ACPI_PARSE_OBJECT       *OwningOp;
+    ACPI_PARSE_OBJECT       *SpaceIdOp;
     UINT32                  MinimumLength;
     UINT32                  Temp;
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
     ACPI_FUNCTION_NAME ("LkNamespaceLocateBegin");
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: PsNode %p\n", PsNode));
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Op %p\n", Op));
 
 
     /* We are only interested in opcodes that have an associated name */
 
-    OpInfo = AcpiPsGetOpcodeInfo (PsNode->AmlOpcode);
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Asl.AmlOpcode);
 
     if ((!(OpInfo->Flags & AML_NAMED)) &&
-        (PsNode->ParseOpcode != NAMESTRING) &&
-        (PsNode->ParseOpcode != NAMESEG)    &&
-        (PsNode->ParseOpcode != METHODCALL))
+        (Op->Asl.ParseOpcode != PARSEOP_NAMESTRING) &&
+        (Op->Asl.ParseOpcode != PARSEOP_NAMESEG)    &&
+        (Op->Asl.ParseOpcode != PARSEOP_METHODCALL))
     {
         return (AE_OK);
     }
 
     if (OpInfo->Flags & AML_NAMED)
     {
-        Path = PsNode->Child->Value.String;
+        Path = Op->Asl.Child->Asl.Value.String;
     }
     else
     {
-        Path = PsNode->Value.String;
+        Path = Op->Asl.Value.String;
     }
 
-    ObjectType = AslMapNamedOpcodeToDataType (PsNode->AmlOpcode);
-    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%x\n", ObjectType));
+    ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "NamespaceLocateBegin: Type=%X\n", ObjectType));
 
     /*
      * Lookup the name in the namespace.  Name must exist at this point, or it
@@ -453,7 +518,7 @@ LkNamespaceLocateBegin (
 
     Status = AcpiNsLookup (WalkState->ScopeInfo,  Path,
                             ObjectType, ACPI_IMODE_EXECUTE,
-                            ACPI_NS_SEARCH_PARENT, WalkState, &(NsNode));
+                            ACPI_NS_SEARCH_PARENT, WalkState, &(Node));
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_NOT_FOUND)
@@ -470,13 +535,13 @@ LkNamespaceLocateBegin (
                 {
                     /* There exists such a name, but we couldn't get to it from this scope */
 
-                    AslError (ASL_WARNING, ASL_MSG_NOT_REACHABLE, PsNode, PsNode->ExternalName);
+                    AslError (ASL_WARNING, ASL_MSG_NOT_REACHABLE, Op, Op->Asl.ExternalName);
                 }
                 else
                 {
                     /* The name doesn't exist, period */
 
-                    AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, PsNode, PsNode->ExternalName);
+                    AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, Op, Op->Asl.ExternalName);
                 }
             }
             else
@@ -487,13 +552,13 @@ LkNamespaceLocateBegin (
                 {
                     /* Gave full path, the object does not exist */
 
-                    AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, PsNode, PsNode->ExternalName);
+                    AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, Op, Op->Asl.ExternalName);
                 }
                 else
                 {
                     /* We can't tell whether it doesn't exist or just can't be reached. */
 
-                    AslError (ASL_WARNING, ASL_MSG_NOT_FOUND, PsNode, PsNode->ExternalName);
+                    AslError (ASL_WARNING, ASL_MSG_NOT_FOUND, Op, Op->Asl.ExternalName);
                 }
             }
         }
@@ -502,8 +567,8 @@ LkNamespaceLocateBegin (
 
     /* 1) Check for a reference to a resource descriptor */
 
-    if ((NsNode->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
-        (NsNode->Type == INTERNAL_TYPE_RESOURCE))
+    if ((Node->Type == INTERNAL_TYPE_RESOURCE_FIELD) ||
+        (Node->Type == INTERNAL_TYPE_RESOURCE))
     {
         /*
          * This was a reference to a field within a resource descriptor.  Extract
@@ -511,21 +576,21 @@ LkNamespaceLocateBegin (
          * the field type) and change the named reference into an integer for
          * AML code generation
          */
-        Temp = (UINT32) NsNode->OwnerId;
-        if (NsNode->Flags & ANOBJ_IS_BIT_OFFSET)
+        Temp = (UINT32) Node->OwnerId;
+        if (Node->Flags & ANOBJ_IS_BIT_OFFSET)
         {
-            PsNode->Flags |= NODE_IS_BIT_OFFSET;
+            Op->Asl.CompileFlags |= NODE_IS_BIT_OFFSET;
         }
 
         /* Perform BitOffset <--> ByteOffset conversion if necessary */
 
-        switch (PsNode->Parent->AmlOpcode)
+        switch (Op->Asl.Parent->Asl.AmlOpcode)
         {
         case AML_CREATE_FIELD_OP:
 
             /* We allow a Byte offset to Bit Offset conversion for this op */
 
-            if (!(PsNode->Flags & NODE_IS_BIT_OFFSET))
+            if (!(Op->Asl.CompileFlags & NODE_IS_BIT_OFFSET))
             {
                 /* Simply multiply byte offset times 8 to get bit offset */
 
@@ -538,9 +603,9 @@ LkNamespaceLocateBegin (
 
             /* This op requires a Bit Offset */
 
-            if (!(PsNode->Flags & NODE_IS_BIT_OFFSET))
+            if (!(Op->Asl.CompileFlags & NODE_IS_BIT_OFFSET))
             {
-                AslError (ASL_ERROR, ASL_MSG_BYTES_TO_BITS, PsNode, NULL);
+                AslError (ASL_ERROR, ASL_MSG_BYTES_TO_BITS, Op, NULL);
             }
             break;
 
@@ -553,31 +618,36 @@ LkNamespaceLocateBegin (
 
             /* These Ops require Byte offsets */
 
-            if (PsNode->Flags & NODE_IS_BIT_OFFSET)
+            if (Op->Asl.CompileFlags & NODE_IS_BIT_OFFSET)
             {
-                AslError (ASL_ERROR, ASL_MSG_BITS_TO_BYTES, PsNode, NULL);
+                AslError (ASL_ERROR, ASL_MSG_BITS_TO_BYTES, Op, NULL);
             }
+            break;
+
+
+        default:
+            /* Nothing to do for other opcodes */
             break;
         }
 
         /* Now convert this node to an integer whose value is the field offset */
 
-        PsNode->ParseOpcode     = INTEGER;
-        PsNode->Value.Integer   = (UINT64) Temp;
-        PsNode->Flags           |= NODE_IS_RESOURCE_FIELD;
+        Op->Asl.ParseOpcode     = PARSEOP_INTEGER;
+        Op->Asl.Value.Integer   = (UINT64) Temp;
+        Op->Asl.CompileFlags   |= NODE_IS_RESOURCE_FIELD;
 
-        OpcGenerateAmlOpcode (PsNode);
-        PsNode->AmlLength = OpcSetOptimalIntegerSize (PsNode);
+        OpcGenerateAmlOpcode (Op);
+        Op->Asl.AmlLength = OpcSetOptimalIntegerSize (Op);
     }
 
     /* 2) Check for a method invocation */
 
-    else if ((((PsNode->ParseOpcode == NAMESTRING) || (PsNode->ParseOpcode == NAMESEG)) &&
-        (NsNode->Type == ACPI_TYPE_METHOD) &&
-        (PsNode->Parent) &&
-        (PsNode->Parent->ParseOpcode != METHOD))   ||
+    else if ((((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) || (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)) &&
+        (Node->Type == ACPI_TYPE_METHOD) &&
+        (Op->Asl.Parent) &&
+        (Op->Asl.Parent->Asl.ParseOpcode != PARSEOP_METHOD))   ||
 
-        (PsNode->ParseOpcode == METHODCALL))
+        (Op->Asl.ParseOpcode == PARSEOP_METHODCALL))
     {
         /*
          * There are two types of method invocation:
@@ -585,11 +655,11 @@ LkNamespaceLocateBegin (
          * 2) Invocation with no arguments --the parser cannot determine that this is a method
          *    invocation, therefore we have to figure it out here.
          */
-        if (NsNode->Type != ACPI_TYPE_METHOD)
+        if (Node->Type != ACPI_TYPE_METHOD)
         {
-            sprintf (MsgBuffer, "%s is a %s", PsNode->ExternalName, AcpiUtGetTypeName (NsNode->Type));
+            sprintf (MsgBuffer, "%s is a %s", Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
 
-            AslError (ASL_ERROR, ASL_MSG_NOT_METHOD, PsNode, MsgBuffer);
+            AslError (ASL_ERROR, ASL_MSG_NOT_METHOD, Op, MsgBuffer);
             return (AE_OK);
         }
 
@@ -598,40 +668,40 @@ LkNamespaceLocateBegin (
          * Count the number of arguments, each appears as a child
          * under the parent node
          */
-        PsNode->ParseOpcode = METHODCALL;
+        Op->Asl.ParseOpcode = PARSEOP_METHODCALL;
         PassedArgs          = 0;
-        Next                = PsNode->Child;
+        NextOp              = Op->Asl.Child;
 
-        while (Next)
+        while (NextOp)
         {
             PassedArgs++;
-            Next = Next->Peer;
+            NextOp = NextOp->Asl.Next;
         }
 
-        if (NsNode->OwnerId != ASL_EXTERNAL_METHOD)
+        if (Node->OwnerId != ASL_EXTERNAL_METHOD)
         {
             /*
              * Check the parsed arguments with the number expected by the
              * method declaration itself
              */
-            if (PassedArgs != NsNode->OwnerId)
+            if (PassedArgs != Node->OwnerId)
             {
-                sprintf (MsgBuffer, "%s requires %d", PsNode->ExternalName,
-                            NsNode->OwnerId);
+                sprintf (MsgBuffer, "%s requires %d", Op->Asl.ExternalName,
+                            Node->OwnerId);
 
-                if (PassedArgs < NsNode->OwnerId)
+                if (PassedArgs < Node->OwnerId)
                 {
-                    AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_LO, PsNode, MsgBuffer);
+                    AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_LO, Op, MsgBuffer);
 
-                    if (NsNode->OwnerId > 7)
+                    if (Node->OwnerId > 7)
                     {
-                        printf ("too many arguments defined for method [%4.4s]\n", (char *) &NsNode->Name);
+                        printf ("too many arguments defined for method [%4.4s]\n", (char *) &Node->Name);
                         return (AE_BAD_PARAMETER);
                     }
                 }
                 else
                 {
-                    AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_HI, PsNode, MsgBuffer);
+                    AslError (ASL_ERROR, ASL_MSG_ARG_COUNT_HI, Op, MsgBuffer);
                 }
             }
 
@@ -639,24 +709,24 @@ LkNamespaceLocateBegin (
              * Check if the method caller expects this method to return a value and
              * if the called method in fact returns a value.
              */
-            if (!(PsNode->Flags & NODE_RESULT_NOT_USED))
+            if (!(Op->Asl.CompileFlags & NODE_RESULT_NOT_USED))
             {
                 /* 1) The result from the method is used (the method is a TermArg) */
 
-                OwningPsNode = (ASL_PARSE_NODE *) NsNode->Object;
-                if (OwningPsNode->Flags & NODE_METHOD_NO_RETVAL)
+                OwningOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
+                if (OwningOp->Asl.CompileFlags & NODE_METHOD_NO_RETVAL)
                 {
                     /*
                      * 2) Method NEVER returns a value
                      */
-                    AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, PsNode, PsNode->ExternalName);
+                    AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, Op, Op->Asl.ExternalName);
                 }
-                else if (OwningPsNode->Flags & NODE_METHOD_SOME_NO_RETVAL)
+                else if (OwningOp->Asl.CompileFlags & NODE_METHOD_SOME_NO_RETVAL)
                 {
                     /*
                      * 2) Method SOMETIMES returns a value, SOMETIMES not
                      */
-                    AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, PsNode, PsNode->ExternalName);
+                    AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, Op, Op->Asl.ExternalName);
                 }
             }
         }
@@ -666,9 +736,9 @@ LkNamespaceLocateBegin (
     /*
      * 3) Check for an ASL Field definition
      */
-    else if ((PsNode->Parent) &&
-            ((PsNode->Parent->ParseOpcode == FIELD)     ||
-             (PsNode->Parent->ParseOpcode == BANKFIELD)))
+    else if ((Op->Asl.Parent) &&
+            ((Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_FIELD)     ||
+             (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_BANKFIELD)))
     {
         /*
          * Offset checking for fields.  If the parent operation region has a
@@ -679,19 +749,19 @@ LkNamespaceLocateBegin (
          * Note: Index fields do not directly reference an operation region,
          * thus they are not included in this check.
          */
-        if (PsNode == PsNode->Parent->Child)
+        if (Op == Op->Asl.Parent->Asl.Child)
         {
             /*
              * This is the first child of the field node, which is
              * the name of the region.  Get the parse node for the
              * region -- which contains the length of the region.
              */
-            OwningPsNode = (ASL_PARSE_NODE *) NsNode->Object;
-            PsNode->Parent->ExtraValue = ACPI_MUL_8 (OwningPsNode->Value.Integer32);
+            OwningOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
+            Op->Asl.Parent->Asl.ExtraValue = ACPI_MUL_8 (OwningOp->Asl.Value.Integer32);
 
             /* Examine the field access width */
 
-            switch (PsNode->Parent->Value.Integer8)
+            switch (Op->Asl.Parent->Asl.Value.Integer8)
             {
             case AML_FIELD_ACCESS_ANY:
             case AML_FIELD_ACCESS_BYTE:
@@ -717,60 +787,67 @@ LkNamespaceLocateBegin (
              * Is the region at least as big as the access width?
              * Note: DataTableRegions have 0 length
              */
-            if ((OwningPsNode->Value.Integer32) &&
-                (OwningPsNode->Value.Integer32 < MinimumLength))
+            if ((OwningOp->Asl.Value.Integer32) &&
+                (OwningOp->Asl.Value.Integer32 < MinimumLength))
             {
-                AslError (ASL_ERROR, ASL_MSG_FIELD_ACCESS_WIDTH, PsNode, NULL);
+                AslError (ASL_ERROR, ASL_MSG_FIELD_ACCESS_WIDTH, Op, NULL);
             }
 
             /*
              * Check EC/CMOS/SMBUS fields to make sure that the correct
              * access type is used (BYTE for EC/CMOS, BUFFER for SMBUS)
              */
-            SpaceIdNode = OwningPsNode->Child->Peer;
-            switch (SpaceIdNode->Value.Integer32)
+            SpaceIdOp = OwningOp->Asl.Child->Asl.Next;
+            switch (SpaceIdOp->Asl.Value.Integer32)
             {
             case REGION_EC:
             case REGION_CMOS:
 
-                if (PsNode->Parent->Value.Integer8 != AML_FIELD_ACCESS_BYTE)
+                if (Op->Asl.Parent->Asl.Value.Integer8 != AML_FIELD_ACCESS_BYTE)
                 {
-                    AslError (ASL_ERROR, ASL_MSG_REGION_BYTE_ACCESS, PsNode, NULL);
+                    AslError (ASL_ERROR, ASL_MSG_REGION_BYTE_ACCESS, Op, NULL);
                 }
 
                 break;
 
             case REGION_SMBUS:
 
-                if (PsNode->Parent->Value.Integer8 != AML_FIELD_ACCESS_BUFFER)
+                if (Op->Asl.Parent->Asl.Value.Integer8 != AML_FIELD_ACCESS_BUFFER)
                 {
-                    AslError (ASL_ERROR, ASL_MSG_REGION_BUFFER_ACCESS, PsNode, NULL);
+                    AslError (ASL_ERROR, ASL_MSG_REGION_BUFFER_ACCESS, Op, NULL);
                 }
+                break;
+
+            default:
+                /* Nothing to do for other address spaces */
                 break;
             }
         }
         else
         {
+
             /*
-             * This is one element of the field list
+             * This is one element of the field list.  Check to make sure
+             * that it does not go beyond the end of the parent operation region.
+             *
+             * In the code below:
+             *    Op->Asl.Parent->Asl.ExtraValue      - Region Length (bits)
+             *    Op->Asl.ExtraValue                  - Field start offset (bits)
+             *    Op->Asl.Child->Asl.Value.Integer32  - Field length (bits)
+             *    Op->Asl.Child->Asl.ExtraValue       - Field access width (bits)
              */
-            if (PsNode->Parent->ExtraValue && PsNode->Child)
+            if (Op->Asl.Parent->Asl.ExtraValue && Op->Asl.Child)
             {
-                /*
-                 * Check each field unit against the region size.  The entire
-                 * field unit (start offset plus length) must fit within the
-                 * region.
-                 */
-                if (PsNode->Parent->ExtraValue <
-                   (PsNode->ExtraValue + PsNode->Child->Value.Integer32))
-                {
-                    AslError (ASL_ERROR, ASL_MSG_FIELD_UNIT_OFFSET, PsNode, NULL);
-                }
+                LkCheckFieldRange (Op,
+                            Op->Asl.Parent->Asl.ExtraValue,
+                            Op->Asl.ExtraValue,
+                            Op->Asl.Child->Asl.Value.Integer32,
+                            Op->Asl.Child->Asl.ExtraValue);
             }
         }
     }
 
-    PsNode->NsNode = NsNode;
+    Op->Asl.Node = Node;
     return (Status);
 }
 
@@ -790,7 +867,7 @@ LkNamespaceLocateBegin (
 
 ACPI_STATUS
 LkNamespaceLocateEnd (
-    ASL_PARSE_NODE          *PsNode,
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context)
 {
@@ -803,7 +880,7 @@ LkNamespaceLocateEnd (
 
     /* We are only interested in opcodes that have an associated name */
 
-    OpInfo = AcpiPsGetOpcodeInfo (PsNode->AmlOpcode);
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Asl.AmlOpcode);
     if (!(OpInfo->Flags & AML_NAMED))
     {
         return (AE_OK);
@@ -812,17 +889,17 @@ LkNamespaceLocateEnd (
     /*
      * TBD: do we ever need to check the argument of AML_NAME_OP
      * to get the correct type?
-     *  if (PsNode->AmlOpcode == AML_NAME_OP)
+     *  if (Op->Asl.AmlOpcode == AML_NAME_OP)
      */
 
     /* Pop the scope stack */
 
-    if (AcpiNsOpensScope (AslMapNamedOpcodeToDataType (PsNode->AmlOpcode)))
+    if (AcpiNsOpensScope (AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode)))
     {
 
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
             "%s: Popping scope for Op %p\n",
-            AcpiUtGetTypeName (OpInfo->ObjectType), PsNode));
+            AcpiUtGetTypeName (OpInfo->ObjectType), Op));
 
         AcpiDsScopeStackPop (WalkState);
     }
