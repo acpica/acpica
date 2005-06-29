@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.45 $
+ *       $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -214,6 +214,11 @@ AcpiDsCreateBufferField (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState);
 
+ACPI_STATUS
+AcpiDsInitFieldObjects (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState);
+
 
 /* dsload - Parser/Interpreter interface, namespace load callbacks */
 
@@ -421,15 +426,6 @@ AcpiDsCreateOperands (
 ACPI_STATUS
 AcpiDsResolveOperands (
     ACPI_WALK_STATE         *WalkState);
-
-ACPI_OBJECT_TYPE8
-AcpiDsMapOpcodeToDataType (
-    UINT16                  Opcode,
-    UINT32                  *OutFlags);
-
-ACPI_OBJECT_TYPE8
-AcpiDsMapNamedOpcodeToDataType (
-    UINT16                  Opcode);
 
 
 /*
