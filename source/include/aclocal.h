@@ -433,7 +433,7 @@ typedef union acpi_op_value
 
 #define ACPI_COMMON_OP \
     UINT8                   DataType;       /* To differentiate various internal objs */\
-    UINT8                   Flags;          /* Not used */\
+    UINT8                   Flags;          /* Type of Op */\
     UINT16                  Opcode;         /* AML opcode */\
     UINT32                  AmlOffset;      /* offset of declaration in AML */\
     struct acpi_generic_op  *Parent;        /* parent op */\
