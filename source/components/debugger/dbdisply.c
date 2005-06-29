@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -191,7 +191,7 @@ void
 AcpiDbDumpParserDescriptor (
     ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_OPCODE_INFO        *Info;
+    const ACPI_OPCODE_INFO  *Info;
 
 
     Info = AcpiPsGetOpcodeInfo (Op->Opcode);
@@ -597,7 +597,7 @@ AcpiDbDisplayMethodInfo (
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_PARSE_OBJECT       *RootOp;
     ACPI_PARSE_OBJECT       *Op;
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
     UINT32                  NumOps = 0;
     UINT32                  NumOperands = 0;
     UINT32                  NumOperators = 0;
