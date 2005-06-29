@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -129,21 +129,6 @@
 
 /* warn : named type definition in parentheses */
 #pragma warning(disable:4115)
-
-/* MS doesn't have getopt, but we implement it */
-int
-getopt (
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
-
-#endif
-
-#ifdef _LINUX
-
-/* includes native getopt definition */
-#include <unistd.h>
-
 #endif
 
 #include <stdio.h>
