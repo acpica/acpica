@@ -380,7 +380,8 @@ InitAcpiLibGlobals (void)
     
     NameString              = NULL;
     NameStringSize          = 0;
-
+    RsdpOriginalLocation    = 0;
+    
     /* Interpreter */
 
     BufSeq                  = 0;
@@ -392,11 +393,6 @@ InitAcpiLibGlobals (void)
     Gpe1EnableRegisterSave  = NULL;
     OriginalMode            = -1;   /*  original ACPI/legacy mode   */
     SciHandle				= 0;
-
-
-
-    AcpiHook                = 0;
-    AcpiLibInitStatus       = 0;
 
     /* Namespace */
 
