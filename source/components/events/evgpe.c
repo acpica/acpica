@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.32 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -228,6 +228,12 @@ AcpiEvGpeDetect (
 
     ACPI_FUNCTION_NAME ("EvGpeDetect");
 
+    /* Check for the case where there are no GPEs */
+
+    if (!GpeXruptList)
+    {
+        return (IntStatus);
+    }
 
     /* Examine all GPE blocks attached to this interrupt level */
 
