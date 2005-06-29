@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.139 $
+ *       $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -468,7 +468,7 @@ AcpiExSystemResetEvent(
 ACPI_STATUS
 AcpiExSystemWaitSemaphore (
     ACPI_HANDLE             Semaphore,
-    UINT32                  Timeout);
+    UINT16                  Timeout);
 
 
 /*
@@ -702,10 +702,6 @@ AcpiExExitInterpreter (
 void
 AcpiExTruncateFor32bitTable (
     ACPI_OPERAND_OBJECT     *ObjDesc);
-
-BOOLEAN
-AcpiExValidateObjectType (
-    ACPI_OBJECT_TYPE        Type);
 
 BOOLEAN
 AcpiExAcquireGlobalLock (
