@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -1167,6 +1167,15 @@ AcpiOsWritePciConfiguration (
 {
 
     return (AE_OK);
+}
+
+void
+AcpiOsDerivePciId(
+    ACPI_HANDLE	            rhandle,
+    ACPI_HANDLE             chandle,
+    ACPI_PCI_ID	            **PciId)
+{
+
 }
 
 
