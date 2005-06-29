@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.35 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -116,6 +116,7 @@
  *****************************************************************************/
 
 #include "aslcompiler.h"
+#include "adisasm.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslfiles")
@@ -146,7 +147,7 @@ AslAbort (void)
         AePrintErrorLog (ASL_FILE_STDERR);
     }
 
-    exit (1);
+    exit (0);
 }
 
 
@@ -503,56 +504,6 @@ FlOpenIncludeFile (
 
 /*******************************************************************************
  *
- * FUNCTION:    FlGenerateFilename
- *
- * PARAMETERS:  InputFilename       - Original ASL source filename
- *              Suffix              - New extension.
- *
- * RETURN:      New filename containing the original base + the new suffix
- *
- * DESCRIPTION: Generate a new filename from the ASL source filename and a new
- *              extension.  Used to create the *.LST, *.TXT, etc. files.
- *
- ******************************************************************************/
-
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix)
-{
-    char                    *Position;
-    char                    *NewFilename;
-
-
-    /* Copy the original filename to a new buffer */
-
-    NewFilename = UtLocalCalloc (strlen (InputFilename) + strlen (Suffix));
-    strcpy (NewFilename, InputFilename);
-
-    /* Try to find the last dot in the filename */
-
-    Position = strrchr (NewFilename, '.');
-    if (Position)
-    {
-        /* Tack on the new suffix */
-        Position++;
-        *Position = 0;
-        strcat (Position, Suffix);
-    }
-    else
-    {
-        /* No dot, add one and then the suffix */
-
-        strcat (NewFilename, ".");
-        strcat (NewFilename, Suffix);
-    }
-
-    return NewFilename;
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    FlOpenInputFile
  *
  * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
@@ -671,7 +622,7 @@ FlOpenMiscOutputFiles (
     char                    *Filename;
 
 
-    /* Create/Open a combined source output file if asked */
+    /* Create/Open a combined source output file */
 
     Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_SOURCE);
     if (!Filename)
@@ -680,9 +631,12 @@ FlOpenMiscOutputFiles (
         return (AE_ERROR);
     }
 
-    /* Open the source output file, text mode */
-
-    FlOpenFile (ASL_FILE_SOURCE_OUTPUT, Filename, "w+");
+    /* 
+     * Open the source output file, binary mode (so that LF does not get
+     * expanded to CR/LF on some systems, messing up our seek
+     * calculations.)
+     */
+    FlOpenFile (ASL_FILE_SOURCE_OUTPUT, Filename, "w+b");
 
     /* Create/Open a listing output file if asked */
 
@@ -796,7 +750,7 @@ FlOpenMiscOutputFiles (
         /* TBD: hide this behind a FlReopenFile function */
 
         Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Filename = Filename;
-        Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle   = freopen (Filename, "w+", stderr);
+        Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle   = freopen (Filename, "w+t", stderr);
 
         AslCompilerSignon (ASL_FILE_DEBUG_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_DEBUG_OUTPUT);

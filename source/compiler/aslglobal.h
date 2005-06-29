@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.28 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -177,6 +177,10 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_ParseOnlyFlag, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_CompileTimesFlag, FALSE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_FoldConstants, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_VerboseErrors, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DisasmFlag, FALSE);
+
 
 #define HEX_OUTPUT_NONE         0
 #define HEX_OUTPUT_C            1
@@ -207,6 +211,7 @@ ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalParseNodes, 0);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalMethods, 0);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalAllocations, 0);
 ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalAllocated, 0);
+ASL_EXTERN UINT32                   ASL_INIT_GLOBAL (TotalFolds, 0);
 
 
 /* Misc */
@@ -238,8 +243,8 @@ ASL_EXTERN FILE                     *AcpiGbl_DebugFile; /* Placeholder for oswin
 
 ASL_EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
 ASL_EXTERN ACPI_TABLE_HEADER        TableHeader;
-extern const ASL_RESERVED_INFO  ReservedMethods[];
-ASL_EXTERN ASL_EVENT_INFO           AslGbl_Events[20];
+extern const ASL_RESERVED_INFO      ReservedMethods[];
+ASL_EXTERN ASL_EVENT_INFO           AslGbl_Events[21];
 
 
 /* Scratch buffers */

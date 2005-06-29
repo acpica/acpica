@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -192,7 +192,8 @@ char                        *AslMessages [] = {
     "Invalid operand type for reserved name, must be",
     "Reserved name must be a control method",
     "String must be entirely alphanumeric",
-    "Invalid use of reserved name"
+    "Invalid use of reserved name",
+    "Invalid operand"
 };
 
 
