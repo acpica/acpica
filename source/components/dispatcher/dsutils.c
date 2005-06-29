@@ -207,7 +207,7 @@ PsxDeleteResultIfNotUsed (
 
     /* Never delete the return value associated with a return opcode */
 
-    if (Op->Opcode == AML_ReturnOp)
+    if (Op->Parent->Opcode == AML_ReturnOp)
     {
         DEBUG_PRINT (TRACE_PARSE, ("PsxDeleteResultIfNotUsed: No delete, [RETURN] opcode=%X Op=%X\n",
                         Op->Opcode, Op));
@@ -333,7 +333,7 @@ PsxCreateOperand (
         }
 
         Status = NsLookup (Gbl_CurrentScope->Scope, NameString, ACPI_TYPE_Any, InterpreterMode, 
-                                    NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) &ObjDesc);
+                                    NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, (NAME_TABLE_ENTRY **) &ObjDesc);
 
         /* Free the namestring created above */
 
@@ -510,7 +510,7 @@ Cleanup:
     PsxObjStackPopAndDelete (ArgsPushed, WalkState);
 
     DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperands: Error while creating Arg %d - %s\n",
-                    (ArgsPushed+1), Gbl_ExceptionNames [Status]));
+                    (ArgsPushed+1), CmFormatException (Status)));
     return_ACPI_STATUS (Status);
 }
 
