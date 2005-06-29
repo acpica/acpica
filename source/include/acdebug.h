@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.58 $
+ *       $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -244,6 +244,9 @@ void
 AcpiDbDisplayResources (
     NATIVE_CHAR             *ObjectArg);
 
+void
+AcpiDbCheckIntegrity (
+    void);
 
 /*
  * dbdisasm - AML disassembler
