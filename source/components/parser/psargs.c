@@ -341,7 +341,6 @@ AcpiPsGetNextNamepath (
     ACPI_GENERIC_OP         *Count;
 
 
-
     FUNCTION_TRACE ("PsGetNextNamepath");
 
 
@@ -389,7 +388,7 @@ AcpiPsGetNextNamepath (
                         AcpiPsInitOp (Arg, AML_METHODCALL_OP);
 
                         Name->Value.Name        = Path;
-                        Name->NameTableEntry    = Op;          /* Point METHODCALL/NAME to the METHOD NTE */
+                        Name->AcpiNamedObject    = Op;          /* Point METHODCALL/NAME to the METHOD NTE */
                         AcpiPsAppendArg (Arg, Name);
 
                         *ArgCount = Count->Value.Integer & METHOD_FLAGS_ARG_COUNT;
@@ -434,10 +433,9 @@ AcpiPsGetNextNamepath (
     char                    *Path;
     ACPI_GENERIC_OP         *Name;
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *Method = NULL;
-    NAME_TABLE_ENTRY        *Nte;
+    ACPI_NAMED_OBJECT       *Method = NULL;
+    ACPI_NAMED_OBJECT       *Entry;
     ACPI_GENERIC_STATE      ScopeInfo;
-
 
 
     FUNCTION_TRACE ("PsGetNextNamepath");
@@ -459,11 +457,11 @@ AcpiPsGetNextNamepath (
         /*
          * Lookup the name in the internal namespace
          */
-        ScopeInfo.Scope.Entry = NULL;
-        Nte = ParserState->StartOp->NameTableEntry;
-        if (Nte)
+        ScopeInfo.Scope.NameTable = NULL;
+        Entry = ParserState->StartOp->AcpiNamedObject;
+        if (Entry)
         {
-            ScopeInfo.Scope.Entry = Nte->Scope;
+            ScopeInfo.Scope.NameTable = Entry->ChildTable;
         }
 
         /*
@@ -473,12 +471,12 @@ AcpiPsGetNextNamepath (
          */
 
         Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY, IMODE_EXECUTE, /* MUST BE mode EXECUTE to perform upsearch */
-                                NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, &Nte);
+                                NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, NULL, &Entry);
         if (ACPI_SUCCESS (Status))
         {
-            if (Nte->Type == ACPI_TYPE_METHOD)
+            if (Entry->Type == ACPI_TYPE_METHOD)
             {
-                Method = Nte;
+                Method = Entry;
                 DEBUG_PRINT (TRACE_PARSE, ("PsGetNextNamepath: method - %p Path=%p\n", Method, Path));
 
                 Name = AcpiPsAllocOp (AML_NAMEPATH_OP);
@@ -489,7 +487,7 @@ AcpiPsGetNextNamepath (
                     AcpiPsInitOp (Arg, AML_METHODCALL_OP);
 
                     Name->Value.Name        = Path;
-                    Name->NameTableEntry    = Method;           /* Point METHODCALL/NAME to the METHOD NTE */
+                    Name->AcpiNamedObject    = Method;           /* Point METHODCALL/NAME to the METHOD NTE */
                     AcpiPsAppendArg (Arg, Name);
 
                     *ArgCount = ((ACPI_OBJECT_INTERNAL *) Method->Object)->Method.ParamCount;
@@ -562,7 +560,7 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 2 bytes from the AML stream */
 
-        STORE16TO32 (&Arg->Value.Integer, ParserState->Aml);
+        MOVE_UNALIGNED16_TO_32 (&Arg->Value.Integer, ParserState->Aml);
         ParserState->Aml += 2;
         break;
 
@@ -573,7 +571,7 @@ AcpiPsGetNextSimpleArg (
 
         /* Get 4 bytes from the AML stream */
 
-        STORE32TO32 (&Arg->Value.Integer, ParserState->Aml);
+        MOVE_UNALIGNED32_TO_32 (&Arg->Value.Integer, ParserState->Aml);
         ParserState->Aml += 4;
         break;
 
@@ -669,7 +667,7 @@ AcpiPsGetNextField (
 
             /* Get the 4-character name */
 
-            STORE32TO32 (&Name, ParserState->Aml);
+            MOVE_UNALIGNED32_TO_32 (&Name, ParserState->Aml);
             AcpiPsSetName (Field, Name);
             ParserState->Aml += 4;
 
@@ -728,7 +726,6 @@ AcpiPsGetNextArg (
     ACPI_GENERIC_OP         *Prev = NULL;
     ACPI_GENERIC_OP         *Field;
     INT32                   Subop;
-
 
 
     FUNCTION_TRACE_PTR ("PsGetNextArg", ParserState);
