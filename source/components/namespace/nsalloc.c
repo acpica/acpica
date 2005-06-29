@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.73 $
+ *              $Revision: 1.75 $
  *
  ******************************************************************************/
 
@@ -225,6 +225,58 @@ AcpiNsDeleteNode (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiNsCompareNames 
+ *
+ * PARAMETERS:  Name1           - First name to compare
+ *              Name2           - Second name to compare
+ *
+ * RETURN:      value from strncmp
+ *
+ * DESCRIPTION: Compare two ACPI names.  Names that are prefixed with an 
+ *              underscore are forced to be alphabetically first.
+ *
+ ******************************************************************************/
+
+int
+AcpiNsCompareNames (
+    char                    *Name1,
+    char                    *Name2)
+{
+    char                    ReversedName1[ACPI_NAME_SIZE];
+    char                    ReversedName2[ACPI_NAME_SIZE];
+    UINT32                  i;
+    UINT32                  j;
+
+
+    /*
+     * Replace all instances of "underscore" with a value that is smaller so
+     * that all names that are prefixed with underscore(s) are alphabetically
+     * first.
+     *
+     * Reverse the name bytewise so we can just do a 32-bit compare instead
+     * of a strncmp.
+     */
+    for (i = 0, j= (ACPI_NAME_SIZE - 1); i < ACPI_NAME_SIZE; i++, j--)
+    {
+        ReversedName1[j] = Name1[i];
+        if (Name1[i] == '_')
+        {
+            ReversedName1[j] = '*';
+        }
+
+        ReversedName2[j] = Name2[i];
+        if (Name2[i] == '_')
+        {
+            ReversedName2[j] = '*';
+        }
+    }
+
+    return (*(INT32 *) ReversedName1 - *(INT32 *) ReversedName2);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiNsInstallNode
  *
  * PARAMETERS:  WalkState       - Current state of the walk
@@ -237,8 +289,10 @@ AcpiNsDeleteNode (
  * DESCRIPTION: Initialize a new namespace node and install it amongst
  *              its peers.
  *
- *              Note: Current namespace lookup is linear search, so the nodes
- *              are not linked in any particular order.
+ *              Note: Current namespace lookup is linear search.  However, the
+ *              nodes are linked in alphabetical order to 1) put all reserved
+ *              names (start with underscore) first, and to 2) make a readable
+ *              namespace dump.
  *
  ******************************************************************************/
 
@@ -251,6 +305,7 @@ AcpiNsInstallNode (
 {
     UINT16                  OwnerId = TABLE_ID_DSDT;
     ACPI_NAMESPACE_NODE     *ChildNode;
+    ACPI_NAMESPACE_NODE     *PreviousChildNode;
 
 
     ACPI_FUNCTION_TRACE ("NsInstallNode");
@@ -272,71 +327,74 @@ AcpiNsInstallNode (
     if (!ChildNode)
     {
         ParentNode->Child = Node;
+        Node->Flags |= ANOBJ_END_OF_PEER_LIST;
+        Node->Peer = ParentNode;
     }
     else
     {
-        while (!(ChildNode->Flags & ANOBJ_END_OF_PEER_LIST))
+        /*
+         * Walk the list whilst searching for the the correct
+         * alphabetic placement.
+         */
+        PreviousChildNode = NULL;
+        while (AcpiNsCompareNames (ChildNode->Name.Ascii, Node->Name.Ascii) < 0)
         {
+            if (ChildNode->Flags & ANOBJ_END_OF_PEER_LIST)
+            {
+                /* Last peer;  Clear end-of-list flag */
+
+                ChildNode->Flags &= ~ANOBJ_END_OF_PEER_LIST;
+
+                /* This node is the new peer to the child node */
+
+                ChildNode->Peer = Node;
+
+                /* This node is the new end-of-list */
+
+                Node->Flags |= ANOBJ_END_OF_PEER_LIST;
+                Node->Peer = ParentNode;
+                break;
+            }
+
+            /* Get next peer */
+
+            PreviousChildNode = ChildNode;
             ChildNode = ChildNode->Peer;
         }
 
-        ChildNode->Peer = Node;
+        /* Did the node get inserted at the end-of-list? */
 
-        /* Clear end-of-list flag */
+        if (!(Node->Flags & ANOBJ_END_OF_PEER_LIST))
+        {
+            /* 
+             * Loop above terminated without reaching the end-of-list.
+             * Insert the new node at the current location
+             */
+            if (PreviousChildNode)
+            {
+                /* Insert node alphabetically */
 
-        ChildNode->Flags &= ~ANOBJ_END_OF_PEER_LIST;
+                Node->Peer = ChildNode;
+                PreviousChildNode->Peer = Node;
+            }
+            else
+            {
+                /* Insert node alphabetically at start of list */
+
+                Node->Peer = ChildNode;
+                ParentNode->Child = Node;
+            }
+        }
     }
 
     /* Init the new entry */
 
-    Node->OwnerId   = OwnerId;
-    Node->Flags     |= ANOBJ_END_OF_PEER_LIST;
-    Node->Peer      = ParentNode;
+    Node->OwnerId = OwnerId;
+    Node->Type = (UINT8) Type;
 
-
-    /*
-     * If adding a name with unknown type, or having to
-     * add the region in order to define fields in it, we
-     * have a forward reference.
-     */
-    if ((ACPI_TYPE_ANY == Type) ||
-        (INTERNAL_TYPE_FIELD_DEFN == Type) ||
-        (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
-    {
-        /*
-         * We don't want to abort here, however!
-         * We will fill in the actual type when the
-         * real definition is found later.
-         */
-        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "[%4.4s] is a forward reference\n",
-            Node->Name.Ascii));
-    }
-
-    /*
-     * The DefFieldDefn and BankFieldDefn cases are actually
-     * looking up the Region in which the field will be defined
-     */
-    if ((INTERNAL_TYPE_FIELD_DEFN == Type) ||
-        (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
-    {
-        Type = ACPI_TYPE_REGION;
-    }
-
-    /*
-     * Scope, DefAny, and IndexFieldDefn are bogus "types" which do
-     * not actually have anything to do with the type of the name
-     * being looked up.  Save any other value of Type as the type of
-     * the entry.
-     */
-    if ((Type != INTERNAL_TYPE_SCOPE) &&
-        (Type != INTERNAL_TYPE_DEF_ANY) &&
-        (Type != INTERNAL_TYPE_INDEX_FIELD_DEFN))
-    {
-        Node->Type = (UINT8) Type;
-    }
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "%4.4s added to %p at %p\n",
-        Node->Name.Ascii, ParentNode, Node));
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "%4.4s (%s) added to %4.4s (%s) %p at %p\n",
+        Node->Name.Ascii, AcpiUtGetTypeName (Node->Type), 
+        ParentNode->Name.Ascii, AcpiUtGetTypeName (ParentNode->Type), ParentNode, Node));
 
     /*
      * Increment the reference count(s) of all parents up to
@@ -448,7 +506,7 @@ AcpiNsDeleteChildren (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiNsDeleteNamespaceSubtree (
     ACPI_NAMESPACE_NODE     *ParentNode)
 {
@@ -461,7 +519,7 @@ AcpiNsDeleteNamespaceSubtree (
 
     if (!ParentNode)
     {
-        return_ACPI_STATUS (AE_OK);
+        return_VOID;
     }
 
     /*
@@ -517,7 +575,7 @@ AcpiNsDeleteNamespaceSubtree (
         }
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 
@@ -591,7 +649,7 @@ AcpiNsRemoveReference (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiNsDeleteNamespaceByOwner (
     UINT16                  OwnerId)
 {
@@ -678,7 +736,7 @@ AcpiNsDeleteNamespaceByOwner (
         }
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_VOID;
 }
 
 

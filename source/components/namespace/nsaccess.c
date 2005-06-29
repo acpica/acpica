@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.161 $
+ *              $Revision: 1.162 $
  *
  ******************************************************************************/
 
@@ -408,29 +408,9 @@ AcpiNsLookup (
         }
     }
 
-    /*
-     * This check is explicitly split to relax the TypeToCheckFor
-     * conditions for BankFieldDefn.  Originally, both BankFieldDefn and
-     * DefFieldDefn caused TypeToCheckFor to be set to ACPI_TYPE_REGION,
-     * but the BankFieldDefn may also check for a Field definition as well
-     * as an OperationRegion.
-     */
-    if (INTERNAL_TYPE_FIELD_DEFN == Type)
-    {
-        /* DefFieldDefn defines fields in a Region */
+    /* Save type   TBD: may be no longer necessary */
 
-        TypeToCheckFor = ACPI_TYPE_REGION;
-    }
-    else if (INTERNAL_TYPE_BANK_FIELD_DEFN == Type)
-    {
-        /* BankFieldDefn defines data fields in a Field Object */
-
-        TypeToCheckFor = ACPI_TYPE_ANY;
-    }
-    else
-    {
-        TypeToCheckFor = Type;
-    }
+    TypeToCheckFor = Type;
 
     /*
      * Begin examination of the actual pathname
@@ -651,6 +631,7 @@ AcpiNsLookup (
                     CurrentNode));
             }
 
+            *ReturnNode = ThisNode;
             return_ACPI_STATUS (Status);
         }
 
@@ -661,28 +642,25 @@ AcpiNsLookup (
          *    2) And we are looking for a specific type
          *       (Not checking for TYPE_ANY)
          *    3) Which is not an alias
-         *    4) Which is not a local type (TYPE_DEF_ANY)
-         *    5) Which is not a local type (TYPE_SCOPE)
-         *    6) Which is not a local type (TYPE_INDEX_FIELD_DEFN)
-         *    7) And the type of target object is known (not TYPE_ANY)
-         *    8) And target object does not match what we are looking for
+         *    4) Which is not a local type (TYPE_SCOPE)
+         *    5) And the type of target object is known (not TYPE_ANY)
+         *    6) And target object does not match what we are looking for
          *
          * Then we have a type mismatch.  Just warn and ignore it.
          */
         if ((NumSegments        == 0)                               &&
             (TypeToCheckFor     != ACPI_TYPE_ANY)                   &&
-            (TypeToCheckFor     != INTERNAL_TYPE_ALIAS)             &&
-            (TypeToCheckFor     != INTERNAL_TYPE_DEF_ANY)           &&
-            (TypeToCheckFor     != INTERNAL_TYPE_SCOPE)             &&
-            (TypeToCheckFor     != INTERNAL_TYPE_INDEX_FIELD_DEFN)  &&
+            (TypeToCheckFor     != ACPI_TYPE_LOCAL_ALIAS)           &&
+            (TypeToCheckFor     != ACPI_TYPE_LOCAL_SCOPE)           &&
             (ThisNode->Type     != ACPI_TYPE_ANY)                   &&
             (ThisNode->Type     != TypeToCheckFor))
         {
             /* Complain about a type mismatch */
 
             ACPI_REPORT_WARNING (
-                ("NsLookup: %4.4s, type %X, checking for type %X\n",
-                (char *) &SimpleName, ThisNode->Type, TypeToCheckFor));
+                ("NsLookup: Type mismatch on %4.4s (%s), searching for (%s)\n",
+                (char *) &SimpleName, AcpiUtGetTypeName (ThisNode->Type), 
+                AcpiUtGetTypeName (TypeToCheckFor)));
         }
 
         /*
