@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: amfieldio - Aml Field I/O
+ * Module Name: amfldio - Aml Field I/O
  *
  *****************************************************************************/
 
@@ -114,21 +114,21 @@
  *****************************************************************************/
 
 
-#define __IEFREAD_C__
+#define __AMFLDIO_C__
 
 #include "acpi.h"
-#include "interp.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "hardware.h"
-#include "events.h"
+#include "acnamesp.h"
+#include "achware.h"
+#include "acevents.h"
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iefread");
+        MODULE_NAME         ("amfldio");
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiAmlReadFieldData
  *
@@ -140,7 +140,7 @@
  *
  * DESCRIPTION: Retrieve the value of the given field
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiAmlReadFieldData (
@@ -169,7 +169,7 @@ AcpiAmlReadFieldData (
 
     FieldByteWidth = DIV_8 (FieldBitWidth);
     Status = AcpiAmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
-    if (AE_OK != Status)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -183,26 +183,27 @@ AcpiAmlReadFieldData (
 
 
     /*
-     * Round offset down to next multiple of
-     * field width, add region base address and offset within the field
+     * Set offset to next multiple of field width, 
+     *  add region base address and offset within the field
      */
-
     Address = RgnDesc->Region.Address +
-              (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1)) +
+              (ObjDesc->Field.Offset * FieldByteWidth) +
               FieldByteOffset;
+
 
     if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
     {
         DEBUG_PRINT (TRACE_OPREGION,
-                    ("AmlReadFieldData: **** Unknown OpRegion SpaceID %d at %08lx width %d\n",
-                    RgnDesc->Region.SpaceId, Address, FieldBitWidth));
+            ("AmlReadFieldData: **** Unknown OpRegion SpaceID %d at %08lx width %d\n",
+            RgnDesc->Region.SpaceId, Address, FieldBitWidth));
     }
 
     else
     {
         DEBUG_PRINT (TRACE_OPREGION,
-                    ("AmlReadFieldData: OpRegion %s at %08lx width %d\n",
-                    AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
+            ("AmlReadFieldData: OpRegion %s at %08lx width %d\n",
+            AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId], Address,
+            FieldBitWidth));
     }
 
 
@@ -213,23 +214,26 @@ AcpiAmlReadFieldData (
 
     if (Status == AE_NOT_IMPLEMENTED)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlReadFieldData: **** OpRegion type %s not implemented\n",
-                AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId]));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlReadFieldData: **** OpRegion type %s not implemented\n",
+            AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId]));
     }
 
     else if (Status == AE_EXIST)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlReadFieldData: **** Unknown OpRegion SpaceID %d\n",
-                RgnDesc->Region.SpaceId));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlReadFieldData: **** Unknown OpRegion SpaceID %d\n",
+            RgnDesc->Region.SpaceId));
     }
 
-    DEBUG_PRINT (TRACE_OPREGION, ("AmlReadField: Returned value=%08lx \n", *Value));
+    DEBUG_PRINT (TRACE_OPREGION,
+        ("AmlReadField: Returned value=%08lx \n", *Value));
 
     return_ACPI_STATUS (Status);
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiAmlReadField
  *
@@ -241,7 +245,7 @@ AcpiAmlReadFieldData (
  *
  * DESCRIPTION: Retrieve the value of the given field
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiAmlReadField (
@@ -263,7 +267,6 @@ AcpiAmlReadField (
     UINT32                  MergedDatum = 0;
 
 
-
     FUNCTION_TRACE ("AmlReadField");
 
     /*
@@ -279,7 +282,8 @@ AcpiAmlReadField (
     ThisFieldByteOffset = 0;
     ThisFieldDatumOffset= 0;
 
-    Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset, BitGranularity, &PreviousRawDatum);
+    Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset, BitGranularity,
+                                    &PreviousRawDatum);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -287,7 +291,9 @@ AcpiAmlReadField (
 
     /* We might actually be done if the request fits in one datum */
 
-    if ((DatumLength == 1) && ((ObjDesc->Field.BitOffset + ObjDesc->FieldUnit.Length) <= (UINT16) BitGranularity))
+    if ((DatumLength == 1) &&
+        ((ObjDesc->Field.BitOffset + ObjDesc->FieldUnit.Length) <=
+            (UINT16) BitGranularity))
     {
         MergedDatum = PreviousRawDatum;
 
@@ -301,7 +307,11 @@ AcpiAmlReadField (
         }
 
 
-        /* Place the MergedDatum into the proper format and return buffer field */
+        /*
+         * Place the MergedDatum into the proper format and return buffer
+         * field
+         */
+
         switch (ByteGranularity)
         {
         case 1:
@@ -309,11 +319,11 @@ AcpiAmlReadField (
             break;
 
         case 2:
-            STORE16TO16 (&(((UINT16 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
+            MOVE_UNALIGNED16_TO_16 (&(((UINT16 *) Buffer)[ThisFieldDatumOffset]), &MergedDatum);
             break;
 
         case 4:
-            STORE32TO32 (&(((UINT32 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
+            MOVE_UNALIGNED32_TO_32 (&(((UINT32 *) Buffer)[ThisFieldDatumOffset]), &MergedDatum);
             break;
         }
 
@@ -327,10 +337,14 @@ AcpiAmlReadField (
 
         while (ThisFieldDatumOffset < DatumLength)
         {
-            /* Get the next raw datum, it contains bits of the current field datum... */
+            /*
+             * Get the next raw datum, it contains bits of the current
+             * field datum
+             */
 
-            Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset + ByteGranularity,
-                                        BitGranularity, &ThisRawDatum);
+            Status = AcpiAmlReadFieldData (ObjDesc,
+                            ThisFieldByteOffset + ByteGranularity,
+                            BitGranularity, &ThisRawDatum);
             if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
@@ -351,12 +365,17 @@ AcpiAmlReadField (
                 break;
             }
 
-            /* Put together bits of the two raw data to make a complete field datum */
+            /*
+             * Put together bits of the two raw data to make a complete
+             * field datum
+             */
+
 
             if (ObjDesc->Field.BitOffset != 0)
             {
-                MergedDatum = (PreviousRawDatum >> ObjDesc->Field.BitOffset) |
-                                (ThisRawDatum << (BitGranularity - ObjDesc->Field.BitOffset));
+                MergedDatum =
+                    (PreviousRawDatum >> ObjDesc->Field.BitOffset) |
+                    (ThisRawDatum << (BitGranularity - ObjDesc->Field.BitOffset));
             }
 
             else
@@ -364,8 +383,28 @@ AcpiAmlReadField (
                 MergedDatum = PreviousRawDatum;
             }
 
-            /* Now store the datum in the caller's buffer, according to the data type */
+            /*
+             * Prepare the merged datum for storing into the caller's
+             *  buffer.  It is possible to have a 32-bit buffer
+             *  (ByteGranularity == 4), but a ObjDesc->Field.Length
+             *  of 8 or 16, meaning that the upper bytes of merged data
+             *  are undesired.  This section fixes that.
+             */
+            switch (ObjDesc->Field.Length)
+            {
+            case 8:
+                MergedDatum &= 0x000000FF;
+                break;
 
+            case 16:
+                MergedDatum &= 0x0000FFFF;
+                break;
+            }
+
+            /*
+             * Now store the datum in the caller's buffer, according to
+             * the data type
+             */
             switch (ByteGranularity)
             {
             case 1:
@@ -373,16 +412,18 @@ AcpiAmlReadField (
                 break;
 
             case 2:
-                STORE16TO16 (&(((UINT16 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
+                MOVE_UNALIGNED16_TO_16 (&(((UINT16 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
                 break;
 
             case 4:
-                STORE32TO32 (&(((UINT32 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
+                MOVE_UNALIGNED32_TO_32 (&(((UINT32 *) Buffer) [ThisFieldDatumOffset]), &MergedDatum);
                 break;
             }
 
-
-            /* Save the most recent datum since it contains bits of the *next* field datum */
+            /*
+             * Save the most recent datum since it contains bits of
+             * the *next* field datum
+             */
 
             PreviousRawDatum = ThisRawDatum;
 
@@ -398,8 +439,7 @@ Cleanup:
 }
 
 
-
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiAmlWriteFieldData
  *
@@ -411,7 +451,7 @@ Cleanup:
  *
  * DESCRIPTION: Store the value into the given field
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiAmlWriteFieldData (
@@ -438,32 +478,33 @@ AcpiAmlWriteFieldData (
 
     FieldByteWidth = DIV_8 (FieldBitWidth);
     Status = AcpiAmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
-    if (AE_OK != Status)
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
 
     /*
-     * Round offset down to next multiple of
-     * field width, add region base address and offset within the field
+     * Set offset to next multiple of field width, 
+     *  add region base address and offset within the field
      */
-
     Address = RgnDesc->Region.Address +
-              (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1)) +
+              (ObjDesc->Field.Offset * FieldByteWidth) +
               FieldByteOffset;
+
 
     if (RgnDesc->Region.SpaceId >= NUM_REGION_TYPES)
     {
         DEBUG_PRINT (TRACE_OPREGION,
-                ("AmlWriteField: **** Store %lx in unknown OpRegion SpaceID %d at %08lx width %d ** \n",
-                Value, RgnDesc->Region.SpaceId, Address, FieldBitWidth));
+            ("AmlWriteField: **** Store %lx in unknown OpRegion SpaceID %d at %08lx width %d ** \n",
+            Value, RgnDesc->Region.SpaceId, Address, FieldBitWidth));
     }
     else
     {
         DEBUG_PRINT (TRACE_OPREGION,
-                ("AmlWriteField: Store %lx in OpRegion %s at %08lx width %d\n",
-                Value, AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId], Address, FieldBitWidth));
+            ("AmlWriteField: Store %lx in OpRegion %s at %08lx width %d\n",
+            Value, AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId], Address,
+            FieldBitWidth));
     }
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
@@ -473,19 +514,20 @@ AcpiAmlWriteFieldData (
 
     if (Status == AE_NOT_IMPLEMENTED)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** OpRegion type %s not implemented\n",
-                        AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId]));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlWriteField: **** OpRegion type %s not implemented\n",
+            AcpiGbl_RegionTypes[RgnDesc->Region.SpaceId]));
     }
 
     else if (Status == AE_EXIST)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("AmlWriteField: **** Unknown OpRegion SpaceID %x\n",
-                        RgnDesc->Region.SpaceId));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AmlWriteField: **** Unknown OpRegion SpaceID %x\n",
+            RgnDesc->Region.SpaceId));
     }
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*****************************************************************************
@@ -498,7 +540,7 @@ AcpiAmlWriteFieldData (
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Apply the field update rule to a field write
  *
  ****************************************************************************/
 
@@ -515,13 +557,11 @@ AcpiAmlWriteFieldDataWithUpdateRule (
     UINT32                  CurrentValue;
 
 
-
     /* Start with the new bits  */
 
     MergedValue = FieldValue;
 
     /* Check if update rule needs to be applied (not if mask is all ones) */
-
 
 
     /* Decode the update rule */
@@ -535,7 +575,8 @@ AcpiAmlWriteFieldDataWithUpdateRule (
          * Read the current contents of the byte/word/dword containing
          * the field, and merge with the new field value.
          */
-        Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset, BitGranularity, &CurrentValue);
+        Status = AcpiAmlReadFieldData (ObjDesc, ThisFieldByteOffset,
+                                        BitGranularity, &CurrentValue);
         MergedValue |= (CurrentValue & ~Mask);
         break;
 
@@ -557,8 +598,9 @@ AcpiAmlWriteFieldDataWithUpdateRule (
 
 
     default:
-        DEBUG_PRINT (ACPI_ERROR, ("WriteFieldDataWithUpdateRule: Unknown UpdateRule setting: %x\n",
-                        ObjDesc->Field.UpdateRule));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("WriteFieldDataWithUpdateRule: Unknown UpdateRule setting: %x\n",
+            ObjDesc->Field.UpdateRule));
         Status = AE_AML_OPERAND_VALUE;
     }
 
@@ -567,10 +609,11 @@ AcpiAmlWriteFieldDataWithUpdateRule (
 
     if (ACPI_SUCCESS (Status))
     {
-        Status = AcpiAmlWriteFieldData (ObjDesc, ThisFieldByteOffset, BitGranularity, MergedValue);
+        Status = AcpiAmlWriteFieldData (ObjDesc, ThisFieldByteOffset,
+                                        BitGranularity, MergedValue);
     }
 
-    return Status;
+    return (Status);
 }
 
 
@@ -614,8 +657,8 @@ AcpiAmlWriteField (
 
     /*
      * Break the request into up to three parts:
-     * non-aligned part at start, aligned part in middle, non-aligned part at end
-     * --- Just like an I/O request ---
+     * non-aligned part at start, aligned part in middle, non-aligned part
+     * at end --- Just like an I/O request ---
      */
 
     ThisFieldByteOffset = 0;
@@ -630,11 +673,11 @@ AcpiAmlWriteField (
         break;
 
     case 2:
-        STORE16TO32 (&PreviousRawDatum, &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
+        MOVE_UNALIGNED16_TO_32 (&PreviousRawDatum, &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
         break;
 
     case 4:
-        STORE32TO32 (&PreviousRawDatum, &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
+        MOVE_UNALIGNED32_TO_32 (&PreviousRawDatum, &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
         break;
 
     default:
@@ -645,25 +688,33 @@ AcpiAmlWriteField (
     }
 
 
-    /* Write a partial field datum if field does not begin on a datum boundary */
+    /*
+     * Write a partial field datum if field does not begin on a datum boundary
+     *
+     * Construct Mask with 1 bits where the field is, 0 bits elsewhere
+     *
+     * 1) Bits above the field
+     */
 
-    /* Construct Mask with 1 bits where the field is, 0 bits elsewhere */
+    Mask = (((UINT32)(-1)) << (UINT32)ObjDesc->Field.BitOffset);
 
-    Mask = (((UINT32)(-1)) << (UINT32)ObjDesc->Field.BitOffset); /* Bits above the field */
-
-    /* Only the bottom 5 bits are valid for a shift operation. */
+    /* 2) Only the bottom 5 bits are valid for a shift operation. */
 
     if ((ObjDesc->Field.BitOffset + ObjDesc->FieldUnit.Length) < 32)
     {
-        Mask &= (~(((UINT32)(-1)) << ((UINT32)ObjDesc->Field.BitOffset + (UINT32)ObjDesc->FieldUnit.Length)));   /* Bits above the field */
+        /* Bits above the field */
+
+        Mask &= (~(((UINT32)(-1)) << ((UINT32)ObjDesc->Field.BitOffset +
+                                        (UINT32)ObjDesc->FieldUnit.Length)));
     }
 
-    /* Shift and mask the value into the field position */
+    /* 3) Shift and mask the value into the field position */
 
     FieldValue = (PreviousRawDatum << ObjDesc->Field.BitOffset) & Mask;
 
-    Status = AcpiAmlWriteFieldDataWithUpdateRule (ObjDesc, Mask, FieldValue, ThisFieldByteOffset,
-                                                BitGranularity);
+    Status = AcpiAmlWriteFieldDataWithUpdateRule (ObjDesc, Mask, FieldValue,
+                                                    ThisFieldByteOffset,
+                                                    BitGranularity);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -673,7 +724,8 @@ AcpiAmlWriteField (
     /* If the field fits within one datum, we are done. */
 
     if ((DatumLength == 1) &&
-       ((ObjDesc->Field.BitOffset + ObjDesc->FieldUnit.Length) <= (UINT16) BitGranularity))
+       ((ObjDesc->Field.BitOffset + ObjDesc->FieldUnit.Length) <=
+            (UINT16) BitGranularity))
     {
         goto Cleanup;
     }
@@ -682,8 +734,8 @@ AcpiAmlWriteField (
      * We don't need to worry about the update rule for these data, because
      * all of the bits are part of the field.
      *
-     * Can't write the last datum, however, because it might contain bits that are not
-     * part of the field -- the update rule must be applied.
+     * Can't write the last datum, however, because it might contain bits that
+     * are not part of the field -- the update rule must be applied.
      */
 
     while (ThisFieldDatumOffset < (DatumLength - 1))
@@ -699,11 +751,11 @@ AcpiAmlWriteField (
             break;
 
         case 2:
-            STORE16TO32 (&ThisRawDatum, &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
+            MOVE_UNALIGNED16_TO_32 (&ThisRawDatum, &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
             break;
 
         case 4:
-            STORE32TO32 (&ThisRawDatum, &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
+            MOVE_UNALIGNED32_TO_32 (&ThisRawDatum, &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
             break;
 
         default:
@@ -713,12 +765,16 @@ AcpiAmlWriteField (
             goto Cleanup;
         }
 
-        /* Put together bits of the two raw data to make a complete field datum */
+        /*
+         * Put together bits of the two raw data to make a complete field
+         * datum
+         */
 
         if (ObjDesc->Field.BitOffset != 0)
         {
-            MergedDatum = (PreviousRawDatum >> (BitGranularity - ObjDesc->Field.BitOffset)) |
-                            (ThisRawDatum << ObjDesc->Field.BitOffset);
+            MergedDatum =
+                (PreviousRawDatum >> (BitGranularity - ObjDesc->Field.BitOffset)) |
+                (ThisRawDatum << ObjDesc->Field.BitOffset);
         }
 
         else
@@ -729,15 +785,19 @@ AcpiAmlWriteField (
         /* Now write the completed datum  */
 
 
-        Status = AcpiAmlWriteFieldData (ObjDesc, ThisFieldByteOffset + ByteGranularity,
-                                    BitGranularity, MergedDatum);
+        Status = AcpiAmlWriteFieldData (ObjDesc,
+                                        ThisFieldByteOffset + ByteGranularity,
+                                        BitGranularity, MergedDatum);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
         }
 
 
-        /* Save the most recent datum since it contains bits of the *next* field datum */
+        /*
+         * Save the most recent datum since it contains bits of
+         * the *next* field datum
+         */
 
         PreviousRawDatum = ThisRawDatum;
 
@@ -746,10 +806,10 @@ AcpiAmlWriteField (
     }  /* while */
 
 
-
     /* Write a partial field datum if field does not end on a datum boundary */
 
-    if ((ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset) % BitGranularity)
+    if ((ObjDesc->FieldUnit.Length + ObjDesc->FieldUnit.BitOffset) %
+        BitGranularity)
     {
         switch (ByteGranularity)
         {
@@ -758,26 +818,29 @@ AcpiAmlWriteField (
             break;
 
         case 2:
-            STORE16TO32 (&ThisRawDatum, &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
+            MOVE_UNALIGNED16_TO_32 (&ThisRawDatum, &(((UINT16 *) Buffer) [ThisFieldDatumOffset]));
             break;
 
         case 4:
-            STORE32TO32 (&ThisRawDatum, &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
+            MOVE_UNALIGNED32_TO_32 (&ThisRawDatum, &(((UINT32 *) Buffer) [ThisFieldDatumOffset]));
             break;
         }
 
         /* Construct Mask with 1 bits where the field is, 0 bits elsewhere */
 
-        ValidFieldBits = ((ObjDesc->FieldUnit.Length % BitGranularity) + ObjDesc->Field.BitOffset);
+        ValidFieldBits = ((ObjDesc->FieldUnit.Length % BitGranularity) +
+                            ObjDesc->Field.BitOffset);
 
         Mask = (((UINT32) 1 << ValidFieldBits) - (UINT32) 1);
 
         /* Shift and mask the value into the field position */
 
-        FieldValue = (PreviousRawDatum >> (BitGranularity - ObjDesc->Field.BitOffset)) & Mask;
+        FieldValue = (PreviousRawDatum >>
+                        (BitGranularity - ObjDesc->Field.BitOffset)) & Mask;
 
-        Status = AcpiAmlWriteFieldDataWithUpdateRule (ObjDesc, Mask, FieldValue, ThisFieldByteOffset + 1,
-                                                    BitGranularity);
+        Status = AcpiAmlWriteFieldDataWithUpdateRule (ObjDesc, Mask, FieldValue, 
+                                                        ThisFieldByteOffset + ByteGranularity,
+                                                        BitGranularity);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -785,12 +848,9 @@ AcpiAmlWriteField (
     }
 
 
-
 Cleanup:
 
     return_ACPI_STATUS (Status);
 }
-
-
 
 
