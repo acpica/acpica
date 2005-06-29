@@ -268,11 +268,20 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AsExaminePaths
+ *
+ * DESCRIPTION: Source and Target pathname verification and handling
+ *
+ ******************************************************************************/
+
 int
 AsExaminePaths (
     ACPI_CONVERSION_TABLE   *ConversionTable,
     char                    *Source,
-    char                    *Target)
+    char                    *Target,
+    UINT32                  *SourceFileType)
 {
     int                     Status;
     int                     Response;
@@ -285,8 +294,17 @@ AsExaminePaths (
         return -1;
     }
 
-    /* Check if source is a file or a directory */
+    /* Return the filetype -- file or a directory */
 
+    *SourceFileType = 0;
+    if (Gbl_StatBuf.st_mode & _S_IFDIR)
+    {
+        *SourceFileType = _S_IFDIR;
+    }
+
+    /*
+     * If we are in no-output mode or in batch mode, we are done
+     */
     if ((ConversionTable->Flags & FLG_NO_FILE_OUTPUT) ||
         (Gbl_BatchMode))
     {
@@ -395,6 +413,7 @@ main (
     ACPI_CONVERSION_TABLE   *ConversionTable = NULL;
     char                    *SourcePath;
     char                    *TargetPath;
+    UINT32                  FileType;
 
     
     printf ("ACPI Source Code Conversion Utility ");
@@ -411,30 +430,51 @@ main (
     while ((j = getopt (argc, argv, "lcsvy")) != EOF) switch(j) 
     {
     case 'l':
+
+        /* Linux code generation */
+
         printf ("Creating Linux source code\n");
         ConversionTable = &LinuxConversionTable;
         break;
 
+
     case 'c':
+
+        /* Cleanup code */
+
         printf ("Code cleanup\n");
         ConversionTable = &CleanupConversionTable;
         break;
 
+
     case 's':
+
+        /* Statistics only */
+
         break;
 
+
     case 'v':
+
+        /* Verbose mode */
+
         Gbl_VerboseMode = TRUE;
         break;
 
+
     case 'y':
+
+        /* Batch mode */
+
         Gbl_BatchMode = TRUE;
         break;
+
 
     default:    
         AsDisplayUsage ();
         return -1;
     }
+
 
     SourcePath = argv[optind];
     TargetPath = argv[optind+1];
@@ -450,14 +490,30 @@ main (
     }
 
 
-    if (AsExaminePaths (ConversionTable, SourcePath, TargetPath))
+    /* Check source and target paths and files */
+
+    if (AsExaminePaths (ConversionTable, SourcePath, TargetPath, &FileType))
     {
         return -1;
     }
 
-    /* Process the directory tree */
+    /* Source/target can be either directories or a files */
 
-    AsProcessTree (ConversionTable, SourcePath, TargetPath);
+    if (FileType == _S_IFDIR)
+    {
+        /* Process the directory tree */
+
+        AsProcessTree (ConversionTable, SourcePath, TargetPath);
+    }
+
+    else
+    {
+        /* Process a single file */
+
+        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_SOURCE);
+    }
+
+    /* Always display final summary and stats */
 
     AsDisplayStats ();
 

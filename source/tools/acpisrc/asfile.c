@@ -328,13 +328,13 @@ AsConvertFile (
 
         case CVT_COUNT_TABS:
 
-            AsCountTabs (FileBuffer);
+            AsCountTabs (FileBuffer, Filename);
             break;
 
 
         case CVT_COUNT_NON_ANSI_COMMENTS:
 
-            AsCountNonAnsiComments (FileBuffer);
+            AsCountNonAnsiComments (FileBuffer, Filename);
             break;
 
 
@@ -346,7 +346,7 @@ AsConvertFile (
 
         case CVT_COUNT_LINES:
 
-            AsCountSourceLines (FileBuffer);
+            AsCountSourceLines (FileBuffer, Filename);
             break;
 
 
@@ -436,8 +436,12 @@ AsProcessOneFile (
 
     /* Generate the source pathname and read the file */
 
-    strcpy (Pathname, SourcePath);
-    strcat (Pathname, "/");
+    if (SourcePath)
+    {
+        strcpy (Pathname, SourcePath);
+        strcat (Pathname, "/");
+    }
+
     strcat (Pathname, Filename);
 
     if (AsGetFile (Pathname, &Gbl_FileBuffer, &Gbl_FileSize))
@@ -454,8 +458,11 @@ AsProcessOneFile (
         /* Generate the target pathname and write the file */
 
         strcpy (Pathname, TargetPath);
-        strcat (Pathname, "/");
-        strcat (Pathname, Filename);
+        if (SourcePath)
+        {
+            strcat (Pathname, "/");
+            strcat (Pathname, Filename);
+        }
 
         AsPutFile (Pathname, Gbl_FileBuffer, ConversionTable->Flags);
     }

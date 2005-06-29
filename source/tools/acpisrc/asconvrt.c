@@ -185,7 +185,7 @@ AsTrimLines (
 Exit:
     if (SpaceCount)
     {
-        printf ("Eliminated %d extraneous spaces in \"%s\"\n", SpaceCount, Filename);
+        printf ("!! Eliminated %d extraneous spaces in %s\n", SpaceCount, Filename);
     }
 }
 
@@ -621,8 +621,6 @@ AsRemoveStatement (
             SubBuffer = SubString;
         }
     }
-
-
 }
 
 
@@ -727,8 +725,6 @@ AsRemoveIfdef (
             SubBuffer = SubString;
         }
     }
-
-
 }
 
 
@@ -786,8 +782,6 @@ AsRemoveLine (
             SubBuffer = SubString;
         }
     }
-
-
 }
 
 
@@ -912,7 +906,8 @@ AsRemoveDebugMacros (
 
 void
 AsCountTabs (
-    char                    *Buffer)
+    char                    *Buffer,
+    char                    *Filename)
 {   
     UINT32                  i;
     UINT32                  TabCount = 0;
@@ -928,7 +923,7 @@ AsCountTabs (
 
     if (TabCount)
     {
-        printf ("**** %d Tabs found in this source file! ****\n", TabCount);
+        printf ("!! Found %d Tabs in %s\n", TabCount, Filename);
         Gbl_Tabs += TabCount;
     }
 }
@@ -945,7 +940,8 @@ AsCountTabs (
 
 void
 AsCountNonAnsiComments (
-    char                    *Buffer)
+    char                    *Buffer,
+    char                    *Filename)
 {   
     char                    *SubBuffer = Buffer;
     UINT32                  CommentCount = 0;
@@ -963,7 +959,7 @@ AsCountNonAnsiComments (
 
     if (CommentCount)
     {
-        printf ("**** %d Non-ANSI Comments (// Comments) found in this source file! ****\n", CommentCount);
+        printf ("!! Found %d Non-ANSI Comments (// Comments) in \n", CommentCount, Filename);
         Gbl_NonAnsiComments += CommentCount;
     }
 }
@@ -979,7 +975,8 @@ AsCountNonAnsiComments (
 
 void
 AsCountSourceLines (
-    char                    *Buffer)
+    char                    *Buffer,
+    char                    *Filename)
 {   
     char                    *SubBuffer = Buffer;
     UINT32                  LineCount = 0;
@@ -1037,8 +1034,8 @@ AsCountSourceLines (
     Gbl_WhiteLines += WhiteCount;
     Gbl_CommentLines += CommentCount;
 
-    VERBOSE_PRINT (("%d Lines, %d Comment %d White %d Code\n", 
-                LineCount+WhiteCount+CommentCount, CommentCount, WhiteCount, LineCount));
+    VERBOSE_PRINT (("%d Comment %d White %d Code %d Lines in %s\n", 
+                CommentCount, WhiteCount, LineCount, LineCount+WhiteCount+CommentCount, Filename));
 }
 
 

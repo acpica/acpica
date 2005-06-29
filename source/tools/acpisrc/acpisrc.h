@@ -259,7 +259,8 @@ AsMixedCaseToUnderscores (
 
 void
 AsCountTabs (
-    char                    *Buffer);
+    char                    *Buffer,
+    char                    *Filename);
 
 void
 AsBracesOnSameLine (
@@ -275,11 +276,13 @@ AsRemoveDebugMacros (
 
 void
 AsCountSourceLines (
-    char                    *Buffer);
+    char                    *Buffer,
+    char                    *Filename);
 
 void
 AsCountNonAnsiComments (
-    char                    *Buffer);
+    char                    *Buffer,
+    char                    *Filename);
 
 void
 AsTrimWhitespace (
