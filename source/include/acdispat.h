@@ -148,6 +148,10 @@ DsObjStackGetValue (
     UINT32                  Index,
     ACPI_WALK_STATE         *WalkState);
 
+ACPI_STATUS
+DsObjStackPopObject (
+    ACPI_OBJECT_INTERNAL    **Object,
+    ACPI_WALK_STATE         *WalkState);
 
 
 /* dsregion - Op region support */
