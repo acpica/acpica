@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -274,15 +274,25 @@ AePrintException (
                  * Seek to the offset in the combined source file, read the source
                  * line, and write it to the output.
                  */
-                fseek (SourceFile, (long) Enode->LogicalByteOffset, SEEK_SET);
-
-                Actual = fread (&SourceByte, 1, 1, SourceFile);
-                while (Actual && SourceByte && (SourceByte != '\n'))
+                Actual = fseek (SourceFile, (long) Enode->LogicalByteOffset, SEEK_SET);
+                if (Actual)
                 {
-                    fwrite (&SourceByte, 1, 1, OutputFile);
-                    Actual = fread (&SourceByte, 1, 1, SourceFile);
+                    fprintf (OutputFile, "[*** iASL: Seek error on source code temp file ***]");
                 }
-
+                else
+                {
+                    Actual = fread (&SourceByte, 1, 1, SourceFile);
+                    if (!Actual)
+                    {
+                        fprintf (OutputFile, "[*** iASL: Read error on source code temp file ***]");
+                    }
+                    
+                    else while (Actual && SourceByte && (SourceByte != '\n'))
+                    {
+                        fwrite (&SourceByte, 1, 1, OutputFile);
+                        Actual = fread (&SourceByte, 1, 1, SourceFile);
+                    }
+                }
                 fprintf (OutputFile, "\n");
             }
         }
