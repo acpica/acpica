@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.106 $
+ *              $Revision: 1.108 $
  *
  ******************************************************************************/
 
@@ -126,7 +126,6 @@
         MODULE_NAME         ("hwregs")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiHwGetBitShift
@@ -191,7 +190,7 @@ AcpiHwClearAcpiStatus (void)
 
     if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1bEvtBlk.Address))
     {
-        AcpiOsWritePort ((ACPI_IO_ADDRESS) 
+        AcpiOsWritePort ((ACPI_IO_ADDRESS)
             ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm1bEvtBlk.Address),
             ALL_FIXED_STS_BITS, 16);
     }
@@ -258,7 +257,6 @@ AcpiHwObtainSleepTypeRegisterData (
     /*
      *  Validate parameters
      */
-
     if ((SleepState > ACPI_S_STATES_MAX) ||
         !Slp_TypA || !Slp_TypB)
     {
@@ -268,8 +266,7 @@ AcpiHwObtainSleepTypeRegisterData (
     /*
      *  AcpiEvaluate the namespace object containing the values for this state
      */
-
-    Status = AcpiNsEvaluateByName ((NATIVE_CHAR *) AcpiGbl_DbSleepStates[SleepState], 
+    Status = AcpiNsEvaluateByName ((NATIVE_CHAR *) AcpiGbl_DbSleepStates[SleepState],
                     NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
@@ -387,7 +384,6 @@ AcpiHwRegisterBitAccess (
      * Check bit id to fine locate Register offset.
      * Check Mask to determine Register offset, and then read-write.
      */
-
     switch (REGISTER_BLOCK_ID (RegisterId))
     {
     case PM1_STS:
@@ -438,7 +434,6 @@ AcpiHwRegisterBitAccess (
              * others should be written as 0 so they will be left
              * unchanged
              */
-
             Value <<= AcpiHwGetBitShift (Mask);
             Value &= Mask;
 
@@ -553,7 +548,6 @@ AcpiHwRegisterBitAccess (
              * Therefore, pass the RegisterId, not just generic PM1_CONTROL,
              * because we need to do different things. Yuck.
              */
-
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId,
                     (UINT16) RegisterValue);
         }
@@ -621,7 +615,6 @@ AcpiHwRegisterBitAccess (
          *     gpe_block_id is one of GPE[01]_EN_BLOCK and GPE[01]_STS_BLOCK
          *     gpe_bit_number is relative from the gpe_block (0x00~0xFF)
          */
-
         Mask = REGISTER_BIT_ID(RegisterId); /* gpe_bit_number */
         RegisterId = REGISTER_BLOCK_ID(RegisterId) | (Mask >> 3);
         Mask = AcpiGbl_DecodeTo8bit [Mask % 8];
@@ -651,9 +644,10 @@ AcpiHwRegisterBitAccess (
             Value          &= Mask;
             RegisterValue  |= Value;
 
-            /* This write will put the Action state into the General Purpose */
-            /* Enable Register indexed by the value in Mask */
-
+            /*
+             * This write will put the Action state into the General Purpose
+             * Enable Register indexed by the value in Mask
+             */
             ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %04X\n",
                 RegisterValue, RegisterId));
             AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, RegisterId,
@@ -666,6 +660,7 @@ AcpiHwRegisterBitAccess (
 
     case SMI_CMD_BLOCK:
     case PROCESSOR_BLOCK:
+
         /* Not used by any callers at this time - therefore, not implemented */
 
     default:
@@ -756,8 +751,8 @@ AcpiHwRegisterRead (
 
 
     /*
-     * For the GPE? Blocks, the lower word of RegisterId contains the 
-     * byte offset for which to read, as each part of each block may be 
+     * For the GPE? Blocks, the lower word of RegisterId contains the
+     * byte offset for which to read, as each part of each block may be
      * several bytes long.
      */
     case GPE0_STS_BLOCK: /* 8-bit access */
@@ -825,6 +820,7 @@ AcpiHwRegisterWrite (
     UINT32                  Value)
 {
     UINT32                  BankOffset;
+
 
     FUNCTION_TRACE ("HwRegisterWrite");
 
@@ -962,6 +958,9 @@ AcpiHwLowLevelRead (
     UINT16                  PciRegister;
 
 
+    FUNCTION_ENTRY ();
+
+
     /*
      * Must have a valid pointer to a GAS structure, and
      * a non-zero address within
@@ -977,7 +976,6 @@ AcpiHwLowLevelRead (
      * Three address spaces supported:
      * Memory, Io, or PCI config.
      */
-
     switch (Reg->AddressSpaceId)
     {
     case ACPI_ADR_SPACE_SYSTEM_MEMORY:
@@ -1041,6 +1039,9 @@ AcpiHwLowLevelWrite (
     UINT16                  PciRegister;
 
 
+    FUNCTION_ENTRY ();
+
+
     /*
      * Must have a valid pointer to a GAS structure, and
      * a non-zero address within
@@ -1056,7 +1057,6 @@ AcpiHwLowLevelWrite (
      * Three address spaces supported:
      * Memory, Io, or PCI config.
      */
-
     switch (Reg->AddressSpaceId)
     {
     case ACPI_ADR_SPACE_SYSTEM_MEMORY:
