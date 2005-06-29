@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.98 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -119,14 +119,13 @@
 #define __EXMISC_C__
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acdispat.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exmisc")
+        ACPI_MODULE_NAME    ("exmisc")
 
 
 /*******************************************************************************
@@ -152,7 +151,7 @@ AcpiExGetObjectReference (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("ExGetObjectReference", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExGetObjectReference", ObjDesc);
 
 
     switch (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc))
@@ -244,7 +243,7 @@ AcpiExConcatTemplate (
     ACPI_SIZE               Length2;
 
 
-    FUNCTION_TRACE ("ExConcatTemplate");
+    ACPI_FUNCTION_TRACE ("ExConcatTemplate");
 
 
     /* Find the EndTags in each resource template */
@@ -273,7 +272,7 @@ AcpiExConcatTemplate (
     NewBuf = ACPI_MEM_ALLOCATE (Length1 + Length2);
     if (!NewBuf)
     {
-        REPORT_ERROR
+        ACPI_REPORT_ERROR
             (("ExConcatTemplate: Buffer allocation failure\n"));
         Status = AE_NO_MEMORY;
         goto Cleanup;
@@ -281,8 +280,8 @@ AcpiExConcatTemplate (
 
     /* Copy the templates to the new descriptor */
 
-    MEMCPY (NewBuf, ObjDesc1->Buffer.Pointer, Length1);
-    MEMCPY (NewBuf + Length1, ObjDesc2->Buffer.Pointer, Length2);
+    ACPI_MEMCPY (NewBuf, ObjDesc1->Buffer.Pointer, Length1);
+    ACPI_MEMCPY (NewBuf + Length1, ObjDesc2->Buffer.Pointer, Length2);
 
     /*
      * Point the return object to the new buffer
@@ -292,7 +291,7 @@ AcpiExConcatTemplate (
 
     /* Compute the new checksum */
 
-    NewBuf[ReturnDesc->Buffer.Length - 1] =
+    NewBuf[ReturnDesc->Buffer.Length - 1] = (NATIVE_CHAR)
             AcpiUtGenerateChecksum (ReturnDesc->Buffer.Pointer,
                                     (ReturnDesc->Buffer.Length - 1));
 
@@ -339,7 +338,7 @@ AcpiExDoConcatenate (
     UINT32                  IntegerSize = sizeof (ACPI_INTEGER);
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*
@@ -378,7 +377,7 @@ AcpiExDoConcatenate (
         NewBuf = ACPI_MEM_CALLOCATE (ReturnDesc->Buffer.Length);
         if (!NewBuf)
         {
-            REPORT_ERROR
+            ACPI_REPORT_ERROR
                 (("ExDoConcatenate: Buffer allocation failure\n"));
             Status = AE_NO_MEMORY;
             goto Cleanup;
@@ -391,7 +390,7 @@ AcpiExDoConcatenate (
         ThisInteger = ObjDesc1->Integer.Value;
         for (i = 0; i < IntegerSize; i++)
         {
-            NewBuf[i] = (UINT8) ThisInteger;
+            NewBuf[i] = (NATIVE_CHAR) ThisInteger;
             ThisInteger >>= 8;
         }
 
@@ -400,7 +399,7 @@ AcpiExDoConcatenate (
         ThisInteger = ObjDesc2->Integer.Value;
         for (; i < (IntegerSize * 2); i++)
         {
-            NewBuf[i] = (UINT8) ThisInteger;
+            NewBuf[i] = (NATIVE_CHAR) ThisInteger;
             ThisInteger >>= 8;
         }
 
@@ -421,15 +420,15 @@ AcpiExDoConcatenate (
                                     ObjDesc2->String.Length + 1);
         if (!NewBuf)
         {
-            REPORT_ERROR
+            ACPI_REPORT_ERROR
                 (("ExDoConcatenate: String allocation failure\n"));
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        STRCPY (NewBuf, ObjDesc1->String.Pointer);
-        STRCPY (NewBuf + ObjDesc1->String.Length,
-                         ObjDesc2->String.Pointer);
+        ACPI_STRCPY (NewBuf, ObjDesc1->String.Pointer);
+        ACPI_STRCPY (NewBuf + ObjDesc1->String.Length,
+                              ObjDesc2->String.Pointer);
 
         /* Point the return object to the new string */
 
@@ -453,15 +452,15 @@ AcpiExDoConcatenate (
                                     ObjDesc2->Buffer.Length);
         if (!NewBuf)
         {
-            REPORT_ERROR
+            ACPI_REPORT_ERROR
                 (("ExDoConcatenate: Buffer allocation failure\n"));
             Status = AE_NO_MEMORY;
             goto Cleanup;
         }
 
-        MEMCPY (NewBuf, ObjDesc1->Buffer.Pointer,
+        ACPI_MEMCPY (NewBuf, ObjDesc1->Buffer.Pointer,
                         ObjDesc1->Buffer.Length);
-        MEMCPY (NewBuf + ObjDesc1->Buffer.Length, ObjDesc2->Buffer.Pointer,
+        ACPI_MEMCPY (NewBuf + ObjDesc1->Buffer.Length, ObjDesc2->Buffer.Pointer,
                          ObjDesc2->Buffer.Length);
 
         /*
@@ -646,6 +645,9 @@ AcpiExDoLogicalOp (
         {
             return (TRUE);
         }
+        break;
+
+    default:
         break;
     }
 

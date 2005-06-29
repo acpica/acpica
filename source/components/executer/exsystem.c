@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.70 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -119,12 +119,10 @@
 
 #include "acpi.h"
 #include "acinterp.h"
-#include "acnamesp.h"
-#include "achware.h"
 #include "acevents.h"
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exsystem")
+        ACPI_MODULE_NAME    ("exsystem")
 
 
 /*******************************************************************************
@@ -151,7 +149,7 @@ AcpiExSystemWaitSemaphore (
     ACPI_STATUS             Status2;
 
 
-    FUNCTION_TRACE ("ExSystemWaitSemaphore");
+    ACPI_FUNCTION_TRACE ("ExSystemWaitSemaphore");
 
 
     Status = AcpiOsWaitSemaphore (Semaphore, 1, 0);
@@ -205,7 +203,7 @@ AcpiExSystemDoStall (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     if (HowLong > 1000) /* 1 millisecond */
@@ -249,7 +247,7 @@ AcpiExSystemDoSuspend (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Since this thread will sleep, we must release the interpreter */
@@ -289,7 +287,7 @@ AcpiExSystemAcquireMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("ExSystemAcquireMutex", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExSystemAcquireMutex", ObjDesc);
 
 
     if (!ObjDesc)
@@ -334,7 +332,7 @@ AcpiExSystemReleaseMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExSystemReleaseMutex");
+    ACPI_FUNCTION_TRACE ("ExSystemReleaseMutex");
 
 
     if (!ObjDesc)
@@ -376,7 +374,7 @@ AcpiExSystemSignalEvent (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExSystemSignalEvent");
+    ACPI_FUNCTION_TRACE ("ExSystemSignalEvent");
 
 
     if (ObjDesc)
@@ -411,7 +409,7 @@ AcpiExSystemWaitEvent (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExSystemWaitEvent");
+    ACPI_FUNCTION_TRACE ("ExSystemWaitEvent");
 
 
     if (ObjDesc)
@@ -444,7 +442,7 @@ AcpiExSystemResetEvent (
     void                    *TempSemaphore;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*

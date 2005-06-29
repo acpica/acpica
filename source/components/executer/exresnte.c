@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.48 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -119,16 +119,13 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
 #include "acnamesp.h"
-#include "actables.h"
-#include "acevents.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exresnte")
+        ACPI_MODULE_NAME    ("exresnte")
 
 
 /*******************************************************************************
@@ -136,7 +133,7 @@
  * FUNCTION:    AcpiExResolveNodeToValue
  *
  * PARAMETERS:  ObjectPtr       - Pointer to a location that contains
- *                                a pointer to a NS node, and will recieve a
+ *                                a pointer to a NS node, and will receive a
  *                                pointer to the resolved object.
  *              WalkState       - Current state.  Valid only if executing AML
  *                                code.  NULL if simply resolving an object
@@ -171,7 +168,7 @@ AcpiExResolveNodeToValue (
     ACPI_INTEGER            TempVal;
 
 
-    FUNCTION_TRACE ("ExResolveNodeToValue");
+    ACPI_FUNCTION_TRACE ("ExResolveNodeToValue");
 
 
     /*
@@ -218,10 +215,14 @@ AcpiExResolveNodeToValue (
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
-        /* Return an additional reference to the object */
+        Status = AcpiDsGetPackageArguments (SourceDesc);
+        if (ACPI_SUCCESS (Status))
+        {
+            /* Return an additional reference to the object */
 
-        ObjDesc = SourceDesc;
-        AcpiUtAddReference (ObjDesc);
+            ObjDesc = SourceDesc;
+            AcpiUtAddReference (ObjDesc);
+        }
         break;
 
 
@@ -234,10 +235,14 @@ AcpiExResolveNodeToValue (
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
-        /* Return an additional reference to the object */
+        Status = AcpiDsGetBufferArguments (SourceDesc);
+        if (ACPI_SUCCESS (Status))
+        {
+            /* Return an additional reference to the object */
 
-        ObjDesc = SourceDesc;
-        AcpiUtAddReference (ObjDesc);
+            ObjDesc = SourceDesc;
+            AcpiUtAddReference (ObjDesc);
+        }
         break;
 
 
@@ -281,7 +286,7 @@ AcpiExResolveNodeToValue (
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "FieldRead Node=%p SourceDesc=%p Type=%X\n",
             Node, SourceDesc, EntryType));
 
-        Status = AcpiExReadDataFromField (SourceDesc, &ObjDesc);
+        Status = AcpiExReadDataFromField (WalkState, SourceDesc, &ObjDesc);
         break;
 
     /*

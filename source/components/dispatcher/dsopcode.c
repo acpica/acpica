@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,6 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "actables.h"
 
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dsopcode")
@@ -275,7 +274,7 @@ AcpiDsGetBufferFieldArguments (
 
     ACPI_DEBUG_EXEC(AcpiUtDisplayInitPathname (Node, "  [Field]"));
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] BufferField JIT Init\n",
-        (char *) &Node->Name));
+        Node->Name.Ascii));
 
     /* Execute the AML code for the TermArg arguments */
 
@@ -426,7 +425,7 @@ AcpiDsGetRegionArguments (
     ACPI_DEBUG_EXEC(AcpiUtDisplayInitPathname (Node, "  [Operation Region]"));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] OpRegion Init at AML %p\n",
-        (char *) &Node->Name, ExtraDesc->Extra.AmlStart));
+        Node->Name.Ascii, ExtraDesc->Extra.AmlStart));
 
 
     Status = AcpiDsExecuteArguments (Node, AcpiNsGetParentNode (Node),
@@ -540,16 +539,7 @@ AcpiDsEvalBufferFieldOperands (
 
     /* Get the operands */
 
-    if (AML_CREATE_FIELD_OP == Op->Common.AmlOpcode)
-    {
-        ResDesc = WalkState->Operands[3];
-        CntDesc = WalkState->Operands[2];
-    }
-    else
-    {
-        ResDesc = WalkState->Operands[2];
-    }
-
+    ResDesc = WalkState->Operands[2];
     OffDesc = WalkState->Operands[1];
     SrcDesc = WalkState->Operands[0];
     Offset  = (UINT32) OffDesc->Integer.Value;
@@ -573,6 +563,11 @@ AcpiDsEvalBufferFieldOperands (
     switch (Op->Common.AmlOpcode)
     {
     case AML_CREATE_FIELD_OP:
+
+        /* Slightly different operands for this opcode */
+
+        CntDesc = WalkState->Operands[2];
+        ResDesc = WalkState->Operands[3];
 
         /* Offset is in bits, count is in bits */
 

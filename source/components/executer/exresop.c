@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.46 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -120,15 +120,12 @@
 #include "acpi.h"
 #include "amlcode.h"
 #include "acparser.h"
-#include "acdispat.h"
 #include "acinterp.h"
 #include "acnamesp.h"
-#include "actables.h"
-#include "acevents.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exresop")
+        ACPI_MODULE_NAME    ("exresop")
 
 
 /*******************************************************************************
@@ -151,7 +148,7 @@ AcpiExCheckObjectType (
     ACPI_OBJECT_TYPE        ThisType,
     void                    *Object)
 {
-    PROC_NAME ("ExCheckObjectType");
+    ACPI_FUNCTION_NAME ("ExCheckObjectType");
 
 
     if (TypeNeeded == ACPI_TYPE_ANY)
@@ -163,7 +160,7 @@ AcpiExCheckObjectType (
 
     if (TypeNeeded != ThisType)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Needed [%s], found [%s] %p\n",
             AcpiUtGetTypeName (TypeNeeded),
             AcpiUtGetTypeName (ThisType), Object));
@@ -213,7 +210,7 @@ AcpiExResolveOperands (
     ACPI_OBJECT_TYPE        TypeNeeded;
 
 
-    FUNCTION_TRACE_U32 ("ExResolveOperands", Opcode);
+    ACPI_FUNCTION_TRACE_U32 ("ExResolveOperands", Opcode);
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
@@ -231,8 +228,8 @@ AcpiExResolveOperands (
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode %X OperandTypes=%X \n",
-        Opcode, ArgTypes));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode %X [%s] OperandTypes=%X \n",
+        Opcode, OpInfo->Name, ArgTypes));
 
     /*
      * Normal exit is with (ArgTypes == 0) at end of argument list.
@@ -306,7 +303,7 @@ AcpiExResolveOperands (
                 case AML_LOCAL_OP:
                 case AML_REVISION_OP:
 
-                    DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+                    ACPI_DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                         "Reference Opcode: %s\n", OpInfo->Name)));
                     break;
 
@@ -358,6 +355,7 @@ AcpiExResolveOperands (
             }
 
             /* Else not a string - fall through to the normal Reference case below */
+            /*lint -fallthrough */
 
         case ARGI_REFERENCE:            /* References: */
         case ARGI_INTEGER_REF:
@@ -408,6 +406,10 @@ AcpiExResolveOperands (
             {
                 goto NextOperand;
             }
+            break;
+
+        default:
+            /* All cases covered above */
             break;
         }
 

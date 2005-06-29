@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.102 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -119,15 +119,13 @@
 
 #include "acpi.h"
 #include "acparser.h"
-#include "acnamesp.h"
 #include "acinterp.h"
 #include "acevents.h"
 #include "amlcode.h"
-#include "acdispat.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exoparg2")
+        ACPI_MODULE_NAME    ("exoparg2")
 
 
 /*!
@@ -177,50 +175,47 @@ AcpiExOpcode_2A_0T_0R (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_STR ("ExOpcode_2A_0T_0R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_0T_0R", 
+            AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /* Examine the opcode */
 
     switch (WalkState->Opcode)
     {
-
     case AML_NOTIFY_OP:         /* Notify (NotifyObject, NotifyValue) */
 
         /* The first operand is a namespace node */
 
         Node = (ACPI_NAMESPACE_NODE *) Operand[0];
 
-        /* The node must refer to a device or thermal zone */
+        /* Notifies allowed on this object? */
 
-        switch (Node->Type)
+        if (!AcpiEvIsNotifyObject (Node))
         {
-        case ACPI_TYPE_DEVICE:
-        case ACPI_TYPE_THERMAL:
-
-            /*
-             * Dispatch the notify to the appropriate handler
-             * NOTE: the request is queued for execution after this method
-             * completes.  The notify handlers are NOT invoked synchronously
-             * from this thread -- because handlers may in turn run other
-             * control methods.
-             */
-            Status = AcpiEvQueueNotifyRequest (Node,
-                                    (UINT32) Operand[1]->Integer.Value);
-            break;
-
-        default:
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unexpected notify object type %X\n",
-                Node->Type));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unexpected notify object type [%s]\n",
+                    AcpiUtGetTypeName (Node->Type)));
 
             Status = AE_AML_OPERAND_TYPE;
             break;
         }
+
+        /*
+         * Dispatch the notify to the appropriate handler
+         * NOTE: the request is queued for execution after this method
+         * completes.  The notify handlers are NOT invoked synchronously
+         * from this thread -- because handlers may in turn run other
+         * control methods.
+         */
+        Status = AcpiEvQueueNotifyRequest (Node,
+                        (UINT32) Operand[1]->Integer.Value);
         break;
+
 
     default:
 
-        REPORT_ERROR (("AcpiExOpcode_2A_0T_0R: Unknown opcode %X\n", WalkState->Opcode));
+        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_0T_0R: Unknown opcode %X\n", 
+                WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
     }
 
@@ -251,7 +246,7 @@ AcpiExOpcode_2A_2T_1R (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_STR ("ExOpcode_2A_2T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_2T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /*
@@ -288,7 +283,7 @@ AcpiExOpcode_2A_2T_1R (
 
     default:
 
-        REPORT_ERROR (("AcpiExOpcode_2A_2T_1R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_2T_1R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
@@ -356,7 +351,7 @@ AcpiExOpcode_2A_1T_1R (
     ACPI_STATUS             Status      = AE_OK;
 
 
-    FUNCTION_TRACE_STR ("ExOpcode_2A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_1T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /*
@@ -540,7 +535,7 @@ AcpiExOpcode_2A_1T_1R (
 
     default:
 
-        REPORT_ERROR (("AcpiExOpcode_2A_1T_1R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_1T_1R: Unknown opcode %X\n",
                 WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
@@ -600,7 +595,7 @@ AcpiExOpcode_2A_0T_1R (
     BOOLEAN                 LogicalResult = FALSE;
 
 
-    FUNCTION_TRACE_STR ("ExOpcode_2A_0T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
+    ACPI_FUNCTION_TRACE_STR ("ExOpcode_2A_0T_1R", AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
     /* Create the internal return object */
@@ -650,7 +645,7 @@ AcpiExOpcode_2A_0T_1R (
 
     default:
 
-        REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown opcode %X\n", WalkState->Opcode));
+        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown opcode %X\n", WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }

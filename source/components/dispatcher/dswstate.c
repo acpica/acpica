@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -118,11 +118,9 @@
 #define __DSWSTATE_C__
 
 #include "acpi.h"
-#include "amlcode.h"
 #include "acparser.h"
 #include "acdispat.h"
 #include "acnamesp.h"
-#include "acinterp.h"
 
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dswstate")
@@ -223,7 +221,7 @@ AcpiDsResultRemove (
         return (AE_NOT_EXIST);
     }
 
-    if (Index >= OBJ_NUM_OPERANDS)
+    if (Index >= OBJ_MAX_OPERAND)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Index out of range: %X State=%p Num=%X\n",

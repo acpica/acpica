@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -215,9 +215,9 @@ AcpiDsLoad1BeginOp (
 
     /* We are only interested in opcodes that have an associated name */
 
-    if (WalkState->Op)
+    if (Op)
     {
-       if (!(WalkState->OpInfo->Flags & AML_NAMED))
+        if (!(WalkState->OpInfo->Flags & AML_NAMED))
         {
             *OutOp = Op;
             return (AE_OK);
@@ -302,6 +302,7 @@ AcpiDsLoad1EndOp (
 {
     ACPI_PARSE_OBJECT       *Op;
     ACPI_OBJECT_TYPE        ObjectType;
+    ACPI_STATUS             Status = AE_OK;
 
 
     ACPI_FUNCTION_NAME ("DsLoad1EndOp");
@@ -327,15 +328,15 @@ AcpiDsLoad1EndOp (
             WalkState->Opcode == AML_BANK_FIELD_OP     ||
             WalkState->Opcode == AML_INDEX_FIELD_OP)
         {
-            AcpiDsInitFieldObjects (Op, WalkState);
+            Status = AcpiDsInitFieldObjects (Op, WalkState);
         }
-        return (AE_OK);
+        return (Status);
     }
 
 
     if (Op->Common.AmlOpcode == AML_REGION_OP)
     {
-        /*Status = */AcpiExCreateRegion (Op->Named.Data, Op->Named.Length,
+        Status = AcpiExCreateRegion (Op->Named.Data, Op->Named.Length,
                          (ACPI_ADR_SPACE_TYPE) ((Op->Common.Value.Arg)->Common.Value.Integer), WalkState);
     }
 
@@ -388,7 +389,6 @@ AcpiDsLoad2BeginOp (
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        ObjectType;
     NATIVE_CHAR             *BufferPtr;
-    void                    *Original = NULL;
 
 
     ACPI_FUNCTION_NAME ("DsLoad2BeginOp");
@@ -462,9 +462,12 @@ AcpiDsLoad2BeginOp (
     }
     else
     {
+        /* All other opcodes */
+
         if (Op && Op->Common.Node)
         {
-            Original = Op->Common.Node;
+            /* This op/node was previously entered into the namespace */
+
             Node = Op->Common.Node;
 
             if (AcpiNsOpensScope (ObjectType))
@@ -502,7 +505,10 @@ AcpiDsLoad2BeginOp (
 
             /* Initialize the new op */
 
-            Op->Named.Name = Node->Name.Integer;
+            if (Node)
+            {
+                Op->Named.Name = Node->Name.Integer;
+            }
             *OutOp = Op;
         }
 
@@ -511,17 +517,6 @@ AcpiDsLoad2BeginOp (
          * can get it again quickly when this scope is closed
          */
         Op->Common.Node = Node;
-
-        if (Original)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "old %p new %p\n", Original, Node));
-
-            if (Original != Node)
-            {
-                ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                    "Lookup match error: old %p new %p\n", Original, Node));
-            }
-        }
     }
 
     return (Status);
@@ -674,6 +669,10 @@ AcpiDsLoad2EndOp (
 
             Status = AcpiDsCreateField (Op, Arg->Common.Node, WalkState);
             break;
+
+        default:
+            /* All NAMED_FIELD opcodes must be handled above */
+            break;
         }
         break;
 
@@ -790,6 +789,11 @@ AcpiDsLoad2EndOp (
         case AML_NAME_OP:
 
             Status = AcpiDsCreateNode (WalkState, Node, Op);
+            break;
+
+
+        default:
+            /* All NAMED_COMPLEX opcodes must be handled above */
             break;
         }
         break;

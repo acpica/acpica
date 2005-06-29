@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,6 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acdispat.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 
 #define _COMPONENT          ACPI_DISPATCHER
@@ -216,7 +215,7 @@ AcpiDsInitOneObject (
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] - parse failure, %s\n",
-                ObjHandle, (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name,
+                ObjHandle, ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii,
                 AcpiFormatException (Status)));
 
             /* This parse failed, but we will continue parsing more methods */

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.57 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -118,17 +118,15 @@
 #define __EXCONFIG_C__
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acevents.h"
 #include "actables.h"
-#include "acdispat.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exconfig")
+        ACPI_MODULE_NAME    ("exconfig")
 
 
 /*******************************************************************************
@@ -157,9 +155,9 @@ AcpiExAddTable (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("ExAddTable");
+    ACPI_FUNCTION_TRACE ("ExAddTable");
 
- 
+
     /* Create an object to be the table handle */
 
     ObjDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_REFERENCE);
@@ -188,7 +186,7 @@ AcpiExAddTable (
     {
         /* Uninstall table on error */
 
-        AcpiTbUninstallTable (TableInfo.InstalledDesc);
+        (void) AcpiTbUninstallTable (TableInfo.InstalledDesc);
         goto Cleanup;
     }
 
@@ -233,7 +231,7 @@ AcpiExLoadTableOp (
     ACPI_OPERAND_OBJECT     *DdbHandle;
 
 
-    FUNCTION_TRACE ("ExLoadTableOp");
+    ACPI_FUNCTION_TRACE ("ExLoadTableOp");
 
 
     /*
@@ -288,7 +286,7 @@ AcpiExLoadTableOp (
          * location within the namespace where the table will be loaded.
          */
         Status = AcpiNsGetNodeByPath (Operand[3]->String.Pointer, StartNode,
-                                        NS_SEARCH_PARENT, &ParentNode);
+                                        ACPI_NS_SEARCH_PARENT, &ParentNode);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -313,7 +311,7 @@ AcpiExLoadTableOp (
          * Find the node referenced by the ParameterPathString
          */
         Status = AcpiNsGetNodeByPath (Operand[4]->String.Pointer, StartNode,
-                                        NS_SEARCH_PARENT, &ParameterNode);
+                                        ACPI_NS_SEARCH_PARENT, &ParameterNode);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -334,11 +332,11 @@ AcpiExLoadTableOp (
     {
         /* Store the parameter data into the optional parameter object */
 
-        Status = AcpiExStore (Operand[5], (ACPI_OPERAND_OBJECT *) ParameterNode,
+        Status = AcpiExStore (Operand[5], ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, ParameterNode),
                                 WalkState);
         if (ACPI_FAILURE (Status))
         {
-            AcpiExUnloadTable (DdbHandle);
+            (void) AcpiExUnloadTable (DdbHandle);
         }
     }
 
@@ -376,7 +374,7 @@ AcpiExLoadOp (
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("ExLoadOp");
+    ACPI_FUNCTION_TRACE ("ExLoadOp");
 
 
     /* Object can be either an OpRegion or a Field */
@@ -395,7 +393,7 @@ AcpiExLoadOp (
         {
             Status = AcpiEvAddressSpaceDispatch (ObjDesc, ACPI_READ,
                                 (ACPI_PHYSICAL_ADDRESS) i, 8,
-                                (ACPI_INTEGER *) ((UINT8 *) &TableHeader + i));
+                                (ACPI_INTEGER *) ((UINT8 *) &TableHeader) + i);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -412,7 +410,7 @@ AcpiExLoadOp (
 
         /* Copy the header to the buffer */
 
-        MEMCPY (TablePtr, &TableHeader, sizeof (ACPI_TABLE_HEADER));
+        ACPI_MEMCPY (TablePtr, &TableHeader, sizeof (ACPI_TABLE_HEADER));
         TableDataPtr = ACPI_PTR_ADD (UINT8, TablePtr, sizeof (ACPI_TABLE_HEADER));
 
         /* Get the table from the op region */
@@ -443,7 +441,7 @@ AcpiExLoadOp (
          * Read the entire field and thus the entire table.  Buffer is
          * allocated during the read.
          */
-        Status = AcpiExReadDataFromField (ObjDesc, &BufferDesc);
+        Status = AcpiExReadDataFromField (WalkState, ObjDesc, &BufferDesc);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -459,16 +457,16 @@ AcpiExLoadOp (
 
     /* The table must be either an SSDT or a PSDT */
 
-    if ((!STRNCMP (TablePtr->Signature,
+    if ((!ACPI_STRNCMP (TablePtr->Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_PSDT].SigLength)) &&
-        (!STRNCMP (TablePtr->Signature,
+        (!ACPI_STRNCMP (TablePtr->Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].SigLength)))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
-            (char *) &TablePtr->Signature));
+            TablePtr->Signature));
         Status = AE_BAD_SIGNATURE;
         goto Cleanup;
     }
@@ -527,7 +525,7 @@ AcpiExUnloadTable (
     ACPI_TABLE_DESC         *TableInfo;
 
 
-    FUNCTION_TRACE ("ExUnloadTable");
+    ACPI_FUNCTION_TRACE ("ExUnloadTable");
 
 
     /*

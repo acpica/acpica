@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.69 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -120,14 +120,10 @@
 
 #include "acpi.h"
 #include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "achware.h"
-#include "acevents.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exregion")
+        ACPI_MODULE_NAME    ("exregion")
 
 
 /*******************************************************************************
@@ -161,9 +157,10 @@ AcpiExSystemMemorySpaceHandler (
     void                    *LogicalAddrPtr = NULL;
     ACPI_MEM_SPACE_CONTEXT  *MemInfo = RegionContext;
     UINT32                  Length;
+    UINT32                  WindowSize;
 
 
-    FUNCTION_TRACE ("ExSystemMemorySpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExSystemMemorySpaceHandler");
 
 
     /* Validate and translate the bit width */
@@ -192,7 +189,6 @@ AcpiExSystemMemorySpaceHandler (
         return_ACPI_STATUS (AE_AML_OPERAND_VALUE);
     }
 
-
     /*
      * Does the request fit into the cached memory mapping?
      * Is 1) Address below the current mapping? OR
@@ -214,23 +210,31 @@ AcpiExSystemMemorySpaceHandler (
                                 MemInfo->MappedLength);
         }
 
-        MemInfo->MappedLength = 0;  /* In case of failure below */
-
+        /* 
+         * Don't attempt to map memory beyond the end of the region, and
+         * constrain the maximum mapping size to something reasonable.
+         */
+        WindowSize = (UINT32) ((MemInfo->Address + MemInfo->Length) - Address);
+        if (WindowSize > SYSMEM_REGION_WINDOW_SIZE)
+        {
+            WindowSize = SYSMEM_REGION_WINDOW_SIZE;
+        }
+     
         /* Create a new mapping starting at the address given */
 
-        Status = AcpiOsMapMemory (Address, SYSMEM_REGION_WINDOW_SIZE,
+        Status = AcpiOsMapMemory (Address, WindowSize,
                                     (void **) &MemInfo->MappedLogicalAddress);
         if (ACPI_FAILURE (Status))
         {
+            MemInfo->MappedLength = 0;
             return_ACPI_STATUS (Status);
         }
 
         /* Save the physical address and mapping size */
 
         MemInfo->MappedPhysicalAddress = Address;
-        MemInfo->MappedLength = SYSMEM_REGION_WINDOW_SIZE;
+        MemInfo->MappedLength = WindowSize;
     }
-
 
     /*
      * Generate a logical pointer corresponding to the address we want to
@@ -241,7 +245,7 @@ AcpiExSystemMemorySpaceHandler (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "SystemMemory %d (%d width) Address=%8.8X%8.8X\n", Function, BitWidth,
-        HIDWORD (Address), LODWORD (Address)));
+        ACPI_HIDWORD (Address), ACPI_LODWORD (Address)));
 
    /* Perform the memory read or write */
 
@@ -249,6 +253,7 @@ AcpiExSystemMemorySpaceHandler (
     {
     case ACPI_READ:
 
+        *Value = 0;
         switch (BitWidth)
         {
         case 8:
@@ -256,15 +261,19 @@ AcpiExSystemMemorySpaceHandler (
             break;
 
         case 16:
-            MOVE_UNALIGNED16_TO_32 (Value, LogicalAddrPtr);
+            ACPI_MOVE_UNALIGNED16_TO_16 (Value, LogicalAddrPtr);
             break;
 
         case 32:
-            MOVE_UNALIGNED32_TO_32 (Value, LogicalAddrPtr);
+            ACPI_MOVE_UNALIGNED32_TO_32 (Value, LogicalAddrPtr);
             break;
 
         case 64:
-            MOVE_UNALIGNED64_TO_64 (Value, LogicalAddrPtr);
+            ACPI_MOVE_UNALIGNED64_TO_64 (Value, LogicalAddrPtr);
+            break;
+        
+        default:
+            /* BitWidth was already validated */
             break;
         }
         break;
@@ -278,15 +287,19 @@ AcpiExSystemMemorySpaceHandler (
             break;
 
         case 16:
-            MOVE_UNALIGNED16_TO_16 (LogicalAddrPtr, Value);
+            ACPI_MOVE_UNALIGNED16_TO_16 (LogicalAddrPtr, Value);
             break;
 
         case 32:
-            MOVE_UNALIGNED32_TO_32 (LogicalAddrPtr, Value);
+            ACPI_MOVE_UNALIGNED32_TO_32 (LogicalAddrPtr, Value);
             break;
 
         case 64:
-            MOVE_UNALIGNED64_TO_64 (LogicalAddrPtr, Value);
+            ACPI_MOVE_UNALIGNED64_TO_64 (LogicalAddrPtr, Value);
+            break;
+        
+        default:
+            /* BitWidth was already validated */
             break;
         }
         break;
@@ -330,12 +343,12 @@ AcpiExSystemIoSpaceHandler (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExSystemIoSpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExSystemIoSpaceHandler");
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "SystemIO %d (%d width) Address=%8.8X%8.8X\n", Function, BitWidth,
-        HIDWORD (Address), LODWORD (Address)));
+        ACPI_HIDWORD (Address), ACPI_LODWORD (Address)));
 
     /* Decode the function parameter */
 
@@ -393,7 +406,7 @@ AcpiExPciConfigSpaceHandler (
     UINT16                  PciRegister;
 
 
-    FUNCTION_TRACE ("ExPciConfigSpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExPciConfigSpaceHandler");
 
 
     /*
@@ -469,7 +482,7 @@ AcpiExCmosSpaceHandler (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExCmosSpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExCmosSpaceHandler");
 
 
     return_ACPI_STATUS (Status);
@@ -506,7 +519,7 @@ AcpiExPciBarSpaceHandler (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExPciBarSpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExPciBarSpaceHandler");
 
 
     return_ACPI_STATUS (Status);
@@ -541,12 +554,12 @@ AcpiExDataTableSpaceHandler (
     void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  ByteWidth = DIV_8 (BitWidth);
+    UINT32                  ByteWidth = ACPI_DIV_8 (BitWidth);
     UINT32                  i;
     char                    *LogicalAddrPtr;
 
 
-    FUNCTION_TRACE ("ExDataTableSpaceHandler");
+    ACPI_FUNCTION_TRACE ("ExDataTableSpaceHandler");
 
 
     LogicalAddrPtr = ACPI_PHYSADDR_TO_PTR (Address);
@@ -565,6 +578,7 @@ AcpiExDataTableSpaceHandler (
         break;
 
     case ACPI_WRITE:
+    default:
 
         return_ACPI_STATUS (AE_SUPPORT);
     }

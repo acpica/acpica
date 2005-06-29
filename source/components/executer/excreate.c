@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -118,12 +118,10 @@
 #define __EXCREATE_C__
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "acdispat.h"
 #include "actables.h"
 
 

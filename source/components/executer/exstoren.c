@@ -3,7 +3,7 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.45 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -119,16 +119,11 @@
 #define __EXSTOREN_C__
 
 #include "acpi.h"
-#include "acparser.h"
-#include "acdispat.h"
 #include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "actables.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exstoren")
+        ACPI_MODULE_NAME    ("exstoren")
 
 
 /*******************************************************************************
@@ -156,7 +151,7 @@ AcpiExResolveObject (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("ExResolveObject");
+    ACPI_FUNCTION_TRACE ("ExResolveObject");
 
 
     /*
@@ -241,7 +236,7 @@ AcpiExResolveObject (
  * FUNCTION:    AcpiExStoreObjectToObject
  *
  * PARAMETERS:  SourceDesc          - Object to store
- *              DestDesc            - Object to recieve a copy of the source
+ *              DestDesc            - Object to receive a copy of the source
  *              NewDesc             - New object if DestDesc is obsoleted
  *              WalkState           - Current walk state
  *
@@ -282,7 +277,7 @@ AcpiExStoreObjectToObject (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE_PTR ("AcpiExStoreObjectToObject", SourceDesc);
+    ACPI_FUNCTION_TRACE_PTR ("AcpiExStoreObjectToObject", SourceDesc);
 
 
     ActualSrcDesc = SourceDesc;

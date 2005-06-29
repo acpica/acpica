@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -122,8 +122,6 @@
 #include "acdispat.h"
 #include "acinterp.h"
 #include "acnamesp.h"
-#include "actables.h"
-#include "acdebug.h"
 
 
 #define _COMPONENT          ACPI_DISPATCHER
@@ -171,7 +169,7 @@ AcpiDsParseMethod (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** Parsing [%4.4s] **** NamedObj=%p\n",
-        (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name, ObjHandle));
+        ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii, ObjHandle));
 
     /* Extract the method object from the method Node */
 
@@ -253,7 +251,7 @@ AcpiDsParseMethod (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
-        (char *) &((ACPI_NAMESPACE_NODE *) ObjHandle)->Name, ObjHandle, Op));
+        ((ACPI_NAMESPACE_NODE *) ObjHandle)->Name.Ascii, ObjHandle, Op));
 
     AcpiPsDeleteParseTree (Op);
     return_ACPI_STATUS (Status);
@@ -560,6 +558,11 @@ AcpiDsTerminateControlMethod (
 
     ACPI_FUNCTION_TRACE_PTR ("DsTerminateControlMethod", WalkState);
 
+
+    if (!WalkState)
+    {
+        return (AE_BAD_PARAMETER);
+    }
 
     /* The current method object was saved in the walk state */
 

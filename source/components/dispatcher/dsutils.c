@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  ******************************************************************************/
 
@@ -531,7 +531,6 @@ AcpiDsCreateOperand (
                 return_ACPI_STATUS (Status);
             }
         }
-
         else
         {
             /* Create an ACPI_INTERNAL_OBJECT for the argument */
@@ -551,7 +550,7 @@ AcpiDsCreateOperand (
                 AcpiUtDeleteObjectDesc (ObjDesc);
                 return_ACPI_STATUS (Status);
             }
-       }
+        }
 
         /* Put the operand object on the object stack */
 

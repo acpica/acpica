@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -288,6 +288,7 @@ AcpiDsGetFieldNames (
     ACPI_PARSE_OBJECT       *Arg)
 {
     ACPI_STATUS             Status;
+    ACPI_INTEGER            Position;
 
 
     ACPI_FUNCTION_TRACE_PTR ("DsGetFieldNames", Info);
@@ -311,14 +312,16 @@ AcpiDsGetFieldNames (
         {
         case AML_INT_RESERVEDFIELD_OP:
 
-            if (((ACPI_INTEGER) Info->FieldBitPosition + Arg->Common.Value.Size) >
-                ACPI_UINT32_MAX)
+            Position = (ACPI_INTEGER) Info->FieldBitPosition 
+                        + (ACPI_INTEGER) Arg->Common.Value.Size;
+
+            if (Position > ACPI_UINT32_MAX)
             {
                 ACPI_REPORT_ERROR (("Bit offset within field too large (> 0xFFFFFFFF)\n"));
                 return_ACPI_STATUS (AE_SUPPORT);
             }
 
-            Info->FieldBitPosition += Arg->Common.Value.Size;
+            Info->FieldBitPosition = (UINT32) Position;
             break;
 
 
@@ -371,8 +374,10 @@ AcpiDsGetFieldNames (
 
             /* Keep track of bit position for the next field */
 
-            if (((ACPI_INTEGER) Info->FieldBitPosition + Arg->Common.Value.Size) >
-                ACPI_UINT32_MAX)
+            Position = (ACPI_INTEGER) Info->FieldBitPosition 
+                        + (ACPI_INTEGER) Arg->Common.Value.Size;
+
+            if (Position > ACPI_UINT32_MAX)
             {
                 ACPI_REPORT_ERROR (("Field [%4.4s] bit offset too large (> 0xFFFFFFFF)\n",
                     &Info->FieldNode->Name));
@@ -501,6 +506,9 @@ AcpiDsInitFieldObjects (
         Arg = AcpiPsGetArg (Op, 3);
         Type = INTERNAL_TYPE_INDEX_FIELD;
         break;
+
+    default:
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /*

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.160 $
+ *              $Revision: 1.164 $
  *
  *****************************************************************************/
 
@@ -118,16 +118,14 @@
 #define __EXSTORE_C__
 
 #include "acpi.h"
-#include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
-#include "actables.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
-        MODULE_NAME         ("exstore")
+        ACPI_MODULE_NAME    ("exstore")
 
 
 /*******************************************************************************
@@ -160,7 +158,7 @@ AcpiExStore (
     ACPI_OPERAND_OBJECT     *RefDesc = DestDesc;
 
 
-    FUNCTION_TRACE_PTR ("ExStore", DestDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExStore", DestDesc);
 
 
     /* Validate parameters */
@@ -194,9 +192,9 @@ AcpiExStore (
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Destination is not a ReferenceObj [%p]\n", DestDesc));
 
-        DUMP_STACK_ENTRY (SourceDesc);
-        DUMP_STACK_ENTRY (DestDesc);
-        DUMP_OPERANDS (&DestDesc, IMODE_EXECUTE, "ExStore",
+        ACPI_DUMP_STACK_ENTRY (SourceDesc);
+        ACPI_DUMP_STACK_ENTRY (DestDesc);
+        ACPI_DUMP_OPERANDS (&DestDesc, ACPI_IMODE_EXECUTE, "ExStore",
                         2, "Target is not a ReferenceObj");
 
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -246,7 +244,7 @@ AcpiExStore (
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see ACPI Specification
          */
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Write to Debug Object: ****:\n\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "**** Write to Debug Object: ****:\n\n"));
 
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[ACPI Debug] %s: ",
                         AcpiUtGetTypeName (SourceDesc->Common.Type)));
@@ -256,7 +254,8 @@ AcpiExStore (
         case ACPI_TYPE_INTEGER:
 
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "%8.8X%8.8X\n",
-                    HIWORD (SourceDesc->Integer.Value), LOWORD (SourceDesc->Integer.Value)));
+                    ACPI_HIWORD (SourceDesc->Integer.Value),
+                    ACPI_LOWORD (SourceDesc->Integer.Value)));
             break;
 
 
@@ -287,7 +286,7 @@ AcpiExStore (
             break;
         }
 
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INFO, "\n"));
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC, "\n"));
         break;
 
 
@@ -307,7 +306,7 @@ AcpiExStore (
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Reference subtype %02x\n",
             RefDesc->Reference.Opcode));
-        DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
+        ACPI_DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
 
         Status = AE_AML_INTERNAL;
         break;
@@ -344,7 +343,7 @@ AcpiExStoreObjectToIndex (
     UINT8                   Value = 0;
 
 
-    FUNCTION_TRACE ("ExStoreObjectToIndex");
+    ACPI_FUNCTION_TRACE ("ExStoreObjectToIndex");
 
 
     /*
@@ -429,7 +428,7 @@ AcpiExStoreObjectToIndex (
 
         case ACPI_TYPE_STRING:
 
-            Value = SourceDesc->String.Pointer[0];
+            Value = (UINT8) SourceDesc->String.Pointer[0];
             break;
 
         default:
@@ -496,7 +495,7 @@ AcpiExStoreObjectToNode (
     ACPI_OBJECT_TYPE        TargetType;
 
 
-    FUNCTION_TRACE_PTR ("ExStoreObjectToNode", SourceDesc);
+    ACPI_FUNCTION_TRACE_PTR ("ExStoreObjectToNode", SourceDesc);
 
 
     /*
@@ -505,7 +504,7 @@ AcpiExStoreObjectToNode (
     TargetType = AcpiNsGetType (Node);
     TargetDesc = AcpiNsGetAttachedObject (Node);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Storing %p(%s) into node %p(%s)\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Storing %p(%s) into node %p(%s)\n",
         SourceDesc, AcpiUtGetTypeName (SourceDesc->Common.Type),
               Node, AcpiUtGetTypeName (TargetType)));
 
@@ -561,7 +560,7 @@ AcpiExStoreObjectToNode (
              */
             Status = AcpiNsAttachObject (Node, NewDesc, TargetType);
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                 "Store %s into %s via Convert/Attach\n",
                 AcpiUtGetTypeName (SourceDesc->Common.Type),
                 AcpiUtGetTypeName (NewDesc->Common.Type)));
@@ -571,7 +570,7 @@ AcpiExStoreObjectToNode (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
             "Storing %s (%p) directly into node (%p), no implicit conversion\n",
             AcpiUtGetTypeName (SourceDesc->Common.Type), SourceDesc, Node));
 
