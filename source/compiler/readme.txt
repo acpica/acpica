@@ -40,11 +40,20 @@ the messages and the corresponding source line(s).
 
 Part 2.  Integration into a project build
 
-This procedure
+This procedure creates a project that compiles ASL files to AML.
 
 a) Create a new, empty project and add your .ASL files to the project
 
-b) 
+b) For all ASL files in the project, specify a custom build with the
+following settings (or similar):
+
+Commands:
+c:\acpi\libraries\iasl.exe -vs -vi "$(InputPath)"
+
+Output:
+$(InputDir)\$(InputPath).aml
+
+
 
 
 
