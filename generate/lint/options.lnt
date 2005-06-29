@@ -18,6 +18,9 @@
 -dENABLE_DEBUGGER
 -d_LINT=1
 
+-printf(4, AcpiUtDebugPrint, AcpiUtDebugPrintRaw)
+-printf(1, AcpiOsPrintf, AcpiOsVprintf)
+
 /* Macro exceptions */
 
 -emacro( (413), ACPI_OFFSET )               // use of NULL pointer creates a stir

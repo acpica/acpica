@@ -5,12 +5,11 @@
 c:\acpi\generate\lint\co-msc40.lnt
 c:\acpi\generate\lint\lib-win.lnt
 
--d_IA16
-//-dWIN32
+-dMSDOS
 //-d_MSC_VER
 
 -e747	// Compiler supports parameter conversions
 
 
-options.lnt  -mL -si2 -spN2 -spF4
+options.lnt  -mL -si2 -spN2 -spF4 -sl4
 
