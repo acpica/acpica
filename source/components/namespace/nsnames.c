@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -275,7 +275,7 @@ AcpiNsGetPathnameLength (
     Size = 0;
     NextNode = Node;
 
-    while (NextNode != AcpiGbl_RootNode)
+    while (NextNode && (NextNode != AcpiGbl_RootNode))
     {
         Size += PATH_SEGMENT_LENGTH;
         NextNode = AcpiNsGetParentNode (NextNode);
