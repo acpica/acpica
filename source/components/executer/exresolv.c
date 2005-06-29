@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
- *              $Revision: 1.73 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -148,8 +148,8 @@
 
 ACPI_STATUS
 AcpiAmlGetFieldUnitValue (
-    ACPI_OBJECT_INTERNAL    *FieldDesc,
-    ACPI_OBJECT_INTERNAL    *ResultDesc)
+    ACPI_OPERAND_OBJECT     *FieldDesc,
+    ACPI_OPERAND_OBJECT     *ResultDesc)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Mask;
@@ -167,7 +167,16 @@ AcpiAmlGetFieldUnitValue (
         Status = AE_AML_NO_OPERAND;
     }
 
-    else if (!FieldDesc->FieldUnit.Container)
+    if (!(FieldDesc->Common.Flags & AOPOBJ_DATA_VALID))
+    {
+        Status = AcpiDsGetFieldUnitArguments (FieldDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    if (!FieldDesc->FieldUnit.Container)
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlGetFieldUnitValue: Internal error - null container pointer\n"));
@@ -179,16 +188,6 @@ AcpiAmlGetFieldUnitValue (
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlGetFieldUnitValue: Internal error - container is not a Buffer\n"));
         Status = AE_AML_OPERAND_TYPE;
-    }
-
-    else if (FieldDesc->FieldUnit.Sequence
-                != FieldDesc->FieldUnit.Container->Buffer.Sequence)
-    {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetFieldUnitValue: Internal error - stale Buffer [%lx != %lx]\n",
-            FieldDesc->FieldUnit.Sequence,
-            FieldDesc->FieldUnit.Container->Buffer.Sequence));
-        Status = AE_AML_INTERNAL;
     }
 
     else if (!ResultDesc)
@@ -266,7 +265,7 @@ AcpiAmlGetFieldUnitValue (
  * FUNCTION:    AcpiAmlResolveToValue
  *
  * PARAMETERS:  **StackPtr          - Points to entry on ObjStack, which can
- *                                    be either an (ACPI_OBJECT_INTERNAL *)
+ *                                    be either an (ACPI_OPERAND_OBJECT  *)
  *                                    or an ACPI_HANDLE.
  *
  * RETURN:      Status
@@ -277,7 +276,7 @@ AcpiAmlGetFieldUnitValue (
 
 ACPI_STATUS
 AcpiAmlResolveToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -296,8 +295,8 @@ AcpiAmlResolveToValue (
 
     /*
      * The entity pointed to by the StackPtr can be either
-     * 1) A valid ACPI_OBJECT_INTERNAL, or
-     * 2) A ACPI_NAMED_OBJECT (NamedObj)
+     * 1) A valid ACPI_OPERAND_OBJECT, or
+     * 2) A ACPI_NAMESPACE_NODE (NamedObj)
      */
 
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_INTERNAL))
@@ -317,7 +316,7 @@ AcpiAmlResolveToValue (
 
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_NAMED))
     {
-        Status = AcpiAmlResolveNamedObjectToValue ((ACPI_NAMED_OBJECT**) StackPtr);
+        Status = AcpiAmlResolveNodeToValue ((ACPI_NAMESPACE_NODE **) StackPtr);
     }
 
 
@@ -344,13 +343,13 @@ AcpiAmlResolveToValue (
 
 ACPI_STATUS
 AcpiAmlResolveObjectToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OBJECT_INTERNAL    *StackDesc;
+    ACPI_OPERAND_OBJECT     *StackDesc;
     ACPI_STATUS             Status = AE_OK;
     ACPI_HANDLE             TempHandle = NULL;
-    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
     UINT32                  Index = 0;
     UINT16                  Opcode;
 
@@ -360,7 +359,7 @@ AcpiAmlResolveObjectToValue (
 
     StackDesc = *StackPtr;
 
-    /* This is an ACPI_OBJECT_INTERNAL */
+    /* This is an ACPI_OPERAND_OBJECT  */
 
     switch (StackDesc->Common.Type)
     {
@@ -376,7 +375,7 @@ AcpiAmlResolveObjectToValue (
 
             /*
              * Convert indirect name ptr to a direct name ptr.
-             * Then, AcpiAmlResolveNamedObjectToValue can be used to get the value
+             * Then, AcpiAmlResolveNodeToValue can be used to get the value
              */
 
             TempHandle = StackDesc->Reference.Object;
@@ -408,7 +407,7 @@ AcpiAmlResolveObjectToValue (
                 return_ACPI_STATUS (Status);
             }
 
-            /* 
+            /*
              * Now we can delete the original Reference Object and
              * replace it with the resolve value
              */
@@ -449,7 +448,7 @@ AcpiAmlResolveObjectToValue (
                 return_ACPI_STATUS (Status);
             }
 
-            /* 
+            /*
              * Now we can delete the original Reference Object and
              * replace it with the resolve value
              */
