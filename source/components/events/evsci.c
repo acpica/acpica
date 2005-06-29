@@ -15,15 +15,17 @@
  | legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.11 $
- | $Date: 2005/06/29 16:43:49 $
+ | $Revision: 1.12 $
+ | $Date: 2005/06/29 16:43:50 $
  | $Log: evsci.c,v $
- | Revision 1.11  2005/06/29 16:43:49  aystarik
- | Header cleanup;  Split debug switch into component_id and level
+ | Revision 1.12  2005/06/29 16:43:50  aystarik
+ |
  |
  | 
- | date	99.04.05.23.09.00;	author rmoore1;	state Exp;
+ | date	99.04.06.20.42.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 12    4/06/99 1:42p Rmoore1
  * 
  * 11    4/05/99 4:09p Rmoore1
  * Header cleanup;  Split debug switch into component_id and level
@@ -68,7 +70,7 @@
 #include <acpinmsp.h>
 #include <acpievnt.h>
 #include <acpilgcy.h>
-#include <evsci.h>
+#include <events.h>
 #include <acpitbls.h>
 
 
