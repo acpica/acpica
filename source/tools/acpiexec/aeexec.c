@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -158,7 +158,6 @@ RSDT_DESCRIPTOR_REV1        *LocalRSDT;
 #define RSDT_SIZE           (sizeof (RSDT_DESCRIPTOR_REV1) + ((RSDT_TABLES -1) * sizeof (UINT32)))
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AeBuildLocalTables
@@ -213,7 +212,7 @@ AeBuildLocalTables (void)
     LocalFADT.Header.Length     = sizeof (FADT_DESCRIPTOR_REV1);
     LocalFADT.Gpe0BlkLen        = 4;
     LocalFADT.Gpe1BlkLen        = 6;
-    LocalFADT.Gpe1Base          = 61;   
+    LocalFADT.Gpe1Base          = 61;
 
     LocalFADT.Pm1EvtLen         = 4;
     LocalFADT.Pm1CntLen         = 4;
@@ -396,7 +395,7 @@ AeRegionHandler (
                 RegionElement = RegionElement->NextRegion;
             }
         }
-    }                                                                
+    }
 
     /*
      * If the Region buffer does not exist, create it now
