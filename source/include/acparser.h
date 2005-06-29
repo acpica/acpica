@@ -249,18 +249,18 @@ BOOLEAN
 PsHasCompletedScope (
     ACPI_PARSE_STATE        *ParserState);
 
-ACPI_STATUS
-PsPushScope (
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_GENERIC_OP         *Op, 
-    char                    *NextArg,
-    UINT32                  ArgCount);
-
 void
 PsPopScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_GENERIC_OP         **Op,
-    char                    **NextArg);
+    UINT32                  *ArgList);
+
+ACPI_STATUS
+PsPushScope (
+    ACPI_PARSE_STATE        *ParserState,
+    ACPI_GENERIC_OP         *Op, 
+    UINT32                  RemainingArgs,
+    UINT32                  ArgCount);
 
 void
 PsCleanupScope (
