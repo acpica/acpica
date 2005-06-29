@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -386,10 +386,11 @@ AcpiHwGetGpeStatus (
     UINT32                  GpeNumber,
     ACPI_EVENT_STATUS       *EventStatus)
 {
-    UINT32                  InByte = 0;
-    UINT8                   BitMask = 0;
+    UINT32                  InByte;
+    UINT8                   BitMask;
     ACPI_GPE_REGISTER_INFO  *GpeRegisterInfo;
     ACPI_STATUS             Status;
+    ACPI_EVENT_STATUS       LocalEventStatus = 0;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -399,8 +400,6 @@ AcpiHwGetGpeStatus (
     {
         return (AE_BAD_PARAMETER);
     }
-
-    (*EventStatus) = 0;
 
     /* Get the info block for the entire GPE register */
 
@@ -424,14 +423,14 @@ AcpiHwGetGpeStatus (
 
     if (BitMask & InByte)
     {
-        (*EventStatus) |= ACPI_EVENT_FLAG_ENABLED;
+        LocalEventStatus |= ACPI_EVENT_FLAG_ENABLED;
     }
 
     /* GPE Enabled for wake? */
 
     if (BitMask & GpeRegisterInfo->WakeEnable)
     {
-        (*EventStatus) |= ACPI_EVENT_FLAG_WAKE_ENABLED;
+        LocalEventStatus |= ACPI_EVENT_FLAG_WAKE_ENABLED;
     }
 
     /* GPE active (set)? */
@@ -444,8 +443,12 @@ AcpiHwGetGpeStatus (
 
     if (BitMask & InByte)
     {
-        (*EventStatus) |= ACPI_EVENT_FLAG_SET;
+        LocalEventStatus |= ACPI_EVENT_FLAG_SET;
     }
+
+    /* Set return value */
+
+    (*EventStatus) = LocalEventStatus;
     return (AE_OK);
 }
 
