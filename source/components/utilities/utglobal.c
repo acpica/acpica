@@ -408,9 +408,11 @@ CmInitGlobals (void)
 
 #ifdef _RPARSER
     Gbl_PkgStackLevel           = 0;
+    Gbl_ObjStackTop             = 0;
+    Gbl_MthStackHead            = NULL;
+    Gbl_MethodStackTop          = -1;
 #endif
 
-    Gbl_MthStackHead            = NULL;
 
     /* ACPI table structure */
 
@@ -459,10 +461,7 @@ CmInitGlobals (void)
     
     /* Stack pointers */
 
-    Gbl_ObjStackTop             = 0;
     Gbl_CurrentScope            = NULL;
-    Gbl_MethodStackTop          = -1;
-    Gbl_MthStackHead            = NULL;
 
     /* Interpreter */
 
@@ -490,7 +489,6 @@ CmInitGlobals (void)
     Gbl_RootObject->Fill1       = 0;
     Gbl_RootObject->Name        = * (UINT32 *) NS_ROOT;
     Gbl_RootObject->Scope       = NULL;
-    Gbl_RootObject->ParentScope = NULL;
     Gbl_RootObject->ParentEntry = NULL;
     Gbl_RootObject->NextEntry   = NULL;
     Gbl_RootObject->PrevEntry   = NULL;
