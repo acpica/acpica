@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.75 $
+ *              $Revision: 1.80 $
  *
  ******************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -198,7 +198,7 @@ AcpiNsEvaluateRelative (
 
     /* Lookup the name in the namespace */
 
-    ScopeInfo.Scope.Node = PrefixNode->Child;
+    ScopeInfo.Scope.Node = PrefixNode;
     Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY,
                             IMODE_EXECUTE, NS_NO_UPSEARCH, NULL,
                             &Node);
@@ -594,13 +594,14 @@ AcpiNsGetObjectValue (
         }
 
         /*
-         *  Just copy from the original to the return object
+         * Just copy from the original to the return object
+         *
+         * TBD: [Future] - need a low-level object copy that handles
+         * the reference count automatically.  (Don't want to copy it)
          */
 
-        MEMCPY (&ObjDesc->Common.FirstNonCommonByte,
-                &ValDesc->Common.FirstNonCommonByte,
-                (sizeof(ACPI_OBJECT_COMMON) -
-                    sizeof(ObjDesc->Common.FirstNonCommonByte)));
+        MEMCPY (ObjDesc, ValDesc, sizeof (ACPI_OPERAND_OBJECT));
+        ObjDesc->Common.ReferenceCount = 1;
     }
 
 
@@ -632,9 +633,17 @@ AcpiNsGetObjectValue (
          * NOTE: we can get away with passing in NULL for a walk state
          * because ObjDesc is guaranteed to not be a reference to either
          * a method local or a method argument
+         *
+         * Even though we do not technically need to use the interpreter
+         * for this, we must enter it because we could hit an opregion.
+         * The opregion access code assumes it is in the interpreter.
          */
 
+        AcpiAmlEnterInterpreter();
+
         Status = AcpiAmlResolveToValue (&ObjDesc, NULL);
+
+        AcpiAmlExitInterpreter();
     }
 
     /*

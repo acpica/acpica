@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
- * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.52 $
+ * Module Name: rsxface - Public interfaces to the ACPI subsystem
+ *              $Revision: 1.9 $
  *
  ******************************************************************************/
 
@@ -114,228 +114,213 @@
  *
  *****************************************************************************/
 
-#define __NSNAMES_C__
+
+#define __RSXFACE_C__
 
 #include "acpi.h"
-#include "amlcode.h"
 #include "acinterp.h"
 #include "acnamesp.h"
+#include "acresrc.h"
 
-
-#define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("nsnames")
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsGetTablePathname
- *
- * PARAMETERS:  Node        - Scope whose name is needed
- *
- * RETURN:      Pointer to storage containing the fully qualified name of
- *              the scope, in Label format (all segments strung together
- *              with no separators)
- *
- * DESCRIPTION: Used for debug printing in AcpiNsSearchTable().
- *
- ******************************************************************************/
-
-NATIVE_CHAR *
-AcpiNsGetTablePathname (
-    ACPI_NAMESPACE_NODE     *Node)
-{
-    NATIVE_CHAR             *NameBuffer;
-    UINT32                  Size;
-    ACPI_NAME               Name;
-    ACPI_NAMESPACE_NODE     *ChildNode;
-    ACPI_NAMESPACE_NODE     *ParentNode;
-
-
-    FUNCTION_TRACE_PTR ("AcpiNsGetTablePathname", Node);
-
-
-    if (!AcpiGbl_RootNode || !Node)
-    {
-        /*
-         * If the name space has not been initialized,
-         * this function should not have been called.
-         */
-        return_PTR (NULL);
-    }
-
-    ChildNode = Node->Child;
-
-
-    /* Calculate required buffer size based on depth below root */
-
-    Size = 1;
-    ParentNode = ChildNode;
-    while (ParentNode)
-    {
-        ParentNode = AcpiNsGetParentObject (ParentNode);
-        if (ParentNode)
-        {
-            Size += ACPI_NAME_SIZE;
-        }
-    }
-
-
-    /* Allocate a buffer to be returned to caller */
-
-    NameBuffer = AcpiCmCallocate (Size + 1);
-    if (!NameBuffer)
-    {
-        REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
-        return_PTR (NULL);
-    }
-
-
-    /* Store terminator byte, then build name backwards */
-
-    NameBuffer[Size] = '\0';
-    while ((Size > ACPI_NAME_SIZE) &&
-        AcpiNsGetParentObject (ChildNode))
-    {
-        Size -= ACPI_NAME_SIZE;
-        Name = AcpiNsFindParentName (ChildNode);
-
-        /* Put the name into the buffer */
-
-        MOVE_UNALIGNED32_TO_32 ((NameBuffer + Size), &Name);
-        ChildNode = AcpiNsGetParentObject (ChildNode);
-    }
-
-    NameBuffer[--Size] = AML_ROOT_PREFIX;
-
-    if (Size != 0)
-    {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("NsGetTablePathname:  Bad pointer returned; size=%X\n", Size));
-    }
-
-    return_PTR (NameBuffer);
-}
+#define _COMPONENT          RESOURCE_MANAGER
+        MODULE_NAME         ("rsxface")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsHandleToPathname
+ * FUNCTION:    AcpiGetIrqRoutingTable
  *
- * PARAMETERS:  TargetHandle            - Handle of named object whose name is
- *                                        to be found
- *              BufSize                 - Size of the buffer provided
- *              UserBuffer              - Where the pathname is returned
+ * PARAMETERS:  DeviceHandle    - a handle to the Bus device we are querying
+ *              RetBuffer       - a pointer to a buffer to receive the
+ *                                current resources for the device
  *
- * RETURN:      Status, Buffer is filled with pathname if status is AE_OK
+ * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: Build and return a full namespace pathname
+ * DESCRIPTION: This function is called to get the IRQ routing table for a
+ *              specific bus.  The caller must first acquire a handle for the
+ *              desired bus.  The routine table is placed in the buffer pointed
+ *              to by the RetBuffer variable parameter.
  *
- * MUTEX:       Locks Namespace
+ *              If the function fails an appropriate status will be returned
+ *              and the value of RetBuffer is undefined.
+ *
+ *              This function attempts to execute the _PRT method contained in
+ *              the object indicated by the passed DeviceHandle.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiNsHandleToPathname (
-    ACPI_HANDLE             TargetHandle,
-    UINT32                  *BufSize,
-    NATIVE_CHAR             *UserBuffer)
+AcpiGetIrqRoutingTable  (
+    ACPI_HANDLE             DeviceHandle,
+    ACPI_BUFFER             *RetBuffer)
 {
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_NAMESPACE_NODE     *Node;
-    ACPI_NAMESPACE_NODE     *NextNode;
-    UINT32                  PathLength;
-    UINT32                  Size;
-    UINT32                  UserBufSize;
-    ACPI_NAME               Name;
-
-    FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
+    ACPI_STATUS             Status;
 
 
-    if (!AcpiGbl_RootNode || !TargetHandle)
-    {
-        /*
-         * If the name space has not been initialized,
-         * this function should not have been called.
-         */
+    FUNCTION_TRACE ("AcpiGetIrqRoutingTable ");
 
-        return_ACPI_STATUS (AE_NO_NAMESPACE);
-    }
-
-    Node = AcpiNsConvertHandleToEntry (TargetHandle);
-    if (!Node)
+    /*
+     *  Must have a valid handle and buffer, So we have to have a handle
+     *  and a return buffer structure, and if there is a non-zero buffer length
+     *  we also need a valid pointer in the buffer. If it's a zero buffer length,
+     *  we'll be returning the needed buffer size, so keep going.
+     */
+    if ((!DeviceHandle)         ||
+        (!RetBuffer)            ||
+        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /*
-     * Compute length of pathname as 5 * number of name segments.
-     * Go back up the parent tree to the root
-     */
-    for (Size = 0, NextNode = Node;
-          AcpiNsGetParentObject (NextNode);
-          NextNode = AcpiNsGetParentObject (NextNode))
-    {
-        Size += PATH_SEGMENT_LENGTH;
-    }
+    Status = AcpiRsGetPrtMethodData (DeviceHandle, RetBuffer);
 
-    /* Special case for size still 0 - no parent for "special" nodes */
-
-    if (!Size)
-    {
-        Size = PATH_SEGMENT_LENGTH;
-    }
-
-    /* Set return length to the required path length */
-
-    PathLength = Size + 1;
-    UserBufSize = *BufSize;
-    *BufSize = PathLength;
-
-    /* Check if the user buffer is sufficiently large */
-
-    if (PathLength > UserBufSize)
-    {
-        Status = AE_BUFFER_OVERFLOW;
-        goto Exit;
-    }
-
-    /* Store null terminator */
-
-    UserBuffer[Size] = 0;
-    Size -= ACPI_NAME_SIZE;
-
-    /* Put the original ACPI name at the end of the path */
-
-    MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size),
-                            &Node->Name);
-
-    UserBuffer[--Size] = PATH_SEPARATOR;
-
-    /* Build name backwards, putting "." between segments */
-
-    while ((Size > ACPI_NAME_SIZE) && Node)
-    {
-        Size -= ACPI_NAME_SIZE;
-        Name = AcpiNsFindParentName (Node);
-        MOVE_UNALIGNED32_TO_32 ((UserBuffer + Size), &Name);
-
-        UserBuffer[--Size] = PATH_SEPARATOR;
-        Node = AcpiNsGetParentObject (Node);
-    }
-
-    /*
-     * Overlay the "." preceding the first segment with
-     * the root name "\"
-     */
-
-    UserBuffer[Size] = '\\';
-
-    DEBUG_PRINT (TRACE_EXEC,
-        ("NsHandleToPathname: Len=%X, %s \n",
-        PathLength, UserBuffer));
-
-Exit:
     return_ACPI_STATUS (Status);
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGetCurrentResources
+ *
+ * PARAMETERS:  DeviceHandle    - a handle to the device object for the
+ *                                device we are querying
+ *              RetBuffer       - a pointer to a buffer to receive the
+ *                                current resources for the device
+ *
+ * RETURN:      Status          - the status of the call
+ *
+ * DESCRIPTION: This function is called to get the current resources for a
+ *              specific device.  The caller must first acquire a handle for
+ *              the desired device.  The resource data is placed in the buffer
+ *              pointed to by the RetBuffer variable parameter.
+ *
+ *              If the function fails an appropriate status will be returned
+ *              and the value of RetBuffer is undefined.
+ *
+ *              This function attempts to execute the _CRS method contained in
+ *              the object indicated by the passed DeviceHandle.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetCurrentResources (
+    ACPI_HANDLE             DeviceHandle,
+    ACPI_BUFFER             *RetBuffer)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AcpiGetCurrentResources");
+
+    /*
+     *  Must have a valid handle and buffer, So we have to have a handle
+     *  and a return buffer structure, and if there is a non-zero buffer length
+     *  we also need a valid pointer in the buffer. If it's a zero buffer length,
+     *  we'll be returning the needed buffer size, so keep going.
+     */
+    if ((!DeviceHandle)         ||
+        (!RetBuffer)            ||
+        ((RetBuffer->Length) && (!RetBuffer->Pointer)))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiRsGetCrsMethodData (DeviceHandle, RetBuffer);
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGetPossibleResources
+ *
+ * PARAMETERS:  DeviceHandle    - a handle to the device object for the
+ *                                device we are querying
+ *              RetBuffer       - a pointer to a buffer to receive the
+ *                                resources for the device
+ *
+ * RETURN:      Status          - the status of the call
+ *
+ * DESCRIPTION: This function is called to get a list of the possible resources
+ *              for a specific device.  The caller must first acquire a handle
+ *              for the desired device.  The resource data is placed in the
+ *              buffer pointed to by the RetBuffer variable.
+ *
+ *              If the function fails an appropriate status will be returned
+ *              and the value of RetBuffer is undefined.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetPossibleResources (
+    ACPI_HANDLE             DeviceHandle,
+    ACPI_BUFFER             *RetBuffer)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AcpiGetPossibleResources");
+
+    /*
+     *  Must have a valid handle and buffer, So we have to have a handle
+     *  and a return buffer structure, and if there is a non-zero buffer length
+     *  we also need a valid pointer in the buffer. If it's a zero buffer length,
+     *  we'll be returning the needed buffer size, so keep going.
+     */
+    if ((!DeviceHandle)         ||
+        (!RetBuffer)            ||
+        ((RetBuffer->Length) && (!RetBuffer->Pointer)))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+   }
+
+    Status = AcpiRsGetPrsMethodData (DeviceHandle, RetBuffer);
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiSetCurrentResources
+ *
+ * PARAMETERS:  DeviceHandle    - a handle to the device object for the
+ *                                device we are changing the resources of
+ *              InBuffer        - a pointer to a buffer containing the
+ *                                resources to be set for the device
+ *
+ * RETURN:      Status          - the status of the call
+ *
+ * DESCRIPTION: This function is called to set the current resources for a
+ *              specific device.  The caller must first acquire a handle for
+ *              the desired device.  The resource data is passed to the routine
+ *              the buffer pointed to by the InBuffer variable.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiSetCurrentResources (
+    ACPI_HANDLE             DeviceHandle,
+    ACPI_BUFFER             *InBuffer)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AcpiSetCurrentResources");
+
+    /*
+     *  Must have a valid handle and buffer
+     */
+    if ((!DeviceHandle)       ||
+        (!InBuffer)           ||
+        (!InBuffer->Pointer)  ||
+        (!InBuffer->Length))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiRsSetSrsMethodData (DeviceHandle, InBuffer);
+
+    return_ACPI_STATUS (Status);
+}

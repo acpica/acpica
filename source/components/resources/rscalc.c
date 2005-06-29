@@ -1,17 +1,17 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.9 $
+ *              $Revision: 1.17 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -118,16 +118,17 @@
 #define __RSCALC_C__
 
 #include "acpi.h"
+#include "acresrc.h"
 
 #define _COMPONENT          RESOURCE_MANAGER
         MODULE_NAME         ("rscalc")
 
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsCalculateByteStreamLength
  *
- * PARAMETERS:
- *              LinkedList          - Pointer to the resource linked list
+ * PARAMETERS:  LinkedList          - Pointer to the resource linked list
  *              SizeNeeded          - UINT32 pointer of the size buffer needed
  *                                      to properly return the parsed data
  *
@@ -137,7 +138,7 @@
  *              the size buffer needed to hold the linked list that conveys
  *              the resource data.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsCalculateByteStreamLength (
@@ -151,6 +152,7 @@ AcpiRsCalculateByteStreamLength (
 
 
     FUNCTION_TRACE ("RsCalculateByteStreamLength");
+
 
     while (!Done)
     {
@@ -379,15 +381,14 @@ AcpiRsCalculateByteStreamLength (
     *SizeNeeded = ByteStreamSizeNeeded;
 
     return_ACPI_STATUS (AE_OK);
+}
 
-} /* AcpiRsCalculateByteStreamLength */
 
-
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsCalculateListLength
  *
- * PARAMETERS:
- *              ByteStreamBuffer        - Pointer to the resource byte stream
+ * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource byte stream
  *              ByteStreamBufferLength  - Size of ByteStreamBuffer
  *              SizeNeeded              - UINT32 pointer of the size buffer
  *                                          needed to properly return the
@@ -399,7 +400,7 @@ AcpiRsCalculateByteStreamLength (
  *              the size buffer needed to hold the linked list that conveys
  *              the resource data.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsCalculateListLength (
@@ -422,6 +423,7 @@ AcpiRsCalculateListLength (
 
 
     FUNCTION_TRACE ("RsCalculateListLength");
+
 
     while (BytesParsed < ByteStreamBufferLength)
     {
@@ -448,7 +450,6 @@ AcpiRsCalculateListLength (
 
                 StructureSize = sizeof (MEMORY24_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA;
-
                 break;
 
             case LARGE_VENDOR_DEFINED:
@@ -589,7 +590,6 @@ AcpiRsCalculateListLength (
                  *  Interrupt table length to the Temp8 variable.
                  */
                 Buffer += 3;
-
                 Temp8 = *Buffer;
 
                 /*
@@ -631,7 +631,7 @@ AcpiRsCalculateListLength (
 
                 break;
 
-/* 64-bit not currently supported */
+/* TBD: [Future] 64-bit not currently supported */
 /*
             case 0x8A:
                 break;
@@ -666,7 +666,6 @@ AcpiRsCalculateListLength (
                  *  trailing bytes
                  */
                 Buffer = ByteStreamBuffer;
-
                 Temp8 = *Buffer;
 
                 if(Temp8 & 0x01)
@@ -702,7 +701,6 @@ AcpiRsCalculateListLength (
                 StructureSize = sizeof (IO_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (NumberOfInterrupts * sizeof (UINT32));
-
                 break;
 
 
@@ -738,7 +736,6 @@ AcpiRsCalculateListLength (
                 StructureSize = sizeof (DMA_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (NumberOfChannels * sizeof (UINT32));
-
                 break;
 
 
@@ -751,7 +748,6 @@ AcpiRsCalculateListLength (
                  * Determine if it there are two or three trailing bytes
                  */
                 Buffer = ByteStreamBuffer;
-
                 Temp8 = *Buffer;
 
                 if(Temp8 & 0x01)
@@ -776,7 +772,6 @@ AcpiRsCalculateListLength (
                  * End Dependent Functions Resource
                  */
                 BytesConsumed = 1;
-
                 StructureSize = RESOURCE_LENGTH;
                 break;
 
@@ -786,7 +781,6 @@ AcpiRsCalculateListLength (
                  * IO Port Resource
                  */
                 BytesConsumed = 8;
-
                 StructureSize = sizeof (IO_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA;
                 break;
@@ -798,7 +792,6 @@ AcpiRsCalculateListLength (
                  * Fixed IO Port Resource
                  */
                 BytesConsumed = 4;
-
                 StructureSize = sizeof (FIXED_IO_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA;
                 break;
@@ -819,7 +812,6 @@ AcpiRsCalculateListLength (
                  * Ensure a 32-bit boundry for the structure
                  */
                 Temp8 = (UINT8) ROUND_UP_TO_32BITS (Temp8);
-
                 StructureSize = sizeof (VENDOR_RESOURCE) +
                                 RESOURCE_LENGTH_NO_DATA +
                                 (Temp8 * sizeof (UINT8));
@@ -832,7 +824,6 @@ AcpiRsCalculateListLength (
                  * End Tag
                  */
                 BytesConsumed = 2;
-
                 StructureSize = RESOURCE_LENGTH;
                 break;
 
@@ -868,14 +859,14 @@ AcpiRsCalculateListLength (
     *SizeNeeded = BufferSize;
 
     return_ACPI_STATUS (AE_OK);
+}
 
-} /* AcpiRsCalculateListLength */
 
-/***************************************************************************
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsCalculatePciRoutingTableLength
  *
- * PARAMETERS:
- *              PackageObject           - Pointer to the package object
+ * PARAMETERS:  PackageObject           - Pointer to the package object
  *              BufferSizeNeeded        - UINT32 pointer of the size buffer
  *                                          needed to properly return the
  *                                          parsed data
@@ -886,19 +877,25 @@ AcpiRsCalculateListLength (
  *                calculates the size of the corresponding linked list of
  *                descriptions.
  *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiRsCalculatePciRoutingTableLength (
     ACPI_OPERAND_OBJECT     *PackageObject,
     UINT32                  *BufferSizeNeeded)
 {
-    UINT32                   NumberOfElements;
-    UINT32                   TempSizeNeeded;
-    ACPI_OPERAND_OBJECT      **TopObjectList;
-    UINT32                   Index;
+    UINT32                  NumberOfElements;
+    UINT32                  TempSizeNeeded = 0;
+    ACPI_OPERAND_OBJECT     **TopObjectList;
+    UINT32                  Index;
+    ACPI_OPERAND_OBJECT     *PackageElement;
+    ACPI_OPERAND_OBJECT     **SubObjectList;
+    BOOLEAN                 NameFound;
+    UINT32                  TableIndex;
+
 
     FUNCTION_TRACE ("AcpiRsCalculatePciRoutingTableLength");
+
 
     NumberOfElements = PackageObject->Package.Count;
 
@@ -912,8 +909,6 @@ AcpiRsCalculatePciRoutingTableLength (
      * NOTE: The NumberOfElements is incremented by one to add an end
      * table structure that is essentially a structure of zeros.
      */
-    TempSizeNeeded = (NumberOfElements + 1) *
-                       (sizeof (PCI_ROUTING_TABLE) - 1);
 
     /*
      * But each PRT_ENTRY structure has a pointer to a string and
@@ -923,11 +918,6 @@ AcpiRsCalculatePciRoutingTableLength (
 
     for (Index = 0; Index < NumberOfElements; Index++)
     {
-        ACPI_OPERAND_OBJECT     *PackageElement;
-        ACPI_OPERAND_OBJECT     **SubObjectList;
-        BOOLEAN                 NameFound;
-        UINT32                  TableIndex;
-
         /*
          * Dereference the sub-package
          */
@@ -960,6 +950,8 @@ AcpiRsCalculatePciRoutingTableLength (
             }
         }
 
+        TempSizeNeeded += (sizeof (PCI_ROUTING_TABLE) - 1);
+
         /*
          * Was a String type found?
          */
@@ -970,7 +962,6 @@ AcpiRsCalculatePciRoutingTableLength (
              * terminating NULL
              */
             TempSizeNeeded += (*SubObjectList)->String.Length;
-            TempSizeNeeded = ROUND_UP_TO_32BITS (TempSizeNeeded);
         }
 
         else
@@ -982,13 +973,19 @@ AcpiRsCalculatePciRoutingTableLength (
             TempSizeNeeded += sizeof(UINT32);
         }
 
+
+        /* Round up the size since each element must be aligned */
+
+        TempSizeNeeded = ROUND_UP_TO_64BITS (TempSizeNeeded);
+
         /*
          * Point to the next ACPI_OPERAND_OBJECT
          */
         TopObjectList++;
     }
 
-    *BufferSizeNeeded = TempSizeNeeded;
+
+    *BufferSizeNeeded = TempSizeNeeded + sizeof (PCI_ROUTING_TABLE);
 
     return_ACPI_STATUS (AE_OK);
 }

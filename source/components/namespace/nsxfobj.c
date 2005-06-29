@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.65 $
+ *              $Revision: 1.76 $
  *
  ******************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -121,6 +121,7 @@
 #include "acpi.h"
 #include "acinterp.h"
 #include "acnamesp.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -348,8 +349,8 @@ AcpiEvaluateObject (
                          * but return the buffer size needed
                          */
 
-                        DEBUG_PRINT (ACPI_ERROR,
-                            ("AcpiEvaluateObject: Needed buffer size %d, received %d\n",
+                        DEBUG_PRINT (ACPI_INFO,
+                            ("AcpiEvaluateObject: Needed buffer size %X, received %X\n",
                             BufferSpaceNeeded, UserBufferLength));
 
                         ReturnBuffer->Length = BufferSpaceNeeded;
@@ -626,6 +627,8 @@ UnlockAndExit:
  *              MaxDepth            - Depth to which search is to reach
  *              UserFunction        - Called when an object of "Type" is found
  *              Context             - Passed to user function
+ *              ReturnValue         - Location where return value of
+ *                                    UserFunction is put if terminated early
  *
  * RETURNS      Return value from the UserFunction if terminated early.
  *              Otherwise, returns NULL.
@@ -689,3 +692,162 @@ AcpiWalkNamespace (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsGetDeviceCallback
+ *
+ * PARAMETERS:  Callback from AcpiGetDevice
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Takes callbacks from WalkNamespace and filters out all non-
+ *              present devices, or if they specified a HID, it filters based
+ *              on that.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiNsGetDeviceCallback (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_STATUS             Status;
+    ACPI_NAMESPACE_NODE     *Node;
+    UINT32                  Flags;
+    DEVICE_ID               DeviceId;
+    ACPI_GET_DEVICES_INFO   *Info;
+
+
+    Info = Context;
+
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+
+    Node = AcpiNsConvertHandleToEntry (ObjHandle);
+    if (!Node)
+    {
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        return (AE_BAD_PARAMETER);
+    }
+
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+
+    /*
+     * Run _STA to determine if device is present
+     */
+
+    Status = AcpiCmExecute_STA (Node, &Flags);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    if (!(Flags & 0x01))
+    {
+        /* don't return at the device or children of the device if not there */
+
+        return (AE_CTRL_DEPTH);
+    }
+
+    /*
+     * Filter based on device HID
+     */
+    if (Info->Hid != NULL)
+    {
+        Status = AcpiCmExecute_HID (Node, &DeviceId);
+
+        if (Status == AE_NOT_FOUND)
+        {
+            return (AE_OK);
+        }
+
+        else if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        if (STRNCMP (DeviceId.Buffer, Info->Hid, sizeof (DeviceId.Buffer)) != 0)
+        {
+            return (AE_OK);
+        }
+    }
+
+    Info->UserFunction (ObjHandle, NestingLevel, Info->Context, ReturnValue);
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGetDevices
+ *
+ * PARAMETERS:  HID                 - HID to search for. Can be NULL.
+ *              UserFunction        - Called when a matching object is found
+ *              Context             - Passed to user function
+ *              ReturnValue         - Location where return value of
+ *                                    UserFunction is put if terminated early
+ *
+ * RETURNS      Return value from the UserFunction if terminated early.
+ *              Otherwise, returns NULL.
+ *
+ * DESCRIPTION: Performs a modified depth-first walk of the namespace tree,
+ *              starting (and ending) at the object specified by StartHandle.
+ *              The UserFunction is called whenever an object that matches
+ *              the type parameter is found.  If the user function returns
+ *              a non-zero value, the search is terminated immediately and this
+ *              value is returned to the caller.
+ *
+ *              This is a wrapper for WalkNamespace, but the callback performs
+ *              additional filtering. Please see AcpiGetDeviceCallback.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetDevices (
+    NATIVE_CHAR             *HID,
+    WALK_CALLBACK           UserFunction,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_STATUS             Status;
+    ACPI_GET_DEVICES_INFO   Info;
+
+
+    FUNCTION_TRACE ("AcpiGetDevices");
+
+
+    /* Parameter validation */
+
+    if (!UserFunction)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /*
+     * We're going to call their callback from OUR callback, so we need
+     * to know what it is, and their context parameter.
+     */
+    Info.Context      = Context;
+    Info.UserFunction = UserFunction;
+    Info.Hid          = HID;
+
+    /*
+     * Lock the namespace around the walk.
+     * The namespace will be unlocked/locked around each call
+     * to the user function - since this function
+     * must be allowed to make Acpi calls itself.
+     */
+
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE,
+                                    ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                                    NS_WALK_UNLOCK,
+                                    AcpiNsGetDeviceCallback, &Info,
+                                    ReturnValue);
+
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+
+    return_ACPI_STATUS (Status);
+}

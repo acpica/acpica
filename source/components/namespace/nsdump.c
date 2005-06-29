@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.77 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -274,7 +274,7 @@ AcpiNsDumpOneObject (
 
             else
             {
-                DownstreamSiblingMask &= 0xffffffff ^ (1 << (Level - 1));
+                DownstreamSiblingMask &= ACPI_UINT32_MAX ^ (1 << (Level - 1));
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
             }
 
@@ -305,7 +305,7 @@ AcpiNsDumpOneObject (
 
     if (!AcpiCmValidAcpiName (ThisNode->Name))
     {
-        REPORT_WARNING ("Invalid Name");
+        REPORT_WARNING (("Invalid ACPI Name %08X\n", ThisNode->Name));
     }
 
     /*
@@ -409,15 +409,15 @@ AcpiNsDumpOneObject (
 
             if (ObjType > INTERNAL_TYPE_MAX)
             {
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [UNKNOWN])\n", ObjType));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type %X [UNKNOWN])\n", ObjType));
                 BytesToDump = 32;
             }
 
             else
             {
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [%s])\n",
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type %X [%s])\n",
                                     ObjType, AcpiCmGetTypeName (ObjType)));
-                BytesToDump = ObjDesc->Common.Size;
+                BytesToDump = sizeof (ACPI_OPERAND_OBJECT);
             }
         }
 
@@ -521,6 +521,7 @@ AcpiNsDumpObjects (
 }
 
 
+#ifndef _ACPI_ASL_COMPILER
 /****************************************************************************
  *
  * FUNCTION:    AcpiNsDumpOneDevice
@@ -594,6 +595,7 @@ AcpiNsDumpRootDevices (void)
                         AcpiNsDumpOneDevice, NULL, NULL);
 }
 
+#endif
 
 /****************************************************************************
  *

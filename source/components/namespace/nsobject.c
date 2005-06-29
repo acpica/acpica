@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.44 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -170,7 +170,7 @@ AcpiNsAttachObject (
     {
         /* Name space not initialized  */
 
-        REPORT_ERROR ("NsAttachObject: Name space not initialized");
+        REPORT_ERROR (("NsAttachObject: Namespace not initialized\n"));
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
@@ -178,7 +178,7 @@ AcpiNsAttachObject (
     {
         /* Invalid handle */
 
-        REPORT_ERROR ("NsAttachObject: Null NamedObj handle");
+        REPORT_ERROR (("NsAttachObject: Null NamedObj handle\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -186,8 +186,7 @@ AcpiNsAttachObject (
     {
         /* Null object */
 
-        REPORT_ERROR ("NsAttachObject: Null object, but type"
-                        "not ACPI_TYPE_ANY");
+        REPORT_ERROR (("NsAttachObject: Null object, but type not ACPI_TYPE_ANY\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -195,7 +194,7 @@ AcpiNsAttachObject (
     {
         /* Not a name handle */
 
-        REPORT_ERROR ("NsAttachObject: Invalid handle");
+        REPORT_ERROR (("NsAttachObject: Invalid handle\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -396,8 +395,8 @@ AcpiNsAttachObject (
 
 
     DEBUG_PRINT (TRACE_EXEC,
-        ("NsAttachObject: Installing Intobj %p into NameObj %p\n",
-        ObjDesc, Node));
+        ("NsAttachObject: Installing obj %p into NameObj %p [%4.4s]\n",
+        ObjDesc, Node, &Node->Name));
 
 
     /*
@@ -514,7 +513,7 @@ AcpiNsGetAttachedObject (
     {
         /* handle invalid */
 
-        REPORT_WARNING ("NsGetAttachedObject: Null handle");
+        DEBUG_PRINT (ACPI_WARN, ("NsGetAttachedObject: Null handle\n"));
         return_PTR (NULL);
     }
 

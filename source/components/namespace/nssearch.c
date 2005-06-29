@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.57 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -170,7 +170,7 @@ AcpiNsSearchNode (
             ("NsSearchNode: Searching %s [%p]\n",
             ScopeName, Node));
         DEBUG_PRINT (TRACE_NAMES,
-            ("NsSearchNode: For %4.4s (type 0x%X)\n",
+            ("NsSearchNode: For %4.4s (type %X)\n",
             &TargetName, Type));
         DEBUG_EXEC (AcpiCmFree (ScopeName));
     }
@@ -223,7 +223,7 @@ AcpiNsSearchNode (
             }
 
             DEBUG_PRINT (TRACE_NAMES,
-                ("NsSearchNode: Name %4.4s (actual type 0x%X) found at %p\n",
+                ("NsSearchNode: Name %4.4s (actual type %X) found at %p\n",
                 &TargetName, NextNode->Type, NextNode));
 
             *ReturnNode = NextNode;
@@ -251,7 +251,7 @@ AcpiNsSearchNode (
     /* Searched entire table, not found */
 
     DEBUG_PRINT (TRACE_NAMES,
-        ("NsSearchNode: Name %4.4s (type 0x%X) not found at %p\n",
+        ("NsSearchNode: Name %4.4s (type %X) not found at %p\n",
         &TargetName, Type, NextNode));
 
 
@@ -284,7 +284,7 @@ AcpiNsSearchNode (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiNsSearchParentTree (
     UINT32                  TargetName,
     ACPI_NAMESPACE_NODE     *Node,
@@ -317,7 +317,7 @@ AcpiNsSearchParentTree (
         if (AcpiNsLocal (Type))
         {
             DEBUG_PRINT (TRACE_NAMES,
-                ("NsSearchParentTree: [%4.4s] (type 0x%X) is local (no search)\n",
+                ("NsSearchParentTree: [%4.4s] (type %X) is local (no search)\n",
                 &TargetName, Type));
         }
 
@@ -414,7 +414,7 @@ AcpiNsSearchAndEnter (
             ("NsSearchAndEnter: Null param:  Table %p Name %p Return %p\n",
             Node, TargetName, ReturnNode));
 
-        REPORT_ERROR ("NsSearchAndEnter: bad (null)parameter");
+        REPORT_ERROR (("NsSearchAndEnter: bad (null) parameter\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -427,7 +427,7 @@ AcpiNsSearchAndEnter (
             ("NsSearchAndEnter:  *** Bad character in name: %08lx *** \n",
             TargetName));
 
-        REPORT_ERROR ("NsSearchAndEnter: Bad character in ACPI Name");
+        REPORT_ERROR (("NsSearchAndEnter: Bad character in ACPI Name\n"));
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
 

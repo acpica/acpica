@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.38 $
+ * Module Name: tbxfroot - Find the root ACPI table (RSDT)
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -114,157 +114,207 @@
  *
  *****************************************************************************/
 
-#define __PSXFACE_C__
+#define __TBXFROOT_C__
 
 #include "acpi.h"
-#include "acparser.h"
-#include "acdispat.h"
-#include "acinterp.h"
-#include "amlcode.h"
-#include "acnamesp.h"
+#include "achware.h"
+#include "actables.h"
 
 
-#define _COMPONENT          PARSER
-        MODULE_NAME         ("psxface")
+#define _COMPONENT          TABLE_MANAGER
+        MODULE_NAME         ("tbxfroot")
+
+#define RSDP_CHECKSUM_LENGTH 20
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiPsxExecute
+ * FUNCTION:    AcpiFindRootPointer
  *
- * PARAMETERS:  MethodNode          - A method object containing both the AML
- *                                    address and length.
- *              **Params            - List of parameters to pass to method,
- *                                    terminated by NULL. Params itself may be
- *                                    NULL if no parameters are being passed.
- *              **ReturnObjDesc     - Return object from execution of the
- *                                    method.
+ * PARAMETERS:  **RsdpPhysicalAddress       - Where to place the RSDP address
+ *
+ * RETURN:      Status, Physical address of the RSDP
+ *
+ * DESCRIPTION: Find the RSDP
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiFindRootPointer (
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+{
+    ACPI_TABLE_DESC         TableInfo;
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AcpiFindRootPointer");
+
+
+    /* Get the RSDP */
+
+    Status = AcpiTbFindRsdp (&TableInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("RSDP structure not found\n"));
+        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+    }
+
+    *RsdpPhysicalAddress = TableInfo.PhysicalAddress;
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbScanMemoryForRsdp
+ *
+ * PARAMETERS:  StartAddress        - Starting pointer for search
+ *              Length              - Maximum length to search
+ *
+ * RETURN:      Pointer to the RSDP if found, otherwise NULL.
+ *
+ * DESCRIPTION: Search a block of memory for the RSDP signature
+ *
+ ******************************************************************************/
+
+UINT8 *
+AcpiTbScanMemoryForRsdp (
+    UINT8                   *StartAddress,
+    UINT32                  Length)
+{
+    UINT32                  Offset;
+    UINT8                   *MemRover;
+
+
+    FUNCTION_TRACE ("TbScanMemoryForRsdp");
+
+    /* Search from given start addr for the requested length  */
+
+    for (Offset = 0, MemRover = StartAddress;
+         Offset < Length;
+         Offset += RSDP_SCAN_STEP, MemRover += RSDP_SCAN_STEP)
+    {
+
+        /* The signature and checksum must both be correct */
+
+        if (STRNCMP ((NATIVE_CHAR *) MemRover,
+                RSDP_SIG, sizeof (RSDP_SIG)-1) == 0 &&
+            AcpiTbChecksum (MemRover, RSDP_CHECKSUM_LENGTH) == 0)
+        {
+            /* If so, we have found the RSDP */
+
+            return_PTR (MemRover);
+        }
+    }
+
+    /* Searched entire block, no RSDP was found */
+
+    return_PTR (NULL);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbFindRsdp
+ *
+ * PARAMETERS:  *BufferPtr              - If == NULL, read data from buffer
+ *                                        rather than searching memory
+ *              *TableInfo              - Where the table info is returned
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Execute a control method
+ * DESCRIPTION: Search lower 1Mbyte of memory for the root system descriptor
+ *              pointer structure.  If it is found, set *RSDP to point to it.
  *
- ****************************************************************************/
+ *              NOTE: The RSDP must be either in the first 1K of the Extended
+ *              BIOS Data Area or between E0000 and FFFFF (ACPI 1.0 section
+ *              5.2.2; assertion #421).
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
-AcpiPsxExecute (
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObjDesc)
+AcpiTbFindRsdp (
+    ACPI_TABLE_DESC         *TableInfo)
 {
-    ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    UINT32                  i;
-    ACPI_PARSE_OBJECT       *Op;
+    UINT8                   *TablePtr;
+    UINT8                   *MemRover;
+    UINT64                  PhysAddr;
+    ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("PsxExecute");
+    FUNCTION_TRACE ("TbFindRsdp");
 
 
-    /* Validate the Node and get the attached object */
+    /*
+     * Search memory for RSDP.  First map low physical memory.
+     */
 
-    if (!MethodNode)
-    {
-        return_ACPI_STATUS (AE_NULL_ENTRY);
-    }
+    Status = AcpiOsMapMemory (LO_RSDP_WINDOW_BASE, LO_RSDP_WINDOW_SIZE,
+                                (void **)&TablePtr);
 
-    ObjDesc = AcpiNsGetAttachedObject (MethodNode);
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_NULL_OBJECT);
-    }
-
-    /* Init for new method, wait on concurrency semaphore */
-
-    Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    if (Params)
-    {
-        /*
-         * The caller "owns" the parameters, so give each one an extra
-         * reference
-         */
-
-        for (i = 0; Params[i]; i++)
-        {
-            AcpiCmAddReference (Params[i]);
-        }
-    }
-
     /*
-     * Perform the first pass parse of the method to enter any
-     * named objects that it creates into the namespace
+     * 1) Search EBDA (low memory) paragraphs
      */
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
-        MethodNode, ObjDesc));
+    MemRover = AcpiTbScanMemoryForRsdp (TablePtr, LO_RSDP_WINDOW_SIZE);
 
-    /* Create and init a Root Node */
+    /* This mapping is no longer needed */
 
-    Op = AcpiPsAllocOp (AML_SCOPE_OP);
-    if (!Op)
+    AcpiOsUnmapMemory (TablePtr, LO_RSDP_WINDOW_SIZE);
+
+    if (MemRover)
     {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
+        /* Found it, return the physical address */
 
-    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                                ObjDesc->Method.PcodeLength,
-                                ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
-                                MethodNode, Params, ReturnObjDesc,
-                                AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
-    AcpiPsDeleteParseTree (Op);
+        PhysAddr = LO_RSDP_WINDOW_BASE;
+        PhysAddr += (MemRover - TablePtr);
 
-    /* Create and init a Root Node */
+        TableInfo->PhysicalAddress = PhysAddr;
 
-    Op = AcpiPsAllocOp (AML_SCOPE_OP);
-    if (!Op)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    /*
-     * The walk of the parse tree is where we actually execute the method
-     */
-    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
-                                ObjDesc->Method.PcodeLength,
-                                ACPI_PARSE_EXECUTE | ACPI_PARSE_DELETE_TREE,
-                                MethodNode, Params, ReturnObjDesc,
-                                AcpiDsExecBeginOp, AcpiDsExecEndOp);
-    AcpiPsDeleteParseTree (Op);
-
-    if (Params)
-    {
-        /* Take away the extra reference that we gave the parameters above */
-
-        for (i = 0; Params[i]; i++)
-        {
-            AcpiCmUpdateObjectReference (Params[i], REF_DECREMENT);
-        }
+        return_ACPI_STATUS (AE_OK);
     }
 
 
     /*
-     * Normal exit is with Status == AE_RETURN_VALUE when a ReturnOp has been
-     * executed, or with Status == AE_PENDING at end of AML block (end of
-     * Method code)
+     * 2) Search upper memory: 16-byte boundaries in E0000h-F0000h
      */
 
-    if (*ReturnObjDesc)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("Method returned ObjDesc=%X\n",
-            *ReturnObjDesc));
-        DUMP_STACK_ENTRY (*ReturnObjDesc);
+    Status = AcpiOsMapMemory (HI_RSDP_WINDOW_BASE, HI_RSDP_WINDOW_SIZE,
+                                (void **)&TablePtr);
 
-        Status = AE_CTRL_RETURN_VALUE;
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    MemRover = AcpiTbScanMemoryForRsdp (TablePtr, HI_RSDP_WINDOW_SIZE);
+
+    /* This mapping is no longer needed */
+
+    AcpiOsUnmapMemory (TablePtr, HI_RSDP_WINDOW_SIZE);
+
+    if (MemRover)
+    {
+        /* Found it, return the physical address */
+
+        PhysAddr = HI_RSDP_WINDOW_BASE;
+        PhysAddr += (MemRover - TablePtr);
+
+        TableInfo->PhysicalAddress = PhysAddr;
+
+        return_ACPI_STATUS (AE_OK);
     }
 
 
-    return_ACPI_STATUS (Status);
+    /* RSDP signature was not found */
+
+    return_ACPI_STATUS (AE_NOT_FOUND);
 }
 
 
