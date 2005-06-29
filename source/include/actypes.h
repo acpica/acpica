@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.266 $
+ *       $Revision: 1.267 $
  *
  *****************************************************************************/
 
@@ -967,6 +967,7 @@ typedef struct acpi_compatible_id_list
 #define ACPI_VALID_HID                  0x0004
 #define ACPI_VALID_UID                  0x0008
 #define ACPI_VALID_CID                  0x0010
+#define ACPI_VALID_SXDS                 0x0020
 
 
 #define ACPI_COMMON_OBJ_INFO \
@@ -987,12 +988,12 @@ typedef struct acpi_device_info
 {
     ACPI_COMMON_OBJ_INFO;
 
-    UINT8                       HighestDstates[4];  /* _SxD values 0xFF indicates not valid */
     UINT32                      Valid;              /* Indicates which fields below are valid */
     UINT32                      CurrentStatus;      /* _STA value */
     ACPI_INTEGER                Address;            /* _ADR value if any */
     ACPI_DEVICE_ID              HardwareId;         /* _HID value if any */
     ACPI_DEVICE_ID              UniqueId;           /* _UID value if any */
+    UINT8                       HighestDstates[4];  /* _SxD values: 0xFF indicates not valid */
     ACPI_COMPATIBLE_ID_LIST     CompatibilityId;    /* List of _CIDs if any */
 
 } ACPI_DEVICE_INFO;
