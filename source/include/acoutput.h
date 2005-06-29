@@ -43,24 +43,71 @@ typedef struct
 
 INT32
 GetDebugLevel (void);
+
 void
-SetDebugLevel (INT32 level);
+SetDebugLevel (
+    INT32               level);
+
 void
-FunctionTrace (char *ModuleName, INT32 LineNumber, INT32 ComponentId, char * FunctionName);
+FunctionTrace (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    char                *FunctionName);
+
 void
-DebugPrintPrefix (char *ModuleName, INT32 LineNumber, INT32 ComponentId);
+DebugPrintPrefix (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId);
+
 void
-DebugPrint (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 PrintLevel, char *Format, ...);
+DebugPrint (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    INT32               PrintLevel, 
+    char                *Format, ...);
+
 void
-DebugPrintRaw (char *Format, ...);
+DebugPrintRaw (
+    char                *Format, ...);
+
 void
-_ReportInfo (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry);
+_ReportInfo (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    ST_KEY_DESC_TABLE   *KdtEntry);
+
 void
-_ReportError (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry);
+_ReportError (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    ST_KEY_DESC_TABLE   *KdtEntry);
+
 void
-_ReportWarning (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry);
+_ReportWarning (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    ST_KEY_DESC_TABLE   *KdtEntry);
+
 void
-_ReportSuccess (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry);
+_ReportSuccess (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    ST_KEY_DESC_TABLE   *KdtEntry);
+
+void 
+DumpBuf (
+    char               *Buffer, 
+    UINT32              Count, 
+    INT32               Flags, 
+    INT32               componentId);
+
 void 
 _Kinc_error (char *, INT32, INT32, char *, INT32, INT32); 
 void 
@@ -68,55 +115,46 @@ _Kinc_info (char *, INT32, INT32, char *, INT32, INT32);
 void 
 _Kinc_warning (char *, INT32, INT32, char *, INT32, INT32);
 
-void
-_dump_buf (
-    void        *buf,
-    UINT32      len,
-    INT32       flags,
-    LogHandle   Logfile,
-    INT32       LogFlags);
-
-void DumpBuf (UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
-                INT32 iLogFlags);
-
-#define dump_buf(Buf,len,flags)             _dump_buf(Buf,len,flags,0,SCREEN | LOGFILE)
-#define DumpBuffer(Buffer, Count, Flags)    DumpBuf(Buffer, Count, Flags, 0, SCREEN | LOGFILE)
-
 
 /*
- * TBD:  Move to a more appropriate header!!
- *
  * Memory allocation functions.
  * Macros that expand to include filename and line number
+ *
+ * TBD:  Move to a more appropriate header!!
+ *
  */
 
 void *
-_AllocateObjectDesc (char *ModuleName, INT32 LineNumber, INT32 ComponentId, ST_KEY_DESC_TABLE *KdtEntry);
+_AllocateObjectDesc (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    ST_KEY_DESC_TABLE   *KdtEntry);
+
 void *
-_LocalAllocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 AllocSize);
+_LocalAllocate (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    INT32               AllocSize);
+
 void *
-_LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 AllocSize);
+_LocalCallocate (
+    char                *ModuleName, 
+    INT32               LineNumber, 
+    INT32               ComponentId, 
+    INT32               AllocSize);
 
 #define LocalAllocate(a)                _LocalAllocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define LocalCallocate(a)               _LocalCallocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define AllocateObjectDesc(a)           _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT,a)
 
-/* 
- * Trace macro.
- * Used to trace procedure entries
- */
 
-#ifdef _TRACE
-#define FUNCTION_TRACE(a)               FunctionTrace (_THIS_MODULE,__LINE__,_COMPONENT,a)
-#else
-#define FUNCTION_TRACE(a)
-#endif
+/* Buffer dump macros */
 
-#ifdef _SCREEN_IO
-#define LINE_SET(a,b)                   LineSet(a,b)
-#else
-#define LINE_SET(a,b)
-#endif
+#define DumpBuffer(Buf,Count,Flags)     DumpBuf((char *) Buf, Count, Flags,_COMPONENT)
+
+
 
 /*
  * Reporting macros that are never compiled out
@@ -143,6 +181,10 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
 
 #ifdef _DEBUG
 
+/* Function entry tracing */
+
+#define FUNCTION_TRACE(a)               FunctionTrace(_THIS_MODULE,__LINE__,_COMPONENT,a)
+
 /* Stack and buffer dumping */
 
 #define DUMP_STACK_ENTRY(a)             DumpStackEntry(a)
@@ -151,20 +193,29 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
 #define DUMP_BUFFER(a,b,c)              DumpBuffer(a,b,c)
 #define DUMP_CODE(a)                    DumpCode(a)
 
-/* Master debug print macros */
+/* 
+ * Master debug print macros 
+ * Print iff:
+ *    1) Debug print for the current component is enabled
+ *    2) Debug error level or trace level for the print statement is enabled
+ *
+ */
 
 #define	PARAM_LIST(PL) PL
+#define TEST_DEBUG_SWITCH(lvl)          if ((lvl & DebugLevel) && (_COMPONENT & DebugLayer))
 
-#define DEBUG_PRINT(lvl,fp)            if ((lvl & DebugLevel) && (_COMPONENT & DebugLayer)) {\
+#define DEBUG_PRINT(lvl,fp)             TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintPrefix (_THIS_MODULE,__LINE__,_COMPONENT);\
                                             DebugPrintRaw PARAM_LIST(fp);}
 
-#define DEBUG_PRINT_RAW(lvl,fp)        if ((lvl & DebugLevel) && (_COMPONENT & DebugLayer)) {\
+#define DEBUG_PRINT_RAW(lvl,fp)         TEST_DEBUG_SWITCH(lvl) {\
                                             DebugPrintRaw PARAM_LIST(fp);}
-
 
 #else
 
+/* Non-debug case -- make everything go away */
+
+#define FUNCTION_TRACE(a)
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_STACK(a,b,c,d)
 #define DUMP_ENTRY(a)
@@ -177,34 +228,13 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
 #endif
 
 
-/* Various debug print levels, controlled by global DebugLevel */
+/*
+ * Debug levels and component IDs.  These are used to control the
+ * granularity of the output of the DEBUG_PRINT macro -- on a per-
+ * component basis and a per-exception-type basis.
+ */
 
-/* OBSOLETE
-
-#define GLOBAL_SUCCESS              0x00000001
-#define GLOBAL_ERROR                0x00000002
-#define GLOBAL_WARN                 0x00000004
-#define GLOBAL_INFO                 0x00000008
-#define GLOBAL_ALL                  0x0000000F
-
-#define AML_ERROR                   0x00000010
-#define AML_WARN                    0x00000020
-#define AML_INFO                    0x00000040
-
-#define NS_ERROR                    0x00000080
-#define NS_WARN                     0x00000100
-#define NS_INFO                     0x00000200
-
-#define DV_ERROR                    0x00000400
-#define DV_WARN                     0x00000800
-#define DV_INFO                     0x00001000
-
-#define EV_ERROR                    0x00002000
-#define EV_WARN                     0x00004000
-#define EV_INFO                     0x00008000
-*/
-
-/* Component IDs -- used in global DebugLayer */
+/* Component IDs -- used in the global "DebugLayer" */
 
 #define GLOBAL                      0x00000001
 #define INTERPRETER                 0x00000002
@@ -213,13 +243,12 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
 #define RESOURCE_MANAGER            0x00000010
 #define EVENT_HANDLING              0x00000020
 #define MISCELLANEOUS               0x00000040
-
 #define OS_DEPENDENT                0x00000080
 
-#define ALL_COMPONENTS              0x000100FF
+#define ALL_COMPONENTS              0x000000FF
 
-/* Exception level or Trace level */
 
+/* Exception level or Trace level -- used in the global "DebugLevel" */
 
 #define ACPI_SUCCESS                0x00000001
 #define ACPI_INFO                   0x00000002
@@ -246,6 +275,12 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
  *
  * Obsolete??
  */
+
+#ifdef _SCREEN_IO
+#define LINE_SET(a,b)                   LineSet(a,b)
+#else
+#define LINE_SET(a,b)
+#endif
 
 /* flags for print_message, inc_warning, inc_error, and inc_info. */
 
@@ -279,27 +314,30 @@ _LocalCallocate (char *ModuleName, INT32 LineNumber, INT32 ComponentId, INT32 Al
 
 BOOLEAN
 _SetIndentAfterNewLine (BOOLEAN NewValue);
+
 BOOLEAN
 GetIndentAfterNewLine (void);
+
 INT32
 IncIndent (void);
+
 INT32
 DecIndent (void);
+
 INT32
 SetIndent (INT32 i);
+
 INT32
 GetIndent (void);
+
 char *
 pIndent (void);
+
 void
 CloseOFT (void);
+
 void
 RestoreOFT (void);
-
-/*
-LogHandle
-GetMasterLogHandle (void);
-*/
 
 
 /* 
@@ -323,25 +361,21 @@ open_log (
 INT32
 close_log (LogHandle handle);                             /* LogHandle to close */
 
+/*
+LogHandle
+GetMasterLogHandle (void);
+*/
+
 
 
 /* Orphaned prototypes TBD:  move to appropriate header !!!*/
+
 
 UINT8
 checksum (
     void                *Buf,
     UINT32              BufSize);
 
-
-UINT32
-InstallInterruptHandler (
-    UINT8               InterruptNumber,
-    INT32               (* Isr)(void),
-    UINT8               InterruptTaskFlag,
-    UINT32 *            ExceptPtr);
-
-INT32
-RemoveInterruptHandler (UINT32 Key);
 
 INT32
 AcpiInit (char          *FileName);
