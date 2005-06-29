@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -248,7 +248,7 @@ AcpiNsInstallNode (
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     *ParentNode,    /* Parent */
     ACPI_NAMESPACE_NODE     *Node,          /* New Child*/
-    ACPI_OBJECT_TYPE8       Type)
+    ACPI_OBJECT_TYPE        Type)
 {
     UINT16                  OwnerId = TABLE_ID_DSDT;
     ACPI_NAMESPACE_NODE     *ChildNode;

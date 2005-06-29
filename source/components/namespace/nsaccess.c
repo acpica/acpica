@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.143 $
+ *              $Revision: 1.144 $
  *
  ******************************************************************************/
 
@@ -321,7 +321,7 @@ ACPI_STATUS
 AcpiNsLookup (
     ACPI_GENERIC_STATE      *ScopeInfo,
     NATIVE_CHAR             *Pathname,
-    ACPI_OBJECT_TYPE8       Type,
+    ACPI_OBJECT_TYPE        Type,
     OPERATING_MODE          InterpreterMode,
     UINT32                  Flags,
     ACPI_WALK_STATE         *WalkState,
@@ -333,8 +333,8 @@ AcpiNsLookup (
     ACPI_NAMESPACE_NODE     *ThisNode = NULL;
     UINT32                  NumSegments;
     ACPI_NAME               SimpleName;
-    ACPI_OBJECT_TYPE8       TypeToCheckFor;
-    ACPI_OBJECT_TYPE8       ThisSearchType;
+    ACPI_OBJECT_TYPE        TypeToCheckFor;
+    ACPI_OBJECT_TYPE        ThisSearchType;
     UINT32                  LocalFlags = Flags & ~NS_ERROR_IF_FOUND;
 
 

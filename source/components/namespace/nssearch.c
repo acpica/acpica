@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.72 $
+ *              $Revision: 1.80 $
  *
  ******************************************************************************/
 
@@ -156,7 +156,7 @@ ACPI_STATUS
 AcpiNsSearchNode (
     UINT32                  TargetName,
     ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_TYPE8       Type,
+    ACPI_OBJECT_TYPE        Type,
     ACPI_NAMESPACE_NODE     **ReturnNode)
 {
     ACPI_NAMESPACE_NODE     *NextNode;
@@ -170,23 +170,21 @@ AcpiNsSearchNode (
     {
         NATIVE_CHAR         *ScopeName;
 
-        ScopeName = AcpiNsGetTablePathname (Node);
+        ScopeName = AcpiNsGetExternalPathname (Node);
         if (ScopeName)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching %s [%p] For %4.4s (type %X)\n",
-                ScopeName, Node, &TargetName, Type));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching %s [%p] For %4.4s (type %s)\n",
+                ScopeName, Node, (char *) &TargetName, AcpiUtGetTypeName (Type)));
 
             ACPI_MEM_FREE (ScopeName);
         }
     }
 #endif
 
-
     /*
      * Search for name in this table, which is to say that we must search
      * for the name among the children of this object
      */
-
     NextNode = Node->Child;
     while (NextNode)
     {
@@ -201,7 +199,6 @@ AcpiNsSearchNode (
              * The DefFieldDefn and BankFieldDefn cases are actually looking up
              * the Region in which the field will be defined
              */
-
             if ((INTERNAL_TYPE_FIELD_DEFN == Type) ||
                 (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
             {
@@ -214,7 +211,6 @@ AcpiNsSearchNode (
              * looked up.  For any other value of Type, if the type stored in
              * the entry is Any (i.e. unknown), save the actual type.
              */
-
             if (Type != INTERNAL_TYPE_SCOPE &&
                 Type != INTERNAL_TYPE_DEF_ANY &&
                 Type != INTERNAL_TYPE_INDEX_FIELD_DEFN &&
@@ -223,14 +219,13 @@ AcpiNsSearchNode (
                 NextNode->Type = (UINT8) Type;
             }
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, 
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Name %4.4s (actual type %X) found at %p\n",
-                &TargetName, NextNode->Type, NextNode));
+                (char *) &TargetName, NextNode->Type, NextNode));
 
             *ReturnNode = NextNode;
             return_ACPI_STATUS (AE_OK);
         }
-
 
         /*
          * The last entry in the list points back to the parent,
@@ -248,11 +243,10 @@ AcpiNsSearchNode (
         NextNode = NextNode->Peer;
     }
 
-
     /* Searched entire table, not found */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Name %4.4s (type %X) not found at %p\n",
-        &TargetName, Type, NextNode));
+        (char *) &TargetName, Type, NextNode));
 
     return_ACPI_STATUS (AE_NOT_FOUND);
 }
@@ -287,7 +281,7 @@ static ACPI_STATUS
 AcpiNsSearchParentTree (
     UINT32                  TargetName,
     ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_TYPE8       Type,
+    ACPI_OBJECT_TYPE        Type,
     ACPI_NAMESPACE_NODE     **ReturnNode)
 {
     ACPI_STATUS             Status;
@@ -297,7 +291,7 @@ AcpiNsSearchParentTree (
     FUNCTION_TRACE ("NsSearchParentTree");
 
 
-    ParentNode = AcpiNsGetParentObject (Node);
+    ParentNode = AcpiNsGetParentNode (Node);
 
     /*
      * If there is no parent (at the root) or type is "local", we won't be
@@ -309,22 +303,21 @@ AcpiNsSearchParentTree (
         if (!ParentNode)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "[%4.4s] has no parent\n",
-                &TargetName));
+                (char *) &TargetName));
         }
 
         if (AcpiNsLocal (Type))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "[%4.4s] type %X is local(no search)\n", 
-                &TargetName, Type));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "[%4.4s] type %X is local(no search)\n",
+                (char *) &TargetName, Type));
         }
 
         return_ACPI_STATUS (AE_NOT_FOUND);
     }
 
-
     /* Search the parent tree */
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching parent for %4.4s\n", &TargetName));
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching parent for %4.4s\n", (char *) &TargetName));
 
     /*
      * Search parents until found the target or we have backed up to
@@ -332,12 +325,13 @@ AcpiNsSearchParentTree (
      */
     while (ParentNode)
     {
-        /* Search parent scope */
-        /* TBD: [Investigate] Why ACPI_TYPE_ANY? */
-
+        /* 
+         * Search parent scope.  Use TYPE_ANY because we don't care about the
+         * object type at this point, we only care about the existence of 
+         * the actual name we are searching for.  Typechecking comes later.
+         */
         Status = AcpiNsSearchNode (TargetName, ParentNode,
                                         ACPI_TYPE_ANY, ReturnNode);
-
         if (ACPI_SUCCESS (Status))
         {
             return_ACPI_STATUS (Status);
@@ -347,10 +341,8 @@ AcpiNsSearchParentTree (
          * Not found here, go up another level
          * (until we reach the root)
          */
-
-        ParentNode = AcpiNsGetParentObject (ParentNode);
+        ParentNode = AcpiNsGetParentNode (ParentNode);
     }
-
 
     /* Not found in parent tree */
 
@@ -389,7 +381,7 @@ AcpiNsSearchAndEnter (
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     *Node,
     OPERATING_MODE          InterpreterMode,
-    ACPI_OBJECT_TYPE8       Type,
+    ACPI_OBJECT_TYPE        Type,
     UINT32                  Flags,
     ACPI_NAMESPACE_NODE     **ReturnNode)
 {
@@ -404,25 +396,23 @@ AcpiNsSearchAndEnter (
 
     if (!Node || !TargetName || !ReturnNode)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null param-  Table %p Name %p Return %p\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null param-  Table %p Name %X Return %p\n",
             Node, TargetName, ReturnNode));
 
         REPORT_ERROR (("NsSearchAndEnter: bad (null) parameter\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     /* Name must consist of printable characters */
 
     if (!AcpiUtValidAcpiName (TargetName))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "*** Bad character in name: %08lx *** \n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "*** Bad character in name: %08x *** \n",
             TargetName));
 
         REPORT_ERROR (("NsSearchAndEnter: Bad character in ACPI Name\n"));
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
-
 
     /* Try to find the name in the table specified by the caller */
 
@@ -437,7 +427,7 @@ AcpiNsSearchAndEnter (
         if ((Status == AE_OK) &&
             (Flags & NS_ERROR_IF_FOUND))
         {
-            Status = AE_EXIST;
+            Status = AE_ALREADY_EXISTS;
         }
 
         /*
@@ -447,9 +437,8 @@ AcpiNsSearchAndEnter (
         return_ACPI_STATUS (Status);
     }
 
-
     /*
-     * Not found in the table.  If we are NOT performing the
+     * The name was not found.  If we are NOT performing the
      * first pass (name entry) of loading the namespace, search
      * the parent tree (all the way to the root if necessary.)
      * We don't want to perform the parent search when the
@@ -457,7 +446,6 @@ AcpiNsSearchAndEnter (
      * the search when namespace references are being resolved
      * (load pass 2) and during the execution phase.
      */
-
     if ((InterpreterMode != IMODE_LOAD_PASS1) &&
         (Flags & NS_SEARCH_PARENT))
     {
@@ -465,7 +453,6 @@ AcpiNsSearchAndEnter (
          * Not found in table - search parent tree according
          * to ACPI specification
          */
-
         Status = AcpiNsSearchParentTree (TargetName, Node,
                                             Type, ReturnNode);
         if (ACPI_SUCCESS (Status))
@@ -474,18 +461,16 @@ AcpiNsSearchAndEnter (
         }
     }
 
-
     /*
      * In execute mode, just search, never add names.  Exit now.
      */
     if (InterpreterMode == IMODE_EXECUTE)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "%4.4s Not found in %p [Not adding]\n",
-            &TargetName, Node));
+            (char *) &TargetName, Node));
 
         return_ACPI_STATUS (AE_NOT_FOUND);
     }
-
 
     /* Create the new named object */
 
