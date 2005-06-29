@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -192,6 +192,7 @@ AcpiExTriadic (
         /* Might return while OS is shutting down */
 
         ACPI_MEM_FREE (Fatal);
+        AcpiUtRemoveReference (Operand[2]);
         break;
 
 
