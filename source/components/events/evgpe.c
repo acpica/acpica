@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -149,6 +149,9 @@ AcpiEvGetGpeEventInfo (
     ACPI_NATIVE_UINT        i;
 
 
+    ACPI_FUNCTION_NAME ("EvGetGpeEventInfo");
+
+
     /* A NULL GpeBlock means use the FADT-defined GPE block(s) */
 
     if (!GpeDevice)
@@ -199,7 +202,8 @@ AcpiEvGetGpeEventInfo (
  *
  * FUNCTION:    AcpiEvGpeDetect
  *
- * PARAMETERS:  None
+ * PARAMETERS:  GpeXruptList        - Interrupt block for this interrupt.
+ *                                    Can have multiple GPE blocks attached.
  *
  * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
  *
@@ -317,7 +321,7 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiEvAsynchExecuteGpeMethod
  *
- * PARAMETERS:  GpeEventInfo - Info for this GPE
+ * PARAMETERS:  Context (GpeEventInfo) - Info for this GPE
  *
  * RETURN:      None
  *

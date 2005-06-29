@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -142,6 +142,9 @@ AcpiEvValidGpeEvent (
 {
     ACPI_GPE_XRUPT_INFO     *GpeXruptBlock;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
+
+
+    ACPI_FUNCTION_NAME ("EvValidGpeEvent");
 
 
     /* No need for spin lock since we are not changing any list elements */
@@ -443,12 +446,15 @@ AcpiEvDeleteGpeXrupt (
     ACPI_STATUS             Status;
 
 
+    ACPI_FUNCTION_TRACE ("EvDeleteGpeXrupt");
+
+
     /* We never want to remove the SCI interrupt handler */
 
     if (GpeXrupt->InterruptLevel == AcpiGbl_FADT->SciInt)
     {
         GpeXrupt->GpeBlockListHead = NULL;
-        return (AE_OK);
+        return_ACPI_STATUS (AE_OK);
     }
 
     /* Disable this interrupt */
@@ -457,7 +463,7 @@ AcpiEvDeleteGpeXrupt (
                                     AcpiEvGpeXruptHandler);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        return_ACPI_STATUS (Status);
     }
 
     /* Unlink the interrupt block with lock */
@@ -477,7 +483,7 @@ AcpiEvDeleteGpeXrupt (
     /* Free the block */
 
     ACPI_MEM_FREE (GpeXrupt);
-    return (AE_OK);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -504,10 +510,13 @@ AcpiEvInstallGpeBlock (
     ACPI_STATUS             Status;
 
 
+    ACPI_FUNCTION_TRACE ("EvInstallGpeBlock");
+
+
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        return_ACPI_STATUS (Status);
     }
 
     GpeXruptBlock = AcpiEvGetGpeXruptBlock (InterruptLevel);
@@ -541,7 +550,7 @@ AcpiEvInstallGpeBlock (
 
 UnlockAndExit:
     Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -564,10 +573,13 @@ AcpiEvDeleteGpeBlock (
     ACPI_STATUS             Status;
 
 
+    ACPI_FUNCTION_TRACE ("EvInstallGpeBlock");
+
+    
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        return_ACPI_STATUS (Status);
     }
 
     /* Disable all GPEs in this block */
@@ -613,7 +625,7 @@ AcpiEvDeleteGpeBlock (
 
 UnlockAndExit:
     Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
