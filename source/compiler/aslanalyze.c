@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -230,7 +230,8 @@ AnSemanticAnalysisWalkBegin (
 
     case RETURN:
 
-        if (Node->Child)
+        if ((Node->Child) &&
+            (Node->Child->ParseOpcode != DEFAULT_ARG))
         {
             MethodInfo->NumReturnWithValue++;
         }
@@ -251,6 +252,43 @@ AnSemanticAnalysisWalkBegin (
 
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AnLastStatementIsReturn (
+    ASL_PARSE_NODE              *Node)
+{    
+    ASL_PARSE_NODE              *Next;
+
+
+    /*
+     * Check if last statement is a return
+     */
+    Next = ASL_GET_CHILD_NODE (Node);
+    while (Next)
+    {
+        if ((!Next->Peer) &&
+            (Next->ParseOpcode == RETURN))
+        {
+            return TRUE;
+        }
+
+        Next = ASL_GET_PEER_NODE (Next);
+    }
+
+    return FALSE;
+}
 
 
 /*******************************************************************************
@@ -274,6 +312,10 @@ AnSemanticAnalysisWalkEnd (
     ASL_ANALYSIS_WALK_INFO      *WalkInfo = (ASL_ANALYSIS_WALK_INFO *) Context;
     ASL_METHOD_INFO             *MethodInfo;
     ASL_PARSE_NODE              *Next;
+    ASL_PARSE_NODE              *SecondToLastNode = NULL;
+    ASL_PARSE_NODE              *LastNode = NULL;
+
+
 
 
     UtPrintFormattedName (Node->ParseOpcode, Level);
@@ -287,19 +329,33 @@ AnSemanticAnalysisWalkEnd (
         MethodInfo = WalkInfo->MethodStack;
         WalkInfo->MethodStack = MethodInfo->Next;
 
-        /*
-         * Check if last statement is a return
-         */
+
+
         Next = ASL_GET_CHILD_NODE (Node);
         while (Next)
         {
-            if ((!Next->Peer) &&
-                (Next->ParseOpcode != RETURN))
-            {
-                MethodInfo->NumReturnNoValue++;
-            }
-
+            SecondToLastNode = LastNode;
+            LastNode = Next;
             Next = ASL_GET_PEER_NODE (Next);
+        }
+
+        if ((SecondToLastNode) &&
+            (LastNode) &&
+            (SecondToLastNode->ParseOpcode == IF) &&
+            (LastNode->ParseOpcode == ELSE) &&
+            AnLastStatementIsReturn (SecondToLastNode) &&
+            AnLastStatementIsReturn (LastNode))
+        {
+        }
+        
+        /*
+         * Check if last statement is a return
+         */
+        else if (!AnLastStatementIsReturn (Node))
+        {
+            /* No return statement, this is equivalent to Return () */
+
+            MethodInfo->NumReturnNoValue++;
         }
 
 
@@ -314,6 +370,21 @@ AnSemanticAnalysisWalkEnd (
         {
             AslWarningMsg (ASL_WARNING_RETURN_TYPES, Node->LineNumber, Node->ExternalName);
         }
+
+
+        /*
+         * Check predefined method names for correct return behavior
+         */
+/******** TBD: needs to be more sophisticated
+        if (!strcmp (Node->ExternalName, "_STA"))
+        {
+            if (MethodInfo->NumReturnNoValue)
+            {
+                AslErrorMsg (ASL_ERROR_PREDEFINED_METHOD_RETURN, 
+                                Node->LineNumber, Node->ExternalName);
+            }
+        }
+*/
 
         DbgPrint ("Method obj %p popped\n", MethodInfo);
         free (MethodInfo);

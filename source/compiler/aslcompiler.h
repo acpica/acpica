@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -136,7 +136,9 @@
 
 #define CompilerId                              "ACPI Component Architecture ASL Compiler"
 #define CompilerName                            "iasl"
-#define Version                                 "X202"
+#define CompilerCreatorId                       "IASL"
+#define Version                                 "X203"
+#define CompilerCreatorRevision                 0x00020203
 
 
 
@@ -164,6 +166,8 @@ typedef struct asl_analysis_walk_info
  */
 #define ASL_OFFSET_OF(s,m)          ((UINT32) &(((s *)0)->m))
 #define ASL_RESDESC_OFFSET(m)       ASL_OFFSET_OF (ASL_RESOURCE_DESC, m)
+#define ASL_PTR_DIFF(a,b)           ((UINT8 *)(b) - (UINT8 *)(a))
+#define ASL_PTR_ADD(a,b)            ((UINT8 *)(a) = ((UINT8 *)(a) + (b)))
 #define ASL_GET_CHILD_NODE(a)       (a)->Child
 #define ASL_GET_PEER_NODE(a)        (a)->Peer
 
@@ -299,6 +303,7 @@ EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuf
 
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_DebugFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
 
 /* Files */
 
@@ -313,7 +318,7 @@ EXTERN FILE                     *Gbl_ListingFile;
 
 /* Statistics */
 
-EXTERN UINT32                   INIT_GLOBAL (InputChars, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_InputByteCount, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalKeywords, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalNamedObjects, 0);
 EXTERN UINT32                   INIT_GLOBAL (TotalExecutableOpcodes, 0);
@@ -356,6 +361,7 @@ typedef enum
     ASL_ERROR_INVALID_PERFORMANCE,
     ASL_ERROR_LOCAL_INIT,
     ASL_ERROR_ARG_INVALID,
+    ASL_ERROR_PREDEFINED_METHOD_RETURN,
 
 } ASL_ERROR_IDS;
 
@@ -564,6 +570,7 @@ UtLocalCalloc (
 void *
 UtLocalRealloc (
     void                    *Previous,
+    UINT32                  OldSize,
     UINT32                  Size);
 
 

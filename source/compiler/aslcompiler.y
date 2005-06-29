@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.7 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -823,7 +823,7 @@ UserTerm
     ;
 
 ArgList
-    : {$$ = NULL}
+    :                           {$$ = NULL}
     | TermArg ArgListTail       {$$ = TgLinkPeerNode ($1,$2);}
     ;
 
@@ -834,10 +834,10 @@ ArgListTail
     ;
 
 TermArg
-    : Type2Opcode {}
-    | DataRefObject {}
-    | ArgTerm {}
-    | LocalTerm {}
+    : Type2Opcode               {}
+    | DataRefObject             {}
+    | ArgTerm                   {}
+    | LocalTerm                 {}
     | error                     {$$= NULL}
     ;
 
@@ -1192,11 +1192,11 @@ PowerResTerm
 ProcessorTerm
     : PROCESSOR '('
         NameString ','
-        ByteConstExpr ','
+        ByteConstExpr
         OptionalDWordConstExpr
         OptionalByteConstExpr
         ')' '{' 
-            ObjectList '}'      {$$ = TgCreateNode (PROCESSOR,5,$3,$5,$7,$8,$11);}
+            ObjectList '}'      {$$ = TgCreateNode (PROCESSOR,5,$3,$5,$6,$7,$10);}
     ;
 
 ThermalZoneTerm
@@ -2161,10 +2161,10 @@ DMATerm
     : DMA '('
         DMATypeKeyword ','
         BusMasterKeyword ','
-        XferTypeKeyword ','
+        XferTypeKeyword
         OptionalNameString
         ')' '{'
-            ByteList '}'        {$$ = TgCreateNode (DMA,5,$3,$5,$7,$9,$12);}
+            ByteList '}'        {$$ = TgCreateNode (DMA,5,$3,$5,$7,$8,$11);}
     ;
 
 DWordIOTerm
@@ -2204,7 +2204,7 @@ DWordMemoryTerm
         OptionalStringData
         OptionalNameString
         OptionalAddressRange
-        OptionalTranslationType
+        OptionalType
         ')'                     {$$ = TgCreateNode (DWORDMEMORY,16,$3,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$19,$20,$21,$22,$23);}
     ;
 
@@ -2259,7 +2259,7 @@ IRQTerm
         OptionalShareType     
         OptionalNameString
         ')' '{' 
-            ByteList '}'        {$$ = TgCreateNode (IRQ,4,$3,$5,$6,$7);}
+            ByteList '}'        {$$ = TgCreateNode (IRQ,5,$3,$5,$6,$7,$10);}
     ;
 
 Memory24Term
@@ -2268,18 +2268,18 @@ Memory24Term
         WordConstExpr ','
         WordConstExpr ','
         WordConstExpr ','
-        WordConstExpr ','
+        WordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY24,6,$3,$5,$7,$9,$11,$13);}
+        ')'                     {$$ = TgCreateNode (MEMORY24,6,$3,$5,$7,$9,$11,$12);}
     ;
 
 Memory32FixedTerm
     : MEMORY32FIXED '('
         ReadWriteKeyword ','
         DWordConstExpr ','
-        DWordConstExpr ','
+        DWordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY32FIXED,4,$3,$5,$7,$9);}
+        ')'                     {$$ = TgCreateNode (MEMORY32FIXED,4,$3,$5,$7,$8);}
     ;
 
 Memory32Term
@@ -2288,9 +2288,9 @@ Memory32Term
         DWordConstExpr ','
         DWordConstExpr ','
         DWordConstExpr ','
-        DWordConstExpr ','
+        DWordConstExpr
         OptionalNameString
-        ')'                     {$$ = TgCreateNode (MEMORY32,6,$3,$5,$7,$9,$11,$13);}
+        ')'                     {$$ = TgCreateNode (MEMORY32,6,$3,$5,$7,$9,$11,$12);}
     ;
 
 QWordIOTerm
@@ -2330,7 +2330,7 @@ QWordMemoryTerm
         OptionalStringData
         OptionalNameString
         OptionalAddressRange
-        OptionalTranslationType
+        OptionalType
         ')'                     {$$ = TgCreateNode (QWORDMEMORY,16,$3,$4,$5,$6,$7,$8,$10,$12,$14,$16,$18,$19,$20,$21,$22,$23);}
     ;
 
@@ -2346,9 +2346,9 @@ RegisterTerm
 StartDependentFnTerm
     : STARTDEPENDENTFN '('
         ByteConstExpr ','
-        ByteConstExpr ','
+        ByteConstExpr
         ')' '{' 
-        ResourceMacroList '}'   {$$ = TgCreateNode (STARTDEPENDENTFN,3,$3,$5,$9);}
+        ResourceMacroList '}'   {$$ = TgCreateNode (STARTDEPENDENTFN,3,$3,$5,$8);}
     ;
                 
 StartDependentFnNoPriTerm
@@ -2428,11 +2428,11 @@ NameSeg
 /* TBD: Could not find in spec */
 
 ObjectReference
-    : NameString {}
+    : NameString                {}
     ;
 
 DDBHandle
-    : String {}
+    : String                    {}
     ;
 
 
@@ -2544,6 +2544,7 @@ OptionalRangeType
 OptionalShareType
     : ','                       {$$ = NULL}
     | ShareTypeKeyword ','      {$$ = $1}
+    | ShareTypeKeyword          {$$ = $1}
     ;
 
 OptionalType

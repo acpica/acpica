@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -171,7 +171,7 @@ NamePathTail        [.]{NameSeg}
 "/*"			            { comment(); }
 "//"                        { comment2(); }
 
-\"([^\"]|(\\\"))*\"	        { count (0); literal (); return STRING_LITERAL; }
+\"([^\"]|(\\\"))*\"	        { literal (); return STRING_LITERAL; }
 
 
 0[xX]{HexDigitChar}+ |
@@ -558,6 +558,7 @@ count (
 				Gbl_CurrentColumn++;
 		}
 
+        Gbl_InputByteCount++;
 		*Gbl_LineBufPtr = 0;
 	}
 }
@@ -581,6 +582,7 @@ DoOneChar (
     int                     c)
 {
 
+    Gbl_InputByteCount++;
     if (c == '\n')
     {
         ResetCurrentLineBuffer ();
@@ -687,9 +689,34 @@ literal (void)
         {
             *d = *s;
             d++;
+            DoOneChar (*s);
+            s++;
         }
 
-        s++;
+        else /* (*s == backslash escape) */
+        {
+            DoOneChar (*s);
+            s++;
+
+            switch (*s)
+            {
+            case 'n':
+                *d = 0x0A;      /* LF */
+                break;
+
+            case 't':
+                *d = 0x20;
+                break;
+
+            default:
+                *d = *s;
+                break;
+            }
+
+            d++;
+            DoOneChar (*s);
+            s++;
+        }
     }
 
     d--;

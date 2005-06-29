@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -385,11 +385,11 @@ CgWriteTableHeader (
 
     /* Compiler ID */
 
-    strncpy (TableHeader.AslCompilerId, "iASL", 4);
+    strncpy (TableHeader.AslCompilerId, CompilerCreatorId, 4);
 
     /* Compiler version */
 
-    TableHeader.AslCompilerRevision = 0x22221111;
+    TableHeader.AslCompilerRevision = CompilerCreatorRevision;
 
 
     fwrite (&TableHeader, sizeof (ACPI_TABLE_HEADER), 1, Gbl_OutputAmlFile);
