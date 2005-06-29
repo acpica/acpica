@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.21 $
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -116,196 +116,370 @@
  *****************************************************************************/
 
 
-#include "aslcompiler.h"
-#include "aslcompiler.y.h"
+#include "AslCompiler.h"
+#include "AslCompiler.y.h"
 #include "amlcode.h"
-#include "acnamesp.h"
 
-
-#define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("asllength")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    LnInitLengthsWalk
+ * FUNCTION:    
  *
- * PARAMETERS:  ASL_WALK_CALLBACK
+ * PARAMETERS:  
  *
- * RETURN:      None.
+ * RETURN:      
  *
- * DESCRIPTION: Walk callback to initialize (and re-initialize) the node
- *              subtree length(s) to zero.  The Subtree lengths are bubbled
- *              up to the root node in order to get a total AML length.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-LnInitLengthsWalk (
-    ASL_PARSE_NODE          *Node,
-    UINT32                  Level,
-    void                    *Context)
-{
-
-    Node->AmlSubtreeLength = 0;
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    LnPackageLengthWalk
- *
- * PARAMETERS:  ASL_WALK_CALLBACK
- *
- * RETURN:      None
- *
- * DESCRIPTION: Walk callback to calculate the total AML length.
- *              1) Calculate the AML lengths (opcode, package length, etc.) for
- *                 THIS node.
- *              2) Bubbble up all of these lengths to the parent node by summing
- *                 them all into the parent subtree length.
- *
- * Note:  The SubtreeLength represents the total AML length of all child nodes
- *        in all subtrees under a given node.  Therefore, once this walk is
- *        complete, the Root Node subtree length is the AML length of the entire
- *        tree (and thus, the entire ACPI table)
- *
- ******************************************************************************/
-
-ACPI_STATUS
-LnPackageLengthWalk (
-    ASL_PARSE_NODE          *Node,
-    UINT32                  Level,
-    void                    *Context)
-{
-
-    /* Generate the AML lengths for this node */
-
-    CgGenerateAmlLengths (Node);
-
-    /* Bubble up all lengths (this node and all below it) to the parent */
-
-    if ((Node->Parent) &&
-        (Node->ParseOpcode != DEFAULT_ARG))
-    {
-        Node->Parent->AmlSubtreeLength += (Node->AmlLength +
-                                            Node->AmlOpcodeLength +
-                                            Node->AmlPkgLenBytes +
-                                            Node->AmlSubtreeLength);
-    }
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    LnAdjustLengthToRoot
- *
- * PARAMETERS:  PsNode      - Node whose Length was changed
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Change the Subtree length of the given node, and bubble the
- *              change all the way up to the root node.  This allows for
- *              last second changes to a package length (for example, if the
- *              package length encoding gets shorter or longer.)
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 void
-LnAdjustLengthToRoot (
-    ASL_PARSE_NODE          *PsNode,
-    UINT32                  LengthDelta)
+CgAmlPackageLengthWalk (
+    ASL_PARSE_NODE              *Node,
+    UINT32                      Level,
+    void                        *Context)
 {
-    ASL_PARSE_NODE          *Node;
 
 
-    /* Adjust all subtree lengths up to the root */
 
-    Node = PsNode->Parent;
-    while (Node)
+    /* TBD Do an "init nodes" walk */
+/*
+    Node->AmlLength = 0;
+    Node->AmlOpcodeLength = 0;
+    Node->AmlSubtreeLength = 0;
+    Node->AmlPkgLenBytes = 0;
+*/
+    /* 
+     * generate the subtree length and
+     * bubble it up to the parent
+     */
+    CgGenerateAmlLengths (Node);
+    if ((Node->Parent) &&
+        (Node->ParseOpcode != DEFAULT_ARG))
     {
-        Node->AmlSubtreeLength -= LengthDelta;
-        Node = Node->Parent;
+        Node->Parent->AmlSubtreeLength += (Node->AmlLength + 
+                                            Node->AmlOpcodeLength +
+                                            Node->AmlPkgLenBytes +                                            Node->AmlSubtreeLength);
     }
+}
 
-    /* Adjust the global table length */
 
-    Gbl_TableLength -= LengthDelta;
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsValidRootPrefix
+ *
+ * PARAMETERS:  Prefix          - Character to be checked
+ *
+ * RETURN:      TRUE if a valid prefix
+ *
+ * DESCRIPTION: Check if a character is a valid ACPI Root prefix
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiNsValidRootPrefix (
+    NATIVE_CHAR             Prefix)
+{
+
+    return ((BOOLEAN) (Prefix == '\\'));
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    CgGetPackageLenByteCount
+ * FUNCTION:    AcpiNsValidPathSeparator
  *
- * PARAMETERS:  Node            - Parse node
- *              PackageLength   - Length to be encoded
+ * PARAMETERS:  Sep              - Character to be checked
  *
- * RETURN:      Required length of the package length encoding
+ * RETURN:      TRUE if a valid path separator
  *
- * DESCRIPTION: Calculate the number of bytes required to encode the given
- *              package length.
+ * DESCRIPTION: Check if a character is a valid ACPI path separator
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiNsValidPathSeparator (
+    NATIVE_CHAR             Sep)
+{
+
+    return ((BOOLEAN) (Sep == '.'));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiNsInternalizeName (
+    NATIVE_CHAR             *ExternalName,
+    NATIVE_CHAR             **ConvertedName)
+{
+    NATIVE_CHAR             *Result = NULL;
+    NATIVE_CHAR             *InternalName;
+    UINT32                  NumSegments;
+    UINT32                  NumCarats;
+    BOOLEAN                 FullyQualified = FALSE;
+    UINT32                  i;
+
+
+    FUNCTION_TRACE ("NsInternalizeName");
+
+
+    if ((!ExternalName)      ||
+        (*ExternalName == 0) ||
+        (!ConvertedName))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    /*
+     * For the internal name, the required length is 4 bytes
+     * per segment, plus 1 each for RootPrefix, MultiNamePrefixOp,
+     * segment count, trailing null (which is not really needed,
+     * but there's no harm in putting it there)
+     *
+     * strlen() + 1 covers the first NameSeg, which has no
+     * path separator
+     */
+
+    if (AcpiNsValidRootPrefix (ExternalName[0]))
+    {
+        FullyQualified = TRUE;
+        ExternalName++;
+    }
+
+    NumCarats = 0;
+    while (*ExternalName == '^')
+    {
+        if (FullyQualified)
+        {
+            return_ACPI_STATUS (AE_BAD_PATHNAME);
+        }
+
+        NumCarats++;
+        ExternalName++;
+    }
+
+    /*
+     * Determine the number of ACPI name "segments" by counting
+     * the number of path separators within the string.  Start
+     * with one segment since the segment count is (# separators)
+     * + 1, and zero separators is ok.
+     */
+
+    NumSegments = 1;
+    for (i = 0; ExternalName[i]; i++)
+    {
+        if (AcpiNsValidPathSeparator (ExternalName[i]))
+        {
+            NumSegments++;
+        }
+    }
+
+
+    /* We need a segment to store the internal version of the name */
+
+    InternalName = calloc ((ACPI_NAME_SIZE * NumSegments) + 4 + NumCarats, 1);
+    if (!InternalName)
+    {
+        DbgPrint ("Error - insufficient memory\n");
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* Setup the correct prefixes, counts, and pointers */
+
+    if (FullyQualified)
+    {
+        InternalName[0] = '\\';
+
+        if (NumSegments == 1)
+        {
+            Result = &InternalName[1];
+            if (!ExternalName[0])
+            {
+                *Result = 0;
+                NumSegments = 0;
+            }
+        }
+        else if (NumSegments == 2)
+        {
+            InternalName[1] = AML_DUAL_NAME_PREFIX;
+            Result = &InternalName[2];
+        }
+        else
+        {
+            InternalName[1] = AML_MULTI_NAME_PREFIX_OP;
+            InternalName[2] = (char) NumSegments;
+            Result = &InternalName[3];
+        }
+
+    }
+    else 
+    {
+        Result = InternalName;
+        for (i = 0; i < NumCarats; i++)
+        {
+            *Result = '^';
+            Result++;
+        }
+
+        if (NumSegments == 1)
+        {
+        }
+
+        else if (NumSegments == 2)
+        {
+            *Result = AML_DUAL_NAME_PREFIX;
+            Result++;
+        }
+        else
+        {
+            Result[0] = AML_MULTI_NAME_PREFIX_OP;
+            Result[1] = (char) NumSegments;
+            Result = &Result[2];
+        }
+    }
+
+
+    /* Build the name (minus path separators) */
+
+    for (; NumSegments; NumSegments--)
+    {
+        for (i = 0; i < ACPI_NAME_SIZE; i++)
+        {
+            if (AcpiNsValidPathSeparator (*ExternalName) ||
+               (*ExternalName == 0))
+            {
+                /*
+                 * Pad the segment with underscore(s) if
+                 * segment is short
+                 */
+
+                Result[i] = '_';
+            }
+
+            else
+            {
+                /* Convert INT8 to uppercase and save it */
+
+                Result[i] = (char) toupper (*ExternalName);
+                ExternalName++;
+            }
+
+        }
+
+        /* Now we must have a path separator, or the pathname is bad */
+
+        if (!AcpiNsValidPathSeparator (*ExternalName) &&
+            (*ExternalName != 0))
+        {
+            free(InternalName);
+            return_ACPI_STATUS (AE_BAD_PARAMETER);
+        }
+
+        /* Move on the next segment */
+
+        ExternalName++;
+        Result += ACPI_NAME_SIZE;
+    }
+
+
+    /* Return the completed name */
+
+    /* Terminate the string! */
+    *Result = 0;
+    *ConvertedName = InternalName;
+
+
+    if (FullyQualified)
+    {
+        DEBUG_PRINT (TRACE_EXEC,
+            ("NsInternalizeName: returning [%p] (abs) \"\\%s\"\n",
+            InternalName, &InternalName[3]));
+    }
+    else
+    {
+        DEBUG_PRINT (TRACE_EXEC,
+            ("NsInternalizeName: returning [%p] (rel) \"%s\"\n",
+            InternalName, &InternalName[2]));
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
 UINT8
 CgGetPackageLenByteCount (
-    ASL_PARSE_NODE          *Node,
     UINT32                  PackageLength)
 {
 
-    /*
+    /* 
      * Determine the number of bytes required to encode the package length
      * Note: the package length includes the number of bytes used to encode
      * the package length, so we must account for this also.
      */
-
-    if (PackageLength <= (0x0000003F - 1))
+    if (PackageLength <= (0x0000003F - 1)) 
     {
         return (1);
     }
-
     else if (PackageLength <= (0x00000FFF - 2))
     {
         return (2);
     }
-
     else if (PackageLength <= (0x000FFFFF - 3))
     {
         return (3);
     }
-
     else if (PackageLength <= (0x0FFFFFFF - 4))
     {
         return (4);
     }
-
     else
     {
         /* Fatal error - the package length is too large to encode */
 
-        AslError (ASL_ERROR, ASL_MSG_ENCODING_LENGTH, Node, NULL);
+        AslError (ASL_ERROR_ENCODING_LENGTH );
     }
 
     return (0);
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    CgGenerateAmlOpcodeLength
+ * FUNCTION:    
  *
- * PARAMETERS:  Node        - Parse node whose AML opcode lengths will be
- *                            calculated
+ * PARAMETERS:  
  *
- * RETURN:      None.
+ * RETURN:      
  *
- * DESCRIPTION: Calculate the AmlOpcodeLength, AmlPkgLenBytes, and AmlLength
- *              fields for this node.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -332,43 +506,37 @@ CgGenerateAmlOpcodeLength (
     Node->AmlPkgLenBytes = 0;
     if (Node->Flags & NODE_AML_PACKAGE)
     {
-        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node, Node->AmlSubtreeLength);
+        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node->AmlSubtreeLength);
     }
-
-
-    /* Data opcode lengths are easy */
 
     switch (Node->AmlOpcode)
     {
     case AML_BYTE_OP:
-        Node->AmlLength = 1;
+        Node->AmlLength += 1;
         break;
 
     case AML_WORD_OP:
-        Node->AmlLength = 2;
+        Node->AmlLength += 2;
         break;
 
     case AML_DWORD_OP:
-        Node->AmlLength = 4;
+        Node->AmlLength += 4;
         break;
 
-    case AML_QWORD_OP:
-        Node->AmlLength = 8;
-        break;
     }
 }
 
 
+
 /*******************************************************************************
  *
- * FUNCTION:    CgGenerateAmlLengths
+ * FUNCTION:    
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  
  *
- * RETURN:      None.
+ * RETURN:      
  *
- * DESCRIPTION: Generate internal length fields based on the AML opcode or
- *              parse opcode.
+ * DESCRIPTION: 
  *
  ******************************************************************************/
 
@@ -378,6 +546,7 @@ CgGenerateAmlLengths (
 {
     char                    *Buffer;
     ACPI_STATUS             Status;
+    
 
 
     switch (Node->AmlOpcode)
@@ -386,30 +555,20 @@ CgGenerateAmlLengths (
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 1;
         return;
-
+    
     case AML_RAW_DATA_WORD:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 2;
         return;
-
+    
     case AML_RAW_DATA_DWORD:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 4;
         return;
-
+    
     case AML_RAW_DATA_QWORD:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 8;
-        return;
-
-    case AML_RAW_DATA_BUFFER:
-        /* Aml length is/was set by creator */
-        Node->AmlOpcodeLength = 0;
-        return;
-
-    case AML_RAW_DATA_CHAIN:
-        /* Aml length is/was set by creator */
-        Node->AmlOpcodeLength = 0;
         return;
     }
 
@@ -417,38 +576,29 @@ CgGenerateAmlLengths (
     switch (Node->ParseOpcode)
     {
     case DEFINITIONBLOCK:
-        Gbl_TableLength = sizeof (ACPI_TABLE_HEADER) + Node->AmlSubtreeLength;
+        TableLength = sizeof (ACPI_TABLE_HEADER) + Node->AmlSubtreeLength;
         break;
 
     case NAMESEG:
         Node->AmlOpcodeLength = 0;
         Node->AmlLength = 4;
-        Node->ExternalName = Node->Value.String;
         break;
 
     case NAMESTRING:
-    case METHODCALL:
-        if (Node->Flags & NODE_NAME_INTERNALIZED)
-        {
-            break;
-        }
-
         Node->AmlOpcodeLength = 0;
-        Status = UtInternalizeName (Node->Value.String, &Buffer);
+        Status = AcpiNsInternalizeName (Node->Value.String, &Buffer);
         if (ACPI_FAILURE (Status))
         {
-            DbgPrint (ASL_DEBUG_OUTPUT,
-                "Failure from internalize name %X\n", Status);
+            DbgPrint ("Failure from internalize name %X\n", Status);
             break;
         }
 
-        Node->ExternalName = Node->Value.String;
+        free (Node->Value.String);
         Node->Value.String = Buffer;
-        Node->Flags |= NODE_NAME_INTERNALIZED;
 
         Node->AmlLength = strlen (Buffer);
-
-        /*
+        
+        /* 
          * Check for single backslash reference to root,
          * make it a null terminated string in the AML
          */
@@ -465,19 +615,17 @@ CgGenerateAmlLengths (
 
     case PACKAGE_LENGTH:
         Node->AmlOpcodeLength = 0;
-        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node, Node->Value.Integer32);
+        Node->AmlPkgLenBytes = CgGetPackageLenByteCount (Node->Value.Integer);
         break;
 
     case RAW_DATA:
         Node->AmlOpcodeLength = 0;
+        Node->AmlLength = 1;
         break;
 
     /* Ignore the "default arg" nodes, they are extraneous at this point */
 
     case DEFAULT_ARG:
-    case EXTERNAL:
-    case INCLUDE:
-    case INCLUDE_END:
         break;
 
     default:
@@ -485,5 +633,7 @@ CgGenerateAmlLengths (
         break;
     }
 }
+
+
 
 
