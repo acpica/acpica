@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -621,7 +621,8 @@ AcpiExConvertToString (
 
             /* Recalculate length */
 
-            ReturnDesc->String.Length = ACPI_STRLEN (ReturnDesc->String.Pointer);
+            ReturnDesc->String.Length = (UINT32) 
+                ACPI_STRLEN (ReturnDesc->String.Pointer);
             break;
 
         default:
