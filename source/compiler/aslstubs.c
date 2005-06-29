@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -207,7 +207,6 @@ AcpiDsMethodDataGetValue (
     return (AE_OK);
 }
 
-
 ACPI_STATUS
 AcpiDsMethodDataGetNode (
     UINT16                  Opcode,
@@ -315,15 +314,12 @@ AcpiPsGetArg(
     return NULL;
 }
 
-
-
 void
 AcpiTbDeleteAcpiTables (
     void)
 {
     return;
 }
-
 
 ACPI_TABLE_DESC *
 AcpiTbUninstallTable (
@@ -334,7 +330,6 @@ AcpiTbUninstallTable (
 
 ACPI_STATUS
 AcpiTbInstallTable (
-    ACPI_TABLE_HEADER       *TablePtr,
     ACPI_TABLE_DESC         *TableInfo)
 {
     return (AE_OK);
@@ -357,9 +352,6 @@ AcpiTbMatchSignature (
 {
     return (AE_OK);
 }
-
-
-
 
 
 /*
