@@ -28,7 +28,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -402,7 +402,7 @@ BREAKPOINT3;
         {
             /* Valid return object, copy the returned object that is on the stack */
 
-            (*ReturnObject) = *((ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop]);            
+            (*ReturnObject) = *((ACPI_OBJECT_INTERNAL *) AmlObjStackGetValue (STACK_TOP));            
         }
 
         /* 
@@ -410,22 +410,19 @@ BREAKPOINT3;
          * of the return value by deleting the object and popping the stack!
          *
          * TBD: There a difference between what is returned by NsExecuteControlMethod and
-         * NsGetObjectValue - ObjStackTop is one vs. zero (respectively).  
+         * NsGetObjectValue:  The AmlObjStackLevel() is one vs. zero (respectively).  
          * What is the real reason for this??
          */
 
-        LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
-        if (ObjStackTop)
+        AmlObjStackDeleteValue (STACK_TOP);
+        if (AmlObjStackLevel ())
         {
-            if (ObjStackTop > 1)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("NsEvaluateByHandle: Object stack not empty: %d\n",
-                                ObjStackTop));
-            }
+            DEBUG_PRINT (ACPI_ERROR, ("NsEvaluateByHandle: Object stack not empty: TOS=%d\n",
+                            AmlObjStackLevel ()));
 
             /* In all cases, clear the object stack! */
 
-            ObjStackTop = 0;
+            AmlObjStackClearAll ();
         }
 
         /* Map AE_RETURN_VALUE to AE_OK, we are done with it */
@@ -503,7 +500,7 @@ NsExecuteControlMethod (
     /* Clear both the package and object stacks */
 
     AmlClearPkgStack ();
-    AmlClearObjStack ();
+    AmlObjStackClearAll ();
     
     /* 
      * Excecute the method via the interpreter
@@ -532,11 +529,11 @@ NsExecuteControlMethod (
         /* Object stack is not empty at method exit and should be */
 
         REPORT_ERROR ("Object stack not empty at method exit");
-        DEBUG_PRINT (ACPI_ERROR, ("%d Remaining: \n", ObjStackTop));
+        DEBUG_PRINT (ACPI_ERROR, ("%d Remaining: \n", AmlObjStackLevel ()));
 
-        for (i = 0; i < (UINT32) ObjStackTop; i++)
+        for (i = 0; i < (UINT32) AmlObjStackLevel (); i++)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("Object Stack [%d]: %p\n", i, ObjStack[ObjStackTop]));
+            DEBUG_PRINT (ACPI_ERROR, ("Object Stack [-%d]: %p\n", i, AmlObjStackGetValue (i)));
         }
 
         AmlDumpObjStack (MODE_Exec, "Remaining Object Stack entries", -1, "");
@@ -588,16 +585,16 @@ NsGetObjectValue (
 
     /* 
      * Put the ObjDesc on the stack, and use AmlGetRvalue() to get 
-     * the associated value.  Note that ObjStackTop points to the 
+     * the associated value.  Note that the object stack top points to the 
      * top valid entry, not to the first unused position.
      */
 
-    LocalDeleteObject ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
-    ObjStack[ObjStackTop] = (void *) ObjDesc;
+    AmlObjStackDeleteValue (STACK_TOP);
+    AmlObjStackSetValue (STACK_TOP, ObjDesc);
 
-    /* This causes ObjDesc (allocated above) to always be deleted */
+    /* Call to AmlGetRvalue causes ObjDesc (allocated above) to always be deleted */
 
-    Status = AmlGetRvalue ((ACPI_OBJECT_INTERNAL **) &ObjStack[ObjStackTop]);
+    Status = AmlGetRvalue (AmlObjStackGetTopPtr ());
 
     /* 
      * If AmlGetRvalue() succeeded, treat the top stack entry as
@@ -607,7 +604,8 @@ NsGetObjectValue (
     if (Status == AE_OK)
     {
         Status = AE_RETURN_VALUE;
-        DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning obj %p\n", ObjStack[ObjStackTop]));
+        DEBUG_PRINT (ACPI_INFO, ("NsGetObjectValue: Returning obj %p\n", 
+                            AmlObjStackGetValue (STACK_TOP)));
     }
 
 
