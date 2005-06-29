@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -301,7 +301,7 @@ AcpiUtCreateStringObject (
         return_PTR (NULL);
     }
 
-    /* 
+    /*
      * Allocate the actual string buffer -- (Size + 1) for NULL terminator.
      * NOTE: Zero-length strings are NULL terminated
      */
