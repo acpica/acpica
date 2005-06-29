@@ -15,15 +15,18 @@
  | control and status registers.
  |__________________________________________________________________________
  |
- | $Revision: 1.6 $
- | $Date: 2005/06/29 16:54:05 $
+ | $Revision: 1.7 $
+ | $Date: 2005/06/29 16:54:06 $
  | $Log: hwregs.c,v $
- | Revision 1.6  2005/06/29 16:54:05  aystarik
- | Anti-Polish
+ | Revision 1.7  2005/06/29 16:54:06  aystarik
+ | Anti-Polish Complete - Compiles
  |
  | 
- | date	99.02.12.01.51.00;	author rmosgrov;	state Exp;
+ | date	99.02.16.17.35.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 7     2/16/99 9:35a Rmosgrov
+ * Anti-Polish Complete - Compiles
  * 
  * 6     2/11/99 5:51p Rmosgrov
  * Anti-Polish
@@ -455,7 +458,7 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
             break;
         
         case PM_TIMER:
-            RegisterValue = In32 ((WORD) FACP->dPmTmrBlk);
+            RegisterValue = In32 ((WORD) FACP->PmTmrBlk);
             Mask = 0xFFFFFFFF;
             break;
         
