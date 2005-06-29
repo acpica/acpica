@@ -190,11 +190,18 @@ AcpiTerminate (void)
 
     FUNCTION_TRACE ("AcpiTerminate");
 
+    /* Terminate the AML Debuger if present */
+
+    Gbl_DbTerminateThreads = TRUE;
+    CmReleaseMutex (MTX_DEBUGGER);
+
+
+    /* Shutdown and free all resources */
 
     CmSubsystemShutdown ();
 
 
-    /* Free the mutex objects */
+    /* Free the mutex objects last */
 
     CmMutexTerminate ();
 
