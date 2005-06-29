@@ -292,8 +292,7 @@ AmlExecStore (
     {
         /* DestDesc is not an ACPI_HANDLE  */
 
-        DEBUG_PRINT (ACPI_INFO, ("AmlExecStore: Dest is object (not handle) - may be deleted!\n", 
-                        DestDesc));
+        DEBUG_PRINT (ACPI_INFO, ("AmlExecStore: Dest is object (not handle) - may be deleted!\n"));
     }
 
 
@@ -303,8 +302,8 @@ AmlExecStore (
     {   
         /* Destination is not an Lvalue */
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Destination is not an Lvalue [%s]\n",
-                        Gbl_NsTypeNames[DestDesc->Common.Type]));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore: Destination is not an Lvalue [%p]\n",
+                        DestDesc));
 
         DUMP_STACK_ENTRY (ValDesc);
         DUMP_STACK_ENTRY (DestDesc);
