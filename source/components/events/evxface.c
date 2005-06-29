@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -622,18 +622,19 @@ AcpiInstallGpeHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Ensure that we have a valid GPE number */
 
     GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
     if (!GpeEventInfo)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /* Make sure that there isn't a handler there already */
@@ -641,27 +642,29 @@ AcpiInstallGpeHandler (
     if (GpeEventInfo->Handler)
     {
         Status = AE_ALREADY_EXISTS;
-        goto Cleanup;
+        goto UnlockAndExit;
     }
 
     /* Install the handler */
 
+    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
     GpeEventInfo->Handler = Handler;
     GpeEventInfo->Context = Context;
-    GpeEventInfo->Type    = (UINT8) Type;
+    GpeEventInfo->Flags   = (UINT8) Type;
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
 
     /* Clear the GPE (of stale events), the enable it */
 
     Status = AcpiHwClearGpe (GpeEventInfo);
     if (ACPI_FAILURE (Status))
     {
-        goto Cleanup;
+        goto UnlockAndExit;
     }
 
     Status = AcpiHwEnableGpe (GpeEventInfo);
 
 
-Cleanup:
+UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
@@ -701,12 +704,19 @@ AcpiRemoveGpeHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Ensure that we have a valid GPE number */
 
     GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
     if (!GpeEventInfo)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /* Disable the GPE before removing the handler */
@@ -714,13 +724,7 @@ AcpiRemoveGpeHandler (
     Status = AcpiHwDisableGpe (GpeEventInfo);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
-    }
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
+        goto UnlockAndExit;
     }
 
     /* Make sure that the installed handler is the same */
@@ -729,16 +733,18 @@ AcpiRemoveGpeHandler (
     {
         (void) AcpiHwEnableGpe (GpeEventInfo);
         Status = AE_BAD_PARAMETER;
-        goto Cleanup;
+        goto UnlockAndExit;
     }
 
     /* Remove the handler */
 
+    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
     GpeEventInfo->Handler = NULL;
     GpeEventInfo->Context = NULL;
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
 
 
-Cleanup:
+UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }

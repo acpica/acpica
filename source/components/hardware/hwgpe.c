@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -365,10 +365,17 @@ AcpiHwGetGpeStatus (
         return (AE_BAD_PARAMETER);
     }
 
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
     GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
     if (!GpeEventInfo)
     {
-        return (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /* Get the info block for the entire GPE register */
@@ -384,7 +391,7 @@ AcpiHwGetGpeStatus (
     Status = AcpiHwLowLevelRead (8, &InByte, &GpeRegisterInfo->EnableAddress, 0);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        goto UnlockAndExit;
     }
 
     if (BitMask & InByte)
@@ -404,7 +411,7 @@ AcpiHwGetGpeStatus (
     Status = AcpiHwLowLevelRead (8, &InByte, &GpeRegisterInfo->StatusAddress, 0);
     if (ACPI_FAILURE (Status))
     {
-        return (Status);
+        goto UnlockAndExit;
     }
 
     if (BitMask & InByte)
@@ -415,11 +422,26 @@ AcpiHwGetGpeStatus (
     /* Set return value */
 
     (*EventStatus) = LocalEventStatus;
-    return (AE_OK);
+
+
+UnlockAndExit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return (Status);
 }
 
 
-
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwDisableGpeBlock
+ *
+ * PARAMETERS:  GpeXruptInfo        - GPE Interrupt info
+ *              GpeBlock            - Gpe Block info
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Disable all GPEs within a GPE block
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiHwDisableGpeBlock (
@@ -451,6 +473,19 @@ AcpiHwDisableGpeBlock (
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwClearGpeBlock
+ *
+ * PARAMETERS:  GpeXruptInfo        - GPE Interrupt info
+ *              GpeBlock            - Gpe Block info
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Clear all GPEs within a GPE block
+ *
+ ******************************************************************************/
+
 ACPI_STATUS
 AcpiHwClearGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
@@ -481,6 +516,18 @@ AcpiHwClearGpeBlock (
 }
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwDisableNonWakeupGpeBlock
+ *
+ * PARAMETERS:  GpeXruptInfo        - GPE Interrupt info
+ *              GpeBlock            - Gpe Block info
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Disable all GPEs except wakeup GPEs in a GPE block
+ *
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiHwDisableNonWakeupGpeBlock (
@@ -562,6 +609,19 @@ AcpiHwDisableNonWakeupGpes (
     return (Status);
 }
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwEnableNonWakeupGpeBlock
+ *
+ * PARAMETERS:  GpeXruptInfo        - GPE Interrupt info
+ *              GpeBlock            - Gpe Block info
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Enable a single GPE.
+ *
+ ******************************************************************************/
 
 ACPI_STATUS 
 AcpiHwEnableNonWakeupGpeBlock (

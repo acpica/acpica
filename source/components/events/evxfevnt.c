@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.63 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -314,12 +314,19 @@ AcpiEnableGpe (
     ACPI_FUNCTION_TRACE ("AcpiEnableGpe");
 
 
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Ensure that we have a valid GPE number */
 
     GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
     if (!GpeEventInfo)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /* Enable the requested GPE number */
@@ -327,7 +334,7 @@ AcpiEnableGpe (
     Status = AcpiHwEnableGpe (GpeEventInfo);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto UnlockAndExit;
     }
 
     if (Flags & ACPI_EVENT_WAKE_ENABLE)
@@ -335,6 +342,8 @@ AcpiEnableGpe (
         AcpiHwEnableGpeForWakeup (GpeEventInfo);
     }
 
+UnlockAndExit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -427,12 +436,19 @@ AcpiDisableGpe (
     ACPI_FUNCTION_TRACE ("AcpiDisableGpe");
 
 
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Ensure that we have a valid GPE number */
 
     GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
     if (!GpeEventInfo)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /*
@@ -448,6 +464,8 @@ AcpiDisableGpe (
         Status = AcpiHwDisableGpe (GpeEventInfo);
     }
 
+UnlockAndExit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -472,7 +490,6 @@ AcpiClearEvent (
 
 
     ACPI_FUNCTION_TRACE ("AcpiClearEvent");
-
 
 
     /* Decode the Fixed Event */
@@ -518,16 +535,25 @@ AcpiClearGpe (
     ACPI_FUNCTION_TRACE ("AcpiClearGpe");
 
 
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Ensure that we have a valid GPE number */
 
     GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
     if (!GpeEventInfo)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     Status = AcpiHwClearGpe (GpeEventInfo);
 
+UnlockAndExit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
@@ -546,7 +572,6 @@ AcpiClearGpe (
  *
  ******************************************************************************/
 
-
 ACPI_STATUS
 AcpiGetEventStatus (
     UINT32                  Event,
@@ -563,7 +588,6 @@ AcpiGetEventStatus (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-
     /* Decode the Fixed Event */
 
     if (Event > ACPI_EVENT_MAX)
@@ -578,7 +602,6 @@ AcpiGetEventStatus (
 
     return_ACPI_STATUS (Status);
 }
-
 
 
 /*******************************************************************************
@@ -609,17 +632,27 @@ AcpiGetGpeStatus (
     ACPI_FUNCTION_TRACE ("AcpiGetGpeStatus");
 
 
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Ensure that we have a valid GPE number */
 
     GpeEventInfo = AcpiEvGetGpeEventInfo (GpeNumber, GpeBlock);
     if (!GpeEventInfo)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
     }
 
     /* Obtain status on the requested GPE number */
 
     Status = AcpiHwGetGpeStatus (GpeNumber, GpeBlock, EventStatus);
+
+UnlockAndExit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
 
