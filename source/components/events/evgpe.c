@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -179,6 +179,7 @@ AcpiEvGetGpeEventInfo (
      */
 
     /* Walk the interrupt level descriptor list */
+    /* No need for spin lock since we are not changing any list elements here */
 
     GpeXruptInfo = AcpiGbl_GpeXruptListHead;
     while (GpeXruptInfo)

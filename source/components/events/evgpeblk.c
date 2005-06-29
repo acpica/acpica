@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -145,7 +145,8 @@ AcpiEvValidGpeEvent (
     BOOLEAN                 IsValid = FALSE;
 
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
+    /* No need for spin lock since we are not changing any list elements */
+
     GpeXruptBlock = AcpiGbl_GpeXruptListHead;
     while (GpeXruptBlock)
     {
@@ -340,7 +341,7 @@ AcpiEvSaveMethodInfo (
         return (Status);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Registered GPE method %s as GPE number %2.2X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Registered GPE method %s as GPE number 0x%.2X\n",
         Name, GpeNumber));
     return (AE_OK);
 }
@@ -370,6 +371,8 @@ AcpiEvGetGpeXruptBlock (
     ACPI_STATUS             Status;
 
 
+    /* No need for spin lock since we are not changing any list elements here */
+
     NextGpeXrupt = AcpiGbl_GpeXruptListHead;
     while (NextGpeXrupt)
     {
@@ -381,7 +384,6 @@ AcpiEvGetGpeXruptBlock (
         NextGpeXrupt = NextGpeXrupt->Next;
     }
 
-
     /* Not found, must allocate a new xrupt descriptor */
 
     GpeXrupt = ACPI_MEM_CALLOCATE (sizeof (ACPI_GPE_XRUPT_INFO));
@@ -392,7 +394,7 @@ AcpiEvGetGpeXruptBlock (
 
     GpeXrupt->InterruptLevel = InterruptLevel;
 
-    /* Install new interrupt descriptor */
+    /* Install new interrupt descriptor with spin lock */
 
     AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
     if (AcpiGbl_GpeXruptListHead)
@@ -461,7 +463,7 @@ AcpiEvInstallGpeBlock (
         goto UnlockAndExit;
     }
 
-    /* Install the new block at the end of the list for this interrupt */
+    /* Install the new block at the end of the list for this interrupt with lock */
 
     AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NON_HANDLER);
     if (GpeXruptBlock->GpeBlockListHead)
@@ -709,7 +711,7 @@ AcpiEvCreateGpeBlock (
         ACPI_HIDWORD (ACPI_GET_ADDRESS (GpeBlock->BlockAddress.Address)),
         ACPI_LODWORD (ACPI_GET_ADDRESS (GpeBlock->BlockAddress.Address))));
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "GPE Block defined as GPE%d to GPE%d\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "GPE Block defined as GPE 0x%.2X to GPE 0x%.2X\n",
         GpeBlock->BlockBaseNumber,
         (UINT32) (GpeBlock->BlockBaseNumber +
                 ((GpeBlock->RegisterCount * ACPI_GPE_REGISTER_WIDTH) -1))));
