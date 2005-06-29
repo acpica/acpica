@@ -150,24 +150,21 @@ CmUpdateRefCount (
     UINT32                  NewCount = Count;
 
 
-    if (Action == REF_FORCE_DELETE)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmUpdateRefCount: Obj %p Refs=%d, Force delete! (Set to 0)\n",
-                        Object, Count));
-        
-        NewCount = 0;
-    }
 
-    else if (Action == REF_INCREMENT)
+    switch (Action)
     {
+
+    case REF_INCREMENT:
+
         NewCount++;
 
         DEBUG_PRINT (ACPI_INFO, ("CmUpdateRefCount: Obj %p Refs=%d, [Incremented]\n",
                         Object, NewCount));
-    }
+        break;
 
-    else if (Action == REF_DECREMENT)
-    {
+
+    case REF_DECREMENT:
+
         if (Count < 1)
         {
             DEBUG_PRINT (ACPI_INFO, ("CmUpdateRefCount: Obj %p Refs=%d, can't decrement! (Set to 0)\n",
@@ -175,6 +172,7 @@ CmUpdateRefCount (
 
             NewCount = 0;
         }
+
         else
         {
             NewCount--;
@@ -182,6 +180,24 @@ CmUpdateRefCount (
             DEBUG_PRINT (ACPI_INFO, ("CmUpdateRefCount: Obj %p Refs=%d, [Decremented]\n",
                             Object, NewCount));
         }
+
+        break;
+
+
+    case REF_FORCE_DELETE:
+
+        DEBUG_PRINT (ACPI_INFO, ("CmUpdateRefCount: Obj %p Refs=%d, Force delete! (Set to 0)\n",
+                        Object, Count));
+        
+        NewCount = 0;
+        break;
+
+
+    default: 
+
+        DEBUG_PRINT (ACPI_ERROR, ("CmUpdateRefCount: Unknown action (%d)\n", 
+                        Action));
+        break;
     }
 
 
@@ -222,10 +238,13 @@ CmUpdateObjectReference (
     FUNCTION_TRACE_PTR ("CmUpdateObjectReference", Object);
 
 
+    /* Ignore a null object ptr */
+
     if (!Object)
     {
         return_ACPI_STATUS (AE_OK);
     }
+
 
     /* 
      * Make sure that this isn't a namespace handle or an AML pointer
@@ -238,7 +257,7 @@ CmUpdateObjectReference (
         return_ACPI_STATUS (AE_OK);
     }
 
-    if (AmlIsInPCodeBlock ((UINT8 *) Object))
+    if (NsIsInSystemTable (Object))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmUpdateObjectReference: found an AML pointer %p\n",
                         Object));
@@ -310,177 +329,173 @@ CmUpdateObjectReference (
 
 /******************************************************************************
  *
- * FUNCTION:    CmDeleteInternalSimpleObject
+ * FUNCTION:    CmDeleteInternalObj
  *
  * PARAMETERS:  *Object        - Pointer to the list to be deleted
  * 
  * RETURN:      None
  * 
- * DESCRIPTION: This function deletes a simple (non-package) object.
+ * DESCRIPTION: Low level object deletion, after reference counts have been
+ *              updated (All reference counts, including sub-objects!)
  *
  ******************************************************************************/
 
 void
-CmDeleteInternalSimpleObject (
+CmDeleteInternalObj (
     ACPI_OBJECT_INTERNAL    *Object)
 {
     void                    *ObjPointer = NULL;
+    UINT32                  i;
 
 
-    FUNCTION_TRACE ("CmDeleteInternalSimpleObject");
+    FUNCTION_TRACE_PTR ("CmDeleteInternalObj", Object);
 
+
+    /* Only delete the object when the reference count reaches zero */
+
+    if (Object->Common.ReferenceCount > 0)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Refs=%d, No delete\n", 
+                                Object->Common.ReferenceCount));
+
+        return_VOID;
+    }
+
+    
+    /* Handle sub-objects and buffers within the object */
 
     switch (Object->Type)
     {
 
     case TYPE_String:
-        ObjPointer = Object->String.Pointer;
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalSimpleObject: ***** String %p, ptr %p\n", 
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** String %p, ptr %p\n", 
                                 Object, Object->String.Pointer));
+
+        /* Free the actual string buffer */
+
+        ObjPointer = Object->String.Pointer;
         break;
+
 
     case TYPE_Buffer:
-        ObjPointer = Object->Buffer.Pointer;
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalSimpleObject: ***** Buffer %p, ptr %p\n", 
+        
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Buffer %p, ptr %p\n", 
                                 Object, Object->Buffer.Pointer));
+
+        /* Free the actual buffer */
+
+        ObjPointer = Object->Buffer.Pointer;
         break;
 
-    case TYPE_Package: /* This shouldn't happen */
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalSimpleObject: ***** Package of count %d\n", 
+
+    case TYPE_Package:
+        
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Package of count %d\n", 
                                 Object->Package.Count));
+
+        /* Free each object in the element array */
+
+        for (i = 0; i < Object->Package.Count; i++)
+        {
+            CmDeleteInternalObj (Object->Package.Elements[i]);
+        }
+
+        /* Free the (variable length) element pointer array */
+
+        ObjPointer = Object->Package.Elements;
         break;
+
 
     case TYPE_Method:
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalSimpleObject: ***** Method %p\n", 
+        
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Method %p\n", 
                                 Object));
         break;
 
-    case TYPE_FieldUnit:
 
-        CmDeleteInternalObjDispatch (Object->FieldUnit.Container);
+    case TYPE_FieldUnit:
+        
+        CmDeleteInternalObj (Object->FieldUnit.Container);
         break;
 
 
     case TYPE_DefField:
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalSimpleObject: ***** Field %p, container %p (not freeing)\n", 
+        
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Field %p, container %p (not freeing)\n", 
                                 Object, Object->Field.Container));
 
-        CmDeleteInternalObjDispatch (Object->Field.Container);
+        CmDeleteInternalObj (Object->Field.Container);
         break;
 
 
     case TYPE_BankField:
-
-        CmDeleteInternalObjDispatch (Object->BankField.Container);
-        CmDeleteInternalObjDispatch (Object->BankField.BankSelect);
+        
+        CmDeleteInternalObj (Object->BankField.Container);
+        CmDeleteInternalObj (Object->BankField.BankSelect);
         break;
 
 
     case TYPE_Region:
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalSimpleObject: ***** Region %p, method %p\n", 
+        
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Region %p, method %p\n", 
                                 Object, Object->Region.AddressLocation));
 
-        CmDeleteInternalObjDispatch (Object->Region.AddressLocation);        
+        CmDeleteInternalObj (Object->Region.AddressLocation);        
         break;
 
+
     case TYPE_Lvalue:
-        if (!IS_NS_HANDLE (Object->Lvalue.Object))
+        
+        if ((Object->Lvalue.Object) &&
+           (!IS_NS_HANDLE (Object->Lvalue.Object)))
         {   
-            DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalSimpleObject: ***** Lvalue: %p\n", 
+            DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Lvalue: %p\n", 
                                 Object->Lvalue.Object));
-            CmDeleteInternalObjDispatch (Object->Lvalue.Object);
+            CmDeleteInternalObj (Object->Lvalue.Object);
         }
         break;
 
+
     default:
-        break;
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalSimpleObject: ***** Obj Type: %d, no subobject delete\n", 
+
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: ***** Obj Type: %d, no subobject delete\n", 
                                 Object->Type));
+        break;
     }
+
+
+    /*
+     * Delete any allocated memory found above 
+     */
 
     if (ObjPointer)
     {
-        if (!AmlIsInPCodeBlock ((UINT8 *) ObjPointer))
+        if (!NsIsInSystemTable (ObjPointer))
         {
-            DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalSimpleObject: Deleting Obj Ptr %p \n", 
+            DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj Ptr %p \n", 
                                     ObjPointer));
 
             CmFree (ObjPointer);
         }
     }
 
-    DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalSimpleObject: Deleting Obj %p [%s]\n",
-                            Object, NsTypeNames[Object->Type]));
+    
+    /* Only delete the object if it was dynamically allocated */
 
-    CmFree (Object);
-
-    return_VOID;
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    CmDeleteInternalPackageObject
- *
- * PARAMETERS:  *Object        - Pointer to the list to be deleted
- * 
- * RETURN:      None
- * 
- * DESCRIPTION: This function deletes a package object.
- *
- ******************************************************************************/
-
-void
-CmDeleteInternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *Object)
-{
-    UINT32                  i;
-    ACPI_OBJECT_INTERNAL    *Element;
-
-
-
-    FUNCTION_TRACE ("CmDeleteInternalPackageObject");
-
-
-    if (Object->Package.Count == 0)
+    if (Object->Common.Flags & AO_STATIC_ALLOCATION)
     {
-        return_VOID;
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Obj %p [%s] static allocation!\n",
+                                Object, NsTypeNames[Object->Type]));
     }
 
-    for (i = 0; i < Object->Package.Count; i++)
+    else
     {
-        /* Get the next element pointer from the list */
+        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObj: Deleting Obj %p [%s]\n",
+                                Object, NsTypeNames[Object->Type]));
 
-        Element = Object->Package.Elements[i];
-
-        /* Don't want to delete any namespace handles */
-        /* TBD: this may be obsolete, an old bug put handles in package lists */
-
-        if (IS_NS_HANDLE (Element))
-        {
-            continue;
-        }
-
-        /* If element is a package, we must delete the package elements... */
-
-        if (Element->Type == TYPE_Package)
-        {
-            CmDeleteInternalPackageObject (Element);
-
-            /* Now we can free the top level object */
-
-            CmFree (Element);
-        }
-
-        else
-        {
-            CmDeleteInternalSimpleObject (Element);
-        }
+        CmFree (Object);
     }
-
-    /* Now we can free the element list */
-
-    CmFree (Object->Package.Elements);
 
     return_VOID;
 }
@@ -517,31 +532,18 @@ CmDeleteInternalObject (
         return_VOID;
     }
 
-    if (AmlIsInPCodeBlock ((UINT8 *)    Object))
+    if (NsIsInSystemTable (Object))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: ***Object is in Pcode block\n"));
         return_VOID;
     }
 
-    if (IS_NS_HANDLE                   (Object))
+    if (IS_NS_HANDLE (Object))
     {
         DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: ***Object is a namespace handle\n"));
         return_VOID;
     }
-/*        
-    if (AmlIsMethodValue               (Object))
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: ***Object is a method value\n"));
-        return_VOID;
-    }
 
-    if (IsNsObject                      (Object))
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: ***Object is a namespace value\n"));
-        return_VOID;
-    }
-
-*/
     DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObject: Obj %x Refs=%d\n", 
                             Object, Object->Common.ReferenceCount));
 
@@ -552,54 +554,14 @@ CmDeleteInternalObject (
      */
 
     CmUpdateObjectReference  (Object, REF_DECREMENT);
-    CmDeleteInternalObjDispatch (Object);
+
+    /* Now attempt to delete the object and all sub-objects */
+
+    CmDeleteInternalObj (Object);
 
     return_VOID;
 }
 
-
-/******************************************************************************
- *
- * FUNCTION:    CmDeleteInternalObjDispatch
- *
- * PARAMETERS:  *Object        - Pointer to the list to be deleted
- * 
- * RETURN:      None
- * 
- * DESCRIPTION: Low level delete (after ref count has been decremented).
- *
- ******************************************************************************/
-
-void
-CmDeleteInternalObjDispatch (
-    ACPI_OBJECT_INTERNAL    *Object)
-{
-
-
-    if (Object->Common.ReferenceCount > 0)
-    {
-        DEBUG_PRINT (ACPI_INFO, ("CmDeleteInternalObjDispatch: Refs=%d, No delete\n", 
-                                Object->Common.ReferenceCount));
-
-        return;
-    }
-
-    if (Object->Type == TYPE_Package)
-    {
-        /* Delete the package */
-        
-        CmDeleteInternalPackageObject (Object);
-    }
-
-    else
-    {
-        /* Delete the simple object */
-
-        CmDeleteInternalSimpleObject (Object);
-    }
-
-    return;
-}
 
 
 /******************************************************************************
@@ -644,7 +606,7 @@ CmDeleteInternalObjectList (
              * on how the internal package object was allocated!!!
              */
 
-            CmDeleteInternalPackageObject (*InternalObj);
+            CmDeleteInternalObj (*InternalObj);
         }
 
     }
