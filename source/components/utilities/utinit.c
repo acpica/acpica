@@ -152,7 +152,8 @@ CmFacpRegisterError (
     
     REPORT_ERROR ("Invalid FACP register value");
     
-    DEBUG_PRINT (ACPI_ERROR, ("Invalid FACP register value, %s = 0x%X\n", RegisterName, Value));
+    DEBUG_PRINT (ACPI_ERROR, ("Invalid FACP register value, %s = 0x%X (FACP=0x%X)\n", 
+                    RegisterName, Value, Gbl_FACP));
 }
 
 
