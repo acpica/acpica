@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.195 $
+ *       $Revision: 1.196 $
  *
  *****************************************************************************/
 
@@ -519,6 +519,12 @@ typedef UINT8                           ACPI_OBJECT_TYPE8;
 #define ACPI_BTYPE_OBJECTS_AND_REFS     0x0001FFFF  /* ARG or LOCAL */
 #define ACPI_BTYPE_ALL_OBJECTS          0x0000FFFF
 
+/*
+ * All I/O
+ */
+#define ACPI_READ                       0
+#define ACPI_WRITE                      1
+
 
 /*
  * AcpiEvent Types:
@@ -762,9 +768,6 @@ void (*ACPI_NOTIFY_HANDLER) (
 
 
 /* Address Spaces (Operation Regions */
-
-#define ACPI_READ_ADR_SPACE     1
-#define ACPI_WRITE_ADR_SPACE    2
 
 typedef
 ACPI_STATUS (*ACPI_ADR_SPACE_HANDLER) (
