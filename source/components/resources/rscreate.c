@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.40 $
+ *              $Revision: 1.42 $
  *
  ******************************************************************************/
 
@@ -245,7 +245,7 @@ AcpiRsCreatePciRoutingTable (
     UINT32                  BufferSizeNeeded = 0;
     UINT32                  NumberOfElements = 0;
     UINT32                  Index = 0;
-    PCI_ROUTING_TABLE       *UserPrt = NULL;
+    ACPI_PCI_ROUTING_TABLE  *UserPrt = NULL;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
 
@@ -282,12 +282,12 @@ AcpiRsCreatePciRoutingTable (
 
     /*
      * Loop through the ACPI_INTERNAL_OBJECTS - Each object should
-     * contain a UINT32 Address, a UINT8 Pin, a Name and a UINT8
+     * contain an ACPI_INTEGER Address, a UINT8 Pin, a Name and a UINT8
      * SourceIndex.
      */
     TopObjectList    = PackageObject->Package.Elements;
     NumberOfElements = PackageObject->Package.Count;
-    UserPrt          = (PCI_ROUTING_TABLE *) Buffer;
+    UserPrt          = (ACPI_PCI_ROUTING_TABLE *) Buffer;
 
     for (Index = 0; Index < NumberOfElements; Index++)
     {
@@ -298,7 +298,7 @@ AcpiRsCreatePciRoutingTable (
          * be zero because we cleared the return buffer earlier
          */
         Buffer += UserPrt->Length;
-        UserPrt = (PCI_ROUTING_TABLE *) Buffer;
+        UserPrt = (ACPI_PCI_ROUTING_TABLE *) Buffer;
 
         /*
          * Fill in the Length field with the information we
@@ -306,7 +306,7 @@ AcpiRsCreatePciRoutingTable (
          * The minus four is to subtract the size of the
          * UINT8 Source[4] member because it is added below.
          */
-        UserPrt->Length = (sizeof (PCI_ROUTING_TABLE) -4);
+        UserPrt->Length = (sizeof (ACPI_PCI_ROUTING_TABLE) -4);
 
         /*
          * Dereference the sub-package
