@@ -102,7 +102,7 @@
 #define _COMPONENT          EVENT_HANDLING
 
 
-extern FIXED_EVENT_HANDLER FixedEventHandlers[NUM_FIXED_EVENTS];
+extern FIXED_EVENT_HANDLER  FixedEventHandlers[NUM_FIXED_EVENTS];
 
 
 
@@ -204,7 +204,8 @@ AcpiEnable (void)
 ACPI_STATUS     
 AcpiDisable (void)
 {
-    UINT32          Status;
+    UINT32                  Status;
+
 
     FUNCTION_TRACE ("AcpiDisable");
 
