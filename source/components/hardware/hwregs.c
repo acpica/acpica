@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.164 $
+ *              $Revision: 1.165 $
  *
  ******************************************************************************/
 
@@ -217,6 +217,7 @@ AcpiGetSleepTypeData (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_PARAMETER_INFO     Info;
+    char                    *SleepStateName;
 
 
     ACPI_FUNCTION_TRACE ("AcpiGetSleepTypeData");
@@ -235,12 +236,14 @@ AcpiGetSleepTypeData (
      * Evaluate the namespace object containing the values for this state
      */
     Info.Parameters = NULL;
-    Status = AcpiNsEvaluateByName ((char *) AcpiGbl_SleepStateNames[SleepState],
-                    &Info);
+    Info.ReturnObject = NULL;
+    SleepStateName = (char *) AcpiGbl_SleepStateNames[SleepState];
+
+    Status = AcpiNsEvaluateByName (SleepStateName, &Info);
     if (ACPI_FAILURE (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s while evaluating SleepState [%s]\n",
-            AcpiFormatException (Status), AcpiGbl_SleepStateNames[SleepState]));
+            AcpiFormatException (Status), SleepStateName));
 
         return_ACPI_STATUS (Status);
     }
@@ -250,7 +253,7 @@ AcpiGetSleepTypeData (
     if (!Info.ReturnObject)
     {
         ACPI_REPORT_ERROR (("No Sleep State object returned from [%s]\n",
-            AcpiGbl_SleepStateNames[SleepState]));
+            SleepStateName));
         Status = AE_NOT_EXIST;
     }
 
@@ -294,7 +297,7 @@ AcpiGetSleepTypeData (
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "%s While evaluating SleepState [%s], bad Sleep object %p type %s\n",
             AcpiFormatException (Status),
-            AcpiGbl_SleepStateNames[SleepState], Info.ReturnObject,
+            SleepStateName, Info.ReturnObject,
             AcpiUtGetObjectTypeName (Info.ReturnObject)));
     }
 
