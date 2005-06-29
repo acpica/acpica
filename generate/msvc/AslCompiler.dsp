@@ -183,11 +183,11 @@ SOURCE=..\..\AslCompiler\aslcompile.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\AslCompiler\AslCompiler.l.c
+SOURCE=..\..\AslCompiler\aslcompiler.l.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\AslCompiler\AslCompiler.y.c
+SOURCE=..\..\AslCompiler\aslcompiler.y.c
 # End Source File
 # Begin Source File
 
@@ -296,7 +296,7 @@ SOURCE=..\..\AslCompiler\AslCompiler.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\AslCompiler\AslCompiler.y.h
+SOURCE=..\..\AslCompiler\aslcompiler.y.h
 # End Source File
 # Begin Source File
 
@@ -317,13 +317,13 @@ SOURCE=..\..\AslCompiler\asltypes.h
 # End Group
 # Begin Source File
 
-SOURCE=../../AslCompiler/AslCompiler.l
+SOURCE=../../AslCompiler/aslcompiler.l
 
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Lexer from $(InputPath)
-InputPath=../../AslCompiler/AslCompiler.l
+InputPath=../../AslCompiler/aslcompiler.l
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(InputPath).c $(InputPath)
@@ -334,7 +334,7 @@ InputPath=../../AslCompiler/AslCompiler.l
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Lexer from $(InputPath)
-InputPath=../../AslCompiler/AslCompiler.l
+InputPath=../../AslCompiler/aslcompiler.l
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(InputPath).c $(InputPath)
@@ -346,13 +346,13 @@ InputPath=../../AslCompiler/AslCompiler.l
 # End Source File
 # Begin Source File
 
-SOURCE=../../AslCompiler/AslCompiler.y
+SOURCE=../../AslCompiler/aslcompiler.y
 
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Parser from $(InputPath)
-InputPath=../../AslCompiler/AslCompiler.y
+InputPath=../../AslCompiler/aslcompiler.y
 
 BuildCmds= \
 	..\..\ThirdPartyTools\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
@@ -368,7 +368,7 @@ BuildCmds= \
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Parser from $(InputPath)
-InputPath=../../AslCompiler/AslCompiler.y
+InputPath=../../AslCompiler/aslcompiler.y
 
 BuildCmds= \
 	..\..\ThirdPartyTools\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
