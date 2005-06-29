@@ -138,6 +138,10 @@ SOURCE=..\..\source\components\utilities\utglobal.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\utilities\utmath.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utmisc.c
 # End Source File
 # End Group
