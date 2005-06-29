@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -370,7 +370,7 @@ LkCrossReferenceNamespace (
      * Create a new walk state for use when looking up names
      * within the namespace (Passed as context to the callbacks)
      */
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
     if (!WalkState)
     {
         return AE_NO_MEMORY;

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfold - Constant folding
- *              $Revision: 1.3 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -166,7 +166,7 @@ OpcAmlEvaluationWalk1 (
     Status = AcpiDsExecBeginOp (WalkState, &OutOp);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Constant interpretation failed - %s\n", 
+        AcpiOsPrintf ("Constant interpretation failed - %s\n",
                         AcpiFormatException (Status));
     }
 
@@ -212,7 +212,7 @@ OpcAmlEvaluationWalk2 (
     Status = AcpiDsExecEndOp (WalkState);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Constant interpretation failed - %s\n", 
+        AcpiOsPrintf ("Constant interpretation failed - %s\n",
                         AcpiFormatException (Status));
     }
 
@@ -335,13 +335,13 @@ OpcAmlConstantWalk (
      * expressions that can be evaluated at this time
      */
     if ((!(Op->Asl.CompileFlags & NODE_COMPILE_TIME_CONST)) ||
-          (Op->Asl.CompileFlags & NODE_IS_TARGET)) 
+          (Op->Asl.CompileFlags & NODE_IS_TARGET))
     {
         return (AE_OK);
     }
 
     /*
-     * Set the walk type based on the reduction used for this op 
+     * Set the walk type based on the reduction used for this op
      */
     if (Op->Asl.CompileFlags & NODE_IS_TERM_ARG)
     {
@@ -363,7 +363,7 @@ OpcAmlConstantWalk (
 
     /* Create a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, NULL);
+    WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
     if (!WalkState)
     {
         return AE_NO_MEMORY;
@@ -376,7 +376,7 @@ OpcAmlConstantWalk (
 
     /* Examine the entire subtree -- all nodes must be constants or type 3/4/5 opcodes */
 
-    Status = TrWalkParseTree (Op, ASL_WALK_VISIT_DOWNWARD, 
+    Status = TrWalkParseTree (Op, ASL_WALK_VISIT_DOWNWARD,
                 OpcAmlCheckForConstant, NULL, WalkState);
 
     /*
@@ -415,7 +415,7 @@ OpcAmlConstantWalk (
         Op->Common.Parent = RootOp;
 
         /*
-         * Hand off the subtree to the AML interpreter 
+         * Hand off the subtree to the AML interpreter
          */
         Status = TrWalkParseTree (Op, ASL_WALK_VISIT_TWICE, OpcAmlEvaluationWalk1, OpcAmlEvaluationWalk2, WalkState);
         Op->Common.Parent = OriginalParentOp;
@@ -446,7 +446,7 @@ OpcAmlConstantWalk (
     }
     else
     {
-        AslError (ASL_REMARK, ASL_MSG_CONSTANT_FOLDED, Op, Op->Asl.ParseOpName);
+        AslError (ASL_OPTIMIZATION, ASL_MSG_CONSTANT_FOLDED, Op, Op->Asl.ParseOpName);
 
         /*
          * Because we know we executed type 3/4/5 opcodes above, we know that
@@ -461,7 +461,7 @@ OpcAmlConstantWalk (
             OpcSetOptimalIntegerSize (Op);
 
             DbgPrint (ASL_PARSE_OUTPUT, "Constant expression reduced to (INTEGER) %8.8X%8.8X\n",
-                ACPI_HIDWORD (ObjDesc->Integer.Value), 
+                ACPI_HIDWORD (ObjDesc->Integer.Value),
                 ACPI_LODWORD (ObjDesc->Integer.Value));
             break;
 
@@ -488,7 +488,7 @@ OpcAmlConstantWalk (
             /* Child node is the buffer length */
 
             RootOp = TrAllocateNode (PARSEOP_INTEGER);
- 
+
             RootOp->Asl.AmlOpcode     = AML_DWORD_OP;
             RootOp->Asl.Value.Integer = ObjDesc->Buffer.Length;
             RootOp->Asl.Parent        = Op;
@@ -506,7 +506,7 @@ OpcAmlConstantWalk (
             RootOp->Asl.AmlLength     = ObjDesc->Buffer.Length;
             RootOp->Asl.Value.String  = (char *) ObjDesc->Buffer.Pointer;
             RootOp->Asl.Parent        = Op->Asl.Parent;
-    
+
             Op->Asl.Next = RootOp;
             Op = RootOp;
 
@@ -516,7 +516,7 @@ OpcAmlConstantWalk (
 
 
         default:
-            printf ("Unsupported return type: %s\n", 
+            printf ("Unsupported return type: %s\n",
                         AcpiUtGetObjectTypeName (ObjDesc));
             break;
         }
