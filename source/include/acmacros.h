@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.83 $
+ *       $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -459,31 +459,31 @@
 #ifdef ACPI_DEBUG
 
 #define REPORT_INFO(fp)                 {_ReportInfo(_THIS_MODULE,__LINE__,_COMPONENT); \
-                                            DebugPrintRaw PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 #define REPORT_ERROR(fp)                {_ReportError(_THIS_MODULE,__LINE__,_COMPONENT); \
-                                            DebugPrintRaw PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 #define REPORT_WARNING(fp)              {_ReportWarning(_THIS_MODULE,__LINE__,_COMPONENT); \
-                                            DebugPrintRaw PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 
 #else
 
 #define REPORT_INFO(fp)                 {_ReportInfo("ACPI",__LINE__,_COMPONENT); \
-                                            DebugPrintRaw PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 #define REPORT_ERROR(fp)                {_ReportError("ACPI",__LINE__,_COMPONENT); \
-                                            DebugPrintRaw PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 #define REPORT_WARNING(fp)              {_ReportWarning("ACPI",__LINE__,_COMPONENT); \
-                                            DebugPrintRaw PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 
 #endif
 
 /* Error reporting.  These versions pass thru the module and line# */
 
 #define _REPORT_INFO(a,b,c,fp)          {_ReportInfo(a,b,c); \
-                                            DebugPrintRaw PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 #define _REPORT_ERROR(a,b,c,fp)         {_ReportError(a,b,c); \
-                                            DebugPrintRaw PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 #define _REPORT_WARNING(a,b,c,fp)       {_ReportWarning(a,b,c); \
-                                            DebugPrintRaw PARAM_LIST(fp);}
+                                            AcpiOsPrintf PARAM_LIST(fp);}
 
 /* Buffer dump macros */
 
