@@ -124,8 +124,8 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "nseval.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nseval");
 
 
 
@@ -451,6 +451,7 @@ NsExecuteControlMethod (
     ACPI_OBJECT_INTERNAL    **Params)
 {
     ACPI_STATUS             Status;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
     UINT32                  i;
 
 
@@ -459,7 +460,7 @@ NsExecuteControlMethod (
 
     /* Verify that there is a method associated with this object */
 
-    if (!MethodEntry->Object)
+    if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) MethodEntry)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Control method is undefined (nil value)\n"));
         return_ACPI_STATUS (AE_ERROR);
@@ -469,10 +470,9 @@ NsExecuteControlMethod (
      * Valid method, Set the current scope to that of the Method, and execute it.
      */
 
-    DEBUG_PRINT (ACPI_INFO,
-                ("Control method at Offset %x Length %lx]\n",
-                ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Pcode + 1,
-                ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.PcodeLength - 1));
+    DEBUG_PRINT (ACPI_INFO, ("Control method at Offset %x Length %lx]\n",
+                    ObjDesc->Method.Pcode + 1,
+                    ObjDesc->Method.PcodeLength - 1));
 
     NsDumpPathname (MethodEntry->Scope, "NsExecuteControlMethod: Setting scope to", 
                     TRACE_NAMES, _COMPONENT);
@@ -489,7 +489,7 @@ NsExecuteControlMethod (
                     TRACE_NAMES, _COMPONENT);
 
     DEBUG_PRINT (TRACE_NAMES, ("At offset %8XH\n",
-                      ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Pcode + 1));
+                      ObjDesc->Method.Pcode + 1));
 
     /* Clear both the package and object stacks */
 
@@ -499,9 +499,8 @@ NsExecuteControlMethod (
     /* 
      * Excecute the method via the interpreter
      */
-    Status = AmlExecuteMethod (((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.Pcode + 1,
-                               ((ACPI_OBJECT_INTERNAL *) MethodEntry->Object)->Method.PcodeLength - 1,
-                               Params);
+    Status = AmlExecuteMethod (ObjDesc->Method.Pcode + 1,
+                               ObjDesc->Method.PcodeLength - 1, Params);
 
     if (AmlPkgStackLevel ())
     {
