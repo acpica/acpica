@@ -270,13 +270,6 @@ AcpiGoToSleep (
     char                    *SleepState);
 
 
-/* ACPI mode Prototypes */
-
-INT32
-AcpiModeCapabilities (
-    void);
-
-
 /* ACPI Timer prototypes */
 
 UINT32
@@ -286,7 +279,5 @@ AcpiPmtTicks (
 INT32
 AcpiPmtResolution (
     void);
-
-
 
 #endif /* __HARDWARE_H__ */
