@@ -1,7 +1,7 @@
 
 /******************************************************************************
- * 
- * Module Name: isdump - Scanner debug output routines
+ *
+ * Module Name: amdump - Interpreter debug output routines
  *
  *****************************************************************************/
 
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __ISDUMP_C__
+#define __AMDUMP_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -124,11 +124,11 @@
 #include "acpiosd.h"
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("isdump");
+        MODULE_NAME         ("amdump");
 
 
 /*
- * The following routines are used for debug output only 
+ * The following routines are used for debug output only
  */
 
 #ifdef ACPI_DEBUG
@@ -149,10 +149,10 @@
  *
  ****************************************************************************/
 
-void 
+void
 AcpiAmlShowHexValue (
-    INT32                   ByteCount, 
-    UINT8                   *AmlPtr, 
+    INT32                   ByteCount,
+    UINT8                   *AmlPtr,
     INT32                   LeadSpace)
 {
     INT32                   Value;                  /*  Value retrieved from AML stream */
@@ -169,7 +169,7 @@ AcpiAmlShowHexValue (
         REPORT_ERROR ("AmlShowHexValue: null pointer");
     }
 
-    /* 
+    /*
      * AML numbers are always stored little-endian,
      * even if the processor is big-endian.
      */
@@ -223,7 +223,7 @@ AcpiAmlShowHexValue (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlDumpOperand
  *
  * PARAMETERS:  *EntryDesc          - Pointer to entry to be dumped
@@ -245,9 +245,9 @@ AcpiAmlDumpOperand (
 
     if (!EntryDesc)
     {
-        /* 
-         * This usually indicates that something serious is wrong -- since most (if not all) 
-         * code that dumps the stack expects something to be there! 
+        /*
+         * This usually indicates that something serious is wrong -- since most (if not all)
+         * code that dumps the stack expects something to be there!
          */
         DEBUG_PRINT (ACPI_INFO, ("AmlDumpOperand: *** Possible error: Null stack entry ptr\n"));
         return AE_OK;
@@ -310,7 +310,7 @@ AcpiAmlDumpOperand (
 
         case AML_NAME_OP:
 
-            DUMP_PATHNAME (EntryDesc->Reference.Object, "Reference: Name: ", 
+            DUMP_PATHNAME (EntryDesc->Reference.Object, "Reference: Name: ",
                             ACPI_INFO, _COMPONENT);
             DUMP_ENTRY (EntryDesc->Reference.Object, ACPI_INFO);
             break;
@@ -331,12 +331,12 @@ AcpiAmlDumpOperand (
             if (ACPI_TYPE_NUMBER == EntryDesc->Common.Type)
             {
                 /* Value is a Number */
-            
-                DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]", 
+
+                DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]",
                                             EntryDesc->Number.Value));
             }
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("\n")); 
+            DEBUG_PRINT_RAW (ACPI_INFO, ("\n"));
             break;
 
 
@@ -349,12 +349,12 @@ AcpiAmlDumpOperand (
             {
 
                 /* Value is a Number */
-            
-                DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]", 
+
+                DEBUG_PRINT_RAW (ACPI_INFO, (" value is [%ld]",
                                             EntryDesc->Number.Value));
             }
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("\n")); 
+            DEBUG_PRINT_RAW (ACPI_INFO, ("\n"));
             break;
 
 
@@ -362,12 +362,12 @@ AcpiAmlDumpOperand (
             DEBUG_PRINT_RAW (ACPI_INFO, ("Reference.Nte->Name %x\n",
                         EntryDesc->Reference.Nte->Name));
             break;
-        
+
         default:
 
             /*  unknown opcode  */
 
-            DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown opcode=%X\n", EntryDesc->Reference.OpCode)); 
+            DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown opcode=%X\n", EntryDesc->Reference.OpCode));
             REPORT_ERROR ("AmlDumpOperand: Unknown AML Opcode");
             break;
 
@@ -394,7 +394,7 @@ AcpiAmlDumpOperand (
         if (EntryDesc->Buffer.Pointer)
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("Buffer Contents: "));
-                           
+
             for (Buf = EntryDesc->Buffer.Pointer; Length--; ++Buf)
             {
                 DEBUG_PRINT_RAW (ACPI_INFO,(Length ? " %02x" : " %02x", *Buf));
@@ -432,7 +432,7 @@ AcpiAmlDumpOperand (
                     EntryDesc->Package.Count, EntryDesc->Package.Elements));
 
 
-        /* 
+        /*
          * If elements exist, package vector pointer is valid,
          * and debug_level exceeds 1, dump package's elements.
          */
@@ -466,10 +466,10 @@ AcpiAmlDumpOperand (
         else
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("Region %s",
-                                Acpi_GblRegionTypes[EntryDesc->Region.SpaceId]));
+                                AcpiGbl_RegionTypes[EntryDesc->Region.SpaceId]));
         }
 
-        /* 
+        /*
          * If the address and length have not been evaluated,
          * don't print them.
          */
@@ -606,7 +606,7 @@ AcpiAmlDumpOperand (
 
         DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown Type 0x%X\n", EntryDesc->Common.Type));
         REPORT_ERROR ("AmlDumpOperand: Unknown Type");
-        
+
         /* Back up to previous entry */
 
         EntryDesc--;
@@ -621,13 +621,13 @@ AcpiAmlDumpOperand (
         break;
 
     }
- 
+
     return AE_OK;
 }
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlDumpOperands
  *
  * PARAMETERS:  InterpreterMode      - Load or Exec
@@ -642,17 +642,17 @@ AcpiAmlDumpOperand (
 void
 AcpiAmlDumpOperands (
     ACPI_OBJECT_INTERNAL    **Operands,
-    OPERATING_MODE          InterpreterMode, 
-    char                    *Ident, 
-    INT32                   NumLevels, 
+    OPERATING_MODE          InterpreterMode,
+    char                    *Ident,
+    INT32                   NumLevels,
     char                    *Note,
-    char                    *ModuleName, 
+    char                    *ModuleName,
     INT32                   LineNumber)
 {
     UINT32                  i;
     ACPI_OBJECT_INTERNAL    **EntryDesc;
 
-    
+
     if (!Ident)
     {
         Ident = "?";
@@ -664,7 +664,7 @@ AcpiAmlDumpOperands (
     }
 
 
-    DEBUG_PRINT (ACPI_INFO, ("************* AcpiAmlDumpOperands  Mode=%X ******************\n", 
+    DEBUG_PRINT (ACPI_INFO, ("************* AcpiAmlDumpOperands  Mode=%X ******************\n",
                             InterpreterMode));
     DEBUG_PRINT (ACPI_INFO, ("From %12s(%d)  %s: %s\n", ModuleName, LineNumber, Ident, Note));
 
@@ -688,7 +688,7 @@ AcpiAmlDumpOperands (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlDumpNameTableEntry
  *
  * PARAMETERS:  *Entry              - Descriptor to dump
@@ -706,7 +706,7 @@ AcpiAmlDumpNameTableEntry (
 
     if (!Flags)
     {
-        if (!((TRACE_OBJECTS & DebugLevel) && (_COMPONENT & DebugLayer)))
+        if (!((TRACE_OBJECTS & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
         {
             return;
         }
@@ -727,7 +727,7 @@ AcpiAmlDumpNameTableEntry (
 
 
 /*****************************************************************************
- * 
+ *
  * FUNCTION:    AcpiAmlDumpObjectDescriptor
  *
  * PARAMETERS:  *Object             - Descriptor to dump
@@ -744,15 +744,15 @@ AcpiAmlDumpObjectDescriptor (
 {
     FUNCTION_TRACE ("AmlDumpObjectDescriptor");
 
-    
+
     if (!Flags)
     {
-        if (!((TRACE_OBJECTS & DebugLevel) && (_COMPONENT & DebugLayer)))
+        if (!((TRACE_OBJECTS & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
         {
             return;
         }
     }
-    
+
     if (!(VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ)))
     {
         AcpiOsdPrintf ("0x%p is not a valid ACPI object\n", ObjDesc);
@@ -773,8 +773,8 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsdPrintf ("%20s : %s\n",   "Type", "Number");
         AcpiOsdPrintf ("%20s : 0x%X\n", "Value", ObjDesc->Number.Value);
         break;
- 
-        
+
+
     case ACPI_TYPE_STRING:
 
         AcpiOsdPrintf ("%20s : %s\n",   "Type", "String");
@@ -790,8 +790,8 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsdPrintf ("%20s : 0x%X\n", "Sequence", ObjDesc->Buffer.Sequence);
         AcpiOsdPrintf ("%20s : 0x%p\n", "Pointer", ObjDesc->Buffer.Pointer);
         break;
-        
-        
+
+
     case ACPI_TYPE_PACKAGE:
 
         AcpiOsdPrintf ("%20s : %s\n",   "Type", "Package");
@@ -799,7 +799,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsdPrintf ("%20s : 0x%p\n", "Elements", ObjDesc->Package.Elements);
         AcpiOsdPrintf ("%20s : 0x%p\n", "NextElement", ObjDesc->Package.NextElement);
         break;
-        
+
 
     case ACPI_TYPE_FIELD_UNIT:
 
@@ -813,7 +813,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsdPrintf ("%20s : 0x%X\n", "Sequence", ObjDesc->FieldUnit.Sequence);
         AcpiOsdPrintf ("%20s : 0x%p\n", "Container", ObjDesc->FieldUnit.Container);
         break;
-        
+
 
     case ACPI_TYPE_DEVICE:
 
@@ -844,7 +844,7 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsdPrintf ("%20s : 0x%X\n", "Pcode", ObjDesc->Method.Pcode);
         AcpiOsdPrintf ("%20s : 0x%X\n", "AcpiTable", ObjDesc->Method.AcpiTable);
         break;
-    
+
 
     case ACPI_TYPE_MUTEX:
 
