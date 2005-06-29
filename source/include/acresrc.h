@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.20 $
+ *       $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -283,6 +283,19 @@ AcpiRsAddress32Resource (
 
 ACPI_STATUS
 AcpiRsAddress32Stream (
+    RESOURCE                *LinkedList,
+    UINT8                   **OutputBuffer,
+    UINT32                  *BytesConsumed);
+
+ACPI_STATUS
+AcpiRsAddress64Resource (
+    UINT8                   *ByteStreamBuffer,
+    UINT32                  *BytesConsumed,
+    UINT8                   **OutputBuffer,
+    UINT32                  *StructureSize);
+
+ACPI_STATUS
+AcpiRsAddress64Stream (
     RESOURCE                *LinkedList,
     UINT8                   **OutputBuffer,
     UINT32                  *BytesConsumed);
