@@ -120,8 +120,8 @@
 #include <acpi.h>
 #include <events.h>
 #include <hardware.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include <namesp.h>
+#include <interp.h>
 #include <amlcode.h>
 
 
@@ -201,7 +201,7 @@ AcpiTerminate (void)
 
     /* Debug only - display leftover memory allocation, if any */
 
-    CmDumpCurrentAllocations (ACPI_UINT_MAX, NULL);
+    CmDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
     BREAKPOINT3;
 
 
