@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.68 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -397,8 +397,12 @@ typedef enum
     ASL_MSG_INTERRUPT_LIST,
     ASL_MSG_DMA_CHANNEL,
     ASL_MSG_DMA_LIST,
-    ASL_MSG_VENDOR_LIST
-
+    ASL_MSG_VENDOR_LIST,
+    ASL_MSG_SWITCH_TYPE,
+    ASL_MSG_TOO_MANY_TEMPS,
+    ASL_MSG_RESOURCE_INDEX,
+    ASL_MSG_RESOURCE_SOURCE
+    
 } ASL_MESSAGE_IDS;
 
 #ifdef ASL_EXCEPTIONS
@@ -494,7 +498,12 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_INTERRUPT_LIST */             "Too many interrupts (255 max)",
 /*    ASL_MSG_DMA_CHANNEL */                "Invalid DMA channel (must be 0-7)",
 /*    ASL_MSG_DMA_LIST */                   "Too many DMA channels (8 max)",
-/*    ASL_MSG_VENDOR_LIST */                "Too many vendor data bytes (7 max)"
+/*    ASL_MSG_VENDOR_LIST */                "Too many vendor data bytes (7 max)",
+/*    ASL_MSG_SWITCH_TYPE */                "Switch expression is not a static Integer/Buffer/String data type, defaulting to Integer",
+/*    ASL_MSG_TOO_MANY_TEMPS */             "Method requires too many temporary variables (_T_x)",
+/*    ASL_MSG_RESOURCE_INDEX */             "Missing ResourceSourceIndex (required)",
+/*    ASL_MSG_RESOURCE_SOURCE */            "Missing ResourceSource string (required)"
+
 };
 
 

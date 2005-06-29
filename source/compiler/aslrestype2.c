@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.31 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -179,6 +179,7 @@ RsDoDwordIoDescriptor (
     UINT32                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
+    BOOLEAN                 ResSourceIndex = FALSE;
 
 
     InitializerOp = Op->Asl.Child;
@@ -277,9 +278,12 @@ RsDoDwordIoDescriptor (
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
+                /* Found a valid ResourceSourceIndex */
+
                 Descriptor->Das.OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
                 Descriptor->Das.Length++;
+                ResSourceIndex = TRUE;
             }
             break;
 
@@ -290,11 +294,27 @@ RsDoDwordIoDescriptor (
             {
                 if (StringLength)
                 {
+                    /* Found a valid ResourceSource */
+
                     Descriptor->Das.Length = (UINT16) (Descriptor->Das.Length + StringLength);
 
                     strcpy ((char *) &Descriptor->Das.OptionalFields[OptionIndex],
                             InitializerOp->Asl.Value.String);
+                    
+                    /* ResourceSourceIndex must also be valid */
+
+                    if (!ResSourceIndex)
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_INDEX, InitializerOp, NULL);
+                    }
                 }
+            }
+
+            /* Not a valid ResourceSource, ResourceSourceIndex must also be invalid */
+
+            else if (ResSourceIndex)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE, InitializerOp, NULL);
             }
             break;
 
@@ -358,6 +378,7 @@ RsDoDwordMemoryDescriptor (
     UINT32                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
+    BOOLEAN                 ResSourceIndex = FALSE;
 
 
     InitializerOp = Op->Asl.Child;
@@ -466,6 +487,7 @@ RsDoDwordMemoryDescriptor (
                 Descriptor->Das.OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
                 Descriptor->Das.Length++;
+                ResSourceIndex = TRUE;
             }
             break;
 
@@ -480,7 +502,21 @@ RsDoDwordMemoryDescriptor (
 
                     strcpy ((char *) &Descriptor->Das.OptionalFields[OptionIndex],
                             InitializerOp->Asl.Value.String);
+
+                    /* ResourceSourceIndex must also be valid */
+
+                    if (!ResSourceIndex)
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_INDEX, InitializerOp, NULL);
+                    }
                 }
+            }
+
+            /* Not a valid ResourceSource, ResourceSourceIndex must also be invalid */
+
+            else if (ResSourceIndex)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE, InitializerOp, NULL);
             }
             break;
 
@@ -545,6 +581,7 @@ RsDoDwordSpaceDescriptor (
     UINT32                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
+    BOOLEAN                 ResSourceIndex = FALSE;
 
 
     InitializerOp = Op->Asl.Child;
@@ -648,6 +685,7 @@ RsDoDwordSpaceDescriptor (
                 Descriptor->Das.OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
                 Descriptor->Das.Length++;
+                ResSourceIndex = TRUE;
             }
             break;
 
@@ -662,7 +700,21 @@ RsDoDwordSpaceDescriptor (
 
                     strcpy ((char *) &Descriptor->Das.OptionalFields[OptionIndex],
                             InitializerOp->Asl.Value.String);
+
+                    /* ResourceSourceIndex must also be valid */
+
+                    if (!ResSourceIndex)
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_INDEX, InitializerOp, NULL);
+                    }
                 }
+            }
+
+            /* Not a valid ResourceSource, ResourceSourceIndex must also be invalid */
+
+            else if (ResSourceIndex)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE, InitializerOp, NULL);
             }
             break;
 
@@ -1191,6 +1243,7 @@ RsDoQwordIoDescriptor (
     UINT32                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
+    BOOLEAN                 ResSourceIndex = FALSE;
 
 
     InitializerOp = Op->Asl.Child;
@@ -1291,6 +1344,7 @@ RsDoQwordIoDescriptor (
                 Descriptor->Qas.OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
                 Descriptor->Qas.Length++;
+                ResSourceIndex = TRUE;
             }
             break;
 
@@ -1305,7 +1359,21 @@ RsDoQwordIoDescriptor (
 
                     strcpy ((char *) &Descriptor->Qas.OptionalFields[OptionIndex],
                             InitializerOp->Asl.Value.String);
+
+                    /* ResourceSourceIndex must also be valid */
+
+                    if (!ResSourceIndex)
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_INDEX, InitializerOp, NULL);
+                    }
                 }
+            }
+
+            /* Not a valid ResourceSource, ResourceSourceIndex must also be invalid */
+
+            else if (ResSourceIndex)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE, InitializerOp, NULL);
             }
             break;
 
@@ -1369,6 +1437,7 @@ RsDoQwordMemoryDescriptor (
     UINT32                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
+    BOOLEAN                 ResSourceIndex = FALSE;
 
 
     InitializerOp = Op->Asl.Child;
@@ -1476,6 +1545,7 @@ RsDoQwordMemoryDescriptor (
                 Descriptor->Qas.OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
                 Descriptor->Qas.Length++;
+                ResSourceIndex = TRUE;
             }
             break;
 
@@ -1490,7 +1560,21 @@ RsDoQwordMemoryDescriptor (
 
                     strcpy ((char *) &Descriptor->Qas.OptionalFields[OptionIndex],
                             InitializerOp->Asl.Value.String);
+
+                    /* ResourceSourceIndex must also be valid */
+
+                    if (!ResSourceIndex)
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_INDEX, InitializerOp, NULL);
+                    }
                 }
+            }
+
+            /* Not a valid ResourceSource, ResourceSourceIndex must also be invalid */
+
+            else if (ResSourceIndex)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE, InitializerOp, NULL);
             }
             break;
 
@@ -1555,6 +1639,7 @@ RsDoQwordSpaceDescriptor (
     UINT32                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
+    BOOLEAN                 ResSourceIndex = FALSE;
 
 
     InitializerOp = Op->Asl.Child;
@@ -1657,6 +1742,7 @@ RsDoQwordSpaceDescriptor (
                 Descriptor->Qas.OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
                 Descriptor->Qas.Length++;
+                ResSourceIndex = TRUE;
             }
             break;
 
@@ -1671,7 +1757,21 @@ RsDoQwordSpaceDescriptor (
 
                     strcpy ((char *) &Descriptor->Qas.OptionalFields[OptionIndex],
                             InitializerOp->Asl.Value.String);
+
+                    /* ResourceSourceIndex must also be valid */
+
+                    if (!ResSourceIndex)
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_INDEX, InitializerOp, NULL);
+                    }
                 }
+            }
+
+            /* Not a valid ResourceSource, ResourceSourceIndex must also be invalid */
+
+            else if (ResSourceIndex)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE, InitializerOp, NULL);
             }
             break;
 
@@ -1721,6 +1821,7 @@ RsDoWordIoDescriptor (
     UINT32                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
+    BOOLEAN                 ResSourceIndex = FALSE;
 
 
     InitializerOp = Op->Asl.Child;
@@ -1822,6 +1923,7 @@ RsDoWordIoDescriptor (
                 Descriptor->Was.OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
                 Descriptor->Was.Length++;
+                ResSourceIndex = TRUE;
             }
             break;
 
@@ -1836,7 +1938,21 @@ RsDoWordIoDescriptor (
 
                     strcpy ((char *) &Descriptor->Was.OptionalFields[OptionIndex],
                             InitializerOp->Asl.Value.String);
+
+                    /* ResourceSourceIndex must also be valid */
+
+                    if (!ResSourceIndex)
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_INDEX, InitializerOp, NULL);
+                    }
                 }
+            }
+
+            /* Not a valid ResourceSource, ResourceSourceIndex must also be invalid */
+
+            else if (ResSourceIndex)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE, InitializerOp, NULL);
             }
             break;
 
@@ -1900,6 +2016,7 @@ RsDoWordBusNumberDescriptor (
     UINT32                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
+    BOOLEAN                 ResSourceIndex = FALSE;
 
 
     InitializerOp = Op->Asl.Child;
@@ -1994,6 +2111,7 @@ RsDoWordBusNumberDescriptor (
                 Descriptor->Was.OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
                 Descriptor->Was.Length++;
+                ResSourceIndex = TRUE;
             }
             break;
 
@@ -2008,7 +2126,21 @@ RsDoWordBusNumberDescriptor (
 
                     strcpy ((char *) &Descriptor->Was.OptionalFields[OptionIndex],
                             InitializerOp->Asl.Value.String);
+
+                    /* ResourceSourceIndex must also be valid */
+
+                    if (!ResSourceIndex)
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_INDEX, InitializerOp, NULL);
+                    }
                 }
+            }
+
+            /* Not a valid ResourceSource, ResourceSourceIndex must also be invalid */
+
+            else if (ResSourceIndex)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE, InitializerOp, NULL);
             }
             break;
 
@@ -2058,6 +2190,7 @@ RsDoWordSpaceDescriptor (
     UINT32                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
+    BOOLEAN                 ResSourceIndex = FALSE;
 
 
     InitializerOp = Op->Asl.Child;
@@ -2161,6 +2294,7 @@ RsDoWordSpaceDescriptor (
                 Descriptor->Was.OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
                 Descriptor->Was.Length++;
+                ResSourceIndex = TRUE;
             }
             break;
 
@@ -2175,7 +2309,21 @@ RsDoWordSpaceDescriptor (
 
                     strcpy ((char *) &Descriptor->Was.OptionalFields[OptionIndex],
                             InitializerOp->Asl.Value.String);
+
+                    /* ResourceSourceIndex must also be valid */
+
+                    if (!ResSourceIndex)
+                    {
+                        AslError (ASL_ERROR, ASL_MSG_RESOURCE_INDEX, InitializerOp, NULL);
+                    }
                 }
+            }
+
+            /* Not a valid ResourceSource, ResourceSourceIndex must also be invalid */
+
+            else if (ResSourceIndex)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE, InitializerOp, NULL);
             }
             break;
 
@@ -2319,6 +2467,20 @@ RsDoInterruptDescriptor (
                 {
                     ResSourceString = (UINT8 *) InitializerOp->Asl.Value.String;
                 }
+
+                /* ResourceSourceIndex must also be valid */
+
+                if (!HasResSourceIndex)
+                {
+                    AslError (ASL_ERROR, ASL_MSG_RESOURCE_INDEX, InitializerOp, NULL);
+                }
+            }
+
+            /* Not a valid ResourceSource, ResourceSourceIndex must also be invalid */
+
+            else if (HasResSourceIndex)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE, InitializerOp, NULL);
             }
             break;
 
