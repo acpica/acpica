@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.26 $
+ *       $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -158,13 +158,13 @@ AcpiTbGetTablePtr (
 
 ACPI_STATUS
 AcpiTbGetTable (
-    UINT64                  PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     ACPI_TABLE_HEADER       *BufferPtr,
     ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 AcpiTbVerifyRsdp (
-    UINT64                  RSDP_PhysicalAddress);
+    ACPI_PHYSICAL_ADDRESS   RSDP_PhysicalAddress);
 
 ACPI_STATUS
 AcpiTbGetTableFacs (
@@ -255,7 +255,7 @@ AcpiTbSystemTablePointer (
 
 ACPI_STATUS
 AcpiTbMapAcpiTable (
-    UINT64                  PhysicalAddress,
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     UINT32                  *Size,
     void                    **LogicalAddress);
 
