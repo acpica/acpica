@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.128 $
+ *       $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -269,6 +269,10 @@ void
 AcpiNsDeleteChildren (
     ACPI_NAMESPACE_NODE     *Parent);
 
+int
+AcpiNsCompareNames (
+    char                    *Name1,
+    char                    *Name2);
 
 /*
  * Namespace modification - nsmodify
