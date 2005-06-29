@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.69 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,6 +117,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #include "acpi.h"
 #include "amlcode.h"
@@ -124,6 +125,7 @@
 #include "acnamesp.h"
 #include "acinterp.h"
 #include "acdebug.h"
+#include "acapps.h"
 
 #include "aecommon.h"
 
@@ -148,6 +150,19 @@ AcpiGetIrqRoutingTable  (
 }
 #endif
 
+
+void
+AeGpeHandler (
+    void                        *Context)
+{
+
+
+    AcpiOsPrintf ("Received a GPE at handler\n");
+}
+
+
+
+
 /******************************************************************************
  *
  * FUNCTION:    usage
@@ -171,7 +186,7 @@ usage (void)
     printf ("    Miscellaneous Options\n");
     printf ("        -?                  Display this message\n");
     printf ("        -i                  Do not run INI methods\n");
-    printf ("        -l DebugLevel       Specify debug output level\n");
+    printf ("        -x DebugLevel       Specify debug output level\n");
     printf ("        -v                  Verbose init output\n");
 }
 
@@ -197,6 +212,7 @@ main (
     ACPI_STATUS             Status;
     UINT32                  InitFlags;
     ACPI_BUFFER             ReturnBuf;
+    ACPI_TABLE_HEADER       *Table;
     char                    Buffer[32];
 
 
@@ -206,26 +222,30 @@ main (
 #endif
 #endif
 
+    signal (SIGINT, AeCtrlCHandler);
+
     /* Init globals */
 
-    AcpiDbgLevel = NORMAL_DEFAULT;
+    AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
     AcpiDbgLayer = 0xFFFFFFFF;
 
     /* Init ACPI and start debugger thread */
 
     AcpiInitializeSubsystem ();
+    AcpiGbl_GlobalLockPresent = TRUE;
 
     printf ("\nIntel ACPI Component Architecture\nAML Execution/Debug Utility");
 
 #if ACPI_MACHINE_WIDTH == 16
-    printf ("(16-bit)");
+    printf (" (16-bit)");
 #endif
 
-    printf (" version %8.8X [%s]\n\n", (UINT32) ACPI_CA_VERSION, __DATE__);
+    printf (" version %8.8X", ((UINT32) ACPI_CA_VERSION));
+    printf (" [%s]\n\n",  __DATE__);
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "?dgil:o:sv")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?dgio:svx:")) != EOF) switch(j)
     {
     case 'd':
         AcpiGbl_DbOpt_disasm = TRUE;
@@ -241,8 +261,8 @@ main (
         AcpiGbl_DbOpt_ini_methods = FALSE;
         break;
 
-    case 'l':
-        AcpiDbgLevel = strtoul (optarg, NULL, 0);
+    case 'x':
+        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
         AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
         printf ("Debug Level: %lX\n", AcpiDbgLevel);
         break;
@@ -256,7 +276,7 @@ main (
         break;
 
     case 'v':
-        AcpiDbgLevel |= ACPI_LV_INIT;
+        AcpiDbgLevel |= ACPI_LV_INIT_NAMES;
         break;
 
     case '?':
@@ -274,20 +294,19 @@ main (
 
     /* Standalone filename is the only argument */
 
-    if (argv[optind])
+    if (argv[AcpiGbl_Optind])
     {
         AcpiGbl_DbOpt_tables = TRUE;
-        AcpiGbl_DbFilename = argv[optind];
+        AcpiGbl_DbFilename = argv[AcpiGbl_Optind];
 
-        Status = AcpiDbGetAcpiTable (AcpiGbl_DbFilename);
+        Status = AcpiDbReadTableFromFile (AcpiGbl_DbFilename, &Table);
         if (ACPI_FAILURE (Status))
         {
             printf ("**** Could not get input table, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
-
-        AeBuildLocalTables ();
+        AeBuildLocalTables (Table);
         Status = AeInstallTables ();
         if (ACPI_FAILURE (Status))
         {
@@ -295,16 +314,16 @@ main (
             goto enterloop;
         }
 
-        /*
-         * TBD:
-         * Need a way to call this after the "LOAD" command
-         */
         Status = AeInstallHandlers ();
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
         }
 
+        /*
+         * TBD:
+         * Need a way to call this after the "LOAD" command
+         */
         Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
         {
@@ -319,6 +338,8 @@ main (
             goto enterloop;
         }
 
+        AcpiInstallGpeHandler (0, 0, AeGpeHandler, NULL);
+
         ReturnBuf.Length = 32;
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
@@ -331,7 +352,7 @@ main (
     {
 #include "16bit.h"
 
-        Status = AfFindDsdt (NULL, NULL);
+        Status = AfFindTable (DSDT_SIG, NULL, NULL);
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
@@ -352,15 +373,15 @@ main (
             goto enterloop;
         }
 
-        /* TBD:
-         * Need a way to call this after the "LOAD" command
-         */
+
         Status = AeInstallHandlers ();
         if (ACPI_FAILURE (Status))
         {
             goto enterloop;
         }
-
+        /* TBD:
+         * Need a way to call this after the "LOAD" command
+         */
         Status = AcpiEnableSubsystem (InitFlags);
         if (ACPI_FAILURE (Status))
         {
@@ -374,6 +395,7 @@ main (
             printf ("**** Could not InitializeObjects, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
+
      }
 #endif
 
