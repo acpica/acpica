@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -311,8 +311,7 @@ _UtAllocateObjectDesc (
 
         /* Attempt to allocate new descriptor */
 
-        Object = AcpiUtCallocate (sizeof (ACPI_OPERAND_OBJECT), ComponentId,
-                                    ModuleName, LineNumber);
+        Object = ACPI_MEM_CALLOCATE (sizeof (ACPI_OPERAND_OBJECT));
         if (!Object)
         {
             /* Allocation failed */
