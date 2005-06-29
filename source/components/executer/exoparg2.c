@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.113 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -531,41 +531,10 @@ AcpiExOpcode_2A_1T_1R (
                 goto Cleanup;
             }
 
-            if ((ACPI_GET_OBJECT_TYPE (Operand[2]) == ACPI_TYPE_INTEGER) &&
-                (Operand[2]->Common.Flags & AOPOBJ_AML_CONSTANT))
-            {
-                /*
-                 * There is no actual result descriptor (the ZeroOp/Constant Result
-                 * descriptor is a placeholder), so just delete the placeholder and
-                 * return a reference to the package element
-                 */
-                AcpiUtRemoveReference (Operand[2]);
-            }
-
-            else
-            {
-                /*
-                 * Each element of the package is an internal object.  Get the one
-                 * we are after.
-                 */
-                TempDesc                         = Operand[0]->Package.Elements [Index];
-                ReturnDesc->Reference.Opcode     = AML_INDEX_OP;
-                ReturnDesc->Reference.TargetType = ACPI_GET_OBJECT_TYPE (TempDesc);
-                ReturnDesc->Reference.Object     = TempDesc;
-
-                Status = AcpiExStore (ReturnDesc, Operand[2], WalkState);
-                ReturnDesc->Reference.Object     = NULL;
-            }
-
-            /*
-             * The local return object must always be a reference to the package element,
-             * not the element itself.
-             */
-            ReturnDesc->Reference.Opcode     = AML_INDEX_OP;
             ReturnDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
+            ReturnDesc->Reference.Object     = Operand[0]->Package.Elements [Index];
             ReturnDesc->Reference.Where      = &Operand[0]->Package.Elements [Index];
         }
-
         else
         {
             /* Object to be indexed is a Buffer */
@@ -578,13 +547,20 @@ AcpiExOpcode_2A_1T_1R (
                 goto Cleanup;
             }
 
-            ReturnDesc->Reference.Opcode       = AML_INDEX_OP;
-            ReturnDesc->Reference.TargetType   = ACPI_TYPE_BUFFER_FIELD;
-            ReturnDesc->Reference.Object       = Operand[0];
-            ReturnDesc->Reference.Offset       = Index;
-
-            Status = AcpiExStore (ReturnDesc, Operand[2], WalkState);
+            ReturnDesc->Reference.TargetType = ACPI_TYPE_BUFFER_FIELD;
+            ReturnDesc->Reference.Object     = Operand[0];
         }
+
+        /* Complete the Index reference object */
+
+        ReturnDesc->Reference.Opcode     = AML_INDEX_OP;
+        ReturnDesc->Reference.Offset     = Index;
+
+        /* Store the reference to the Target */
+
+        Status = AcpiExStore (ReturnDesc, Operand[2], WalkState);
+
+        /* Return the reference */
 
         WalkState->ResultObj = ReturnDesc;
         goto Cleanup;
@@ -613,7 +589,10 @@ StoreResultToTarget:
             goto Cleanup;
         }
 
-        WalkState->ResultObj = ReturnDesc;
+        if (!WalkState->ResultObj)
+        {
+            WalkState->ResultObj = ReturnDesc;
+        }
     }
 
 
