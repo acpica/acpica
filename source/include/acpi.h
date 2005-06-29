@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acpi.h - Master include file, Publics and external data.
- *       $Revision: 1.53 $
+ *       $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -136,7 +136,7 @@
 #include "acstruct.h"           /* Common structures */
 #include "acglobal.h"           /* All global variables */
 #include "achware.h"            /* Hardware defines and interfaces */
-#include "accommon.h"           /* Common interfaces */
+#include "acutils.h"            /* Utility interfaces */
 
 
 #endif /* __ACPI_H__ */
