@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.90 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -191,7 +191,7 @@ AcpiExReadDataFromField (
 
         /* Create the actual read buffer */
 
-        BufferDesc->Buffer.Pointer = AcpiUtCallocate (Length);
+        BufferDesc->Buffer.Pointer = ACPI_MEM_CALLOCATE (Length);
         if (!BufferDesc->Buffer.Pointer)
         {
             AcpiUtRemoveReference (BufferDesc);
@@ -373,7 +373,7 @@ AcpiExAccessBufferField (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE_PTR ("AcpiExAccessBufferField", ObjDesc);
+    FUNCTION_TRACE_PTR ("ExAccessBufferField", ObjDesc);
 
 
     /*
@@ -601,9 +601,9 @@ AcpiExCommonAccessField (
     FUNCTION_TRACE_PTR ("ExCommonAccessField", ObjDesc);
 
 
-    DEBUG_PRINTP (ACPI_INFO, ("Obj=%p Type=%X Buf=%p Len=%X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Obj=%p Type=%X Buf=%p Len=%X\n",
         ObjDesc, ObjDesc->Common.Type, Buffer, BufferLength));
-    DEBUG_PRINTP (ACPI_INFO, ("Mode=%d BitLen=%X BitOff=%X ByteOff=%X\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode=%d BitLen=%X BitOff=%X ByteOff=%X\n",
         Mode, ObjDesc->CommonField.BitLength, 
         ObjDesc->CommonField.StartFieldBitOffset,
         ObjDesc->CommonField.BaseByteOffset));
@@ -628,7 +628,7 @@ AcpiExCommonAccessField (
 
     default:
 
-        DEBUG_PRINTP (ACPI_ERROR, ("Unknown I/O Mode: %X\n", Mode));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown I/O Mode: %X\n", Mode));
         Status = AE_BAD_PARAMETER;
         break;
     }

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -646,7 +646,7 @@ AcpiExDumpOperands (
     ACPI_OPERAND_OBJECT     **EntryDesc;
 
 
-    PROC_NAME ("AcpiExDumpOperands");
+    PROC_NAME ("ExDumpOperands");
 
     if (!Ident)
     {
