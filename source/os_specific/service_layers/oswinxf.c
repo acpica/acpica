@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows application interface
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -121,11 +121,17 @@
  * map directly to Clibrary calls.
  */
 
-
+#ifdef WIN32
 #pragma warning(disable:4115)   /* warning C4115: named type definition in parentheses (caused by rpcasync.h> */
 
 #include <windows.h>
 #include <winbase.h>
+#endif
+
+#ifdef WIN64
+#include <windowsx.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -138,7 +144,7 @@
 #undef HIBYTE
 
 
-#include "acpi.h"           /* TBD: this should be acpixf.h */
+#include "acpi.h"
 #include "acdebug.h"
 
 #define _COMPONENT          ACPI_OS_SERVICES
@@ -227,8 +233,8 @@ AcpiOsGetTimer (void)
     GetSystemTime (&SysTime);
 
     return ((SysTime.wMinute * 60000) +
-        (SysTime.wSecond * 1000) +
-        SysTime.wMilliseconds);
+            (SysTime.wSecond * 1000) +
+             SysTime.wMilliseconds);
 
 }
 
@@ -376,7 +382,7 @@ UINT32
 AcpiOsGetLine (
     char                    *Buffer)
 {
-    UINT8                   Temp;
+    char                    Temp;
     UINT32                  i;
 
 
@@ -417,10 +423,10 @@ AcpiOsGetLine (
 ACPI_STATUS
 AcpiOsMapMemory (
     UINT64                  where,
-    UINT32                  length,
+    ACPI_SIZE               length,
     void                    **there)
 {
-    *there = (void *) (UINT32) where;
+    *there = ACPI_TO_POINTER ((NATIVE_UINT) where);
 
     return AE_OK;
 }
@@ -443,7 +449,7 @@ AcpiOsMapMemory (
 void
 AcpiOsUnmapMemory (
     void                    *where,
-    UINT32                  length)
+    ACPI_SIZE               length)
 {
 
     return;
@@ -464,7 +470,7 @@ AcpiOsUnmapMemory (
 
 void *
 AcpiOsAllocate (
-    UINT32                  size)
+    ACPI_SIZE               size)
 {
     void                    *Mem;
 
@@ -489,7 +495,7 @@ AcpiOsAllocate (
 
 void *
 AcpiOsCallocate (
-    UINT32                  size)
+    ACPI_SIZE               size)
 {
     void                    *Mem;
 
@@ -514,11 +520,11 @@ AcpiOsCallocate (
 
 void
 AcpiOsFree (
-    char                    *mem)
+    void                    *Mem)
 {
 
 
-    free ((void *) mem);
+    free (Mem);
 }
 
 
