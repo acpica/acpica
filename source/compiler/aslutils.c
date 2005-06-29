@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.54 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,7 +126,7 @@
 
 #ifdef _USE_BERKELEY_YACC
 extern const char * const       AslCompilername[];
-static const char * const       *yytname = &AslCompilername[255];
+static const char * const       *yytname = &AslCompilername[254];
 #else
 extern const char * const       yytname[];
 #endif
@@ -580,11 +580,11 @@ UtCheckIntegerRange (
  *
  ******************************************************************************/
 
-NATIVE_CHAR *
+char *
 UtGetStringBuffer (
     UINT32                  Length)
 {
-    NATIVE_CHAR             *Buffer;
+    char                    *Buffer;
 
 
     if ((Gbl_StringCacheNext + Length) >= Gbl_StringCacheLast)
@@ -615,8 +615,8 @@ UtGetStringBuffer (
 
 ACPI_STATUS
 UtInternalizeName (
-    NATIVE_CHAR             *ExternalName,
-    NATIVE_CHAR             **ConvertedName)
+    char                    *ExternalName,
+    char                    **ConvertedName)
 {
     ACPI_NAMESTRING_INFO    Info;
     ACPI_STATUS             Status;
@@ -803,7 +803,7 @@ UtAttachNamepathToOwner (
 
 ACPI_INTEGER
 UtDoConstant (
-    NATIVE_CHAR             *String)
+    char                    *String)
 {
     ACPI_STATUS             Status;
     ACPI_INTEGER            Converted;
@@ -839,7 +839,7 @@ UtDoConstant (
 
 ACPI_STATUS
 UtStrtoul64 (
-    NATIVE_CHAR             *String,
+    char                    *String,
     UINT32                  Base,
     ACPI_INTEGER            *RetInteger)
 {
