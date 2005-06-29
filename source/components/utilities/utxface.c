@@ -339,7 +339,7 @@ AcpiFormatException (
      * Get length of string and check if it will fit in caller's buffer
      */
 
-    Length = strlen (Gbl_ExceptionNames [Exception]);
+    Length = STRLEN (Gbl_ExceptionNames [Exception]);
 
     if (OutBuffer->Length < Length)
     {
@@ -350,7 +350,7 @@ AcpiFormatException (
 
     /* Copy the string, all done */
 
-    strcpy (OutBuffer->Pointer, Gbl_ExceptionNames [Exception]);
+    STRCPY (OutBuffer->Pointer, Gbl_ExceptionNames [Exception]);
 
     return_ACPI_STATUS (AE_OK);
 }
