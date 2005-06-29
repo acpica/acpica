@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -337,10 +337,9 @@ AcpiExNameSegment (
  *
  ******************************************************************************/
 
-
 ACPI_STATUS
 AcpiExGetNameString (
-    ACPI_OBJECT_TYPE8       DataType,
+    ACPI_OBJECT_TYPE        DataType,
     UINT8                   *InAmlAddress,
     NATIVE_CHAR             **OutNameString,
     UINT32                  *OutNameLength)
