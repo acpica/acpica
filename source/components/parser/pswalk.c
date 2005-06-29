@@ -187,6 +187,18 @@ PsGetNextWalkOp (
 
     Status = AscendingCallback (WalkState, Op);
 
+    if (Status == AE_TERMINATE)
+    {
+        /* 
+         * A control method was terminated via a RETURN statement.
+         * The walk of this method is complete.
+         */
+        WalkState->PrevOp       = WalkState->Origin;
+        WalkState->NextOp       = NULL;
+
+        return_ACPI_STATUS (AE_OK);
+    }
+    
     /* Look for a sibling to the current op */
 
     if (Next)
@@ -488,6 +500,7 @@ PsWalkParsedAml (
     Op = StartOp;
     Status = AE_OK;
     
+
     /*
      * Execute the walk loop as long as there is a valid Walk State.  This handles nested
      * control method invocations without recursion.
