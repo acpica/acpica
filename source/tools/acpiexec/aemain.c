@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -336,13 +336,13 @@ main (
             goto enterloop;
         }
 
-        AcpiInstallGpeHandler (0, NULL, 0, AeGpeHandler, NULL);
+        AcpiInstallGpeHandler (NULL, 0, 0, AeGpeHandler, NULL);
 
         ReturnBuf.Length = 32;
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
         AcpiEnableEvent (ACPI_EVENT_GLOBAL, 0);
-        AcpiEnableGpe (0, NULL, 0);
+        AcpiEnableGpe (NULL, 0, 0);
     }
 
 #if ACPI_MACHINE_WIDTH == 16
