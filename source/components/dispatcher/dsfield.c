@@ -159,7 +159,7 @@ AcpiDsCreateField (
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
     ACPI_GENERIC_OP         *Arg;
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *Entry;
     UINT8                   FieldFlags;
     UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
@@ -192,25 +192,43 @@ AcpiDsCreateField (
 
         case AML_ACCESSFIELD_OP:
 
-            /* Get a new AccessType and AccessAttribute for all entries (until end or another AccessAs keyword) */
+            /*
+             * Get a new AccessType and AccessAttribute for all
+             * entries (until end or another AccessAs keyword)
+             */
 
             AccessAttribute = (UINT8) Arg->Value.Integer;
-            FieldFlags      = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) || ((UINT8) (Arg->Value.Integer >> 8)));
+            FieldFlags      = (UINT8)
+                            ((FieldFlags & FIELD_ACCESS_TYPE_MASK) ||
+                            ((UINT8) (Arg->Value.Integer >> 8)));
             break;
 
 
         case AML_NAMEDFIELD_OP:
 
-            Status = AcpiNsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_DEF_FIELD, IMODE_LOAD_PASS1,
-                                        NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
+                            (char *) &((ACPI_NAMED_OP *)Arg)->Name,
+                            INTERNAL_TYPE_DEF_FIELD,
+                            IMODE_LOAD_PASS1,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            NULL, &Entry);
+
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            /* Initialize an object for the new NTE that is on the object stack */
+            /*
+             * Initialize an object for the new NTE that is on
+             * the object stack
+             */
 
-            Status = AcpiAmlPrepDefFieldValue (Entry, Region, FieldFlags, AccessAttribute, FieldBitPosition, Arg->Value.Size);
+            Status = AcpiAmlPrepDefFieldValue (Entry, Region,
+                                                FieldFlags,
+                                                AccessAttribute,
+                                                FieldBitPosition,
+                                                Arg->Value.Size);
+
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -250,8 +268,8 @@ AcpiDsCreateBankField (
 {
     ACPI_STATUS             Status = AE_AML_ERROR;
     ACPI_GENERIC_OP         *Arg;
-    NAME_TABLE_ENTRY        *BankReg;
-    NAME_TABLE_ENTRY        *Entry;
+    ACPI_NAMED_OBJECT       *BankReg;
+    ACPI_NAMED_OBJECT       *Entry;
     UINT32                  BankValue;
     UINT8                   FieldFlags;
     UINT8                   AccessAttribute = 0;
@@ -269,8 +287,12 @@ AcpiDsCreateBankField (
 
     Arg = Arg->Next;
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String, INTERNAL_TYPE_BANK_FIELD_DEFN, IMODE_LOAD_PASS1,
-                                NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &BankReg);
+    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
+                            INTERNAL_TYPE_BANK_FIELD_DEFN,
+                            IMODE_LOAD_PASS1,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            NULL, &BankReg);
+
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -302,25 +324,44 @@ AcpiDsCreateBankField (
 
         case AML_ACCESSFIELD_OP:
 
-            /* Get a new AccessType and AccessAttribute for all entries (until end or another AccessAs keyword) */
+            /*
+             * Get a new AccessType and AccessAttribute for
+             * all entries (until end or another AccessAs keyword)
+             */
 
             AccessAttribute = (UINT8) Arg->Value.Integer;
-            FieldFlags      = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) || ((UINT8) (Arg->Value.Integer >> 8)));
+            FieldFlags      = (UINT8)
+                            ((FieldFlags & FIELD_ACCESS_TYPE_MASK) ||
+                            ((UINT8) (Arg->Value.Integer >> 8)));
             break;
 
 
         case AML_NAMEDFIELD_OP:
 
-            Status = AcpiNsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_DEF_FIELD, IMODE_LOAD_PASS1,
-                                        NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
+                            (char *) &((ACPI_NAMED_OP *)Arg)->Name,
+                            INTERNAL_TYPE_DEF_FIELD,
+                            IMODE_LOAD_PASS1,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            NULL, &Entry);
+
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            /* Initialize an object for the new NTE that is on the object stack */
+            /*
+             * Initialize an object for the new NTE that is on
+             * the object stack
+             */
 
-            Status = AcpiAmlPrepBankFieldValue (Entry, Region, BankReg, BankValue, FieldFlags, AccessAttribute, FieldBitPosition, Arg->Value.Size);
+            Status = AcpiAmlPrepBankFieldValue (Entry, Region,
+                                                BankReg, BankValue,
+                                                FieldFlags,
+                                                AccessAttribute,
+                                                FieldBitPosition,
+                                                Arg->Value.Size);
+
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -361,9 +402,9 @@ AcpiDsCreateIndexField (
 {
     ACPI_STATUS             Status;
     ACPI_GENERIC_OP         *Arg;
-    NAME_TABLE_ENTRY        *Entry;
-    NAME_TABLE_ENTRY        *IndexReg;
-    NAME_TABLE_ENTRY        *DataReg;
+    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *IndexReg;
+    ACPI_NAMED_OBJECT       *DataReg;
     UINT8                   FieldFlags;
     UINT8                   AccessAttribute = 0;
     UINT32                  FieldBitPosition = 0;
@@ -376,8 +417,11 @@ AcpiDsCreateIndexField (
 
     /* First arg is the name of the Index register */
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String, ACPI_TYPE_ANY, IMODE_LOAD_PASS1,
-                                NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &IndexReg);
+    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
+                            ACPI_TYPE_ANY, IMODE_LOAD_PASS1,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            NULL, &IndexReg);
+
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -387,8 +431,12 @@ AcpiDsCreateIndexField (
 
     Arg = Arg->Next;
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String, INTERNAL_TYPE_INDEX_FIELD_DEFN, IMODE_LOAD_PASS1,
-                                NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &DataReg);
+    Status = AcpiNsLookup (WalkState->ScopeInfo, Arg->Value.String,
+                            INTERNAL_TYPE_INDEX_FIELD_DEFN,
+                            IMODE_LOAD_PASS1,
+                            NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                            NULL, &DataReg);
+
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -416,25 +464,43 @@ AcpiDsCreateIndexField (
 
         case AML_ACCESSFIELD_OP:
 
-            /* Get a new AccessType and AccessAttribute for all entries (until end or another AccessAs keyword) */
+            /*
+             * Get a new AccessType and AccessAttribute for all
+             * entries (until end or another AccessAs keyword)
+             */
 
             AccessAttribute = (UINT8) Arg->Value.Integer;
-            FieldFlags      = (UINT8) ((FieldFlags & FIELD_ACCESS_TYPE_MASK) || ((UINT8) (Arg->Value.Integer >> 8)));
+            FieldFlags      = (UINT8)
+                                ((FieldFlags & FIELD_ACCESS_TYPE_MASK) ||
+                                ((UINT8) (Arg->Value.Integer >> 8)));
             break;
 
 
         case AML_NAMEDFIELD_OP:
 
-            Status = AcpiNsLookup (WalkState->ScopeInfo, (char *) &((ACPI_NAMED_OP *)Arg)->Name, INTERNAL_TYPE_INDEX_FIELD, IMODE_LOAD_PASS1,
-                                        NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
+            Status = AcpiNsLookup (WalkState->ScopeInfo,
+                                    (char *) &((ACPI_NAMED_OP *)Arg)->Name,
+                                    INTERNAL_TYPE_INDEX_FIELD,
+                                    IMODE_LOAD_PASS1,
+                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
+                                    NULL, &Entry);
+
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            /* Initialize an object for the new NTE that is on the object stack */
+            /*
+             * Initialize an object for the new NTE that is on
+             * the object stack
+             */
 
-            Status = AcpiAmlPrepIndexFieldValue (Entry, IndexReg, DataReg, FieldFlags, AccessAttribute, FieldBitPosition, Arg->Value.Size);
+            Status = AcpiAmlPrepIndexFieldValue (Entry, IndexReg,
+                                                DataReg, FieldFlags,
+                                                AccessAttribute,
+                                                FieldBitPosition,
+                                                Arg->Value.Size);
+
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -448,7 +514,9 @@ AcpiDsCreateIndexField (
 
         default:
 
-            DEBUG_PRINT (ACPI_ERROR, ("DsEnterIndexField: Invalid opcode in field list: %X\n", Arg->Opcode));
+            DEBUG_PRINT (ACPI_ERROR,
+                ("DsEnterIndexField: Invalid opcode in field list: %X\n",
+                Arg->Opcode));
             Status = AE_AML_ERROR;
             break;
         }

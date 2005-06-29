@@ -153,7 +153,8 @@ AcpiDsScopeStackClear (
         ScopeInfo = WalkState->ScopeInfo;
         WalkState->ScopeInfo = ScopeInfo->Scope.Next;
 
-        DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+        DEBUG_PRINT (TRACE_EXEC,
+            ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
         AcpiCmDeleteGenericState (ScopeInfo);
     }
 }
@@ -173,7 +174,7 @@ AcpiDsScopeStackClear (
 
 ACPI_STATUS
 AcpiDsScopeStackPush (
-    NAME_TABLE_ENTRY        *NewScope,
+    ACPI_NAME_TABLE         *NewScope,
     OBJECT_TYPE_INTERNAL    Type,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -209,7 +210,7 @@ AcpiDsScopeStackPush (
 
     /* Init new scope object */
 
-    ScopeInfo->Scope.Entry  = NewScope;
+    ScopeInfo->Scope.NameTable  = NewScope;
     ScopeInfo->Common.Value = (UINT16) Type;
 
     /* Push new scope object onto stack */
@@ -256,7 +257,8 @@ AcpiDsScopeStackPop (
         return_ACPI_STATUS (AE_STACK_UNDERFLOW);
     }
 
-    DEBUG_PRINT (TRACE_EXEC, ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+    DEBUG_PRINT (TRACE_EXEC,
+        ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
 
     AcpiCmDeleteGenericState (ScopeInfo);
 
