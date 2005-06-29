@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -221,8 +221,8 @@ AcpiDsParseMethod (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, Op, Node, ObjDesc->Method.Pcode, 
-                    ObjDesc->Method.PcodeLength, 1);
+    Status = AcpiDsInitAmlWalk (WalkState, Op, Node, ObjDesc->Method.AmlStart, 
+                    ObjDesc->Method.AmlLength, 1);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -411,8 +411,8 @@ AcpiDsCallControlMethod (
         goto Cleanup;
     }
 
-    Status = AcpiDsInitAmlWalk (NextWalkState, Op, MethodNode, ObjDesc->Method.Pcode, 
-                    ObjDesc->Method.PcodeLength, 1);
+    Status = AcpiDsInitAmlWalk (NextWalkState, Op, MethodNode, ObjDesc->Method.AmlStart, 
+                    ObjDesc->Method.AmlLength, 1);
     if (ACPI_FAILURE (Status))
     {
         /* TBD: delete walk state */
@@ -435,8 +435,8 @@ AcpiDsCallControlMethod (
         goto Cleanup;
     }
 
-    Status = AcpiDsInitAmlWalk (NextWalkState, NULL, MethodNode, ObjDesc->Method.Pcode,
-                    ObjDesc->Method.PcodeLength, 3);
+    Status = AcpiDsInitAmlWalk (NextWalkState, NULL, MethodNode, ObjDesc->Method.AmlStart,
+                    ObjDesc->Method.AmlLength, 3);
 
     /*
      * Initialize the arguments for the method.  The resolved
