@@ -196,10 +196,6 @@ SOURCE=..\..\Subsystem\Hardware\hwregs.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\Subsystem\Hardware\hwsleep.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Subsystem\Hardware\hwtimer.c
 # End Source File
 # Begin Source File
