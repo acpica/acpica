@@ -57,10 +57,6 @@ void
 _ReportError (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
 void
 _ReportWarning (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
-void *
-_AllocateObjectDesc (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
-void *
-_LocalAllocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName);
 void 
 _Kinc_error (char *, INT32, INT32, char *, INT32, INT32); 
 void 
@@ -88,10 +84,21 @@ void DumpBuf(UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
 
 
 /*
+ * TBD:  Move to a more appropriate header!!
+ *
+ * Memory allocation functions.
  * Macros that expand to include filename and line number
  */
 
+void *
+_AllocateObjectDesc (ST_KEY_DESC_TABLE *KdtEntry, INT32 LineNumber, char *ModuleName);
+void *
+_LocalAllocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName);
+void *
+_LocalCallocate (INT32 AllocSize, INT32 LineNumber, char *ModuleName);
+
 #define LocalAllocate(a)                _LocalAllocate(a,__LINE__,_THIS_MODULE)
+#define LocalCallocate(a)               _LocalCallocate(a,__LINE__,_THIS_MODULE)
 #define AllocateObjectDesc(a)           _AllocateObjectDesc(a,__LINE__,_THIS_MODULE)
 
 /* 
@@ -117,7 +124,7 @@ void DumpBuf(UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
 
 #ifdef _DEBUG
 
-/* Error reporting.  These versions stamp with callers module/line# */
+/* Error reporting.  These versions add callers module/line# */
 
 #define REPORT_INFO(a)                  _ReportInfo(a,__LINE__,_THIS_MODULE)
 #define REPORT_ERROR(a)                 _ReportError(a,__LINE__,_THIS_MODULE)
@@ -161,12 +168,14 @@ void DumpBuf(UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
 
 #else
 
-#define REPORT_INFO(a) 
-#define REPORT_ERROR(a) 
-#define REPORT_WARNING(a)
 #define _REPORT_INFO(a,b,c)
 #define _REPORT_ERROR(a,b,c)
 #define _REPORT_WARNING(a,b,c)
+
+#define REPORT_INFO(a) 
+#define REPORT_ERROR(a) 
+#define REPORT_WARNING(a)
+
 #define DUMP_STACK_ENTRY(a)
 #define DUMP_STACK(a,b,c,d)
 #define DUMP_ENTRY(a)
@@ -182,18 +191,27 @@ void DumpBuf(UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
 #define DEBUG_PRINT6(l,f,a,b,c,d,e,g)
 #define DEBUG_PRINT7(l,f,a,b,c,d,e,g,h)
 #define DEBUG_PRINT10(l,f,a,b,c,d,e,g,h,i,j,k)
+
+#define DEBUG_PRINT_RAW(l,f)                        
+#define DEBUG_PRINT1_RAW(l,f,a)                     
+#define DEBUG_PRINT2_RAW(l,f,a,b)                   
+#define DEBUG_PRINT3_RAW(l,f,a,b,c)                 
+#define DEBUG_PRINT4_RAW(l,f,a,b,c,d)               
+#define DEBUG_PRINT5_RAW(l,f,a,b,c,d,e)             
+#define DEBUG_PRINT6_RAW(l,f,a,b,c,d,e,g)           
+#define DEBUG_PRINT7_RAW(l,f,a,b,c,d,e,g,h)         
+#define DEBUG_PRINT10_RAW(l,f,a,b,c,d,e,g,h,i,j,k)  
+
+
 #endif
 
 
-#define ACPI_INTERPRETER            0
-#define ACPI_NAMESPACE              1
-#define ACPI_DEVICE_MANAGER         2
-#define ACPI_EVENT_HANDLING         3
 
 #define GLOBAL_INFO                 0x00000001
 #define GLOBAL_WARN                 0x00000002
 #define GLOBAL_ERROR                0x00000004
 #define GLOBAL_FATAL                0x00000008
+#define GLOBAL_ALL                  0x0000000F
 
 #define AML_INFO                    0x00000010
 #define AML_WARN                    0x00000020
@@ -210,7 +228,6 @@ void DumpBuf(UINT8*Buffer, UINT32 Count, INT32 Flags, LogHandle LogFile,
 #define EV_INFO                     0x00002000
 #define EV_WARN                     0x00004000
 #define EV_ERROR                    0x00008000
-
 
 #define TRACE_LOAD                  0x00100000
 #define TRACE_OPCODE                0x00200000
