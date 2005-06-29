@@ -178,7 +178,7 @@ NsAllocateNameTable (
 
 ACPI_STATUS
 NsDeleteNamespace (
-    void);
+    ACPI_HANDLE             ParentHandle);
 
 void
 NsDetachObject (
@@ -226,6 +226,12 @@ NsDumpPathname (
 void
 NsDumpRootDevices (
     void);
+
+void
+NsDumpObjects (
+    ACPI_OBJECT_TYPE        Type, 
+    INT32                   MaxDepth, 
+    ACPI_HANDLE             StartHandle);
 
 
 /*
