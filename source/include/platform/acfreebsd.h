@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acfreebsd.h - OS specific defines, etc.
- *       $Revision: 1.18 $
+ *       $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -117,90 +117,18 @@
 #ifndef __ACFREEBSD_H__
 #define __ACFREEBSD_H__
 
-
-/* FreeBSD uses GCC */
-
-#include "acgcc.h"
-#include <sys/types.h>
-#include <machine/acpica_machdep.h>
-
-#ifdef _KERNEL
-#include "opt_acpi.h"
-#endif
-
-#ifdef ACPI_DEBUG
-#define ACPI_DEBUG_OUTPUT   /* for backward compatibility */
-#define ACPI_DISASSEMBLER
-#endif
+#define ACPI_OS_NAME                "FreeBSD"
 
 #ifdef _KERNEL
 #include <sys/ctype.h>
 #include <sys/param.h>
 #include <sys/systm.h>
 #include <sys/libkern.h>
-#include <machine/stdarg.h>
+#include <stdarg.h>
 
-#ifdef DEBUGGER_THREADING
-#undef DEBUGGER_THREADING
-#endif /* DEBUGGER_THREADING */
-#define DEBUGGER_THREADING 0    /* integrated with DDB */
-#ifdef ACPI_DEBUG_OUTPUT
-#include "opt_ddb.h"
-#ifdef DDB
-#define ACPI_DEBUGGER
-#endif /* DDB */
-#endif /* ACPI_DEBUG_OUTPUT */
+#define asm         __asm
+#define __cli()     disable_intr()
+#define __sti()     enable_intr()
 
-#else /* _KERNEL */
-
-/* Not building kernel code, so use libc */
-#define ACPI_USE_STANDARD_HEADERS
-#define ACPI_FLUSH_CPU_CACHE()
-
-#if __STDC_HOSTED__
-#include <ctype.h>
-#endif
-
-#define __cli()
-#define __sti()
-
-#endif /* _KERNEL */
-
-/* Always use FreeBSD code over our local versions */
-#define ACPI_USE_SYSTEM_CLIBRARY
-
-/* FreeBSD doesn't have strupr, should be fixed. (move to libkern) */
-static __inline char *
-strupr(char *str)
-{
-    char *c = str;
-    while(*c) {
-    *c = toupper(*c);
-    c++;
-    }
-    return(str);
-}
-
-#ifdef _KERNEL
-/* Or strstr (used in debugging mode, also move to libkern) */
-static __inline char *
-strstr(char *s, char *find)
-{
-    char c, sc;
-    size_t len;
-
-    if ((c = *find++) != 0) {
-    len = strlen(find);
-    do {
-        do {
-        if ((sc = *s++) == 0)
-            return (NULL);
-        } while (sc != c);
-    } while (strncmp(s, find, len) != 0);
-    s--;
-    }
-    return ((char *)s);
-}
-#endif /* _KERNEL */
 
 #endif /* __ACFREEBSD_H__ */

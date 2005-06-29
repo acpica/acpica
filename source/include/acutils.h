@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.79 $
+ *       $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -154,12 +154,14 @@ AcpiCmSubsystemShutdown (
     void);
 
 ACPI_STATUS
-AcpiCmValidateFacp (
+AcpiCmValidateFadt (
     void);
 
 /*
  * CmGlobal - Global data structures and procedures
  */
+
+#ifdef ACPI_DEBUG
 
 NATIVE_CHAR *
 AcpiCmGetMutexName (
@@ -168,6 +170,13 @@ AcpiCmGetMutexName (
 NATIVE_CHAR *
 AcpiCmGetTypeName (
     UINT32                  Type);
+
+NATIVE_CHAR *
+AcpiCmGetRegionName (
+    UINT8                   SpaceId);
+
+#endif
+
 
 BOOLEAN
 AcpiCmValidObjectType (
@@ -470,9 +479,9 @@ AcpiCmDeleteInternalObjectList (
 
 ACPI_STATUS
 AcpiCmEvaluateNumericObject (
-    NATIVE_CHAR             *MethodName,
+    NATIVE_CHAR             *ObjectName,
     ACPI_NAMESPACE_NODE     *DeviceNode,
-    UINT32                  *Address);
+    ACPI_INTEGER            *Address);
 
 ACPI_STATUS
 AcpiCmExecute_HID (
