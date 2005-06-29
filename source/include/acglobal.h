@@ -248,6 +248,11 @@ extern OBJECT_DESCRIPTOR        *MethodStack[AML_METHOD_MAX_NEST][ARGBASE+NUMARG
 extern INT32                    MethodStackTop;
 
 
+/* Event globals */
+
+extern UINT32                   SciHandle;
+extern UINT32         	        EventCount[NUM_FIXED_EVENTS];   
+extern FIXED_EVENT_HANDLER      FixedEventHandlers[NUM_FIXED_EVENTS];
 
 
 #endif /* __GLOBALS_H__ */
