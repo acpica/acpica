@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -512,4 +512,66 @@ AcpiExPciBarSpaceHandler (
 
     return_ACPI_STATUS (Status);
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExDataTableSpaceHandler
+ *
+ * PARAMETERS:  Function            - Read or Write operation
+ *              Address             - Where in the space to read or write
+ *              BitWidth            - Field width in bits (8, 16, or 32)
+ *              Value               - Pointer to in or out value
+ *              HandlerContext      - Pointer to Handler's context
+ *              RegionContext       - Pointer to context specific to the
+ *                                    accessed region
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Handler for the Data Table address space (Op Region)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExDataTableSpaceHandler (
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    ACPI_INTEGER            *Value,
+    void                    *HandlerContext,
+    void                    *RegionContext)
+{
+    ACPI_STATUS             Status = AE_OK;
+    UINT32                  ByteWidth = DIV_8 (BitWidth);
+    UINT32                  i;
+    char                    *LogicalAddrPtr;
+
+
+    FUNCTION_TRACE ("ExDataTableSpaceHandler");
+
+
+    LogicalAddrPtr = (char *) (NATIVE_UINT) Address;
+
+
+   /* Perform the memory read or write */
+
+    switch (Function)
+    {
+    case ACPI_READ:
+
+        for (i = 0; i < ByteWidth; i++)
+        {
+            ((char *) Value) [i] = LogicalAddrPtr[i];
+        }
+        break;
+
+    case ACPI_WRITE:
+
+        return_ACPI_STATUS (AE_SUPPORT);
+        break;
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
 
