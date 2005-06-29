@@ -244,7 +244,10 @@ typedef UINT32              ACPI_OBJECT_TYPE;
 #define TYPE_Processor      (ACPI_OBJECT_TYPE) 12 /* Name,ByteConst,DWordConst,ByteConst,multi NmO */
 #define TYPE_Thermal        (ACPI_OBJECT_TYPE) 13 /* Name, multiple NamedObject */
 #define TYPE_Alias          (ACPI_OBJECT_TYPE) 14
-#define ACPI_TYPE_MAX       14
+#define TYPE_Notfy          (ACPI_OBJECT_TYPE) 15
+#define TYPE_AddrHandler    (ACPI_OBJECT_TYPE) 16
+
+#define ACPI_TYPE_MAX       16
     /* 
      * The remaining values do not relate to the ObjectType operator and are
      * used for various internal purposes only.  A gap is provided in case more
@@ -292,6 +295,7 @@ typedef UINT32              ACPI_EVENT_TYPE;
 #define GPE_MAX             0xFF
 #define NUM_GPE             256
 
+#define MAX_SYS_NOTIFY      0x7f
 
 /* 
  * External ACPI object definition 
@@ -433,8 +437,6 @@ void * (*WALK_CALLBACK) (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
     void                    *Context);
-
-
 
 /* Interrupt handler return values (must be unique bits) */
 
