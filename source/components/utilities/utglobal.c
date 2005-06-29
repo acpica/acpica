@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.99 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -148,7 +148,7 @@ UINT32                      AcpiDbgLevel = NORMAL_DEFAULT;
 
 /* Debug switch - layer (component) mask */
 
-UINT32                      AcpiDbgLayer = ALL_COMPONENTS;
+UINT32                      AcpiDbgLayer = COMPONENT_DEFAULT;
 UINT32                      AcpiGbl_NestingLevel = 0;
 
 
@@ -240,7 +240,8 @@ UINT8                       AcpiGbl_NsProperties[] =
     NSP_LOCAL,                  /* 31 DefAny           */
     NSP_NORMAL,                 /* 32 Method Arg       */
     NSP_NORMAL,                 /* 33 Method Local     */
-    NSP_NORMAL                  /* 34 Invalid          */
+    NSP_NORMAL,                 /* 34 Extra            */
+    NSP_NORMAL                  /* 35 Invalid          */
 };
 
 
@@ -358,7 +359,8 @@ static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 31 */ "DefAny",
     /* 32 */ "MethodArg",
     /* 33 */ "MethodLcl",
-    /* 34 */ "Invalid"
+    /* 34 */ "Extra",
+    /* 35 */ "Invalid"
 };
 
 
@@ -565,6 +567,7 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
 {
     UINT32                  i;
 
+
     FUNCTION_TRACE ("CmInitGlobals");
 
 
@@ -580,7 +583,7 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
 
     /* ACPI table structure */
 
-    for (i = 0; i < ACPI_TABLE_MAX; i++)
+    for (i = 0; i < NUM_ACPI_TABLES; i++)
     {
         AcpiGbl_AcpiTables[i].Prev          = &AcpiGbl_AcpiTables[i];
         AcpiGbl_AcpiTables[i].Next          = &AcpiGbl_AcpiTables[i];
@@ -593,7 +596,7 @@ AcpiCmInitGlobals (ACPI_INIT_DATA *InitData)
 
     /* Address Space handler array */
 
-    for (i = 0; i < ACPI_MAX_ADDRESS_SPACE; i++)
+    for (i = 0; i < ACPI_NUM_ADDRESS_SPACES; i++)
     {
         AcpiGbl_AddressSpaces[i].Handler    = NULL;
         AcpiGbl_AddressSpaces[i].Context    = NULL;
