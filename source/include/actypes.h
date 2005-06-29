@@ -384,6 +384,8 @@ typedef UINT32                          ACPI_EVENT_TYPE;
 #define GPE_MAX                         0xFF
 #define NUM_GPE                         256
 
+#define EVENT_LEVEL_TRIGGERED           (ACPI_EVENT_TYPE) 0
+#define EVENT_EDGE_TRIGGERED            (ACPI_EVENT_TYPE) 1
 
 /* 
  * Event Status:
