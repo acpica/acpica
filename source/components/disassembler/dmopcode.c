@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.46 $
+ *              $Revision: 1.49 $
  *
  ******************************************************************************/
 
@@ -189,6 +189,7 @@ AcpiDbBlockType (
 
 ACPI_STATUS
 AcpiPsDisplayObjectPathname (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *TargetOp;
@@ -205,7 +206,6 @@ AcpiPsDisplayObjectPathname (
          * (such as _OS_).  Rather than worry about looking up all
          * the predefined names, just display the name as given
          */
-
         AcpiOsPrintf ("  **** Path not found in parse tree");
     }
 
@@ -225,6 +225,7 @@ AcpiPsDisplayObjectPathname (
 
 ACPI_STATUS
 AcpiPsDisplayObjectPathname (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status;
@@ -233,19 +234,30 @@ AcpiPsDisplayObjectPathname (
     UINT32                  BufferSize = MAX_SHOW_ENTRY;
 
 
-    AcpiOsPrintf ("  (Path ");
-
     /* Just get the Node out of the Op object */
 
     Node = Op->Node;
     if (!Node)
     {
-        /*
-         * No Named obj,  so we can't get the pathname since the object
-         * is not in the namespace.  This can happen during single
-         * stepping where a dynamic named object is *about* to be created.
-         */
-        return (AE_OK);
+        /* Node not defined in this scope, look it up */
+
+        Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Value.String, ACPI_TYPE_ANY,
+                        IMODE_EXECUTE, NS_SEARCH_PARENT, WalkState, &(Node));
+
+        if (ACPI_FAILURE (Status))
+        {
+            /*
+             * We can't get the pathname since the object
+             * is not in the namespace.  This can happen during single
+             * stepping where a dynamic named object is *about* to be created.
+             */
+            AcpiOsPrintf ("  [Path not found]");
+            return (AE_OK);
+        }
+
+        /* Save it for next time. */
+
+        Op->Node = Node;
     }
 
     /* Convert NamedDesc/handle to a full pathname */
@@ -257,7 +269,7 @@ AcpiPsDisplayObjectPathname (
         return (Status);
     }
 
-    AcpiOsPrintf ("%s)", Buffer);
+    AcpiOsPrintf ("  (Path %s)", Buffer);
     return (AE_OK);
 }
 
@@ -389,7 +401,7 @@ AcpiDbDisplayOp (
                 (Op->Parent) &&
                 (AcpiGbl_DbOpt_verbose))
             {
-                AcpiPsDisplayObjectPathname (Op);
+                AcpiPsDisplayObjectPathname (WalkState, Op);
             }
 
             AcpiOsPrintf ("\n");
@@ -709,13 +721,13 @@ AcpiDbDisplayOpcode (
 
         if (AcpiGbl_DbOpt_verbose)
         {
-            AcpiOsPrintf ("(UINT64) 0x%8.8X%8.8X", Op->Value.Integer64.Hi, 
+            AcpiOsPrintf ("(UINT64) 0x%8.8X%8.8X", Op->Value.Integer64.Hi,
                                                    Op->Value.Integer64.Lo);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%8.8X%8.8X", Op->Value.Integer64.Hi, 
+            AcpiOsPrintf ("0x%8.8X%8.8X", Op->Value.Integer64.Hi,
                                           Op->Value.Integer64.Lo);
         }
 
@@ -819,7 +831,6 @@ AcpiDbDisplayOpcode (
         break;
     }
 
-
     if (!OpInfo)
     {
         /* If there is another element in the list, add a comma */
@@ -830,11 +841,9 @@ AcpiDbDisplayOpcode (
         }
     }
 
-
     /*
      * If this is a named opcode, print the associated name value
      */
-
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
     if (Op && (OpInfo->Flags & AML_NAMED))
     {
