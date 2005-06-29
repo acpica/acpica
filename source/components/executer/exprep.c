@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -117,10 +118,10 @@
 #define __AMPREP_C__
 
 #include "acpi.h"
-#include "interp.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "parser.h"
+#include "acnamesp.h"
+#include "acparser.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -147,19 +148,19 @@ AcpiAmlDecodeFieldAccessType (
     switch (Access)
     {
     case ACCESS_ANY_ACC:
-        return 8;
+        return (8);
         break;
 
     case ACCESS_BYTE_ACC:
-        return 8;
+        return (8);
         break;
 
     case ACCESS_WORD_ACC:
-        return 16;
+        return (16);
         break;
 
     case ACCESS_DWORD_ACC:
-        return 32;
+        return (32);
         break;
 
     default:
@@ -168,7 +169,7 @@ AcpiAmlDecodeFieldAccessType (
         DEBUG_PRINT (ACPI_ERROR,
             ("AmlDecodeFieldAccessType: Unknown field access type %x\n",
             Access));
-        return 0;
+        return (0);
     }
 }
 
@@ -274,7 +275,7 @@ AcpiAmlPrepDefFieldValue (
     UINT32                  FieldLength)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    INT32                   Type;
+    UINT32                  Type;
     ACPI_STATUS             Status;
 
 
@@ -395,7 +396,7 @@ AcpiAmlPrepBankFieldValue (
     UINT32                  FieldLength)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    INT32                   Type;
+    UINT32                  Type;
     ACPI_STATUS             Status;
 
 

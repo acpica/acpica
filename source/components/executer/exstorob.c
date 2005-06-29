@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstorob - AML Interpreter object store support, store to object
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -117,12 +118,12 @@
 #define __AMSTOROB_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "tables.h"
+#include "acnamesp.h"
+#include "actables.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -158,7 +159,8 @@
 ACPI_STATUS
 AcpiAmlStoreObjectToObject (
     ACPI_OBJECT_INTERNAL    *ValDesc,
-    ACPI_OBJECT_INTERNAL    *DestDesc)
+    ACPI_OBJECT_INTERNAL    *DestDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT8                   *Buffer = NULL;
@@ -202,8 +204,8 @@ AcpiAmlStoreObjectToObject (
             /*
              *  Initially not a number, convert
              */
-            Status = AcpiAmlResolveToValue (&ValDesc);
-            if ((Status == AE_OK) &&
+            Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
+            if (ACPI_SUCCESS (Status) &&
                 (ValDesc->Common.Type != ACPI_TYPE_NUMBER))
             {
                 /*
@@ -236,8 +238,8 @@ AcpiAmlStoreObjectToObject (
             /*
              *  Initially not a valid type, convert
              */
-            Status = AcpiAmlResolveToValue (&ValDesc);
-            if ((Status == AE_OK) &&
+            Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
+            if (ACPI_SUCCESS (Status) &&
                 (ValDesc->Common.Type != ACPI_TYPE_NUMBER) &&
                 (ValDesc->Common.Type != ACPI_TYPE_BUFFER) &&
                 (ValDesc->Common.Type != ACPI_TYPE_STRING))
@@ -266,7 +268,7 @@ AcpiAmlStoreObjectToObject (
 
     /* Exit now if failure above */
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         goto CleanUpAndBailOut;
     }

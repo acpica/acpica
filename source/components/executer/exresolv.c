@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresolv - AML Interpreter object resolution
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -118,12 +119,12 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "interp.h"
-#include "namesp.h"
-#include "tables.h"
-#include "events.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "actables.h"
+#include "acevents.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -276,7 +277,8 @@ AcpiAmlGetFieldUnitValue (
 
 ACPI_STATUS
 AcpiAmlResolveToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr)
+    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -301,7 +303,7 @@ AcpiAmlResolveToValue (
     if (VALID_DESCRIPTOR_TYPE (*StackPtr, ACPI_DESC_TYPE_INTERNAL))
     {
 
-        Status = AcpiAmlResolveObjectToValue (StackPtr);
+        Status = AcpiAmlResolveObjectToValue (StackPtr, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -342,7 +344,8 @@ AcpiAmlResolveToValue (
 
 ACPI_STATUS
 AcpiAmlResolveObjectToValue (
-    ACPI_OBJECT_INTERNAL    **StackPtr)
+    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OBJECT_INTERNAL    *StackDesc;
     ACPI_STATUS             Status = AE_OK;
@@ -393,35 +396,37 @@ AcpiAmlResolveObjectToValue (
 
             Index = StackDesc->Reference.Offset;
 
-            /* Delete the Reference Object */
-
-            AcpiCmRemoveReference (StackDesc);
-
             /*
              * Get the local from the method's state info
-             * Note: this increments the object reference count
+             * Note: this increments the local's object reference count
              */
 
             Status = AcpiDsMethodDataGetValue (MTH_TYPE_LOCAL, Index,
-                                                StackPtr);
+                                                WalkState, &ObjDesc);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            StackDesc = *StackPtr;
+            /* 
+             * Now we can delete the original Reference Object and
+             * replace it with the resolve value
+             */
+
+            AcpiCmRemoveReference (StackDesc);
+            *StackPtr = ObjDesc;
 
             DEBUG_PRINT (ACPI_INFO,
                 ("AmlResolveObjectToValue: [Local%d] ValueObj is %p\n",
-                Index, StackDesc));
+                Index, ObjDesc));
 
-            if (ACPI_TYPE_NUMBER == StackDesc->Common.Type)
+            if (ACPI_TYPE_NUMBER == ObjDesc->Common.Type)
             {
                 /* Value is a Number */
 
                 DEBUG_PRINT (ACPI_INFO,
                     ("AmlResolveObjectToValue: [Local%d] value is [0x%X] \n",
-                    Index, StackDesc->Number.Value));
+                    Index, ObjDesc->Number.Value));
             }
 
             break;
@@ -431,9 +436,6 @@ AcpiAmlResolveObjectToValue (
 
             Index = StackDesc->Reference.Offset;
 
-            /* Delete the Reference Object*/
-
-            AcpiCmRemoveReference (StackDesc);
 
             /*
              * Get the argument from the method's state info
@@ -441,25 +443,31 @@ AcpiAmlResolveObjectToValue (
              */
 
             Status = AcpiDsMethodDataGetValue (MTH_TYPE_ARG, Index,
-                                                StackPtr);
+                                                WalkState, &ObjDesc);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            StackDesc = *StackPtr;
+            /* 
+             * Now we can delete the original Reference Object and
+             * replace it with the resolve value
+             */
+
+            AcpiCmRemoveReference (StackDesc);
+            *StackPtr = ObjDesc;
 
             DEBUG_PRINT (TRACE_EXEC,
                 ("AmlResolveObjectToValue: [Arg%d] ValueObj is %p\n",
-                Index, StackDesc));
+                Index, ObjDesc));
 
-            if (ACPI_TYPE_NUMBER == StackDesc->Common.Type)
+            if (ACPI_TYPE_NUMBER == ObjDesc->Common.Type)
             {
                 /* Value is a Number */
 
                 DEBUG_PRINT (ACPI_INFO,
                     ("AmlResolveObjectToValue: [Arg%d] value is [0x%X] \n",
-                    Index, StackDesc->Number.Value));
+                    Index, ObjDesc->Number.Value));
             }
 
             break;
@@ -557,7 +565,7 @@ AcpiAmlResolveObjectToValue (
         }   /* switch (Opcode) */
 
 
-        if (AE_OK != Status)
+        if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }

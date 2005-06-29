@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -117,10 +118,10 @@
 #define __AMDUMP_C__
 
 #include "acpi.h"
-#include "interp.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "tables.h"
+#include "acnamesp.h"
+#include "actables.h"
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("amdump");
@@ -150,13 +151,13 @@
 
 void
 AcpiAmlShowHexValue (
-    INT32                   ByteCount,
+    UINT32                  ByteCount,
     UINT8                   *AmlPtr,
-    INT32                   LeadSpace)
+    UINT32                  LeadSpace)
 {
-    INT32                   Value;                  /*  Value retrieved from AML stream */
-    INT32                   ShowDecimalValue;
-    INT32                   Length;                 /*  Length of printed field */
+    UINT32                  Value;                  /*  Value retrieved from AML stream */
+    UINT32                  ShowDecimalValue;
+    UINT32                  Length;                 /*  Length of printed field */
     UINT8                   *CurrentAmlPtr = NULL;  /*  Pointer to current byte of AML value    */
 
 
@@ -176,7 +177,7 @@ AcpiAmlShowHexValue (
             Value = 0;
             CurrentAmlPtr > AmlPtr; )
     {
-        Value = (Value << 8) + (INT32)* --CurrentAmlPtr;
+        Value = (Value << 8) + (UINT32)* --CurrentAmlPtr;
     }
 
     Length = LeadSpace * ByteCount + 2;
@@ -253,7 +254,7 @@ AcpiAmlDumpOperand (
          */
         DEBUG_PRINT (ACPI_INFO,
             ("AmlDumpOperand: *** Possible error: Null stack entry ptr\n"));
-        return AE_OK;
+        return (AE_OK);
     }
 
     if (VALID_DESCRIPTOR_TYPE (EntryDesc, ACPI_DESC_TYPE_NAMED))
@@ -261,7 +262,7 @@ AcpiAmlDumpOperand (
         DEBUG_PRINT (ACPI_INFO,
             ("AmlDumpOperand: Name Table Entry (NTE): \n"));
         DUMP_ENTRY (EntryDesc, ACPI_INFO);
-        return AE_OK;
+        return (AE_OK);
     }
 
     if (AcpiTbSystemTablePointer (EntryDesc))
@@ -269,7 +270,7 @@ AcpiAmlDumpOperand (
         DEBUG_PRINT (ACPI_INFO,
             ("AmlDumpOperand: %p is a Pcode pointer\n",
             EntryDesc));
-        return AE_OK;
+        return (AE_OK);
     }
 
     if (!VALID_DESCRIPTOR_TYPE (EntryDesc, ACPI_DESC_TYPE_INTERNAL))
@@ -277,7 +278,7 @@ AcpiAmlDumpOperand (
         DEBUG_PRINT (ACPI_INFO,
             ("AmlDumpOperand: %p Not a local object \n", EntryDesc));
         DUMP_BUFFER (EntryDesc, sizeof (ACPI_OBJECT_INTERNAL));
-        return AE_OK;
+        return (AE_OK);
     }
 
     /*  EntryDesc is a valid object  */
@@ -631,7 +632,7 @@ AcpiAmlDumpOperand (
 
     }
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -652,11 +653,11 @@ void
 AcpiAmlDumpOperands (
     ACPI_OBJECT_INTERNAL    **Operands,
     OPERATING_MODE          InterpreterMode,
-    char                    *Ident,
-    INT32                   NumLevels,
-    char                    *Note,
-    char                    *ModuleName,
-    INT32                   LineNumber)
+    NATIVE_CHAR             *Ident,
+    UINT32                  NumLevels,
+    NATIVE_CHAR             *Note,
+    NATIVE_CHAR             *ModuleName,
+    UINT32                  LineNumber)
 {
     UINT32                  i;
     ACPI_OBJECT_INTERNAL    **EntryDesc;
@@ -688,7 +689,7 @@ AcpiAmlDumpOperands (
     {
         EntryDesc = &Operands[i];
 
-        if (AE_OK != AcpiAmlDumpOperand (*EntryDesc))
+        if (ACPI_FAILURE (AcpiAmlDumpOperand (*EntryDesc)))
         {
             break;
         }

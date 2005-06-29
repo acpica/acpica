@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -117,11 +118,11 @@
 #define __AMUTILS_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "events.h"
+#include "acnamesp.h"
+#include "acevents.h"
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("amutils");
@@ -141,7 +142,7 @@ typedef struct Internal_Search_st
 INTERNAL_PKG_SEARCH_INFO        CopyLevel[MAX_PACKAGE_DEPTH];
 
 
-static char                 hex[] =
+static NATIVE_CHAR          hex[] =
     {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
 
@@ -217,49 +218,10 @@ AcpiAmlValidateObjectType (
     if ((Type > ACPI_TYPE_MAX && Type < INTERNAL_TYPE_BEGIN) ||
         (Type > INTERNAL_TYPE_MAX))
     {
-        return FALSE;
+        return (FALSE);
     }
 
-    return TRUE;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlAppendOperandDiag
- *
- * PARAMETERS:  *FileName       - Name of source file
- *              LineNum         - Line Number in file
- *              OpCode          - OpCode being executed
- *              NumOperands     - Number of operands PrepStack tried to check
- *
- * DESCRIPTION: Print diagnostic information about operands.
- *              This function is intended to be called after PrepStack
- *              has returned S_ERROR.
- *
- ******************************************************************************/
-
-void
-AcpiAmlAppendOperandDiag (
-    char                    *FileName,
-    INT32                   LineNum,
-    UINT16                  OpCode,
-    ACPI_OBJECT_INTERNAL    **Operands,
-    INT32                   NumOperands)
-{
-
-    /*
-     * This function outputs debug information only
-     */
-
-    DEBUG_PRINT (ACPI_ERROR, (" [%s:%d, opcode = %s AML offset %04x]\n",
-                    FileName, LineNum, AcpiPsGetOpcodeName (OpCode), NULL));
-
-    if (GetDebugLevel () > 0)
-    {
-        DUMP_OPERANDS (Operands, IMODE_EXECUTE, AcpiPsGetOpcodeName (OpCode),
-                        NumOperands, "after PrepStack failed");
-    }
+    return (TRUE);
 }
 
 
@@ -282,7 +244,7 @@ UINT32
 AcpiAmlBufSeq (void)
 {
 
-    return ++AcpiGbl_BufSeq;
+    return (++AcpiGbl_BufSeq);
 }
 
 
@@ -391,12 +353,12 @@ AcpiAmlReleaseGlobalLock (
  *
  ******************************************************************************/
 
-INT32
+UINT32
 AcpiAmlDigitsNeeded (
-    INT32                   val,
-    INT32                   base)
+    UINT32                  val,
+    UINT32                  base)
 {
-    INT32                   NumDigits = 0;
+    UINT32                  NumDigits = 0;
 
 
     FUNCTION_TRACE ("AmlDigitsNeeded");
@@ -436,13 +398,13 @@ _ntohl (
     union
     {
         UINT32              Value;
-        char                Bytes[4];
+        UINT8               Bytes[4];
     } Out;
 
     union
     {
         UINT32              Value;
-        char                Bytes[4];
+        UINT8               Bytes[4];
     } In;
 
 
@@ -453,7 +415,7 @@ _ntohl (
     Out.Bytes[2] = In.Bytes[1];
     Out.Bytes[3] = In.Bytes[0];
 
-    return Out.Value;
+    return (Out.Value);
 }
 
 
@@ -471,7 +433,7 @@ _ntohl (
 ACPI_STATUS
 AcpiAmlEisaIdToString (
     UINT32                  NumericId,
-    char                    *OutString)
+    NATIVE_CHAR             *OutString)
 {
     UINT32                  id;
 
@@ -488,7 +450,7 @@ AcpiAmlEisaIdToString (
     OutString[6] = hex[id & 0xf];
     OutString[7] = 0;
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -509,7 +471,8 @@ AcpiAmlEisaIdToString (
 ACPI_STATUS
 AcpiAmlBuildCopyInternalPackageObject (
     ACPI_OBJECT_INTERNAL    *SourceObj,
-    ACPI_OBJECT_INTERNAL    *DestObj)
+    ACPI_OBJECT_INTERNAL    *DestObj,
+    ACPI_WALK_STATE         *WalkState)
 {
     UINT32                      CurrentDepth = 0;
     ACPI_STATUS                 Status = AE_OK;
@@ -612,9 +575,9 @@ AcpiAmlBuildCopyInternalPackageObject (
                                 ThisSourceObj->Common.Type);
             LevelPtr->DestObj->Package.Elements[ThisIndex] = ThisDestObj;
 
-            Status = AcpiAmlStoreObjectToObject(ThisSourceObj, ThisDestObj);
+            Status = AcpiAmlStoreObjectToObject(ThisSourceObj, ThisDestObj, WalkState);
 
-            if (Status != AE_OK)
+            if (ACPI_FAILURE (Status))
             {
                 /*
                  * Failure get out

@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammisc - ACPI AML (p-code) execution - specific opcodes
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -118,10 +119,10 @@
 #define __AMMISC_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "dispatch.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -162,7 +163,7 @@ AcpiAmlExecFatal (
 
     /* Resolve operands */
 
-    Status = AcpiAmlResolveOperands (AML_FATAL_OP, WALK_OPERANDS);
+    Status = AcpiAmlResolveOperands (AML_FATAL_OP, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
                     AcpiPsGetOpcodeName (AML_FATAL_OP),
                     3, "after AcpiAmlResolveOperands");
@@ -172,12 +173,14 @@ AcpiAmlExecFatal (
     Status |= AcpiDsObjStackPopObject (&ArgDesc, WalkState);
     Status |= AcpiDsObjStackPopObject (&CodeDesc, WalkState);
     Status |= AcpiDsObjStackPopObject (&TypeDesc, WalkState);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
-        /* invalid parameters on object stack  */
+        /* Invalid parameters on object stack  */
 
-        AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__,
-                                    (UINT16) AML_FATAL_OP, WALK_OPERANDS, 3);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("AcpiAmlExecFatal/AML_FATAL_OP: bad operand(s) (0x%X)\n",
+            Status));
+
         goto Cleanup;
     }
 
@@ -253,7 +256,7 @@ AcpiAmlExecIndex (
     /* Resolve operands */
     /* First operand can be either a package or a buffer */
 
-    Status = AcpiAmlResolveOperands (AML_INDEX_OP, WALK_OPERANDS);
+    Status = AcpiAmlResolveOperands (AML_INDEX_OP, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
                     AcpiPsGetOpcodeName (AML_INDEX_OP),
                     3, "after AcpiAmlResolveOperands");
@@ -263,12 +266,14 @@ AcpiAmlExecIndex (
     Status |= AcpiDsObjStackPopObject (&ResDesc, WalkState);
     Status |= AcpiDsObjStackPopObject (&IdxDesc, WalkState);
     Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         /* Invalid parameters on object stack  */
 
-        AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__,
-                                    (UINT16) AML_INDEX_OP, WALK_OPERANDS, 3);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("AcpiAmlExecIndex/AML_INDEX_OP: bad operand(s) (0x%X)\n",
+            Status));
+
         goto Cleanup;
     }
 
@@ -323,7 +328,7 @@ AcpiAmlExecIndex (
             RetDesc->Reference.TargetType = TmpDesc->Common.Type;
             RetDesc->Reference.Object     = TmpDesc;
 
-            Status = AcpiAmlExecStore (RetDesc, ResDesc);
+            Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
             RetDesc->Reference.Object     = NULL;
         }
 
@@ -353,7 +358,7 @@ AcpiAmlExecIndex (
         RetDesc->Reference.Object       = ObjDesc;
         RetDesc->Reference.Offset       = IdxDesc->Number.Value;
 
-        Status = AcpiAmlExecStore (RetDesc, ResDesc);
+        Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
     }
 
 
@@ -428,7 +433,7 @@ AcpiAmlExecMatch (
 
     /* Resolve all operands */
 
-    Status = AcpiAmlResolveOperands (AML_MATCH_OP, WALK_OPERANDS);
+    Status = AcpiAmlResolveOperands (AML_MATCH_OP, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE,
                     AcpiPsGetOpcodeName (AML_MATCH_OP),
                     6, "after AcpiAmlResolveOperands");
@@ -442,12 +447,14 @@ AcpiAmlExecMatch (
     Status |= AcpiDsObjStackPopObject (&Op1Desc, WalkState);
     Status |= AcpiDsObjStackPopObject (&PkgDesc, WalkState);
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         /* Invalid parameters on object stack  */
 
-        AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__,
-                                    (UINT16) AML_MATCH_OP, WALK_OPERANDS, 6);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecMatch/AML_MATCH_OP: bad operand(s) (0x%X)\n",
+            Status));
+
         goto Cleanup;
     }
 

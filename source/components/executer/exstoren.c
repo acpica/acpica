@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstoren - AML Interpreter object store support, store to NTE
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -117,12 +118,12 @@
 #define __AMSTOREN_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "tables.h"
+#include "acnamesp.h"
+#include "actables.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -159,7 +160,8 @@
 ACPI_STATUS
 AcpiAmlStoreObjectToNte (
     ACPI_OBJECT_INTERNAL    *ValDesc,
-    ACPI_NAMED_OBJECT       *Entry)
+    ACPI_NAMED_OBJECT       *Entry,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT8                   *Buffer = NULL;
@@ -225,8 +227,8 @@ AcpiAmlStoreObjectToNte (
             /*
              *  Initially not a number, convert
              */
-            Status = AcpiAmlResolveToValue (&ValDesc);
-            if ((Status == AE_OK) &&
+            Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
+            if (ACPI_SUCCESS (Status) &&
                 (ValDesc->Common.Type != ACPI_TYPE_NUMBER))
             {
                 /*
@@ -260,8 +262,8 @@ AcpiAmlStoreObjectToNte (
             /*
              *  Initially not a valid type, convert
              */
-            Status = AcpiAmlResolveToValue (&ValDesc);
-            if ((Status == AE_OK) &&
+            Status = AcpiAmlResolveToValue (&ValDesc, WalkState);
+            if (ACPI_SUCCESS (Status) &&
                 (ValDesc->Common.Type != ACPI_TYPE_NUMBER) &&
                 (ValDesc->Common.Type != ACPI_TYPE_BUFFER) &&
                 (ValDesc->Common.Type != ACPI_TYPE_STRING))
@@ -310,7 +312,7 @@ AcpiAmlStoreObjectToNte (
 
     /* Exit now if failure above */
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         goto CleanUpAndBailOut;
     }
@@ -365,16 +367,18 @@ AcpiAmlStoreObjectToNte (
          *  Perform the update (Set Bank Select)
          */
 
-        Status = AcpiAmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
-                                    &DestDesc->BankField.Value,
-                                    sizeof (DestDesc->BankField.Value));
-        if (Status == AE_OK)
+        Status = AcpiAmlAccessNamedField (ACPI_WRITE,
+                                DestDesc->BankField.BankSelect,
+                                &DestDesc->BankField.Value,
+                                sizeof (DestDesc->BankField.Value));
+        if (ACPI_SUCCESS (Status))
         {
             /* Set bank select successful, set data value  */
 
-            Status = AcpiAmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
-                                           &ValDesc->BankField.Value,
-                                           sizeof (ValDesc->BankField.Value));
+            Status = AcpiAmlAccessNamedField (ACPI_WRITE,
+                                DestDesc->BankField.BankSelect,
+                                &ValDesc->BankField.Value,
+                                sizeof (ValDesc->BankField.Value));
         }
 
         break;
@@ -409,7 +413,9 @@ AcpiAmlStoreObjectToNte (
             break;
         }
 
-        Status = AcpiAmlSetNamedFieldValue (Entry, Buffer, Length);
+        Status = AcpiAmlAccessNamedField (ACPI_WRITE, 
+                                    Entry, Buffer, Length);
+
         break;      /* Global Lock released below   */
 
 
@@ -542,21 +548,23 @@ AcpiAmlStoreObjectToNte (
          *  perform the update (Set index)
          */
 
-        Status = AcpiAmlSetNamedFieldValue (DestDesc->IndexField.Index,
-                                       &DestDesc->IndexField.Value,
-                                       sizeof (DestDesc->IndexField.Value));
+        Status = AcpiAmlAccessNamedField (ACPI_WRITE,
+                                DestDesc->IndexField.Index,
+                                &DestDesc->IndexField.Value,
+                                sizeof (DestDesc->IndexField.Value));
 
         DEBUG_PRINT (ACPI_INFO,
             ("AmlStoreObjectToNte: IndexField: set index returned %s\n",
             AcpiCmFormatException (Status)));
 
-        if (AE_OK == Status)
+        if (ACPI_SUCCESS (Status))
         {
             /* set index successful, next set Data value */
 
-            Status = AcpiAmlSetNamedFieldValue (DestDesc->IndexField.Data,
-                                           &ValDesc->Number.Value,
-                                           sizeof (ValDesc->Number.Value));
+            Status = AcpiAmlAccessNamedField (ACPI_WRITE,
+                                DestDesc->IndexField.Data,
+                                &ValDesc->Number.Value,
+                                sizeof (ValDesc->Number.Value));
             DEBUG_PRINT (ACPI_INFO,
                 ("AmlStoreObjectToNte: IndexField: set data returned %s\n",
                 AcpiCmFormatException (Status)));

@@ -1,6 +1,8 @@
+
 /******************************************************************************
  *
  * Module Name: amregion - ACPI default OpRegion (address space) handlers
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -117,11 +119,11 @@
 #define __AMREGION_C__
 
 #include "acpi.h"
-#include "interp.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "hardware.h"
-#include "events.h"
+#include "acnamesp.h"
+#include "achware.h"
+#include "acevents.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -136,7 +138,9 @@
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
- *              Context             - Context pointer
+ *              HandlerContext      - Pointer to Handler's context
+ *              RegionContext       - Pointer to context specific to the 
+ *                                      accessed region
  *
  * RETURN:      Status
  *
@@ -150,11 +154,12 @@ AcpiAmlSystemMemorySpaceHandler (
     UINT32                  Address, /* TBD: [Future] Should this be A POINTER for 64-bit support? */
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context)
+    void                    *HandlerContext,
+    void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
     void                    *LogicalAddrPtr = NULL;
-    MEM_HANDLER_CONTEXT     *MemInfo = Context;
+    MEM_HANDLER_CONTEXT     *MemInfo = RegionContext;
     UINT32                  Length;
 
 
@@ -192,8 +197,8 @@ AcpiAmlSystemMemorySpaceHandler (
      *    2) Address beyond the current mapping?
      */
 
-    if (((char *) Address < MemInfo->MappedPhysicalAddress) ||
-        (((char *) Address + Length) >
+    if (((UINT8 *) Address < MemInfo->MappedPhysicalAddress) ||
+        (((UINT8 *) Address + Length) >
             (MemInfo->MappedPhysicalAddress + MemInfo->MappedLength)))
     {
         /*
@@ -220,7 +225,7 @@ AcpiAmlSystemMemorySpaceHandler (
             return_ACPI_STATUS (Status);
         }
 
-        MemInfo->MappedPhysicalAddress = (char *) Address;
+        MemInfo->MappedPhysicalAddress = (UINT8 *) Address;
         MemInfo->MappedLength = SYSMEM_REGION_WINDOW_SIZE;
     }
 
@@ -231,7 +236,7 @@ AcpiAmlSystemMemorySpaceHandler (
      */
 
     LogicalAddrPtr = MemInfo->MappedLogicalAddress +
-                    ((char *) Address - MemInfo->MappedPhysicalAddress);
+                    ((UINT8 *) Address - MemInfo->MappedPhysicalAddress);
 
     /* Perform the memory read or write */
 
@@ -302,7 +307,9 @@ AcpiAmlSystemMemorySpaceHandler (
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
- *              Context             - Context pointer
+ *              HandlerContext      - Pointer to Handler's context
+ *              RegionContext       - Pointer to context specific to the 
+ *                                      accessed region
  *
  * RETURN:      Status
  *
@@ -316,7 +323,8 @@ AcpiAmlSystemIoSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context)
+    void                    *HandlerContext,
+    void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -407,7 +415,9 @@ AcpiAmlSystemIoSpaceHandler (
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, or 32)
  *              Value               - Pointer to in or out value
- *              Context             - Context pointer
+ *              HandlerContext      - Pointer to Handler's context
+ *              RegionContext       - Pointer to context specific to the 
+ *                                      accessed region
  *
  * RETURN:      Status
  *
@@ -421,7 +431,8 @@ AcpiAmlPciConfigSpaceHandler (
     UINT32                  Address,
     UINT32                  BitWidth,
     UINT32                  *Value,
-    void                    *Context)
+    void                    *HandlerContext,
+    void                    *RegionContext)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  PciBus;
@@ -447,7 +458,7 @@ AcpiAmlPciConfigSpaceHandler (
      *
      */
 
-    PCIContext = (PCI_HANDLER_CONTEXT *) Context;
+    PCIContext = (PCI_HANDLER_CONTEXT *) RegionContext;
 
     PciBus = LOWORD(PCIContext->Seg) << 16;
     PciBus |= LOWORD(PCIContext->Bus);

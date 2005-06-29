@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amstore - AML Interpreter object store support
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -117,12 +118,12 @@
 #define __AMSTORE_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "tables.h"
+#include "acnamesp.h"
+#include "actables.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -151,7 +152,8 @@
 ACPI_STATUS
 AcpiAmlExecStore (
     ACPI_OBJECT_INTERNAL    *ValDesc,
-    ACPI_OBJECT_INTERNAL    *DestDesc)
+    ACPI_OBJECT_INTERNAL    *DestDesc,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OBJECT_INTERNAL    *DeleteDestDesc = NULL;
@@ -232,7 +234,8 @@ AcpiAmlExecStore (
          *  Storing into a Name
          */
         DeleteDestDesc = DestDesc;
-        Status = AcpiAmlStoreObjectToNte (ValDesc, DestDesc->Reference.Object);
+        Status = AcpiAmlStoreObjectToNte (ValDesc, DestDesc->Reference.Object,
+                        WalkState);
 
         break;  /* Case NameOp */
 
@@ -305,7 +308,7 @@ AcpiAmlExecStore (
                 if (ACPI_TYPE_PACKAGE == TmpDesc->Common.Type)
                 {
                     Status = AcpiAmlBuildCopyInternalPackageObject (
-                                ValDesc, TmpDesc);
+                                ValDesc, TmpDesc, WalkState);
                     if (ACPI_FAILURE (Status))
                     {
                         AcpiCmRemoveReference (TmpDesc);
@@ -331,7 +334,8 @@ AcpiAmlExecStore (
                  * convert the contents of the source (ValDesc) and copy into
                  * the destination (TmpDesc)
                  */
-                Status = AcpiAmlStoreObjectToObject(ValDesc, TmpDesc);
+                Status = AcpiAmlStoreObjectToObject (ValDesc, TmpDesc, 
+                                                        WalkState);
                 if (ACPI_FAILURE (Status))
                 {
                     /*
@@ -435,7 +439,7 @@ AcpiAmlExecStore (
         /*
          * If we had an error, break out of this case statement.
          */
-        if(AE_OK != Status)
+        if (ACPI_FAILURE (Status))
         {
             break;
         }
@@ -452,7 +456,7 @@ AcpiAmlExecStore (
     case AML_ONES_OP:
 
         /*
-         * Storing to a constant is a no-op -- see spec sec 15.2.3.3.1.
+         * Storing to a constant is a no-op -- see ACPI Specification
          * Delete the result descriptor.
          */
 
@@ -463,7 +467,7 @@ AcpiAmlExecStore (
     case AML_LOCAL_OP:
 
         Status = AcpiDsMethodDataSetValue (MTH_TYPE_LOCAL,
-                        (DestDesc->Reference.Offset), ValDesc);
+                        (DestDesc->Reference.Offset), ValDesc, WalkState);
         DeleteDestDesc = DestDesc;
         break;
 
@@ -471,7 +475,7 @@ AcpiAmlExecStore (
     case AML_ARG_OP:
 
         Status = AcpiDsMethodDataSetValue (MTH_TYPE_ARG,
-                        (DestDesc->Reference.Offset), ValDesc);
+                        (DestDesc->Reference.Offset), ValDesc, WalkState);
         DeleteDestDesc = DestDesc;
         break;
 
@@ -480,7 +484,7 @@ AcpiAmlExecStore (
 
         /*
          * Storing to the Debug object causes the value stored to be
-         * displayed and otherwise has no effect -- see sec. 15.2.3.3.3.
+         * displayed and otherwise has no effect -- see ACPI Specification
          */
         DEBUG_PRINT (ACPI_INFO, ("**** Write to Debug Object: ****: \n"));
         if (ValDesc->Common.Type == ACPI_TYPE_STRING)

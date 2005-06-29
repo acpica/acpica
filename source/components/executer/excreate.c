@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -118,12 +119,12 @@
 #define __AMCREATE_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "events.h"
-#include "dispatch.h"
+#include "acnamesp.h"
+#include "acevents.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -184,7 +185,7 @@ AcpiAmlExecCreateField (
 
     /* Resolve the operands */
 
-    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS);
+    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
                     NumOperands, "after AcpiAmlResolveOperands");
 
@@ -201,12 +202,14 @@ AcpiAmlExecCreateField (
     Status |= AcpiDsObjStackPopObject (&OffDesc, WalkState);
     Status |= AcpiDsObjStackPopObject (&SrcDesc, WalkState);
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         /* Invalid parameters on object stack  */
 
-        AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode,
-                                    WALK_OPERANDS, 3);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecCreateField/%s: bad operand(s) (0x%X)\n",
+            AcpiPsGetOpcodeName (Opcode), Status));
+
         goto Cleanup;
     }
 
@@ -441,7 +444,7 @@ AcpiAmlExecCreateField (
 
     /* Store constructed field descriptor in result location */
 
-    Status = AcpiAmlExecStore (FieldDesc, ResDesc);
+    Status = AcpiAmlExecStore (FieldDesc, ResDesc, WalkState);
 
     /*
      * If the field descriptor was not physically stored (or if a failure
@@ -509,7 +512,9 @@ AcpiAmlExecCreateAlias (
         return_ACPI_STATUS (Status);
     }
 
-    /* Don't pop it, it gets popped later */
+    /* 
+     * Don't pop it, it gets removed in the calling routine
+     */
 
     AliasEntry  = AcpiDsObjStackGetValue (0, WalkState);
 
@@ -706,8 +711,14 @@ AcpiAmlExecCreateRegion (
 
     if (RegionSpace >= NUM_REGION_TYPES)
     {
-        /* TBD: [Errors] should this return an error, or should we just keep
-         * going? */
+        /* TBD: [Future] In ACPI 2.0, valid region space 
+         *  includes types 0-6 (Adding CMOS and PCIBARTarget).
+         *  Also, types 0x80-0xff are defined as "OEM Region 
+         *  Space handler"
+         * 
+         * Should this return an error, or should we just keep
+         * going?  How do we handle the OEM region handlers? 
+         */
 
         DEBUG_PRINT (TRACE_LOAD,
             ("AmlDoNamedObject: Type out of range [*???*]\n"));
@@ -721,7 +732,6 @@ AcpiAmlExecCreateRegion (
     /* Get the NTE from the object stack  */
 
     Entry = AcpiDsObjStackGetValue (0, WalkState);
-
 
     /* Create the region descriptor */
 
@@ -764,14 +774,35 @@ AcpiAmlExecCreateRegion (
 
     Status = AcpiNsAttachObject (Entry, ObjDescRegion,
                                 (UINT8) ACPI_TYPE_REGION);
+
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
     }
 
+    /*
+     * If we have a valid region, initialize it
+     * Namespace is NOT locked at this point.
+     */
+
+    Status = AcpiEvInitializeRegion (ObjDescRegion, FALSE);
+
+    if (ACPI_FAILURE (Status))
+    {
+        /*
+         *  If AE_NOT_EXIST is returned, it is not fatal 
+         *  because many regions get created before a handler
+         *  is installed for said region.
+         */
+        if (AE_NOT_EXIST == Status)
+        {
+            Status = AE_OK;
+        }
+    }
+
 Cleanup:
 
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         /* Delete region object and method subobject */
 
@@ -782,23 +813,6 @@ Cleanup:
             AcpiCmRemoveReference (ObjDescRegion);
             ObjDescRegion = NULL;
         }
-    }
-
-
-    /*
-     * If we have a valid region, initialize it
-     */
-    if (ObjDescRegion)
-    {
-        /*
-         *  TBD: [Errors] Is there anything we can or could do when this
-         *          fails?
-         *  We need to do something useful with a failure.
-         */
-        /* Namespace IS locked */
-
-        (void *) AcpiEvInitializeRegion (ObjDescRegion, TRUE);
-  
     }
 
     return_ACPI_STATUS (Status);

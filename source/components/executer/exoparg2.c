@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amdyadic - ACPI AML (p-code) execution for dyadic operators
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -118,12 +119,12 @@
 #define __AMDYADIC_C__
 
 #include "acpi.h"
-#include "parser.h"
-#include "namesp.h"
-#include "interp.h"
-#include "events.h"
+#include "acparser.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "acevents.h"
 #include "amlcode.h"
-#include "dispatch.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -161,7 +162,7 @@ AcpiAmlExecDyadic1 (
 
     /* Resolve all operands */
 
-    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS);
+    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
                     2, "after AcpiAmlResolveOperands");
 
@@ -173,8 +174,10 @@ AcpiAmlExecDyadic1 (
     {
         /* Invalid parameters on object stack  */
 
-        AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode,
-                                WALK_OPERANDS, 2);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecDyadic1/%s: bad operand(s) (0x%X)\n",
+            AcpiPsGetOpcodeName (Opcode), Status));
+
         goto Cleanup;
     }
 
@@ -223,8 +226,8 @@ AcpiAmlExecDyadic1 (
         break;
 
     default:
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecDyadic1: Unknown dyadic opcode %02x\n", Opcode));
+
+        REPORT_ERROR ("AcpiAmlExecDyadic1: Unknown dyadic opcode");
         Status = AE_AML_BAD_OPCODE;
     }
 
@@ -270,8 +273,8 @@ AcpiAmlExecDyadic2R (
     ACPI_OBJECT_INTERNAL    *RetDesc2   = NULL;
     ACPI_STATUS             Status      = AE_OK;
     UINT32                  Remainder;
-    INT32                   NumOperands = 3;
-    char                    *NewBuf;
+    UINT32                  NumOperands = 3;
+    NATIVE_CHAR             *NewBuf;
 
 
     FUNCTION_TRACE_U32 ("AmlExecDyadic2R", Opcode);
@@ -279,7 +282,7 @@ AcpiAmlExecDyadic2R (
 
     /* Resolve all operands */
 
-    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS);
+    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
                     NumOperands, "after AcpiAmlResolveOperands");
 
@@ -294,11 +297,12 @@ AcpiAmlExecDyadic2R (
     Status |= AcpiDsObjStackPopObject (&ResDesc, WalkState);
     Status |= AcpiDsObjStackPopObject (&ObjDesc2, WalkState);
     Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
-        AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode,
-            &(WalkState->Operands [WalkState->NumOperands -1]),
-            NumOperands);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecDyadic2R/%s: bad operand(s) (0x%X)\n",
+            AcpiPsGetOpcodeName (Opcode), Status));
+
         goto Cleanup;
     }
 
@@ -495,9 +499,9 @@ AcpiAmlExecDyadic2R (
                 goto Cleanup;
             }
 
-            STRCPY (NewBuf, (char *) ObjDesc->String.Pointer);
+            STRCPY (NewBuf, ObjDesc->String.Pointer);
             STRCPY (NewBuf + ObjDesc->String.Length,
-                            (char *) ObjDesc2->String.Pointer);
+                            ObjDesc2->String.Pointer);
 
             /* Point the return object to the new string */
 
@@ -521,20 +525,8 @@ AcpiAmlExecDyadic2R (
                                      ObjDesc2->Buffer.Length);
             if (!NewBuf)
             {
-                /* Only bail out if the buffer is small */
-
-                /* TBD: [Investigate] what is the point of this code? */
-
-                if (ObjDesc->Buffer.Length + ObjDesc2->Buffer.Length < 1024)
-                {
-                    REPORT_ERROR
-                        ("AmlExecDyadic2R/ConcatOp: Buffer allocation failure");
-                    return_ACPI_STATUS (AE_NO_MEMORY);
-                }
-
-                DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlExecDyadic2R/ConcatOp: Buffer allocation failure %d\n",
-                     ObjDesc->Buffer.Length + ObjDesc2->Buffer.Length));
+                REPORT_ERROR
+                    ("AmlExecDyadic2R/ConcatOp: Buffer allocation failure");
                 Status = AE_NO_MEMORY;
                 goto Cleanup;
             }
@@ -557,8 +549,7 @@ AcpiAmlExecDyadic2R (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecDyadic2R: Unknown dyadic opcode %02x\n", Opcode));
+        REPORT_ERROR ("AcpiAmlExecDyadic2R: Unknown dyadic opcode");
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
@@ -570,14 +561,15 @@ AcpiAmlExecDyadic2R (
      * descriptor (ResDesc).
      */
 
-    if ((Status = AcpiAmlExecStore (RetDesc, ResDesc)) != AE_OK)
+    Status = AcpiAmlExecStore (RetDesc, ResDesc, WalkState);
+    if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
     }
 
     if (AML_DIVIDE_OP == Opcode)
     {
-        Status = AcpiAmlExecStore (RetDesc2, ResDesc2);
+        Status = AcpiAmlExecStore (RetDesc2, ResDesc2, WalkState);
 
         /*
          * Since the remainder is not returned, remove a reference to
@@ -652,7 +644,7 @@ AcpiAmlExecDyadic2S (
 
     /* Resolve all operands */
 
-    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS);
+    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
                     2, "after AcpiAmlResolveOperands");
 
@@ -660,12 +652,14 @@ AcpiAmlExecDyadic2S (
 
     Status |= AcpiDsObjStackPopObject (&TimeDesc, WalkState);
     Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         /* Invalid parameters on object stack  */
 
-        AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode,
-                                    WALK_OPERANDS, 2);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecDyadic2S/%s: bad operand(s) (0x%X)\n",
+            AcpiPsGetOpcodeName (Opcode), Status));
+
         goto Cleanup;
     }
 
@@ -707,9 +701,7 @@ AcpiAmlExecDyadic2S (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecDyadic2S: Unknown dyadic synchronization opcode %02x\n",
-            Opcode));
+        REPORT_ERROR ("AcpiAmlExecDyadic2S: Unknown dyadic synchronization opcode");
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
@@ -785,7 +777,7 @@ AcpiAmlExecDyadic2 (
 
     /* Resolve all operands */
 
-    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS);
+    Status = AcpiAmlResolveOperands (Opcode, WALK_OPERANDS, WalkState);
     DUMP_OPERANDS (WALK_OPERANDS, IMODE_EXECUTE, AcpiPsGetOpcodeName (Opcode),
                     2, "after AcpiAmlResolveOperands");
 
@@ -793,12 +785,14 @@ AcpiAmlExecDyadic2 (
 
     Status |= AcpiDsObjStackPopObject (&ObjDesc2, WalkState);
     Status |= AcpiDsObjStackPopObject (&ObjDesc, WalkState);
-    if (Status != AE_OK)
+    if (ACPI_FAILURE (Status))
     {
         /* Invalid parameters on object stack  */
 
-        AcpiAmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode,
-                                    WALK_OPERANDS, 2);
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("ExecDyadic2/%s: bad operand(s) (0x%X)\n",
+            AcpiPsGetOpcodeName (Opcode), Status));
+
         goto Cleanup;
     }
 
@@ -867,8 +861,7 @@ AcpiAmlExecDyadic2 (
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlExecDyadic2: Unknown dyadic opcode %02x\n", Opcode));
+        REPORT_ERROR ("AcpiAmlExecDyadic2: Unknown dyadic opcode");
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
         break;

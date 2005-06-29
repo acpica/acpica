@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresop - AML Interpreter operand/object resolution
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -118,12 +119,12 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "interp.h"
-#include "namesp.h"
-#include "tables.h"
-#include "events.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "actables.h"
+#include "acevents.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -152,7 +153,8 @@
 ACPI_STATUS
 AcpiAmlResolveOperands (
     UINT16                  Opcode,
-    ACPI_OBJECT_INTERNAL    **StackPtr)
+    ACPI_OBJECT_INTERNAL    **StackPtr,
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_STATUS             Status = AE_OK;
@@ -167,7 +169,7 @@ AcpiAmlResolveOperands (
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-    if (!OpInfo)
+    if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
     {
         return_ACPI_STATUS (AE_AML_BAD_OPCODE);
     }
@@ -242,7 +244,7 @@ AcpiAmlResolveOperands (
                  */
 
                 OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-                if (!OpInfo)
+                if (ACPI_GET_OP_TYPE (OpInfo) != ACPI_OP_TYPE_OPCODE)
                 {
                     return_ACPI_STATUS (AE_AML_BAD_OPCODE);
                 }
@@ -337,7 +339,8 @@ AcpiAmlResolveOperands (
 
             /* Need an operand of type ACPI_TYPE_NUMBER */
 
-            if ((Status = AcpiAmlResolveToValue (StackPtr)) != AE_OK)
+            Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+            if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
             }
@@ -357,7 +360,8 @@ AcpiAmlResolveOperands (
 
             /* Need an operand of type ACPI_TYPE_STRING or ACPI_TYPE_BUFFER */
 
-            if ((Status = AcpiAmlResolveToValue (StackPtr)) != AE_OK)
+            Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+            if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
             }
@@ -378,7 +382,8 @@ AcpiAmlResolveOperands (
 
             /* Need an operand of type ACPI_TYPE_BUFFER */
 
-            if ((Status = AcpiAmlResolveToValue(StackPtr)) != AE_OK)
+            Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+            if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
             }
@@ -398,7 +403,8 @@ AcpiAmlResolveOperands (
 
             /* Need an operand of type ACPI_TYPE_MUTEX */
 
-            if ((Status = AcpiAmlResolveToValue(StackPtr)) != AE_OK)
+            Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+            if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
             }
@@ -418,7 +424,8 @@ AcpiAmlResolveOperands (
 
             /* Need an operand of type ACPI_TYPE_EVENT */
 
-            if ((Status = AcpiAmlResolveToValue(StackPtr)) != AE_OK)
+            Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+            if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
             }
@@ -438,7 +445,8 @@ AcpiAmlResolveOperands (
 
             /* Need an operand of type ACPI_TYPE_REGION */
 
-            if ((Status = AcpiAmlResolveToValue(StackPtr)) != AE_OK)
+            Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+            if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
             }
@@ -473,7 +481,8 @@ AcpiAmlResolveOperands (
 
             /* Need an operand of type ACPI_TYPE_PACKAGE */
 
-            if ((Status = AcpiAmlResolveToValue (StackPtr)) != AE_OK)
+            Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+            if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
             }
@@ -507,7 +516,8 @@ AcpiAmlResolveOperands (
 
             /* All others must be resolved */
 
-            if ((Status = AcpiAmlResolveToValue (StackPtr)) != AE_OK)
+            Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+            if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
             }
@@ -527,7 +537,8 @@ AcpiAmlResolveOperands (
              *  error with a size of 4.
              */
 
-            if ((Status = AcpiAmlResolveToValue (StackPtr)) != AE_OK)
+            Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+            if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
             }
@@ -566,7 +577,8 @@ AcpiAmlResolveOperands (
 
         case ARGI_COMPLEXOBJ:
 
-            if ((Status = AcpiAmlResolveToValue (StackPtr)) != AE_OK)
+            Status = AcpiAmlResolveToValue (StackPtr, WalkState);
+            if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
             }

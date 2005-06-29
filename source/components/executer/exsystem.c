@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amsystem - Interface to OS services
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -117,10 +118,10 @@
 #define __AMSYSTEM_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "namesp.h"
-#include "hardware.h"
-#include "events.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "achware.h"
+#include "acevents.h"
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("amsystem");

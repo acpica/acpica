@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -117,12 +118,12 @@
 #define __AMFIELD_C__
 
 #include "acpi.h"
-#include "dispatch.h"
-#include "interp.h"
+#include "acdispat.h"
+#include "acinterp.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "hardware.h"
-#include "events.h"
+#include "acnamesp.h"
+#include "achware.h"
+#include "acevents.h"
 
 
 #define _COMPONENT          INTERPRETER
@@ -162,10 +163,10 @@ ACPI_STATUS
 AcpiAmlSetupField (
     ACPI_OBJECT_INTERNAL    *ObjDesc,
     ACPI_OBJECT_INTERNAL    *RgnDesc,
-    INT32                   FieldBitWidth)
+    UINT32                  FieldBitWidth)
 {
     ACPI_STATUS             Status = AE_OK;
-    INT32                   FieldByteWidth;
+    UINT32                  FieldByteWidth;
 
 
     FUNCTION_TRACE ("AmlSetupField");
@@ -190,6 +191,8 @@ AcpiAmlSetupField (
 
 
     /*
+     * TBD: [Future] Acpi 2.0 supports Qword fields
+     *
      * Init and validate Field width
      * Possible values are 1, 2, 4
      */
@@ -219,12 +222,6 @@ AcpiAmlSetupField (
             return_ACPI_STATUS (Status);
         }
     }
-
-
-    /*
-     * If (offset rounded up to next multiple of field width)
-     * exceeds region length, indicate an error.
-     */
 
     if (RgnDesc->Region.Length <
        (ObjDesc->Field.Offset & ~((UINT32) FieldByteWidth - 1)) +
@@ -267,7 +264,7 @@ AcpiAmlSetupField (
 
 ACPI_STATUS
 AcpiAmlAccessNamedField (
-    INT32                   Mode,
+    UINT32                  Mode,
     ACPI_HANDLE             NamedField,
     void                    *Buffer,
     UINT32                  BufferLength)
@@ -285,6 +282,14 @@ AcpiAmlAccessNamedField (
     FUNCTION_TRACE_PTR ("AmlAccessNamedField", NamedField);
 
 
+    /* Basic data checking */
+    if ((!NamedField) || (ACPI_READ == Mode && !Buffer))
+    {
+        DEBUG_PRINT (ACPI_ERROR,
+            ("AcpiAmlAccessNamedField: Internal error - null parameter\n"));
+        return_ACPI_STATUS (AE_AML_INTERNAL);
+    }
+    
     /* Get the attached field object */
 
     ObjDesc = AcpiNsGetAttachedObject (NamedField);
@@ -405,84 +410,6 @@ AcpiAmlAccessNamedField (
 
     AcpiAmlReleaseGlobalLock (Locked);
 
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlSetNamedFieldValue
- *
- * PARAMETERS:  NamedField          - Handle for field to be set
- *              Buffer              - Bytes to be stored
- *              BufferLength        - Number of bytes to be stored
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Store the given value into the field
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiAmlSetNamedFieldValue (
-    ACPI_HANDLE             NamedField,
-    void                    *Buffer,
-    UINT32                  BufferLength)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE_PTR ("AmlSetNamedFieldValue", NamedField);
-
-
-    if (!NamedField)
-    {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlSetNamedFieldValue: Internal error - null handle\n"));
-        return_ACPI_STATUS (AE_AML_INTERNAL);
-    }
-
-    Status = AcpiAmlAccessNamedField (ACPI_WRITE, NamedField, Buffer,
-                                        BufferLength);
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiAmlGetNamedFieldValue
- *
- * PARAMETERS:  NamedField          - Handle for field to be read
- *              *Buffer             - Where to store value read from field
- *              BufferLength        - Max length to read
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Retrieve the value of the given field
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiAmlGetNamedFieldValue (
-    ACPI_HANDLE             NamedField,
-    void                    *Buffer,
-    UINT32                  BufferLength)
-{
-    ACPI_STATUS             Status;
-
-
-    FUNCTION_TRACE_PTR ("AmlGetNamedFieldValue", NamedField);
-
-
-    if ((!NamedField) || (!Buffer))
-    {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("AmlGetNamedFieldValue: Internal error - null parameter\n"));
-        return_ACPI_STATUS (AE_AML_INTERNAL);
-    }
-
-    Status = AcpiAmlAccessNamedField (ACPI_READ, NamedField, Buffer,
-                                        BufferLength);
     return_ACPI_STATUS (Status);
 }
 
