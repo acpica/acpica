@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -219,7 +220,7 @@ AcpiDsCreateField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            (INT8 *) &((ACPI_EXTENDED_OP *)Arg)->Name,
+                            (NATIVE_CHAR *) &((ACPI_EXTENDED_OP *)Arg)->Name,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
@@ -361,7 +362,7 @@ AcpiDsCreateBankField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                            (INT8 *) &((ACPI_EXTENDED_OP *)Arg)->Name,
+                            (NATIVE_CHAR *) &((ACPI_EXTENDED_OP *)Arg)->Name,
                             INTERNAL_TYPE_DEF_FIELD,
                             IMODE_LOAD_PASS1,
                             NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,
@@ -498,7 +499,7 @@ AcpiDsCreateIndexField (
         case AML_NAMEDFIELD_OP:
 
             Status = AcpiNsLookup (WalkState->ScopeInfo,
-                                    (INT8 *) &((ACPI_EXTENDED_OP *)Arg)->Name,
+                                    (NATIVE_CHAR *) &((ACPI_EXTENDED_OP *)Arg)->Name,
                                     INTERNAL_TYPE_INDEX_FIELD,
                                     IMODE_LOAD_PASS1,
                                     NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE,

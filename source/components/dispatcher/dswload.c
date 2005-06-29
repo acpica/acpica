@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -153,7 +154,7 @@ AcpiDsLoad1BeginOp (
     ACPI_NAMED_OBJECT       *Entry;
     ACPI_STATUS             Status;
     OBJECT_TYPE_INTERNAL    DataType;
-    INT8                    *Path;
+    NATIVE_CHAR             *Path;
 
 
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -215,7 +216,7 @@ AcpiDsLoad1BeginOp (
 
     /* Initialize */
 
-    ((ACPI_NAMED_OP *)Op)->Name = Entry->Name;
+    ((ACPI_EXTENDED_OP *)Op)->Name = Entry->Name;
 
     /*
      * Put the NTE in the "op" object that the parser uses, so we
@@ -324,7 +325,7 @@ AcpiDsLoad2BeginOp (
     ACPI_NAMED_OBJECT       *NewEntry;
     ACPI_STATUS             Status;
     OBJECT_TYPE_INTERNAL    DataType;
-    INT8                    *BufferPtr;
+    NATIVE_CHAR             *BufferPtr;
     void                    *Original = NULL;
 
 
@@ -370,7 +371,7 @@ AcpiDsLoad2BeginOp (
         {
             /* Get name from the op */
 
-            BufferPtr = (INT8 *) &((ACPI_NAMED_OP *)Op)->Name;
+            BufferPtr = (NATIVE_CHAR *) &((ACPI_EXTENDED_OP *)Op)->Name;
         }
     }
 
@@ -454,7 +455,7 @@ AcpiDsLoad2BeginOp (
 
             /* Initialize */
 
-            ((ACPI_NAMED_OP *)Op)->Name = NewEntry->Name;
+            ((ACPI_EXTENDED_OP *)Op)->Name = NewEntry->Name;
             *OutOp = Op;
         }
 
@@ -522,7 +523,7 @@ AcpiDsLoad2EndOp (
         DEBUG_PRINT (TRACE_DISPATCH,
             ("Load2EndOp: ending scope Op=%p State=%p\n", Op, WalkState));
 
-        if (((ACPI_NAMED_OP *)Op)->Name == -1)
+        if (((ACPI_EXTENDED_OP *)Op)->Name == -1)
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("Load2EndOp: Un-named scope! Op=%p State=%p\n", Op,
@@ -743,7 +744,7 @@ AcpiDsLoad2EndOp (
         Arg = Op->Value.Arg;
 
         Status = AcpiDsCreateField (Op,
-                                    (ACPI_HANDLE) Arg->AcpiNamedObject,
+                                    Arg->AcpiNamedObject,
                                     WalkState);
         break;
 
@@ -770,7 +771,7 @@ AcpiDsLoad2EndOp (
 
         Arg = Op->Value.Arg;
         Status = AcpiDsCreateBankField (Op,
-                                        (ACPI_HANDLE) Arg->AcpiNamedObject,
+                                        Arg->AcpiNamedObject,
                                         WalkState);
         break;
 
@@ -786,8 +787,8 @@ AcpiDsLoad2EndOp (
 
         if (!Entry->Object)
         {
-            Status = AcpiAmlExecCreateMethod (((ACPI_DEFERRED_OP *) Op)->Body,
-                                ((ACPI_DEFERRED_OP *) Op)->BodyLength,
+            Status = AcpiAmlExecCreateMethod (((ACPI_EXTENDED_OP *) Op)->Data,
+                                ((ACPI_EXTENDED_OP *) Op)->Length,
                                 Arg->Value.Integer, (ACPI_HANDLE) Entry);
         }
 
@@ -840,8 +841,8 @@ AcpiDsLoad2EndOp (
          * (We must save the address of the AML of the address and length operands)
          */
 
-        Status = AcpiAmlExecCreateRegion (((ACPI_DEFERRED_OP *) Op)->Body,
-                                        ((ACPI_DEFERRED_OP *) Op)->BodyLength,
+        Status = AcpiAmlExecCreateRegion (((ACPI_EXTENDED_OP *) Op)->Data,
+                                        ((ACPI_EXTENDED_OP *) Op)->Length,
                                         Arg->Value.Integer, WalkState);
 
         DEBUG_PRINT (TRACE_DISPATCH,

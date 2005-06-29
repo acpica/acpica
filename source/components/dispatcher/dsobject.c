@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -156,7 +157,6 @@ AcpiDsInitOneObject (
 {
     OBJECT_TYPE_INTERNAL    Type;
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
     INIT_WALK_INFO          *Info = (INIT_WALK_INFO *) Context;
 
 
@@ -219,16 +219,7 @@ AcpiDsInitOneObject (
 
         if (AcpiGbl_WhenToParseMethods != METHOD_PARSE_AT_INIT)
         {
-
             AcpiNsDeleteNamespaceSubtree (ObjHandle);
-
-            /* TBD: [Restructure] - remove, obsolete */
-
-            /*
-            ObjDesc = ((ACPI_NAMED_OBJECT*)ObjHandle)->Object;
-            AcpiPsDeleteParseTree (ObjDesc->Method.ParserOp);
-            ObjDesc->Method.ParserOp = NULL;
-            */
         }
 
         break;
@@ -253,8 +244,8 @@ AcpiDsInitOneObject (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Walk the entire namespace and perform any necessary initialization
- *              on the objects found therein
+ * DESCRIPTION: Walk the entire namespace and perform any necessary 
+ *              initialization on the objects found therein
  *
  ******************************************************************************/
 
@@ -283,7 +274,7 @@ AcpiDsInitializeObjects (
     /* Walk entire namespace from the supplied root */
 
     Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartEntry,
-                                ACPI_INT32_MAX, AcpiDsInitOneObject,
+                                ACPI_UINT32_MAX, AcpiDsInitOneObject,
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {

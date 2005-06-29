@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -117,8 +118,8 @@
 #define __DSWSCOPE_C__
 
 #include "acpi.h"
-#include "interp.h"
-#include "dispatch.h"
+#include "acinterp.h"
+#include "acdispat.h"
 
 
 #define _COMPONENT          NAMESPACE

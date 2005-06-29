@@ -2,6 +2,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
+ *              $Revision: 1.41 $
  *
  ******************************************************************************/
 
@@ -319,7 +320,7 @@ AcpiDsCreateOperand (
     ACPI_GENERIC_OP         *Arg)
 {
     ACPI_STATUS             Status = AE_OK;
-    INT8                    *NameString;
+    NATIVE_CHAR             *NameString;
     UINT32                  NameLength;
     OBJECT_TYPE_INTERNAL    DataType;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
@@ -514,7 +515,7 @@ AcpiDsCreateOperand (
             /* Initialize the new object */
 
             Status = AcpiDsInitObjectFromOp (WalkState, Arg,
-                                                Opcode, ObjDesc);
+                                                Opcode, &ObjDesc);
             if (ACPI_FAILURE (Status))
             {
                 AcpiCmDeleteObjectDesc (ObjDesc);

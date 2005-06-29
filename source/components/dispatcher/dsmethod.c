@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -136,7 +137,7 @@
 ACPI_PARSE_STATE *
 AcpiPsCreateState (
     UINT8                   *Aml,
-    INT32                   AmlSize);
+    UINT32                  AmlSize);
 
 
 /*******************************************************************************

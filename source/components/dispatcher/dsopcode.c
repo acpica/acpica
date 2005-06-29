@@ -1,8 +1,9 @@
 
 /******************************************************************************
  *
- * Module Name: dsopcode - Dispatcher Op Region support
- *                          and handling of "control" opcodes
+ * Module Name: dsopcode - Dispatcher Op Region support and handling of 
+ *                         "control" opcodes
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -206,8 +207,8 @@ AcpiDsGetRegionArguments (
 
     /* Get and init the actual RegionOp created above */
 
-    //RegionOp = Op->Value.Arg;
-    //Op->AcpiNamedObject = Entry;
+/*    RegionOp = Op->Value.Arg;
+    Op->AcpiNamedObject = Entry;*/
 
 
     RegionOp = Op->Value.Arg;
@@ -407,7 +408,7 @@ AcpiDsExecBeginControlOp (
          */
         WalkState->ControlState->Control.AmlPredicateStart = 
                     WalkState->ParserState->Aml - 1;
-                    //AcpiPsPkgLengthEncodingSize (GET8 (WalkState->ParserState->Aml));
+                    /*AcpiPsPkgLengthEncodingSize (GET8 (WalkState->ParserState->Aml));*/
         break;
 
 
@@ -506,8 +507,8 @@ AcpiDsExecEndControlOp (
             Status = AE_CTRL_PENDING;
         }
 
-//        else
-//        {
+/*        else
+        {*/
             DEBUG_PRINT (TRACE_DISPATCH,
                 ("EndControlOp: [WHILE_OP] termination! Op=%p\n", Op));
 
@@ -518,7 +519,7 @@ AcpiDsExecEndControlOp (
 
             WalkState->AmlLastWhile = ControlState->Control.AmlPredicateStart;
             AcpiCmDeleteGenericState (ControlState);
-//        }
+/*        }*/
 
         break;
 
