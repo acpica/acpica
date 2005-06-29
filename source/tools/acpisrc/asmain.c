@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.62 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -142,6 +142,7 @@ BOOLEAN                 Gbl_DebugStatementsMode = FALSE;
 BOOLEAN                 Gbl_MadeChanges = FALSE;
 BOOLEAN                 Gbl_Overwrite = FALSE;
 BOOLEAN                 Gbl_WidenDeclarations = FALSE;
+BOOLEAN                 Gbl_IgnoreLoneLineFeeds = FALSE;
 
 
 /******************************************************************************
@@ -230,6 +231,7 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Declarations first */
 
+    {"UINT16_BIT  ",             "u16                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"UINT32_BIT  ",             "u32                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"INT64       ",             "s64                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"UINT64      ",             "u64                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
@@ -829,6 +831,7 @@ main (
         printf ("Creating Linux source code\n");
         ConversionTable = &LinuxConversionTable;
         Gbl_WidenDeclarations = TRUE;
+        Gbl_IgnoreLoneLineFeeds = TRUE;
         break;
 
     case 'c':
