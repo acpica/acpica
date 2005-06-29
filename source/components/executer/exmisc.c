@@ -164,12 +164,14 @@ AmlExecCreateField (
     ACPI_OBJECT_INTERNAL    *CntDesc = NULL;
     ACPI_OBJECT_INTERNAL    *OffDesc = NULL;
     ACPI_OBJECT_INTERNAL    *SrcDesc = NULL;
+    ACPI_OBJECT_TYPE        ResType;
     ACPI_STATUS             Status;
     char                    *OpName = NULL;
     UINT32                  NumOperands;
     UINT16                  BitCount;
     UINT32                  BitOffset;
     UINT32                  StackIndex;
+    UINT32                  Offset;
     UINT8                   TypeFound;
 
 
@@ -209,7 +211,7 @@ AmlExecCreateField (
 
     /* Get pointers to everything that is now on the object stack */
 
-    AmlDumpObjStack (MODE_Exec, OpName, NumOperands, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, OpName, NumOperands, "after AmlPrepObjStack");
 
     StackIndex = 0;
     ResDesc = AmlObjStackGetValue (StackIndex++);           /* result */
@@ -220,6 +222,8 @@ AmlExecCreateField (
     }
 
     OffDesc = AmlObjStackGetValue (StackIndex++);           /* offset */
+    Offset = OffDesc->Number.Value;
+
     SrcDesc = AmlObjStackGetValue (StackIndex++);           /* source */
 
     /* If ResDesc is a Name, it will be a direct name pointer after AmlPrepObjStack() */
@@ -242,8 +246,8 @@ AmlExecCreateField (
 
     case AML_BitFieldOp:
 
-        BitOffset = OffDesc->Number.Value;              /* offset is in bits */
-        BitCount = 1;                                   /* field is a bit */
+        BitOffset = Offset;                         /* offset is in bits */
+        BitCount = 1;                               /* field is a bit */
         break;
 
 
@@ -251,8 +255,8 @@ AmlExecCreateField (
 
     case AML_ByteFieldOp:
 
-        BitOffset = 8 * OffDesc->Number.Value;          /* offset is in bytes */
-        BitCount = 8;                                   /* field is a Byte */
+        BitOffset = 8 * Offset;                     /* offset is in bytes */
+        BitCount = 8;                               /* field is a Byte */
         break;
 
 
@@ -260,8 +264,8 @@ AmlExecCreateField (
 
     case AML_WordFieldOp:
 
-        BitOffset = 8 * OffDesc->Number.Value;          /* offset is in bytes */
-        BitCount = 16;                                  /* field is a Word */
+        BitOffset = 8 * Offset;                     /* offset is in bytes */
+        BitCount = 16;                              /* field is a Word */
         break;
 
 
@@ -269,8 +273,8 @@ AmlExecCreateField (
 
     case AML_DWordFieldOp:
 
-        BitOffset = 8 * OffDesc->Number.Value;          /* offset is in bytes */
-        BitCount = 32;                                  /* field is a DWord */
+        BitOffset = 8 * Offset;                     /* offset is in bytes */
+        BitCount = 32;                              /* field is a DWord */
         break;
 
 
@@ -278,8 +282,8 @@ AmlExecCreateField (
 
     case AML_CreateFieldOp:
 
-        BitOffset = OffDesc->Number.Value;              /* offset is in bits */
-        BitCount = (UINT16) CntDesc->Number.Value;      /* as is count */
+        BitOffset = Offset;                         /* offset is in bits */
+        BitCount = (UINT16) CntDesc->Number.Value;  /* as is count */
         break;
 
 
@@ -308,14 +312,21 @@ AmlExecCreateField (
         if (BitOffset + (UINT32) BitCount > 8 * (UINT32) SrcDesc->Buffer.Length)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
-                            BitOffset + (UINT32)BitCount,
-                            8 * (UINT32)SrcDesc->Buffer.Length));
+                            BitOffset + (UINT32) BitCount,
+                            8 * (UINT32) SrcDesc->Buffer.Length));
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-        /* Reuse "OffDesc" descriptor to build result */
+        /* Reuse "OffDesc" pointer to build result */
+
+        if (OffDesc->Common.ReferenceCount > 1)
+        {
+            DEBUG_PRINT (ACPI_ERROR, ("Reusing a descriptor %p with multiple ref count %d\n",
+                            OffDesc, OffDesc->Common.ReferenceCount));
+        }
         
-        OffDesc->Type                   = (UINT8) TYPE_FieldUnit;
+        OffDesc->Common.Type            = (UINT8) TYPE_FieldUnit;
+        OffDesc->Common.ReferenceCount  = 1;
         OffDesc->FieldUnit.Access       = (UINT16) ACCESS_AnyAcc;
         OffDesc->FieldUnit.LockRule     = (UINT16) GLOCK_NeverLock;
         OffDesc->FieldUnit.UpdateRule   = (UINT16) UPDATE_Preserve;
@@ -376,7 +387,8 @@ AmlExecCreateField (
      * reference before calling AmlExecStore().
      */
 
-    switch (NsGetType (ResDesc))                /* Type of Name's existing value */
+    ResType = NsGetType (ResDesc);
+    switch (ResType)                /* Type of Name's existing value */
     {
 
     case TYPE_Alias:
@@ -403,6 +415,32 @@ AmlExecCreateField (
     /* Store constructed field descriptor in result location */
     
     Status = AmlExecStore (OffDesc, ResDesc);
+
+
+    /*
+     * In the default case (below) in AmlExecStore above, the OffDesc will be
+     * copied to the DestDesc.  Therefore, we must delete the OffDesc, but ONLY
+     * in the cases below!
+     */
+
+    /* TBD: this is a bit ugly, likewise with the switch above */
+
+    switch (ResType)                /* Type of Name's existing value */
+    {
+
+    case TYPE_Alias:
+    case TYPE_BankField:
+    case TYPE_DefField:
+    case TYPE_FieldUnit:
+    case TYPE_IndexField:
+
+        break;
+
+    default:
+        CmDeleteInternalObject (OffDesc);
+        break;
+    }
+
 
     /* 
      * Pop off everything from the stack except the result,
@@ -455,7 +493,7 @@ AmlExecFatal (void)
         return_ACPI_STATUS (Status);
     }
 
-    AmlDumpObjStack (MODE_Exec, LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepObjStack");
 
 
     /* DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
@@ -519,7 +557,7 @@ AmlExecIndex (void)
 
     else
     {
-        AmlDumpObjStack (MODE_Exec, ShortOps[AML_IndexOp], 3, "after AmlPrepObjStack");
+        AmlDumpObjStack (IMODE_Execute, ShortOps[AML_IndexOp], 3, "after AmlPrepObjStack");
 
         ResDesc = AmlObjStackGetValue (0);
         IdxDesc = AmlObjStackGetValue (1);
@@ -613,7 +651,7 @@ AmlExecMatch (void)
 
     /* Get the parameters from the object stack */
 
-    AmlDumpObjStack (MODE_Exec, ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
 
     StartDesc = AmlObjStackGetValue (0);
     V2Desc    = AmlObjStackGetValue (1);
