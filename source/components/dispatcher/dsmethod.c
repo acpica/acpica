@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -517,8 +517,8 @@ AcpiDsRestartControlMethod (
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-        "****Restart [%4.4s]: Op %p ReturnValueFromCallee %p\n",
-        &WalkState->MethodNode->Name, WalkState->MethodCallOp,
+        "****Restart [%4.4s] Op %p ReturnValueFromCallee %p\n",
+        (char *) &WalkState->MethodNode->Name, WalkState->MethodCallOp,
         ReturnDesc));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
