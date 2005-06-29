@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.52 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -119,12 +119,9 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
 #include "acnamesp.h"
-#include "actables.h"
-#include "acevents.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -375,7 +372,7 @@ AcpiExResolveNodeToValue (
          */
         if (WalkState)
         {
-            AcpiExTruncateFor32bitTable (ObjDesc, WalkState);
+            AcpiExTruncateFor32bitTable (ObjDesc);
         }
         break;
 

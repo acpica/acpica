@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.108 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -119,12 +119,8 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
-#include "acnamesp.h"
-#include "actables.h"
-#include "acevents.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -168,7 +164,7 @@ AcpiExResolveToValue (
      * 1) A valid ACPI_OPERAND_OBJECT, or
      * 2) A ACPI_NAMESPACE_NODE (NamedObj)
      */
-    if (ACPI_GET_DESCRIPTOR_TYPE (*StackPtr) == ACPI_DESC_TYPE_INTERNAL)
+    if (ACPI_GET_DESCRIPTOR_TYPE (*StackPtr) == ACPI_DESC_TYPE_OPERAND)
     {
         Status = AcpiExResolveObjectToValue (StackPtr, WalkState);
         if (ACPI_FAILURE (Status))
@@ -183,7 +179,8 @@ AcpiExResolveToValue (
      */
     if (ACPI_GET_DESCRIPTOR_TYPE (*StackPtr) == ACPI_DESC_TYPE_NAMED)
     {
-        Status = AcpiExResolveNodeToValue ((ACPI_NAMESPACE_NODE **) StackPtr,
+        Status = AcpiExResolveNodeToValue (
+                        ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE, StackPtr),
                         WalkState);
         if (ACPI_FAILURE (Status))
         {
@@ -191,7 +188,7 @@ AcpiExResolveToValue (
         }
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Resolved object %p\n", *StackPtr));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Resolved object %p\n", *StackPtr));
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -277,7 +274,7 @@ AcpiExResolveObjectToValue (
             AcpiUtRemoveReference (StackDesc);
             *StackPtr = ObjDesc;
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "[Arg/Local %d] ValueObj is %p\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Arg/Local %d] ValueObj is %p\n",
                 StackDesc->Reference.Offset, ObjDesc));
             break;
 
@@ -313,11 +310,15 @@ AcpiExResolveObjectToValue (
 
                 /* Truncate value if we are executing from a 32-bit ACPI table */
 
-                AcpiExTruncateFor32bitTable (ObjDesc, WalkState);
+                AcpiExTruncateFor32bitTable (ObjDesc);
                 break;
 
             case AML_REVISION_OP:
                 ObjDesc->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
+                break;
+
+            default:
+                /* No other opcodes can get here */
                 break;
             }
 
