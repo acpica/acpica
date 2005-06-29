@@ -316,7 +316,7 @@ AcpiAmlAcquireGlobalLock (
     {
         /*  OK to get the lock   */
 
-        Status = AcpiEvAcquireGlobalLock ()
+        Status = AcpiEvAcquireGlobalLock ();
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT (ACPI_ERROR, ("Get Global Lock Failed!!\n"));
