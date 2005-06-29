@@ -134,27 +134,37 @@
 /*****************************************************************************
  * 
  * ACPI Table globals 
- *
+ * 
  ****************************************************************************/
 
+/*
+ * Table pointers.
+ * Although these pointers are somewhat redundant with the global AcpiTable,
+ * they are convenient because they are typed pointers.
+ *
+ * These tables are single-table only; meaning that there can be at most one
+ * of each in the system.  Each global points to the actual table.
+ *
+ */
 ACPI_EXTERN ROOT_SYSTEM_DESCRIPTOR_POINTER      * RSDP;
 ACPI_EXTERN ROOT_SYSTEM_DESCRIPTION_TABLE       * RSDT;
 ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE     * FACS;
 ACPI_EXTERN FIXED_ACPI_DESCRIPTION_TABLE        * FACP;
 ACPI_EXTERN APIC_TABLE                          * APIC;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * DSDT;
-ACPI_EXTERN ACPI_TABLE_HEADER                   * PSDT;
-
-/* 
- * TBD - There may be multiple SSDTs so a single pointer is not sufficient 
- * to tag them all.  An array or linked list of SSDT pointers will be
- * necessary. 
- */
-ACPI_EXTERN ACPI_TABLE_HEADER                   * SSDT;
 ACPI_EXTERN ACPI_TABLE_HEADER                   * SBDT;
+/* 
+ * Since there may be multiple SSDTs and PSDTS, a single pointer is not 
+ * sufficient; Therefore, there isn't one!
+ */
 
 
-extern      ACPI_TABLE_INFO     AcpiTables[NUM_ACPI_TABLES];
+/*
+ * ACPI Table info tables
+ */
+extern      ACPI_TABLE_DESC     AcpiTables[NUM_ACPI_TABLES];
+extern      UINT8               AcpiTableFlags[NUM_ACPI_TABLES];
+extern      char                *AcpiTableNames[NUM_ACPI_TABLES];
 
 /*****************************************************************************
  * 
@@ -239,7 +249,7 @@ extern INT32                    ObjStackTop;
 /* Method stack - contains arguments and locals */
 /* TBD: Split into parallel arg stack and local stack */
 
-extern ACPI_OBJECT_INTERNAL     *MethodStack[AML_METHOD_MAX_NEST][MTH_ENTRY_SIZE];
+extern METHOD_STACK             MethodStack[AML_METHOD_MAX_NEST];
 extern INT32                    MethodStackTop;
 
 /* Base of AML block, and pointer to current location in it */
