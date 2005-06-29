@@ -135,25 +135,20 @@ AcpiTerminate (
     void);
 
 ACPI_STATUS
+AcpiEnable (
+	void);
+
+ACPI_STATUS
+AcpiDisable (
+    void);
+
+ACPI_STATUS
 AcpiGetSystemInfo(
     ACPI_BUFFER             *RetBuffer);
 
 
-
 /*
- * Interpreter interfaces
- */
-
-ACPI_STATUS
-AcpiEvaluateObject (
-    ACPI_HANDLE             Handle, 
-    ACPI_STRING             Pathname, 
-    ACPI_OBJECT_LIST        *ParameterObjects,
-    ACPI_BUFFER             *ReturnObjectBuffer);
-
-
-/*
- * ACPI table interfaces
+ * ACPI table manipulation interfaces
  */
 
 ACPI_STATUS
@@ -179,15 +174,22 @@ AcpiGetTable (
     ACPI_BUFFER             *RetBuffer);
 
 
-
 /*
- * Namespace and enumeration interfaces
+ * Namespace and name interfaces
  */
-
 
 ACPI_STATUS
 AcpiLoadNamespace (
     void);
+
+ACPI_STATUS
+AcpiWalkNamespace (
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             StartObject, 
+    UINT32                  MaxDepth,
+    void *                  (* UserFunction)(ACPI_HANDLE, UINT32, void *), 
+    void                    *Context, 
+    void *                  *ReturnValue);
 
 ACPI_STATUS
 AcpiNameToHandle (
@@ -210,32 +212,22 @@ AcpiHandleToPathname (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *OutPathBuffer);
 
+
+/* 
+ * Object manipulation and enumeration
+ */
+
 ACPI_STATUS
-AcpiWalkNamespace (
-    ACPI_OBJECT_TYPE        Type, 
-    ACPI_HANDLE             StartObject, 
-    UINT32                  MaxDepth,
-    void *                  (* UserFunction)(ACPI_HANDLE,UINT32,void *), 
-    void                    *Context, 
-    void *                  *ReturnValue);
+AcpiEvaluateObject (
+    ACPI_HANDLE             Object, 
+    ACPI_STRING             Pathname, 
+    ACPI_OBJECT_LIST        *ParameterObjects,
+    ACPI_BUFFER             *ReturnObjectBuffer);
 
 ACPI_STATUS
 AcpiGetDeviceInfo (
     ACPI_HANDLE             Device, 
     ACPI_DEVICE_INFO        *Info);
-
-ACPI_STATUS
-AcpiSetFirmwareWakingVector (
-    void                    *PhysicalAddress);
-
-ACPI_STATUS
-AcpiGetFirmwareWakingVector (
-    void                    **PhysicalAddress);
-
-
-/* 
- * Object manipulation
- */
 
 ACPI_STATUS
 AcpiGetNextObject (
@@ -254,29 +246,10 @@ AcpiGetParent (
     ACPI_HANDLE             Object,
     ACPI_HANDLE             *OutHandle);
 
-/*
-ACPI_STATUS
-AcpiGetScope (
-    ACPI_HANDLE             Handle,
-    ACPI_HANDLE             *OutHandle);
-
-ACPI_STATUS
-AcpiGetContainingScope (
-    ACPI_HANDLE             Handle,
-    ACPI_HANDLE             *OutHandle);
-*/
 
 /*
- * Event / System interfaces
+ * Event handler interfaces
  */
-
-ACPI_STATUS
-AcpiEnable (
-	void);
-
-ACPI_STATUS
-AcpiDisable (
-    void);
 
 ACPI_STATUS
 AcpiInstallFixedEventHandler (
@@ -312,7 +285,6 @@ AcpiRemoveNotifyHandler (
     NOTIFY_HANDLER          Handler);
 
 ACPI_STATUS
-
 AcpiInstallAddressSpaceHandler (
     UINT32                  SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler, 
@@ -324,9 +296,8 @@ AcpiRemoveAddressSpaceHandler (
     ADDRESS_SPACE_HANDLER   Handler);
 
 
-
 /*
- * Resource related interfaces
+ * Resource interfaces
  */
 
 ACPI_STATUS
@@ -349,9 +320,18 @@ AcpiGetIRQRoutingTable  (
     ACPI_HANDLE             BusDeviceHandle, 
     ACPI_BUFFER             *RetBuffer);
 
+
 /*
  * Hardware (ACPI device) interfaces
  */
+
+ACPI_STATUS
+AcpiSetFirmwareWakingVector (
+    void                    *PhysicalAddress);
+
+ACPI_STATUS
+AcpiGetFirmwareWakingVector (
+    void                    **PhysicalAddress);
 
 ACPI_STATUS 
 AcpiSystemSleepStateSupported (
