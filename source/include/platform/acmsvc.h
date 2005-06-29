@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmsvc.h - VC specific defines, etc.
- *       $Revision: 1.5 $
+ *       $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -148,5 +148,10 @@
 /* warn C4706: assignment within conditional expression */
 #pragma warning(disable:4706)
 
+/* This macro is used to tag functions as "printf-like" because
+ * some compilers can catch printf format string problems. MSVC
+ * doesn't, so this is proprocessed away.
+ */
+#define ACPI_PRINTF_LIKE_FUNC
 
 #endif /* __ACMSVC_H__ */
