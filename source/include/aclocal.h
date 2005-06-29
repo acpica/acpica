@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.110 $
+ *       $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -628,7 +628,7 @@ typedef struct acpi_opcode_info
 typedef union acpi_parse_val
 {
     UINT32                  Integer;        /* integer constant */
-    NATIVE_UINT             Size;           /* bytelist or field size */
+    UINT32                  Size;           /* bytelist or field size */
     NATIVE_CHAR             *String;        /* NULL terminated string */
     UINT8                   *Buffer;        /* buffer or string */
     NATIVE_CHAR             *Name;          /* NULL terminated string */
@@ -641,7 +641,7 @@ typedef union acpi_parse_val
     UINT8                   DataType;       /* To differentiate various internal objs */\
     UINT8                   Flags;          /* Type of Op */\
     UINT16                  Opcode;         /* AML opcode */\
-    ACPI_PTRDIFF            AmlOffset;      /* offset of declaration in AML */\
+    UINT32                  AmlOffset;      /* offset of declaration in AML */\
     struct acpi_parse_obj   *Parent;        /* parent op */\
     struct acpi_parse_obj   *Next;          /* next op */\
     DEBUG_ONLY_MEMBERS (\
@@ -668,7 +668,7 @@ typedef struct acpi_parse2_obj
 {
     ACPI_PARSE_COMMON
     UINT8                   *Data;          /* AML body or bytelist data */
-    NATIVE_UINT             Length;         /* AML length */
+    UINT32                  Length;         /* AML length */
     UINT32                  Name;           /* 4-byte name or zero if no name */
 
 } ACPI_PARSE2_OBJECT;
