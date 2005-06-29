@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.81 $
+ *              $Revision: 1.87 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 #include "acnamesp.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nseval")
 
 
@@ -388,8 +388,8 @@ AcpiNsEvaluateByHandle (
     Node = AcpiNsConvertHandleToEntry (Handle);
     if (!Node)
     {
-        Status = AE_BAD_PARAMETER;
-        goto UnlockAndExit;
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
 
@@ -456,12 +456,6 @@ AcpiNsEvaluateByHandle (
      * so we just return
      */
     return_ACPI_STATUS (Status);
-
-
-UnlockAndExit:
-
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-    return_ACPI_STATUS (Status);
 }
 
 
@@ -504,6 +498,8 @@ AcpiNsExecuteControlMethod (
     {
         DEBUG_PRINT (ACPI_ERROR,
             ("Control method is undefined (nil value)\n"));
+
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
         return_ACPI_STATUS (AE_ERROR);
     }
 
@@ -526,11 +522,10 @@ AcpiNsExecuteControlMethod (
      * interpreter locks to ensure that no thread is using the portion of the
      * namespace that is being deleted.
      */
-
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /*
-     * Excecute the method via the interpreter
+     * Execute the method via the interpreter
      */
     Status = AcpiAmlExecuteMethod (MethodNode, Params, ReturnObjDesc);
 
@@ -602,6 +597,7 @@ AcpiNsGetObjectValue (
 
         MEMCPY (ObjDesc, ValDesc, sizeof (ACPI_OPERAND_OBJECT));
         ObjDesc->Common.ReferenceCount = 1;
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     }
 
 
@@ -622,28 +618,34 @@ AcpiNsGetObjectValue (
 
         /* Construct a descriptor pointing to the name */
 
-        ObjDesc->Reference.OpCode  = (UINT8) AML_NAME_OP;
+        ObjDesc->Reference.Opcode  = (UINT8) AML_NAME_OP;
         ObjDesc->Reference.Object  = (void *) Node;
 
         /*
-         * Use AcpiAmlResolveToValue() to get the associated value.
-         * The call to AcpiAmlResolveToValue causes
-         * ObjDesc (allocated above) to always be deleted.
+         * Use ResolveToValue() to get the associated value.  This call
+         * always deletes ObjDesc (allocated above).
          *
          * NOTE: we can get away with passing in NULL for a walk state
          * because ObjDesc is guaranteed to not be a reference to either
          * a method local or a method argument
          *
-         * Even though we do not technically need to use the interpreter
-         * for this, we must enter it because we could hit an opregion.
-         * The opregion access code assumes it is in the interpreter.
+         * Even though we do not directly invoke the interpreter
+         * for this, we must enter it because we could access an opregion.
+         * The opregion access code assumes that the interpreter
+         * is locked.
+         *
+         * We must release the namespace lock before entering the
+         * intepreter.
          */
 
-        AcpiAmlEnterInterpreter();
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        Status = AcpiAmlEnterInterpreter ();
+        if (ACPI_SUCCESS (Status))
+        {
+            Status = AcpiAmlResolveToValue (&ObjDesc, NULL);
 
-        Status = AcpiAmlResolveToValue (&ObjDesc, NULL);
-
-        AcpiAmlExitInterpreter();
+            AcpiAmlExitInterpreter ();
+        }
     }
 
     /*
@@ -659,6 +661,10 @@ AcpiNsGetObjectValue (
         DEBUG_PRINT (ACPI_INFO,
             ("NsGetObjectValue: Returning obj %p\n", *ReturnObjDesc));
     }
+
+    /* Namespace is unlocked */
+
+    return_ACPI_STATUS (Status);
 
 
 UnlockAndExit:

@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.78 $
+ *              $Revision: 1.81 $
  *
  ******************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsxfobj")
 
 
@@ -217,9 +217,8 @@ AcpiEvaluateObject (
          */
         for (i = 0; i < Count; i++)
         {
-            Status =
-                AcpiCmBuildInternalObject (&ParamObjects->Pointer[i],
-                                            ParamPtr[i]);
+            Status = AcpiCmCopyEobjectToIobject (&ParamObjects->Pointer[i],
+                                                ParamPtr[i]);
 
             if (ACPI_FAILURE (Status))
             {
@@ -362,7 +361,7 @@ AcpiEvaluateObject (
                         /*
                          *  We have enough space for the object, build it
                          */
-                        Status = AcpiCmBuildExternalObject (ReturnObj,
+                        Status = AcpiCmCopyIobjectToEobject (ReturnObj,
                                         ReturnBuffer);
                         ReturnBuffer->Length = BufferSpaceNeeded;
                     }
@@ -725,13 +724,13 @@ AcpiNsGetDeviceCallback (
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
 
     Node = AcpiNsConvertHandleToEntry (ObjHandle);
-    if (!Node)
-    {
-        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
-        return (AE_BAD_PARAMETER);
-    }
 
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+
+    if (!Node)
+    {
+        return (AE_BAD_PARAMETER);
+    }
 
     /*
      * Run _STA to determine if device is present

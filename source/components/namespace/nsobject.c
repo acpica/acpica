@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 #include "actables.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsobject")
 
 
@@ -293,7 +293,7 @@ AcpiNsAttachObject (
 
             MOVE_UNALIGNED16_TO_16 (&Opcode, Object);
 
-            /* Check for a recognized OpCode */
+            /* Check for a recognized Opcode */
 
             switch ((UINT8) Opcode)
             {

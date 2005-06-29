@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.12 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,7 @@
 #include "acnamesp.h"
 #include "acdispat.h"
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsinit")
 
 
@@ -174,7 +174,8 @@ AcpiNsInitializeObjects (
 
     DEBUG_PRINT_RAW (ACPI_OK,
         ("\n%d/%d Regions, %d/%d Fields initialized (%d nodes total)\n",
-        Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit, Info.FieldCount, Info.ObjectCount));
+        Info.OpRegionInit, Info.OpRegionCount, Info.FieldInit, 
+        Info.FieldCount, Info.ObjectCount));
     DEBUG_PRINT (TRACE_DISPATCH,
         ("NsInitializeObjects: %d Control Methods found\n", Info.MethodCount));
     DEBUG_PRINT (TRACE_DISPATCH,
@@ -184,7 +185,7 @@ AcpiNsInitializeObjects (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsInitializeDevices
  *
@@ -195,15 +196,14 @@ AcpiNsInitializeObjects (
  * DESCRIPTION: Walk the entire namespace and initialize all ACPI devices.
  *              This means running _INI on all present devices.
  *
- *              Also: Install PCI config space handler for all PCI root bridges.
- *              A PCI root bridge is found by searching for devices containing
- *              a HID with the value EISAID("PNP0A03")
+ *              Note: We install PCI config space handler on region access,
+ *              not here.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsInitializeDevices (
-    UINT32                  Flags)
+    void)
 {
     ACPI_STATUS             Status;
     ACPI_DEVICE_WALK_INFO   Info;
@@ -212,7 +212,6 @@ AcpiNsInitializeDevices (
     FUNCTION_TRACE ("NsInitializeDevices");
 
 
-    Info.Flags = Flags;
     Info.DeviceCount = 0;
     Info.Num_STA = 0;
     Info.Num_INI = 0;
@@ -220,8 +219,8 @@ AcpiNsInitializeDevices (
 
     DEBUG_PRINT_RAW (ACPI_OK, ("Executing device _INI methods:"));
 
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                        FALSE, AcpiNsInitOneDevice, &Info, NULL);
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT, 
+                    ACPI_UINT32_MAX, FALSE, AcpiNsInitOneDevice, &Info, NULL);
 
     if (ACPI_FAILURE (Status))
     {
@@ -300,11 +299,16 @@ AcpiNsInitOneObject (
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
-            DEBUG_PRINT (ACPI_ERROR, ("%s while getting region arguments [%4.4s]\n",
-                            AcpiCmFormatException (Status), &Node->Name));
+            DEBUG_PRINT (ACPI_ERROR, 
+                    ("%s while getting region arguments [%4.4s]\n",
+                    AcpiCmFormatException (Status), &Node->Name));
         }
 
-        DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        if (!(AcpiDbgLevel & TRACE_INIT))
+        {
+            DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        }
+
         break;
 
 
@@ -321,10 +325,15 @@ AcpiNsInitOneObject (
         if (ACPI_FAILURE (Status))
         {
             DEBUG_PRINT_RAW (ACPI_ERROR, ("\n"));
-            DEBUG_PRINT (ACPI_ERROR, ("%s while getting field arguments [%4.4s]\n",
-                            AcpiCmFormatException (Status), &Node->Name));
+            DEBUG_PRINT (ACPI_ERROR, 
+                    ("%s while getting field arguments [%4.4s]\n",
+                    AcpiCmFormatException (Status), &Node->Name));
         }
-        DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        if (!(AcpiDbgLevel & TRACE_INIT))
+        {
+            DEBUG_PRINT_RAW (ACPI_OK, ("."));
+        }
+
 
         break;
 
@@ -340,11 +349,11 @@ AcpiNsInitOneObject (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsInitOneDevice
  *
- * PARAMETERS:  The usual "I'm a namespace callback" stuff
+ * PARAMETERS:  WALK_CALLBACK
  *
  * RETURN:      ACPI_STATUS
  *
@@ -352,7 +361,7 @@ AcpiNsInitOneObject (
  *              to initialize each device. It determines if the device is
  *              present, and if so, calls _INI.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsInitOneDevice (
@@ -370,7 +379,11 @@ AcpiNsInitOneDevice (
     FUNCTION_TRACE ("AcpiNsInitOneDevice");
 
 
-    DEBUG_PRINT_RAW (ACPI_OK, ("."));
+    if (!(AcpiDbgLevel & TRACE_INIT))
+    {
+        DEBUG_PRINT_RAW (ACPI_OK, ("."));
+    }
+
     Info->DeviceCount++;
 
     AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -388,6 +401,7 @@ AcpiNsInitOneDevice (
      * Run _STA to determine if we can run _INI on the device.
      */
 
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (Node, "_STA  [Method]"));
     Status = AcpiCmExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
     {
@@ -404,10 +418,12 @@ AcpiNsInitOneDevice (
         return_ACPI_STATUS(AE_CTRL_DEPTH);
     }
 
+
     /*
      * The device is present. Run _INI.
      */
 
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (ObjHandle, "_INI  [Method]"));
     Status = AcpiNsEvaluateRelative (ObjHandle, "_INI", NULL, NULL);
     if (AE_NOT_FOUND == Status)
     {
@@ -431,7 +447,7 @@ AcpiNsInitOneDevice (
 
     else
     {
-        /* Count of successfull INIs */
+        /* Count of successful INIs */
 
         Info->Num_INI++;
     }

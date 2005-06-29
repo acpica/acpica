@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.35 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -125,11 +125,11 @@
 #include "acdebug.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsload")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiLoadNamespace
  *
@@ -250,12 +250,10 @@ AcpiNsOneCompleteParse (
     DEBUG_PRINT (TRACE_PARSE,
         ("NsParseTable: *PARSE* pass %d parse\n", PassNumber));
 
-    Status = AcpiPsParseAml (ParseRoot,
-                            TableDesc->AmlPointer,
+    Status = AcpiPsParseAml (ParseRoot, TableDesc->AmlPointer,
                             TableDesc->AmlLength,
                             ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
-                            NULL, NULL, NULL,
-                            DescendingCallback,
+                            NULL, NULL, NULL, DescendingCallback,
                             AscendingCallback);
 
     AcpiPsDeleteParseTree (ParseRoot);
@@ -326,7 +324,7 @@ AcpiNsParseTable (
 }
 
 
-/*****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsLoadTable
  *
@@ -337,7 +335,7 @@ AcpiNsParseTable (
  *
  * DESCRIPTION: Load one ACPI table into the namespace
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsLoadTable (
@@ -409,7 +407,7 @@ AcpiNsLoadTable (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsLoadTableByType
  *
@@ -421,7 +419,7 @@ AcpiNsLoadTable (
  *              of the given type are loaded.  The mechanism allows this
  *              routine to be called repeatedly.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsLoadTableByType (
@@ -495,8 +493,7 @@ AcpiNsLoadTableByType (
 
             if (!TableDesc->LoadedIntoNamespace)
             {
-                Status = AcpiNsLoadTable (TableDesc,
-                                            AcpiGbl_RootNode);
+                Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootNode);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -507,7 +504,6 @@ AcpiNsLoadTableByType (
 
             TableDesc = TableDesc->Next;
         }
-
         break;
 
 
@@ -531,8 +527,7 @@ AcpiNsLoadTableByType (
 
             if (!TableDesc->LoadedIntoNamespace)
             {
-                Status = AcpiNsLoadTable (TableDesc,
-                                            AcpiGbl_RootNode);
+                Status = AcpiNsLoadTable (TableDesc, AcpiGbl_RootNode);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
@@ -549,6 +544,7 @@ AcpiNsLoadTableByType (
 
     default:
         Status = AE_SUPPORT;
+        break;
     }
 
 
@@ -561,7 +557,7 @@ UnlockAndExit:
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiNsDeleteSubtree
  *
@@ -592,9 +588,9 @@ AcpiNsDeleteSubtree (
     FUNCTION_TRACE ("NsDeleteSubtree");
 
 
-    ParentHandle    = StartHandle;
-    ChildHandle     = 0;
-    Level           = 1;
+    ParentHandle = StartHandle;
+    ChildHandle  = 0;
+    Level        = 1;
 
     /*
      * Traverse the tree of objects until we bubble back up
@@ -606,8 +602,7 @@ AcpiNsDeleteSubtree (
         /* Attempt to get the next object in this scope */
 
         Status = AcpiGetNextObject (ACPI_TYPE_ANY, ParentHandle,
-                                    ChildHandle,
-                                    &NextChildHandle);
+                                    ChildHandle, &NextChildHandle);
 
         ChildHandle = NextChildHandle;
 
@@ -618,9 +613,8 @@ AcpiNsDeleteSubtree (
         {
             /* Check if this object has any children */
 
-            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY,
-                                                ChildHandle, 0,
-                                                &Dummy)))
+            if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_ANY, ChildHandle, 
+                                    0, &Dummy)))
             {
                 /*
                  * There is at least one child of this object,
@@ -628,8 +622,8 @@ AcpiNsDeleteSubtree (
                  */
 
                 Level++;
-                ParentHandle    = ChildHandle;
-                ChildHandle     = 0;
+                ParentHandle = ChildHandle;
+                ChildHandle  = 0;
             }
         }
 
@@ -654,12 +648,11 @@ AcpiNsDeleteSubtree (
 
     AcpiNsDeleteNode (ChildHandle);
 
-
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  *  FUNCTION:       AcpiNsUnloadNameSpace
  *
@@ -671,7 +664,7 @@ AcpiNsDeleteSubtree (
  *                  event.  Deletes an entire subtree starting from (and
  *                  including) the given handle.
  *
- ****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsUnloadNamespace (
