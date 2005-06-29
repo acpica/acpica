@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -202,14 +202,6 @@ AcpiDisable (void)
     FUNCTION_TRACE ("AcpiDisable");
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Restore original mode  */
 
     Status = AcpiHwSetMode (AcpiGbl_OriginalMode);
@@ -254,14 +246,6 @@ AcpiEnableEvent (
 
     FUNCTION_TRACE ("AcpiEnableEvent");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /* The Type must be either Fixed AcpiEvent or GPE */
 
@@ -377,14 +361,6 @@ AcpiDisableEvent (
     FUNCTION_TRACE ("AcpiDisableEvent");
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* The Type must be either Fixed AcpiEvent or GPE */
 
     switch (Type)
@@ -494,14 +470,6 @@ AcpiClearEvent (
     FUNCTION_TRACE ("AcpiClearEvent");
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* The Type must be either Fixed AcpiEvent or GPE */
 
     switch (Type)
@@ -598,14 +566,6 @@ AcpiGetEventStatus (
 
     FUNCTION_TRACE ("AcpiGetEventStatus");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     if (!EventStatus)
     {

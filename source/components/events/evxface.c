@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -156,14 +156,6 @@ AcpiInstallFixedEventHandler (
     FUNCTION_TRACE ("AcpiInstallFixedEventHandler");
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Parameter validation */
 
     if (Event > ACPI_EVENT_MAX)
@@ -235,14 +227,6 @@ AcpiRemoveFixedEventHandler (
     FUNCTION_TRACE ("AcpiRemoveFixedEventHandler");
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Parameter validation */
 
     if (Event > ACPI_EVENT_MAX)
@@ -310,14 +294,6 @@ AcpiInstallNotifyHandler (
 
     FUNCTION_TRACE ("AcpiInstallNotifyHandler");
 
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /* Parameter validation */
 
@@ -492,14 +468,6 @@ AcpiRemoveNotifyHandler (
     FUNCTION_TRACE ("AcpiRemoveNotifyHandler");
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Parameter validation */
 
     if ((!Handler) ||
@@ -643,14 +611,6 @@ AcpiInstallGpeHandler (
     FUNCTION_TRACE ("AcpiInstallGpeHandler");
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Parameter validation */
 
     if (!Handler || (GpeNumber > ACPI_GPE_MAX))
@@ -716,14 +676,6 @@ AcpiRemoveGpeHandler (
     FUNCTION_TRACE ("AcpiRemoveGpeHandler");
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Parameter validation */
 
     if (!Handler || (GpeNumber > ACPI_GPE_MAX))
@@ -783,14 +735,6 @@ AcpiAcquireGlobalLock (
     ACPI_STATUS             Status;
 
 
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
     Status = AcpiExEnterInterpreter ();
     if (ACPI_FAILURE (Status))
     {
@@ -824,17 +768,6 @@ ACPI_STATUS
 AcpiReleaseGlobalLock (
     void)
 {
-    ACPI_STATUS             Status;
-
-
-    /* Ensure that ACPI has been initialized */
-
-    ACPI_IS_INITIALIZATION_COMPLETE (Status);
-    if (ACPI_FAILURE (Status))
-    {
-        return (Status);
-    }
-
     AcpiEvReleaseGlobalLock ();
     return (AE_OK);
 }
