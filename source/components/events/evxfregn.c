@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.30 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
         MODULE_NAME         ("evxfregn")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiInstallAddressSpaceHandler
  *
@@ -147,20 +147,29 @@
 ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
     ACPI_HANDLE             Device,
-    ACPI_ADDRESS_SPACE_TYPE SpaceId,
-    ADDRESS_SPACE_HANDLER   Handler,
-    ADDRESS_SPACE_SETUP     Setup,
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_ADR_SPACE_HANDLER  Handler,
+    ACPI_ADR_SPACE_SETUP    Setup,
     void                    *Context)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status = AE_OK;
-    OBJECT_TYPE_INTERNAL    Type;
+    ACPI_OBJECT_TYPE8       Type;
     UINT16                  Flags = 0;
 
 
     FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
+
+
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Parameter validation */
 
@@ -171,7 +180,7 @@ AcpiInstallAddressSpaceHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Convert and validate the device handle */
 
@@ -187,7 +196,6 @@ AcpiInstallAddressSpaceHandler (
      *  and the root.  This is where the default handlers
      *  get placed.
      */
-
     if ((Node->Type != ACPI_TYPE_DEVICE)     &&
         (Node->Type != ACPI_TYPE_PROCESSOR)  &&
         (Node->Type != ACPI_TYPE_THERMAL)    &&
@@ -203,19 +211,29 @@ AcpiInstallAddressSpaceHandler (
 
         switch (SpaceId)
         {
-        case ADDRESS_SPACE_SYSTEM_MEMORY:
-            Handler = AcpiAmlSystemMemorySpaceHandler;
-            Setup = AcpiEvSystemMemoryRegionSetup;
+        case ACPI_ADR_SPACE_SYSTEM_MEMORY:
+            Handler = AcpiExSystemMemorySpaceHandler;
+            Setup   = AcpiEvSystemMemoryRegionSetup;
             break;
 
-        case ADDRESS_SPACE_SYSTEM_IO:
-            Handler = AcpiAmlSystemIoSpaceHandler;
-            Setup = AcpiEvIoSpaceRegionSetup;
+        case ACPI_ADR_SPACE_SYSTEM_IO:
+            Handler = AcpiExSystemIoSpaceHandler;
+            Setup   = AcpiEvIoSpaceRegionSetup;
             break;
 
-        case ADDRESS_SPACE_PCI_CONFIG:
-            Handler = AcpiAmlPciConfigSpaceHandler;
-            Setup = AcpiEvPciConfigRegionSetup;
+        case ACPI_ADR_SPACE_PCI_CONFIG:
+            Handler = AcpiExPciConfigSpaceHandler;
+            Setup   = AcpiEvPciConfigRegionSetup;
+            break;
+
+        case ACPI_ADR_SPACE_CMOS:
+            Handler = AcpiExCmosSpaceHandler;
+            Setup   = AcpiEvCmosRegionSetup;
+            break;
+
+        case ACPI_ADR_SPACE_PCI_BAR_TARGET:
+            Handler = AcpiExPciBarSpaceHandler;
+            Setup   = AcpiEvPciBarRegionSetup;
             break;
 
         default:
@@ -236,7 +254,6 @@ AcpiInstallAddressSpaceHandler (
     /*
      *  Check for an existing internal object
      */
-
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
     {
@@ -269,9 +286,8 @@ AcpiInstallAddressSpaceHandler (
 
     else
     {
-        DEBUG_PRINT (TRACE_OPREGION,
-            ("Creating object on Device %p while installing handler\n",
-            Node));
+        ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+            "Creating object on Device %p while installing handler\n", Node));
 
         /* ObjDesc does not exist, create one */
 
@@ -285,7 +301,7 @@ AcpiInstallAddressSpaceHandler (
             Type = Node->Type;
         }
 
-        ObjDesc = AcpiCmCreateInternalObject (Type);
+        ObjDesc = AcpiUtCreateInternalObject (Type);
         if (!ObjDesc)
         {
             Status = AE_NO_MEMORY;
@@ -301,14 +317,14 @@ AcpiInstallAddressSpaceHandler (
         Status = AcpiNsAttachObject (Node, ObjDesc, (UINT8) Type);
         if (ACPI_FAILURE (Status))
         {
-            AcpiCmRemoveReference (ObjDesc);
+            AcpiUtRemoveReference (ObjDesc);
             goto UnlockAndExit;
         }
     }
 
-    DEBUG_PRINT (TRACE_OPREGION,
-        ("Installing address handler for region %s(%X) on Device %p(%p)\n",
-        AcpiCmGetRegionName (SpaceId), SpaceId, Node, ObjDesc));
+    ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+        "Installing address handler for region %s(%X) on Device %p(%p)\n",
+        AcpiUtGetRegionName (SpaceId), SpaceId, Node, ObjDesc));
 
     /*
      *  Now we can install the handler
@@ -317,7 +333,7 @@ AcpiInstallAddressSpaceHandler (
      *  So, we just allocate the object for the handler and link it
      *  into the list.
      */
-    HandlerObj = AcpiCmCreateInternalObject (INTERNAL_TYPE_ADDRESS_HANDLER);
+    HandlerObj = AcpiUtCreateInternalObject (INTERNAL_TYPE_ADDRESS_HANDLER);
     if (!HandlerObj)
     {
         Status = AE_NO_MEMORY;
@@ -353,7 +369,6 @@ AcpiInstallAddressSpaceHandler (
     /*
      *  Place this handler 1st on the list
      */
-
     HandlerObj->Common.ReferenceCount =
                             (UINT16) (HandlerObj->Common.ReferenceCount +
                             ObjDesc->Common.ReferenceCount - 1);
@@ -361,12 +376,12 @@ AcpiInstallAddressSpaceHandler (
 
 
 UnlockAndExit:
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiRemoveAddressSpaceHandler
  *
@@ -382,8 +397,8 @@ UnlockAndExit:
 ACPI_STATUS
 AcpiRemoveAddressSpaceHandler (
     ACPI_HANDLE             Device,
-    ACPI_ADDRESS_SPACE_TYPE SpaceId,
-    ADDRESS_SPACE_HANDLER   Handler)
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_ADR_SPACE_HANDLER  Handler)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     *HandlerObj;
@@ -396,6 +411,14 @@ AcpiRemoveAddressSpaceHandler (
     FUNCTION_TRACE ("AcpiRemoveAddressSpaceHandler");
 
 
+    /* Ensure that ACPI has been initialized */
+
+    ACPI_IS_INITIALIZATION_COMPLETE (Status);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
     /* Parameter validation */
 
     if ((!Device)   ||
@@ -405,7 +428,7 @@ AcpiRemoveAddressSpaceHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
 
     /* Convert and validate the device handle */
 
@@ -432,7 +455,6 @@ AcpiRemoveAddressSpaceHandler (
     /*
      *  find the address handler the user requested
      */
-
     HandlerObj = ObjDesc->Device.AddrHandler;
     LastObjPtr = &ObjDesc->Device.AddrHandler;
     while (HandlerObj)
@@ -440,15 +462,14 @@ AcpiRemoveAddressSpaceHandler (
         /*
          *  We have a handler, see if user requested this one
          */
-
         if(HandlerObj->AddrHandler.SpaceId == SpaceId)
         {
             /*
              *  Got it, first dereference this in the Regions
              */
-            DEBUG_PRINT (TRACE_OPREGION,
-                ("Removing address handler %p(%p) for region %s on Device %p(%p)\n",
-                HandlerObj, Handler, AcpiCmGetRegionName (SpaceId),
+            ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+                "Removing address handler %p(%p) for region %s on Device %p(%p)\n",
+                HandlerObj, Handler, AcpiUtGetRegionName (SpaceId),
                 Node, ObjDesc));
 
             RegionObj = HandlerObj->AddrHandler.RegionList;
@@ -483,8 +504,8 @@ AcpiRemoveAddressSpaceHandler (
             /*
              *  Now we can delete the handler object
              */
-            AcpiCmRemoveReference (HandlerObj);
-            AcpiCmRemoveReference (HandlerObj);
+            AcpiUtRemoveReference (HandlerObj);
+            AcpiUtRemoveReference (HandlerObj);
 
             goto UnlockAndExit;
         }
@@ -500,15 +521,15 @@ AcpiRemoveAddressSpaceHandler (
     /*
      *  The handler does not exist
      */
-    DEBUG_PRINT (TRACE_OPREGION,
-        ("Unable to remove address handler %p for %s(%X), DevNode %p, obj %p\n",
-        Handler, AcpiCmGetRegionName (SpaceId), SpaceId, Node, ObjDesc));
+    ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
+        "Unable to remove address handler %p for %s(%X), DevNode %p, obj %p\n",
+        Handler, AcpiUtGetRegionName (SpaceId), SpaceId, Node, ObjDesc));
 
     Status = AE_NOT_EXIST;
 
 
 UnlockAndExit:
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
