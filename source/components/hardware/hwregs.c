@@ -107,7 +107,7 @@
 #define _COMPONENT          DEVICE_MANAGER
 
 
-#pragma check_stack (off)
+/* Is this needed? #pragma check_stack (off) */
 
 
 /******************************************************************************
@@ -158,9 +158,9 @@ GetBitShift (UINT32 Mask)
 UINT32
 AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
 {
-    UINT32          RegisterValue;
-    UINT32          Mask;
-    UINT32          Value;
+    UINT32          RegisterValue = 0;
+    UINT32          Mask = 0;
+    UINT32          Value = 0;
     UINT32          GpeReg = 0;
 
 
@@ -523,7 +523,7 @@ AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
     return (RegisterValue);
 }
 
-#pragma check_stack ()
+/* Is this needed? #pragma check_stack () */
 
 
 /******************************************************************************
