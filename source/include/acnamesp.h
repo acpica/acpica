@@ -211,7 +211,7 @@ NsDeleteNamespace (
     void);
 
 void
-NsDeleteValue (
+NsDetachObject (
     ACPI_HANDLE             Object);
 
 void
@@ -228,7 +228,12 @@ NsDeleteAcpiTable (
 
 void
 NsFreeAcpiTable (
-    ACPI_TABLE_INFO         *TableInfo);
+    ACPI_TABLE_DESC         *TableInfo);
+
+ACPI_STATUS
+NsInstallAcpiTable (
+    ACPI_TABLE_TYPE         TableType,
+    ACPI_TABLE_DESC         *TableInfo);
 
 
 /*
@@ -340,13 +345,13 @@ NsHandleToPathname (
     char                    *UserBuffer);
 
 ACPI_STATUS
-NsSetMethod (
+NsAttachMethod (
     ACPI_HANDLE             ObjHandle, 
     ACPI_PTRDIFF            Offset, 
     INT32                   Length);
 
 void
-NsSetValue (
+NsAttachObject (
     ACPI_HANDLE             ObjHandle, 
     ACPI_HANDLE             Value, 
     UINT8                   ValTyp);
@@ -389,7 +394,7 @@ NsCompareValue (
     void                    *ObjDesc);
 
 ACPI_HANDLE
-NsFindValue (
+NsFindAttachedObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc, 
     ACPI_HANDLE             SearchBase, 
     INT32                   MaxDepth);
@@ -440,12 +445,13 @@ NsPopCurrent (
 ACPI_STATUS
 NsGetTablePtr (
     ACPI_TABLE_TYPE         TableType, 
+    UINT32                  Instance,
     ACPI_TABLE_HEADER       **TablePtrLoc);
 
 ACPI_STATUS
 NsFindRsdp (
-    char                    **BufferPtr,
-    ACPI_TABLE_INFO         *TableInfo);
+    char                    *BufferPtr,
+    ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 NsVerifyTableChecksum (
@@ -454,13 +460,13 @@ NsVerifyTableChecksum (
 ACPI_STATUS
 NsGetTable (
     void                    *PhysicalAddress, 
-    char                    **BufferPtr,
-    ACPI_TABLE_INFO         *TableInfo);
+    char                    *BufferPtr,
+    ACPI_TABLE_DESC         *TableInfo);
 
 ACPI_STATUS
 NsGetTableFacs (
-    char                    **BufferPtr,
-    ACPI_TABLE_INFO         *TableInfo);
+    char                    *BufferPtr,
+    ACPI_TABLE_DESC         *TableInfo);
 
 
 /*
@@ -477,7 +483,7 @@ NsGetType (
     ACPI_HANDLE             ObjHandle);
 
 void *
-NsGetValue (
+NsGetAttachedObject (
     ACPI_HANDLE             ObjHandle);
 
 INT32
@@ -490,7 +496,7 @@ NsInternalizeName (
     char                    **ConvertedName);
 
 INT32
-IsNsValue (
+IsNsObject (
     ACPI_OBJECT_INTERNAL    *pOD);
 
 INT32
