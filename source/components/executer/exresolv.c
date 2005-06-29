@@ -150,7 +150,7 @@ AmlGetFieldUnitValue (
     ACPI_OBJECT_INTERNAL    *FieldDesc, 
     ACPI_OBJECT_INTERNAL    *ResultDesc)
 {
-    ACPI_STATUS             Status = AE_AML_ERROR;
+    ACPI_STATUS             Status = AE_OK;
     UINT32                  Mask;
     UINT8                   *Location = NULL;
     BOOLEAN                 Locked = FALSE;
@@ -162,85 +162,71 @@ AmlGetFieldUnitValue (
     if (!FieldDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - null field pointer\n"));
+        Status = AE_AML_NO_OPERAND;
     }
 
     else if (!FieldDesc->FieldUnit.Container)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - null container pointer\n"));
+        Status = AE_AML_INTERNAL;
     }
 
     else if (ACPI_TYPE_Buffer != FieldDesc->FieldUnit.Container->Common.Type)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - container is not a Buffer\n"));
+        Status = AE_AML_OPERAND_TYPE;
     }
 
     else if (FieldDesc->FieldUnit.Sequence
                 != FieldDesc->FieldUnit.Container->Buffer.Sequence)
     {
-        DEBUG_PRINT (ACPI_ERROR, (
-                "AmlGetFieldUnitValue: Internal error - stale Buffer [%lx != %lx]\n",
-                FieldDesc->FieldUnit.Sequence,
-                FieldDesc->FieldUnit.Container->Buffer.Sequence));
+        DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - stale Buffer [%lx != %lx]\n",
+                        FieldDesc->FieldUnit.Sequence,
+                        FieldDesc->FieldUnit.Container->Buffer.Sequence));
+        Status = AE_AML_INTERNAL;
     }
 
     else if (!ResultDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: Internal error - null result pointer\n"));
+        Status = AE_AML_INTERNAL;
     }
 
-    else 
+    if (ACPI_FAILURE (Status))
     {
-        /* Input parameters are valid */
+        return_ACPI_STATUS (Status);
+    }
 
-        Status = AE_OK;
 
         /* Get the global lock if needed */
 
-        Locked = AmlAcquireGlobalLock (FieldDesc->FieldUnit.LockRule);
-    }
+    Locked = AmlAcquireGlobalLock (FieldDesc->FieldUnit.LockRule);
 
-    if (AE_OK == Status)
-    {   
-        /* Input parameters valid and global lock possibly acquired */
+    /* Field location is (base of buffer) + (byte offset) */
 
-        if (FieldDesc->FieldUnit.Length + FieldDesc->FieldUnit.BitOffset > 32)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("AmlGetFieldUnitValue: implementation limitation: Field exceeds UINT32\n"));
-            Status = AE_AML_ERROR;
-        }
-    }
+    Location = FieldDesc->FieldUnit.Container->Buffer.Pointer
+                + FieldDesc->FieldUnit.Offset;
 
-    if (AE_OK == Status)
-    {   
-        /* Field location is (base of buffer) + (byte offset) */
-    
-        Location = FieldDesc->FieldUnit.Container->Buffer.Pointer
-                    + FieldDesc->FieldUnit.Offset;
+    /* Construct Mask with as many 1 bits as the field width */
 
-        /* Construct Mask with as many 1 bits as the field width */
-    
-        Mask = ((UINT32) 1 << FieldDesc->FieldUnit.Length) - (UINT32) 1;
+    Mask = ((UINT32) 1 << FieldDesc->FieldUnit.Length) - (UINT32) 1;
 
-        ResultDesc->Number.Type = (UINT8) ACPI_TYPE_Number;
+    ResultDesc->Number.Type = (UINT8) ACPI_TYPE_Number;
 
-        /* Shift the word containing the field, and mask the value */
-    
-        ResultDesc->Number.Value
-            = *(UINT32 *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
+    /* Shift the word containing the field, and mask the value */
 
-        DEBUG_PRINT (ACPI_INFO,
-            ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
-            FieldDesc->FieldUnit.Container->Buffer.Pointer,
-            FieldDesc->FieldUnit.Offset,
-            FieldDesc->FieldUnit.BitOffset,
-            FieldDesc->FieldUnit.Length,
-            Location, Mask, ResultDesc->Number.Value));
-    }
+    ResultDesc->Number.Value = *(UINT32 *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
+
+    DEBUG_PRINT (ACPI_INFO, ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
+                    FieldDesc->FieldUnit.Container->Buffer.Pointer,
+                    FieldDesc->FieldUnit.Offset,
+                    FieldDesc->FieldUnit.BitOffset,
+                    FieldDesc->FieldUnit.Length,
+                    Location, Mask, ResultDesc->Number.Value));
 
     /* Release global lock if we acquired it earlier */
 
     AmlReleaseGlobalLock (Locked);
-
 
     return_ACPI_STATUS (Status);
 }
@@ -316,7 +302,15 @@ AmlGetRvalueFromObject (
                             MvIndex, StackPtr, StackDesc, *(UINT32 *) StackDesc));
 
             CmDeleteInternalObject (StackDesc);     /* Delete the Lvalue */
+
+            /* Get the local from the method's state info */
+
             Status = PsxMthStackGetValue (MTH_TYPE_LOCAL, MvIndex, StackPtr);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+
             StackDesc = *StackPtr;
 
             DEBUG_PRINT (ACPI_INFO, ("AmlGetRvalueFromObject: [Local%d] after MSGV Status=%s %p %p %08lx \n",
@@ -343,6 +337,14 @@ AmlGetRvalueFromObject (
 
             CmDeleteInternalObject (StackDesc);     /* Delete the Lvalue */
             Status = PsxMthStackGetValue (MTH_TYPE_ARG, MvIndex, StackPtr);
+
+            /* Get the argument from the method's state info */
+
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+
             StackDesc = *StackPtr;
    
             DEBUG_PRINT (TRACE_EXEC, ("AmlGetRvalueFromObject: [Arg%d] MSGV returned %s %p %p %08lx \n",
@@ -401,7 +403,7 @@ AmlGetRvalueFromObject (
                 /* Invalid obj descriptor */
 
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromObject: Null IndexOp value ptr\n"));
-                Status = AE_AML_ERROR;
+                Status = AE_AML_INTERNAL;
             }
 
             break;
@@ -417,7 +419,7 @@ AmlGetRvalueFromObject (
 
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromObject: Unknown Lvalue subtype %02x\n",
                             Opcode));
-            Status = AE_AML_ERROR;
+            Status = AE_AML_INTERNAL;
 
         }   /* switch (Opcode) */
 
@@ -576,7 +578,7 @@ AmlGetRvalueFromEntry (
         if (!ValDesc)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null ValDesc\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_NO_OPERAND);
         }
 
 
@@ -622,7 +624,7 @@ AmlGetRvalueFromEntry (
 
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Not a PackageOp opcode (%x)\n",
                                 AmlOpcode));
-                return_ACPI_STATUS (AE_AML_ERROR);
+                return_ACPI_STATUS (AE_AML_BAD_OPCODE);
             }
 #else
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Unparsed Packages not supported!\n"));
@@ -635,7 +637,7 @@ AmlGetRvalueFromEntry (
         if (!ValDesc || (ACPI_TYPE_Package != ValDesc->Common.Type))
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - Bad package value\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
         /* Return an additional reference to the object */
@@ -650,7 +652,7 @@ AmlGetRvalueFromEntry (
         if (!ValDesc)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null Buffer ValuePtr\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_NO_OPERAND);
         }
 
 
@@ -696,7 +698,7 @@ AmlGetRvalueFromEntry (
 
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Not a BufferOp opcode (%x)\n",
                                 AmlOpcode));
-                return_ACPI_STATUS (AE_AML_ERROR);
+                return_ACPI_STATUS (AE_AML_BAD_OPCODE);
             }
 #else
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Unparsed Buffers not supported!\n"));
@@ -711,7 +713,7 @@ AmlGetRvalueFromEntry (
         if (!ValDesc || (ACPI_TYPE_Buffer != ValDesc->Common.Type))
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Bad buffer value\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
         
         /* Return an additional reference to the object */
@@ -750,7 +752,7 @@ AmlGetRvalueFromEntry (
             if (ACPI_TYPE_String != ValDesc->Common.Type)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - Bad string value\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
 
             /* Return an additional reference to the object */
@@ -769,7 +771,7 @@ AmlGetRvalueFromEntry (
         if (!ValDesc)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null Number ValuePtr\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_NO_OPERAND);
         }
 
         
@@ -831,7 +833,7 @@ AmlGetRvalueFromEntry (
                         "AmlGetRvalue/Number: Internal error - expected AML number, found %02x\n",
                         AmlOpcode));
 
-                return_ACPI_STATUS (AE_AML_ERROR);
+                return_ACPI_STATUS (AE_AML_BAD_OPCODE);
 
             } /* switch */
 
@@ -856,7 +858,7 @@ AmlGetRvalueFromEntry (
             if (ACPI_TYPE_Number != ValDesc->Common.Type)
             {
                 DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue/Number: Internal error - not a Number\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
 
             /* Return an additional reference to the object */
@@ -880,7 +882,7 @@ AmlGetRvalueFromEntry (
         Status = AmlGetNamedFieldValue ((ACPI_HANDLE) StackEntry, &TempVal, sizeof (TempVal));
         if (AE_OK != Status)
         {
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (Status);
         }
 
         ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
@@ -904,13 +906,13 @@ AmlGetRvalueFromEntry (
         if (!ValDesc)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null BankField ValuePtr\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_NO_OPERAND);
         }
 
         if (AttachedAmlPointer)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - BankField cannot be an Aml ptr\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
         if (INTERNAL_TYPE_BankField != ValDesc->Common.Type)
@@ -919,7 +921,7 @@ AmlGetRvalueFromEntry (
                     "AmlGetRvalue/BankField:Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                     &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), INTERNAL_TYPE_BankField, ValDesc->Common.Type, ValDesc));
             
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
 
@@ -940,7 +942,7 @@ AmlGetRvalueFromEntry (
 
         if (AE_OK != Status)
         {
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (Status);
         }
         
         /* Read Data value */
@@ -948,7 +950,7 @@ AmlGetRvalueFromEntry (
         Status = AmlGetNamedFieldValue ((ACPI_HANDLE) ValDesc->BankField.Container, &TempVal, sizeof (TempVal));
         if (AE_OK != Status)
         {
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (Status);
         }
 
         ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
@@ -968,13 +970,13 @@ AmlGetRvalueFromEntry (
         if (!ValDesc)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null IndexField ValuePtr\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_NO_OPERAND);
         }
 
         if (AttachedAmlPointer)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - IndexField cannot be an Aml ptr\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
         if (INTERNAL_TYPE_IndexField != ValDesc->Common.Type)
@@ -983,7 +985,7 @@ AmlGetRvalueFromEntry (
                     "AmlGetRvalue/IndexField: Internal error - Name %4.4s type %d does not match value-type %d at %p\n",
                     &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), INTERNAL_TYPE_IndexField, ValDesc->Common.Type, ValDesc));
             
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
 
@@ -1002,7 +1004,7 @@ AmlGetRvalueFromEntry (
 
         if (AE_OK != Status)
         {
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (Status);
         }
 
         /* Read Data value */
@@ -1010,7 +1012,7 @@ AmlGetRvalueFromEntry (
         Status = AmlGetNamedFieldValue (ValDesc->IndexField.Data, &TempVal, sizeof (TempVal));
         if (AE_OK != Status)
         {
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (Status);
         }
 
         ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
@@ -1030,13 +1032,13 @@ AmlGetRvalueFromEntry (
         if (!ValDesc)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - null FieldUnit ValuePtr\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_NO_OPERAND);
         }
 
         if (AttachedAmlPointer)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Internal error - FieldUnit cannot be an Aml ptr\n"));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
 
         if (ValDesc->Common.Type != (UINT8) EntryType)
@@ -1046,7 +1048,7 @@ AmlGetRvalueFromEntry (
                       &(((NAME_TABLE_ENTRY *) (*StackPtr))->Name), EntryType,
                       ValDesc->Common.Type, ValDesc));
             
-            return_ACPI_STATUS (AE_AML_ERROR);
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             break;
         }
 
@@ -1101,7 +1103,7 @@ AmlGetRvalueFromEntry (
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Untyped entry %p - has no Rvalue\n",
                         StackEntry));
         
-        return_ACPI_STATUS (AE_AML_ERROR);  /* Cannot be AE_TYPE */
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);  /* Cannot be AE_TYPE */
 
 
     /* Default case is for unknown types */
@@ -1111,7 +1113,7 @@ AmlGetRvalueFromEntry (
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalueFromEntry: Entry %p - Unknown object type %d\n",
                         StackEntry, EntryType));
         
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     
     } /* switch (EntryType) */
 
@@ -1153,7 +1155,7 @@ AmlGetRvalue (
     if (!StackPtr || !*StackPtr)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlGetRvalue: Internal error - null pointer\n"));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
 
@@ -1167,6 +1169,10 @@ AmlGetRvalue (
     {
 
         Status = AmlGetRvalueFromObject (StackPtr);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /* 
