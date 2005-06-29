@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfold - Constant folding
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -483,6 +483,7 @@ OpcAmlConstantWalk (
 
             Op->Asl.ParseOpcode     = PARSEOP_BUFFER;
             Op->Common.AmlOpcode    = AML_BUFFER_OP;
+            UtSetParseOpName (Op);
 
             /* Child node is the buffer length */
 
@@ -490,18 +491,21 @@ OpcAmlConstantWalk (
  
             RootOp->Asl.AmlOpcode     = AML_DWORD_OP;
             RootOp->Asl.Value.Integer = ObjDesc->Buffer.Length;
+            RootOp->Asl.Parent        = Op;
 
             (void) OpcSetOptimalIntegerSize (RootOp);
 
             Op->Asl.Child = RootOp;
             Op = RootOp;
+            UtSetParseOpName (Op);
 
             /* Peer to the child is the raw buffer data */
 
             RootOp = TrAllocateNode (PARSEOP_RAW_DATA);
-            RootOp->Asl.AmlOpcode      = AML_RAW_DATA_BUFFER;
-            RootOp->Asl.AmlLength      = ObjDesc->Buffer.Length;
-            RootOp->Asl.Value.String   = (char *) ObjDesc->Buffer.Pointer;
+            RootOp->Asl.AmlOpcode     = AML_RAW_DATA_BUFFER;
+            RootOp->Asl.AmlLength     = ObjDesc->Buffer.Length;
+            RootOp->Asl.Value.String  = (char *) ObjDesc->Buffer.Pointer;
+            RootOp->Asl.Parent        = Op->Asl.Parent;
     
             Op->Asl.Next = RootOp;
             Op = RootOp;
