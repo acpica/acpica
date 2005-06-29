@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.128 $
+ *              $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -239,10 +239,14 @@ UINT32                      AcpiGbl_SystemFlags = 0;
 UINT32                      AcpiGbl_StartupFlags = 0;
 
 /* System starts unitialized! */
+
 BOOLEAN                     AcpiGbl_Shutdown = TRUE;
 
+const UINT8                 AcpiGbl_DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
 
-UINT8                       AcpiGbl_DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
+const NATIVE_CHAR           *AcpiGbl_DbSleepStates[ACPI_NUM_SLEEP_STATES] = {
+                                "\\_S0_","\\_S1_","\\_S2_","\\_S3_",
+                                "\\_S4_","\\_S5_","\\_S4B"};
 
 
 /******************************************************************************
@@ -331,6 +335,20 @@ const NATIVE_CHAR           AcpiGbl_HexToAscii[] =
                                 {'0','1','2','3','4','5','6','7',
                                 '8','9','A','B','C','D','E','F'};
 
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiUtHexToAsciiChar
+ *
+ * PARAMETERS:  Integer             - Contains the hex digit
+ *              Position            - bit position of the digit within the
+ *                                    integer
+ *
+ * RETURN:      Ascii character
+ *
+ * DESCRIPTION: Convert a hex digit to an ascii character
+ *
+ ****************************************************************************/
+
 UINT8
 AcpiUtHexToAsciiChar (
     ACPI_INTEGER            Integer,
@@ -339,6 +357,7 @@ AcpiUtHexToAsciiChar (
 
     return (AcpiGbl_HexToAscii[(Integer >> Position) & 0xF]);
 }
+
 
 /******************************************************************************
  *
@@ -370,13 +389,10 @@ ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
 
 #ifdef ACPI_DEBUG
 
-/******************************************************************************
- *
+/*
  * Strings and procedures used for debug only
  *
- ******************************************************************************/
-
-NATIVE_CHAR                 *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
+ */
 
 
 /*****************************************************************************
@@ -415,7 +431,7 @@ AcpiUtGetMutexName (
  */
 
 static const NATIVE_CHAR    AcpiGbl_BadType[] = "UNDEFINED";
-#define TYPE_NAME_LENGTH    9                       /* Maximum length of each string */
+#define TYPE_NAME_LENGTH    9                           /* Maximum length of each string */
 
 static const NATIVE_CHAR    *AcpiGbl_NsTypeNames[] =    /* printable names of ACPI types */
 {
@@ -681,25 +697,25 @@ AcpiUtInitGlobals (
 
     FUNCTION_TRACE ("UtInitGlobals");
 
+    AcpiGbl_LowestStackPointer = ACPI_UINT32_MAX;
 
 
     /* Memory allocation and cache lists */
 
-    MEMSET (AcpiGbl_MemoryLists, 0, 
-            sizeof (ACPI_MEMORY_LIST) * ACPI_NUM_MEM_LISTS);
+    MEMSET (AcpiGbl_MemoryLists, 0, sizeof (ACPI_MEMORY_LIST) * ACPI_NUM_MEM_LISTS);
 
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].LinkOffset      = (UINT16) (NATIVE_UINT) &(((ACPI_GENERIC_STATE *) NULL)->Common.Next);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].LinkOffset     = (UINT16) (NATIVE_UINT) &(((ACPI_PARSE_OBJECT *) NULL)->Next);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].LinkOffset = (UINT16) (NATIVE_UINT) &(((ACPI_PARSE2_OBJECT *) NULL)->Next);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].LinkOffset    = (UINT16) (NATIVE_UINT) &(((ACPI_OPERAND_OBJECT *) NULL)->Cache.Next);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].LinkOffset       = (UINT16) (NATIVE_UINT) &(((ACPI_WALK_STATE *) NULL)->Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].LinkOffset         = (UINT16) (NATIVE_UINT) &(((ACPI_GENERIC_STATE *) NULL)->Common.Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].LinkOffset        = (UINT16) (NATIVE_UINT) &(((ACPI_PARSE_OBJECT *) NULL)->Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].LinkOffset    = (UINT16) (NATIVE_UINT) &(((ACPI_PARSE2_OBJECT *) NULL)->Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].LinkOffset       = (UINT16) (NATIVE_UINT) &(((ACPI_OPERAND_OBJECT *) NULL)->Cache.Next);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].LinkOffset          = (UINT16) (NATIVE_UINT) &(((ACPI_WALK_STATE *) NULL)->Next);
 
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].ObjectSize     = sizeof (ACPI_NAMESPACE_NODE);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].ObjectSize      = sizeof (ACPI_GENERIC_STATE);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].ObjectSize     = sizeof (ACPI_PARSE_OBJECT);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].ObjectSize = sizeof (ACPI_PARSE2_OBJECT);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].ObjectSize    = sizeof (ACPI_OPERAND_OBJECT);
-    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].ObjectSize       = sizeof (ACPI_WALK_STATE);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].ObjectSize        = sizeof (ACPI_NAMESPACE_NODE);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].ObjectSize         = sizeof (ACPI_GENERIC_STATE);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].ObjectSize        = sizeof (ACPI_PARSE_OBJECT);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].ObjectSize    = sizeof (ACPI_PARSE2_OBJECT);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].ObjectSize       = sizeof (ACPI_OPERAND_OBJECT);
+    AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].ObjectSize          = sizeof (ACPI_WALK_STATE);
 
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].MaxCacheDepth      = MAX_STATE_CACHE_DEPTH;
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].MaxCacheDepth     = MAX_PARSE_CACHE_DEPTH;
@@ -707,14 +723,13 @@ AcpiUtInitGlobals (
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].MaxCacheDepth    = MAX_OBJECT_CACHE_DEPTH;
     AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].MaxCacheDepth       = MAX_WALK_CACHE_DEPTH;
 
-
-    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].ListName          = "Global Memory Allocation");
-    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].ListName          = "Namespace Nodes");
-    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].ListName           = "State Object Cache");
-    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].ListName          = "Parse Node Cache");
-    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].ListName      = "Extended Parse Node Cache");
-    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].ListName         = "Operand Object Cache");
-    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].ListName            = "Tree Walk Node Cache");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_GLOBAL].ListName       = "Global Memory Allocation");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].ListName       = "Namespace Nodes");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_STATE].ListName        = "State Object Cache");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE].ListName       = "Parse Node Cache");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_PSNODE_EXT].ListName   = "Extended Parse Node Cache");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_OPERAND].ListName      = "Operand Object Cache");
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_WALK].ListName         = "Tree Walk Node Cache");
 
     /* ACPI table structure */
 
@@ -759,7 +774,6 @@ AcpiUtInitGlobals (
     AcpiGbl_FADT                        = NULL;
     AcpiGbl_DSDT                        = NULL;
 
-
     /* Global Lock support */
 
     AcpiGbl_GlobalLockAcquired          = FALSE;
@@ -779,7 +793,6 @@ AcpiUtInitGlobals (
     AcpiGbl_NextTableOwnerId            = FIRST_TABLE_ID;
     AcpiGbl_NextMethodOwnerId           = FIRST_METHOD_ID;
     AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
-
 
     /* Hardware oriented */
 
