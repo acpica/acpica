@@ -1,9 +1,9 @@
 
 /******************************************************************************
- * 
- * Name: acpiosd.h - All interfaces to the OS-dependent layer.  These 
- *                   interfaces must be implemented by the OS-dependent 
- *                   front-end to the ACPI subsystem.
+ *
+ * Name: acpiosxf.h - All interfaces to the OS-dependent layer.  These
+ *                    interfaces must be implemented by the OS-dependent
+ *                    front-end to the ACPI subsystem.
  *
  *****************************************************************************/
 
@@ -12,8 +12,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -41,9 +41,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -51,11 +51,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -89,7 +89,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -120,19 +120,24 @@
 #ifndef __ACPIOSD_H__
 #define __ACPIOSD_H__
 
-#include <environment.h>
-#include <acpitypes.h>
+#include "platform/acenv.h"
+#include "actypes.h"
 
 
-/* Priorities for OsdQueueForExecution */
+/* Priorities for AcpiOsQueueForExecution */
 
-#define OSD_PRIORITY_HIGH   1
-#define OSD_PRIORITY_MED    2
-#define OSD_PRIORITY_LO     3
-#define OSD_PRIORITY_GPE    OSD_PRIORITY_HIGH
+#define OSD_PRIORITY_GPE    1
+#define OSD_PRIORITY_HIGH   2
+#define OSD_PRIORITY_MED    3
+#define OSD_PRIORITY_LO     4
+
+#define ACPI_NO_UNIT_LIMIT  ((UINT32) -1)
+#define ACPI_MUTEX_SEM      1
 
 
-/* Types specific to the OS-dependent layer interfaces */
+/*
+ * Types specific to the OS-dependent layer interfaces
+ */
 
 typedef
 UINT32 (*OSD_HANDLER) (
@@ -144,122 +149,174 @@ void (*OSD_EXECUTION_CALLBACK) (
 
 
 /*
- * Synchronization primitived
+ * Initialization and shutdown primitives  (Optional)
  */
- 
-ACPI_STATUS
-OsdCreateSemaphore (
-	UINT32				InitialUnits,
-	ACPI_HANDLE			*OutHandle);
 
 ACPI_STATUS
-OsdDeleteSemaphore (
-	ACPI_HANDLE			Handle);
+AcpiOsInitialize (
+    void);
 
 ACPI_STATUS
-OsdWaitSemaphore (
-	ACPI_HANDLE			Handle,
-	UINT32				Units,
-	UINT32				Timeout);
+AcpiOsTerminate (
+    void);
+
+/*
+ * Synchronization primitives
+ */
 
 ACPI_STATUS
-OsdSignalSemaphore (
-	ACPI_HANDLE			Handle,
-	UINT32				Units);
+AcpiOsCreateSemaphore (
+    UINT32                  MaxUnits,
+    UINT32                  InitialUnits,
+    ACPI_HANDLE             *OutHandle);
 
-/* 
- * Memory allocation and mapping 
+ACPI_STATUS
+AcpiOsDeleteSemaphore (
+    ACPI_HANDLE             Handle);
+
+ACPI_STATUS
+AcpiOsWaitSemaphore (
+    ACPI_HANDLE             Handle,
+    UINT32                  Units,
+    UINT32                  Timeout);
+
+ACPI_STATUS
+AcpiOsSignalSemaphore (
+    ACPI_HANDLE             Handle,
+    UINT32                  Units);
+
+/*
+ * Memory allocation and mapping
  */
 
 void *
-OsdAllocate (
+AcpiOsAllocate (
     UINT32                  Size);
 
 void *
-OsdCallocate (
+AcpiOsCallocate (
     UINT32                  Size);
 
-void 
-OsdFree (
+void
+AcpiOsFree (
     void *                  Memory);
 
-void *
-OsdMapMemory (
-    void                    *PhysicalAddress,
+ACPI_STATUS
+AcpiOsMapMemory (
+    ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
+    UINT32                  Length,
+    void                    **LogicalAddress);
+
+void
+AcpiOsUnmapMemory (
+    void                    *LogicalAddress,
     UINT32                  Length);
 
-void 
-OsdUnMapMemory (
-    void                    *LogicalAddress, 
-    UINT32                  Length);
+ACPI_STATUS
+AcpiOsGetPhysicalAddress (
+    void                    *LogicalAddress,
+    ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
 
-
-/* 
- * Interrupt handlers 
+/*
+ * Interrupt handlers
  */
 
 ACPI_STATUS
-OsdInstallInterruptHandler (
+AcpiOsInstallInterruptHandler (
     UINT32                  InterruptNumber,
     OSD_HANDLER             ServiceRoutine,
     void                    *Context);
 
 ACPI_STATUS
-OsdRemoveInterruptHandler (
+AcpiOsRemoveInterruptHandler (
     UINT32                  InterruptNumber,
     OSD_HANDLER             ServiceRoutine);
 
 
-/* 
- * Scheduling 
+/*
+ * Threads and Scheduling
  */
 
+UINT32
+AcpiOsGetThreadId (
+    void);
+
 ACPI_STATUS
-OsdQueueForExecution (
+AcpiOsQueueForExecution (
     UINT32                  Priority,
     OSD_EXECUTION_CALLBACK  Function,
     void                    *Context);
 
 void
-OsdSleep (
+AcpiOsSleep (
     UINT32                  Seconds,
     UINT32                  Milliseconds);
 
 void
-OsdSleepUsec (
+AcpiOsSleepUsec (
     UINT32                  Microseconds);
-
 
 /*
  * Platform/Hardware independent I/O interfaces
  */
 
 UINT8
-OsdIn8 (
-    UINT16                  InPort);
+AcpiOsIn8 (
+    ACPI_IO_ADDRESS         InPort);
 
 
 UINT16
-OsdIn16 (
-    UINT16                  InPort);
+AcpiOsIn16 (
+    ACPI_IO_ADDRESS         InPort);
 
 UINT32
-OsdIn32 (
-    UINT16                  InPort);
+AcpiOsIn32 (
+    ACPI_IO_ADDRESS         InPort);
 
 void
-OsdOut8 (
-    UINT16                  OutPort, 
+AcpiOsOut8 (
+    ACPI_IO_ADDRESS         OutPort,
     UINT8                   Value);
 
 void
-OsdOut16 (
-    UINT16                  OutPort, 
+AcpiOsOut16 (
+    ACPI_IO_ADDRESS         OutPort,
     UINT16                  Value);
 
 void
-OsdOut32 (
-    UINT16                  OutPort, 
+AcpiOsOut32 (
+    ACPI_IO_ADDRESS         OutPort,
+    UINT32                  Value);
+
+/*
+ * Platform/Hardware independent physical memory interfaces
+ */
+
+UINT8
+AcpiOsMemIn8 (
+    ACPI_PHYSICAL_ADDRESS   InAddr);
+
+UINT16
+AcpiOsMemIn16 (
+    ACPI_PHYSICAL_ADDRESS   InAddr);
+
+UINT32
+AcpiOsMemIn32 (
+    ACPI_PHYSICAL_ADDRESS   InAddr);
+
+void
+AcpiOsMemOut8 (
+    ACPI_PHYSICAL_ADDRESS   OutAddr,
+    UINT8                   Value);
+
+void
+AcpiOsMemOut16 (
+    ACPI_PHYSICAL_ADDRESS   OutAddr,
+    UINT16                  Value);
+
+void
+AcpiOsMemOut32 (
+    ACPI_PHYSICAL_ADDRESS   OutAddr,
     UINT32                  Value);
 
 
@@ -267,79 +324,103 @@ OsdOut32 (
  * Standard access to PCI configuration space
  */
 
-ACPI_STATUS 
-OsdReadPciCfgByte (
-    UINT32                  Bus, 
-    UINT32                  DeviceFunction, 
-    UINT32                  Register, 
+ACPI_STATUS
+AcpiOsReadPciCfgByte (
+    UINT32                  Bus,
+    UINT32                  DeviceFunction,
+    UINT32                  Register,
     UINT8                   *Value);
 
-ACPI_STATUS 
-OsdReadPciCfgWord (
-    UINT32                  Bus, 
-    UINT32                  DeviceFunction, 
-    UINT32                  Register, 
+ACPI_STATUS
+AcpiOsReadPciCfgWord (
+    UINT32                  Bus,
+    UINT32                  DeviceFunction,
+    UINT32                  Register,
     UINT16                  *Value);
 
-ACPI_STATUS 
-OsdReadPciCfgDword (
-    UINT32                  Bus, 
-    UINT32                  DeviceFunction, 
-    UINT32                  Register, 
+ACPI_STATUS
+AcpiOsReadPciCfgDword (
+    UINT32                  Bus,
+    UINT32                  DeviceFunction,
+    UINT32                  Register,
     UINT32                  *Value);
 
-ACPI_STATUS 
-OsdWritePciCfgByte (
-    UINT32                  Bus, 
-    UINT32                  DeviceFunction, 
-    UINT32                  Register, 
+ACPI_STATUS
+AcpiOsWritePciCfgByte (
+    UINT32                  Bus,
+    UINT32                  DeviceFunction,
+    UINT32                  Register,
     UINT8                   Value);
 
-ACPI_STATUS 
-OsdWritePciCfgWord (
-    UINT32                  Bus, 
-    UINT32                  DeviceFunction, 
-    UINT32                  Register, 
+ACPI_STATUS
+AcpiOsWritePciCfgWord (
+    UINT32                  Bus,
+    UINT32                  DeviceFunction,
+    UINT32                  Register,
     UINT16                  Value);
 
-ACPI_STATUS 
-OsdWritePciCfgDword (
-    UINT32                  Bus, 
-    UINT32                  DeviceFunction, 
-    UINT32                  Register, 
+
+ACPI_STATUS
+AcpiOsWritePciCfgDword (
+    UINT32                  Bus,
+    UINT32                  DeviceFunction,
+    UINT32                  Register,
     UINT32                  Value);
 
 
 /*
- * Debug print routines 
+ * Miscellaneous
  */
 
-INT32 
-OsdPrintf (
-    const char              *Format, 
-    ...);
+ACPI_STATUS
+AcpiOsBreakpoint (
+    NATIVE_CHAR             *Message);
 
-INT32
-OsdVprintf (
-    const char              *Format, 
-    va_list                 Args);
+BOOLEAN
+AcpiOsReadable (
+    void                    *Pointer,
+    UINT32                  Length);
 
+
+BOOLEAN
+AcpiOsWritable (
+    void                    *Pointer,
+    UINT32                  Length);
 
 
 /*
- * Debug 
+ * Debug print routines
+ */
+
+INT32
+AcpiOsPrintf (
+    const NATIVE_CHAR       *Format,
+    ...);
+
+INT32
+AcpiOsVprintf (
+    const NATIVE_CHAR       *Format,
+    va_list                 Args);
+
+/*
+ * Debug input
+ */
+
+UINT32
+AcpiOsGetLine (
+    NATIVE_CHAR             *Buffer);
+
+
+/*
+ * Debug
  */
 
 void
-OsdDbgTrap(
-    UCHAR                   *pTrapCause);
-
-void
-OsdDbgAssert(
+AcpiOsDbgAssert(
     void                    *FailedAssertion,
     void                    *FileName,
     UINT32                  LineNumber,
-	UCHAR                   *Message);
+    NATIVE_CHAR             *Message);
 
 
 #endif /* __ACPIOSD_H__ */
