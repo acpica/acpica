@@ -261,17 +261,6 @@ AcpiRemoveFixedEventHandler (
     FIXED_EVENT_HANDLER     Handler);
 
 ACPI_STATUS
-AcpiInstallGpeHandler (
-    UINT32                  GpeNumber, 
-    GPE_HANDLER             Handler, 
-    void                    *Context);
-
-ACPI_STATUS
-AcpiRemoveGpeHandler (
-    UINT32                  GpeNumber, 
-    GPE_HANDLER             Handler);
-
-ACPI_STATUS
 AcpiInstallNotifyHandler (
     ACPI_HANDLE             Device,
     UINT32                  HandlerType, 
@@ -297,6 +286,31 @@ AcpiRemoveAddressSpaceHandler (
     UINT32                  SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler);
 
+ACPI_STATUS
+AcpiInstallGpeHandler (
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler, 
+    void                    *Context);
+
+ACPI_STATUS
+AcpiRemoveGpeHandler (
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler);
+
+ACPI_STATUS
+AcpiEnableEvent (
+    UINT32                  Event,
+    UINT32                  Type);
+
+ACPI_STATUS
+AcpiDisableEvent (
+    UINT32                  Event,
+    UINT32                  Type);
+
+ACPI_STATUS
+AcpiClearEvent (
+    UINT32                  Event,
+    UINT32                  Type);
 
 /*
  * Resource interfaces
