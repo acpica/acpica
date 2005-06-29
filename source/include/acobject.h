@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.102 $
+ *       $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -158,7 +158,7 @@
 
 /* Defines for flag byte above */
 
-#define AOPOBJ_STATIC_ALLOCATION    0x01
+#define AOPOBJ_RESERVED             0x01
 #define AOPOBJ_STATIC_POINTER       0x02
 #define AOPOBJ_DATA_VALID           0x04
 #define AOPOBJ_OBJECT_INITIALIZED   0x08
@@ -168,8 +168,8 @@
 
 /*
  * Common bitfield for the field objects
- * "Field Datum"    -- a datum from the actual field object
- * "Buffer Datum"   -- a datum from a user buffer, read from or to be written to the field
+ * "Field Datum"  -- a datum from the actual field object
+ * "Buffer Datum" -- a datum from a user buffer, read from or to be written to the field
  */
 #define ACPI_COMMON_FIELD_INFO              /* SIZE/ALIGNMENT: 24 bits + three 32-bit values */\
     UINT8                       FieldFlags;         /* Access, update, and lock bits */\
