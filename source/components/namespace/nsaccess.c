@@ -404,9 +404,13 @@ NsLookup (
     }
 
 
-    /* Get the prefix scope */
+    /* 
+     * Get the prefix scope.
+     * A null scope means use the root scope 
+     */
 
-    if (!ScopeInfo)
+    if ((!ScopeInfo) ||
+        (!ScopeInfo->Scope.Entry))
     {
         PrefixScope = Gbl_RootObject->Scope;
     }
@@ -485,6 +489,14 @@ NsLookup (
 
             DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching from root [%p]\n", 
                                         EntryToSearch));
+
+            /* Direct reference to root, "\" */
+
+            if (!(*Name))
+            {
+                *RetEntry = Gbl_RootObject;
+                return_ACPI_STATUS (AE_OK);
+            }
         }
     
         else
