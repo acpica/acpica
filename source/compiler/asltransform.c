@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -339,10 +339,6 @@ TrTransformSubtree (
         TrDoDefinitionBlock (Op);
         break;
 
-    case PARSEOP_ELSEIF:
-        TrDoElseif (Op);
-        break;
-
     case PARSEOP_SWITCH:
         TrDoSwitch (Op);
         break;
@@ -383,51 +379,6 @@ TrDoDefinitionBlock (
     }
 
     Gbl_FirstLevelInsertionNode = Next;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    TrDoElseif
- *
- * PARAMETERS:  Op        - Parse node for ELSEIF
- *
- * RETURN:      None
- *
- * DESCRIPTION: Transform an Elseif into an Else and If AML opcode pair.
- *              There is no AML opcode for ELSEIF -- it must be simulated
- *              with an if/else pair.
- *
- ******************************************************************************/
-
-void
-TrDoElseif (
-    ACPI_PARSE_OBJECT       *ElseNode)
-{
-    ACPI_PARSE_OBJECT       *IfNode;
-
-
-    /* Change the ELSEIF into an ELSE (Maintains NEXT peer list) */
-
-    TrAmlInitNode (ElseNode, PARSEOP_ELSE);
-
-    /* Create a new IF node */
-
-    IfNode             = TrCreateLeafNode (PARSEOP_IF);
-    IfNode->Asl.Parent = ElseNode;
-    TrAmlInitLineNumbers (IfNode, ElseNode);
-
-    /* 
-     * Insert the IF node as the only ELSE child and make the original ELSEIF
-     * child tree a child of the IF node.
-     *
-     * Note: The new IF node has no NEXT peer, and the ELSE node maintains the 
-     * original peer list (NEXT).
-     */
-    IfNode->Asl.Child   = ElseNode->Asl.Child;
-    ElseNode->Asl.Child = IfNode;
-
-    TrAmlSetSubtreeParent (IfNode->Asl.Child, IfNode);
 }
 
 
