@@ -9,91 +9,110 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
  * reserved.
  *
  * 2. License
- * 
- * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
- * copy of the source code appearing in this file ("Covered Code") a license 
- * under Intel's copyrights in the base code distributed originally by Intel 
- * ("Original Intel Code") to copy, make derivatives, distribute, use and 
- * display any portion of the Covered Code in any form; and
  *
- * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * 2.1. This is your license from Intel Corp. under its intellectual property
+ * rights.  You may have additional license terms from the party that provided
+ * you this software, covering your right to use that party's intellectual
+ * property rights.
+ *
+ * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
+ * copy of the source code appearing in this file ("Covered Code") an
+ * irrevocable, perpetual, worldwide license under Intel's copyrights in the
+ * base code distributed originally by Intel ("Original Intel Code") to copy,
+ * make derivatives, distribute, use and display any portion of the Covered
+ * Code in any form, with the right to sublicense such rights; and
+ *
+ * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
  * license (without the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell, 
- * offer to sell, and import the Covered Code and derivative works thereof 
- * solely to the minimum extent necessary to exercise the above copyright 
- * license, and in no event shall the patent license extend to any additions to
- * or modifications of the Original Intel Code.  No other license or right is 
- * granted directly or by implication, estoppel or otherwise;
+ * patents that are infringed by the Original Intel Code, to make, use, sell,
+ * offer to sell, and import the Covered Code and derivative works thereof
+ * solely to the minimum extent necessary to exercise the above copyright
+ * license, and in no event shall the patent license extend to any additions
+ * to or modifications of the Original Intel Code.  No other license or right
+ * is granted directly or by implication, estoppel or otherwise;
  *
- * the above copyright and patent license is granted only if the following 
+ * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
  * 3. Conditions 
  *
- * 3.1. Redistribution of source code of any substantial portion of the Covered 
- * Code or modification must include the above Copyright Notice, the above 
- * License, this list of Conditions, and the following Disclaimer and Export 
- * Compliance provision.  In addition, Licensee must cause all Covered Code to 
- * which Licensee contributes to contain a file documenting the changes 
- * Licensee made to create that Covered Code and the date of any change.  
- * Licensee must include in that file the documentation of any changes made by
- * any predecessor Licensee.  Licensee must include a prominent statement that
- * the modification is derived, directly or indirectly, from Original Intel 
- * Code.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification with rights to further distribute source must include
+ * the above Copyright Notice, the above License, this list of Conditions,
+ * and the following Disclaimer and Export Compliance provision.  In addition,
+ * Licensee must cause all Covered Code to which Licensee contributes to
+ * contain a file documenting the changes Licensee made to create that Covered
+ * Code and the date of any change.  Licensee must include in that file the
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * must include a prominent statement that the modification is derived,
+ * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution in binary form of any substantial portion of the Covered 
- * Code or modification must reproduce the above Copyright Notice, and the 
- * following Disclaimer and Export Compliance provision in the documentation 
- * and/or other materials provided with the distribution.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * Redistribution of source code of any substantial portion of the Covered
+ * Code or modification without rights to further distribute source must
+ * include the following Disclaimer and Export Compliance provision in the
+ * documentation and/or other materials provided with distribution.  In
+ * addition, Licensee may not authorize further sublicense of source of any
+ * portion of the Covered Code, and must include terms to the effect that the
+ * license from Licensee to its licensee is limited to the intellectual
+ * property embodied in the software Licensee provides to its licensee, and
+ * not to intellectual property embodied in modifications its licensee may
+ * make.
  *
- * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * 3.3. Redistribution of Executable. Redistribution in executable form of any
+ * substantial portion of the Covered Code or modification must reproduce the
+ * above Copyright Notice, and the following Disclaimer and Export Compliance
+ * provision in the documentation and/or other materials provided with the
+ * distribution.
+ *
+ * 3.4. Intel retains all right, title, and interest in and to the Original
  * Intel Code.
  *
- * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
- * Intel shall be used in advertising or otherwise to promote the sale, use or 
- * other dealings in products derived from or relating to the Covered Code 
+ * 3.5. Neither the name Intel nor any other trademark owned or controlled by
+ * Intel shall be used in advertising or otherwise to promote the sale, use or
+ * other dealings in products derived from or relating to the Covered Code
  * without prior written authorization from Intel.
  *
  * 4. Disclaimer and Export Compliance
  *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
  * PARTICULAR PURPOSE. 
  *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
  * LIMITED REMEDY.
  *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this 
- * software or system incorporating such software without first obtaining any 
- * required license or other approval from the U. S. Department of Commerce or 
- * any other agency or department of the United States Government.  In the 
- * event Licensee exports any such software from the United States or re-
- * exports any such software from a foreign destination, Licensee shall ensure
- * that the distribution and export/re-export of the software is in compliance 
- * with all laws, regulations, orders, or other restrictions of the U.S. Export 
- * Administration Regulations. Licensee agrees that neither it nor any of its 
- * subsidiaries will export/re-export any technical data, process, software, or 
- * service, directly or indirectly, to any country for which the United States 
- * government or any agency thereof requires an export license, other 
- * governmental approval, or letter of assurance, without first obtaining such
- * license, approval or letter.
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this
+ * software or system incorporating such software without first obtaining any
+ * required license or other approval from the U. S. Department of Commerce or
+ * any other agency or department of the United States Government.  In the
+ * event Licensee exports any such software from the United States or
+ * re-exports any such software from a foreign destination, Licensee shall
+ * ensure that the distribution and export/re-export of the software is in
+ * compliance with all laws, regulations, orders, or other restrictions of the
+ * U.S. Export Administration Regulations. Licensee agrees that neither it nor
+ * any of its subsidiaries will export/re-export any technical data, process,
+ * software, or service, directly or indirectly, to any country for which the
+ * United States government or any agency thereof requires an export license,
+ * other governmental approval, or letter of assurance, without first obtaining
+ * such license, approval or letter.
  *
  *****************************************************************************/
-
 
 #define __IEOPEXEC_C__
 
@@ -137,12 +156,13 @@
  ****************************************************************************/
 
 ACPI_STATUS
-AmlExecCreateField (UINT16 opcode)
+AmlExecCreateField (
+    UINT16                  opcode)
 {
-    OBJECT_DESCRIPTOR       *ResDesc = NULL;
-    OBJECT_DESCRIPTOR       *CntDesc = NULL;
-    OBJECT_DESCRIPTOR       *OffDesc = NULL;
-    OBJECT_DESCRIPTOR       *SrcDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ResDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *CntDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *OffDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *SrcDesc = NULL;
     ACPI_STATUS             Status;
     char                    *OpName = NULL;
     INT32                   NumOperands;
@@ -162,7 +182,7 @@ AmlExecCreateField (UINT16 opcode)
 
     if (AML_CreateFieldOp == opcode)
     {
-        Status = AmlPrepStack ("lnnb");
+        Status = AmlPrepObjStack ("lnnb");
         NumOperands = 4;
         OpName = LongOps[opcode & 0x00ff];
     }
@@ -173,7 +193,7 @@ AmlExecCreateField (UINT16 opcode)
 
     else
     {
-        Status = AmlPrepStack ("lnb");
+        Status = AmlPrepObjStack ("lnb");
         NumOperands = 3;
         OpName = ShortOps[opcode];
     }
@@ -183,29 +203,29 @@ AmlExecCreateField (UINT16 opcode)
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
-    AmlDumpStack (MODE_Exec, OpName, NumOperands, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, OpName, NumOperands, "after AmlPrepObjStack");
 
-    ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];        /* result */
+    ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* result */
     
     if (AML_CreateFieldOp == opcode)
     {
-        CntDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];        /* count */
+        CntDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* count */
     }
 
-    OffDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop--];        /* offset */
-    SrcDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];          /* source */
+    OffDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop--];        /* offset */
+    SrcDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];          /* source */
     ObjStackTop += NumOperands - 1;
 
-    /* If ResDesc is a Name, it will be a direct name pointer after AmlPrepStack() */
+    /* If ResDesc is a Name, it will be a direct name pointer after AmlPrepObjStack() */
     
     if (!IS_NS_HANDLE (ResDesc))
     {
         DEBUG_PRINT (ACPI_ERROR, ("%s: destination must be a Name\n", OpName));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -256,7 +276,7 @@ AmlExecCreateField (UINT16 opcode)
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlExecCreateField:internal error: Unknown field creation opcode %02x\n",
                 opcode));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
 
     } /* switch */
@@ -273,7 +293,7 @@ AmlExecCreateField (UINT16 opcode)
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
                             BitOffset + (UINT32)BitCount,
                             8 * (UINT32)SrcDesc->Buffer.BufLen));
-            FUNCTION_EXIT;
+            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
             return AE_AML_ERROR;
         }
 
@@ -307,7 +327,7 @@ AmlExecCreateField (UINT16 opcode)
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlExecCreateField: Tried to create field in improper object type %s\n",
                 TypeFoundPtr));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     
     } /* switch */
@@ -356,7 +376,7 @@ AmlExecCreateField (UINT16 opcode)
     Status = AmlExecStore (OffDesc, ResDesc);
     ObjStackTop -= NumOperands - 1;
     
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -382,34 +402,34 @@ AmlExecCreateField (UINT16 opcode)
 ACPI_STATUS
 AmlExecFatal (void)
 {
-    OBJECT_DESCRIPTOR       *TypeDesc;
-    OBJECT_DESCRIPTOR       *CodeDesc;
-    OBJECT_DESCRIPTOR       *ArgDesc;
+    ACPI_OBJECT_INTERNAL    *TypeDesc;
+    ACPI_OBJECT_INTERNAL    *CodeDesc;
+    ACPI_OBJECT_INTERNAL    *ArgDesc;
     ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlExecFatal");
 
 
-    Status = AmlPrepStack ("nnn");
+    Status = AmlPrepObjStack ("nnn");
 
     if (Status != AE_OK)
     {
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_FatalOp, 3);
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
-    AmlDumpStack (MODE_Exec, LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepObjStack");
 
 
     /*  DefFatal    :=  FatalOp FatalType   FatalCode   FatalArg    */
 
-    ArgDesc  = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
-    CodeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
-    TypeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
+    ArgDesc  = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+    CodeDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
+    TypeDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
 
     DEBUG_PRINT (ACPI_INFO,
                 ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
@@ -417,7 +437,7 @@ AmlExecFatal (void)
                 ArgDesc->Number.Number));
 
     DEBUG_PRINT (ACPI_ERROR, ("AmlExecFatal: FatalOp executed\n"));
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_AML_ERROR);
     return AE_AML_ERROR;
 }
 
@@ -447,16 +467,16 @@ AmlExecFatal (void)
 ACPI_STATUS
 AmlExecIndex (void)
 {
-    OBJECT_DESCRIPTOR       *PkgDesc;
-    OBJECT_DESCRIPTOR       *IdxDesc;
-    OBJECT_DESCRIPTOR       *ResDesc;
+    ACPI_OBJECT_INTERNAL    *PkgDesc;
+    ACPI_OBJECT_INTERNAL    *IdxDesc;
+    ACPI_OBJECT_INTERNAL    *ResDesc;
     ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AmlExecIndex");
 
 
-    Status = AmlPrepStack ("lnp");
+    Status = AmlPrepObjStack ("lnp");
 
     if (Status != AE_OK)
     {
@@ -467,11 +487,11 @@ AmlExecIndex (void)
 
     else
     {
-        AmlDumpStack (MODE_Exec, ShortOps[AML_IndexOp], 3, "after AmlPrepStack");
+        AmlDumpObjStack (MODE_Exec, ShortOps[AML_IndexOp], 3, "after AmlPrepObjStack");
 
-        ResDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
-        IdxDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
-        PkgDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
+        ResDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+        IdxDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
+        PkgDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
 
         if (IdxDesc->Number.Number < 0 || 
             IdxDesc->Number.Number >= (UINT32) PkgDesc->Package.PkgCount)
@@ -501,7 +521,7 @@ AmlExecIndex (void)
         ObjStackTop -= 2;
     }
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (Status);
     return Status;
 }
 
@@ -533,12 +553,12 @@ AmlExecIndex (void)
 ACPI_STATUS
 AmlExecMatch (void)
 {
-    OBJECT_DESCRIPTOR       *PkgDesc;
-    OBJECT_DESCRIPTOR       *Op1Desc;
-    OBJECT_DESCRIPTOR       *V1Desc;
-    OBJECT_DESCRIPTOR       *Op2Desc;
-    OBJECT_DESCRIPTOR       *V2Desc;
-    OBJECT_DESCRIPTOR       *StartDesc;
+    ACPI_OBJECT_INTERNAL    *PkgDesc;
+    ACPI_OBJECT_INTERNAL    *Op1Desc;
+    ACPI_OBJECT_INTERNAL    *V1Desc;
+    ACPI_OBJECT_INTERNAL    *Op2Desc;
+    ACPI_OBJECT_INTERNAL    *V2Desc;
+    ACPI_OBJECT_INTERNAL    *StartDesc;
     ACPI_STATUS             Status;
     UINT32                  Look;
     UINT32                  MatchValue = (UINT32) -1;
@@ -547,25 +567,25 @@ AmlExecMatch (void)
     FUNCTION_TRACE ("AmlExecMatch");
 
 
-    Status = AmlPrepStack ("nnnnnp");
+    Status = AmlPrepObjStack ("nnnnnp");
 
     if (Status != AE_OK)
     {
         /*  invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_MatchOp, 6);
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
-    AmlDumpStack (MODE_Exec, ShortOps[AML_MatchOp], 6, "after AmlPrepStack");
+    AmlDumpObjStack (MODE_Exec, ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
 
-    StartDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop];
-    V2Desc    = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
-    Op2Desc   = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
-    V1Desc    = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 3];
-    Op1Desc   = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 4];
-    PkgDesc   = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 5];
+    StartDesc = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop];
+    V2Desc    = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 1];
+    Op2Desc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 2];
+    V1Desc    = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 3];
+    Op1Desc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 4];
+    PkgDesc   = (ACPI_OBJECT_INTERNAL *) ObjStack[ObjStackTop - 5];
 
     /* Validate match comparison sub-opcodes */
     
@@ -573,7 +593,7 @@ AmlExecMatch (void)
         Op2Desc->Number.Number < 0 || Op2Desc->Number.Number > 5)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: operation encoding out of range\n"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -581,7 +601,7 @@ AmlExecMatch (void)
     if (Look < 0 || Look >= (UINT32) PkgDesc->Package.PkgCount)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: start position value out of range\n"));
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
         return AE_AML_ERROR;
     }
 
@@ -729,7 +749,6 @@ AmlExecMatch (void)
     
     ObjStackTop -= 5;          /* Remove operands */
 
-    FUNCTION_EXIT;
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
-
