@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -731,9 +731,12 @@ LkNamespaceLocateBegin (
                 break;
             }
 
-            /* Is the region at least as big as the access width? */
-
-            if (OwningPsNode->Value.Integer32 < MinimumLength)
+            /*
+             * Is the region at least as big as the access width?
+             * Note: DataTableRegions have 0 length
+             */
+            if ((OwningPsNode->Value.Integer32) &&
+                (OwningPsNode->Value.Integer32 < MinimumLength))
             {
                 AslError (ASL_ERROR, ASL_MSG_FIELD_ACCESS_WIDTH, PsNode, NULL);
             }
