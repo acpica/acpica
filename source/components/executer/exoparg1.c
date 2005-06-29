@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.160 $
+ *              $Revision: 1.161 $
  *
  *****************************************************************************/
 
@@ -408,7 +408,8 @@ AcpiExOpcode_1A_1T_1R (
              * Acpi specification describes Integer type as a little
              * endian unsigned value, so this boundary condition is valid.
              */
-            for (Temp32 = 0; ReturnDesc->Integer.Value && Temp32 < ACPI_INTEGER_BIT_SIZE; ++Temp32)
+            for (Temp32 = 0; ReturnDesc->Integer.Value && 
+                             Temp32 < ACPI_INTEGER_BIT_SIZE; ++Temp32)
             {
                 ReturnDesc->Integer.Value >>= 1;
             }
@@ -425,14 +426,16 @@ AcpiExOpcode_1A_1T_1R (
              * The Acpi specification describes Integer type as a little
              * endian unsigned value, so this boundary condition is valid.
              */
-            for (Temp32 = 0; ReturnDesc->Integer.Value && Temp32 < ACPI_INTEGER_BIT_SIZE; ++Temp32)
+            for (Temp32 = 0; ReturnDesc->Integer.Value && 
+                             Temp32 < ACPI_INTEGER_BIT_SIZE; ++Temp32)
             {
                 ReturnDesc->Integer.Value <<= 1;
             }
 
             /* Since the bit position is one-based, subtract from 33 (65) */
 
-            ReturnDesc->Integer.Value = Temp32 == 0 ? 0 : (ACPI_INTEGER_BIT_SIZE + 1) - Temp32;
+            ReturnDesc->Integer.Value = Temp32 == 0 ? 0 : 
+                                        (ACPI_INTEGER_BIT_SIZE + 1) - Temp32;
             break;
 
 
@@ -620,8 +623,8 @@ AcpiExOpcode_1A_1T_1R (
         break;
 
 
-    case AML_SHIFT_LEFT_BIT_OP:     /*  ShiftLeftBit (Source, BitNum)  */
-    case AML_SHIFT_RIGHT_BIT_OP:    /*  ShiftRightBit (Source, BitNum) */
+    case AML_SHIFT_LEFT_BIT_OP:     /* ShiftLeftBit (Source, BitNum)  */
+    case AML_SHIFT_RIGHT_BIT_OP:    /* ShiftRightBit (Source, BitNum) */
 
         /*
          * These are two obsolete opcodes
@@ -837,7 +840,8 @@ AcpiExOpcode_1A_0T_1R (
             break;
 
         default:
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "SizeOf, Not Buf/Str/Pkg - found type %s\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "SizeOf, Not Buf/Str/Pkg - found type %s\n",
                 AcpiUtGetTypeName (Type)));
             Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
@@ -1020,7 +1024,8 @@ AcpiExOpcode_1A_0T_1R (
                          * an uninitialized package element and is thus a
                          * severe error.
                          */
-                        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "NULL package element obj %p\n",
+                        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                            "NULL package element obj %p\n",
                             Operand[0]));
                         Status = AE_AML_UNINITIALIZED_ELEMENT;
                         goto Cleanup;
@@ -1032,7 +1037,8 @@ AcpiExOpcode_1A_0T_1R (
 
                 default:
 
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Index TargetType %X in obj %p\n",
+                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                        "Unknown Index TargetType %X in obj %p\n",
                         Operand[0]->Reference.TargetType, Operand[0]));
                     Status = AE_AML_OPERAND_TYPE;
                     goto Cleanup;
@@ -1057,7 +1063,8 @@ AcpiExOpcode_1A_0T_1R (
 
 
             default:
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown opcode in ref(%p) - %X\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    "Unknown opcode in ref(%p) - %X\n",
                     Operand[0], Operand[0]->Reference.Opcode));
 
                 Status = AE_TYPE;
