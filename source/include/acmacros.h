@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.109 $
+ *       $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -223,6 +223,9 @@
 
 #define ACPI_TO_POINTER(i)              ACPI_PTR_ADD (void,NULL,(NATIVE_UINT)i)
 #define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p,NULL)
+#define ACPI_OFFSET(d,o)                ((ACPI_SIZE) ACPI_TO_INTEGER (&(((d *)0)->o)))
+#define ACPI_FADT_OFFSET(o)             ACPI_OFFSET (FADT_DESCRIPTOR, o)
+
 
 #ifdef _IA16
 #define ACPI_PHYSADDR_TO_PTR(i)         (void *)(i)
@@ -668,8 +671,8 @@
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            AcpiOsAllocate(a)
-#define ACPI_MEM_CALLOCATE(a)           AcpiOsCallocate(a)
+#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
 #define ACPI_MEM_FREE(a)                AcpiOsFree(a)
 #define ACPI_MEM_TRACKING(a)
 
@@ -678,9 +681,9 @@
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_FREE(a)                AcpiUtFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocateAndTrack(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocateAndTrack(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_FREE(a)                AcpiUtFreeAndTrack(a,_COMPONENT,_THIS_MODULE,__LINE__)
 #define ACPI_MEM_TRACKING(a)            a
 
 #endif /* ACPI_DBG_TRACK_ALLOCATIONS */
