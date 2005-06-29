@@ -647,8 +647,8 @@ AmlExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                  * Construct Mask with 1 bits where the field is,
                  * 0 bits elsewhere
                  */
-                Mask = ((UINT32) 1 << DestDesc->FieldUnit.DatLen) - (UINT32)1
-                                    << DestDesc->FieldUnit.BitOffset;
+                Mask = ((UINT32) 1 << DestDesc->FieldUnit.DatLen) - ((UINT32)1
+                                    << DestDesc->FieldUnit.BitOffset);
 
                 DEBUG_PRINT (TRACE_BFIELD,
                         ("** Store %lx in buffer %p byte %ld bit %d width %d addr %p mask %08lx\n",
@@ -1678,9 +1678,9 @@ AmlExecDyadic2R (UINT16 opcode)
 ACPI_STATUS
 AmlExecDyadic2S (UINT16 opcode)
 {
-    OBJECT_DESCRIPTOR       *ObjDesc;
-    OBJECT_DESCRIPTOR       *TimeDesc;
-    OBJECT_DESCRIPTOR       *ResDesc;
+    OBJECT_DESCRIPTOR       *ObjDesc = NULL;
+    OBJECT_DESCRIPTOR       *TimeDesc = NULL;
+    OBJECT_DESCRIPTOR       *ResDesc = NULL;
     ACPI_STATUS             Status;
 
 
@@ -1906,7 +1906,7 @@ AmlExecuteMethod (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
     FUNCTION_TRACE ("AmlExecuteMethod");
 
 
-    if (Status = AmlPrepExec (Offset, Length) != AE_OK)               /* package stack */
+    if ((Status = AmlPrepExec (Offset, Length)) != AE_OK)  /* package stack */
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecuteMethod: Exec Stack Overflow\n"));
     }
