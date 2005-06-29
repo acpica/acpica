@@ -543,7 +543,27 @@ SOURCE=..\..\subsystem\Dispatcher\dswstate.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=..\..\subsystem\Include\accommon.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acconfig.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acdebug.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acdispat.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Include\acenv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acevents.h
 # End Source File
 # Begin Source File
 
@@ -551,7 +571,39 @@ SOURCE=..\..\Subsystem\Include\acexcep.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\subsystem\Include\acglobal.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\achware.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acinterp.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\aclocal.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acmacros.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acnamesp.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Include\acobject.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acoutput.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\acparser.h
 # End Source File
 # Begin Source File
 
@@ -559,15 +611,15 @@ SOURCE=..\..\Subsystem\Include\acpi.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\subsystem\Include\acpiosxf.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\subsystem\Include\acpixf.h
+SOURCE=..\..\subsystem\Include\acresrc.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\actables.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\subsystem\Include\actbl.h
 # End Source File
 # Begin Source File
 
@@ -584,66 +636,6 @@ SOURCE=..\..\Subsystem\Include\actypes.h
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Include\amlcode.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\common.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\config.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\debugger.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\dispatch.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\events.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\globals.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\hardware.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\internal.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\interp.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\macros.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\namesp.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\output.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\parser.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\resource.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Subsystem\Include\tables.h
 # End Source File
 # End Group
 # Begin Source File
