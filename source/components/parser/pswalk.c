@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -141,26 +141,26 @@ AcpiPsDeleteParseTree (
     ACPI_PARSE_OBJECT       *Op = SubtreeRoot;
     ACPI_PARSE_OBJECT       *Next = NULL;
     ACPI_PARSE_OBJECT       *Parent = NULL;
-    
+
 
     ACPI_FUNCTION_TRACE_PTR ("PsDeleteParseTree", SubtreeRoot);
 
 
     /* Visit all nodes in the subtree */
-    
+
     while (Op)
     {
         /* Check if we are not ascending */
-        
+
         if (Op != Parent)
         {
             /* Look for an argument or child of the current op */
-            
+
             Next = AcpiPsGetArg (Op, 0);
             if (Next)
             {
                 /* Still going downward in tree (Op is not completed yet) */
-                
+
                 Op = Next;
                 continue;
             }
@@ -171,7 +171,7 @@ AcpiPsDeleteParseTree (
          */
         Next = Op->Common.Next;
         Parent = Op->Common.Parent;
-        
+
         AcpiPsFreeOp (Op);
 
         /*
