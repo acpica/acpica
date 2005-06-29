@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -716,10 +716,7 @@ Cleanup:
 
     /* Always clear the object stack */
 
-    /* TBD: [Investigate] Clear stack of return value,
-    but don't delete it */
     WalkState->NumOperands = 0;
-
     return_ACPI_STATUS (Status);
 }
 
