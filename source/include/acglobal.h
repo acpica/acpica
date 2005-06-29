@@ -261,10 +261,11 @@ ACPI_EXTERN NsHandle            LastMethod;
 extern UINT32         	        EventCount[NUM_FIXED_EVENTS];   
 extern FIXED_EVENT_HANDLER      FixedEventHandlers[NUM_FIXED_EVENTS];
 
+ACPI_EXTERN NsHandle            GpeObjHandle;
 ACPI_EXTERN UINT32              SciHandle;
 ACPI_EXTERN UINT32              GpeRegisterCount;
-ACPI_EXTERN GPE_INFO            *GpeInfo;
-ACPI_EXTERN GPE_HANDLERS        *GpeDispatch;
+ACPI_EXTERN GPE_REGISTERS       *GpeRegisters;
+ACPI_EXTERN GPE_LEVEL_INFO      *GpeInfo;
 
 
 
