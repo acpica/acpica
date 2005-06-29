@@ -14,68 +14,75 @@
 
 char        * Why;
 char        WhyBuf [WHYBUF_SIZE];
-int         AcpiHook = 0;
-int         __AcpiLibInitStatus = 0;
-selector    FlatSeg;
+INT32       AcpiHook = 0;
+INT32       __AcpiLibInitStatus = 0;
 
 
 /* Debug switch */
 
-int DebugLevel = 0x7FFFFFFF;
+INT32 DebugLevel = 0x7FFFFFFF;
 
-int
+INT32
 debug_level (void)
 {
+
     return DebugLevel;
 }
 
 void
-set_debug_level (int dl)
+set_debug_level (INT32 dl)
 {
+
     DebugLevel = dl;
 }
 
 
 void
-_Kinc_error (char *a, int b, int c, char * d, int e, int f)
+_Kinc_error (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
+
     OsdPrintf (NULL, "*** Error %s at line %d, file %s\n", a, c, d); 
     return;
 }
 
 
 void
-Kinc_error (char *a, int b)
+Kinc_error (char *a, INT32 b)
 {
+
     OsdPrintf (NULL, "*** Error %s\n", a); 
     return;
 }
 
 
 void
-_Kinc_info (char *a, int b, int c, char * d, int e, int f)
+_Kinc_info (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
+
     OsdPrintf (NULL, "*** Info %s at line %d, file %s\n", a, c, d); 
     return;
 }
 
 void
-Kinc_info (char *a, int b, int c, char * d, int e, int f)
+Kinc_info (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
+
     OsdPrintf (NULL, "*** Info %s at line %d, file %s\n", a, c, d); 
     return;
 }
 
 void
-_Kinc_warning (char *a, int b, int c, char * d, int e, int f)
+_Kinc_warning (char *a, INT32 b, INT32 c, char * d, INT32 e, INT32 f)
 {
+
     OsdPrintf (NULL, "*** Warning %s at line %d, file %s\n", a, c, d); 
     return;
 }
 
 void
-Kinc_warning (char *a, int b)
+Kinc_warning (char *a, INT32 b)
 {
+
     OsdPrintf (NULL, "*** Warning %s\n", a); 
     return;
 }
@@ -83,6 +90,7 @@ Kinc_warning (char *a, int b)
 void
 KFatalError (char * a, char * b)
 {
+
     OsdPrintf (NULL, "*** Fatal Error %s: %s\n", a, b);
     return;
 }
@@ -90,6 +98,7 @@ KFatalError (char * a, char * b)
 void
 CloseOFT (void)
 {
+
     OsdPrintf (NULL, "CloseOFT called, not supported **********\n");
     return;
 }
@@ -97,17 +106,18 @@ CloseOFT (void)
 void
 RestoreOFT (void)
 {
+
     OsdPrintf (NULL, "RestoreOFT called, not supported **********\n");
     return;
 }
 
 void
-DumpBuf (BYTE *Buffer, size_t Count, int Flags, LogHandle LogFile,
-    int iLogFlags)
+DumpBuf (UINT8 *Buffer, size_t Count, INT32 Flags, LogHandle LogFile,
+            INT32 iLogFlags)
 {
-    unsigned int    i = 0;
-    unsigned int    j;
-    unsigned char   BufChar;
+    UINT32      i = 0;
+    UINT32      j;
+    UINT8       BufChar;
 
 
     /*
@@ -172,7 +182,7 @@ SetNotSupported (void)
 }
 
 void 
-DisplayTable (void *Header, int DisplayBitFlags)
+DisplayTable (void *Header, INT32 DisplayBitFlags)
 {
     OsdPrintf (NULL, "DisplayTable called, not supported **********\n");
     return;
@@ -185,41 +195,11 @@ FunctionTrace (char * FileName, char * FunctionName)
     OsdPrintf (NULL, "Enter Module: %10s, Function: %s\n", FileName, FunctionName);
 }
 
-/*
-
-int
-vm86 (void)
-{
-    return 0;
-}
-
-int
-iIrqToInt (WORD wIrq)
-{
-    return 0;
-}
-
-
-// Output format
-
-int
-iDecIndent (void)
-{
-    return 0;
-}
-
-
-int
-iIncIndent (void)
-{
-    return 0;
-}
-
-**************/
 
 LogHandle
 GetMasterLogHandle (void)
 {
+
 /*  return NO_LOG_HANDLE; */
 
     return 1; /* stdout; */
@@ -231,13 +211,16 @@ GetMasterLogHandle (void)
 size_t
 PtrOffset (void *Ptr)
 {
+
     OsdPrintf (NULL, "PtrOffset called, not supported **********\n");
     return (size_t) Ptr;
 }
 
+/***********OBSOLETE
 selector
 PtrSelector (void *Ptr)
 {
+
     OsdPrintf (NULL, "PtrSelector called, not supported **********\n");
     return (selector) WIN_DS_REGISTER;
 }
@@ -245,54 +228,61 @@ PtrSelector (void *Ptr)
 void *
 BuildPtr (selector Seg, size_t Offset)
 {
+
     OsdPrintf (NULL, "BuildPtr called, not supported **********\n");
     return (void *) Offset;
 }
-
-void *
-PHYStoFP (DWORD phys)
-{
-    OsdPrintf (NULL, "PHYStoFP called, not supported **********\n");
-    return 0;
-}
-
-DWORD
-FPtoPHYS (void *fp)
-{
-    OsdPrintf (NULL, "FPtoPHYS called, not supported **********\n");
-    return 0;
-}
-
 selector
 ebds (void)
 {
     return 0;
 }
 
+******************/
+
+void *
+PHYStoFP (UINT32 phys)
+{
+
+    OsdPrintf (NULL, "PHYStoFP called, not supported **********\n");
+    return 0;
+}
+
+UINT32
+FPtoPHYS (void *fp)
+{
+
+    OsdPrintf (NULL, "FPtoPHYS called, not supported **********\n");
+    return 0;
+}
+
 /* Interrupt handlers */
 
-DWORD
+UINT32
 InstallInterruptHandler (
-    BYTE                InterruptNumber,
-    int                 (* Isr)(void),
-    BYTE                InterruptTaskFlag,
-    selector            InterruptHandlerDS,
-    WORD *              ExceptPtr)
+    UINT8               InterruptNumber,
+    INT32               (* Isr)(void),
+    UINT8               InterruptTaskFlag,
+    UINT32 *            ExceptPtr)
 {
-	DWORD RetVal;
+
+	UINT32 RetVal;
+
 
     OsdPrintf (NULL, "InstallInterruptHandler called, not supported **********\n");
 
-    RetVal = (DWORD) OsdInstallInterruptHandler (InterruptNumber, Isr, ExceptPtr);
+    RetVal = (UINT32) OsdInstallInterruptHandler ((UINT32) InterruptNumber, 
+                                                    Isr, ExceptPtr);
 
 	
 	return(RetVal);
 
 }
 
-int
-RemoveInterruptHandler (DWORD wKey)
+INT32
+RemoveInterruptHandler (UINT32 Key)
 {
+
     OsdPrintf (NULL, "RemoveInterruptHandler called, not supported **********\n");
     return 0;
 }
