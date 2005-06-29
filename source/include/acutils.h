@@ -99,94 +99,183 @@
 #define _COMMON_H
 
 #include "acpiobj.h"
+#include "acpiosd.h"
 
 
-/* Prototypes */
+/* Global initialization interfaces */
+
+void 
+InitAcpiLibGlobals (
+    void);
+
+ACPI_STATUS
+InitAcpiGetRsdt (
+    UINT32                  *NumberOfTables, 
+    OSD_FILE                *FilePtr);
+
+ACPI_STATUS
+InitAcpiGetAllTables (
+    UINT32                  NumberOfTables, 
+    OSD_FILE                *FilePtr);
+
+ACPI_STATUS
+InitAcpiRegisters (
+    void);
+
+ACPI_STATUS
+InitOpenFile (
+    char                    *Filename, 
+    OSD_FILE                **FilePtr);
+void
+InitCloseFile (
+    OSD_FILE                *FilePtr);
+
+
+/* Exit interfaces */
+
+void
+AcpiLocalCleanup (
+    void);
+
+
+/* cmobject - object construction and conversion interfaces */
+
+ACPI_STATUS
+CmGetSimpleObjectSize (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
+
+ACPI_STATUS
+CmGetPackageObjectSize (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
+
+ACPI_STATUS
+CmGetObjectSize(
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    UINT32                  *ObjLength);
+
+ACPI_STATUS
+CmBuildSimpleObject(
+    ACPI_OBJECT_INTERNAL    *Obj,
+    ACPI_OBJECT             *UserObj,
+    char                    *DataSpace,
+    UINT32                  *BufferSpaceUsed);
+
+ACPI_STATUS
+CmBuildPackageObject (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    char                    *Buffer, 
+    UINT32                  *SpaceUsed);
+
+ACPI_STATUS
+CmBuildExternalObject (
+    ACPI_OBJECT_INTERNAL    *Obj, 
+    ACPI_BUFFER             *RetBuffer);
+
+
+
+/* Debug interfaces */
 
 INT32
-GetDebugLevel (void);
+GetDebugLevel (
+    void);
 
 void
 SetDebugLevel (
-    INT32               level);
+    INT32                   level);
 
 void
 FunctionTrace (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    char                *FunctionName);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName);
 
 void
 FunctionExit (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    char                *FunctionName);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName);
+
+void
+FunctionStatusExit (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    ACPI_STATUS             Status);
 
 void
 DebugPrintPrefix (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId);
 
 void
 DebugPrint (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    INT32               PrintLevel, 
-    char                *Format, ...);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    INT32                   PrintLevel, 
+    char                    *Format, ...);
 
 void
 DebugPrintRaw (
-    char                *Format, ...);
+    char                    *Format, ...);
 
 void
 _ReportInfo (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *Message);
 
 void
 _ReportError (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *Message);
 
 void
 _ReportWarning (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *Message);
 
 void
 _ReportSuccess (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *Message);
 
 void 
 DumpBuffer (
-    char               *Buffer, 
-    UINT32              Count, 
-    INT32               Flags, 
-    INT32               componentId);
+    char                    *Buffer, 
+    UINT32                  Count, 
+    INT32                   Flags, 
+    INT32                   componentId);
 
 
+// assert macros
 
-/* TBD: simplify or remove entirely */
+#ifdef DEBUG_ASSERT
+#undef DEBUG_ASSERT
+#endif
 
-void 
-_Kinc_error (char *, INT32, INT32, char *, INT32, INT32); 
-void 
-_Kinc_info (char *, INT32, INT32, char *, INT32, INT32); 
-void 
-_Kinc_warning (char *, INT32, INT32, char *, INT32, INT32);
+#define ACPI_ASSERT(exp)	                                        \
+    if(!(exp))												\
+        OsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
+
+#define DEBUG_ASSERT(msg, exp)								\
+    if(!(exp))												\
+        OsdDbgAssert(#exp, __FILE__, __LINE__, msg)
+
+
 
 
 /*
@@ -196,35 +285,38 @@ _Kinc_warning (char *, INT32, INT32, char *, INT32, INT32);
 
 void *
 _AllocateObjectDesc (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId); 
 
 void *
 _LocalAllocate (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    INT32               AllocSize);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    INT32                   AllocSize);
 
 void *
 _LocalCallocate (
-    char                *ModuleName, 
-    INT32               LineNumber, 
-    INT32               ComponentId, 
-    INT32               AllocSize);
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    INT32                   AllocSize);
 
 
 void
 LocalDeleteObject (
-    ACPI_OBJECT         **ppOD);
+    ACPI_OBJECT_INTERNAL    **ObjDesc);
 
 
 
+/*
+ * The point of these macros is to add the caller's module information - to be used
+ * in case of an error during allocation
+ */
 #define LocalAllocate(a)                _LocalAllocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define LocalCallocate(a)               _LocalCallocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define AllocateObjectDesc(a)           _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define AllocateObjectDesc()            _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
 
 
 
