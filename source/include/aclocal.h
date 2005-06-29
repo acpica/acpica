@@ -214,6 +214,7 @@ typedef struct
      */
     ACPI_OBJECT_TYPE        Type;   
 
+
 } SCOPE_STACK;    
 
 
@@ -241,6 +242,7 @@ typedef struct
  */
 #define ACPI_MAX_ADDRESS_SPACE      255
 #define ACPI_NUM_ADDRESS_SPACES     256
+
 
 typedef struct
 {
@@ -290,6 +292,14 @@ typedef struct
 
 } GPE_LEVEL_INFO;
 
+/* Information about each particular fixed event */
+
+typedef struct
+{
+	FIXED_EVENT_HANDLER		Handler;		/* Address of handler. */
+	void					*Context;		/* Context to be passed to handler */
+} FIXED_EVENT_INFO;
+
 
 /* Entry for a memory allocation (debug only) */
 
@@ -311,10 +321,4 @@ typedef struct AllocationInfo
 } ALLOCATION_INFO;
 
 
-typedef struct
-{
-    FIXED_EVENT_HANDLER     Handler;        /* Address of handler, if any */
-    void                    *Context;       /* Context to be passed to handler */
-
-} FIXED_EVENT_INFO;
 #endif
