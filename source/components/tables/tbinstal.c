@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,58 @@
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiTbMatchSignature
+ *
+ * PARAMETERS:  Signature           - Table signature to match
+ *              TableInfo           - Return data
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Compare signature against the list of "ACPI-subsystem-owned"
+ *              tables (DSDT/FADT/SSDT, etc.) Returns the TableTypeID on match.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiTbMatchSignature (
+    NATIVE_CHAR             *Signature,
+    ACPI_TABLE_DESC         *TableInfo)
+{
+    NATIVE_UINT             i;
+
+
+    FUNCTION_TRACE ("TbMatchSignature");
+
+
+    /*
+     * Search for a signature match among the known table types
+     */
+    for (i = 0; i < NUM_ACPI_TABLES; i++)
+    {
+        if (!STRNCMP (Signature, AcpiGbl_AcpiTableData[i].Signature,
+                      AcpiGbl_AcpiTableData[i].SigLength))
+        {
+            /* Found a signature match, return index if requested */
+
+            if (TableInfo)
+            {
+                TableInfo->Type = (UINT8) i;
+            }
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "ACPI Signature match %4.4s\n",
+                (char *) AcpiGbl_AcpiTableData[i].Signature));
+
+            return_ACPI_STATUS (AE_OK);
+        }
+    }
+
+    return_ACPI_STATUS (AE_NOT_FOUND);
+}
+
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiTbInstallTable
  *
  * PARAMETERS:  TablePtr            - Input buffer pointer, optional
@@ -205,8 +257,6 @@ AcpiTbRecognizeTable (
 {
     ACPI_TABLE_HEADER       *TableHeader;
     ACPI_STATUS             Status;
-    ACPI_TABLE_TYPE         TableType = 0;
-    UINT32                  i;
 
 
     FUNCTION_TRACE ("TbRecognizeTable");
@@ -221,60 +271,35 @@ AcpiTbRecognizeTable (
     }
 
     /*
-     * Search for a signature match among the known table types
-     * Start at index one -> Skip the RSDP
+     * We only "recognize" a limited number of ACPI tables -- namely, the
+     * ones that are used by the subsystem (DSDT, FADT, etc.)
+     *
+     * An AE_NOT_FOUND means that the table was not recognized.
+     * This can be any one of many valid ACPI tables, it just isn't one of
+     * the tables that is consumed by the core subsystem
      */
-    Status = AE_SUPPORT;
-    for (i = 1; i < NUM_ACPI_TABLES; i++)
+    Status = AcpiTbMatchSignature (TableHeader->Signature, TableInfo);
+    if (ACPI_SUCCESS (Status))
     {
-        if (!STRNCMP (TableHeader->Signature,
-                        AcpiGbl_AcpiTableData[i].Signature,
-                        AcpiGbl_AcpiTableData[i].SigLength))
+        /* Return the table type and length via the info struct */
+
+        TableInfo->Length   = TableHeader->Length;
+
+        /*
+         * Validate checksum for _most_ tables,
+         * even the ones whose signature we don't recognize
+         */
+        if (TableInfo->Type != ACPI_TABLE_FACS)
         {
-            /*
-             * Found a signature match, get the pertinent info from the
-             * TableData structure
-             */
-            TableType       = i;
-            Status          = AcpiGbl_AcpiTableData[i].Status;
+            Status = AcpiTbVerifyTableChecksum (TableHeader);
+            if (ACPI_FAILURE (Status) &&
+                (!ACPI_CHECKSUM_ABORT))
+            {
+                /* Ignore the error if configuration says so */
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Found %4.4s\n",
-                (char*)AcpiGbl_AcpiTableData[i].Signature));
-            break;
+                Status = AE_OK;
+            }
         }
-    }
-
-    /* Return the table type and length via the info struct */
-
-    TableInfo->Type     = (UINT8) TableType;
-    TableInfo->Length   = TableHeader->Length;
-
-
-    /*
-     * Validate checksum for _most_ tables,
-     * even the ones whose signature we don't recognize
-     */
-    if (TableType != ACPI_TABLE_FACS)
-    {
-        Status = AcpiTbVerifyTableChecksum (TableHeader);
-        if (ACPI_FAILURE (Status) &&
-            (!ACPI_CHECKSUM_ABORT))
-        {
-            /* Ignore the error if configuration says so */
-
-            Status = AE_OK;
-        }
-    }
-
-    /*
-     * An AE_SUPPORT means that the table was not recognized.
-     * We basically ignore this;  just print a debug message
-     */
-    if (Status == AE_SUPPORT)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "Unsupported table %s (Type %X) was found and discarded\n",
-            AcpiGbl_AcpiTableData[TableType].Name, TableType));
     }
 
     return_ACPI_STATUS (Status);
