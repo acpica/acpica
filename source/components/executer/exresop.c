@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.43 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -179,18 +179,21 @@ AcpiExCheckObjectType (
  *
  * FUNCTION:    AcpiExResolveOperands
  *
- * PARAMETERS:  Opcode              Opcode being interpreted
- *              StackPtr            Top of operand stack
+ * PARAMETERS:  Opcode              - Opcode being interpreted
+ *              StackPtr            - Pointer to the operand stack to be 
+ *                                    resolved
+ *              WalkState           - Current stateu
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Convert stack entries to required types
+ * DESCRIPTION: Convert multiple input operands to the types required by the
+ *              target operator.
  *
- *      Each nibble in ArgTypes represents one required operand
- *      and indicates the required Type:
+ *      Each nibble (actually 5 bits)  in ArgTypes represents one required
+ *      operand and indicates the required Type:
  *
- *      The corresponding stack entry will be converted to the
- *      required type if possible, else return an exception
+ *      The corresponding operand will be converted to the required type if 
+ *      possible, otherwise we abort with an exception.
  *
  ******************************************************************************/
 
@@ -313,7 +316,6 @@ AcpiExResolveOperands (
                         ObjDesc->Reference.Opcode));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-                    break;
                 }
             }
             break;
@@ -328,7 +330,6 @@ AcpiExResolveOperands (
                 ACPI_GET_DESCRIPTOR_TYPE (ObjDesc), ObjDesc));
 
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-            break;
         }
 
 
@@ -344,6 +345,20 @@ AcpiExResolveOperands (
          */
         switch (ThisArgType)
         {
+        case ARGI_REF_OR_STRING:        /* Can be a String or Reference */
+
+            if ((ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_INTERNAL) &&
+                (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_STRING))
+            {
+                /* 
+                 * String found - the string references a named object and must be
+                 * resolved to a node
+                 */
+                goto NextOperand;
+            }
+
+            /* Else not a string - fall through to the normal Reference case below */
+
         case ARGI_REFERENCE:            /* References: */
         case ARGI_INTEGER_REF:
         case ARGI_OBJECT_REF:
@@ -376,9 +391,7 @@ AcpiExResolveOperands (
                 AcpiUtRemoveReference (ObjDesc);
                 (*StackPtr) = TempNode;
             }
-
             goto NextOperand;
-            break;
 
 
         case ARGI_ANYTYPE:
@@ -484,7 +497,6 @@ AcpiExResolveOperands (
                 return_ACPI_STATUS (Status);
             }
             goto NextOperand;
-            break;
 
 
         case ARGI_BUFFER:
@@ -508,7 +520,6 @@ AcpiExResolveOperands (
                 return_ACPI_STATUS (Status);
             }
             goto NextOperand;
-            break;
 
 
         case ARGI_STRING:
@@ -532,7 +543,6 @@ AcpiExResolveOperands (
                 return_ACPI_STATUS (Status);
             }
             goto NextOperand;
-            break;
 
 
         case ARGI_COMPUTEDATA:
@@ -554,10 +564,8 @@ AcpiExResolveOperands (
                     AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-                break;
             }
             goto NextOperand;
-            break;
 
 
         case ARGI_DATAOBJECT:
@@ -618,10 +626,8 @@ AcpiExResolveOperands (
                     AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-                break;
             }
             goto NextOperand;
-            break;
 
 
         case ARGI_COMPLEXOBJ:
@@ -643,10 +649,8 @@ AcpiExResolveOperands (
                     AcpiUtGetTypeName ((*StackPtr)->Common.Type), *StackPtr));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
-                break;
             }
             goto NextOperand;
-            break;
 
 
         default:
