@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.65 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -191,7 +191,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" * Copyright (C) 2000 - 2003, R. Byron Moore\n"
+" * Copyright (C) 2000 - 2004, R. Byron Moore\n"
 " * All rights reserved.\n"
 " *\n"
 " * Redistribution and use in source and binary forms, with or without\n"
@@ -308,6 +308,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_GPE_HANDLER",                 SRC_TYPE_SIMPLE},
     {"ACPI_GPE_INDEX_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_GPE_REGISTER_INFO",           SRC_TYPE_STRUCT},
+    {"ACPI_GPE_WALK_INFO",               SRC_TYPE_STRUCT},
     {"ACPI_HANDLE",                      SRC_TYPE_SIMPLE},
     {"ACPI_INIT_HANDLER",                SRC_TYPE_SIMPLE},
     {"ACPI_IDENTIFIER_TABLE",            SRC_TYPE_STRUCT},
@@ -619,7 +620,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
-    {"(c) 1999 - 2003",      "(c) 1999 - 2003",          REPLACE_WHOLE_WORD},
+    {"(c) 1999 - 2003",      "(c) 1999 - 2004",          REPLACE_WHOLE_WORD},
 
 #if 0
     "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",         REPLACE_WHOLE_WORD,
