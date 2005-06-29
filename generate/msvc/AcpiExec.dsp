@@ -417,7 +417,7 @@ SOURCE=..\..\source\Tools\AcpiExec\aemain.c
 
 !ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
 
-# ADD CPP /Ze /FR
+# ADD CPP /Ze /FAcs /FR
 
 !ENDIF 
 
