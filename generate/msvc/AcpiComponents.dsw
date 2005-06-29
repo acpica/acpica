@@ -3,6 +3,22 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
+Project: "AcpiDump"=.\AcpiDump.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/Tools/AcpiDump", XHHAAAAA
+    ..\..\Tools\AcpiDump
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "Subsystem"=.\Subsystem\Subsystem.dsp - Package Owner=<4>
 
 Package=<5>
