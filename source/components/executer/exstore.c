@@ -236,7 +236,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
         /* Storing into a Name */
 
         TempHandle = DestDesc->Lvalue.Ref;
-        switch (NsValType (TempHandle)) 
+        switch (NsGetType (TempHandle)) 
         {
             /* Type of Name's existing value */
 
@@ -244,12 +244,12 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 #if 1
             DEBUG_PRINT (ACPI_ERROR, (
                       "ExecStore/NameOp: Store into %s not implemented\n",
-                      NsTypeNames[NsValType (TempHandle)]));
+                      NsTypeNames[NsGetType (TempHandle)]));
             Excep = S_ERROR;
 #else
             DEBUG_PRINT (ACPI_WARN,
                         ("ExecStore/NameOp: Store into %s not implemented\n",
-                        NsTypeNames[NsValType(TempHandle)]));
+                        NsTypeNames[NsGetType(TempHandle)]));
             Excep = S_SUCCESS;
 #endif
             DELETE (DestDesc);
@@ -284,7 +284,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                  */
 
                 DELETE (DestDesc);
-                DestDesc = NsValPtr (TempHandle);
+                DestDesc = NsGetValue (TempHandle);
                 if (!DestDesc)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("ExecStore/BankField: internal error: null old-value pointer\n"));
@@ -298,7 +298,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore/BankField: internal error: Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc));
+                        TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
                 Excep = S_ERROR;
             }
@@ -386,7 +386,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                  */
 
                 DELETE (DestDesc);
-                DestDesc = NsValPtr (TempHandle);
+                DestDesc = NsGetValue (TempHandle);
             
                 if (!DestDesc)
                 {
@@ -400,7 +400,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore/DefField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc));
+                        TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
                 Excep = S_ERROR;
             }
@@ -469,7 +469,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                  */
 
                 DELETE (DestDesc);
-                DestDesc = NsValPtr (TempHandle);
+                DestDesc = NsGetValue (TempHandle);
             
                 if (!DestDesc)
                 {
@@ -483,7 +483,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore/IndexField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
-                        TempHandle, NsValType (TempHandle), DestDesc->ValType, DestDesc));
+                        TempHandle, NsGetType (TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
                 Excep = S_ERROR;
             }
@@ -565,7 +565,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                  * and point to descriptor for name's value instead.
                  */
                 DELETE (DestDesc);
-                DestDesc = NsValPtr (TempHandle);
+                DestDesc = NsGetValue (TempHandle);
             
                 if (!DestDesc)
                 {
@@ -582,11 +582,11 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             }
 
             if ((S_SUCCESS == Excep) &&
-                (DestDesc->ValType != (UINT8) NsValType (TempHandle)))
+                (DestDesc->ValType != (UINT8) NsGetType (TempHandle)))
             {
                 DEBUG_PRINT (ACPI_ERROR, (
                         "ExecStore/FieldUnit:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
-                          TempHandle, NsValType(TempHandle), DestDesc->ValType, DestDesc));
+                          TempHandle, NsGetType(TempHandle), DestDesc->ValType, DestDesc));
                 AmlAppendBlockOwner (DestDesc);
                 Excep = S_ERROR;
             }
@@ -1243,7 +1243,7 @@ ExecMonadic2 (UINT16 opcode)
              * it must be a direct name pointer.  Allocate a descriptor
              * to hold the type.
              */
-            Excep = (INT32) NsValType ((NsHandle) ObjDesc);
+            Excep = (INT32) NsGetType ((NsHandle) ObjDesc);
 
             ObjDesc = AllocateObjectDesc (&KDT[4]);
             if (!ObjDesc)
