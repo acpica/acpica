@@ -216,7 +216,8 @@ NsNameOfScope (
  ***************************************************************************/
 
 char *
-NsNameOfCurrentScope (void)
+NsNameOfCurrentScope (
+    ACPI_WALK_STATE         *WalkState)
 {
     char                    *ScopeName;
 
@@ -224,9 +225,9 @@ NsNameOfCurrentScope (void)
     FUNCTION_TRACE ("NsNameOfCurrentScope");
 
 
-    if (Gbl_CurrentScope && Gbl_CurrentScope->Scope)
+    if (WalkState && WalkState->ScopeInfo)
     {
-        ScopeName = NsNameOfScope (Gbl_CurrentScope->Scope);
+        ScopeName = NsNameOfScope (WalkState->ScopeInfo->Scope.Entry);
         return_VALUE (ScopeName);
     }
     
@@ -342,7 +343,7 @@ NsHandleToPathname (
     
     UserBuffer[Size] = '\\';
 
-    DEBUG_PRINT (ACPI_INFO, ("NsHandleToPathname: Len=%d, %s \n", 
+    DEBUG_PRINT (TRACE_EXEC, ("NsHandleToPathname: Len=%d, %s \n", 
                                 PathLength, UserBuffer));
 
 
@@ -494,7 +495,8 @@ NsLowFindNames (
 
     /* Walk the namespace and find all matches */
 
-    AcpiWalkNamespace (ACPI_TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
+    NsWalkNamespace (ACPI_TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NS_WALK_NO_UNLOCK, 
+                        NsNameCompare, &Find, NULL);
 
     if (List)
     {
