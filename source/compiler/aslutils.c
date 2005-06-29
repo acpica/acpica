@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -201,12 +201,12 @@ UINT8
 UtHexCharToValue (
     int                     hc)
 {
-    if (hc < 0x39)
+    if (hc <= 0x39)
     {
         return (hc - 0x30);
     }
 
-    if (hc < 0x46)
+    if (hc <= 0x46)
     {
         return (hc - 0x37);
     }
@@ -324,7 +324,7 @@ UtDisplaySummary (
     if (ErrorCount == 0)
     {
         printf ("AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n", 
-                    Gbl_OutputFilename, TableLength, TotalNamedObjects, TotalExecutableOpcodes);
+                    Gbl_OutputFilename, Gbl_TableLength, TotalNamedObjects, TotalExecutableOpcodes);
     }
 }
 
