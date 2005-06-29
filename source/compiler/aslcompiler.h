@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.47 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -126,10 +126,6 @@
 #include <stdarg.h>
 #include <string.h>
 
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_DEBUG
-#define ACPI_APPLICATION
-
 
 #include "acpi.h"
 #include "acdebug.h"
@@ -141,11 +137,11 @@
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2014"
-#define CompilerCreatorRevision     0x02002014  /* Acpi 2.0, Version# */
+#define CompilerVersion             "X2016"
+#define CompilerCreatorRevision     0x02002016  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
-#define CompilerCopyright           "Copyright (C) 2000 Intel Corporation"
+#define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
 #define CompilerCompliance          "ACPI 2.0"
 #define CompilerName                "iasl"
 #define CompilerCreatorId           "INTL"
@@ -187,6 +183,16 @@
 /* TBD: Is this a real opcode? */
 
 #define AML_CONCAT_TPL_OP           (UINT16) 0x00FE
+
+
+/* filename suffixes for output files */
+
+#define FILE_SUFFIX_AML_CODE        "aml"
+#define FILE_SUFFIX_LISTING         "lst"
+#define FILE_SUFFIX_HEX_DUMP        "hex"
+#define FILE_SUFFIX_DEBUG           "txt"
+#define FILE_SUFFIX_SOURCE          "src"
+#define FILE_SUFFIX_NAMESPACE       "nsp"
 
 
 /*******************************************************************************
