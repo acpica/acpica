@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.148 $
+ *              $Revision: 1.149 $
  *
  ******************************************************************************/
 
@@ -130,7 +130,7 @@
  *
  * FUNCTION:    AcpiHwClearAcpiStatus
  *
- * PARAMETERS:  none
+ * PARAMETERS:  Flags           - Lock the hardware or not
  *
  * RETURN:      none
  *
@@ -139,7 +139,8 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiHwClearAcpiStatus (void)
+AcpiHwClearAcpiStatus (
+    UINT32                  Flags)
 {
     ACPI_STATUS             Status;
 
@@ -151,11 +152,13 @@ AcpiHwClearAcpiStatus (void)
         ACPI_BITMASK_ALL_FIXED_STATUS,
         (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm1aEvtBlk.Address)));
 
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
-    if (ACPI_FAILURE (Status))
+    if (Flags & ACPI_MTX_LOCK)
     {
-        return_ACPI_STATUS (Status);
+        Status = AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, ACPI_REGISTER_PM1_STATUS,
@@ -182,7 +185,10 @@ AcpiHwClearAcpiStatus (void)
     Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock);
 
 UnlockAndExit:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+    if (Flags & ACPI_MTX_LOCK)
+    {
+        (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+    }
     return_ACPI_STATUS (Status);
 }
 
@@ -324,8 +330,9 @@ AcpiHwGetBitRegisterInfo (
  *
  * FUNCTION:    AcpiGetRegister
  *
- * PARAMETERS:  RegisterId          - Index of ACPI Register to access
- *              UseLock             - Lock the hardware
+ * PARAMETERS:  RegisterId      - ID of ACPI BitRegister to access
+ *              ReturnValue     - Value that was read from the register
+ *              Flags           - Lock the hardware or not
  *
  * RETURN:      Value is read from specified Register.  Value returned is
  *              normalized to bit0 (is shifted all the way right)
