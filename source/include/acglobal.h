@@ -234,12 +234,12 @@ ACPI_EXTERN INT32                       Gbl_EdgeLevelSave;
 ACPI_EXTERN INT32                       Gbl_IrqEnableSave;
 ACPI_EXTERN UINT32                      Gbl_RsdpOriginalLocation; 
 ACPI_EXTERN ACPI_HANDLE                 Gbl_GlobalLockSemaphore;
-ACPI_EXTERN BOOLEAN                     Gbl_Shutdown;
 ACPI_EXTERN BOOLEAN                     Gbl_MethodExecuting;
 ACPI_EXTERN BOOLEAN                     Gbl_StepToNextCall;
 ACPI_EXTERN ACPI_WALK_STATE            *Gbl_BreakpointWalk;
 ACPI_EXTERN BOOLEAN                     Gbl_DbTerminateThreads;
 
+extern		BOOLEAN                     Gbl_Shutdown;
 extern      UINT32                      Gbl_SystemFlags;
 extern      UINT32                      Gbl_StartupFlags;
 extern      char                       *Gbl_AcpiCaVersion;
