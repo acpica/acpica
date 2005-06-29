@@ -329,6 +329,8 @@ NotifyHandler (
     void                        *Context)
 {
 
+    printf ("**** Notify Handler: Value 0x%x\n", Value);
+
     switch (Value)
     {
     case 0:
