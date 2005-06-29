@@ -116,13 +116,13 @@
  *
  * PARAMETERS:  Handle              - Object handle (optional)
  *              *Pathname           - Object pathname (optional)
- *              *ReturnObject       - Where to put method's return value (if 
- *                                    any).  If NULL, no value is returned.
  *              **Params            - List of parameters to pass to
  *                                    method, terminated by NULL.
  *                                    Params itself may be NULL
  *                                    if no parameters are being
  *                                    passed.
+ *              *ReturnObject       - Where to put method's return value (if 
+ *                                    any).  If NULL, no value is returned.
  *
  * RETURN:      Status
  *
@@ -136,8 +136,8 @@ ACPI_STATUS
 AcpiEvaluateObject (
     ACPI_HANDLE             Handle, 
     char                    *Pathname, 
-    ACPI_OBJECT             *ReturnObject,
-    ACPI_OBJECT             **Params)
+    ACPI_OBJECT             **Params,
+    ACPI_OBJECT             *ReturnObject)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry;
@@ -151,7 +151,7 @@ AcpiEvaluateObject (
 
     if ((Pathname) && (Pathname[0] == '\\'))
     {
-        Status = NsEvaluateByName (Pathname, ReturnObject, Params);
+        Status = NsEvaluateByName (Pathname, Params, ReturnObject);
         FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
@@ -192,14 +192,14 @@ AcpiEvaluateObject (
         /*
          *  The null pathname case means the handle is for the object
          */
-        Status = NsEvaluateByHandle (ObjEntry, ReturnObject, Params);
+        Status = NsEvaluateByHandle (ObjEntry, Params, ReturnObject);
     }
     else
     {
        /*
         *   Have both Handle and a relative Pathname
         */
-        Status = NsEvaluateRelative (ObjEntry, Pathname, ReturnObject, Params);
+        Status = NsEvaluateRelative (ObjEntry, Pathname, Params, ReturnObject);
     }
 
     FUNCTION_STATUS_EXIT (Status);
@@ -726,7 +726,7 @@ AcpiCurrentScopeName (void)
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiIsNameSpaceHandle
+ * FUNCTION:    AcpiIsNamespaceHandle
  *
  * PARAMETERS:  QueryHandle     - handle to be verified
  *
@@ -738,7 +738,7 @@ AcpiCurrentScopeName (void)
  ******************************************************************************/
 
 BOOLEAN 
-AcpiIsNameSpaceHandle (
+AcpiIsNamesaceHandle (
     ACPI_HANDLE             QueryHandle)
 {
     return (TRUE);
@@ -747,7 +747,7 @@ AcpiIsNameSpaceHandle (
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiIsNameSpaceValue
+ * FUNCTION:    AcpiIsNamesaceValue
  *
  * PARAMETERS:  Value
  *
@@ -758,7 +758,7 @@ AcpiIsNameSpaceHandle (
  ******************************************************************************/
 
 BOOLEAN 
-AcpiIsNameSpaceValue (
+AcpiIsNamesaceValue (
     ACPI_OBJECT_TYPE        Value)
 {
     return (TRUE);
