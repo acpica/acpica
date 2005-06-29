@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -220,7 +220,7 @@ AcpiDbDumpBuffer (
     AcpiOsPrintf ("\nLocation %X:\n", Address);
 
     AcpiDbgLevel |= ACPI_LV_TABLES;
-    AcpiUtDumpBuffer (ACPI_TO_POINTER (Address), 64, DB_BYTE_DISPLAY, 
+    AcpiUtDumpBuffer (ACPI_TO_POINTER (Address), 64, DB_BYTE_DISPLAY,
             ACPI_UINT32_MAX);
 }
 
@@ -289,7 +289,7 @@ AcpiDbDumpObject (
         AcpiOsPrintf ("[Buffer] Length %.2X = ", ObjDesc->Buffer.Length);
         if (ObjDesc->Buffer.Length)
         {
-            AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, 
+            AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer,
                     ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         }
         else
