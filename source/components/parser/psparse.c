@@ -334,7 +334,7 @@ AcpiPsPeekOpcode (
 ACPI_PARSE_STATE *
 AcpiPsCreateState (
     UINT8                   *Aml,
-    INT32                   AmlSize)
+    UINT32                  AmlSize)
 {
     ACPI_PARSE_STATE        *ParserState;
 
@@ -385,8 +385,16 @@ AcpiPsFindObject (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         **OutOp)
 {
-    INT8                    *Path;
+    NATIVE_CHAR             *Path;
 
+
+    /* We are only interested in opcodes that have an associated name */
+
+    if (!AcpiPsIsNamedOp (Opcode))
+    {
+        *OutOp = Op;
+        return (AE_OK);
+    }
 
     /* Find the name in the parse tree */
 
@@ -531,9 +539,12 @@ AcpiPsCompleteThisOp (
 
         return_VALUE (TRUE);
     }
-#endif
 
     return_VALUE (FALSE);
+
+#else
+    return (FALSE);
+#endif
 }
 
 
