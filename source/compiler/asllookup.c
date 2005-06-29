@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -562,8 +562,8 @@ LkOptimizeNamedReference (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPTIMIZATIONS, 
         "%32s (%2d) ==> %-32s(%2d) %-32s",
-        CurrentPath.Pointer, CurrentPathLength,
-        TargetPath.Pointer, TargetPathLength, ExternalNameString));
+        (char *) CurrentPath.Pointer, CurrentPathLength,
+        (char *) TargetPath.Pointer, TargetPathLength, ExternalNameString));
 
     ACPI_MEM_FREE (ExternalNameString);
 
