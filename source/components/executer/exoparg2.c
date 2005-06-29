@@ -256,8 +256,8 @@ AmlExecDyadic2R (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *ObjDesc2;
-    ACPI_OBJECT_INTERNAL    *ResDesc;
-    ACPI_OBJECT_INTERNAL    *ResDesc2;
+    ACPI_OBJECT_INTERNAL    *ResDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *ResDesc2 = NULL;
     ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
     ACPI_OBJECT_INTERNAL    *RetDesc2 = NULL;
     ACPI_STATUS             Status;
@@ -507,7 +507,7 @@ AmlExecDyadic2R (
             
             /* Point the return object to the new string */
             
-            RetDesc->String.Pointer = (UINT8 *) NewBuf;
+            RetDesc->String.Pointer = NewBuf;
             RetDesc->String.Length = ObjDesc->String.Length += ObjDesc2->String.Length;
         }
         
@@ -704,7 +704,9 @@ AmlExecDyadic2S (
     if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
         ThisEntry = (NAME_TABLE_ENTRY *) ObjDesc;
-        if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ThisEntry)))
+
+        ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ThisEntry);
+        if (!ObjDesc)
         {
             /* No object present, create a Mutex object */
 
@@ -787,12 +789,12 @@ AmlExecDyadic2S (
 
     if (Status == AE_TIME)
     {
-        RetDesc->Number.Value = (-1);       /* TRUE, operation timed out */
+        RetDesc->Number.Value = (UINT32)(-1);   /* TRUE, operation timed out */
     }
 
     else
     {
-        RetDesc->Number.Value = 0;          /* FALSE, operation did not time out */
+        RetDesc->Number.Value = 0;              /* FALSE, operation did not time out */
     }
 
 
@@ -888,7 +890,7 @@ AmlExecDyadic2 (
 
     case AML_LAndOp:
         
-        Lboolean = (ObjDesc->Number.Value && ObjDesc2->Number.Value);
+        Lboolean = (BOOLEAN) (ObjDesc->Number.Value && ObjDesc2->Number.Value);
         break;
 
 
@@ -896,7 +898,7 @@ AmlExecDyadic2 (
 
     case AML_LEqualOp:
 
-        Lboolean = (ObjDesc->Number.Value == ObjDesc2->Number.Value);
+        Lboolean = (BOOLEAN) (ObjDesc->Number.Value == ObjDesc2->Number.Value);
         break;
 
 
@@ -904,7 +906,7 @@ AmlExecDyadic2 (
 
     case AML_LGreaterOp:
 
-        Lboolean = (ObjDesc->Number.Value > ObjDesc2->Number.Value);
+        Lboolean = (BOOLEAN) (ObjDesc->Number.Value > ObjDesc2->Number.Value);
         break;
 
 
@@ -912,7 +914,7 @@ AmlExecDyadic2 (
 
     case AML_LLessOp:
 
-        Lboolean = (ObjDesc->Number.Value < ObjDesc2->Number.Value);
+        Lboolean = (BOOLEAN) (ObjDesc->Number.Value < ObjDesc2->Number.Value);
         break;
 
 
@@ -920,10 +922,12 @@ AmlExecDyadic2 (
 
     case AML_LOrOp:
 
-        Lboolean = (ObjDesc->Number.Value || ObjDesc2->Number.Value);
+        Lboolean = (BOOLEAN) (ObjDesc->Number.Value || ObjDesc2->Number.Value);
         break;
     
+
     default:
+
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecDyadic2: Unknown dyadic opcode %02x\n", Opcode));
         Status = AE_AML_ERROR;
         goto Cleanup;
