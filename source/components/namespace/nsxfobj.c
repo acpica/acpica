@@ -306,39 +306,53 @@ AcpiEvaluateObject (
         UserBufferLength = ReturnBuffer->Length;
         ReturnBuffer->Length = 0;
 
-        if ((ReturnObj) &&
-            (ACPI_SUCCESS (Status)))
+        if (ReturnObj)
         {
-            /*
-             *  Find out how large a buffer is needed to contain the
-             *  returned object
-             */
-            Status = CmGetObjectSize (ReturnObj, &BufferSpaceNeeded);
+            if (VALID_DESCRIPTOR_TYPE (ReturnObj, DESC_TYPE_NTE))
+            {
+                /* 
+                 * If we got an NTE as a return object, this means the object we are evaluating has nothing
+                 * interesting to return (such as a mutex, etc.)  We return an error because these types
+                 * are essentially unsupported by this interface.  We don't check up front because this makes
+                 * it easier to add support for various types at a later date if necessary.
+                 */
+                Status = AE_TYPE;
+                ReturnObj = NULL;   /* No need to delete an NTE */
+            }
+
             if (ACPI_SUCCESS (Status))
             {
-                /* Check if there is enough room in the caller's buffer */
-
-                if (UserBufferLength < BufferSpaceNeeded) 
+                /*
+                 *  Find out how large a buffer is needed to contain the
+                 *  returned object
+                 */
+                Status = CmGetObjectSize (ReturnObj, &BufferSpaceNeeded);
+                if (ACPI_SUCCESS (Status))
                 {
-                    /*
-                     *  Caller's buffer is too small, can't give him partial results
-                     *  fail the call but return the buffer size needed
-                     */
+                    /* Check if there is enough room in the caller's buffer */
 
-                    DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Needed buffer size %d, received %d\n",
-                                                BufferSpaceNeeded, UserBufferLength));
+                    if (UserBufferLength < BufferSpaceNeeded) 
+                    {
+                        /*
+                         *  Caller's buffer is too small, can't give him partial results
+                         *  fail the call but return the buffer size needed
+                         */
 
-                    ReturnBuffer->Length = BufferSpaceNeeded;
-                    Status = AE_BUFFER_OVERFLOW;
-                }
+                        DEBUG_PRINT (ACPI_ERROR, ("AcpiEvaluateObject: Needed buffer size %d, received %d\n",
+                                                    BufferSpaceNeeded, UserBufferLength));
 
-                else
-                {
-                    /*
-                     *  We have enough space for the object, build it
-                     */
-                    Status = CmBuildExternalObject (ReturnObj, ReturnBuffer);
-                    ReturnBuffer->Length = BufferSpaceNeeded;
+                        ReturnBuffer->Length = BufferSpaceNeeded;
+                        Status = AE_BUFFER_OVERFLOW;
+                    }
+
+                    else
+                    {
+                        /*
+                         *  We have enough space for the object, build it
+                         */
+                        Status = CmBuildExternalObject (ReturnObj, ReturnBuffer);
+                        ReturnBuffer->Length = BufferSpaceNeeded;
+                    }
                 }
             }
         }
