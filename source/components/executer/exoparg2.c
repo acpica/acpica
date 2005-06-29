@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -450,7 +450,7 @@ AcpiExOpcode_2A_1T_1R (
 
     case AML_CONCAT_RES_OP:         /* ConcatenateResTemplate (Buffer, Buffer, Result) (ACPI 2.0) */
 
-        Status = AE_NOT_IMPLEMENTED;
+        Status = AcpiExConcatTemplate (Operand[0], Operand[1], &ReturnDesc, WalkState);
         break;
 
 
