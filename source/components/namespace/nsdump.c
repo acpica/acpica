@@ -120,10 +120,11 @@
 #include <acpi.h>
 #include <interpreter.h>
 #include <namespace.h>
+#include <tables.h>
 
 
-#define _THIS_MODULE        "nsdump.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsdump");
 
 
 
@@ -212,6 +213,7 @@ NsDumpOneObject (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_TYPE        ObjType;
     UINT32                  DbLevel = (UINT32) Context;
+    UINT32                  BytesToDump;
 
 
     ThisEntry = NsConvertHandleToEntry(ObjHandle);
@@ -328,7 +330,10 @@ NsDumpOneObject (
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Pcode,
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.PcodeLength));                
 
-        return AE_OK;
+    }
+    else
+    {
+        DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
     }
   
     /* There is an attached object, display it */
@@ -337,29 +342,66 @@ NsDumpOneObject (
     ObjDesc = ThisEntry->Object;
     ObjType = ObjDesc->Common.Type;
 
-    /* Name is not a Method, or the AML offset/length are not set */
-    
-    DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
+    /* If debug turned off, done */
 
-    /* If debug turned on, display values */
-
-    while (Value && (DebugLevel & TRACE_VALUES))
+    if (!(DebugLevel & TRACE_VALUES))
     {
-        DEBUG_PRINT_RAW (TRACE_TABLES,
-                    ("       Object %p  %02x %02x %02x %02x %02x %02x",
-                    Value, Value[0], Value[1], Value[2], Value[3], Value[4],
-                    Value[5]));
-        DEBUG_PRINT_RAW (TRACE_TABLES,
-                    (" %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-                    Value[6], Value[7], Value[8], Value[9], Value[10],
-                    Value[11], Value[12], Value[13], Value[14], Value[15]));
+        return AE_OK;
+    }
+
+
+    /* Dump attached objects */
+
+    while (Value)
+    {
+
+        /* Decode the type of attached object and dump the contents */
+
+        DEBUG_PRINT_RAW (TRACE_TABLES, ("        Attached Object %p: ", Value));
+
+        if (TbSystemTablePointer (Value))
+        {
+            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to AML Code)\n"));
+            BytesToDump = 16;
+        }
+
+        else if (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_NTE))
+        {
+            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to Name Table Entry)\n"));
+            BytesToDump = sizeof (NAME_TABLE_ENTRY);
+        }
+
+
+        else if (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_ACPI_OBJ))
+        {
+            if (ObjDesc->Common.Type > INTERNAL_TYPE_MAX)
+            {
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [UNKNOWN])\n", ObjDesc->Common.Type));
+                BytesToDump = 32;
+            }
+
+            else
+            {
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [%s])\n", 
+                                    ObjDesc->Common.Type, Gbl_NsTypeNames[ObjDesc->Common.Type]));
+                BytesToDump = ObjDesc->Common.Size;
+            }
+        }
+
+        else
+        {
+            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Unknown Type)\n", Value));
+            BytesToDump = 16;
+        }
+
+        DUMP_BUFFER (Value, BytesToDump, 0);
 
         /* If value is NOT an internal object, we are done */
 
-        if ((NsIsInSystemTable (Value)) ||
+        if ((TbSystemTablePointer (Value)) ||
             (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_NTE)))
         {
-            return AE_OK;
+            goto Cleanup;
         }
 
         /* 
@@ -379,6 +421,10 @@ NsDumpOneObject (
             Value = (UINT8 *) ObjDesc->Package.Elements;
             break;
 
+        case ACPI_TYPE_Method:
+            Value = (UINT8 *) ObjDesc->Method.Pcode;
+            break;
+
         case ACPI_TYPE_FieldUnit:
             Value = (UINT8 *) ObjDesc->FieldUnit.Container;
             break;
@@ -396,12 +442,14 @@ NsDumpOneObject (
             break;
 
        default:
-            return AE_OK;
+            goto Cleanup;
         }
 
         ObjType = INTERNAL_TYPE_Invalid;     /* Terminate loop after next pass */
     }
 
+Cleanup:
+    DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
     return AE_OK;
 }
 
