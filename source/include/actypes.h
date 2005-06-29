@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.187 $
+ *       $Revision: 1.188 $
  *
  *****************************************************************************/
 
@@ -380,7 +380,7 @@ typedef UINT64                          ACPI_INTEGER;
 #define ACPI_NOTIFY_DEVICE_CHECK_LIGHT  (UINT8) 4
 #define ACPI_NOTIFY_FREQUENCY_MISMATCH  (UINT8) 5
 #define ACPI_NOTIFY_BUS_MODE_MISMATCH   (UINT8) 6
-#define ACPI_NOTIFY_POWER_FAULT	        (UINT8) 7
+#define ACPI_NOTIFY_POWER_FAULT         (UINT8) 7
 
 
 /*
