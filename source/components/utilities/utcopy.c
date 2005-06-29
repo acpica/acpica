@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.103 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -117,7 +117,6 @@
 #define __UTCOPY_C__
 
 #include "acpi.h"
-#include "acnamesp.h"
 #include "amlcode.h"
 
 
@@ -208,7 +207,7 @@ AcpiUtCopyIsimpleToEsimple (
         break;
 
 
-    case INTERNAL_TYPE_REFERENCE:
+    case ACPI_TYPE_LOCAL_REFERENCE:
 
         /*
          * This is an object reference.  Attempt to dereference it.
