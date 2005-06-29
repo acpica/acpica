@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -480,7 +480,7 @@ AcpiDsEvalBufferFieldOperands (
 
         BitOffset   = Offset;
         BitCount    = (UINT32) CntDesc->Integer.Value;
-        FieldFlags  = ACCESS_BYTE_ACC;
+        FieldFlags  = AML_FIELD_ACCESS_BYTE;
         break;
 
     case AML_CREATE_BIT_FIELD_OP:
@@ -489,7 +489,7 @@ AcpiDsEvalBufferFieldOperands (
 
         BitOffset   = Offset;
         BitCount    = 1;
-        FieldFlags  = ACCESS_BYTE_ACC;
+        FieldFlags  = AML_FIELD_ACCESS_BYTE;
         break;
 
     case AML_CREATE_BYTE_FIELD_OP:
@@ -498,7 +498,7 @@ AcpiDsEvalBufferFieldOperands (
 
         BitOffset   = 8 * Offset;
         BitCount    = 8;
-        FieldFlags  = ACCESS_BYTE_ACC;
+        FieldFlags  = AML_FIELD_ACCESS_BYTE;
         break;
 
     case AML_CREATE_WORD_FIELD_OP:
@@ -507,7 +507,7 @@ AcpiDsEvalBufferFieldOperands (
 
         BitOffset   = 8 * Offset;
         BitCount    = 16;
-        FieldFlags  = ACCESS_WORD_ACC;
+        FieldFlags  = AML_FIELD_ACCESS_WORD;
         break;
 
     case AML_CREATE_DWORD_FIELD_OP:
@@ -516,7 +516,7 @@ AcpiDsEvalBufferFieldOperands (
 
         BitOffset   = 8 * Offset;
         BitCount    = 32;
-        FieldFlags  = ACCESS_DWORD_ACC;
+        FieldFlags  = AML_FIELD_ACCESS_DWORD;
         break;
 
     case AML_CREATE_QWORD_FIELD_OP:
@@ -525,7 +525,7 @@ AcpiDsEvalBufferFieldOperands (
 
         BitOffset   = 8 * Offset;
         BitCount    = 64;
-        FieldFlags  = ACCESS_QWORD_ACC;
+        FieldFlags  = AML_FIELD_ACCESS_QWORD;
         break;
 
     default:
@@ -561,7 +561,7 @@ AcpiDsEvalBufferFieldOperands (
          * Initialize areas of the field object that are common to all fields
          * For FieldFlags, use LOCK_RULE = 0 (NO_LOCK), UPDATE_RULE = 0 (UPDATE_PRESERVE)
          */
-        Status = AcpiExPrepCommonFieldObject (ObjDesc, FieldFlags,
+        Status = AcpiExPrepCommonFieldObject (ObjDesc, FieldFlags, 0,
                                                 BitOffset, BitCount);
         if (ACPI_FAILURE (Status))
         {
