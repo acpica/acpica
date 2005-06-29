@@ -117,11 +117,6 @@
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
 
-#include <config.h>
-#include <actables.h>
-#include <internal.h>
-#include <acobject.h>
-
 
 /*
  * Ensure that the globals are actually defined only once
@@ -242,7 +237,7 @@ ACPI_EXTERN UINT16                      Gbl_NextMethodOwnerId;
 
 ACPI_EXTERN UINT8                       Gbl_DebuggerConfiguration;
 ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockAcquired;
-ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockSet; /* TBD: OBSOLETE?? */
+ACPI_EXTERN BOOLEAN                     Gbl_GlobalLockSet; /* TBD: [Restructure] OBSOLETE?? */
 ACPI_EXTERN BOOLEAN                     Gbl_StepToNextCall;
 ACPI_EXTERN BOOLEAN                     Gbl_AcpiHardwarePresent;
 
