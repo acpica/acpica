@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.94 $
+ *       $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -190,6 +190,20 @@ BOOLEAN
 AcpiEvValidGpeEvent (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo);
 
+ACPI_STATUS
+AcpiEvUpdateGpeEnableMasks (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    UINT8                   Type);
+
+ACPI_STATUS
+AcpiEvEnableGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo,
+    BOOLEAN                 WriteToHardware);
+
+ACPI_STATUS
+AcpiEvDisableGpe (
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo);
+
 ACPI_GPE_EVENT_INFO *
 AcpiEvGetGpeEventInfo (
     ACPI_HANDLE             GpeDevice,
@@ -226,7 +240,7 @@ UINT32
 AcpiEvGpeDetect (
     ACPI_GPE_XRUPT_INFO     *GpeXruptList);
 
-void
+ACPI_STATUS
 AcpiEvSetGpeType (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo,
     UINT8                   Type);
