@@ -140,45 +140,26 @@ ACPI_STATUS
 EvInstallDefaultAddressSpaceHandlers (
     void)
 {
-    ACPI_STATUS Status;
-    ACPI_HANDLE BusHandle;
+    ACPI_STATUS Status = AE_OK;
     
     FUNCTION_TRACE ("EvInstallDefaultAddressSpaceHandlers");
 
-    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemMemory, ACPI_DEFAULT_HANDLER, NULL);
-    AcpiInstallAddressSpaceHandler (Gbl_RootObject, REGION_SystemIO, ACPI_DEFAULT_HANDLER, NULL);
+    if (ACPI_FAILURE(Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, ADDRESS_SPACE_SYSTEM_MEMORY, ACPI_DEFAULT_HANDLER, NULL)))
+        return Status;
+
+    if (ACPI_FAILURE(Status = AcpiInstallAddressSpaceHandler (Gbl_RootObject, ADDRESS_SPACE_SYSTEM_IO, ACPI_DEFAULT_HANDLER, NULL)))
+        return Status;
 
     /*
-    Can't be any defaults till a device appears.
-
-    AcpiInstallAddressSpaceHandler (REGION_EmbeddedControl, AmlEmbeddedControllerSpaceHandler, NULL);
-    AcpiInstallAddressSpaceHandler (REGION_SMBus, AmlSmBusSpaceHandler, NULL);
-    */
-
-
-    Status = AcpiGetHandle (NULL, "\\_SB_.PCI0", &BusHandle);
-    if(Status == AE_OK)
-    {
-        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)0);
-    }
-    Status = AcpiGetHandle (NULL, "\\_SB_.PCI0.PCI3", &BusHandle);
-    if(Status == AE_OK)
-    {
-        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)3);
-    }
-    Status = AcpiGetHandle (NULL, "\\_SB_.PCI1", &BusHandle);
-    if(Status == AE_OK)
-    {
-        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)1);
-    }
-    Status = AcpiGetHandle (NULL, "\\_SB_.PCI2", &BusHandle);
-    if(Status == AE_OK)
-    {
-        AcpiInstallAddressSpaceHandler (BusHandle, REGION_PCIConfig, ACPI_DEFAULT_HANDLER, (void *)2);
-    }
+     * NOTE: All other address spaces (PCI Config, EC, SMBus) are scope-
+     *       dependent and registration must occur when the OS loads 
+     *       a driver for the specific device.  This is due to the fact
+     *       that different handlers can be installed for a single 
+     *       address space (e.g. two PCI-to-PCI bridges will have different
+     *       bus numbers).
+     */
 
     return_ACPI_STATUS (Status);
-
 }
 
 
@@ -303,7 +284,8 @@ EvAddressSpaceDispatch (
 
     Handler = Obj->Region.AddrHandler->AddrHandler.Handler;
     Context = Obj->Region.AddrHandler->AddrHandler.Context;
-    if (Obj->Region.SpaceId == REGION_PCIConfig)
+
+    if (Obj->Region.SpaceId == ADDRESS_SPACE_PCI_CONFIG)
     {
         /*
          *  BUGBUG: This is pretty bogus.  There's got to be a better way
@@ -705,7 +687,7 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
     switch (SpaceId)
     {
 
-    case REGION_PCIConfig:
+    case ADDRESS_SPACE_PCI_CONFIG:
 
         /*
          *  For PCI we have to get the value from the _ADR object
