@@ -1,8 +1,7 @@
-
 /******************************************************************************
- * 
- * Module Name: nsapinam - Public interfaces to the ACPI subsystem
- *                         ACPI Name oriented interfaces
+ *
+ * Module Name: nsxfname - Public interfaces to the ACPI subsystem
+ *                         ACPI Namespace oriented interfaces
  *
  *****************************************************************************/
 
@@ -28,7 +27,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -39,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,207 +114,382 @@
  *
  *****************************************************************************/
 
-#define __NSAPINAM_C__
+#define __NSXFNAME_C__
 
-#include <acpi.h>
-#include <interpreter.h>
-#include <namespace.h>
-#include <methods.h>
-#include <acpiobj.h>
-#include <pnp.h>
+#include "acpi.h"
+#include "acinterp.h"
+#include "acnamesp.h"
+#include "amlcode.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acevents.h"
 
 
-#define _THIS_MODULE        "nsapinam.c"
 #define _COMPONENT          NAMESPACE
+        MODULE_NAME         ("nsxfname");
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiLoadNamespace
+ *
+ * PARAMETERS:  DisplayAmlDuringLoad
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Load the name space from what ever is pointed to by DSDT.
+ *              (DSDT points to either the BIOS or a buffer.)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiLoadNamespace (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    FUNCTION_TRACE ("AcpiLoadNameSpace");
+
+
+    /* There must be at least a DSDT installed */
+
+    if (AcpiGbl_DSDT == NULL)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("DSDT is not in memory\n"));
+        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+    }
+
+
+    /* Init the hardware */
+
+    /*
+     * TBD: [Restructure] Should this should be moved elsewhere,
+     * like AcpiEnable! ??
+     */
+
+    /* we need to be able to call this interface repeatedly! */
+    /* Does H/W require init before loading the namespace? */
+
+    Status = AcpiCmHardwareInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /*
+     * Load the namespace.  The DSDT is required,
+     * but the SSDT and PSDT tables are optional.
+     */
+
+    Status = AcpiNsLoadTableByType (ACPI_TABLE_DSDT);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Ignore exceptions from these */
+
+    AcpiNsLoadTableByType (ACPI_TABLE_SSDT);
+    AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
+
+
+    DEBUG_PRINT_RAW (ACPI_OK,
+        ("ACPI Namespace successfully loaded at root 0x%p\n",
+        AcpiGbl_RootObject->ChildTable));
+
+
+    /*
+     * Install the default OpRegion handlers, ignore the return
+     * code right now.
+     */
+
+    AcpiEvInstallDefaultAddressSpaceHandlers ();
+
+    return_ACPI_STATUS (Status);
+}
 
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiNameToHandle
+ * FUNCTION:    AcpiGetHandle
  *
- * PARAMETERS:  Name            - Pointer to an ascii string containing the name
- *              Scope           - Handle for a search scope.
+ * PARAMETERS:  Parent          - Object to search under (search scope).
+ *              PathName        - Pointer to an asciiz string containing the
+ *                                  name
  *              RetHandle       - Where the return handle is placed
  *
  * RETURN:      Status
  *
  * DESCRIPTION: This routine will search for a caller specified name in the
  *              name space.  The caller can restrict the search region by
- *              specifying a non NULL scope.  The Scope value is itself a namespace
- *              handle.  If the scope value is NULL or the NsName specified is
- *              fully qualified, teh Scope value is ignored.
+ *              specifying a non NULL parent.  The parent value is itself a
+ *              namespace handle.
  *
  ******************************************************************************/
 
-ACPI_STATUS 
-AcpiNameToHandle (
-    UINT32                  Name, 
-    ACPI_HANDLE             Scope, 
+ACPI_STATUS
+AcpiGetHandle (
+    ACPI_HANDLE             Parent,
+    ACPI_STRING             Pathname,
     ACPI_HANDLE             *RetHandle)
 {
-    NAME_TABLE_ENTRY        *ThisEntry;
-    ACPI_HANDLE             LocalScope = Scope;
+    ACPI_STATUS             Status;
+    ACPI_NAMED_OBJECT       *ThisEntry;
+    ACPI_NAME_TABLE         *Scope = NULL;
 
-
-    if (!RetHandle)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Special case for root, since we can't search for it */
-
-    if (Name == NS_ROOT)
-    {
-        *RetHandle = RootObject;
-        return AE_OK;
-    }
-
-    /* Null scope means root scope */
-
-    if (!Scope)
-    {
-        LocalScope = RootObject->Scope;
-    }
-
-    /* Validate the scope handle */
-
-    if (!(ThisEntry = NsConvertHandleToEntry (LocalScope)))
-    {
-        return AE_BAD_PARAMETER;
-    }
-    
-    /* Search for the name within this scope */
-
-    while (ThisEntry)
-    {
-        if (ThisEntry->Name == Name)
-        {
-            *RetHandle = ThisEntry;
-            return AE_OK;
-        }
-
-        ThisEntry = ThisEntry->NextEntry;
-    }
-
-    *RetHandle = NULL;
-    return AE_NOT_FOUND;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiHandleToName
- *
- * PARAMETERS:  Handle          - Handle to be converted to a name
- *              RetName         - Where the 4 char (UINT32) name is placed
- *
- * RETURN:      Status
- *
- * DESCRIPTION: This routine returns the name associated with ACPI_HANDLE.  This
- *              and the AcpiNameToHandle are complementary functions.
- *
- *                  Handle == AcpiNameToHandle(AcpiHandleToName(Handle))
- *              and
- *                  Name == AcpiHandleToName(AcpiNameToHandle(Name, NULL))
- *
- ******************************************************************************/
-
-ACPI_STATUS 
-AcpiHandleToName (
-    ACPI_HANDLE             Handle, 
-    UINT32                  *RetName)
-{
-    NAME_TABLE_ENTRY        *ObjEntry;
-
-
-    if (!RetName)
-    {
-        return AE_BAD_PARAMETER;
-    }
-
-    /* Validate handle and convert to and NTE */
-
-    if (!(ObjEntry = NsConvertHandleToEntry (Handle)))
-    {
-        *RetName = 0;
-        return AE_BAD_PARAMETER;
-    }
-
-
-    /* Just extract the name field */
-
-    *RetName = ObjEntry->Name;
-    return AE_OK;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiPathnameToHandle
- *
- * PARAMETERS:  Pathname        - pointer to ascii string containing full pathname
- *              RetHandle       - Where the return handle is stored
- *
- * RETURN:      Status
- *
- * DESCRIPTION: This routine will search for a caller specified name in the
- *              name space.  The pathname provided must be a fully qualified 
- *              path from the root of the namespace.
- *
- ******************************************************************************/
-
-ACPI_STATUS 
-AcpiPathnameToHandle (
-    char                    *Pathname, 
-    ACPI_HANDLE             *RetHandle)
-{
 
     if (!RetHandle || !Pathname)
     {
         return AE_BAD_PARAMETER;
     }
 
-    /* Special case for root, since we can't search for it */
-
-    if (strcmp (Pathname, NS_ROOT_PATH) == 0)
+    if (Parent)
     {
-        *RetHandle = RootObject;
+        AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+
+        ThisEntry = AcpiNsConvertHandleToEntry (Parent);
+        if (!ThisEntry)
+        {
+            AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+            return AE_BAD_PARAMETER;
+        }
+
+        Scope = ThisEntry->ChildTable;
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    }
+
+    /* Special case for root, since we can't search for it */
+    /* TBD: [Investigate] Check for both forward and backslash?? */
+
+    if (STRCMP (Pathname, NS_ROOT_PATH) == 0)
+    {
+        *RetHandle = AcpiNsConvertEntryToHandle (AcpiGbl_RootObject);
         return AE_OK;
     }
 
-    *RetHandle = NULL;
-    return (NsGetHandle (Pathname, NS_ALL, RetHandle));
+    /*
+     *  Find the Nte and convert to the user format
+     */
+    ThisEntry = NULL;
+    Status = AcpiNsGetNamedObject (Pathname, Scope, &ThisEntry);
+
+   *RetHandle = AcpiNsConvertEntryToHandle (ThisEntry);
+
+    return (Status);
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    AcpiHandleToPathname
+ * FUNCTION:    AcpiGetPathname
  *
  * PARAMETERS:  Handle          - Handle to be converted to a pathname
+ *              NameType        - Full pathname or single segment
  *              RetPathPtr      - Buffer for returned path
  *
- * RETURN:      pointer to a string containing the fully qualified Name.
+ * RETURN:      Pointer to a string containing the fully qualified Name.
  *
  * DESCRIPTION: This routine returns the fully qualified name associated with
- *              the Handle parameter.  This and the AcpiPathnameToHandle are 
+ *              the Handle parameter.  This and the AcpiPathnameToHandle are
  *              complementary functions.
  *
  ******************************************************************************/
 
-
-ACPI_STATUS 
-AcpiHandleToPathname (
-    ACPI_HANDLE             Handle, 
+ACPI_STATUS
+AcpiGetName (
+    ACPI_HANDLE             Handle,
+    UINT32                  NameType,
     ACPI_BUFFER             *RetPathPtr)
 {
-    if ((!RetPathPtr->BufferPtr)    ||
-        (!RetPathPtr->Length))
+    ACPI_STATUS             Status;
+    ACPI_NAMED_OBJECT       *ObjEntry;
+
+
+    /* Buffer pointer must be valid always */
+
+    if (!RetPathPtr || (NameType > ACPI_NAME_TYPE_MAX))
     {
         return AE_BAD_PARAMETER;
     }
 
-    return (NsHandleToPathname (Handle, RetPathPtr->Length, RetPathPtr->BufferPtr));
+    /* Allow length to be zero and ignore the pointer */
+
+    if ((RetPathPtr->Length) &&
+       (!RetPathPtr->Pointer))
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+    if (NameType == ACPI_FULL_PATHNAME)
+    {
+        /* Get the full pathname (From the namespace root) */
+
+        Status = AcpiNsHandleToPathname (Handle, &RetPathPtr->Length,
+                                        RetPathPtr->Pointer);
+        return Status;
+    }
+
+    /*
+     * Wants the single segment ACPI name.
+     * Validate handle and convert to an NTE
+     */
+
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+    ObjEntry = AcpiNsConvertHandleToEntry (Handle);
+    if (!ObjEntry)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+    /* Check if name will fit in buffer */
+
+    if (RetPathPtr->Length < PATH_SEGMENT_LENGTH)
+    {
+        RetPathPtr->Length = PATH_SEGMENT_LENGTH;
+        Status = AE_BUFFER_OVERFLOW;
+        goto UnlockAndExit;
+    }
+
+    /* Just copy the ACPI name from the NTE and zero terminate it */
+
+    STRNCPY (RetPathPtr->Pointer, (INT8 *) &ObjEntry->Name,
+                ACPI_NAME_SIZE);
+    ((INT8 *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
+    Status = AE_OK;
+
+
+UnlockAndExit:
+
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+    return Status;
 }
 
+
+/****************************************************************************
+ *
+ * FUNCTION:    AcpiGetObjectInfo
+ *
+ * PARAMETERS:  Handle          - Object Handle
+ *              Info            - Where the info is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Returns information about an object as gleaned from running
+ *              several standard control methods.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetObjectInfo (
+    ACPI_HANDLE             Device,
+    ACPI_DEVICE_INFO        *Info)
+{
+    DEVICE_ID               Hid;
+    DEVICE_ID               Uid;
+    ACPI_STATUS             Status;
+    UINT32                  DeviceStatus = 0;
+    UINT32                  Address = 0;
+    ACPI_NAMED_OBJECT       *DeviceEntry;
+
+
+    /* Parameter validation */
+
+    if (!Device || !Info)
+    {
+        return AE_BAD_PARAMETER;
+    }
+
+    AcpiCmAcquireMutex (ACPI_MTX_NAMESPACE);
+
+    DeviceEntry = AcpiNsConvertHandleToEntry (Device);
+    if (!DeviceEntry)
+    {
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        return AE_BAD_PARAMETER;
+    }
+
+    Info->Type      = DeviceEntry->Type;
+    Info->Name      = DeviceEntry->Name;
+    Info->Parent    =
+        AcpiNsConvertEntryToHandle (AcpiNsGetParentEntry (DeviceEntry));
+
+    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+
+    /*
+     * If not a device, we are all done.
+     */
+    if (Info->Type != ACPI_TYPE_DEVICE)
+    {
+        return AE_OK;
+    }
+
+
+    /* Get extra info for ACPI devices */
+
+    Info->Valid     = 0;
+
+    /* Execute the _HID method and save the result */
+
+    Status = AcpiCmExecute_HID (DeviceEntry, &Hid);
+    if (ACPI_SUCCESS (Status))
+    {
+        if (Hid.Type == STRING_PTR_DEVICE_ID)
+        {
+            STRCPY (Info->HardwareId, Hid.Data.StringPtr);
+        }
+        else
+        {
+            STRCPY (Info->HardwareId, Hid.Data.Buffer);
+        }
+
+        Info->Valid |= ACPI_VALID_HID;
+    }
+
+    /* Execute the _UID method and save the result */
+
+    Status = AcpiCmExecute_UID (DeviceEntry, &Uid);
+    if (ACPI_SUCCESS (Status))
+    {
+        if (Hid.Type == STRING_PTR_DEVICE_ID)
+        {
+            STRCPY (Info->UniqueId, Uid.Data.StringPtr);
+        }
+        else
+        {
+            STRCPY (Info->UniqueId, Uid.Data.Buffer);
+        }
+
+        Info->Valid |= ACPI_VALID_UID;
+    }
+
+    /*
+     * Execute the _STA method and save the result
+     * _STA is not always present
+     */
+
+    Status = AcpiCmExecute_STA (DeviceEntry, &DeviceStatus);
+    if (ACPI_SUCCESS (Status))
+    {
+        Info->CurrentStatus = DeviceStatus;
+        Info->Valid |= ACPI_VALID_STA;
+    }
+
+    /*
+     * Execute the _ADR method and save result if successful
+     * _ADR is not always present
+     */
+
+    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__ADR,
+                                            DeviceEntry, &Address);
+
+    if (ACPI_SUCCESS (Status))
+    {
+        Info->Address = Address;
+        Info->Valid |= ACPI_VALID_ADR;
+    }
+
+    return AE_OK;
+}
 

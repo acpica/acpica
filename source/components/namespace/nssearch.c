@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: nssearch - Namespace search
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,20 +116,19 @@
 
 #define __NSSEARCH_C__
 
-#include <acpi.h>
-#include <amlcode.h>
-#include <interp.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "amlcode.h"
+#include "acinterp.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          NAMESPACE
         MODULE_NAME         ("nssearch");
 
 
-
 /****************************************************************************
  *
- * FUNCTION:    NsSearchOnly
+ * FUNCTION:    AcpiNsSearchNameTable
  *
  * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
  *              *NameTable          - Starting table where search will begin
@@ -145,147 +144,183 @@
  ***************************************************************************/
 
 ACPI_STATUS
-NsSearchOnly (
-    UINT32                  EntryName, 
-    NAME_TABLE_ENTRY        *NameTable, 
-    ACPI_OBJECT_TYPE        Type, 
-    NAME_TABLE_ENTRY        **RetEntry, 
+AcpiNsSearchNameTable (
+    UINT32                  EntryName,
+    ACPI_NAME_TABLE         *NameTable,
+    OBJECT_TYPE_INTERNAL    Type,
+    ACPI_NAMED_OBJECT       **RetEntry,
     NS_SEARCH_DATA          *RetInfo)
 {
     UINT32                  Position;
-    UINT32                  Tries;
+    ACPI_NAME_TABLE         *ThisTable;
+    ACPI_NAME_TABLE         *PreviousTable = NameTable;
+    ACPI_NAMED_OBJECT       *Entries;
+    BOOLEAN                 TableFull = TRUE;
+    ACPI_NAME_TABLE         *TableWithEmptySlots = NULL;
+    UINT32                  EmptySlotPosition = 0;
 
 
-    FUNCTION_TRACE ("NsSearchOnly");
-
-    /* Debug only */
+    FUNCTION_TRACE ("NsSearchNameTable");
 
     {
-        DEBUG_EXEC (char *ScopeName = NsNameOfScope (NameTable));
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Searching %s [%p]\n",
-                            ScopeName, NameTable));
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: For %4.4s (type %d)\n",
-                            &EntryName, Type));
-        DEBUG_EXEC (CmFree (ScopeName));
+        DEBUG_EXEC (INT8 *ScopeName = AcpiNsGetTablePathname (NameTable));
+        DEBUG_PRINT (TRACE_NAMES,
+            ("NsSearchNameTable: Searching %s [%p]\n",
+            ScopeName, NameTable));
+        DEBUG_PRINT (TRACE_NAMES,
+            ("NsSearchNameTable: For %4.4s (type 0x%X)\n",
+            &EntryName, Type));
+        DEBUG_EXEC (AcpiCmFree (ScopeName));
     }
 
-
-    /* 
+    /*
      * Name tables are built (and subsequently dumped) in the
      * order in which the names are encountered during the namespace load;
      *
-     * All namespace searching will be linear;  If a table overflows an 
+     * All namespace searching will be linear;  If a table overflows an
      * additional segment will be allocated and added (chained).
      *
      * Start linear search at top of table
      */
     Position = 0;
+    ThisTable = NameTable;
+    Entries = ThisTable->Entries;
+
 
     /* Init return data */
 
     if (RetInfo)
     {
-        RetInfo->PreviousEntry = NULL;
-        RetInfo->NameTable = NameTable;
+        RetInfo->NameTable = ThisTable;
     }
 
-    /* 
-     * Search for name in table, starting at Position.  Stop searching upon
-     * finding an unused entry or after examining all entries in the table.
-     *
-     * Moving to the "next" entry is done at the bottom of the loop instead
-     * of in the iteration expression because the method used depends on
-     * whether or not USE_HASHING is in effect.
+
+    /*
+     * Search entire name table, including all linked appendages
      */
 
-    for (Tries = NS_TABLE_SIZE; Tries && 0 != NameTable[Position].Name; Tries--)
+    while (ThisTable)
     {
-        /* Search for name in table */
+        /*
+         * Search for name in table, starting at Position.  Stop
+         * searching upon examining all entries in the table.
+         *
+         */
 
-        if (NameTable[Position].Name == EntryName)
+        Entries = ThisTable->Entries;
+        while (Position < NS_TABLE_SIZE)
         {
-            /* 
-             * Found matching entry.  Capture type if appropriate before
-             * returning the entry.
-             */
+            /* Check for a valid entry */
 
-            /* 
-             * The DefFieldDefn and BankFieldDefn cases are actually
-             * looking up the Region in which the field will be defined
-             */
-
-            if ((INTERNAL_TYPE_DefFieldDefn == Type) || 
-                (INTERNAL_TYPE_BankFieldDefn == Type))
+            if (!Entries[Position].Name)
             {
-                Type = ACPI_TYPE_Region;
+                if (TableFull)
+                {
+                    /*
+                     * There is room in the table for more
+                     * entries, if necessary
+                     */
+
+                    TableFull = FALSE;
+                    TableWithEmptySlots = ThisTable;
+                    EmptySlotPosition = Position;
+                }
             }
 
-            /* 
-             * Scope, DefAny, and IndexFieldDefn are bogus "types" which do
-             * not actually have anything to do with the type of the name
-             * being looked up.  For any other value of Type, if the type
-             * stored in the entry is Any (i.e. unknown), save the actual type.
-             */
+            /* Search for name in table */
 
-            if (Type != INTERNAL_TYPE_Scope && 
-                Type != INTERNAL_TYPE_DefAny &&
-                Type != INTERNAL_TYPE_IndexFieldDefn && 
-                NameTable[Position].Type == ACPI_TYPE_Any)
+            else if (Entries[Position].Name == EntryName)
             {
-                NameTable[Position].Type = (UINT8) Type;
+                /*
+                 * Found matching entry.  Capture type if
+                 * appropriate before returning the entry.
+                 */
+
+                /*
+                 * The DefFieldDefn and BankFieldDefn cases
+                 * are actually looking up the Region in which
+                 * the field will be defined
+                 */
+
+                if ((INTERNAL_TYPE_DEF_FIELD_DEFN == Type) ||
+                    (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
+                {
+                    Type = ACPI_TYPE_REGION;
+                }
+
+                /*
+                 * Scope, DefAny, and IndexFieldDefn are bogus
+                 * "types" which do not actually have anything
+                 * to do with the type of the name being looked
+                 * up.  For any other value of Type, if the type
+                 * stored in the entry is Any (i.e. unknown),
+                 * save the actual type.
+                 */
+
+                if (Type != INTERNAL_TYPE_SCOPE &&
+                    Type != INTERNAL_TYPE_DEF_ANY &&
+                    Type != INTERNAL_TYPE_INDEX_FIELD_DEFN &&
+                    Entries[Position].Type == ACPI_TYPE_ANY)
+                {
+                    Entries[Position].Type = (UINT8) Type;
+                }
+
+                DEBUG_PRINT (TRACE_NAMES,
+                    ("NsSearchNameTable: Name %4.4s (actual type 0x%X) found at %p\n",
+                    &EntryName, Entries[Position].Type, &Entries[Position]));
+
+                *RetEntry = &Entries[Position];
+                return_ACPI_STATUS (AE_OK);
             }
 
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (actual type %d) found at %p\n", 
-                            &EntryName, NameTable[Position].Type, &NameTable[Position]));
-            
-            *RetEntry = &NameTable[Position];
-            return_ACPI_STATUS (AE_OK);
+
+            /* Didn't match name, move on to the next entry */
+
+            Position++;
         }
 
-        if (RetInfo)
-        {
-            /* Save a pointer to this entry, it might become the previous entry */
 
-            RetInfo->PreviousEntry = &NameTable[Position];
-        }
-        
+        /*
+         * Just examined last slot in this table, move on
+         *  to next appendate.
+         * All appendages, even to the root NT, contain
+         *  NS_TABLE_SIZE entries.
+         */
 
-        /* Done with this table? */
+        PreviousTable = ThisTable;
+        ThisTable = ThisTable->NextTable;
 
-        if ((1 == Tries) && 
-            (NEXTSEG (NameTable)))
-        {
-            /* 
-             * Just examined last slot, but table has an appendage.
-             * All appendages, even to the root NT, contain NS_DEFAULT_TABLE_SIZE entries.
-             */
-
-            NameTable = NEXTSEG (NameTable);
-            DEBUG_PRINT (TRACE_EXEC, ("NsSearchOnly: Search appendage NameTable=%p\n", NameTable));
-            Position = 0;
-            Tries += NS_TABLE_SIZE;
-        }
-        
-        else
-        {
-            ++Position;
-        }
+        DEBUG_PRINT (TRACE_EXEC,
+            ("NsSearchNameTable: Search appendage Entries=%p\n", Entries));
+        Position = 0;
     }
 
 
     /* Searched entire table, not found */
 
-    DEBUG_PRINT (TRACE_NAMES, ("NsSearchOnly: Name %4.4s (type %d) not found at %p\n", 
-                                &EntryName, Type, &NameTable[Position]));
+    DEBUG_PRINT (TRACE_NAMES,
+        ("NsSearchNameTable: Name %4.4s (type 0x%X) not found at %p\n",
+        &EntryName, Type, &Entries[Position]));
 
 
     if (RetInfo)
     {
-        /* Save the final information (name was not found) */
+        /*
+         * Save info on if/where a slot is available
+         * (name was not found)
+         */
 
-        RetInfo->TableFull  = (BOOLEAN) (!(Tries));      /* Table is full if no more tries available */
-        RetInfo->Position   = Position;
-        RetInfo->NameTable  = NameTable;
+        RetInfo->TableFull  = TableFull;
+        if (TableFull)
+        {
+            RetInfo->NameTable  = PreviousTable;
+        }
+
+        else
+        {
+            RetInfo->Position   = EmptySlotPosition;
+            RetInfo->NameTable  = TableWithEmptySlots;
+        }
     }
 
     return_ACPI_STATUS (AE_NOT_FOUND);
@@ -294,7 +329,7 @@ NsSearchOnly (
 
 /****************************************************************************
  *
- * FUNCTION:    NsSearchParentTree 
+ * FUNCTION:    AcpiNsSearchParentTree
  *
  * PARAMETERS:  *EntryName          - Ascii ACPI name to search for
  *              *NameTable          - Starting table where search will begin
@@ -304,85 +339,95 @@ NsSearchOnly (
  * RETURN:      Status
  *
  * DESCRIPTION: Called when a name has not been found in the current namespace
- *              table.  Before adding it or giving up, ACPI scope rules require 
- *              searching enclosing scopes in cases identified by NsLocal().
+ *              table.  Before adding it or giving up, ACPI scope rules require
+ *              searching enclosing scopes in cases identified by AcpiNsLocal().
  *
- *              "A name is located by finding the matching name in the current 
- *              name space, and then in the parent name space. If the parent 
- *              name space does not contain the name, the search continues 
- *              recursively until either the name is found or the name space 
- *              does not have a parent (the root of the name space).  This 
- *              indicates that the name is not found" (From ACPI Specification, 
+ *              "A name is located by finding the matching name in the current
+ *              name space, and then in the parent name space. If the parent
+ *              name space does not contain the name, the search continues
+ *              recursively until either the name is found or the name space
+ *              does not have a parent (the root of the name space).  This
+ *              indicates that the name is not found" (From ACPI Specification,
  *              section 5.3)
  *
  ***************************************************************************/
 
 
 ACPI_STATUS
-NsSearchParentTree (
-    UINT32                  EntryName, 
-    NAME_TABLE_ENTRY        *NameTable, 
-    ACPI_OBJECT_TYPE        Type, 
-    NAME_TABLE_ENTRY        **RetEntry)
+AcpiNsSearchParentTree (
+    UINT32                  EntryName,
+    ACPI_NAME_TABLE         *NameTable,
+    OBJECT_TYPE_INTERNAL    Type,
+    ACPI_NAMED_OBJECT       **RetEntry)
 {
     ACPI_STATUS             Status;
-    NAME_TABLE_ENTRY        *ParentEntry;
+    ACPI_NAMED_OBJECT       *ParentEntry;
+    ACPI_NAMED_OBJECT       *Entries;
 
 
     FUNCTION_TRACE ("NsSearchParentTree");
 
 
-    /* 
-     * NameTable[0] will be an unused entry if the table being searched is empty,
-     * However, its ParentEntry member will have been filled in
-     * when the table was allocated (unless it is the root name table).
+    Entries = NameTable->Entries;
+
+    /*
+     * If no parent or type is "local", we won't be searching the
+     * parent tree.
      */
 
-   
-    if (!NsLocal (Type) && 
-        NameTable[0].ParentEntry)
+    if (!AcpiNsLocal (Type) &&
+        NameTable->ParentEntry)
     {
-        ParentEntry = NameTable[0].ParentEntry;
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: Searching parent for %4.4s\n", 
-                                    &EntryName));
+        ParentEntry = NameTable->ParentEntry;
+        DEBUG_PRINT (TRACE_NAMES,
+            ("NsSearchParentTree: Searching parent for %4.4s\n",
+            &EntryName));
 
-        /* Search parents until found or we have backed up to the root */
+        /*
+         * Search parents until found or we have backed up to
+         * the root
+         */
 
         while (ParentEntry)
         {
             /* Search parent scope */
-            /* TBD: Why ACPI_TYPE_Any? */
+            /* TBD: [Investigate] Why ACPI_TYPE_ANY? */
 
-            Status = NsSearchOnly (EntryName, ParentEntry->Scope, ACPI_TYPE_Any, RetEntry, NULL);
-            if (Status == AE_OK)
+            Status = AcpiNsSearchNameTable (EntryName,
+                                            ParentEntry->ChildTable,
+                                            ACPI_TYPE_ANY,
+                                            RetEntry, NULL);
+
+            if (ACPI_SUCCESS (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
-            /* Not found here, go up another level (until we reach the root) */
+            /*
+             * Not found here, go up another level
+             * (until we reach the root)
+             */
 
-            ParentEntry = ParentEntry->ParentEntry;
+            ParentEntry = AcpiNsGetParentEntry (ParentEntry);
         }
 
         /* Not found in parent tree */
     }
- 
+
     else
     {
-        /*
-         * No parent, or type is "local".  We won't be searching the parent tree.
-         */
-
-        if (!NameTable[0].ParentEntry)
+        if (!NameTable->ParentEntry)
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] has no parent\n", 
-                                        &EntryName));
+            DEBUG_PRINT (TRACE_NAMES,
+                ("NsSearchParentTree: [%4.4s] has no parent\n",
+                &EntryName));
         }
 
-        else if (NsLocal (Type))
+        else if (AcpiNsLocal (Type))
         {
-            DEBUG_PRINT (TRACE_NAMES, ("NsSearchParentTree: [%4.4s] (type %d) is local (no search)\n", 
-                                        &EntryName, Type));
+            DEBUG_PRINT (TRACE_NAMES,
+                ("NsSearchParentTree: [%4.4s] (type 0x%X) is local (no search)\n",
+                &EntryName, Type));
         }
     }
 
@@ -392,7 +437,7 @@ NsSearchParentTree (
 
 /****************************************************************************
  *
- * FUNCTION:    NsCreateAndLinkNewTable
+ * FUNCTION:    AcpiNsCreateAndLinkNewTable
  *
  * PARAMETERS:  *NameTable          - The table that is to be "extended" by
  *                                    the creation of an appendage table.
@@ -402,17 +447,17 @@ NsSearchParentTree (
  * DESCRIPTION: Allocate a new namespace table, initialize it, and link it
  *              into the parent table.
  *
- *              NOTE: We are in the first or second pass load mode, want to 
+ *              NOTE: We are in the first or second pass load mode, want to
  *              add a new table entry, and the current table is full.
  *
  ***************************************************************************/
 
 ACPI_STATUS
-NsCreateAndLinkNewTable (
-    NAME_TABLE_ENTRY        *NameTable)
+AcpiNsCreateAndLinkNewTable (
+    ACPI_NAME_TABLE         *NameTable)
 {
-    NAME_TABLE_ENTRY        *NewTable;
-    NAME_TABLE_ENTRY        *ParentEntry;
+    ACPI_NAME_TABLE         *NewTable;
+    ACPI_NAMED_OBJECT       *ParentEntry;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -421,45 +466,43 @@ NsCreateAndLinkNewTable (
 
     /* Sanity check on the data structure */
 
-    if (NEXTSEG (NameTable))
+    if (NameTable->NextTable)
     {
         /* We should never get here (an appendage already allocated) */
 
         DEBUG_PRINT (ACPI_ERROR,
-                    ("NsCreateAndLinkNewTable: appendage %p about to be overwritten\n",
-                    NEXTSEG (NameTable)));
+            ("NsCreateAndLinkNewTable: appendage %p already exists!\n",
+            NameTable->NextTable));
+        return (AE_AML_INTERNAL);
     }
 
 
     /*
-     * We can use the parent entries from the start of the current table 
+     * We can use the parent entries from the current table
      * Since the parent information remains the same.
      */
-
-    ParentEntry = NameTable[0].ParentEntry;
+    ParentEntry = NameTable->ParentEntry;
 
 
     /* Allocate and chain an appendage to the filled table */
-    
-    NewTable = NsAllocateNameTable (NS_TABLE_SIZE);
+
+    NewTable = AcpiNsAllocateNameTable (NS_TABLE_SIZE);
     if (!NewTable)
     {
         REPORT_ERROR ("Name Table appendage allocation failure");
-        Status = AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    else
-    {
-        /* 
-         * Allocation successful. Init the new table.
-         */
-        NEXTSEG (NameTable) = NewTable;
-        NsInitializeTable (NewTable, ParentEntry->Scope, ParentEntry);
+    /*
+     * Allocation successful. Init the new table.
+     */
+    NameTable->NextTable = NewTable;
+    AcpiNsInitializeTable (NewTable, ParentEntry->ChildTable,
+                            ParentEntry);
 
-        DEBUG_PRINT (TRACE_EXEC, 
-            ("NsCreateAndLinkNewTable: NewTable=%p, ParentEntry=%p, Scope=%p\n",
-                NewTable, ParentEntry, NameTable->Scope));
-    }
+    DEBUG_PRINT (TRACE_EXEC,
+        ("NsCreateAndLinkNewTable: NewTable=%p, ParentEntry=%p, ChildTable=%p\n",
+        NewTable, ParentEntry, ParentEntry->ChildTable));
 
     return_ACPI_STATUS (Status);
 }
@@ -467,10 +510,10 @@ NsCreateAndLinkNewTable (
 
 /****************************************************************************
  *
- * FUNCTION:    NsInitializeTable
+ * FUNCTION:    AcpiNsInitializeTable
  *
  * PARAMETERS:  NewTable            - The new table to be initialized
- *              ParentScope         - The parent (owner) scope
+ *              ParentTable         - The parent (owner) scope
  *              ParentEntry         - The NTE for the parent
  *
  * RETURN:      None
@@ -481,15 +524,25 @@ NsCreateAndLinkNewTable (
  ***************************************************************************/
 
 void
-NsInitializeTable (
-    NAME_TABLE_ENTRY        *NewTable, 
-    NAME_TABLE_ENTRY        *ParentScope, 
-    NAME_TABLE_ENTRY        *ParentEntry)
+AcpiNsInitializeTable (
+    ACPI_NAME_TABLE         *NewTable,
+    ACPI_NAME_TABLE         *ParentTable,
+    ACPI_NAMED_OBJECT       *ParentEntry)
 {
+    UINT8                  i;
 
 
-    NewTable->ParentEntry     = ParentEntry;
+    NewTable->ParentEntry   = ParentEntry;
+    NewTable->ParentTable   = ParentTable;
 
+
+    /* Init each named object entry in the table */
+
+    for (i = 0; i < NS_TABLE_SIZE; i++)
+    {
+        NewTable->Entries[i].ThisIndex = i;
+        NewTable->Entries[i].DataType = ACPI_DESC_TYPE_NAMED;
+    }
 
     DEBUG_PRINT (TRACE_NAMES, ("NsInitializeTable: %x\n", NewTable));
 }
@@ -497,7 +550,7 @@ NsInitializeTable (
 
 /****************************************************************************
  *
- * FUNCTION:    NsInitializeEntry
+ * FUNCTION:    AcpiNsInitializeEntry
  *
  * PARAMETERS:  NameTable       - The containing table for the new NTE
  *              Position        - Position (index) of the new NTE in the table
@@ -513,96 +566,102 @@ NsInitializeTable (
  ***************************************************************************/
 
 void
-NsInitializeEntry (
-    NAME_TABLE_ENTRY        *NameTable, 
-    UINT32                  Position, 
-    UINT32                  EntryName, 
-    ACPI_OBJECT_TYPE        Type, 
-    NAME_TABLE_ENTRY        *PreviousEntry)
+AcpiNsInitializeEntry (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_NAME_TABLE         *NameTable,
+    UINT32                  Position,
+    UINT32                  EntryName,
+    OBJECT_TYPE_INTERNAL    Type)
 {
-    NAME_TABLE_ENTRY        *NewEntry;
+    ACPI_NAMED_OBJECT       *NewEntry;
+    UINT16                  OwnerId = TABLE_ID_DSDT;
+    ACPI_NAMED_OBJECT       *Entries;
 
 
     FUNCTION_TRACE ("NsInitializeEntry");
 
 
-    NewEntry = &NameTable[Position];
-    
-    /*  first or second pass load mode, NameTable valid   */
-
-    NewEntry->DataType      = DESC_TYPE_NTE;
-    NewEntry->Name          = EntryName;
-    NewEntry->ParentEntry   = NameTable[0].ParentEntry;
-
-    /* 
-     * Set forward and back links.
-     * Important:  These are the links that tie the tables together
-     * so that when walking the links, it is invisible that their
-     * are separate, disjoint tables.
+    /*
+     * Get the owner ID from the Walk state
+     * The owner ID is used to track table deletion and
+     * deletion of objects created by methods
      */
-    if (PreviousEntry)
+    if (WalkState)
     {
-        PreviousEntry->NextEntry = NewEntry;
+        OwnerId = WalkState->OwnerId;
     }
 
-    NewEntry->PrevEntry = PreviousEntry;
-    NewEntry->NextEntry = NULL;
+    /* The new entry is given by two parameters */
 
-    /* 
-     * If adding a name with unknown type, or having to add the region in
-     * order to define fields in it, we have a forward reference.
+    Entries = NameTable->Entries;
+    NewEntry = &Entries[Position];
+
+    /* Init the new entry */
+
+    NewEntry->DataType       = ACPI_DESC_TYPE_NAMED;
+    NewEntry->Name           = EntryName;
+    NewEntry->OwnerId        = OwnerId;
+    NewEntry->ReferenceCount = 1;
+
+
+    /*
+     * If adding a name with unknown type, or having to
+     * add the region in order to define fields in it, we
+     * have a forward reference.
      */
 
-    if ((ACPI_TYPE_Any == Type) || 
-        (INTERNAL_TYPE_DefFieldDefn == Type) || 
-        (INTERNAL_TYPE_BankFieldDefn == Type))
+    if ((ACPI_TYPE_ANY == Type) ||
+        (INTERNAL_TYPE_DEF_FIELD_DEFN == Type) ||
+        (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
     {
-        /* 
+        /*
          * We don't want to abort here, however!
-         * We will fill in the actual type when the real definition
-         * is found later.
+         * We will fill in the actual type when the
+         * real definition is found later.
          */
 
-        DEBUG_PRINT (ACPI_INFO, ("[%4.4s] is a forward reference into the namespace\n",
-                        &EntryName));
+        DEBUG_PRINT (ACPI_INFO,
+            ("[%4.4s] is a forward reference into the namespace\n",
+            &EntryName));
 
     }
 
-    /* 
+    /*
      * The DefFieldDefn and BankFieldDefn cases are actually
      * looking up the Region in which the field will be defined
      */
 
-    if ((INTERNAL_TYPE_DefFieldDefn == Type) || 
-        (INTERNAL_TYPE_BankFieldDefn == Type))
+    if ((INTERNAL_TYPE_DEF_FIELD_DEFN == Type) ||
+        (INTERNAL_TYPE_BANK_FIELD_DEFN == Type))
     {
-        Type = ACPI_TYPE_Region;
+        Type = ACPI_TYPE_REGION;
     }
 
-    /* 
+    /*
      * Scope, DefAny, and IndexFieldDefn are bogus "types" which do
      * not actually have anything to do with the type of the name
      * being looked up.  Save any other value of Type as the type of
      * the entry.
      */
 
-    if ((Type != INTERNAL_TYPE_Scope) && 
-        (Type != INTERNAL_TYPE_DefAny) && 
-        (Type != INTERNAL_TYPE_IndexFieldDefn))
+    if ((Type != INTERNAL_TYPE_SCOPE) &&
+        (Type != INTERNAL_TYPE_DEF_ANY) &&
+        (Type != INTERNAL_TYPE_INDEX_FIELD_DEFN))
     {
         NewEntry->Type = (UINT8) Type;
     }
 
-    DEBUG_PRINT (TRACE_NAMES, ("NsInitializeEntry: %4.4s added to %p at %p\n", 
-                                &EntryName, NameTable, NewEntry));
-    
+    DEBUG_PRINT (TRACE_NAMES,
+        ("NsInitializeEntry: %4.4s added to %p at %p\n",
+        &EntryName, NameTable, NewEntry));
+
     return_VOID;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsSearchAndEnter
+ * FUNCTION:    AcpiNsSearchAndEnter
  *
  * PARAMETERS:  EntryName           - Ascii ACPI name to search for (4 chars)
  *              *NameTable          - Starting table where search will begin
@@ -618,23 +677,26 @@ NsInitializeEntry (
  *              Type is not Any and the type previously stored in the
  *              entry was Any (i.e. unknown), update the stored type.
  *
- *              In IMODE_Execute, search only.
+ *              In IMODE_EXECUTE, search only.
  *              In other modes, search and add if not found.
  *
  ***************************************************************************/
 
 ACPI_STATUS
-NsSearchAndEnter (
-    UINT32                  EntryName, 
-    NAME_TABLE_ENTRY        *NameTable,
-    OPERATING_MODE          InterpreterMode, 
-    ACPI_OBJECT_TYPE        Type, 
+AcpiNsSearchAndEnter (
+    UINT32                  EntryName,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_NAME_TABLE         *NameTable,
+    OPERATING_MODE          InterpreterMode,
+    OBJECT_TYPE_INTERNAL    Type,
     UINT32                  Flags,
-    NAME_TABLE_ENTRY        **RetEntry)
+    ACPI_NAMED_OBJECT       **RetEntry)
 {
     UINT32                  Position;       /* position in table */
     ACPI_STATUS             Status;
     NS_SEARCH_DATA          SearchInfo;
+    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *Entries;
 
 
     FUNCTION_TRACE ("NsSearchAndEnter");
@@ -651,10 +713,11 @@ NsSearchAndEnter (
 
     /* Name must consist of printable characters */
 
-    if (!AmlGoodName (EntryName))
+    if (!AcpiCmValidAcpiName (EntryName))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** Bad char in name: %08lx *** \n", 
-                                    EntryName));
+        DEBUG_PRINT (ACPI_ERROR,
+            ("NsSearchAndEnter:  *** Bad INT8 in name: %08lx *** \n",
+            EntryName));
 
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }
@@ -663,30 +726,41 @@ NsSearchAndEnter (
     /* Try to find the name in the table specified by the caller */
 
     *RetEntry = ENTRY_NOT_FOUND;
-    Status = NsSearchOnly (EntryName, NameTable, Type, RetEntry, &SearchInfo);
+    Status = AcpiNsSearchNameTable (EntryName, NameTable,
+                                    Type, RetEntry, &SearchInfo);
     if (Status != AE_NOT_FOUND)
     {
-        /* Either found it or there was an error -- finished either way */
+        /*
+         * Either found it or there was an error
+         * -- finished either way
+         */
 
         return_ACPI_STATUS (Status);
     }
 
 
     /*
-     * Not found in the table.  If we are NOT performing the first pass (name entry) of
-     * loading the namespace, search the parent tree (all the way to the root if necessary.)  
-     * We don't want to perform the parent search when the namespace is actually being loaded.
-     * We want to perform the search when namespace references are being resolved (load pass 2)
-     * and during the execution phase.
+     * Not found in the table.  If we are NOT performing the
+     * first pass (name entry) of loading the namespace, search
+     * the parent tree (all the way to the root if necessary.)
+     * We don't want to perform the parent search when the
+     * namespace is actually being loaded.  We want to perform
+     * the search when namespace references are being resolved
+     * (load pass 2) and during the execution phase.
      */
 
-    if ((InterpreterMode != IMODE_LoadPass1) &&
-        (Flags == NS_SEARCH_PARENT))
+    if ((InterpreterMode != IMODE_LOAD_PASS1) &&
+        (Flags & NS_SEARCH_PARENT))
     {
-        /* Not found in table - search parent tree according to ACPI specification */
+        /*
+         * Not found in table - search parent tree according
+         * to ACPI specification
+         */
 
-        Status = NsSearchParentTree (EntryName, NameTable, Type, RetEntry);
-        if (Status == AE_OK)
+        Status = AcpiNsSearchParentTree (EntryName, NameTable,
+                                            Type, RetEntry);
+
+        if (ACPI_SUCCESS (Status))
         {
             return_ACPI_STATUS (Status);
         }
@@ -697,16 +771,17 @@ NsSearchAndEnter (
      * In execute mode, just search, never add names.  Exit now.
      */
 
-    if (InterpreterMode == IMODE_Execute)
+    if (InterpreterMode == IMODE_EXECUTE)
     {
-        DEBUG_PRINT (TRACE_NAMES, ("NsSearchAndEnter: %4.4s Not found in %p [Not adding]\n", 
-                                    &EntryName, NameTable));
-    
+        DEBUG_PRINT (TRACE_NAMES,
+            ("NsSearchAndEnter: %4.4s Not found in %p [Not adding]\n",
+            &EntryName, NameTable));
+
         return_ACPI_STATUS (AE_NOT_FOUND);
     }
 
 
-    /* 
+    /*
      * Extract the pertinent info from the search result struct.
      * NameTable and position might now point to an appendage
      */
@@ -714,22 +789,22 @@ NsSearchAndEnter (
     Position = SearchInfo.Position;
 
 
-    /* 
+    /*
      * This block handles the case where the existing table is full.
      * we must allocate a new table before we can initialize a new entry
      */
 
     if (SearchInfo.TableFull)
     {
-        Status = NsCreateAndLinkNewTable (NameTable);
-        if (Status != AE_OK)
+        Status = AcpiNsCreateAndLinkNewTable (NameTable);
+        if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
 
         /* Point to the first slot in the new table */
 
-        NameTable = NEXTSEG (NameTable);
+        NameTable = NameTable->NextTable;
         Position = 0;
     }
 
@@ -739,9 +814,25 @@ NsSearchAndEnter (
      * Initialize the new entry
      */
 
-    NsInitializeEntry (NameTable, Position, EntryName, Type, 
-                        SearchInfo.PreviousEntry);
-    *RetEntry = &NameTable[Position];
+    AcpiNsInitializeEntry (WalkState, NameTable, Position,
+                            EntryName, Type);
+
+
+    Entries     = NameTable->Entries;
+    *RetEntry   = &Entries[Position];
+    Entry       = &Entries[Position];
+
+    /*
+     * Increment the reference count(s) of all parents up to
+     * the root!
+     */
+
+    while (AcpiNsGetParentEntry (Entry))
+    {
+        Entry = AcpiNsGetParentEntry (Entry);
+        Entry->ReferenceCount++;
+    }
+
 
     return_ACPI_STATUS (AE_OK);
 }
