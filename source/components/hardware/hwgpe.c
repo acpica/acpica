@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -130,8 +130,8 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Write a GPE enable register.  Note: The bit for this GPE must 
- *              already be cleared or set in the parent register 
+ * DESCRIPTION: Write a GPE enable register.  Note: The bit for this GPE must
+ *              already be cleared or set in the parent register
  *              EnableForRun mask.
  *
  ******************************************************************************/
