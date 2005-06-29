@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  ******************************************************************************/
 
@@ -289,6 +289,9 @@ AcpiHwObtainSleepTypeRegisterData (
      *  two elements
      */
 
+    /* Even though AcpiEvaluateObject resolves package references, 
+     * NsEvaluate dpesn't. So, we do it here.
+     */
     Status = AcpiCmResolvePackageReferences(ObjDesc);
 
     if (ObjDesc->Package.Count < 2)
