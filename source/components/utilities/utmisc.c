@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: cmutils - common utility procedures
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  ******************************************************************************/
 
@@ -430,20 +430,26 @@ AcpiCmAcquireMutex (
 
 
     DEBUG_PRINT (TRACE_MUTEX,
-                ("Thread %X acquiring Mutex [%s]\n",
+                ("Thread %X attempting to acquire Mutex [%s]\n",
                 ThisThreadId, AcpiCmGetMutexName (MutexId)));
 
     Status = AcpiOsWaitSemaphore (AcpiGbl_AcpiMutexInfo[MutexId].Mutex,
                                     1, WAIT_FOREVER);
 
-    DEBUG_PRINT (TRACE_MUTEX, ("Thread %X acquired Mutex [%s] Status %s\n",
-                ThisThreadId, AcpiCmGetMutexName (MutexId),
-                AcpiCmFormatException (Status)));
-
     if (ACPI_SUCCESS (Status))
     {
+        DEBUG_PRINT (TRACE_MUTEX, ("Thread %X acquired Mutex [%s]\n",
+                    ThisThreadId, AcpiCmGetMutexName (MutexId)));
+
         AcpiGbl_AcpiMutexInfo[MutexId].UseCount++;
         AcpiGbl_AcpiMutexInfo[MutexId].OwnerId = ThisThreadId;
+    }
+
+    else
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("Thread %X could not acquire Mutex [%s] %s\n",
+                    ThisThreadId, AcpiCmGetMutexName (MutexId),
+                    AcpiCmFormatException (Status)));
     }
 
     return (Status);
@@ -527,13 +533,14 @@ AcpiCmReleaseMutex (
 
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (ACPI_ERROR, ("Error Releasing Mutex [%s], %s\n",
-                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+        DEBUG_PRINT (ACPI_ERROR, ("Thread %X could not release Mutex [%s] %s\n",
+                    ThisThreadId, AcpiCmGetMutexName (MutexId), 
+                    AcpiCmFormatException (Status)));
     }
     else
     {
-        DEBUG_PRINT (TRACE_MUTEX, ("Released Mutex [%s], %s\n",
-                    AcpiCmGetMutexName (MutexId), AcpiCmFormatException (Status)));
+        DEBUG_PRINT (TRACE_MUTEX, ("Thread %X released Mutex [%s]\n",
+                    ThisThreadId, AcpiCmGetMutexName (MutexId)));
     }
 
     return (Status);
