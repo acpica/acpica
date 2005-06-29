@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -392,8 +392,8 @@ AcpiExDigitsNeeded (
         /*
          * ACPI_INTEGER is unsigned, which is why we don't worry about a '-'
          */
-        for (NumDigits = 1; 
-            (AcpiUtShortDivide (&Value, Base, &Value, NULL)); 
+        for (NumDigits = 1;
+            (AcpiUtShortDivide (&Value, Base, &Value, NULL));
             ++NumDigits)
         { ; }
     }
