@@ -401,6 +401,7 @@ void (*GPE_HANDLER) (
 
 typedef
 void (*NOTIFY_HANDLER) (
+    UINT32          Value,
     void            *Context);
 
 
@@ -439,22 +440,28 @@ enum
 
 typedef struct 
 {
-    UINT8           Status;
-    UINT16          StatusReg;
-    UINT8           Enable;
-    UINT16          EnableReg;
+    UINT8           Status;         /* Current value of status reg */
+    UINT8           Enable;         /* Current value of enable reg */
+    UINT16          StatusAddr;     /* Address of status reg */
+    UINT16          EnableAddr;     /* Address of enable reg */
 
-} GPE_INFO;
+} GPE_REGISTERS;
 
 
-/* Installed GPE handlers and their context values */
+#define GPE_LEVEL_TRIGGERED         1
+#define GPE_EDGE_TRIGGERED          2
+
+
+/* Information about each particular GPE level */
 
 typedef struct
 {
-    GPE_HANDLER     Handler;
-    void            *Context;
+    UINT8           Type;           /* Level or Edge */
+    UINT32          MethodName;     /* _Lxx or _Exx name */
+    GPE_HANDLER     Handler;        /* Address of handler, if any */
+    void            *Context;       /* Context to be passed to handler */
 
-} GPE_HANDLERS;
+} GPE_LEVEL_INFO;
 
 
 
