@@ -1,16 +1,16 @@
-/*******************************************************************************
+
+/******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.30 $
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -118,26 +118,26 @@
 #define __RSUTILS_C__
 
 #include "acpi.h"
-#include "acnamesp.h"
-#include "acresrc.h"
+#include "namesp.h"
+#include "resource.h"
 
 
-#define _COMPONENT          ACPI_RESOURCES
-        ACPI_MODULE_NAME    ("rsutils")
+#define _COMPONENT          RESOURCE_MANAGER
+        MODULE_NAME         ("rsutils");
 
 
-/*******************************************************************************
+
+/******************************************************************************
  *
  * FUNCTION:    AcpiRsGetPrtMethodData
  *
- * PARAMETERS:  Handle          - a handle to the containing object
- *              RetBuffer       - a pointer to a buffer structure for the
- *                                  results
+ * PARAMETERS:  DeviceHandle    - a handle to the containing object
+ *              RetBuffer       - a pointer to a buffer structure for the results
  *
- * RETURN:      Status
+ * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to get the _PRT value of an object
- *              contained in an object specified by the handle passed in
+ * DESCRIPTION: This function is called to get the _PRT value of an object contained
+ *              in an object specified by the handle passed in
  *
  *              If the function fails an appropriate status will be returned
  *              and the contents of the callers buffer is undefined.
@@ -149,20 +149,31 @@ AcpiRsGetPrtMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer)
 {
-    ACPI_OPERAND_OBJECT     *RetObj;
+    ACPI_OBJECT_INTERNAL    *RetObj;
     ACPI_STATUS             Status;
+    UINT32                  BufferSpaceNeeded = RetBuffer->Length;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetPrtMethodData");
+    FUNCTION_TRACE ("RsGetPrtMethodData");
 
 
-    /* Parameters guaranteed valid by caller */
+    /*
+     *  Must have a valid handle and buffer, So we have to have a handle
+     *  a return buffer structure and if there is a non-zero buffer length
+     *  we also need a valid pointer in the buffer
+     */
+    if ((!Handle)               ||
+        (!RetBuffer)            ||
+        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
     /*
      *  Execute the method, no parameters
      */
     Status = AcpiNsEvaluateRelative (Handle, "_PRT", NULL, &RetObj);
-    if (ACPI_FAILURE (Status))
+    if (Status != AE_OK)
     {
         return_ACPI_STATUS (Status);
     }
@@ -171,50 +182,60 @@ AcpiRsGetPrtMethodData (
     {
         /* Return object is required */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object was returned from _PRT\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _PRT\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
+
     /*
-     * The return object will be a package, so check the parameters.  If the
-     * return object is not a package, then the underlying AML code is corrupt
-     * or improperly written.
+     * The return object will be a package, so check the
+     *  parameters.  If the return object is not a package,
+     *  then the underlying AML code is corrupt or improperly
+     *  written.
      */
     if (ACPI_TYPE_PACKAGE != RetObj->Common.Type)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_PRT did not return a Package, returned %s\n",
-                AcpiUtGetTypeName (RetObj->Common.Type)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
 
     /*
-     * Create a resource linked list from the byte stream buffer that comes
-     * back from the _CRS method execution.
+     * Make the call to create a resource linked list from the
+     *  byte stream buffer that comes back from the _CRS method
+     *  execution.
      */
-    Status = AcpiRsCreatePciRoutingTable (RetObj, RetBuffer);
+    Status = AcpiRsCreatePciRoutingTable (RetObj,
+                                      RetBuffer->Pointer,
+                                      &BufferSpaceNeeded);
 
-    /* On exit, we must delete the object returned by EvaluateObject */
+    /*
+     * Tell the user how much of the buffer we have used or is needed
+     *  and return the final status.
+     */
+    RetBuffer->Length = BufferSpaceNeeded;
+
+
+    /* On exit, we must delete the object returned by evaluateObject */
 
 Cleanup:
 
-    AcpiUtRemoveReference (RetObj);
+    AcpiCmRemoveReference (RetObj);
+
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiRsGetCrsMethodData
  *
- * PARAMETERS:  Handle          - a handle to the containing object
- *              RetBuffer       - a pointer to a buffer structure for the
- *                                  results
+ * PARAMETERS:  DeviceHandle    - a handle to the containing object
+ *              RetBuffer       - a pointer to a buffer structure for the results
  *
- * RETURN:      Status
+ * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to get the _CRS value of an object
- *              contained in an object specified by the handle passed in
+ * DESCRIPTION: This function is called to get the _CRS value of an object contained
+ *              in an object specified by the handle passed in
  *
  *              If the function fails an appropriate status will be returned
  *              and the contents of the callers buffer is undefined.
@@ -226,20 +247,31 @@ AcpiRsGetCrsMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer)
 {
-    ACPI_OPERAND_OBJECT     *RetObj;
+    ACPI_OBJECT_INTERNAL    *RetObj;
     ACPI_STATUS             Status;
+    UINT32                  BufferSpaceNeeded = RetBuffer->Length;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetCrsMethodData");
+    FUNCTION_TRACE ("RsGetCrsMethodData");
 
-
-    /* Parameters guaranteed valid by caller */
+  
+    /*
+     *  Must have a valid handle and buffer, So we have to have a handle
+     *  a return buffer structure and if there is a non-zero buffer length
+     *  we also need a valid pointer in the buffer
+     */
+    if ((!Handle)               ||
+        (!RetBuffer)            ||
+        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
     /*
-     * Execute the method, no parameters
+     *  Execute the method, no parameters
      */
     Status = AcpiNsEvaluateRelative (Handle, "_CRS", NULL, &RetObj);
-    if (ACPI_FAILURE (Status))
+    if (Status != AE_OK)
     {
         return_ACPI_STATUS (Status);
     }
@@ -248,52 +280,64 @@ AcpiRsGetCrsMethodData (
     {
         /* Return object is required */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object was returned from _CRS\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _CRS\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
     /*
      * The return object will be a buffer, but check the
-     * parameters.  If the return object is not a buffer,
-     * then the underlying AML code is corrupt or improperly
-     * written.
+     *  parameters.  If the return object is not a buffer,
+     *  then the underlying AML code is corrupt or improperly
+     *  written.
      */
     if (ACPI_TYPE_BUFFER != RetObj->Common.Type)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_CRS did not return a Buffer, returned %s\n",
-                AcpiUtGetTypeName (RetObj->Common.Type)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
 
     /*
      * Make the call to create a resource linked list from the
-     * byte stream buffer that comes back from the _CRS method
-     * execution.
+     *  byte stream buffer that comes back from the _CRS method
+     *  execution.
      */
-    Status = AcpiRsCreateResourceList (RetObj, RetBuffer);
+    Status = AcpiRsCreateResourceList (RetObj,
+                                   RetBuffer->Pointer,
+                                   &BufferSpaceNeeded);
+
+    if (AE_OK == Status)
+    {
+        AcpiRsDumpResourceList((RESOURCE *)RetBuffer->Pointer);
+    }
+
+    /*
+     * Tell the user how much of the buffer we have used or is needed
+     *  and return the final status.
+     */
+    RetBuffer->Length = BufferSpaceNeeded;
+
 
     /* On exit, we must delete the object returned by evaluateObject */
 
 Cleanup:
 
-    AcpiUtRemoveReference (RetObj);
+    AcpiCmRemoveReference (RetObj);
+
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiRsGetPrsMethodData
  *
- * PARAMETERS:  Handle          - a handle to the containing object
- *              RetBuffer       - a pointer to a buffer structure for the
- *                                  results
+ * PARAMETERS:  DeviceHandle    - a handle to the containing object
+ *              RetBuffer       - a pointer to a buffer structure for the results
  *
- * RETURN:      Status
+ * RETURN:      Status          - the status of the call
  *
- * DESCRIPTION: This function is called to get the _PRS value of an object
- *              contained in an object specified by the handle passed in
+ * DESCRIPTION: This function is called to get the _PRS value of an object contained
+ *              in an object specified by the handle passed in
  *
  *              If the function fails an appropriate status will be returned
  *              and the contents of the callers buffer is undefined.
@@ -305,20 +349,31 @@ AcpiRsGetPrsMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *RetBuffer)
 {
-    ACPI_OPERAND_OBJECT     *RetObj;
+    ACPI_OBJECT_INTERNAL    *RetObj;
     ACPI_STATUS             Status;
+    UINT32                  BufferSpaceNeeded = RetBuffer->Length;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetPrsMethodData");
+    FUNCTION_TRACE ("RsGetPrsMethodData");
 
-
-    /* Parameters guaranteed valid by caller */
+  
+    /*
+     *  Must have a valid handle and buffer, So we have to have a handle
+     *  a return buffer structure and if there is a non-zero buffer length
+     *  we also need a valid pointer in the buffer
+     */
+    if ((!Handle)               ||
+        (!RetBuffer)            ||
+        ((!RetBuffer->Pointer) && (RetBuffer->Length)))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
     /*
-     * Execute the method, no parameters
+     *  Execute the method, no parameters
      */
     Status = AcpiNsEvaluateRelative (Handle, "_PRS", NULL, &RetObj);
-    if (ACPI_FAILURE (Status))
+    if (Status != AE_OK)
     {
         return_ACPI_STATUS (Status);
     }
@@ -327,49 +382,58 @@ AcpiRsGetPrsMethodData (
     {
         /* Return object is required */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No object was returned from _PRS\n"));
+        DEBUG_PRINT (ACPI_ERROR, ("No object was returned from _PRS\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
 
     /*
      * The return object will be a buffer, but check the
-     * parameters.  If the return object is not a buffer,
-     * then the underlying AML code is corrupt or improperly
-     * written..
+     *  parameters.  If the return object is not a buffer,
+     *  then the underlying AML code is corrupt or improperly
+     *  written..
      */
     if (ACPI_TYPE_BUFFER != RetObj->Common.Type)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_PRS did not return a Buffer, returned %s\n",
-                AcpiUtGetTypeName (RetObj->Common.Type)));
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
     }
 
     /*
      * Make the call to create a resource linked list from the
-     * byte stream buffer that comes back from the _CRS method
-     * execution.
+     *  byte stream buffer that comes back from the _CRS method
+     *  execution.
      */
-    Status = AcpiRsCreateResourceList (RetObj, RetBuffer);
+    Status = AcpiRsCreateResourceList (RetObj,
+                                   RetBuffer->Pointer,
+                                   &BufferSpaceNeeded);
+
+    /*
+     * Tell the user how much of the buffer we have used or is needed
+     *  and return the final status.
+     */
+    RetBuffer->Length = BufferSpaceNeeded;
+
 
     /* On exit, we must delete the object returned by evaluateObject */
 
 Cleanup:
 
-    AcpiUtRemoveReference (RetObj);
+    AcpiCmRemoveReference (RetObj);
+
     return_ACPI_STATUS (Status);
 }
 
 
-/*******************************************************************************
+/******************************************************************************
  *
  * FUNCTION:    AcpiRsSetSrsMethodData
  *
- * PARAMETERS:  Handle          - a handle to the containing object
- *              InBuffer        - a pointer to a buffer structure of the
- *                                  parameter
+ * PARAMETERS:  DeviceHandle    - a handle to the containing object
+ *              *MethodName     - Name of method to execute, If NULL, the
+ *                                handle is the object to execute
+ *              InBuffer        - a pointer to a buffer structure of the parameter
  *
- * RETURN:      Status
+ * RETURN:      Status          - the status of the call
  *
  * DESCRIPTION: This function is called to set the _SRS of an object contained
  *              in an object specified by the handle passed in
@@ -384,56 +448,101 @@ AcpiRsSetSrsMethodData (
     ACPI_HANDLE             Handle,
     ACPI_BUFFER             *InBuffer)
 {
-    ACPI_OPERAND_OBJECT     *Params[2];
+    ACPI_OBJECT_INTERNAL    *Params[2];
+    ACPI_OBJECT_INTERNAL    ParamObj;
     ACPI_STATUS             Status;
-    ACPI_BUFFER             Buffer;
+    UINT8                   *ByteStream = NULL;
+    UINT32                  BufferSizeNeeded = 0;
 
+    FUNCTION_TRACE ("RsSetSrsMethodData");
 
-    ACPI_FUNCTION_TRACE ("RsSetSrsMethodData");
-
-
-    /* Parameters guaranteed valid by caller */
+    /*
+     *  Must have a valid handle and buffer
+     */
+    if ((!Handle)       ||
+        (!InBuffer)           ||
+        (!InBuffer->Pointer)  ||
+        (!InBuffer->Length))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
     /*
      * The InBuffer parameter will point to a linked list of
-     * resource parameters.  It needs to be formatted into a
-     * byte stream to be sent in as an input parameter to _SRS
-     *
-     * Convert the linked list into a byte stream
+     *  resource parameters.  It needs to be formatted into a
+     *  byte stream to be sent in as an input parameter.
      */
-    Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
-    Status = AcpiRsCreateByteStream (InBuffer->Pointer, &Buffer);
-    if (ACPI_FAILURE (Status))
+    BufferSizeNeeded = 0;
+
+    /*
+     * First call is to get the buffer size needed
+     */
+    Status = AcpiRsCreateByteStream (InBuffer->Pointer,
+                                 ByteStream,
+                                 &BufferSizeNeeded);
+
+    /*
+     * We expect a return of AE_BUFFER_OVERFLOW
+     *  if not, exit with the error
+     */
+    if (AE_BUFFER_OVERFLOW != Status)
     {
         return_ACPI_STATUS (Status);
     }
 
     /*
-     * Init the param object
+     * Allocate the buffer needed
      */
-    Params[0] = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
-    if (!Params[0])
+    ByteStream = AcpiCmCallocate(BufferSizeNeeded);
+
+    if (NULL == ByteStream)
     {
-        AcpiOsFree (Buffer.Pointer);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     /*
-     * Set up the parameter object
+     * Now call to convert the linked list into a byte stream
      */
-    Params[0]->Buffer.Length  = (UINT32) Buffer.Length;
-    Params[0]->Buffer.Pointer = Buffer.Pointer;
-    Params[1] = NULL;
+    Status = AcpiRsCreateByteStream (InBuffer->Pointer,
+                                 ByteStream,
+                                 &BufferSizeNeeded);
+
+    if(AE_OK != Status)
+    {
+        /*
+         *  Failed the call
+         */
+        AcpiCmFree (ByteStream);
+        return_ACPI_STATUS (Status);
+    }
 
     /*
-     * Execute the method, no return value
+     *  Init the param object
+     */
+    AcpiCmInitStaticObject (&ParamObj);
+
+    /*
+     *  Method requires one parameter.  Set it up
+     */
+    Params [0] = &ParamObj;
+    Params [1] = NULL;
+
+    /*
+     *  Set up the parameter object
+     */
+    ParamObj.Common.Type    = ACPI_TYPE_BUFFER;
+    ParamObj.Buffer.Length  = BufferSizeNeeded;
+    ParamObj.Buffer.Pointer = ByteStream;
+
+    /*
+     *  Execute the method, no return value
      */
     Status = AcpiNsEvaluateRelative (Handle, "_SRS", Params, NULL);
 
     /*
-     * Clean up and return the status from AcpiNsEvaluateRelative
+     *  Clean up and return the status from AcpiNsEvaluateRelative
      */
-    AcpiUtRemoveReference (Params[0]);
+    AcpiCmFree (ByteStream);
     return_ACPI_STATUS (Status);
 }
 

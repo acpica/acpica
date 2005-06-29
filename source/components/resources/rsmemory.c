@@ -1,16 +1,20 @@
-/*******************************************************************************
+/******************************************************************************
  *
- * Module Name: rsmem24 - Memory resource descriptors
- *              $Revision: 1.19 $
+ * Module Name: rsmem24 - AcpiRsMemory24Resource
+ *                        AcpiRsMemory24Stream
+ *                        AcpiRsMemory32RangeResource
+ *                        AcpiRsFixedMemory32Resource
+ *                        AcpiRsMemory32RangeStream
+ *                        AcpiRsFixedMemory32Stream
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -117,148 +121,159 @@
 #define __RSMEMORY_C__
 
 #include "acpi.h"
-#include "acresrc.h"
 
-#define _COMPONENT          ACPI_RESOURCES
-        ACPI_MODULE_NAME    ("rsmemory")
+#define _COMPONENT          RESOURCE_MANAGER
+        MODULE_NAME         ("rsmemory");
 
 
-/*******************************************************************************
- *
+/***************************************************************************
  * FUNCTION:    AcpiRsMemory24Resource
  *
- * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
- *                                        stream
- *              BytesConsumed           - Pointer to where the number of bytes
- *                                        consumed the ByteStreamBuffer is
- *                                        returned
- *              OutputBuffer            - Pointer to the return data buffer
- *              StructureSize           - Pointer to where the number of bytes
- *                                        in the return data struct is returned
+ * PARAMETERS:
+ *              ByteStreamBuffer        - Pointer to the resource input byte stream
+ *              BytesConsumed           - UINT32 pointer that is filled with the number
+ *                                          of bytes consumed from the ByteStreamBuffer
+ *              OutputBuffer            - Pointer to the user's return buffer
+ *              StructureSize           - UINT32 pointer that is filled with the number
+ *                                          of bytes in the filled in structure
  *
- * RETURN:      Status
+ * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
  * DESCRIPTION: Take the resource byte stream and fill out the appropriate
- *              structure pointed to by the OutputBuffer.  Return the
- *              number of bytes consumed from the byte stream.
+ *                  structure pointed to by the OutputBuffer.  Return the
+ *                  number of bytes consumed from the byte stream.
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
 AcpiRsMemory24Resource (
     UINT8                   *ByteStreamBuffer,
-    ACPI_SIZE               *BytesConsumed,
+    UINT32                  *BytesConsumed,
     UINT8                   **OutputBuffer,
-    ACPI_SIZE               *StructureSize)
+    UINT32                  *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
+    RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_MEM24);
+    UINT32                  StructSize = sizeof (MEMORY24_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
 
 
-    ACPI_FUNCTION_TRACE ("RsMemory24Resource");
-
+    FUNCTION_TRACE ("RsMemory24Resource");
 
     /*
      * Point past the Descriptor to get the number of bytes consumed
      */
     Buffer += 1;
 
-    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    Temp16 = *(UINT16 *)Buffer;
+
     Buffer += 2;
+
     *BytesConsumed = Temp16 + 3;
-    OutputStruct->Id = ACPI_RSTYPE_MEM24;
+
+    OutputStruct->Id = Memory24;
 
     /*
      * Check Byte 3 the Read/Write bit
      */
     Temp8 = *Buffer;
+
     Buffer += 1;
+
     OutputStruct->Data.Memory24.ReadWriteAttribute = Temp8 & 0x01;
 
     /*
      * Get MinBaseAddress (Bytes 4-5)
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    Temp16 = *(UINT16 *)Buffer;
+
     Buffer += 2;
+
     OutputStruct->Data.Memory24.MinBaseAddress = Temp16;
 
     /*
      * Get MaxBaseAddress (Bytes 6-7)
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    Temp16 = *(UINT16 *)Buffer;
+
     Buffer += 2;
+
     OutputStruct->Data.Memory24.MaxBaseAddress = Temp16;
 
     /*
      * Get Alignment (Bytes 8-9)
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    Temp16 = *(UINT16 *)Buffer;
+
     Buffer += 2;
+
     OutputStruct->Data.Memory24.Alignment = Temp16;
 
     /*
      * Get RangeLength (Bytes 10-11)
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    Temp16 = *(UINT16 *)Buffer;
+
     OutputStruct->Data.Memory24.RangeLength = Temp16;
 
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = (UINT32) StructSize;
+    OutputStruct->Length = StructSize;
 
     /*
      * Return the final size of the structure
      */
     *StructureSize = StructSize;
+
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
- *
+/***************************************************************************
  * FUNCTION:    AcpiRsMemory24Stream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:
+ *              LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes
- *                                        used in the OutputBuffer is returned
+ *              BytesConsumed           - UINT32 pointer that is filled with the number
+ *                                          of bytes of the OutputBuffer used
  *
- * RETURN:      Status
+ * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
  * DESCRIPTION: Take the linked list resource structure and fills in the
- *              the appropriate bytes in a byte stream
+ *                  the appropriate bytes in a byte stream
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
 AcpiRsMemory24Stream (
-    ACPI_RESOURCE           *LinkedList,
+    RESOURCE                *LinkedList,
     UINT8                   **OutputBuffer,
-    ACPI_SIZE               *BytesConsumed)
+    UINT32                  *BytesConsumed)
 {
     UINT8                   *Buffer = *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
+    
 
-
-    ACPI_FUNCTION_TRACE ("RsMemory24Stream");
-
+    FUNCTION_TRACE ("RsMemory24Stream");
 
     /*
      * The descriptor field is static
      */
     *Buffer = 0x81;
+
     Buffer += 1;
 
     /*
      * The length field is static
      */
     Temp16 = 0x09;
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
+
+    STORE16 (Buffer, &Temp16);
+
     Buffer += 2;
 
     /*
@@ -271,87 +286,84 @@ AcpiRsMemory24Stream (
     /*
      * Set the Range minimum base address
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &LinkedList->Data.Memory24.MinBaseAddress);
+    STORE16 (Buffer, &LinkedList->Data.Memory24.MinBaseAddress);
     Buffer += 2;
 
     /*
      * Set the Range maximum base address
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &LinkedList->Data.Memory24.MaxBaseAddress);
+    STORE16 (Buffer, &LinkedList->Data.Memory24.MaxBaseAddress);
     Buffer += 2;
 
     /*
      * Set the base alignment
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &LinkedList->Data.Memory24.Alignment);
+    STORE16 (Buffer, &LinkedList->Data.Memory24.Alignment);
     Buffer += 2;
 
     /*
      * Set the range length
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &LinkedList->Data.Memory24.RangeLength);
+    STORE16 (Buffer, &LinkedList->Data.Memory24.RangeLength);
     Buffer += 2;
 
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
+    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer - (NATIVE_UINT) *OutputBuffer);
+
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
- *
+/***************************************************************************
  * FUNCTION:    AcpiRsMemory32RangeResource
  *
- * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
- *                                        stream
- *              BytesConsumed           - Pointer to where the number of bytes
- *                                        consumed the ByteStreamBuffer is
- *                                        returned
- *              OutputBuffer            - Pointer to the return data buffer
- *              StructureSize           - Pointer to where the number of bytes
- *                                        in the return data struct is returned
+ * PARAMETERS:
+ *              ByteStreamBuffer        - Pointer to the resource input byte stream
+ *              BytesConsumed           - UINT32 pointer that is filled with the number
+ *                                          of bytes consumed from the ByteStreamBuffer
+ *              OutputBuffer            - Pointer to the user's return buffer
+ *              StructureSize           - UINT32 pointer that is filled with the number
+ *                                          of bytes in the filled in structure
  *
- * RETURN:      Status
+ * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
  * DESCRIPTION: Take the resource byte stream and fill out the appropriate
- *              structure pointed to by the OutputBuffer.  Return the
- *              number of bytes consumed from the byte stream.
+ *                  structure pointed to by the OutputBuffer.  Return the
+ *                  number of bytes consumed from the byte stream.
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
 AcpiRsMemory32RangeResource (
     UINT8                   *ByteStreamBuffer,
-    ACPI_SIZE               *BytesConsumed,
+    UINT32                  *BytesConsumed,
     UINT8                   **OutputBuffer,
-    ACPI_SIZE               *StructureSize)
+    UINT32                  *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
+    RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_MEM32);
+    UINT32                  StructSize = sizeof (MEMORY32_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
 
 
-    ACPI_FUNCTION_TRACE ("RsMemory32RangeResource");
-
+    FUNCTION_TRACE ("RsMemory32RangeResource");
 
     /*
      * Point past the Descriptor to get the number of bytes consumed
      */
     Buffer += 1;
 
-    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    STORE16 (&Temp16, Buffer);
     Buffer += 2;
     *BytesConsumed = Temp16 + 3;
 
-    OutputStruct->Id = ACPI_RSTYPE_MEM32;
+    OutputStruct->Id = Memory32;
 
     /*
-     *  Point to the place in the output buffer where the data portion will
-     *  begin.
+     *  Point to the place in the output buffer where the data portion will begin.
      *  1. Set the RESOURCE_DATA * Data to point to it's own address, then
      *  2. Set the pointer to the next address.
      *
@@ -370,89 +382,85 @@ AcpiRsMemory32RangeResource (
     /*
      * Get MinBaseAddress (Bytes 4-7)
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Memory32.MinBaseAddress,
-                            Buffer);
+    STORE32 (&OutputStruct->Data.Memory32.MinBaseAddress, Buffer);
     Buffer += 4;
 
     /*
      * Get MaxBaseAddress (Bytes 8-11)
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Memory32.MaxBaseAddress,
-                            Buffer);
+    STORE32 (&OutputStruct->Data.Memory32.MaxBaseAddress, Buffer);
     Buffer += 4;
 
     /*
      * Get Alignment (Bytes 12-15)
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Memory32.Alignment, Buffer);
+    STORE32 (&OutputStruct->Data.Memory32.Alignment, Buffer);
     Buffer += 4;
 
     /*
      * Get RangeLength (Bytes 16-19)
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.Memory32.RangeLength, Buffer);
+    STORE32 (&OutputStruct->Data.Memory32.RangeLength, Buffer);
 
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = (UINT32) StructSize;
+    OutputStruct->Length = StructSize;
 
     /*
      * Return the final size of the structure
      */
     *StructureSize = StructSize;
+
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
- *
+/***************************************************************************
  * FUNCTION:    AcpiRsFixedMemory32Resource
  *
- * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource input byte
- *                                        stream
- *              BytesConsumed           - Pointer to where the number of bytes
- *                                        consumed the ByteStreamBuffer is
- *                                        returned
- *              OutputBuffer            - Pointer to the return data buffer
- *              StructureSize           - Pointer to where the number of bytes
- *                                        in the return data struct is returned
+ * PARAMETERS:
+ *              ByteStreamBuffer        - Pointer to the resource input byte stream
+ *              BytesConsumed           - UINT32 pointer that is filled with the number
+ *                                          of bytes consumed from the ByteStreamBuffer
+ *              OutputBuffer            - Pointer to the user's return buffer
+ *              StructureSize           - UINT32 pointer that is filled with the number
+ *                                          of bytes in the filled in structure
  *
- * RETURN:      Status
+ * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
  * DESCRIPTION: Take the resource byte stream and fill out the appropriate
- *              structure pointed to by the OutputBuffer.  Return the
- *              number of bytes consumed from the byte stream.
+ *                  structure pointed to by the OutputBuffer.  Return the
+ *                  number of bytes consumed from the byte stream.
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
 AcpiRsFixedMemory32Resource (
     UINT8                   *ByteStreamBuffer,
-    ACPI_SIZE               *BytesConsumed,
+    UINT32                  *BytesConsumed,
     UINT8                   **OutputBuffer,
-    ACPI_SIZE               *StructureSize)
+    UINT32                  *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
+    RESOURCE                *OutputStruct = (RESOURCE *) * OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_FIXED_MEM32);
+    UINT32                  StructSize = sizeof (FIXED_MEMORY32_RESOURCE) + RESOURCE_LENGTH_NO_DATA;
 
 
-    ACPI_FUNCTION_TRACE ("RsFixedMemory32Resource");
-
+    FUNCTION_TRACE ("RsFixedMemory32Resource");
 
     /*
      * Point past the Descriptor to get the number of bytes consumed
      */
     Buffer += 1;
-    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    STORE16 (&Temp16, Buffer);
 
     Buffer += 2;
     *BytesConsumed = Temp16 + 3;
 
-    OutputStruct->Id = ACPI_RSTYPE_FIXED_MEM32;
+    OutputStruct->Id = FixedMemory32;
 
     /*
      * Check Byte 3 the Read/Write bit
@@ -464,58 +472,56 @@ AcpiRsFixedMemory32Resource (
     /*
      * Get RangeBaseAddress (Bytes 4-7)
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.FixedMemory32.RangeBaseAddress,
-                            Buffer);
+    STORE32 (&OutputStruct->Data.FixedMemory32.RangeBaseAddress, Buffer);
     Buffer += 4;
 
     /*
      * Get RangeLength (Bytes 8-11)
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (&OutputStruct->Data.FixedMemory32.RangeLength,
-                            Buffer);
+    STORE32 (&OutputStruct->Data.FixedMemory32.RangeLength, Buffer);
 
     /*
      * Set the Length parameter
      */
-    OutputStruct->Length = (UINT32) StructSize;
+    OutputStruct->Length = StructSize;
 
     /*
      * Return the final size of the structure
      */
     *StructureSize = StructSize;
+
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
- *
+/***************************************************************************
  * FUNCTION:    AcpiRsMemory32RangeStream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:
+ *              LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes
- *                                        used in the OutputBuffer is returned
+ *              BytesConsumed           - UINT32 pointer that is filled with the number
+ *                                          of bytes of the OutputBuffer used
  *
- * RETURN:      Status
+ * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
  * DESCRIPTION: Take the linked list resource structure and fills in the
- *              the appropriate bytes in a byte stream
+ *                  the appropriate bytes in a byte stream
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
 AcpiRsMemory32RangeStream (
-    ACPI_RESOURCE           *LinkedList,
+    RESOURCE                *LinkedList,
     UINT8                   **OutputBuffer,
-    ACPI_SIZE               *BytesConsumed)
+    UINT32                  *BytesConsumed)
 {
     UINT8                   *Buffer = *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-
-
-    ACPI_FUNCTION_TRACE ("RsMemory32RangeStream");
-
+   
+    
+    FUNCTION_TRACE ("RsMemory32RangeStream");
 
     /*
      * The descriptor field is static
@@ -528,7 +534,7 @@ AcpiRsMemory32RangeStream (
      */
     Temp16 = 0x11;
 
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
+    STORE16 (Buffer, &Temp16);
     Buffer += 2;
 
     /*
@@ -541,64 +547,64 @@ AcpiRsMemory32RangeStream (
     /*
      * Set the Range minimum base address
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer, &LinkedList->Data.Memory32.MinBaseAddress);
+    STORE32 (Buffer, &LinkedList->Data.Memory32.MinBaseAddress);
     Buffer += 4;
 
     /*
      * Set the Range maximum base address
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer, &LinkedList->Data.Memory32.MaxBaseAddress);
+    STORE32 (Buffer, &LinkedList->Data.Memory32.MaxBaseAddress);
     Buffer += 4;
 
     /*
      * Set the base alignment
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer, &LinkedList->Data.Memory32.Alignment);
+    STORE32 (Buffer, &LinkedList->Data.Memory32.Alignment);
     Buffer += 4;
 
     /*
      * Set the range length
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer, &LinkedList->Data.Memory32.RangeLength);
+    STORE32 (Buffer, &LinkedList->Data.Memory32.RangeLength);
     Buffer += 4;
 
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
+    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer - (NATIVE_UINT) *OutputBuffer);
+
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
- *
+/***************************************************************************
  * FUNCTION:    AcpiRsFixedMemory32Stream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:
+ *              LinkedList              - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
- *              BytesConsumed           - Pointer to where the number of bytes
- *                                        used in the OutputBuffer is returned
+ *              BytesConsumed           - UINT32 pointer that is filled with the number
+ *                                          of bytes of the OutputBuffer used
  *
- * RETURN:      Status
+ * RETURN:      Status  AE_OK if okay, else a valid ACPI_STATUS code
  *
  * DESCRIPTION: Take the linked list resource structure and fills in the
- *              the appropriate bytes in a byte stream
+ *                  the appropriate bytes in a byte stream
  *
- ******************************************************************************/
+ ***************************************************************************/
 
 ACPI_STATUS
 AcpiRsFixedMemory32Stream (
-    ACPI_RESOURCE           *LinkedList,
+    RESOURCE                *LinkedList,
     UINT8                   **OutputBuffer,
-    ACPI_SIZE               *BytesConsumed)
+    UINT32                  *BytesConsumed)
 {
     UINT8                   *Buffer = *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
+    
 
-
-    ACPI_FUNCTION_TRACE ("RsFixedMemory32Stream");
-
+    FUNCTION_TRACE ("RsFixedMemory32Stream");
 
     /*
      * The descriptor field is static
@@ -611,7 +617,7 @@ AcpiRsFixedMemory32Stream (
      */
     Temp16 = 0x09;
 
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
+    STORE16 (Buffer, &Temp16);
     Buffer += 2;
 
     /*
@@ -624,21 +630,20 @@ AcpiRsFixedMemory32Stream (
     /*
      * Set the Range base address
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer,
-                            &LinkedList->Data.FixedMemory32.RangeBaseAddress);
+    STORE32 (Buffer, &LinkedList->Data.FixedMemory32.RangeBaseAddress);
     Buffer += 4;
 
     /*
      * Set the range length
      */
-    ACPI_MOVE_UNALIGNED32_TO_32 (Buffer,
-                            &LinkedList->Data.FixedMemory32.RangeLength);
+    STORE32 (Buffer, &LinkedList->Data.FixedMemory32.RangeLength);
     Buffer += 4;
 
     /*
      * Return the number of bytes consumed in this operation
      */
-    *BytesConsumed = ACPI_PTR_DIFF (Buffer, *OutputBuffer);
+    *BytesConsumed = (UINT32) ((NATIVE_UINT) Buffer - (NATIVE_UINT) *OutputBuffer);
+
     return_ACPI_STATUS (AE_OK);
 }
 
