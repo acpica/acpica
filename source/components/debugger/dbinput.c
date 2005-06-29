@@ -145,7 +145,7 @@ UINT32                  Gbl_MethodBreakpoint = 0;
 BOOLEAN                 Gbl_MethodExecuting = FALSE;
 BOOLEAN                 OutputToFile = FALSE;
 UINT8                   Gbl_DbOutputFlags = DB_CONSOLE_OUTPUT;
-UINT8                   Gbl_DbTerminateThreads = FALSE;
+BOOLEAN                 Gbl_DbTerminateThreads = FALSE;
 
 
 BOOLEAN                 opt_tables      = FALSE;
@@ -412,44 +412,45 @@ void
 DbDisplayHelp (void)
 {
     OsdPrintf ("\nAML Debugger Commands\n\n");
-    OsdPrintf ("Allocations                     Display memory allocation info\n");
-    OsdPrintf ("Debug <Method Path>             Single Step a control method\n");
+    OsdPrintf ("Allocations                         Display memory allocation info\n");
+    OsdPrintf ("Debug <Namepath> [Arguments]        Single Step a control method\n");
     OsdPrintf ("Dump <Address>|<Namepath>\n");
-    OsdPrintf ("     [Byte|Word|Dword|Qword]    Display ACPI objects or memory\n");
-    OsdPrintf ("Event <F|G> <Value>             Generate Event (Fixed/GPE)\n");
-    OsdPrintf ("Execute <Method Namepath>       Execute control method (full pathname)\n");
-    OsdPrintf ("Help                            This help screen\n");
-    OsdPrintf ("History                         Display command history buffer\n");
-    OsdPrintf ("Level <DebugLevel>              Set debug level (file output only)\n");
-    OsdPrintf ("Method                          Display list of loaded control methods\n");
-    OsdPrintf ("Notify <NamePath> <Value>       Send a notification\n");
-    OsdPrintf ("Object <Address>|<Namepath>     Synonym for Dump\n");
-    OsdPrintf ("Prefix [<NamePath>]             Set or Get current execution prefix\n");
-    OsdPrintf ("Quit or Exit                    Exit this command\n");
-    OsdPrintf ("Stats                           Display namespace and memory statistics\n");
-    OsdPrintf ("Terminate                       Delete namespace and all internal objects\n");
-    OsdPrintf ("Unload                          Unload an ACPI table\n");
-    OsdPrintf ("! <CommandNumber>               Execute command from history buffer\n");
+    OsdPrintf ("     [Byte|Word|Dword|Qword]        Display ACPI objects or memory\n");
+    OsdPrintf ("Event <F|G> <Value>                 Generate Event (Fixed/GPE)\n");
+    OsdPrintf ("Execute <Namepath> [Arguments]      Execute control method\n");
+    OsdPrintf ("Help                                This help screen\n");
+    OsdPrintf ("History                             Display command history buffer\n");
+    OsdPrintf ("Level [<DebugLevel>] [console]      Get/Set debug level for file or console\n");
+    OsdPrintf ("Method                              Display list of loaded control methods\n");
+    OsdPrintf ("Namespace [<Address>|<Namepath>]    Display loaded namespace tree or subtree\n");
+    OsdPrintf ("Notify <NamePath> <Value>           Send a notification\n");
+    OsdPrintf ("Object <Address>|<Namepath>         Synonym for Dump\n");
+    OsdPrintf ("Prefix [<NamePath>]                 Set or Get current execution prefix\n");
+    OsdPrintf ("Quit or Exit                        Exit this command\n");
+    OsdPrintf ("Stats                               Display namespace and memory statistics\n");
+    OsdPrintf ("Terminate                           Delete namespace and all internal objects\n");
+    OsdPrintf ("Unload                              Unload an ACPI table\n");
+    OsdPrintf ("! <CommandNumber>                   Execute command from history buffer\n");
 
     OsdPrintf ("\nControl Method Execution Commands\n\n");
-    OsdPrintf ("Arguments (or Args)             Display method arguments\n");
-    OsdPrintf ("Breakpoint <AmlOffset>          Set an AML execution breakpoint\n");
-    OsdPrintf ("Call                            Run to next control method invocation\n");
-    OsdPrintf ("Go                              Allow method to run to completion\n");
-    OsdPrintf ("Information                     Display info about the current method\n");
-    OsdPrintf ("Into                            Step into (not over) a method call\n");
-    OsdPrintf ("List [# of Aml Opcodes]         Display method ASL statements\n");
-    OsdPrintf ("Locals                          Display method local variables\n");
-    OsdPrintf ("Results                         Display method result stack\n");
-    OsdPrintf ("Set <A|L> <#> <Value>           Set method data (Arguments/Locals)\n");
-    OsdPrintf ("Stop                            Terminate control method\n");
-    OsdPrintf ("Tree                            Display control method calling tree\n");
-    OsdPrintf ("<Enter>                         Single step next AML opcode\n");
+    OsdPrintf ("Arguments (or Args)                 Display method arguments\n");
+    OsdPrintf ("Breakpoint <AmlOffset>              Set an AML execution breakpoint\n");
+    OsdPrintf ("Call                                Run to next control method invocation\n");
+    OsdPrintf ("Go                                  Allow method to run to completion\n");
+    OsdPrintf ("Information                         Display info about the current method\n");
+    OsdPrintf ("Into                                Step into (not over) a method call\n");
+    OsdPrintf ("List [# of Aml Opcodes]             Display method ASL statements\n");
+    OsdPrintf ("Locals                              Display method local variables\n");
+    OsdPrintf ("Results                             Display method result stack\n");
+    OsdPrintf ("Set <A|L> <#> <Value>               Set method data (Arguments/Locals)\n");
+    OsdPrintf ("Stop                                Terminate control method\n");
+    OsdPrintf ("Tree                                Display control method calling tree\n");
+    OsdPrintf ("<Enter>                             Single step next AML opcode (over calls)\n");
 
     OsdPrintf ("\nFile I/O Commands\n\n");
-    OsdPrintf ("Close                           Close debug output file\n");
-    OsdPrintf ("Open <Output Filename>          Open a file for debug output\n");
-    OsdPrintf ("Load <Input Filename>           Load ACPI table from a file\n");
+    OsdPrintf ("Close                               Close debug output file\n");
+    OsdPrintf ("Open <Output Filename>              Open a file for debug output\n");
+    OsdPrintf ("Load <Input Filename>               Load ACPI table from a file\n");
 }
 
 
@@ -631,6 +632,12 @@ DbCommandDispatch (
     ACPI_STATUS             Status = AE_TRUE;
 
 
+    /* If AcpiTerminate has been called, terminate this thread */
+
+    if (Gbl_DbTerminateThreads)
+    {
+        return (AE_TERMINATE);
+    }
    
     ParamCount = DbGetLine (InputBuffer);
     CommandIndex = DbMatchCommand (Args[0]);
@@ -679,7 +686,7 @@ DbCommandDispatch (
         break;
 
     case CMD_DEBUG:
-        DbExecute (Args[1], EX_SINGLE_STEP);
+        DbExecute (Args[1], &Args[2], EX_SINGLE_STEP);
         break;
 
     case CMD_DUMP:
@@ -692,7 +699,7 @@ DbCommandDispatch (
         break;
 
     case CMD_EXECUTE:
-        DbExecute (Args[1], EX_NO_SINGLE_STEP);
+        DbExecute (Args[1], &Args[2], EX_NO_SINGLE_STEP);
         break;
 
     case CMD_GO:
@@ -771,7 +778,7 @@ DbCommandDispatch (
         break;
 
     case CMD_NAMESPACE:
-        DbDumpNamespace ();
+        DbDumpNamespace (Args[1]);
         break;
 
     case CMD_NOTIFY:
