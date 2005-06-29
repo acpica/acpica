@@ -96,13 +96,13 @@
  *
  *****************************************************************************/
 
-#ifndef _ACPIOSD_H_
-#define _ACPIOSD_H_
+#ifndef __ACPIOSD_H__
+#define __ACPIOSD_H__
 
 #include <environment.h>
 #include <datatypes.h>
 #include <acpiasm.h>
-#include <excep.h>
+#include <acpiexcep.h>
 #include <output.h>
 
 
@@ -148,13 +148,27 @@ OsdMapMemory (
 
 void 
 OsdUnMapMemory (
-    void                    *PhysicalAddress, 
+    void                    *LogicalAddress, 
     UINT32                  Length);
 
 
 /* 
  * Interrupt handlers 
  */
+
+/* TBD: These are the new interfaces!! 
+
+ACPI_STATUS
+OsdInstallInterruptHandler (
+    UINT32                  InterruptNumber,
+    OSD_HANDLER             ServiceRoutine,
+    void                    *Context);
+
+ACPI_STATUS
+OsdRemoveInterruptHandler (
+    UINT32                  InterruptNumber,
+    OSD_HANDLER             ServiceRoutine);
+*/
 
 UINT32
 OsdInstallInterruptHandler (
@@ -165,6 +179,7 @@ OsdInstallInterruptHandler (
 void
 OsdRemoveInterruptHandler (
     UINT32                  Handle);
+
 
 
 /* 
@@ -229,42 +244,42 @@ OsdReadPciCfgByte (
     UINT32                  Bus, 
     UINT32                  DeviceFunction, 
     UINT32                  Register, 
-    void                    *Value);
+    UINT8                   *Value);
 
 ACPI_STATUS 
 OsdReadPciCfgWord (
     UINT32                  Bus, 
     UINT32                  DeviceFunction, 
     UINT32                  Register, 
-    void                    *Value);
+    UINT16                  *Value);
 
 ACPI_STATUS 
 OsdReadPciCfgDword (
     UINT32                  Bus, 
     UINT32                  DeviceFunction, 
     UINT32                  Register, 
-    void                    *Value);
+    UINT32                  *Value);
 
 ACPI_STATUS 
 OsdWritePciCfgByte (
     UINT32                  Bus, 
     UINT32                  DeviceFunction, 
     UINT32                  Register, 
-    void                    Value);
+    UINT8                   Value);
 
 ACPI_STATUS 
 OsdWritePciCfgWord (
     UINT32                  Bus, 
     UINT32                  DeviceFunction, 
     UINT32                  Register, 
-    void                    Value);
+    UINT16                  Value);
 
 ACPI_STATUS 
 OsdWritePciCfgDword (
     UINT32                  Bus, 
     UINT32                  DeviceFunction, 
     UINT32                  Register, 
-    void                    Value);
+    UINT32                  Value);
 
 
 /*
@@ -314,14 +329,21 @@ OsdWrite (
     UINT32                  Count, 
     OSD_FILE                *Stream); 
 
+
+/*
+ * Debug 
+ */
+
 void
 OsdDbgTrap(
-    UCHAR *pTrapCause);
+    UCHAR                   *pTrapCause);
 
 void
 OsdDbgAssert(
-    void *FailedAssertion,
-    void *FileName,
-    UINT32 LineNumber,
-	UCHAR *Message);
-#endif
+    void                    *FailedAssertion,
+    void                    *FileName,
+    UINT32                  LineNumber,
+	UCHAR                   *Message);
+
+
+#endif /* __ACPIOSD_H__ */
