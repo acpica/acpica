@@ -208,7 +208,7 @@ AcpiTerminate (void)
     /* Terminate the AML Debuger if present */
 
     Gbl_DbTerminateThreads = TRUE;
-    CmReleaseMutex (MTX_DEBUGGER);
+    CmReleaseMutex (MTX_DEBUG_CMD_READY);
 
 
     /* Shutdown and free all resources */
