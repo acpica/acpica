@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  ******************************************************************************/
 
@@ -385,7 +385,7 @@ AcpiNsAttachObject (
     }
 
 
-    DEBUG_PRINTP (TRACE_EXEC, ("Installing obj %p into NameObj %p [%4.4s]\n",
+    DEBUG_PRINTP (TRACE_EXEC, ("Installing %p into Node %p [%4.4s]\n",
         ObjDesc, Node, &Node->Name));
 
 
