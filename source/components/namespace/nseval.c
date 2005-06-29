@@ -382,7 +382,7 @@ NsEvaluateByHandle (
      * Check if there is a return value on the stack that must be dealt with 
      */
 
-    if (AE_RETURN_VALUE == Status)
+    if (Status == AE_RETURN_VALUE)
     {
 BREAKPOINT3;
         /* 
@@ -420,7 +420,10 @@ BREAKPOINT3;
 
         /* Map AE_RETURN_VALUE to AE_OK, we are done with it */
 
-        Status = AE_OK;
+        if (Status == AE_RETURN_VALUE)
+        {
+            Status = AE_OK;
+        }
     }
 
     return_ACPI_STATUS (Status);
