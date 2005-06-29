@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,6 @@ AcpiUtCopyIsimpleToEsimple (
     UINT8                   *DataSpace,
     ACPI_SIZE               *BufferSpaceUsed)
 {
-    ACPI_BUFFER             Buffer;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -160,7 +159,7 @@ AcpiUtCopyIsimpleToEsimple (
 
     /*
      * Check for NULL object case (could be an uninitialized
-     * package element
+     * package element)
      */
     if (!InternalObject)
     {
@@ -217,44 +216,32 @@ AcpiUtCopyIsimpleToEsimple (
         switch (InternalObject->Reference.Opcode)
         {
         case AML_ZERO_OP:
-            ExternalObject->Type = ACPI_TYPE_INTEGER;
+
+            ExternalObject->Type          = ACPI_TYPE_INTEGER;
             ExternalObject->Integer.Value = 0;
             break;
 
         case AML_ONE_OP:
-            ExternalObject->Type = ACPI_TYPE_INTEGER;
+
+            ExternalObject->Type          = ACPI_TYPE_INTEGER;
             ExternalObject->Integer.Value = 1;
             break;
 
         case AML_ONES_OP:
-            ExternalObject->Type = ACPI_TYPE_INTEGER;
+
+            ExternalObject->Type          = ACPI_TYPE_INTEGER;
             ExternalObject->Integer.Value = ACPI_INTEGER_MAX;
             break;
 
         case AML_REVISION_OP:
-            ExternalObject->Type = ACPI_TYPE_INTEGER;
+
+            ExternalObject->Type          = ACPI_TYPE_INTEGER;
             ExternalObject->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
             break;
 
         case AML_INT_NAMEPATH_OP:
-            /*
-             * This is a named reference, get the string.  We already know that
-             * we have room for it, use max length
-             */
-            ExternalObject->Type = ACPI_TYPE_STRING;
-            ExternalObject->String.Pointer = (NATIVE_CHAR *) DataSpace;
 
-            Buffer.Length = MAX_STRING_LENGTH;
-            Buffer.Pointer = DataSpace;
-
-            Status = AcpiNsHandleToPathname ((ACPI_HANDLE) InternalObject->Reference.Node,
-                        &Buffer);
-
-            /* Converted (external) string length is returned from above */
-
-            ExternalObject->String.Length = (UINT32) Buffer.Length;
-            *BufferSpaceUsed = ACPI_ROUND_UP_TO_NATIVE_WORD (Buffer.Length);
-            break;
+            /* For namepath, return the object handle ("reference") */
 
         default:
             /*
@@ -270,9 +257,9 @@ AcpiUtCopyIsimpleToEsimple (
 
     case ACPI_TYPE_PROCESSOR:
 
-        ExternalObject->Processor.ProcId = InternalObject->Processor.ProcId;
+        ExternalObject->Processor.ProcId      = InternalObject->Processor.ProcId;
         ExternalObject->Processor.PblkAddress = InternalObject->Processor.Address;
-        ExternalObject->Processor.PblkLength = InternalObject->Processor.Length;
+        ExternalObject->Processor.PblkLength  = InternalObject->Processor.Length;
         break;
 
 
@@ -920,12 +907,12 @@ AcpiUtCopyIpackageToIpackage (
     DestObj->Common.Flags   = SourceObj->Common.Flags;
     DestObj->Package.Count  = SourceObj->Package.Count;
 
-
     /*
      * Create the object array and walk the source package tree
      */
-    DestObj->Package.Elements = ACPI_MEM_CALLOCATE (((ACPI_SIZE) SourceObj->Package.Count + 1) *
-                                                    sizeof (void *));
+    DestObj->Package.Elements = ACPI_MEM_CALLOCATE (
+                                    ((ACPI_SIZE) SourceObj->Package.Count + 1) *
+                                    sizeof (void *));
     if (!DestObj->Package.Elements)
     {
         ACPI_REPORT_ERROR (
