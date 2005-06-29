@@ -672,7 +672,7 @@ NsSearchAndEnter (
 
     /* Name must consist of printable characters */
 
-    if (!AmlGoodName (EntryName))
+    if (!CmValidAcpiName (EntryName))
     {
         DEBUG_PRINT (ACPI_ERROR, ("NsSearchAndEnter:  *** Bad char in name: %08lx *** \n", 
                                     EntryName));
