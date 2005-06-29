@@ -130,12 +130,12 @@ _AllocateObjectDesc (
     INT32                   LineNumber, 
     INT32                   ComponentId)
 {
-    ACPI_OBJECT             *NewDesc;
+    ACPI_OBJECT_INTERNAL    *NewDesc;
 
 
     /* Attempt to allocate new descriptor */
 
-    NewDesc = OsdCallocate (sizeof (ACPI_OBJECT));
+    NewDesc = OsdCallocate (sizeof (ACPI_OBJECT_INTERNAL));
     if (!NewDesc)
     {
         /* Allocation failed */
@@ -147,7 +147,7 @@ _AllocateObjectDesc (
     else
     {
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %x Size 0x%x\n",
-                        NewDesc, sizeof (ACPI_OBJECT)));
+                        NewDesc, sizeof (ACPI_OBJECT_INTERNAL)));
     }
 
     return NewDesc;
@@ -262,7 +262,7 @@ _LocalCallocate (
 
 void
 LocalDeleteObject (
-    ACPI_OBJECT             **ObjDesc)
+    ACPI_OBJECT_INTERNAL    **ObjDesc)
 {
 
     FUNCTION_TRACE ("LocalDeleteObject");
@@ -279,8 +279,8 @@ LocalDeleteObject (
      */
 
 
-    if ((ACPI_OBJECT **) 0 !=             ObjDesc  &&
-        (ACPI_OBJECT *) 0 !=             *ObjDesc  &&
+    if ((ACPI_OBJECT_INTERNAL **) 0 !=    ObjDesc  &&
+        (ACPI_OBJECT_INTERNAL *) 0 !=    *ObjDesc  &&
         !AmlIsInPCodeBlock ((UINT8 *)    *ObjDesc) &&
         !IS_NS_HANDLE                   (*ObjDesc) &&
         !AmlIsMethodValue               (*ObjDesc) &&
