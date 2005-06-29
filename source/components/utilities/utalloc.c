@@ -504,7 +504,7 @@ CmDumpCurrentAllocations (
             ((Module == NULL) || (0 == STRCMP (Module, Element->Module))))
         {
             DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-                ("%p: Length %04x %10.10s Line %d",
+                ("%p Len %04X %9.9s-%d",
                 Element->Address, Element->Size, Element->Module, Element->Line));
 
             /* Most of the elements will be internal objects. */
@@ -513,8 +513,20 @@ CmDumpCurrentAllocations (
             {
                 if (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType == DESC_TYPE_ACPI_OBJ)
                 {
-                    DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" Type %s", 
+                    DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ObjType %s", 
                         CmGetTypeName (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.Type)));
+                }
+
+                else if (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType == DESC_TYPE_PARSER)
+                {
+                    DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" ParseObj Opcode %04X", 
+                        ((ACPI_GENERIC_OP *)(Element->Address))->Opcode));
+                }
+
+                else if (((ACPI_OBJECT_INTERNAL *)(Element->Address))->Common.DataType == DESC_TYPE_NTE)
+                {
+                    DEBUG_PRINT_RAW (TRACE_ALLOCATIONS | TRACE_TABLES, (" NTE Name %4.4s", 
+                        &((NAME_TABLE_ENTRY *)(Element->Address))->Name));
                 }
             }
 
