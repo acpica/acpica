@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.18 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -154,7 +154,6 @@ char                        *AslErrorLevel [] = {
 };
 
 
-extern char MsgBuffer[];
 
 /*******************************************************************************
  *
@@ -173,26 +172,49 @@ AeAddToErrorLog (
     ASL_ERROR_MSG           *Enode)
 {
     ASL_ERROR_MSG           *Next;
+    ASL_ERROR_MSG           *Prev;
 
 
-    if (!AslGbl_ErrorLog)
+
+    if (!Gbl_ErrorLog)
     {
-        AslGbl_ErrorLog = Enode;
+        Gbl_ErrorLog = Enode;
         return;
     }
 
 
     /* List is sorted according to line number */
 
-    Next = AslGbl_ErrorLog;
-    while ((Next->Next) && 
-           (Next->Next->LogicalLineNumber < Enode->LogicalLineNumber))
+    if (!Gbl_ErrorLog)
     {
+        Gbl_ErrorLog = Enode;
+        return;
+    }
+
+    /* Walk error list until we find a line number greater than ours */
+
+    Prev = NULL;
+    Next = Gbl_ErrorLog;
+
+    while ((Next) && 
+           (Next->LogicalLineNumber <= Enode->LogicalLineNumber))
+    {
+        Prev = Next;
         Next = Next->Next;
     }
 
-    Enode->Next = Next->Next;
-    Next->Next = Enode;
+    /* Found our place in the list */
+
+    Enode->Next = Next;
+
+    if (Prev)
+    {
+        Prev->Next = Enode;
+    }
+    else
+    {
+        Gbl_ErrorLog = Enode;
+    }
 }
 
 
@@ -214,10 +236,21 @@ AePrintException (
     ASL_ERROR_MSG           *Enode)
 {
 
-    fprintf (Where, "%s", Gbl_InputFilename);
-    if (Enode->LineNumber)
+    /* TBD: Need to handle include filenames! */
+
+
+    if (Enode->Filename)
     {
-        fprintf (Where, "%5d:", Enode->LineNumber);
+
+        fprintf (Where, "%12s ", Enode->Filename);
+
+        if (Enode->LineNumber)
+        {
+            sprintf (StringBuffer, "%d",
+                        Enode->LineNumber);
+
+            fprintf (Where, "%5s: ", StringBuffer);
+        }
     }
 
     if (Enode->MessageId == 0)
@@ -228,7 +261,7 @@ AePrintException (
 
     else
     {
-        fprintf (Where, " %s %04.4d - %s %s\n", 
+        fprintf (Where, "%s %04.4d - %s %s\n", 
                     AslErrorLevel[Enode->Level],
                     Enode->MessageId + ((Enode->Level+1) * 1000), 
                     AslMessages[Enode->MessageId],
@@ -253,7 +286,7 @@ void
 AePrintErrorLog (
     FILE                    *Where)
 {
-    ASL_ERROR_MSG           *Enode = AslGbl_ErrorLog;
+    ASL_ERROR_MSG           *Enode = Gbl_ErrorLog;
 
 
 
@@ -284,12 +317,14 @@ AslCommonError (
     UINT8                   MessageId,
     UINT32                  CurrentLineNumber,
     UINT32                  LogicalLineNumber,
+    char                    *Filename,
     char                    *ExtraMessage)
 {
     char                    *LocalMessage = "";
     UINT32                  MessageSize;
     char                    *MessageBuffer;
     ASL_ERROR_MSG           *Enode;
+
 
 
     if (ExtraMessage)
@@ -302,6 +337,7 @@ AslCommonError (
     Enode           = UtLocalCalloc (sizeof (ASL_ERROR_MSG));
 
     STRCPY (MessageBuffer, LocalMessage);
+    Enode->Filename             = Filename;
     Enode->MessageId            = MessageId;
     Enode->Level                = Level;
     Enode->LineNumber           = CurrentLineNumber;
@@ -315,16 +351,16 @@ AslCommonError (
      * TBD: output errors immediately or wait and do the
      * list all at once?
      */
-    AePrintException (stderr, Enode);
+//    AePrintException (stderr, Enode);
     if (Gbl_DebugFlag)
     {
         /* stderr was a file, print error on stdout also */
 
-        AePrintException (stdout, Enode);
+        AePrintException (stderr, Enode);
     }
 
 
-    AslGbl_ExceptionCount[Level]++;
+    Gbl_ExceptionCount[Level]++;
 
     return Enode;
 }
@@ -353,7 +389,7 @@ AslError (
 
     AslCommonError (Level, MessageId, 
                     Node->LineNumber, Node->LogicalLineNumber,
-                    ExtraMessage);
+                    Node->Filename, ExtraMessage);
 }
 
 
@@ -380,9 +416,13 @@ AslCompilererror (
 
     Length = strlen (Gbl_InputFilename);
 
-	sprintf (MsgBuffer, "%s\n%*s %s\n", Gbl_CurrentLineBuffer, Gbl_CurrentColumn + 7 + Length, "^", CompilerMessage);
+	sprintf (MsgBuffer, "%s\n%*s %s\n", 
+                Gbl_CurrentLineBuffer, 
+                Gbl_CurrentColumn + 9 + Length, "^", 
+                CompilerMessage);
 
-    AslCommonError (ASL_ERROR, ASL_MSG_NULL, Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, MsgBuffer);
+    AslCommonError (ASL_ERROR, ASL_MSG_NULL, Gbl_CurrentLineNumber, 
+                    Gbl_LogicalLineNumber, Gbl_InputFilename, MsgBuffer);
     
 	return 0;
 }

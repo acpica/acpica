@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.3 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __DSWLOAD_C__
+#define __ASLLOAD_C__
 
 #include "acpi.h"
 #include "acparser.h"
@@ -128,7 +128,7 @@
 #include "AslCompiler.y.h"
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dswload")
+        MODULE_NAME         ("aslload")
 
 
 
@@ -146,7 +146,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-LkLoadNamespace (void)
+LdLoadNamespace (void)
 {
     ACPI_WALK_STATE         *WalkState;
     ACPI_WALK_LIST          WalkList;
@@ -373,8 +373,16 @@ LdNamespace1Begin (
 
     /* Map the raw opcode into an internal object type */
 
-    if ((PsNode->ParseOpcode == DEFAULT_ARG) &&
-        (PsNode->Flags == NODE_IS_RESOURCE_DESC))
+    if (PsNode->ParseOpcode == EXTERNAL)
+    {
+        /* "External" simply enters a name and type into the namespace */
+        /* first child is name, next child is ObjectType */
+
+        DataType = PsNode->Child->Peer->Value.Integer8;
+    }
+
+    else if ((PsNode->ParseOpcode == DEFAULT_ARG) &&
+             (PsNode->Flags == NODE_IS_RESOURCE_DESC))
     {
         /* TBD: Merge into AcpiDsMapNamedOpcodeToDataType */
 

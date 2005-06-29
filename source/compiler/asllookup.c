@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.4 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -129,6 +129,77 @@
         MODULE_NAME         ("dswload")
 
 
+/*****************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+LsDoOneNamespaceObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+
+
+    Gbl_NumNamespaceObjects++;
+
+    fprintf (Gbl_NamespaceOutputFile, "%5d  [%d]  %*s %4.4s - %s\n", 
+                        Gbl_NumNamespaceObjects, Level, (Level * 3), " ", 
+                        &Node->Name, 
+                        AcpiCmGetTypeName (Node->Type));
+
+    return (AE_OK);
+}
+
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+LsDisplayNamespace (void)
+{
+    ACPI_STATUS             Status;
+
+
+
+    if (!Gbl_NsOutputFlag)
+    {
+        return (AE_OK);
+    }
+
+    fprintf (Gbl_NamespaceOutputFile, "Contents of ACPI Namespace\n\n");
+    fprintf (Gbl_NamespaceOutputFile, "Count  Depth    Name - Type\n\n");
+
+    /* Walk entire namespace from the supplied root */
+
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+                                ACPI_UINT32_MAX, FALSE, LsDoOneNamespaceObject,
+                                NULL, NULL);
+ 
+
+    return (AE_OK);
+}
+
 
 /*****************************************************************************
  *
@@ -244,7 +315,7 @@ LkNamespaceLocateBegin (
     {
         if (Status == AE_NOT_FOUND)
         {
-            AslWarningMsg (ASL_WARNING_NOT_FOUND, PsNode->LineNumber, PsNode->ExternalName);
+            AslError (ASL_WARNING, ASL_MSG_NOT_FOUND, PsNode, PsNode->ExternalName);
         }
         return (Status);
     }

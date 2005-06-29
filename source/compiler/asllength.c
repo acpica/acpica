@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.6 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,7 @@
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("asllength")
+
 
 
 
@@ -267,7 +268,7 @@ CgGetPackageLenByteCount (
     {
         /* Fatal error - the package length is too large to encode */
 
-        AslError (ASL_ERROR_ENCODING_LENGTH, Node->LineNumber);
+        AslError (ASL_ERROR, ASL_MSG_ENCODING_LENGTH, Node, NULL);
     }
 
     return (0);
@@ -382,6 +383,11 @@ CgGenerateAmlLengths (
         /* Aml length is/was set by creator */
         Node->AmlOpcodeLength = 0;
         return;
+
+    case AML_RAW_DATA_CHAIN:
+        /* Aml length is/was set by creator */
+        Node->AmlOpcodeLength = 0;
+        return;
     }
 
 
@@ -398,6 +404,12 @@ CgGenerateAmlLengths (
         break;
 
     case NAMESTRING:
+    case METHODCALL:
+        if (Node->Flags & NODE_NAME_INTERNALIZED)
+        {
+            break;
+        }
+
         Node->AmlOpcodeLength = 0;
         Status = AcpiNsInternalizeName (Node->Value.String, &Buffer);
         if (ACPI_FAILURE (Status))
@@ -408,6 +420,7 @@ CgGenerateAmlLengths (
 
         Node->ExternalName = Node->Value.String;
         Node->Value.String = Buffer;
+        Node->Flags |= NODE_NAME_INTERNALIZED;
 
         Node->AmlLength = strlen (Buffer);
         
@@ -439,6 +452,9 @@ CgGenerateAmlLengths (
     /* Ignore the "default arg" nodes, they are extraneous at this point */
 
     case DEFAULT_ARG:
+    case EXTERNAL:
+    case INCLUDE:
+    case INCLUDE_END:
         break;
 
     default:
