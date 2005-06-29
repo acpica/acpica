@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.25 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -129,34 +129,43 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiLoadFirmwareTables
+ * FUNCTION:    AcpiLoadTables
  *
  * PARAMETERS:  None
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This function is called to load the ACPI tables from BIOS
+ * DESCRIPTION: This function is called to load the ACPI tables from the
+ *              provided RSDT
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiLoadFirmwareTables (void)
+AcpiLoadTables (
+    void                    *RsdpPhysicalAddress)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  NumberOfTables = 0;
 
 
-    FUNCTION_TRACE ("AcpiLoadFirmwareTables");
+    FUNCTION_TRACE ("AcpiLoadTables");
 
 
-    /* Get the RSDT first */
+    /* Map and validate the RSDP */
+
+    Status = AcpiTbVerifyRsdp (RsdpPhysicalAddress);
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorExit;
+    }
+
+    /* Get the RSDT via the RSDP */
 
     Status = AcpiTbGetTableRsdt (&NumberOfTables);
     if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
-
 
     /* Now get the rest of the tables */
 
@@ -166,16 +175,23 @@ AcpiLoadFirmwareTables (void)
         goto ErrorExit;
     }
 
-
     DEBUG_PRINT (ACPI_OK, ("ACPI Tables successfully loaded\n"));
+
+
+    /* Load the namespace from the tables */
+
+    Status = AcpiNsLoadNamespace ();
+    if (ACPI_FAILURE (Status))
+    {
+        goto ErrorExit;
+    }
 
     return_ACPI_STATUS (AE_OK);
 
 
 ErrorExit:
-    DEBUG_PRINT (ACPI_ERROR,
-        ("Failure during ACPI Table Init: %s\n",
-        AcpiCmFormatException (Status)));
+    REPORT_ERROR (("AcpiLoadTables: Could not load tables: %s\n",
+                    AcpiCmFormatException (Status)));
 
     return_ACPI_STATUS (Status);
 }
@@ -227,8 +243,22 @@ AcpiLoadTable (
     Status = AcpiTbInstallTable (NULL, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: [Errors] must free table allocated by AcpiTbGetTable */
+        /* Free table allocated by AcpiTbGetTable */
+
+        AcpiTbDeleteSingleTable (&TableInfo);
+        return_ACPI_STATUS (Status);
     }
+
+
+    Status = AcpiNsLoadTable (TableInfo.InstalledDesc, AcpiGbl_RootNode);
+    if (ACPI_FAILURE (Status))
+    {
+        /* Uninstall table and free the buffer */
+
+        AcpiTbUninstallTable (TableInfo.InstalledDesc);
+        return_ACPI_STATUS (Status);
+    }
+
 
     return_ACPI_STATUS (Status);
 }
