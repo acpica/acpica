@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -462,25 +462,38 @@ AcpiUtGetSimpleObjectSize (
 
     case INTERNAL_TYPE_REFERENCE:
 
-        /*
-         * The only type that should be here is internal opcode NAMEPATH_OP -- since
-         * this means an object reference
-         */
-        if (InternalObject->Reference.Opcode != AML_INT_NAMEPATH_OP)
+        switch (InternalObject->Reference.Opcode)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Unsupported Reference opcode=%X in object %p\n",
-                InternalObject->Reference.Opcode, InternalObject));
-            Status = AE_TYPE;
-        }
+        case AML_ZERO_OP:
+        case AML_ONE_OP:
+        case AML_ONES_OP:
+        case AML_REVISION_OP:
 
-        else
-        {
+            /* These Constant opcodes will be resolved to Integers */
+
+            break;
+
+        case AML_INT_NAMEPATH_OP:
+
             /*
              * Get the actual length of the full pathname to this object.
              * The reference will be converted to the pathname to the object
              */
             Length += ROUND_UP_TO_NATIVE_WORD (AcpiNsGetPathnameLength (InternalObject->Reference.Node));
+            break;
+
+        default:
+
+            /*
+             * No other reference opcodes are supported.  
+             * Notably, Locals and Args are not supported, by this may be
+             * required eventually.
+             */
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Unsupported Reference opcode=%X in object %p\n",
+                InternalObject->Reference.Opcode, InternalObject));
+            Status = AE_TYPE;
+            break;
         }
         break;
 
