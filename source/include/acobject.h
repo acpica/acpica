@@ -166,13 +166,15 @@
 /* 
  * Common bitfield for the field objects
  */
-#define ACPI_OBJECT_BITFIELD32 \
-    BIT32                   Length          :13;    /* # of bits in buffer */ \
-    BIT32                   BitOffset       : 3; \
-    BIT32                   Access          : 4; \
-    BIT32                   LockRule        : 1; \
-    BIT32                   UpdateRule      : 2; \
-    BIT32                   ReservedBits    : 9;
+#define ACPI_COMMON_FIELD_INFO                  /* Three 32-bit values */\
+    UINT32                  Offset;                     /* Byte offset within containing object */\
+    UINT16                  Length;                     /* # of bits in buffer */ \
+    UINT8                   Granularity;\
+    UINT8                   BitOffset;                  /* Bit offset within min read/write data unit */\
+    UINT8                   Access;\
+    UINT8                   LockRule;\
+    UINT8                   UpdateRule;\
+    UINT8                   ReservedF1;
 
 
 
@@ -266,10 +268,8 @@ typedef struct /* FIELD UNIT */
 {
     ACPI_OBJECT_COMMON
 
-    ACPI_OBJECT_BITFIELD32        
-    UINT32                  Offset;             /* Byte offset within containing object */
+    ACPI_COMMON_FIELD_INFO        
     UINT32                  Sequence;           /* Container's sequence number */
-    UINT32                  Reserved4;
 
     union AcpiObjInternal   *Container;         /* Containing object (Buffer) */
     void                    *Reserved_p2;
@@ -323,7 +323,8 @@ typedef struct /* METHOD */
     ACPI_OBJECT_COMMON
 
     UINT16                  ParamCount;
-    UINT16                  Fill1;
+    UINT8                   MethodFlags;
+    UINT8                   Fill1;
     UINT32                  PcodeLength;
     UINT32                  TableLength;
     UINT32                  Reserved4;
@@ -439,9 +440,7 @@ typedef struct /* FIELD */
 {
     ACPI_OBJECT_COMMON
 
-    ACPI_OBJECT_BITFIELD32
-    UINT32                  Offset;             /* Byte offset within containing object */
-    UINT32                  Reserved3;
+    ACPI_COMMON_FIELD_INFO        
     UINT32                  Reserved4;
 
     union AcpiObjInternal   *Container;         /* Containing object */
@@ -457,10 +456,8 @@ typedef struct /* BANK FIELD */
 {
     ACPI_OBJECT_COMMON
 
-    ACPI_OBJECT_BITFIELD32
-    UINT32                  Offset;             /* Byte offset within containing object */
+    ACPI_COMMON_FIELD_INFO        
     UINT32                  Value;              /* Value to store into BankSelect */
-    UINT32                  Reserved4;
 
     ACPI_HANDLE             BankSelect;         /* Bank select register */
     union AcpiObjInternal   *Container;         /* Containing object */
@@ -479,10 +476,8 @@ typedef struct /* INDEX FIELD */
      */
     ACPI_OBJECT_COMMON
 
-    ACPI_OBJECT_BITFIELD32
+    ACPI_COMMON_FIELD_INFO
     UINT32                  Value;              /* Value to store into Index register */
-    UINT32                  Reserved3;         
-    UINT32                  Reserved4;
     
     ACPI_HANDLE             Index;              /* Index register */
     ACPI_HANDLE             Data;               /* Data register */
