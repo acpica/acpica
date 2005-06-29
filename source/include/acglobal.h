@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.99 $
+ *       $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -276,8 +276,8 @@ extern PREDEFINED_NAMES                 AcpiGbl_PreDefinedNames [NUM_PREDEFINED_
 /* Used to detect memory leaks (DEBUG ONLY) */
 
 #ifdef ACPI_DEBUG
-ACPI_EXTERN ALLOCATION_INFO            *AcpiGbl_HeadAllocPtr;
-ACPI_EXTERN ALLOCATION_INFO            *AcpiGbl_TailAllocPtr;
+ACPI_EXTERN ACPI_ALLOCATION_INFO        *AcpiGbl_HeadAllocPtr;
+ACPI_EXTERN ACPI_ALLOCATION_INFO        *AcpiGbl_TailAllocPtr;
 #endif
 
 
