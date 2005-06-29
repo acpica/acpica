@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -286,7 +286,7 @@ AePrintException (
                     {
                         fprintf (OutputFile, "[*** iASL: Read error on source code temp file ***]");
                     }
-                    
+
                     else while (Actual && SourceByte && (SourceByte != '\n'))
                     {
                         fwrite (&SourceByte, 1, 1, OutputFile);
