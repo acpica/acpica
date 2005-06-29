@@ -443,7 +443,7 @@ DsMethodDataSetEntry (
  *
  ****************************************************************************/
 
-ACPI_OBJECT_TYPE
+OBJECT_TYPE_INTERNAL
 DsMethodDataGetType (
     UINT32                  Type,
     UINT32                  Index)
@@ -461,7 +461,7 @@ DsMethodDataGetType (
     Status = DsMethodDataGetEntry (Type, Index, &Entry);
     if (ACPI_FAILURE (Status))
     {
-        return_VALUE ((ACPI_OBJECT_TYPE) (-1));
+        return_VALUE ((ACPI_TYPE_NotFound));
     }
 
     /* Get the object from the method stack */
