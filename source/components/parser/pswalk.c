@@ -406,7 +406,7 @@ PsWalkLoop (
     FUNCTION_TRACE_PTR ("PsWalkLoop", StartOp);
 
 
-    WalkState = PsGetCurrentWalkState (WalkList);
+    WalkState = DsGetCurrentWalkState (WalkList);
 
 
     /* Walk entire subtree, visiting all nodes depth-first */
@@ -446,7 +446,7 @@ PsWalkLoop (
 
             /* If the method call worked, a new walk state was created -- get it */
 
-            WalkState = PsGetCurrentWalkState (WalkList);
+            WalkState = DsGetCurrentWalkState (WalkList);
         }
 
         /* Abort the walk on any exception */
@@ -606,7 +606,7 @@ PsWalkParsedAml (
 
        /* Check if we have restarted a preempted walk */
 
-        WalkState = PsGetCurrentWalkState (&WalkList);
+        WalkState = DsGetCurrentWalkState (&WalkList);
         if (WalkState &&
             Status == AE_OK)
         {
