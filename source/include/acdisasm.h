@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.1 $
+ *       $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,6 @@ extern const NATIVE_CHAR        *AcpiGbl_MatchOps[NUM_MATCH_OPS];
 
 typedef struct acpi_op_walk_info
 {
-    UINT32                  PreviousLevel;
     UINT32                  Level;
     UINT32                  BitOffset;
 
@@ -267,6 +266,10 @@ AcpiDmRegionFlags (
 
 void
 AcpiDmMatchOp (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+AcpiDmMatchKeyword (
     ACPI_PARSE_OBJECT       *Op);
 
 BOOLEAN
