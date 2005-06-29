@@ -165,18 +165,6 @@ AmlSystemMemorySpaceHandler (
 
     case ADDRESS_SPACE_READ:
 
-        /* System memory defined to be in first Mbyte  */
-        /* XXX:  Is this true on all OS/platform combinations??  */
-        /* RBM:  Do we need to worry about this in protected mode?? */
-
-        if (Address & 0xFFF00000UL)
-        {
-            DEBUG_PRINT (ACPI_ERROR,
-                    ("AmlSystemMemorySpaceHandler: **** Implementation limitation - SystemMemory address %08lx over 1MB\n", Address));
-            FUNCTION_STATUS_EXIT (AE_NOT_IMPLEMENTED);
-            return AE_NOT_IMPLEMENTED;
-        }
-
         /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
 
         /* 
@@ -213,17 +201,6 @@ AmlSystemMemorySpaceHandler (
 
 
     case ADDRESS_SPACE_WRITE:
-
-        /* TBD:  Is this an issue in protected mode?  !!! */
-
-        if (Address & 0xFFF00000UL)
-        {
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlSystemMemorySpaceHandler: **** Implementation limitation - SystemMemory address %08lx over 1MB\n", Address));
-            FUNCTION_STATUS_EXIT (AE_NOT_IMPLEMENTED);
-            return AE_NOT_IMPLEMENTED;
-        }
-
 
         /* XXX: was PhysicalAddrPtr = PHYStoFP(Address); */
 
