@@ -120,7 +120,7 @@
 #include <config.h>
 
 
-#define WAIT_FOREVER        -1
+#define WAIT_FOREVER        ((UINT32) -1)
 
 typedef void*               ACPI_MUTEX;
 typedef UINT32              ACPI_MUTEX_HANDLE;
@@ -347,6 +347,9 @@ typedef struct
  ****************************************************************************/
 
 
+#define OP_INFO_TYPE                0x1F
+#define OP_INFO_HAS_ARGS            0x20
+#define OP_INFO_CHILD_LOCATION      0xC0
 
 /*
  * AML opcode, name, and argument layout
@@ -354,17 +357,7 @@ typedef struct
 typedef struct acpi_op_info
 {
     UINT16                  Opcode;         /* AML opcode */
-
-/* TBD: Squeeze these back into 1 byte without using bit field */
-/*
-    UINT8                   Type            : 5;
-    UINT8                   HasArgs         : 1;
-    UINT8                   ChildLocation   : 2;
-*/
-
-    UINT8                   Type;
-    UINT8                   HasArgs;
-    UINT8                   ChildLocation;
+    UINT8                   Flags;          /* Opcode type, HasArgs flag */
     char                    *Args;          /* argument format */
 
     DEBUG_ONLY_MEMBERS (
@@ -378,6 +371,7 @@ typedef union acpi_op_value
     UINT32                  Integer;        /* integer constant */
     UINT32                  Size;           /* bytelist or field size */
     char                    *String;        /* NULL terminated string */
+    UINT8                   *Buffer;        /* buffer or string */
     char                    *Name;          /* NULL terminated string */
     struct acpi_generic_op  *Arg;           /* arguments and contained ops */
     NAME_TABLE_ENTRY        *Entry;         /* entry in interpreter namespace tbl */ 
@@ -392,9 +386,9 @@ typedef union acpi_op_value
     struct acpi_generic_op  *Parent;        /* parent op */\
     struct acpi_generic_op  *Next;          /* next op */\
     void                    *ResultObj;     /* for use by interpreter */\
-    UINT32                  AmlOffset;      /* offset of declaration in AML */\
-    UINT32                  Opcode;         /* AML opcode */\
     ACPI_OP_VALUE           Value;          /* Value or args associated with the opcode */\
+    UINT32                  AmlOffset;      /* offset of declaration in AML */\
+    UINT16                  Opcode;         /* AML opcode */\
 
 
 /*
