@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.55 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -140,10 +140,10 @@
 ACPI_STATUS
 AcpiTbHandleToObject (
     UINT16                  TableId,
-    ACPI_TABLE_DESC         **TableDesc)
+    ACPI_TABLE_DESC         **ReturnTableDesc)
 {
     UINT32                  i;
-    ACPI_TABLE_DESC         *ListHead;
+    ACPI_TABLE_DESC         *TableDesc;
 
 
     ACPI_FUNCTION_NAME ("TbHandleToObject");
@@ -151,18 +151,17 @@ AcpiTbHandleToObject (
 
     for (i = 0; i < ACPI_TABLE_MAX; i++)
     {
-        ListHead = &AcpiGbl_AcpiTables[i];
-        do
+        TableDesc = AcpiGbl_TableLists[i].Next;
+        while (TableDesc)
         {
-            if (ListHead->TableId == TableId)
+            if (TableDesc->TableId == TableId)
             {
-                *TableDesc = ListHead;
+                *ReturnTableDesc = TableDesc;
                 return (AE_OK);
             }
 
-            ListHead = ListHead->Next;
-
-        } while (ListHead != &AcpiGbl_AcpiTables[i]);
+            TableDesc = TableDesc->Next;
+        }
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "TableId=%X does not exist\n", TableId));
@@ -211,7 +210,7 @@ AcpiTbValidateTableHeader (
 
     /* Ensure that the signature is 4 ASCII characters */
 
-    ACPI_MOVE_UNALIGNED32_TO_32 (&Signature, TableHeader->Signature);
+    ACPI_MOVE_32_TO_32 (&Signature, TableHeader->Signature);
     if (!AcpiUtValidAcpiName (Signature))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -233,7 +232,7 @@ AcpiTbValidateTableHeader (
             TableHeader, (char *) &Signature));
 
         ACPI_REPORT_WARNING (("Invalid table header length (0x%X) found\n",
-            TableHeader->Length));
+            (UINT32) TableHeader->Length));
         ACPI_DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_HEADER);
     }
@@ -274,8 +273,8 @@ AcpiTbVerifyTableChecksum (
 
     if (Checksum)
     {
-        ACPI_REPORT_WARNING (("Invalid checksum (%X) in table %4.4s\n",
-            Checksum, TableHeader->Signature));
+        ACPI_REPORT_WARNING (("Invalid checksum in table [%4.4s] (%02X, sum %02X is not zero)\n",
+            TableHeader->Signature, (UINT32) TableHeader->Checksum, (UINT32) Checksum));
 
         Status = AE_BAD_CHECKSUM;
     }
