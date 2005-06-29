@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmem24 - Memory resource descriptors
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  ******************************************************************************/
 
@@ -271,25 +271,25 @@ AcpiRsMemory24Stream (
     /*
      * Set the Range minimum base address
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &LinkedList->Data.Memory24.MinBaseAddress);
+    ACPI_MOVE_UNALIGNED32_TO_16 (Buffer, &LinkedList->Data.Memory24.MinBaseAddress);
     Buffer += 2;
 
     /*
      * Set the Range maximum base address
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &LinkedList->Data.Memory24.MaxBaseAddress);
+    ACPI_MOVE_UNALIGNED32_TO_16 (Buffer, &LinkedList->Data.Memory24.MaxBaseAddress);
     Buffer += 2;
 
     /*
      * Set the base alignment
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &LinkedList->Data.Memory24.Alignment);
+    ACPI_MOVE_UNALIGNED32_TO_16 (Buffer, &LinkedList->Data.Memory24.Alignment);
     Buffer += 2;
 
     /*
      * Set the range length
      */
-    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &LinkedList->Data.Memory24.RangeLength);
+    ACPI_MOVE_UNALIGNED32_TO_16 (Buffer, &LinkedList->Data.Memory24.RangeLength);
     Buffer += 2;
 
     /*
