@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.48 $
+ *              $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -170,6 +170,8 @@ FILE                        *AcpiGbl_OutputFile;
 #ifndef _ACPI_EXEC_APP
 /* Used by both iASL and AcpiDump applications */
 
+CHAR                s[500];
+
 /******************************************************************************
  *
  * FUNCTION:    OsGetTable
@@ -186,8 +188,7 @@ ACPI_TABLE_HEADER *
 OsGetTable (
     char                *TableName)
 {
-    HKEY                Handle;
-    CHAR                s[500];
+    HKEY                Handle = NULL;
     ULONG               i;
     LONG                Status;
     ULONG               Type;
@@ -195,20 +196,35 @@ OsGetTable (
     ULONG               DataSize;
     HKEY                SubKey;
     ACPI_TABLE_HEADER   *Buffer;
+    char                *Signature = TableName;
 
 
     /* Get a handle to the DSDT key */
 
-    ACPI_STRCPY (s, "HARDWARE\\ACPI\\");
-    ACPI_STRCAT (s, TableName);
-
-    Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, s,
-                0L, KEY_ALL_ACCESS, &Handle);
-
-    if (Status != ERROR_SUCCESS)
+    while (1)
     {
-        AcpiOsPrintf ("Could not find %s in registry at %s\n", TableName, s);
-        return (NULL);
+        ACPI_STRCPY (s, "HARDWARE\\ACPI\\");
+        ACPI_STRCAT (s, Signature);
+
+        Status = RegOpenKeyEx (HKEY_LOCAL_MACHINE, s,
+                    0L, KEY_ALL_ACCESS, &Handle);
+
+        if (Status != ERROR_SUCCESS)
+        {
+            if (!ACPI_STRNCMP (Signature, "FACP", 4))
+            {
+                Signature = "FADT";
+            }
+            else
+            {
+                AcpiOsPrintf ("Could not find %s in registry at %s\n", TableName, s);
+                return (NULL);
+            }
+        }
+        else
+        {
+            break;
+        }
     }
 
     /* Actual DSDT is down a couple of levels */
@@ -363,8 +379,8 @@ AcpiOsGetRootPointer (
 
 ACPI_STATUS
 AcpiOsPredefinedOverride (
-	const ACPI_PREDEFINED_NAMES *InitVal,
-	ACPI_STRING                 *NewVal)
+    const ACPI_PREDEFINED_NAMES *InitVal,
+    ACPI_STRING                 *NewVal)
 {
 
     if (!InitVal || !NewVal)
@@ -485,7 +501,7 @@ AcpiOsGetTimer (void)
 BOOLEAN
 AcpiOsReadable (
     void                    *Pointer,
-    UINT32                  Length)
+    ACPI_SIZE               Length)
 {
 
     return ((BOOLEAN) !IsBadReadPtr (Pointer, Length));
@@ -508,7 +524,7 @@ AcpiOsReadable (
 BOOLEAN
 AcpiOsWritable (
     void                    *Pointer,
-    UINT32                  Length)
+    ACPI_SIZE               Length)
 {
 
     return ((BOOLEAN) !IsBadWritePtr (Pointer, Length));
@@ -995,8 +1011,6 @@ AcpiOsSignalSemaphore (
 }
 
 
-
-
 ACPI_STATUS
 AcpiOsCreateLock (
     ACPI_HANDLE             *OutHandle)
@@ -1029,8 +1043,6 @@ AcpiOsReleaseLock (
 {
     AcpiOsSignalSemaphore (Handle, 1);
 }
-
-
 
 
 /******************************************************************************
@@ -1259,27 +1271,26 @@ AcpiOsDerivePciId(
 ACPI_STATUS
 AcpiOsReadPort (
     ACPI_IO_ADDRESS         Address,
-    void                    *Value,
+    UINT32                  *Value,
     UINT32                  Width)
 {
 
     switch (Width)
     {
     case 8:
-        *((UINT8 *) Value) = 0xFF;
+        *Value = 0xFF;
         break;
 
     case 16:
-        *((UINT16 *) Value) = 0xFFFF;
+        *Value = 0xFFFF;
         break;
 
     case 32:
-        *((UINT32 *) Value) = 0xFFFFFFFF;
+        *Value = 0xFFFFFFFF;
         break;
 
-    case 64:
-        *((UINT64 *) Value) = 0xFFFFFFFFFFFFFFFF;
-        break;
+    default:
+        return (AE_BAD_PARAMETER);
     }
 
     return (AE_OK);
@@ -1303,7 +1314,7 @@ AcpiOsReadPort (
 ACPI_STATUS
 AcpiOsWritePort (
     ACPI_IO_ADDRESS         Address,
-    ACPI_INTEGER            Value,
+    UINT32                  Value,
     UINT32                  Width)
 {
 
@@ -1319,7 +1330,8 @@ AcpiOsWritePort (
  *              Value               Where value is placed
  *              Width               Number of bits
  *
- * RETURN:      Value read from physical memory address
+ * RETURN:      Value read from physical memory address.  Always returned
+ *              as a 32-bit integer, regardless of the read width.
  *
  * DESCRIPTION: Read data from a physical memory address
  *
@@ -1328,26 +1340,20 @@ AcpiOsWritePort (
 ACPI_STATUS
 AcpiOsReadMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    void                    *Value,
+    UINT32                  *Value,
     UINT32                  Width)
 {
 
     switch (Width)
     {
     case 8:
-        *((UINT8 *) Value) = 0;
-        break;
-
     case 16:
-        *((UINT16 *) Value) = 0;
-        break;
-
     case 32:
-        *((UINT32 *) Value) = 0;
+        *Value = 0;
         break;
 
-    case 64:
-        *((UINT64 *) Value) = 0;
+    default:
+        return (AE_BAD_PARAMETER);
         break;
     }
 
@@ -1372,7 +1378,7 @@ AcpiOsReadMemory (
 ACPI_STATUS
 AcpiOsWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    ACPI_INTEGER            Value,
+    UINT32                  Value,
     UINT32                  Width)
 {
 
