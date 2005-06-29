@@ -14,15 +14,18 @@
  | FILENAME: acpitype.h - Data structures defined in ACPI specification
  |__________________________________________________________________________
  |
- | $Revision: 1.4 $
- | $Date: 2005/06/29 20:06:29 $
+ | $Revision: 1.5 $
+ | $Date: 2005/06/29 20:06:30 $
  | $Log: actbl.h,v $
- | Revision 1.4  2005/06/29 20:06:29  aystarik
- | Anti-Polish clean up
+ | Revision 1.5  2005/06/29 20:06:30  aystarik
+ | 16/32/64-bit common data types
  |
  | 
- | date	99.02.12.19.10.00;	author rmosgrov;	state Exp;
+ | date	99.03.10.00.04.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 5     3/09/99 4:04p Rmoore1
+ * 16/32/64-bit common data types
  * 
  * 4     2/12/99 11:10a Rmosgrov
  * Anti-Polish clean up
@@ -69,7 +72,7 @@
 
 #include <bu.h>
 
-typedef DWORD IOADDR;                       /* Only for clarity in declarations */
+typedef UINT32      IOADDR;                 /* Only for clarity in declarations */
 
 typedef void * ACPI_OBJECT_HANDLE;          /* ptr to an ACPI data object */
 
@@ -89,184 +92,198 @@ typedef void * ACPI_OBJECT_HANDLE;          /* ptr to an ACPI data object */
 
 typedef struct
 {                                           /* Root System Descriptor Pointer */
-    char Signature[8];                      /* contains "RSD PTR " */
-    BYTE Checksum;                          /* to make sum of struct == 0 */
-    char OemId[6];                          /* OEM identification */
-    BYTE Reserved;                          /* reserved - must be zero */
-    DWORD RsdtPhysicalAddress;              /* physical address of RSDT */
+    char        Signature [8];              /* contains "RSD PTR " */
+    UINT8       Checksum;                   /* to make sum of struct == 0 */
+    char        OemId [6];                  /* OEM identification */
+    UINT8       Reserved;                   /* reserved - must be zero */
+    UINT32      RsdtPhysicalAddress;        /* physical address of RSDT */
+
 } ROOT_SYSTEM_DESCRIPTOR_POINTER;
 
 typedef struct
 {                                           /* ACPI common table header */
-    char  Signature[4];                     /* identifies type of table */
-    DWORD Length;                           /* length of table, in bytes,
+    char        Signature [4];              /* identifies type of table */
+    UINT32      Length;                     /* length of table, in bytes,
                                              * including header */
-    BYTE  Revision;                         /* specification minor version # */
-    BYTE  bChecksum;                        /* to make sum of entire table == 0 */
-    char  OemId[6];                         /* OEM identification */
-    char  OemTableId[8];                    /* OEM table identification */
-    DWORD OemRevision;                      /* OEM revision number */
-    char  AslCompilerId[4];                 /* ASL compiler vendor ID */
-    DWORD AslCompilerRevision;              /* ASL compiler revision number */
+    UINT8       Revision;                   /* specification minor version # */
+    UINT8       bChecksum;                  /* to make sum of entire table == 0 */
+    char        OemId [6];                  /* OEM identification */
+    char        OemTableId [8];             /* OEM table identification */
+    UINT32      OemRevision;                /* OEM revision number */
+    char        AslCompilerId [4];          /* ASL compiler vendor ID */
+    UINT32      AslCompilerRevision;        /* ASL compiler revision number */
+
 } ACPI_TABLE_HEADER;
 
 typedef struct
 {                                           /* Root System Description Table */
     ACPI_TABLE_HEADER header;               /* table header */
-    DWORD TableOffsetEntry[1];              /* array of pointers to other
+    UINT32      TableOffsetEntry [1];       /* array of pointers to other
                                              * tables' headers */
 } ROOT_SYSTEM_DESCRIPTION_TABLE;
 
 
-#define GL_OWNED    0x02                    /* Ownership of global lock is bit 1 */
+#define GL_OWNED        0x02                /* Ownership of global lock is bit 1 */
 
 typedef struct
 {                                           /* Firmware ACPI Control Structure */
-    char  Signature[4];                     /* signature "FACS" */
-    DWORD Length;                           /* length of structure, in bytes */
-    DWORD HardwareSignature;                /* hardware configuration signature */
-    DWORD FirmwareWakingVector;             /* ACPI OS waking vector */
-    DWORD GlobalLock;                       /* Global Lock */
-    WORD_BIT S4Bios_f       : 1;            /* Indicates whether or not S4BIOS
+    char        Signature[4];               /* signature "FACS" */
+    UINT32      Length;                     /* length of structure, in bytes */
+    UINT32      HardwareSignature;          /* hardware configuration signature */
+    UINT32      FirmwareWakingVector;       /* ACPI OS waking vector */
+    UINT32      GlobalLock;                 /* Global Lock */
+    UINT16_BIT  S4Bios_f        : 1;        /* Indicates whether or not S4BIOS
                                              * support is present */
-    WORD_BIT Reserved1  : 15;               /* must be 0 */
-    WORD  Reserved2;                        /* must be 0 */
-    BYTE  Resverved3[40];                   /* reserved - must be zero */
+    UINT16_BIT  Reserved1       : 15;       /* must be 0 */
+    UINT16      Reserved2;                  /* must be 0 */
+    UINT8       Resverved3 [40];            /* reserved - must be zero */
+
 } FIRMWARE_ACPI_CONTROL_STRUCTURE;
 
+
+
 /* values of Model */
-#define DUAL_PIC  0
-#define MULTIPLE_APIC  1
+
+#define DUAL_PIC        0
+#define MULTIPLE_APIC   1
 
 typedef struct
 {                                           /* Fixed ACPI Description Table */
     ACPI_TABLE_HEADER header;               /* table header */
-    DWORD FirmwareCtrl;                     /* Physical addesss of FACS */
-    DWORD Dsdt;                             /* Physical address of DSDT */
-    BYTE  Model;                            /* System Interrupt Model */
-    BYTE  Reserved1;                        /* reserved */
-    WORD  SciInt;                           /* System vector of SCI interrupt */
-    IOADDR SmiCmd;                          /* Port address of SMI command port */
-    BYTE  AcpiEnable;                       /* value to write to port smi_cmd to
+    UINT32      FirmwareCtrl;               /* Physical addesss of FACS */
+    UINT32      Dsdt;                       /* Physical address of DSDT */
+    UINT8       Model;                      /* System Interrupt Model */
+    UINT8       Reserved1;                  /* reserved */
+    UINT16      SciInt;                     /* System vector of SCI interrupt */
+    IOADDR      SmiCmd;                     /* Port address of SMI command port */
+    UINT8       AcpiEnable;                 /* value to write to port smi_cmd to
                                              * enable ACPI */
-    BYTE  AcpiDisable;                      /* value to write to port smi_cmd to
+    UINT8       AcpiDisable;                /* value to write to port smi_cmd to
                                              * disable ACPI */
-    BYTE  S4BiosReq;                        /* Value to write to SMI CMD port to
+    UINT8       S4BiosReq;                  /* Value to write to SMI CMD port to
                                              * enter the S4BIOS state */
-    BYTE  Reserved2;                        /* reserved - must be zero */
-    IOADDR Pm1aEvtBlk;                      /* Port address of Power Mgt 1a
+    UINT8       Reserved2;                  /* reserved - must be zero */
+    IOADDR      Pm1aEvtBlk;                 /* Port address of Power Mgt 1a
                                              * Event Reg Blk */
-    IOADDR Pm1bEvtBlk;                      /* Port address of Power Mgt 1b
+    IOADDR      Pm1bEvtBlk;                 /* Port address of Power Mgt 1b
                                              * Event Reg Blk */
-    IOADDR Pm1aCntBlk;                      /* Port address of Power Mgt 1a
+    IOADDR      Pm1aCntBlk;                 /* Port address of Power Mgt 1a
                                              * Control Reg Blk */
-    IOADDR Pm1bCntBlk;                      /* Port address of Power Mgt 1b
+    IOADDR      Pm1bCntBlk;                 /* Port address of Power Mgt 1b
                                              * Control Reg Blk */
-    IOADDR Pm2CntBlk;                       /* Port address of Power Mgt 2
+    IOADDR      Pm2CntBlk;                  /* Port address of Power Mgt 2
                                              * Control Reg Blk */
-    IOADDR PmTmrBlk;                        /* Port address of Power Mgt Timer
+    IOADDR      PmTmrBlk;                   /* Port address of Power Mgt Timer
                                              * Ctrl Reg Blk */
-    IOADDR Gpe0Blk;                         /* Port addr of General Purpose
+    IOADDR      Gpe0Blk;                    /* Port addr of General Purpose
                                              * Event 0 Reg Blk */
-    IOADDR Gpe1Blk;                         /* Port addr of General Purpose
+    IOADDR      Gpe1Blk;                    /* Port addr of General Purpose
                                              * Event 1 Reg Blk */
-    BYTE  Pm1EvtLen;                        /* Byte Length of ports at
+    UINT8       Pm1EvtLen;                  /* Byte Length of ports at
                                              * pm1X_evt_blk */
-    BYTE  Pm1CntLen;                        /* Byte Length of ports at
+    UINT8       Pm1CntLen;                  /* Byte Length of ports at
                                              * pm1X_cnt_blk */
-    BYTE  Pm2CntLen;                        /* Byte Length of ports at
+    UINT8       Pm2CntLen;                  /* Byte Length of ports at
                                              * pm2_cnt_blk */
-    BYTE  PmTmLen;                          /* Byte Length of ports at pm_tm_blk */
-    BYTE  Gpe0BlkLen;                       /* Byte Length of ports at gpe0_blk */
-    BYTE  Gpe1BlkLen;                       /* Byte Length of ports at gpe1_blk */
-    BYTE  Gpe1Base;                         /* offset in gpe model where gpe1
+    UINT8       PmTmLen;                    /* Byte Length of ports at pm_tm_blk */
+    UINT8       Gpe0BlkLen;                 /* Byte Length of ports at gpe0_blk */
+    UINT8       Gpe1BlkLen;                 /* Byte Length of ports at gpe1_blk */
+    UINT8       Gpe1Base;                   /* offset in gpe model where gpe1
                                              * events start */
-    BYTE  Reserved3;                        /* reserved */
-    WORD  PLvl2Lat;                         /* worst case HW latency to
+    UINT8       Reserved3;                  /* reserved */
+    UINT16      PLvl2Lat;                   /* worst case HW latency to
                                              * enter/exit C2 state */
-    WORD  PLvl3Lat;                         /* worst case HW latency to
+    UINT16      PLvl3Lat;                   /* worst case HW latency to
                                              * enter/exit C3 state */
-    WORD  FlushSize;                        /* Size of area read to flush caches */
-    WORD  FlushStride;                      /* Stride used in flushing caches */
-    BYTE  DutyOffset;                       /* bit location of duty cycle field
+    UINT16      FlushSize;                  /* Size of area read to flush caches */
+    UINT16      FlushStride;                /* Stride used in flushing caches */
+    UINT8       DutyOffset;                 /* bit location of duty cycle field
                                              * in p_cnt reg */
-    BYTE  DutyWidth;                        /* bit width of duty cycle field in
+    UINT8       DutyWidth;                  /* bit width of duty cycle field in
                                              * p_cnt reg */
-    BYTE  DayAlrm;                          /* index to day-of-month alarm in
+    UINT8       DayAlrm;                    /* index to day-of-month alarm in
                                              * RTC CMOS RAM */
-    BYTE  MonAlrm;                          /* index to month-of-year alarm in
+    UINT8       MonAlrm;                    /* index to month-of-year alarm in
                                              * RTC CMOS RAM */
-    BYTE  Century;                          /* index to century in RTC CMOS RAM */
-    BYTE  Reserved4;                        /* reserved */
-    BYTE  Reserved4a;                       /* reserved */
-    BYTE  Reserved4b;                       /* reserved */
-    WORD_BIT WBInvd     : 1;                /* wbinvd instruction works properly */
-    WORD_BIT WBInvdFlush    : 1;            /* wbinvd flushes but does not
+    UINT8       Century;                    /* index to century in RTC CMOS RAM */
+    UINT8       Reserved4;                  /* reserved */
+    UINT8       Reserved4a;                 /* reserved */
+    UINT8       Reserved4b;                 /* reserved */
+    UINT16_BIT  WBInvd          : 1;        /* wbinvd instruction works properly */
+    UINT16_BIT  WBInvdFlush     : 1;        /* wbinvd flushes but does not
                                              * invalidate */
-    WORD_BIT ProcC1     : 1;                /* all processors support C1 state */
-    WORD_BIT PLvl2Up        : 1;            /* C2 state works on MP system */
-    WORD_BIT PwrButton  : 1;                /* Power button is handled as a
+    UINT16_BIT  ProcC1          : 1;        /* all processors support C1 state */
+    UINT16_BIT  PLvl2Up         : 1;        /* C2 state works on MP system */
+    UINT16_BIT  PwrButton       : 1;        /* Power button is handled as a
                                              * generic feature */
-    WORD_BIT SleepButton    : 1;            /* Sleep button is handled as a
+    UINT16_BIT  SleepButton     : 1;        /* Sleep button is handled as a
                                              * generic feature, or no button
                                              * present */
-    WORD_BIT FixedRTC       : 1;            /* RTC wakeup stat not in fixed
+    UINT16_BIT  FixedRTC        : 1;        /* RTC wakeup stat not in fixed
                                              * register space */
-    WORD_BIT RTCS4          : 1;            /* RTC wakeup stat not possible from
+    UINT16_BIT  RTCS4           : 1;        /* RTC wakeup stat not possible from
                                              * S4 */
-    WORD_BIT TmrValExt  : 1;                /* tmr_val is 32 bits */
-    WORD_BIT Reserved5  : 7;                /* reserved - must be zero */
-    WORD Reserved6;                         /* reserved - must be zero */
+    UINT16_BIT  TmrValExt       : 1;        /* tmr_val is 32 bits */
+    UINT16_BIT  Reserved5       : 7;        /* reserved - must be zero */
+    UINT16      Reserved6;                  /* reserved - must be zero */
+
 }  FIXED_ACPI_DESCRIPTION_TABLE;
 
 typedef struct
 {                                           /* APIC Table */
     ACPI_TABLE_HEADER header;               /* table header */
-    DWORD LocalApicAddress;                 /* Physical address for accessing
+    UINT32      LocalApicAddress;           /* Physical address for accessing
                                              * local APICs */
-    WORD_BIT PCATCompat : 1;                /* a one indicates system also has
+    UINT16_BIT  PCATCompat      : 1;        /* a one indicates system also has
                                              * dual 8259s */
-    WORD_BIT Reserved1 : 15;
-    WORD  Reserved2;
+    UINT16_BIT  Reserved1       : 15;
+    UINT16      Reserved2;
+
 } APIC_TABLE;
 
+
+
 /* values of bType in APIC_HEADER */
-#define APIC_PROC  0
-#define APIC_IO    1
+
+#define APIC_PROC   0
+#define APIC_IO     1
 
 typedef struct
 {
-    BYTE Type;                              /* APIC type.  Either APIC_PROC or
+    UINT8       Type;                       /* APIC type.  Either APIC_PROC or
                                              * APIC_IO */
-    BYTE Length;                            /* Length of APIC structure */
+    UINT8       Length;                     /* Length of APIC structure */
+
 } APIC_HEADER;
 
 typedef struct
 {
     APIC_HEADER header;
-    BYTE ProcessorApicId;                   /* ACPI processor id */
-    BYTE LocalApicId;                       /* processor's local APIC id */
-    WORD_BIT ProcessorEnabled : 1;          /* Processor is usable if set */
-    WORD_BIT Reserved1 : 15;
-    WORD Reserved2;
+    UINT8       ProcessorApicId;            /* ACPI processor id */
+    UINT8       LocalApicId;                /* processor's local APIC id */
+    UINT16_BIT  ProcessorEnabled: 1;        /* Processor is usable if set */
+    UINT16_BIT  Reserved1       : 15;
+    UINT16      Reserved2;
+
 } PROCESSOR_APIC;
 
 typedef struct
 {
     APIC_HEADER header;
-    BYTE IOApicId;                          /* io APIC id */
-    BYTE Reserved;                          /* reserved - must be zero */
-    DWORD IOApicAddress;                    /* APIC's physical address */
-    DWORD Vector;                           /* interrupt vector index where INTI
+    UINT8       IOApicId;                   /* io APIC id */
+    UINT8       Reserved;                   /* reserved - must be zero */
+    UINT32      IOApicAddress;              /* APIC's physical address */
+    UINT32      Vector;                     /* interrupt vector index where INTI
                                              * lines start */
 } IO_APIC;
 
 typedef struct
 {
     ACPI_TABLE_HEADER header;
-    DWORD WarningLevel;
-    DWORD LowLeve;
-    DWORD CriticalLevel;
-}   SMART_BATTERT_DESCRIPTION_TABLE;
+    UINT32      WarningLevel;
+    UINT32      LowLeve;
+    UINT32      CriticalLevel;
+
+} SMART_BATTERT_DESCRIPTION_TABLE;
 
 #endif /* __ACPITYPE_H__ */
