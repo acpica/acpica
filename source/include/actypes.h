@@ -327,10 +327,12 @@ typedef UINT32                          ACPI_OBJECT_TYPE;
 #define INTERNAL_TYPE_Alias             (ACPI_OBJECT_TYPE) 37 /* 0x25  */
 #define INTERNAL_TYPE_Notify            (ACPI_OBJECT_TYPE) 38 /* 0x26  */
 #define INTERNAL_TYPE_AddressHandler    (ACPI_OBJECT_TYPE) 39 /* 0x27  */
+#define INTERNAL_TYPE_MethodArgument    (ACPI_OBJECT_TYPE) 40 /* 0x28  */
+#define INTERNAL_TYPE_MethodLocalVar    (ACPI_OBJECT_TYPE) 41 /* 0x29  */
 
-#define INTERNAL_TYPE_MAX               39
+#define INTERNAL_TYPE_MAX               41
 
-#define INTERNAL_TYPE_Invalid           (ACPI_OBJECT_TYPE) 40
+#define INTERNAL_TYPE_Invalid           (ACPI_OBJECT_TYPE) 42
 
 
 /* 
