@@ -209,6 +209,7 @@ SOURCE=..\..\source\components\hardware\hwsleep.c
 # Begin Source File
 
 SOURCE=..\..\source\components\hardware\hwtimer.c
+# ADD CPP /Ze
 # End Source File
 # End Group
 # Begin Group "Interpreter"
