@@ -148,7 +148,7 @@ BOOLEAN
 AcpiCmValidAcpiName (
     UINT32                  Name)
 {
-    char                    *NamePtr = (char *) &Name;
+    INT8                    *NamePtr = (INT8 *) &Name;
     UINT32                  i;
 
 
@@ -158,12 +158,12 @@ AcpiCmValidAcpiName (
               (NamePtr[i] >= 'A' && NamePtr[i] <= 'Z') ||
               (NamePtr[i] >= '0' && NamePtr[i] <= '9')))
         {
-            return FALSE;
+            return (FALSE);
         }
     }
 
 
-    return TRUE;
+    return (TRUE);
 }
 
 
@@ -181,7 +181,7 @@ AcpiCmValidAcpiName (
 
 BOOLEAN
 AcpiCmValidAcpiCharacter (
-    char                    Character)
+    INT8                    Character)
 {
 
     return ((BOOLEAN)   ((Character == '_') ||
@@ -451,18 +451,18 @@ AcpiCmCreateUpdateStateAndPush (
 
     if (!Object)
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
     State = AcpiCmCreateUpdateState (Object, Action);
     if (!State)
     {
-        return AE_NO_MEMORY;
+        return (AE_NO_MEMORY);
     }
 
 
     AcpiCmPushGenericState (StateList, State);
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -586,7 +586,7 @@ AcpiCmCreateGenericState (void)
         State->Common.DataType = ACPI_DESC_TYPE_STATE;
     }
 
-    return State;
+    return (State);
 }
 
 
@@ -621,7 +621,7 @@ AcpiCmCreateUpdateState (
     State = AcpiCmCreateGenericState ();
     if (!State)
     {
-        return NULL;
+        return (NULL);
     }
 
     /* Init fields specific to the update struct */
@@ -660,7 +660,7 @@ AcpiCmCreateControlState (
     State = AcpiCmCreateGenericState ();
     if (!State)
     {
-        return NULL;
+        return (NULL);
     }
 
 
@@ -779,10 +779,10 @@ AcpiCmDeleteGenericStateCache (
 
 void
 _ReportError (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *Message)
+    INT8                    *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_ERROR,
@@ -808,43 +808,15 @@ _ReportError (
 
 void
 _ReportWarning (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *Message)
+    INT8                    *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_WARN,
                 "*** Warning: %s\n", Message);
 
-}
-
-
-/*****************************************************************************
- *
- * FUNCTION:    _ReportSuccess
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
- *              Message             - Error message to use on failure
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print warning message from KD table
- *
- ****************************************************************************/
-
-void
-_ReportSuccess (
-    char                    *ModuleName,
-    INT32                   LineNumber,
-    INT32                   ComponentId,
-    char                    *Message)
-{
-
-    DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_OK,
-                "*** Success: %s\n", Message);
 }
 
 
@@ -865,10 +837,10 @@ _ReportSuccess (
 
 void
 _ReportInfo (
-    char                    *ModuleName,
+    INT8                    *ModuleName,
     INT32                   LineNumber,
     INT32                   ComponentId,
-    char                    *Message)
+    INT8                    *Message)
 {
 
     DebugPrint (ModuleName, LineNumber, ComponentId, ACPI_INFO,
