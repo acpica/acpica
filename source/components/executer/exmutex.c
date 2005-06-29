@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.13 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -372,7 +372,7 @@ AcpiExReleaseMutex (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AcpiExReleaseAllMutexes (
     ACPI_THREAD_STATE       *Thread)
 {
@@ -408,6 +408,8 @@ AcpiExReleaseAllMutexes (
 
         This->Mutex.OwnerThread      = NULL;
     }
+
+    return (AE_OK);
 }
 
 

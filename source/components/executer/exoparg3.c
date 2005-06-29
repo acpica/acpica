@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -197,7 +197,7 @@ AcpiExOpcode_3A_0T_0R (
         /*
          * Always signal the OS!
          */
-        AcpiOsSignal (ACPI_SIGNAL_FATAL, Fatal);
+        Status = AcpiOsSignal (ACPI_SIGNAL_FATAL, Fatal);
 
         /* Might return while OS is shutting down, just continue */
 
