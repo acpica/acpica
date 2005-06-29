@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -464,7 +464,8 @@ AcpiEvGpeInitialize (void)
 
         if (AcpiGbl_GpeNumberMax >= AcpiGbl_FADT->Gpe1Base)
         {
-            ACPI_REPORT_ERROR (("GPE0 block (GPE  0 to %d) overlaps the GPE1 block (GPE %d to %d)\n",
+            ACPI_REPORT_ERROR ((
+                "GPE0 block (GPE  0 to %d) overlaps the GPE1 block (GPE %d to %d)\n",
                 AcpiGbl_GpeNumberMax, AcpiGbl_FADT->Gpe1Base, 
                 AcpiGbl_FADT->Gpe1Base + (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1)));
             return_ACPI_STATUS (AE_BAD_VALUE);
@@ -472,14 +473,16 @@ AcpiEvGpeInitialize (void)
 
         /* GPE0 and GPE1 do not have to be contiguous in the GPE number space */
 
-        AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base + (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1);
+        AcpiGbl_GpeNumberMax = AcpiGbl_FADT->Gpe1Base + 
+                                (ACPI_MUL_8 (AcpiGbl_GpeBlockInfo[1].RegisterCount) - 1);
     }
 
     /* Check for Max GPE number out-of-range */
 
     if (AcpiGbl_GpeNumberMax > ACPI_GPE_MAX)
     {
-        ACPI_REPORT_ERROR (("Maximum GPE number from FADT is too large: 0x%X\n", AcpiGbl_GpeNumberMax));
+        ACPI_REPORT_ERROR (("Maximum GPE number from FADT is too large: 0x%X\n", 
+            AcpiGbl_GpeNumberMax));
         return_ACPI_STATUS (AE_BAD_VALUE);
     }
 
@@ -927,7 +930,7 @@ AcpiEvAsynchExecuteGpeMethod (
         Status = AcpiNsEvaluateByHandle (GpeInfo.MethodHandle, NULL, NULL);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("%s while evaluated GPE%X method\n",
+            ACPI_REPORT_ERROR (("%s while evaluating GPE%X method\n",
                 AcpiFormatException (Status), GpeNumber));
         }
     }
@@ -982,7 +985,7 @@ AcpiEvGpeDispatch (
     GpeNumberIndex = AcpiEvGetGpeNumberIndex (GpeNumber);
     if (GpeNumberIndex == ACPI_GPE_INVALID)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid event, GPE[%X].\n", GpeNumber));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "GPE[%X] is not a valid event\n", GpeNumber));
         return_VALUE (ACPI_INTERRUPT_NOT_HANDLED);
     }
 
