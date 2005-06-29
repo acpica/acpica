@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.131 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -716,34 +716,39 @@ AcpiExDumpOperands (
 
 void
 AcpiExOutString (
-    char                *Title,
-    char                *Value)
+    char                    *Title,
+    char                    *Value)
 {
     AcpiOsPrintf ("%20s : %s\n", Title, Value);
 }
 
 void
 AcpiExOutPointer (
-    char                *Title,
-    void                *Value)
+    char                    *Title,
+    void                    *Value)
 {
     AcpiOsPrintf ("%20s : %p\n", Title, Value);
 }
 
 void
 AcpiExOutInteger (
-    char                *Title,
-    UINT32              Value)
+    char                    *Title,
+    UINT32                  Value)
 {
     AcpiOsPrintf ("%20s : %X\n", Title, Value);
 }
 
 void
-AcpiExOutInt64 (
-    char                *Title,
-    UINT64              Value)
+AcpiExOutAddress (
+    char                    *Title,
+    ACPI_PHYSICAL_ADDRESS   Value)
 {
-    AcpiOsPrintf ("%20s : %8.8X%8.8X\n", Title, Value);
+#ifdef _IA16
+    AcpiOsPrintf ("%20s : %p\n", Title, Value);
+#else
+    AcpiOsPrintf ("%20s : %8.8X%8.8X\n", Title, 
+                HIDWORD (Value), LODWORD (Value));
+#endif
 }
 
 
@@ -925,7 +930,7 @@ AcpiExDumpObjectDescriptor (
 
         AcpiExOutInteger ("SpaceId",         ObjDesc->Region.SpaceId);
         AcpiExOutInteger ("Flags",           ObjDesc->Region.Flags);
-        AcpiExOutInt64   ("Address",         ObjDesc->Region.Address);
+        AcpiExOutAddress ("Address",         ObjDesc->Region.Address);
         AcpiExOutInteger ("Length",          ObjDesc->Region.Length);
         AcpiExOutPointer ("AddrHandler",     ObjDesc->Region.AddrHandler);
         AcpiExOutPointer ("Next",            ObjDesc->Region.Next);
