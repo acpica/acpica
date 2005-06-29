@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.61 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -324,107 +324,6 @@ AcpiPsGetNextNamestring (
  *
  ******************************************************************************/
 
-
-#ifdef PARSER_ONLY
-
-void
-AcpiPsGetNextNamepath (
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_PARSE_OBJECT       *Arg,
-    UINT32                  *ArgCount,
-    BOOLEAN                 MethodCall)
-{
-    NATIVE_CHAR             *Path;
-    ACPI_PARSE_OBJECT       *NameOp;
-    ACPI_PARSE_OBJECT       *Op;
-    ACPI_PARSE_OBJECT       *Count;
-
-
-    ACPI_FUNCTION_TRACE ("PsGetNextNamepath");
-
-
-    Path = AcpiPsGetNextNamestring (ParserState);
-    if (!Path || !MethodCall)
-    {
-        /* Null name case, create a null namepath object */
-
-        AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
-        Arg->Common.Value.Name = Path;
-        return_VOID;
-    }
-
-
-    if (AcpiGbl_ParsedNamespaceRoot)
-    {
-        /*
-         * Lookup the name in the parsed namespace
-         */
-        Op = NULL;
-        if (MethodCall)
-        {
-            Op = AcpiPsFind (AcpiPsGetParentScope (ParserState),
-                                Path, AML_METHOD_OP, 0);
-        }
-
-        if (Op)
-        {
-            if (Op->Common.AmlOpcode == AML_METHOD_OP)
-            {
-                /*
-                 * The name refers to a control method, so this namepath is a
-                 * method invocation.  We need to 1) Get the number of arguments
-                 * associated with this method, and 2) Change the NAMEPATH
-                 * object into a METHODCALL object.
-                 */
-                Count = AcpiPsGetArg (Op, 0);
-                if (Count && Count->Common.AmlOpcode == AML_BYTE_OP)
-                {
-                    NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
-                    if (NameOp)
-                    {
-                        /* Change arg into a METHOD CALL and attach the name */
-
-                        AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
-
-                        NameOp->Common.Value.Name = Path;
-
-                        /* Point METHODCALL/NAME to the METHOD Node */
-
-                        NameOp->Common.Node = (ACPI_NAMESPACE_NODE *) Op;
-                        AcpiPsAppendArg (Arg, NameOp);
-
-                        *ArgCount = (UINT32) Count->Common.Value.Integer &
-                                    METHOD_FLAGS_ARG_COUNT;
-                    }
-                }
-
-                return_VOID;
-            }
-
-            /*
-             * Else this is normal named object reference.
-             * Just init the NAMEPATH object with the pathname.
-             * (See code below)
-             */
-        }
-    }
-
-    /*
-     * Either we didn't find the object in the namespace, or the object is
-     * something other than a control method.  Just initialize the Op with the
-     * pathname
-     */
-    AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
-    Arg->Common.Value.Name = Path;
-
-
-    return_VOID;
-}
-
-
-#else
-
-
 void
 AcpiPsGetNextNamepath (
     ACPI_PARSE_STATE        *ParserState,
@@ -435,7 +334,7 @@ AcpiPsGetNextNamepath (
     NATIVE_CHAR             *Path;
     ACPI_PARSE_OBJECT       *NameOp;
     ACPI_STATUS             Status;
-    ACPI_NAMESPACE_NODE     *MethodNode = NULL;
+    ACPI_OPERAND_OBJECT     *MethodDesc;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_GENERIC_STATE      ScopeInfo;
 
@@ -476,32 +375,38 @@ AcpiPsGetNextNamepath (
     {
         if (Node->Type == ACPI_TYPE_METHOD)
         {
-            MethodNode = Node;
-            ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "method - %p Path=%p\n",
-                MethodNode, Path));
+            MethodDesc = AcpiNsGetAttachedObject (Node);
+            ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Control Method - %p Desc %p Path=%p\n",
+                Node, MethodDesc, Path));
 
             NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
-            if (NameOp)
+            if (!NameOp)
             {
-                /* Change arg into a METHOD CALL and attach name to it */
-
-                AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
-
-                NameOp->Common.Value.Name = Path;
-
-                /* Point METHODCALL/NAME to the METHOD Node */
-
-                NameOp->Common.Node = MethodNode;
-                AcpiPsAppendArg (Arg, NameOp);
-
-                if (!AcpiNsGetAttachedObject (MethodNode))
-                {
-                    return_VOID;
-                }
-
-                *ArgCount = (AcpiNsGetAttachedObject (MethodNode))->Method.ParamCount;
+                return_VOID;
             }
 
+            /* Change arg into a METHOD CALL and attach name to it */
+
+            AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
+
+            NameOp->Common.Value.Name = Path;
+
+            /* Point METHODCALL/NAME to the METHOD Node */
+
+            NameOp->Common.Node = Node;
+            AcpiPsAppendArg (Arg, NameOp);
+
+            if (!MethodDesc)
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Control Method - %p has no attached object\n",
+                    Node));
+                return_VOID;
+            }
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "Control Method - %p Args %X\n",
+                Node, MethodDesc->Method.ParamCount));
+
+            *ArgCount = MethodDesc->Method.ParamCount;
             return_VOID;
         }
 
@@ -524,7 +429,6 @@ AcpiPsGetNextNamepath (
     return_VOID;
 }
 
-#endif
 
 /*******************************************************************************
  *
