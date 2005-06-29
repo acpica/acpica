@@ -268,14 +268,38 @@ typedef char *va_list;
 #define halt()                  __asm {hlt}
 #define wbinvd()                __asm {WBINVD}
 
-#define ASM_mov(d,s)            __asm {mov d, s}
-#define ASM_and(t,v)            __asm {and t, v}
-#define ASM_bts(t,b)            __asm {bts t, b}
-#define ASM_adc(t,v)            __asm {adc t, v}
-#define ASM_cmp(v1,v2)          __asm {cmp v1, v2}
-#define ASM_cmpxchg(v1,v2)      __asm {lock cmpxchg dword ptr v1, v2}
-#define ASM_jnz(t)              __asm {jnz short t}
-#define ASM_sbb(t,v)            __asm {sbb t, v}
+
+#define ASM_AcquireGL(GLptr, Acq)       __asm {     \
+        __asm mov           ecx, GLptr              \
+                                                    \
+        __asm acq10:                                \
+        __asm mov           eax, [ecx]              \
+        __asm mov           edx, eax                \
+        __asm and           edx, 0xFFFFFFFE         \
+        __asm bts           edx, 1                  \
+        __asm adc           edx, 0                  \
+        __asm lock cmpxchg  dword ptr [ecx], edx    \
+        __asm jnz           acq10                   \
+                                                    \
+        __asm cmp           dl, 3                   \
+        __asm sbb           eax, eax                \
+        __asm mov           Acq, al                 \
+}
+
+#define ASM_ReleaseGL(GLptr, Pnd)       __asm {     \
+        __asm mov           ecx, GLptr              \
+                                                    \
+        __asm Rel10:                                \
+        __asm mov           eax, [ecx]              \
+        __asm mov           edx, eax                \
+        __asm and           edx, 0xFFFFFFFC         \
+        __asm lock cmpxchg  dword ptr [ecx], edx    \
+        __asm jnz           rel10                   \
+                                                    \
+        __asm cmp           dl, 3                   \
+        __asm and           eax, 1                  \
+        __asm mov           Pnd, al                 \
+}
 
 
 #elif defined(__GNUC__)
@@ -287,14 +311,37 @@ typedef char *va_list;
 #define halt()                  __asm ("hlt")
 #define wbinvd()                __asm ("wbinvd")
 
-#define ASM_mov(d,s)            __asm {"mov d, s"}
-#define ASM_and(t,v)            __asm {"and t, v"}
-#define ASM_bts(t,b)            __asm {"bts t, b"}
-#define ASM_adc(t,v)            __asm {"adc t, v"}
-#define ASM_cmp(v1,v2)          __asm {"cmp v1, v2"}
-#define ASM_cmpxchg(v1,v2)      __asm {"lock cmpxchg dword ptr v1, v2"}
-#define ASM_jnz(t)              __asm {"jnz short t"}
-#define ASM_sbb(t,v)            __asm {"sbb t, v"}
+
+/*
+ * A brief explanation as GNU inline assembly is a bit hairy
+ *  %0 is the output parameter in EAX ("=a") 
+ *  %1 and %2 are the input parameters in ECX ("c") and an immediate value ("i") respectively
+ *  All actual register references are preceded with "%%" as in "%%edx"
+ *  Immediate values in the assembly are preceded by "$" as in "$0x1"
+ *  The final asm parameter is the non-output registers altered by the operation
+ */
+#define ASM_AcquireGL(GLptr, Acq)           \
+  asm("1: movl              (%1),%%eax;"    \
+         "movl              %%eax,%%edx;"   \
+         "andl              %2,%%edx;"      \
+         "btsl              $0x1,%%edx;"    \
+         "adcl              $0x0,%%edx;"    \
+         "lock; cmpxchgl    %%edx,(%1);"    \
+         "jnz               1b;"            \
+                                            \
+         "cmpb              $0x3,%%dl;"     \
+         "sbbl              %%eax,%%eax"    \
+         :"=a"(Acq):"c"(GLptr),"i"(~1L):"cx","dx")
+
+#define ASM_ReleaseGL(GLptr, Acq)           \
+  asm("1: movl              (%1),%%eax;"    \
+         "movl              %%eax,%%edx;"   \
+         "andl              %2,%%edx;"      \
+         "lock; cmpxchgl    %%edx,(%1);"    \
+         "jnz               1b;"            \
+                                            \
+         "andl              $0x1,%%eax"     \
+         :"=a"(Acq):"c"(GLptr),"i"(~3L):"cx","dx")
 
 
 #else
@@ -305,14 +352,8 @@ typedef char *va_list;
 #define enable()
 #define halt()
 
-#define ASM_mov(d,s)
-#define ASM_and(t,v)
-#define ASM_bts(t,b) 
-#define ASM_adc(t,v)
-#define ASM_cmp(v1,v2)
-#define ASM_cmpxchg(v1,v2)
-#define ASM_jnz(t)
-#define ASM_sbb(t,v)
+#define ASM_AcquireGL(GLptr, Acq)
+#define ASM_ReleaseGL(GLptr, Acq) 
 
 #endif
 
