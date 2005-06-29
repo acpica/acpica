@@ -122,10 +122,54 @@
 #include <namespace.h>
 
 
-#define _THIS_MODULE        "ieprep.c"
 #define _COMPONENT          INTERPRETER
+        MODULE_NAME         ("ieprep");
 
 
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlDecodeFieldAccessType
+ *
+ * PARAMETERS:  Access          - Encoded field access bits
+ *
+ * RETURN:      Field granularity (8, 16, or 32)
+ *
+ * DESCRIPTION: Decode the AccessType bits of a field definition.
+ *
+ ****************************************************************************/
+
+UINT32
+AmlDecodeFieldAccessType (
+    UINT32                  Access)
+{
+ 
+    switch (Access)
+    {
+    case ACCESS_AnyAcc:
+        return 8;
+        break;
+
+    case ACCESS_ByteAcc:
+        return 8;
+        break;
+
+    case ACCESS_WordAcc:
+        return 16;
+        break;
+
+    case ACCESS_DWordAcc:
+        return 32;
+        break;
+
+    default:
+        /* Invalid field access type */
+
+        DEBUG_PRINT (ACPI_ERROR, ("AmlDecodeFieldAccessType: Unknown field access type %x\n",
+                        Access));
+        return 0;
+    }
+}
 
 
 /*****************************************************************************
@@ -156,6 +200,7 @@ AmlPrepDefFieldValue (
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     NAME_TABLE_ENTRY        *ThisEntry;
     INT32                   Type;
+    UINT32                  Granularity;
 
 
     FUNCTION_TRACE ("AmlPrepDefFieldValue");
@@ -169,7 +214,7 @@ AmlPrepDefFieldValue (
 
     /* Region typecheck */
 
-    if (TYPE_Region != (Type = NsGetType (Region)))
+    if (ACPI_TYPE_Region != (Type = NsGetType (Region)))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlPrepDefFieldValue: Needed Region, found %d %s\n",
                     Type, Gbl_NsTypeNames[Type]));
@@ -178,7 +223,7 @@ AmlPrepDefFieldValue (
 
     /* Allocate a new object */
 
-    ObjDesc = CmCreateInternalObject (TYPE_DefField);
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_DefField);
     if (!ObjDesc)
     {   
         /* Unable to allocate new object descriptor    */
@@ -191,7 +236,7 @@ AmlPrepDefFieldValue (
 
     DUMP_STACK (IMODE_Execute, "AmlPrepDefFieldValue", 2, "case DefField");
 
-    if (TYPE_DefField != ObjDesc->Field.Type)
+    if (INTERNAL_TYPE_DefField != ObjDesc->Field.Type)
     {
         /* 
          * The C implementation has done something which is technically legal
@@ -215,18 +260,25 @@ AmlPrepDefFieldValue (
 
     /* ObjDesc, Region, and ObjDesc->Field.Type valid    */
 
-    ObjDesc->Field.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-    ObjDesc->Field.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    ObjDesc->Field.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    ObjDesc->Field.Length     = (UINT16) FldLen;
+    ObjDesc->Field.Length       = (UINT16) FldLen;
+    ObjDesc->Field.UpdateRule   = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->Field.LockRule     = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+    ObjDesc->Field.Access       = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
 
-    /* TBD: - should use width of data register, not hardcoded 8 */
+    /* Decode the access type so we can compute offsets */
 
-    DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: hardcoded 8 **\n"));
+    Granularity = AmlDecodeFieldAccessType (ObjDesc->Field.Access);
+    if (!Granularity)
+    {
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
 
-    ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
-    ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
-    ObjDesc->Field.Container  = NsGetAttachedObject (Region);
+    /* Compute field offset and bit offset within the minimum read/write data unit */
+
+    ObjDesc->Field.Granularity  = Granularity;
+    ObjDesc->Field.BitOffset    = (UINT16) FldPos % Granularity;
+    ObjDesc->Field.Offset       = (UINT32) FldPos / Granularity;
+    ObjDesc->Field.Container    = NsGetAttachedObject (Region);
 
     /* An additional reference for the container */
 
@@ -235,6 +287,9 @@ AmlPrepDefFieldValue (
     ThisEntry = AmlObjStackGetValue (0);
 
     /* Debug output only */
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: bitoff=%X off=%X gran=%X\n",
+        ObjDesc->Field.BitOffset, ObjDesc->Field.Offset, Granularity));
 
     DEBUG_PRINT (ACPI_INFO, ("AmlPrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
                     ThisEntry, &(ThisEntry->Name), ObjDesc));
@@ -292,6 +347,7 @@ AmlPrepBankFieldValue (
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     NAME_TABLE_ENTRY        *ThisEntry;
     INT32                   Type;
+    UINT32                  Granularity;
 
 
     FUNCTION_TRACE ("AmlPrepBankFieldValue");
@@ -312,7 +368,7 @@ AmlPrepBankFieldValue (
 
     /* Allocate a new object */
 
-    ObjDesc = CmCreateInternalObject (TYPE_BankField);
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_BankField);
     if (!ObjDesc)
     {   
         /* Unable to allocate new object descriptor    */
@@ -324,7 +380,7 @@ AmlPrepBankFieldValue (
 
     DUMP_STACK (IMODE_Execute, "AmlPrepBankFieldValue", 2, "case BankField");
 
-    if (TYPE_BankField != ObjDesc->BankField.Type)
+    if (INTERNAL_TYPE_BankField != ObjDesc->BankField.Type)
     {
         /* See comments in AmlPrepDefFieldValue() re: unexpected C behavior */
 
@@ -341,20 +397,25 @@ AmlPrepBankFieldValue (
 
     /*  ObjDesc, Region, and ObjDesc->BankField.ValTyp valid    */
 
-    ObjDesc->BankField.Access     = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-    ObjDesc->BankField.LockRule   = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    ObjDesc->BankField.UpdateRule = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    ObjDesc->BankField.Length     = (UINT16) FldLen;
+    ObjDesc->BankField.Access       = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+    ObjDesc->BankField.LockRule     = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+    ObjDesc->BankField.UpdateRule   = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->BankField.Length       = (UINT16) FldLen;
 
-    /* XXX - should use width of data register, not hardcoded 8 */
+    /* Decode the access type so we can compute offsets */
 
-    DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepBankFieldValue: hard 8 **\n"));
+    Granularity = AmlDecodeFieldAccessType (ObjDesc->Field.Access);
+    if (!Granularity)
+    {
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
 
-    ObjDesc->BankField.BitOffset  = (UINT16) FldPos % 8;
-    ObjDesc->BankField.Offset     = (UINT32) FldPos / 8;
-    ObjDesc->BankField.Value      = BankVal;
-    ObjDesc->BankField.Container  = NsGetAttachedObject (Region);
-    ObjDesc->BankField.BankSelect = NsGetAttachedObject (BankReg);
+    ObjDesc->Field.Granularity      = Granularity;
+    ObjDesc->BankField.BitOffset    = (UINT16) FldPos % Granularity;
+    ObjDesc->BankField.Offset       = (UINT32) FldPos / Granularity;
+    ObjDesc->BankField.Value        = BankVal;
+    ObjDesc->BankField.Container    = NsGetAttachedObject (Region);
+    ObjDesc->BankField.BankSelect   = NsGetAttachedObject (BankReg);
 
     /* An additional reference for the container and bank select */
     /* TBD: is "BankSelect" ever a real internal object?? */
@@ -363,6 +424,9 @@ AmlPrepBankFieldValue (
     CmUpdateObjectReference (ObjDesc->BankField.BankSelect, REF_INCREMENT);
 
     ThisEntry = AmlObjStackGetValue (0);
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: bitoff=%X off=%X gran=%X\n",
+        ObjDesc->BankField.BitOffset, ObjDesc->BankField.Offset, Granularity));
 
     DEBUG_PRINT (ACPI_INFO, ("AmlPrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
                     ThisEntry, &(ThisEntry->Name), ObjDesc));
@@ -413,6 +477,7 @@ AmlPrepIndexFieldValue (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
     NAME_TABLE_ENTRY        *ThisEntry;
+    UINT32                  Granularity;
 
 
     FUNCTION_TRACE ("AmlPrepIndexFieldValue");
@@ -426,7 +491,7 @@ AmlPrepIndexFieldValue (
 
     /* Allocate a new object descriptor */
 
-    ObjDesc = CmCreateInternalObject (TYPE_IndexField);
+    ObjDesc = CmCreateInternalObject (INTERNAL_TYPE_IndexField);
     if (!ObjDesc)
     {   
         /* Unable to allocate new object descriptor    */
@@ -436,7 +501,7 @@ AmlPrepIndexFieldValue (
 
     /* ObjDesc, IndexRegion, and DataReg valid  */
 
-    if (TYPE_IndexField != ObjDesc->IndexField.Type)
+    if (INTERNAL_TYPE_IndexField != ObjDesc->IndexField.Type)
     {
         /* See comments in AmlPrepDefFieldValue() re unexpected C behavior */
     
@@ -453,21 +518,29 @@ AmlPrepIndexFieldValue (
 
     /*  ObjDesc, IndexRegion, and DataReg, and ObjDesc->IndexField.ValTyp valid */
 
-    ObjDesc->IndexField.Access        = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
-    ObjDesc->IndexField.LockRule      = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
-    ObjDesc->IndexField.UpdateRule    = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
-    ObjDesc->IndexField.Length        = (UINT16) FldLen;
+    ObjDesc->IndexField.Access      = (FldFlg & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT;
+    ObjDesc->IndexField.LockRule    = (FldFlg & LOCK_RULE_MASK) >> LOCK_RULE_SHIFT;
+    ObjDesc->IndexField.UpdateRule  = (FldFlg & UPDATE_RULE_MASK) >> UPDATE_RULE_SHIFT;
+    ObjDesc->IndexField.Length      = (UINT16) FldLen;
 
-    /* XXX - should use width of data register, not hardcoded 8 */
+    /* Decode the access type so we can compute offsets */
 
-    DEBUG_PRINT (ACPI_INFO, (" ** AmlPrepIndexFieldValue: hard 8 **\n"));
+    Granularity = AmlDecodeFieldAccessType (ObjDesc->Field.Access);
+    if (!Granularity)
+    {
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
 
-    ObjDesc->IndexField.BitOffset = (UINT16) FldPos % 8;
-    ObjDesc->IndexField.Value     = (UINT32) FldPos / 8;
-    ObjDesc->IndexField.Index     = IndexReg;
-    ObjDesc->IndexField.Data      = DataReg;
+    ObjDesc->Field.Granularity      = Granularity;
+    ObjDesc->IndexField.BitOffset   = (UINT16) FldPos % Granularity;
+    ObjDesc->IndexField.Value       = (UINT32) FldPos / Granularity;
+    ObjDesc->IndexField.Index       = IndexReg;
+    ObjDesc->IndexField.Data        = DataReg;
 
     ThisEntry = AmlObjStackGetValue (0);
+
+    DEBUG_PRINT (ACPI_INFO, ("AmlPrepIndexFieldValue: bitoff=%X off=%X gran=%X\n",
+        ObjDesc->IndexField.BitOffset, ObjDesc->IndexField.Offset, Granularity));
 
     DEBUG_PRINT (ACPI_INFO, ("AmlPrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
                     ThisEntry, &(ThisEntry->Name), ObjDesc));
