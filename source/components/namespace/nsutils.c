@@ -331,7 +331,7 @@ AcpiNsInternalizeName (
 
     for (; NumSegments; NumSegments--)
     {
-        for (i = 0; i < ACPI_NAME_SIZE; i++) //STRNCPY (Result, ExternalName, ACPI_NAME_SIZE);
+        for (i = 0; i < ACPI_NAME_SIZE; i++)
         {
             if (AcpiNsValidPathSeparator (*ExternalName) ||
                (*ExternalName == 0))
