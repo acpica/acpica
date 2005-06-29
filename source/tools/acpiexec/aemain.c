@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -213,7 +213,7 @@ AeDoDivideCheck (void)
  * anything.
  */
 
-FADT_DESCRIPTOR             LocalFADT;
+FADT_DESCRIPTOR_REV1        LocalFADT;
 ACPI_COMMON_FACS            LocalFACS;
 
 #ifdef _IA16
@@ -378,21 +378,39 @@ main (
 
         /* Build a fake FADT so we can test the hardware/event init */
 
-        ACPI_STORE_ADDRESS (LocalFADT.XGpe0Blk.Address, 0x70);
-        ACPI_STORE_ADDRESS (LocalFADT.XPm1aEvtBlk.Address, 0x80);
-        ACPI_STORE_ADDRESS (LocalFADT.XPm1aCntBlk.Address, 0x90);
-        ACPI_STORE_ADDRESS (LocalFADT.XPmTmrBlk.Address, 0xA0);
-
+        MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
+        MEMCPY (&LocalFADT.header.Signature, FADT_SIG, 4);
+        LocalFADT.header.Revision = 1;
+        LocalFADT.header.Length = sizeof (FADT_DESCRIPTOR_REV1);
         LocalFADT.Gpe0BlkLen    = 8;
         LocalFADT.Gpe1BlkLen    = 12;
         LocalFADT.Gpe1Base      = 64;
+
         LocalFADT.Pm1EvtLen     = 4;
         LocalFADT.Pm1CntLen     = 4;
         LocalFADT.PmTmLen       = 8;
 
-        AcpiGbl_FADT = &LocalFADT;
-        AcpiGbl_FACS = &LocalFACS;
+        LocalFADT.Gpe0Blk       = 0x12340000;
+        LocalFADT.Gpe1Blk       = 0x12341110;
 
+        LocalFADT.Pm1aEvtBlk    = 0x1234aaa0;
+        LocalFADT.Pm1bEvtBlk    = 0;
+        LocalFADT.PmTmrBlk      = 0xA0;
+        LocalFADT.Pm1aCntBlk    = 0xB0;
+
+        /* Complete the FADT with the checksum */
+
+        LocalFADT.header.Checksum = AcpiTbChecksum (&LocalFADT, LocalFADT.header.Length);
+
+        Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFADT);
+        if (ACPI_FAILURE (Status))
+        {
+            printf ("**** Could not load localFADT, %s\n", AcpiFormatException (Status));
+            goto enterloop;
+        }
+
+
+        AcpiGbl_FACS = &LocalFACS;
 
         /* TBD:
          * Need a way to call this after the "LOAD" command
@@ -413,6 +431,8 @@ main (
         ReturnBuf.Length = 32;
         ReturnBuf.Pointer = Buffer;
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
+        AcpiEnableEvent (ACPI_EVENT_GLOBAL, ACPI_EVENT_FIXED, 0);
+        AcpiEnableEvent (0, ACPI_EVENT_GPE, ACPI_EVENT_ENABLE);
     }
 
 #ifdef _IA16
