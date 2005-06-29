@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -717,7 +717,7 @@ AcpiUtCopyEobjectToIobject (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtCopyObject
+ * FUNCTION:    AcpiUtCopySimpleObject
  *
  * PARAMETERS:  SourceDesc          - The internal object to be copied
  *              DestDesc            - New target object
@@ -781,7 +781,6 @@ AcpiUtCopySimpleObject (
                     SourceDesc->String.Length);
         }
         break;
-
     }
 
     return (AE_OK);
