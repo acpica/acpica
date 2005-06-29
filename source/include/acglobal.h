@@ -222,7 +222,7 @@ extern      char                *Gbl_ExceptionNames[];
  *
  ****************************************************************************/
 
-#define NUM_NS_TYPES            TYPE_Invalid+1
+#define NUM_NS_TYPES            INTERNAL_TYPE_Invalid+1
 #define NUM_PREDEFINED_NAMES    9
 
 /* Scope stack */
