@@ -151,11 +151,11 @@
  ******************************************************************************/
 
 
-ACPI_SIZE
+NATIVE_UINT
 AcpiCmStrlen (
     const char              *String)
 {
-    UINT32                  Length = 0;
+    NATIVE_UINT             Length = 0;
 
 
     /* Count the string until a null is encountered */
@@ -227,7 +227,7 @@ char *
 AcpiCmStrncpy (
     char                    *DstString,
     const char              *SrcString,
-    ACPI_SIZE               Count)
+    NATIVE_UINT             Count)
 {
     char                    *String = DstString;
 
@@ -303,7 +303,7 @@ UINT32
 AcpiCmStrncmp (
     const char              *String1,
     const char              *String2,
-    ACPI_SIZE               Count)
+    NATIVE_UINT             Count)
 {
 
 
@@ -374,7 +374,7 @@ char *
 AcpiCmStrncat (
     char                    *DstString,
     const char              *SrcString,
-    ACPI_SIZE               Count)
+    NATIVE_UINT             Count)
 {
     char                    *String;
 
@@ -421,7 +421,7 @@ void *
 AcpiCmMemcpy (
     void                    *Dest,
     const void              *Src,
-    ACPI_SIZE               Count)
+    NATIVE_UINT             Count)
 {
     char                    *New = (char *) Dest;
     char                    *Old = (char *) Src;
@@ -457,7 +457,7 @@ void *
 AcpiCmMemset (
     void                    *Dest,
     INT32                   Value,
-    ACPI_SIZE               Count)
+    NATIVE_UINT             Count)
 {
     char                    *New = (char *) Dest;
 
