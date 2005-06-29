@@ -41,7 +41,7 @@ typedef void * NsHandle;
 /* 
  * Types associated with names
  * Values correspond to the definition of the ObjectType operator.
- * Must coordinate with aiNsProperties and apcNsTypeNames in acpinmsp.c
+ * Must coordinate with NsProperties and NsTypeNames in acpinmsp.c
  * The NsType type is also used in OBJECT_DESCRIPTOR defined in amlpriv.h
  */
 
