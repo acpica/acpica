@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.136 $
+ *              $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -404,9 +404,10 @@ AcpiEvAddressSpaceDispatch (
     Handler = HandlerDesc->AddrHandler.Handler;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
-        "Addrhandler %p (%p), Address %8.8X%8.8X\n",
+        "Handler %p (@%p) Address %8.8X%8.8X [%s]\n",
         &RegionObj->Region.AddrHandler->AddrHandler, Handler,
-        ACPI_HIDWORD (Address), ACPI_LODWORD (Address)));
+        ACPI_HIDWORD (Address), ACPI_LODWORD (Address),
+        AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
     if (!(HandlerDesc->AddrHandler.Flags & ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
     {
