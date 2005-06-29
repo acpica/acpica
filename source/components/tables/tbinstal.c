@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -256,10 +256,14 @@ AcpiTbRecognizeTable (
      */
     if (TableType != ACPI_TABLE_FACS)
     {
-        /* But don't abort if the checksum is wrong */
-        /* TBD: [Future] make this a configuration option? */
+        Status = AcpiTbVerifyTableChecksum (TableHeader);
+        if (ACPI_FAILURE (Status) &&
+            (!ACPI_CHECKSUM_ABORT))
+        {
+            /* Ignore the error if configuration says so */
 
-        AcpiTbVerifyTableChecksum (TableHeader);
+            Status = AE_OK;
+        }
     }
 
     /*
