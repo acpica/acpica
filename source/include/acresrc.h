@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.36 $
+ *       $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -144,13 +144,6 @@ AcpiRsGetMethodData (
     ACPI_HANDLE             Handle,
     char                    *Path,
     ACPI_BUFFER             *RetBuffer);
-
-ACPI_STATUS
-AcpiWalkResources (
-    ACPI_HANDLE                     DeviceHandle,
-    char                            *Path,
-    ACPI_WALK_RESOURCE_CALLBACK     UserFunction,
-    void                            *Context);
 
 ACPI_STATUS
 AcpiRsSetSrsMethodData (

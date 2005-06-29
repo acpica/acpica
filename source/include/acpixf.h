@@ -428,6 +428,13 @@ AcpiGetPossibleResources(
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
+AcpiWalkResources (
+    ACPI_HANDLE                     DeviceHandle,
+    char                            *Path,
+    ACPI_WALK_RESOURCE_CALLBACK     UserFunction,
+    void                            *Context);
+
+ACPI_STATUS
 AcpiSetCurrentResources (
     ACPI_HANDLE             DeviceHandle,
     ACPI_BUFFER             *InBuffer);
@@ -479,6 +486,10 @@ AcpiEnterSleepStatePrep (
 ACPI_STATUS
 AcpiEnterSleepState (
     UINT8                   SleepState);
+
+ACPI_STATUS
+AcpiEnterSleepStateS4bios (
+    void);
 
 ACPI_STATUS
 AcpiLeaveSleepState (
