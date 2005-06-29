@@ -30,6 +30,7 @@
  * granted directly or by implication, estoppel or otherwise;
  *
  * the above copyright and patent license is granted only if the following 
+
  * conditions are met:
  *
  * 3. Conditions 
@@ -174,7 +175,7 @@ EvNotifyDispatch (
 
 /* Debug stuff */
 
-#ifdef _DEBUG
+#ifdef ACPI_DEBUG
 
 INT32 
 EvSciCount (
