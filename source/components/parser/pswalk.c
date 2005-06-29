@@ -1,6 +1,8 @@
+
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -587,7 +589,7 @@ AcpiPsWalkParsedAml (
 
     if (!StartOp || !EndOp)
     {
-        return AE_BAD_PARAMETER;
+        return (AE_BAD_PARAMETER);
     }
 
     /* Initialize a new walk list */
@@ -622,7 +624,7 @@ AcpiPsWalkParsedAml (
         /* Init arguments if this is a control method */
         /* TBD: [Restructure] add walkstate as a param */
 
-        AcpiDsMethodDataInitArgs (Params, MTH_NUM_ARGS);
+        AcpiDsMethodDataInitArgs (Params, MTH_NUM_ARGS, WalkState);
     }
 
     Op = StartOp;
@@ -672,8 +674,7 @@ AcpiPsWalkParsedAml (
          * there's lots of cleanup to do
          */
 
-        if (WalkState->MethodDesc &&
-            WalkState->MethodDesc->Method.ParserOp)
+        if (WalkState->MethodDesc)
         {
             AcpiDsTerminateControlMethod (WalkState);
         }

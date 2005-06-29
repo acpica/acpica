@@ -2,6 +2,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -153,6 +154,7 @@ AcpiPsxExecute (
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     UINT32                  i;
+    ACPI_GENERIC_OP         *Op;
 
 
     FUNCTION_TRACE ("PsxExecute");
@@ -171,7 +173,7 @@ AcpiPsxExecute (
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
-    /* Parse method if necessary, wait on concurrency semaphore */
+    /* Init for new method, wait on concurrency semaphore */
 
     Status = AcpiDsBeginMethodExecution (MethodEntry, ObjDesc);
     if (ACPI_FAILURE (Status))
@@ -193,19 +195,46 @@ AcpiPsxExecute (
     }
 
     /*
-     * Method is parsed and ready to execute
-     * The walk of the parse tree is where we actually execute the method
+     * Perform the first pass parse of the method to enter any
+     * named objects that it creates into the namespace
      */
 
     DEBUG_PRINT (ACPI_INFO,
         ("PsxExecute: **** Begin Method Execution **** Entry=%p obj=%p\n",
         MethodEntry, ObjDesc));
 
-    Status = AcpiPsWalkParsedAml (ObjDesc->Method.ParserOp,
-                    ObjDesc->Method.ParserOp, ObjDesc,
-                    MethodEntry->ChildTable, Params, ReturnObjDesc,
-                    ObjDesc->Method.OwningId, AcpiDsExecBeginOp,
-                    AcpiDsExecEndOp);
+    /* Create and init a root object */
+
+    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!Op)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
+                                ObjDesc->Method.PcodeLength, 
+                                ACPI_PARSE_LOAD_PASS1 | ACPI_PARSE_DELETE_TREE,
+                                MethodEntry, Params, ReturnObjDesc,
+                                AcpiDsLoad1BeginOp, AcpiDsLoad1EndOp);
+    AcpiPsDeleteParseTree (Op);
+
+    /* Create and init a root object */
+
+    Op = AcpiPsAllocOp (AML_SCOPE_OP);
+    if (!Op)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /*
+     * The walk of the parse tree is where we actually execute the method
+     */
+    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode,
+                                ObjDesc->Method.PcodeLength, 
+                                ACPI_PARSE_EXECUTE | ACPI_PARSE_DELETE_TREE,
+                                MethodEntry, Params, ReturnObjDesc,
+                                AcpiDsExecBeginOp, AcpiDsExecEndOp);
+    AcpiPsDeleteParseTree (Op);
 
     if (Params)
     {
