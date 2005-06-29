@@ -20,15 +20,18 @@
  | These interfaces must be implemented by the OS-dependent front-end
  | to the ACPI subsystem.
  |
- | $Revision: 1.9 $
- | $Date: 2005/06/29 19:59:45 $
+ | $Revision: 1.10 $
+ | $Date: 2005/06/29 19:59:46 $
  | $Log: acpiosxf.h,v $
- | Revision 1.9  2005/06/29 19:59:45  aystarik
- | 16/32/64-bit common data types
+ | Revision 1.10  2005/06/29 19:59:46  aystarik
+ | Integrated with 03/99 OPSD code
  |
  | 
- | date	99.03.10.00.04.00;	author rmoore1;	state Exp;
+ | date	99.03.31.22.30.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 10    3/31/99 2:30p Rmoore1
+ * Integrated with 03/99 OPSD code
  * 
  * 9     3/09/99 4:04p Rmoore1
  * 16/32/64-bit common data types
@@ -37,16 +40,10 @@
  * Added File header
  */
 
-#include "datatypes.h"
-#include "acpiasm.h"
+#include <datatypes.h>
+#include <acpiasm.h>
+#include <stdarg.h>
 
-#define OSD_FILE    void
-
-/* FIX THIS !! */
-#ifndef _SIZE_T_DEFINED
-typedef unsigned int size_t;
-#define _SIZE_T_DEFINED
-#endif
 
 
 /* File I/O */
@@ -61,18 +58,18 @@ INT32
 OsdClose (
     OSD_FILE *      stream);
 
-size_t 
+UINT32 
 OsdRead (
     void *          buffer, 
-    size_t          size, 
-    size_t          count, 
+    UINT32          size, 
+    UINT32          count, 
     OSD_FILE *      stream);
 
-size_t 
+UINT32 
 OsdWrite (
     const void *    buffer, 
-    size_t          size, 
-    size_t          count, 
+    UINT32          size, 
+    UINT32          count, 
     OSD_FILE *      stream); 
 
 INT32 
@@ -80,6 +77,12 @@ OsdPrintf (
     OSD_FILE *      stream, 
     const char *    format, 
     ...);
+
+INT32
+OsdVprintf (
+    OSD_FILE *      stream, 
+    const char *    format, 
+    va_list         args);
 
 INT32 
 OsdFlushall (
