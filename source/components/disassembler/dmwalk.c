@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.14 $
+ *              $Revision: 1.19 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -128,14 +128,40 @@
         ACPI_MODULE_NAME    ("dmwalk")
 
 
-#define DB_FULL_OP_INFO     "%5.5X #%4.4hX "
+#define DB_FULL_OP_INFO     "[%4.4s] @%5.5X #%4.4hX:  "
+
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiDmDescendingOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static ACPI_STATUS
+AcpiDmAscendingOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static void
+AcpiDmWalkParseTree (
+    ACPI_PARSE_OBJECT       *Op,
+    ASL_WALK_CALLBACK       DescendingCallback,
+    ASL_WALK_CALLBACK       AscendingCallback,
+    void                    *Context);
+
+static UINT32
+AcpiDmBlockType (
+    ACPI_PARSE_OBJECT       *Op);
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmDisassemble
  *
- * PARAMETERS:  Origin          - Starting object
+ * PARAMETERS:  WalkState       - Current state
+ *              Origin          - Starting object
  *              NumOpcodes      - Max number of opcodes to be displayed
  *
  * RETURN:      None
@@ -161,8 +187,8 @@ AcpiDmDisassemble (
     }
 
     Info.Level = 0;
+    Info.WalkState = WalkState;
     AcpiDmWalkParseTree (Op, AcpiDmDescendingOp, AcpiDmAscendingOp, &Info);
-
     return;
 }
 
@@ -171,7 +197,8 @@ AcpiDmDisassemble (
  *
  * FUNCTION:    AcpiDmWalkParseTree
  *
- * PARAMETERS:  DescendingCallback      - Called during tree descent
+ * PARAMETERS:  Op                      - Root Op object
+ *              DescendingCallback      - Called during tree descent
  *              AscendingCallback       - Called during tree ascent
  *              Context                 - To be passed to the callbacks
  *
@@ -181,7 +208,7 @@ AcpiDmDisassemble (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmWalkParseTree (
     ACPI_PARSE_OBJECT       *Op,
     ASL_WALK_CALLBACK       DescendingCallback,
@@ -281,13 +308,13 @@ AcpiDmWalkParseTree (
  *
  * PARAMETERS:  Op              - Object to be examined
  *
- * RETURN:      Status
+ * RETURN:      BlockType - not a block, parens, braces, or even both.
  *
  * DESCRIPTION: Type of block for this op (parens or braces)
  *
  ******************************************************************************/
 
-UINT32
+static UINT32
 AcpiDmBlockType (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -356,7 +383,7 @@ AcpiDmBlockType (
  *
  * PARAMETERS:  Op              - Object to be examined
  *
- * RETURN:      Status
+ * RETURN:      ListType - has commas or not.
  *
  * DESCRIPTION: Type of block for this op (parens or braces)
  *
@@ -390,7 +417,7 @@ AcpiDmListType (
     case AML_INDEX_FIELD_OP:
     case AML_BANK_FIELD_OP:
 
-        return (0);
+        return (BLOCK_NONE);
 
     case AML_BUFFER_OP:
     case AML_PACKAGE_OP:
@@ -424,7 +451,7 @@ AcpiDmListType (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDmDescendingOp (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
@@ -450,8 +477,8 @@ AcpiDmDescendingOp (
     {
         /* In verbose mode, print the AML offset, opcode and depth count */
 
-        VERBOSE_PRINT ((DB_FULL_OP_INFO, (UINT32) Op->Common.AmlOffset,
-                    Op->Common.AmlOpcode));
+        VERBOSE_PRINT ((DB_FULL_OP_INFO, &Info->WalkState->MethodNode->Name,
+            (UINT32) Op->Common.AmlOffset, Op->Common.AmlOpcode));
 
         if (Op->Common.AmlOpcode == AML_SCOPE_OP)
         {
@@ -463,13 +490,17 @@ AcpiDmDescendingOp (
 
             if (AcpiGbl_ExternalList)
             {
-                AcpiOsPrintf ("    /*\n     * These objects were referenced but not defined in this table\n     */\n");
+                AcpiOsPrintf (
+                    "    /*\n     * These objects were referenced but not defined in this table\n     */\n");
 
-                /* Walk the list of externals (unresolved references) found during parsing */
-
+                /*
+                 * Walk the list of externals (unresolved references)
+                 * found during parsing
+                 */
                 while (AcpiGbl_ExternalList)
                 {
-                    AcpiOsPrintf ("    External (%s, DeviceObj)\n", AcpiGbl_ExternalList->Path);
+                    AcpiOsPrintf ("    External (%s, DeviceObj)\n",
+                        AcpiGbl_ExternalList->Path);
 
                     NextExternal = AcpiGbl_ExternalList->Next;
                     ACPI_MEM_FREE (AcpiGbl_ExternalList->Path);
@@ -486,8 +517,10 @@ AcpiDmDescendingOp (
              (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)) &&
              (Op->Common.AmlOpcode != AML_INT_BYTELIST_OP))
     {
-            /* This is a first-level element of a term list, indent a new line */
-
+            /*
+             * This is a first-level element of a term list,
+             * indent a new line
+             */
             AcpiDmIndent (Level);
     }
 
@@ -542,10 +575,8 @@ AcpiDmDescendingOp (
                     AcpiDmDumpName ((char *) &Name);
                 }
 
-
                 if (Op->Common.AmlOpcode != AML_INT_NAMEDFIELD_OP)
                 {
-                    AcpiDmValidateName ((char *) &Name, Op);
                     if (AcpiGbl_DbOpt_verbose)
                     {
                         (void) AcpiPsDisplayObjectPathname (NULL, Op);
@@ -780,7 +811,7 @@ AcpiDmDescendingOp (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiDmAscendingOp (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
@@ -820,8 +851,10 @@ AcpiDmAscendingOp (
                      (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)) &&
                      (Op->Common.AmlOpcode != AML_INT_BYTELIST_OP))
             {
-                /* This is a first-level element of a term list, start a new line */
-
+                /*
+                 * This is a first-level element of a term list
+                 * start a new line
+                 */
                 AcpiOsPrintf ("\n");
             }
         }
@@ -879,8 +912,10 @@ AcpiDmAscendingOp (
                      (!(Op->Common.DisasmFlags & ACPI_PARSEOP_PARAMLIST)) &&
                      (Op->Common.AmlOpcode != AML_INT_BYTELIST_OP))
             {
-                /* This is a first-level element of a term list, start a new line */
-
+                /*
+                 * This is a first-level element of a term list
+                 * start a new line
+                 */
                 AcpiOsPrintf ("\n");
             }
         }
@@ -925,7 +960,8 @@ AcpiDmAscendingOp (
         }
         else
         {
-            Op->Common.Parent->Common.DisasmFlags |= ACPI_PARSEOP_EMPTY_TERMLIST;
+            Op->Common.Parent->Common.DisasmFlags |=
+                                    ACPI_PARSEOP_EMPTY_TERMLIST;
             AcpiOsPrintf (") {");
         }
     }
