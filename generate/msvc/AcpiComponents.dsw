@@ -67,6 +67,22 @@ Package=<4>
 
 ###############################################################################
 
+Project: "AcpiSrc_Linux"=.\AcpiSrc_Linux.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi/generate/msvc", SVBAAAAA
+    ..\..
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "AcpiSubsystem"=.\AcpiSubsystem.dsp - Package Owner=<4>
 
 Package=<5>
