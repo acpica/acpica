@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.132 $
+ *       $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -273,6 +273,15 @@ typedef void*                           ACPI_HANDLE;    /* Actually a ptr to an 
  */
 
 #define ACPI_ROOT_OBJECT                (ACPI_HANDLE)(-1)
+
+#define ACPI_FULL_INITIALIZATION        0x00
+#define ACPI_NO_ADDRESS_SPACE_INIT      0x01
+#define ACPI_NO_HARDWARE_INIT           0x02
+#define ACPI_NO_EVENT_INIT              0x04
+#define ACPI_NO_ACPI_ENABLE             0x08
+#define ACPI_NO_DEVICE_INIT             0x10
+#define ACPI_NO_PCI_INIT                0x20
+#define ACPI_NO_OBJECT_INIT             0x40
 
 
 /*

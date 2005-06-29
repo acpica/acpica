@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Name: accommon.h -- prototypes for the common (subsystem-wide) procedures
+ *       $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@ AcpiCmTerminate (
 
 
 /*
- * AcpiCmInit - miscellaneous initialization and shutdown
+ * CmInit - miscellaneous initialization and shutdown
  */
 
 ACPI_STATUS
@@ -153,8 +153,12 @@ ACPI_STATUS
 AcpiCmSubsystemShutdown (
     void);
 
+void
+AcpiCmValidateFacp (
+    void);
+
 /*
- * AcpiCmGlobal - Global data structures and procedures
+ * CmGlobal - Global data structures and procedures
  */
 
 NATIVE_CHAR *
@@ -175,7 +179,7 @@ AcpiCmAllocateOwnerId (
 
 
 /*
- * AcpiCmClib - Local implementations of C library functions
+ * CmClib - Local implementations of C library functions
  */
 
 NATIVE_UINT
@@ -252,58 +256,58 @@ AcpiCmToLower (
 
 
 /*
- * AcpiCmCopy - Object construction and conversion interfaces
+ * CmCopy - Object construction and conversion interfaces
  */
 
 ACPI_STATUS
 AcpiCmBuildSimpleObject(
-    ACPI_OBJECT_INTERNAL    *Obj,
+    ACPI_OPERAND_OBJECT     *Obj,
     ACPI_OBJECT             *UserObj,
     UINT8                   *DataSpace,
     UINT32                  *BufferSpaceUsed);
 
 ACPI_STATUS
 AcpiCmBuildPackageObject (
-    ACPI_OBJECT_INTERNAL    *Obj,
+    ACPI_OPERAND_OBJECT     *Obj,
     UINT8                   *Buffer,
     UINT32                  *SpaceUsed);
 
 ACPI_STATUS
 AcpiCmBuildExternalObject (
-    ACPI_OBJECT_INTERNAL    *Obj,
+    ACPI_OPERAND_OBJECT     *Obj,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiCmBuildInternalSimpleObject(
     ACPI_OBJECT             *UserObj,
-    ACPI_OBJECT_INTERNAL    *Obj);
+    ACPI_OPERAND_OBJECT     *Obj);
 
 ACPI_STATUS
 AcpiCmBuildInternalObject (
     ACPI_OBJECT             *Obj,
-    ACPI_OBJECT_INTERNAL    *InternalObj);
+    ACPI_OPERAND_OBJECT     *InternalObj);
 
 ACPI_STATUS
 AcpiCmCopyInternalSimpleObject (
-    ACPI_OBJECT_INTERNAL    *SourceObj,
-    ACPI_OBJECT_INTERNAL    *DestObj);
+    ACPI_OPERAND_OBJECT     *SourceObj,
+    ACPI_OPERAND_OBJECT     *DestObj);
 
 ACPI_STATUS
 AcpiCmBuildCopyInternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *SourceObj,
-    ACPI_OBJECT_INTERNAL    *DestObj);
+    ACPI_OPERAND_OBJECT     *SourceObj,
+    ACPI_OPERAND_OBJECT     *DestObj);
 
 
 /*
- * AcpiCmCreate - Object creation
+ * CmCreate - Object creation
  */
 
 ACPI_STATUS
 AcpiCmUpdateObjectReference (
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action);
 
-ACPI_OBJECT_INTERNAL *
+ACPI_OPERAND_OBJECT  *
 _CmCreateInternalObject (
     NATIVE_CHAR             *ModuleName,
     UINT32                  LineNumber,
@@ -312,7 +316,7 @@ _CmCreateInternalObject (
 
 
 /*
- * AcpiCmDebug - Debug interfaces
+ * CmDebug - Debug interfaces
  */
 
 UINT32
@@ -432,28 +436,28 @@ AcpiCmDumpBuffer (
 
 
 /*
- * AcpiCmDelete - Object deletion
+ * CmDelete - Object deletion
  */
 
 void
 AcpiCmDeleteInternalObj (
-    ACPI_OBJECT_INTERNAL    *Object);
+    ACPI_OPERAND_OBJECT     *Object);
 
 void
 AcpiCmDeleteInternalPackageObject (
-    ACPI_OBJECT_INTERNAL    *Object);
+    ACPI_OPERAND_OBJECT     *Object);
 
 void
 AcpiCmDeleteInternalSimpleObject (
-    ACPI_OBJECT_INTERNAL    *Object);
+    ACPI_OPERAND_OBJECT     *Object);
 
 ACPI_STATUS
 AcpiCmDeleteInternalObjectList (
-    ACPI_OBJECT_INTERNAL    **ObjList);
+    ACPI_OPERAND_OBJECT     **ObjList);
 
 
 /*
- * AcpiCmEval - object evaluation
+ * CmEval - object evaluation
  */
 
 /* Method name strings */
@@ -470,27 +474,27 @@ AcpiCmDeleteInternalObjectList (
 ACPI_STATUS
 AcpiCmEvaluateNumericObject (
     NATIVE_CHAR             *MethodName,
-    ACPI_NAMED_OBJECT       *AcpiDevice,
+    ACPI_NAMESPACE_NODE     *DeviceNode,
     UINT32                  *Address);
 
 ACPI_STATUS
 AcpiCmExecute_HID (
-    ACPI_NAMED_OBJECT       *AcpiDevice,
+    ACPI_NAMESPACE_NODE     *DeviceNode,
     DEVICE_ID               *Hid);
 
 ACPI_STATUS
 AcpiCmExecute_STA (
-    ACPI_NAMED_OBJECT       *AcpiDevice,
+    ACPI_NAMESPACE_NODE     *DeviceNode,
     UINT32                  *StatusFlags);
 
 ACPI_STATUS
 AcpiCmExecute_UID (
-    ACPI_NAMED_OBJECT       *AcpiDevice,
+    ACPI_NAMESPACE_NODE     *DeviceNode,
     DEVICE_ID               *Uid);
 
 
 /*
- * AcpiCmError - exception interfaces
+ * CmError - exception interfaces
  */
 
 NATIVE_CHAR *
@@ -499,7 +503,7 @@ AcpiCmFormatException (
 
 
 /*
- * AcpiCmMutex - mutual exclusion interfaces
+ * CmMutex - mutual exclusion interfaces
  */
 
 ACPI_STATUS
@@ -528,7 +532,7 @@ AcpiCmReleaseMutex (
 
 
 /*
- * AcpiCmObject - internal object create/delete/cache routines
+ * CmObject - internal object create/delete/cache routines
  */
 
 void *
@@ -542,7 +546,7 @@ _CmAllocateObjectDesc (
 
 void
 AcpiCmDeleteObjectDesc (
-    ACPI_OBJECT_INTERNAL    *Object);
+    ACPI_OPERAND_OBJECT     *Object);
 
 BOOLEAN
 AcpiCmValidInternalObject (
@@ -550,39 +554,39 @@ AcpiCmValidInternalObject (
 
 
 /*
- * AcpiCmRefCnt - Object reference count management
+ * CmRefCnt - Object reference count management
  */
 
 void
 AcpiCmAddReference (
-    ACPI_OBJECT_INTERNAL    *Object);
+    ACPI_OPERAND_OBJECT     *Object);
 
 void
 AcpiCmRemoveReference (
-    ACPI_OBJECT_INTERNAL    *Object);
+    ACPI_OPERAND_OBJECT     *Object);
 
 /*
- * AcpiCmSize - Object size routines
+ * CmSize - Object size routines
  */
 
 ACPI_STATUS
 AcpiCmGetSimpleObjectSize (
-    ACPI_OBJECT_INTERNAL    *Obj,
+    ACPI_OPERAND_OBJECT     *Obj,
     UINT32                  *ObjLength);
 
 ACPI_STATUS
 AcpiCmGetPackageObjectSize (
-    ACPI_OBJECT_INTERNAL    *Obj,
+    ACPI_OPERAND_OBJECT     *Obj,
     UINT32                  *ObjLength);
 
 ACPI_STATUS
 AcpiCmGetObjectSize(
-    ACPI_OBJECT_INTERNAL    *Obj,
+    ACPI_OPERAND_OBJECT     *Obj,
     UINT32                  *ObjLength);
 
 
 /*
- * AcpiCmState - Generic state creation/cache routines
+ * CmState - Generic state creation/cache routines
  */
 
 void
@@ -601,12 +605,12 @@ AcpiCmCreateGenericState (
 
 ACPI_GENERIC_STATE *
 AcpiCmCreateUpdateState (
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action);
 
 ACPI_STATUS
 AcpiCmCreateUpdateStateAndPush (
-    ACPI_OBJECT_INTERNAL    *Object,
+    ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action,
     ACPI_GENERIC_STATE      **StateList);
 
@@ -627,7 +631,7 @@ AcpiCmDeleteObjectCache (
     void);
 
 /*
- * AcpiCmutils
+ * Cmutils
  */
 
 BOOLEAN
@@ -667,7 +671,7 @@ _CmFree (
 
 void
 AcpiCmInitStaticObject (
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 #define AcpiCmAllocate(a)               _CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
 #define AcpiCmCallocate(a)              _CmCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
@@ -683,6 +687,8 @@ AcpiCmInitStaticObject (
 #define DECREMENT_OBJECT_METRICS(a)
 #define INCREMENT_OBJECT_METRICS(a)
 #define INITIALIZE_ALLOCATION_METRICS()
+#define DECREMENT_NAME_TABLE_METRICS(a)
+#define INCREMENT_NAME_TABLE_METRICS(a)
 
 #else
 
@@ -699,9 +705,9 @@ AcpiCmInitStaticObject (
     AcpiGbl_RunningAllocCount = 0; \
     AcpiGbl_MaxConcurrentAllocSize = 0; \
     AcpiGbl_MaxConcurrentAllocCount = 0; \
-    AcpiGbl_CurrentNamedObjectCount = 0; \
-    AcpiGbl_CurrentNamedObjectSize = 0; \
-    AcpiGbl_MaxConcurrentNamedObjectCount = 0
+    AcpiGbl_CurrentNodeCount = 0; \
+    AcpiGbl_CurrentNodeSize = 0; \
+    AcpiGbl_MaxConcurrentNodeCount = 0
 
 
 #define DECREMENT_OBJECT_METRICS(a) \
@@ -723,17 +729,16 @@ AcpiCmInitStaticObject (
     }
 
 #define DECREMENT_NAME_TABLE_METRICS(a) \
-    AcpiGbl_CurrentNamedObjectCount--; \
-    AcpiGbl_CurrentNamedObjectSize -= (a)
+    AcpiGbl_CurrentNodeCount--; \
+    AcpiGbl_CurrentNodeSize -= (a)
 
 #define INCREMENT_NAME_TABLE_METRICS(a) \
-    AcpiGbl_CurrentNamedObjectCount++; \
-    AcpiGbl_CurrentNamedObjectSize+= (a); \
-    if (AcpiGbl_MaxConcurrentNamedObjectCount < AcpiGbl_CurrentNamedObjectCount) \
+    AcpiGbl_CurrentNodeCount++; \
+    AcpiGbl_CurrentNodeSize+= (a); \
+    if (AcpiGbl_MaxConcurrentNodeCount < AcpiGbl_CurrentNodeCount) \
     { \
-        AcpiGbl_MaxConcurrentNamedObjectCount = AcpiGbl_CurrentNamedObjectCount; \
+        AcpiGbl_MaxConcurrentNodeCount = AcpiGbl_CurrentNodeCount; \
     } \
-
 
 
 void
