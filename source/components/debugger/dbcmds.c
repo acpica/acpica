@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  ******************************************************************************/
 
@@ -292,7 +292,7 @@ AcpiDbDisplayTableInfo (
             {
                 AcpiOsPrintf (" OemID=%6s TableId=%8s OemRevision=%8.8X",
                         TableDesc->Pointer->OemId,
-                        TableDesc->Pointer->OemTableId, 
+                        TableDesc->Pointer->OemTableId,
                         TableDesc->Pointer->OemRevision);
             }
             AcpiOsPrintf ("\n");

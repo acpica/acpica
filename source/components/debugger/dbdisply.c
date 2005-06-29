@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.90 $
+ *              $Revision: 1.93 $
  *
  ******************************************************************************/
 
@@ -804,7 +804,7 @@ AcpiDbDisplayLocals (void)
     for (i = 0; i < ACPI_METHOD_NUM_LOCALS; i++)
     {
         ObjDesc = WalkState->LocalVariables[i].Object;
-        AcpiOsPrintf ("Local%d: ", i);
+        AcpiOsPrintf ("    Local%X: ", i);
         AcpiDbDisplayInternalObject (ObjDesc, WalkState);
     }
 }
@@ -851,13 +851,13 @@ AcpiDbDisplayArguments (void)
     NumArgs     = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
-    AcpiOsPrintf ("Method [%4.4s] has %X arguments, max concurrency = %X\n",
+    AcpiOsPrintf ("Arguments for Method [%4.4s]:  (%X arguments defined, max concurrency = %X)\n",
             Node->Name.Ascii, NumArgs, Concurrency);
 
     for (i = 0; i < ACPI_METHOD_NUM_ARGS; i++)
     {
         ObjDesc = WalkState->Arguments[i].Object;
-        AcpiOsPrintf ("Arg%d: ", i);
+        AcpiOsPrintf ("    Arg%d:   ", i);
         AcpiDbDisplayInternalObject (ObjDesc, WalkState);
     }
 }
@@ -949,6 +949,59 @@ AcpiDbDisplayCallingTree (void)
 
         WalkState = WalkState->Next;
     }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbDisplayObjectType
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display current calling tree of nested control methods
+ *
+ ******************************************************************************/
+
+void
+AcpiDbDisplayObjectType (
+    char                    *ObjectArg)
+{
+    ACPI_HANDLE             Handle;
+    ACPI_BUFFER             Buffer;
+    ACPI_DEVICE_INFO        *Info;
+    ACPI_STATUS             Status;
+    ACPI_NATIVE_UINT        i;
+
+
+    Handle = ACPI_TO_POINTER (ACPI_STRTOUL (ObjectArg, NULL, 16));
+
+
+    Status = AcpiGetObjectInfo (Handle, &Buffer);
+    if (ACPI_SUCCESS (Status))
+    {
+        Info = Buffer.Pointer;
+        AcpiOsPrintf ("HID: %s, ADR: %8.8X%8.8X, Status %8.8X\n",
+                        &Info->HardwareId,
+                        ACPI_HIDWORD (Info->Address), ACPI_LODWORD (Info->Address),
+                        Info->CurrentStatus);
+
+        if (Info->Valid & ACPI_VALID_CID)
+        {
+            for (i = 0; i < Info->CompatibilityId.Count; i++)
+            {
+                AcpiOsPrintf ("CID #%d: %s\n", i, &Info->CompatibilityId.Id[i]);
+            }
+        }
+
+        ACPI_MEM_FREE (Info);
+    }
+    else
+    {
+        AcpiOsPrintf ("%s\n", AcpiFormatException (Status));
+    }
+
 }
 
 
@@ -1055,7 +1108,7 @@ AcpiDbDisplayGpes (void)
         }
 
         GpeXruptInfo = GpeXruptInfo->Next;
-    }   
+    }
 }
 
 
