@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -544,8 +544,8 @@ const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[AML_NUM_OPCODES] =
 /*! [Begin] no source code translation */
 /* Index           Name                 Parser Args               Interpreter Args                ObjectType                Class                      Type                  Flags */
 
-/* 00 */ ACPI_OP ("Zero",               ARGP_ZERO_OP,              ARGI_ZERO_OP,               INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        AML_CONSTANT),
-/* 01 */ ACPI_OP ("One",                ARGP_ONE_OP,               ARGI_ONE_OP,                INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        AML_CONSTANT),
+/* 00 */ ACPI_OP ("Zero",               ARGP_ZERO_OP,              ARGI_ZERO_OP,               ACPI_TYPE_INTEGER,       AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        AML_CONSTANT),
+/* 01 */ ACPI_OP ("One",                ARGP_ONE_OP,               ARGI_ONE_OP,                ACPI_TYPE_INTEGER,       AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        AML_CONSTANT),
 /* 02 */ ACPI_OP ("Alias",              ARGP_ALIAS_OP,             ARGI_ALIAS_OP,              INTERNAL_TYPE_ALIAS,     AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_SIMPLE,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
 /* 03 */ ACPI_OP ("Name",               ARGP_NAME_OP,              ARGI_NAME_OP,               ACPI_TYPE_ANY,           AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_COMPLEX,   AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
 /* 04 */ ACPI_OP ("ByteConst",          ARGP_BYTE_OP,              ARGI_BYTE_OP,               ACPI_TYPE_INTEGER,       AML_CLASS_ARGUMENT,        AML_TYPE_LITERAL,         AML_CONSTANT),
@@ -613,7 +613,7 @@ const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[AML_NUM_OPCODES] =
 /* 42 */ ACPI_OP ("Return",             ARGP_RETURN_OP,            ARGI_RETURN_OP,             ACPI_TYPE_ANY,           AML_CLASS_CONTROL,         AML_TYPE_CONTROL,         AML_HAS_ARGS),
 /* 43 */ ACPI_OP ("Break",              ARGP_BREAK_OP,             ARGI_BREAK_OP,              ACPI_TYPE_ANY,           AML_CLASS_CONTROL,         AML_TYPE_CONTROL,         0),
 /* 44 */ ACPI_OP ("BreakPoint",         ARGP_BREAK_POINT_OP,       ARGI_BREAK_POINT_OP,        ACPI_TYPE_ANY,           AML_CLASS_CONTROL,         AML_TYPE_CONTROL,         0),
-/* 45 */ ACPI_OP ("Ones",               ARGP_ONES_OP,              ARGI_ONES_OP,               INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        AML_CONSTANT),
+/* 45 */ ACPI_OP ("Ones",               ARGP_ONES_OP,              ARGI_ONES_OP,               ACPI_TYPE_INTEGER,       AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        AML_CONSTANT),
 
 /* Prefixed opcodes (Two-byte opcodes with a prefix op) */
 
@@ -632,7 +632,7 @@ const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[AML_NUM_OPCODES] =
 /* 52 */ ACPI_OP ("FromBCD",            ARGP_FROM_BCD_OP,          ARGI_FROM_BCD_OP,           ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_1R,   AML_FLAGS_EXEC_1A_1T_1R | AML_CONSTANT),
 /* 53 */ ACPI_OP ("ToBCD",              ARGP_TO_BCD_OP,            ARGI_TO_BCD_OP,             ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_1R,   AML_FLAGS_EXEC_1A_1T_1R | AML_CONSTANT),
 /* 54 */ ACPI_OP ("Unload",             ARGP_UNLOAD_OP,            ARGI_UNLOAD_OP,             ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_0T_0R,   AML_FLAGS_EXEC_1A_0T_0R),
-/* 55 */ ACPI_OP ("Revision",           ARGP_REVISION_OP,          ARGI_REVISION_OP,           INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
+/* 55 */ ACPI_OP ("Revision",           ARGP_REVISION_OP,          ARGI_REVISION_OP,           ACPI_TYPE_INTEGER,       AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
 /* 56 */ ACPI_OP ("Debug",              ARGP_DEBUG_OP,             ARGI_DEBUG_OP,              INTERNAL_TYPE_REFERENCE, AML_CLASS_ARGUMENT,        AML_TYPE_CONSTANT,        0),
 /* 57 */ ACPI_OP ("Fatal",              ARGP_FATAL_OP,             ARGI_FATAL_OP,              ACPI_TYPE_ANY,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_3A_0T_0R,   AML_FLAGS_EXEC_3A_0T_0R),
 /* 58 */ ACPI_OP ("OperationRegion",    ARGP_REGION_OP,            ARGI_REGION_OP,             ACPI_TYPE_REGION,        AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_COMPLEX,   AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED | AML_DEFER),
