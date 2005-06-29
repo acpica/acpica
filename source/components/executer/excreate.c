@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
- *              $Revision: 1.58 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiAmlExecCreateField
+ * FUNCTION:    AcpiAmlCreateBufferField
  *
  * PARAMETERS:  Opcode              - The opcode to be executed
  *              Operands            - List of operands for the opcode
@@ -159,9 +159,8 @@
  *
  ******************************************************************************/
 
-
 ACPI_STATUS
-AcpiAmlExecCreateField (
+AcpiAmlCreateBufferField (
     UINT8                   *AmlPtr,
     UINT32                  AmlLength,
     ACPI_NAMESPACE_NODE     *Node,
@@ -172,31 +171,26 @@ AcpiAmlExecCreateField (
     ACPI_OPERAND_OBJECT     *TmpDesc;
 
 
-    FUNCTION_TRACE ("AmlExecCreateField");
+    FUNCTION_TRACE ("AmlCreateBufferField");
 
 
-    /* Create the region descriptor */
+    /* Create the descriptor */
 
-    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_FIELD_UNIT);
+    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_BUFFER_FIELD);
     if (!ObjDesc)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
     }
 
-    /* Construct the field object */
-
-    ObjDesc->FieldUnit.Access       = (UINT8) ACCESS_ANY_ACC;
-    ObjDesc->FieldUnit.LockRule     = (UINT8) GLOCK_NEVER_LOCK;
-    ObjDesc->FieldUnit.UpdateRule   = (UINT8) UPDATE_PRESERVE;
 
     /*
      * Allocate a method object for this field unit
      */
 
-    ObjDesc->FieldUnit.Extra = AcpiCmCreateInternalObject (
+    ObjDesc->BufferField.Extra = AcpiCmCreateInternalObject (
                                     INTERNAL_TYPE_EXTRA);
-    if (!ObjDesc->FieldUnit.Extra)
+    if (!ObjDesc->BufferField.Extra)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
@@ -208,15 +202,15 @@ AcpiAmlExecCreateField (
      * operands must be evaluated.
      */
 
-    ObjDesc->FieldUnit.Extra->Extra.Pcode       = AmlPtr;
-    ObjDesc->FieldUnit.Extra->Extra.PcodeLength = AmlLength;
-    ObjDesc->FieldUnit.Node = Node;
+    ObjDesc->BufferField.Extra->Extra.Pcode       = AmlPtr;
+    ObjDesc->BufferField.Extra->Extra.PcodeLength = AmlLength;
+    ObjDesc->BufferField.Node = Node;
 
 
     /*
      * This operation is supposed to cause the destination Name to refer
-     * to the defined FieldUnit -- it must not store the constructed
-     * FieldUnit object (or its current value) in some location that the
+     * to the defined BufferField -- it must not store the constructed
+     * BufferField object (or its current value) in some location that the
      * Name may already be pointing to.  So, if the Name currently contains
      * a reference which would cause AcpiAmlExecStore() to perform an indirect
      * store rather than setting the value of the Name itself, clobber that
@@ -228,11 +222,10 @@ AcpiAmlExecCreateField (
     switch (AcpiNsGetType (Node))
     {
 
-    case ACPI_TYPE_FIELD_UNIT:
-
+    case ACPI_TYPE_BUFFER_FIELD:
     case INTERNAL_TYPE_ALIAS:
+    case INTERNAL_TYPE_REGION_FIELD:
     case INTERNAL_TYPE_BANK_FIELD:
-    case INTERNAL_TYPE_DEF_FIELD:
     case INTERNAL_TYPE_INDEX_FIELD:
 
         TmpDesc = AcpiNsGetAttachedObject (Node);
@@ -244,7 +237,7 @@ AcpiAmlExecCreateField (
              */
 
             DUMP_PATHNAME (Node,
-                "AmlExecCreateField: Removing Current Reference",
+                "AmlCreateBufferField: Removing Current Reference",
                 TRACE_BFIELD, _COMPONENT);
 
             DUMP_ENTRY (Node, TRACE_BFIELD);
@@ -270,7 +263,7 @@ AcpiAmlExecCreateField (
 
     /* Store constructed field descriptor in result location */
 
-    Status = AcpiAmlExecStore (ObjDesc, (ACPI_OPERAND_OBJECT *) Node, 
+    Status = AcpiAmlExecStore (ObjDesc, (ACPI_OPERAND_OBJECT *) Node,
                     WalkState);
 
     /*
@@ -306,7 +299,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiAmlExecCreateAlias
  *
- * PARAMETERS:  WalkState            - Current state, contains List of 
+ * PARAMETERS:  WalkState            - Current state, contains List of
  *                                      operands for the opcode
  *
  * RETURN:      Status
