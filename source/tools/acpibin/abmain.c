@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abmain - Main module for the acpi binary utility
- *              $Revision: 1.6 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,7 @@
 
 #define _DECLARE_GLOBALS
 #include "acpibin.h"
+#include "acapps.h"
 
 
 /******************************************************************************
@@ -135,6 +136,7 @@ AbDisplayUsage (void)
     printf ("Usage: acpibin [-cd] <File1> [<File2>]\n\n");
     printf ("Options:  -c               Compare AML files\n");
     printf ("          -d               Dump AML file\n");
+    printf ("          -s               Compute checksum for ACPI table\n");
     printf ("          -t               Terse mode\n");
     printf ("\n");
     return;
@@ -168,7 +170,7 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "cdt")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "cdst")) != EOF) switch(j)
     {
     case 'c':
         /* Compare Files */
@@ -180,6 +182,11 @@ main (
 
         Gbl_DumpMode = TRUE;
         break;
+
+    case 's':
+
+        AbComputeChecksum (argv[AcpiGbl_Optind]);
+        return (0);
 
     case 't':
 
@@ -194,12 +201,12 @@ main (
 
     if (Gbl_CompareMode)
     {
-        AbCompareAmlFiles (argv[optind], argv[optind+1]);
+        AbCompareAmlFiles (argv[AcpiGbl_Optind], argv[AcpiGbl_Optind+1]);
     }
 
     else if (Gbl_DumpMode)
     {
-        AbDumpAmlFile (argv[optind]);
+        AbDumpAmlFile (argv[AcpiGbl_Optind]);
     }
 
     return 0;

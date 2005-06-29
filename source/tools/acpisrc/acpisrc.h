@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.8 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -142,15 +142,16 @@
 #define CVT_COUNT_TABS                      0x00000001
 #define CVT_COUNT_NON_ANSI_COMMENTS         0x00000002
 #define CVT_TRIM_LINES                      0x00000004
-#define CVT_COUNT_LINES                     0x00000008
-#define CVT_BRACES_ON_SAME_LINE             0x00000010
-#define CVT_MIXED_CASE_TO_UNDERSCORES       0x00000020
-#define CVT_LOWER_CASE_IDENTIFIERS          0x00000040
-#define CVT_REMOVE_DEBUG_MACROS             0x00000080
-#define CVT_TRIM_WHITESPACE                 0x00000100  /* Should be after all line removal */
-#define CVT_REMOVE_EMPTY_BLOCKS             0x00000200  /* Should be after trimming lines */
-#define CVT_SPACES_TO_TABS4                 0x40000000
-#define CVT_SPACES_TO_TABS8                 0x80000000
+#define CVT_CHECK_BRACES                    0x00000008
+#define CVT_COUNT_LINES                     0x00000010
+#define CVT_BRACES_ON_SAME_LINE             0x00000020
+#define CVT_MIXED_CASE_TO_UNDERSCORES       0x00000040
+#define CVT_LOWER_CASE_IDENTIFIERS          0x00000080
+#define CVT_REMOVE_DEBUG_MACROS             0x00000100
+#define CVT_TRIM_WHITESPACE                 0x00000200  /* Should be after all line removal */
+#define CVT_REMOVE_EMPTY_BLOCKS             0x00000400  /* Should be after trimming lines */
+#define CVT_SPACES_TO_TABS4                 0x40000000  /* Tab conversion should be last */
+#define CVT_SPACES_TO_TABS8                 0x80000000  /* Tab conversion should be last */
 
 
 #define FLG_DEFAULT_FLAGS                   0x00000000
@@ -162,6 +163,7 @@
 /* Globals */
 
 extern UINT32                   Gbl_Files;
+extern UINT32                   Gbl_MissingBraces;
 extern UINT32                   Gbl_Tabs;
 extern UINT32                   Gbl_NonAnsiComments;
 extern UINT32                   Gbl_SourceLines;
@@ -174,14 +176,16 @@ extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
 extern BOOLEAN                  Gbl_VerboseMode;
 extern BOOLEAN                  Gbl_BatchMode;
-
-
-extern int                      optind;
-extern char                     *optarg;
+extern BOOLEAN                  Gbl_MadeChanges;
+extern BOOLEAN                  Gbl_Overwrite;
 
 #define PARAM_LIST(pl)          pl
 #define TERSE_PRINT(a)          if (!Gbl_VerboseMode) printf PARAM_LIST(a)
 #define VERBOSE_PRINT(a)        if (Gbl_VerboseMode) printf PARAM_LIST(a)
+
+
+#define REPLACE_WHOLE_WORD      0
+#define REPLACE_SUBSTRINGS      1
 
 
 /* Conversion table structs */
@@ -190,6 +194,7 @@ typedef struct acpi_string_table
 {
     char                        *Target;
     char                        *Replacement;
+    UINT8                       Type;
 
 } ACPI_STRING_TABLE;
 
@@ -206,6 +211,8 @@ typedef struct acpi_conversion_table
     char                        *NewHeader;
     UINT32                      Flags;
 
+    ACPI_IDENTIFIER_TABLE       *LowerCaseTable;
+
     ACPI_STRING_TABLE           *SourceStringTable;
     ACPI_IDENTIFIER_TABLE       *SourceLineTable;
     ACPI_IDENTIFIER_TABLE       *SourceConditionalTable;
@@ -220,12 +227,6 @@ typedef struct acpi_conversion_table
 
 
 /* Prototypes */
-
-int
-getopt (
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
 
 char *
 AsSkipUntilChar (
@@ -244,17 +245,27 @@ AsReplaceData (
     char                    *BufferToAdd,
     UINT32                  LengthToAdd);
 
-
 int
 AsReplaceString (
     char                    *Target,
     char                    *Replacement,
+    UINT8                   Type,
+    char                    *Buffer);
+
+int
+AsLowerCaseString (
+    char                    *Target,
     char                    *Buffer);
 
 void
 AsRemoveLine (
     char                    *Buffer,
     char                    *Keyword);
+
+void
+AsCheckForBraces (
+    char                    *Buffer,
+    char                    *Filename);
 
 void
 AsTrimLines (

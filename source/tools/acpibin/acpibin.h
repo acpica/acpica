@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpibinh - Include file for AcpiBin utility
- *              $Revision: 1.8 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -147,6 +147,8 @@
 /* Globals */
 
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_TerseMode, FALSE);
+EXTERN BOOLEAN              INIT_GLOBAL (Gbl_CompareMode, FALSE);
+EXTERN BOOLEAN              INIT_GLOBAL (Gbl_DumpMode, FALSE);
 
 
 /* Prototypes */
@@ -157,21 +159,11 @@ AbCompareAmlFiles (
     char                    *File2Path);
 
 int
-AbExtractAmlFile (
-    char                    *TableSig,
-    char                    *File1Path,
-    char                    *File2Path);
-
-int
 AbDumpAmlFile (
-    char                    *File1Path,
-    char                    *File2Path);
+    char                    *File1Path);
 
 void
 AbComputeChecksum (
     char                    *File1Path);
 
-void
-AbDisplayHeader (
-    char                    *File1Path);
 
