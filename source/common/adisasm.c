@@ -363,6 +363,7 @@ AdSecondPassParse (
     UINT32                  BaseAmlOffset;
 
 
+    PROC_NAME ("AdSecondPassParse");
     printf ("Parsing Control Methods \n");
 
     while (Op)
@@ -372,7 +373,7 @@ AdSecondPassParse (
             printf (".");
 
             Method = (ACPI_PARSE2_OBJECT *) Op;
-            DEBUG_PRINT (ACPI_INFO, ("Parsing method [%4.4s]\n", &Method->Name));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing method [%4.4s]\n", &Method->Name));
 
             /* Parse the method */
 
