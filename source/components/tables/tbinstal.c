@@ -409,6 +409,11 @@ TbInitTableDescriptor (
     }
 
 
+    /* Return Data */
+
+    TableInfo->TableId          = TableDesc->TableId;
+    TableInfo->InstalledDesc    = TableDesc;
+
     return_ACPI_STATUS (AE_OK);
 }
 
