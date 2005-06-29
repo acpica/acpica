@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -366,14 +366,7 @@ AcpiGetObjectInfo (
     Status = AcpiCmExecute_HID (Node, &Hid);
     if (ACPI_SUCCESS (Status))
     {
-        if (Hid.Type == STRING_PTR_DEVICE_ID)
-        {
-            STRCPY (Info->HardwareId, Hid.Data.StringPtr);
-        }
-        else
-        {
-            STRCPY (Info->HardwareId, Hid.Data.Buffer);
-        }
+        STRNCPY (Info->HardwareId, Hid.Buffer, sizeof(Info->HardwareId));
 
         Info->Valid |= ACPI_VALID_HID;
     }
@@ -383,15 +376,8 @@ AcpiGetObjectInfo (
     Status = AcpiCmExecute_UID (Node, &Uid);
     if (ACPI_SUCCESS (Status))
     {
-        if (Uid.Type == STRING_PTR_DEVICE_ID)
-        {
-            STRCPY (Info->UniqueId, Uid.Data.StringPtr);
-        }
-        else
-        {
-            STRCPY (Info->UniqueId, Uid.Data.Buffer);
-        }
-
+        STRCPY (Info->UniqueId, Uid.Buffer);
+        
         Info->Valid |= ACPI_VALID_UID;
     }
 
