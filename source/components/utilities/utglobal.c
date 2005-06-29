@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.156 $
+ *              $Revision: 1.158 $
  *
  *****************************************************************************/
 
@@ -118,11 +118,8 @@
 #define DEFINE_ACPI_GLOBALS
 
 #include "acpi.h"
-#include "acevents.h"
 #include "acnamesp.h"
-#include "acinterp.h"
 #include "amlcode.h"
-
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utglobal")
@@ -280,15 +277,15 @@ const NATIVE_CHAR           *AcpiGbl_DbSleepStates[ACPI_NUM_SLEEP_STATES] = {
 
 const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
 {
-    {"_GPE",    INTERNAL_TYPE_DEF_ANY},
-    {"_PR_",    INTERNAL_TYPE_DEF_ANY},
-    {"_SB_",    ACPI_TYPE_DEVICE},
-    {"_SI_",    INTERNAL_TYPE_DEF_ANY},
-    {"_TZ_",    INTERNAL_TYPE_DEF_ANY},
+    {"_GPE",    INTERNAL_TYPE_DEF_ANY,      NULL},
+    {"_PR_",    INTERNAL_TYPE_DEF_ANY,      NULL},
+    {"_SB_",    ACPI_TYPE_DEVICE,           NULL},
+    {"_SI_",    INTERNAL_TYPE_DEF_ANY,      NULL},
+    {"_TZ_",    INTERNAL_TYPE_DEF_ANY,      NULL},
     {"_REV",    ACPI_TYPE_INTEGER,          "2"},
     {"_OS_",    ACPI_TYPE_STRING,           ACPI_OS_NAME},
     {"_GL_",    ACPI_TYPE_MUTEX,            "0"},
-    {NULL,      ACPI_TYPE_ANY}              /* Table terminator */
+    {NULL,      ACPI_TYPE_ANY,              NULL}              /* Table terminator */
 };
 
 
@@ -343,9 +340,9 @@ const UINT8                     AcpiGbl_NsProperties[] =
 
 /* Hex to ASCII conversion table */
 
-const NATIVE_CHAR           AcpiGbl_HexToAscii[] =
+static const NATIVE_CHAR    AcpiGbl_HexToAscii[] =
                                 {'0','1','2','3','4','5','6','7',
-                                '8','9','A','B','C','D','E','F'};
+                                 '8','9','A','B','C','D','E','F'};
 
 /*****************************************************************************
  *
@@ -361,7 +358,7 @@ const NATIVE_CHAR           AcpiGbl_HexToAscii[] =
  *
  ****************************************************************************/
 
-UINT8
+char
 AcpiUtHexToAsciiChar (
     ACPI_INTEGER            Integer,
     UINT32                  Position)
@@ -461,7 +458,7 @@ ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EVENTS] =
 
 /* Region type decoding */
 
-const NATIVE_CHAR *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
+static const NATIVE_CHAR *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS] =
 {
     "SystemMemory",
     "SystemIO",
@@ -507,7 +504,7 @@ AcpiUtGetRegionName (
 
 /* Event type decoding */
 
-const NATIVE_CHAR *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
+static const NATIVE_CHAR *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
 {
     "PM_Timer",
     "GlobalLock",
@@ -647,14 +644,14 @@ AcpiUtGetTypeName (
 
 /* Data used in keeping track of fields */
 
-const NATIVE_CHAR *AcpiGbl_FENames[NUM_FIELD_NAMES] =
+static const NATIVE_CHAR *AcpiGbl_FENames[NUM_FIELD_NAMES] =
 {
     "skip",
     "?access?"
 };              /* FE = Field Element */
 
 
-const NATIVE_CHAR *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
+static const NATIVE_CHAR *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
 {
     "Error",
     "MTR",
@@ -668,7 +665,7 @@ const NATIVE_CHAR *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
 
 /* Access type decoding */
 
-const NATIVE_CHAR *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
+static const NATIVE_CHAR *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
 {
     "AnyAcc",
     "ByteAcc",
@@ -681,7 +678,7 @@ const NATIVE_CHAR *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
 
 /* Update rule decoding */
 
-const NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
+static const NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
 {
     "Preserve",
     "WriteAsOnes",
@@ -769,6 +766,9 @@ AcpiUtAllocateOwnerId (
         {
             AcpiGbl_NextMethodOwnerId = ACPI_FIRST_METHOD_ID;
         }
+        break;
+
+    default:
         break;
     }
 
