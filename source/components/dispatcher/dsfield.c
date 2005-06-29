@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -157,6 +157,7 @@ AcpiDsCreateBufferField (
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *SecondDesc = NULL;
     UINT32                  Flags;
 
 
@@ -221,10 +222,9 @@ AcpiDsCreateBufferField (
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
     {
-        /* No longer need the Extra field */
+        /* TBD: true?  No longer need the Extra field */
 
-        AcpiUtRemoveReference (ObjDesc->BufferField.Extra);
-        ObjDesc->BufferField.Extra = NULL;
+        AcpiNsDetachSecondary (ObjDesc);
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -243,11 +243,10 @@ AcpiDsCreateBufferField (
     }
 
     /*
-     * Allocate a method object for this field unit
+     * Allocate a secondary object for this field unit
      */
-    ObjDesc->BufferField.Extra = AcpiUtCreateInternalObject (
-                                    INTERNAL_TYPE_EXTRA);
-    if (!ObjDesc->BufferField.Extra)
+    SecondDesc = AcpiUtCreateInternalObject (INTERNAL_TYPE_EXTRA);
+    if (!SecondDesc)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
@@ -258,20 +257,26 @@ AcpiDsCreateBufferField (
      * opcode and operands -- since the buffer and index
      * operands must be evaluated.
      */
-    ObjDesc->BufferField.Extra->Extra.AmlStart  = ((ACPI_PARSE2_OBJECT *) Op)->Data;
-    ObjDesc->BufferField.Extra->Extra.AmlLength = ((ACPI_PARSE2_OBJECT *) Op)->Length;
+    SecondDesc->Extra.AmlStart  = ((ACPI_PARSE2_OBJECT *) Op)->Data;
+    SecondDesc->Extra.AmlLength = ((ACPI_PARSE2_OBJECT *) Op)->Length;
     ObjDesc->BufferField.Node = Node;
 
-    /* Attach constructed field descriptor to parent node */
+    /* Attach constructed field descriptors to parent node */
 
     Status = AcpiNsAttachObject (Node, ObjDesc, ACPI_TYPE_BUFFER_FIELD);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
 
+    Status = AcpiNsAttachSecondary (Node, SecondDesc);
 
 Cleanup:
 
-    /* Remove local reference to the object */
+    /* Remove local reference to the objects */
 
     AcpiUtRemoveReference (ObjDesc);
+    AcpiUtRemoveReference (SecondDesc);
     return_ACPI_STATUS (Status);
 }
 
