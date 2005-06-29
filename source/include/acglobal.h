@@ -260,12 +260,12 @@ ACPI_EXTERN UINT8               *PCode;
 /* 
  * Length of AML block, and remaining length of current package.
  */
-ACPI_EXTERN INT32               PCodeBlockLen;
-ACPI_EXTERN INT32               PCodeLen;
+ACPI_EXTERN UINT32              PCodeBlockLen;
+ACPI_EXTERN UINT32              PCodeLen;
 
 ACPI_EXTERN UINT32              BufSeq;             /* Counts allocated Buffer descriptors */
 ACPI_EXTERN INT32               SkipField;
-ACPI_EXTERN INT32               LastPkgLen;
+ACPI_EXTERN UINT32              LastPkgLen;
 ACPI_EXTERN UINT8               LastFieldFlag;
 extern char                     *FENames[];
 
