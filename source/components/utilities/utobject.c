@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.57 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -315,6 +315,11 @@ AcpiUtDeleteObjectDesc (
     FUNCTION_TRACE_PTR ("UtDeleteObjectDesc", Object);
 
 
+    if ((UINT32) Object == 0x4a2418)
+    {
+        AcpiOsPrintf ("Found\n");
+    }
+
     /* Object must be an ACPI_OPERAND_OBJECT  */
 
     if (Object->Common.DataType != ACPI_DESC_TYPE_INTERNAL)
@@ -353,7 +358,6 @@ AcpiUtDeleteObjectCache (
     AcpiUtDeleteGenericCache (ACPI_MEM_LIST_OPERAND);
     return_VOID;
 }
-
 
 
 /*******************************************************************************
