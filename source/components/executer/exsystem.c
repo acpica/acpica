@@ -116,7 +116,7 @@ static ST_KEY_DESC_TABLE KDT[] = {
  * 
  * FUNCTION:    OsThreadId
  *
- * PARAMETERS:  void
+ * PARAMETERS:  None
  *
  * RETURN:      Current Thread ID (for this implementation a 1 is returned)
  *
@@ -138,16 +138,16 @@ OsThreadId (void)
  * 
  * FUNCTION:    OsDoNotifyOp 
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *ValDesc -    The value of the opcode to be
- *                                          executed.
+ * PARAMETERS:  *ValDesc            - The value of the opcode to be executed.
+ *              *ObjDesc            - Device's object descriptor
  *
- * RETURN:      S_SUCCESS or S_ERROR (S_SUCCESS for now only)
+ * RETURN:      Status
  *
- * DESCRIPTION: prints a message that these operations are not implemented
+ * DESCRIPTION: Prints a message that these operations are not implemented
  *
  ******************************************************************************/
 
-INT32
+ACPI_STATUS
 OsDoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
 
@@ -187,7 +187,7 @@ OsDoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
         REPORT_WARNING (&KDT[0]);
     }
     
-    return S_SUCCESS;
+    return AE_OK;
 }
 
 
@@ -195,13 +195,11 @@ OsDoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
  * 
  * FUNCTION:    OsDoSuspend
  *
- * PARAMETERS:  UINT32 HowLong - The amount of time to suspend
+ * PARAMETERS:  HowLong             - The amount of time to suspend
  *
- * RETURN:      void
+ * RETURN:      None
  *
- * DESCRIPTION: Suspend processing for specified amount of time.  This
- *              function should be suspending the current thread but is using
- *              busy wait instead since this implementation is single threaded
+ * DESCRIPTION: Suspend running thread for specified amount of time.
  *
  ******************************************************************************/
 
@@ -216,24 +214,24 @@ OsDoSuspend (UINT32 HowLong)
  * 
  * FUNCTION:    OsAcquireOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *TimeDesc  - The 'time to delay' object descriptor
- *              OBJECT_DESCRIPTOR *ObjDesc   - The object descriptor for this op
+ * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
+ *              *ObjDesc            - The object descriptor for this op
  *
- * RETURN:      S_SUCCESS/S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
- *              within the AML.  Current implementation is for single thread
- *              OS only.  This function will cause a lock to be generated
+ *              within the AML.  This function will cause a lock to be generated
  *              for the Mutex pointed to by ObjDesc.
- *              Timeout is being ignored for now since this is single threaded.
+ *
+ *             TBD: Timeout is being ignored for now since this is single threaded.
  *
  ******************************************************************************/
 
-INT32
+ACPI_STATUS
 OsAcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    UINT16      CurrentId;
-    INT32       Excep = S_SUCCESS;
+    UINT16          CurrentId;
+    ACPI_STATUS     Status = AE_OK;
 
 
     if (ObjDesc)
@@ -247,16 +245,16 @@ OsAcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attemted to Aquire a resource owned "
                     "by thread %02Xh\n", CurrentId, ObjDesc->Mutex.ThreadId));
-            Excep = S_ERROR;
+            Status = AE_ERROR;
         }
 
-        if (S_SUCCESS == Excep)
+        if (AE_OK == Status)
         {
             ObjDesc->Mutex.LockCount++;
         }
     }
 
-    return (Excep);
+    return (Status);
 }
 
 
@@ -264,23 +262,22 @@ OsAcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
  * 
  * FUNCTION:    OsReleaseOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc  - The object descriptor for this op
+ * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
- * RETURN:      S_SUCCESS/S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
- *              within the AML.  Current implementation is for single thread
- *              OS only.  This operation is a request to release a previously
+ *              within the AML.  This operation is a request to release a previously
  *              acquired Mutex.  If the Mutex variable is set then it will be
- *              decremented.  Otherwise S_ERROR will be returned.
+ *              decremented.  Otherwise AE_ERROR will be returned.
  *
  ******************************************************************************/
 
-INT32
+ACPI_STATUS
 OsReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
-    UINT16      CurrentId;
-    INT32       Excep = S_SUCCESS;
+    UINT16          CurrentId;
+    ACPI_STATUS     Status = AE_OK;
 
 
     if (ObjDesc)
@@ -288,23 +285,23 @@ OsReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
         if (ObjDesc->Mutex.LockCount == 0)
         {
             DEBUG_PRINT (ACPI_ERROR, ("Attempting to Release a Mutex that is not locked\n"));
-            Excep == S_ERROR;
+            Status == AE_ERROR;
         }
     
         else if (ObjDesc->Mutex.ThreadId != (CurrentId = OsThreadId ()))
         {
             DEBUG_PRINT (ACPI_ERROR, ("Thread %02Xh attemted to Release a Mutex owned "
                         "by thread %02Xh\n", CurrentId, ObjDesc->Mutex.ThreadId));
-            Excep = S_ERROR;
+            Status = AE_ERROR;
         }
     
-        if (S_SUCCESS == Excep)
+        if (AE_OK == Status)
         {
             ObjDesc->Mutex.LockCount--;
         }
     }
 
-    return (Excep);
+    return (Status);
 }
 
 
@@ -312,20 +309,19 @@ OsReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  * 
  * FUNCTION:    OsSignalOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc  - The object descriptor for this op
+ * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
- * RETURN:      S_SUCCESS
+ * RETURN:      AE_OK
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
- *              within the AML.  Current implementation is for single thread
- *              OS only.  This will signal when an event has been posted.
+ *              within the AML.  This will signal when an event has been posted.
  *              if this occures prior to a wait then the wait will succeed.
  *              if a wait occures without a signal then the wait will fail
  *              because the signal will never occur.
  *
  ******************************************************************************/
 
-INT32
+ACPI_STATUS
 OsSignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
 
@@ -334,7 +330,7 @@ OsSignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
         ObjDesc->Event.SignalCount++;
     }
 
-    return (S_SUCCESS);
+    return (AE_OK);
 }
 
 
@@ -342,27 +338,27 @@ OsSignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  * 
  * FUNCTION:    OsWaitOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *TimeDesc - The 'time to delay' object descriptor
- *              OBJECT_DESCRIPTOR *ObjDesc   - The object descriptor for this op
+ * PARAMETERS:  *TimeDesc           - The 'time to delay' object descriptor
+ *              *ObjDesc            - The object descriptor for this op
  *
- * RETURN:      S_SUCCESS/S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
- *              within the AML.  Current implementation is for single thread
- *              OS only.  This operation is a request to wait for an event.
+ *              within the AML.  This operation is a request to wait for an event.
  *              In a single thread OS,  if the signal for this event has
  *              already occured then dec the signal count and return success.
  *              If the signal has not already occured then it never will
  *              because the wait would have to give the processor over to a
  *              new process and that can't happen in a single threaded OS.
- *              Timeout is being ignored for the current implementation.
+ *
+ *              TBD: Timeout is being ignored for the current implementation.
  *
  ******************************************************************************/
 
-INT32
+ACPI_STATUS
 OsWaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    INT32       Excep = S_SUCCESS;
+    ACPI_STATUS     Status = AE_OK;
 
 
     if (ObjDesc)
@@ -373,7 +369,7 @@ OsWaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
         
             DEBUG_PRINT (ACPI_ERROR, ("Waiting for a signal that has not occured.  In a single threaded"
                     "\nOperating System the signal would never be received.\n"));
-            Excep = S_ERROR;
+            Status = AE_ERROR;
         }
     
         else
@@ -382,7 +378,7 @@ OsWaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
         }
     }
   
-    return (Excep);
+    return (Status);
 }
 
 
@@ -390,9 +386,9 @@ OsWaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
  * 
  * FUNCTION:    OsResetOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc  - The object descriptor for this op
+ * PARAMETERS:  *ObjDesc            - The object descriptor for this op
  *
- * RETURN:      S_SUCCESS/S_ERROR
+ * RETURN:      Status
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
  *              within the AML.  Current implementation is for single thread
@@ -401,10 +397,10 @@ OsWaitOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
  *
  ******************************************************************************/
 
-INT32
+ACPI_STATUS
 OsResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
-    INT32       Excep = S_SUCCESS;
+    ACPI_STATUS         Status = AE_OK;
 
 
     if (ObjDesc)
@@ -412,7 +408,7 @@ OsResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
         ObjDesc->Event.SignalCount = 0;
     }
 
-    return (Excep);
+    return (Status);
 }
 
 
@@ -420,19 +416,21 @@ OsResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
  * 
  * FUNCTION:    OsGetGlobalLock
  *
- * RETURN:      S_SUCCESS/S_ERROR
+ * RETURN:      Status
  *
- * DESCRIPTION: attemts to gain ownership of the Global Lock.  Since this
+ * DESCRIPTION: Attempts to gain ownership of the Global Lock.  
+ *
+ *              TBD: Since this
  *              is a single threaded implementation if the Global Lock
  *              ownership is not successful then the test will fail.
  *
  **************************************************************************/
 
-INT32
+ACPI_STATUS
 OsGetGlobalLock(void)
 {
-    UINT32          GlobalLockReg;
-    INT32           Excep = S_ERROR;
+    UINT32              GlobalLockReg;
+    ACPI_STATUS         Status = AE_ERROR;
 
 
     if (FACS)
@@ -446,19 +444,19 @@ OsGetGlobalLock(void)
             DEBUG_PRINT (ACPI_ERROR, ("The Global Lock is owned by another process\n"\
                     "This is a single threaded implementation. There is no way some\n"\
                     "other process can own the Global Lock!\n"));
-            Excep = S_ERROR;
+            Status = AE_ERROR;
         }
     
         else
         {
-            /* Its not owned so take ownership and return S_SUCCESS */
+            /* Its not owned so take ownership and return AE_OK */
         
             FACS->GlobalLock |= GL_OWNED;
-            Excep = S_SUCCESS;
+            Status = AE_OK;
         }
     }
 
-    return (Excep);
+    return (Status);
 }
 
 
@@ -466,7 +464,7 @@ OsGetGlobalLock(void)
  * 
  * FUNCTION:    OsReleaseGlobalLock
  *
- * DESCRIPTION: Releases the ownership of the Global Lock.
+ * DESCRIPTION: Releases ownership of the Global Lock.
  *
  **************************************************************************/
 
