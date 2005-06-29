@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -288,7 +288,7 @@ AcpiAmlDumpOperand (
     {
     case INTERNAL_TYPE_REFERENCE:
 
-        switch (EntryDesc->Reference.OpCode)
+        switch (EntryDesc->Reference.Opcode)
         {
         case AML_ZERO_OP:
 
@@ -374,7 +374,7 @@ AcpiAmlDumpOperand (
             /*  unknown opcode  */
 
             DEBUG_PRINT_RAW (ACPI_INFO, ("Unknown opcode=%X\n",
-                EntryDesc->Reference.OpCode));
+                EntryDesc->Reference.Opcode));
             break;
 
         }
@@ -917,7 +917,7 @@ AcpiAmlDumpObjectDescriptor (
 
         AcpiOsPrintf ("%20s : %s\n", "Type", "Reference");
         AcpiOsPrintf ("%20s : %X\n", "TargetType", ObjDesc->Reference.TargetType);
-        AcpiOsPrintf ("%20s : %X\n", "OpCode", ObjDesc->Reference.OpCode);
+        AcpiOsPrintf ("%20s : %X\n", "Opcode", ObjDesc->Reference.Opcode);
         AcpiOsPrintf ("%20s : %X\n", "Offset", ObjDesc->Reference.Offset);
         AcpiOsPrintf ("%20s : %p\n", "ObjDesc", ObjDesc->Reference.Object);
         AcpiOsPrintf ("%20s : %p\n", "Node", ObjDesc->Reference.Node);
