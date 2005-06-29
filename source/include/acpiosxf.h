@@ -163,23 +163,23 @@ OsdTerminate (
  
 ACPI_STATUS
 OsdCreateSemaphore (
-	UINT32				InitialUnits,
-	ACPI_HANDLE			*OutHandle);
+	UINT32				    InitialUnits,
+	ACPI_HANDLE			    *OutHandle);
 
 ACPI_STATUS
 OsdDeleteSemaphore (
-	ACPI_HANDLE			Handle);
+	ACPI_HANDLE			    Handle);
 
 ACPI_STATUS
 OsdWaitSemaphore (
-	ACPI_HANDLE			Handle,
-	UINT32				Units,
-	UINT32				Timeout);
+	ACPI_HANDLE			    Handle,
+	UINT32				    Units,
+	UINT32				    Timeout);
 
 ACPI_STATUS
 OsdSignalSemaphore (
-	ACPI_HANDLE			Handle,
-	UINT32				Units);
+	ACPI_HANDLE			    Handle,
+	UINT32				    Units);
 
 /* 
  * Memory allocation and mapping 
@@ -338,13 +338,13 @@ OsdBreakpoint (
     char                    *Message);
 
 BOOLEAN
-OsdVerifyReadable (
+OsdReadable (
     void                    *Pointer,
     UINT32                  Length);
 
 
 BOOLEAN
-OsdVerifyWritable (
+OsdWritable (
     void                    *Pointer,
     UINT32                  Length);
 
