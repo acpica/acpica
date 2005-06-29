@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI hardware functions - mode and timer
- *              $Revision: 1.26 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -224,7 +224,7 @@ AcpiHwInitialize (
          * status bits prior to restoring the original mode.
          *
          * The location of the PM1aEvtBlk enable registers is defined as the
-         * base of PM1aEvtBlk + PM1aEvtBlkLength / 2. Since the spec further
+         * base of PM1aEvtBlk + DIV_2(PM1aEvtBlkLength). Since the spec further
          * fully defines the PM1aEvtBlk to be a total of 4 bytes, the offset
          * for the enable registers is always 2 from the base. It is hard
          * coded here. If this changes in the spec, this code will need to
@@ -375,7 +375,7 @@ AcpiHwGetMode (void)
     FUNCTION_TRACE ("HwGetMode");
 
 
-    if (AcpiHwRegisterAccess (ACPI_READ, ACPI_MTX_LOCK, SCI_EN))
+    if (AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_LOCK, SCI_EN))
     {
         return_VALUE (SYS_MODE_ACPI);
     }
