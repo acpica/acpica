@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.131 $
+ *              $Revision: 1.132 $
  *
  ******************************************************************************/
 
@@ -228,7 +228,7 @@ AcpiGetSleepTypeData (
 
 
     /*
-     *  Validate parameters
+     * Validate parameters
      */
     if ((SleepState > ACPI_S_STATES_MAX) ||
         !SleepTypeA || !SleepTypeB)
@@ -237,7 +237,7 @@ AcpiGetSleepTypeData (
     }
 
     /*
-     *  AcpiEvaluate the namespace object containing the values for this state
+     * Evaluate the namespace object containing the values for this state
      */
     Status = AcpiNsEvaluateByName ((NATIVE_CHAR *) AcpiGbl_DbSleepStates[SleepState],
                     NULL, &ObjDesc);
@@ -246,48 +246,44 @@ AcpiGetSleepTypeData (
         return_ACPI_STATUS (Status);
     }
 
+    /* Must have a return object */
+
     if (!ObjDesc)
     {
         ACPI_REPORT_ERROR (("Missing Sleep State object\n"));
-        return_ACPI_STATUS (AE_NOT_EXIST);
+        Status = AE_NOT_EXIST;
     }
 
-    /* 
-     * NsEvaluate does not resolve package references, do it here.
-     * (Also checks to make sure the object is a Package.)
-     */
-    Status = AcpiUtResolvePackageReferences (ObjDesc);
-    if (ACPI_FAILURE (Status))
+    /* It must be of type Package */
+
+    else if (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_PACKAGE)
     {
-        return_ACPI_STATUS (Status);
+        ACPI_REPORT_ERROR (("Sleep State object not a Package\n"));
+        Status = AE_AML_OPERAND_TYPE;
     }
 
-    /*
-     *  We got an object, now ensure it is correct.  The object must
-     *  be a package and must have at least 2 numeric values as the
-     *  two elements
-     */
-    if (ObjDesc->Package.Count < 2)
-    {
-        /* Must have at least two elements */
+    /* The package must have at least two elements */
 
+    else if (ObjDesc->Package.Count < 2)
+    {
         ACPI_REPORT_ERROR (("Sleep State package does not have at least two elements\n"));
         Status = AE_AML_NO_OPERAND;
     }
-    else if (((ObjDesc->Package.Elements[0])->Common.Type != ACPI_TYPE_INTEGER) ||
-             ((ObjDesc->Package.Elements[1])->Common.Type != ACPI_TYPE_INTEGER))
-    {
-        /* Must have two  */
 
+    /* The first two elements must both be of type Integer */
+
+    else if ((ACPI_GET_OBJECT_TYPE (ObjDesc->Package.Elements[0]) != ACPI_TYPE_INTEGER) ||
+             (ACPI_GET_OBJECT_TYPE (ObjDesc->Package.Elements[1]) != ACPI_TYPE_INTEGER))
+    {
         ACPI_REPORT_ERROR (("Sleep State package elements are not both Integers (%s, %s)\n",
-            AcpiUtGetTypeName ((ObjDesc->Package.Elements[0])->Common.Type),
-            AcpiUtGetTypeName ((ObjDesc->Package.Elements[1])->Common.Type)));
+            AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (ObjDesc->Package.Elements[0])),
+            AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (ObjDesc->Package.Elements[1]))));
         Status = AE_AML_OPERAND_TYPE;
     }
     else
     {
         /*
-         *  Valid _Sx_ package size, type, and value
+         * Valid _Sx_ package size, type, and value
          */
         *SleepTypeA = (UINT8) (ObjDesc->Package.Elements[0])->Integer.Value;
         *SleepTypeB = (UINT8) (ObjDesc->Package.Elements[1])->Integer.Value;
@@ -308,8 +304,8 @@ AcpiGetSleepTypeData (
  *
  * FUNCTION:    AcpiHwGetRegisterBitMask
  *
- * PARAMETERS:  RegisterId      - index of ACPI Register to access
- *
+ * PARAMETERS:  RegisterId          - Index of ACPI Register to access
+ *  
  * RETURN:      The bit mask to be used when accessing the register
  *
  * DESCRIPTION: Map RegisterId into a register bit mask.
@@ -337,8 +333,8 @@ AcpiHwGetBitRegisterInfo (
  *
  * FUNCTION:    AcpiGetRegister
  *
- * PARAMETERS:  RegisterId      - index of ACPI Register to access
- *              UseLock         - Lock the hardware
+ * PARAMETERS:  RegisterId          - Index of ACPI Register to access
+ *              UseLock             - Lock the hardware
  *
  * RETURN:      Value is read from specified Register.  Value returned is
  *              normalized to bit0 (is shifted all the way right)
