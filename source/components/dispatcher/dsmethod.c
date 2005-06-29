@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -208,7 +208,7 @@ AcpiDsParseMethod (
 
     /* Init new op with the method name and pointer back to the Node */
 
-    AcpiPsSetName (Op, Node->Name);
+    AcpiPsSetName (Op, Node->Name.Integer);
     Op->Node = Node;
 
     /*
