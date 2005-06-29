@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,7 @@
 #include "amlcode.h"
 #include "acnamesp.h"
 #include "actables.h"
+#include "acparser.h"
 
 #define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("exdump")
@@ -737,6 +738,9 @@ AcpiExDumpObjectDescriptor (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  Flags)
 {
+    ACPI_OPCODE_INFO        *OpInfo;
+
+
     FUNCTION_TRACE ("ExDumpObjectDescriptor");
 
 
@@ -765,8 +769,9 @@ AcpiExDumpObjectDescriptor (
     {
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf ("%20s : %s\n", "Type", "Number");
-        AcpiOsPrintf ("%20s : %X\n", "Value", ObjDesc->Integer.Value);
+        AcpiOsPrintf ("%20s : %s\n", "Type", "Integer");
+        AcpiOsPrintf ("%20s : %X%8.8X\n", "Value", HIDWORD (ObjDesc->Integer.Value),
+                                                   LODWORD (ObjDesc->Integer.Value));
         break;
 
 
@@ -789,6 +794,7 @@ AcpiExDumpObjectDescriptor (
     case ACPI_TYPE_PACKAGE:
 
         AcpiOsPrintf ("%20s : %s\n", "Type", "Package");
+        AcpiOsPrintf ("%20s : %X\n", "Flags", ObjDesc->Package.Flags);
         AcpiOsPrintf ("%20s : %X\n", "Count", ObjDesc->Package.Count);
         AcpiOsPrintf ("%20s : %p\n", "Elements", ObjDesc->Package.Elements);
         AcpiOsPrintf ("%20s : %p\n", "NextElement", ObjDesc->Package.NextElement);
@@ -925,9 +931,11 @@ AcpiExDumpObjectDescriptor (
 
     case INTERNAL_TYPE_REFERENCE:
 
+        OpInfo = AcpiPsGetOpcodeInfo (ObjDesc->Reference.Opcode);
+
         AcpiOsPrintf ("%20s : %s\n", "Type", "Reference");
         AcpiOsPrintf ("%20s : %X\n", "TargetType", ObjDesc->Reference.TargetType);
-        AcpiOsPrintf ("%20s : %X\n", "Opcode", ObjDesc->Reference.Opcode);
+        AcpiOsPrintf ("%20s : %s\n", "Opcode", OpInfo->Name);
         AcpiOsPrintf ("%20s : %X\n", "Offset", ObjDesc->Reference.Offset);
         AcpiOsPrintf ("%20s : %p\n", "ObjDesc", ObjDesc->Reference.Object);
         AcpiOsPrintf ("%20s : %p\n", "Node", ObjDesc->Reference.Node);
