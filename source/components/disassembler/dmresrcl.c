@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.1 $
+ *              $Revision: 1.4 $
  *
  ******************************************************************************/
 
@@ -213,24 +213,35 @@ AcpiDmWordDescriptor (
     /* The WORD values */
 
     AcpiOsPrintf ("\n");
-    AcpiDmIndent (Level+2);
-    AcpiOsPrintf ("0x%4.4X, 0x%4.4X, 0x%4.4X, 0x%4.4X, 0x%4.4X",
-        (UINT32) Resource->Granularity,
-        (UINT32) Resource->AddressMin,
-        (UINT32) Resource->AddressMax,
-        (UINT32) Resource->TranslationOffset,
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%4.4X,\n",
+        (UINT32) Resource->Granularity);
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%4.4X,\n",
+        (UINT32) Resource->AddressMin);
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%4.4X,\n",
+        (UINT32) Resource->AddressMax);
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%4.4X,\n",
+        (UINT32) Resource->TranslationOffset);
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%4.4X",
         (UINT32) Resource->AddressLength);
 
     /* Optional fields */
 
-    if (Length > 16)
+    if (Length > 13)
     {
-        AcpiDmIndent (Level+1);
-        AcpiOsPrintf (", 0x%2.2X, %s",
-            (UINT32) Resource->OptionalFields[0],
-            &Resource->OptionalFields[1]);
+        AcpiOsPrintf (", 0x%2.2X",
+            (UINT32) Resource->OptionalFields[0]);
     }
 
+    if (Length > 14)
+    {
+        AcpiOsPrintf (", %s",
+            &Resource->OptionalFields[1]);
+    }
     AcpiOsPrintf (")\n");
 }
 
@@ -274,24 +285,34 @@ AcpiDmDwordDescriptor (
     /* The DWORD values */
 
     AcpiOsPrintf ("\n");
-    AcpiDmIndent (Level+2);
-    AcpiOsPrintf ("0x%8.8X, 0x%8.8X, 0x%8.8X, 0x%8.8X, 0x%8.8X",
-        Resource->Granularity,
-        Resource->AddressMin,
-        Resource->AddressMax,
-        Resource->TranslationOffset,
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X,\n", 
+        Resource->Granularity);
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X,\n",
+        Resource->AddressMin);
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X,\n", 
+        Resource->AddressMax);
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X,\n",
+        Resource->TranslationOffset);
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X", 
         Resource->AddressLength);
 
     /* Optional fields */
 
-    if (Length > 27)
+    if (Length > 23)
     {
-        AcpiDmIndent (Level+1);
-        AcpiOsPrintf (", 0x%2.2X, %s",
-            Resource->OptionalFields[0],
+        AcpiOsPrintf (", 0x%2.2X",
+            Resource->OptionalFields[0]);
+    }
+    if (Length > 24)
+    {
+        AcpiOsPrintf (", %s",
             &Resource->OptionalFields[1]);
     }
-
     AcpiOsPrintf (")\n");
 }
 
@@ -335,26 +356,41 @@ AcpiDmQwordDescriptor (
     /* The QWORD values */
 
     AcpiOsPrintf ("\n");
-    AcpiDmIndent (Level+2);
-    AcpiOsPrintf ("0x%8.8X%8.8X, 0x%8.8X%8.8X, 0x%8.8X%8.8X, 0x%8.8X%8.8X, 0x%8.8X%8.8X",
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X,\n",
         ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->Granularity)),
-        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->Granularity)),
+        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->Granularity)));
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X,\n",
         ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->AddressMin)),
-        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->AddressMin)),
+        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->AddressMin)));
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X,\n",
         ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->AddressMax)),
-        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->AddressMax)),
+        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->AddressMax)));
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X,\n",
         ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->TranslationOffset)),
-        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->TranslationOffset)),
+        ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->TranslationOffset)));
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf ("0x%8.8X%8.8X",
         ACPI_HIDWORD (ACPI_GET_ADDRESS (Resource->AddressLength)),
         ACPI_LODWORD (ACPI_GET_ADDRESS (Resource->AddressLength)));
 
     /* Optional fields */
 
-    if (Length > 46)
+    if (Length > 43)
     {
-        AcpiDmIndent (Level+1);
-        AcpiOsPrintf (", 0x%2.2X, %s",
-            Resource->OptionalFields[0],
+        AcpiOsPrintf (", 0x%2.2X",
+            Resource->OptionalFields[0]);
+    }
+    if (Length > 44)
+    {
+        AcpiOsPrintf (", %s",
             &Resource->OptionalFields[1]);
     }
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  ******************************************************************************/
 
@@ -290,6 +290,7 @@ AcpiDmIsUnicodeBuffer (
      * word must be zero
      */
     if ((!ByteCount)     ||
+         (ByteCount < 4) ||
          (ByteCount & 1) ||
         ((UINT16 *) (void *) ByteData)[WordCount - 1] != 0)
     {
@@ -356,7 +357,9 @@ AcpiDmIsStringBuffer (
 
     /* Last byte must be the null terminator */
 
-    if (ByteData[ByteCount-1] != 0)
+    if ((!ByteCount)     ||
+         (ByteCount < 2) ||
+         (ByteData[ByteCount-1] != 0))
     {
         return (FALSE);
     }
