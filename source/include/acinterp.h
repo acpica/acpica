@@ -502,11 +502,6 @@ AcpiAmlGetNameString (
     INT8                    **OutNameString,
     UINT32                  *OutNameLength);
 
-UINT32
-AcpiAmlDecodePackageLength (
-    UINT32                  LastPkgLen);
-
-
 ACPI_STATUS
 AcpiAmlDoName (
     ACPI_OBJECT_TYPE        DataType,
