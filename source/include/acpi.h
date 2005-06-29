@@ -123,22 +123,22 @@
  * in the rest of the source code again and again.
  */
 #include <config.h>         /* Configuration constants */
-#include <environment.h>    /* Target environment specific items */
-#include <acpitypes.h>      /* Fundamental data types */
-#include <acpiexcep.h>      /* Local exception codes */
+#include <acenv.h>          /* Target environment specific items */
+#include <actypes.h>        /* Fundamental data types */
+#include <acexcep.h>        /* Local exception codes */
 #include <macros.h>         /* C macros */
 #include <internal.h>       /* Internal data types */
 #include <output.h>         /* Error output and Debug macros */
-#include <acpitables.h>     /* ACPI table definitions */
+#include <actables.h>       /* ACPI table definitions */
 #include <acpiosd.h>        /* Interfaces to OS-dependent part (OSD) */
-#include <acpisubsys.h>     /* External interfaces to this part */
+#include <acapi.h>          /* External interfaces to this part */
 #include <globals.h>        /* All global variables */
 #include <common.h>         /* Common (global) interfaces */
 
 
 /* Version string */
 
-#define ACPI_CA_VERSION                     "X0033"
+#define ACPI_CA_VERSION                     0x0080
 
 
 #define	ACPI_CHAPTER						3
