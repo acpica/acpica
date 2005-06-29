@@ -1,8 +1,8 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.15 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -39,9 +39,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +49,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +87,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -122,6 +122,7 @@
 /* Globals */
 
 UINT32                  Gbl_Tabs = 0;
+UINT32                  Gbl_MissingBraces = 0;
 UINT32                  Gbl_NonAnsiComments = 0;
 UINT32                  Gbl_Files = 0;
 UINT32                  Gbl_WhiteLines = 0;
@@ -136,7 +137,8 @@ UINT32                  Gbl_FileSize;
 BOOLEAN                 Gbl_VerboseMode = FALSE;
 BOOLEAN                 Gbl_BatchMode = FALSE;
 BOOLEAN                 Gbl_DebugStatementsMode = FALSE;
-
+BOOLEAN                 Gbl_MadeChanges = FALSE;
+BOOLEAN                 Gbl_Overwrite = FALSE;
 
 
 /******************************************************************************
@@ -144,7 +146,6 @@ BOOLEAN                 Gbl_DebugStatementsMode = FALSE;
  * Standard/Common translation tables
  *
  ******************************************************************************/
-
 
 
 ACPI_STRING_TABLE           StandardDataTypes[] = {
@@ -168,7 +169,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
     "INT32  ",          "int    ",
     "INT32",            "int",
     "INT16",            "short",
-    "INT8",             "char", 
+    "INT8",             "char",
 
     /* Put back anything we broke (such as anything with _INT32_ in it) */
 
@@ -178,18 +179,15 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 };
 
 
-
-
-
 /******************************************************************************
  *
  * Linux-specific translation tables
  *
  ******************************************************************************/
 
-char                        LinuxHeader[] = 
+char                        LinuxHeader[] =
 "/*\n"
-" *  Copyright (C) 2000 R. Byron Moore\n"
+" *  Copyright (C) 2000, 2001 R. Byron Moore\n"
 " *\n"
 " *  This program is free software; you can redistribute it and/or modify\n"
 " *  it under the terms of the GNU General Public License as published by\n"
@@ -207,41 +205,125 @@ char                        LinuxHeader[] =
 " */\n";
 
 
-
 ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Declarations first */
 
-    "UINT32_BIT  ",     "u32         ",
+    "UINT32_BIT  ",             "u32         ",
 
-    "UINT32      ",     "u32         ",
-    "UINT16      ",     "u16         ",
-    "UINT8       ",     "u8          ",
-    "BOOLEAN     ",     "u8          ",
+    "UINT32      ",             "u32         ",
+    "UINT16      ",             "u16         ",
+    "UINT8       ",             "u8          ",
+    "BOOLEAN     ",             "u8          ",
 
     /* Now do embedded typecasts */
 
-    "UINT32",           "u32",
-    "UINT16",           "u16",
-    "UINT8",            "u8",
-    "BOOLEAN",          "u8",
+    "UINT32",                   "u32",
+    "UINT16",                   "u16",
+    "UINT8",                    "u8",
+    "BOOLEAN",                  "u8",
 
-    "INT32  ",          "s32    ",
-    "INT32",            "s32",
-    "INT16  ",          "s16    ",
-    "INT8   ",          "s8     ", 
-    "INT16",            "s16",
-    "INT8",             "s8", 
+    "INT32  ",                  "s32    ",
+    "INT32",                    "s32",
+    "INT16  ",                  "s16    ",
+    "INT8   ",                  "s8     ",
+    "INT16",                    "s16",
+    "INT8",                     "s8",
 
     /* Put back anything we broke (such as anything with _INTxx_ in it) */
 
-    "_s32_",            "_INT32_",
-    "_u32_",            "_UINT32_",
-    "_s16_",            "_INT16_",
-    "_u16_",            "_UINT16_",
-    "_s8_",             "_INT8_",
-    "_u8_",             "_UINT8_",
-    NULL,               NULL
+    "_s32_",                    "_INT32_",
+    "_u32_",                    "_UINT32_",
+    "_s16_",                    "_INT16_",
+    "_u16_",                    "_UINT16_",
+    "_s8_",                     "_INT8_",
+    "_u8_",                     "_UINT8_",
+
+    "ACPI_STATUS  ",            "acpi_status_t",
+    "ACPI_IO_ADDRESS  ",        "acpi_io_address_t",
+    "ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address_t",
+    "NATIVE_UINT  ",            "native_uint_t",
+    "NATIVE_INT  ",             "native_int_t",
+    "NATIVE_CHAR  ",            "native_char_t",
+    "ACPI_NAME  ",              "acpi_name_t",
+    "ACPI_STRING  ",            "acpi_string_t",
+    "ACPI_HANDLE  ",            "acpi_handle_t",
+    "ACPI_INTEGER  ",           "acpi_integer_t",
+    "ACPI_OBJECT_TYPE  ",       "acpi_object_type_t",
+    "ACPI_OBJECT_TYPE8  ",      "acpi_object_type8_t",
+    "OPERATING_MODE  ",         "operating_mode_t",
+    "ACPI_EVENT_STATUS  ",      "acpi_event_status_t",
+    "ACPI_OWNER_ID  ",          "acpi_owner_id_t",
+    "ACPI_TABLE_TYPE  ",        "acpi_table_type_t",
+
+    "ACPI_NAMESPACE_NODE",      "acpi_namespace_node",
+    "ACPI_OPERAND_OBJECT",      "acpi_operand_object",
+    "ACPI_GENERIC_STATE",       "acpi_generic_state",
+    "ACPI_WALK_STATE",          "acpi_walk_state",
+    "ACPI_GPE_LEVEL_INFO",      "acpi_gpe_level_info",
+    "ACPI_PARSE_OBJECT",        "acpi_parse_object",
+    "ACPI_WALK_LIST",           "acpi_walk_list",
+    "ACPI_PARSE_STATE",         "acpi_parse_state",
+    "ACPI_BUFFER",              "acpi_buffer",
+    "ACPI_OBJECT",              "acpi_object",
+    "ACPI_OBJECT_LIST",         "acpi_object_list",
+    "ACPI_OPCODE_INFO",         "acpi_opcode_info",
+    "PREDEFINED_NAMES",         "predefined_names",
+    "DB_METHOD_INFO",           "db_method_info",
+    "ACPI_PARSE2_OBJECT",       "acpi_parse2_object",
+    "ACPI_PARSE_DOWNWARDS",     "acpi_parse_downwards",
+    "ACPI_PARSE_UPWARDS",       "acpi_parse_upwards",
+    "ACPI_GENERIC_ADDRESS",     "acpi_generic_address",
+    "PCI_ROUTING_TABLE",        "pci_routing_table",
+    "ACPI_RESOURCE_DATA",       "acpi_resource_data",
+    "ACPI_RESOURCE_IRQ",        "acpi_resource_irq",
+    "ACPI_RESOURCE_DMA",        "acpi_resource_dma",
+    "ACPI_RESOURCE_START_DPF",  "acpi_resource_start_dpf",
+    "ACPI_RESOURCE_IO",         "acpi_resource_io",
+    "ACPI_RESOURCE_FIXED_IO",   "acpi_resource_fixed_io",
+    "ACPI_RESOURCE_VENDOR",     "acpi_resource_vendor",
+    "ACPI_RESOURCE_MEM24",      "acpi_resource_mem24",
+    "ACPI_RESOURCE_MEM32",      "acpi_resource_mem32",
+    "ACPI_RESOURCE_FIXED_MEM32","acpi_resource_fixed_mem32",
+    "ACPI_RESOURCE_ADDRESS16",  "acpi_resource_address16",
+    "ACPI_RESOURCE_ADDRESS32",  "acpi_resource_address32",
+    "ACPI_RESOURCE_ADDRESS64",  "acpi_resource_address64",
+    "ACPI_RESOURCE_EXT_IRQ",    "acpi_resource_ext_irq",
+    "ACPI_RESOURCE",            "acpi_resource",    /* Must be last resource desc*/
+    "ACPI_TABLE_DESC",          "acpi_table_desc",
+    "XSDT_DESCRIPTOR",          "xsdt_descriptor",
+    "FADT_DESCRIPTOR_REV071",   "fadt_descriptor_rev071",
+    "FADT_DESCRIPTOR_REV1",     "fadt_descriptor_rev1",
+    "FADT_DESCRIPTOR_REV2",     "fadt_descriptor_rev2",
+    "ACPI_COMMON_FACS",         "acpi_common_facs",
+    "FACS_DESCRIPTOR_REV071",   "facs_descriptor_rev071",
+    "FACS_DESCRIPTOR_REV1",     "facs_descriptor_rev1",
+    "FACS_DESCRIPTOR_REV2",     "facs_descriptor_rev2",
+    "ACPI_TABLE_HEADER",        "acpi_table_header",
+    "ACPI_PKG_INFO",            "acpi_pkg_info",
+
+    /* Typecasts */
+
+    "ACPI_STATUS",              "acpi_status_t",
+
+
+    "ACPI_IO_ADDRESS)",         "acpi_io_address_t)",
+    "ACPI_PHYSICAL_ADDRESS)",   "acpi_physical_address_t)",
+    "NATIVE_UINT)",             "native_uint_t)",
+    "NATIVE_INT)",              "native_int_t)",
+    "NATIVE_CHAR)",             "native_char_t)",
+    "ACPI_NAME)",               "acpi_name_t)",
+    "ACPI_STRING)",             "acpi_string_t)",
+    "ACPI_HANDLE)",             "acpi_handle_t)",
+    "ACPI_INTEGER)",            "acpi_integer_t)",
+    "ACPI_OBJECT_TYPE)",        "acpi_object_type_t)",
+    "ACPI_OBJECT_TYPE8)",       "acpi_object_type8_t)",
+    "OPERATING_MODE)",          "operating_mode_t)",
+    "ACPI_EVENT_STATUS)",       "acpi_event_status_t)",
+    "ACPI_OWNER_ID)",           "acpi_owner_id_t)",
+    "ACPI_TABLE_TYPE)",         "acpi_table_type_t)",
+
+    NULL,                       NULL
 };
 
 
@@ -270,7 +352,7 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     LinuxDataTypes,
     LinuxLineIdentifiers,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE | 
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_BRACES_ON_SAME_LINE |
      CVT_MIXED_CASE_TO_UNDERSCORES | CVT_LOWER_CASE_IDENTIFIERS | CVT_REMOVE_DEBUG_MACROS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS | CVT_SPACES_TO_TABS8),
 
@@ -280,10 +362,9 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
     NULL,
     LinuxConditionalIdentifiers,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_MIXED_CASE_TO_UNDERSCORES |
-     CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE | 
+     CVT_LOWER_CASE_IDENTIFIERS | CVT_TRIM_WHITESPACE |
      CVT_REMOVE_EMPTY_BLOCKS| CVT_SPACES_TO_TABS8),
 };
-
 
 
 /******************************************************************************
@@ -303,7 +384,7 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
     NULL,
     NULL,
     NULL,
-    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
+    (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_CHECK_BRACES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 
     /* C header files */
 
@@ -335,8 +416,6 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 };
 
 
-
-
 /******************************************************************************
  *
  * Customizable translation tables
@@ -346,8 +425,14 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    "ACPI_NAMESPACE_NODE*", "ACPI_NAMESPACE_NODE *", 
-    NULL,               NULL
+    "2000, 2001, Intel Corp",     "2000, 2001, Intel Corp",
+    "ACPI_TYPE_INTEGER",     "ACPI_TYPE_INTEGER",
+    "ARGI_INTEGER",          "ARGI_INTEGER",
+    "ARGP_INTEGER",          "ARGP_INTEGER",
+    "ACPI_BTYPE_INTEGER",    "ACPI_BTYPE_INTEGER",
+    "ACPI_OBJECT_INTEGER",   "ACPI_OBJECT_INTEGER",
+    "->Integer",             "->Integer",
+    NULL,                   NULL
 };
 
 
@@ -370,7 +455,6 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
     NULL,
     (CVT_COUNT_TABS | CVT_COUNT_NON_ANSI_COMMENTS | CVT_COUNT_LINES | CVT_TRIM_LINES | CVT_TRIM_WHITESPACE),
 };
-
 
 
 /******************************************************************************
@@ -416,6 +500,7 @@ AsExaminePaths (
         return 0;
     }
 
+
     if (!stricmp (Source, Target))
     {
         printf ("Target path is the same as the source path, overwrite?\n");
@@ -427,6 +512,8 @@ AsExaminePaths (
         {
             return -1;
         }
+
+        Gbl_Overwrite = TRUE;
     }
 
     else
@@ -446,7 +533,6 @@ AsExaminePaths (
         }
     }
 
-    
     return 0;
 }
 
@@ -466,6 +552,7 @@ AsDisplayStats (void)
     printf ("\nAcpiSrc statistics:\n\n");
     printf ("%6d Files processed\n", Gbl_Files);
     printf ("%6d Tabs found\n", Gbl_Tabs);
+    printf ("%6d Missing if/else braces\n", Gbl_MissingBraces);
     printf ("%6d Non-ANSI comments found\n", Gbl_NonAnsiComments);
     printf ("%6d Total Lines\n", Gbl_TotalLines);
     printf ("%6d Lines of code\n", Gbl_SourceLines);
@@ -481,7 +568,7 @@ AsDisplayStats (void)
 
 /******************************************************************************
  *
- * FUNCTION:    AsDisplayUsage  
+ * FUNCTION:    AsDisplayUsage
  *
  * DESCRIPTION: Usage message
  *
@@ -492,14 +579,15 @@ AsDisplayUsage (void)
 {
 
     printf ("\n");
-    printf ("Usage: acpisrc [-c | -l | -u] [-s] [-v] [-y] [-d] <SourceDir> <DestinationDir>\n\n");
+    printf ("Usage: acpisrc [-c|l|u] [-dsvy] <SourceDir> <DestinationDir>\n\n");
     printf ("Where: -c          Generate cleaned version of the source\n");
     printf ("       -l          Generate Linux version of the source\n");
-    printf ("       -u          Custom source translation\n");
+    printf ("       -u          Generate Custom source translation\n");
+    printf ("\n");
+    printf ("       -d          Leave debug statements in code\n");
     printf ("       -s          Generate source statistics only\n");
     printf ("       -v          Verbose mode\n");
     printf ("       -y          Suppress file overwrite prompts\n");
-    printf ("       -d          Leave debug statements in code\n");
     printf ("\n");
     return;
 }
@@ -513,9 +601,9 @@ AsDisplayUsage (void)
  *
  ******************************************************************************/
 
-int 
+int
 main (
-    NATIVE_UINT             argc, 
+    NATIVE_UINT             argc,
     char                    *argv[])
 {
     int                     j;
@@ -524,7 +612,7 @@ main (
     char                    *TargetPath;
     UINT32                  FileType;
 
-    
+
     printf ("ACPI Source Code Conversion Utility ");
     printf ("version [%s]\n", __DATE__);
 
@@ -536,7 +624,7 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "lcsuvyd")) != EOF) switch(j) 
+    while ((j = getopt (argc, argv, "lcsuvyd")) != EOF) switch(j)
     {
     case 'l':
         /* Linux code generation */
@@ -558,7 +646,7 @@ main (
         break;
 
     case 'u':
-        /* Cleanup code */
+        /* custom conversion  */
 
         printf ("Custom source translation\n");
         ConversionTable = &CustomConversionTable;
@@ -579,16 +667,23 @@ main (
     case 'd':
         /* Leave debug statements in */
 
-        Gbl_DebugStatementsMode = TRUE;   
+        Gbl_DebugStatementsMode = TRUE;
         break;
 
-    default:    
+    default:
         AsDisplayUsage ();
         return -1;
     }
 
 
     SourcePath = argv[optind];
+    if (!SourcePath)
+    {
+        printf ("Missing source path\n");
+        AsDisplayUsage ();
+        return -1;
+    }
+
     TargetPath = argv[optind+1];
 
     if (!ConversionTable)
@@ -599,6 +694,11 @@ main (
 
         printf ("Source code statistics only\n");
         ConversionTable = &StatsConversionTable;
+    }
+
+    else if (!TargetPath)
+    {
+        TargetPath = SourcePath;
     }
 
     if (Gbl_DebugStatementsMode)
@@ -634,5 +734,5 @@ main (
 
     AsDisplayStats ();
 
-	return 0;
+    return 0;
 }
