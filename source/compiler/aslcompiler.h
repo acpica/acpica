@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.6 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -116,8 +116,10 @@
  *****************************************************************************/
 
 
-#ifndef AslCompiler_C_INTERFACE
-#define AslCompiler_C_INTERFACE
+#ifndef __ASLCOMPILER_H
+#define __ASLCOMPILER_H
+
+#pragma warning(disable:4103)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -126,9 +128,32 @@
 #include "acpi.h"
 
 
-#define CompilerId                  "ACPI Component Architecture ASL Compiler"
-#define CompilerName                "iasl"
-#define Version                     "X202"
+#define CompilerId                              "ACPI Component Architecture ASL Compiler"
+#define CompilerName                            "iasl"
+#define Version                                 "X202"
+
+
+
+
+typedef struct asl_method_info
+{
+    UINT8                   NumArguments;
+    UINT8                   LocalInitialized[8];
+    struct asl_method_info  *Next;
+
+} ASL_METHOD_INFO;
+
+typedef struct asl_analysis_walk_info
+{
+    ASL_METHOD_INFO         *MethodStack;
+
+} ASL_ANALYSIS_WALK_INFO;
+
+
+
+
+#define ASL_GET_CHILD_NODE(a)       (a)->Child
+#define ASL_GET_PEER_NODE(a)        (a)->Peer
 
 
 
@@ -146,6 +171,8 @@
 #define AML_RAW_DATA_WORD           (UINT16) 0xAA02
 #define AML_RAW_DATA_DWORD          (UINT16) 0xAA04
 #define AML_RAW_DATA_QWORD          (UINT16) 0xAA08
+#define AML_RAW_DATA_BUFFER         (UINT16) 0xAA0B
+
 #define AML_PACKAGE_LENGTH          (UINT16) 0xAA10
 
 #define AML_UNASSIGNED_OPCODE       (UINT16) 0xEEEE
@@ -153,6 +180,7 @@
 
 #define NODE_VISITED                0x01
 #define NODE_AML_PACKAGE            0x02
+#define NODE_IS_TARGET              0x04
 
 #define ASL_WALK_VISIT_DOWNWARD     0x01
 #define ASL_WALK_VISIT_UPWARD       0x02
@@ -171,7 +199,8 @@ typedef struct asl_mapping_entry
 
 typedef union asl_node_value
 {
-    UINT32                  Integer;
+    UINT64                  Integer;        /* Generic integer is largest integer */
+    UINT64                  Integer64;
     UINT32                  Integer32;
     UINT16                  Integer16;
     UINT8                   Integer8;
@@ -186,7 +215,7 @@ typedef struct asl_parse_node
     struct asl_parse_node   *Peer;
     struct asl_parse_node   *Child;
     union asl_node_value    Value;
-    void                    *Valuex;
+    UINT32                  LineNumber;
     UINT16                  AmlOpcode;
     UINT16                  ParseOpcode;
     UINT32                  AmlLength;
@@ -194,6 +223,8 @@ typedef struct asl_parse_node
     UINT8                   AmlOpcodeLength;
     UINT8                   AmlPkgLenBytes;
     UINT8                   Flags;
+    char                    ParseOpName[12];
+    char                    AmlOpName[12];
 
 } ASL_PARSE_NODE;
 
@@ -287,7 +318,8 @@ typedef enum
 
 typedef enum 
 {
-    ASL_ERROR_INPUT_FILE_OPEN = 0,
+    ASL_ERROR_MEMORY_ALLOCATION = 0,
+    ASL_ERROR_INPUT_FILE_OPEN,
     ASL_ERROR_OUTPUT_FILENAME,
     ASL_ERROR_OUTPUT_FILE_OPEN,
     ASL_ERROR_LISTING_FILENAME,
@@ -295,6 +327,10 @@ typedef enum
     ASL_ERROR_DEBUG_FILENAME,
     ASL_ERROR_DEBUG_FILE_OPEN,
     ASL_ERROR_ENCODING_LENGTH,
+    ASL_ERROR_UNITIALIZED_LOCAL,
+    ASL_ERROR_INVALID_ARGUMENT,
+    ASL_ERROR_INVALID_PRIORITY,
+    ASL_ERROR_INVALID_PERFORMANCE,
 
 } ASL_ERROR_IDS;
 
@@ -319,11 +355,13 @@ ErrorContext (void);
 
 void
 AslWarning (
-    UINT32                  WarningId);
+    UINT32                  WarningId,
+    UINT32                  LineNumber);
 
 void
 AslError (
-    UINT32                  ErrorId);
+    UINT32                  ErrorId,
+    UINT32                  LineNumber);
 
 
 void
@@ -382,9 +420,15 @@ CgWriteNode (
 
 
 void
+CgDoResourceTemplate (
+    ASL_PARSE_NODE          *Node);
+
+
+void
 TgWalkParseTree (
     UINT32                  Visitation,
-    ASL_WALK_CALLBACK       Callback,
+    ASL_WALK_CALLBACK       DescendingCallback,
+    ASL_WALK_CALLBACK       AscendingCallback,
     void                    *Context);
 
 
@@ -392,7 +436,7 @@ char *
 TgAddNode (
     void                    *Thing);
 
-char *
+ASL_PARSE_NODE *
 _TgUpdateNode (
     UINT32                  ParseOpcode,
     ASL_PARSE_NODE          *Node);
@@ -415,6 +459,7 @@ TgWalkTree (void);
 #define TgLinkPeerNode(a,b)      (char *)_TgLinkPeerNode ((ASL_PARSE_NODE *)(a),(ASL_PARSE_NODE *)(b))
 #define TgLinkChildNode(a,b)     (char *)_TgLinkChildNode ((ASL_PARSE_NODE *)(a),(ASL_PARSE_NODE *)(b))
 #define TgUpdateNode(a,b)        (char *)_TgUpdateNode (a,(ASL_PARSE_NODE *)(b))
+#define TgSetNodeFlags(a,b)      (char *)_TgSetNodeFlags ((ASL_PARSE_NODE *)(a),(b))
 
 ASL_PARSE_NODE *
 _TgLinkPeerNode (
@@ -426,8 +471,37 @@ _TgLinkChildNode (
     ASL_PARSE_NODE          *Node1,
     ASL_PARSE_NODE          *Node2);
 
+ASL_PARSE_NODE *
+_TgSetNodeFlags (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Flags);
+
+/* Analyze */
+
+void
+AnSemanticAnalysisWalkBegin (
+    ASL_PARSE_NODE              *Node,
+    UINT32                      Level,
+    void                        *Context);
+
+void
+AnSemanticAnalysisWalkEnd (
+    ASL_PARSE_NODE              *Node,
+    UINT32                      Level,
+    void                        *Context);
 
 /* Utils */
+
+void *
+UtLocalCalloc (
+    UINT32                  Size);
+
+
+void *
+UtLocalRealloc (
+    void                    *Previous,
+    UINT32                  Size);
+
 
 void
 UtPrintFormattedName (
