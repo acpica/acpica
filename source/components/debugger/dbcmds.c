@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  ******************************************************************************/
 
@@ -231,7 +231,7 @@ AcpiDbFindReferences (
 
     /* Convert string to object pointer */
 
-    ObjDesc = (ACPI_OPERAND_OBJECT  *) STRTOUL (ObjectArg, NULL, 16);
+    ObjDesc = ACPI_TO_POINTER (STRTOUL (ObjectArg, NULL, 16));
 
     /* Search all nodes in namespace */
 
@@ -494,7 +494,7 @@ AcpiDbDumpNamespace (
 
         if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
         {
-            SubtreeEntry = (ACPI_HANDLE) STRTOUL (StartArg, NULL, 16);
+            SubtreeEntry = ACPI_TO_POINTER (STRTOUL (StartArg, NULL, 16));
             if (!AcpiOsReadable (SubtreeEntry, sizeof (ACPI_NAMESPACE_NODE)))
             {
                 AcpiOsPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
@@ -1034,13 +1034,12 @@ AcpiDbDisplayResources (
 
     /* Convert string to object pointer */
 
-    ObjDesc = (ACPI_OPERAND_OBJECT  *) STRTOUL (ObjectArg, NULL, 16);
+    ObjDesc = ACPI_TO_POINTER (STRTOUL (ObjectArg, NULL, 16));
 
     /* Prepare for a return object of arbitrary size */
 
     ReturnObj.Pointer           = AcpiGbl_DbBuffer;
     ReturnObj.Length            = ACPI_DEBUG_BUFFER_SIZE;
-
 
     /* _PRT */
 

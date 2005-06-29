@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  ******************************************************************************/
 
@@ -167,7 +167,7 @@ AcpiDbGetPointer (
 
     /* Simple flat pointer */
 
-    ObjPtr = (void *) STRTOUL (Target, NULL, 16);
+    ObjPtr = ACPI_TO_POINTER (STRTOUL (Target, NULL, 16));
 #endif
 
     return (ObjPtr);
