@@ -331,11 +331,9 @@ PsGetNextNamepath (
 {
     UINT8                   *Path;
     NAME_TABLE_ENTRY        *Method = NULL;
-    NAME_TABLE_ENTRY        *Nte;
     ACPI_GENERIC_OP         *MethodOp;
     ACPI_GENERIC_OP         *Count;
     ACPI_GENERIC_OP         *Name;
-    ACPI_STATUS             Status;
 
 
 
