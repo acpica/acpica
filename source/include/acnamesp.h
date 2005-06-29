@@ -219,6 +219,10 @@ NsInstallAcpiTable (
     ACPI_TABLE_TYPE         TableType,
     ACPI_TABLE_DESC         *TableInfo);
 
+void
+NsDeleteSingleTable (
+    ACPI_TABLE_DESC         *TableDesc);
+
 
 /*
  * Namespace modification - nsmodify
