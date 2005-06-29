@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.15 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -116,11 +116,19 @@
  *****************************************************************************/
 
 
-#include "AslCompiler.h"
+#include "aslcompiler.h"
 #include "acnamesp.h"
 
+#define _COMPONENT          ACPI_COMPILER
+        MODULE_NAME         ("aslutils")
 
+#ifdef _USE_BERKELEY_YACC
+extern const char * const       AslCompilername[];
+static const char * const       *yytname = &AslCompilername[255];
+#else
 extern const char * const       yytname[];
+#endif
+
 
 
 /*******************************************************************************
@@ -144,11 +152,13 @@ UtLocalCalloc (
     void                    *Allocated;
 
 
-    Allocated = calloc (Size, 1);
+    Allocated = AcpiCmCallocate (Size);
     if (!Allocated)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
-            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, Gbl_InputFilename, NULL);
+            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+            Gbl_InputByteCount, Gbl_CurrentColumn,
+            Gbl_InputFilename, NULL);
         exit (1);
     }
 
@@ -230,6 +240,7 @@ UtConvertByteToHex (
 
 int
 DbgPrint (
+    UINT32                  Type,
     char                    *Fmt,
     ...)
 {
@@ -238,8 +249,19 @@ DbgPrint (
 
     va_start (Args, Fmt);
 
-    if (Gbl_DebugFlag)
-        vfprintf (stderr, Fmt, Args);
+    if (!Gbl_DebugFlag)
+    {
+        return 0;
+    }
+
+
+    if ((Type == ASL_PARSE_OUTPUT) &&
+        (!(AslCompilerdebug)))
+    {
+        return 0;
+    }
+
+    vfprintf (stderr, Fmt, Args);
 
     va_end (Args);
     return 0;
@@ -267,13 +289,15 @@ UtPrintFormattedName (
     UINT32                  Level)
 {
 
+    DbgPrint (ASL_TREE_OUTPUT,
+        "%*s %-16.16s", (3 * Level), " ",
+        yytname[ParseOpcode-255]);
 
-    DbgPrint ("%*s %-16.16s", (3 * Level), " ", yytname[ParseOpcode-255]);
 
-    
     if (Level < TEXT_OFFSET)
     {
-        DbgPrint ("%*s", (TEXT_OFFSET - Level) * 3, " ");
+        DbgPrint (ASL_TREE_OUTPUT,
+            "%*s", (TEXT_OFFSET - Level) * 3, " ");
     }
 }
 
@@ -312,20 +336,20 @@ UtGetOpName (
 
 void
 UtDisplaySummary (
-    void)
+    FILE                    *Where)
 {
 
 
-    printf ("Compilation complete. %d Errors %d Warnings\n",
+    fprintf (Where, "Compilation complete. %d Errors %d Warnings\n",
                 Gbl_ExceptionCount[ASL_ERROR],
                 Gbl_ExceptionCount[ASL_WARNING]);
 
-    printf ("ASL Input: %d lines, %d bytes, %d keywords\n",
-                Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
+    fprintf (Where, "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
+                Gbl_InputFilename, Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
 
     if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
-        printf ("AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
+        fprintf (Where, "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
                     Gbl_OutputFilename, Gbl_TableLength, TotalNamedObjects, TotalExecutableOpcodes);
     }
 }
@@ -333,7 +357,58 @@ UtDisplaySummary (
 
 /*******************************************************************************
  *
- * FUNCTION:    UtAttachNamepathToOwner 
+ * FUNCTION:    UtDisplaySummary
+ *
+ * PARAMETERS:  Node            - Integer parse node
+ *              LowValue        - Smallest allowed value
+ *              HighValue       - Largest allowed value
+ *
+ * RETURN:      Node if OK, otherwise NULL
+ *
+ * DESCRIPTION: Check integer for an allowable range
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE *
+UtCheckIntegerRange (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  LowValue,
+    UINT32                  HighValue)
+{
+    char                    *ParseError = NULL;
+    char                    Buffer[64];
+
+
+    if (!Node)
+    {
+        return NULL;
+    }
+
+    if (Node->Value.Integer64 < LowValue)
+    {
+        ParseError = "Value below valid range";
+    }
+
+    if (Node->Value.Integer64 > HighValue)
+    {
+        ParseError = "Value above valid range";
+    }
+
+    if (ParseError)
+    {
+        sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
+        AslCompilererror (Buffer);
+        AcpiCmFree (Node);
+        return NULL;
+    }
+
+    return Node;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    UtAttachNamepathToOwner
  *
  * PARAMETERS:  Node            - Parent parse node
  *              NameNode        - Node that contains the name
@@ -362,6 +437,205 @@ UtAttachNamepathToOwner (
         /* TBD: abort on no memory */
     }
 
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    strtoul
+ *
+ * PARAMETERS:  String          - Null terminated string
+ *              Terminater      - Where a pointer to the terminating byte is returned
+ *              Base            - Radix of the string
+ *
+ * RETURN:      Converted value
+ *
+ * DESCRIPTION: Convert a string into an unsigned value.
+ *
+ ******************************************************************************/
+#define NEGATIVE    1
+#define POSITIVE    0
+
+ACPI_INTEGER
+UtStrtoul64 (
+    NATIVE_CHAR             *String,
+    NATIVE_CHAR             **Terminator,
+    UINT32                  Base)
+{
+    UINT32                  converted = 0;
+    UINT32                  index;
+    UINT32                  sign;
+    NATIVE_CHAR             *StringStart;
+    ACPI_INTEGER            ReturnValue = 0;
+    ACPI_STATUS             Status = AE_OK;
+
+
+    /*
+     * Save the value of the pointer to the buffer's first
+     * character, save the current errno value, and then
+     * skip over any white space in the buffer:
+     */
+    StringStart = String;
+    while (isspace (*String) || *String == '\t')
+    {
+        ++String;
+    }
+
+    /*
+     * The buffer may contain an optional plus or minus sign.
+     * If it does, then skip over it but remember what is was:
+     */
+    if (*String == '-')
+    {
+        sign = NEGATIVE;
+        ++String;
+    }
+
+    else if (*String == '+')
+    {
+        ++String;
+        sign = POSITIVE;
+    }
+
+    else
+    {
+        sign = POSITIVE;
+    }
+
+    /*
+     * If the input parameter Base is zero, then we need to
+     * determine if it is octal, decimal, or hexadecimal:
+     */
+    if (Base == 0)
+    {
+        if (*String == '0')
+        {
+            if (tolower (*(++String)) == 'x')
+            {
+                Base = 16;
+                ++String;
+            }
+
+            else
+            {
+                Base = 8;
+            }
+        }
+
+        else
+        {
+            Base = 10;
+        }
+    }
+
+    else if (Base < 2 || Base > 36)
+    {
+        /*
+         * The specified Base parameter is not in the domain of
+         * this function:
+         */
+        goto done;
+    }
+
+    /*
+     * For octal and hexadecimal bases, skip over the leading
+     * 0 or 0x, if they are present.
+     */
+    if (Base == 8 && *String == '0')
+    {
+        String++;
+    }
+
+    if (Base == 16 &&
+        *String == '0' &&
+        tolower (*(++String)) == 'x')
+    {
+        String++;
+    }
+
+
+    /*
+     * Main loop: convert the string to an unsigned long:
+     */
+    while (*String)
+    {
+        if (isdigit (*String))
+        {
+            index = *String - '0';
+        }
+
+        else
+        {
+            index = toupper (*String);
+            if (isupper (index))
+            {
+                index = index - 'A' + 10;
+            }
+
+            else
+            {
+                goto done;
+            }
+        }
+
+        if (index >= Base)
+        {
+            goto done;
+        }
+
+        /*
+         * Check to see if value is out of range:
+         */
+
+        if (ReturnValue > ((ACPI_INTEGER_MAX - (ACPI_INTEGER) index) /
+                            (ACPI_INTEGER) Base))
+        {
+            Status = AE_ERROR;
+            ReturnValue = 0L;           /* reset */
+        }
+
+        else
+        {
+            ReturnValue *= Base;
+            ReturnValue += index;
+            converted = 1;
+        }
+
+        ++String;
+    }
+
+done:
+    /*
+     * If appropriate, update the caller's pointer to the next
+     * unconverted character in the buffer.
+     */
+    if (Terminator)
+    {
+        if (converted == 0 && ReturnValue == 0L && String != NULL)
+        {
+            *Terminator = (NATIVE_CHAR *) StringStart;
+        }
+
+        else
+        {
+            *Terminator = (NATIVE_CHAR *) String;
+        }
+    }
+
+    if (Status == AE_ERROR)
+    {
+        ReturnValue = ACPI_INTEGER_MAX;
+    }
+
+    /*
+     * If a minus sign was present, then "the conversion is negated":
+     */
+    if (sign == NEGATIVE)
+    {
+        ReturnValue = (ACPI_UINT32_MAX - ReturnValue) + 1;
+    }
+
+    return (ReturnValue);
 }
 
 
