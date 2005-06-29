@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.55 $
+ *              $Revision: 1.57 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -488,7 +488,9 @@ AcpiDbDisplayNamestring (
         return;
     }
 
-    if (AcpiPsIsPrefixChar (GET8 (Name)))
+    /* Handle all Scope Prefix operators */
+
+    while (AcpiPsIsPrefixChar (GET8 (Name)))
     {
         /* append prefix character */
 
@@ -498,6 +500,10 @@ AcpiDbDisplayNamestring (
 
     switch (GET8 (Name))
     {
+    case 0:
+        SegCount = 0;
+        break;
+
     case AML_DUAL_NAME_PREFIX:
         SegCount = 2;
         Name++;
