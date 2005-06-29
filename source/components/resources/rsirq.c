@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.22 $
+ *              $Revision: 1.25 $
  *
  ******************************************************************************/
 
@@ -120,7 +120,7 @@
 #include "acresrc.h"
 
 #define _COMPONENT          ACPI_RESOURCES
-        MODULE_NAME         ("rsirq")
+        ACPI_MODULE_NAME    ("rsirq")
 
 
 /*******************************************************************************
@@ -152,15 +152,15 @@ AcpiRsIrqResource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
     UINT8                   Index;
     UINT8                   i;
-    ACPI_SIZE               StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_IRQ);
+    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_IRQ);
 
 
-    FUNCTION_TRACE ("RsIrqResource");
+    ACPI_FUNCTION_TRACE ("RsIrqResource");
 
 
     /*
@@ -175,7 +175,7 @@ AcpiRsIrqResource (
      * Point to the 16-bits of Bytes 1 and 2
      */
     Buffer += 1;
-    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     OutputStruct->Data.Irq.NumberOfInterrupts = 0;
 
@@ -209,15 +209,15 @@ AcpiRsIrqResource (
          */
         if (Temp8 & 0x01)
         {
-            OutputStruct->Data.Irq.EdgeLevel = EDGE_SENSITIVE;
-            OutputStruct->Data.Irq.ActiveHighLow = ACTIVE_HIGH;
+            OutputStruct->Data.Irq.EdgeLevel = ACPI_EDGE_SENSITIVE;
+            OutputStruct->Data.Irq.ActiveHighLow = ACPI_ACTIVE_HIGH;
         }
         else
         {
             if (Temp8 & 0x8)
             {
-                OutputStruct->Data.Irq.EdgeLevel = LEVEL_SENSITIVE;
-                OutputStruct->Data.Irq.ActiveHighLow = ACTIVE_LOW;
+                OutputStruct->Data.Irq.EdgeLevel = ACPI_LEVEL_SENSITIVE;
+                OutputStruct->Data.Irq.ActiveHighLow = ACPI_ACTIVE_LOW;
             }
             else
             {
@@ -241,9 +241,9 @@ AcpiRsIrqResource (
          * Assume Edge Sensitive, Active High, Non-Sharable
          * per ACPI Specification
          */
-        OutputStruct->Data.Irq.EdgeLevel = EDGE_SENSITIVE;
-        OutputStruct->Data.Irq.ActiveHighLow = ACTIVE_HIGH;
-        OutputStruct->Data.Irq.SharedExclusive = EXCLUSIVE;
+        OutputStruct->Data.Irq.EdgeLevel = ACPI_EDGE_SENSITIVE;
+        OutputStruct->Data.Irq.ActiveHighLow = ACPI_ACTIVE_HIGH;
+        OutputStruct->Data.Irq.SharedExclusive = ACPI_EXCLUSIVE;
     }
 
     /*
@@ -288,16 +288,16 @@ AcpiRsIrqStream (
     BOOLEAN                 IRQInfoByteNeeded;
 
 
-    FUNCTION_TRACE ("RsIrqStream");
+    ACPI_FUNCTION_TRACE ("RsIrqStream");
 
 
     /*
      * The descriptor field is set based upon whether a third byte is
      * needed to contain the IRQ Information.
      */
-    if (EDGE_SENSITIVE == LinkedList->Data.Irq.EdgeLevel &&
-        ACTIVE_HIGH == LinkedList->Data.Irq.ActiveHighLow &&
-        EXCLUSIVE == LinkedList->Data.Irq.SharedExclusive)
+    if (ACPI_EDGE_SENSITIVE == LinkedList->Data.Irq.EdgeLevel &&
+        ACPI_ACTIVE_HIGH == LinkedList->Data.Irq.ActiveHighLow &&
+        ACPI_EXCLUSIVE == LinkedList->Data.Irq.SharedExclusive)
     {
         *Buffer = 0x22;
         IRQInfoByteNeeded = FALSE;
@@ -322,7 +322,7 @@ AcpiRsIrqStream (
         Temp16 |= 0x1 << Temp8;
     }
 
-    MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
+    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
     Buffer += 2;
 
     /*
@@ -334,8 +334,8 @@ AcpiRsIrqStream (
         Temp8 = (UINT8) ((LinkedList->Data.Irq.SharedExclusive &
                           0x01) << 4);
 
-        if (LEVEL_SENSITIVE == LinkedList->Data.Irq.EdgeLevel &&
-            ACTIVE_LOW == LinkedList->Data.Irq.ActiveHighLow)
+        if (ACPI_LEVEL_SENSITIVE == LinkedList->Data.Irq.EdgeLevel &&
+            ACPI_ACTIVE_LOW == LinkedList->Data.Irq.ActiveHighLow)
         {
             Temp8 |= 0x08;
         }
@@ -385,22 +385,22 @@ AcpiRsExtendedIrqResource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    NATIVE_CHAR             *TempPtr;
+    UINT8                   *TempPtr;
     UINT8                   Index;
-    ACPI_SIZE               StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_EXT_IRQ);
+    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_EXT_IRQ);
 
 
-    FUNCTION_TRACE ("RsExtendedIrqResource");
+    ACPI_FUNCTION_TRACE ("RsExtendedIrqResource");
 
 
     /*
      * Point past the Descriptor to get the number of bytes consumed
      */
     Buffer += 1;
-    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     *BytesConsumed = Temp16 + 3;
     OutputStruct->Id = ACPI_RSTYPE_EXT_IRQ;
@@ -422,7 +422,7 @@ AcpiRsExtendedIrqResource (
      * - Edge/Level are defined opposite in the table vs the headers
      */
     OutputStruct->Data.ExtendedIrq.EdgeLevel =
-                        (Temp8 & 0x2) ? EDGE_SENSITIVE : LEVEL_SENSITIVE;
+                        (Temp8 & 0x2) ? ACPI_EDGE_SENSITIVE : ACPI_LEVEL_SENSITIVE;
 
     /*
      * Check Interrupt Polarity
@@ -491,7 +491,7 @@ AcpiRsExtendedIrqResource (
         OutputStruct->Data.ExtendedIrq.ResourceSource.StringPtr =
                 (NATIVE_CHAR *)(OutputStruct + StructSize);
 
-        TempPtr = OutputStruct->Data.ExtendedIrq.ResourceSource.StringPtr;
+        TempPtr = (UINT8 *) OutputStruct->Data.ExtendedIrq.ResourceSource.StringPtr;
 
         /* Copy the string into the buffer */
 
@@ -517,7 +517,7 @@ AcpiRsExtendedIrqResource (
          * StructSize to the next 32-bit boundary.
          */
         Temp8 = (UINT8) (Index + 1);
-        StructSize += ROUND_UP_TO_32BITS (Temp8);
+        StructSize += ACPI_ROUND_UP_TO_32BITS (Temp8);
     }
     else
     {
@@ -568,7 +568,7 @@ AcpiRsExtendedIrqStream (
     NATIVE_CHAR             *TempPointer = NULL;
 
 
-    FUNCTION_TRACE ("RsExtendedIrqStream");
+    ACPI_FUNCTION_TRACE ("RsExtendedIrqStream");
 
 
     /*
@@ -580,7 +580,7 @@ AcpiRsExtendedIrqStream (
     /*
      * Set a pointer to the Length field - to be filled in later
      */
-    LengthField = (UINT16 *)Buffer;
+    LengthField = ACPI_CAST_PTR (UINT16, Buffer);
     Buffer += 2;
 
     /*
@@ -598,7 +598,7 @@ AcpiRsExtendedIrqStream (
      *
      * - Edge/Level are defined opposite in the table vs the headers
      */
-    if (EDGE_SENSITIVE == LinkedList->Data.ExtendedIrq.EdgeLevel)
+    if (ACPI_EDGE_SENSITIVE == LinkedList->Data.ExtendedIrq.EdgeLevel)
     {
         Temp8 |= 0x2;
     }
@@ -622,7 +622,7 @@ AcpiRsExtendedIrqStream (
     for (Index = 0; Index < LinkedList->Data.ExtendedIrq.NumberOfInterrupts;
          Index++)
     {
-        MOVE_UNALIGNED32_TO_32 (Buffer,
+        ACPI_MOVE_UNALIGNED32_TO_32 (Buffer,
                         &LinkedList->Data.ExtendedIrq.Interrupts[Index]);
         Buffer += 4;
     }
@@ -640,14 +640,14 @@ AcpiRsExtendedIrqStream (
         /*
          * Copy the string
          */
-        STRCPY (TempPointer,
+        ACPI_STRCPY (TempPointer,
             LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr);
 
         /*
          * Buffer needs to be set to the length of the sting + one for the
          * terminating null
          */
-        Buffer += (STRLEN (LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr) + 1);
+        Buffer += (ACPI_STRLEN (LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr) + 1);
     }
 
     /*

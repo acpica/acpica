@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsio - IO and DMA resource descriptors
- *              $Revision: 1.16 $
+ *              $Revision: 1.18 $
  *
  ******************************************************************************/
 
@@ -120,7 +120,7 @@
 #include "acresrc.h"
 
 #define _COMPONENT          ACPI_RESOURCES
-        MODULE_NAME         ("rsio")
+        ACPI_MODULE_NAME    ("rsio")
 
 
 /*******************************************************************************
@@ -152,13 +152,13 @@ AcpiRsIoResource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    ACPI_SIZE               StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_IO);
+    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_IO);
 
 
-    FUNCTION_TRACE ("RsIoResource");
+    ACPI_FUNCTION_TRACE ("RsIoResource");
 
 
     /*
@@ -180,7 +180,7 @@ AcpiRsIoResource (
      * Check MinBase Address
      */
     Buffer += 1;
-    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     OutputStruct->Data.Io.MinBaseAddress = Temp16;
 
@@ -188,7 +188,7 @@ AcpiRsIoResource (
      * Check MaxBase Address
      */
     Buffer += 2;
-    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     OutputStruct->Data.Io.MaxBaseAddress = Temp16;
 
@@ -250,13 +250,13 @@ AcpiRsFixedIoResource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
-    ACPI_SIZE               StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_FIXED_IO);
+    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_FIXED_IO);
 
 
-    FUNCTION_TRACE ("RsFixedIoResource");
+    ACPI_FUNCTION_TRACE ("RsFixedIoResource");
 
 
     /*
@@ -270,7 +270,7 @@ AcpiRsFixedIoResource (
      * Check Range Base Address
      */
     Buffer += 1;
-    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+    ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     OutputStruct->Data.FixedIo.BaseAddress = Temp16;
 
@@ -322,7 +322,7 @@ AcpiRsIoStream (
     UINT8                   Temp8 = 0;
 
 
-    FUNCTION_TRACE ("RsIoStream");
+    ACPI_FUNCTION_TRACE ("RsIoStream");
 
 
     /*
@@ -344,7 +344,7 @@ AcpiRsIoStream (
      */
     Temp16 = (UINT16) LinkedList->Data.Io.MinBaseAddress;
 
-    MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
+    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
     Buffer += 2;
 
     /*
@@ -352,7 +352,7 @@ AcpiRsIoStream (
      */
     Temp16 = (UINT16) LinkedList->Data.Io.MaxBaseAddress;
 
-    MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
+    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
     Buffer += 2;
 
     /*
@@ -406,7 +406,7 @@ AcpiRsFixedIoStream (
     UINT8                   Temp8 = 0;
 
 
-    FUNCTION_TRACE ("RsFixedIoStream");
+    ACPI_FUNCTION_TRACE ("RsFixedIoStream");
 
 
     /*
@@ -421,7 +421,7 @@ AcpiRsFixedIoStream (
      */
     Temp16 = (UINT16) LinkedList->Data.FixedIo.BaseAddress;
 
-    MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
+    ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
     Buffer += 2;
 
     /*
@@ -469,14 +469,14 @@ AcpiRsDmaResource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
     UINT8                   Temp8 = 0;
     UINT8                   Index;
     UINT8                   i;
-    ACPI_SIZE               StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_DMA);
+    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_DMA);
 
 
-    FUNCTION_TRACE ("RsDmaResource");
+    ACPI_FUNCTION_TRACE ("RsDmaResource");
 
 
     /*
@@ -576,7 +576,7 @@ AcpiRsDmaStream (
     UINT8                   Index;
 
 
-    FUNCTION_TRACE ("RsDmaStream");
+    ACPI_FUNCTION_TRACE ("RsDmaStream");
 
 
     /*

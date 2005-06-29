@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.19 $
+ *              $Revision: 1.21 $
  *
  ******************************************************************************/
 
@@ -120,7 +120,7 @@
 #include "acresrc.h"
 
 #define _COMPONENT          ACPI_RESOURCES
-        MODULE_NAME         ("rsmisc")
+        ACPI_MODULE_NAME    ("rsmisc")
 
 
 /*******************************************************************************
@@ -151,11 +151,11 @@ AcpiRsEndTagResource (
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *StructureSize)
 {
-    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
     ACPI_SIZE               StructSize = ACPI_RESOURCE_LENGTH;
 
 
-    FUNCTION_TRACE ("RsEndTagResource");
+    ACPI_FUNCTION_TRACE ("RsEndTagResource");
 
 
     /*
@@ -207,7 +207,7 @@ AcpiRsEndTagStream (
     UINT8                   Temp8 = 0;
 
 
-    FUNCTION_TRACE ("RsEndTagStream");
+    ACPI_FUNCTION_TRACE ("RsEndTagStream");
 
 
     /*
@@ -262,14 +262,14 @@ AcpiRsVendorResource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
     UINT16                  Temp16 = 0;
     UINT8                   Temp8 = 0;
     UINT8                   Index;
-    ACPI_SIZE               StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_VENDOR);
+    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_VENDOR);
 
 
-    FUNCTION_TRACE ("RsVendorResource");
+    ACPI_FUNCTION_TRACE ("RsVendorResource");
 
 
     /*
@@ -286,7 +286,7 @@ AcpiRsVendorResource (
 
         /* Dereference */
 
-        MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
+        ACPI_MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
         /* Calculate bytes consumed */
 
@@ -326,7 +326,7 @@ AcpiRsVendorResource (
      * calculate the length of the vendor string and expand the
      * StructSize to the next 32-bit boundary.
      */
-    StructSize += ROUND_UP_TO_32BITS (Temp16);
+    StructSize += ACPI_ROUND_UP_TO_32BITS (Temp16);
 
     /*
      * Set the Length parameter
@@ -369,7 +369,7 @@ AcpiRsVendorStream (
     UINT8                   Index;
 
 
-    FUNCTION_TRACE ("RsVendorStream");
+    ACPI_FUNCTION_TRACE ("RsVendorStream");
 
 
     /*
@@ -385,7 +385,7 @@ AcpiRsVendorStream (
 
         Temp16 = (UINT16) LinkedList->Data.VendorSpecific.Length;
 
-        MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
+        ACPI_MOVE_UNALIGNED16_TO_16 (Buffer, &Temp16);
         Buffer += 2;
     }
     else
@@ -394,7 +394,7 @@ AcpiRsVendorStream (
          * Small Item, Set the descriptor field
          */
         Temp8 = 0x70;
-        Temp8 |= LinkedList->Data.VendorSpecific.Length;
+        Temp8 |= (UINT8) LinkedList->Data.VendorSpecific.Length;
 
         *Buffer = Temp8;
         Buffer += 1;
@@ -448,12 +448,12 @@ AcpiRsStartDependFnsResource (
     ACPI_SIZE               *StructureSize)
 {
     UINT8                   *Buffer = ByteStreamBuffer;
-    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
     UINT8                   Temp8 = 0;
-    ACPI_SIZE               StructSize = SIZEOF_RESOURCE (ACPI_RESOURCE_START_DPF);
+    ACPI_SIZE               StructSize = ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_START_DPF);
 
 
-    FUNCTION_TRACE ("RsStartDependFnsResource");
+    ACPI_FUNCTION_TRACE ("RsStartDependFnsResource");
 
 
     /*
@@ -496,10 +496,10 @@ AcpiRsStartDependFnsResource (
     else
     {
         OutputStruct->Data.StartDpf.CompatibilityPriority =
-                ACCEPTABLE_CONFIGURATION;
+                ACPI_ACCEPTABLE_CONFIGURATION;
 
         OutputStruct->Data.StartDpf.PerformanceRobustness =
-                ACCEPTABLE_CONFIGURATION;
+                ACPI_ACCEPTABLE_CONFIGURATION;
     }
 
     /*
@@ -543,11 +543,11 @@ AcpiRsEndDependFnsResource (
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *StructureSize)
 {
-    ACPI_RESOURCE           *OutputStruct = (ACPI_RESOURCE *) *OutputBuffer;
+    ACPI_RESOURCE           *OutputStruct = (void *) *OutputBuffer;
     ACPI_SIZE               StructSize = ACPI_RESOURCE_LENGTH;
 
 
-    FUNCTION_TRACE ("RsEndDependFnsResource");
+    ACPI_FUNCTION_TRACE ("RsEndDependFnsResource");
 
 
     /*
@@ -600,16 +600,16 @@ AcpiRsStartDependFnsStream (
     UINT8                   Temp8 = 0;
 
 
-    FUNCTION_TRACE ("RsStartDependFnsStream");
+    ACPI_FUNCTION_TRACE ("RsStartDependFnsStream");
 
 
     /*
      * The descriptor field is set based upon whether a byte is needed
      * to contain Priority data.
      */
-    if (ACCEPTABLE_CONFIGURATION ==
+    if (ACPI_ACCEPTABLE_CONFIGURATION ==
             LinkedList->Data.StartDpf.CompatibilityPriority &&
-        ACCEPTABLE_CONFIGURATION ==
+        ACPI_ACCEPTABLE_CONFIGURATION ==
             LinkedList->Data.StartDpf.PerformanceRobustness)
     {
         *Buffer = 0x30;
@@ -665,7 +665,7 @@ AcpiRsEndDependFnsStream (
     UINT8                   *Buffer = *OutputBuffer;
 
 
-    FUNCTION_TRACE ("RsEndDependFnsStream");
+    ACPI_FUNCTION_TRACE ("RsEndDependFnsStream");
 
 
     /*
