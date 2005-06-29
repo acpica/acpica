@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.135 $
+ *       $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -286,6 +286,13 @@ AcpiExGetObjectReference (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
+AcpiExResolveMultiple (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_OPERAND_OBJECT     *Operand,
+    ACPI_OBJECT_TYPE        *ReturnType,
+    ACPI_OPERAND_OBJECT     **ReturnDesc);
+
+ACPI_STATUS
 AcpiExConcatTemplate (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_OPERAND_OBJECT     *ObjDesc2,
@@ -390,7 +397,7 @@ AcpiExReleaseMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
-ACPI_STATUS
+void
 AcpiExReleaseAllMutexes (
     ACPI_THREAD_STATE       *Thread);
 
@@ -528,13 +535,6 @@ AcpiExResolveObjectToValue (
 /*
  * exdump - Scanner debug output routines
  */
-
-void
-AcpiExShowHexValue (
-    UINT32                  ByteCount,
-    UINT8                   *AmlStart,
-    UINT32                  LeadSpace);
-
 
 void
 AcpiExDumpOperand (
@@ -701,12 +701,7 @@ AcpiExExitInterpreter (
 
 void
 AcpiExTruncateFor32bitTable (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_WALK_STATE         *WalkState);
-
-BOOLEAN
-AcpiExValidateObjectType (
-    ACPI_OBJECT_TYPE        Type);
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 BOOLEAN
 AcpiExAcquireGlobalLock (
