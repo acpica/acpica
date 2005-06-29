@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -143,13 +143,13 @@
 ACPI_STATUS
 AcpiEnable (void)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("AcpiEnable");
 
 
-    /* Make sure we've got ACPI tables */
+    /* Make sure we have ACPI tables */
 
     if (!AcpiGbl_DSDT)
     {
@@ -159,16 +159,24 @@ AcpiEnable (void)
 
     AcpiGbl_OriginalMode = AcpiHwGetMode();
 
-    /* Transition to ACPI mode */
-
-    Status = AcpiHwSetMode (SYS_MODE_ACPI);
-    if (ACPI_FAILURE (Status))
+    if (AcpiGbl_OriginalMode == SYS_MODE_ACPI)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, "Could not transition to ACPI mode.\n"));
-        return_ACPI_STATUS (Status);
+        ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Already in ACPI mode\n"));
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Transition to ACPI mode successful\n"));
+    else
+    {
+        /* Transition to ACPI mode */
+
+        Status = AcpiHwSetMode (SYS_MODE_ACPI);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, "Could not transition to ACPI mode.\n"));
+            return_ACPI_STATUS (Status);
+        }
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Transition to ACPI mode successful\n"));
+    }
 
     return_ACPI_STATUS (Status);
 }
