@@ -623,7 +623,7 @@ AmlGetRvalueFromEntry (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-        ObjDesc = CmAllocateObjectDesc ();
+        ObjDesc = CmCreateInternalObject (ValDesc->Common.Type);
         if (!ObjDesc)
         {   
             /* Descriptor allocation failure */
@@ -704,7 +704,7 @@ AmlGetRvalueFromEntry (
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-        ObjDesc = CmAllocateObjectDesc ();
+        ObjDesc = CmCreateInternalObject (ValDesc->Common.Type);
         if (!ObjDesc)
         {   
             /* Descriptor allocation failure */
@@ -760,7 +760,7 @@ AmlGetRvalueFromEntry (
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
 
-            ObjDesc = CmAllocateObjectDesc ();
+            ObjDesc = CmCreateInternalObject (ValDesc->Common.Type);
             if (!ObjDesc)
             {   
                 /* Descriptor allocation failure */
@@ -878,7 +878,7 @@ AmlGetRvalueFromEntry (
                 return_ACPI_STATUS (AE_AML_ERROR);
             }
 
-            ObjDesc = CmAllocateObjectDesc ();
+            ObjDesc = CmCreateInternalObject (ValDesc->Common.Type);
             if (!ObjDesc)
             {   
                 /* Descriptor allocation failure  */
