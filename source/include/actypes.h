@@ -450,7 +450,12 @@ typedef union AcpiObj
     } Buffer;
 
     struct
+    {
+        ACPI_OBJECT_TYPE            Type;
+        ACPI_HANDLE                 Handle;     /* object reference */
+    } Reference;
 
+    struct
     {
         ACPI_OBJECT_TYPE            Type;
         UINT32                      Count;      /* # of elements in package */
