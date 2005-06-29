@@ -116,24 +116,23 @@
 
 #define __DSMETHOD_C__
 
-#include <acpi.h>
-#include <parser.h>
-#include <amlcode.h>
-#include <dispatch.h>
-#include <interp.h>
-#include <namesp.h>
-#include <tables.h>
-#include <debugger.h>
+#include "acpi.h"
+#include "parser.h"
+#include "amlcode.h"
+#include "dispatch.h"
+#include "interp.h"
+#include "namesp.h"
+#include "tables.h"
+#include "debugger.h"
 
 
 #define _COMPONENT          DISPATCHER
-        MODULE_NAME         ("dsmeth0d");
-
+        MODULE_NAME         ("dsmethod");
 
 
 /*******************************************************************************
  *
- * FUNCTION:    DsParseMethod
+ * FUNCTION:    AcpiDsParseMethod
  *
  * PARAMETERS:  ObjHandle       - NTE of the method
  *              Level           - Current nesting level
@@ -145,10 +144,12 @@
  * DESCRIPTION: Call the parser and parse the AML that is
  *              associated with the method.
  *
+ * MUTEX:       Assumes parser is locked
+ *
  ******************************************************************************/
 
 ACPI_STATUS
-DsParseMethod (
+AcpiDsParseMethod (
     ACPI_HANDLE             ObjHandle)
 {
     ACPI_STATUS             Status;
@@ -186,7 +187,7 @@ DsParseMethod (
     if ((ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY) &&
         (!ObjDesc->Method.Semaphore))
     {
-        Status = OsdCreateSemaphore (ObjDesc->Method.Concurrency, &ObjDesc->Method.Semaphore);
+        Status = AcpiOsdCreateSemaphore (ObjDesc->Method.Concurrency, &ObjDesc->Method.Semaphore);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -195,7 +196,7 @@ DsParseMethod (
 
     /* Allocate a new parser op to be the root of the parsed method tree */
 
-    Op = PsAllocOp (AML_MethodOp);
+    Op = AcpiPsAllocOp (AML_METHOD_OP);
     if (!Op)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -203,13 +204,21 @@ DsParseMethod (
 
     /* Init new op with the method name and pointer back to the NTE */
 
-    PsSetName (Op, Entry->Name);
+    AcpiPsSetName (Op, Entry->Name);
     Op->NameTableEntry = Entry;
 
 
-    /* Parse the method, creating a parse tree */
+    /* 
+     * Parse the method, creating a parse tree.
+     *
+     * The parse also includes a first pass load of the namespace where
+     * newly declared named objects are added into the namespace.  Actual evaluation
+     * of the named objects (what would be called a "second pass") happens during the
+     * actual execution of the method so that operands to the named objects can take
+     * on dynamic run-time values.
+     */
 
-    Status = PsParseAml (Op, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength);
+    Status = AcpiPsParseAml (Op, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength, 0);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -218,24 +227,14 @@ DsParseMethod (
 
     /* Get a new OwnerId for objects created by this method */
 
-    OwnerId = CmAllocateOwnerId (OWNER_TYPE_METHOD);
-
-	/*
-	 * Make a first pass walk to add newly declared items to the namespace.
-	 * (The first pass only adds the names, it does not evaluate them)
-	 * The second pass occurs during the actual execution of the method
-	 * so that operands are evaluated dynamically.
-	 */
-
-    PsWalkParsedAml (Op->Value.Arg, Op, ObjDesc, Entry->Scope, NULL, NULL,
-                        OwnerId, DsLoad1BeginOp, DsLoad1EndOp);
+    OwnerId = AcpiCmAllocateOwnerId (OWNER_TYPE_METHOD);
 
     /* Install the parsed tree in the method object */
 
     ObjDesc->Method.ParserOp = Op;
     ObjDesc->Method.OwningId = OwnerId;
 
-    DEBUG_EXEC (DbGenerateStatistics (Op, 1));
+    DEBUG_EXEC (AcpiDbGenerateStatistics (Op, 1));
 
     DEBUG_PRINT (ACPI_INFO, ("DsParseMethod: **** [%4.4s] Parsed **** Nte=%p Op=%p\n", 
                     &((NAME_TABLE_ENTRY *)ObjHandle)->Name, ObjHandle, Op));
@@ -246,7 +245,100 @@ DsParseMethod (
 
 /*******************************************************************************
  *
- * FUNCTION:    DsCallControlMethod
+ * FUNCTION:    AcpiDsBeginMethodExecution
+ *
+ * PARAMETERS:  MethodEntry         - NTE of the method
+ *              ObjDesc             - The method object
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Prepare a method for execution.  Parses the method if necessary,
+ *              increments the thread count, and waits at the method semaphore for
+ *              clearance to execute.
+ *
+ * MUTEX:       Locks/unlocks parser.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsBeginMethodExecution (
+    NAME_TABLE_ENTRY        *MethodEntry,
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    FUNCTION_TRACE_PTR ("DsBeginMethodExecution", MethodEntry);
+
+
+    if (!MethodEntry)
+    {
+        return_ACPI_STATUS (AE_NULL_ENTRY);
+    }
+
+    ObjDesc = AcpiNsGetAttachedObject (MethodEntry);
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_NULL_OBJECT);
+    }
+
+    /*
+     * Lock the parser while we check for and possibly parse the control method
+     */
+
+    AcpiCmAcquireMutex (MTX_PARSER);
+
+
+    /* If method is not parsed at this time, we must parse it first */
+
+    if (!ObjDesc->Method.ParserOp)
+    {
+
+        DEBUG_PRINT (ACPI_INFO, ("PsxExecute: **** Parsing Method **** obj=%p\n", ObjDesc));
+
+        Status = AcpiDsParseMethod (MethodEntry);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiCmReleaseMutex (MTX_PARSER);
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+
+    /* 
+     * Increment the method parse tree thread count since there is one additional thread executing
+     * in it.  If configured for deletion-on-exit, the parse tree will be deleted when the last
+     * thread completes execution of the method
+     */
+
+    ((ACPI_DEFERRED_OP *) ObjDesc->Method.ParserOp)->ThreadCount++;
+
+    /* 
+     * Parsing is complete, we can unlock the parser.  Parse tree cannot be deleted
+     * at least until this thread completes.
+     */
+
+    AcpiCmReleaseMutex (MTX_PARSER);
+    
+    /* 
+     * If there is a concurrency limit on this method, we need to obtain a unit
+     * from the method semaphore.  This releases the interpreter if we block
+     */
+
+    if (ObjDesc->Method.Semaphore)
+    {
+        Status = OsLocalWaitSemaphore (ObjDesc->Method.Semaphore, WAIT_FOREVER);
+    }
+
+
+    return_ACPI_STATUS (Status);
+
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsCallControlMethod
  *
  * PARAMETERS:  WalkState           - Current state of the walk
  *              Op                  - Current Op to be walked
@@ -258,17 +350,16 @@ DsParseMethod (
  ******************************************************************************/
 
 ACPI_STATUS
-DsCallControlMethod (
+AcpiDsCallControlMethod (
     ACPI_WALK_LIST          *WalkList,
     ACPI_WALK_STATE         *ThisWalkState,
     ACPI_GENERIC_OP         *Op)
 {
     ACPI_STATUS             Status;
     ACPI_DEFERRED_OP        *Method;
-    NAME_TABLE_ENTRY        *MethodNte;
+    NAME_TABLE_ENTRY        *MethodEntry;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_WALK_STATE         *NextWalkState;
-    UINT32                  NumArgs;
     UINT32                  i;
 
 
@@ -276,118 +367,102 @@ DsCallControlMethod (
 
     DEBUG_PRINT (TRACE_DISPATCH, ("DsCall, execute method %p, currentstate=%p\n", 
                         ThisWalkState->PrevOp, ThisWalkState));
-    BREAKPOINT3;
 
-
-    /* TBD: Move this code to the ParseAml procedure? */
 
     /*
      * PrevOp points to the METHOD_CALL Op.
      * Get the NTE entry (in the METHOD_CALL->NAME Op) and the corresponding METHOD Op
      */
 
-    MethodNte   = (ThisWalkState->PrevOp->Value.Arg)->NameTableEntry;
-    ObjDesc     = NsGetAttachedObject (MethodNte);
+    MethodEntry = (ThisWalkState->PrevOp->Value.Arg)->NameTableEntry;
+    if (!MethodEntry)
+    {
+        return_ACPI_STATUS (AE_NULL_ENTRY);
+    }
+
+    ObjDesc = AcpiNsGetAttachedObject (MethodEntry);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
-    /*
-     * If the method isn't parsed yet (no parse tree), we must parse it.
-     */
-    if (!ObjDesc->Method.ParserOp)
+    /* Parse method if necessary, wait on concurrency semaphore */
+
+    Status = AcpiDsBeginMethodExecution (MethodEntry, ObjDesc);
+    if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINT (TRACE_DISPATCH, ("DsCall, parsing control method\n"));
-
-        Status = DsParseMethod (MethodNte);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        return_ACPI_STATUS (Status);
     }
-
-    /* Get the parse tree and parameter count */
-
-    Method      = ObjDesc->Method.ParserOp;
-    NumArgs     = ObjDesc->Method.ParamCount;
 
     /* Save the (current) Op for when this walk is restarted */
 
     ThisWalkState->MethodCallOp = ThisWalkState->PrevOp;
     ThisWalkState->PrevOp       = Op;
+    Method                      = ObjDesc->Method.ParserOp;
 
     /* Create a new state for the preempting walk */
 
-    NextWalkState = DsCreateWalkState ((ACPI_GENERIC_OP *) Method, ObjDesc, WalkList);
+    NextWalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwningId, (ACPI_GENERIC_OP *) Method, ObjDesc, WalkList);
     if (!NextWalkState)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    /* The NextOp of the NextWalk will be the beginning of the method */
+    
+    NextWalkState->NextOp = (ACPI_GENERIC_OP *) Method;
 
     /* Open a new scope */
 
-    Status = DsScopeStackPush (MethodNte->Scope, ACPI_TYPE_Method, NextWalkState);
+    Status = AcpiDsScopeStackPush (MethodEntry->Scope, ACPI_TYPE_METHOD, NextWalkState);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
 
-    /* TBD: Do the operands always start at index 0? */
-
     /* 
      * Initialize the arguments for the method.  The resolved arguments were put 
-     * on the previous walk state's operand stack
+     * on the previous walk state's operand stack.  Operands on the previous walk state
+     * stack always start at index 0.
      */
 
-    Status = DsMethodDataInitArgs (&ThisWalkState->Operands[0], ThisWalkState->NumOperands);
+    Status = AcpiDsMethodDataInitArgs (&ThisWalkState->Operands[0], ThisWalkState->NumOperands);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     /* Delete the operands on the previous walkstate operand stack (they were copied to new objects) */
 
-    for (i = 0; i < NumArgs; i++)
+    for (i = 0; i < ObjDesc->Method.ParamCount; i++)
     {
-        CmRemoveReference (ThisWalkState->Operands [i]);
+        AcpiCmRemoveReference (ThisWalkState->Operands [i]);
     }
 
     /* Clear the operand stack */
 
     ThisWalkState->NumOperands = 0;
 
-    /* The next op will be the beginning of the method */
-
-    NextWalkState->NextOp = (ACPI_GENERIC_OP *) Method;
-
-    /* 
-     * If there is a concurrency limit on this method, we need to obtain a unit
-     * from the method semaphore.  This releases the interpreter if we block
-     */
-
-    if (ObjDesc->Method.Semaphore)
-    {
-        Status = OsLocalWaitSemaphore (ObjDesc->Method.Semaphore, WAIT_FOREVER);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
-
  
     DEBUG_PRINT (TRACE_DISPATCH, ("DsCall, starting nested execution, newstate=%p\n", NextWalkState));
-    BREAKPOINT3;
 
     return_ACPI_STATUS (AE_OK);
+
+
+    /* On error, we must delete the new walk state */
+
+Cleanup:
+    AcpiDsTerminateControlMethod (NextWalkState);
+    AcpiDsDeleteWalkState (NextWalkState);
+    return_ACPI_STATUS (Status);
+
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    DsRestartControlMethod
+ * FUNCTION:    AcpiDsRestartControlMethod
  *
  * PARAMETERS:  WalkState           - State of the method when it was preempted
  *              Op                  - Pointer to new current op
@@ -399,7 +474,7 @@ DsCallControlMethod (
  ******************************************************************************/
 
 ACPI_STATUS
-DsRestartControlMethod (
+AcpiDsRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OBJECT_INTERNAL    *ReturnDesc)
 {
@@ -413,16 +488,16 @@ DsRestartControlMethod (
     {
         /* Get the return value (if any) from the previous method.  NULL if no return value */
 
-        Status = DsResultStackPush (ReturnDesc, WalkState);
+        Status = AcpiDsResultStackPush (ReturnDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
-            CmRemoveReference (ReturnDesc);
+            AcpiCmRemoveReference (ReturnDesc);
             return_ACPI_STATUS (Status);
         }
 
         /* Delete the return value if it will not be used by the calling method */
 
-        DsDeleteResultIfNotUsed (WalkState->MethodCallOp, ReturnDesc, WalkState);
+        AcpiDsDeleteResultIfNotUsed (WalkState->MethodCallOp, ReturnDesc, WalkState);
     }
 
     DEBUG_PRINT (TRACE_DISPATCH, ("DsRestart: Method=%p Return=%p State=%p\n", 
@@ -435,7 +510,7 @@ DsRestartControlMethod (
 
 /*******************************************************************************
  *
- * FUNCTION:    DsTerminateControlMethod
+ * FUNCTION:    AcpiDsTerminateControlMethod
  *
  * PARAMETERS:  WalkState           - State of the method
  *
@@ -448,12 +523,12 @@ DsRestartControlMethod (
  ******************************************************************************/
 
 ACPI_STATUS
-DsTerminateControlMethod (
+AcpiDsTerminateControlMethod (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_GENERIC_OP         *Op;
+    ACPI_DEFERRED_OP        *Op;
     NAME_TABLE_ENTRY        *MethodEntry;
 
 
@@ -468,57 +543,76 @@ DsTerminateControlMethod (
         return_ACPI_STATUS (AE_OK);
     }
 
+    /* Delete all arguments and locals */
+
+    AcpiDsMethodDataDeleteAll (WalkState);
+
+    /* 
+     * Lock the parser while we terminate this method.
+     * If this is the last thread executing the method, we have
+     * additional cleanup to perform
+     */
+
+    AcpiCmAcquireMutex (MTX_PARSER);
+
     /* The root of the method parse tree should be stored in the method object */
 
     Op = ObjDesc->Method.ParserOp;
     if (!Op)
     {
-        return_ACPI_STATUS (AE_OK);
+        goto UnlockAndExit;
     }
-
-    /* The method NTE is stored in the method Op */
-
-    MethodEntry = Op->NameTableEntry;
-
-
-    /*
-     * Delete any namespace entries created immediately underneath the method
-     */
-    CmReleaseMutex (MTX_NAMESPACE);
-    if (MethodEntry->Scope)
-    {
-        NsDeleteNamespaceSubtree (MethodEntry);
-    }
-
-    /* 
-     * Delete any namespace entries created anywhere else within the namespace 
-     */
-
-    NsDeleteNamespaceByOwner (WalkState->MethodDesc->Method.OwningId);
-    CmAcquireMutex (MTX_NAMESPACE);
-
-
+ 
     /* Signal completion of the execution of this method if necessary */
 
     if (WalkState->MethodDesc->Method.Semaphore)
     {
-        Status = OsdSignalSemaphore (WalkState->MethodDesc->Method.Semaphore, 1);
+        Status = AcpiOsdSignalSemaphore (WalkState->MethodDesc->Method.Semaphore, 1);
     }
 
-    /* Delete all arguments and locals */
+    /* Decrement the thread count on the method parse tree */
 
-    DsMethodDataDeleteAll (WalkState);
-    
-    /* 
-     * Delete the method's parse tree if asked to 
-     */
-    if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
+    Op->ThreadCount--;
+    if (!Op->ThreadCount)
     {
-        PsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
-        WalkState->MethodDesc->Method.ParserOp = NULL;
+        /*
+         * There are no more threads executing this method.  Perform additional cleanup.
+         *
+         * The method NTE is stored in the method Op 
+         */
+        MethodEntry = Op->NameTableEntry;
+
+        /*
+         * Delete any namespace entries created immediately underneath the method
+         */
+        AcpiCmAcquireMutex (MTX_NAMESPACE);
+        if (MethodEntry->Scope)
+        {
+            AcpiNsDeleteNamespaceSubtree (MethodEntry);
+        }
+
+        /* 
+         * Delete any namespace entries created anywhere else within the namespace 
+         */
+
+        AcpiNsDeleteNamespaceByOwner (WalkState->MethodDesc->Method.OwningId);
+        AcpiCmReleaseMutex (MTX_NAMESPACE);
+
+
+        /* 
+         * Delete the method's parse tree if asked to 
+         */
+        if (Acpi_GblWhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
+        {
+            AcpiPsDeleteParseTree (WalkState->MethodDesc->Method.ParserOp);
+            WalkState->MethodDesc->Method.ParserOp = NULL;
+        }
     }
 
 
+UnlockAndExit:
+
+    AcpiCmReleaseMutex (MTX_PARSER);
     return_ACPI_STATUS (AE_OK);
 }
 

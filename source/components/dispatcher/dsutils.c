@@ -116,13 +116,13 @@
 
 #define __DSUTILS_C__
 
-#include <acpi.h>
-#include <parser.h>
-#include <amlcode.h>
-#include <dispatch.h>
-#include <interp.h>
-#include <namesp.h>
-#include <debugger.h>
+#include "acpi.h"
+#include "parser.h"
+#include "amlcode.h"
+#include "dispatch.h"
+#include "interp.h"
+#include "namesp.h"
+#include "debugger.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("dsutils");
@@ -131,7 +131,7 @@
 
 /*****************************************************************************
  *
- * FUNCTION:    DsDeleteResultIfNotUsed
+ * FUNCTION:    AcpiDsDeleteResultIfNotUsed
  *
  * PARAMETERS:  Op
  *              ResultObj
@@ -147,7 +147,7 @@
  ****************************************************************************/
 
 void
-DsDeleteResultIfNotUsed (
+AcpiDsDeleteResultIfNotUsed (
     ACPI_GENERIC_OP         *Op,
     ACPI_OBJECT_INTERNAL    *ResultObj,
     ACPI_WALK_STATE         *WalkState)
@@ -181,23 +181,23 @@ DsDeleteResultIfNotUsed (
 
         /* Must pop the result stack (ObjDesc should be equal to ResultObj) */
 
-        Status = DsResultStackPop (&ObjDesc, WalkState);
+        Status = AcpiDsResultStackPop (&ObjDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return;
         }
 
-        CmDeleteInternalObject (ObjDesc);
+        AcpiCmRemoveReference (ResultObj);
 
         return_VOID;
     }
 
 
     /*
-     * Get info on the parent.  The root Op is AML_Scope
+     * Get info on the parent.  The root Op is AML_SCOPE
      */
 
-    ParentInfo = PsGetOpcodeInfo (Op->Parent->Opcode);
+    ParentInfo = AcpiPsGetOpcodeInfo (Op->Parent->Opcode);
     if (!ParentInfo)
     {
         DEBUG_PRINT (ACPI_ERROR, ("DsDeleteResultIfNotUsed: Unknown parent opcode. Op=%X\n",
@@ -209,7 +209,7 @@ DsDeleteResultIfNotUsed (
 
     /* Never delete the return value associated with a return opcode */
 
-    if (Op->Parent->Opcode == AML_ReturnOp)
+    if (Op->Parent->Opcode == AML_RETURN_OP)
     {
         DEBUG_PRINT (TRACE_DISPATCH, ("DsDeleteResultIfNotUsed: No delete, [RETURN] opcode=%X Op=%X\n",
                         Op->Opcode, Op));
@@ -237,13 +237,13 @@ DsDeleteResultIfNotUsed (
 
         /* Must pop the result stack (ObjDesc should be equal to ResultObj) */
 
-        Status = DsResultStackPop (&ObjDesc, WalkState);
+        Status = AcpiDsResultStackPop (&ObjDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
             return_VOID;
         }
 
-        CmDeleteInternalObject (ObjDesc);
+        AcpiCmRemoveReference (ResultObj);
         break;
 
     /* 
@@ -261,7 +261,7 @@ DsDeleteResultIfNotUsed (
 
 /*****************************************************************************
  *
- * FUNCTION:    DsCreateOperand
+ * FUNCTION:    AcpiDsCreateOperand
  *
  * PARAMETERS:  WalkState
  *              Arg
@@ -276,14 +276,14 @@ DsDeleteResultIfNotUsed (
  ****************************************************************************/
 
 ACPI_STATUS
-DsCreateOperand (
+AcpiDsCreateOperand (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Arg)
 {
     ACPI_STATUS             Status = AE_OK;
     char                    *NameString;
     UINT32                  NameLength;
-    ACPI_OBJECT_TYPE        DataType; 
+    OBJECT_TYPE_INTERNAL    DataType; 
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_GENERIC_OP         *ParentOp;
     UINT16                  Opcode;
@@ -296,14 +296,14 @@ DsCreateOperand (
 
     /* A valid name must be looked up in the namespace */
 
-    if ((Arg->Opcode == AML_NAMEPATH) &&
+    if ((Arg->Opcode == AML_NAMEPATH_OP) &&
         (Arg->Value.String))
     {
         DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Getting a name: Arg=%p\n", Arg));
 
         /* Get the entire name string from the AML stream */
 
-        Status = AmlGetNameString (ACPI_TYPE_Any, Arg->Value.Buffer, &NameString, &NameLength);
+        Status = AcpiAmlGetNameString (ACPI_TYPE_ANY, Arg->Value.Buffer, &NameString, &NameLength);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -313,55 +313,74 @@ DsCreateOperand (
 
         /*
          * Differentiate between a namespace "create" operation versus a "lookup" operation 
-         * (IMODE_LoadPass2 vs. IMODE_Execute) in order to support the creation of namespace
+         * (IMODE_LOAD_PASS2 vs. IMODE_EXECUTE) in order to support the creation of namespace
          * objects during the execution of control methods.
          */
 
         ParentOp = Arg->Parent;
-        if ((PsIsNamedObjectOp (ParentOp->Opcode)) &&
-            (ParentOp->Opcode != AML_METHODCALL) &&
-            (ParentOp->Opcode != AML_NAMEPATH))
+        if ((AcpiPsIsNamedObjectOp (ParentOp->Opcode)) &&
+            (ParentOp->Opcode != AML_METHODCALL_OP) &&
+            (ParentOp->Opcode != AML_NAMEPATH_OP))
         {
             /* Enter name into namespace if not found */
 
-            InterpreterMode = IMODE_LoadPass2;
+            InterpreterMode = IMODE_LOAD_PASS2;
         }
 
         else
         {
             /* Return a failure if name not found */
 
-            InterpreterMode = IMODE_Execute;
+            InterpreterMode = IMODE_EXECUTE;
         }
 
-        Status = NsLookup (WalkState->ScopeInfo, NameString, ACPI_TYPE_Any, InterpreterMode, 
+        Status = AcpiNsLookup (WalkState->ScopeInfo, NameString, ACPI_TYPE_ANY, InterpreterMode, 
                                     NS_SEARCH_PARENT | NS_DONT_OPEN_SCOPE, WalkState, (NAME_TABLE_ENTRY **) &ObjDesc);
 
         /* Free the namestring created above */
 
-        CmFree (NameString);
+        AcpiCmFree (NameString);
 
         /*
          * The only case where we pass through (ignore) a NOT_FOUND error is for the 
          * CondRefOf opcode.
          */
 
-        if ((Status == AE_NOT_FOUND) &&
-            (ParentOp->Opcode == AML_CondRefOfOp))
+        if (Status == AE_NOT_FOUND) 
         {
-            ObjDesc = (ACPI_OBJECT_INTERNAL *) Gbl_RootObject;
-            Status = AE_OK;
+            if (ParentOp->Opcode == AML_COND_REF_OF_OP)
+            {
+                /*
+                 * For the Conditional Reference op, it's OK if the name is not found;  We
+                 * just need a way to indicate this to the interpreter, set the object to the root
+                 */
+                ObjDesc = (ACPI_OBJECT_INTERNAL *) Acpi_GblRootObject;
+                Status = AE_OK;
+            }
+
+            else
+            {
+                /* We just plain didn't find it -- which is a very serious error at this point */
+
+                Status = AE_AML_NAME_NOT_FOUND;
+            }
         }
 
         /* Check status from the lookup */
-
+ 
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
         }
 
-        DsObjStackPush (ObjDesc, WalkState);
-        DEBUG_EXEC (DbDisplayArgumentObject (ObjDesc));
+        /* Put the resulting object onto the current object stack */
+
+        Status = AcpiDsObjStackPush (ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+        DEBUG_EXEC (AcpiDbDisplayArgumentObject (ObjDesc));
     }
 
 
@@ -369,17 +388,17 @@ DsCreateOperand (
     {
         /* Check for null name case */
 
-        if (Arg->Opcode == AML_NAMEPATH)
+        if (Arg->Opcode == AML_NAMEPATH_OP)
         {
             /*
              * If the name is null, this means that this is an optional result parameter that was
-             * not specified in the original ASL.  Create an Lvalue for a placeholder 
+             * not specified in the original ASL.  Create an Reference for a placeholder 
              */
-            Opcode = AML_ZeroOp;        /* Has no arguments! */
+            Opcode = AML_ZERO_OP;       /* Has no arguments! */
 
             DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Null namepath: Arg=%p\n", Arg));
 
-            /* TBD: anything else needed for the zero op lvalue? */
+            /* TBD: [Investigate] anything else needed for the zero op lvalue? */
         }
 
         else
@@ -390,44 +409,39 @@ DsCreateOperand (
 
         /* Get the data type of the argument */
 
-        DataType = DsMapOpcodeToDataType (Opcode, &Flags);
-        if (DataType == INTERNAL_TYPE_Invalid)
+        DataType = AcpiDsMapOpcodeToDataType (Opcode, &Flags);
+        if (DataType == INTERNAL_TYPE_INVALID)
         {
             return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
         }
 
         if (Flags & OP_HAS_RETURN_VALUE)
         {
-            DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Argument already created, getting from result stack \n"));
+            DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Argument previously created, already stacked \n"));
+
+//            DEBUG_EXEC (AcpiDbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1]));
 
             /* 
              * Use value that was already previously returned by the evaluation of this argument
              */
 
-            Status = DsResultStackPop (&ObjDesc, WalkState);
+            Status = AcpiDsResultStackPop (&ObjDesc, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 /*
-                 * Only error is underflow, and this indicates a missing operand!
+                 * Only error is underflow, and this indicates a missing or null operand!
                  */
                 DEBUG_PRINT (ACPI_ERROR, ("DsCreateOperand: Could not pop result\n"));
-                return_ACPI_STATUS (AE_AML_NO_OPERAND);
+                return_ACPI_STATUS (Status);
             }
 
-            /* There must be a valid value on the stack or something is seriously wrong */
-
-            if (!ObjDesc)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("DsCreateOperand: But result obj is null! Arg=%X\n", Arg));
-                return_ACPI_STATUS (AE_AML_NO_OPERAND);
-            }
         }
 
         else
         {
             /* Create an ACPI_INTERNAL_OBJECT for the argument */
 
-            ObjDesc = CmCreateInternalObject (DataType);
+            ObjDesc = AcpiCmCreateInternalObject (DataType);
             if (!ObjDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -435,19 +449,24 @@ DsCreateOperand (
 
             /* Initialize the new object */
 
-            Status = DsInitObjectFromOp (WalkState, Arg, Opcode, ObjDesc);
+            Status = AcpiDsInitObjectFromOp (WalkState, Arg, Opcode, ObjDesc);
             if (ACPI_FAILURE (Status))
             {
-                CmFree (ObjDesc);
+                AcpiCmFree (ObjDesc);
                 return_ACPI_STATUS (Status);
             }
-        }
-
+       }
 
         /* Put the operand object on the object stack */
 
-        DsObjStackPush (ObjDesc, WalkState);
-        DEBUG_EXEC (DbDisplayArgumentObject (ObjDesc));
+        Status = AcpiDsObjStackPush (ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        DEBUG_EXEC (AcpiDbDisplayArgumentObject (ObjDesc));
+
     }
 
 
@@ -458,7 +477,7 @@ DsCreateOperand (
 
 /*****************************************************************************
  *
- * FUNCTION:    DsCreateOperands
+ * FUNCTION:    AcpiDsCreateOperands
  *
  * PARAMETERS:  FirstArg            - First argument of a parser argument tree
  *
@@ -471,7 +490,7 @@ DsCreateOperand (
  ****************************************************************************/
 
 ACPI_STATUS
-DsCreateOperands (
+AcpiDsCreateOperands (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *FirstArg)
 {
@@ -490,7 +509,7 @@ DsCreateOperands (
     while (Arg)
     {
 
-        Status = DsCreateOperand (WalkState, Arg);
+        Status = AcpiDsCreateOperand (WalkState, Arg);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -514,17 +533,17 @@ Cleanup:
      * of the operand stack and delete those objects 
      */
 
-    DsObjStackPopAndDelete (ArgsPushed, WalkState);
+    AcpiDsObjStackPopAndDelete (ArgsPushed, WalkState);
 
     DEBUG_PRINT (ACPI_ERROR, ("DsCreateOperands: Error while creating Arg %d - %s\n",
-                    (ArgsPushed+1), CmFormatException (Status)));
+                    (ArgsPushed+1), AcpiCmFormatException (Status)));
     return_ACPI_STATUS (Status);
 }
 
 
 /*****************************************************************************
  *
- * FUNCTION:    DsResolveOperands
+ * FUNCTION:    AcpiDsResolveOperands
  *
  * PARAMETERS:  WalkState           - Current walk state with operands on stack
  *
@@ -536,7 +555,7 @@ Cleanup:
  ****************************************************************************/
 
 ACPI_STATUS
-DsResolveOperands (
+AcpiDsResolveOperands (
     ACPI_WALK_STATE         *WalkState)
 {
     UINT32                  i;
@@ -552,14 +571,13 @@ DsResolveOperands (
      */
     
     /*
-     * TBD: Note from previous parser:
-     *
-     * TBD: RefOf problem with AmlGetRvalue() conversion.
+     * TBD: [Investigate] Note from previous parser:
+     *   RefOf problem with AcpiAmlResolveToValue() conversion.
      */
 
     for (i = 0; i < WalkState->NumOperands; i++)
     {
-        Status = AmlGetRvalue (&WalkState->Operands[i]);
+        Status = AcpiAmlResolveToValue (&WalkState->Operands[i]);
         if (ACPI_FAILURE (Status))
         {
             break;
@@ -572,7 +590,7 @@ DsResolveOperands (
 
 /*****************************************************************************
  *
- * FUNCTION:    DsMapOpcodeToDataType
+ * FUNCTION:    AcpiDsMapOpcodeToDataType
  *
  * PARAMETERS:  Opcode          - AML opcode to map
  *              OutFlags        - Additional info about the opcode
@@ -585,17 +603,17 @@ DsResolveOperands (
  *
  ****************************************************************************/
 
-ACPI_OBJECT_TYPE
-DsMapOpcodeToDataType (
+OBJECT_TYPE_INTERNAL
+AcpiDsMapOpcodeToDataType (
     UINT16                  Opcode,
     UINT32                  *OutFlags)
 {
-    ACPI_OBJECT_TYPE        DataType = INTERNAL_TYPE_Invalid;
+    OBJECT_TYPE_INTERNAL    DataType = INTERNAL_TYPE_INVALID;
     ACPI_OP_INFO            *OpInfo;
     UINT32                  Flags = 0;
 
 
-    OpInfo = PsGetOpcodeInfo (Opcode);
+    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
     if (!OpInfo)
     {
         /* Unknown opcode */
@@ -610,21 +628,21 @@ DsMapOpcodeToDataType (
 
         switch (Opcode)
         {
-        case AML_ByteOp:
-        case AML_WordOp:
-        case AML_DWordOp:
+        case AML_BYTE_OP:
+        case AML_WORD_OP:
+        case AML_DWORD_OP:
 
-            DataType = ACPI_TYPE_Number;
+            DataType = ACPI_TYPE_NUMBER;
             break;
 
 
-        case AML_StringOp:
+        case AML_STRING_OP:
 
-            DataType = ACPI_TYPE_String;
+            DataType = ACPI_TYPE_STRING;
             break;
 
-        case AML_NAMEPATH:
-            DataType = INTERNAL_TYPE_Reference;
+        case AML_NAMEPATH_OP:
+            DataType = INTERNAL_TYPE_REFERENCE;
             break;
         }
 
@@ -635,14 +653,14 @@ DsMapOpcodeToDataType (
 
         switch (Opcode)
         {
-        case AML_BufferOp:
+        case AML_BUFFER_OP:
 
-            DataType = ACPI_TYPE_Buffer;
+            DataType = ACPI_TYPE_BUFFER;
             break;
 
-        case AML_PackageOp:
+        case AML_PACKAGE_OP:
 
-            DataType = ACPI_TYPE_Package;
+            DataType = ACPI_TYPE_PACKAGE;
             break;
         }
 
@@ -653,7 +671,7 @@ DsMapOpcodeToDataType (
     case OPTYPE_METHOD_ARGUMENT:
     case OPTYPE_LOCAL_VARIABLE:
 
-        DataType = INTERNAL_TYPE_Lvalue;
+        DataType = INTERNAL_TYPE_REFERENCE;
         break;
 
 
@@ -666,21 +684,21 @@ DsMapOpcodeToDataType (
     case OPTYPE_MATCH:
 
         Flags = OP_HAS_RETURN_VALUE;
-        DataType = ACPI_TYPE_Any;
+        DataType = ACPI_TYPE_ANY;
 
         break;
 
     case OPTYPE_METHOD_CALL:
 
         Flags = OP_HAS_RETURN_VALUE;
-        DataType = ACPI_TYPE_Method;
+        DataType = ACPI_TYPE_METHOD;
 
         break;
 
 
     case OPTYPE_NAMED_OBJECT:
 
-        DataType = DsMapNamedOpcodeToDataType (Opcode);
+        DataType = AcpiDsMapNamedOpcodeToDataType (Opcode);
 
         break;
 
@@ -713,7 +731,7 @@ DsMapOpcodeToDataType (
 
 /*****************************************************************************
  *
- * FUNCTION:    DsMapNamedOpcodeToDataType
+ * FUNCTION:    AcpiDsMapNamedOpcodeToDataType
  *
  * PARAMETERS:  Opcode              - The Named AML opcode to map
  *
@@ -724,81 +742,81 @@ DsMapOpcodeToDataType (
  *
  ****************************************************************************/
 
-ACPI_OBJECT_TYPE 
-DsMapNamedOpcodeToDataType (
+OBJECT_TYPE_INTERNAL 
+AcpiDsMapNamedOpcodeToDataType (
     UINT16                  Opcode)
 {
-    ACPI_OBJECT_TYPE        DataType; 
+    OBJECT_TYPE_INTERNAL    DataType; 
 
 
     /* Decode Opcode */
 
     switch (Opcode)
     {
-    case AML_ScopeOp:
-        DataType = INTERNAL_TYPE_Scope;
+    case AML_SCOPE_OP:
+        DataType = INTERNAL_TYPE_SCOPE;
         break;
 
-    case AML_DeviceOp:
-        DataType = ACPI_TYPE_Device;
+    case AML_DEVICE_OP:
+        DataType = ACPI_TYPE_DEVICE;
         break;
 
-    case AML_ThermalZoneOp:
-        DataType = ACPI_TYPE_Thermal;
+    case AML_THERMAL_ZONE_OP:
+        DataType = ACPI_TYPE_THERMAL;
         break;
 
-    case AML_MethodOp:
-        DataType = ACPI_TYPE_Method;
+    case AML_METHOD_OP:
+        DataType = ACPI_TYPE_METHOD;
         break;
 
-    case AML_PowerResOp:
-        DataType = ACPI_TYPE_Power;
+    case AML_POWER_RES_OP:
+        DataType = ACPI_TYPE_POWER;
         break;
 
-    case AML_ProcessorOp:
-        DataType = ACPI_TYPE_Processor;
+    case AML_PROCESSOR_OP:
+        DataType = ACPI_TYPE_PROCESSOR;
         break;
 
-    case AML_DefFieldOp:                            /* DefFieldOp */
-        DataType = INTERNAL_TYPE_DefFieldDefn;
+    case AML_DEF_FIELD_OP:                          /* DefFieldOp */
+        DataType = INTERNAL_TYPE_DEF_FIELD_DEFN;
         break;
 
-    case AML_IndexFieldOp:                          /* IndexFieldOp */
-        DataType = INTERNAL_TYPE_IndexFieldDefn;
+    case AML_INDEX_FIELD_OP:                        /* IndexFieldOp */
+        DataType = INTERNAL_TYPE_INDEX_FIELD_DEFN;
         break;
 
-    case AML_BankFieldOp:                           /* BankFieldOp */
-        DataType = INTERNAL_TYPE_BankFieldDefn;
+    case AML_BANK_FIELD_OP:                         /* BankFieldOp */
+        DataType = INTERNAL_TYPE_BANK_FIELD_DEFN;
         break;
 
-    case AML_NAMEDFIELD:                            /* NO CASE IN ORIGINAL  */
-        DataType = ACPI_TYPE_Any;
+    case AML_NAMEDFIELD_OP:                         /* NO CASE IN ORIGINAL  */
+        DataType = ACPI_TYPE_ANY;
         break;
 
-    case AML_NameOp:                                /* NameOp - special code in original */
-    case AML_NAMEPATH:                    
-        DataType = ACPI_TYPE_Any;
+    case AML_NAME_OP:                               /* NameOp - special code in original */
+    case AML_NAMEPATH_OP:                    
+        DataType = ACPI_TYPE_ANY;
         break;
 
-    case AML_AliasOp:
-        DataType = INTERNAL_TYPE_Alias;
+    case AML_ALIAS_OP:
+        DataType = INTERNAL_TYPE_ALIAS;
         break;
 
-    case AML_MutexOp:
-        DataType = ACPI_TYPE_Mutex;
+    case AML_MUTEX_OP:
+        DataType = ACPI_TYPE_MUTEX;
         break;
 
-    case AML_EventOp:
-        DataType = ACPI_TYPE_Event;
+    case AML_EVENT_OP:
+        DataType = ACPI_TYPE_EVENT;
         break;
 
-    case AML_RegionOp:
-        DataType = ACPI_TYPE_Region;
+    case AML_REGION_OP:
+        DataType = ACPI_TYPE_REGION;
         break;
 
 
     default:
-        DataType = ACPI_TYPE_Any;
+        DataType = ACPI_TYPE_ANY;
         break;
 
     }
