@@ -118,8 +118,12 @@
 #define _CONFIG_H
 
 
-#define VERBOSE_DEBUG /* TEMP!!! */
-
+#if defined _RPARSER
+#define VERBOSE_DEBUG 
+#define AML_EXPR_MAX_NEST           100     /* Max stack depth parsing expressions */
+#define AML_PKG_MAX_NEST            100     /* Max depth of package nesting */
+#define AML_METHOD_MAX_NEST         10      /* Max depth of nested method calls */
+#endif
 
 /*
  * Configuration constants for the ACPI subsystem
@@ -134,23 +138,16 @@
 #define PATHNAME_MAX                256     /* A full namespace pathname */
 
 
-/*
- * AML Interpreter
- */
-
-#define AML_PKG_MAX_NEST            100     /* Max depth of package nesting */
-#define AML_METHOD_MAX_NEST         10      /* Max depth of nested method calls */
-#define INITIAL_NAME_BUF_SIZE       32
-#define AML_EXPR_MAX_NEST           100     /* Max stack depth parsing expressions */
-
 /* 
  * Method info (in WALK_STATE), containing local variables and argumetns
  */
+
 #define MTH_NUM_LOCALS              8
 #define MTH_MAX_LOCAL               7
 
 #define MTH_NUM_ARGS                7
 #define MTH_MAX_ARG                 6
+
 
 /*
  * Operand Stack (in WALK_STATE), Must be large enough to contain MTH_MAX_ARG
@@ -169,7 +166,6 @@
  */
 
 #define NS_TABLE_SIZE               16
-#define MAX_SCOPE_NESTING           15      /* Max nesting of name scopes, used for sizing stacks */
 
 
 /* Names within the namespace are 4 bytes long */
