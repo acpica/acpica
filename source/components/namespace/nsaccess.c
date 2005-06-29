@@ -374,7 +374,8 @@ BREAKPOINT3;
                     DumpStack (Exec, "Remaining Object Stack entries", -1, "");
                 }
 
-                DEBUG_PRINT (ACPI_INFO, ("Method execution completed\n"));
+                DEBUG_PRINT (ACPI_INFO, ("*** Completed execution of method %s ***\n",
+                                FullyQualifiedName));
             }
 
 #ifdef FETCH_VALUES

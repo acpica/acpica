@@ -108,12 +108,12 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
                 {
                     if (DownstreamSiblingMask & WhichBit)
                     {    
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("| "));
+                        DEBUG_PRINT_RAW (TRACE_TABLES, ("| "));
                     }
                     
                     else
                     {
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("  "));
+                        DEBUG_PRINT_RAW (TRACE_TABLES, ("  "));
                     }
                     
                     WhichBit <<= 1;
@@ -124,29 +124,29 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
                     if (ExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
                     {
                         DownstreamSiblingMask |= (1 << (Level - 1));
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("+-"));
+                        DEBUG_PRINT_RAW (TRACE_TABLES, ("+-"));
                     }
                     
                     else
                     {
                         DownstreamSiblingMask &= 0xffffffff ^ (1 << (Level - 1));
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("+-"));
+                        DEBUG_PRINT_RAW (TRACE_TABLES, ("+-"));
                     }
 
                     if (ThisEntry->ChildScope == NULL)
                     {
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("- "));
+                        DEBUG_PRINT_RAW (TRACE_TABLES, ("- "));
                     }
                     
                     else if (ExistDownstreamSibling (ThisEntry->ChildScope, TABLSIZE,
                                                         NEXTSEG (ThisEntry->ChildScope)))
                     {
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("+ "));
+                        DEBUG_PRINT_RAW (TRACE_TABLES, ("+ "));
                     }
                     
                     else
                     {
-                        DEBUG_PRINT_RAW (ACPI_INFO, ("- "));
+                        DEBUG_PRINT_RAW (TRACE_TABLES, ("- "));
                     }
                 }
             }
@@ -166,15 +166,15 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
                 /* name is a Method and its AML offset/length are set */
                 
                 
-                DEBUG_PRINT_RAW (ACPI_INFO,
+                DEBUG_PRINT_RAW (TRACE_TABLES,
                             ("%4.4s [%8.8s] ", &ThisEntry->NameSeg, NsTypeNames[Type]));
                 
-                DEBUG_PRINT_RAW (ACPI_INFO, ("N:%p", ThisEntry));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("N:%p", ThisEntry));
                 
-                DEBUG_PRINT_RAW (ACPI_INFO, (" C:%p P:%p",
+                DEBUG_PRINT_RAW (TRACE_TABLES, (" C:%p P:%p",
                         ThisEntry->ChildScope, ThisEntry->ParentScope));
 
-                DEBUG_PRINT_RAW (ACPI_INFO, (" At: %04x(%04lx)\n",
+                DEBUG_PRINT_RAW (TRACE_TABLES, (" At: %04x(%04lx)\n",
                             ((meth *) ThisEntry->ptrVal)->Offset,
                             ((meth *) ThisEntry->ptrVal)->Length));                
             }
@@ -186,12 +186,12 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
 
                 /* name is not a Method, or the AML offset/length are not set */
                 
-                DEBUG_PRINT_RAW (ACPI_INFO,
+                DEBUG_PRINT_RAW (TRACE_TABLES,
                             ("%4.4s [%8.8s] ", &ThisEntry->NameSeg, NsTypeNames[Type]));
                 
-                DEBUG_PRINT_RAW (ACPI_INFO, ("N:%p", ThisEntry));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("N:%p", ThisEntry));
                 
-                DEBUG_PRINT_RAW (ACPI_INFO, (" C:%p P:%p V:%p\n",
+                DEBUG_PRINT_RAW (TRACE_TABLES, (" C:%p P:%p V:%p\n",
                             ThisEntry->ChildScope, ThisEntry->ParentScope, ThisEntry->ptrVal));
 
 #if 0
@@ -200,13 +200,13 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
                 if ((IndexField == Type) && (0 == Size) && (0 == Level) &&
                     ThisEntry->ParentScope)
                 {
-                    DEBUG_PRINT_RAW (ACPI_INFO, ("  in "));
+                    DEBUG_PRINT_RAW (TRACE_TABLES, ("  in "));
                     ++TRACE;
-                    DEBUG_PRINT_RAW (ACPI_INFO,
+                    DEBUG_PRINT_RAW (TRACE_TABLES,
                                 ("call NsDumpEntry %p\n", ThisEntry->ParentScope));
                     
                     NsDumpEntry ((NsHandle) ThisEntry->ParentScope, DisplayBitFlags);
-                    DEBUG_PRINT_RAW (ACPI_INFO,
+                    DEBUG_PRINT_RAW (TRACE_TABLES,
                                 ("ret from NsDumpEntry %p\n", ThisEntry->ParentScope));
                     --TRACE;
                 }
@@ -218,11 +218,11 @@ NsDumpTable (nte *ThisEntry, INT32 Size, INT32 Level, INT32 MaxDepth)
                     UINT8               bT = ((OBJECT_DESCRIPTOR *) Value)->ValType;
 
 
-                    DEBUG_PRINT_RAW (ACPI_INFO,
+                    DEBUG_PRINT_RAW (TRACE_TABLES,
                                 ("                 %p  %02x %02x %02x %02x %02x %02x",
                                 Value, Value[0], Value[1], Value[2], Value[3], Value[4],
                                 Value[5]));
-                    DEBUG_PRINT_RAW (ACPI_INFO,
+                    DEBUG_PRINT_RAW (TRACE_TABLES,
                                 (" %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
                                 Value[6], Value[7], Value[8], Value[9], Value[10],
                                 Value[11], Value[12], Value[13], Value[14], Value[15]));
@@ -300,6 +300,7 @@ NsDumpTables (NsHandle SearchBase, INT32 MaxDepth)
          * If the name space has not been initialized,
          * there is nothing to dump.
          */
+        DEBUG_PRINT (TRACE_TABLES, ("NsDumpTables: name space not initialized!\n"));
         return;
     }
 
@@ -308,7 +309,7 @@ NsDumpTables (NsHandle SearchBase, INT32 MaxDepth)
         /*  entire namespace    */
 
         SearchBase = Root;
-        DEBUG_PRINT (ACPI_INFO, ("\\\n"));
+        DEBUG_PRINT (TRACE_TABLES, ("\\\n"));
     }
 
     NsDumpTable (SearchBase, SearchBase == Root ? NsRootSize : TABLSIZE,
