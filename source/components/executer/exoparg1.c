@@ -118,14 +118,98 @@
 
 #include <acpi.h>
 #include <parser.h>
-#include <interpreter.h>
+#include <interp.h>
 #include <amlcode.h>
-#include <namespace.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("iemonad");
 
+
+
+
+
+/*****************************************************************************
+ * 
+ * FUNCTION:    AmlGetObjectReference
+ *
+ * PARAMETERS:  ObjDesc         - Create a reference to this object
+ *              RetDesc         - Where to store the reference
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Obtain and return a "reference" to the target object
+ *              Common code for the RefOfOp and the CondRefOfOp.
+ *
+ ****************************************************************************/
+
+ACPI_STATUS
+AmlGetObjectReference (
+    ACPI_OBJECT_INTERNAL    *ObjDesc,
+    ACPI_OBJECT_INTERNAL    **RetDesc)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+
+    if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_ACPI_OBJ))
+    {
+        if (ObjDesc->Common.Type != INTERNAL_TYPE_Lvalue)
+        {
+            *RetDesc = NULL;
+            Status = AE_TYPE;
+            goto Cleanup;
+        }
+
+        /* 
+         * Not a Name -- an indirect name pointer would have
+         * been converted to a direct name pointer in AmlPrepOperands
+         */
+        switch (ObjDesc->Lvalue.OpCode)
+        {
+        case AML_LocalOp:
+
+            *RetDesc = (void *) PsxMthStackGetNte (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset));
+            break;
+
+
+        case AML_ArgOp:
+
+            *RetDesc = (void *) PsxMthStackGetNte (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset));
+            break;
+
+
+        default:
+
+            DEBUG_PRINT (ACPI_ERROR, ("AmlGetObjectReference: Unknown Lvalue subtype %02x\n",
+                            ObjDesc->Lvalue.OpCode));
+            *RetDesc = NULL;
+            Status = AE_AML_ERROR;
+            goto Cleanup;
+        }
+
+    }
+
+    else if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+    {
+        /* Must be a named object;  Just return the NTE */
+
+        *RetDesc = ObjDesc;
+    }
+    
+    else
+    {
+        *RetDesc = NULL;
+        Status = AE_TYPE;
+    }
+
+
+Cleanup:
+ 
+    DEBUG_PRINT (TRACE_EXEC, ("AmlGetObjectReference: Obj=%p Ref=%p\n", ObjDesc, *RetDesc));
+    return Status;
+}
 
 
 /*****************************************************************************
@@ -138,8 +222,6 @@
  *
  * DESCRIPTION: Execute Type 1 monadic operator with numeric operand on 
  *              object stack
- *
- * ALLOCATION:  Deletes the operand
  *
  ****************************************************************************/
 
@@ -155,7 +237,8 @@ AmlExecMonadic1 (
     FUNCTION_TRACE_PTR ("AmlExecMonadic1", Operands);
 
 
-    if (AML_SleepOp == Opcode || AML_StallOp == Opcode)
+    if ((AML_SleepOp == Opcode) || 
+        (AML_StallOp == Opcode))
     {
         Status = AmlPrepOperands ("n", Operands);                 /* Operand should be a Number */
     }
@@ -168,7 +251,7 @@ AmlExecMonadic1 (
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
 
@@ -185,7 +268,8 @@ AmlExecMonadic1 (
 
     if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
     {
-        if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjDesc)));
+        ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjDesc);
+        if (!ObjDesc)
         {
             /* No object, just exit */
 
@@ -205,14 +289,14 @@ AmlExecMonadic1 (
 
         if (ACPI_TYPE_Mutex != ObjDesc->Common.Type)
         {
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
-                    ObjDesc->Common.Type));
-           return_ACPI_STATUS (AE_AML_ERROR);
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
+                            ObjDesc->Common.Type));
+            Status = AE_AML_ERROR;
+            goto Cleanup;
         }
 
-        Status = OsReleaseOpRqst (ObjDesc);
-        return_ACPI_STATUS (Status);
+        Status = OsReleaseMutex (ObjDesc);
+        break;
 
 
     /*  DefReset    :=  ResetOp     EventObject */
@@ -221,13 +305,13 @@ AmlExecMonadic1 (
 
         if (ACPI_TYPE_Event != ObjDesc->Common.Type)
         {
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->Common.Type));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1/ResetOp: Needed Event, found %d\n", 
+                            ObjDesc->Common.Type));
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
-        Status = OsResetOpRqst (ObjDesc);
-        return_ACPI_STATUS (Status);
+        Status = OsResetEvent (ObjDesc);
+        break;
 
 
     /*  DefSignal   :=  SignalOp    EventObject */
@@ -236,13 +320,14 @@ AmlExecMonadic1 (
 
         if (ACPI_TYPE_Event != ObjDesc->Common.Type)
         {
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->Common.Type));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1/SignalOp: Needed Event, found %d\n", 
+                            ObjDesc->Common.Type));
+            Status = AE_AML_ERROR;
+            goto Cleanup;
         }
 
-        Status = OsSignalOpRqst (ObjDesc);
-        return_ACPI_STATUS (Status);
+        Status = OsSignalEvent (ObjDesc);
+        break;
 
 
     /*  DefSleep    :=  SleepOp MsecTime    */
@@ -257,7 +342,7 @@ AmlExecMonadic1 (
     
     case AML_StallOp:
 
-        OsdSleepUsec (ObjDesc->Number.Value);
+        OsDoStall (ObjDesc->Number.Value);
         break;
 
 
@@ -266,14 +351,16 @@ AmlExecMonadic1 (
     default:
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic1: Unknown monadic opcode %02x\n", Opcode));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        Status = AE_AML_ERROR;
+        break;
     
     } /* switch */
 
 
-    /* 
-     * Delete the operand (If NTE, it won't be deleted)
-     */
+
+Cleanup:
+
+    /* Always delete the operand */
 
     CmDeleteOperand (&Operands[0]);
 
@@ -302,40 +389,80 @@ AmlExecMonadic2R (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *ResDesc;
+    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
+    ACPI_OBJECT_INTERNAL    *RetDesc2 = NULL;
     UINT32                  ResVal;
     ACPI_STATUS             Status;
-    INT32                   d0, d1, d2, d3;
-
+    UINT32                  ReferenceCount;
+    INT32                   d0;
+    INT32                   d1;
+    INT32                   d2;
+    INT32                   d3;
 
 
     FUNCTION_TRACE_PTR ("AmlExecMonadic2R", Operands);
 
+
     /*
-     * We will try several different combinations of operands
-     *
-     * 1) Try Lvalue returning a Number
+     * Resolve operands based upon the opcode
      */
 
-    Status = AmlPrepOperands ("ln", Operands);
-    if (Status == AE_TYPE)
+    switch (Opcode)
     {
-        /* Try Lvalue, returning a string or buffer */
+    case AML_BitNotOp:
+    case AML_FindSetLeftBitOp:
+    case AML_FindSetRightBitOp:
+    case AML_FromBCDOp:
+    case AML_ToBCDOp:
 
-        Status = AmlPrepOperands ("ls", Operands);
-    }
+        /* Lvalue returning a Number */
 
-    if (Status == AE_TYPE)
-    {
-        /* Try Lvalue, returning an Lvalue (caused by storing into a DebugOp */
+        Status = AmlPrepOperands ("ln", Operands);
+        if (Status == AE_TYPE)
+        {
+            /* Try Package, returning a Number (Local0 = _PRT package) */
+
+            Status = AmlPrepOperands ("pn", Operands);
+        }
+        break;
+
+    case AML_CondRefOfOp:
+    case AML_DebugOp:
+    
+        /* Lvalue, returning an Lvalue */
 
         Status = AmlPrepOperands ("ll", Operands);
-    }
+        break;
+    
 
-    if (Status == AE_TYPE)
-    {
-        /* Try Package, returning a Number (Local0 = _PRT package) */
+    case AML_StoreOp:
+    default:
 
-        Status = AmlPrepOperands ("pn", Operands);
+        /* Try Lvalue returning a Number */
+
+        Status = AmlPrepOperands ("ln", Operands);
+
+        if (Status == AE_TYPE)
+        {
+            /* Try Lvalue, returning a string or buffer */
+
+            Status = AmlPrepOperands ("ls", Operands);
+        }
+
+        if (Status == AE_TYPE)
+        {
+            /* Try Lvalue, returning a Lvalue */
+
+            Status = AmlPrepOperands ("ll", Operands);
+        }
+
+        if (Status == AE_TYPE)
+        {
+            /* Try Package, returning a Number (Local0 = _PRT package) */
+
+            Status = AmlPrepOperands ("pn", Operands);
+        }
+        break;
     }
 
     /* If everything failed above, exit */
@@ -343,9 +470,9 @@ AmlExecMonadic2R (
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 2);
-        return_ACPI_STATUS (Status);
+        Status = AE_AML_ERROR;
+        goto Cleanup;
     }
-
 
     /*
      * Stack was prepped successfully
@@ -356,13 +483,36 @@ AmlExecMonadic2R (
     ResDesc = Operands[0];
     ObjDesc = Operands[-1];
 
+
+    /* Create a return object of type NUMBER for most opcodes */
+
+    switch (Opcode)
+    {
+    case AML_BitNotOp:
+    case AML_FindSetLeftBitOp:
+    case AML_FindSetRightBitOp:
+    case AML_FromBCDOp:
+    case AML_ToBCDOp:
+    case AML_CondRefOfOp:
+
+        RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        if (!RetDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
+        }
+
+        break;
+    }
+
+
     switch (Opcode)
     {
     /*  DefNot  :=  NotOp   Operand Result  */
     
     case AML_BitNotOp:
 
-        ObjDesc->Number.Value = ~ObjDesc->Number.Value;
+        RetDesc->Number.Value = ~ObjDesc->Number.Value;
         break;
 
 
@@ -370,12 +520,13 @@ AmlExecMonadic2R (
 
     case AML_FindSetLeftBitOp:
 
-        for (ResVal = 0; ObjDesc->Number.Value && ResVal < 33; ++ResVal)
+        RetDesc->Number.Value = ObjDesc->Number.Value;
+        for (ResVal = 0; RetDesc->Number.Value && ResVal < 33; ++ResVal)
         {
-            ObjDesc->Number.Value >>= 1;
+            RetDesc->Number.Value >>= 1;
         }
 
-        ObjDesc->Number.Value = ResVal;
+        RetDesc->Number.Value = ResVal;
         break;
 
 
@@ -383,12 +534,13 @@ AmlExecMonadic2R (
 
     case AML_FindSetRightBitOp:
 
-        for (ResVal = 0; ObjDesc->Number.Value && ResVal < 33; ++ResVal)
+        RetDesc->Number.Value = ObjDesc->Number.Value;
+        for (ResVal = 0; RetDesc->Number.Value && ResVal < 33; ++ResVal)
         {
-            ObjDesc->Number.Value <<= 1;
+            RetDesc->Number.Value <<= 1;
         }
 
-        ObjDesc->Number.Value = ResVal == 0 ? 0 : 33 - ResVal;
+        RetDesc->Number.Value = ResVal == 0 ? 0 : 33 - ResVal;
         break;
 
 
@@ -403,13 +555,13 @@ AmlExecMonadic2R (
         
         if (d0 > 9 || d1 > 9 || d2 > 9 || d3 > 9)
         {
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic2R/FromBCDOp: improper BCD digit %d %d %d %d\n",
-                    d3, d2, d1, d0));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R/FromBCDOp: BCD digit too large %d %d %d %d\n",
+                            d3, d2, d1, d0));
+            Status = AE_AML_ERROR;
+            goto Cleanup;
         }
         
-        ObjDesc->Number.Value = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
+        RetDesc->Number.Value = d0 + d1 * 10 + d2 * 100 + d3 * 1000;
         break;
 
 
@@ -420,12 +572,13 @@ AmlExecMonadic2R (
 
         if (ObjDesc->Number.Value > 9999)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("iExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
-                    ObjDesc->Number.Value));
-            return_ACPI_STATUS (AE_AML_ERROR);
+            DEBUG_PRINT (ACPI_ERROR, ("ExecMonadic2R/ToBCDOp: BCD overflow: %d\n",
+                            ObjDesc->Number.Value));
+            Status = AE_AML_ERROR;
+            goto Cleanup;
         }
         
-        ObjDesc->Number.Value
+        RetDesc->Number.Value
             = ObjDesc->Number.Value % 10
             + (ObjDesc->Number.Value / 10 % 10 << 4)
             + (ObjDesc->Number.Value / 100 % 10 << 8)
@@ -436,17 +589,82 @@ AmlExecMonadic2R (
 
     /*  DefShiftLeftBit     :=  ShiftLeftBitOp      Source          BitNum  */
     /*  DefShiftRightBit    :=  ShiftRightBitOp     Source          BitNum  */
-    /*  DefCondRefOf        :=  CondRefOfOp         SourceObject    Result  */
+    /*  TBD: OBSOLETE OPCODES? */
 
     case AML_ShiftLeftBitOp:
     case AML_ShiftRightBitOp:
-    case AML_CondRefOfOp:
         
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n", PsGetOpcodeName (Opcode)));
-        return_ACPI_STATUS (AE_AML_ERROR);
+        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n", 
+                        PsGetOpcodeName (Opcode)));
+        Status = AE_SUPPORT;
+        goto Cleanup;
+        break;
+
+
+    /*  DefCondRefOf        :=  CondRefOfOp         SourceObject    Result  */
+
+    case AML_CondRefOfOp:
+
+        /*
+         * This op is a little strange because the internal return value is different 
+         * than the return value stored in the result descriptor (There are really 
+         * two return values)
+         */
+
+        if ((NAME_TABLE_ENTRY *) ObjDesc == Gbl_RootObject)
+        {
+            /* This means that the object does not exist in the namespace, return FALSE */
+
+            RetDesc->Number.Value = 0;
+
+            /* Must delete the result descriptor since there is no reference being returned */
+
+            CmDeleteOperand (&Operands[0]);
+            goto Cleanup;
+        }
+
+        /* Get the object reference and store it */
+
+        Status = AmlGetObjectReference (ObjDesc, &RetDesc2);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Cleanup;
+        }
+
+        Status = AmlExecStore (RetDesc2, ResDesc);
+        if (RetDesc2->Common.ReferenceCount > 1)
+        {
+            DEBUG_PRINT (TRACE_EXEC, ("AmlExecMonadic2R: Return Obj %p has other refs, incrementing\n",
+                            RetDesc2));
+            CmUpdateObjectReference (RetDesc2, REF_INCREMENT);
+        }
+
+        /* The object exists in the namespace, return TRUE */
+
+        RetDesc->Number.Value = (UINT32) -1;
+        goto Cleanup;
+        break;
 
 
     case AML_StoreOp:
+
+        /* 
+         * Do the store, and be careful about deleting the source object,
+         * since the object itself may have been stored.
+         */
+        
+        ReferenceCount = ObjDesc->Common.ReferenceCount;
+        Status = AmlExecStore (ObjDesc, ResDesc);
+        if (ObjDesc->Common.ReferenceCount > ReferenceCount)
+        {
+            DEBUG_PRINT (TRACE_EXEC, ("AmlExecMonadic2R: Operand %p was physically stored, not deleting\n",
+                            ObjDesc));
+            CmUpdateObjectReference (ObjDesc, REF_INCREMENT);
+        }
+        
+        Operands[-1] = NULL;
+        *ReturnDesc = ObjDesc;
+        return_ACPI_STATUS (Status);
 
         break;
 
@@ -454,14 +672,43 @@ AmlExecMonadic2R (
     default:
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: internal error: Unknown monadic opcode %02x\n",
-                    Opcode));
-        return_ACPI_STATUS (AE_AML_ERROR);
+                        Opcode));
+        Status = AE_AML_ERROR;
+        goto Cleanup;
     }
     
-    Status = AmlExecStore (ObjDesc, ResDesc);
 
-    *ReturnDesc = ObjDesc;
+    Status = AmlExecStore (RetDesc, ResDesc);
 
+    if (RetDesc->Common.ReferenceCount > 1)
+    {
+        DEBUG_PRINT (TRACE_EXEC, ("AmlExecMonadic2R: Return Obj %p has other refs, incrementing\n",
+                        RetDesc));
+        CmUpdateObjectReference (RetDesc, REF_INCREMENT);
+    }
+
+
+
+Cleanup:
+    /* Always delete the operand object */
+
+    CmDeleteOperand (&Operands[-1]);
+
+    /* Delete return object(s) on error */
+
+    if (ACPI_FAILURE (Status))
+    {
+        CmDeleteOperand (&Operands[0]);     /* Result descriptor */
+        if (RetDesc)
+        {
+            CmDeleteInternalObject (RetDesc);
+            RetDesc = NULL;
+        }
+    }
+
+    /* Set the return object and exit */
+
+    *ReturnDesc = RetDesc;
     return_ACPI_STATUS (Status);
 }
 
@@ -487,9 +734,11 @@ AmlExecMonadic2 (
     ACPI_OBJECT_INTERNAL    **ReturnDesc)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_OBJECT_INTERNAL    *TempDesc;
+    ACPI_OBJECT_INTERNAL    *TmpDesc;
+    ACPI_OBJECT_INTERNAL    *RetDesc = NULL;
     ACPI_STATUS             Status;
     UINT32                  Type;
+    UINT32                  Value;
 
 
     FUNCTION_TRACE_PTR ("AmlExecMonadic2", Operands);
@@ -507,7 +756,7 @@ AmlExecMonadic2 (
     if (Status != AE_OK)
     {
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     DUMP_OPERANDS (Operands, IMODE_Execute, PsGetOpcodeName (Opcode), 1, "after AmlPrepOperands");
@@ -524,7 +773,14 @@ AmlExecMonadic2 (
 
     case AML_LNotOp:
 
-        ObjDesc->Number.Value = !ObjDesc->Number.Value;
+        RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        if (!RetDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
+        }
+
+        RetDesc->Number.Value = !ObjDesc->Number.Value;
         break;
 
 
@@ -544,60 +800,56 @@ AmlExecMonadic2 (
 
         if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
         {
-            TempDesc = ObjDesc;
+            RetDesc = ObjDesc;
         }
 
         else
         {
-            /* Duplicate the Lvalue in a TempDesc */
+            /* 
+             * Duplicate the Lvalue in a new object so that we can resolve it
+             * without destroying the original Lvalue object
+             */
         
-            TempDesc = CmCreateInternalObject (ObjDesc->Common.Type);
-            if (!TempDesc)
+            RetDesc = CmCreateInternalObject (INTERNAL_TYPE_Lvalue);
+            if (!RetDesc)
             {
-                return_ACPI_STATUS (AE_NO_MEMORY);
+                Status = AE_NO_MEMORY;
+                goto Cleanup;
             }
 
-            Status = CmCopyInternalObject (ObjDesc, TempDesc);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
+            RetDesc->Lvalue.OpCode = ObjDesc->Lvalue.OpCode;
+            RetDesc->Lvalue.Offset = ObjDesc->Lvalue.Offset;
+            RetDesc->Lvalue.Object = ObjDesc->Lvalue.Object;
         }
         
-        /* Convert the TempDesc Lvalue to a Number */
+
+        /* 
+         * Convert the RetDesc Lvalue to a Number
+         * (This deletes the original RetDesc)
+         */
         
-        Status = AmlPrepOperands ("n", &TempDesc);
+        Status = AmlPrepOperands ("n", &RetDesc);
         if (Status != AE_OK)
         {
             AmlAppendOperandDiag (_THIS_MODULE, __LINE__, Opcode, Operands, 1);
-            return_ACPI_STATUS (Status);
+            goto Cleanup;
         }
 
         /* Do the actual increment or decrement */
-        
+    
         if (AML_IncrementOp == Opcode)
         {
-            TempDesc->Number.Value++;
+            RetDesc->Number.Value++;
         }
         else
         {
-            TempDesc->Number.Value--;
+            RetDesc->Number.Value--;
         }
 
         /* Store the result back in the original descriptor */
 
-        Status = AmlExecStore (TempDesc, ObjDesc);
-
-        /* 
-         * Delete the temporary descriptor 
-         * Don't delete ObjDesc because it holds the result
-         */
-
-        CmDeleteInternalObject (TempDesc);  
-
-        *ReturnDesc = ObjDesc;
-        return_ACPI_STATUS (Status);
-
+        Status = AmlExecStore (RetDesc, ObjDesc);
+        break;
 
 
     /*  DefObjectType   :=  ObjectTypeOp    SourceObject    */
@@ -612,7 +864,9 @@ AmlExecMonadic2 (
              */
             switch (ObjDesc->Lvalue.OpCode)
             {
-            case AML_ZeroOp: case AML_OneOp: case AML_OnesOp:
+            case AML_ZeroOp: 
+            case AML_OneOp: 
+            case AML_OnesOp:
                 
                 /* Constants are of type Number */
                 
@@ -620,40 +874,40 @@ AmlExecMonadic2 (
                 break;
 
 
-            case Debug1:
+            case AML_DebugOp:
                 
-                /* Per spec, Debug object is of type Region */
+                /* Per 1.0b spec, Debug object is of type DebugObject */
                 
-                Type = ACPI_TYPE_Region;
+                Type = ACPI_TYPE_DebugObject;
                 break;
 
 
             case AML_IndexOp:
 
-                DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2/TypeOp: determining type of Index result is not implemented\n"));
-                return_ACPI_STATUS (AE_AML_ERROR);
+                /* Get the type of this reference (index into another object) */
 
-
-            case AML_Local0: case AML_Local1: case AML_Local2: case AML_Local3:
-            case AML_Local4: case AML_Local5: case AML_Local6: case AML_Local7:
-
-                Type = PsxMthStackGetType (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.OpCode - AML_Local0));
+                Type = ObjDesc->Lvalue.TargetType;
                 break;
 
 
-            case AML_Arg0: case AML_Arg1: case AML_Arg2: case AML_Arg3:
-            case AML_Arg4: case AML_Arg5: case AML_Arg6:
+            case AML_LocalOp:
 
-                Type = PsxMthStackGetType (MTH_TYPE_ARG, (ObjDesc->Lvalue.OpCode - AML_Arg0));
+                Type = PsxMthStackGetType (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset));
+                break;
+
+
+            case AML_ArgOp:
+
+                Type = PsxMthStackGetType (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset));
                 break;
 
 
             default:
 
-                DEBUG_PRINT (ACPI_ERROR, (
-                        "AmlExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x\n",
-                        ObjDesc->Lvalue.OpCode));
-                return_ACPI_STATUS (AE_AML_ERROR);
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2/TypeOp:internal error: Unknown Lvalue subtype %02x\n",
+                                ObjDesc->Lvalue.OpCode));
+                Status = AE_AML_ERROR;
+                goto Cleanup;
             }
         }
         
@@ -661,31 +915,21 @@ AmlExecMonadic2 (
         {
             /* 
              * Since we passed AmlPrepOperands("l") and it's not an Lvalue,
-             * it must be a direct name pointer.  Allocate a descriptor
-             * to hold the type.
+             * it must be a direct name pointer. 
              */
             Type = NsGetType ((ACPI_HANDLE) ObjDesc);
+        }
 
-            ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
-            if (!ObjDesc)
-            {
-                return_ACPI_STATUS (AE_NO_MEMORY);
-            }
+        /*  Allocate a descriptor to hold the type. */
 
-            /* 
-             * Replace (ACPI_HANDLE) on TOS with descriptor containing result.
-             * No need to CmDeleteInternalObject() first since TOS is an ACPI_HANDLE.
-             */
-
-            Operands[0] = ObjDesc;
+        RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        if (!RetDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
         }
         
-
-        /* TBD: reuse of ObjDesc, fix */
-
-        ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
-        ObjDesc->Number.Value = Type;
-
+        RetDesc->Number.Value = Type;
         break;
 
 
@@ -693,37 +937,61 @@ AmlExecMonadic2 (
 
     case AML_SizeOfOp:
 
-        switch (ObjDesc->Common.Type)
+        if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
         {
-
-        case ACPI_TYPE_Buffer:
-
-            ObjDesc->Number.Value = ObjDesc->Buffer.Length;
-            ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
-            break;
-
-
-        case ACPI_TYPE_String:
-
-            ObjDesc->Number.Value = ObjDesc->String.Length;
-            ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
-            break;
-
-
-        case ACPI_TYPE_Package:
-
-            ObjDesc->Number.Value = ObjDesc->Package.Count;
-            ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
-            break;
-
-
-        default:
-
-            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->Common.Type));
-            return_ACPI_STATUS (AE_AML_ERROR);
-
+            ObjDesc = NsGetAttachedObject (ObjDesc);
         }
+
+        if (!ObjDesc)
+        {
+            Value = 0;
+        }
+
+        else
+        {
+            switch (ObjDesc->Common.Type)
+            {
+
+            case ACPI_TYPE_Buffer:
+
+                Value = ObjDesc->Buffer.Length;
+                break;
+
+
+            case ACPI_TYPE_String:
+
+                Value = ObjDesc->String.Length;
+                break;
+
+
+            case ACPI_TYPE_Package:
+
+                Value = ObjDesc->Package.Count;
+                break;
+
+
+            default:
+
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: Not Buf/Str/Pkg - found type 0x%X\n", 
+                                ObjDesc->Common.Type));
+                Status = AE_AML_ERROR;
+                goto Cleanup;
+            }
+        }
+
+        /* 
+         * Now that we have the size of the object, create a result
+         * object to hold the value
+         */
+
+        RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        if (!RetDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
+        }
+
+        RetDesc->Number.Value = Value;
         break;
 
 
@@ -731,11 +999,11 @@ AmlExecMonadic2 (
 
     case AML_RefOfOp:
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: RefOf returning %p\n",
-                        ObjDesc));
-
-        /* Just return the object descriptor as the reference! */
-
+        Status = AmlGetObjectReference (ObjDesc, &RetDesc);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Cleanup;
+        }
         break;
 
 
@@ -743,30 +1011,125 @@ AmlExecMonadic2 (
 
     case AML_DerefOfOp:
 
-        /*
-         * TBD: DerefOf is not implemented!! 
-         */
 
-        DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: %s unimplemented\n",
-                PsGetOpcodeName (Opcode)));
+        /* Check for a method local or argument */
 
-        return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
+        if (!VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+        {
+            /* Must dereference the local/arg reference first */
+
+            switch (ObjDesc->Lvalue.OpCode)
+            {
+                /* Set ObjDesc to the value of the local/arg */
+
+            case AML_LocalOp:
+
+                PsxMthStackGetValue (MTH_TYPE_LOCAL, (ObjDesc->Lvalue.Offset), &ObjDesc);
+                break;
+
+
+            case AML_ArgOp:
+
+                PsxMthStackGetValue (MTH_TYPE_ARG, (ObjDesc->Lvalue.Offset), &ObjDesc);
+                break;
+            }
+        }
+
+
+        if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
+        {
+            /* Extract the actual object from the NTE (This is the dereference) */
+
+            RetDesc = ((NAME_TABLE_ENTRY *) ObjDesc)->Object;
+        }
+
+        else
+        {   /* This must be a reference object produced by the Index ASL operation */
+            /* Must be an lvalue, make sure opcode is correct */
+
+            if ((ObjDesc->Lvalue.OpCode != AML_IndexOp) &&
+                (ObjDesc->Lvalue.OpCode != AML_RefOfOp))
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: DerefOf, invalid obj ref %p\n", ObjDesc));
+
+                Status = AE_TYPE;
+                goto Cleanup;
+            }
+
+
+            switch (ObjDesc->Lvalue.OpCode)
+            {
+            case AML_IndexOp:
+
+                if (ObjDesc->Lvalue.TargetType == ACPI_TYPE_Buffer)
+                {
+                    RetDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+                    if (!RetDesc)
+                    {
+                        Status = AE_NO_MEMORY;
+                        goto Cleanup;
+                    }
+
+                    TmpDesc = ObjDesc->Lvalue.Object;
+                    RetDesc->Number.Value = TmpDesc->Buffer.Pointer[ObjDesc->Lvalue.Offset];
+
+                    /* TBD: (see below) Don't add an additional ref! */
+                }
+                else if (ObjDesc->Lvalue.TargetType == ACPI_TYPE_Package)
+                {
+                    RetDesc = *(ObjDesc->Lvalue.Where);
+                }
+                
+                else
+                {
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: DerefOf, Unknown TargetType %X in obj %p\n", 
+                                    ObjDesc->Lvalue.TargetType, ObjDesc));
+                    Status = AE_AML_ERROR;
+                    goto Cleanup;
+                }
+
+                break;
+
+
+            case AML_RefOfOp:
+           
+                RetDesc = ObjDesc->Lvalue.Object;
+                break;
+            }
+        }
+
+
+        /* TBD: ??? Return an additional reference to the object */
+
+        /* CmUpdateObjectReference (RetDesc, REF_INCREMENT); */
+
         break;
         
 
     default:
 
-        DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic2: Internal error, unknown monadic opcode %02x\n",
-                    Opcode));
-        
-        return_ACPI_STATUS (AE_AML_ERROR);
+        DEBUG_PRINT (ACPI_ERROR, ( "AmlExecMonadic2: Internal error, unknown monadic opcode %02x\n",
+                        Opcode));
+        Status = AE_AML_ERROR;
+        goto Cleanup;
     }
 
 
-    /* Internal return value is at the top of the object stack */
 
-    *ReturnDesc = ObjDesc;
-    return_ACPI_STATUS (AE_OK);
+Cleanup:
+
+    CmDeleteOperand (&Operands[0]);
+
+    /* Delete return object on error */
+
+    if (ACPI_FAILURE (Status) &&
+        (RetDesc))
+    {
+        CmDeleteInternalObject (RetDesc);
+        RetDesc = NULL;
+    }
+
+    *ReturnDesc = RetDesc;
+    return_ACPI_STATUS (Status);
 }
  

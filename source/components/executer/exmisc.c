@@ -280,38 +280,59 @@ AmlExecIndex (
     {
         /* Object to be indexed is a Package */
 
-        if (IdxDesc->Number.Value < 0 || 
-            IdxDesc->Number.Value >= (UINT32) ObjDesc->Package.Count)
+        if (IdxDesc->Number.Value >= ObjDesc->Package.Count)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecIndex: Index value out of range\n"));
             Status = AE_AML_ERROR;
             goto Cleanup;
         }
 
-        /* 
-         * TBD - possible dangling reference: if the package vector changes
-         * TBD - before this pointer is used, the results may be surprising.
-         */
+        if ((ResDesc->Common.Type == INTERNAL_TYPE_Lvalue) &&
+            (ResDesc->Lvalue.OpCode == AML_ZeroOp))
+        {
+            /* 
+             * There is no actual result descriptor (the ZeroOp Result descriptor is a placeholder),
+             * so just delete the placeholder and return a reference to the package element
+             */
 
-        /* 
-         * Each element of the package is an internal object.  Get the one
-         * we are after.
-         */
+            CmDeleteInternalObject (ResDesc);
+        }
 
-        TmpDesc                      = ObjDesc->Package.Elements[IdxDesc->Number.Value];
+        else
+        {
+            /* 
+             * TBD - possible dangling reference: if the package vector changes
+             * TBD - before this pointer is used, the results may be surprising.
+             */
+
+            /* 
+             * Each element of the package is an internal object.  Get the one
+             * we are after.
+             */
+
+            TmpDesc                      = ObjDesc->Package.Elements[IdxDesc->Number.Value];
+            RetDesc->Lvalue.OpCode       = AML_IndexOp;
+            RetDesc->Lvalue.TargetType   = TmpDesc->Common.Type;
+            RetDesc->Lvalue.Object       = TmpDesc;
+
+            Status = AmlExecStore (RetDesc, ResDesc);
+            RetDesc->Lvalue.Object       = NULL;
+        }
+
+        /*
+         * The local return object must always be a reference to the package element,
+         * not the element itself.
+         */
         RetDesc->Lvalue.OpCode       = AML_IndexOp;
-        RetDesc->Lvalue.TargetType   = TmpDesc->Common.Type;
-        RetDesc->Lvalue.Object       = TmpDesc;
-
-        Status = AmlExecStore (RetDesc, ResDesc);
+        RetDesc->Lvalue.TargetType   = ACPI_TYPE_Package;
+        RetDesc->Lvalue.Where        = &ObjDesc->Package.Elements[IdxDesc->Number.Value];
     }
 
     else
     {
         /* Object to be indexed is a Buffer */
 
-        if (IdxDesc->Number.Value < 0 || 
-            IdxDesc->Number.Value >= ObjDesc->Buffer.Length)
+        if (IdxDesc->Number.Value >= ObjDesc->Buffer.Length)
         {
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecIndex: Index value out of range\n"));
             Status = AE_AML_ERROR;
@@ -423,8 +444,8 @@ AmlExecMatch (
 
     /* Validate match comparison sub-opcodes */
     
-    if (Op1Desc->Number.Value < 0 || Op1Desc->Number.Value > MAX_MATCH_OPERATOR || 
-        Op2Desc->Number.Value < 0 || Op2Desc->Number.Value > MAX_MATCH_OPERATOR)
+    if ((Op1Desc->Number.Value > MAX_MATCH_OPERATOR) || 
+        (Op2Desc->Number.Value > MAX_MATCH_OPERATOR))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: operation encoding out of range\n"));
         Status = AE_AML_ERROR;
@@ -432,7 +453,7 @@ AmlExecMatch (
     }
 
     Index = StartDesc->Number.Value;
-    if (Index < 0 || Index >= (UINT32) PkgDesc->Package.Count)
+    if (Index >= (UINT32) PkgDesc->Package.Count)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: start position value out of range\n"));
         Status = AE_AML_ERROR;
@@ -457,7 +478,7 @@ AmlExecMatch (
      * returned as a Number, this will produce the Ones value as specified.
      */
 
-    for ( ; Index < (UINT32) PkgDesc->Package.Count; ++Index)
+    for ( ; Index < PkgDesc->Package.Count; ++Index)
     {
         /* 
          * Treat any NULL or non-numeric elements as non-matching.
