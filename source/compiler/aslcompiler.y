@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -170,6 +170,10 @@ AslLocalAllocate (unsigned int Size);
     char            *s;
     ACPI_PARSE_OBJECT  *n;
 }
+
+
+/*! [Begin] no source code translation */
+
 
 /*
  * Token types: These are returned by the lexer
@@ -2864,6 +2868,8 @@ AslCompilerwrap(void)
 {
   return 1;
 }
+
+/*! [End] no source code translation !*/
 
 void *
 AslLocalAllocate (unsigned int Size)
