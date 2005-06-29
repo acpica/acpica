@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  ******************************************************************************/
 
@@ -189,7 +189,7 @@ AcpiNsRootInitialize (void)
         {
             DEBUG_PRINTP (ACPI_ERROR, 
                 ("Could not create predefined name %s, %s\n",
-                InitVal->Name, AcpiUtFormatException (Status)));
+                InitVal->Name, AcpiFormatException (Status)));
         }
 
         /*
