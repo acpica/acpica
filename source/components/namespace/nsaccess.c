@@ -542,16 +542,15 @@ NsLookup (
             
             if (ThisEntry->Scope == NULL)
             {
-                DEBUG_PRINT (ACPI_ERROR, ("NsLookup: No child scope at entry %p\n", ThisEntry));
-
                 if (IMODE_LoadPass1 == InterpreterMode || 
                     IMODE_LoadPass2 == InterpreterMode)
                 {
+                    DEBUG_PRINT (ACPI_ERROR, ("NsLookup: ***Error - No child scope at entry %p\n", ThisEntry));
                     REPORT_ERROR ("Name Table allocation failure");
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
 
-                REPORT_ERROR ("Name not found");
+                DEBUG_PRINT (ACPI_INFO, ("NsLookup: No child scope at entry %p\n", ThisEntry));
 
                 return_ACPI_STATUS (AE_NOT_FOUND);
             }
