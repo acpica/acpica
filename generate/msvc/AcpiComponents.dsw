@@ -3,6 +3,22 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
+Project: "AcpiDriver"=.\AcpiDriver.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/test/driver/wdm", DBDAAAAA
+    .
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "AcpiDump"=.\AcpiDump.dsp - Package Owner=<4>
 
 Package=<5>
@@ -47,25 +63,13 @@ Package=<4>
 
 ###############################################################################
 
-Project: "Subsystem"=.\AcpiSubsystem.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "app"=.\AcpiTest.dsp - Package Owner=<4>
+Project: "AcpiSubsystem"=.\AcpiSubsystem.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/Generate/VC", SVBAAAAA
-    .
+    "$/Acpi Components/Subsystem", CQBAAAAA
+    ..\..
     end source code control
 }}}
 
@@ -75,12 +79,28 @@ Package=<4>
 
 ###############################################################################
 
-Project: "wdm"=.\AcpiDriver.dsp - Package Owner=<4>
+Project: "AcpiSubsystem_Linux"=.\AcpiSubsystem_Linux.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    "$/Acpi Components/Generate/VC", SVBAAAAA
+    "$/Acpi Components/Subsystem", CQBAAAAA
+    ..\..
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "AcpiTest"=.\AcpiTest.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    "$/Acpi Components/Test/AcpiTest/Wdm", DLHAAAAA
     .
     end source code control
 }}}
