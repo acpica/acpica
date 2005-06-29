@@ -377,12 +377,23 @@ NsLookup (
     }
 
 
-    /* DefFieldDefn and BankFieldDefn define fields in a Region */
+    /*
+     * This check is explicitly split provide relax the TypeToCheckFor
+     * conditions for BankFieldDefn.  Originally, both BankFieldDefn and
+     * DefFieldDefn caused TypeToCheckFor to be set to ACPI_TYPE_Region,
+     * but the BankFieldDefn may also check for a Field definition as well
+     * as an OperationRegion.
+     */
+    /* DefFieldDefn defines fields in a Region */
 
-    if (INTERNAL_TYPE_DefFieldDefn == Type ||
-        INTERNAL_TYPE_BankFieldDefn == Type)
+    if (INTERNAL_TYPE_DefFieldDefn == Type)
     {
         TypeToCheckFor = ACPI_TYPE_Region;
+    }
+    /* BankFieldDefn defines data fields in a Field Object */
+    else if (INTERNAL_TYPE_BankFieldDefn == Type)
+    {
+        TypeToCheckFor = ACPI_TYPE_Any;
     }
     else
     {
@@ -556,7 +567,7 @@ NsLookup (
             /* Complain about type mismatch */
 
             REPORT_WARNING ("Type mismatch");
-            DEBUG_PRINT (ACPI_WARN, ("NsLookup: %4.4s, type %X, checking for type %X\n", 
+            DEBUG_PRINT (ACPI_WARN, ("NsLookup: %4.4s, type 0x%X, checking for type 0x%X\n", 
                                         Name, ThisEntry->Type, TypeToCheckFor));
         }
 
