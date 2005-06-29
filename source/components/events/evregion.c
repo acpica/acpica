@@ -210,7 +210,7 @@ EvDisassociateRegionFromHandler(
         /*
          *  This guy has no handler, we're done
          */
-        return;
+        return_VOID;
     }
     /*
      *  Find this region in the handler's list
@@ -262,7 +262,7 @@ EvDisassociateRegionFromHandler(
             CmUpdateObjectReference (RegionObj, REF_DECREMENT);
             CmUpdateObjectReference (HandlerObj, REF_DECREMENT);
 
-            return;
+            return_VOID;
 
         } /* found the right handler */
 
@@ -280,6 +280,8 @@ EvDisassociateRegionFromHandler(
         ("Cannot remove region 0x%X from address handler 0x%X\n",
             RegionObj, HandlerObj));
 
+	return_VOID;
+	
 }  /* EvDisassociateRegionAndHandler */
 
 
@@ -297,6 +299,7 @@ EvDisassociateRegionFromHandler(
  *
  ******************************************************************************/
 
+ACPI_STATUS
 EvAssociateRegionAndHander(
     ACPI_OBJECT_INTERNAL    *HandlerObj,
     ACPI_OBJECT_INTERNAL    *RegionObj)
@@ -384,7 +387,7 @@ EvAddrHandlerHelper (
 
     if (!(ObjEntry = NsConvertHandleToEntry (ObjHandle)))
     {
-        return (void *) AE_BAD_PARAMETER;
+        return_VALUE ((void *) AE_BAD_PARAMETER);
     }
 
     /*
@@ -396,7 +399,7 @@ EvAddrHandlerHelper (
         (ObjEntry->Type != TYPE_Region) &&
         (ObjEntry != Gbl_RootObject))
     {
-        return (void *) AE_OK;
+        return_VALUE ((void *) AE_OK);
     }
 
     /* Check for an existing internal object */
@@ -407,7 +410,7 @@ EvAddrHandlerHelper (
         /*
          *  The object DNE, we don't care about it
          */
-        return (void *) AE_OK;
+        return_VALUE ((void *) AE_OK);
     }
 
     /*
@@ -440,7 +443,7 @@ EvAddrHandlerHelper (
                  *  bail out telling the walk routine to not traverse this
                  *  branch.  This preserves the scoping rule for handlers.
                  */
-                return GO_NO_FURTHER;
+                return_VALUE (GO_NO_FURTHER);
             }
             /*
              *  Move through the linked list of handlers
@@ -452,7 +455,7 @@ EvAddrHandlerHelper (
          *  space we don't care about it.  We just ignore it and
          *  proceed.
          */
-        return (void *) AE_OK;
+        return_VALUE ((void *) AE_OK);
     }
 
     /*
@@ -466,7 +469,7 @@ EvAddrHandlerHelper (
          *  This region os for a different address space
          *  ignore it
          */
-        return (void *) AE_OK;
+        return_VALUE ((void *) AE_OK);
     }
     /*
      *  Now we have a region and it is for the handler's address
@@ -481,7 +484,7 @@ EvAddrHandlerHelper (
      */
     EvAssociateRegionAndHander(HandlerObj, ObjDesc);
 
-    return (void *) AE_OK;
+    return_VALUE ((void *) AE_OK);
 }
 
 /******************************************************************************
