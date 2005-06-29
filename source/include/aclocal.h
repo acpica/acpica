@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.192 $
+ *       $Revision: 1.193 $
  *
  *****************************************************************************/
 
@@ -271,7 +271,7 @@ typedef struct acpi_namespace_node
 
 
     union acpi_operand_object   *Object;        /* Pointer to attached ACPI object (optional) */
-    struct acpi_namespace_node  *Child;         /* first child */
+    struct acpi_namespace_node  *Child;         /* First child */
     struct acpi_namespace_node  *Peer;          /* Next peer*/
     UINT16                      ReferenceCount; /* Current count of references and children */
     UINT8                       Flags;
@@ -569,10 +569,10 @@ typedef struct acpi_scope_state
 typedef struct acpi_pscope_state
 {
     ACPI_STATE_COMMON
-    union acpi_parse_object     *Op;                    /* current op being parsed */
-    UINT8                       *ArgEnd;                /* current argument end */
-    UINT8                       *PkgEnd;                /* current package end */
-    UINT32                      ArgList;                /* next argument to parse */
+    union acpi_parse_object     *Op;                    /* Current op being parsed */
+    UINT8                       *ArgEnd;                /* Current argument end */
+    UINT8                       *PkgEnd;                /* Current package end */
+    UINT32                      ArgList;                /* Next argument to parse */
     UINT32                      ArgCount;               /* Number of fixed arguments */
 
 } ACPI_PSCOPE_STATE;
@@ -684,11 +684,8 @@ typedef struct acpi_opcode_info
 
 typedef union acpi_parse_value
 {
-    ACPI_INTEGER                Integer;        /* integer constant (Up to 64 bits) */
+    ACPI_INTEGER                Integer;        /* Integer constant (Up to 64 bits) */
     UINT64_STRUCT               Integer64;      /* Structure overlay for 2 32-bit Dwords */
-    UINT32                      Integer32;      /* integer constant, 32 bits only */
-    UINT16                      Integer16;      /* integer constant, 16 bits only */
-    UINT8                       Integer8;       /* integer constant, 8 bits only */
     UINT32                      Size;           /* bytelist or field size */
     char                        *String;        /* NULL terminated string */
     UINT8                       *Buffer;        /* buffer or string */
@@ -702,15 +699,15 @@ typedef union acpi_parse_value
     UINT8                       DataType;       /* To differentiate various internal objs */\
     UINT8                       Flags;          /* Type of Op */\
     UINT16                      AmlOpcode;      /* AML opcode */\
-    UINT32                      AmlOffset;      /* offset of declaration in AML */\
-    union acpi_parse_object     *Parent;        /* parent op */\
-    union acpi_parse_object     *Next;          /* next op */\
+    UINT32                      AmlOffset;      /* Offset of declaration in AML */\
+    union acpi_parse_object     *Parent;        /* Parent op */\
+    union acpi_parse_object     *Next;          /* Next op */\
     ACPI_DISASM_ONLY_MEMBERS (\
     UINT8                       DisasmFlags;    /* Used during AML disassembly */\
     UINT8                       DisasmOpcode;   /* Subtype used for disassembly */\
-    char                        AmlOpName[16])  /* op name (debug only) */\
+    char                        AmlOpName[16])  /* Op name (debug only) */\
                                                 /* NON-DEBUG members below: */\
-    ACPI_NAMESPACE_NODE         *Node;          /* for use by interpreter */\
+    ACPI_NAMESPACE_NODE         *Node;          /* For use by interpreter */\
     ACPI_PARSE_VALUE            Value;          /* Value or args associated with the opcode */\
 
 
@@ -794,14 +791,14 @@ typedef union acpi_parse_object
 typedef struct acpi_parse_state
 {
     UINT32                      AmlSize;
-    UINT8                       *AmlStart;      /* first AML byte */
-    UINT8                       *Aml;           /* next AML byte */
+    UINT8                       *AmlStart;      /* First AML byte */
+    UINT8                       *Aml;           /* Next AML byte */
     UINT8                       *AmlEnd;        /* (last + 1) AML byte */
-    UINT8                       *PkgStart;      /* current package begin */
-    UINT8                       *PkgEnd;        /* current package end */
-    union acpi_parse_object     *StartOp;       /* root of parse tree */
+    UINT8                       *PkgStart;      /* Current package begin */
+    UINT8                       *PkgEnd;        /* Current package end */
+    union acpi_parse_object     *StartOp;       /* Root of parse tree */
     struct acpi_namespace_node  *StartNode;
-    union acpi_generic_state    *Scope;         /* current scope */
+    union acpi_generic_state    *Scope;         /* Current scope */
     union acpi_parse_object     *StartScope;
 
 } ACPI_PARSE_STATE;
