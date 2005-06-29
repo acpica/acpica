@@ -174,8 +174,8 @@ OsDoSuspend (
 
 ACPI_STATUS
 OsAcquireOpRqst (
-    ACPI_OBJECT             *TimeDesc, 
-    ACPI_OBJECT             *ObjDesc)
+    ACPI_OBJECT_INTERNAL    *TimeDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     UINT16                  CurrentId;
     ACPI_STATUS             Status = AE_OK;
@@ -222,7 +222,7 @@ OsAcquireOpRqst (
 
 ACPI_STATUS
 OsReleaseOpRqst (
-    ACPI_OBJECT             *ObjDesc)
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     UINT16                  CurrentId;
     ACPI_STATUS             Status = AE_OK;
@@ -271,7 +271,7 @@ OsReleaseOpRqst (
 
 ACPI_STATUS
 OsSignalOpRqst (
-    ACPI_OBJECT             *ObjDesc)
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
 
     if (ObjDesc)
@@ -306,8 +306,8 @@ OsSignalOpRqst (
 
 ACPI_STATUS
 OsWaitOpRqst (
-    ACPI_OBJECT             *TimeDesc, 
-    ACPI_OBJECT             *ObjDesc)
+    ACPI_OBJECT_INTERNAL    *TimeDesc, 
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
@@ -350,7 +350,7 @@ OsWaitOpRqst (
 
 ACPI_STATUS
 OsResetOpRqst (
-    ACPI_OBJECT             *ObjDesc)
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_STATUS             Status = AE_OK;
 
