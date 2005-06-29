@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -940,19 +940,23 @@ SimpleTarget
 
 /* Rules for specifying the Return type for control methods */
 
+ParameterTypePackage
+    :                               {$$ = NULL;}
+    | ObjectTypeKeyword             {$$ = $1;}
+    | '{''}'                        {$$ = NULL;}
+    | '{'
+        ObjectTypeKeyword
+      '}'                           {$$ = $2;}
+    | '{'
+        ParameterTypePackageList
+      '}'                           {$$ = $2;}
+    ;
+
 ParameterTypePackageList
     :                               {$$ = NULL;}
     | ObjectTypeKeyword             {$$ = $1;}
     | ObjectTypeKeyword ','
         ParameterTypePackageList    {$$ = TrLinkPeerNodes (2,$1,$3);}
-    ;
-
-ParameterTypePackage
-    :                               {$$ = NULL;}
-    | ObjectTypeKeyword             {$$ = $1;}
-    | '{'
-        ParameterTypePackageList
-      '}'                           {$$ = $2;}
     ;
 
 OptionalParameterTypePackage
@@ -963,25 +967,32 @@ OptionalParameterTypePackage
 
 /* Rules for specifying the Argument types for control methods */
 
-ParameterTypesPackageList
-    :                               {$$ = NULL;}
-    | ObjectTypeKeyword             {$$ = $1;}
-    | ObjectTypeKeyword ','
-        ParameterTypesPackage       {$$ = TrLinkPeerNodes (2,$1,$3);}
-    ;
-
 ParameterTypesPackage
     :                               {$$ = NULL;}
     | ObjectTypeKeyword             {$$ = $1;}
+    | '{''}'                        {$$ = NULL;}
+    | '{'
+        ObjectTypeKeyword
+      '}'                           {$$ = $2;}
     | '{'
         ParameterTypesPackageList
-      '}'                           {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_DEFAULT_ARG),1,$2);}
+      '}'                           {$$ = $2;}
+    ;
+
+ParameterTypesPackageList
+    :                               {$$ = NULL;}
+    | ObjectTypeKeyword             {$$ = $1;}
+    | ParameterTypesPackage         {$$ = $1;}
+    | ParameterTypesPackage ','
+        ParameterTypesPackageList   {$$ = TrLinkPeerNodes (2,$1,$3);}
+    | ParameterTypesPackage ','
+        ParameterTypesPackage       {$$ = TrLinkPeerNodes (2,$1,$3);}
     ;
 
 OptionalParameterTypesPackage
     :                               {$$ = TrCreateLeafNode (PARSEOP_DEFAULT_ARG);}
     | ','                           {$$ = TrCreateLeafNode (PARSEOP_DEFAULT_ARG);}
-    | ',' ParameterTypesPackage     {$$ = $2;}
+    | ',' ParameterTypesPackage     {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_DEFAULT_ARG),1,$2);}
     ;
 
 
