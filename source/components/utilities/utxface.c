@@ -145,6 +145,8 @@
 ACPI_STATUS
 AcpiInitialize (void)
 {
+    ACPI_STATUS             Status;
+
 
     FUNCTION_TRACE ("AcpiInitialize");
     DEBUG_PRINT (ACPI_INFO, ("Initializing ACPI Subsystem...\n"));
@@ -164,7 +166,11 @@ AcpiInitialize (void)
     AcpiInstallAddressSpaceHandler (REGION_SMBus, AmlSmBusSpaceHandler, NULL);
 
 
-    return_ACPI_STATUS (AE_OK);
+    /* Create the default mutex objects */
+
+    Status = CmMutexInitialize ();
+
+    return_ACPI_STATUS (Status);
 }
 
 
