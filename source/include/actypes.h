@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.145 $
+ *       $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -342,17 +342,13 @@ typedef UINT64                          ACPI_INTEGER;
 typedef UINT32                          ACPI_TABLE_TYPE;
 
 #define ACPI_TABLE_RSDP                 (ACPI_TABLE_TYPE) 0
-#define ACPI_TABLE_APIC                 (ACPI_TABLE_TYPE) 1
-#define ACPI_TABLE_DSDT                 (ACPI_TABLE_TYPE) 2
-#define ACPI_TABLE_FACP                 (ACPI_TABLE_TYPE) 3
-#define ACPI_TABLE_FACS                 (ACPI_TABLE_TYPE) 4
-#define ACPI_TABLE_PSDT                 (ACPI_TABLE_TYPE) 5
-#define ACPI_TABLE_RSDT                 (ACPI_TABLE_TYPE) 6
-#define ACPI_TABLE_SSDT                 (ACPI_TABLE_TYPE) 7
-#define ACPI_TABLE_SBST                 (ACPI_TABLE_TYPE) 8
-#define ACPI_TABLE_SPIC                 (ACPI_TABLE_TYPE) 9
-#define ACPI_TABLE_BOOT                 (ACPI_TABLE_TYPE) 10
-#define ACPI_TABLE_MAX                  10
+#define ACPI_TABLE_DSDT                 (ACPI_TABLE_TYPE) 1
+#define ACPI_TABLE_FADT                 (ACPI_TABLE_TYPE) 2
+#define ACPI_TABLE_FACS                 (ACPI_TABLE_TYPE) 3
+#define ACPI_TABLE_PSDT                 (ACPI_TABLE_TYPE) 4
+#define ACPI_TABLE_SSDT                 (ACPI_TABLE_TYPE) 5
+#define ACPI_TABLE_XSDT                 (ACPI_TABLE_TYPE) 6
+#define ACPI_TABLE_MAX                  6
 #define NUM_ACPI_TABLES                 (ACPI_TABLE_MAX+1)
 
 
