@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /Za /W4 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "ENABLE_DEBUGGER" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /YX /FD /c
+# ADD CPP /nologo /MT /Za /W4 /GX /O2 /I "..\..\Subsystem\Include" /D "NDEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "ENABLE_DEBUGGER" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -73,7 +73,7 @@ PostBuild_Cmds=copy bin\acpiexec.exe ..\..\libraries\acpiexec.exe	dir ..\..\libr
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MT /Za /W4 /Gm /GX /ZI /Od /I "..\..\Subsystem\Include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "ENABLE_DEBUGGER" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MT /Za /W4 /Gm /GX /ZI /Od /I "..\..\Subsystem\Include" /D "_DEBUG" /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "_CONSOLE" /D "_MBCS" /D "ACPI_USE_SYSTEM_CLIBRARY" /D "ACPI_DEBUG" /D "ACPI_APPLICATION" /D "ENABLE_DEBUGGER" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -248,6 +248,10 @@ SOURCE=..\..\subsystem\Namespace\nseval.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\subsystem\Namespace\nsinit.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\subsystem\Namespace\nsload.c
 # End Source File
 # Begin Source File
@@ -269,10 +273,6 @@ SOURCE=..\..\subsystem\Namespace\nsutils.c
 # Begin Source File
 
 SOURCE=..\..\subsystem\Namespace\nswalk.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\subsystem\Namespace\nsxfinit.c
 # End Source File
 # Begin Source File
 
