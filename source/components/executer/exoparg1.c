@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.163 $
+ *              $Revision: 1.164 $
  *
  *****************************************************************************/
 
@@ -600,6 +600,11 @@ AcpiExOpcode_1A_1T_1R (
 
         Status = AcpiExConvertToString (Operand[0], &ReturnDesc,
                     ACPI_EXPLICIT_CONVERT_DECIMAL);
+        if (ReturnDesc == Operand[0])
+        {
+            /* No conversion performed, add ref to handle return value */
+            AcpiUtAddReference (ReturnDesc);
+        }
         break;
 
 
@@ -607,12 +612,22 @@ AcpiExOpcode_1A_1T_1R (
 
         Status = AcpiExConvertToString (Operand[0], &ReturnDesc,
                     ACPI_EXPLICIT_CONVERT_HEX);
+        if (ReturnDesc == Operand[0])
+        {
+            /* No conversion performed, add ref to handle return value */
+            AcpiUtAddReference (ReturnDesc);
+        }
         break;
 
 
     case AML_TO_BUFFER_OP:          /* ToBuffer (Data, Result) */
 
         Status = AcpiExConvertToBuffer (Operand[0], &ReturnDesc);
+        if (ReturnDesc == Operand[0])
+        {
+            /* No conversion performed, add ref to handle return value */
+            AcpiUtAddReference (ReturnDesc);
+        }
         break;
 
 
@@ -620,6 +635,11 @@ AcpiExOpcode_1A_1T_1R (
 
         Status = AcpiExConvertToInteger (Operand[0], &ReturnDesc,
                     ACPI_ANY_BASE);
+        if (ReturnDesc == Operand[0])
+        {
+            /* No conversion performed, add ref to handle return value */
+            AcpiUtAddReference (ReturnDesc);
+        }
         break;
 
 
@@ -644,10 +664,13 @@ AcpiExOpcode_1A_1T_1R (
         goto Cleanup;
     }
 
-    /*
-     * Store the return value computed above into the target object
-     */
-    Status = AcpiExStore (ReturnDesc, Operand[1], WalkState);
+    if (ACPI_SUCCESS (Status))
+    {
+        /*
+         * Store the return value computed above into the target object
+         */
+        Status = AcpiExStore (ReturnDesc, Operand[1], WalkState);
+    }
 
 
 Cleanup:
