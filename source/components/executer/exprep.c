@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -228,6 +228,7 @@ AcpiExPrepCommonFieldObject (
     UINT32                  FieldBitLength)
 {
     UINT32                  AccessBitWidth;
+    UINT32                  NearestByteAddress;
 
 
     FUNCTION_TRACE ("ExPrepCommonFieldObject");
@@ -275,8 +276,8 @@ AcpiExPrepCommonFieldObject (
 
     /* BaseByteOffset is the byte address of the start of the field within the region */
 
-    ObjDesc->CommonField.BaseByteOffset       = ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
-
+    NearestByteAddress                        = ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
+    ObjDesc->CommonField.BaseByteOffset       = ROUND_DOWN (NearestByteAddress, AccessBitWidth);
 
     /*
      * StartFieldBitOffset is the offset of the first bit of the field within a field datum.
