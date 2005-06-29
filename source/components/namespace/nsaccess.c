@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.186 $
+ *              $Revision: 1.187 $
  *
  ******************************************************************************/
 
@@ -277,7 +277,7 @@ AcpiNsRootInitialize (void)
             case ACPI_TYPE_MUTEX:
 
                 ObjDesc->Mutex.Node = NewNode;
-                ObjDesc->Mutex.SyncLevel = (UINT8) ACPI_TO_INTEGER (Val);
+                ObjDesc->Mutex.SyncLevel = (UINT8) (ACPI_TO_INTEGER (Val) - 1);
 
                 if (ACPI_STRCMP (InitVal->Name, "_GL_") == 0)
                 {
