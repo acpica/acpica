@@ -576,7 +576,7 @@ InitAcpiGetAllTables (
     {   
         /* since we're operating on ACPI hardware, initialize Capabilities */
             
-        Capabilities = AcpiModeCapabilities ();
+        Capabilities = AcpiGetModeCapabilities ();
     }
 
     FUNCTION_STATUS_EXIT (Status);
