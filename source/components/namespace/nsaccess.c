@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  ******************************************************************************/
 
@@ -397,20 +397,19 @@ AcpiNsLookup (
         TypeToCheckFor = Type;
     }
 
-    /* TBD: [Restructure] - Move the pathname stuff into a new procedure */
 
-    /* Examine the name pointer */
+    /* Examine the pathname */
 
     if (!Pathname)
     {
-        /*  8-12-98 ASL Grammar Update supports null NamePath   */
+        /* Null NamePath -- is allowed */
 
         NullNamePath = TRUE;
-        NumSegments = 0;
-        ThisNode = AcpiGbl_RootNode;
+        NumSegments  = 0;
+        ThisNode     = AcpiGbl_RootNode;
 
         ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-            "Null Pathname (Zero segments),  Flags=%x\n", Flags));
+            "Null Pathname (Zero segments), Flags=%x\n", Flags));
     }
 
     else
@@ -435,21 +434,21 @@ AcpiNsLookup (
          */
         if (*Pathname == AML_ROOT_PREFIX)
         {
-            /* Pathname is fully qualified, look in root name table */
+            /* Pathname is fully qualified, start from the root */
 
             CurrentNode = AcpiGbl_RootNode;
 
-            /* point to segment part */
+            /* Point to segment part */
 
             Pathname++;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching from root [%p]\n",
                 CurrentNode));
 
-            /* Direct reference to root, "\" */
-
             if (!(*Pathname))
             {
+                /* Direct reference to root, "\" */
+
                 ThisNode = AcpiGbl_RootNode;
                 goto CheckForNewScopeAndExit;
             }
@@ -473,7 +472,7 @@ AcpiNsLookup (
 
                 Pathname++;
 
-                /*  Backup to the parent's scope  */
+                /* Backup to the parent's scope  */
 
                 ThisNode = AcpiNsGetParentObject (CurrentNode);
                 if (!ThisNode)
@@ -489,17 +488,15 @@ AcpiNsLookup (
             }
         }
 
-
         /*
          * Examine the name prefix opcode, if any, to determine the number of 
          * segments
          */
         if (*Pathname == AML_DUAL_NAME_PREFIX)
         {
+            /* Two segments, point to first segment */
+
             NumSegments = 2;
-
-            /* point to first segment */
-
             Pathname++;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
@@ -507,10 +504,9 @@ AcpiNsLookup (
         }
         else if (*Pathname == AML_MULTI_NAME_PREFIX_OP)
         {
+            /* Extract segment count, point to first segment */
+
             NumSegments = (UINT32)* (UINT8 *) ++Pathname;
-
-            /* point to first segment */
-
             Pathname++;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
@@ -574,7 +570,6 @@ AcpiNsLookup (
 
             return_ACPI_STATUS (Status);
         }
-
 
         /*
          * If 1) This is the last segment (NumSegments == 0)
