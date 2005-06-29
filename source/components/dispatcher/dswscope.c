@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
- *              $Revision: 1.36 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -10,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -122,8 +121,8 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          NAMESPACE
-        MODULE_NAME         ("dswscope");
+#define _COMPONENT          ACPI_DISPATCHER
+        MODULE_NAME         ("dswscope")
 
 
 #define STACK_POP(head) head
@@ -155,7 +154,7 @@ AcpiDsScopeStackClear (
         WalkState->ScopeInfo = ScopeInfo->Scope.Next;
 
         DEBUG_PRINT (TRACE_EXEC,
-            ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+            ("Popped object type %X\n", ScopeInfo->Common.Value));
         AcpiCmDeleteGenericState (ScopeInfo);
     }
 }
@@ -165,18 +164,18 @@ AcpiDsScopeStackClear (
  *
  * FUNCTION:    AcpiDsScopeStackPush
  *
- * PARAMETERS:  *NewScope,              - Name to be made current
- *              Type,                   - Type of frame being pushed
+ * PARAMETERS:  *Node,              - Name to be made current
+ *              Type,               - Type of frame being pushed
  *
  * DESCRIPTION: Push the current scope on the scope stack, and make the
- *              passed Named Object current.
+ *              passed Node current.
  *
  ***************************************************************************/
 
 ACPI_STATUS
 AcpiDsScopeStackPush (
-    ACPI_NAMED_OBJECT       *NewScope,
-    OBJECT_TYPE_INTERNAL    Type,
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OBJECT_TYPE8       Type,
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_GENERIC_STATE      *ScopeInfo;
@@ -185,11 +184,11 @@ AcpiDsScopeStackPush (
     FUNCTION_TRACE ("DsScopeStackPush");
 
 
-    if (!NewScope)
+    if (!Node)
     {
         /*  invalid scope   */
 
-        REPORT_ERROR ("DsScopeStackPush: null scope passed");
+        REPORT_ERROR (("DsScopeStackPush: null scope passed\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -197,7 +196,7 @@ AcpiDsScopeStackPush (
 
     if (!AcpiAmlValidateObjectType (Type))
     {
-        REPORT_WARNING ("DsScopeStackPush: type code out of range");
+        REPORT_WARNING (("DsScopeStackPush: type code out of range\n"));
     }
 
 
@@ -211,7 +210,7 @@ AcpiDsScopeStackPush (
 
     /* Init new scope object */
 
-    ScopeInfo->Scope.NameTable  = NewScope;
+    ScopeInfo->Scope.Node  = Node;
     ScopeInfo->Common.Value = (UINT16) Type;
 
     /* Push new scope object onto stack */
@@ -259,7 +258,7 @@ AcpiDsScopeStackPop (
     }
 
     DEBUG_PRINT (TRACE_EXEC,
-        ("Popped object type 0x%X\n", ScopeInfo->Common.Value));
+        ("Popped object type %X\n", ScopeInfo->Common.Value));
 
     AcpiCmDeleteGenericState (ScopeInfo);
 

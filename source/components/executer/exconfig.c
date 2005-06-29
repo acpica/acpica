@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
  * Module Name: amconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.21 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -10,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -128,8 +127,8 @@
 #include "acdispat.h"
 
 
-#define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("amconfig");
+#define _COMPONENT          ACPI_EXECUTER
+        MODULE_NAME         ("amconfig")
 
 
 /*****************************************************************************
@@ -145,13 +144,13 @@
  *
  ****************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlExecLoadTable (
-    ACPI_OBJECT_INTERNAL    *RgnDesc,
+    ACPI_OPERAND_OBJECT     *RgnDesc,
     ACPI_HANDLE             *DdbHandle)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *TableDesc = NULL;
+    ACPI_OPERAND_OBJECT     *TableDesc = NULL;
     UINT8                   *TablePtr;
     UINT8                   *TableDataPtr;
     ACPI_TABLE_HEADER       TableHeader;
@@ -169,8 +168,9 @@ AcpiAmlExecLoadTable (
     TableHeader.Length = 0;
     for (i = 0; i < sizeof (ACPI_TABLE_HEADER); i++)
     {
-        Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ,
-                        i, 8, (UINT32 *) ((UINT8 *) &TableHeader + i));
+        Status = AcpiEvAddressSpaceDispatch (RgnDesc, ACPI_READ_ADR_SPACE,
+                            (ACPI_PHYSICAL_ADDRESS) i, 8,
+                            (UINT32 *) ((UINT8 *) &TableHeader + i));
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -195,8 +195,9 @@ AcpiAmlExecLoadTable (
 
     for (i = 0; i < TableHeader.Length; i++)
     {
-        Status = AcpiEvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ,
-                        i, 8, (UINT32 *) (TableDataPtr + i));
+        Status = AcpiEvAddressSpaceDispatch (RgnDesc, ACPI_READ_ADR_SPACE,
+                            (ACPI_PHYSICAL_ADDRESS) i, 8,
+                            (UINT32 *) (TableDataPtr + i));
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -245,19 +246,24 @@ AcpiAmlExecLoadTable (
 
     /* Add the table to the namespace */
 
+    /* TBD: [Restructure] - change to whatever new interface is appropriate */
+/*
     Status = AcpiLoadNamespace ();
     if (ACPI_FAILURE (Status))
     {
+*/
         /* TBD: [Errors] Unload the table on failure ? */
-
+/*
         goto Cleanup;
     }
+*/
+
 
     /* TBD: [Investigate] we need a pointer to the table desc */
 
     /* Init the table handle */
 
-    TableDesc->Reference.OpCode = AML_LOAD_OP;
+    TableDesc->Reference.Opcode = AML_LOAD_OP;
     TableDesc->Reference.Object = TableInfo.InstalledDesc;
 
     *DdbHandle = TableDesc;
@@ -286,12 +292,12 @@ Cleanup:
  *
  ****************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiAmlExecUnloadTable (
     ACPI_HANDLE             DdbHandle)
 {
     ACPI_STATUS             Status = AE_NOT_IMPLEMENTED;
-    ACPI_OBJECT_INTERNAL    *TableDesc = (ACPI_OBJECT_INTERNAL *) DdbHandle;
+    ACPI_OPERAND_OBJECT     *TableDesc = (ACPI_OPERAND_OBJECT  *) DdbHandle;
     ACPI_TABLE_DESC         *TableInfo;
 
 
@@ -306,7 +312,7 @@ AcpiAmlExecUnloadTable (
 
     if ((!DdbHandle) ||
         (!VALID_DESCRIPTOR_TYPE (DdbHandle, ACPI_DESC_TYPE_INTERNAL)) ||
-        (((ACPI_OBJECT_INTERNAL *)DdbHandle)->Common.Type !=
+        (((ACPI_OPERAND_OBJECT  *)DdbHandle)->Common.Type !=
                 INTERNAL_TYPE_REFERENCE))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -318,7 +324,7 @@ AcpiAmlExecUnloadTable (
     TableInfo = (ACPI_TABLE_DESC *) TableDesc->Reference.Object;
 
     /*
-     * Delete the entire namespace under this table Named Object
+     * Delete the entire namespace under this table Node
      * (Offset contains the TableId)
      */
 
@@ -330,7 +336,7 @@ AcpiAmlExecUnloadTable (
 
     /* Delete the table itself */
 
-    AcpiTbDeleteSingleTable (TableInfo->InstalledDesc);
+    AcpiTbUninstallTable (TableInfo->InstalledDesc);
 
     /* Delete the table descriptor (DdbHandle) */
 
@@ -359,7 +365,7 @@ AcpiAmlExecReconfiguration (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OBJECT_INTERNAL    *RegionDesc = NULL;
+    ACPI_OPERAND_OBJECT     *RegionDesc = NULL;
     ACPI_HANDLE             *DdbHandle;
 
 
@@ -374,7 +380,7 @@ AcpiAmlExecReconfiguration (
 
     /* Get the table handle, common for both opcodes */
 
-    Status |= AcpiDsObjStackPopObject ((ACPI_OBJECT_INTERNAL **) &DdbHandle,
+    Status |= AcpiDsObjStackPopObject ((ACPI_OPERAND_OBJECT  **) &DdbHandle,
                                         WalkState);
 
     switch (Opcode)
@@ -387,8 +393,8 @@ AcpiAmlExecReconfiguration (
         Status |= AcpiDsObjStackPopObject (&RegionDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, 
-                ("ExecReconfiguration/AML_LOAD_OP: bad operand(s) (0x%X)\n",
+            DEBUG_PRINT (ACPI_ERROR,
+                ("ExecReconfiguration/AML_LOAD_OP: bad operand(s) (%X)\n",
                 Status));
 
             AcpiCmRemoveReference (RegionDesc);
@@ -403,8 +409,8 @@ AcpiAmlExecReconfiguration (
 
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINT (ACPI_ERROR, 
-                ("ExecReconfiguration/AML_UNLOAD_OP: bad operand(s) (0x%X)\n",
+            DEBUG_PRINT (ACPI_ERROR,
+                ("ExecReconfiguration/AML_UNLOAD_OP: bad operand(s) (%X)\n",
                 Status));
 
             return_ACPI_STATUS (Status);
