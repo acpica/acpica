@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.127 $
+ *       $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -630,15 +630,31 @@ ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
 #define ACPI_GET_OP_ARGS(a)             ((a)->Flags & ACPI_OP_ARGS_MASK)
 #define ACPI_GET_OP_TYPE(a)             ((a)->Flags & ACPI_OP_TYPE_MASK)
 
+/*
+ * Flags byte: 0-4 (5 bits) = Opcode Class  (0x001F
+ *             5   (1 bit)  = Has arguments flag
+ *             6-7 (2 bits) = Reserved
+ */
+#define AML_NO_ARGS         0
+#define AML_HAS_ARGS        0x0020
+#define AML_NSOBJECT        0x0100
+#define AML_NSOPCODE        0x0200
+#define AML_NSNODE          0x0400
+#define AML_NAMED           0x0800
+#define AML_DEFER           0x1000
+#define AML_FIELD           0x2000
+#define AML_CREATE          0x4000
+
+
 
 /*
  * AML opcode, name, and argument layout
  */
 typedef struct acpi_opcode_info
 {
-    UINT8                   Flags;          /* Opcode type, HasArgs flag */
     UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
     UINT32                  RuntimeArgs;    /* Interpret time arguments */
+    UINT16                  Flags;          /* Opcode type, HasArgs flag */
 
 #ifdef _OPCODE_NAMES
     NATIVE_CHAR             *Name;          /* op name (debug only) */
