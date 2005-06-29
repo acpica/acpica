@@ -28,7 +28,7 @@
  * Code in any form, with the right to sublicense such rights; and
  *
  * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (without the right to sublicense), under only those claims of Intel
+ * license (with the right to sublicense), under only those claims of Intel
  * patents that are infringed by the Original Intel Code, to make, use, sell,
  * offer to sell, and import the Covered Code and derivative works thereof
  * solely to the minimum extent necessary to exercise the above copyright
@@ -149,6 +149,8 @@ NsDumpPathname (
     UINT32                  Component)
 {
     char                    *Buffer;
+    UINT32                  Length;
+
     
     FUNCTION_TRACE ("NsDumpPathname");
 
@@ -169,7 +171,8 @@ NsDumpPathname (
 
     /* Convert handle to a full pathname and print it (with supplied message) */
 
-    if (ACPI_SUCCESS (NsHandleToPathname (Handle, PATHNAME_MAX, Buffer)))
+    Length = PATHNAME_MAX;
+    if (ACPI_SUCCESS (NsHandleToPathname (Handle, &Length, Buffer)))
     {
         OsdPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
     }
