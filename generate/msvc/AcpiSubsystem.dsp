@@ -181,6 +181,10 @@ SOURCE=..\..\Subsystem\Events\evsci.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Hardware\hwgpe.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Hardware\hwlegacy.c
 # End Source File
 # Begin Source File
