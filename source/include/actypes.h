@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.182 $
+ *       $Revision: 1.183 $
  *
  *****************************************************************************/
 
@@ -845,7 +845,7 @@ typedef struct
     UINT16                      Bus;
     UINT16                      Device;
     UINT16                      Function;
-} ACPI_PCI_SPACE_CONTEXT;
+} ACPI_PCI_ID;
 
 
 typedef struct
