@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.184 $
+ *              $Revision: 1.185 $
  *
  *****************************************************************************/
 
@@ -272,7 +272,7 @@ AcpiExStore (
         if (!AcpiUtValidInternalObject (SourceDesc))
         {
            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
-               "%X, Invalid Internal Object!\n", SourceDesc));
+               "%p, Invalid Internal Object!\n", SourceDesc));
            break;
         }
 
