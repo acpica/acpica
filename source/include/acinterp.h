@@ -133,12 +133,6 @@
 #define STACK_BOTTOM                (UINT32) -1
 
 
-/* For AmlMthStackSetValue */
-
-#define MTH_TYPE_LOCAL              0
-#define MTH_TYPE_ARG                1
-
-
 
 /*
  * iapi - External interpreter interfaces
@@ -150,8 +144,9 @@ AmlLoadTable (
 
 ACPI_STATUS
 AmlExecuteMethod (
-    ACPI_OBJECT_INTERNAL    *MthDesc,
-    ACPI_OBJECT_INTERNAL    **Params);
+    ACPI_OBJECT_INTERNAL    *MethodDesc,
+    ACPI_OBJECT_INTERNAL    **Params,
+    ACPI_OBJECT_INTERNAL    **ReturnObjDesc);
 
 
 /*
@@ -218,25 +213,42 @@ AmlGetNamedFieldValue (
 
 ACPI_STATUS
 AmlExecCreateField (
-    UINT16                  Opcode);
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    **Operands);
+
+ACPI_STATUS
+AmlExecFatal (    
+    ACPI_OBJECT_INTERNAL    **Operands);
+
+ACPI_STATUS
+AmlExecIndex (
+    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_OBJECT_INTERNAL    **ReturnDesc);
+
+ACPI_STATUS
+AmlExecMatch (
+    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_OBJECT_INTERNAL    **ReturnDesc);
 
 ACPI_STATUS
 AmlExecCreateMutex (
-    OPERATING_MODE          InterpreterMode);
+    OPERATING_MODE          InterpreterMode,
+    ACPI_OBJECT_INTERNAL    **Operands);
 
 ACPI_STATUS
 AmlExecCreateRegion (
     UINT8                   *AmlPtr,
     UINT32                  AmlLength,
+    ACPI_OBJECT_INTERNAL    **Operands,
     OPERATING_MODE          InterpreterMode);
 
 ACPI_STATUS
 AmlExecCreateEvent (
-    void);
+    ACPI_OBJECT_INTERNAL    **Operands);
 
 ACPI_STATUS
 AmlExecCreateAlias (
-    void);
+    ACPI_OBJECT_INTERNAL    **Operands);
 
 ACPI_STATUS
 AmlExecCreateMethod (
@@ -245,17 +257,7 @@ AmlExecCreateMethod (
     UINT32                  MethodFlags,
     ACPI_HANDLE             Method);
 
-ACPI_STATUS
-AmlExecFatal (
-    void);
 
-ACPI_STATUS
-AmlExecIndex (
-    void);
-
-ACPI_STATUS
-AmlExecMatch (
-    void);
 
 
 /*
@@ -266,10 +268,6 @@ ACPI_STATUS
 AmlGetRvalue (
     ACPI_OBJECT_INTERNAL    **StackPtr);
 
-BOOLEAN
-AmlIsMethodValue (
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
-
 
 /*
  * ieprep - ACPI AML (p-code) execution - prep utilities
@@ -277,6 +275,7 @@ AmlIsMethodValue (
 
 ACPI_STATUS
 AmlPrepDefFieldValue (
+    NAME_TABLE_ENTRY        *ThisEntry,
     ACPI_HANDLE             Region, 
     UINT8                   FldFlg, 
     INT32                   FldPos, 
@@ -284,6 +283,7 @@ AmlPrepDefFieldValue (
 
 ACPI_STATUS
 AmlPrepBankFieldValue (
+    NAME_TABLE_ENTRY        *ThisEntry,
     ACPI_HANDLE             Region, 
     ACPI_HANDLE             BankReg, 
     UINT32                  BankVal,
@@ -293,116 +293,17 @@ AmlPrepBankFieldValue (
 
 ACPI_STATUS
 AmlPrepIndexFieldValue(
+    NAME_TABLE_ENTRY        *ThisEntry,
     ACPI_HANDLE             IndexReg, 
     ACPI_HANDLE             DataReg,
     UINT8                   FldFlg, 
     INT32                   FldPos, 
     INT32                   FldLen);
 
-
-/*
- * iemstack - method stack utilities
- */
-
-INT32
-AmlMthStackLevel (
-    void);
-
-ACPI_OBJECT_TYPE
-AmlMthStackGetType (
-    UINT32                  Type,
-    UINT32                  Index);
-
 ACPI_STATUS
-AmlMthStackGetValue (
-    UINT32                  Type,
-    UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *ObjDesc);
-
-ACPI_STATUS
-AmlMthStackSetValue (
-    UINT32                  Type,
-    UINT32                  Index, 
-    ACPI_OBJECT_INTERNAL    *ObjDesc, 
-    ACPI_OBJECT_INTERNAL    *ObjDesc2);
-
-ACPI_STATUS
-AmlMthStackPop (
-    void);
-
-ACPI_STATUS
-AmlMthStackPush (
-    ACPI_OBJECT_INTERNAL    **Params);
-
-ACPI_STATUS
-AmlMthStackDeleteValue (
-    UINT32                  Type,
-    UINT32                  Index) ;
-
-/*
- * ieostack - object stack utilities
- */
-
-UINT32
-AmlObjStackLevel (
-     void);
-void
-AmlObjStackClearAll (
-    void);
-
-ACPI_STATUS
-AmlPrepObjStack (
-    char                    *Types);
-
-ACPI_STATUS
-AmlObjStackPushIfExec (
-    OPERATING_MODE          LoadExecMode);
-
-ACPI_STATUS
-AmlObjStackPush (
-    void);
-
-void *
-AmlObjStackPopValue (
-    void);
-
-ACPI_STATUS
-AmlObjStackPop (
-    UINT32                  StackEntries);
-
-ACPI_OBJECT_INTERNAL **
-AmlObjStackGetPtr (
-    UINT32                  OffsetFromStackTop);
-
-void *
-AmlObjStackGetValue (
-    UINT32                  OffsetFromStackTop);
-
-void
-AmlObjStackSetValue (
-    UINT32                  OffsetFromStackTop,
-    void                    *StackEntry);
-
-void *
-AmlObjStackRemoveValue (
-    UINT32                  OffsetFromStackTop);
-
-void
-AmlObjStackDeleteValue (
-    UINT32                  OffsetFromStackTop);
-
-ACPI_STATUS
-AmlObjStackClearUntil (
-    ACPI_OBJECT_TYPE        Type);
-
-
-ACPI_OBJECT_INTERNAL **
-AmlObjStackGetTopPtr (
-    void);
-
-void
-AmlObjStackClearTop (
-    void);
+AmlPrepOperands (
+    char                    *Types,
+    ACPI_OBJECT_INTERNAL    **StackPtr);
 
 
 
@@ -503,12 +404,6 @@ AmlExecStore (
     ACPI_OBJECT_INTERNAL    *op1, 
     ACPI_OBJECT_INTERNAL    *res);
 
-ACPI_STATUS
-PsxExecute (
-    ACPI_OBJECT_INTERNAL    *MthDesc,
-    ACPI_OBJECT_INTERNAL    **Params);
-
-
 
 /*
  * iemonadic - ACPI AML (p-code) execution, monadic operators
@@ -516,15 +411,20 @@ PsxExecute (
 
 ACPI_STATUS
 AmlExecMonadic1 (
-    UINT16                  Opcode);
-
-ACPI_STATUS
-AmlExecMonadic2R (
-    UINT16                  Opcode);
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    **Operands);
 
 ACPI_STATUS
 AmlExecMonadic2 (
-    UINT16                  Opcode);
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_OBJECT_INTERNAL    **ReturnDesc);
+
+ACPI_STATUS
+AmlExecMonadic2R (
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_OBJECT_INTERNAL    **ReturnDesc);
 
 
 /*
@@ -533,33 +433,28 @@ AmlExecMonadic2 (
 
 ACPI_STATUS
 AmlExecDyadic1 (
-    UINT16                  Opcode);
-
-ACPI_STATUS
-AmlExecDyadic2R (
-    UINT16                  Opcode);
-        
-ACPI_STATUS
-AmlExecDyadic2S (
-    UINT16                  Opcode);
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    **Operands);
 
 ACPI_STATUS
 AmlExecDyadic2 (
-    UINT16                  Opcode);
-
-
-/*
- * isatoms - interpreter/scanner atom load/execute
- */
-
-ACPI_STATUS 
-AmlDoSuperName (
-    OPERATING_MODE          LoadExecMode, 
-    ACPI_OBJECT_TYPE        Define);
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_OBJECT_INTERNAL    **ReturnDesc);
 
 ACPI_STATUS
-AmlDoLiteral (
-    OPERATING_MODE          LoadExecMode);
+AmlExecDyadic2R (
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_OBJECT_INTERNAL    **ReturnDesc);
+        
+ACPI_STATUS
+AmlExecDyadic2S (
+    UINT16                  Opcode,
+    ACPI_OBJECT_INTERNAL    **Operands,
+    ACPI_OBJECT_INTERNAL    **ReturnDesc);
+
+
 
 /*
  * iscode - Scanner AML code manipulation routines
@@ -638,12 +533,13 @@ AmlDumpBuffer (
 
 
 ACPI_STATUS
-AmlDumpObjStackEntry (
+AmlDumpOperand (
     ACPI_OBJECT_INTERNAL    *EntryDesc);
 
 void
-_AmlDumpObjStack (
-    OPERATING_MODE          LoadExecMode, 
+AmlDumpOperands (
+    ACPI_OBJECT_INTERNAL    **Operands,
+    OPERATING_MODE          InterpreterMode, 
     char                    *Ident, 
     INT32                   NumLevels, 
     char                    *Note,
@@ -653,9 +549,6 @@ _AmlDumpObjStack (
 void
 AmlDumpObjectDescriptor (
 	ACPI_OBJECT_INTERNAL    *ObjDesc);
-
-
-#define AmlDumpObjStack(a,b,c,d)    _AmlDumpObjStack(a,b,c,d,_THIS_MODULE,__LINE__)
 
 
 
@@ -721,6 +614,7 @@ AmlAppendOperandDiag(
     char                    *Name, 
     INT32                   Line, 
     UINT16                  OpCode, 
+    ACPI_OBJECT_INTERNAL    **Operands,
     INT32                   NOperands);
 
 UINT32 
