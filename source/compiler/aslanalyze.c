@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.24 $
+ *              $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 
 #include <ctype.h>
 
-#define _COMPONENT          COMPILER
+#define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("aslanalyze")
 
 
@@ -282,7 +282,7 @@ AnMapEtypeToBtype (
     switch (Etype)
     {
 
-    case INTERNAL_TYPE_DEF_FIELD:
+    case INTERNAL_TYPE_FIELD:
     case INTERNAL_TYPE_BANK_FIELD:
     case INTERNAL_TYPE_INDEX_FIELD:
 
