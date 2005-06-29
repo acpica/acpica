@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -270,27 +270,43 @@ AcpiDbLoadTable(
     UINT8                   *AmlPtr;
     UINT32                  AmlLength;
     UINT32                  Actual;
+    ACPI_STATUS             Status;
 
 
     /* Read the table header */
 
-    if (fread (&TableHeader, 1, sizeof (TableHeader), fp) != sizeof (TableHeader))
+    if (fread (&TableHeader, 1, sizeof (TableHeader), fp) != sizeof (ACPI_TABLE_HEADER))
     {
         AcpiOsPrintf ("Couldn't read the table header\n");
         return (AE_BAD_SIGNATURE);
     }
 
-    /* Get and validate the table length */
 
-    *TableLength = TableHeader.Length;
-    if (!*TableLength)
+    /* Validate the table header/length */
+
+    Status = AcpiTbValidateTableHeader (&TableHeader);
+    if ((ACPI_FAILURE (Status)) ||
+        (TableHeader.Length > (1024 * 1024)))
     {
-        AcpiOsPrintf ("Found a table length of zero!\n");
+        AcpiOsPrintf ("Table header is invalid!\n");
+        return (AE_ERROR);
+    }
+
+
+    /* We only support a limited number of table types */
+
+    if (STRNCMP ((char *) TableHeader.Signature, DSDT_SIG, 4) &&
+        STRNCMP ((char *) TableHeader.Signature, PSDT_SIG, 4) &&
+        STRNCMP ((char *) TableHeader.Signature, SSDT_SIG, 4))
+    {
+        AcpiOsPrintf ("Table signature is invalid\n");
+        DUMP_BUFFER (&TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_ERROR);
     }
 
     /* Allocate a buffer for the table */
 
+    *TableLength = TableHeader.Length;    
     *TablePtr = (ACPI_TABLE_HEADER *) AcpiCmAllocate ((size_t) *TableLength);
     if (!*TablePtr)
     {
