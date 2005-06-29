@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -213,7 +213,8 @@ AcpiGetFirmwareTable (
     UINT32                  Flags,
     ACPI_TABLE_HEADER       **TablePointer)
 {
-    ACPI_PHYSICAL_ADDRESS   PhysicalAddress;
+    ACPI_POINTER            RsdpAddress;
+    ACPI_POINTER            Address;
     ACPI_TABLE_HEADER       *RsdtPtr = NULL;
     ACPI_TABLE_HEADER       *TablePtr;
     ACPI_STATUS             Status;
@@ -246,7 +247,7 @@ AcpiGetFirmwareTable (
     {
         /* Get the RSDP */
 
-        Status = AcpiOsGetRootPointer (Flags, &PhysicalAddress);
+        Status = AcpiOsGetRootPointer (Flags, &RsdpAddress);
         if (ACPI_FAILURE (Status))
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RSDP  not found\n"));
@@ -257,7 +258,7 @@ AcpiGetFirmwareTable (
 
         if ((Flags & ACPI_MEMORY_MODE) == ACPI_LOGICAL_ADDRESSING)
         {
-            Status = AcpiOsMapMemory (PhysicalAddress, sizeof (RSDP_DESCRIPTOR),
+            Status = AcpiOsMapMemory (RsdpAddress.Pointer.Physical, sizeof (RSDP_DESCRIPTOR),
                                         (void **) &AcpiGbl_RSDP);
             if (ACPI_FAILURE (Status))
             {
@@ -266,7 +267,7 @@ AcpiGetFirmwareTable (
         }
         else
         {
-            AcpiGbl_RSDP = ACPI_PHYSADDR_TO_PTR (PhysicalAddress);
+            AcpiGbl_RSDP = RsdpAddress.Pointer.Logical;
         }
 
         /*
@@ -297,8 +298,9 @@ AcpiGetFirmwareTable (
 
     /* Get the RSDT and validate it */
 
-    PhysicalAddress = AcpiTbGetRsdtAddress ();
-    Status = AcpiTbGetTablePointer (PhysicalAddress, Flags, &RsdtSize, &RsdtPtr);
+    AcpiTbGetRsdtAddress (&Address);
+
+    Status = AcpiTbGetTablePointer (&Address, Flags, &RsdtSize, &RsdtPtr);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -323,20 +325,20 @@ AcpiGetFirmwareTable (
     {
         /* Get the next table pointer */
 
+        Address.PointerType = AcpiGbl_TableFlags;
         if (AcpiGbl_RSDP->Revision < 2)
         {
-            PhysicalAddress = (ACPI_PHYSICAL_ADDRESS)
-                ((RSDT_DESCRIPTOR *) RsdtPtr)->TableOffsetEntry[i];
+            Address.Pointer.Value = ((RSDT_DESCRIPTOR *) RsdtPtr)->TableOffsetEntry[i];
         }
         else
         {
-            PhysicalAddress = (ACPI_PHYSICAL_ADDRESS)
-                ACPI_GET_ADDRESS (((XSDT_DESCRIPTOR *) RsdtPtr)->TableOffsetEntry[i]);
+            Address.Pointer.Value = ACPI_GET_ADDRESS (
+            						((XSDT_DESCRIPTOR *) RsdtPtr)->TableOffsetEntry[i]);
         }
 
         /* Get addressibility if necessary */
 
-        Status = AcpiTbGetTablePointer (PhysicalAddress, Flags, &TableSize, &TablePtr);
+        Status = AcpiTbGetTablePointer (&Address, Flags, &TableSize, &TablePtr);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;

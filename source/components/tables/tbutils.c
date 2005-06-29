@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -312,7 +312,8 @@ AcpiTbMapAcpiTable (
 
     /* Map the physical memory for the correct length */
 
-    Status = AcpiOsMapMemory (PhysicalAddress, TableSize, (void **) &Table);
+    Status = AcpiOsMapMemory (PhysicalAddress, TableSize, 
+                                (void **) &Table);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
