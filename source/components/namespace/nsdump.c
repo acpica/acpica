@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.98 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -155,6 +155,7 @@ AcpiNsDumpPathname (
 
 
     FUNCTION_TRACE ("NsDumpPathname");
+
 
     /* Do this only if the requested debug level and component are enabled */
 
@@ -314,7 +315,6 @@ AcpiNsDumpOneObject (
     /*
      * Now we can print out the pertinent information
      */
-
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " %4.4s %-9s ", &ThisNode->Name, AcpiUtGetTypeName (Type)));
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, "%p S:%p O:%p",  ThisNode, ThisNode->Child, ThisNode->Object));
 
@@ -335,8 +335,8 @@ AcpiNsDumpOneObject (
         /* Name is a Method and its AML offset/length are set */
 
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_TABLES, " M:%p-%X\n",
-                    ((ACPI_OPERAND_OBJECT  *) ThisNode->Object)->Method.Pcode,
-                    ((ACPI_OPERAND_OBJECT  *) ThisNode->Object)->Method.PcodeLength));
+                    ((ACPI_OPERAND_OBJECT  *) ThisNode->Object)->Method.AmlStart,
+                    ((ACPI_OPERAND_OBJECT  *) ThisNode->Object)->Method.AmlLength));
 
         break;
 
@@ -462,7 +462,7 @@ AcpiNsDumpOneObject (
             break;
 
         case ACPI_TYPE_METHOD:
-            Value = (UINT8 *) ObjDesc->Method.Pcode;
+            Value = (UINT8 *) ObjDesc->Method.AmlStart;
             break;
 
         case INTERNAL_TYPE_REGION_FIELD:
@@ -516,6 +516,9 @@ AcpiNsDumpObjects (
     ACPI_WALK_INFO          Info;
 
 
+    FUNCTION_ENTRY ();
+
+
     Info.DebugLevel = ACPI_LV_TABLES;
     Info.OwnerId = OwnerId;
 
@@ -548,6 +551,7 @@ AcpiNsDumpOneDevice (
     ACPI_DEVICE_INFO        Info;
     ACPI_STATUS             Status;
     UINT32                  i;
+
 
     PROC_NAME ("NsDumpOneDevice");
 
@@ -584,6 +588,7 @@ void
 AcpiNsDumpRootDevices (void)
 {
     ACPI_HANDLE             SysBusHandle;
+
 
     PROC_NAME ("NsDumpRootDevices");
 
@@ -669,6 +674,9 @@ AcpiNsDumpEntry (
     UINT32                  DebugLevel)
 {
     ACPI_WALK_INFO          Info;
+
+
+    FUNCTION_ENTRY ();
 
 
     Info.DebugLevel = DebugLevel;
