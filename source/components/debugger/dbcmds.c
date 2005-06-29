@@ -123,6 +123,7 @@
 #include <events.h>
 #include <interp.h>
 #include <debugger.h>
+#include <tables.h>
 
 #ifdef ACPI_DEBUG
 
@@ -167,7 +168,7 @@ typedef struct HistoryInfo
 #define HI_NO_HISTORY       0
 #define HI_RECORD_HISTORY   1
 
-#define HISTORY_SIZE        8
+#define HISTORY_SIZE        20
 HISTORY_INFO                HistoryBuffer[HISTORY_SIZE];
 UINT32                      LoHistory = 0;
 UINT32                      NumHistory = 0;
@@ -345,6 +346,82 @@ DbMatchArgument (
     /* Argument not recognized */
 
     return -1;
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbDisplayTableInfo
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ *****************************************************************************/
+
+void
+DbDisplayTableInfo (
+    char                    *TableArg)
+{
+    UINT32                  i;
+
+
+
+    for (i = 0; i < NUM_ACPI_TABLES; i++)
+    {
+        if (Gbl_AcpiTables[i].Pointer)
+        {
+            OsdPrintf ("%s at 0x%p length 0x%X\n", Gbl_AcpiTableData[i].Name, 
+                        Gbl_AcpiTables[i].Pointer, Gbl_AcpiTables[i].Length);
+        }
+    }
+}
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    DbUnloadAcpiTable
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ *****************************************************************************/
+
+void
+DbUnloadAcpiTable (
+    char                    *TableArg,
+    char                    *InstanceArg)
+{
+    UINT32                  i;
+    ACPI_STATUS             Status;
+
+
+
+    for (i = 0; i < NUM_ACPI_TABLES; i++)
+    {
+        if (!STRNCMP (TableArg, Gbl_AcpiTableData[i].Signature, Gbl_AcpiTableData[i].SigLength))
+        {
+            Status = AcpiUnloadTable (i);
+            if (ACPI_SUCCESS (Status))
+            {
+                OsdPrintf ("[%s] unloaded and uninstalled\n", TableArg);
+            }
+            else
+            {
+                OsdPrintf ("%s, while unloading [%s]\n", CmFormatException (Status), TableArg);
+            }
+
+            return;
+        }
+    }
+
+    OsdPrintf ("Unknown table type [%s]\n", TableArg);
 }
 
 
@@ -615,6 +692,7 @@ DbSetMethodData (
     ACPI_OBJECT_INTERNAL    *ObjDesc;
 
 
+    STRUPR (TypeArg);
     Type = TypeArg[0];
     if ((Type != 'L') &&
         (Type != 'A'))
@@ -656,7 +734,7 @@ DbSetMethodData (
             return;
         }
 
-        DsMthStackSetValue (MTH_TYPE_ARG, Index, ObjDesc);
+        DsMethodDataSetValue (MTH_TYPE_ARG, Index, ObjDesc);
         ObjDesc = WalkState->Arguments[Index].Object;
         OsdPrintf ("Arg%d: ", Index);
         DbDisplayInternalObject (ObjDesc);
@@ -672,7 +750,7 @@ DbSetMethodData (
             return;
         }
 
-        DsMthStackSetValue (MTH_TYPE_LOCAL, Index, ObjDesc);
+        DsMethodDataSetValue (MTH_TYPE_LOCAL, Index, ObjDesc);
         ObjDesc = WalkState->LocalVariables[Index].Object;
         OsdPrintf ("Local%d: ", Index);
         DbDisplayInternalObject (ObjDesc);
@@ -780,6 +858,7 @@ DbDisplayObjects (
     UINT32                  Type;
 
     
+    STRUPR (ObjTypeArg);
     Type = DbMatchArgument (ObjTypeArg, DbObjectTypes);
     if (Type == (UINT32) -1)
     {
