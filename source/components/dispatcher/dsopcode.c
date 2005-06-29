@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.96 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -1126,6 +1126,10 @@ AcpiDsExecEndControlOp (
          */
         if (Op->Common.Value.Arg)
         {
+            /* Since we have a real Return(), delete any implicit return */
+
+            AcpiDsClearImplicitReturn (WalkState);
+
             /* Return statement has an immediate operand */
 
             Status = AcpiDsCreateOperands (WalkState, Op->Common.Value.Arg);
@@ -1155,6 +1159,10 @@ AcpiDsExecEndControlOp (
         else if ((WalkState->Results) &&
                  (WalkState->Results->Results.NumResults > 0))
         {
+            /* Since we have a real Return(), delete any implicit return */
+
+            AcpiDsClearImplicitReturn (WalkState);
+
             /*
              * The return value has come from a previous calculation.
              *
