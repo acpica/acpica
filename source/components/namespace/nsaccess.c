@@ -108,19 +108,6 @@
 
 
 
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "Root name table allocation failure", "Root name table allocation failure"},
-    {"0001", '1', "Initial value descriptor allocation failure", "Initial value descriptor allocation failure"},
-    {"0002", '1', "Initial value string allocation failure", "Initial value string allocation failure"},
-    {"0003", '1', "Scope has no parent", "Scope has no parent"},
-    {"0004", '1', "name table overflow", "name table overflow"},
-    {"0005", 'W', "Type mismatch", "Type mismatch"},
-    {"0006", '1', "Name Table allocation failure", "Name Table allocation failure"},
-    {"0007", '1', " Name not found", " Name not found"},
-    {NULL, 'I', NULL, NULL}
-};
-
-
 
 /****************************************************************************
  * 
@@ -163,7 +150,7 @@ NsSetup (void)
     {
         /*  root name table allocation failure  */
 
-        REPORT_ERROR (&KDT[0]);
+        REPORT_ERROR ("Root name table allocation failure");
         FUNCTION_EXIT;
         return AE_NO_MEMORY;
     }
@@ -197,7 +184,7 @@ NsSetup (void)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
-            ACPI_OBJECT             *ObjDesc = AllocateObjectDesc (&KDT[1]);
+            ACPI_OBJECT             *ObjDesc = AllocateObjectDesc ();
 
             if (!ObjDesc)
             {
@@ -232,7 +219,7 @@ NsSetup (void)
                     ObjDesc->String.String = OsdAllocate ((size_t) (ObjDesc->String.StrLen + 1));
                     if (!ObjDesc->String.String)
                     {
-                        REPORT_ERROR (&KDT[2]);
+                        REPORT_ERROR ("Initial value string allocation failure");
                         FUNCTION_EXIT;
                         return AE_NO_MEMORY;
                     }
@@ -404,7 +391,7 @@ NsEnter (
             {
                 /* Current scope has no parent scope */
                 
-                REPORT_ERROR (&KDT[3]);
+                REPORT_ERROR ("Scope has no parent");
                 CheckTrash ("leave NsEnter NOTFOUND 1");
 
                 FUNCTION_EXIT;
@@ -472,7 +459,7 @@ NsEnter (
 
                 if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
                 {
-                    REPORT_ERROR (&KDT[4]);
+                    REPORT_ERROR ("Name table overflow");
                 }
 
                 else
@@ -497,7 +484,7 @@ NsEnter (
         {                                                   /* complain.                        */
             /*  complain about type mismatch    */
 
-            REPORT_WARNING (&KDT[5]);
+            REPORT_WARNING ("Type mismatch");
         }
 
         /*
@@ -542,12 +529,12 @@ NsEnter (
 
                 if (MODE_Load1 == LoadMode || MODE_Load == LoadMode)
                 {
-                    REPORT_ERROR (&KDT[6]);
+                    REPORT_ERROR ("Name Table allocation failure");
                     FUNCTION_EXIT;
                     return AE_NOT_FOUND;
                 }
 
-                REPORT_ERROR (&KDT[7]);
+                REPORT_ERROR ("Name not found");
                 CheckTrash ("leave NsEnter NOTFOUND 3");
                 FUNCTION_EXIT;
                 return AE_NOT_FOUND;
