@@ -116,11 +116,11 @@
 
 #define __IESYSTEM_C__
 
-#include <acpi.h>
-#include <interp.h>
-#include <namesp.h>
-#include <hardware.h>
-#include <events.h>
+#include "acpi.h"
+#include "interp.h"
+#include "namesp.h"
+#include "hardware.h"
+#include "events.h"
 
 #define _COMPONENT          INTERPRETER
         MODULE_NAME         ("iesystem");
@@ -171,7 +171,7 @@ OsLocalWaitSemaphore (
 
     FUNCTION_TRACE ("OsLocalWaitSemaphore");
 
-    Status = OsdWaitSemaphore (Semaphore, 1, 0);
+    Status = AcpiOsdWaitSemaphore (Semaphore, 1, 0);
     if (ACPI_SUCCESS (Status))
     {
         return_ACPI_STATUS (Status);
@@ -181,15 +181,15 @@ OsLocalWaitSemaphore (
     {
         /* We must wait, so unlock the interpreter */
 
-        AmlExitInterpreter ();
+        AcpiAmlExitInterpreter ();
 
-        Status = OsdWaitSemaphore (Semaphore, 1, Timeout);
+        Status = AcpiOsdWaitSemaphore (Semaphore, 1, Timeout);
 
         /* Reacquire the interpreter */
 
-        AmlEnterInterpreter ();
+        AcpiAmlEnterInterpreter ();
 
-        DEBUG_PRINT (TRACE_EXEC, ("*** Thread awake and inside interpreter after blocking, %s\n", CmFormatException (Status)));
+        DEBUG_PRINT (TRACE_EXEC, ("*** Thread awake and inside interpreter after blocking, %s\n", AcpiCmFormatException (Status)));
     }
 
     return_ACPI_STATUS (Status);
@@ -217,18 +217,18 @@ OsDoStall (
     {
         /* Since this thread will sleep, we must release the interpreter */
 
-        AmlExitInterpreter ();
+        AcpiAmlExitInterpreter ();
 
-        OsdSleepUsec (HowLong);
+        AcpiOsdSleepUsec (HowLong);
 
         /* And now we must get the interpreter again */
 
-        AmlEnterInterpreter ();
+        AcpiAmlEnterInterpreter ();
     }
 
     else
     {
-        OsdSleepUsec (HowLong);
+        AcpiOsdSleepUsec (HowLong);
     }
 }
 
@@ -251,13 +251,13 @@ OsDoSuspend (
 {
     /* Since this thread will sleep, we must release the interpreter */
 
-    AmlExitInterpreter ();
+    AcpiAmlExitInterpreter ();
 
-    OsdSleep ((UINT16) (HowLong / (UINT32) 1000), (UINT16) (HowLong % (UINT32) 1000));
+    AcpiOsdSleep ((UINT16) (HowLong / (UINT32) 1000), (UINT16) (HowLong % (UINT32) 1000));
 
     /* And now we must get the interpreter again */
 
-    AmlEnterInterpreter ();
+    AcpiAmlEnterInterpreter ();
 }
 
 
@@ -295,9 +295,9 @@ OsAcquireMutex (
      * Support for the _GL_ Mutex object -- go get the global lock
      */
 
-    if (ObjDesc->Mutex.Semaphore == Gbl_GlobalLockSemaphore)
+    if (ObjDesc->Mutex.Semaphore == Acpi_GblGlobalLockSemaphore)
     {
-        Status = EvAcquireGlobalLock ();
+        Status = AcpiEvAcquireGlobalLock ();
         return_ACPI_STATUS (Status);
     }
 
@@ -339,13 +339,13 @@ OsReleaseMutex (
     /*
      * Support for the _GL_ Mutex object -- release the global lock
      */
-    if (ObjDesc->Mutex.Semaphore == Gbl_GlobalLockSemaphore)
+    if (ObjDesc->Mutex.Semaphore == Acpi_GblGlobalLockSemaphore)
     {
-        EvReleaseGlobalLock ();
+        AcpiEvReleaseGlobalLock ();
         return_ACPI_STATUS (AE_OK);
     }
 
-    Status = OsdSignalSemaphore (ObjDesc->Mutex.Semaphore, 1);
+    Status = AcpiOsdSignalSemaphore (ObjDesc->Mutex.Semaphore, 1);
     return_ACPI_STATUS (Status);
 }
 
@@ -375,7 +375,7 @@ OsSignalEvent (
     
     if (ObjDesc)
     {
-        Status = OsdSignalSemaphore (ObjDesc->Event.Semaphore, 1);
+        Status = AcpiOsdSignalSemaphore (ObjDesc->Event.Semaphore, 1);
     }
 
     return_ACPI_STATUS (Status);
@@ -440,10 +440,10 @@ OsResetEvent (
 
     /* We are going to simply delete the existing semaphore and create a new one! */
 
-    Status = OsdCreateSemaphore (0, &TempSemaphore);
+    Status = AcpiOsdCreateSemaphore (0, &TempSemaphore);
     if (ACPI_SUCCESS (Status))
     {
-        OsdDeleteSemaphore (ObjDesc->Mutex.Semaphore);
+        AcpiOsdDeleteSemaphore (ObjDesc->Mutex.Semaphore);
         ObjDesc->Mutex.Semaphore = TempSemaphore;
     }
 
