@@ -1,392 +1,428 @@
-/*******************************************************************************
- *
- * Module Name: evsci - System Control Interrupt configuration and
- *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.73 $
- *
- ******************************************************************************/
-
-/******************************************************************************
- *
- * 1. Copyright Notice
- *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
- * All rights reserved.
- *
- * 2. License
- *
- * 2.1. This is your license from Intel Corp. under its intellectual property
- * rights.  You may have additional license terms from the party that provided
- * you this software, covering your right to use that party's intellectual
- * property rights.
- *
- * 2.2. Intel grants, free of charge, to any person ("Licensee") obtaining a
- * copy of the source code appearing in this file ("Covered Code") an
- * irrevocable, perpetual, worldwide license under Intel's copyrights in the
- * base code distributed originally by Intel ("Original Intel Code") to copy,
- * make derivatives, distribute, use and display any portion of the Covered
- * Code in any form, with the right to sublicense such rights; and
- *
- * 2.3. Intel grants Licensee a non-exclusive and non-transferable patent
- * license (with the right to sublicense), under only those claims of Intel
- * patents that are infringed by the Original Intel Code, to make, use, sell,
- * offer to sell, and import the Covered Code and derivative works thereof
- * solely to the minimum extent necessary to exercise the above copyright
- * license, and in no event shall the patent license extend to any additions
- * to or modifications of the Original Intel Code.  No other license or right
- * is granted directly or by implication, estoppel or otherwise;
- *
- * The above copyright and patent license is granted only if the following
- * conditions are met:
- *
- * 3. Conditions
- *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification with rights to further distribute source must include
- * the above Copyright Notice, the above License, this list of Conditions,
- * and the following Disclaimer and Export Compliance provision.  In addition,
- * Licensee must cause all Covered Code to which Licensee contributes to
- * contain a file documenting the changes Licensee made to create that Covered
- * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
- * must include a prominent statement that the modification is derived,
- * directly or indirectly, from Original Intel Code.
- *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
- * Redistribution of source code of any substantial portion of the Covered
- * Code or modification without rights to further distribute source must
- * include the following Disclaimer and Export Compliance provision in the
- * documentation and/or other materials provided with distribution.  In
- * addition, Licensee may not authorize further sublicense of source of any
- * portion of the Covered Code, and must include terms to the effect that the
- * license from Licensee to its licensee is limited to the intellectual
- * property embodied in the software Licensee provides to its licensee, and
- * not to intellectual property embodied in modifications its licensee may
-
- * make.
- *
- * 3.3. Redistribution of Executable. Redistribution in executable form of any
- * substantial portion of the Covered Code or modification must reproduce the
- * above Copyright Notice, and the following Disclaimer and Export Compliance
- * provision in the documentation and/or other materials provided with the
- * distribution.
- *
- * 3.4. Intel retains all right, title, and interest in and to the Original
- * Intel Code.
- *
- * 3.5. Neither the name Intel nor any other trademark owned or controlled by
- * Intel shall be used in advertising or otherwise to promote the sale, use or
- * other dealings in products derived from or relating to the Covered Code
- * without prior written authorization from Intel.
- *
- * 4. Disclaimer and Export Compliance
- *
- * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED
- * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
- * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE,
- * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
- * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
- * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
- *
- * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
- * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
- * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT,
- * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY
- * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL
- * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS
- * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY
- * LIMITED REMEDY.
- *
- * 4.3. Licensee shall not export, either directly or indirectly, any of this
- * software or system incorporating such software without first obtaining any
- * required license or other approval from the U. S. Department of Commerce or
- * any other agency or department of the United States Government.  In the
- * event Licensee exports any such software from the United States or
- * re-exports any such software from a foreign destination, Licensee shall
- * ensure that the distribution and export/re-export of the software is in
- * compliance with all laws, regulations, orders, or other restrictions of the
- * U.S. Export Administration Regulations. Licensee agrees that neither it nor
- * any of its subsidiaries will export/re-export any technical data, process,
- * software, or service, directly or indirectly, to any country for which the
- * United States government or any agency thereof requires an export license,
- * other governmental approval, or letter of assurance, without first obtaining
- * such license, approval or letter.
- *
- *****************************************************************************/
-
-#include "acpi.h"
-#include "acnamesp.h"
-#include "achware.h"
-#include "acevents.h"
-
-
-#define _COMPONENT          ACPI_EVENTS
-        MODULE_NAME         ("evsci")
-
-
 /*
- * Elements correspond to counts for TMR, NOT_USED, GBL, PWR_BTN, SLP_BTN, RTC,
- * and GENERAL respectively.  These counts are modified by the ACPI interrupt
- * handler.
- *
- * TBD: [Investigate] Note that GENERAL should probably be split out into
- * one element for each bit in the GPE registers
- */
+  __________________________________________________________________________
+ |
+ |
+ |           Copyright (C) Intel Corporation 1994-1998
+ |
+ | All rights reserved. No part of this program or publication may be
+ | reproduced, transmitted, transcribed, stored in a retrieval system, or
+ | translated into any language or computer language, in any form or by any
+ | means, electronic, mechanical, magnetic, optical, chemical, manual, or
+ | otherwise, without the prior written permission of Intel Corporation.
+ |__________________________________________________________________________
+ |
+ | FILENAME: scilast.c -  System Control Interrupt configuration and
+ |									legacy to ACPI mode state transition functions
+ |__________________________________________________________________________
+ |
+ | $Revision: 1.1 $
+ | $Date: 2005/06/29 16:43:39 $
+ | $Log: evsci.c,v $
+ | Revision 1.1  2005/06/29 16:43:39  aystarik
+ | Event Handling
+ |
+ |
+ | 
+ | date	99.01.11.22.08.00;	author rmoore1;	state Exp;
+ |
+ * 
+ * 1     1/11/99 2:08p Rmoore1
+ * Event Handling
+// 
+//    Rev 1.4   11 Sep 1998 18:03:28   phutchis
+// Change inc_error() etc. to dKinc_error() etc. (error key logging).
+// 
+//    Rev 1.3   14 Aug 1998 17:46:14   jkreinem
+// Added iVerifyAcpiTablesPresent() function and NO_ACPI_TABLES_MASK
+// error code.
+// 
+//    Rev 1.2   13 Aug 1998 17:28:54   jkreinem
+// Added SAVE_NOT_VALID definition for interrupt configuration.
+// Enhanced failure messages and debug output.
+// 
+//    Rev 1.1   12 Aug 1998 16:31:04   jkreinem
+// Improved SCI configuration and legacy to ACPI transition log messages.
+// 
+//    Rev 1.0   12 Aug 1998 15:54:34   jkreinem
+// Initial revision.
+ |__________________________________________________________________________
+
+*/
+
+#define	__SCILAST_C__
+
+#include <bu.h>
+#include "acpi.h"
+#include "acpievnt.h"
+#include "acpilgcy.h"
+#include "hwoverrd.h"
+#include "evsci.h"
+
+extern int	__iAcpiLibInitStatus;
 
 
-/*******************************************************************************
+/**************************************************************************
+ *	FUNCTION:		int iInitializeSCI
  *
- * FUNCTION:    AcpiEvSciHandler
+ *	PARAMETERS:
+ *		iProgramSCI	--	TRUE if SCI can be reprogrammed to level sensitivity
+ *							FALSE if current SCI sensitivity must be preserved
  *
- * PARAMETERS:  Context   - Calling Context
+ *	RETURN:			0 if successful; non-zero if failure encountered
  *
- * RETURN:      Status code indicates whether interrupt was handled.
- *
- * DESCRIPTION: Interrupt handler that will figure out what function or
- *              control method to call to deal with a SCI.  Installed
- *              using BU interrupt support.
- *
- ******************************************************************************/
-
-static UINT32
-AcpiEvSciHandler (void *Context)
+ *	DESCRIPTION:	iInitializeSCI() ensures that the system control
+ *						interrupt (SCI) is properly configured.
+ *						If successful, return 0. Otherwise, return non-zero.
+ *************************************************************************/
+/*
+int iInitializeSCI (int iProgramSCI)
 {
-    UINT32                  InterruptHandled = INTERRUPT_NOT_HANDLED;
+	int	iErrorMask=0, iStatusOfIrq;
 
+//	enter_function (GetMasterLogHandle(), LOGFILE, "iInitializeSCI",
+//		"iProgramSCI=%d", iProgramSCI);
 
-    FUNCTION_TRACE("EvSciHandler");
+	//	Set up the System Control Interrupt (SCI) as required.
+	//	If it is installed, verify it is level not edge triggered.
+	//	If it is edge triggered, bail.
+	//
 
+	iIrqEnabledAtPic (pFACP->wSciInt, &iStatusOfIrq);
+	if (SAVE_NOT_VALID == iIrqEnableSave)
+	{
+		iIrqEnableSave = iStatusOfIrq;
+		trace_bu (debug_level() >= 4, __FILE__, __LINE__,
+			"iInitializeSCI: iIrqEnableSave=%d (%sabled)", iIrqEnableSave,
+			iIrqEnableSave ? "dis" : "en");
+	}
 
-    /*
-     * Make sure that ACPI is enabled by checking SCI_EN.  Note that we are
-     * required to treat the SCI interrupt as sharable, level, active low.
-     */
-    if (!AcpiHwRegisterBitAccess (ACPI_READ, ACPI_MTX_DO_NOT_LOCK, SCI_EN))
-    {
-        /* ACPI is not enabled;  this interrupt cannot be for us */
+	if (IRQ_DISABLE != iStatusOfIrq)
+	{	
+		//	SCI interrupt already enabled
 
-        return_VALUE (INTERRUPT_NOT_HANDLED);
-    }
+		iIrqAttributesAtPic (pFACP->wSciInt, &iStatusOfIrq);
+		if (SAVE_NOT_VALID == iEdgeLevelSave)
+		{
+			iEdgeLevelSave = iStatusOfIrq;
+			trace_bu (debug_level() >= 4, __FILE__, __LINE__,
+				"iInitializeSCI: iEdgeLevelSave=%d (%s)", iEdgeLevelSave,
+				iEdgeLevelSave ? "level" : "edge");
+		}
 
-    /*
-     * Fixed AcpiEvents:
-     * -------------
-     * Check for and dispatch any Fixed AcpiEvents that have occurred
-     */
-    InterruptHandled |= AcpiEvFixedEventDetect ();
+		if (IRQ_EDGE == iStatusOfIrq)
+		{	
+			//	 SCI interrupt is edge sensitive
 
-    /*
-     * GPEs:
-     * -----
-     * Check for and dispatch any GPEs that have occurred
-     */
-    InterruptHandled |= AcpiEvGpeDetect ();
+			printf_bu ("\nInterrupt %02Xh is Enabled/Edge sensitive and the"
+				"\nSCI handler requires it to be Level sensitive.", pFACP->wSciInt);
 
-    return_VALUE (InterruptHandled);
+			if (iProgramSCI)
+			{	
+				//	set SCI to Level Triggered
+
+				iSetIrqToLevel (pFACP->wSciInt);
+				iIrqAttributesAtPic (pFACP->wSciInt, &iStatusOfIrq);
+
+				if (IRQ_EDGE == iStatusOfIrq)
+					printf_bu ("\n  Unable to reprogram SCI interrupt %d to level sensitivity",
+						pFACP->wSciInt);
+				else
+					printf_bu ("\n  Interrupt %02Xh reprogrammed to level sensitive\n",
+						pFACP->wSciInt);
+			}
+
+			if (IRQ_EDGE == iStatusOfIrq)
+			{	
+					//	SCI interrupt is still edge sensitive
+
+				if (ACPI_MODE == AcpiModeStatus())
+				{	
+						//	edge level sensitivity in ACPI mode
+
+					dKinc_error ("0000", PRINT | APPEND_CRLF);
+					iErrorMask |= SCI_LEVEL_INT_MASK;
+					printf_bu ("    Failure Explanation:");
+					printf_bu ("\n      ACPI Specification 1.0(a) sections 4.7.2.5, 5.2.5, and 5.6.1");
+					printf_bu ("\n      specify that the system control interrupt must be sharable, level");
+					printf_bu ("\n      sensitive, active low, and mapped to a declared interrupt vector.\n");
+				}
+
+				else
+				{
+					//	edge level sensitivity in legacy (non-ACPI) mode
+					//	To prevent legacy mode interrupt handling problems where
+					//	interrupt handlers expect the interrupt to be configured
+					//	edge sensitive, just issue warning since we may be allowed
+					//	to reprogram the interrupt to level sensitivity after
+					//	transitioning into ACPI mode.
+					//
+					dKinc_warning ("0001", PRINT | APPEND_CRLF);
+
+			}
+		}
+	}
+	else
+	{	
+			//	SCI interrupt disabled
+			//	Enable the SCI Interrupt
+
+		iEnableIrqAtPic (pFACP->wSciInt);
+
+			//	Set it to Level Triggered
+
+		iSetIrqToLevel (pFACP->wSciInt);
+	}
+
+//	exit_function (GetMasterLogHandle(), LOGFILE,
+//		"iInitializeSCI", "iErrorMask=%d", iErrorMask);
+
+	return iErrorMask;
+
 }
 
 
-/******************************************************************************
+/**************************************************************************
+ *	FUNCTION:		int iVerifyAcpiTablesPresent
  *
- * FUNCTION:    AcpiEvInstallSciHandler
+ *	PARAMETERS:
+ *		pcTestName	--	pointer to test name string for log messages
  *
- * PARAMETERS:  none
+ *	RETURN:
+ *		0				if tables are present
+ *		non-zero		if ACPI tables can NOT be located
  *
- * RETURN:      Status
- *
- * DESCRIPTION: Installs SCI handler.
- *
- ******************************************************************************/
+ *	DESCRIPTION:	iVerifyAcpiTablesPresent() ensures that the current
+ *						environment contains ACPI (namespace) tables from
+ *						either the BIOS or from an input file.
+ *						Return 0 if tables are present; non-zero otherwise.
+ *************************************************************************/
 
-UINT32
-AcpiEvInstallSciHandler (void)
+int iVerifyAcpiTablesPresent (char *pcTestName)
 {
-    UINT32                  Except = AE_OK;
+	int	iErrorMask=0;
+
+//	enter_function (GetMasterLogHandle(), LOGFILE, "iVerifyAcpiTablesPresent",
+//		NULL);
+
+	if (__iAcpiLibInitStatus == E_NO_ACPI_TBLS)
+	{
+		printf_bu ("\nACPI tables are required for %s but not available",
+			pcTestName);
+		dKinc_error ("0002", PRINT | APPEND_CRLF);
+
+		iErrorMask = NO_ACPI_TABLES_MASK;
+		printf_bu ("\nACPI tables can be loaded from an input file."
+			"\nCommand line help is available with the '/?' switch.\n");
+	}
+
+//	exit_function (GetMasterLogHandle(), LOGFILE,
+//		"iVerifyAcpiTablesPresent", "iErrorMask=%d", iErrorMask);
+
+	return iErrorMask;
+
+}	/*	iVerifyAcpiTablesPresent	*/
 
 
-    FUNCTION_TRACE ("EvInstallSciHandler");
-
-
-    Except = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
-                                            AcpiEvSciHandler,
-                                            NULL);
-
-    return_ACPI_STATUS (Except);
-}
-
-
-/******************************************************************************
-
+/**************************************************************************
+ *	FUNCTION:		int iInstallSCIHandlerXferToACPI
  *
- * FUNCTION:    AcpiEvRemoveSciHandler
+ *	PARAMETERS:
+ *		pcTestName	--	pointer to test name string for log messages
+ *		iFlags		--	flag bitmask (logical OR) to specify:
+ *							ACPI_TABLES_REQUIRED, HW_OVERRIDE_SUPPORTED,
+ *							PROGRAM_SCI_LEVEL_SENSITIVITY, DISABLE_KNOWN_EVENTS
  *
- * PARAMETERS:  none
+ *	RETURN:			0 if successful; non-zero if failure encountered
  *
- * RETURN:      E_OK if handler uninstalled OK, E_ERROR if handler was not
- *              installed to begin with
- *
- * DESCRIPTION: Restores original status of all fixed event enable bits and
- *              removes SCI handler.
- *
- ******************************************************************************/
+ *	DESCRIPTION:	iInstallSCIHandlerXferToACPI() ensures that the system
+ *						control interrupt (SCI) is properly configured, disables
+ *						SCI event sources, installs the SCI handler, and
+ *						transfers the system into ACPI mode.
+ *						If successful, return 0. Otherwise, return non-zero.
+ *************************************************************************/
 
-ACPI_STATUS
-AcpiEvRemoveSciHandler (void)
+int AcpiEnable (char *pcTestName, int iFlags)
 {
-    FUNCTION_TRACE ("EvRemoveSciHandler");
+	int	iErrorMask=0;
 
-#if 0
-    /* TBD:[Investigate] Figure this out!!  Disable all events first ???  */
+//	enter_function (GetMasterLogHandle(), LOGFILE,
+//		"iInstallSCIHandlerXferToACPI", "pcTestName=%p, iFlags=%d",
+//		pcTestName, iFlags);
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (TMR_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (TMR_FIXED_EVENT);
-    }
+	if (NULL == pcTestName)
+		pcTestName = "";	/*	create valid pointer	*/
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (GBL_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (GBL_FIXED_EVENT);
-    }
+	if (iFlags & ACPI_TABLES_REQUIRED)
+		iErrorMask |= iVerifyAcpiTablesPresent (pcTestName);
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (PWR_BTN_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
-    }
+	if (E_OK == iErrorMask)
+	{	/*	ACPI tables are available or not required	*/
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (SLP_BTN_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
-    }
+		if (LEGACY_MODE == AcpiModeCapabilities ())
+		{	/*	no ACPI mode support provided by BIOS	*/
+			/*	The only way to get through sign_on() without ACPI support is
+			 *	if we are running from an input file.
+			 */
 
-    if (OriginalFixedEnableBitStatus ^ 1 << AcpiEventIndex (RTC_FIXED_EVENT))
-    {
-        AcpiEventDisableEvent (RTC_FIXED_EVENT);
-    }
+			if (iFlags & HW_OVERRIDE_SUPPORTED)
+			{	/*	hardware over-ride supported	*/
 
-    OriginalFixedEnableBitStatus = 0;
+				if (!iHardwareOverrideStatus())
+				{	/*	hardware over-ride not specified	*/
+					printf_bu ("\n%s execution from input table requires HwOverride\n",
+						pcTestName);
+					dKinc_error ("0003", PRINT | APPEND_CRLF);
+				}
+			}	/*	hardware over-ride supported	*/
 
-#endif
+			else
+			{	/*	hardware over-ride not supported	*/
+				printf_bu ("\n%s does NOT support execution from input table with HwOverride\n",
+					pcTestName);
+				dKinc_error ("0004", PRINT | APPEND_CRLF);
+			}
+		}	/*	no ACPI mode support provided by BIOS	*/
 
-    AcpiOsRemoveInterruptHandler ((UINT32) AcpiGbl_FADT->SciInt,
-                                    AcpiEvSciHandler);
+		iOriginalMode = AcpiModeStatus();
 
-    return_ACPI_STATUS (AE_OK);
-}
+		/*	do not change the SCI sensitivity while in legacy mode	*/
 
+// TOO LOW LEVEL FOR OS-independent code!!
+//
+//		iErrorMask |= iInitializeSCI (FALSE);
 
-/*******************************************************************************
+		if (0 == iErrorMask)
+		{	/*	SCI configured correctly	*/
+
+			if (iFlags & DISABLE_KNOWN_EVENTS)
+			{	/*	disable any ACPI interrupt sources that may be enabled	*/
+
+				iAcpiEventDisableEvent (TMR_FIXED_EVENT);
+				iAcpiEventDisableEvent (GBL_FIXED_EVENT);
+				iAcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
+				iAcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
+				iAcpiEventDisableEvent (RTC_FIXED_EVENT);
+			}	/*	disable any ACPI interrupt sources that may be enabled	*/
+
+			if (wInstallSciHandler())
+			{	/*	SCI Interrupt Handler installed properly	*/
+
+				if (E_OK == AcpiSetMode (ACPI_MODE))
+				{	/*	in ACPI mode	*/
+
+					printf_bu ("\nTransition to ACPI mode successful\n");
+
+					/*	verify SCI sensitivity while in ACPI mode	*/
+// Nope, DON'T DO IT
+//					iErrorMask |= iInitializeSCI (iFlags & PROGRAM_SCI_LEVEL_SENSITIVITY);
+				}
+
+				else
+				{
+					printf_bu ("\nUnable to transition to ACPI Mode");
+					dKinc_error ("0005", PRINT | APPEND_CRLF);
+					vSetNotSupported ();
+					iErrorMask |= NO_ACPI_TRANSITION_MASK;
+				}
+			}	/*	SCI Interrupt Handler installed properly	*/
+
+			else
+			{
+				printf_bu ("\nUnable to install the System Control Interrupt Handler");
+				dKinc_error ("0006", PRINT | APPEND_CRLF);
+				iErrorMask |= NO_SCI_HANDLER_MASK;
+			}
+		}	/*	SCI configured correctly	*/
+	}	/*	ACPI tables are available or not required	*/
+
+//	exit_function (GetMasterLogHandle(), LOGFILE,
+//		"iInstallSCIHandlerXferToACPI", "iErrorMask=%d", iErrorMask);
+
+	return iErrorMask;
+
+}	/*	iInstallSCIHandlerXferToACPI	*/
+
+	
+/**************************************************************************
+ *	FUNCTION:		int iUninstallSCIHandlerXferToLegacy
  *
- * FUNCTION:    AcpiEvRestoreAcpiState
+ *	PARAMETERS:		none
  *
- * PARAMETERS:  none
+ *	RETURN:			0 if successful; non-zero if failure encountered
  *
- * RETURN:      none
- *
- * DESCRIPTION: Restore the original ACPI state of the machine
- *
- ******************************************************************************/
+ *	DESCRIPTION:	iUninstallSCIHandlerXferToLegacy() returns the system
+ *						to original ACPI/legacy mode, unloads the SCI handler,
+ *						and restores the SCI to its original configuration.
+ *						If successful, return 0. Otherwise, return non-zero.
+ *************************************************************************/
 
-void
-AcpiEvRestoreAcpiState (void)
+int AcpiDisable ()
 {
-    UINT32                  Index;
+	int	iErrorMask=0;
 
+//	enter_function (GetMasterLogHandle(), LOGFILE,
+//		"vUninstallSCIHandlerXferToLegacy", NULL);
 
-    FUNCTION_TRACE ("EvRestoreAcpiState");
+	/*	restore IRQ before returning to legacy mode	*/
 
+	if (IRQ_EDGE == iEdgeLevelSave)
+	{
+		trace_bu (debug_level() >= 4, __FILE__, __LINE__,
+			"iUninstallSCIHandlerXferToLegacy: Restore IRQ %d to edge sensitivity",
+			pFACP->wSciInt);
 
-    /* Restore the state of the chipset enable bits. */
+/* Don't fuss with PIC here !!!
 
-    if (AcpiGbl_RestoreAcpiChipset == TRUE)
-    {
-        /* Restore the fixed events */
+		if (iSetIrqToEdge (pFACP->wSciInt))
+		{
+			printf_bu ("\nUnable to restore interrupt %d to edge sensitivity",
+				pFACP->wSciInt);
+			dKinc_warning ("0007", PRINT | APPEND_CRLF);
+			//	iErrorMask |= SCI_LEVEL_INT_MASK;
+		}
+		else
+			printf_bu ("\nInterrupt %d restored to edge sensitivity\n",
+				pFACP->wSciInt);
+*/
 
-        if (AcpiHwRegisterRead (ACPI_MTX_LOCK, PM1_EN) !=
-                AcpiGbl_Pm1EnableRegisterSave)
-        {
-            AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1_EN,
-                AcpiGbl_Pm1EnableRegisterSave);
-        }
+	}
 
+/* Don't fuss with PIC here !!!
 
-        /* Ensure that all status bits are clear */
+	if (IRQ_DISABLE == iIrqEnableSave)
+	{
+		trace_bu (debug_level() >= 4, __FILE__, __LINE__,
+			"iUninstallSCIHandlerXferToLegacy: Restore interrupt %d to disable",
+			pFACP->wSciInt);
 
-        AcpiHwClearAcpiStatus ();
+		if (iDisableIrqAtPic (pFACP->wSciInt))
+		{
+			printf_bu ("\nUnable to restore interrupt %d to disable",
+				pFACP->wSciInt);
+			dKinc_warning ("0008", PRINT | APPEND_CRLF);
+		}
 
+		else
+			printf_bu ("\nInterrupt %d restored to disable\n", pFACP->wSciInt);
+	}
+*/
 
-        /* Now restore the GPEs */
+	/*	restore original mode	*/
 
-        for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe0BlkLen); Index++)
-        {
-            if (AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index) !=
-                    AcpiGbl_Gpe0EnableRegisterSave[Index])
-            {
-                AcpiHwRegisterWrite (ACPI_MTX_LOCK, GPE0_EN_BLOCK | Index,
-                    AcpiGbl_Gpe0EnableRegisterSave[Index]);
-            }
-        }
+	if (E_OK != AcpiSetMode (iOriginalMode))
+	{
+		printf_bu ("\nUnable to transition to the Original Mode");
+		dKinc_warning ("0009", PRINT | APPEND_CRLF);
+		/*	iErrorMask |= NO_LEGACY_TRANSITION_MASK;	*/
+	}
 
-        /* GPE 1 present? */
+	/*	unload SCI handler	*/
 
-        if (AcpiGbl_FADT->Gpe1BlkLen)
-        {
-            for (Index = 0; Index < DIV_2 (AcpiGbl_FADT->Gpe1BlkLen); Index++)
-            {
-                if (AcpiHwRegisterRead (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index) !=
-                    AcpiGbl_Gpe1EnableRegisterSave[Index])
-                {
-                    AcpiHwRegisterWrite (ACPI_MTX_LOCK, GPE1_EN_BLOCK | Index,
-                        AcpiGbl_Gpe1EnableRegisterSave[Index]);
-                }
-            }
-        }
+	vUninstallSciHandler();
 
-        if (AcpiHwGetMode() != AcpiGbl_OriginalMode)
-        {
-            AcpiHwSetMode (AcpiGbl_OriginalMode);
-        }
-    }
+//	exit_function (GetMasterLogHandle(), LOGFILE,
+//		"vUninstallSCIHandlerXferToLegacy", "iErrorMask=%d", iErrorMask);
 
-    return_VOID;
-}
+	return iErrorMask;
 
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiEvTerminate
- *
- * PARAMETERS:  none
- *
- * RETURN:      none
- *
- * DESCRIPTION: free memory allocated for table storage.
- *
- ******************************************************************************/
-
-void
-AcpiEvTerminate (void)
-{
-
-    FUNCTION_TRACE ("EvTerminate");
-
-
-    /*
-     * Free global tables, etc.
-     */
-
-    if (AcpiGbl_GpeRegisters)
-    {
-        ACPI_MEM_FREE (AcpiGbl_GpeRegisters);
-    }
-
-    if (AcpiGbl_GpeInfo)
-    {
-        ACPI_MEM_FREE (AcpiGbl_GpeInfo);
-    }
-
-    return_VOID;
-}
-
-
+}	/*	iUninstallSCIHandlerXferToLegacy	*/
