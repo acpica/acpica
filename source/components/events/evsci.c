@@ -2,7 +2,7 @@
  *
  * Module Name: evsci - System Control Interrupt configuration and
  *                      legacy to ACPI mode state transition functions
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -353,7 +353,6 @@ AcpiEvRestoreAcpiState (void)
             AcpiHwRegisterWrite (ACPI_MTX_LOCK, PM1_EN,
                 AcpiGbl_Pm1EnableRegisterSave);
         }
-
 
 
         /* Ensure that all status bits are clear */
