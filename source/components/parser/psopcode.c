@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.90 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -136,8 +136,7 @@
  *
  ******************************************************************************/
 
-/*******************************************************************************
- *
+/*
  * Summary of opcode types/flags
  *
 
@@ -257,7 +256,7 @@
 
 
 /*
- * Master Opcode information table.  A summary of everything we know about each 
+ * Master Opcode information table.  A summary of everything we know about each
  * opcode, all in one place.
  */
 const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[AML_NUM_OPCODES] =
@@ -385,7 +384,7 @@ const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[AML_NUM_OPCODES] =
 /* ACPI 2.0 opcodes */
 
 /* 6E */ ACPI_OP ("QwordConst",         ARGP_QWORD_OP,             ARGI_QWORD_OP,              ACPI_TYPE_INTEGER,           AML_CLASS_ARGUMENT,        AML_TYPE_LITERAL,         AML_CONSTANT),
-/* 6F */ ACPI_OP ("Package /*Var*/",    ARGP_VAR_PACKAGE_OP,       ARGI_VAR_PACKAGE_OP,        ACPI_TYPE_PACKAGE,           AML_CLASS_CREATE,          AML_TYPE_CREATE_OBJECT,   AML_HAS_ARGS | AML_DEFER),
+/* 6F */ ACPI_OP ("Package", /* Var */  ARGP_VAR_PACKAGE_OP,       ARGI_VAR_PACKAGE_OP,        ACPI_TYPE_PACKAGE,           AML_CLASS_CREATE,          AML_TYPE_CREATE_OBJECT,   AML_HAS_ARGS | AML_DEFER),
 /* 70 */ ACPI_OP ("ConcatenateResTemplate", ARGP_CONCAT_RES_OP,    ARGI_CONCAT_RES_OP,         ACPI_TYPE_ANY,               AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_CONSTANT),
 /* 71 */ ACPI_OP ("Mod",                ARGP_MOD_OP,               ARGI_MOD_OP,                ACPI_TYPE_ANY,               AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_CONSTANT),
 /* 72 */ ACPI_OP ("CreateQWordField",   ARGP_CREATE_QWORD_FIELD_OP,ARGI_CREATE_QWORD_FIELD_OP, ACPI_TYPE_BUFFER_FIELD,      AML_CLASS_CREATE,          AML_TYPE_CREATE_FIELD,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSNODE | AML_DEFER | AML_CREATE),
@@ -485,8 +484,7 @@ static const UINT8 AcpiGbl_LongOpIndex[NUM_EXTENDED_OPCODE] =
  *
  * PARAMETERS:  Opcode              - The AML opcode
  *
- * RETURN:      A pointer to the info about the opcode.  NULL if the opcode was
- *              not found in the table.
+ * RETURN:      A pointer to the info about the opcode.
  *
  * DESCRIPTION: Find AML opcode description based on the opcode.
  *              NOTE: This procedure must ALWAYS return a valid pointer!
@@ -525,7 +523,8 @@ AcpiPsGetOpcodeInfo (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown AML opcode [%4.4X]\n", Opcode));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Unknown AML opcode [%4.4X]\n", Opcode));
         break;
     }
 
