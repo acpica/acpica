@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,92 @@
 
 #define _COMPONENT          ACPI_EVENTS
         MODULE_NAME         ("evmisc")
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvGetFixedStatusRegisterId
+ *
+ * PARAMETERS:  Event       - Fixed Event number (ACPI_EVENT_*)
+ *
+ * RETURN:      Encoded hardware register ID for the event.
+ *
+ * DESCRIPTION: Get the encoded status Register ID associated with an ACPI 
+ *              event.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiEvGetFixedStatusRegisterId (
+    UINT32                  Event)
+{
+    switch (Event)
+    {
+    case ACPI_EVENT_PMTIMER:
+        return (ACPI_TIMER_STATUS);
+
+    case ACPI_EVENT_GLOBAL:
+        return (ACPI_GBL_LOCK_STATUS);
+
+    case ACPI_EVENT_POWER_BUTTON:
+        return (ACPI_POWER_BTN_STATUS);
+
+    case ACPI_EVENT_SLEEP_BUTTON:
+        return (ACPI_SLEEP_BTN_STATUS);
+
+    case ACPI_EVENT_RTC:
+        return (ACPI_RT_CLOCK_STATUS);
+
+    default:
+        return (0);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvGetFixedEnableRegisterId
+ *
+ * PARAMETERS:  Event       - Fixed Event number (ACPI_EVENT_*)
+ *
+ * RETURN:      Encoded hardware enable register ID for the event.
+ *
+ * DESCRIPTION: Get the encoded enable Register ID associated with an ACPI 
+ *              event.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiEvGetFixedEnableRegisterId (
+    UINT32                  Event)
+{
+    switch (Event)
+    {
+    case ACPI_EVENT_PMTIMER:
+        return (ACPI_TIMER_ENABLE);
+        break;
+
+    case ACPI_EVENT_GLOBAL:
+        return (ACPI_GBL_LOCK_ENABLE);
+        break;
+
+    case ACPI_EVENT_POWER_BUTTON:
+        return (ACPI_POWER_BTN_ENABLE);
+        break;
+
+    case ACPI_EVENT_SLEEP_BUTTON:
+        return (ACPI_SLEEP_BTN_ENABLE);
+        break;
+
+    case ACPI_EVENT_RTC:
+        return (ACPI_RT_CLOCK_ENABLE);
+        break;
+
+    default:
+        return (0);
+    }
+}
 
 
 /*******************************************************************************
@@ -481,7 +567,7 @@ AcpiEvInitGlobalLockHandler (void)
 
     /*
      * If the global lock does not exist on this platform, the attempt
-     * to enable GBL_STS will fail (the GBL_EN bit will not stick)
+     * to enable GBL_STATUS will fail (the GBL_ENABLE bit will not stick)
      * Map to AE_OK, but mark global lock as not present.
      * Any attempt to actually use the global lock will be flagged
      * with an error.
@@ -620,7 +706,7 @@ AcpiEvReleaseGlobalLock (void)
         if (Pending)
         {
             AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK,
-                                    GBL_RLS, 1);
+                                    ACPI_GBL_LOCK_RELEASE, 1);
         }
     }
 

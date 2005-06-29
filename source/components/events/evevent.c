@@ -1,8 +1,7 @@
 /******************************************************************************
  *
- * Module Name: evevent - Fixed and General Purpose AcpiEvent
- *                          handling and dispatch
- *              $Revision: 1.63 $
+ * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -132,7 +131,7 @@
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Initialize data structures for events.
+ * DESCRIPTION: Initialize global data structures for events.
  *
  ******************************************************************************/
 
@@ -162,14 +161,18 @@ AcpiEvInitialize (
     Status = AcpiEvFixedEventInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, "Unable to initialize fixed events.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, 
+                "Unable to initialize fixed events, %s\n", 
+                AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
     Status = AcpiEvGpeInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, "Unable to initialize general purpose events.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, 
+                "Unable to initialize general purpose events, %s\n", 
+                AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -204,7 +207,9 @@ AcpiEvHandlerInitialize (
     Status = AcpiEvInstallSciHandler ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, "Unable to install System Control Interrupt Handler\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, 
+                "Unable to install System Control Interrupt Handler, %s\n", 
+                AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -213,7 +218,9 @@ AcpiEvHandlerInitialize (
     Status = AcpiEvInitGpeControlMethods ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, "Unable to initialize GPE control methods\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, 
+                "Unable to initialize GPE control methods, %s\n", 
+                AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -222,7 +229,9 @@ AcpiEvHandlerInitialize (
     Status = AcpiEvInitGlobalLockHandler ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, "Unable to initialize Global Lock handler\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, 
+                "Unable to initialize Global Lock handler, %s\n", 
+                AcpiFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
 
@@ -238,12 +247,13 @@ AcpiEvHandlerInitialize (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Initialize the Fixed AcpiEvent data structures
+ * DESCRIPTION: Install the fixed event handlers and enable the fixed events.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEvFixedEventInitialize(void)
+AcpiEvFixedEventInitialize (
+    void)
 {
     NATIVE_UINT             i;
 
@@ -256,11 +266,13 @@ AcpiEvFixedEventInitialize(void)
         AcpiGbl_FixedEventHandlers[i].Context = NULL;
     }
 
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, TMR_EN, 0);
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, GBL_EN, 0);
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, PWRBTN_EN, 0);
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, SLPBTN_EN, 0);
-    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RTC_EN, 0);
+    /* Enable the fixed events */
+
+    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_TIMER_ENABLE, 0);
+    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_GBL_LOCK_ENABLE, 0);
+    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_POWER_BTN_ENABLE, 0);
+    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_SLEEP_BTN_ENABLE, 0);
+    AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_RT_CLOCK_ENABLE, 0);
 
     return (AE_OK);
 }
@@ -279,7 +291,8 @@ AcpiEvFixedEventInitialize(void)
  ******************************************************************************/
 
 UINT32
-AcpiEvFixedEventDetect (void)
+AcpiEvFixedEventDetect (
+    void)
 {
     UINT32                  IntStatus = INTERRUPT_NOT_HANDLED;
     UINT32                  StatusRegister;
@@ -293,8 +306,8 @@ AcpiEvFixedEventDetect (void)
      * Read the fixed feature status and enable registers, as all the cases
      * depend on their values.
      */
-    StatusRegister = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, PM1_STS);
-    EnableRegister = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, PM1_EN);
+    StatusRegister = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_PM1_STATUS);
+    EnableRegister = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK, ACPI_PM1_ENABLE);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
         "Fixed AcpiEvent Block: Enable %08X Status %08X\n",
@@ -361,30 +374,10 @@ AcpiEvFixedEventDispatch (
 
     /* Clear the status bit */
 
-    switch (Event)
+    RegisterId = AcpiEvGetFixedStatusRegisterId (Event);
+    if (!RegisterId)
     {
-    case ACPI_EVENT_PMTIMER:
-        RegisterId = TMR_STS;
-        break;
-
-    case ACPI_EVENT_GLOBAL:
-        RegisterId = GBL_STS;
-        break;
-
-    case ACPI_EVENT_POWER_BUTTON:
-        RegisterId = PWRBTN_STS;
-        break;
-
-    case ACPI_EVENT_SLEEP_BUTTON:
-        RegisterId = SLPBTN_STS;
-        break;
-
-    case ACPI_EVENT_RTC:
-        RegisterId = RTC_STS;
-        break;
-
-    default:
-        return 0;
+        return (0);
     }
 
     AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK, RegisterId, 1);
@@ -395,7 +388,7 @@ AcpiEvFixedEventDispatch (
      */
     if (NULL == AcpiGbl_FixedEventHandlers[Event].Handler)
     {
-        RegisterId = (PM1_EN | REGISTER_BIT_ID(RegisterId));
+        RegisterId = (ACPI_PM1_ENABLE | ACPI_GET_REGISTER_BIT_ID (RegisterId));
 
         AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_DO_NOT_LOCK,
                                 RegisterId, 0);
