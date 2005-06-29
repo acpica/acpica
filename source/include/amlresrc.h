@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amlresrc.h - AML resource descriptors
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -328,6 +328,7 @@ typedef struct asl_extended_address_desc
     UINT64                      TranslationOffset;
     UINT64                      AddressLength;
     UINT64                      TypeSpecificAttributes;
+    UINT8                       OptionalFields[2];  /* Used for length calculation only */
 
 } ASL_EXTENDED_ADDRESS_DESC;
 
