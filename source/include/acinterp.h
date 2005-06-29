@@ -401,12 +401,9 @@ OsResetEvent(
     ACPI_OBJECT_INTERNAL    *ObjDesc);
 
 ACPI_STATUS
-OsGetGlobalLock(
-    void);
-
-void
-OsReleaseGlobalLock(
-    void);
+OsLocalWaitSemaphore (
+    ACPI_HANDLE             Semaphore,
+    UINT32                  Timeout);
 
 
 /*
@@ -538,7 +535,6 @@ void
 AmlShowHexValue (
     INT32                   ByteCount, 
     UINT8                   *AmlPtr, 
-    OPERATING_MODE          LoadExecMode, 
     INT32                   LeadSpace);
 
 void
