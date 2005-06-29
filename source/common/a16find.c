@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -734,7 +734,7 @@ AfDumpRsdt (void)
     ACPI_TABLE_HEADER       ThisTable;
 
 
-    NumTables = (AcpiGbl_XSDT->Header.Length - sizeof (ACPI_TABLE_HEADER)) / 8;
+    NumTables = (AcpiGbl_XSDT->Length - sizeof (ACPI_TABLE_HEADER)) / 8;
 
     AcpiOsPrintf ("%d Tables defined in RSDT/XSDT:\n", NumTables);
 
@@ -792,7 +792,7 @@ AfGetTableFromXsdt (
     ACPI_TABLE_HEADER       ThisTable;
 
 
-    NumTables = (AcpiGbl_XSDT->Header.Length - sizeof (ACPI_TABLE_HEADER)) / 8;
+    NumTables = (AcpiGbl_XSDT->Length - sizeof (ACPI_TABLE_HEADER)) / 8;
 
     for (i = 0; i < NumTables; i++)
     {
@@ -864,7 +864,7 @@ AfFindTable (
     else if (!ACPI_STRNCMP (TableName, FADT_SIG, ACPI_NAME_SIZE))
     {
         *TablePtr = (UINT8 *) AcpiGbl_FADT;
-        *TableLength = AcpiGbl_FADT->Header.Length;
+        *TableLength = AcpiGbl_FADT->Length;
     }
     else if (!ACPI_STRNCMP (TableName, FACS_SIG, ACPI_NAME_SIZE))
     {
@@ -874,7 +874,7 @@ AfFindTable (
     else if (!ACPI_STRNCMP (TableName, RSDT_SIG, ACPI_NAME_SIZE))
     {
         *TablePtr = (UINT8 *) AcpiGbl_XSDT;
-        *TableLength = AcpiGbl_XSDT->Header.Length;
+        *TableLength = AcpiGbl_XSDT->Length;
     }
     else if (!ACPI_STRNCMP (TableName, SSDT_SIG, ACPI_NAME_SIZE))
     {
