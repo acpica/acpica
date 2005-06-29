@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.151 $
+ *       $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -461,7 +461,7 @@ AcpiExSystemDoNotifyOp (
 
 ACPI_STATUS
 AcpiExSystemDoSuspend(
-    UINT32                  Time);
+    ACPI_INTEGER            Time);
 
 ACPI_STATUS
 AcpiExSystemDoStall (
