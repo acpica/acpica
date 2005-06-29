@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.100 $
+ *       $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -343,8 +343,8 @@ typedef char *va_list;
  * Storage alignment properties
  */
 
-#define  _AUPBND                (sizeof (NATIVE_INT) - 1)
-#define  _ADNBND                (sizeof (NATIVE_INT) - 1)
+#define  _AUPBND                (sizeof (ACPI_NATIVE_INT) - 1)
+#define  _ADNBND                (sizeof (ACPI_NATIVE_INT) - 1)
 
 /*
  * Variable argument list macro definitions
@@ -399,7 +399,7 @@ typedef char *va_list;
  * Calling conventions:
  *
  * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
- * ACPI_EXTERNAL_XFACE      - External ACPI interfaces 
+ * ACPI_EXTERNAL_XFACE      - External ACPI interfaces
  * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
  * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
  */
