@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.155 $
+ *              $Revision: 1.156 $
  *
  *****************************************************************************/
 
@@ -208,9 +208,9 @@ AcpiPsPeekOpcode (
     Aml = ParserState->Aml;
     Opcode = (UINT16) ACPI_GET8 (Aml);
 
-    if (Opcode == AML_EXTOP)
+    if (Opcode == AML_EXTENDED_OP_PREFIX)
     {
-        /* Extended opcode */
+        /* Extended opcode, get the second opcode byte */
 
         Aml++;
         Opcode = (UINT16) ((Opcode << 8) | ACPI_GET8 (Aml));
