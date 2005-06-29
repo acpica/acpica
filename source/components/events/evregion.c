@@ -124,6 +124,127 @@
         MODULE_NAME         ("evregion");
 
 
+
+
+#define PCI_ROOT_HID        "PNP0A03"
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    EvFindOnePciRootBus
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: 
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+EvFindOnePciRootBus (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  NestingLevel,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    NAME_TABLE_ENTRY        *Entry;
+    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_STATUS             Status;
+
+    
+    Entry = (NAME_TABLE_ENTRY *) ObjHandle;
+    ObjDesc = ((NAME_TABLE_ENTRY *)ObjHandle)->Object;
+
+
+    /*
+     * We are looking for all valid _HID objects.
+     */
+
+    if ((Entry->Name != *(UINT32 *) METHOD_NAME__HID) ||
+        (!ObjDesc))
+    {
+        return AE_OK;
+    }
+
+
+    /*
+     * Found an _HID object. 
+     * Now we need a HID with the value EISAID("PNP0A03")
+     * HID can be either a number or a string.
+     */
+
+    switch (ObjDesc->Common.Type)
+    {
+    case ACPI_TYPE_Number:
+
+        /* TBD: What should this number be?  */
+
+        if (ObjDesc->Number.Value != 0x12345678)
+        {
+            return AE_OK;
+        }
+
+        break;
+
+    case ACPI_TYPE_String:
+
+        if (STRNCMP (ObjDesc->String.Pointer, PCI_ROOT_HID, sizeof (PCI_ROOT_HID)))
+        {
+            return AE_OK;
+        }
+
+        break;
+
+    default:
+
+        return AE_OK;
+    }
+
+
+    /*
+     * We found a valid PCI_ROOT_HID.
+     * The parent of the HID entry is the PCI device;  Install the default PCI
+     * handler for this PCI device.
+     */
+
+
+    /* TBD: Namespace is LOCKED here.  This call might deadlock. */
+
+    Status = AcpiInstallAddressSpaceHandler (Entry->ParentEntry,
+                ADDRESS_SPACE_PCI_CONFIG, ACPI_DEFAULT_HANDLER, NULL, NULL);
+
+    return AE_OK;
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    EvFindPciRootBuses
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: 
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+EvFindPciRootBuses (
+    char                    *NameArg)
+{
+    
+    NsWalkNamespace (ACPI_TYPE_Any, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
+                        FALSE, EvFindOnePciRootBus, NameArg, NULL);
+
+    return AE_OK;
+}
+
+
+
 /**************************************************************************
  *
  * FUNCTION:    EvInstallDefaultAddressSpaceHandlers
@@ -180,18 +301,19 @@ EvInstallDefaultAddressSpaceHandlers (
      */
 
     {
-        char *PCIBus_devices[] = {
-            "\\_SB_.PCI0", "\\_SB_.PCI1", "\\_SB_.PCI2", "\\_SB_.CBN", NULL };
+        char *PCIBus_devices[] = {"\\_SB_.PCI0", "\\_SB_.PCI1", "\\_SB_.PCI2", "\\_SB_.CBN", NULL };
         NATIVE_UINT i = 0;
 
         ACPI_HANDLE PCIBusHandle;
 
-        while (PCIBus_devices[i]) {
+        while (PCIBus_devices[i]) 
+        {
             Status = AcpiGetHandle (NULL, PCIBus_devices[i], &PCIBusHandle);
             if (ACPI_SUCCESS(Status))
             {
                 Status = AcpiInstallAddressSpaceHandler (PCIBusHandle,
                             ADDRESS_SPACE_PCI_CONFIG, ACPI_DEFAULT_HANDLER, NULL, NULL);
+
                 if (ACPI_FAILURE (Status))
                 {
                     return_ACPI_STATUS (Status);
@@ -386,7 +508,7 @@ EvAddressSpaceDispatch (
     /*
      * MCW - TBD: This is not right, but I want to get it going quickly
      */ 
-    //HandlerDesc->AddrHandler.Context = RegionObj;
+    HandlerDesc->AddrHandler.Context = RegionObj;
 
     Status = Handler (Function, Address, BitWidth, Value, HandlerDesc->AddrHandler.Context);
 
@@ -1092,5 +1214,4 @@ EvInitializeRegion (
 
     return_ACPI_STATUS (AE_NOT_EXIST);
 }
-
 
