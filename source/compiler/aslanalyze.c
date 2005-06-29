@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -1225,6 +1225,81 @@ AnMethodTypingWalkEnd (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AnCheckMethodReturnValue
+ *
+ * PARAMETERS:  Op                  - Parent
+ *              OpInfo              - Parent info
+ *              ArgOp               - Method invocation op
+ *              RequiredBtypes      - What caller requires
+ *              ThisNodeBtype       - What this node returns (if anything)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Check a method invocation for 1) A return value and if it does
+ *              in fact return a value, 2) check the type of the return value.
+ *
+ ******************************************************************************/
+
+void
+AnCheckMethodReturnValue (
+    ACPI_PARSE_OBJECT       *Op,
+    const ACPI_OPCODE_INFO  *OpInfo,
+    ACPI_PARSE_OBJECT       *ArgOp,
+    UINT32                  RequiredBtypes,
+    UINT32                  ThisNodeBtype)
+{
+    ACPI_PARSE_OBJECT       *OwningOp;
+    ACPI_NAMESPACE_NODE     *Node;
+
+
+    Node = ArgOp->Asl.Node;
+
+
+    /* Examine the parent op of this method */
+
+    OwningOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
+    if (OwningOp->Asl.CompileFlags & NODE_METHOD_NO_RETVAL)
+    {
+        /*
+         * Method NEVER returns a value
+         */
+        AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, Op, Op->Asl.ExternalName);
+    }
+    else if (OwningOp->Asl.CompileFlags & NODE_METHOD_SOME_NO_RETVAL)
+    {
+        /*
+         * Method SOMETIMES returns a value, SOMETIMES not
+         */
+        AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, Op, Op->Asl.ExternalName);
+    }
+    else if (!(ThisNodeBtype & RequiredBtypes))
+    {
+        /*
+         * Method returns a value, but the type is wrong
+         */
+        AnFormatBtype (StringBuffer, ThisNodeBtype);
+        AnFormatBtype (StringBuffer2, RequiredBtypes);
+
+
+        /*
+         * The case where the method does not return any value at all
+         * was already handled in the namespace cross reference
+         * -- Only issue an error if the method in fact returns a value,
+         * but it is of the wrong type
+         */
+        if (ThisNodeBtype != 0)
+        {
+            sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]",
+                        StringBuffer, OpInfo->Name, StringBuffer2);
+
+            AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgOp, MsgBuffer);
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AnOperandTypecheckWalkBegin
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
@@ -1272,11 +1347,11 @@ AnOperandTypecheckWalkEnd (
     UINT32                  RuntimeArgTypes;
     UINT32                  RuntimeArgTypes2;
     UINT32                  RequiredBtypes;
+    UINT32                  ThisNodeBtype;
+    UINT32                  CommonBtypes;
+    UINT32                  OpcodeClass;
     ACPI_PARSE_OBJECT       *ArgOp;
     UINT32                  ArgType;
-    UINT32                  ThisNodeBtype;
-    UINT32                  OpcodeClass;
-    UINT32                  CommonBtypes;
 
 
     switch (Op->Asl.AmlOpcode)
@@ -1305,9 +1380,39 @@ AnOperandTypecheckWalkEnd (
         return (AE_OK);
     }
 
-    ArgOp         = Op->Asl.Child;
+    ArgOp           = Op->Asl.Child;
     RuntimeArgTypes = OpInfo->RuntimeArgs;
     OpcodeClass     = OpInfo->Class;
+
+
+    /*
+     * Special case for control opcodes IF/RETURN/WHILE since they
+     * have no runtime arg list (at this time)
+     */
+    switch (Op->Asl.AmlOpcode)
+    {
+    case AML_IF_OP:
+    case AML_RETURN_OP:
+    case AML_WHILE_OP:
+
+        if (ArgOp->Asl.ParseOpcode == PARSEOP_METHODCALL)
+        {
+            /* The lone arg is a method call, check it */
+
+            RequiredBtypes = AnMapArgTypeToBtype (ARGI_INTEGER);
+
+            ThisNodeBtype = AnGetBtype (ArgOp);
+            if (ThisNodeBtype == ACPI_UINT32_MAX)
+            {
+                return (AE_OK);
+            }
+            AnCheckMethodReturnValue (Op, OpInfo, ArgOp, RequiredBtypes, ThisNodeBtype);
+        }
+        return (AE_OK);
+
+    default:
+        break;
+    }
 
     /* Ignore the non-executable opcodes */
 
@@ -1325,12 +1430,14 @@ AnOperandTypecheckWalkEnd (
 
         /* TBD: Change class or fix typechecking for these */
 
-        if ((Op->Asl.AmlOpcode == AML_BUFFER_OP) ||
-            (Op->Asl.AmlOpcode == AML_PACKAGE_OP) ||
+        if ((Op->Asl.AmlOpcode == AML_BUFFER_OP)        ||
+            (Op->Asl.AmlOpcode == AML_PACKAGE_OP)       ||
             (Op->Asl.AmlOpcode == AML_VAR_PACKAGE_OP))
         {
             break;
         }
+
+        /* Reverse the runtime argument list */
 
         RuntimeArgTypes2 = 0;
         while ((ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes)))
@@ -1451,25 +1558,9 @@ AnOperandTypecheckWalkEnd (
 
             if (ArgOp->Asl.ParseOpcode == PARSEOP_METHODCALL)
             {
-                if (!CommonBtypes)
-                {
-                    AnFormatBtype (StringBuffer, ThisNodeBtype);
-                    AnFormatBtype (StringBuffer2, RequiredBtypes);
+                /* Check a method call for a valid return value */
 
-                    /*
-                     * The case where the method does not return any value at all
-                     * was already handled in the namespace cross reference
-                     * -- Only issue an error if the method in fact returns a value,
-                     * but it is of the wrong type
-                     */
-                    if (ThisNodeBtype != 0)
-                    {
-                        sprintf (MsgBuffer, "Method returns [%s], %s operator requires [%s]",
-                                    StringBuffer, OpInfo->Name, StringBuffer2);
-
-                        AslError (ASL_ERROR, ASL_MSG_INVALID_TYPE, ArgOp, MsgBuffer);
-                    }
-                }
+                AnCheckMethodReturnValue (Op, OpInfo, ArgOp, RequiredBtypes, ThisNodeBtype);
             }
 
             /*
