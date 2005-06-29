@@ -365,6 +365,19 @@ ACPI_STATUS
 AcpiEnterSystemSleepState (
     UINT8                   SleepState);
 
+ACPI_STATUS
+AcpiSetProcessorThrottlingState(
+                            ACPI_HANDLE ProcessorHandle,
+                            UINT32 ThrottleState);
 
+ACPI_STATUS
+AcpiGetProcessorThrottlingState(
+                            ACPI_HANDLE ProcessorHandle,
+                            UINT32 *ThrottleState);
+
+ACPI_STATUS
+AcpiGetProcessorThrottlingInfo(
+                            ACPI_HANDLE ProcessorHandle,
+                            ACPI_BUFFER *UserBuffer);
 
 #endif /* __ACAPI_H__ */
