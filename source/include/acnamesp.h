@@ -148,6 +148,60 @@
 #define NS_NO_UPSEARCH          0
 #define NS_SEARCH_PARENT        0x01
 #define NS_DONT_OPEN_SCOPE      0x02
+#define NS_NO_PEER_SEARCH       0x04
+
+#define NS_WALK_UNLOCK          TRUE
+#define NS_WALK_NO_UNLOCK       FALSE
+
+
+
+
+
+ACPI_STATUS
+NsWalkNamespace (
+    ACPI_OBJECT_TYPE        Type, 
+    ACPI_HANDLE             StartObject, 
+    UINT32                  MaxDepth,
+    BOOLEAN                 UnlockBeforeCallback,
+    WALK_CALLBACK           UserFunction, 
+    void                    *Context, 
+    void                    **ReturnValue);
+
+
+NAME_TABLE_ENTRY *
+NsGetNextObject (
+    ACPI_OBJECT_TYPE        Type, 
+    NAME_TABLE_ENTRY        *Parent, 
+    NAME_TABLE_ENTRY        *Child);
+
+
+ACPI_STATUS
+NsDeleteNamespaceByOwner (
+    UINT16                  TableId);
+
+void
+NsFreeTableEntry (
+    NAME_TABLE_ENTRY        *Entry);
+
+
+
+/* Namespace loading - nsload */
+
+ACPI_STATUS
+NsParseTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    NAME_TABLE_ENTRY        *Scope);
+
+ACPI_STATUS
+NsLoadTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    NAME_TABLE_ENTRY        *Entry);
+
+ACPI_STATUS
+NsLoadTableByType (
+    ACPI_TABLE_TYPE         TableType);
+
+
 
 /*
  * Top-level namespace access - nsaccess
@@ -155,7 +209,7 @@
 
 
 ACPI_STATUS
-NsSetup (
+NsRootInitialize (
     void);
 
 ACPI_STATUS
@@ -178,7 +232,7 @@ NsAllocateNameTable (
     INT32                   NteEntries);
 
 ACPI_STATUS
-NsDeleteNamespace (
+NsDeleteNamespaceSubtree (
     ACPI_HANDLE             ParentHandle);
 
 void
@@ -376,8 +430,9 @@ NsFindAttachedObject (
 ACPI_STATUS
 NsSearchAndEnter (
     UINT32                  EntryName, 
+    ACPI_WALK_STATE			*WalkState,
     NAME_TABLE_ENTRY        *NameTable,
-    OPERATING_MODE          LoadMode, 
+    OPERATING_MODE          InterpreterMode, 
     ACPI_OBJECT_TYPE        Type, 
     UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry);
@@ -389,32 +444,13 @@ NsInitializeTable (
     NAME_TABLE_ENTRY        *ParentEntry);
 
 ACPI_STATUS
-NsSearchOnly (
+NsSearchOneScope (
     UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
     ACPI_OBJECT_TYPE        Type, 
     NAME_TABLE_ENTRY        **RetEntry, 
     NS_SEARCH_DATA          *RetInfo);
 
-
-/*
- * Scope Stack manipulation - nsstack
- */
-
-ACPI_STATUS
-NsScopeStackPush (
-    NAME_TABLE_ENTRY        *NewScope, 
-    ACPI_OBJECT_TYPE        Type,
-	ACPI_WALK_STATE			*WalkState);
-
-
-ACPI_STATUS
-NsScopeStackPop (
-	ACPI_WALK_STATE			*WalkState);
-
-void
-NsScopeStackClear (
-	ACPI_WALK_STATE			*WalkState);
 
 /*
  * Utility functions - nsutils
