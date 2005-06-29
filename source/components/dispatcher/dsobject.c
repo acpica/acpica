@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -411,7 +411,7 @@ AcpiDsInitObjectFromOp (
         ByteList = (ACPI_PARSE2_OBJECT *) Arg->Next;
         if (ByteList)
         {
-            if (ByteList->Opcode != AML_BYTELIST_OP)
+            if (ByteList->Opcode != AML_INT_BYTELIST_OP)
             {
                 DEBUG_PRINT (ACPI_ERROR,
                     ("InitObject: Expecting bytelist, got: %x\n",
@@ -478,7 +478,7 @@ AcpiDsInitObjectFromOp (
 
         default: /* Constants, Literals, etc.. */
 
-            if (Op->Opcode == AML_NAMEPATH_OP)
+            if (Op->Opcode == AML_INT_NAMEPATH_OP)
             {
                 /* Node was saved in Op */
 
@@ -535,7 +535,7 @@ AcpiDsBuildInternalSimpleObj (
     FUNCTION_TRACE ("DsBuildInternalSimpleObj");
 
 
-    if (Op->Opcode == AML_NAMEPATH_OP)
+    if (Op->Opcode == AML_INT_NAMEPATH_OP)
     {
         /*
          * This is an object reference.  If The name was
