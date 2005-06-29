@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.57 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -211,7 +211,7 @@ AcpiTbValidateTableHeader (
 
     /* Ensure that the signature is 4 ASCII characters */
 
-    ACPI_MOVE_UNALIGNED32_TO_32 (&Signature, TableHeader->Signature);
+    ACPI_MOVE_32_TO_32 (&Signature, TableHeader->Signature);
     if (!AcpiUtValidAcpiName (Signature))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
