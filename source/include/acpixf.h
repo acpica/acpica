@@ -282,16 +282,16 @@ AcpiRemoveGpeHandler (
 
 ACPI_STATUS
 AcpiInstallNotifyHandler (
-    ACPI_HANDLE             Device, 
+    ACPI_HANDLE             Device,
+    UINT32                  HandlerType, 
     NOTIFY_HANDLER          Handler, 
-    void                    *Context,
-    UINT32                  Type);
+    void                    *Context);
 
 ACPI_STATUS
 AcpiRemoveNotifyHandler (
     ACPI_HANDLE             Device, 
-    NOTIFY_HANDLER          Handler,
-    UINT32                  Type);
+    UINT32                  HandlerType, 
+    NOTIFY_HANDLER          Handler);
 
 ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
