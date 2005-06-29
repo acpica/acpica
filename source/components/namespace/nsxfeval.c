@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.1 $
+ *              $Revision: 1.4 $
  *
  ******************************************************************************/
 
@@ -447,7 +447,6 @@ AcpiEvaluateObject (
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiWalkNamespace
@@ -495,8 +494,8 @@ AcpiWalkNamespace (
 
     /* Parameter validation */
 
-    if ((Type > ACPI_TYPE_MAX)  ||
-        (!MaxDepth)             ||
+    if ((Type > ACPI_TYPE_EXTERNAL_MAX) ||
+        (!MaxDepth)                     ||
         (!UserFunction))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -708,11 +707,13 @@ AcpiGetDevices (
  *
  * FUNCTION:    AcpiAttachData
  *
- * PARAMETERS:
+ * PARAMETERS:  ObjHandle           - Namespace node 
+ *              Handler             - Handler for this attachment
+ *              Data                - Pointer to data to be attached
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Attach arbitrary data and handler to a namespace node.
  *
  ******************************************************************************/
 
@@ -762,11 +763,12 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiDetachData
  *
- * PARAMETERS:
+ * PARAMETERS:  ObjHandle           - Namespace node handle
+ *              Handler             - Handler used in call to AcpiAttachData
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Remove data that was previously attached to a node.
  *
  ******************************************************************************/
 
@@ -814,11 +816,13 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiGetData
  *
- * PARAMETERS:
+ * PARAMETERS:  ObjHandle           - Namespace node
+ *              Handler             - Handler used in call to AttachData
+ *              Data                - Where the data is returned
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Retrieve data that was previously attached to a namespace node.
  *
  ******************************************************************************/
 
