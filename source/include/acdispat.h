@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.43 $
+ *       $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -231,6 +231,10 @@ ACPI_STATUS
 AcpiDsLoad2EndOp (
     ACPI_WALK_STATE         *WalkState);
 
+ACPI_STATUS
+AcpiDsInitCallbacks (
+    ACPI_WALK_STATE         *WalkState,
+    UINT32                  PassNumber);
 
 
 /* dsmthdat - method data (locals/args) */
