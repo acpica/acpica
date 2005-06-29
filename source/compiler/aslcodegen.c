@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.44 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,7 +118,6 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
-#include "amlresrc.h"
 #include "amlcode.h"
 
 #define _COMPONENT          ACPI_COMPILER
@@ -195,7 +194,7 @@ CgAmlWriteWalk (
 
     DbgPrint (ASL_TREE_OUTPUT,
         "Val-%08X POp-%04X AOp-%04X OpLen-%01X PByts-%01X Len-%04X SubLen-%04X PSubLen-%04X Op-%08X Chld-%08X Paren-%08X Flags-%04X AcTyp-%08X C-%2d L-%d\n",
-                Op->Asl.Value.Integer32,
+                (UINT32) Op->Asl.Value.Integer,
                 Op->Asl.ParseOpcode,
                 Op->Asl.AmlOpcode,
                 Op->Asl.AmlOpcodeLength,
@@ -323,7 +322,7 @@ CgWriteAmlOpcode (
 
         /* Value is the length to be encoded (Used in field definitions) */
 
-        PkgLen.Len = Op->Asl.Value.Integer32;
+        PkgLen.Len = (UINT32) Op->Asl.Value.Integer;
         break;
 
     default:
@@ -383,22 +382,22 @@ CgWriteAmlOpcode (
     {
     case AML_BYTE_OP:
 
-        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer8, 1);
+        CgLocalWriteAmlData (Op, &((UINT8) Op->Asl.Value.Integer), 1);
         break;
 
     case AML_WORD_OP:
 
-        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer16, 2);
+        CgLocalWriteAmlData (Op, &((UINT16) Op->Asl.Value.Integer), 2);
        break;
 
     case AML_DWORD_OP:
 
-        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer32, 4);
+        CgLocalWriteAmlData (Op, &((UINT32) Op->Asl.Value.Integer), 4);
         break;
 
     case AML_QWORD_OP:
 
-        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer64, 8);
+        CgLocalWriteAmlData (Op, &Op->Asl.Value.Integer, 8);
         break;
 
     case AML_STRING_OP:
@@ -444,7 +443,7 @@ CgWriteTableHeader (
     /* Revision */
 
     Child = Child->Asl.Next;
-    TableHeader.Revision = Child->Asl.Value.Integer8;
+    TableHeader.Revision = (UINT8) Child->Asl.Value.Integer;
 
     /* OEMID */
 
@@ -459,7 +458,7 @@ CgWriteTableHeader (
     /* OEM Revision */
 
     Child = Child->Asl.Next;
-    TableHeader.OemRevision = Child->Asl.Value.Integer32;
+    TableHeader.OemRevision = (UINT32) Child->Asl.Value.Integer;
 
     /* Compiler ID */
 

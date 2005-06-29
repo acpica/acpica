@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -735,7 +735,7 @@ AnMethodAnalysisWalkBegin (
 
         Next = Op->Asl.Child;
         Next = Next->Asl.Next;
-        MethodInfo->NumArguments = (UINT8) (Next->Asl.Value.Integer8 & 0x07);
+        MethodInfo->NumArguments = (UINT8) (((UINT8) Next->Asl.Value.Integer) & 0x07);
 
         /*
          * Actual arguments are initialized at method entry.
