@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.79 $
+ *              $Revision: 1.82 $
  *
  ******************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -388,8 +388,8 @@ AcpiNsEvaluateByHandle (
     Node = AcpiNsConvertHandleToEntry (Handle);
     if (!Node)
     {
-        Status = AE_BAD_PARAMETER;
-        goto UnlockAndExit;
+        AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
 
@@ -455,12 +455,6 @@ AcpiNsEvaluateByHandle (
      * Namespace was unlocked by the handling AcpiNs* function,
      * so we just return
      */
-    return_ACPI_STATUS (Status);
-
-
-UnlockAndExit:
-
-    AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -530,7 +524,7 @@ AcpiNsExecuteControlMethod (
     AcpiCmReleaseMutex (ACPI_MTX_NAMESPACE);
 
     /*
-     * Excecute the method via the interpreter
+     * Execute the method via the interpreter
      */
     Status = AcpiAmlExecuteMethod (MethodNode, Params, ReturnObjDesc);
 
