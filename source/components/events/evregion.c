@@ -284,14 +284,6 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
         return_ACPI_STATUS (Status);
     }
 
-    /*
-     *  Install PCI config space handler for all PCI root bridges.  A PCI root
-     *  bridge is found by searching for devices containing a HID with the value
-     *  EISAID("PNP0A03")
-     */
-
-    AcpiEvFindPciRootBuses ();
-
 
     return_ACPI_STATUS (AE_OK);
 }
