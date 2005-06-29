@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -442,27 +442,23 @@ AcpiExOpcode_2A_1T_1R (
          * been converted.)  Copy the raw buffer data to a new object of type String.
          */
 
-        /* Get the length of the new string */
-
+        /*
+         * Get the length of the new string. It is the smallest of:
+         * 1) Length of the input buffer
+         * 2) Max length as specified in the ToString operator
+         * 3) Length of input buffer up to a zero byte (null terminator)
+         */
         Length = 0;
-        if (Operand[1]->Integer.Value == 0)
-        {
-            /* Handle optional length value */
-
-            Operand[1]->Integer.Value = ACPI_INTEGER_MAX;
-        }
-
         while ((Length < Operand[0]->Buffer.Length) &&
                (Length < Operand[1]->Integer.Value) &&
                (Operand[0]->Buffer.Pointer[Length]))
         {
             Length++;
-        }
-
-        if (Length > ACPI_MAX_STRING_CONVERSION)
-        {
-            Status = AE_AML_STRING_LIMIT;
-            goto Cleanup;
+            if (Length > ACPI_MAX_STRING_CONVERSION)
+            {
+                Status = AE_AML_STRING_LIMIT;
+                goto Cleanup;
+            }
         }
 
         /* Allocate a new string (Length + 1 for null terminator) */
