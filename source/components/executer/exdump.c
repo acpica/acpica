@@ -691,6 +691,10 @@ AmlDumpObjStackEntry (
 
         REPORT_ERROR ("AmlDumpObjStackEntry: Unknown Type");
         
+/* Gbl_Aml table pertains to old parser only */
+/* TBD: fix for new parser or remove this code */
+
+#ifdef _RPARSER        
         if (AML_UNASSIGNED != Gbl_Aml[(INT32) EntryDesc->Common.Type])
         {
             DEBUG_PRINT_RAW (ACPI_ERROR,
@@ -698,22 +702,7 @@ AmlDumpObjStackEntry (
                           Gbl_ShortOps[Gbl_Aml[(INT32) EntryDesc->Common.Type]]));
         }
 
-
-        /* !!!! POINTER STUFF COMMENTED OUT !!!! */
-
-/*
-*           if (PtrOffset (EntryDesc) > sizeof (ACPI_OBJECT_INTERNAL))
-*           {
-*               --EntryDesc;
-*           }
-*           else
-*           {
-*               EntryDesc = (ACPI_OBJECT_INTERNAL *) (((char *) EntryDesc) - PtrOffset (EntryDesc));
-*           }
-*/
-
-        
-        /* !!! FLAT MODEL EQUIVALENT !!! */
+#endif
 
         /* Back up to previous entry ?? */
 
