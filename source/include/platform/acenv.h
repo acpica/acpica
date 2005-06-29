@@ -391,16 +391,9 @@ typedef char *va_list;
 
 /*! [Begin] no source code translation */
 
-/* The instructions sti and hlt are defined in IA64 */
-/* Instruction set reference, but the GCC for some  */
-/* reason doesn't understand them. We still need a  */
-/* working IA64 halt() routine.*/
+/* PAL_HALT[_LIGHT] */
+#define halt() ia64_pal_halt_light()
 
-/* #define halt() \
-__asm__ volatile ("sti   \n" \
-                  "hlt   \n" \
-                  :::"memory")
-*/
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
     do { \
     __asm__ volatile ("1:  ld4      r29=%1\n"  \
