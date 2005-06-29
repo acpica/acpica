@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.32 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -250,7 +250,6 @@ AcpiUtExecute_HID (
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "_HID on %4.4s was not found\n",
                 (char*)&DeviceNode->Name));
         }
-
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_HID on %4.4s failed %s\n",
@@ -280,7 +279,6 @@ AcpiUtExecute_HID (
             "Type returned from _HID not a number or string: %s(%X) \n",
             AcpiUtGetTypeName (ObjDesc->Common.Type), ObjDesc->Common.Type));
     }
-
     else
     {
         if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
@@ -289,7 +287,6 @@ AcpiUtExecute_HID (
 
             AcpiExEisaIdToString ((UINT32) ObjDesc->Integer.Value, Hid->Buffer);
         }
-
         else
         {
             /* Copy the String HID from the returned object */
@@ -297,7 +294,6 @@ AcpiUtExecute_HID (
             STRNCPY(Hid->Buffer, ObjDesc->String.Pointer, sizeof(Hid->Buffer));
         }
     }
-
 
     /* On exit, we must delete the return object */
 
@@ -316,7 +312,7 @@ AcpiUtExecute_HID (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Executes the _CID control method that returns one or more 
+ * DESCRIPTION: Executes the _CID control method that returns one or more
  *              compatible hardware IDs for the device.
  *
  *              NOTE: Internal function, no parameter validation
@@ -343,13 +339,12 @@ AcpiUtExecute_CID (
         if (Status == AE_NOT_FOUND)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "_CID on %4.4s was not found\n",
-                &DeviceNode->Name));
+                (char *)&DeviceNode->Name));
         }
-
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "_CID on %4.4s failed %s\n",
-                &DeviceNode->Name, AcpiFormatException (Status)));
+                (char *)&DeviceNode->Name, AcpiFormatException (Status)));
         }
 
         return_ACPI_STATUS (Status);
@@ -368,29 +363,34 @@ AcpiUtExecute_CID (
      *  IDs.  Each compatible ID can be a Number (32 bit compressed EISA ID) or
      *  string (PCI ID format, e.g. "PCI\VEN_vvvv&DEV_dddd&SUBSYS_ssssssss").
      */
-
-    switch (ObjDesc->Common.Type) 
+    switch (ObjDesc->Common.Type)
     {
     case ACPI_TYPE_INTEGER:
-            /* Convert the Numeric CID to string */
-            AcpiExEisaIdToString ((UINT32) ObjDesc->Integer.Value, Cid->Buffer);
-	    break;
+
+        /* Convert the Numeric CID to string */
+
+        AcpiExEisaIdToString ((UINT32) ObjDesc->Integer.Value, Cid->Buffer);
+        break;
 
     case ACPI_TYPE_STRING:
-            /* Copy the String CID from the returned object */
-            STRNCPY(Cid->Buffer, ObjDesc->String.Pointer, sizeof(Cid->Buffer));
-	    break;
+
+        /* Copy the String CID from the returned object */
+
+        STRNCPY(Cid->Buffer, ObjDesc->String.Pointer, sizeof(Cid->Buffer));
+        break;
 
     case ACPI_TYPE_PACKAGE:
-	    /* TBD: Parse package elements; need different return struct, etc. */
-	    break;
+
+        /* TBD: Parse package elements; need different return struct, etc. */
+        break;
 
     default:
+
         Status = AE_TYPE;
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Type returned from _CID not a number, string, or package: %s(%X) \n",
             AcpiUtGetTypeName (ObjDesc->Common.Type), ObjDesc->Common.Type));
-	break;
+        break;
     }
 
     /* On exit, we must delete the return object */
@@ -440,7 +440,6 @@ AcpiUtExecute_UID (
             ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "_UID on %4.4s was not found\n",
                 (char*)&DeviceNode->Name));
         }
-
         else
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
@@ -471,7 +470,6 @@ AcpiUtExecute_UID (
             "Type returned from _UID was not a number or string: %X \n",
             ObjDesc->Common.Type));
     }
-
     else
     {
         if (ObjDesc->Common.Type == ACPI_TYPE_INTEGER)
@@ -480,7 +478,6 @@ AcpiUtExecute_UID (
 
             AcpiExUnsignedIntegerToString (ObjDesc->Integer.Value, Uid->Buffer);
         }
-
         else
         {
             /* Copy the String UID from the returned object */
@@ -566,7 +563,6 @@ AcpiUtExecute_STA (
                 "Type returned from _STA was not a number: %X \n",
                 ObjDesc->Common.Type));
         }
-
         else
         {
             /* Extract the status flags */
