@@ -2,6 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -160,20 +161,6 @@ AcpiLoadNamespace (
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-
-    /* Init the hardware */
-
-    /*
-     * With the advent of a 3-pass parser, we need to be
-     *  prepared to execute on initialized HW before the
-     *  namespace has completed its load.
-     */
-
-    Status = AcpiCmHardwareInitialize ();
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
 
     /*
      * Load the namespace.  The DSDT is required,
@@ -356,9 +343,9 @@ AcpiGetName (
 
     /* Just copy the ACPI name from the NTE and zero terminate it */
 
-    STRNCPY (RetPathPtr->Pointer, (INT8 *) &ObjEntry->Name,
+    STRNCPY (RetPathPtr->Pointer, (UINT8 *) &ObjEntry->Name,
                 ACPI_NAME_SIZE);
-    ((INT8 *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
+    ((NATIVE_CHAR *) RetPathPtr->Pointer) [ACPI_NAME_SIZE] = 0;
     Status = AE_OK;
 
 
