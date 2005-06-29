@@ -817,7 +817,7 @@ AmlPrepStack (char *Types)
     {
         UINT8       bTypeFound;
         char        TypeFound[30];
-        char        *TypeFoundPtr;
+        char        *TypeFoundPtr = NULL;
 
 
         if (!StackPtr || !*StackPtr)
