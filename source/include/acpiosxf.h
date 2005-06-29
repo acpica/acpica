@@ -239,9 +239,6 @@ AcpiOsReleaseLock (
     ACPI_HANDLE             Handle,
     UINT32                  Flags);
 
-#define ACPI_NOT_ISR        1
-#define ACPI_ISR            0
-
 
 /*
  * Memory allocation and mapping
