@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.34 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -179,7 +179,7 @@ AcpiExLoadTableOp (
 
     /* Allocate a buffer for the entire table */
 
-    TablePtr = AcpiUtAllocate (TableHeader.Length);
+    TablePtr = ACPI_MEM_ALLOCATE (TableHeader.Length);
     if (!TablePtr)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -214,8 +214,8 @@ AcpiExLoadTableOp (
                     AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].Signature,
                     AcpiGbl_AcpiTableData[ACPI_TABLE_SSDT].SigLength)))
     {
-        DEBUG_PRINTP (ACPI_ERROR,
-            ("Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            "Table has invalid signature [%4.4s], must be SSDT or PSDT\n",
             TableHeader.Signature));
         Status = AE_BAD_SIGNATURE;
         goto Cleanup;
@@ -273,8 +273,8 @@ AcpiExLoadTableOp (
 
 Cleanup:
 
-    AcpiUtFree (TableDesc);
-    AcpiUtFree (TablePtr);
+    ACPI_MEM_FREE (TableDesc);
+    ACPI_MEM_FREE (TablePtr);
     return_ACPI_STATUS (Status);
 
 }
@@ -304,12 +304,12 @@ AcpiExUnloadTable (
     FUNCTION_TRACE ("ExUnloadTable");
 
 
-    /* Validate the handle */
-    /* Although the handle is partially validated in AcpiExReconfiguration(),
-     *  when it calls AcpiExResolveOperands(), the handle is more completely
-     *  validated here.
+    /* 
+     * Validate the handle
+     * Although the handle is partially validated in AcpiExReconfiguration(),
+     * when it calls AcpiExResolveOperands(), the handle is more completely
+     * validated here.
      */
-
     if ((!DdbHandle) ||
         (!VALID_DESCRIPTOR_TYPE (DdbHandle, ACPI_DESC_TYPE_INTERNAL)) ||
         (((ACPI_OPERAND_OBJECT  *)DdbHandle)->Common.Type !=
@@ -317,7 +317,6 @@ AcpiExUnloadTable (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-
 
     /* Get the actual table descriptor from the DdbHandle */
 
@@ -327,7 +326,6 @@ AcpiExUnloadTable (
      * Delete the entire namespace under this table Node
      * (Offset contains the TableId)
      */
-
     Status = AcpiNsDeleteNamespaceByOwner (TableInfo->TableId);
     if (ACPI_FAILURE (Status))
     {
@@ -393,8 +391,8 @@ AcpiExReconfiguration (
         Status |= AcpiDsObjStackPopObject (&RegionDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINTP (ACPI_ERROR, ("bad operand(s) (Load) (%s)\n",
-                AcpiUtFormatException (Status)));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "bad operand(s) (Load) (%s)\n",
+                AcpiFormatException (Status)));
 
             AcpiUtRemoveReference (RegionDesc);
             return_ACPI_STATUS (Status);
@@ -408,8 +406,8 @@ AcpiExReconfiguration (
 
         if (ACPI_FAILURE (Status))
         {
-            DEBUG_PRINTP (ACPI_ERROR, ("bad operand(s) (unload) (%s)\n",
-                AcpiUtFormatException (Status)));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "bad operand(s) (unload) (%s)\n",
+                AcpiFormatException (Status)));
 
             return_ACPI_STATUS (Status);
         }
@@ -420,7 +418,7 @@ AcpiExReconfiguration (
 
     default:
 
-        DEBUG_PRINTP (ACPI_ERROR, ("bad opcode=%X\n", Opcode));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "bad opcode=%X\n", Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
     }
