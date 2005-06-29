@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.75 $
+ *       $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -378,19 +378,20 @@
 
 /* Opcode flags */
 
-#define AML_HAS_ARGS                0x0800
-#define AML_HAS_TARGET              0x0400
-#define AML_HAS_RETVAL              0x0200
-#define AML_NSOBJECT                0x0100
-#define AML_NSOPCODE                0x0080
-#define AML_NSNODE                  0x0040
-#define AML_NAMED                   0x0020
-#define AML_DEFER                   0x0010
-#define AML_FIELD                   0x0008
-#define AML_CREATE                  0x0004
-#define AML_MATH                    0x0002
 #define AML_LOGICAL                 0x0001
-#define AML_CONSTANT                0x1000
+#define AML_LOGICAL_NUMERIC         0x0002
+#define AML_MATH                    0x0004
+#define AML_CREATE                  0x0008
+#define AML_FIELD                   0x0010
+#define AML_DEFER                   0x0020
+#define AML_NAMED                   0x0040
+#define AML_NSNODE                  0x0080
+#define AML_NSOPCODE                0x0100
+#define AML_NSOBJECT                0x0200
+#define AML_HAS_RETVAL              0x0400
+#define AML_HAS_TARGET              0x0800
+#define AML_HAS_ARGS                0x1000
+#define AML_CONSTANT                0x2000
 
 /* Convenient flag groupings */
 
