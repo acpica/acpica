@@ -219,7 +219,7 @@ DbDecodeAndDisplayObject (
     if ((Target[0] >= 0x30) && (Target[0] <= 0x39))
     {
         ObjPtr = (void *) STRTOUL (Target, NULL, 16);
-        if (!OsdVerifyReadable (ObjPtr, 16))
+        if (!OsdReadable (ObjPtr, 16))
         {
             OsdPrintf ("Address %p is invalid in this address space\n", ObjPtr);
             return;
@@ -229,7 +229,7 @@ DbDecodeAndDisplayObject (
         {
             /* This is an NTE */
 
-            if (!OsdVerifyReadable (ObjPtr, sizeof (NAME_TABLE_ENTRY)))
+            if (!OsdReadable (ObjPtr, sizeof (NAME_TABLE_ENTRY)))
             {
                 OsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
                 return;
@@ -249,7 +249,7 @@ DbDecodeAndDisplayObject (
         {
             /* This is an ACPI OBJECT */
 
-            if (!OsdVerifyReadable (ObjPtr, sizeof (ACPI_OBJECT_INTERNAL)))
+            if (!OsdReadable (ObjPtr, sizeof (ACPI_OBJECT_INTERNAL)))
             {
                 OsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
                 return;
@@ -263,7 +263,7 @@ DbDecodeAndDisplayObject (
         {
             /* This is an Parser Op object */
 
-            if (!OsdVerifyReadable (ObjPtr, sizeof (ACPI_GENERIC_OP)))
+            if (!OsdReadable (ObjPtr, sizeof (ACPI_GENERIC_OP)))
             {
                 OsdPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
                 return;
@@ -277,7 +277,7 @@ DbDecodeAndDisplayObject (
         else
         {
             Size = 16;
-            if (OsdVerifyReadable (ObjPtr, 64))
+            if (OsdReadable (ObjPtr, 64))
             {
                 Size = 64;
             }
@@ -309,7 +309,7 @@ DbDecodeAndDisplayObject (
     }
 
     OsdPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
-    if (!OsdVerifyReadable (Entry, sizeof (NAME_TABLE_ENTRY)))
+    if (!OsdReadable (Entry, sizeof (NAME_TABLE_ENTRY)))
     {
         OsdPrintf ("Invalid NTE at address %p\n", Entry);
         return;
@@ -321,7 +321,7 @@ DbDecodeAndDisplayObject (
     if (Entry->Object)
     {
         OsdPrintf ("\nAttached Object (0x%X):\n", Entry->Object);
-        if (!OsdVerifyReadable (Entry->Object, sizeof (ACPI_OBJECT_INTERNAL)))
+        if (!OsdReadable (Entry->Object, sizeof (ACPI_OBJECT_INTERNAL)))
         {
             OsdPrintf ("Invalid internal ACPI Object at address %p\n", Entry->Object);
             return;

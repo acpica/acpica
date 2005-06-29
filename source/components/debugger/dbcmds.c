@@ -277,7 +277,7 @@ DbDumpNamespace (
     {
 
         SubtreeEntry = (ACPI_HANDLE) STRTOUL (StartArg, NULL, 16);
-        if (!OsdVerifyReadable (SubtreeEntry, sizeof (NAME_TABLE_ENTRY)))
+        if (!OsdReadable (SubtreeEntry, sizeof (NAME_TABLE_ENTRY)))
         {
             OsdPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
             return;
