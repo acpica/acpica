@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.84 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -160,7 +160,7 @@ ACPI_EXECUTE_OP         AcpiGbl_OpTypeDispatch [] = {
 ACPI_STATUS
 AcpiDsGetPredicateValue (
     ACPI_WALK_STATE         *WalkState,
-    UINT32                  HasResultObj)
+    ACPI_OPERAND_OBJECT     *ResultObj)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -171,7 +171,7 @@ AcpiDsGetPredicateValue (
 
     WalkState->ControlState->Common.State = 0;
 
-    if (HasResultObj)
+    if (ResultObj)
     {
         Status = AcpiDsResultPop (&ObjDesc, WalkState);
         if (ACPI_FAILURE (Status))
@@ -606,7 +606,6 @@ AcpiDsExecEndOp (
              * especially the operand count!
              */
             return_ACPI_STATUS (Status);
-            break;
 
 
         case AML_TYPE_CREATE_FIELD:
@@ -656,7 +655,6 @@ AcpiDsExecEndOp (
 
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Undefined opcode type Op=%p\n", Op));
             return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
-            break;
 
 
         case AML_TYPE_BOGUS:
