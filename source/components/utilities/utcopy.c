@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
- *              $Revision: 1.55 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -155,7 +155,7 @@ PKG_SEARCH_INFO                 Level[MAX_PACKAGE_DEPTH];
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiCmBuildExternalSimpleObject (
     ACPI_OPERAND_OBJECT     *InternalObj,
     ACPI_OBJECT             *ExternalObj,
@@ -239,10 +239,10 @@ AcpiCmBuildExternalSimpleObject (
                                 InternalObj->Processor.ProcId;
 
         ExternalObj->Processor.PblkAddress =
-                                InternalObj->Processor.PblkAddress;
+                                InternalObj->Processor.Address;
 
         ExternalObj->Processor.PblkLength =
-                                InternalObj->Processor.PblkLength;
+                                InternalObj->Processor.Length;
         break;
 
     case ACPI_TYPE_POWER:
@@ -296,7 +296,7 @@ AcpiCmBuildExternalSimpleObject (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiCmBuildExternalPackageObject (
     ACPI_OPERAND_OBJECT     *InternalObj,
     UINT8                   *Buffer,
@@ -445,7 +445,7 @@ AcpiCmBuildExternalPackageObject (
                  * for us to handle
                  */
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
+                    ("CmBuildPackageObject: Pkg nested too deep (max %X)\n",
                     MAX_PACKAGE_DEPTH));
                 return_ACPI_STATUS (AE_LIMIT);
             }
@@ -602,6 +602,10 @@ AcpiCmBuildInternalSimpleObject (
 }
 
 
+#ifdef ACPI_FUTURE_IMPLEMENTATION
+
+/* Code to convert packages that are parameters to control methods */
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiCmBuildInternalPackageObject
@@ -621,7 +625,7 @@ AcpiCmBuildInternalSimpleObject (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiCmBuildInternalPackageObject (
     ACPI_OPERAND_OBJECT     *InternalObj,
     UINT8                   *Buffer,
@@ -697,7 +701,7 @@ AcpiCmBuildInternalPackageObject (
                  * Too many nested levels of packages for us to handle
                  */
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("CmBuildPackageObject: Pkg nested too deep (max %d)\n",
+                    ("CmBuildPackageObject: Pkg nested too deep (max %X)\n",
                     MAX_PACKAGE_DEPTH));
                 return_ACPI_STATUS (AE_LIMIT);
             }
@@ -767,6 +771,8 @@ AcpiCmBuildInternalPackageObject (
     }   /* while (1)  */
 }
 
+#endif /* Future implementation */
+
 
 /******************************************************************************
  *
@@ -797,6 +803,10 @@ AcpiCmBuildInternalObject (
         /*
          * Package objects contain other objects (which can be objects)
          * buildpackage does it all
+         *
+         * TBD: Package conversion must be completed and tested
+         * NOTE: this code converts packages as input parameters to
+         * control methods only.  This is a very, very rare case.
          */
 /*
         Status = AcpiCmBuildInternalPackageObject(InternalObj,
