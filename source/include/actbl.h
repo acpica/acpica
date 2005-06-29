@@ -345,7 +345,7 @@ typedef struct AcpiTableDesc
  * ACPI_TABLE_HEADER.  (b+1) then points past the header.
  */
 
-#define IS_IN_ACPI_TABLE(a,b)   (((UINT8 *)(a) >= (UINT8 *)(b + 1)) &&\
-                                 ((UINT8 *)(a) < (UINT8 *)(b + b->Length)))
+#define IS_IN_ACPI_TABLE(a,b)   (((UINT8 *)(a) >= ((UINT8 *)b + 1)) &&\
+                                 ((UINT8 *)(a) < ((UINT8 *)b + b->Length)))
 
 #endif /* __ACPITYPE_H__ */
