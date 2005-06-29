@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.120 $
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -206,9 +206,10 @@ AcpiExOpcode_2A_0T_0R (
             break;
         }
 
+#ifdef ACPI_GPE_NOTIFY_CHECK
         /*
          * GPE method wake/notify check.  Here, we want to ensure that we
-         * don'treceive any "DeviceWake" Notifies from a GPE _Lxx or _Exx
+         * don't receive any "DeviceWake" Notifies from a GPE _Lxx or _Exx
          * GPE method during system runtime.  If we do, the GPE is marked
          * as "wake-only" and disabled.
          *
@@ -230,6 +231,7 @@ AcpiExOpcode_2A_0T_0R (
                 return_ACPI_STATUS (AE_OK)
             }
         }
+#endif
 
         /*
          * Dispatch the notify to the appropriate handler
