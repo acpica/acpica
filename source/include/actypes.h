@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.226 $
+ *       $Revision: 1.227 $
  *
  *****************************************************************************/
 
@@ -148,6 +148,7 @@ typedef unsigned char                   BOOLEAN;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
 typedef unsigned int                    UINT32;
+typedef COMPILER_DEPENDENT_INT64        INT64;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
 typedef UINT64                          NATIVE_UINT;
@@ -210,6 +211,7 @@ typedef unsigned char                   BOOLEAN;
 typedef unsigned short                  UINT16;
 typedef int                             INT32;
 typedef unsigned int                    UINT32;
+typedef COMPILER_DEPENDENT_INT64        INT64;
 typedef COMPILER_DEPENDENT_UINT64       UINT64;
 
 typedef UINT32                          NATIVE_UINT;
