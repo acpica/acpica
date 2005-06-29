@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.150 $
+ *              $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          ACPI_UTILITIES
-        MODULE_NAME         ("utglobal")
+        ACPI_MODULE_NAME    ("utglobal")
 
 
 /******************************************************************************
@@ -265,7 +265,7 @@ const NATIVE_CHAR           *AcpiGbl_DbSleepStates[ACPI_NUM_SLEEP_STATES] = {
  *    during the initialization sequence.
  */
 
-const PREDEFINED_NAMES      AcpiGbl_PreDefinedNames[] =
+const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
 {
     {"_GPE",    INTERNAL_TYPE_DEF_ANY},
     {"_PR_",    INTERNAL_TYPE_DEF_ANY},
@@ -286,45 +286,45 @@ const PREDEFINED_NAMES      AcpiGbl_PreDefinedNames[] =
  * and the table is indexed by values of ACPI_OBJECT_TYPE
  */
 
-const UINT8                 AcpiGbl_NsProperties[] =
+const UINT8                     AcpiGbl_NsProperties[] =
 {
-    NSP_NORMAL,                 /* 00 Any              */
-    NSP_NORMAL,                 /* 01 Number           */
-    NSP_NORMAL,                 /* 02 String           */
-    NSP_NORMAL,                 /* 03 Buffer           */
-    NSP_LOCAL,                  /* 04 Package          */
-    NSP_NORMAL,                 /* 05 FieldUnit        */
-    NSP_NEWSCOPE | NSP_LOCAL,   /* 06 Device           */
-    NSP_LOCAL,                  /* 07 AcpiEvent        */
-    NSP_NEWSCOPE | NSP_LOCAL,   /* 08 Method           */
-    NSP_LOCAL,                  /* 09 Mutex            */
-    NSP_LOCAL,                  /* 10 Region           */
-    NSP_NEWSCOPE | NSP_LOCAL,   /* 11 Power            */
-    NSP_NEWSCOPE | NSP_LOCAL,   /* 12 Processor        */
-    NSP_NEWSCOPE | NSP_LOCAL,   /* 13 Thermal          */
-    NSP_NORMAL,                 /* 14 BufferField      */
-    NSP_NORMAL,                 /* 15 DdbHandle        */
-    NSP_NORMAL,                 /* 16 Debug Object     */
-    NSP_NORMAL,                 /* 17 DefField         */
-    NSP_NORMAL,                 /* 18 BankField        */
-    NSP_NORMAL,                 /* 19 IndexField       */
-    NSP_NORMAL,                 /* 20 Reference        */
-    NSP_NORMAL,                 /* 21 Alias            */
-    NSP_NORMAL,                 /* 22 Notify           */
-    NSP_NORMAL,                 /* 23 Address Handler  */
-    NSP_NEWSCOPE | NSP_LOCAL,   /* 24 Resource Desc    */
-    NSP_NEWSCOPE | NSP_LOCAL,   /* 25 Resource Field   */
-    NSP_NORMAL,                 /* 26 DefFieldDefn     */
-    NSP_NORMAL,                 /* 27 BankFieldDefn    */
-    NSP_NORMAL,                 /* 28 IndexFieldDefn   */
-    NSP_NORMAL,                 /* 29 If               */
-    NSP_NORMAL,                 /* 30 Else             */
-    NSP_NORMAL,                 /* 31 While            */
-    NSP_NEWSCOPE,               /* 32 Scope            */
-    NSP_LOCAL,                  /* 33 DefAny           */
-    NSP_NORMAL,                 /* 34 Extra            */
-    NSP_NORMAL,                 /* 35 Data             */
-    NSP_NORMAL                  /* 36 Invalid          */
+    ACPI_NS_NORMAL,                     /* 00 Any              */
+    ACPI_NS_NORMAL,                     /* 01 Number           */
+    ACPI_NS_NORMAL,                     /* 02 String           */
+    ACPI_NS_NORMAL,                     /* 03 Buffer           */
+    ACPI_NS_LOCAL,                      /* 04 Package          */
+    ACPI_NS_NORMAL,                     /* 05 FieldUnit        */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 06 Device           */
+    ACPI_NS_LOCAL,                      /* 07 AcpiEvent        */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 08 Method           */
+    ACPI_NS_LOCAL,                      /* 09 Mutex            */
+    ACPI_NS_LOCAL,                      /* 10 Region           */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 11 Power            */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 12 Processor        */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 13 Thermal          */
+    ACPI_NS_NORMAL,                     /* 14 BufferField      */
+    ACPI_NS_NORMAL,                     /* 15 DdbHandle        */
+    ACPI_NS_NORMAL,                     /* 16 Debug Object     */
+    ACPI_NS_NORMAL,                     /* 17 DefField         */
+    ACPI_NS_NORMAL,                     /* 18 BankField        */
+    ACPI_NS_NORMAL,                     /* 19 IndexField       */
+    ACPI_NS_NORMAL,                     /* 20 Reference        */
+    ACPI_NS_NORMAL,                     /* 21 Alias            */
+    ACPI_NS_NORMAL,                     /* 22 Notify           */
+    ACPI_NS_NORMAL,                     /* 23 Address Handler  */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 24 Resource Desc    */
+    ACPI_NS_NEWSCOPE | ACPI_NS_LOCAL,   /* 25 Resource Field   */
+    ACPI_NS_NORMAL,                     /* 26 DefFieldDefn     */
+    ACPI_NS_NORMAL,                     /* 27 BankFieldDefn    */
+    ACPI_NS_NORMAL,                     /* 28 IndexFieldDefn   */
+    ACPI_NS_NORMAL,                     /* 29 If               */
+    ACPI_NS_NORMAL,                     /* 30 Else             */
+    ACPI_NS_NORMAL,                     /* 31 While            */
+    ACPI_NS_NEWSCOPE,                   /* 32 Scope            */
+    ACPI_NS_LOCAL,                      /* 33 DefAny           */
+    ACPI_NS_NORMAL,                     /* 34 Extra            */
+    ACPI_NS_NORMAL,                     /* 35 Data             */
+    ACPI_NS_NORMAL                      /* 36 Invalid          */
 };
 
 
@@ -728,40 +728,41 @@ AcpiUtAllocateOwnerId (
     ACPI_OWNER_ID           OwnerId = 0xFFFF;
 
 
-    FUNCTION_TRACE ("UtAllocateOwnerId");
+    ACPI_FUNCTION_TRACE ("UtAllocateOwnerId");
 
 
-    AcpiUtAcquireMutex (ACPI_MTX_CACHES);
+    if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_CACHES)))
+    {
+        return (0);
+    }
 
     switch (IdType)
     {
-    case OWNER_TYPE_TABLE:
+    case ACPI_OWNER_TYPE_TABLE:
 
         OwnerId = AcpiGbl_NextTableOwnerId;
         AcpiGbl_NextTableOwnerId++;
 
-        if (AcpiGbl_NextTableOwnerId == FIRST_METHOD_ID)
+        if (AcpiGbl_NextTableOwnerId == ACPI_FIRST_METHOD_ID)
         {
-            AcpiGbl_NextTableOwnerId = FIRST_TABLE_ID;
+            AcpiGbl_NextTableOwnerId = ACPI_FIRST_TABLE_ID;
         }
         break;
 
 
-    case OWNER_TYPE_METHOD:
+    case ACPI_OWNER_TYPE_METHOD:
 
         OwnerId = AcpiGbl_NextMethodOwnerId;
         AcpiGbl_NextMethodOwnerId++;
 
-        if (AcpiGbl_NextMethodOwnerId == FIRST_TABLE_ID)
+        if (AcpiGbl_NextMethodOwnerId == ACPI_FIRST_TABLE_ID)
         {
-            AcpiGbl_NextMethodOwnerId = FIRST_METHOD_ID;
+            AcpiGbl_NextMethodOwnerId = ACPI_FIRST_METHOD_ID;
         }
         break;
     }
 
-
-    AcpiUtReleaseMutex (ACPI_MTX_CACHES);
-
+    (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
     return_VALUE (OwnerId);
 }
 
@@ -784,7 +785,7 @@ AcpiUtInitGlobals (
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("UtInitGlobals");
+    ACPI_FUNCTION_TRACE ("UtInitGlobals");
 
     /* Memory allocation and cache lists */
 
@@ -866,10 +867,10 @@ AcpiUtInitGlobals (
     AcpiGbl_NsLookupCount               = 0;
     AcpiGbl_PsFindCount                 = 0;
     AcpiGbl_AcpiHardwarePresent         = TRUE;
-    AcpiGbl_NextTableOwnerId            = FIRST_TABLE_ID;
-    AcpiGbl_NextMethodOwnerId           = FIRST_METHOD_ID;
+    AcpiGbl_NextTableOwnerId            = ACPI_FIRST_TABLE_ID;
+    AcpiGbl_NextMethodOwnerId           = ACPI_FIRST_METHOD_ID;
     AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
-    AcpiGbl_DbOutputFlags               = DB_CONSOLE_OUTPUT;
+    AcpiGbl_DbOutputFlags               = ACPI_DB_CONSOLE_OUTPUT;
 
     /* Hardware oriented */
 
