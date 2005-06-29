@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -149,8 +149,8 @@ LsDoOneNamespaceObject (
     void                    **ReturnValue)
 {
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_PARSE_OBJECT       *Op;
-
 
     Gbl_NumNamespaceObjects++;
 
@@ -160,46 +160,70 @@ LsDoOneNamespaceObject (
                         AcpiUtGetTypeName (Node->Type));
 
     Op = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
+    ObjDesc = Node->Object;
 
-    if (Op)
+    if (!Op)
     {
-        if (Op->Asl.ParseOpcode == PARSEOP_NAME)
-        {
-            Op = Op->Asl.Child;
-        }
+        FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "\n");
+        return (AE_OK);
+    }
 
+
+    if (ObjDesc->Common.Descriptor == ACPI_DESC_TYPE_OPERAND)
+    {
         switch (Node->Type)
         {
         case ACPI_TYPE_INTEGER:
 
-            if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
-                (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
-            {
-                Op = Op->Asl.Next;
-            }
-
-            if (Op->Asl.Value.Integer > ACPI_UINT32_MAX)
-            {
-                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X%X]",
-                            ACPI_HIDWORD (Op->Asl.Value.Integer64), (UINT32) Op->Asl.Value.Integer);
-            }
-            else
-            {
-                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = 0x%X]",
-                            (UINT32) Op->Asl.Value.Integer);
-            }
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "       [Initial Value = 0x%8.8X%8.8X]",
+                    ACPI_FORMAT_UINT64 (ObjDesc->Integer.Value));
             break;
 
 
         case ACPI_TYPE_STRING:
 
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "        [Initial Value = \"%s\"]",
+                    ObjDesc->String.Pointer);
+            break;
+
+        default:
+            /* Nothing to do for other types */
+            break;
+        }
+
+    }
+    else
+    {
+        switch (Node->Type)
+        {
+        case ACPI_TYPE_INTEGER:
+
+            if (Op->Asl.ParseOpcode == PARSEOP_NAME)
+            {
+                Op = Op->Asl.Child;
+            }
             if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
                 (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
             {
                 Op = Op->Asl.Next;
             }
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "       [Initial Value = 0x%8.8X%8.8X]",
+                    ACPI_FORMAT_UINT64 (Op->Asl.Value.Integer));
+            break;
 
-            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Initial Value = \"%s\"]",
+
+        case ACPI_TYPE_STRING:
+
+            if (Op->Asl.ParseOpcode == PARSEOP_NAME)
+            {
+                Op = Op->Asl.Child;
+            }
+            if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
+                (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
+            {
+                Op = Op->Asl.Next;
+            }
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "        [Initial Value = \"%s\"]",
                         Op->Asl.Value.String);
             break;
 
@@ -211,8 +235,57 @@ LsDoOneNamespaceObject (
             {
                 Op = Op->Asl.Child;
             }
-            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "    [Offset 0x%02X, Length 0x%02X]",
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "   [Offset 0x%04X, Length 0x%04X]",
                         Op->Asl.Parent->Asl.ExtraValue, (UINT32) Op->Asl.Value.Integer);
+            break;
+
+
+        case ACPI_TYPE_BUFFER_FIELD:
+
+            switch (Op->Asl.ParseOpcode)
+            {
+            case PARSEOP_CREATEBYTEFIELD:
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "   [BYTE ( 8 bit)]");
+                break;
+
+            case PARSEOP_CREATEDWORDFIELD:
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "   [DWORD (32 bit)]");
+                break;
+
+            case PARSEOP_CREATEQWORDFIELD:
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "   [QWORD (64 bit)]");
+                break;
+
+            case PARSEOP_CREATEWORDFIELD:
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "   [WORD (16 bit)]");
+                break;
+
+            case PARSEOP_CREATEFIELD:
+            case PARSEOP_CREATEBITFIELD:
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "   [Arbitrary Bit Field]");
+                break;
+
+            default:
+                break;
+
+            }
+            break;
+
+
+        case ACPI_TYPE_PACKAGE:
+
+            if (Op->Asl.ParseOpcode == PARSEOP_NAME)
+            {
+                Op = Op->Asl.Child;
+            }
+            if ((Op->Asl.ParseOpcode == PARSEOP_NAMESEG)  ||
+                (Op->Asl.ParseOpcode == PARSEOP_NAMESTRING))
+            {
+                Op = Op->Asl.Next;
+            }
+            Op = Op->Asl.Child;
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "       [Initial Length = 0x%X]",
+                    Op->Asl.Value.Integer);
             break;
 
 
