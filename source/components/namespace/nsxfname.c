@@ -124,10 +124,15 @@
 #include <methods.h>
 #include <amlcode.h>
 #include <pnp.h>
+#include <parser.h>
+#include <dispatch.h>
 
 
 #define _COMPONENT          NAMESPACE
         MODULE_NAME         ("nsapinam");
+
+
+
 
 
 /******************************************************************************
@@ -153,7 +158,7 @@ AcpiLoadNamespace (
     FUNCTION_TRACE ("AcpiLoadNameSpace");
 
 
-    /* Are the tables loaded yet? */
+    /* There must be at least a DSDT installed */
 
     if (Gbl_DSDT == NULL)
     {
@@ -161,12 +166,10 @@ AcpiLoadNamespace (
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
-    /*
-     * Now that the tables are loaded, finish some other initialization
-     */
 
-
-    /* Everything OK, now init the hardware */
+    /* Init the hardware */
+    /* TBD: this should be moved elsewhere, like AcpiEnable! */
+    /* TBD: we need to be able to call this interface repeatedly! */
 
     Status = CmHardwareInitialize ();
     if (ACPI_FAILURE (Status))
@@ -174,36 +177,26 @@ AcpiLoadNamespace (
         return_ACPI_STATUS (Status);
     }
 
+    /* 
+     * Load the namespace.  The DSDT is required,
+     * but the SSDT and PSDT tables are optional.
+     */
 
-    /* Initialize the namespace */
-    
-    Status = NsSetup ();
+    Status = NsLoadTableByType (TABLE_DSDT);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
+    /* Ignore exceptions from these */
 
-    /* 
-     * Load the namespace via the interpreter.  The DSDT is required,
-     * but the SSDT and PSDT tables are optional.
-     */
-
-//    CmAcquireMutex (MTX_NAMESPACE);
-
-    Status = AmlLoadTable (TABLE_DSDT);
-    if (ACPI_FAILURE (Status))
-    {
-        goto UnlockAndExit;
-    }
-
-    Status = AmlLoadTable (TABLE_SSDT);
-    Status = AmlLoadTable (TABLE_PSDT);
+    NsLoadTableByType (TABLE_SSDT);
+    NsLoadTableByType (TABLE_PSDT);
 
 
-    DUMP_TABLES (NS_ALL, ACPI_INT32_MAX);
+/*    DUMP_TABLES (NS_ALL, ACPI_INT32_MAX); */
 
-    DEBUG_PRINT (ACPI_OK, ("**** ACPI Namespace successfully loaded! [%p]\n", 
+    DEBUG_PRINT (ACPI_OK, ("**** ACPI Namespace successfully loaded at root 0x%p\n", 
                     Gbl_RootObject->Scope));
 
 
@@ -211,10 +204,6 @@ AcpiLoadNamespace (
 
     EvInstallDefaultAddressSpaceHandlers ();
 
-
-UnlockAndExit:
-    
-//    CmReleaseMutex (MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
@@ -487,7 +476,7 @@ AcpiGetObjectInfo (
      * _ADR is not always present
      */
 
-    Status = Execute_ADR (DeviceEntry, &Address);
+    Status = EvaluateNumeric (METHOD_NAME__ADR, DeviceEntry, &Address);
     if (ACPI_SUCCESS (Status))
     {
         Info->Address = Address;
