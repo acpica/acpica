@@ -870,8 +870,17 @@ AcpiInstallAddressSpaceHandler (
             ("Creating object on device Device 0x%X while installing handler\n", 
                 ObjEntry));
         /* ObjDesc DNE: We must create one */
+        if (ObjEntry->Type == TYPE_Any)
+        {
+            ObjDesc = CmCreateInternalObject (TYPE_Device);
+            ObjDesc->Common.Type = TYPE_Device;
+        }
+        else
+        {
+            ObjDesc = CmCreateInternalObject (ObjEntry->Type);
+            ObjDesc->Common.Type = ObjEntry->Type;
+        }
 
-        ObjDesc = CmCreateInternalObject (ObjEntry->Type);
         if (!ObjDesc)
         {
             /* Descriptor allocation failure   */
@@ -881,9 +890,7 @@ AcpiInstallAddressSpaceHandler (
 
         /* Attach the new object to the NTE */
 
-        ObjDesc->Common.Type = ObjEntry->Type;
-
-        Status = NsAttachObject (Device, ObjDesc, ObjEntry->Type);
+        Status = NsAttachObject (Device, ObjDesc, ObjDesc->Common.Type);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
