@@ -118,8 +118,8 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include <namesp.h>
+#include <interp.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("pswalk");
@@ -198,6 +198,20 @@ PsGetNextWalkOp (
             return_ACPI_STATUS (AE_OK);
         }
     
+        if (Status == AE_FALSE)
+        {
+            /*
+             * Predicate was false, so instead of moving on to the
+             * body (TermList), we close out the IF/WHILE
+             */
+
+            Next        = Parent->Next;
+
+            Status = AscendingCallback (WalkState, Parent);
+
+            /* Now continue to the next node in the tree */
+        }
+
         /* Look for a sibling to the current op */
 
         if (Next)
@@ -281,6 +295,7 @@ PsGetNextWalkOp (
 
             Op = WalkState->ControlState->PredicateOp;      /* Points to the predicate */
 
+            WalkState->ControlState->Exec           = CONTROL_PREDICATE_EXECUTING;
             WalkState->PrevOp       = Op->Parent;
             WalkState->NextOp       = Op;                   /* Evaluate the predicate again (next) */
             WalkState->NextOpInfo   = NEXT_OP_DOWNWARD;     /* Because we will traverse WHILE tree again */
@@ -531,11 +546,19 @@ PsWalkParsedAml (
 
         /* We are done with this walk, move on to the parent if any */
 
+        BREAKPOINT3;
+
         WalkState = PsPopWalkState (&WalkList);
         ReturnDesc = WalkState->ReturnDesc;     /* Extract return value before we delete WalkState */
+
+        DEBUG_PRINT (TRACE_PARSE, ("PsWalkParsedAml: ReturnValue=%p, State=%p\n", WalkState->ReturnDesc, WalkState));
+
+        
         PsxMthStackDeleteArgs (WalkState);      /* Delete all arguments and locals (if a method completed) */
 
-        CmFree (WalkState);
+        /* Delete this walk state and all linked control states */
+
+        PsDeleteWalkState (WalkState);
 
         /* Check if we have restarted a preempted walk */
 
