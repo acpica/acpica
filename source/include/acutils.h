@@ -130,7 +130,8 @@ InitCloseFile (
 /* Debug interfaces */
 
 INT32
-GetDebugLevel (void);
+GetDebugLevel (
+    void);
 
 void
 SetDebugLevel (
@@ -173,28 +174,28 @@ _ReportInfo (
     char                *ModuleName, 
     INT32               LineNumber, 
     INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
+    char                *Message);
 
 void
 _ReportError (
     char                *ModuleName, 
     INT32               LineNumber, 
     INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
+    char                *Message);
 
 void
 _ReportWarning (
     char                *ModuleName, 
     INT32               LineNumber, 
     INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
+    char                *Message);
 
 void
 _ReportSuccess (
     char                *ModuleName, 
     INT32               LineNumber, 
     INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
+    char                *Message);
 
 void 
 DumpBuffer (
@@ -224,8 +225,7 @@ void *
 _AllocateObjectDesc (
     char                *ModuleName, 
     INT32               LineNumber, 
-    INT32               ComponentId, 
-    ST_KEY_DESC_TABLE   *KdtEntry);
+    INT32               ComponentId); 
 
 void *
 _LocalAllocate (
@@ -244,7 +244,7 @@ _LocalCallocate (
 
 void
 LocalDeleteObject (
-    ACPI_OBJECT         **ppOD);
+    ACPI_OBJECT         **ObjDesc);
 
 
 
@@ -254,7 +254,7 @@ LocalDeleteObject (
  */
 #define LocalAllocate(a)                _LocalAllocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
 #define LocalCallocate(a)               _LocalCallocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define AllocateObjectDesc(a)           _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT,a)
+#define AllocateObjectDesc()            _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
 
 
 
