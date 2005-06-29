@@ -187,7 +187,7 @@ DsDeleteResultIfNotUsed (
             return;
         }
 
-        CmDeleteInternalObject (ObjDesc);
+        CmDeleteInternalObject (ResultObj);
 
         return_VOID;
     }
@@ -243,7 +243,7 @@ DsDeleteResultIfNotUsed (
             return_VOID;
         }
 
-        CmDeleteInternalObject (ObjDesc);
+        CmDeleteInternalObject (ResultObj);
         break;
 
     /* 
@@ -296,7 +296,7 @@ DsCreateOperand (
 
     /* A valid name must be looked up in the namespace */
 
-    if ((Arg->Opcode == AML_NAMEPATH) &&
+    if ((Arg->Opcode == AML_NAMEPATH_OP) &&
         (Arg->Value.String))
     {
         DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Getting a name: Arg=%p\n", Arg));
@@ -319,8 +319,8 @@ DsCreateOperand (
 
         ParentOp = Arg->Parent;
         if ((PsIsNamedObjectOp (ParentOp->Opcode)) &&
-            (ParentOp->Opcode != AML_METHODCALL) &&
-            (ParentOp->Opcode != AML_NAMEPATH))
+            (ParentOp->Opcode != AML_METHODCALL_OP) &&
+            (ParentOp->Opcode != AML_NAMEPATH_OP))
         {
             /* Enter name into namespace if not found */
 
@@ -375,7 +375,11 @@ DsCreateOperand (
 
         /* Put the resulting object onto the current object stack */
 
-        DsObjStackPush (ObjDesc, WalkState);
+        Status = DsObjStackPush (ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
         DEBUG_EXEC (DbDisplayArgumentObject (ObjDesc));
     }
 
@@ -384,7 +388,7 @@ DsCreateOperand (
     {
         /* Check for null name case */
 
-        if (Arg->Opcode == AML_NAMEPATH)
+        if (Arg->Opcode == AML_NAMEPATH_OP)
         {
             /*
              * If the name is null, this means that this is an optional result parameter that was
@@ -413,7 +417,9 @@ DsCreateOperand (
 
         if (Flags & OP_HAS_RETURN_VALUE)
         {
-            DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Argument already created, getting from result stack \n"));
+            DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Argument previously created, already stacked \n"));
+
+//            DEBUG_EXEC (DbDisplayArgumentObject (WalkState->Operands [WalkState->NumOperands - 1]));
 
             /* 
              * Use value that was already previously returned by the evaluation of this argument
@@ -423,19 +429,12 @@ DsCreateOperand (
             if (ACPI_FAILURE (Status))
             {
                 /*
-                 * Only error is underflow, and this indicates a missing operand!
+                 * Only error is underflow, and this indicates a missing or null operand!
                  */
                 DEBUG_PRINT (ACPI_ERROR, ("DsCreateOperand: Could not pop result\n"));
-                return_ACPI_STATUS (AE_AML_NO_OPERAND);
+                return_ACPI_STATUS (Status);
             }
 
-            /* There must be a valid value on the stack or something is seriously wrong */
-
-            if (!ObjDesc)
-            {
-                DEBUG_PRINT (ACPI_ERROR, ("DsCreateOperand: But result obj is null! Arg=%X\n", Arg));
-                return_ACPI_STATUS (AE_AML_NO_OPERAND);
-            }
         }
 
         else
@@ -456,13 +455,18 @@ DsCreateOperand (
                 CmFree (ObjDesc);
                 return_ACPI_STATUS (Status);
             }
-        }
-
+       }
 
         /* Put the operand object on the object stack */
 
-        DsObjStackPush (ObjDesc, WalkState);
+        Status = DsObjStackPush (ObjDesc, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
         DEBUG_EXEC (DbDisplayArgumentObject (ObjDesc));
+
     }
 
 
@@ -638,7 +642,7 @@ DsMapOpcodeToDataType (
             DataType = ACPI_TYPE_String;
             break;
 
-        case AML_NAMEPATH:
+        case AML_NAMEPATH_OP:
             DataType = INTERNAL_TYPE_Reference;
             break;
         }
@@ -786,12 +790,12 @@ DsMapNamedOpcodeToDataType (
         DataType = INTERNAL_TYPE_BankFieldDefn;
         break;
 
-    case AML_NAMEDFIELD:                            /* NO CASE IN ORIGINAL  */
+    case AML_NAMEDFIELD_OP:                         /* NO CASE IN ORIGINAL  */
         DataType = ACPI_TYPE_Any;
         break;
 
     case AML_NameOp:                                /* NameOp - special code in original */
-    case AML_NAMEPATH:                    
+    case AML_NAMEPATH_OP:                    
         DataType = ACPI_TYPE_Any;
         break;
 
