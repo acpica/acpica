@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -530,7 +530,7 @@ AcpiUtValueExit (
 
     AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, LineNumber, DbgInfo,
             "%s %8.8X%8.8X\n", AcpiGbl_FnExitStr,
-            ACPI_HIDWORD (Value), ACPI_LODWORD (Value));
+            ACPI_FORMAT_UINT64 (Value));
 
     AcpiGbl_NestingLevel--;
 }
