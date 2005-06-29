@@ -194,6 +194,15 @@ PsxMthStackInitArgs (
     ACPI_OBJECT_INTERNAL    **Params,
     UINT32                  ParamCount);
 
+NAME_TABLE_ENTRY *
+PsxMthStackGetNte (
+    UINT32                  Type,
+    UINT32                  Index);
+
+ACPI_STATUS
+PsxMthStackInit (
+    ACPI_WALK_STATE         *WalkState);
+
 
 /* psapi - Parser external interfaces */
 
