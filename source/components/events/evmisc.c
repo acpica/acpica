@@ -115,10 +115,10 @@
  *****************************************************************************/
 
 #include "acpi.h"
-#include "events.h"
-#include "namesp.h"
-#include "interp.h"
-#include "hardware.h"
+#include "acevents.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "achware.h"
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evmisc");
@@ -324,7 +324,7 @@ AcpiEvGlobalLockHandler (
                                     Context);
     }
 
-    return INTERRUPT_HANDLED;
+    return (INTERRUPT_HANDLED);
 }
 
 

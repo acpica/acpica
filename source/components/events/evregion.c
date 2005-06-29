@@ -117,9 +117,9 @@
 #define __EVREGION_C__
 
 #include "acpi.h"
-#include "events.h"
-#include "namesp.h"
-#include "interp.h"
+#include "acevents.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 #include "amlcode.h"
 
 #define _COMPONENT          EVENT_HANDLING
@@ -162,10 +162,10 @@ AcpiEvFindOnePciRootBus (
      * We are looking for all valid _HID objects.
      */
 
-    if (STRNCMP ((char *)&Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
+    if (STRNCMP ((INT8 *)&Entry->Name, METHOD_NAME__HID, ACPI_NAME_SIZE) ||
         (!ObjDesc))
     {
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -181,7 +181,7 @@ AcpiEvFindOnePciRootBus (
 
         if (ObjDesc->Number.Value != PCI_ROOT_HID_VALUE)
         {
-            return AE_OK;
+            return (AE_OK);
         }
 
         break;
@@ -191,14 +191,14 @@ AcpiEvFindOnePciRootBus (
         if (STRNCMP (ObjDesc->String.Pointer, PCI_ROOT_HID_STRING,
                      sizeof (PCI_ROOT_HID_STRING)))
         {
-            return AE_OK;
+            return (AE_OK);
         }
 
         break;
 
     default:
 
-        return AE_OK;
+        return (AE_OK);
     }
 
 
@@ -212,7 +212,7 @@ AcpiEvFindOnePciRootBus (
                                              ADDRESS_SPACE_PCI_CONFIG,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -236,7 +236,7 @@ AcpiEvFindPciRootBuses (
     AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
                         FALSE, AcpiEvFindOnePciRootBus, NULL, NULL);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 

@@ -160,7 +160,7 @@ AcpiEvFixedEventInitialize(void)
     AcpiHwRegisterAccess (ACPI_WRITE, ACPI_MTX_LOCK, ACPI_EVENT_RTC +
                             TMR_EN, 0);
 
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -238,7 +238,7 @@ AcpiEvFixedEventDetect(void)
         IntStatus |= AcpiEvFixedEventDispatch (ACPI_EVENT_SLEEP_BUTTON);
     }
 
-    return IntStatus;
+    return (IntStatus);
 }
 
 
@@ -278,13 +278,13 @@ AcpiEvFixedEventDispatch (
             ("EvGpeDispatch: No installed handler for fixed event [0x%08X].",
             Event));
 
-        return INTERRUPT_NOT_HANDLED;
+        return (INTERRUPT_NOT_HANDLED);
     }
 
     /* Invoke the handler */
 
-    return (AcpiGbl_FixedEventHandlers[Event].Handler)(
-                                AcpiGbl_FixedEventHandlers[Event].Context);
+    return ((AcpiGbl_FixedEventHandlers[Event].Handler)(
+                                AcpiGbl_FixedEventHandlers[Event].Context));
 }
 
 
@@ -487,7 +487,7 @@ AcpiEvSaveMethodInfo (
         DEBUG_PRINT (ACPI_ERROR,
             ("EvSaveMethodInfo: Unknown GPE method type: %s (name not of form _Lnn or _Enn)\n",
             Name));
-        return AE_OK;
+        return (AE_OK);
     }
 
     /* Convert the last two characters of the name to the Gpe Number */
@@ -500,7 +500,7 @@ AcpiEvSaveMethodInfo (
         DEBUG_PRINT (ACPI_ERROR,
             ("EvSaveMethodInfo: Could not extract GPE number from name: %s (name not of form _Lnn or _Enn)\n",
             Name));
-        return AE_OK;
+        return (AE_OK);
     }
 
     /* Ensure that we have a valid GPE number */
@@ -509,7 +509,7 @@ AcpiEvSaveMethodInfo (
     {
         /* Not valid, all we can do here is ignore it */
 
-        return AE_OK;
+        return (AE_OK);
     }
 
     /*
@@ -530,7 +530,7 @@ AcpiEvSaveMethodInfo (
     DEBUG_PRINT (ACPI_INFO,
         ("EvSaveMethodInfo: Registered GPE method %s as GPE number %d\n",
         Name, GpeNumber));
-    return AE_OK;
+    return (AE_OK);
 }
 
 
@@ -670,7 +670,7 @@ AcpiEvGpeDetect (void)
         }
     }
 
-    return IntStatus;
+    return (IntStatus);
 }
 
 
