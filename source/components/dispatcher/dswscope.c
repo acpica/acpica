@@ -181,7 +181,7 @@ NsPushCurrentScope (
         }
     }
 
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -227,7 +227,7 @@ NsPushMethodScope (
         }
     }
 
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 /****************************************************************************
@@ -277,14 +277,12 @@ NsPopCurrent (
         if ((TYPE_Any == Type) || (Type == (CurrentScope + 1)->Type))
         {
             DEBUG_PRINT (TRACE_EXEC, ("Found %d\n", Type));
-            FUNCTION_EXIT;
-            return Count;
+            return_VALUE (Count);
         }
     }
 
     DEBUG_PRINT (TRACE_EXEC,("%d Not Found\n", Type));
-    FUNCTION_EXIT;
-    return -Count;
+    return_VALUE (-Count);
 }
 
 
