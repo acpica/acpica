@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.172 $
+ *       $Revision: 1.173 $
  *
  *****************************************************************************/
 
@@ -418,7 +418,7 @@ typedef UINT8                           OBJECT_TYPE_INTERNAL;
  */
 #define INTERNAL_TYPE_BEGIN             17
 
-#define INTERNAL_TYPE_FIELD             17 /* 0x11  */
+#define INTERNAL_TYPE_REGION_FIELD      17 /* 0x11  */
 #define INTERNAL_TYPE_BANK_FIELD        18 /* 0x12  */
 #define INTERNAL_TYPE_INDEX_FIELD       19 /* 0x13  */
 #define INTERNAL_TYPE_REFERENCE         20 /* 0x14  Arg#, Local#, Name, Debug; used only in descriptors */
