@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -419,7 +419,7 @@ AcpiExDoConcatenate (
             goto Cleanup;
         }
 
-        ReturnDesc = AcpiUtCreateStringObject (NewLength + 1);
+        ReturnDesc = AcpiUtCreateStringObject (NewLength);
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
