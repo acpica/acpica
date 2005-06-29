@@ -216,12 +216,16 @@ AcpiInit (char *Filename)
 
     InitCloseFile (FilePtr);
     DEBUG_PRINT (ACPI_OK, ("ACPI Subsystem successfully initialized.\n"));
+
+    FUNCTION_EXIT;
     return AE_OK;
 
 
 ErrorExit:    
     InitCloseFile (FilePtr);
     DEBUG_PRINT (ACPI_ERROR, ("Failure during ACPI Subsystem initialization: %x\n", Status));
+    
+    FUNCTION_EXIT;
     return Status;
 
 }
@@ -386,6 +390,7 @@ InitAcpiGetRsdt (UINT32 *NumberOfTables, OSD_FILE *FilePtr)
         Status = NsGetTable (RSDP->RsdtPhysicalAddress, FilePtr, (void *) &RSDT);
         if (Status != AE_OK)
         {
+            FUNCTION_EXIT;
             return Status;
         }
 
@@ -426,6 +431,7 @@ InitAcpiGetRsdt (UINT32 *NumberOfTables, OSD_FILE *FilePtr)
 
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
 
@@ -591,6 +597,7 @@ InitAcpiGetAllTables (UINT32 NumberOfTables, OSD_FILE *FilePtr)
         Capabilities = AcpiModeCapabilities ();
     }
 
+    FUNCTION_EXIT;
     return Status;
 }
   
@@ -767,6 +774,7 @@ InitAcpiRegisters (void)
                 Gpe0EnableRegisterSave = LocalAllocate ((size_t) (FACP->Gpe0BlkLen / 2));
                 if (!Gpe0EnableRegisterSave)
                 {
+                    FUNCTION_EXIT;
                     return AE_NO_MEMORY;
                 }
 
@@ -874,8 +882,8 @@ InitAcpiRegisters (void)
     }
 
 
+    FUNCTION_EXIT;
 BREAKPOINT3;
-
     return (Status);
 }
 
