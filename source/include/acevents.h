@@ -243,28 +243,28 @@ EvAssociateRegionAndHandler(
 
 ACPI_STATUS
 EvSystemMemoryRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext);
 
 ACPI_STATUS
 EvIoSpaceRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext);
 
 ACPI_STATUS
 EvPciConfigRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext);
 
 ACPI_STATUS
 EvDefaultRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext);
