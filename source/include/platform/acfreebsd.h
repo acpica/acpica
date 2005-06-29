@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acfreebsd.h - OS specific defines, etc.
- *       $Revision: 1.13 $
+ *       $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -118,7 +118,7 @@
 #define __ACFREEBSD_H__
 
 /*
- * Some systems' ASL may have problems because they look for names 
+ * Some systems' ASL may have problems because they look for names
  * of Microsoft operating systems.  To override this, set hw.acpi.os_name
  * to the appropriate string.
  */
