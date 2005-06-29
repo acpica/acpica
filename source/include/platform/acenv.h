@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.58 $
+ *       $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -126,19 +126,18 @@
 #define ACPI_DEBUG
 #define ACPI_APPLICATION
 #define ENABLE_DEBUGGER
-#define ACPI_USE_SYSTEM_CLIBRARY 
+#define ACPI_USE_SYSTEM_CLIBRARY
 #define PARSER_ONLY
-#endif   
+#endif
 
-#ifdef _ACPI_EXEC_APP  
+#ifdef _ACPI_EXEC_APP
 #undef DEBUGGER_THREADING
 #define DEBUGGER_THREADING      DEBUGGER_SINGLE_THREADED
 #define ACPI_DEBUG
 #define ACPI_APPLICATION
 #define ENABLE_DEBUGGER
-#define ACPI_USE_SYSTEM_CLIBRARY 
+#define ACPI_USE_SYSTEM_CLIBRARY
 #endif
-
 
 
 /*
@@ -216,6 +215,9 @@ strupr(char *str);
 #include <efistdarg.h>
 #include <efilib.h>
 
+
+
+
 #elif WIN32
 
 #define ACPI_OS_NAME                "Windows"
@@ -224,6 +226,9 @@ strupr(char *str);
 
 #define strupr              _strupr
 #define ACPI_USE_STANDARD_HEADERS
+
+
+
 
 #elif __FreeBSD__
 
@@ -236,30 +241,23 @@ strupr(char *str);
 #include <sys/libkern.h>
 #include <stdarg.h>
 
-#define asm		__asm
-#define __cli()		disable_intr()
-#define __sti()		enable_intr()
+#define asm         __asm
+#define __cli()     disable_intr()
+#define __sti()     enable_intr()
 
 #else
 
 /* Not building kernel code, so use libc */
+
 #define ACPI_USE_STANDARD_HEADERS
 #endif
 
 /* Always use FreeBSD code over our local versions */
 #define ACPI_USE_SYSTEM_CLIBRARY
 
-/* FreeBSD doesn't have strupr, fix that. */
-static __inline char *
-strupr(char *str)
-{
-    char *c = str;
-    while(*c) {
-	*c = toupper(*c);
-	c++;
-    }
-    return(str);
-}
+/* Use our Strupr b/c system clib lacks it */
+#define strupr AcpiCmStrupr
+
 
 #else
 
@@ -403,6 +401,11 @@ typedef char *va_list;
 #define halt()                  __asm {hlt}
 #define wbinvd()                __asm {WBINVD}
 
+
+/*
+ * For Acpi applications, we don't want to try to access the global lock
+ */
+
 #ifdef ACPI_APPLICATION
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       (Acq = 0xFF)
 #define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       (Pnd = 0)
@@ -450,6 +453,7 @@ typedef char *va_list;
 
 
 #ifdef __ia64__
+#define _IA64
 
 /* Single threaded */
 #define ACPI_APPLICATION
@@ -462,13 +466,12 @@ typedef char *va_list;
 #define wbinvd()
 
 /*! [Begin] no source code translation */
+
 #include <asm/pal.h>
 
-/* PAL_HALT[_LIGHT] */
-#define halt() ia64_pal_halt_light()
+#define halt()              ia64_pal_halt_light()           /* PAL_HALT[_LIGHT] */
+#define safe_halt()         ia64_pal_halt(1)                /* PAL_HALT */
 
-/* PAL_HALT */
-#define safe_halt() ia64_pal_halt(1)
 
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq) \
     do { \
@@ -512,6 +515,7 @@ typedef char *va_list;
         :"=r"(Acq):"m" __atomic_fool_gcc((GLptr)):"r2","r29","r30","memory"); \
     } while (0)
 /*! [End] no source code translation !*/
+
 
 #else /* DO IA32 */
 
@@ -591,13 +595,13 @@ typedef char *va_list;
 #endif
 
 
-#ifdef _MSC_VER                 /* disable some level-4 warnings */
-
 /******************************************************************************
  *
  * Compiler-specific
  *
  *****************************************************************************/
+
+#ifdef _MSC_VER                 /* disable some level-4 warnings */
 
 /* warn C4100: unreferenced formal parameter */
 #pragma warning(disable:4100)
@@ -605,7 +609,19 @@ typedef char *va_list;
 /* warn C4127: conditional expression is constant */
 #pragma warning(disable:4127)
 
+
+#define COMPILER_DEPENDENT_UINT64   unsigned __int64
+
 #endif
+
+
+#ifdef __GNUC__
+#define COMPILER_DEPENDENT_UINT64   unsigned long long
+#endif
+
+
+/* TBD: move this elsewhere! */
+
 
 #ifdef __ia64__
 /* Look at interim FADT to determine IO or memory mapped */
