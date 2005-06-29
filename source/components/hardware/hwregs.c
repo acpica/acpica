@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  ******************************************************************************/
 
@@ -125,11 +125,6 @@
 #define _COMPONENT          ACPI_HARDWARE
         MODULE_NAME         ("hwregs")
 
-
-/* This matches the #defines in actypes.h. */
-
-NATIVE_CHAR                 *SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
-                                                  "\\_S4_","\\_S5_","\\_S4B"};
 
 
 /*******************************************************************************
@@ -274,7 +269,8 @@ AcpiHwObtainSleepTypeRegisterData (
      *  AcpiEvaluate the namespace object containing the values for this state
      */
 
-    Status = AcpiNsEvaluateByName (SleepStateTable[SleepState], NULL, &ObjDesc);
+    Status = AcpiNsEvaluateByName ((NATIVE_CHAR *) AcpiGbl_DbSleepStates[SleepState], 
+                    NULL, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
