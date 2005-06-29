@@ -266,14 +266,6 @@ BREAKPOINT3;
     }
 
 
-    /* Delete the parse tree upon method completion if asked to */
-
-    if (Gbl_WhenToParseMethods & METHOD_DELETE_AT_COMPLETION)
-    {
-        PsDeleteParseTree (ObjDesc->Method.ParserOp);
-        ObjDesc->Method.ParserOp = NULL;
-    }
-
     return_ACPI_STATUS (Status);
 }
 
