@@ -123,6 +123,11 @@ typedef struct {
     char        *BufferPtr;     // pointer to buffer
 } APIBuffer;
 
+typedef struct _AcpiSysInfo {
+    INT32   DebugLevel;
+    INT32   DebugLayer;
+} AcpiSysInfo;
+
 /*
  * Global interfaces
  */
@@ -255,11 +260,30 @@ ACPI_STATUS
 AcpiDisable (
     void);
 
+/*
+ * Resource related interfaces
+ */
 
+ACPI_STATUS
+AcpiGetCurrentResources(
+    NsHandle DeviceHandle,
+    APIBuffer *RetBuffer);
 
+ACPI_STATUS
+AcpiGetPossibleResources(
+    NsHandle DeviceHandle,
+    APIBuffer *RetBuffer);
+
+ACPI_STATUS
+AcpiSetCurrentResources (
+    NsHandle DeviceHandle,
+    APIBuffer *InBuffer);
+
+ACPI_STATUS
+AcpiGetSystemInfo(
+    APIBuffer *OutBuffer);
 
 /* TBD: these may be obsolete */
-
 
 INT32
 AcpiLoadNameSpace  (
