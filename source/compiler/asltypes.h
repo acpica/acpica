@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -396,7 +396,8 @@ typedef enum
     ASL_MSG_BYTES_TO_BITS,
     ASL_MSG_BITS_TO_BYTES,
     ASL_MSG_AML_NOT_IMPLEMENTED,
-    ASL_MSG_NO_WHILE
+    ASL_MSG_NO_WHILE,
+    ASL_MSG_INVALID_ESCAPE
 
 } ASL_MESSAGE_IDS;
 
