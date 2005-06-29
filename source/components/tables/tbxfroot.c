@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.48 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -254,7 +254,7 @@ AcpiTbFindRsdp (
     FUNCTION_TRACE ("TbFindRsdp");
 
 
-    /* 
+    /*
      * Scan supports either 1) Logical addressing or 2) Physical addressing
      */
     if ((Flags & ACPI_MEMORY_MODE) == ACPI_LOGICAL_ADDRESSING)
@@ -283,7 +283,7 @@ AcpiTbFindRsdp (
 
             return_ACPI_STATUS (AE_OK);
         }
-    
+
         /*
          * 2) Search upper memory: 16-byte boundaries in E0000h-F0000h
          */
@@ -319,7 +319,7 @@ AcpiTbFindRsdp (
         /*
          * 1) Search EBDA (low memory) paragraphs
          */
-        MemRover = AcpiTbScanMemoryForRsdp ((UINT8 *) LO_RSDP_WINDOW_BASE, 
+        MemRover = AcpiTbScanMemoryForRsdp ((UINT8 *) LO_RSDP_WINDOW_BASE,
                         LO_RSDP_WINDOW_SIZE);
         if (MemRover)
         {
@@ -332,7 +332,7 @@ AcpiTbFindRsdp (
         /*
          * 2) Search upper memory: 16-byte boundaries in E0000h-F0000h
          */
-        MemRover = AcpiTbScanMemoryForRsdp ((UINT8 *) HI_RSDP_WINDOW_BASE, 
+        MemRover = AcpiTbScanMemoryForRsdp ((UINT8 *) HI_RSDP_WINDOW_BASE,
                         HI_RSDP_WINDOW_SIZE);
         if (MemRover)
         {
@@ -380,10 +380,10 @@ AcpiGetFirmwareTable (
     ACPI_TABLE_HEADER       **TablePointer)
 {
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress;
-    ACPI_TABLE_HEADER       *RsdtPtr;
+    ACPI_TABLE_HEADER       *RsdtPtr = NULL;
     ACPI_TABLE_HEADER       *TablePtr;
     ACPI_STATUS             Status;
-    UINT32                  RsdtSize;
+    UINT32                  RsdtSize = 0;
     UINT32                  TableSize;
     UINT32                  TableCount;
     UINT32                  i;
@@ -393,7 +393,7 @@ AcpiGetFirmwareTable (
     FUNCTION_TRACE ("AcpiGetFirmwareTable");
 
 
-    /* 
+    /*
      * Ensure that at least the table manager is initialized.  We don't
      * require that the entire ACPI subsystem is up for this interface
      */
@@ -408,19 +408,56 @@ AcpiGetFirmwareTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Get the RSDP */
-
-    Status = AcpiOsGetRootPointer (Flags, &PhysicalAddress);
-    if (ACPI_FAILURE (Status))
+    if (!AcpiGbl_RSDP)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RSDP  not found\n"));
-        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+        /* Get the RSDP */
+
+        Status = AcpiOsGetRootPointer (Flags, &PhysicalAddress);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "RSDP  not found\n"));
+            return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+        }
+
+        /* Map and validate the RSDP */
+
+        if ((Flags & ACPI_MEMORY_MODE) == ACPI_LOGICAL_ADDRESSING)
+        {
+            Status = AcpiOsMapMemory (PhysicalAddress, sizeof (RSDP_DESCRIPTOR),
+                                        (void **) &AcpiGbl_RSDP);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+        }
+        else
+        {
+            AcpiGbl_RSDP = (void *) (NATIVE_UINT) PhysicalAddress;
+        }
+
+        /*
+         *  The signature and checksum must both be correct
+         */
+        if (STRNCMP ((NATIVE_CHAR *) AcpiGbl_RSDP, RSDP_SIG, sizeof (RSDP_SIG)-1) != 0)
+        {
+            /* Nope, BAD Signature */
+
+            Status = AE_BAD_SIGNATURE;
+            goto Cleanup;
+        }
+
+        if (AcpiTbChecksum (AcpiGbl_RSDP, RSDP_CHECKSUM_LENGTH) != 0)
+        {
+            /* Nope, BAD Checksum */
+
+            Status = AE_BAD_CHECKSUM;
+            goto Cleanup;
+        }
     }
 
-    AcpiGbl_RSDP = (RSDP_DESCRIPTOR *) (ACPI_TBLPTR) PhysicalAddress;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "RSDP located at %p, RSDT physical=%8.8lX%8.8lX \n",
+        "RSDP located at %p, RSDT physical=%8.8X%8.8X \n",
         AcpiGbl_RSDP, HIDWORD(AcpiGbl_RSDP->RsdtPhysicalAddress),
         LODWORD(AcpiGbl_RSDP->RsdtPhysicalAddress)));
 
@@ -447,7 +484,7 @@ AcpiGetFirmwareTable (
 
 
     /*
-     * Search the RSDT/XSDT for the correct instance of the 
+     * Search the RSDT/XSDT for the correct instance of the
      * requested table
      */
     for (i = 0, j = 0; i < TableCount; i++)
@@ -490,7 +527,8 @@ AcpiGetFirmwareTable (
 
         /* Delete table mapping if using virtual addressing */
 
-        if (TableSize)
+        if ((TableSize) &&
+            ((Flags & ACPI_MEMORY_MODE) == ACPI_LOGICAL_ADDRESSING))
         {
             AcpiOsUnmapMemory (TablePtr, TableSize);
         }
