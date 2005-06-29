@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -571,20 +571,20 @@ static const ACPI_OPCODE_INFO    AmlOpInfo[] =
 /* 1A */ ACPI_OP ("Arg6",               ARGP_ARG6,                 ARGI_ARG6,                  AML_CLASS_ARGUMENT,        AML_TYPE_METHOD_ARGUMENT, 0),
 /* 1B */ ACPI_OP ("Store",              ARGP_STORE_OP,             ARGI_STORE_OP,              AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_1R,   AML_FLAGS_EXEC_1A_1T_1R),
 /* 1C */ ACPI_OP ("RefOf",              ARGP_REF_OF_OP,            ARGI_REF_OF_OP,             AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_0T_1R,   AML_FLAGS_EXEC_1A_0T_1R),
-/* 1D */ ACPI_OP ("Add",                ARGP_ADD_OP,               ARGI_ADD_OP,                AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
+/* 1D */ ACPI_OP ("Add",                ARGP_ADD_OP,               ARGI_ADD_OP,                AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_MATH),
 /* 1E */ ACPI_OP ("Concatenate",        ARGP_CONCAT_OP,            ARGI_CONCAT_OP,             AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
-/* 1F */ ACPI_OP ("Subtract",           ARGP_SUBTRACT_OP,          ARGI_SUBTRACT_OP,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
+/* 1F */ ACPI_OP ("Subtract",           ARGP_SUBTRACT_OP,          ARGI_SUBTRACT_OP,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_MATH),
 /* 20 */ ACPI_OP ("Increment",          ARGP_INCREMENT_OP,         ARGI_INCREMENT_OP,          AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_0T_1R,   AML_FLAGS_EXEC_1A_0T_1R),
 /* 21 */ ACPI_OP ("Decrement",          ARGP_DECREMENT_OP,         ARGI_DECREMENT_OP,          AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_0T_1R,   AML_FLAGS_EXEC_1A_0T_1R),
-/* 22 */ ACPI_OP ("Multiply",           ARGP_MULTIPLY_OP,          ARGI_MULTIPLY_OP,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
+/* 22 */ ACPI_OP ("Multiply",           ARGP_MULTIPLY_OP,          ARGI_MULTIPLY_OP,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_MATH),
 /* 23 */ ACPI_OP ("Divide",             ARGP_DIVIDE_OP,            ARGI_DIVIDE_OP,             AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_2T_1R,   AML_FLAGS_EXEC_2A_2T_1R),
-/* 24 */ ACPI_OP ("ShiftLeft",          ARGP_SHIFT_LEFT_OP,        ARGI_SHIFT_LEFT_OP,         AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
-/* 25 */ ACPI_OP ("ShiftRight",         ARGP_SHIFT_RIGHT_OP,       ARGI_SHIFT_RIGHT_OP,        AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
-/* 26 */ ACPI_OP ("And",                ARGP_BIT_AND_OP,           ARGI_BIT_AND_OP,            AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
-/* 27 */ ACPI_OP ("NAnd",               ARGP_BIT_NAND_OP,          ARGI_BIT_NAND_OP,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
-/* 28 */ ACPI_OP ("Or",                 ARGP_BIT_OR_OP,            ARGI_BIT_OR_OP,             AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
-/* 29 */ ACPI_OP ("NOr",                ARGP_BIT_NOR_OP,           ARGI_BIT_NOR_OP,            AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
-/* 2A */ ACPI_OP ("XOr",                ARGP_BIT_XOR_OP,           ARGI_BIT_XOR_OP,            AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R),
+/* 24 */ ACPI_OP ("ShiftLeft",          ARGP_SHIFT_LEFT_OP,        ARGI_SHIFT_LEFT_OP,         AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_MATH),
+/* 25 */ ACPI_OP ("ShiftRight",         ARGP_SHIFT_RIGHT_OP,       ARGI_SHIFT_RIGHT_OP,        AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_MATH),
+/* 26 */ ACPI_OP ("And",                ARGP_BIT_AND_OP,           ARGI_BIT_AND_OP,            AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_MATH),
+/* 27 */ ACPI_OP ("NAnd",               ARGP_BIT_NAND_OP,          ARGI_BIT_NAND_OP,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_MATH),
+/* 28 */ ACPI_OP ("Or",                 ARGP_BIT_OR_OP,            ARGI_BIT_OR_OP,             AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_MATH),
+/* 29 */ ACPI_OP ("NOr",                ARGP_BIT_NOR_OP,           ARGI_BIT_NOR_OP,            AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_MATH),
+/* 2A */ ACPI_OP ("XOr",                ARGP_BIT_XOR_OP,           ARGI_BIT_XOR_OP,            AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_1T_1R,   AML_FLAGS_EXEC_2A_1T_1R | AML_MATH),
 /* 2B */ ACPI_OP ("Not",                ARGP_BIT_NOT_OP,           ARGI_BIT_NOT_OP,            AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_1R,   AML_FLAGS_EXEC_1A_1T_1R),
 /* 2C */ ACPI_OP ("FindSetLeftBit",     ARGP_FIND_SET_LEFT_BIT_OP, ARGI_FIND_SET_LEFT_BIT_OP,  AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_1R,   AML_FLAGS_EXEC_1A_1T_1R),
 /* 2D */ ACPI_OP ("FindSetRightBit",    ARGP_FIND_SET_RIGHT_BIT_OP,ARGI_FIND_SET_RIGHT_BIT_OP, AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_1T_1R,   AML_FLAGS_EXEC_1A_1T_1R),
@@ -598,12 +598,12 @@ static const ACPI_OPCODE_INFO    AmlOpInfo[] =
 /* 35 */ ACPI_OP ("CreateByteField",    ARGP_CREATE_BYTE_FIELD_OP, ARGI_CREATE_BYTE_FIELD_OP,  AML_CLASS_CREATE,          AML_TYPE_CREATE_FIELD,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSNODE | AML_DEFER | AML_CREATE),
 /* 36 */ ACPI_OP ("CreateBitField",     ARGP_CREATE_BIT_FIELD_OP,  ARGI_CREATE_BIT_FIELD_OP,   AML_CLASS_CREATE,          AML_TYPE_CREATE_FIELD,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSNODE | AML_DEFER | AML_CREATE),
 /* 37 */ ACPI_OP ("ObjectType",         ARGP_TYPE_OP,              ARGI_TYPE_OP,               AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_0T_1R,   AML_FLAGS_EXEC_1A_0T_1R),
-/* 38 */ ACPI_OP ("LAnd",               ARGP_LAND_OP,              ARGI_LAND_OP,               AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_0T_1R,   AML_FLAGS_EXEC_2A_0T_1R),
-/* 39 */ ACPI_OP ("LOr",                ARGP_LOR_OP,               ARGI_LOR_OP,                AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_0T_1R,   AML_FLAGS_EXEC_2A_0T_1R),
+/* 38 */ ACPI_OP ("LAnd",               ARGP_LAND_OP,              ARGI_LAND_OP,               AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_0T_1R,   AML_FLAGS_EXEC_2A_0T_1R | AML_LOGICAL),
+/* 39 */ ACPI_OP ("LOr",                ARGP_LOR_OP,               ARGI_LOR_OP,                AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_0T_1R,   AML_FLAGS_EXEC_2A_0T_1R | AML_LOGICAL),
 /* 3A */ ACPI_OP ("LNot",               ARGP_LNOT_OP,              ARGI_LNOT_OP,               AML_CLASS_EXECUTE,         AML_TYPE_EXEC_1A_0T_1R,   AML_FLAGS_EXEC_1A_0T_1R),
-/* 3B */ ACPI_OP ("LEqual",             ARGP_LEQUAL_OP,            ARGI_LEQUAL_OP,             AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_0T_1R,   AML_FLAGS_EXEC_2A_0T_1R),
-/* 3C */ ACPI_OP ("LGreater",           ARGP_LGREATER_OP,          ARGI_LGREATER_OP,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_0T_1R,   AML_FLAGS_EXEC_2A_0T_1R),
-/* 3D */ ACPI_OP ("LLess",              ARGP_LLESS_OP,             ARGI_LLESS_OP,              AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_0T_1R,   AML_FLAGS_EXEC_2A_0T_1R),
+/* 3B */ ACPI_OP ("LEqual",             ARGP_LEQUAL_OP,            ARGI_LEQUAL_OP,             AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_0T_1R,   AML_FLAGS_EXEC_2A_0T_1R | AML_LOGICAL),
+/* 3C */ ACPI_OP ("LGreater",           ARGP_LGREATER_OP,          ARGI_LGREATER_OP,           AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_0T_1R,   AML_FLAGS_EXEC_2A_0T_1R | AML_LOGICAL),
+/* 3D */ ACPI_OP ("LLess",              ARGP_LLESS_OP,             ARGI_LLESS_OP,              AML_CLASS_EXECUTE,         AML_TYPE_EXEC_2A_0T_1R,   AML_FLAGS_EXEC_2A_0T_1R | AML_LOGICAL),
 /* 3E */ ACPI_OP ("If",                 ARGP_IF_OP,                ARGI_IF_OP,                 AML_CLASS_CONTROL,         AML_TYPE_CONTROL,         AML_HAS_ARGS),
 /* 3F */ ACPI_OP ("Else",               ARGP_ELSE_OP,              ARGI_ELSE_OP,               AML_CLASS_CONTROL,         AML_TYPE_CONTROL,         AML_HAS_ARGS),
 /* 40 */ ACPI_OP ("While",              ARGP_WHILE_OP,             ARGI_WHILE_OP,              AML_CLASS_CONTROL,         AML_TYPE_CONTROL,         AML_HAS_ARGS),
