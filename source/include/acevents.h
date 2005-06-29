@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.74 $
+ *       $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -148,6 +148,10 @@ AcpiEvFixedEventDispatch (
  * Evmisc
  */
 
+BOOLEAN
+AcpiEvIsNotifyObject (
+    ACPI_NAMESPACE_NODE     *Node);
+
 ACPI_STATUS
 AcpiEvAcquireGlobalLock(
     UINT32                  Timeout);
@@ -173,7 +177,7 @@ AcpiEvQueueNotifyRequest (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue);
 
-void
+void ACPI_SYSTEM_XFACE
 AcpiEvNotifyDispatch (
     void                    *Context);
 
