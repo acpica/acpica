@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.45 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,6 @@
 #define NODE_IS_BIT_OFFSET          0x1000
 #define NODE_COMPILE_TIME_CONST     0x2000
 #define NODE_IS_TERM_ARG            0x4000
-#define NODE_WAS_ONES_OP            0x8000
 
 /* Keeps information about individual control methods */
 
@@ -373,9 +372,6 @@ typedef enum
     ASL_MSG_ALPHANUMERIC_STRING,
     ASL_MSG_RESERVED_USE,
     ASL_MSG_INVALID_OPERAND,
-    ASL_MSG_MISSING_ENDDEPENDENT,
-    ASL_MSG_MISSING_STARTDEPENDENT,
-    ASL_MSG_DEPENDENT_NESTING
 
 } ASL_MESSAGE_IDS;
 

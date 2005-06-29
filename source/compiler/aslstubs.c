@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.7 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -117,6 +117,7 @@
 
 #include <stdio.h>
 #include "aslcompiler.h"
+#include "acnamesp.h"
 #include "acdispat.h"
 #include "actables.h"
 
@@ -124,6 +125,7 @@
         ACPI_MODULE_NAME    ("aslstubs")
 
 
+            
 /*
  * Stubs to simplify linkage to the
  * ACPI Namespace Manager (Unused functions).
@@ -146,11 +148,34 @@ AcpiEvReleaseGlobalLock(
 }
 
 ACPI_STATUS
+AcpiDsLoad2BeginOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       **OutOp)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiDsLoad2EndOp (
+    ACPI_WALK_STATE         *WalkState)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
 AeLocalGetRootPointer (
     UINT32                  Flags,
     ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
 {
     return AE_ERROR;
+}
+
+ACPI_STATUS
+AcpiNsLoadTable (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_NAMESPACE_NODE     *Node)
+{
+    return (AE_OK);
 }
 
 ACPI_STATUS
@@ -202,6 +227,13 @@ AcpiDsMethodDataGetType (
 }
 
 ACPI_STATUS
+AcpiNsLoadNamespace (
+    void)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
 AcpiEvQueueNotifyRequest (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue)
@@ -234,6 +266,13 @@ AcpiDsParseMethod (
 }
 
 
+void
+AcpiPsDeleteParseTree (
+    ACPI_PARSE_OBJECT       *root)
+{
+    return;
+}
+
 ACPI_STATUS
 AcpiWalkNamespace (
     ACPI_OBJECT_TYPE        Type,
@@ -253,8 +292,72 @@ AcpiTbFindTable (
     NATIVE_CHAR             *OemTableId,
     ACPI_TABLE_HEADER       **TablePtr)
 {
-    return (AE_SUPPORT);
+    return (AE_OK);
 }
 
+
+/*
+ACPI_STATUS
+AcpiDsInitAmlWalk (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_NAMESPACE_NODE     *MethodNode,
+    UINT8                   *AmlStart,
+    UINT32                  AmlLength,
+    ACPI_OPERAND_OBJECT     **Params,
+    ACPI_OPERAND_OBJECT     **ReturnObjDesc,
+    UINT32                  PassNumber)
+{
+    return (AE_OK);
+}
+
+void
+AcpiTbDeleteAcpiTables (
+    void)
+{
+    return;
+}
+
+ACPI_TABLE_DESC *
+AcpiTbUninstallTable (
+    ACPI_TABLE_DESC         *TableDesc)
+{
+    return NULL;
+}
+
+ACPI_STATUS
+AcpiTbInstallTable (
+    ACPI_TABLE_DESC         *TableInfo)
+{
+    return (AE_OK);
+}
+
+ACPI_STATUS
+AcpiTbMatchSignature (
+    NATIVE_CHAR             *Signature,
+    ACPI_TABLE_DESC         *TableInfo,
+    UINT8                   SearchType)
+{
+    return (AE_OK);
+}
+
+
+ACPI_STATUS
+AcpiPsParseAml (
+    ACPI_WALK_STATE         *WalkState)
+{
+    return (AE_OK);
+}
+
+ACPI_PARSE_OBJECT *
+AcpiPsGetArg(
+    ACPI_PARSE_OBJECT       *op,
+    UINT32                   argn)
+{
+    return NULL;
+}
+
+
+*/
 
 
