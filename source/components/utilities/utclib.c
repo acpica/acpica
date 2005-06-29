@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.57 $
+ * $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -529,40 +529,6 @@ AcpiUtStrncat (
     }
 
     return (DstString);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiUtStrupr (strupr)
- *
- * PARAMETERS:  SrcString       - The source string to convert
- *
- * RETURN:      Converted SrcString (same as input pointer)
- *
- * DESCRIPTION: Convert string to uppercase
- *
- ******************************************************************************/
-
-char *
-AcpiUtStrupr (
-    char                    *SrcString)
-{
-    char                    *String;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Walk entire string, uppercasing the letters */
-
-    for (String = SrcString; *String; )
-    {
-        *String = (char) ACPI_TOUPPER (*String);
-        String++;
-    }
-
-    return (SrcString);
 }
 
 
