@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -390,12 +390,22 @@ AcpiExPrepFieldValue (
         }
     }
 
-    /* Allocate a new region object */
+    /* Allocate a new field object */
 
     ObjDesc = AcpiUtCreateInternalObject (Info->FieldType);
     if (!ObjDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* Initialize areas of the object that are common to all fields */
+
+    Status = AcpiExPrepCommonFieldObject (ObjDesc, Info->FieldFlags,
+                        Info->FieldBitPosition, Info->FieldBitLength);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiUtDeleteObjectDesc (ObjDesc);
+        return_ACPI_STATUS (Status);
     }
 
     /* Initialize areas of the object that are common to all fields */
@@ -477,7 +487,7 @@ AcpiExPrepFieldValue (
                     (UINT8) AcpiNsGetType (Info->FieldNode));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "set NamedObj %p (%4.4s) val = %p\n",
-        Info->FieldNode, (char*)&(Info->FieldNode->Name), ObjDesc));
+            Info->FieldNode, (char*)&(Info->FieldNode->Name), ObjDesc));
 
     /* Remove local reference to the object */
 
