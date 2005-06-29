@@ -1,5 +1,5 @@
 /******************************************************************************
- *
+ * 
  * Module Name: aecommon - common include for the AcpiExec utility
  *
  *****************************************************************************/
@@ -8,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -37,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -123,35 +123,25 @@
 #include <stdio.h>
 
 extern UINT8                    *DsdtPtr;
-extern UINT32                   AcpiDsdtLength;
-extern UINT8                    *AmlStart;
+extern UINT32                   DsdtLength;
+extern int                      optind;
+extern char                     *optarg;
+extern UINT8                    *AmlPtr;
 extern UINT32                   AmlLength;
-extern FILE                     *AcpiGbl_DebugFile;
+
+extern char                     LineBuf[80];
+extern char                     CommandBuf[40];
+extern char                     ArgBuf[40];
+extern char                     ScopeBuf[40];
+extern char                     DebugFilename[40];
+extern FILE                     *DebugFile;
+extern char                     *Buffer;
+extern char                     *Filename;
+
+#define BUFFER_SIZE             4196
 
 
-/*
- * Debug Regions
- */
-typedef struct Region
-{
-    ACPI_PHYSICAL_ADDRESS   Address;
-    UINT32                  Length;
-    void                    *Buffer;
-    void                    *NextRegion;
 
-} REGION;
-
-typedef struct DebugRegions
-{
-    UINT32                  NumberOfRegions;
-    REGION                  *RegionList;
-
-} DEBUG_REGIONS;
-
-
-/*
- * Pointer overlay for 16-bit code
- */
 typedef union ptr_ovl
 {
     void                *ptr;
@@ -161,14 +151,15 @@ typedef union ptr_ovl
         UINT16              offset;
         UINT16              base;
     } ovl;
-
+    
 } PTR_OVL;
+   
 
-
+ 
 #define GET_SEGMENT(ptr)                ((UINT16)(_segment)(ptr))
-#define GET_OFFSET(ptr)                 ((UINT16)(UINT32) (ptr))
+#define GET_OFFSET(ptr)                 ((UINT16)(UINT32) (ptr))   
 #define GET_PHYSICAL_ADDRESS(ptr)       (((((UINT32)GET_SEGMENT(ptr)) << 4)) + GET_OFFSET(ptr))
-#define PTR_OVL_BUILD_PTR(p,b,o)        {p.ovl.base=b;p.ovl.offset=o;}
+#define PTR_OVL_BUILD_PTR(p,b,o)        {p.ovl.base=b;p.ovl.offset=o;}  
 
 
 #define PARAM_LIST(pl)                  pl
@@ -176,15 +167,14 @@ typedef union ptr_ovl
 #define TEST_OUTPUT_LEVEL(lvl)          if ((lvl) & OutputLevel)
 
 #define OSD_PRINT(lvl,fp)               TEST_OUTPUT_LEVEL(lvl) {\
-                                            AcpiOsPrintf PARAM_LIST(fp);}
+                                            OsdPrintf PARAM_LIST(fp);}
 
-ACPI_STATUS
-AeBuildLocalTables (
-    void);
+int 
+getopt (
+    int                     argc, 
+    char                    **argv, 
+    char                    *opts);
 
-ACPI_STATUS
-AeInstallTables (
-    void);
 
 void
 AeDumpNamespace (
@@ -215,13 +205,43 @@ void
 AeOpenDebugFile (
     char                    *Name);
 
+void
+AdPrintStatistics (void);
+
 ACPI_STATUS
 AeDisplayAllMethods (
     UINT32                  DisplayCount);
 
 ACPI_STATUS
+AdFindDsdt(
+    UINT8                   **DsdtPtr, 
+    UINT32                  *DsdtLength);
+
+void
+AdDumpTables (void);
+
+ACPI_STATUS
 AeInstallHandlers (void);
+
+int
+FlatMove (
+    UINT32                  Dest,
+    UINT32                  Src,
+    UINT32                  Size);
+
+ACPI_STATUS
+AdGetTables (
+    char                    *Filename);
+
+ACPI_STATUS
+AdParseTables (void);
+
+ACPI_STATUS
+AdDisplayTables (void);
+
+ACPI_STATUS
+AdDisplayStatistics (void);
+
 
 
 #endif /* _ADCOMMON */
-
