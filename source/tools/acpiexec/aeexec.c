@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: aeexec - Top level parse and execute routines
- *              $Revision: 1.48 $
+ * Module Name: aeexec - Support routines for AcpiExec utility
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -137,6 +137,33 @@ UINT8                       *DsdtPtr;
 UINT32                      AcpiDsdtLength;
 
 DEBUG_REGIONS               Regions;
+RSDP_DESCRIPTOR             LocalRsdp;
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeLocalGetRootPointer
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Return a local RSDP, used to dynamically load tables via the
+ *              standard ACPI mechanism.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AeLocalGetRootPointer (
+    UINT32                  Flags,
+    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+{
+
+    STRCPY (LocalRsdp.Signature, RSDP_SIG);
+    LocalRsdp.Revision = 1;
+
+    return (AE_NOT_FOUND);
+}
 
 
 /******************************************************************************
