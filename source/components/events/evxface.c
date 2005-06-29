@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.110 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -187,10 +187,10 @@ AcpiInstallFixedEventHandler (
     AcpiGbl_FixedEventHandlers[Event].Handler = Handler;
     AcpiGbl_FixedEventHandlers[Event].Context = Context;
 
-    Status = AcpiEnableEvent (Event, ACPI_EVENT_FIXED);
+    Status = AcpiEnableEvent (Event, ACPI_EVENT_FIXED, 0);
     if (!ACPI_SUCCESS (Status))
     {
-        DEBUG_PRINTP (ACPI_WARN, ("Could not enable fixed event.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Could not enable fixed event.\n"));
 
         /* Remove the handler */
 
@@ -200,8 +200,8 @@ AcpiInstallFixedEventHandler (
 
     else
     {
-        DEBUG_PRINTP (ACPI_INFO,
-            ("Enabled fixed event %X, Handler=%p\n", Event, Handler));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Enabled fixed event %X, Handler=%p\n", Event, Handler));
     }
 
 
@@ -254,7 +254,7 @@ AcpiRemoveFixedEventHandler (
 
     /* Disable the event before removing the handler - just in case... */
 
-    Status = AcpiDisableEvent(Event, ACPI_EVENT_FIXED);
+    Status = AcpiDisableEvent(Event, ACPI_EVENT_FIXED, 0);
 
     /* Always Remove the handler */
 
@@ -264,13 +264,13 @@ AcpiRemoveFixedEventHandler (
 
     if (!ACPI_SUCCESS(Status))
     {
-        DEBUG_PRINTP (ACPI_WARN,
-            ("Could not write to fixed event enable register.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
+            "Could not write to fixed event enable register.\n"));
     }
 
     else
     {
-        DEBUG_PRINTP (ACPI_INFO, ("Disabled fixed event %X.\n", Event));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Disabled fixed event %X.\n", Event));
     }
 
     AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
@@ -525,7 +525,7 @@ AcpiRemoveNotifyHandler (
      */
     if (Device == ACPI_ROOT_OBJECT) {
 
-        DEBUG_PRINTP (ACPI_INFO, ("Removing notify handler for ROOT object.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Removing notify handler for ROOT object.\n"));
 
         if (((HandlerType == ACPI_SYSTEM_NOTIFY) &&
               !AcpiGbl_SysNotify.Handler) ||
@@ -801,7 +801,6 @@ AcpiAcquireGlobalLock (
      * TBD: [Restructure] add timeout param to internal interface, and
      * perhaps INTERPRETER_LOCKED
      */
-
     Status = AcpiEvAcquireGlobalLock ();
     AcpiExExitInterpreter ();
 

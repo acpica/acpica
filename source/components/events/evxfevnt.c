@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.33 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiEnable (void)
 
     if (!AcpiGbl_DSDT)
     {
-        DEBUG_PRINTP (ACPI_WARN, ("No ACPI tables present!\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "No ACPI tables present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
@@ -161,7 +161,7 @@ AcpiEnable (void)
 
     if (SYS_MODE_LEGACY == AcpiHwGetModeCapabilities())
     {
-        DEBUG_PRINTP (ACPI_WARN, ("Only legacy mode supported!\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Only legacy mode supported!\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
 
@@ -170,11 +170,11 @@ AcpiEnable (void)
     Status = AcpiHwSetMode (SYS_MODE_ACPI);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINTP (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_FATAL, "Could not transition to ACPI mode.\n"));
         return_ACPI_STATUS (Status);
     }
 
-    DEBUG_PRINTP (ACPI_OK, ("Transition to ACPI mode successful\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_OK, "Transition to ACPI mode successful\n"));
 
     return_ACPI_STATUS (Status);
 }
@@ -215,7 +215,7 @@ AcpiDisable (void)
     Status = AcpiHwSetMode (AcpiGbl_OriginalMode);
     if (ACPI_FAILURE (Status))
     {
-        DEBUG_PRINTP (ACPI_ERROR, ("Unable to transition to original mode"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unable to transition to original mode"));
         return_ACPI_STATUS (Status);
     }
 
@@ -234,6 +234,7 @@ AcpiDisable (void)
  *
  * PARAMETERS:  Event           - The fixed event or GPE to be enabled
  *              Type            - The type of event
+ *              Flags           - Just enable, or also wake enable?
  *
  * RETURN:      Status
  *
@@ -244,7 +245,8 @@ AcpiDisable (void)
 ACPI_STATUS
 AcpiEnableEvent (
     UINT32                  Event,
-    UINT32                  Type)
+    UINT32                  Type,
+    UINT32                  Flags)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  RegisterId;
@@ -301,13 +303,12 @@ AcpiEnableEvent (
          * Enable the requested fixed event (by writing a one to the
          * enable register bit)
          */
-
         AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RegisterId, 1);
 
         if (1 != AcpiHwRegisterBitAccess(ACPI_READ, ACPI_MTX_LOCK, RegisterId))
         {
-            DEBUG_PRINTP (ACPI_ERROR, 
-                ("Fixed event bit clear when it should be set\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Fixed event bit clear when it should be set\n"));
             return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
         }
 
@@ -327,7 +328,15 @@ AcpiEnableEvent (
 
         /* Enable the requested GPE number */
 
-        AcpiHwEnableGpe (Event);
+        if (Flags & ACPI_EVENT_ENABLE)
+        {
+            AcpiHwEnableGpe (Event);
+        }
+        if (Flags & ACPI_EVENT_WAKE_ENABLE)
+        {
+            AcpiHwEnableGpeForWakeup (Event);
+        }
+
         break;
 
 
@@ -346,7 +355,8 @@ AcpiEnableEvent (
  * FUNCTION:    AcpiDisableEvent
  *
  * PARAMETERS:  Event           - The fixed event or GPE to be enabled
- *              Type            - The type of event
+ *              Type            - The type of event, fixed or general purpose
+ *              Flags           - Wake disable vs. non-wake disable
  *
  * RETURN:      Status
  *
@@ -357,7 +367,8 @@ AcpiEnableEvent (
 ACPI_STATUS
 AcpiDisableEvent (
     UINT32                  Event,
-    UINT32                  Type)
+    UINT32                  Type,
+    UINT32                  Flags)
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  RegisterId;
@@ -414,13 +425,12 @@ AcpiDisableEvent (
          * Disable the requested fixed event (by writing a zero to the
          * enable register bit)
          */
-
         AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RegisterId, 0);
 
         if (0 != AcpiHwRegisterBitAccess(ACPI_READ, ACPI_MTX_LOCK, RegisterId))
         {
-            DEBUG_PRINTP (ACPI_ERROR, 
-                ("Fixed event bit set when it should be clear,\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Fixed event bit set when it should be clear,\n"));
             return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
         }
 
@@ -439,7 +449,15 @@ AcpiDisableEvent (
 
         /* Disable the requested GPE number */
 
-        AcpiHwDisableGpe (Event);
+        if (Flags & ACPI_EVENT_DISABLE)
+        {
+            AcpiHwDisableGpe (Event);
+        }
+        if (Flags & ACPI_EVENT_WAKE_DISABLE)
+        {
+            AcpiHwDisableGpeForWakeup (Event);
+        }
+
         break;
 
 
@@ -524,7 +542,6 @@ AcpiClearEvent (
          * Clear the requested fixed event (By writing a one to the
          * status register bit)
          */
-
         AcpiHwRegisterBitAccess (ACPI_WRITE, ACPI_MTX_LOCK, RegisterId, 1);
         break;
 
@@ -658,7 +675,6 @@ AcpiGetEventStatus (
     default:
         Status = AE_BAD_PARAMETER;
     }
-
 
     return_ACPI_STATUS (Status);
 }
