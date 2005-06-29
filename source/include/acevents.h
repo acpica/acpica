@@ -151,23 +151,25 @@ void
 EvRestoreAcpiState (
     void);
 
-INT32
-EvGpeDispatch (
-    UINT16              Index, 
-    UINT32              GpeBase, 
-    UINT16              GpeLength);
+ACPI_STATUS
+EvGpeInitialize (
+    void);
 
-INT32
+UINT32
+EvGpeDispatch (
+    UINT32              GpeNumber);
+
+UINT32
 EvGpeDetect (
     void);
 
-INT32
+UINT32
 EvFixedEventDetect (
     void);
 
-INT32
+UINT32
 EvFixedEventDispatch (
-    INT32               Event);
+    UINT32              Event);
 
 
 /* Debug stuff */
