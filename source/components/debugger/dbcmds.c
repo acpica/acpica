@@ -476,47 +476,56 @@ DbDisassembleAml (
 
 void
 DbDumpNamespace (
-    char                    *StartArg)
+    char                    *StartArg,
+    char                    *DepthArg)
 {
-    ACPI_HANDLE             SubtreeEntry;
+    ACPI_HANDLE             SubtreeEntry = Gbl_RootObject;
+    UINT32                  MaxDepth = ACPI_UINT32_MAX;
 
 
 
     /* No argument given, just start at the root and dump entire namespace */
 
-    if (!StartArg)
-    {
-        SubtreeEntry = Gbl_RootObject;
-    }
-
-    /* Check if numeric argument, must be an NTE */
-
-    else if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
+    if (StartArg)
     {
 
-        SubtreeEntry = (ACPI_HANDLE) STRTOUL (StartArg, NULL, 16);
-        if (!OsdReadable (SubtreeEntry, sizeof (NAME_TABLE_ENTRY)))
+        /* Check if numeric argument, must be an NTE */
+
+        if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
         {
-            OsdPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
-            return;
+            SubtreeEntry = (ACPI_HANDLE) STRTOUL (StartArg, NULL, 16);
+            if (!OsdReadable (SubtreeEntry, sizeof (NAME_TABLE_ENTRY)))
+            {
+                OsdPrintf ("Address %p is invalid in this address space\n", SubtreeEntry);
+                return;
+            }
+            if (!VALID_DESCRIPTOR_TYPE ((SubtreeEntry), DESC_TYPE_NTE))
+            {
+                OsdPrintf ("Address %p is not a valid NTE\n", SubtreeEntry);
+                return;
+            }
         }
-        if (!VALID_DESCRIPTOR_TYPE ((SubtreeEntry), DESC_TYPE_NTE))
+
+        /* Alpha argument */
+
+        else
         {
-            OsdPrintf ("Address %p is not a valid NTE\n", SubtreeEntry);
-            return;
+
+            /* The parameter is a name string that must be resolved to an NTE */
+
+            SubtreeEntry = DbLocalNsLookup (StartArg);
+            if (!SubtreeEntry)
+            {
+                SubtreeEntry = Gbl_RootObject;
+            }
         }
-    }
 
-    /* Alpha argument */
 
-    else
-    {
-        /* The parameter is a name string that must be resolved to an NTE */
+        /* Now we can check for the depth argument */
 
-        SubtreeEntry = DbLocalNsLookup (StartArg);
-        if (!SubtreeEntry)
+        if (DepthArg)
         {
-            return;
+            MaxDepth = STRTOUL (DepthArg, NULL, 0);
         }
     }
 
@@ -527,7 +536,7 @@ DbDumpNamespace (
     /* Display the subtree */
 
     DbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-    NsDumpObjects (ACPI_TYPE_Any, ACPI_UINT32_MAX, SubtreeEntry);
+    NsDumpObjects (ACPI_TYPE_Any, MaxDepth, SubtreeEntry);
     DbSetOutputDestination (DB_CONSOLE_OUTPUT);
 }
 
