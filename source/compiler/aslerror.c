@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -136,12 +136,14 @@ char                        *AslErrors [] = {
     "Could not open listing file",
     "Could not create debug filename",
     "Could not open debug file",
+    "Could not open include file",
     "Package length too long to encode",
     "Invalid priority value",
     "Invalid performace/robustness value",
     "Method variable not initialized:",
     "Method argument is invalid:",
     "Reserved method does not return a value:",
+    "Unsupported feature:",
 };
 
 

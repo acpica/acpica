@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -140,21 +140,40 @@
  ******************************************************************************/
 
 void
-CgAmlPackageLengthWalk (
-    ASL_PARSE_NODE              *Node,
-    UINT32                      Level,
-    void                        *Context)
+LnInitLengthsWalk (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context)
+{
+
+//    Node->AmlLength = 0;
+//    Node->AmlOpcodeLength = 0;
+    Node->AmlSubtreeLength = 0;
+//    Node->AmlPkgLenBytes = 0;
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+LnPackageLengthWalk (
+    ASL_PARSE_NODE          *Node,
+    UINT32                  Level,
+    void                    *Context)
 {
 
 
-
-    /* TBD Do an "init nodes" walk ?? */
-/*
-    Node->AmlLength = 0;
-    Node->AmlOpcodeLength = 0;
-    Node->AmlSubtreeLength = 0;
-    Node->AmlPkgLenBytes = 0;
-*/
     /* 
      * generate the subtree length and
      * bubble it up to the parent
@@ -297,17 +316,20 @@ CgGenerateAmlOpcodeLength (
     switch (Node->AmlOpcode)
     {
     case AML_BYTE_OP:
-        Node->AmlLength += 1;
+        Node->AmlLength = 1;
         break;
 
     case AML_WORD_OP:
-        Node->AmlLength += 2;
+        Node->AmlLength = 2;
         break;
 
     case AML_DWORD_OP:
-        Node->AmlLength += 4;
+        Node->AmlLength = 4;
         break;
 
+    case AML_QWORD_OP:
+        Node->AmlLength = 8;
+        break;
     }
 }
 
@@ -357,7 +379,7 @@ CgGenerateAmlLengths (
         return;
 
     case AML_RAW_DATA_BUFFER:
-        /* Aml length set by creator */
+        /* Aml length is/was set by creator */
         Node->AmlOpcodeLength = 0;
         return;
     }
@@ -411,7 +433,7 @@ CgGenerateAmlLengths (
 
     case RAW_DATA:
         Node->AmlOpcodeLength = 0;
-        Node->AmlLength = 1;
+//        Node->AmlLength = 1;
         break;
 
     /* Ignore the "default arg" nodes, they are extraneous at this point */

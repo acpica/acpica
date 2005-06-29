@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.7 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -142,8 +142,8 @@ Usage (
     void)
 {
     printf ("Usage:    %s [-cdlno] <InputFile>\n\n", CompilerName);
-    printf ("Options:  -c               Generate ACPI 1.0 table (32-bit)\n");
-    printf ("          -d               Create debug/trace output file (*.txt)\n");
+    printf ("Options:  -d               Create debug/trace output file (*.txt)\n");
+    printf ("          -i               Ignore errors, always create AML file\n");
     printf ("          -l               Create listing file (*.lst)\n");
     printf ("          -n               Create namespace file (*.nsp)\n");
     printf ("          -o <filename>    Specify output file (default is *.aml)\n");
@@ -190,14 +190,15 @@ main (
 
     /* Get the command line options */
 
-    while ((j = getopt (argc, argv, "1dn")) != EOF) switch (j)
+    while ((j = getopt (argc, argv, "din")) != EOF) switch (j)
     {
-    case 'c':
-        break;
-
     case 'd':
         Gbl_DebugFlag = TRUE;
         AslCompilerdebug = 1; /* same as yydebug */
+        break;
+
+    case 'i':
+        Gbl_IgnoreErrors = TRUE;
         break;
 
     case 'n':
@@ -241,7 +242,7 @@ main (
     /* Calculate all AML package lengths */
 
     DbgPrint ("\nGenerating Package lengths\n\n");
-    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, CgAmlPackageLengthWalk, NULL);
+    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
 
     /* Semantic error checking */
 
@@ -261,6 +262,11 @@ main (
 
     LkCrossReferenceNamespace ();
 
+    /* Calculate all AML package lengths */
+
+    DbgPrint ("\nGenerating Package lengths\n\n");
+    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnInitLengthsWalk, NULL);
+    TgWalkParseTree (ASL_WALK_VISIT_UPWARD, NULL, LnPackageLengthWalk, NULL);
 
     /* Code generation - emit the AML */
 
@@ -271,6 +277,10 @@ main (
     CgCloseTable ();
     fclose (Gbl_OutputAmlFile);
 
+    if ((ErrorCount > 0) && (!Gbl_IgnoreErrors))
+    {
+        unlink (Gbl_OutputFilename);
+    }
 
     UtDisplaySummary ();
 

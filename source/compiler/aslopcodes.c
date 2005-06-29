@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -1038,6 +1038,11 @@ CgDoEisaId (
     SwappedId |= (id >> 24) & 0xFF;
 
     Node->Value.Integer32 = SwappedId;
+
+    /* Node is now an integer */
+
+    Node->ParseOpcode = INTEGER;
+    CgSetOptimalIntegerSize (Node);
 }
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -171,6 +171,11 @@ _TgUpdateNode (
 {
 
 
+    if (!Node)
+    {
+        return NULL;
+    }
+
     DbgPrint ("\nUpdateNode: Old - %s, New - %s\n\n",
                 UtGetOpName (Node->ParseOpcode),
                 UtGetOpName (ParseOpcode));
@@ -200,6 +205,11 @@ _TgSetNodeFlags (
 
 
     DbgPrint ("\nSetNodeFlags: Node %p, %d\n\n", Node, Flags);
+
+    if (!Node)
+    {
+        return NULL;
+    }
 
     Node->Flags |= Flags;
 

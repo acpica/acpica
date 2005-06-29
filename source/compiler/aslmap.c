@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -232,6 +232,7 @@ ASL_MAPPING_ENTRY AslKeywordMapping [] =
 /* HEXSTR */                    OP_TABLE_ENTRY (AML_HEX_STR_OP,             0, 0),
 /* IF */                        OP_TABLE_ENTRY (AML_IF_OP,                  0,                  NODE_AML_PACKAGE),
 /* INCLUDE */                   OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
+/* INCLUDE_CSTYLE */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0, 0),
 /* INCREMENT */                 OP_TABLE_ENTRY (AML_INCREMENT_OP,           0, 0),
 /* INDEX */                     OP_TABLE_ENTRY (AML_INDEX_OP,               0, 0),
 /* INDEXFIELD */                OP_TABLE_ENTRY (AML_INDEX_FIELD_OP,         0,                  NODE_AML_PACKAGE),

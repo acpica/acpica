@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.2 $
+ * Module Name: asllookup- Namespace lookup
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -183,9 +183,9 @@ LkCrossReferenceNamespace (void)
 
 ACPI_STATUS
 LkNamespaceLocateBegin (
-    ASL_PARSE_NODE              *PsNode,
-    UINT32                      Level,
-    void                        *Context)
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  Level,
+    void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_NAMESPACE_NODE     *NsNode;
@@ -266,7 +266,7 @@ LkNamespaceLocateBegin (
 
         PsNode->ParseOpcode     = INTEGER;
         PsNode->AmlOpcode       = AML_DWORD_OP;
-        PsNode->Value.Integer   = (UINT64) NsNode->Object;
+        PsNode->Value.Integer   = (UINT64) NsNode->OwnerId;
 
         PsNode->AmlLength = CgSetOptimalIntegerSize (PsNode);
 
@@ -277,7 +277,7 @@ LkNamespaceLocateBegin (
         /*
          * Must adjust all package lengths to the root
          */
-        LnAdjustLengthToRoot (PsNode, LengthDelta);
+//        LnAdjustLengthToRoot (PsNode, LengthDelta);
     }
 
     PsNode->NsNode = NsNode;
@@ -301,9 +301,9 @@ LkNamespaceLocateBegin (
 
 ACPI_STATUS
 LkNamespaceLocateEnd (
-    ASL_PARSE_NODE              *PsNode,
-    UINT32                      Level,
-    void                        *Context)
+    ASL_PARSE_NODE          *PsNode,
+    UINT32                  Level,
+    void                    *Context)
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     OBJECT_TYPE_INTERNAL    DataType;
