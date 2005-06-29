@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.76 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -164,6 +164,74 @@ static ARGUMENT_INFO        AcpiDbStatTypes [] =
 #define CMD_STAT_TABLES          4
 #define CMD_STAT_SIZES           5
 #define CMD_STAT_STACK           6
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbListInfo
+ *
+ * PARAMETERS:  List            - Memory list/cache to be displayed
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Display information about the input memory list or cache.
+ *
+ ******************************************************************************/
+
+void
+AcpiDbListInfo (
+    ACPI_MEMORY_LIST        *List)
+{
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+    UINT32                  Outstanding;
+    UINT32                  Temp;
+#endif
+
+    AcpiOsPrintf ("\n%s\n", List->ListName);
+
+    /* MaxDepth > 0 indicates a cache object */
+
+    if (List->MaxDepth > 0)
+    {
+        AcpiOsPrintf (
+            "    Cache: [Depth Max Avail Size]         % 7d % 7d % 7d % 7d B\n",
+            List->CurrentDepth,
+            List->MaxDepth,
+            List->MaxDepth - List->CurrentDepth,
+            (List->CurrentDepth * List->ObjectSize));
+    }
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+    if (List->MaxDepth > 0)
+    {
+        AcpiOsPrintf (
+            "    Cache: [Requests Hits Misses ObjSize] % 7d % 7d % 7d % 7d B\n",
+            List->Requests,
+            List->Hits,
+            List->Requests - List->Hits,
+            List->ObjectSize);
+    }
+
+    Outstanding = List->TotalAllocated -
+                    List->TotalFreed -
+                    List->CurrentDepth;
+
+    if (List->ObjectSize)
+    {
+        Temp = ACPI_ROUND_UP_TO_1K (Outstanding * List->ObjectSize);
+    }
+    else
+    {
+        Temp = ACPI_ROUND_UP_TO_1K (List->CurrentTotalSize);
+    }
+
+    AcpiOsPrintf (
+        "    Mem:   [Alloc Free Outstanding Size]  % 7d % 7d % 7d % 7d Kb\n",
+        List->TotalAllocated,
+        List->TotalFreed,
+        Outstanding, Temp);
+#endif
+}
 
 
 /*******************************************************************************
@@ -388,9 +456,6 @@ AcpiDbDisplayStatistics (
 {
     UINT32                  i;
     UINT32                  Temp;
-#ifdef ACPI_DBG_TRACK_ALLOCATIONS
-    UINT32                  Outstanding;
-#endif
 
 
     if (!AcpiGbl_DSDT)
@@ -458,46 +523,15 @@ AcpiDbDisplayStatistics (
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
         AcpiOsPrintf ("\n----Object and Cache Statistics---------------------------------------------\n");
 
-        for (i = 0; i < ACPI_NUM_MEM_LISTS; i++)
-        {
-            AcpiOsPrintf ("\n%s\n", AcpiGbl_MemoryLists[i].ListName);
+        AcpiDbListInfo (AcpiGbl_GlobalList);
+        AcpiDbListInfo (AcpiGbl_NsNodeList);
 
-            if (AcpiGbl_MemoryLists[i].MaxCacheDepth > 0)
-            {
-                AcpiOsPrintf (
-                    "    Cache: [Depth Max Avail Size]         % 7d % 7d % 7d % 7d B\n",
-                    AcpiGbl_MemoryLists[i].CacheDepth,
-                    AcpiGbl_MemoryLists[i].MaxCacheDepth,
-                    AcpiGbl_MemoryLists[i].MaxCacheDepth - AcpiGbl_MemoryLists[i].CacheDepth,
-                    (AcpiGbl_MemoryLists[i].CacheDepth * AcpiGbl_MemoryLists[i].ObjectSize));
-
-                AcpiOsPrintf (
-                    "    Cache: [Requests Hits Misses ObjSize] % 7d % 7d % 7d % 7d B\n",
-                    AcpiGbl_MemoryLists[i].CacheRequests,
-                    AcpiGbl_MemoryLists[i].CacheHits,
-                    AcpiGbl_MemoryLists[i].CacheRequests - AcpiGbl_MemoryLists[i].CacheHits,
-                    AcpiGbl_MemoryLists[i].ObjectSize);
-            }
-
-            Outstanding = AcpiGbl_MemoryLists[i].TotalAllocated -
-                            AcpiGbl_MemoryLists[i].TotalFreed -
-                            AcpiGbl_MemoryLists[i].CacheDepth;
-
-            if (AcpiGbl_MemoryLists[i].ObjectSize)
-            {
-                Temp = ACPI_ROUND_UP_TO_1K (Outstanding * AcpiGbl_MemoryLists[i].ObjectSize);
-            }
-            else
-            {
-                Temp = ACPI_ROUND_UP_TO_1K (AcpiGbl_MemoryLists[i].CurrentTotalSize);
-            }
-
-            AcpiOsPrintf (
-                "    Mem:   [Alloc Free Outstanding Size]  % 7d % 7d % 7d % 7d Kb\n",
-                AcpiGbl_MemoryLists[i].TotalAllocated,
-                AcpiGbl_MemoryLists[i].TotalFreed,
-                Outstanding, Temp);
-        }
+#ifdef ACPI_USE_LOCAL_CACHE
+        AcpiDbListInfo (AcpiGbl_OperandCache);
+        AcpiDbListInfo (AcpiGbl_PsNodeCache);
+        AcpiDbListInfo (AcpiGbl_PsNodeExtCache);
+        AcpiDbListInfo (AcpiGbl_StateCache);
+#endif
 #endif
 
         break;
