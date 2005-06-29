@@ -117,10 +117,8 @@
 #define __CMCOPY_C__
 
 #include <acpi.h>
-#include <acobject.h>
 #include <interp.h>
 #include <namesp.h>
-#include <pnp.h>
 
 
 #define _COMPONENT          MISCELLANEOUS
