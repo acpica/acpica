@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -399,7 +399,7 @@ AcpiDsMethodDataSetValue (
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, 
-        "obj %X op %X, ref count = %d [%s]\n", Object, 
+        "obj %p op %X, ref count = %d [%s]\n", Object, 
         Opcode, Object->Common.ReferenceCount, 
         AcpiUtGetTypeName (Object->Common.Type)));
 
@@ -424,7 +424,7 @@ AcpiDsMethodDataSetValue (
             return_ACPI_STATUS (Status);
         }
 
-       ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Object Copied %X, new %X\n", 
+       ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Object Copied %p, new %p\n", 
            Object, NewDesc));
     }
     else
