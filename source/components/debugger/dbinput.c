@@ -691,7 +691,7 @@ DbCommandDispatch (
     case CMD_TERMINATE:
         CmSubsystemShutdown ();
 
-        /* Need some way to re-initialize without re-creating the semaphores! */
+        /* TBD: Need some way to re-initialize without re-creating the semaphores! */
 
 //        AcpiInitialize (NULL);
         break;
