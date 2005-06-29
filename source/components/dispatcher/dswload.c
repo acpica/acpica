@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -316,11 +316,12 @@ AcpiDsLoad1BeginOp (
              *  Scope (DEB) { ... }
              */
 
-            ACPI_REPORT_ERROR (("Invalid type (%s) for target of Scope operator [%4.4s], changing type to ANY\n", 
+            ACPI_REPORT_WARNING (("Invalid type (%s) for target of Scope operator [%4.4s], changing type to ANY\n", 
                 AcpiUtGetTypeName (Node->Type), Path));
 
-             Node->Type = ACPI_TYPE_ANY;
-             break;
+            Node->Type = ACPI_TYPE_ANY;
+            WalkState->ScopeInfo->Common.Value = ACPI_TYPE_ANY;
+            break;
 
        default:
 
@@ -583,6 +584,53 @@ AcpiDsLoad2BeginOp (
 
     if (ACPI_SUCCESS (Status))
     {
+        /*
+         * For the scope op, we must check to make sure that the target is
+         * one of the opcodes that actually opens a scope
+         */
+        if (WalkState->Opcode == AML_SCOPE_OP)
+        {
+            switch (Node->Type)
+            {
+            case ACPI_TYPE_ANY:         /* Scope nodes are untyped (ANY) */
+            case ACPI_TYPE_DEVICE:
+            case ACPI_TYPE_METHOD:
+            case ACPI_TYPE_POWER:
+            case ACPI_TYPE_PROCESSOR:
+            case ACPI_TYPE_THERMAL:
+
+                /* These are acceptable types */
+                break;
+
+            case ACPI_TYPE_INTEGER:
+            case ACPI_TYPE_STRING:
+            case ACPI_TYPE_BUFFER:
+
+                /* 
+                 * These types we will allow, but we will change the type.  This
+                 * enables some existing code of the form:
+                 *
+                 *  Name (DEB, 0)
+                 *  Scope (DEB) { ... }
+                 */
+
+                ACPI_REPORT_WARNING (("Invalid type (%s) for target of Scope operator [%4.4s], changing type to ANY\n", 
+                    AcpiUtGetTypeName (Node->Type), BufferPtr));
+
+                Node->Type = ACPI_TYPE_ANY;
+                WalkState->ScopeInfo->Common.Value = ACPI_TYPE_ANY;
+                break;
+
+           default:
+
+                /* All other types are an error */
+
+                ACPI_REPORT_ERROR (("Invalid type (%s) for target of Scope operator [%4.4s]\n", 
+                    AcpiUtGetTypeName (Node->Type), BufferPtr));
+
+                return (AE_AML_OPERAND_TYPE);
+            }
+        }
         if (!Op)
         {
             /* Create a new op */
