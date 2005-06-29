@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -262,7 +262,7 @@ AcpiEvExecuteRegMethod (
     /*
      *  Execute the method, no return value
      */
-    AcpiCmDisplayInitPathname (RegionObj->Region.Extra->Extra.Method_REG, "  [Method]");
+    DEBUG_EXEC(AcpiCmDisplayInitPathname (RegionObj->Region.Extra->Extra.Method_REG, "  [Method]"));
     Status = AcpiNsEvaluateByHandle (RegionObj->Region.Extra->Extra.Method_REG, Params, NULL);
     return_ACPI_STATUS (Status);
 }
