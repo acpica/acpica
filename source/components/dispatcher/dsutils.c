@@ -117,12 +117,10 @@
 #define __PSXUTILS_C__
 
 #include <acpi.h>
-#include <interpreter.h>
 #include <amlcode.h>
-#include <namespace.h>
-
 #include <parser.h>
-#include <psopcode.h>
+#include <interpreter.h>
+#include <namespace.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psxutils");
@@ -230,6 +228,94 @@ PsxInitObjectFromOp (
 
 /*****************************************************************************
  *
+ * FUNCTION:    PsxStoreOrDeleteResult
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: 
+ *
+ ****************************************************************************/
+
+void
+PsxSaveOrDeleteResult (
+    ACPI_GENERIC_OP         *Op)
+{
+    ACPI_OP_INFO            *ParentInfo;
+
+
+    if (!Op)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("PsxStoreOrDeleteResult: Null Op=%X\n",
+                        Op));
+        return;
+    }
+
+    if (!Op->Parent)
+    {
+        /* If there is no parent, the result can't possibly be used! */
+        /* (An executing method typically has no parent, since each method is parsed separately */
+
+        if (Op->ResultObj)
+        {
+            CmDeleteInternalObject (Op->ResultObj);
+            Op->ResultObj = NULL;
+        }
+
+        return;
+    }
+
+
+    /*
+     * Get info on the parent.  The root Op is AML_Scope
+     */
+
+    ParentInfo = PsGetOpcodeInfo (Op->Parent->Opcode);
+    if (!ParentInfo)
+    {
+        DEBUG_PRINT (ACPI_ERROR, ("PsxStoreOrDeleteResult: Unknown parent opcode. Op=%X\n",
+                        Op));
+
+        return;
+    }
+
+
+    /*
+     * Decide what to do with the result based on the parent.  If the parent opcode
+     * will not use the result, delete the object.  Otherwise leave it as is, it will
+     * be deleted when it is used as an operand later.
+     */
+    switch (ParentInfo->Type)
+    {
+
+    /*
+     * In these cases, the parent will never use the return object, so delete it 
+     * here and now.
+     */
+    case OPTYPE_CONTROL:        /* IF, ELSE, WHILE only */
+    case OPTYPE_NAMED_OBJECT:   /* Scope, method, etc. */
+
+        if (Op->ResultObj)
+        {
+            CmDeleteInternalObject (Op->ResultObj);
+            Op->ResultObj = NULL;
+        }
+        break;
+
+    /* 
+     * In all other cases. the parent will actually use the return object, so keep it.
+     */
+    default:
+        break;
+    }
+
+    return;
+}
+
+
+/*****************************************************************************
+ *
  * FUNCTION:    PsxCreateOperands
  *
  * PARAMETERS:  FirstArg            - First argument of a parser argument tree
@@ -244,6 +330,7 @@ PsxInitObjectFromOp (
 
 ACPI_STATUS
 PsxCreateOperands (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *FirstArg)
 {
     ACPI_STATUS             Status = AE_OK;
@@ -275,10 +362,6 @@ PsxCreateOperands (
             DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: Getting a name: Arg=%p\n", Arg));
 
 
-            if (!Arg->Value.String)
-            {
-            }
-
             /* Get the entire name string from the AML stream */
 
             Status = AmlGetNameString (ACPI_TYPE_Any, Arg->Value.String, &NameString, &NameLength);
@@ -287,13 +370,12 @@ PsxCreateOperands (
                 goto Cleanup;
             }
 
-
             /* All prefixes have been handled, and the name is in NameString */
 
-            AmlObjStackDeleteValue (STACK_TOP);
-
             Status = NsLookup (Gbl_CurrentScope->Scope, NameString, ACPI_TYPE_Any, IMODE_Execute, 
-                                        NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) AmlObjStackGetTopPtr ());
+                                        NS_SEARCH_PARENT, (NAME_TABLE_ENTRY **) &ObjDesc);
+
+            PsxObjStackPush (ObjDesc, WalkState);
 
             /* Returned object is already on object stack, we are done! */
 
@@ -318,7 +400,7 @@ PsxCreateOperands (
                  * If the name is null, this means that this is an optional result parameter that was
                  * not specified in the original ASL.  Create an Lvalue for a placeholder 
                  */
-                Opcode = AML_ZeroOp;
+                Opcode = AML_ZeroOp;        /* Has no arguments! */
 
                 DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: Null namepath: Arg=%p\n", Arg));
 
@@ -342,18 +424,21 @@ PsxCreateOperands (
 
             if (Flags & OP_HAS_RETURN_VALUE)
             {
-                DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: Argument already on object stack! \n"));
+                DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: Argument computed earlier! \n"));
 
                 /* 
-                 * Argument is already on the stack, at the stack top.
+                 * Use value that was already previously returned by the evaluation of this argument
                  */
 
-                if (!AmlObjStackGetValue (STACK_TOP))
+                ObjDesc = Arg->ResultObj;
+                if (!ObjDesc)
                 {
-                    DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperands: But stack top is null! 1stArg=%X\n", FirstArg));
+                    DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperands: But result obj is null! 1stArg=%X\n", FirstArg));
                     Status = AE_AML_ERROR;
                     goto Cleanup;
                 }
+
+                PsxObjStackPush (ObjDesc, WalkState);
             }
 
             else
@@ -376,41 +461,41 @@ PsxCreateOperands (
                     goto Cleanup;
                 }
 
+                if (DataType == INTERNAL_TYPE_Lvalue)
+                {
+                    /* 
+                     * Constants, Local variables, and method arguments must be resolved here,
+                     * especially if we are processing arguments to a method invocation
+                     */
+
+                    Status = AmlGetRvalue (&ObjDesc);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        /* TBD: Obj desc may have been deleted ?? */
+
+                        goto Cleanup;
+                    }
+                }
+
                 /* Put the operand object on the object stack */
 
-                AmlObjStackDeleteValue (STACK_TOP);
-                AmlObjStackSetValue (STACK_TOP, ObjDesc);
+                PsxObjStackPush (ObjDesc, WalkState);
             }
         }
 
 
-        /* 
-         * Push object stack, because we either just put something in the top slot,
-         * or we want to preserve an object that was already on the stack.
-         */
-
-        Status = AmlObjStackPush ();
-        if (ACPI_FAILURE (Status))
-        {
-            goto Cleanup;
-        }
-
         /* Move on to next argument, if any */
 
-        DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: This Arg was %p firstarg=%p\n", Arg, FirstArg));
+        DEBUG_PRINT (TRACE_PARSE, ("PsxCreateOperands: %p done, Param=%X Arg1=%p\n", 
+                                Arg, ObjDesc, FirstArg));
         Arg = Arg->Next;
     }
 
-
-    /* Pop the stack so that the last operand is at the top */
-
-    AmlObjStackPop (1);
 
     return_ACPI_STATUS (Status);
 
 
 Cleanup:
-    /* TBD: Must pop and delete everything that was put on the stack! */
 
     DEBUG_PRINT (ACPI_ERROR, ("PsxCreateOperands: Error while creating! Status=%4.4X\n", Status));
     return_ACPI_STATUS (Status);
