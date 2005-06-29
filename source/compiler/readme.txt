@@ -1,22 +1,24 @@
 
 Instructions for integrating iASL compiler into MS VC++ 6.0 environment.
 
+Part 1.  Integration as a custom tool
+
 This procedure adds the iASL compiler as a custom tool that can be used
 to compile ASL source files.  The output is sent to the VC output 
 window.
 
-1) Select Tools->Customize.
+a) Select Tools->Customize.
 
-2) Select the "Tools" tab.
+b) Select the "Tools" tab.
 
-3) Scroll down to the bottom of the "Menu Contents" window.  There you
+c) Scroll down to the bottom of the "Menu Contents" window.  There you
    will see an empty rectangle.  Click in the rectangle to enter a 
    name for this tool.
 
-4) Type "iASL Compiler" in the box and hit enter.  You can now edit
+d) Type "iASL Compiler" in the box and hit enter.  You can now edit
    the other fields for this new custom tool.
 
-5) Enter the following into the fields:
+e) Enter the following into the fields:
 
    Command:             C:\Acpi\iasl.exe
    Arguments:           -e "$(FilePath)"
@@ -27,12 +29,23 @@ window.
    "-e" instructs the compiler to produce messages appropriate for VC.
    Quotes around FilePath and FileDir enable spaces in filenames.
 
-6) Select "Close".
+f) Select "Close".
 
 These steps will add the compiler to the tools menu as a custom tool.
 By enabling "Use Output Window", you can click on error messages in
 the output window and the source file and source line will be
 automatically displayed by VC.  Also, you can use F4 to step through
 the messages and the corresponding source line(s).
+
+
+Part 2.  Integration into a project build
+
+This procedure
+
+a) Create a new, empty project and add your .ASL files to the project
+
+b) 
+
+
 
 
