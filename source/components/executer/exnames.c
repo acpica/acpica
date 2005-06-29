@@ -190,8 +190,7 @@ AmlAllocateNameString (
         /* Allocation failure  */
 
         REPORT_ERROR ("AmlAllocateNameString: name allocation failure");
-        FUNCTION_EXIT;
-        return NULL;
+        return_VALUE (NULL);
     }
 
     TempPtr = NameString;
@@ -233,8 +232,7 @@ AmlAllocateNameString (
 
     *TempPtr = 0;
 
-    FUNCTION_EXIT;
-    return NameString;
+    return_VALUE (NameString);
 }
 
 
@@ -308,8 +306,7 @@ AmlDecodePackageLength (
         NumBytes = 4;
     }
 
-    FUNCTION_EXIT;
-    return NumBytes;
+    return_VALUE (NumBytes);
 }
 
 
@@ -415,8 +412,7 @@ AmlDoSeg (
 
     DEBUG_PRINT (TRACE_EXEC, ("Leave AmlDoSeg %s \n", ExceptionNames[Status]));
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -446,8 +442,8 @@ AmlDoName (
     ACPI_HANDLE             Handle;
     INT32                   MethodFlags;
     INT32                   ArgCount;
-    INT32                   PreviousStackTop;
-    INT32                   CurrentStackTop;
+    INT32                   PreviousStackTop = 0;
+    INT32                   CurrentStackTop = 0;
     UINT32                  StackOffset;
     METHOD_INFO             *MethodPtr;
     ACPI_HANDLE             MethodScope;
@@ -833,8 +829,7 @@ BREAKPOINT3;
         CmFree (NameString);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 

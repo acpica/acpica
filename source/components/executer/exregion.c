@@ -239,8 +239,7 @@ AmlSystemMemorySpaceHandler (
         break;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -338,8 +337,7 @@ AmlSystemIoSpaceHandler (
         break;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -449,8 +447,7 @@ AmlPciConfigSpaceHandler (
         break;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -484,8 +481,7 @@ AmlEmbeddedControllerSpaceHandler (
     FUNCTION_TRACE ("AmlEmbeddedControllerSpaceHandler");
 
     DEBUG_PRINT (ACPI_ERROR, ("AmlEmbeddedControllerSpaceHandler: **** EC OpRegion not implemented\n"));
-    FUNCTION_STATUS_EXIT (AE_NOT_IMPLEMENTED);
-    return AE_NOT_IMPLEMENTED;
+    return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
 
 
     /* Decode the function parameter */
@@ -503,8 +499,7 @@ AmlEmbeddedControllerSpaceHandler (
         break;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -538,8 +533,7 @@ AmlSmBusSpaceHandler (
     FUNCTION_TRACE ("AmlSmBusSpaceHandler");
 
     DEBUG_PRINT (ACPI_ERROR, ("AmlSmBusSpaceHandler: **** SmBus OpRegion not implemented\n"));
-    FUNCTION_STATUS_EXIT (AE_NOT_IMPLEMENTED);
-    return AE_NOT_IMPLEMENTED;
+    return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
 
 
     /* Decode the function parameter */
@@ -557,7 +551,6 @@ AmlSmBusSpaceHandler (
         break;
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 

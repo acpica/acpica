@@ -171,9 +171,6 @@ AmlExecCreateField (
     UINT32                  BitOffset;
     UINT32                  StackIndex;
     UINT8                   TypeFound;
-    char                    TypeName[20];
-    char                    *TypeFoundPtr = NULL;
-
 
 
 
@@ -207,8 +204,7 @@ AmlExecCreateField (
         /* Invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, opcode, NumOperands);
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
     /* Get pointers to everything that is now on the object stack */
@@ -231,8 +227,7 @@ AmlExecCreateField (
     if (!IS_NS_HANDLE (ResDesc))
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField (%s): destination must be a Name\n", OpName));
-        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-        return AE_AML_ERROR;
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
 
@@ -293,8 +288,7 @@ AmlExecCreateField (
         DEBUG_PRINT (ACPI_ERROR, (
                 "AmlExecCreateField: Internal error - unknown field creation opcode %02x\n",
                 opcode));
-        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-        return AE_AML_ERROR;
+        return_ACPI_STATUS (AE_AML_ERROR);
 
     } /* switch */
 
@@ -316,8 +310,7 @@ AmlExecCreateField (
             DEBUG_PRINT (ACPI_ERROR, ("AmlExecCreateField: Field exceeds Buffer %d > %d\n",
                             BitOffset + (UINT32)BitCount,
                             8 * (UINT32)SrcDesc->Buffer.Length));
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
+            return_ACPI_STATUS (AE_AML_ERROR);
         }
 
         /* Reuse "OffDesc" descriptor to build result */
@@ -334,6 +327,8 @@ AmlExecCreateField (
         break;
 
 
+    /* Improper object type */
+
     default:
 
         TypeFound = SrcDesc->Type;
@@ -341,19 +336,19 @@ AmlExecCreateField (
         if ((TypeFound > (UINT8) TYPE_Lvalue) ||
             (BadType == NsTypeNames[TypeFound]))
         {
-            sprintf (TypeName, "encoding %d", TypeFound);
-            TypeFoundPtr = TypeName;
-        }
-        else
-        {
-            TypeFoundPtr = NsTypeNames[TypeFound];
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlExecCreateField: Tried to create field in improper object type - encoding %d\n",
+                    TypeFound));
         }
 
-        DEBUG_PRINT (ACPI_ERROR, (
-                "AmlExecCreateField: Tried to create field in improper object type %s\n",
-                TypeFoundPtr));
-        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-        return AE_AML_ERROR;
+        else
+        {
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlExecCreateField: Tried to create field in improper object type - %s\n",
+                    NsTypeNames[TypeFound]));
+        }
+
+        return_ACPI_STATUS (AE_AML_ERROR);
     
     } /* switch */
 
@@ -404,14 +399,14 @@ AmlExecCreateField (
     
     Status = AmlExecStore (OffDesc, ResDesc);
 
-    /* Pop off everything from the stack */
-
+    /* 
+     * Pop off everything from the stack except the result,
+     * which we want to leave sitting at the stack top.
+     */
     AmlObjStackPop (NumOperands - 1);
-    AmlObjStackClearTop ();
 
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -452,8 +447,7 @@ AmlExecFatal (void)
         /* invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_FatalOp, 3);
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
     AmlDumpObjStack (MODE_Exec, LongOps[AML_FatalOp & 0x00ff], 3, "after AmlPrepObjStack");
@@ -471,8 +465,7 @@ AmlExecFatal (void)
                 ArgDesc->Number.Value));
 
     DEBUG_PRINT (ACPI_ERROR, ("AmlExecFatal: FatalOp executed\n"));
-    FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-    return AE_AML_ERROR;
+    return_ACPI_STATUS (AE_AML_ERROR);
 }
 
 
@@ -557,8 +550,7 @@ AmlExecIndex (void)
         AmlObjStackPop (2);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -596,7 +588,7 @@ AmlExecMatch (void)
     ACPI_OBJECT_INTERNAL    *V2Desc;
     ACPI_OBJECT_INTERNAL    *StartDesc;
     ACPI_STATUS             Status;
-    UINT32                  Look;
+    UINT32                  Index;
     UINT32                  MatchValue = (UINT32) -1;
 
 
@@ -610,9 +602,11 @@ AmlExecMatch (void)
         /* invalid parameters on object stack  */
 
         AmlAppendOperandDiag (_THIS_MODULE, __LINE__, (UINT16) AML_MatchOp, 6);
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
+
+
+    /* Get the parameters from the object stack */
 
     AmlDumpObjStack (MODE_Exec, ShortOps[AML_MatchOp], 6, "after AmlPrepObjStack");
 
@@ -629,16 +623,14 @@ AmlExecMatch (void)
         Op2Desc->Number.Value < 0 || Op2Desc->Number.Value > 5)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: operation encoding out of range\n"));
-        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-        return AE_AML_ERROR;
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
-    Look = StartDesc->Number.Value;
-    if (Look < 0 || Look >= (UINT32) PkgDesc->Package.Count)
+    Index = StartDesc->Number.Value;
+    if (Index < 0 || Index >= (UINT32) PkgDesc->Package.Count)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMatch: start position value out of range\n"));
-        FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-        return AE_AML_ERROR;
+        return_ACPI_STATUS (AE_AML_ERROR);
     }
 
     /* 
@@ -651,14 +643,14 @@ AmlExecMatch (void)
      * returned as a Number, this will produce the Ones value as specified.
      */
 
-    for ( ; Look < (UINT32) PkgDesc->Package.Count ; ++Look)
+    for ( ; Index < (UINT32) PkgDesc->Package.Count ; ++Index)
     {
         /* 
          * Treat any NULL or non-numeric elements as non-matching.
          * XXX - if an element is a Name, should we examine its value?
          */
-        if (!PkgDesc->Package.Elements[Look] ||
-            TYPE_Number != PkgDesc->Package.Elements[Look]->Type)
+        if (!PkgDesc->Package.Elements[Index] ||
+            TYPE_Number != PkgDesc->Package.Elements[Index]->Type)
         {
             continue;
         }
@@ -679,7 +671,7 @@ AmlExecMatch (void)
 
         case MATCH_MEQ:   /* true if equal   */
 
-            if (PkgDesc->Package.Elements[Look]->Number.Value
+            if (PkgDesc->Package.Elements[Index]->Number.Value
                  != V1Desc->Number.Value)
             {
                 continue;
@@ -689,7 +681,7 @@ AmlExecMatch (void)
 
         case MATCH_MLE:   /* true if less than or equal  */
 
-            if (PkgDesc->Package.Elements[Look]->Number.Value
+            if (PkgDesc->Package.Elements[Index]->Number.Value
                  > V1Desc->Number.Value)
             {
                 continue;
@@ -699,7 +691,7 @@ AmlExecMatch (void)
 
         case MATCH_MLT:   /* true if less than   */
 
-            if (PkgDesc->Package.Elements[Look]->Number.Value
+            if (PkgDesc->Package.Elements[Index]->Number.Value
                  >= V1Desc->Number.Value)
             {
                 continue;
@@ -709,7 +701,7 @@ AmlExecMatch (void)
 
         case MATCH_MGE:   /* true if greater than or equal   */
 
-            if (PkgDesc->Package.Elements[Look]->Number.Value
+            if (PkgDesc->Package.Elements[Index]->Number.Value
                  < V1Desc->Number.Value)
             {
                 continue;
@@ -719,7 +711,7 @@ AmlExecMatch (void)
 
         case MATCH_MGT:   /* true if greater than    */
 
-            if (PkgDesc->Package.Elements[Look]->Number.Value
+            if (PkgDesc->Package.Elements[Index]->Number.Value
                  <= V1Desc->Number.Value)
             {
                 continue;
@@ -743,7 +735,7 @@ AmlExecMatch (void)
 
         case MATCH_MEQ:
 
-            if (PkgDesc->Package.Elements[Look]->Number.Value
+            if (PkgDesc->Package.Elements[Index]->Number.Value
                  != V2Desc->Number.Value)
             {
                 continue;
@@ -753,7 +745,7 @@ AmlExecMatch (void)
 
         case MATCH_MLE:
 
-            if (PkgDesc->Package.Elements[Look]->Number.Value
+            if (PkgDesc->Package.Elements[Index]->Number.Value
                  > V2Desc->Number.Value)
             {
                 continue;
@@ -763,7 +755,7 @@ AmlExecMatch (void)
 
         case MATCH_MLT:
 
-            if (PkgDesc->Package.Elements[Look]->Number.Value
+            if (PkgDesc->Package.Elements[Index]->Number.Value
                  >= V2Desc->Number.Value)
             {
                 continue;
@@ -773,7 +765,7 @@ AmlExecMatch (void)
 
         case MATCH_MGE:
 
-            if (PkgDesc->Package.Elements[Look]->Number.Value
+            if (PkgDesc->Package.Elements[Index]->Number.Value
                  < V2Desc->Number.Value)
             {
                 continue;
@@ -783,7 +775,7 @@ AmlExecMatch (void)
 
         case MATCH_MGT:
 
-            if (PkgDesc->Package.Elements[Look]->Number.Value
+            if (PkgDesc->Package.Elements[Index]->Number.Value
                  <= V2Desc->Number.Value)
             {
                 continue;
@@ -798,7 +790,7 @@ AmlExecMatch (void)
 
         /* Match found: exit from loop */
         
-        MatchValue = Look;
+        MatchValue = Index;
         break;
     }
 
@@ -817,6 +809,5 @@ AmlExecMatch (void)
 
     AmlObjStackPop (5);          
 
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    return_ACPI_STATUS (AE_OK);
 }

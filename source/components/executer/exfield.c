@@ -327,8 +327,7 @@ AmlSetupField (
         }
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -375,8 +374,7 @@ AmlReadField (
     Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
     if (AE_OK != Status)
     {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
     /* SetupField validated RgnDesc and FieldBitWidth  */
@@ -429,8 +427,7 @@ AmlReadField (
 
     DEBUG_PRINT (TRACE_OPREGION, ("AmlReadField: Returned value=%08lx \n", *Value));
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -474,8 +471,7 @@ AmlWriteField (
     Status = AmlSetupField (ObjDesc, RgnDesc, FieldBitWidth);
     if (AE_OK != Status)
     {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;
+        return_ACPI_STATUS (Status);
     }
 
     Address = RgnDesc->Region.Address
@@ -511,8 +507,7 @@ AmlWriteField (
                         RgnDesc->Region.SpaceId));
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -749,8 +744,7 @@ AmlAccessNamedField (
 
     AmlReleaseGlobalLock (Locked);
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -787,8 +781,7 @@ AmlSetNamedFieldValue (
         Status = AmlAccessNamedField (ACPI_WRITE, NamedField, &Value);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -832,9 +825,6 @@ AmlGetNamedFieldValue (
         Status = AmlAccessNamedField (ACPI_READ, NamedField, Value);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
-
-
   

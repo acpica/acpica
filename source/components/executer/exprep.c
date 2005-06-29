@@ -254,8 +254,7 @@ AmlPrepDefFieldValue (
                     (UINT8) NsGetType ((ACPI_HANDLE) AmlObjStackGetValue (0)));
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -331,8 +330,7 @@ AmlPrepBankFieldValue (
                     ((UINT8 *) ObjDesc)[3]));
             CmFree (ObjDesc);
 
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
+            return_ACPI_STATUS (AE_AML_ERROR);
         }
     }
 
@@ -375,8 +373,7 @@ AmlPrepBankFieldValue (
     }
 
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -440,8 +437,7 @@ AmlPrepIndexFieldValue (
                     ObjDesc, ((UINT8 *) ObjDesc)[0], ((UINT8 *) ObjDesc)[1], ((UINT8 *) ObjDesc)[2],
                     ((UINT8 *) ObjDesc)[3]));
             CmFree (ObjDesc);
-            FUNCTION_STATUS_EXIT (AE_AML_ERROR);
-            return AE_AML_ERROR;
+            return_ACPI_STATUS (AE_AML_ERROR);
         }
     }
 
@@ -482,7 +478,6 @@ AmlPrepIndexFieldValue (
                     (UINT8) NsGetType ((ACPI_HANDLE) AmlObjStackGetValue (0)));
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 

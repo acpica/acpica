@@ -241,8 +241,7 @@ AmlExecuteMethod (
                         AmlObjStackLevel()));
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -301,8 +300,7 @@ AmlExecStore (
         {   
             /* Allocation failure  */
             
-            FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
-            return AE_NO_MEMORY;
+            return_ACPI_STATUS (AE_NO_MEMORY);
         }
         else
         {
@@ -358,8 +356,7 @@ AmlExecStore (
 
     if (AE_OK != Status)
     {
-        FUNCTION_STATUS_EXIT (Status);
-        return Status;   /* TBD: temporary hack */
+        return_ACPI_STATUS (Status);   /* TBD: temporary hack */
     }
 
 
@@ -889,8 +886,7 @@ AmlExecStore (
         AmlObjStackPop (1);
     }
 
-    FUNCTION_STATUS_EXIT (Status);
-    return Status;
+    return_ACPI_STATUS (Status);
 }
 
 
