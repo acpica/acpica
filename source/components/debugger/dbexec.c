@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  ******************************************************************************/
 
@@ -308,14 +308,17 @@ AcpiDbExecutionWalk (
     ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
 
     AcpiNsPrintNodePathname (Node, "Execute");
+
     /* Do the actual method execution */
 
     AcpiOsPrintf ("\n");
+    AcpiGbl_MethodExecuting = TRUE;
 
     Status = AcpiEvaluateObject (Node, NULL, NULL, &ReturnObj);
 
     AcpiOsPrintf ("[%4.4s] returned %s\n", Node->Name.Ascii, 
         AcpiFormatException (Status));
+    AcpiGbl_MethodExecuting = FALSE;
 
     return (AE_OK);
 }
