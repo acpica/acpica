@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.45 $
+ *       $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -146,20 +146,6 @@
 
 #define ACPI_CA_VERSION             __DATE__
 
-
-/*
- * How and when control methods will be parsed
- * The default action is to parse all methods at table load time to verify them, but delete the parse trees
- * to conserve memory.  Methods are parsed just in time before execution and the parse tree is deleted
- * when execution completes.
- */
-#define METHOD_PARSE_AT_INIT        0x0     /* Parse at table init, never delete the method parse tree */
-#define METHOD_PARSE_JUST_IN_TIME   0x1     /* Parse only when a method is invoked */
-#define METHOD_DELETE_AT_COMPLETION 0x2     /* Delete parse tree on method completion */
-
-/* Default parsing configuration */
-
-#define METHOD_PARSE_CONFIGURATION  (METHOD_PARSE_JUST_IN_TIME | METHOD_DELETE_AT_COMPLETION)
 
 
 /* Maximum objects in the various object caches */
