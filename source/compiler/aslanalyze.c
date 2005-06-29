@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.86 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -204,7 +204,7 @@ AnMapArgTypeToBtype (
 
         /* Buffer, string, package or reference to a Op - Used only by SizeOf operator*/
 
-        return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | 
+        return (ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER |
             ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE);
 
     case ARGI_COMPLEXOBJ:
@@ -220,7 +220,7 @@ AnMapArgTypeToBtype (
         return (ACPI_BTYPE_REGION | ACPI_BTYPE_FIELD_UNIT);
 
     case ARGI_DATAREFOBJ:
-        return (ACPI_BTYPE_INTEGER |ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER | 
+        return (ACPI_BTYPE_INTEGER |ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER |
             ACPI_BTYPE_PACKAGE | ACPI_BTYPE_REFERENCE | ACPI_BTYPE_DDB_HANDLE);
 
     default:
@@ -1036,7 +1036,10 @@ AnMethodAnalysisWalkBegin (
 
     case PARSEOP_STALL:
 
-        if (Op->Asl.Child->Asl.Value.Integer > ACPI_UINT8_MAX)
+        /* We can range check if the argument is an integer */
+
+        if ((Op->Asl.Child->Asl.ParseOpcode == PARSEOP_INTEGER) &&
+            (Op->Asl.Child->Asl.Value.Integer > ACPI_UINT8_MAX))
         {
             AslError (ASL_ERROR, ASL_MSG_INVALID_TIME, Op, NULL);
         }
