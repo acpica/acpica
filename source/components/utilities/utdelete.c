@@ -127,6 +127,30 @@
         MODULE_NAME         ("cmdelete");
 
 
+
+/******************************************************************************
+ * 
+ * FUNCTION:    CmDeleteOperand
+ *
+ * PARAMETERS:  Operand         - Pointer to the object to be deleted
+ *
+ * RETURN:      Delete an operand object, clear stack entry
+ *
+ *****************************************************************************/
+
+void
+CmDeleteOperand (
+    ACPI_OBJECT_INTERNAL    **Operand)
+{
+
+    CmDeleteInternalObject (*Operand);
+
+    /* Clear the stack slot to prevent multiple deletions */
+
+    *Operand = NULL;
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    CmUpdateRefCount

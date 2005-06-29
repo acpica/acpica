@@ -198,6 +198,8 @@ char                        *Gbl_ExceptionNames[] =
     "AE_TIME",
     "AE_TERMINATE",
     "AE_DEPTH",
+    "AE_TRUE",
+    "AE_FALSE",
     "AE_UNKNOWN_STATUS"
 };
 
@@ -205,6 +207,7 @@ char                        *Gbl_ExceptionNames[] =
 /* Message strings */
 
 char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
+char                        *Gbl_AcpiCaVersion = ACPI_CA_VERSION;
 
 
 
@@ -240,55 +243,61 @@ PREDEFINED_NAMES            Gbl_PreDefinedNames[] =
 
 
 /* 
+ * Properties of the ACPI Object Types, both internal and external.
+ * 
  * Elements of NsProperties are bit significant
- * and should be one-to-one with values of ACPI_OBJECT_TYPE
+ * and the table is indexed by values of ACPI_OBJECT_TYPE
  */
 
-INT32                       Gbl_NsProperties[] =    /* properties of types */
+UINT8                       Gbl_NsProperties[] = 
 {
-    0,                      /* 00 Any              */
-    0,                      /* 01 Number           */
-    0,                      /* 02 String           */
-    0,                      /* 03 Buffer           */
-    LOCAL,                  /* 04 Package          */
-    0,                      /* 05 FieldUnit        */
-    NEWSCOPE | LOCAL,       /* 06 Device           */
-    LOCAL,                  /* 07 Event            */
-    NEWSCOPE | LOCAL,       /* 08 Method           */
-    LOCAL,                  /* 09 Mutex            */
-    LOCAL,                  /* 10 Region           */
-    NEWSCOPE | LOCAL,       /* 11 Power            */
-    NEWSCOPE | LOCAL,       /* 12 Processor        */
-    NEWSCOPE | LOCAL,       /* 13 Thermal          */
-    0,                      /* 14 BufferField      */
-    0,                      /* 15 DdbHandle        */
-    0,                      /* 16 reserved         */
-    0,                      /* 17 reserved         */
-    0,                      /* 18 reserved         */
-    0,                      /* 19 reserved         */
-    0,                      /* 20 reserved         */
-    0,                      /* 21 reserved         */
-    0,                      /* 22 reserved         */
-    0,                      /* 23 reserved         */
-    0,                      /* 24 reserved         */
-    0,                      /* 25 DefField         */
-    0,                      /* 26 BankField        */
-    0,                      /* 27 IndexField       */
-    0,                      /* 28 DefFieldDefn     */
-    0,                      /* 29 BankFieldDefn    */
-    0,                      /* 30 IndexFieldDefn   */
-    0,                      /* 31 If               */
-    0,                      /* 32 Else             */
-    0,                      /* 33 While            */
-    NEWSCOPE,               /* 34 Scope            */
-    LOCAL,                  /* 35 DefAny           */
-    0,                      /* 36 Lvalue           */
-    0,                      /* 37 Alias            */
-    0,                      /* 38 Notify           */
-    0,                      /* 39 Address Handler  */
-    0                       /* 40 Invalid          */
+    NSP_NORMAL,                 /* 00 Any              */
+    NSP_NORMAL,                 /* 01 Number           */
+    NSP_NORMAL,                 /* 02 String           */
+    NSP_NORMAL,                 /* 03 Buffer           */
+    NSP_LOCAL,                  /* 04 Package          */
+    NSP_NORMAL,                 /* 05 FieldUnit        */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 06 Device           */
+    NSP_LOCAL,                  /* 07 Event            */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 08 Method           */
+    NSP_LOCAL,                  /* 09 Mutex            */
+    NSP_LOCAL,                  /* 10 Region           */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 11 Power            */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 12 Processor        */
+    NSP_NEWSCOPE | NSP_LOCAL,   /* 13 Thermal          */
+    NSP_NORMAL,                 /* 14 BufferField      */
+    NSP_NORMAL,                 /* 15 DdbHandle        */
+    NSP_NORMAL,                 /* 16 reserved         */
+    NSP_NORMAL,                 /* 17 reserved         */
+    NSP_NORMAL,                 /* 18 reserved         */
+    NSP_NORMAL,                 /* 19 reserved         */
+    NSP_NORMAL,                 /* 20 reserved         */
+    NSP_NORMAL,                 /* 21 reserved         */
+    NSP_NORMAL,                 /* 22 reserved         */
+    NSP_NORMAL,                 /* 23 reserved         */
+    NSP_NORMAL,                 /* 24 reserved         */
+    NSP_NORMAL,                 /* 25 DefField         */
+    NSP_NORMAL,                 /* 26 BankField        */
+    NSP_NORMAL,                 /* 27 IndexField       */
+    NSP_NORMAL,                 /* 28 DefFieldDefn     */
+    NSP_NORMAL,                 /* 29 BankFieldDefn    */
+    NSP_NORMAL,                 /* 30 IndexFieldDefn   */
+    NSP_NORMAL,                 /* 31 If               */
+    NSP_NORMAL,                 /* 32 Else             */
+    NSP_NORMAL,                 /* 33 While            */
+    NSP_NEWSCOPE,               /* 34 Scope            */
+    NSP_LOCAL,                  /* 35 DefAny           */
+    NSP_NORMAL,                 /* 36 Lvalue           */
+    NSP_NORMAL,                 /* 37 Alias            */
+    NSP_NORMAL,                 /* 38 Notify           */
+    NSP_NORMAL,                 /* 39 Address Handler  */
+    NSP_NORMAL                  /* 40 Invalid          */
 };
 
+
+
+
+#ifdef ACPI_DEBUG
 char                        Gbl_BadType[] = "UNDEFINED";
 
 #define TYPE_NAME_LENGTH    9                   /* Maximum length of each string */
@@ -347,6 +356,7 @@ char                        *Gbl_NsTypeNames[] =  /* printable names of types */
     "Invalid"
 };
 
+#endif
 
 /******************************************************************************
  *
@@ -394,7 +404,16 @@ CmInitGlobals (void)
 
     FUNCTION_TRACE ("CmInitGlobals");
 
-    
+    /* TBD: Remove rparser globals */
+
+#ifdef _RPARSER
+    Gbl_PkgStackLevel           = 0;
+    Gbl_ObjStackTop             = 0;
+    Gbl_MthStackHead            = NULL;
+    Gbl_MethodStackTop          = -1;
+#endif
+
+
     /* ACPI table structure */
 
     for (i = 0; i < ACPI_TABLE_MAX; i++)
@@ -417,6 +436,11 @@ CmInitGlobals (void)
     }
 
 
+    /* Global notify handlers */
+
+    Gbl_SysNotify.Handler       = NULL;
+    Gbl_DrvNotify.Handler       = NULL;
+
     /* Global "typed" ACPI table pointers */
 
     Gbl_RSDP                    = NULL;
@@ -437,14 +461,16 @@ CmInitGlobals (void)
     
     /* Stack pointers */
 
-    Gbl_MethodStackTop          = -1;
-    Gbl_PkgStackLevel           = 0;
-    Gbl_ObjStackTop             = 0;
+    Gbl_CurrentScope            = NULL;
 
     /* Interpreter */
 
     Gbl_BufSeq                  = 0;
     Gbl_NamedObjectErr          = FALSE;
+
+    /* Parser */
+
+    Gbl_ParsedNamespaceRoot     = NULL;
 
     /* Hardware oriented */
 
@@ -461,7 +487,7 @@ CmInitGlobals (void)
     Gbl_RootObject->DataType    = DESC_TYPE_NTE;
     Gbl_RootObject->Type        = ACPI_TYPE_Any;
     Gbl_RootObject->Fill1       = 0;
-    Gbl_RootObject->Name        = NS_ROOT;
+    Gbl_RootObject->Name        = * (UINT32 *) NS_ROOT;
     Gbl_RootObject->Scope       = NULL;
     Gbl_RootObject->ParentScope = NULL;
     Gbl_RootObject->ParentEntry = NULL;
