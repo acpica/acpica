@@ -264,7 +264,7 @@ AcpiOsTableOverride (
 BOOLEAN
 AcpiOsReadable (
     void                    *Pointer,
-    UINT32                  Length)
+    ACPI_SIZE               Length)
 {
 
     return (TRUE);
@@ -287,7 +287,7 @@ AcpiOsReadable (
 BOOLEAN
 AcpiOsWritable (
     void                    *Pointer,
-    UINT32                  Length)
+    ACPI_SIZE               Length)
 {
 
     return (TRUE);

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  *****************************************************************************/
 
@@ -485,7 +485,7 @@ AcpiOsGetTimer (void)
 BOOLEAN
 AcpiOsReadable (
     void                    *Pointer,
-    UINT32                  Length)
+    ACPI_SIZE               Length)
 {
 
     return ((BOOLEAN) !IsBadReadPtr (Pointer, Length));
@@ -508,7 +508,7 @@ AcpiOsReadable (
 BOOLEAN
 AcpiOsWritable (
     void                    *Pointer,
-    UINT32                  Length)
+    ACPI_SIZE               Length)
 {
 
     return ((BOOLEAN) !IsBadWritePtr (Pointer, Length));
