@@ -943,7 +943,7 @@ typedef struct
     UINT32                      AddressLength;
     UINT32                      ResourceSourceIndex;
     UINT32                      ResourceSourceStringLength;
-    UINT8                       ResourceSource[1];
+    NATIVE_CHAR                 ResourceSource[1];
 
 } ADDRESS16_RESOURCE;
 
@@ -962,7 +962,7 @@ typedef struct
     UINT32                      AddressLength;
     UINT32                      ResourceSourceIndex;
     UINT32                      ResourceSourceStringLength;
-    UINT8                       ResourceSource[1];
+    NATIVE_CHAR                 ResourceSource[1];
 
 } ADDRESS32_RESOURCE;
 
@@ -976,7 +976,7 @@ typedef struct
     UINT32                      Interrupts[1];
     UINT32                      ResourceSourceIndex;
     UINT32                      ResourceSourceStringLength;
-    UINT8                       ResourceSource[1];
+    NATIVE_CHAR                 ResourceSource[1];
 
 } EXTENDED_IRQ_RESOURCE;
 
