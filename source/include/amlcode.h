@@ -3,7 +3,7 @@
  * Name: amlcode.h - Definitions for AML, as included in "definition blocks"
  *                   Declarations and definitions contained herein are derived
  *                   directly from the ACPI specification.
- *       $Revision: 1.63 $
+ *       $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -461,7 +461,7 @@ typedef enum
     REGION_CMOS,
     REGION_PCI_BAR,
     REGION_DATA_TABLE,              /* Internal use only */
-    REGION_FIXED_HW                 = 0x7F,
+    REGION_FIXED_HW                 = 0x7F
 
 } AML_REGION_TYPES;
 
@@ -509,7 +509,7 @@ typedef enum
     AML_FIELD_ACCESS_WORD           = 0x02,
     AML_FIELD_ACCESS_DWORD          = 0x03,
     AML_FIELD_ACCESS_QWORD          = 0x04,    /* ACPI 2.0 */
-    AML_FIELD_ACCESS_BUFFER         = 0x05,    /* ACPI 2.0 */
+    AML_FIELD_ACCESS_BUFFER         = 0x05     /* ACPI 2.0 */
 
 } AML_ACCESS_TYPE;
 
@@ -519,7 +519,7 @@ typedef enum
 typedef enum
 {
     AML_FIELD_LOCK_NEVER            = 0x00,
-    AML_FIELD_LOCK_ALWAYS           = 0x10,
+    AML_FIELD_LOCK_ALWAYS           = 0x10
 
 } AML_LOCK_RULE;
 
@@ -530,7 +530,7 @@ typedef enum
 {
     AML_FIELD_UPDATE_PRESERVE       = 0x00,
     AML_FIELD_UPDATE_WRITE_AS_ONES  = 0x20,
-    AML_FIELD_UPDATE_WRITE_AS_ZEROS = 0x40,
+    AML_FIELD_UPDATE_WRITE_AS_ZEROS = 0x40
 
 } AML_UPDATE_RULE;
 
@@ -547,7 +547,7 @@ typedef enum
     AML_FIELD_ATTRIB_SMB_BYTE       = 0x06,
     AML_FIELD_ATTRIB_SMB_WORD       = 0x08,
     AML_FIELD_ATTRIB_SMB_BLOCK      = 0x0A,
-    AML_FIELD_ATTRIB_SMB_CALL       = 0x0E,
+    AML_FIELD_ATTRIB_SMB_CALL       = 0x0E
 
 } AML_ACCESS_ATTRIBUTE;
 
