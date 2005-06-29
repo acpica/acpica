@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.155 $
+ *              $Revision: 1.156 $
  *
  *****************************************************************************/
 
@@ -587,7 +587,8 @@ AcpiNsDumpOneObject (
 
         default:
 
-            AcpiOsPrintf ("(String or Buffer ptr - not an object descriptor)\n");
+            AcpiOsPrintf ("(String or Buffer ptr - not an object descriptor) [%s]\n",
+                    AcpiUtGetDescriptorName (ObjDesc));
             BytesToDump = 16;
             break;
         }
