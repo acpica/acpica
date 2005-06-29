@@ -315,7 +315,7 @@ NsDeleteScope (
          * and get the next appendage pointer.  This ptr is null at end-of-list.
          */
 
-        AllocatedTable =  (((UINT8 *) ThisTable) - sizeof (NAME_TABLE_ENTRY *));
+        AllocatedTable =  (((char *) ThisTable) - sizeof (NAME_TABLE_ENTRY *));
         ThisTable = NEXTSEG (ThisTable);
 
         DEBUG_PRINT (ACPI_INFO, ("NsDeleteScope: Deleting Name Table at %p \n", AllocatedTable));
