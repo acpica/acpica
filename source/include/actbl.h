@@ -254,21 +254,6 @@ typedef struct  /* Smart Battery Description Table */
 #define ACPI_TABLE_MULTIPLE     1
 
 
-/*
- * ACPI Table Descriptor.  One per ACPI table
- */
-typedef struct AcpiTableDesc
-{
-    struct AcpiTableDesc    *Prev;
-    struct AcpiTableDesc    *Next;
-    ACPI_TABLE_HEADER       *Pointer;
-    void                    *BasePointer;
-    UINT32                  Length;
-    UINT32                  Allocation;
-    UINT32                  Count;
-    UINT8                   Type;
-
-} ACPI_TABLE_DESC;
 
 
 /* Data about each known table type */
