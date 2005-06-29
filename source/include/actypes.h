@@ -128,6 +128,22 @@ typedef void            OSD_FILE;
 typedef INT32           LogHandle;
 #define NO_LOG_HANDLE   ((LogHandle) -1)
 
+
+/*
+ * Debug/Error reporting table definition
+ */
+
+typedef struct
+{
+    char            *Key;
+    char            Level;
+    char            *Description;
+    char            *Description2;
+
+} ST_KEY_DESC_TABLE;
+
+
+
 /* Operational mode of AML scanner */
 
 typedef enum {
@@ -148,6 +164,99 @@ typedef struct
 /* NsHandle is actually an nte * */
 
 typedef void*           NsHandle;
+
+
+/* 
+ * Types associated with names
+ * Values correspond to the definition of the ObjectType operator.
+ * Must coordinate with NsProperties and NsTypeNames in acpinmsp.c
+ * The NsType type is also used in OBJECT_DESCRIPTOR defined in amlpriv.h
+ */
+
+typedef enum {
+   Any              =  0,
+   Number           =  1, /* Byte/Word/Dword/Zero/One/Ones */
+   String           =  2,
+   Buffer           =  3,
+   Package          =  4, /* ByteConst, multiple DataTerm/Constant/SuperName */
+   FieldUnit        =  5,
+   Device           =  6, /* Name, multiple NamedObject */
+   Event            =  7,
+   Method           =  8, /* Name, ByteConst, multiple Code */
+   Mutex            =  9,
+   Region           = 10,
+   Power            = 11, /* Name,ByteConst,WordConst,multi NamedObject */
+   Processor        = 12, /* Name,ByteConst,DWordConst,ByteConst,multi NmO */
+   Thermal          = 13, /* Name, multiple NamedObject */
+   Alias            = 14,
+
+/* 
+ * The remaining values do not relate to the ObjectType operator and are
+ * used for various internal purposes.  A gap is provided in case more
+ * official ObjectType's are added in the future.  Also, values exceeding
+ * the largest ObjectType need to not overlap with defined AML opcodes.
+ */
+   DefField         = 25,
+   BankField        = 26,
+   IndexField       = 27,
+   DefFieldDefn     = 28, /* Name, ByteConst, multiple FieldElement */
+   BankFieldDefn    = 29, /* 2 Name,DWordConst,ByteConst,multi FieldElement */
+   IndexFieldDefn   = 30, /* 2 Name, ByteConst, multiple FieldElement */
+   If               = 31, /* OpCode, multiple Code */
+   Else             = 32, /* multiple Code */
+   While            = 33, /* OpCode, multiple Code */
+   Scope            = 34, /* Name, multiple NamedObject */
+   DefAny           = 35, /* type is Any, suppress search of enclosing scopes */
+   Lvalue           = 36  /* Arg#, Local#, Name, Debug; used only in descriptors */
+} NsType;
+
+
+
+
+/* 
+ * Typedef nte (name table entry) is private to acpinmsp.c to avoid global
+ * impact in the event of changes to it.  The externally-known type NsHandle
+ * is actually an (nte *).  If an external program needs to extract a field
+ * from the nte, it should use an access function defined in acpinmsp.c
+ *
+ * If you need an access function not provided herein, add it to this module
+ * rather than exporting the nte typedef.
+ *
+ * (nte *) are actually used in two different and not entirely compatible
+ * ways: as pointer to an individual nte and as pointer to an entire name
+ * table (which is an array of nte, sometimes referred to as a scope).  In
+ * the latter case, the specific nte pointed to may be unused; however its
+ * ParentScope member will be valid.
+ */
+
+typedef struct nte
+{
+    UINT32          NameSeg;        /* name segment, always 4 chars per ACPI spec.
+                                     * NameSeg must be the first field in the nte
+                                     * -- see the IsNsHandle macro in acpinmsp.h
+                                     */
+    struct nte      *ChildScope;    /* next level of names */
+    struct nte      *ParentScope;   /* previous level of names */
+    NsType          NtType;         /* type associated with name */
+    void            *ptrVal;        /* pointer to value */
+} nte;
+
+#define NOTFOUND    (nte *)0
+
+
+/* Stack of currently-open scopes, and pointer to top of that stack */
+
+typedef struct
+{
+    nte         *Scope;
+    /* 
+     * Type of scope, typically the same as the type of its parent's entry 
+     * (but not the same as the type of its parent's scope).
+     */
+    NsType      Type;   
+} SCOPE_STACK;    
+
+
 
 
 #endif /* DATATYPES_H */
