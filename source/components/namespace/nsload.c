@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.40 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -156,7 +156,7 @@ AcpiNsLoadNamespace (
 
     if (AcpiGbl_DSDT == NULL)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("DSDT is not in memory\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "DSDT is not in memory\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
@@ -178,8 +178,8 @@ AcpiNsLoadNamespace (
     AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
 
 
-    DEBUG_PRINT_RAW (ACPI_OK,
-        ("ACPI Namespace successfully loaded at root %p\n",
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
+        "ACPI Namespace successfully loaded at root %p\n",
         AcpiGbl_RootNode));
 
 
@@ -247,8 +247,7 @@ AcpiNsOneCompleteParse (
 
     /* Pass 1:  Parse everything except control method bodies */
 
-    DEBUG_PRINT (TRACE_PARSE,
-        ("NsParseTable: *PARSE* pass %d parse\n", PassNumber));
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "*PARSE* pass %d parse\n", PassNumber));
 
     Status = AcpiPsParseAml (ParseRoot, TableDesc->AmlPointer,
                             TableDesc->AmlLength,
@@ -257,7 +256,6 @@ AcpiNsOneCompleteParse (
                             AscendingCallback);
 
     AcpiPsDeleteParseTree (ParseRoot);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -350,18 +348,16 @@ AcpiNsLoadTable (
 
     if (!TableDesc->AmlPointer)
     {
-        DEBUG_PRINT (ACPI_ERROR, ("NsLoadTable: Null AML pointer\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null AML pointer\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("NsLoadTable: AML block at %p\n", TableDesc->AmlPointer));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "AML block at %p\n", TableDesc->AmlPointer));
 
 
     if (!TableDesc->AmlLength)
     {
-        DEBUG_PRINT (ACPI_ERROR,
-            ("NsLoadTable: Zero-length AML block\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Zero-length AML block\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -376,8 +372,7 @@ AcpiNsLoadTable (
      * because we don't know how many arguments to parse next!
      */
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("NsLoadTable: **** Loading table into namespace ****\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Loading table into namespace ****\n"));
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     Status = AcpiNsParseTable (TableDesc, Node->Child);
@@ -395,13 +390,13 @@ AcpiNsLoadTable (
      * parse trees.
      */
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("NsLoadTable: **** Begin Table Method Parsing and Object Initialization ****\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "**** Begin Table Method Parsing and Object Initialization ****\n"));
 
     Status = AcpiDsInitializeObjects (TableDesc, Node);
 
-    DEBUG_PRINT (ACPI_INFO,
-        ("NsLoadTable: **** Completed Table Method Parsing and Object Initialization ****\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "**** Completed Table Method Parsing and Object Initialization ****\n"));
 
     return_ACPI_STATUS (Status);
 }
@@ -446,7 +441,7 @@ AcpiNsLoadTableByType (
 
     case ACPI_TABLE_DSDT:
 
-        DEBUG_PRINT (ACPI_INFO, ("NsLoadTableByType: Loading DSDT\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Loading DSDT\n"));
 
         TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_DSDT];
 
@@ -472,8 +467,7 @@ AcpiNsLoadTableByType (
 
     case ACPI_TABLE_SSDT:
 
-        DEBUG_PRINT (ACPI_INFO,
-            ("NsLoadTableByType: Loading %d SSDTs\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Loading %d SSDTs\n",
             AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count));
 
         /*
@@ -506,8 +500,7 @@ AcpiNsLoadTableByType (
 
     case ACPI_TABLE_PSDT:
 
-        DEBUG_PRINT (ACPI_INFO,
-            ("NsLoadTableByType: Loading %d PSDTs\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Loading %d PSDTs\n",
             AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count));
 
         /*

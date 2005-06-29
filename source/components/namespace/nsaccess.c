@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.129 $
+ *              $Revision: 1.130 $
  *
  ******************************************************************************/
 
@@ -177,7 +177,7 @@ AcpiNsRootInitialize (void)
 
     /* Enter the pre-defined names in the name table */
 
-    DEBUG_PRINTP (ACPI_INFO, ("Entering predefined entries into namespace\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Entering predefined entries into namespace\n"));
 
     for (InitVal = AcpiGbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
@@ -187,8 +187,8 @@ AcpiNsRootInitialize (void)
 
         if (ACPI_FAILURE (Status) || (!NewNode)) /* Must be on same line for code converter */
         {
-            DEBUG_PRINTP (ACPI_ERROR, 
-                ("Could not create predefined name %s, %s\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                "Could not create predefined name %s, %s\n",
                 InitVal->Name, AcpiFormatException (Status)));
         }
 
@@ -376,7 +376,7 @@ AcpiNsLookup (
     if ((!ScopeInfo) ||
         (!ScopeInfo->Scope.Node))
     {
-        DEBUG_PRINTP (TRACE_NAMES, ("Null scope prefix, using root node (%p)\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Null scope prefix, using root node (%p)\n",
             AcpiGbl_RootNode));
 
         PrefixNode = AcpiGbl_RootNode;
@@ -427,8 +427,8 @@ AcpiNsLookup (
         NumSegments = 0;
         ThisNode = AcpiGbl_RootNode;
 
-        DEBUG_PRINTP (TRACE_NAMES,
-            ("Null Pathname (Zero segments),  Flags=%x\n", Flags));
+        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+            "Null Pathname (Zero segments),  Flags=%x\n", Flags));
     }
 
     else
@@ -462,7 +462,7 @@ AcpiNsLookup (
 
             Pathname++;
 
-            DEBUG_PRINTP (TRACE_NAMES, ("Searching from root [%p]\n", 
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching from root [%p]\n", 
                 CurrentNode));
 
             /* Direct reference to root, "\" */
@@ -480,7 +480,7 @@ AcpiNsLookup (
 
             CurrentNode = PrefixNode;
 
-            DEBUG_PRINTP (TRACE_NAMES, ("Searching relative to pfx scope [%p]\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Searching relative to pfx scope [%p]\n",
                 PrefixNode));
 
             /*
@@ -524,8 +524,8 @@ AcpiNsLookup (
 
             Pathname++;
 
-            DEBUG_PRINTP (TRACE_NAMES,
-                ("Dual Pathname (2 segments, Flags=%X)\n", Flags));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                "Dual Pathname (2 segments, Flags=%X)\n", Flags));
         }
 
         else if (*Pathname == AML_MULTI_NAME_PREFIX_OP)
@@ -536,8 +536,8 @@ AcpiNsLookup (
 
             Pathname++;
 
-            DEBUG_PRINTP (TRACE_NAMES,
-                ("Multi Pathname (%d Segments, Flags=%X) \n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                "Multi Pathname (%d Segments, Flags=%X) \n",
                 NumSegments, Flags));
         }
 
@@ -549,8 +549,8 @@ AcpiNsLookup (
              */
             NumSegments = 1;
 
-            DEBUG_PRINTP (TRACE_NAMES,
-                ("Simple Pathname (1 segment, Flags=%X)\n", Flags));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                "Simple Pathname (1 segment, Flags=%X)\n", Flags));
         }
 
 #ifdef ACPI_DEBUG
@@ -559,13 +559,13 @@ AcpiNsLookup (
 
         /* Debug only: print the entire name that we are about to lookup */
 
-        DEBUG_PRINTP (TRACE_NAMES, ("["));
+        ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "["));
 
         for (i = 0; i < NumSegments; i++)
         {
-            DEBUG_PRINT_RAW (TRACE_NAMES, ("%4.4s/", &Pathname[i * 4]));
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_NAMES, "%4.4s/", &Pathname[i * 4]));
         }
-        DEBUG_PRINT_RAW (TRACE_NAMES, ("]\n"));
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_NAMES, "]\n"));
 #endif
     }
 
@@ -608,8 +608,8 @@ AcpiNsLookup (
             {
                 /* Name not found in ACPI namespace  */
 
-                DEBUG_PRINTP (TRACE_NAMES, 
-                    ("Name [%4.4s] not found in scope %X\n",
+                ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, 
+                    "Name [%4.4s] not found in scope %X\n",
                     &SimpleName, CurrentNode));
             }
 
@@ -665,7 +665,7 @@ AcpiNsLookup (
              * and the next scope has not been allocated.
              */
 
-            DEBUG_PRINTP (ACPI_INFO, ("Load mode=%X  ThisNode=%X\n",
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Load mode=%X  ThisNode=%X\n",
                 InterpreterMode, ThisNode));
         }
 
@@ -712,7 +712,7 @@ CheckForNewScopeAndExit:
                 return_ACPI_STATUS (Status);
             }
 
-            DEBUG_PRINTP (ACPI_INFO, ("Set global scope to %p\n", ScopeToPush));
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Set global scope to %p\n", ScopeToPush));
         }
     }
 
