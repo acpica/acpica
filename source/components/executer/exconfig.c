@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: ieconfig - Namespace reconfiguration (Load/Unload opcodes)
+ * Module Name: amconfig - Namespace reconfiguration (Load/Unload opcodes)
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __IECONFIG_C__
+#define __AMCONFIG_C__
 
 #include "acpi.h"
 #include "parser.h"
@@ -128,7 +128,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ieconfig");
+        MODULE_NAME         ("amconfig");
 
 
 

@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: iresop - AML Interpreter operand/object resolution
+ * Module Name: amresop - AML Interpreter operand/object resolution
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __IRESOP_C__
+#define __AMRESOP_C__
 
 #include "acpi.h"
 #include "amlcode.h"
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iresop");
+        MODULE_NAME         ("amresop");
 
 
 /*****************************************************************************

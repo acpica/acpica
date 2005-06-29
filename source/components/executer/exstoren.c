@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: istorent - AML Interpreter object store support, store to NTE
+ * Module Name: amstoren - AML Interpreter object store support, store to NTE
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __ISTORENT_C__
+#define __AMSTOREN_C__
 
 #include "acpi.h"
 #include "parser.h"
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("istorent");
+        MODULE_NAME         ("amstoren");
 
 
 
@@ -286,7 +286,7 @@ AcpiAmlStoreObjectToNte (
 
 
     default:
- 
+
         /*
          * All other types than Alias and the various Fields come here.
          * Store ValDesc as the new value of the Name, and set
@@ -646,8 +646,8 @@ AcpiAmlStoreObjectToNte (
 
 
     default:
- 
-        /* 
+
+        /*
          * All other types than Alias and the various Fields come here.
          * Store ValDesc as the new value of the Name, and set
          * the Name's type to that of the value being stored in it.

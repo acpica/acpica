@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: isnames - interpreter/scanner name load/execute
+ * Module Name: amnames - interpreter/scanner name load/execute
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __ISNAMES_C__
+#define __AMNAMES_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -122,7 +122,7 @@
 #include "namesp.h"
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("isnames");
+        MODULE_NAME         ("amnames");
 
 
 #define PKG_Type1   64              /*  or 0x40 Max encoding size = 0x3F    */

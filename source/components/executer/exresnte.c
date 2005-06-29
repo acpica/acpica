@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: iresnte - AML Interpreter object resolution
+ * Module Name: amresnte - AML Interpreter object resolution
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __IRESNTE_C__
+#define __AMRESNTE_C__
 
 #include "acpi.h"
 #include "amlcode.h"
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iresnte");
+        MODULE_NAME         ("amresnte");
 
 
 /*****************************************************************************

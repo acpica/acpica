@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: ieregion - ACPI default OpRegion (address space) handlers
+ * Module Name: amregion - ACPI default OpRegion (address space) handlers
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *****************************************************************************/
 
 
-#define __IEREGION_C__
+#define __AMREGION_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ieregion");
+        MODULE_NAME         ("amregion");
 
 
 /*****************************************************************************
@@ -199,7 +199,7 @@ AcpiAmlSystemMemorySpaceHandler (
         {
             /* Valid mapping, delete it */
 
-            AcpiOsdUnMapMemory (MemInfo->MappedLogicalAddress, MemInfo->MappedLength);
+            AcpiOsdUnmapMemory (MemInfo->MappedLogicalAddress, MemInfo->MappedLength);
         }
 
         MemInfo->MappedLength = 0;  /* In case of failure below */

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Module Name: iefield - ACPI AML (p-code) execution - field manipulation
+ * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *****************************************************************************/
 
 
-#define __IEFIELD_C__
+#define __AMFIELD_C__
 
 #include "acpi.h"
 #include "dispatch.h"
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iefield");
+        MODULE_NAME         ("amfield");
 
 
 

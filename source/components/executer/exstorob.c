@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: istoreob - AML Interpreter object store support, store to object
+ * Module Name: amstorob - AML Interpreter object store support, store to object
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __ISTOREOB_C__
+#define __AMSTOROB_C__
 
 #include "acpi.h"
 #include "parser.h"
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("istoreob");
+        MODULE_NAME         ("amstorob");
 
 
 
@@ -254,7 +254,7 @@ AcpiAmlStoreObjectToObject (
 
 
     default:
- 
+
         /*
          * TBD: [Unhandled] What other combinations must be implemented?
          */
@@ -414,8 +414,8 @@ AcpiAmlStoreObjectToObject (
         break;
 
     default:
- 
-        /* 
+
+        /*
          * All other types than Alias and the various Fields come here.
          * Store ValDesc as the new value of the Name, and set
          * the Name's type to that of the value being stored in it.

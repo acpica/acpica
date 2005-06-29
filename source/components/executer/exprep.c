@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: ieprep - ACPI AML (p-code) execution - field prep utilities
+ * Module Name: amprep - ACPI AML (p-code) execution - field prep utilities
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __IEPREP_C__
+#define __AMPREP_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -124,7 +124,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ieprep");
+        MODULE_NAME         ("amprep");
 
 
 

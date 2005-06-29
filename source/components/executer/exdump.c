@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: isdump - Scanner debug output routines
+ * Module Name: amdump - Interpreter debug output routines
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __ISDUMP_C__
+#define __AMDUMP_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -124,7 +124,7 @@
 #include "acpiosd.h"
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("isdump");
+        MODULE_NAME         ("amdump");
 
 
 /*

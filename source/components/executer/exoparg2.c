@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: iedyad - ACPI AML (p-code) execution for dyadic operators
+ * Module Name: amdyadic - ACPI AML (p-code) execution for dyadic operators
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *****************************************************************************/
 
 
-#define __IEDYAD_C__
+#define __AMDYADIC_C__
 
 #include "acpi.h"
 #include "parser.h"
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iedyad");
+        MODULE_NAME         ("amdyadic");
 
 
 /*****************************************************************************

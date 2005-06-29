@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: iemonad - ACPI AML (p-code) execution for monadic operators
+ * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __IEMONAD_C__
+#define __AMMONAD_C__
 
 #include "acpi.h"
 #include "parser.h"
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iemonad");
+        MODULE_NAME         ("ammonad");
 
 
 

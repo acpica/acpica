@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: iesystem - Interface to OS services
+ * Module Name: amsystem - Interface to OS services
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __IESYSTEM_C__
+#define __AMSYSTEM_C__
 
 #include "acpi.h"
 #include "interp.h"
@@ -123,7 +123,9 @@
 #include "events.h"
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iesystem");
+        MODULE_NAME         ("amsystem");
+
+
 
 /******************************************************************************
  *
@@ -295,7 +297,7 @@ OsAcquireMutex (
      * Support for the _GL_ Mutex object -- go get the global lock
      */
 
-    if (ObjDesc->Mutex.Semaphore == Acpi_GblGlobalLockSemaphore)
+    if (ObjDesc->Mutex.Semaphore == AcpiGbl_GlobalLockSemaphore)
     {
         Status = AcpiEvAcquireGlobalLock ();
         return_ACPI_STATUS (Status);
@@ -339,7 +341,7 @@ OsReleaseMutex (
     /*
      * Support for the _GL_ Mutex object -- release the global lock
      */
-    if (ObjDesc->Mutex.Semaphore == Acpi_GblGlobalLockSemaphore)
+    if (ObjDesc->Mutex.Semaphore == AcpiGbl_GlobalLockSemaphore)
     {
         AcpiEvReleaseGlobalLock ();
         return_ACPI_STATUS (AE_OK);

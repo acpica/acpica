@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: ieopexec - ACPI AML (p-code) execution - specific opcodes
+ * Module Name: ammisc - ACPI AML (p-code) execution - specific opcodes
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __IEOPEXEC_C__
+#define __AMMISC_C__
 
 #include "acpi.h"
 #include "parser.h"
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("ieopexec");
+        MODULE_NAME         ("ammisc");
 
 
 

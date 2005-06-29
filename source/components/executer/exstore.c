@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: istore - AML Interpreter object store support
+ * Module Name: amstore - AML Interpreter object store support
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __ISTORE_C__
+#define __AMSTORE_C__
 
 #include "acpi.h"
 #include "parser.h"
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("istore");
+        MODULE_NAME         ("amstore");
 
 
 

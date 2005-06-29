@@ -1,7 +1,7 @@
 
 /******************************************************************************
  *
- * Module Name: iecreate - Named object creation
+ * Module Name: amcreate - Named object creation
  *
  *****************************************************************************/
 
@@ -115,7 +115,7 @@
  *
  *****************************************************************************/
 
-#define __IECREATE_C__
+#define __AMCREATE_C__
 
 #include "acpi.h"
 #include "parser.h"
@@ -127,7 +127,7 @@
 
 
 #define _COMPONENT          INTERPRETER
-        MODULE_NAME         ("iecreate");
+        MODULE_NAME         ("amcreate");
 
 
  /*****************************************************************************
