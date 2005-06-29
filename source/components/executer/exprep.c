@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.103 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -263,11 +263,14 @@ AcpiExPrepCommonFieldObject (
     /*
      * Decode the access type so we can compute offsets.  The access type gives
      * two pieces of information - the width of each field access and the
-     * necessary alignment of the access.  For AnyAcc, the width used is the
-     * largest necessary/possible in an attempt to access the whole field in one
-     * I/O operation.  However, for AnyAcc, the alignment is 8.  For all other
-     * access types (Byte, Word, Dword, Qword), the width is the same as the
-     * alignment.
+     * necessary alignment (address granularity) of the access.  
+     * 
+     * For AnyAcc, the AccessBitWidth is the largest width that is both necessary
+     * and possible in an attempt to access the whole field in one
+     * I/O operation.  However, for AnyAcc, the alignment is 8.  
+     * 
+     * For all other access types (Byte, Word, Dword, Qword), the width is the 
+     * same as the alignment.
      */
     AccessBitWidth = AcpiExDecodeFieldAccessType (
                         ((FieldFlags & ACCESS_TYPE_MASK) >> ACCESS_TYPE_SHIFT),
@@ -296,6 +299,8 @@ AcpiExPrepCommonFieldObject (
      * BaseByteOffset is the address of the start of the field within the region.  It is
      * the byte address of the first *datum* (field-width data unit) of the field.
      * (i.e., the first datum that contains at least the first *bit* of the field.)
+     * Note: Alignment is always either equal to the AccessBitWidth or 8 (Byte access),
+     * and it defines the addressing granularity of the parent region or buffer.
      */
     NearestByteAddress                        = ROUND_BITS_DOWN_TO_BYTES (FieldBitPosition);
     ObjDesc->CommonField.BaseByteOffset       = ROUND_DOWN (NearestByteAddress,
@@ -304,14 +309,14 @@ AcpiExPrepCommonFieldObject (
     /*
      * StartFieldBitOffset is the offset of the first bit of the field within a field datum.
      */
-    ObjDesc->CommonField.StartFieldBitOffset  = (UINT8) (FieldBitPosition % AccessBitWidth);
+    ObjDesc->CommonField.StartFieldBitOffset  = (UINT8) (FieldBitPosition % Alignment);
 
     /*
      * Valid bits -- the number of bits that compose a partial datum,
      * 1) At the end of the field within the region (arbitrary starting bit offset)
      * 2) At the end of a buffer used to contain the field (starting offset always zero)
      */
-    ObjDesc->CommonField.EndFieldValidBits    = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) % 
+    ObjDesc->CommonField.EndFieldValidBits    = (UINT8) ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) %
                                                             AccessBitWidth);
     ObjDesc->CommonField.EndBufferValidBits   = (UINT8) (FieldBitLength % AccessBitWidth); /* StartBufferBitOffset always = 0 */
 
@@ -322,7 +327,7 @@ AcpiExPrepCommonFieldObject (
                                                          ObjDesc->CommonField.StartFieldBitOffset);
 
     /*
-     * Does the entire field fit within a single field access element? (datum)  
+     * Does the entire field fit within a single field access element? (datum)
      * (i.e., without crossing a datum boundary)
      */
     if ((ObjDesc->CommonField.StartFieldBitOffset + FieldBitLength) <=
@@ -468,7 +473,7 @@ AcpiExPrepFieldValue (
      * Store the constructed descriptor (ObjDesc) into the parent Node,
      * preserving the current type of that NamedObj.
      */
-    Status = AcpiNsAttachObject (Info->FieldNode, ObjDesc, 
+    Status = AcpiNsAttachObject (Info->FieldNode, ObjDesc,
                     (UINT8) AcpiNsGetType (Info->FieldNode));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "set NamedObj %p (%4.4s) val = %p\n",
