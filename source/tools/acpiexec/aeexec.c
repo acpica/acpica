@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -150,7 +150,7 @@ RSDP_DESCRIPTOR             LocalRSDP;
 FADT_DESCRIPTOR_REV1        LocalFADT;
 FACS_DESCRIPTOR_REV1        LocalFACS;
 RSDT_DESCRIPTOR_REV1        LocalRSDT;
-
+ACPI_TABLE_HEADER           LocalTEST;
 
 /******************************************************************************
  *
@@ -171,8 +171,9 @@ AeBuildLocalTables (void)
 
     ACPI_MEMSET (&LocalRSDP, 0, sizeof (RSDP_DESCRIPTOR));
     ACPI_MEMCPY (&LocalRSDP.Signature, RSDP_SIG, 8);
-    LocalRSDP.Revision = 1;
+    LocalRSDP.Revision            = 1;
     LocalRSDP.RsdtPhysicalAddress = ACPI_TO_INTEGER (&LocalRSDT);
+    LocalRSDP.Checksum     = (UINT8) (0 - AcpiTbChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
 
     AcpiGbl_RSDP = &LocalRSDP;
 
@@ -181,10 +182,12 @@ AeBuildLocalTables (void)
 
     ACPI_MEMSET (&LocalRSDT, 0, sizeof (LocalRSDT));
     ACPI_MEMCPY (&LocalRSDT.Header.Signature, RSDT_SIG, 4);
-    LocalRSDT.Header.Length = sizeof (RSDT_DESCRIPTOR_REV1);
+    LocalRSDT.Header.Length = sizeof (RSDT_DESCRIPTOR_REV1) + sizeof (UINT32);
 
 
-    LocalRSDT.TableOffsetEntry[0] = ACPI_TO_INTEGER (&LocalFADT);
+    LocalRSDT.TableOffsetEntry[1] = ACPI_TO_INTEGER (&LocalFADT);
+    LocalRSDT.TableOffsetEntry[0] = ACPI_TO_INTEGER (&LocalTEST);
+    LocalRSDT.Header.Checksum = (UINT8) (0 - AcpiTbChecksum (&LocalRSDT, LocalRSDT.Header.Length));
 
     /* Build a FADT so we can test the hardware/event init */
 
@@ -192,11 +195,12 @@ AeBuildLocalTables (void)
     ACPI_MEMCPY (&LocalFADT.Header.Signature, FADT_SIG, 4);
 
     LocalFADT.FirmwareCtrl      = ACPI_TO_INTEGER (&LocalFACS);
+    LocalFADT.Dsdt              = ACPI_TO_INTEGER (AcpiGbl_DbTablePtr);
     LocalFADT.Header.Revision   = 1;
     LocalFADT.Header.Length     = sizeof (FADT_DESCRIPTOR_REV1);
-    LocalFADT.Gpe0BlkLen        = 8;
-    LocalFADT.Gpe1BlkLen        = 12;
-    LocalFADT.Gpe1Base          = 64;
+    LocalFADT.Gpe0BlkLen        = 4;
+    LocalFADT.Gpe1BlkLen        = 6;
+    LocalFADT.Gpe1Base          = 61;   
 
     LocalFADT.Pm1EvtLen         = 4;
     LocalFADT.Pm1CntLen         = 4;
@@ -222,6 +226,14 @@ AeBuildLocalTables (void)
     LocalFACS.GlobalLock = 0x11AA0011;
 
 
+    /* Build a fake table so that we make sure that the CA core ignores it */
+
+    ACPI_MEMSET (&LocalTEST, 0, sizeof (ACPI_TABLE_HEADER));
+    ACPI_MEMCPY (&LocalTEST.Signature, "TEST", 4);
+
+    LocalTEST.Revision   = 1;
+    LocalTEST.Length     = sizeof (ACPI_TABLE_HEADER);
+
     return (AE_OK);
 }
 
@@ -244,10 +256,9 @@ AeInstallTables (void)
     ACPI_STATUS             Status;
 
 
-#if 0
     Status = AcpiLoadTables ();
-#endif
 
+#if 0
     Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFADT);
     if (ACPI_FAILURE (Status))
     {
@@ -261,6 +272,7 @@ AeInstallTables (void)
         printf ("**** Could not load local FACS, %s\n", AcpiFormatException (Status));
         return (Status);
     }
+#endif
 
     return (Status);
 }
@@ -282,10 +294,11 @@ AeInstallTables (void)
 ACPI_STATUS
 AeLocalGetRootPointer (
     UINT32                  Flags,
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+    ACPI_POINTER            *Address)
 {
 
-    *RsdpPhysicalAddress = ACPI_PTR_TO_PHYSADDR (&LocalRSDP);
+    Address->PointerType     = ACPI_LOGICAL_POINTER;
+    Address->Pointer.Logical = &LocalRSDP;
     return (AE_OK);
 }
 

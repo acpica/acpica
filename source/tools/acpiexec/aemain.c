@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.59 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -256,7 +256,7 @@ usage (void)
  *
  *****************************************************************************/
 
-int
+int ACPI_SYSTEM_XFACE
 main (
     int                     argc,
     char                    **argv)
@@ -345,10 +345,10 @@ main (
         AcpiGbl_DbOpt_tables = TRUE;
         AcpiGbl_DbFilename = argv[optind];
 
-        Status = AcpiDbLoadAcpiTable (AcpiGbl_DbFilename);
+        Status = AcpiDbGetAcpiTable (AcpiGbl_DbFilename);
         if (ACPI_FAILURE (Status))
         {
-            printf ("**** Could not load input table, %s\n", AcpiFormatException (Status));
+            printf ("**** Could not get input table, %s\n", AcpiFormatException (Status));
             goto enterloop;
         }
 
