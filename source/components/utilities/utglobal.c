@@ -448,50 +448,6 @@ CmValidObjectType (
 }
 
 
-/* 
- * Human-readable decode of exception codes, mostly for debugging
- * These need to match the corresponding defines
- * Note that AE_PENDING is not an error, but indicates
- * that other alternatives should be checked.
- */
-static char                 *Gbl_ExceptionNames[] = 
-{ 
-    "AE_OK",
-    "AE_PENDING",
-    "AE_AML_ERROR",
-    "AE_RETURN_VALUE",
-    "AE_ERROR",
-    "AE_NO_ACPI_TABLES",
-    "AE_NO_NAMESPACE",
-    "AE_NO_MEMORY",
-    "AE_BAD_SIGNATURE",
-    "AE_BAD_HEADER",
-    "AE_BAD_CHECKSUM",
-    "AE_BAD_PARAMETER",
-    "AE_BAD_CHARACTER",
-    "AE_BAD_PATHNAME",
-    "AE_BAD_DATA",
-    "AE_NOT_FOUND",
-    "AE_NOT_EXIST",
-    "AE_EXIST",
-    "AE_TYPE",
-    "AE_NULL_ENTRY",
-    "AE_BUFFER_OVERFLOW",
-    "AE_STACK_OVERFLOW",
-    "AE_STACK_UNDERFLOW",
-    "AE_NOT_IMPLEMENTED",
-    "AE_VERSION_MISMATCH",
-    "AE_SUPPORT",
-    "AE_SHARE",
-    "AE_LIMIT",
-    "AE_TIME",
-    "AE_TERMINATE",
-    "AE_DEPTH",
-    "AE_TRUE",
-    "AE_FALSE",
-    "AE_UNKNOWN_STATUS"
-};
-
 
 /*****************************************************************************
  * 
@@ -612,10 +568,6 @@ CmInitGlobals (ACPI_INIT_DATA *InitData)
     Gbl_Shutdown                = FALSE;
     Gbl_NsLookupCount           = 0;
     Gbl_PsFindCount             = 0;
-
-    /* Stack pointers */
-
-    Gbl_CurrentScope            = NULL;
 
     /* Interpreter */
 
