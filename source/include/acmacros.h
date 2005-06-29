@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.76 $
+ *       $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -524,12 +524,6 @@
 #define BREAK_MSG(a)                    AcpiOsBreakpoint (a)
 
 
-/* Memory allocation */
-
-#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
-#define ACPI_MEM_FREE(a)                AcpiUtFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
-
 /*
  * Generate INT3 on ACPI_ERROR (Debug only!)
  */
@@ -603,13 +597,6 @@
 #define return_VALUE(s)                 return(s)
 #define return_PTR(s)                   return(s)
 
-
-/* Memory allocation */
-
-#define ACPI_MEM_ALLOCATE(a)            AcpiOsAllocate(a)
-#define ACPI_MEM_CALLOCATE(a)           AcpiOsCallocate(a)
-#define ACPI_MEM_FREE(a)                AcpiOsFree(a)
-
 #endif
 
 /*
@@ -658,6 +645,12 @@
 
 #ifndef ACPI_DEBUG_TRACK_ALLOCATIONS
 
+/* Memory allocation */
+
+#define ACPI_MEM_ALLOCATE(a)            AcpiOsAllocate(a)
+#define ACPI_MEM_CALLOCATE(a)           AcpiOsCallocate(a)
+#define ACPI_MEM_FREE(a)                AcpiOsFree(a)
+
 #define AcpiUtAddElementToAllocList(a,b,c,d,e,f)
 #define AcpiUtDeleteElementFromAllocList(a,b,c,d)
 #define AcpiUtDumpCurrentAllocations(a,b)
@@ -670,6 +663,12 @@
 #define INCREMENT_NAME_TABLE_METRICS(a)
 
 #else
+
+/* Memory allocation */
+
+#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate(a, _COMPONENT,_THIS_MODULE,__LINE__)
+#define ACPI_MEM_FREE(a)                AcpiUtFree(a,_COMPONENT,_THIS_MODULE,__LINE__)
 
 #define INITIALIZE_ALLOCATION_METRICS() \
     AcpiGbl_CurrentObjectCount = 0; \
