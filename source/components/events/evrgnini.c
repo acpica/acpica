@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: evrgnini- ACPI AddressSpace / OpRegion init
- *              $Revision: 1.28 $
+ * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
