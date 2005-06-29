@@ -214,7 +214,7 @@ AcpiOsUnmapMemory (
 
 ACPI_STATUS
 AcpiOsGetPhysicalAddress (
-    UINT32                  LogicalAddress,
+    void                    *LogicalAddress,
     ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
 
 /*
