@@ -171,8 +171,7 @@ HwSetMode (
         Status = AE_OK;
     }
         
-    FUNCTION_EXIT;
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -199,13 +198,11 @@ HwGetMode (void)
     
     if (READ_ACPI_REGISTER (SCI_EN))
     {
-        FUNCTION_EXIT;
-        return (SYS_MODE_ACPI);
+        return_VALUE (SYS_MODE_ACPI);
     }
     else
     {
-        FUNCTION_EXIT;
-        return (SYS_MODE_LEGACY);
+        return_VALUE (SYS_MODE_LEGACY);
     }
 }
 
@@ -270,6 +267,5 @@ HwGetModeCapabilities (void)
         }
     }
     
-    FUNCTION_EXIT;
-    return (SystemFlags & SYS_MODES_MASK);
+    return_VALUE (SystemFlags & SYS_MODES_MASK);
 }

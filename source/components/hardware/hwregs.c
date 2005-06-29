@@ -151,8 +151,7 @@ HwGetBitShift (
     for (Shift = 0; ((Mask >> Shift) & 1) == 0; Shift++)
     { ; }
 
-	FUNCTION_EXIT;
-    return (Shift);
+    return_VALUE (Shift);
 }
 
 
@@ -210,7 +209,7 @@ HwClearAcpiStatus (void)
         }
     }
 
-    FUNCTION_EXIT;
+    return_VOID;
 }
 
 
@@ -248,8 +247,7 @@ HwObtainSleepTypeRegisterData (
     ObjDesc = AllocateObjectDesc ();
     if (!ObjDesc)
     {
-        FUNCTION_EXIT;
-        return AE_NO_MEMORY;
+        return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
     if (!SleepStateReq || !Slp_TypA || !Slp_TypB)
@@ -338,8 +336,7 @@ HwObtainSleepTypeRegisterData (
     }
 
     CmFree (ObjDesc);
-    FUNCTION_EXIT;
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -728,6 +725,5 @@ HwRegisterIO (
     RegisterValue >>= HwGetBitShift (Mask);
 
     DEBUG_PRINT (TRACE_IO, ("Register I/O: returning 0x%X\n", RegisterValue));
-    FUNCTION_EXIT;
-    return (RegisterValue);
+    return_ACPI_STATUS (RegisterValue);
 }
