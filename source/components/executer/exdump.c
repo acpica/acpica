@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.182 $
+ *              $Revision: 1.183 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,11 @@
 #define _COMPONENT          ACPI_EXECUTER
         ACPI_MODULE_NAME    ("exdump")
 
+/*
+ * The following routines are used for debug output only
+ */
+#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
+
 /* Local prototypes */
 
 static void
@@ -147,11 +152,6 @@ AcpiExOutAddress (
     char                    *Title,
     ACPI_PHYSICAL_ADDRESS   Value);
 
-
-/*
- * The following routines are used for debug output only
- */
-#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 
 /*******************************************************************************
  *
