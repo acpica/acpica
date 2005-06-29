@@ -1,8 +1,9 @@
 
 /******************************************************************************
- * 
- * Module Name: tbapi - Public interfaces to the ACPI subsystem
+ *
+ * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -39,9 +40,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -49,11 +50,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -87,7 +88,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -115,19 +116,19 @@
  *
  *****************************************************************************/
 
-#define __TBAPI_C__
+#define __TBXFACE_C__
 
-#include <acpi.h>
-#include <namesp.h>
-#include <interp.h>
-#include <tables.h>
+#include "acpi.h"
+#include "acnamesp.h"
+#include "acinterp.h"
+#include "actables.h"
 
 
 #define _COMPONENT          TABLE_MANAGER
-        MODULE_NAME         ("tbapi");
+        MODULE_NAME         ("tbxface");
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiLoadFirmwareTables
  *
@@ -143,7 +144,7 @@ ACPI_STATUS
 AcpiLoadFirmwareTables (void)
 {
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  NumberOfTables = 0; 
+    UINT32                  NumberOfTables = 0;
 
 
     FUNCTION_TRACE ("AcpiLoadFirmwareTables");
@@ -151,18 +152,17 @@ AcpiLoadFirmwareTables (void)
 
     /* Get the RSDT first */
 
-    Status = TbGetTableRsdt (&NumberOfTables);
-    if (Status != AE_OK)
+    Status = AcpiTbGetTableRsdt (&NumberOfTables);
+    if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
 
 
-
     /* Now get the rest of the tables */
 
-    Status = TbGetAllTables (NumberOfTables, NULL);
-    if (Status != AE_OK)
+    Status = AcpiTbGetAllTables (NumberOfTables, NULL);
+    if (ACPI_FAILURE (Status))
     {
         goto ErrorExit;
     }
@@ -173,14 +173,16 @@ AcpiLoadFirmwareTables (void)
     return_ACPI_STATUS (AE_OK);
 
 
-ErrorExit:    
-    DEBUG_PRINT (ACPI_ERROR, ("Failure during ACPI Table Init: %s\n", CmFormatException (Status)));
-    
+ErrorExit:
+    DEBUG_PRINT (ACPI_ERROR,
+        ("Failure during ACPI Table Init: %s\n",
+        AcpiCmFormatException (Status)));
+
     return_ACPI_STATUS (Status);
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiLoadTable
  *
@@ -210,30 +212,30 @@ AcpiLoadTable (
 
     if (!TablePtr)
     {
-        return AE_BAD_PARAMETER;
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
     /* Copy the table to a local buffer */
 
-    Status = TbGetTable (NULL, ((char *) TablePtr), &TableInfo);
+    Status = AcpiTbGetTable (NULL, TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
-    
+
     /* Install the new table into the local data structures */
 
-    Status = TbInstallTable (NULL, &TableInfo);
+    Status = AcpiTbInstallTable (NULL, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
-        /* TBD: must free table allocated by TbGetTable */
+        /* TBD: [Errors] must free table allocated by AcpiTbGetTable */
     }
 
     return_ACPI_STATUS (Status);
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiUnloadTable
  *
@@ -262,34 +264,39 @@ AcpiUnloadTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    
+
     /* Find all tables of the requested type */
 
-    ListHead = &Gbl_AcpiTables[TableType];
+    ListHead = &AcpiGbl_AcpiTables[TableType];
     do
-    {            
-        /* Delete the entire namespace under this table NTE */
+    {
+        /* 
+         * Delete all namespace entries owned by this table.  Note that these
+         * entries can appear anywhere in the namespace by virtue of the AML
+         * "Scope" operator.  Thus, we need to track ownership by an ID, not
+         * simply a position within the hierarchy
+         */
 
-        NsDeleteNamespaceByOwner (ListHead->TableId);
+        AcpiNsDeleteNamespaceByOwner (ListHead->TableId);
 
         /* Delete (or unmap) the actual table */
 
-        TbDeleteAcpiTable (TableType);  
+        AcpiTbDeleteAcpiTable (TableType);
 
-    } while (ListHead != &Gbl_AcpiTables[TableType]);
+    } while (ListHead != &AcpiGbl_AcpiTables[TableType]);
 
     return_ACPI_STATUS (AE_OK);
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetTableHeader
  *
  * PARAMETERS:  TableType       - one of the defined table types
  *              Instance        - the non zero instance of the table, allows
  *                                support for multiple tables of the same type
- *                                see Gbl_AcpiTableFlag
+ *                                see AcpiGbl_AcpiTableFlag
  *              OutTableHeader  - pointer to the ACPI_TABLE_HEADER if successful
  *
  * DESCRIPTION: This function is called to get an ACPI table header.  The caller
@@ -308,7 +315,7 @@ AcpiUnloadTable (
 
 ACPI_STATUS
 AcpiGetTableHeader (
-    ACPI_TABLE_TYPE         TableType, 
+    ACPI_TABLE_TYPE         TableType,
     UINT32                  Instance,
     ACPI_TABLE_HEADER       *OutTableHeader)
 {
@@ -318,10 +325,8 @@ AcpiGetTableHeader (
 
     FUNCTION_TRACE ("AcpiGetTableHeader");
 
-    Status = AE_OK;
-
     if ((Instance == 0)                 ||
-        (TableType == TABLE_RSDP)       ||
+        (TableType == ACPI_TABLE_RSDP)  ||
         (!OutTableHeader))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -330,17 +335,17 @@ AcpiGetTableHeader (
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (Gbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
+        (IS_SINGLE_TABLE (AcpiGbl_AcpiTableData[TableType].Flags) &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
 
     /* Get a pointer to the entire table */
 
-    Status = TbGetTablePtr (TableType, Instance, &TblPtr);
-    if (Status != AE_OK)
+    Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
@@ -356,20 +361,21 @@ AcpiGetTableHeader (
     /*
      * Copy the header to the caller's buffer
      */
-    MEMCPY ((void *) OutTableHeader, (void *) TblPtr, sizeof (ACPI_TABLE_HEADER));
+    MEMCPY ((void *) OutTableHeader, (void *) TblPtr,
+                sizeof (ACPI_TABLE_HEADER));
 
     return_ACPI_STATUS (Status);
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiGetTable
  *
  * PARAMETERS:  TableType       - one of the defined table types
  *              Instance        - the non zero instance of the table, allows
  *                                support for multiple tables of the same type
- *                                see Gbl_AcpiTableFlag
+ *                                see AcpiGbl_AcpiTableFlag
  *              RetBuffer       - pointer to a structure containing a buffer to
  *                                receive the table
  *
@@ -401,39 +407,38 @@ AcpiGetTable (
 
     FUNCTION_TRACE ("AcpiGetTable");
 
-    Status = AE_OK;
-
     /*
      *  Must have a buffer
      */
     if ((Instance == 0)                 ||
         (!RetBuffer)                    ||
         (!RetBuffer->Pointer)           ||
-        (!RetBuffer->Length)) 
+        (!RetBuffer->Length))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
     /* Check the table type and instance */
 
     if ((TableType > ACPI_TABLE_MAX)    ||
-        (Gbl_AcpiTableData[TableType].Flags == ACPI_TABLE_SINGLE &&
+        (IS_SINGLE_TABLE (AcpiGbl_AcpiTableData[TableType].Flags) &&
          Instance > 1))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
-    
+
+
     /* Get a pointer to the entire table */
 
-    Status = TbGetTablePtr (TableType, Instance, &TblPtr);
-    if (Status != AE_OK)
+    Status = AcpiTbGetTablePtr (TableType, Instance, &TblPtr);
+    if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
     /*
-     * The function will return a NULL pointer if the table is not loaded
+     * AcpiTbGetTablePtr will return a NULL pointer if the 
+     *  table is not loaded.
      */
     if (TblPtr == NULL)
     {
@@ -443,7 +448,7 @@ AcpiGetTable (
     /*
      * Got a table ptr, assume it's ok and copy it to the user's buffer
      */
-    if (TableType == TABLE_RSDP)
+    if (TableType == ACPI_TABLE_RSDP)
     {
         /*
          *  RSD PTR is the only "table" without a header
