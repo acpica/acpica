@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -1172,18 +1172,10 @@ AnSemanticAnalysisWalkEnd (
 
     switch (OpcodeClass)
     {
-    case OPTYPE_MONADIC2:
-    case OPTYPE_MONADIC2R:
-    case OPTYPE_DYADIC2:
-    case OPTYPE_DYADIC2R:
-    case OPTYPE_DYADIC_T21:
-    case OPTYPE_TRIADIC:
-    case OPTYPE_QUADRADIC:
-    case OPTYPE_HEXADIC:
-    case OPTYPE_CREATE_FIELD:
-    case OPTYPE_RECONFIGURATION:
-    case OPTYPE_CONTROL:
-    case OPTYPE_RETURN:
+    case AML_CLASS_EXECUTE:
+    case AML_CLASS_CREATE:
+    case AML_CLASS_CONTROL:
+    case AML_CLASS_RETURN_VALUE:
 
         RuntimeArgTypes2 = 0;
         while ((ArgType = GET_CURRENT_ARG_TYPE (RuntimeArgTypes)))
