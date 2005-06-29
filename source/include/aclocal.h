@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.191 $
+ *       $Revision: 1.192 $
  *
  *****************************************************************************/
 
@@ -424,6 +424,7 @@ typedef struct acpi_gpe_block_info
 {
     struct acpi_gpe_block_info      *Previous;
     struct acpi_gpe_block_info      *Next;
+    struct acpi_gpe_xrupt_info      *XruptBlock;    /* Backpointer to interrupt block */
     ACPI_GPE_REGISTER_INFO          *RegisterInfo;  /* One per GPE register pair */
     ACPI_GPE_EVENT_INFO             *EventInfo;     /* One for each GPE */
     ACPI_GENERIC_ADDRESS            BlockAddress;   /* Base address of the block */
