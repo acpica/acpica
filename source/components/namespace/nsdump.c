@@ -324,24 +324,49 @@ NsDumpOneObject (
         return AE_OK;
     }
 
-    if (ACPI_TYPE_Method == Type)
+    switch (Type)
     {
+
+    case ACPI_TYPE_Method:
+
         /* Name is a Method and its AML offset/length are set */
         
         DEBUG_PRINT_RAW (TRACE_TABLES, (" M:%p-%X\n",
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Pcode,
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.PcodeLength));                
 
-    }
-    else
-    {
+        break;
+    
+
+    case ACPI_TYPE_Number:
+ 
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" N:%X\n",
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Number.Value));
+        break;
+
+
+    case ACPI_TYPE_String:
+
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" S:%p-%X\n",
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->String.Pointer,
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->String.Length));
+        break;
+
+
+    case ACPI_TYPE_Buffer:
+
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" B:%p-%X\n",
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Buffer.Pointer,
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Buffer.Length));
+        break;
+
+
+    default:
+
         DEBUG_PRINT_RAW (TRACE_TABLES, ("\n"));
+        break;
     }
   
-    /* There is an attached object, display it */
-
-    Value = ThisEntry->Object;
-
     /* If debug turned off, done */
 
     if (!(DebugLevel & TRACE_VALUES))
@@ -349,6 +374,10 @@ NsDumpOneObject (
         return AE_OK;
     }
 
+
+    /* If there is an attached object, display it */
+
+    Value = ThisEntry->Object;
 
     /* Dump attached objects */
 
