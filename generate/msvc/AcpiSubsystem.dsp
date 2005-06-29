@@ -616,7 +616,15 @@ SOURCE=..\..\Subsystem\Debugger\dbdisply.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Debugger\dbexec.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Debugger\dbfileio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbhistry.c
 # End Source File
 # Begin Source File
 
