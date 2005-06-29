@@ -135,6 +135,21 @@
 #define ENABLE_RTC_ALARM                0x0400
 
 
+
+typedef struct
+{
+    UINT16      SegNum;
+    UINT16      BusNum;
+    UINT16      DevNum;
+    UINT16      FuncNum;
+
+} PCI_HANDLER_CONTEXT;
+
+
+
+
+
+
 /* SCI handling - evsci */
     
 UINT32 
@@ -214,17 +229,11 @@ EvAddressSpaceDispatch (
     UINT32                  BitWidth,
     UINT32                  *Value);
 
-typedef struct
-{
-    UINT16      SegNum;
-    UINT16      BusNum;
-    UINT16      DevNum;
-    UINT16      FuncNum;
-} PCI_HANDLER_CONTEXT;
 
 ACPI_STATUS
 EvInitializeRegion (
-    ACPI_OBJECT_INTERNAL    *RegionObj);
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    BOOLEAN                 NsLocked);
 
 ACPI_STATUS
 EvAddrHandlerHelper (
