@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.25 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,7 @@
  *
  * PARAMETERS:  GpeDevice           - Device node.  NULL for GPE0/GPE1
  *              GpeNumber           - Raw GPE number
- *              
+ *
  * RETURN:      A GPE EventInfo struct.  NULL if not a valid GPE
  *
  * DESCRIPTION: Returns the EventInfo struct associated with this GPE.
@@ -176,7 +176,7 @@ AcpiEvGetGpeEventInfo (
         return (NULL);
     }
 
-    /* 
+    /*
      * A Non-null GpeDevice means this is a GPE Block Device.
      */
     ObjDesc = AcpiNsGetAttachedObject ((ACPI_NAMESPACE_NODE *) GpeDevice);
@@ -269,11 +269,13 @@ AcpiEvGpeDetect (
             }
 
             ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
-                "GPE block at %8.8X%8.8X - Values: Enable %02X Status %02X\n",
+                "GPE pair: Status %8.8X%8.8X = %02X, Enable %8.8X%8.8X = %02X\n",
+                ACPI_HIDWORD (ACPI_GET_ADDRESS (GpeRegisterInfo->StatusAddress.Address)),
+                ACPI_LODWORD (ACPI_GET_ADDRESS (GpeRegisterInfo->StatusAddress.Address)),
+                GpeRegisterInfo->Status,
                 ACPI_HIDWORD (ACPI_GET_ADDRESS (GpeRegisterInfo->EnableAddress.Address)),
                 ACPI_LODWORD (ACPI_GET_ADDRESS (GpeRegisterInfo->EnableAddress.Address)),
-                GpeRegisterInfo->Enable,
-                GpeRegisterInfo->Status));
+                GpeRegisterInfo->Enable));
 
             /* First check if there is anything active at all in this register */
 
@@ -417,7 +419,7 @@ AcpiEvAsynchExecuteGpeMethod (
  * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
  *
  * DESCRIPTION: Dispatch a General Purpose Event to either a function (e.g. EC)
- *              or method (e.g. _Lxx/_Exx) handler.  
+ *              or method (e.g. _Lxx/_Exx) handler.
  *
  *              This function executes at interrupt level.
  *
