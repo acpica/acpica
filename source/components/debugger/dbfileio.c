@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  ******************************************************************************/
 
@@ -290,7 +290,7 @@ AcpiDbLoadTable(
 
     Status = AcpiTbValidateTableHeader (&TableHeader);
     if ((ACPI_FAILURE (Status)) ||
-        (TableHeader.Length > (8 * 1024 * 1024)))  /* 8 Mbyte should be enough */
+        (TableHeader.Length > 0x800000))  /* 8 Mbyte should be enough */
     {
         AcpiOsPrintf ("Table header is invalid!\n");
         return (AE_ERROR);
