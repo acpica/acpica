@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I "..\..\components\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I "..\..\source\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -75,7 +75,7 @@ PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /W4 /Gm /GX /ZI /Od /I "..\..\components\Include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /FD /GZ /c
+# ADD CPP /nologo /W4 /Gm /GX /ZI /Od /I "..\..\source\Include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "_ACPI_ASL_COMPILER" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -107,27 +107,27 @@ PostBuild_Cmds=copy Debug\iasl.exe ..\..\Libraries
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\components\core\utils\cmalloc.c
+SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\utils\cmdebug.c
+SOURCE=..\..\source\components\utilities\utdebug.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\utils\cmdelete.c
+SOURCE=..\..\source\components\utilities\utdelete.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\utils\cmglobal.c
+SOURCE=..\..\source\components\utilities\utglobal.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\utils\cmobject.c
+SOURCE=..\..\source\components\utilities\utobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\utils\cmutils.c
+SOURCE=..\..\source\components\utilities\utmisc.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -135,35 +135,35 @@ SOURCE=..\..\components\core\utils\cmutils.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\components\core\namespace\nsaccess.c
+SOURCE=..\..\source\components\namespace\nsaccess.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\namespace\nsalloc.c
+SOURCE=..\..\source\components\namespace\nsalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\namespace\nsdump.c
+SOURCE=..\..\source\components\namespace\nsdump.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\namespace\nsnames.c
+SOURCE=..\..\source\components\namespace\nsnames.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\namespace\nsobject.c
+SOURCE=..\..\source\components\namespace\nsobject.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\namespace\nssearch.c
+SOURCE=..\..\source\components\namespace\nssearch.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\namespace\nsutils.c
+SOURCE=..\..\source\components\namespace\nsutils.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\core\namespace\nswalk.c
+SOURCE=..\..\source\components\namespace\nswalk.c
 # End Source File
 # End Group
 # Begin Group "Compiler"
@@ -171,19 +171,19 @@ SOURCE=..\..\components\core\namespace\nswalk.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslanalyze.c
+SOURCE=..\..\source\compiler\aslanalyze.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslcodegen.c
+SOURCE=..\..\source\compiler\aslcodegen.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslcompile.c
+SOURCE=..\..\source\compiler\aslcompile.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslcompiler.l.c
+SOURCE=..\..\source\compiler\aslcompiler.l.c
 
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
@@ -196,7 +196,7 @@ SOURCE=..\..\components\compiler\aslcompiler.l.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslcompiler.y.c
+SOURCE=..\..\source\compiler\aslcompiler.y.c
 
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
@@ -209,55 +209,55 @@ SOURCE=..\..\components\compiler\aslcompiler.y.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslerror.c
+SOURCE=..\..\source\compiler\aslerror.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslfiles.c
+SOURCE=..\..\source\compiler\aslfiles.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\asllength.c
+SOURCE=..\..\source\compiler\asllength.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\asllisting.c
+SOURCE=..\..\source\compiler\asllisting.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslload.c
+SOURCE=..\..\source\compiler\aslload.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\asllookup.c
+SOURCE=..\..\source\compiler\asllookup.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslmain.c
+SOURCE=..\..\source\compiler\aslmain.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslmap.c
+SOURCE=..\..\source\compiler\aslmap.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslopcodes.c
+SOURCE=..\..\source\compiler\aslopcodes.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\asloperands.c
+SOURCE=..\..\source\compiler\asloperands.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslresource.c
+SOURCE=..\..\source\compiler\aslresource.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslrestype1.c
+SOURCE=..\..\source\compiler\aslrestype1.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslrestype2.c
+SOURCE=..\..\source\compiler\aslrestype2.c
 
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
@@ -270,11 +270,11 @@ SOURCE=..\..\components\compiler\aslrestype2.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\asltree.c
+SOURCE=..\..\source\compiler\asltree.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslutils.c
+SOURCE=..\..\source\compiler\aslutils.c
 # End Source File
 # End Group
 # Begin Group "Parser"
@@ -282,11 +282,11 @@ SOURCE=..\..\components\compiler\aslutils.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\components\interpreter\parser\psopcode.c
+SOURCE=..\..\source\components\interpreter\parser\psopcode.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\interpreter\parser\psutils.c
+SOURCE=..\..\source\components\interpreter\parser\psutils.c
 # End Source File
 # End Group
 # Begin Group "Dispatcher"
@@ -294,11 +294,11 @@ SOURCE=..\..\components\interpreter\parser\psutils.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\components\interpreter\Dispatcher\dswscope.c
+SOURCE=..\..\source\components\interpreter\Dispatcher\dswscope.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\interpreter\Dispatcher\dswstate.c
+SOURCE=..\..\source\components\interpreter\Dispatcher\dswstate.c
 # End Source File
 # End Group
 # Begin Group "Common"
@@ -306,11 +306,11 @@ SOURCE=..\..\components\interpreter\Dispatcher\dswstate.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\components\common\getopt.c
+SOURCE=..\..\source\common\getopt.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\os_interfaces\oswinxf.c
+SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # End Source File
 # End Group
 # End Group
@@ -319,23 +319,23 @@ SOURCE=..\..\components\os_interfaces\oswinxf.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslcompiler.h
+SOURCE=..\..\source\compiler\aslcompiler.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslcompiler.y.h
+SOURCE=..\..\source\compiler\aslcompiler.y.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslglobal.h
+SOURCE=..\..\source\compiler\aslglobal.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\aslresource.h
+SOURCE=..\..\source\compiler\aslresource.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\components\compiler\asltypes.h
+SOURCE=..\..\source\compiler\asltypes.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -344,16 +344,16 @@ SOURCE=..\..\components\compiler\asltypes.h
 # End Group
 # Begin Source File
 
-SOURCE=../../components/compiler/aslcompiler.l
+SOURCE=../../source/compiler/aslcompiler.l
 
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Lexer from $(InputPath)
-InputPath=../../components/compiler/aslcompiler.l
+InputPath=../../source/compiler/aslcompiler.l
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(InputPath).c $(InputPath)
+	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(InputPath).c $(InputPath)
 
 # End Custom Build
 
@@ -361,10 +361,10 @@ InputPath=../../components/compiler/aslcompiler.l
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building Lexer from $(InputPath)
-InputPath=../../components/compiler/aslcompiler.l
+InputPath=../../source/compiler/aslcompiler.l
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(InputPath).c $(InputPath)
+	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(InputPath).c $(InputPath)
 
 # End Custom Build
 
@@ -373,16 +373,16 @@ InputPath=../../components/compiler/aslcompiler.l
 # End Source File
 # Begin Source File
 
-SOURCE=../../components/compiler/aslcompiler.y
+SOURCE=../../source/compiler/aslcompiler.y
 
 !IF  "$(CFG)" == "AslCompiler - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building interpreter\parser from $(InputPath)
-InputPath=../../components/compiler/aslcompiler.y
+InputPath=../../source/compiler/aslcompiler.y
 
 BuildCmds= \
-	..\..\ThirdPartyTools\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
+	..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
@@ -395,10 +395,10 @@ BuildCmds= \
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building parser from $(InputPath)
-InputPath=../../components/compiler/aslcompiler.y
+InputPath=../../source/compiler/aslcompiler.y
 
 BuildCmds= \
-	..\..\ThirdPartyTools\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
+	..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
