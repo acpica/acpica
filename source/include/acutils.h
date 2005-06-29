@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.126 $
+ *       $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -195,6 +195,9 @@ NATIVE_CHAR *
 AcpiUtGetTypeName (
     ACPI_OBJECT_TYPE        Type);
 
+#endif
+
+
 NATIVE_CHAR *
 AcpiUtGetRegionName (
     UINT8                   SpaceId);
@@ -202,9 +205,6 @@ AcpiUtGetRegionName (
 NATIVE_CHAR *
 AcpiUtGetEventName (
     UINT32                  EventId);
-
-#endif
-
 
 UINT8
 AcpiUtHexToAsciiChar (
@@ -757,7 +757,7 @@ AcpiUtValidateBufferSize (
     ACPI_SIZE               RequiredLength);
 
 
-/* Debug Memory allocation functions */
+/* Memory allocation functions */
 
 void *
 AcpiUtAllocate (
@@ -773,14 +773,47 @@ AcpiUtCallocate (
     NATIVE_CHAR             *Module,
     UINT32                  Line);
 
-void
-AcpiUtFree (
-    void                    *Address,
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+
+void *
+AcpiUtAllocateAndTrack (
+    ACPI_SIZE               Size,
     UINT32                  Component,
     NATIVE_CHAR             *Module,
     UINT32                  Line);
 
-#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+void *
+AcpiUtCallocateAndTrack (
+    ACPI_SIZE               Size,
+    UINT32                  Component,
+    NATIVE_CHAR             *Module,
+    UINT32                  Line);
+
+void
+AcpiUtFreeAndTrack (
+    void                    *Address,
+    UINT32                  Component,
+    NATIVE_CHAR             *Module,
+    UINT32                  Line);
+ACPI_STATUS
+AcpiUtTrackAllocation (
+    UINT32                  ListId,
+    ACPI_DEBUG_MEM_BLOCK    *Address,
+    ACPI_SIZE               Size,
+    UINT8                   AllocType,
+    UINT32                  Component,
+    NATIVE_CHAR             *Module,
+    UINT32                  Line);
+
+ACPI_STATUS
+AcpiUtRemoveAllocation (
+    UINT32                  ListId,
+    ACPI_DEBUG_MEM_BLOCK    *Address,
+    UINT32                  Component,
+    NATIVE_CHAR             *Module,
+    UINT32                  Line);
+
 void
 AcpiUtDumpAllocationInfo (
     void);
