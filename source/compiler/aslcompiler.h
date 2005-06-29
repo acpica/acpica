@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -164,8 +164,8 @@ getopt (
  * Compiler versions and names
  */
 
-#define CompilerVersion             "X2019"
-#define CompilerCreatorRevision     0x02002019  /* Acpi 2.0, Version # */
+#define CompilerVersion             "X2020"
+#define CompilerCreatorRevision     0x02002020  /* Acpi 2.0, Version # */
 
 #define CompilerId                  "Intel ACPI Component Architecture ASL Compiler"
 #define CompilerCopyright           "Copyright (C) 2000, 2001 Intel Corporation"
