@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.160 $
+ *              $Revision: 1.161 $
  *
  ******************************************************************************/
 
@@ -344,6 +344,7 @@ AcpiNsLookup (
     ACPI_NAMESPACE_NODE     **ReturnNode)
 {
     ACPI_STATUS             Status;
+    NATIVE_CHAR             *Path = Pathname;
     ACPI_NAMESPACE_NODE     *PrefixNode;
     ACPI_NAMESPACE_NODE     *CurrentNode = NULL;
     ACPI_NAMESPACE_NODE     *ThisNode = NULL;
@@ -351,9 +352,9 @@ AcpiNsLookup (
     ACPI_NAME               SimpleName;
     ACPI_OBJECT_TYPE        TypeToCheckFor;
     ACPI_OBJECT_TYPE        ThisSearchType;
-    UINT32                  LocalFlags = Flags & ~(ACPI_NS_ERROR_IF_FOUND | ACPI_NS_SEARCH_PARENT);
     UINT32                  SearchParentFlag = ACPI_NS_SEARCH_PARENT;
-    NATIVE_CHAR             *Path = Pathname;
+    UINT32                  LocalFlags = Flags & ~(ACPI_NS_ERROR_IF_FOUND | 
+                                                   ACPI_NS_SEARCH_PARENT);
 
 
     ACPI_FUNCTION_TRACE ("NsLookup");
@@ -388,6 +389,23 @@ AcpiNsLookup (
     else
     {
         PrefixNode = ScopeInfo->Scope.Node;
+        if (ACPI_GET_DESCRIPTOR_TYPE (PrefixNode) != ACPI_DESC_TYPE_NAMED)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "[%p] Not a namespace node\n", 
+                PrefixNode));
+            return_ACPI_STATUS (AE_AML_INTERNAL);
+        }
+
+        /*
+         * This node might not be a actual "scope" node (such as a 
+         * Device/Method, etc.)  It could be a Package or other object node.  
+         * Backup up the tree to find the containing scope node.
+         */
+        while (!AcpiNsOpensScope (PrefixNode->Type) && 
+                PrefixNode->Type != ACPI_TYPE_ANY)
+        {
+            PrefixNode = AcpiNsGetParentNode (PrefixNode);
+        }
     }
 
     /*
@@ -454,8 +472,8 @@ AcpiNsLookup (
 
             Path++;
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Path is absolute from root [%p]\n",
-                ThisNode));
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, 
+                "Path is absolute from root [%p]\n", ThisNode));
         }
         else
         {
@@ -629,7 +647,8 @@ AcpiNsLookup (
 
                 ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                     "Name [%4.4s] not found in scope [%4.4s] %p\n",
-                    (char *) &SimpleName, (char *) &CurrentNode->Name, CurrentNode));
+                    (char *) &SimpleName, (char *) &CurrentNode->Name, 
+                    CurrentNode));
             }
 
             return_ACPI_STATUS (Status);
