@@ -1,7 +1,6 @@
 /******************************************************************************
- *
+ * 
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -9,8 +8,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +37,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +47,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +85,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -117,101 +116,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 
-#include "acpi.h"
-#include "amlcode.h"
-#include "acparser.h"
-#include "acnamesp.h"
-#include "acinterp.h"
-#include "acdebug.h"
-#include "acapps.h"
+#include <acpi.h>
+#include <acapi.h>
+#include <amlcode.h>
+#include <parser.h>
+#include <tables.h>
+#include <namesp.h>
+#include <interp.h>
+#include <debugger.h>
 
 #include "aecommon.h"
 
-#ifdef _DEBUG
-#if ACPI_MACHINE_WIDTH != 16
-#include <crtdbg.h>
-#endif
-#endif
 
 #define _COMPONENT          PARSER
-        ACPI_MODULE_NAME    ("aemain")
+        MODULE_NAME         ("aemain");
 
 
-#if ACPI_MACHINE_WIDTH == 16
-
-ACPI_STATUS
-AcpiGetIrqRoutingTable  (
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer)
-{
-    return AE_NOT_IMPLEMENTED;
-}
-#endif
-
-
-UINT32
-AeGpeHandler (
-    void                        *Context)
-{
+extern char                    *Version;
+extern char                    LineBuf[80];
+extern char                    CommandBuf[40];
+extern char                    ArgBuf[40];
+extern char                    ScopeBuf[40];
+extern char                    DebugFilename[40];
+extern FILE                    *DebugFile;
+extern char                    *Buffer;
+extern char                    *Filename;
 
 
-    AcpiOsPrintf ("Received a GPE at handler\n");
-    return (0);
-}
-
-void
-AfInstallGpeBlock (void)
-{
-    ACPI_STATUS                 Status;
-    ACPI_HANDLE                 Handle;
-    ACPI_HANDLE                 Handle2 = NULL;
-    ACPI_HANDLE                 Handle3 = NULL;
-    ACPI_GENERIC_ADDRESS        BlockAddress;
-
-
-    Status = AcpiGetHandle (NULL, "\\_GPE", &Handle);
-    if (ACPI_FAILURE (Status))
-    {
-        return;
-    }
-
-    BlockAddress.AddressSpaceId = 0;
-#if ACPI_MACHINE_WIDTH != 16
-    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x8000000076540000);
-#else
-    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x76540000);
-#endif
-
-//    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
-
-    /* Above should fail, ignore */
-
-    Status = AcpiGetHandle (NULL, "\\GPE2", &Handle2);
-    if (ACPI_SUCCESS (Status))
-    {
-        Status = AcpiInstallGpeBlock (Handle2, &BlockAddress, 8, 8);
-
-        AcpiInstallGpeHandler (Handle2, 8, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
-        AcpiSetGpeType (Handle2, 8, ACPI_GPE_TYPE_WAKE);
-        AcpiEnableGpe (Handle2, 8, 0);
-    }
-
-    Status = AcpiGetHandle (NULL, "\\GPE3", &Handle3);
-    if (ACPI_SUCCESS (Status))
-    {
-        Status = AcpiInstallGpeBlock (Handle3, &BlockAddress, 8, 11);
-    }
-
-//    Status = AcpiRemoveGpeBlock (Handle);
-//    Status = AcpiRemoveGpeBlock (Handle2);
-//    Status = AcpiRemoveGpeBlock (Handle3);
-
-}
+extern int                     opt_tables;
+extern int                     opt_disasm;
+extern int                     opt_stats;
+extern int                     opt_parse_jit;
+   
 
 /******************************************************************************
- *
+ * 
  * FUNCTION:    usage
  *
  * PARAMETERS:  None
@@ -225,21 +165,87 @@ AfInstallGpeBlock (void)
 void
 usage (void)
 {
-    printf ("Usage: acpiexec [-?dgis] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
+    printf ("Usage: acpiexec [-dgjs] [-l DebugLevel] [-o OutputFile] [AcpiTableFile]\n");
     printf ("Where:\n");
     printf ("    Input Options\n");
     printf ("        AcpiTableFile       Get ACPI tables from this file\n");
     printf ("    Output Options\n");
     printf ("    Miscellaneous Options\n");
-    printf ("        -?                  Display this message\n");
-    printf ("        -i                  Do not run STA/INI methods\n");
-    printf ("        -x DebugLevel       Specify debug output level\n");
-    printf ("        -v                  Verbose init output\n");
+    printf ("        -j                  Just-in-time method parsing\n");
+    printf ("        -l DebugLevel       Specify debug output level\n");
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    AeDisplayHelp
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print a usage message
+ *
+ *****************************************************************************/
+
+
+void
+AeInitializeSubsystem (void)
+{
+    ACPI_STATUS             Status;
+
+    AcpiInitialize (NULL);
+
+    if (opt_parse_jit)
+    {
+        Gbl_WhenToParseMethods = METHOD_PARSE_JUST_IN_TIME; // | METHOD_DELETE_AT_COMPLETION;
+    }
+
+    /* Always have to get the tables! */
+
+    Status = AdGetTables (Filename);   
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("Could not get ACPI tables (Exception %s)\n", Gbl_ExceptionNames[Status]);
+        goto Cleanup;
+    }
+
+    /* Always parse the tables, only option is what to display */
+
+    Status = AdParseTables ();
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("Could not parse ACPI tables (Exception %s)\n", Gbl_ExceptionNames[Status]);
+        goto Cleanup;
+    }
+
+    Status = AeInstallHandlers ();
+
+/*
+    Status = AcpiLoadNamespace ();
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("Could not load the namespace (Exception %s)\n", Gbl_ExceptionNames[Status]);
+        goto Cleanup;
+    }
+
+*/
+
+
+
+Cleanup:
+    if (ACPI_FAILURE (Status))
+    {
+        if (DsdtPtr)
+            free (DsdtPtr);
+    }
+
 }
 
 
 /******************************************************************************
- *
+ * 
  * FUNCTION:    main
  *
  * PARAMETERS:  argc, argv
@@ -250,69 +256,49 @@ usage (void)
  *
  *****************************************************************************/
 
-int ACPI_SYSTEM_XFACE
+int
 main (
-    int                     argc,
+    int                     argc, 
     char                    **argv)
-{
+{      
     int                     j;
-    ACPI_STATUS             Status;
-    UINT32                  InitFlags;
-    ACPI_BUFFER             ReturnBuf;
-    ACPI_TABLE_HEADER       *Table;
-    char                    Buffer[32];
 
-
-#ifdef _DEBUG
-#if ACPI_MACHINE_WIDTH != 16
-    _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF |
-                    _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
-#endif
-#endif
-
-    signal (SIGINT, AeCtrlCHandler);
 
     /* Init globals */
 
-    AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
-    AcpiDbgLayer = 0xFFFFFFFF;
+    Buffer = malloc (BUFFER_SIZE);
+    DebugLevel = DEBUG_DEFAULT;    
+    DebugLayer = 0xFFFFFFFF;
 
-    /* Init ACPI and start debugger thread */
 
-    AcpiInitializeSubsystem ();
-    AcpiGbl_GlobalLockPresent = TRUE;
-
-    printf ("\nIntel ACPI Component Architecture\nAML Execution/Debug Utility");
-
-#if ACPI_MACHINE_WIDTH == 16
-    printf (" (16-bit)");
-#endif
-
-    printf (" version %8.8X", ((UINT32) ACPI_CA_VERSION));
-    printf (" [%s]\n\n",  __DATE__);
+    printf ("ACPI AML Execution/Debug Utility version %s\n", Version);
+    if (argc < 2)
+    {
+        usage ();
+        return 0;
+    }
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?dgio:svx:")) != EOF) switch(j)
+    while ((j = getopt (argc, argv, "dgjl:o:s")) != EOF) switch(j) 
     {
     case 'd':
-        AcpiGbl_DbOpt_disasm = TRUE;
-        AcpiGbl_DbOpt_stats = TRUE;
+        opt_disasm = TRUE;
+        opt_stats = TRUE;
         break;
 
     case 'g':
-        AcpiGbl_DbOpt_tables = TRUE;
-        AcpiGbl_DbFilename = NULL;
+        opt_tables = TRUE;
+        Filename = NULL;
+        break;
+    
+    case 'j':
+        opt_parse_jit = TRUE;
         break;
 
-    case 'i':
-        AcpiGbl_DbOpt_ini_methods = FALSE;
-        break;
-
-    case 'x':
-        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
-        AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
-        printf ("Debug Level: %lX\n", AcpiDbgLevel);
+    case 'l':
+        DebugLevel = strtoul (optarg, NULL, 0);
+        printf ("Debug Level: %lX\n", DebugLevel);
         break;
 
     case 'o':
@@ -320,169 +306,26 @@ main (
         break;
 
     case 's':
-        AcpiGbl_DbOpt_stats = TRUE;
+        opt_stats = TRUE;
         break;
 
-    case 'v':
-        AcpiDbgLevel |= ACPI_LV_INIT_NAMES;
-        break;
-
-    case '?':
-    default:
+    default:    
         usage();
         return -1;
-    }
-
-
-    InitFlags = (ACPI_NO_HANDLER_INIT | ACPI_NO_ACPI_ENABLE);
-    if (!AcpiGbl_DbOpt_ini_methods)
-    {
-        InitFlags |= (ACPI_NO_DEVICE_INIT | ACPI_NO_OBJECT_INIT);
-    }
-
+    }                      
+    
     /* Standalone filename is the only argument */
 
-    if (argv[AcpiGbl_Optind])
+    if (argv[optind])
     {
-        AcpiGbl_DbOpt_tables = TRUE;
-        AcpiGbl_DbFilename = argv[AcpiGbl_Optind];
-
-        Status = AcpiDbReadTableFromFile (AcpiGbl_DbFilename, &Table);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not get input table, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-        AeBuildLocalTables (Table);
-        Status = AeInstallTables ();
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not load ACPI tables, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-        Status = AeInstallHandlers ();
-        if (ACPI_FAILURE (Status))
-        {
-            goto enterloop;
-        }
-
-        /*
-         * TBD:
-         * Need a way to call this after the "LOAD" command
-         */
-        Status = AcpiEnableSubsystem (InitFlags);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not EnableSubsystem, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-        Status = AcpiInitializeObjects (InitFlags);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not InitializeObjects, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-
-        ReturnBuf.Length = 32;
-        ReturnBuf.Pointer = Buffer;
-        AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
-        AcpiEnableEvent (ACPI_EVENT_GLOBAL, 0);
-
-        AcpiInstallGpeHandler (NULL, 0, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
-        AcpiSetGpeType (NULL, 0, ACPI_GPE_TYPE_WAKE_RUN);
-        AcpiEnableGpe (NULL, 0, ACPI_NOT_ISR);
-        AcpiRemoveGpeHandler (NULL, 0, AeGpeHandler);
-
-        AcpiInstallGpeHandler (NULL, 0, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
-        AcpiSetGpeType (NULL, 0, ACPI_GPE_TYPE_WAKE_RUN);
-        AcpiEnableGpe (NULL, 0, ACPI_NOT_ISR);
-
-        AcpiInstallGpeHandler (NULL, 1, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
-        AcpiSetGpeType (NULL, 1, ACPI_GPE_TYPE_RUNTIME);
-        AcpiEnableGpe (NULL, 1, ACPI_NOT_ISR);
-
-        AcpiInstallGpeHandler (NULL, 2, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
-        AcpiSetGpeType (NULL, 2, ACPI_GPE_TYPE_WAKE);
-        AcpiEnableGpe (NULL, 2, ACPI_NOT_ISR);
-
-        AcpiInstallGpeHandler (NULL, 3, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
-        AcpiSetGpeType (NULL, 3, ACPI_GPE_TYPE_WAKE_RUN);
-
-        AcpiInstallGpeHandler (NULL, 4, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
-        AcpiSetGpeType (NULL, 4, ACPI_GPE_TYPE_RUNTIME);
-
-        AcpiInstallGpeHandler (NULL, 5, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
-        AcpiSetGpeType (NULL, 5, ACPI_GPE_TYPE_WAKE);
-
-        AcpiInstallGpeHandler (NULL, 0x19, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
-        AcpiSetGpeType (NULL, 0x19, ACPI_GPE_TYPE_WAKE_RUN);
-        AcpiEnableGpe (NULL, 0x19, ACPI_NOT_ISR);
-
-
-        AfInstallGpeBlock ();
+        opt_tables = TRUE;
+        Filename = argv[optind];
     }
 
-#if ACPI_MACHINE_WIDTH == 16
-    else
-    {
-#include "16bit.h"
 
-        Status = AfFindTable (DSDT_SIG, NULL, NULL);
-        if (ACPI_FAILURE (Status))
-        {
-            goto enterloop;
-        }
+    AeInitializeSubsystem ();
 
-
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not load ACPI tables, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-
-        Status = AcpiNsLoadNamespace ();
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not load ACPI namespace, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-
-        Status = AeInstallHandlers ();
-        if (ACPI_FAILURE (Status))
-        {
-            goto enterloop;
-        }
-        /* TBD:
-         * Need a way to call this after the "LOAD" command
-         */
-        Status = AcpiEnableSubsystem (InitFlags);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not EnableSubsystem, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-        Status = AcpiInitializeObjects (InitFlags);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not InitializeObjects, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-     }
-#endif
-
-enterloop:
-
-    /* Enter the debugger command loop */
-
-    AcpiDbUserCommands (ACPI_DEBUGGER_COMMAND_PROMPT, NULL);
+    DbInitialize  ();
 
     return 0;
 }
