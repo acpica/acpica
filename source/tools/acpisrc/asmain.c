@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.30 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -211,6 +211,7 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     "UINT32_BIT  ",             "u32         ",             REPLACE_WHOLE_WORD,
 
+    "UINT64      ",             "u64         ",             REPLACE_WHOLE_WORD,
     "UINT32      ",             "u32         ",             REPLACE_WHOLE_WORD,
     "UINT16      ",             "u16         ",             REPLACE_WHOLE_WORD,
     "UINT8       ",             "u8          ",             REPLACE_WHOLE_WORD,
@@ -218,11 +219,14 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Now do embedded typecasts */
 
+    "UINT64",                   "u64",                      REPLACE_WHOLE_WORD,
     "UINT32",                   "u32",                      REPLACE_WHOLE_WORD,
     "UINT16",                   "u16",                      REPLACE_WHOLE_WORD,
     "UINT8",                    "u8",                       REPLACE_WHOLE_WORD,
     "BOOLEAN",                  "u8",                       REPLACE_WHOLE_WORD,
 
+    "INT64  ",                  "s64    ",                  REPLACE_WHOLE_WORD,
+    "INT64",                    "s64",                      REPLACE_WHOLE_WORD,
     "INT32  ",                  "s32    ",                  REPLACE_WHOLE_WORD,
     "INT32",                    "s32",                      REPLACE_WHOLE_WORD,
     "INT16  ",                  "s16    ",                  REPLACE_WHOLE_WORD,
@@ -242,118 +246,122 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     "_u8_",                     "_UINT8_",          REPLACE_SUBSTRINGS,
 */
 
+NULL,                       NULL,                       0};
 
-    "ACPI_STATUS",              "acpi_status",                  REPLACE_WHOLE_WORD,
+ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
+
     /*"ACPI_IO_ADDRESS  ",        "acpi_io_address  ",*/
     /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address  ",*/
     /*"NATIVE_UINT  ",            "native_uint  ",*/
     /*"NATIVE_INT  ",             "native_int  ",*/
     /*"NATIVE_CHAR  ",            "native_char  ",*/
-    "ACPI_NAME",                "acpi_name",                  REPLACE_WHOLE_WORD,
-    "ACPI_STRING",              "acpi_string",                REPLACE_WHOLE_WORD,
-    "ACPI_HANDLE",              "acpi_handle",                REPLACE_WHOLE_WORD,
-    "ACPI_INTEGER",             "acpi_integer",               REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT_TYPE",         "acpi_object_type",           REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT_TYPE8",        "acpi_object_type8",          REPLACE_WHOLE_WORD,
-    "OPERATING_MODE",           "operating_mode",             REPLACE_WHOLE_WORD,
-    "ACPI_EVENT_STATUS",        "acpi_event_status",          REPLACE_WHOLE_WORD,
-    "ACPI_OWNER_ID",            "acpi_owner_id",              REPLACE_WHOLE_WORD,
-    "ACPI_TABLE_TYPE",          "acpi_table_type",            REPLACE_WHOLE_WORD,
 
-    "ACPI_NAMESPACE_NODE",      "acpi_namespace_node",          REPLACE_WHOLE_WORD,
-    "ACPI_OPERAND_OBJECT",      "acpi_operand_object",          REPLACE_WHOLE_WORD,
-    "ACPI_GENERIC_STATE",       "acpi_generic_state",           REPLACE_WHOLE_WORD,
-    "ACPI_WALK_STATE",          "acpi_walk_state",              REPLACE_WHOLE_WORD,
-    "ACPI_GPE_LEVEL_INFO",      "acpi_gpe_level_info",          REPLACE_WHOLE_WORD,
-    "ACPI_PARSE_OBJECT",        "acpi_parse_object",            REPLACE_WHOLE_WORD,
-    "ACPI_WALK_LIST",           "acpi_walk_list",               REPLACE_WHOLE_WORD,
-    "ACPI_PARSE_STATE",         "acpi_parse_state",             REPLACE_WHOLE_WORD,
-    "ACPI_BUFFER",              "acpi_buffer",                  REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT_LIST",         "acpi_object_list",             REPLACE_WHOLE_WORD,
-    "ACPI_OPCODE_INFO",         "acpi_opcode_info",             REPLACE_WHOLE_WORD,
-    "PREDEFINED_NAMES",         "predefined_names",             REPLACE_WHOLE_WORD,
-    "DB_METHOD_INFO",           "db_method_info",               REPLACE_WHOLE_WORD,
-    "ACPI_PARSE2_OBJECT",       "acpi_parse2_object",           REPLACE_WHOLE_WORD,
-    "ACPI_PARSE_DOWNWARDS",     "acpi_parse_downwards",         REPLACE_WHOLE_WORD,
-    "ACPI_PARSE_UPWARDS",       "acpi_parse_upwards",           REPLACE_WHOLE_WORD,
-    "ACPI_GENERIC_ADDRESS",     "acpi_generic_address",         REPLACE_WHOLE_WORD,
-    "PCI_ROUTING_TABLE",        "pci_routing_table",            REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_DATA",       "acpi_resource_data",           REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_IRQ",        "acpi_resource_irq",            REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_DMA",        "acpi_resource_dma",            REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_START_DPF",  "acpi_resource_start_dpf",      REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_IO",         "acpi_resource_io",             REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_FIXED_IO",   "acpi_resource_fixed_io",       REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_VENDOR",     "acpi_resource_vendor",         REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_MEM24",      "acpi_resource_mem24",          REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_MEM32",      "acpi_resource_mem32",          REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_FIXED_MEM32","acpi_resource_fixed_mem32",    REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_TYPE",       "acpi_resource_type",           REPLACE_WHOLE_WORD,
-    "ACPI_MEMORY_ATTRIBUTE",	"acpi_memory_attribute",        REPLACE_WHOLE_WORD,
-    "ACPI_IO_ATTRIBUTE",        "acpi_io_attribute",            REPLACE_WHOLE_WORD,
-    "ACPI_BUS_ATTRIBUTE",       "acpi_bus_attribute",           REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_ATTRIBUTE",	"acpi_resource_attribute",      REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_SOURCE",     "acpi_resource_source",         REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_ADDRESS16",  "acpi_resource_address16",      REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_ADDRESS32",  "acpi_resource_address32",      REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_ADDRESS64",  "acpi_resource_address64",      REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE_EXT_IRQ",    "acpi_resource_ext_irq",        REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE ",           "acpi_resource ",               REPLACE_WHOLE_WORD,/* Must be last resource desc */
-    "ACPI_SYSTEM_INFO",         "acpi_system_info",             REPLACE_WHOLE_WORD,
-    "ACPI_TABLE_DESC",          "acpi_table_desc",              REPLACE_WHOLE_WORD,
-    "XSDT_DESCRIPTOR",          "xsdt_descriptor",              REPLACE_WHOLE_WORD,
-    "FADT_DESCRIPTOR_REV071",   "fadt_descriptor_rev071",       REPLACE_WHOLE_WORD,
-    "FADT_DESCRIPTOR_REV1",     "fadt_descriptor_rev1",         REPLACE_WHOLE_WORD,
-    "FADT_DESCRIPTOR_REV2",     "fadt_descriptor_rev2",         REPLACE_WHOLE_WORD,
-    "ACPI_COMMON_FACS",         "acpi_common_facs",             REPLACE_WHOLE_WORD,
-    "FACS_DESCRIPTOR_REV071",   "facs_descriptor_rev071",       REPLACE_WHOLE_WORD,
-    "FACS_DESCRIPTOR_REV1",     "facs_descriptor_rev1",         REPLACE_WHOLE_WORD,
-    "FACS_DESCRIPTOR_REV2",     "facs_descriptor_rev2",         REPLACE_WHOLE_WORD,
-    "ACPI_TABLE_HEADER",        "acpi_table_header",            REPLACE_WHOLE_WORD,
-    "ACPI_PKG_INFO",            "acpi_pkg_info",                REPLACE_WHOLE_WORD,
-    "ACPI_EVENT_TYPE",          "acpi_event_type",              REPLACE_WHOLE_WORD,
-    "ACPI_DEVICE_INFO",         "acpi_device_info",             REPLACE_WHOLE_WORD,
-    "ACPI_PCI_ID",              "acpi_pci_id",                  REPLACE_WHOLE_WORD,
-    "ACPI_MEM_SPACE_CONTEXT",   "acpi_mem_space_context",       REPLACE_WHOLE_WORD,
-    "ACPI_OBJ_INFO_HEADER",     "acpi_obj_info_header",         REPLACE_WHOLE_WORD,
-    "UINT64_STRUCT",            "uint64_struct",                REPLACE_WHOLE_WORD,
+    "ACPI_ADR_SPACE_HANDLER",
+    "ACPI_ADR_SPACE_INFO",
+    "ACPI_ADR_SPACE_SETUP",
+    "ACPI_BUFFER",
+    "ACPI_BUS_ATTRIBUTE",
+    "ACPI_COMMON_FACS",
+    "ACPI_COMMON_STATE",
+    "ACPI_CONTROL_STATE",
+    "ACPI_DEBUG_MEM_BLOCK",
+    "ACPI_DEBUG_MEM_HEADER",
+    "ACPI_DEBUG_PRINT_INFO",
+    "ACPI_DEVICE_ID",
+    "ACPI_DEVICE_INFO",
+    "ACPI_DEVICE_WALK_INFO",
+    "ACPI_EVENT_HANDLER",
+    "ACPI_EVENT_STATUS",
+    "ACPI_EVENT_TYPE",
+    "ACPI_FIELD_INFO",
+    "ACPI_FIXED_EVENT_INFO",
+    "ACPI_GENERIC_ADDRESS",
+    "ACPI_GENERIC_STATE",
+    "ACPI_GET_DEVICES_INFO",
+    "ACPI_GPE_HANDLER",
+    "ACPI_GPE_LEVEL_INFO",
+    "ACPI_GPE_REGISTERS",
+    "ACPI_HANDLE",
+    "ACPI_INTEGER",
+    "ACPI_INIT_WALK_INFO",
+    "ACPI_IO_ATTRIBUTE",
+    "ACPI_MEM_SPACE_CONTEXT",
+    "ACPI_MEMORY_ATTRIBUTE",
+    "ACPI_MUTEX",
+    "ACPI_MUTEX_INFO",
+    "ACPI_NAME",
+    "ACPI_NAMESPACE_NODE",
+    "ACPI_NAMESTRING_INFO",
+    "ACPI_NOTIFY_HANDLER",
+    "ACPI_NOTIFY_INFO",
+    "ACPI_OBJ_INFO_HEADER",
+    "ACPI_OBJECT",
+    "ACPI_OBJECT_LIST",
+    "ACPI_OBJECT_TYPE",
+    "ACPI_OBJECT_TYPE8",
+    "ACPI_OPCODE_INFO",
+    "ACPI_OPERAND_OBJECT",
+    "ACPI_OWNER_ID",
+    "ACPI_PARSE_DOWNWARDS",
+    "ACPI_PARSE_OBJECT",
+    "ACPI_PARSE_STATE",
+    "ACPI_PARSE_UPWARDS",
+    "ACPI_PARSE_VALUE",
+    "ACPI_PARSE2_OBJECT",
+    "ACPI_PCI_ID",
+    "ACPI_PKG_INFO",
+    "ACPI_PKG_STATE",
+    "ACPI_PSCOPE_STATE",
+    "ACPI_RESOURCE",
+    "ACPI_RESOURCE_ADDRESS16",
+    "ACPI_RESOURCE_ADDRESS32",
+    "ACPI_RESOURCE_ADDRESS64",
+    "ACPI_RESOURCE_ATTRIBUTE",
+    "ACPI_RESOURCE_DATA",
+    "ACPI_RESOURCE_DMA",
+    "ACPI_RESOURCE_EXT_IRQ",
+    "ACPI_RESOURCE_FIXED_IO",
+    "ACPI_RESOURCE_FIXED_MEM32",
+    "ACPI_RESOURCE_IO",
+    "ACPI_RESOURCE_IRQ",
+    "ACPI_RESOURCE_MEM24",
+    "ACPI_RESOURCE_MEM32",
+    "ACPI_RESOURCE_SOURCE",
+    "ACPI_RESOURCE_START_DPF",
+    "ACPI_RESOURCE_TYPE",
+    "ACPI_RESOURCE_VENDOR",
+    "ACPI_RESULT_VALUES",
+    "ACPI_SCOPE_STATE",
+    "ACPI_STATUS",
+    "ACPI_STRING",
+    "ACPI_SYSTEM_INFO",
+    "ACPI_TABLE_DESC",
+    "ACPI_TABLE_HEADER",
+    "ACPI_TABLE_INFO",
+    "ACPI_TABLE_TYPE",
+    "ACPI_TABLE_TYPE",
+    "ACPI_UPDATE_STATE",
+    "ACPI_WALK_CALLBACK",
+    "ACPI_WALK_INFO",
+    "ACPI_WALK_LIST",
+    "ACPI_WALK_STATE",
+    "DB_METHOD_INFO",
+    "FACS_DESCRIPTOR_REV071",
+    "FACS_DESCRIPTOR_REV1",
+    "FACS_DESCRIPTOR_REV2",
+    "FADT_DESCRIPTOR_REV071",
+    "FADT_DESCRIPTOR_REV1",
+    "FADT_DESCRIPTOR_REV2",
+    "FIND_CONTEXT",
+    "NS_SEARCH_DATA",
+    "OPERATING_MODE",
+    "PCI_ROUTING_TABLE",
+    "PREDEFINED_NAMES",
+    "UINT64_OVERLAY",
+    "UINT64_STRUCT",
+    "XSDT_DESCRIPTOR",
 
-    /* Typecasts */
-
-    "ACPI_STATUS",              "acpi_status",                  REPLACE_WHOLE_WORD,
-    /*"ACPI_IO_ADDRESS)",         "acpi_io_address)",*/
-    /*"ACPI_PHYSICAL_ADDRESS)",   "acpi_physical_address)",*/
-    /*"NATIVE_UINT)",             "native_uint)",*/
-    /*"NATIVE_INT)",              "native_int)",*/
-    /*"NATIVE_CHAR)",             "native_char)",*/
-    "ACPI_NAME",               "acpi_name",                     REPLACE_WHOLE_WORD,
-    "ACPI_STRING",             "acpi_string",                   REPLACE_WHOLE_WORD,
-    "ACPI_HANDLE",             "acpi_handle",                   REPLACE_WHOLE_WORD,
-    "ACPI_INTEGER",            "acpi_integer",                  REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT_TYPE",        "acpi_object_type",              REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT_TYPE8",       "acpi_object_type8",             REPLACE_WHOLE_WORD,
-    "OPERATING_MODE",          "operating_mode",                REPLACE_WHOLE_WORD,
-    "ACPI_EVENT_STATUS",       "acpi_event_status",             REPLACE_WHOLE_WORD,
-    "ACPI_OWNER_ID",           "acpi_owner_id",                 REPLACE_WHOLE_WORD,
-    "ACPI_TABLE_TYPE",         "acpi_table_type",               REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE",           "acpi_resource",                 REPLACE_WHOLE_WORD,
-
-
-    /*
-     * Function return values.
-     * This is fragile. We have to put these in to get it to compile, BUT
-     * we can't put all tokens here, because that will break strings where
-     * we want to convert FOO but not FOO_MAX_LEN, for example.
-     */
-    "ACPI_OWNER_ID",           "acpi_owner_id",                 REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT_TYPE8",       "acpi_object_type8",             REPLACE_WHOLE_WORD,
-    "ACPI_HANDLE",             "acpi_handle",                   REPLACE_WHOLE_WORD,
-    "ACPI_NAME\n",             "acpi_name\n",                   REPLACE_WHOLE_WORD,
-    "ACPI_NAME ",              "acpi_name ",                    REPLACE_WHOLE_WORD,
-    "ACPI_OBJECT",             "acpi_object",                   REPLACE_WHOLE_WORD,
-    "ACPI_RESOURCE,",          "acpi_resource,",                REPLACE_WHOLE_WORD,
-
-    NULL,                       NULL
+    NULL,
 };
 
 
@@ -376,6 +384,8 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
 
     LinuxHeader,
     FLG_NO_CARRIAGE_RETURNS | FLG_LOWERCASE_DIRNAMES,
+
+    LinuxLowerCase,
 
     /* C source files */
 
@@ -408,7 +418,7 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
 
     NULL,
     FLG_DEFAULT_FLAGS,
-
+    NULL,
     /* C source files */
 
     NULL,
@@ -429,6 +439,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
     NULL,
     FLG_NO_FILE_OUTPUT,
+    NULL,
 
     /* C source files */
 
@@ -470,6 +481,7 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
 
     NULL,
     FLG_DEFAULT_FLAGS,
+    NULL,
 
     /* C source files */
 
