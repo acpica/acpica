@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.85 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -227,18 +227,10 @@ AcpiEnableSubsystem (
     FUNCTION_TRACE ("AcpiEnableSubsystem");
 
 
-    /* Sanity check the FADT for valid values */
-
-    Status = AcpiUtValidateFadt ();
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /*
-     * Install the default OpRegion handlers.  These are
-     * installed unless other handlers have already been
-     * installed via the InstallAddressSpaceHandler interface
+     * Install the default OpRegion handlers.  These are installed unless
+     * other handlers have already been installed via the 
+     * InstallAddressSpaceHandler interface
      */
     if (!(Flags & ACPI_NO_ADDRESS_SPACE_INIT))
     {
@@ -253,6 +245,7 @@ AcpiEnableSubsystem (
 
     /*
      * We must initialize the hardware before we can enable ACPI.
+     * FADT values are validated here.
      */
     if (!(Flags & ACPI_NO_HARDWARE_INIT))
     {
@@ -441,35 +434,31 @@ AcpiGetSystemInfo (
 {
     ACPI_SYSTEM_INFO        *InfoPtr;
     UINT32                  i;
+    ACPI_STATUS             Status;
 
 
     FUNCTION_TRACE ("AcpiGetSystemInfo");
 
 
-    /*
-     *  Must have a valid buffer
-     */
-    if ((!OutBuffer)          ||
-        (!OutBuffer->Pointer))
+    /* Parameter validation */
+
+    Status = AcpiUtValidateBuffer (OutBuffer);
+    if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        return_ACPI_STATUS (Status);
     }
 
-    if (OutBuffer->Length < sizeof (ACPI_SYSTEM_INFO))
-    {
-        /*
-         *  Caller's buffer is too small
-         */
-        OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
+    /* Validate buffer size or allocate new buffer */
 
-        return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
+    Status = AcpiUtValidateBufferSize (OutBuffer, sizeof (ACPI_SYSTEM_INFO));
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
     }
 
-
     /*
-     *  Set return length and get data
+     * Populate the return buffer
      */
-    OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
     InfoPtr->AcpiCaVersion      = ACPI_CA_VERSION;
@@ -479,6 +468,7 @@ AcpiGetSystemInfo (
     InfoPtr->Flags              = SYS_MODE_ACPI;
 
     /* Timer resolution - 24 or 32 bits  */
+
     if (!AcpiGbl_FADT)
     {
         InfoPtr->TimerResolution = 0;
