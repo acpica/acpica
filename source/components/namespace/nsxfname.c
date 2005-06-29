@@ -347,7 +347,7 @@ AcpiHandleToName (
 
 ACPI_STATUS 
 AcpiPathnameToHandle (
-    ACPI_STRING             *Pathname, 
+    ACPI_STRING             Pathname, 
     ACPI_HANDLE             *RetHandle)
 {
 
