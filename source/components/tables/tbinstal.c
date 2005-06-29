@@ -219,7 +219,6 @@ TbRecognizeTable (
     ACPI_TABLE_HEADER       *TableHeader;
     ACPI_STATUS             Status;
     ACPI_TABLE_TYPE         TableType = 0;
-    void                    **TableGlobalPtr;
     UINT32                  i;
 
     
@@ -245,12 +244,15 @@ TbRecognizeTable (
             /* Found a signature match, get the pertinent info from the TableData structure */
 
             TableType       = i;
-            TableGlobalPtr  = Gbl_AcpiTableData[i].GlobalPtr;
             Status          = Gbl_AcpiTableData[i].Status;
 
-            /* Set the appropriate global pointer to point to the newly recognized table */
+            /* Set the appropriate global pointer (if there is one) to point to the newly recognized table */
 
-            *TableGlobalPtr = TableInfo->Pointer;
+            if (Gbl_AcpiTableData[i].GlobalPtr)
+            {
+                *(Gbl_AcpiTableData[i].GlobalPtr) = TableInfo->Pointer;
+            }
+
             break;
         }
     }
@@ -259,9 +261,8 @@ TbRecognizeTable (
 
     TableInfo->Type = (UINT8) TableType;
 
-
     /*
-     * Bad signature means that the table is bad or not one of the recognized tables
+     * Bad_Signature means that the table is bad or not one of the recognized tables
      */
 
     if (Status == AE_BAD_SIGNATURE)
