@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -193,7 +193,10 @@ char                        *AslMessages [] = {
     "Reserved name must be a control method",
     "String must be entirely alphanumeric",
     "Invalid use of reserved name",
-    "Invalid operand"
+    "Invalid operand",
+    "Missing EndDependentFn() macro in dependent resource list",
+    "Missing StartDependentFn() macro in dependent resource list",
+    "Dependent function macros cannot be nested"
 };
 
 
