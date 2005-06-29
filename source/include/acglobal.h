@@ -214,6 +214,7 @@ extern      ACPI_TABLE_SUPPORT          Gbl_AcpiTableData[NUM_ACPI_TABLES];
  */
 ACPI_EXTERN ACPI_MUTEX                  Gbl_AcpiMutexTable [NUM_MTX];
 
+extern ACPI_INIT_DATA Gbl_AcpiInitData;
 
 
 /*****************************************************************************
