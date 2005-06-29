@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amnames - interpreter/scanner name load/execute
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -372,11 +372,11 @@ AcpiAmlGetNameString (
     FUNCTION_TRACE_PTR ("AmlGetNameString", AmlAddress);
 
 
-    if (INTERNAL_TYPE_FIELD == DataType   ||
-        INTERNAL_TYPE_BANK_FIELD == DataType  ||
+    if (INTERNAL_TYPE_REGION_FIELD == DataType   ||
+        INTERNAL_TYPE_BANK_FIELD == DataType     ||
         INTERNAL_TYPE_INDEX_FIELD == DataType)
     {
-        /* Disallow prefixes for types associated with field names */
+        /* Disallow prefixes for types associated with FieldUnit names */
 
         NameString = AcpiAmlAllocateNameString (0, 1);
         if (!NameString)
