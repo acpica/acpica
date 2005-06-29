@@ -144,7 +144,7 @@
 #define AML_OpPrefix                0x5b
 #define AML_RootPrefix              0x5c
 #define AML_ParentPrefix            0x5e
-#define AML_Local_Op                0x60
+#define AML_LocalOp                 0x60
 #define AML_Local0                  0x60
 #define AML_Local1                  0x61
 #define AML_Local2                  0x62
@@ -153,7 +153,7 @@
 #define AML_Local5                  0x65
 #define AML_Local6                  0x66
 #define AML_Local7                  0x67
-#define AML_Arg_Op                  0x68
+#define AML_ArgOp                   0x68
 #define AML_Arg0                    0x68
 #define AML_Arg1                    0x69
 #define AML_Arg2                    0x6a
@@ -350,6 +350,8 @@ typedef enum
     MATCH_MGT                   = 5
 
 } AML_MATCH_OPERATOR;
+
+#define MAX_MATCH_OPERATOR      5
 
 
 /* Field Access Types */
