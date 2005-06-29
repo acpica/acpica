@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.35 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -277,11 +277,14 @@ AcpiTbValidateTableHeader (
     ACPI_NAME               Signature;
 
 
+    PROC_NAME ("TbValidateTableHeader");
+
+
     /* Verify that this is a valid address */
 
     if (!AcpiOsReadable (TableHeader, sizeof (ACPI_TABLE_HEADER)))
     {
-        DEBUG_PRINT (ACPI_ERROR,
+        DEBUG_PRINTP (ACPI_ERROR,
             ("Cannot read table header at %p\n", TableHeader));
         return (AE_BAD_ADDRESS);
     }
@@ -290,9 +293,9 @@ AcpiTbValidateTableHeader (
     /* Ensure that the signature is 4 ASCII characters */
 
     MOVE_UNALIGNED32_TO_32 (&Signature, &TableHeader->Signature);
-    if (!AcpiCmValidAcpiName (Signature))
+    if (!AcpiUtValidAcpiName (Signature))
     {
-        DEBUG_PRINT (ACPI_ERROR,
+        DEBUG_PRINTP (ACPI_ERROR,
             ("Table signature at %p [%X] has invalid characters\n",
             TableHeader, &Signature));
 
@@ -306,7 +309,7 @@ AcpiTbValidateTableHeader (
 
     if (TableHeader->Length < sizeof (ACPI_TABLE_HEADER))
     {
-        DEBUG_PRINT (ACPI_ERROR,
+        DEBUG_PRINTP (ACPI_ERROR,
             ("Invalid length in table header %p name %4.4s\n",
             TableHeader, &Signature));
 
@@ -339,7 +342,7 @@ ACPI_STATUS
 AcpiTbMapAcpiTable (
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
     UINT32                  *Size,
-    void                    **LogicalAddress)
+    ACPI_TABLE_HEADER       **LogicalAddress)
 {
     ACPI_TABLE_HEADER       *Table;
     UINT32                  TableSize = *Size;
