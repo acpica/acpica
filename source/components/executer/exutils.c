@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amutils - interpreter/scanner utilities
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -246,10 +246,14 @@ AcpiAmlTruncateFor32bitTable (
     ACPI_WALK_STATE         *WalkState)
 {
 
-    /* Object must be a valid number */
+    /* 
+     * Object must be a valid number and we must be executing
+     * a control method
+     */
 
     if ((!ObjDesc) ||
-        (ObjDesc->Common.Type != ACPI_TYPE_NUMBER))
+        (ObjDesc->Common.Type != ACPI_TYPE_NUMBER) ||
+        (!WalkState->MethodNode))
     {
         return;
     }
