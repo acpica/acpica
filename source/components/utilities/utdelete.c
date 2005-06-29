@@ -128,7 +128,48 @@
 
 
 
+/******************************************************************************
+ *
+ * FUNCTION:    CmCreateStateAndPush 
+ *
+ * PARAMETERS:  *Object         - Object to be added to the new state
+ *              Action          - Increment/Decrement
+ *              StateList       - List the state will be added to
+ * 
+ * RETURN:      None
+ * 
+ * DESCRIPTION: Create a new state and push it
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+CmCreateStateAndPush (
+    ACPI_OBJECT_INTERNAL    *Object,
+    UINT16                  Action,
+    ACPI_GENERIC_STATE      **StateList)
+{
+    ACPI_GENERIC_STATE       *State;
+
+
+    /* Ignore null objects; these are expected */
+
+    if (!Object)
+    {
+        return AE_OK;
+    }
+
+    State = CmCreateUpdateState (Object, Action);
+    if (!State)
+    {
+        return AE_NO_MEMORY;
+    }
+
+
+    CmPushGenericState (StateList, State);
+    return AE_OK;
+}
  
+
 /******************************************************************************
  *
  * FUNCTION:    CmDeleteInternalObj
@@ -588,6 +629,7 @@ CmUpdateObjectReference (
     ACPI_OBJECT_INTERNAL    *Object,
     UINT16                  Action)
 {
+    ACPI_STATUS             Status;
     UINT32                  i;
     ACPI_OBJECT_INTERNAL    *Next;
     ACPI_OBJECT_INTERNAL    *New;
@@ -674,16 +716,16 @@ CmUpdateObjectReference (
              */
             for (i = 0; i < Object->Package.Count; i++)
             {
-                /* There can be null elements within the package */
+                /* 
+                 * Push each element onto the stack for later processing.
+                 * Note: There can be null elements within the package,
+                 * these are simply ignored
+                 */
 
-                if (Object->Package.Elements[i])
+                Status = CmCreateStateAndPush (Object->Package.Elements[i], Action, &StateList);
+                if (ACPI_FAILURE (Status))
                 {
-                    State = CmCreateUpdateState (Object->Package.Elements[i], Action);
-                    if (!State)
-                    {
-                        return_ACPI_STATUS (AE_NO_MEMORY);
-                    }
-                    CmPushGenericState (&StateList, State);
+                    return_ACPI_STATUS (Status);
                 }
             }
             break;
@@ -691,41 +733,37 @@ CmUpdateObjectReference (
 
         case ACPI_TYPE_FieldUnit:
 
-            State = CmCreateUpdateState (Object->FieldUnit.Container, Action);
-            if (!State)
+            Status = CmCreateStateAndPush (Object->FieldUnit.Container, Action, &StateList);
+            if (ACPI_FAILURE (Status))
             {
-                return_ACPI_STATUS (AE_NO_MEMORY);
+                return_ACPI_STATUS (Status);
             }
-            CmPushGenericState (&StateList, State);
             break;
 
 
         case INTERNAL_TYPE_DefField:
 
-            State = CmCreateUpdateState (Object->Field.Container, Action);
-            if (!State)
+            Status = CmCreateStateAndPush (Object->Field.Container, Action, &StateList);
+            if (ACPI_FAILURE (Status))
             {
-                return_ACPI_STATUS (AE_NO_MEMORY);
+                return_ACPI_STATUS (Status);
             }
-            CmPushGenericState (&StateList, State);
            break;
 
 
         case INTERNAL_TYPE_BankField:
 
-            State = CmCreateUpdateState (Object->BankField.BankSelect, Action);
-            if (!State)
+            Status = CmCreateStateAndPush (Object->BankField.BankSelect, Action, &StateList);
+            if (ACPI_FAILURE (Status))
             {
-                return_ACPI_STATUS (AE_NO_MEMORY);
+                return_ACPI_STATUS (Status);
             }
-            CmPushGenericState (&StateList, State);
 
-            State = CmCreateUpdateState (Object->BankField.Container, Action);
-            if (!State)
+            Status = CmCreateStateAndPush (Object->BankField.Container, Action, &StateList);
+            if (ACPI_FAILURE (Status))
             {
-                return_ACPI_STATUS (AE_NO_MEMORY);
+                return_ACPI_STATUS (Status);
             }
-            CmPushGenericState (&StateList, State);
             break;
 
 
