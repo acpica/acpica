@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.40 $
+ *              $Revision: 1.42 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -411,12 +411,12 @@ AcpiDbDecodeInternalObject (
 
     switch (ObjDesc->Common.Type)
     {
-    case ACPI_TYPE_NUMBER:
-        AcpiOsPrintf (" %.8X", ObjDesc->Number.Value);
+    case ACPI_TYPE_INTEGER:
+        AcpiOsPrintf (" %.8X", ObjDesc->Integer.Value);
         break;
 
     case ACPI_TYPE_STRING:
-        AcpiOsPrintf ("(%d) \"%.16s\"...", 
+        AcpiOsPrintf ("(%d) \"%.16s\"...",
                 ObjDesc->String.Length, ObjDesc->String.Pointer);
         break;
 
@@ -498,7 +498,7 @@ AcpiDbDisplayInternalObject (
         switch (ObjDesc->Common.Type)
         {
         case INTERNAL_TYPE_REFERENCE:
-            switch (ObjDesc->Reference.OpCode)
+            switch (ObjDesc->Reference.Opcode)
             {
             case AML_ZERO_OP:
                 AcpiOsPrintf ("[Const]     Number %.8X", 0);
