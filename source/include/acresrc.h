@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.29 $
+ *       $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -198,13 +198,13 @@ ACPI_STATUS
 AcpiRsByteStreamToList (
     UINT8                   *ByteStreamBuffer,
     UINT32                  ByteStreamBufferLength,
-    UINT8                   **OutputBuffer);
+    UINT8                   *OutputBuffer);
 
 ACPI_STATUS
 AcpiRsListToByteStream (
     ACPI_RESOURCE           *LinkedList,
     UINT32                  ByteStreamSizeNeeded,
-    UINT8                   **OutputBuffer);
+    UINT8                   *OutputBuffer);
 
 ACPI_STATUS
 AcpiRsIoResource (
