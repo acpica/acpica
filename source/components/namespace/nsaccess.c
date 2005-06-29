@@ -116,11 +116,11 @@
 
 #define __NSACCESS_C__
 
-#include <acpi.h>
-#include <amlcode.h>
-#include <interp.h>
-#include <namesp.h>
-#include <dispatch.h>
+#include "acpi.h"
+#include "amlcode.h"
+#include "interp.h"
+#include "namesp.h"
+#include "dispatch.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -130,7 +130,7 @@
 
 /****************************************************************************
  * 
- * FUNCTION:    NsRootCreateScope
+ * FUNCTION:    AcpiNsRootCreateScope
  *
  * PARAMETERS:  Entry               - NTE for which a scope will be created
  *
@@ -143,7 +143,7 @@
  ***************************************************************************/
 
 ACPI_STATUS
-NsRootCreateScope (
+AcpiNsRootCreateScope (
     NAME_TABLE_ENTRY        *Entry)
 {
     FUNCTION_TRACE ("NsRootCreateScope");
@@ -156,7 +156,7 @@ NsRootCreateScope (
         return_ACPI_STATUS (AE_EXIST);
     }
 
-    Entry->Scope = NsAllocateNameTable (NS_TABLE_SIZE);
+    Entry->Scope = AcpiNsAllocateNameTable (NS_TABLE_SIZE);
     if (!Entry->Scope)
     {
         /*  root name table allocation failure  */
@@ -169,7 +169,7 @@ NsRootCreateScope (
      * Init the scope first entry -- since it is the exemplar of 
      * the scope (Some fields are duplicated to new entries!) 
      */
-    NsInitializeTable (Entry->Scope, NULL, Entry);
+    AcpiNsInitializeTable (Entry->Scope, NULL, Entry);
     return_ACPI_STATUS (AE_OK);
 
 }
@@ -178,7 +178,7 @@ NsRootCreateScope (
 
 /****************************************************************************
  * 
- * FUNCTION:    NsRootInitialize
+ * FUNCTION:    AcpiNsRootInitialize
  *
  * PARAMETERS:  None
  *
@@ -191,7 +191,7 @@ NsRootCreateScope (
  ***************************************************************************/
 
 ACPI_STATUS
-NsRootInitialize (void)
+AcpiNsRootInitialize (void)
 {
     ACPI_STATUS             Status = AE_OK;
     PREDEFINED_NAMES        *InitVal = NULL;
@@ -202,14 +202,14 @@ NsRootInitialize (void)
     FUNCTION_TRACE ("NsRootInitialize");
 
 
-    CmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (MTX_NAMESPACE);
     
     /* 
      * Root is initially NULL, so a non-NULL value indicates
-     * that NsRootInitialize() has already been called; just return.
+     * that AcpiNsRootInitialize() has already been called; just return.
      */
 
-    if (Gbl_RootObject->Scope)
+    if (Acpi_GblRootObject->Scope)
     {
         Status = AE_OK;
         goto UnlockAndExit;
@@ -218,7 +218,7 @@ NsRootInitialize (void)
 
     /* Create the root scope */
 
-    Status = NsRootCreateScope (Gbl_RootObject);
+    Status = AcpiNsRootCreateScope (Acpi_GblRootObject);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;
@@ -228,10 +228,10 @@ NsRootInitialize (void)
     
     DEBUG_PRINT (ACPI_INFO, ("Entering predefined name table entries into namespace\n"));
 
-    for (InitVal = Gbl_PreDefinedNames; InitVal->Name; InitVal++)
+    for (InitVal = Acpi_GblPreDefinedNames; InitVal->Name; InitVal++)
     {
-        Status = NsLookup (NULL, InitVal->Name, (OBJECT_TYPE_INTERNAL) InitVal->Type, 
-                                    IMODE_LoadPass2, NS_NO_UPSEARCH, NULL, &NewEntry);
+        Status = AcpiNsLookup (NULL, InitVal->Name, (OBJECT_TYPE_INTERNAL) InitVal->Type, 
+                                    IMODE_LOAD_PASS2, NS_NO_UPSEARCH, NULL, &NewEntry);
 
         /* 
          * if name entered successfully
@@ -243,7 +243,7 @@ NsRootInitialize (void)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
-            ObjDesc = CmCreateInternalObject ((OBJECT_TYPE_INTERNAL) InitVal->Type);
+            ObjDesc = AcpiCmCreateInternalObject ((OBJECT_TYPE_INTERNAL) InitVal->Type);
             if (!ObjDesc)
             {
                 Status = AE_NO_MEMORY;
@@ -258,13 +258,13 @@ NsRootInitialize (void)
             switch (InitVal->Type)
             {
 
-            case ACPI_TYPE_Number:
+            case ACPI_TYPE_NUMBER:
 
                 ObjDesc->Number.Value = (UINT32) STRTOUL (InitVal->Val, NULL, 10);
                 break;
 
 
-            case ACPI_TYPE_String:
+            case ACPI_TYPE_STRING:
 
                 ObjDesc->String.Length = (UINT16) STRLEN (InitVal->Val);
 
@@ -272,11 +272,11 @@ NsRootInitialize (void)
                  * Allocate a buffer for the string.  All String.Pointers must be
                  * allocated buffers! (makes deletion simpler)
                  */
-                ObjDesc->String.Pointer = CmAllocate ((ACPI_SIZE) (ObjDesc->String.Length + 1));
+                ObjDesc->String.Pointer = AcpiCmAllocate ((ACPI_SIZE) (ObjDesc->String.Length + 1));
                 if (!ObjDesc->String.Pointer)
                 {
                     REPORT_ERROR ("Initial value string allocation failure");
-                    CmRemoveReference (ObjDesc);
+                    AcpiCmRemoveReference (ObjDesc);
                     Status = AE_NO_MEMORY;
                     goto UnlockAndExit;
                 }
@@ -285,10 +285,10 @@ NsRootInitialize (void)
                 break;
 
 
-            case ACPI_TYPE_Mutex:
+            case ACPI_TYPE_MUTEX:
 
                 ObjDesc->Mutex.SyncLevel = (UINT16) STRTOUL (InitVal->Val, NULL, 10);
-                Status = OsdCreateSemaphore (1, &ObjDesc->Mutex.Semaphore);
+                Status = AcpiOsdCreateSemaphore (1, &ObjDesc->Mutex.Semaphore);
                 if (ACPI_FAILURE (Status))
                 {
                     goto UnlockAndExit;
@@ -298,7 +298,7 @@ NsRootInitialize (void)
                 {
                     /* We just created the mutex for the global lock, save it */
 
-                    Gbl_GlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
+                    Acpi_GblGlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
                 }
 
                 /* TBD: [Restructure] These fields may be obsolete */
@@ -310,33 +310,33 @@ NsRootInitialize (void)
 
             default:
                 REPORT_ERROR ("Unsupported initial type value");
-                CmRemoveReference (ObjDesc);
+                AcpiCmRemoveReference (ObjDesc);
                 ObjDesc = NULL;
                 continue;
             }
 
             /* Store pointer to value descriptor in nte */
         
-            NsAttachObject (NewEntry, ObjDesc, ObjDesc->Common.Type);
+            AcpiNsAttachObject (NewEntry, ObjDesc, ObjDesc->Common.Type);
         }
     }
 
 
 UnlockAndExit:
-    CmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsLookup
+ * FUNCTION:    AcpiNsLookup
  *
  * PARAMETERS:  PrefixScope     - Search scope if name is not fully qualified
  *              Pathname            - Name to be entered, in internal format
  *                                as represented in the AML stream
  *              Type            - Type associated with name
- *              InterpreterMode - IMODE_LoadPass2 => add name if not found
+ *              InterpreterMode - IMODE_LOAD_PASS2 => add name if not found
  *              RetEntry        - Where the new entry (NTE) is placed
  *
  * RETURN:      Status
@@ -349,7 +349,7 @@ UnlockAndExit:
  ***************************************************************************/
 
 ACPI_STATUS
-NsLookup (
+AcpiNsLookup (
     ACPI_GENERIC_STATE      *ScopeInfo,
     char                    *Pathname, 
     OBJECT_TYPE_INTERNAL    Type, 
@@ -380,10 +380,10 @@ NsLookup (
     }
 
    
-    Gbl_NsLookupCount++;
+    Acpi_GblNsLookupCount++;
 
     *RetEntry = ENTRY_NOT_FOUND;
-    if (!Gbl_RootObject->Scope)
+    if (!Acpi_GblRootObject->Scope)
     {
         /* 
          * If the name space has not been initialized:
@@ -392,9 +392,9 @@ NsLookup (
          * -  In Exec mode, there are no names to be found.
          */
 
-        if (IMODE_LoadPass1 == InterpreterMode)
+        if (IMODE_LOAD_PASS1 == InterpreterMode)
         {
-            if ((Status = NsRootInitialize ()) != AE_OK)
+            if ((Status = AcpiNsRootInitialize ()) != AE_OK)
             {
                 return_ACPI_STATUS (Status);
             }
@@ -414,7 +414,7 @@ NsLookup (
     if ((!ScopeInfo) ||
         (!ScopeInfo->Scope.Entry))
     {
-        PrefixScope = Gbl_RootObject->Scope;
+        PrefixScope = Acpi_GblRootObject->Scope;
     }
     else
     {
@@ -425,23 +425,23 @@ NsLookup (
     /*
      * This check is explicitly split provide relax the TypeToCheckFor
      * conditions for BankFieldDefn.  Originally, both BankFieldDefn and
-     * DefFieldDefn caused TypeToCheckFor to be set to ACPI_TYPE_Region,
+     * DefFieldDefn caused TypeToCheckFor to be set to ACPI_TYPE_REGION,
      * but the BankFieldDefn may also check for a Field definition as well
      * as an OperationRegion.
      */
 
-    if (INTERNAL_TYPE_DefFieldDefn == Type)
+    if (INTERNAL_TYPE_DEF_FIELD_DEFN == Type)
     {
         /* DefFieldDefn defines fields in a Region */
 
-        TypeToCheckFor = ACPI_TYPE_Region;
+        TypeToCheckFor = ACPI_TYPE_REGION;
     }
 
-    else if (INTERNAL_TYPE_BankFieldDefn == Type)
+    else if (INTERNAL_TYPE_BANK_FIELD_DEFN == Type)
     {
         /* BankFieldDefn defines data fields in a Field Object */
 
-        TypeToCheckFor = ACPI_TYPE_Any;
+        TypeToCheckFor = ACPI_TYPE_ANY;
     }
 
     else
@@ -458,7 +458,7 @@ NsLookup (
 
         NullNamePath = TRUE;
         NumSegments = 0;
-        ThisEntry = Gbl_RootObject;
+        ThisEntry = Acpi_GblRootObject;
 
         DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Null Pathname (Zero segments),  Flags=%x\n", Flags));
     }
@@ -482,11 +482,11 @@ NsLookup (
          *    segments and the segments themselves.
          */
 
-        if (*Pathname == AML_RootPrefix)
+        if (*Pathname == AML_ROOT_PREFIX)
         {
             /* Pathname is fully qualified, look in root name table */
         
-            EntryToSearch = Gbl_RootObject->Scope;
+            EntryToSearch = Acpi_GblRootObject->Scope;
             Pathname++;                 /* point to segment part */
 
             DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Searching from root [%p]\n", 
@@ -496,7 +496,7 @@ NsLookup (
 
             if (!(*Pathname))
             {
-                ThisEntry = Gbl_RootObject;
+                ThisEntry = Acpi_GblRootObject;
                 goto CheckForNewScopeAndExit;
             }
         }
@@ -512,7 +512,7 @@ NsLookup (
 
             /* Handle up-prefix (carat).  More than one prefix is supported */
 
-            while (*Pathname == AML_ParentPrefix)
+            while (*Pathname == AML_PARENT_PREFIX)
             {
             
                 /* Point to segment part or next ParentPrefix */
@@ -538,7 +538,7 @@ NsLookup (
 
         /* Examine the name prefix opcode, if any, to determine the number of segments */
 
-        if (*Pathname == AML_DualNamePrefix)
+        if (*Pathname == AML_DUAL_NAME_PREFIX)
         {
             NumSegments = 2;
             Pathname++;                             /* point to first segment */
@@ -546,7 +546,7 @@ NsLookup (
             DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Dual Pathname (2 segments, Flags=%X)\n", Flags));
         }
     
-        else if (*Pathname == AML_MultiNamePrefixOp)
+        else if (*Pathname == AML_MULTI_NAME_PREFIX_OP)
         {
             NumSegments = (INT32)* (UINT8 *) ++Pathname;
             Pathname++;                             /* point to first segment */
@@ -589,14 +589,14 @@ NsLookup (
          * Search for the current segment in the table where it should be.
          * Type is significant only at the last (topmost) level.
          */
-        ThisSearchType = ACPI_TYPE_Any;
+        ThisSearchType = ACPI_TYPE_ANY;
         if (!NumSegments)
         {
             ThisSearchType = Type;
         }
 
         STORE32TO32 (&SimpleName, Pathname);
-        Status = NsSearchAndEnter (SimpleName, WalkState, EntryToSearch, InterpreterMode,
+        Status = AcpiNsSearchAndEnter (SimpleName, WalkState, EntryToSearch, InterpreterMode,
                                     ThisSearchType, Flags, &ThisEntry);
         if (Status != AE_OK)
         {
@@ -604,8 +604,8 @@ NsLookup (
             {
                 /* Name not in ACPI namespace  */
 
-                if (IMODE_LoadPass1 == InterpreterMode || 
-                    IMODE_LoadPass2 == InterpreterMode)
+                if (IMODE_LOAD_PASS1 == InterpreterMode || 
+                    IMODE_LOAD_PASS2 == InterpreterMode)
                 {
                     REPORT_ERROR ("Name table overflow");
                 }
@@ -620,11 +620,11 @@ NsLookup (
         }
 
         if (NumSegments         == 0  &&                            /* If last segment                  */
-            TypeToCheckFor      != ACPI_TYPE_Any &&                 /* and looking for a specific type  */
-            TypeToCheckFor      != INTERNAL_TYPE_DefAny &&          /* which is not a local type        */
-            TypeToCheckFor      != INTERNAL_TYPE_Scope &&           /*   "   "   "  "   "     "         */
-            TypeToCheckFor      != INTERNAL_TYPE_IndexFieldDefn &&  /*   "   "   "  "   "     "         */
-            ThisEntry->Type     != ACPI_TYPE_Any &&                 /* and type of entry is known       */
+            TypeToCheckFor      != ACPI_TYPE_ANY &&                 /* and looking for a specific type  */
+            TypeToCheckFor      != INTERNAL_TYPE_DEF_ANY &&         /* which is not a local type        */
+            TypeToCheckFor      != INTERNAL_TYPE_SCOPE &&           /*   "   "   "  "   "     "         */
+            TypeToCheckFor      != INTERNAL_TYPE_INDEX_FIELD_DEFN && /*  "   "   "  "   "     "         */
+            ThisEntry->Type     != ACPI_TYPE_ANY &&                 /* and type of entry is known       */
             ThisEntry->Type     != TypeToCheckFor)                  /* and entry does not match request */
         {                                                           /* complain.                        */
             /* Complain about type mismatch */
@@ -639,12 +639,12 @@ NsLookup (
          * found entry is known, use that type to see if it opens a scope.
          */
 
-        if ((0 == NumSegments) && (ACPI_TYPE_Any == Type))
+        if ((0 == NumSegments) && (ACPI_TYPE_ANY == Type))
         {
             Type = ThisEntry->Type;
         }
 
-        if ((NumSegments || NsOpensScope (Type)) &&
+        if ((NumSegments || AcpiNsOpensScope (Type)) &&
             (ThisEntry->Scope == NULL))
         {
             /* 
@@ -654,13 +654,13 @@ NsLookup (
 
             DEBUG_PRINT (ACPI_INFO, ("NsLookup: Load mode=%d  ThisEntry=%x\n", InterpreterMode, ThisEntry));
 
-            if ((IMODE_LoadPass1 == InterpreterMode) || 
-                (IMODE_LoadPass2 == InterpreterMode))
+            if ((IMODE_LOAD_PASS1 == InterpreterMode) || 
+                (IMODE_LOAD_PASS2 == InterpreterMode))
             {   
                 /* First or second pass load mode ==> locate the next scope */
                 
                 DEBUG_PRINT (TRACE_NAMES, ("NsLookup: Creating and adding a new scope\n"));
-                ThisEntry->Scope = NsAllocateNameTable (NS_TABLE_SIZE);
+                ThisEntry->Scope = AcpiNsAllocateNameTable (NS_TABLE_SIZE);
 
                 if (!ThisEntry->Scope)
                 {
@@ -672,8 +672,8 @@ NsLookup (
             
             if (ThisEntry->Scope == NULL)
             {
-                if (IMODE_LoadPass1 == InterpreterMode || 
-                    IMODE_LoadPass2 == InterpreterMode)
+                if (IMODE_LOAD_PASS1 == InterpreterMode || 
+                    IMODE_LOAD_PASS2 == InterpreterMode)
                 {
                     DEBUG_PRINT (ACPI_ERROR, ("NsLookup: ***Error - No child scope at entry %p\n", ThisEntry));
                     REPORT_ERROR ("Name Table allocation failure");
@@ -688,12 +688,12 @@ NsLookup (
 
             /* Scope table initialization */
 
-            if (IMODE_LoadPass1 == InterpreterMode || 
-                IMODE_LoadPass2 == InterpreterMode)
+            if (IMODE_LOAD_PASS1 == InterpreterMode || 
+                IMODE_LOAD_PASS2 == InterpreterMode)
             {
                 /* Initialize the new table */
 
-                NsInitializeTable (ThisEntry->Scope, EntryToSearch, ThisEntry);
+                AcpiNsInitializeTable (ThisEntry->Scope, EntryToSearch, ThisEntry);
             }
         }
 
@@ -716,7 +716,7 @@ CheckForNewScopeAndExit:
          * push the new scope on the scope stack.
          */
 
-        if (NsOpensScope (TypeToCheckFor))
+        if (AcpiNsOpensScope (TypeToCheckFor))
         {
             /*  8-12-98 ASL Grammar Update supports null NamePath   */
 
@@ -729,7 +729,7 @@ CheckForNewScopeAndExit:
                 ScopeToPush = ThisEntry->Scope;
             }
 
-            Status = DsScopeStackPush (ScopeToPush, Type, WalkState);
+            Status = AcpiDsScopeStackPush (ScopeToPush, Type, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);

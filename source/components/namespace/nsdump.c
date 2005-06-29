@@ -117,10 +117,10 @@
 
 #define __NSDUMP_C__
 
-#include <acpi.h>
-#include <interp.h>
-#include <namesp.h>
-#include <tables.h>
+#include "acpi.h"
+#include "interp.h"
+#include "namesp.h"
+#include "tables.h"
 
 
 #define _COMPONENT          NAMESPACE
@@ -132,7 +132,7 @@
 
 /****************************************************************************
  *
- * FUNCTION:    NsDumpPathname   
+ * FUNCTION:    AcpiNsDumpPathname   
  *
  * PARAMETERS:  Handle              - Object
  *              Msg                 - Prefix message
@@ -145,7 +145,7 @@
  ***************************************************************************/
 
 ACPI_STATUS
-NsDumpPathname (
+AcpiNsDumpPathname (
     ACPI_HANDLE             Handle, 
     char                    *Msg, 
     UINT32                  Level, 
@@ -164,7 +164,7 @@ NsDumpPathname (
         return_ACPI_STATUS (AE_OK);
     }
 
-    Buffer = CmAllocate (PATHNAME_MAX);
+    Buffer = AcpiCmAllocate (PATHNAME_MAX);
     if (!Buffer)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -173,12 +173,12 @@ NsDumpPathname (
     /* Convert handle to a full pathname and print it (with supplied message) */
 
     Length = PATHNAME_MAX;
-    if (ACPI_SUCCESS (NsHandleToPathname (Handle, &Length, Buffer)))
+    if (ACPI_SUCCESS (AcpiNsHandleToPathname (Handle, &Length, Buffer)))
     {
-        OsdPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
+        AcpiOsdPrintf ("%s %s (%p)\n", Msg, Buffer, Handle);
     }
 
-    CmFree (Buffer);
+    AcpiCmFree (Buffer);
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -186,46 +186,46 @@ NsDumpPathname (
 
 /****************************************************************************
  *
- * FUNCTION:    NsDumpOneObject   
+ * FUNCTION:    AcpiNsDumpOneObject   
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              Level               - Nesting level of the handle
  *              Context             - Passed into WalkNamespace
  *
  * DESCRIPTION: Dump a single nte
- *              This procedure is a UserFunction called by NsWalkNamespace.
+ *              This procedure is a UserFunction called by AcpiNsWalkNamespace.
  *
  ***************************************************************************/
 
 ACPI_STATUS
-NsDumpOneObject (
+AcpiNsDumpOneObject (
     ACPI_HANDLE             ObjHandle, 
     UINT32                  Level, 
     void                    *Context,
     void                    **ReturnValue)
 {
+    ACPI_WALK_INFO          *Info = (ACPI_WALK_INFO *) Context;
+    NAME_TABLE_ENTRY        *Appendage = NULL;
+    NAME_TABLE_ENTRY        *ThisEntry;
+    UINT8                   *Value;
+    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
+    OBJECT_TYPE_INTERNAL    ObjType;
+    OBJECT_TYPE_INTERNAL    Type;
+    UINT32                  BytesToDump;
     UINT32                  DownstreamSiblingMask = 0;
     INT32                   LevelTmp;
     UINT32                  WhichBit;
-    NAME_TABLE_ENTRY        *Appendage = NULL;
-    NAME_TABLE_ENTRY        *ThisEntry;
     UINT32                  Size = 0;
-    UINT8                   *Value;
-    ACPI_OBJECT_INTERNAL    *ObjDesc = NULL;
-    ACPI_OBJECT_TYPE        ObjType;
-    ACPI_OBJECT_TYPE        Type;
-    UINT32                  DbLevel = (UINT32) Context;
-    UINT32                  BytesToDump;
 
 
-    ThisEntry = NsConvertHandleToEntry(ObjHandle);
+    ThisEntry = AcpiNsConvertHandleToEntry (ObjHandle);
 
     LevelTmp    = Level;
     Type        = ThisEntry->Type;
     WhichBit    = 1;
 
 
-    if (!(DebugLevel & DbLevel))
+    if (!(DebugLevel & Info->DebugLevel))
     {
         return AE_OK;
     }
@@ -235,6 +235,15 @@ NsDumpOneObject (
         DEBUG_PRINT (ACPI_INFO, ("Null object handle\n"));
         return AE_OK;
     }
+
+    /* Check if the owner matches */
+
+    if ((Info->OwnerId != ACPI_UINT32_MAX) &&
+        (Info->OwnerId != ThisEntry->OwnerId))
+    {
+        return AE_OK;
+    }
+
 
     /* Indent the object according to the level */
 
@@ -260,7 +269,7 @@ NsDumpOneObject (
     
         else
         {
-            if (NsExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
+            if (AcpiNsExistDownstreamSibling (ThisEntry + 1, Size, Appendage))
             {
                 DownstreamSiblingMask |= (1 << (Level - 1));
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
@@ -277,7 +286,7 @@ NsDumpOneObject (
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("-"));
             }
         
-            else if (NsExistDownstreamSibling (ThisEntry->Scope, NS_TABLE_SIZE,
+            else if (AcpiNsExistDownstreamSibling (ThisEntry->Scope, NS_TABLE_SIZE,
                                                 NEXTSEG (ThisEntry->Scope)))
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("+"));
@@ -295,10 +304,10 @@ NsDumpOneObject (
 
     if (Type > INTERNAL_TYPE_MAX)
     {
-        Type = INTERNAL_TYPE_DefAny;                                 /* prints as *ERROR* */
+        Type = INTERNAL_TYPE_DEF_ANY;                                /* prints as *ERROR* */
     }
     
-    if (!AmlGoodChar ((INT32)* (char *) &ThisEntry->Name))
+    if (!AcpiCmValidAcpiName (ThisEntry->Name))
     {
         REPORT_WARNING ("Invalid Name");
     }
@@ -307,13 +316,8 @@ NsDumpOneObject (
      * Now we can print out the pertinent information
      */
 
-    DEBUG_PRINT_RAW (TRACE_TABLES,
-                (" %4.4s %-9s ", &ThisEntry->Name, Gbl_NsTypeNames[Type]));
-
-    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",
-                ThisEntry,
-                ThisEntry->Scope, 
-                ThisEntry->Object));
+    DEBUG_PRINT_RAW (TRACE_TABLES, (" %4.4s %-9s ", &ThisEntry->Name, AcpiCmGetTypeName (Type)));
+    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",  ThisEntry, ThisEntry->Scope, ThisEntry->Object));
 
 
     if (!ThisEntry->Object)
@@ -327,7 +331,7 @@ NsDumpOneObject (
     switch (Type)
     {
 
-    case ACPI_TYPE_Method:
+    case ACPI_TYPE_METHOD:
 
         /* Name is a Method and its AML offset/length are set */
         
@@ -338,14 +342,14 @@ NsDumpOneObject (
         break;
     
 
-    case ACPI_TYPE_Number:
+    case ACPI_TYPE_NUMBER:
  
         DEBUG_PRINT_RAW (TRACE_TABLES, (" N:%X\n",
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Number.Value));
         break;
 
 
-    case ACPI_TYPE_String:
+    case ACPI_TYPE_STRING:
 
         DEBUG_PRINT_RAW (TRACE_TABLES, (" S:%p-%X\n",
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->String.Pointer,
@@ -353,7 +357,7 @@ NsDumpOneObject (
         break;
 
 
-    case ACPI_TYPE_Buffer:
+    case ACPI_TYPE_BUFFER:
 
         DEBUG_PRINT_RAW (TRACE_TABLES, (" B:%p-%X\n",
                     ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Buffer.Pointer,
@@ -383,13 +387,13 @@ NsDumpOneObject (
 
     while (Value)
     {
-        ObjType = INTERNAL_TYPE_Invalid;
+        ObjType = INTERNAL_TYPE_INVALID;
 
         /* Decode the type of attached object and dump the contents */
 
         DEBUG_PRINT_RAW (TRACE_TABLES, ("        Attached Object %p: ", Value));
 
-        if (TbSystemTablePointer (Value))
+        if (AcpiTbSystemTablePointer (Value))
         {
             DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to AML Code)\n"));
             BytesToDump = 16;
@@ -416,22 +420,22 @@ NsDumpOneObject (
             else
             {
                 DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [%s])\n", 
-                                    ObjType, Gbl_NsTypeNames[ObjType]));
+                                    ObjType, AcpiCmGetTypeName (ObjType)));
                 BytesToDump = ObjDesc->Common.Size;
             }
         }
 
         else
         {
-            DEBUG_PRINT_RAW (TRACE_TABLES, ("(Unknown Descriptor Type)\n", Value));
+            DEBUG_PRINT_RAW (TRACE_TABLES, ("(String or Buffer - not descriptor)\n", Value));
             BytesToDump = 16;
         }
 
-        DUMP_BUFFER (Value, BytesToDump, 0);
+        DUMP_BUFFER (Value, BytesToDump);
 
         /* If value is NOT an internal object, we are done */
 
-        if ((TbSystemTablePointer (Value)) ||
+        if ((AcpiTbSystemTablePointer (Value)) ||
             (VALID_DESCRIPTOR_TYPE (Value, DESC_TYPE_NTE)))
         {
             goto Cleanup;
@@ -442,35 +446,35 @@ NsDumpOneObject (
          */
         switch (ObjType)
         {
-        case ACPI_TYPE_String:
+        case ACPI_TYPE_STRING:
             Value = (UINT8 *) ObjDesc->String.Pointer;
             break;
 
-        case ACPI_TYPE_Buffer:
+        case ACPI_TYPE_BUFFER:
             Value = (UINT8 *) ObjDesc->Buffer.Pointer;
             break;
 
-        case ACPI_TYPE_Package:
+        case ACPI_TYPE_PACKAGE:
             Value = (UINT8 *) ObjDesc->Package.Elements;
             break;
 
-        case ACPI_TYPE_Method:
+        case ACPI_TYPE_METHOD:
             Value = (UINT8 *) ObjDesc->Method.Pcode;
             break;
 
-        case ACPI_TYPE_FieldUnit:
+        case ACPI_TYPE_FIELD_UNIT:
             Value = (UINT8 *) ObjDesc->FieldUnit.Container;
             break;
 
-        case INTERNAL_TYPE_DefField:
+        case INTERNAL_TYPE_DEF_FIELD:
             Value = (UINT8 *) ObjDesc->Field.Container;
             break;
 
-        case INTERNAL_TYPE_BankField:
+        case INTERNAL_TYPE_BANK_FIELD:
             Value = (UINT8 *) ObjDesc->BankField.Container;
             break;
 
-        case INTERNAL_TYPE_IndexField:
+        case INTERNAL_TYPE_INDEX_FIELD:
             Value = (UINT8 *) ObjDesc->IndexField.Index;
             break;
 
@@ -478,7 +482,7 @@ NsDumpOneObject (
             goto Cleanup;
         }
 
-        ObjType = INTERNAL_TYPE_Invalid;     /* Terminate loop after next pass */
+        ObjType = INTERNAL_TYPE_INVALID;     /* Terminate loop after next pass */
     }
 
 Cleanup:
@@ -489,45 +493,53 @@ Cleanup:
 
 /****************************************************************************
  *
- * FUNCTION:    NsDumpObjects 
+ * FUNCTION:    AcpiNsDumpObjects 
  *
  * PARAMETERS:  Type                - Object type to be dumped
- *              MaxDepth            - Maximum depth of dump.  Use INT_MAX
+ *              MaxDepth            - Maximum depth of dump.  Use ACPI_UINT32_MAX
  *                                    for an effectively unlimited depth.
+ *              OwnerId             - Dump only objects owned by this ID.  Use
+ *                                    ACPI_UINT32_MAX to match all owners.
  *              StartHandle         - Where in namespace to start/end search
  *
- * DESCRIPTION: Dump typed objects
- *              Uses NsWalkNamespace in conjunction with NsDumpOneObject.
+ * DESCRIPTION: Dump typed objects within the loaded namespace.
+ *              Uses AcpiNsWalkNamespace in conjunction with AcpiNsDumpOneObject.
  *
  ***************************************************************************/
 
 void
-NsDumpObjects (
-    ACPI_OBJECT_TYPE        Type, 
-    INT32                   MaxDepth, 
+AcpiNsDumpObjects (
+    OBJECT_TYPE_INTERNAL    Type, 
+    UINT32                  MaxDepth, 
+    UINT32                  OwnerId,
     ACPI_HANDLE             StartHandle)
 {
+    ACPI_WALK_INFO          Info;
 
-    AcpiWalkNamespace (Type, StartHandle, MaxDepth, NsDumpOneObject, 
-                        (void *) TRACE_TABLES, NULL);
+
+    Info.DebugLevel = TRACE_TABLES;
+    Info.OwnerId = OwnerId;
+
+    AcpiNsWalkNamespace (Type, StartHandle, MaxDepth, NS_WALK_NO_UNLOCK, AcpiNsDumpOneObject, 
+                        (void *) &Info, NULL);
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsDumpOneDevice   
+ * FUNCTION:    AcpiNsDumpOneDevice   
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              Level               - Nesting level of the handle
  *              Context             - Passed into WalkNamespace
  *
  * DESCRIPTION: Dump a single nte that represents a device
- *              This procedure is a UserFunction called by NsWalkNamespace.
+ *              This procedure is a UserFunction called by AcpiNsWalkNamespace.
  *
  ***************************************************************************/
 
 ACPI_STATUS
-NsDumpOneDevice (
+AcpiNsDumpOneDevice (
     ACPI_HANDLE             ObjHandle, 
     UINT32                  Level, 
     void                    *Context,
@@ -538,7 +550,7 @@ NsDumpOneDevice (
     UINT32                  i;
 
 
-    Status = NsDumpOneObject (ObjHandle, Level, Context, ReturnValue);
+    Status = AcpiNsDumpOneObject (ObjHandle, Level, Context, ReturnValue);
 
     Status = AcpiGetObjectInfo (ObjHandle, &Info);
     if (ACPI_SUCCESS (Status))
@@ -559,7 +571,7 @@ NsDumpOneDevice (
 
 /****************************************************************************
  *
- * FUNCTION:    NsDumpRootDevices   
+ * FUNCTION:    AcpiNsDumpRootDevices   
  *
  * PARAMETERS:  None
  *
@@ -568,7 +580,7 @@ NsDumpOneDevice (
  ***************************************************************************/
 
 void
-NsDumpRootDevices (void)
+AcpiNsDumpRootDevices (void)
 {
     ACPI_HANDLE             SysBusHandle;
 
@@ -583,13 +595,14 @@ NsDumpRootDevices (void)
     AcpiGetHandle (0, NS_SYSTEM_BUS, &SysBusHandle);
 
     DEBUG_PRINT (TRACE_TABLES, ("Display of all devices in the namespace:\n"));
-    AcpiWalkNamespace (ACPI_TYPE_Device, SysBusHandle, ACPI_INT32_MAX, NsDumpOneDevice, NULL, NULL);
+    AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, ACPI_INT32_MAX, NS_WALK_NO_UNLOCK, 
+                        AcpiNsDumpOneDevice, NULL, NULL);
 }
 
 
 /****************************************************************************
  * 
- * FUNCTION:    NsDumpTables
+ * FUNCTION:    AcpiNsDumpTables
  *
  * PARAMETERS:  SearchBase          - Root of subtree to be dumped, or
  *                                    NS_ALL to dump the entire namespace
@@ -601,7 +614,7 @@ NsDumpRootDevices (void)
  ***************************************************************************/
 
 void
-NsDumpTables (
+AcpiNsDumpTables (
     ACPI_HANDLE             SearchBase, 
     INT32                   MaxDepth)
 {
@@ -611,7 +624,7 @@ NsDumpTables (
     FUNCTION_TRACE ("NsDumpTables");
 
 
-    if (!Gbl_RootObject->Scope)
+    if (!Acpi_GblRootObject->Scope)
     {      
         /* 
          * If the name space has not been initialized,
@@ -625,19 +638,19 @@ NsDumpTables (
     {
         /*  entire namespace    */
 
-        SearchHandle = Gbl_RootObject;
+        SearchHandle = Acpi_GblRootObject;
         DEBUG_PRINT (TRACE_TABLES, ("\\\n"));
     }
 
 
-    NsDumpObjects (ACPI_TYPE_Any, MaxDepth, SearchHandle);
+    AcpiNsDumpObjects (ACPI_TYPE_ANY, MaxDepth, ACPI_UINT32_MAX, SearchHandle);
     return_VOID;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    NsDumpEntry    
+ * FUNCTION:    AcpiNsDumpEntry    
  *
  * PARAMETERS:  Handle              - Entry to be dumped
  *              DebugLevel          - Output level
@@ -647,17 +660,21 @@ NsDumpTables (
  ***************************************************************************/
 
 void
-NsDumpEntry (
+AcpiNsDumpEntry (
     ACPI_HANDLE             Handle,
     UINT32                  DebugLevel)
 {
+    ACPI_WALK_INFO          Info;
+
 
     FUNCTION_TRACE_PTR ("NsDumpEntry", Handle);
 
+    Info.DebugLevel = DebugLevel;
+    Info.OwnerId = ACPI_UINT32_MAX;
 
-    NsDumpOneObject (Handle, 1, (void *) DebugLevel, NULL);
+    AcpiNsDumpOneObject (Handle, 1, &Info, NULL);
     
-    DEBUG_PRINT (TRACE_EXEC, ("leave NsDumpEntry %p\n", Handle));
+    DEBUG_PRINT (TRACE_EXEC, ("leave AcpiNsDumpEntry %p\n", Handle));
     return_VOID;
 }
 
