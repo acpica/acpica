@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.50 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -166,7 +166,7 @@ AcpiInitializeSubsystem (
     Status = AcpiOsInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        REPORT_ERROR (("OSD failed to initialize, %s\n", 
+        REPORT_ERROR (("OSD failed to initialize, %s\n",
             AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
@@ -176,7 +176,7 @@ AcpiInitializeSubsystem (
     Status = AcpiCmMutexInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        REPORT_ERROR (("Global mutex creation failure, %s\n", 
+        REPORT_ERROR (("Global mutex creation failure, %s\n",
             AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
@@ -189,7 +189,7 @@ AcpiInitializeSubsystem (
     Status = AcpiNsRootInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        REPORT_ERROR (("Namespace initialization failure, %s\n", 
+        REPORT_ERROR (("Namespace initialization failure, %s\n",
             AcpiCmFormatException (Status)));
         return_ACPI_STATUS (Status);
     }
@@ -226,9 +226,9 @@ AcpiEnableSubsystem (
     FUNCTION_TRACE ("AcpiEnableSubsystem");
 
 
-    /* Sanity check the FACP for valid values */
+    /* Sanity check the FADT for valid values */
 
-    Status = AcpiCmValidateFacp ();
+    Status = AcpiCmValidateFadt ();
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -294,7 +294,6 @@ AcpiEnableSubsystem (
             return_ACPI_STATUS (Status);
         }
     }
-
 
 
     /*
