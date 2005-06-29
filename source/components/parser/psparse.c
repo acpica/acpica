@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -142,13 +142,13 @@ extern UINT32               AcpiGbl_ScopeDepth;
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsPeekOpcode
+ * FUNCTION:    AcpiPsGetOpcodeSize
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Opcode          - An AML opcode
  *
- * RETURN:      Status
+ * RETURN:      Size of the opcode, in bytes (1 or 2)
  *
- * DESCRIPTION: Get next AML opcode (without incrementing AML pointer)
+ * DESCRIPTION: Get the size of the current opcode.
  *
  ******************************************************************************/
 
@@ -1184,6 +1184,7 @@ CloseThisOp:
  *                                root of the parsed op tree.
  *              Aml             - Pointer to the raw AML code to parse
  *              AmlSize         - Length of the AML to parse
+ *              
  *
  * RETURN:      Status
  *
@@ -1207,7 +1208,6 @@ AcpiPsParseAml (
     ACPI_PARSE_STATE        *ParserState;
     ACPI_WALK_STATE         *WalkState;
     ACPI_WALK_LIST          WalkList;
-    ACPI_NAMESPACE_NODE     *Node = NULL;
     ACPI_WALK_LIST          *PrevWalkList = AcpiGbl_CurrentWalkList;
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     ACPI_OPERAND_OBJECT     *MthDesc = NULL;
@@ -1282,15 +1282,13 @@ AcpiPsParseAml (
     {
         /* Setup the current scope */
 
-        Node = ParserState->StartOp->Node;
-        ParserState->StartNode = Node;
-
-        if (Node)
+        ParserState->StartNode = ParserState->StartOp->Node;
+        if (ParserState->StartNode)
         {
             /* Push start scope on scope stack and make it current  */
 
-            Status = AcpiDsScopeStackPush (Node, Node->Type,
-                                            WalkState);
+            Status = AcpiDsScopeStackPush (ParserState->StartNode, 
+                            ParserState->StartNode->Type, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 goto Cleanup;
@@ -1299,15 +1297,13 @@ AcpiPsParseAml (
         }
     }
 
-
-    Status = AE_OK;
-
     /*
      * Execute the walk loop as long as there is a valid Walk State.  This
      * handles nested control method invocations without recursion.
      */
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "State=%p\n", WalkState));
 
+    Status = AE_OK;
     while (WalkState)
     {
         if (ACPI_SUCCESS (Status))
@@ -1363,13 +1359,13 @@ AcpiPsParseAml (
             AcpiDsTerminateControlMethod (WalkState);
         }
 
-         /* Delete this walk state and all linked control states */
+        /* Delete this walk state and all linked control states */
 
         AcpiPsCleanupScope (WalkState->ParserState);
         ACPI_MEM_FREE (WalkState->ParserState);
         AcpiDsDeleteWalkState (WalkState);
 
-       /* Check if we have restarted a preempted walk */
+        /* Check if we have restarted a preempted walk */
 
         WalkState = AcpiDsGetCurrentWalkState (&WalkList);
         if (WalkState &&
