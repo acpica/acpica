@@ -119,14 +119,14 @@
 #define __ACXFACE_H__
 
 #include "actypes.h"
-#include "actables.h"
+#include "actbl.h"
 
 /*
  * Global interfaces
  */
 
 ACPI_STATUS
-AcpiInitialize (
+AcpiInitializeSubsystem (
     ACPI_INIT_DATA          *InitData);
 
 ACPI_STATUS
@@ -186,6 +186,14 @@ AcpiGetTable (
 
 ACPI_STATUS
 AcpiLoadNamespace (
+    void);
+
+ACPI_STATUS
+AcpiInitializeObjects (
+    void);
+
+ACPI_STATUS
+AcpiInitializeDevices (
     void);
 
 ACPI_STATUS
@@ -347,6 +355,10 @@ AcpiGetIrqRoutingTable  (
 /*
  * Hardware (ACPI device) interfaces
  */
+
+ACPI_STATUS
+AcpiInitializeHardware (
+    void);
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (
