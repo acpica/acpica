@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.150 $
+ *              $Revision: 1.151 $
  *
  ******************************************************************************/
 
@@ -389,7 +389,7 @@ AcpiGetRegister (
 
         *ReturnValue = RegisterValue;
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Read value %8.8X register %X\n", 
+        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Read value %8.8X register %X\n",
                 RegisterValue, BitRegInfo->ParentRegister));
     }
 
@@ -503,7 +503,7 @@ AcpiSetRegister (
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition,
                 BitRegInfo->AccessBitMask, Value);
 
-        Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK, 
+        Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
                         ACPI_REGISTER_PM1_CONTROL, (UINT16) RegisterValue);
         break;
 
@@ -881,9 +881,9 @@ AcpiHwLowLevelRead (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Read:  %8.8X width %2d from %8.8X%8.8X (%s)\n",
-            *Value, Width, 
-            ACPI_HIDWORD (ACPI_GET_ADDRESS (Reg->Address)), 
-            ACPI_LODWORD (ACPI_GET_ADDRESS (Reg->Address)), 
+            *Value, Width,
+            ACPI_HIDWORD (ACPI_GET_ADDRESS (Reg->Address)),
+            ACPI_LODWORD (ACPI_GET_ADDRESS (Reg->Address)),
             AcpiUtGetRegionName (Reg->AddressSpaceId)));
 
     return (Status);
@@ -970,9 +970,9 @@ AcpiHwLowLevelWrite (
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Wrote: %8.8X width %2d   to %8.8X%8.8X (%s)\n",
-            Value, Width, 
-            ACPI_HIDWORD (ACPI_GET_ADDRESS (Reg->Address)), 
-            ACPI_LODWORD (ACPI_GET_ADDRESS (Reg->Address)), 
+            Value, Width,
+            ACPI_HIDWORD (ACPI_GET_ADDRESS (Reg->Address)),
+            ACPI_LODWORD (ACPI_GET_ADDRESS (Reg->Address)),
             AcpiUtGetRegionName (Reg->AddressSpaceId)));
 
     return (Status);

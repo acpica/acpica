@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Module Name: dswscope - Scope stack manipulation
- *              $Revision: 1.59 $
+ * Module Name: dsinit - Object initialization namespace walk
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -114,198 +114,202 @@
  *
  *****************************************************************************/
 
-#define __DSWSCOPE_C__
+#define __DSINIT_C__
 
 #include "acpi.h"
 #include "acdispat.h"
-
+#include "acnamesp.h"
 
 #define _COMPONENT          ACPI_DISPATCHER
-        ACPI_MODULE_NAME    ("dswscope")
+        ACPI_MODULE_NAME    ("dsinit")
 
 
-#define STACK_POP(head) head
-
-
-/****************************************************************************
+/*******************************************************************************
  *
- * FUNCTION:    AcpiDsScopeStackClear
+ * FUNCTION:    AcpiDsInitOneObject
  *
- * PARAMETERS:  None
+ * PARAMETERS:  ObjHandle       - Node
+ *              Level           - Current nesting level
+ *              Context         - Points to a init info struct
+ *              ReturnValue     - Not used
  *
- * DESCRIPTION: Pop (and free) everything on the scope stack except the
- *              root scope object (which remains at the stack top.)
+ * RETURN:      Status
  *
- ***************************************************************************/
-
-void
-AcpiDsScopeStackClear (
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_GENERIC_STATE      *ScopeInfo;
-
-    ACPI_FUNCTION_NAME ("DsScopeStackClear");
-
-
-    while (WalkState->ScopeInfo)
-    {
-        /* Pop a scope off the stack */
-
-        ScopeInfo = WalkState->ScopeInfo;
-        WalkState->ScopeInfo = ScopeInfo->Scope.Next;
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "Popped object type (%s)\n", AcpiUtGetTypeName (ScopeInfo->Common.Value)));
-        AcpiUtDeleteGenericState (ScopeInfo);
-    }
-}
-
-
-/****************************************************************************
+ * DESCRIPTION: Callback from AcpiWalkNamespace.  Invoked for every object
+ *              within the namespace.
  *
- * FUNCTION:    AcpiDsScopeStackPush
+ *              Currently, the only objects that require initialization are:
+ *              1) Methods
+ *              2) Operation Regions
  *
- * PARAMETERS:  *Node,              - Name to be made current
- *              Type,               - Type of frame being pushed
- *
- * DESCRIPTION: Push the current scope on the scope stack, and make the
- *              passed Node current.
- *
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
-AcpiDsScopeStackPush (
-    ACPI_NAMESPACE_NODE     *Node,
-    ACPI_OBJECT_TYPE        Type,
-    ACPI_WALK_STATE         *WalkState)
+AcpiDsInitOneObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
 {
-    ACPI_GENERIC_STATE      *ScopeInfo;
-    ACPI_GENERIC_STATE      *OldScopeInfo;
+    ACPI_OBJECT_TYPE        Type;
+    ACPI_STATUS             Status;
+    ACPI_INIT_WALK_INFO     *Info = (ACPI_INIT_WALK_INFO *) Context;
 
 
-    ACPI_FUNCTION_TRACE ("DsScopeStackPush");
-
-
-    if (!Node)
-    {
-        /* Invalid scope   */
-
-        ACPI_REPORT_ERROR (("DsScopeStackPush: null scope passed\n"));
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    /* Make sure object type is valid */
-
-    if (!AcpiUtValidObjectType (Type))
-    {
-        ACPI_REPORT_WARNING (("DsScopeStackPush: Invalid object type: 0x%X\n", Type));
-    }
-
-    /* Allocate a new scope object */
-
-    ScopeInfo = AcpiUtCreateGenericState ();
-    if (!ScopeInfo)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    /* Init new scope object */
-
-    ScopeInfo->Common.DataType  = ACPI_DESC_TYPE_STATE_WSCOPE;
-    ScopeInfo->Scope.Node       = Node;
-    ScopeInfo->Common.Value     = (UINT16) Type;
-
-    WalkState->ScopeDepth++;
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "[%.2d] Pushed scope ", (UINT32) WalkState->ScopeDepth));
-
-    OldScopeInfo = WalkState->ScopeInfo;
-    if (OldScopeInfo)
-    {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC,
-            "[%4.4s] (%s)",
-            AcpiUtGetNodeName (OldScopeInfo->Scope.Node),
-            AcpiUtGetTypeName (OldScopeInfo->Common.Value)));
-    }
-    else
-    {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC,
-            "[\\___] (%s)", "ROOT"));
-    }
-
-    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC,
-        ", New scope -> [%4.4s] (%s)\n",
-        AcpiUtGetNodeName (ScopeInfo->Scope.Node),
-        AcpiUtGetTypeName (ScopeInfo->Common.Value)));
-
-    /* Push new scope object onto stack */
-
-    AcpiUtPushGenericState (&WalkState->ScopeInfo, ScopeInfo);
-    return_ACPI_STATUS (AE_OK);
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    AcpiDsScopeStackPop
- *
- * PARAMETERS:  Type                - The type of frame to be found
- *
- * DESCRIPTION: Pop the scope stack until a frame of the requested type
- *              is found.
- *
- * RETURN:      Count of frames popped.  If no frame of the requested type
- *              was found, the count is returned as a negative number and
- *              the scope stack is emptied (which sets the current scope
- *              to the root).  If the scope stack was empty at entry, the
- *              function is a no-op and returns 0.
- *
- ***************************************************************************/
-
-ACPI_STATUS
-AcpiDsScopeStackPop (
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_GENERIC_STATE      *ScopeInfo;
-    ACPI_GENERIC_STATE      *NewScopeInfo;
-
-
-    ACPI_FUNCTION_TRACE ("DsScopeStackPop");
+    ACPI_FUNCTION_NAME ("DsInitOneObject");
 
 
     /*
-     * Pop scope info object off the stack.
+     * We are only interested in objects owned by the table that
+     * was just loaded
      */
-    ScopeInfo = AcpiUtPopGenericState (&WalkState->ScopeInfo);
-    if (!ScopeInfo)
+    if (((ACPI_NAMESPACE_NODE *) ObjHandle)->OwnerId !=
+            Info->TableDesc->TableId)
     {
-        return_ACPI_STATUS (AE_STACK_UNDERFLOW);
+        return (AE_OK);
     }
 
-    WalkState->ScopeDepth--;
+    Info->ObjectCount++;
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-        "[%.2d] Popped scope [%4.4s] (%s), New scope -> ",
-        (UINT32) WalkState->ScopeDepth,
-        AcpiUtGetNodeName (ScopeInfo->Scope.Node),
-        AcpiUtGetTypeName (ScopeInfo->Common.Value)));
+    /* And even then, we are only interested in a few object types */
 
-    NewScopeInfo = WalkState->ScopeInfo;
-    if (NewScopeInfo)
+    Type = AcpiNsGetType (ObjHandle);
+
+    switch (Type)
     {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC,
-            "[%4.4s] (%s)\n",
-            AcpiUtGetNodeName (NewScopeInfo->Scope.Node),
-            AcpiUtGetTypeName (NewScopeInfo->Common.Value)));
-    }
-    else
-    {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC,
-            "[\\___] (ROOT)\n"));
+    case ACPI_TYPE_REGION:
+
+        Status = AcpiDsInitializeRegion (ObjHandle);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Region %p [%4.4s] - Init failure, %s\n",
+                ObjHandle, AcpiUtGetNodeName (ObjHandle),
+                AcpiFormatException (Status)));
+        }
+
+        Info->OpRegionCount++;
+        break;
+
+
+    case ACPI_TYPE_METHOD:
+
+        Info->MethodCount++;
+
+        /* Print a dot for each method unless we are going to print the entire pathname */
+
+        if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
+        {
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
+        }
+
+        /*
+         * Set the execution data width (32 or 64) based upon the
+         * revision number of the parent ACPI table.
+         * TBD: This is really for possible future support of integer width
+         * on a per-table basis. Currently, we just use a global for the width.
+         */
+        if (Info->TableDesc->Pointer->Revision == 1)
+        {
+            ((ACPI_NAMESPACE_NODE *) ObjHandle)->Flags |= ANOBJ_DATA_WIDTH_32;
+        }
+
+        /*
+         * Always parse methods to detect errors, we will delete
+         * the parse tree below
+         */
+        Status = AcpiDsParseMethod (ObjHandle);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Method %p [%4.4s] - parse failure, %s\n",
+                ObjHandle, AcpiUtGetNodeName (ObjHandle),
+                AcpiFormatException (Status)));
+
+            /* This parse failed, but we will continue parsing more methods */
+
+            break;
+        }
+
+        /*
+         * Delete the parse tree.  We simply re-parse the method
+         * for every execution since there isn't much overhead
+         */
+        AcpiNsDeleteNamespaceSubtree (ObjHandle);
+        AcpiNsDeleteNamespaceByOwner (((ACPI_NAMESPACE_NODE *) ObjHandle)->Object->Method.OwningId);
+        break;
+
+
+    case ACPI_TYPE_DEVICE:
+
+        Info->DeviceCount++;
+        break;
+
+
+    default:
+        break;
     }
 
-    AcpiUtDeleteGenericState (ScopeInfo);
+    /*
+     * We ignore errors from above, and always return OK, since
+     * we don't want to abort the walk on a single error.
+     */
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsInitializeObjects
+ *
+ * PARAMETERS:  TableDesc       - Descriptor for parent ACPI table
+ *              StartNode       - Root of subtree to be initialized.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walk the namespace starting at "StartNode" and perform any
+ *              necessary initialization on the objects found therein
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsInitializeObjects (
+    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_NAMESPACE_NODE     *StartNode)
+{
+    ACPI_STATUS             Status;
+    ACPI_INIT_WALK_INFO     Info;
+
+
+    ACPI_FUNCTION_TRACE ("DsInitializeObjects");
+
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "**** Starting initialization of namespace objects ****\n"));
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "Parsing all Control Methods:"));
+
+    Info.MethodCount    = 0;
+    Info.OpRegionCount  = 0;
+    Info.ObjectCount    = 0;
+    Info.DeviceCount    = 0;
+    Info.TableDesc      = TableDesc;
+
+    /* Walk entire namespace from the supplied root */
+
+    Status = AcpiWalkNamespace (ACPI_TYPE_ANY, StartNode, ACPI_UINT32_MAX,
+                    AcpiDsInitOneObject, &Info, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed, %s\n",
+            AcpiFormatException (Status)));
+    }
+
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
+        "\nTable [%4.4s](id %4.4X) - %hd Objects with %hd Devices %hd Methods %hd Regions\n",
+        TableDesc->Pointer->Signature, TableDesc->TableId, Info.ObjectCount,
+        Info.DeviceCount, Info.MethodCount, Info.OpRegionCount));
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "%hd Methods, %hd Regions\n", Info.MethodCount, Info.OpRegionCount));
+
     return_ACPI_STATUS (AE_OK);
 }
 
