@@ -193,8 +193,8 @@ AmlStoreObjectToNTE (
 
     DEBUG_PRINT (ACPI_INFO,
         ("AmlStoreObjectToNTE: Storing %s into %s\n",
-        Gbl_NsTypeNames[ValDesc->Common.Type],
-        Gbl_NsTypeNames[DestinationType]));
+        CmGetTypeName (ValDesc->Common.Type),
+        CmGetTypeName (DestinationType)));
 
     /* 
      *  Make sure the destination Object is the same as the NTE
@@ -253,8 +253,8 @@ AmlStoreObjectToNTE (
                      */
                     DEBUG_PRINT (ACPI_ERROR,
                         ("AmlStoreObjectToNTE: Value assigned to %s must be Number, not %s\n",
-                                Gbl_NsTypeNames[DestinationType],
-                                Gbl_NsTypeNames[ValDesc->Common.Type]));
+                                CmGetTypeName (DestinationType),
+                                CmGetTypeName (ValDesc->Common.Type)));
                     Status = AE_AML_ERROR;
                 }
             }
@@ -290,8 +290,8 @@ AmlStoreObjectToNTE (
                      */
                     DEBUG_PRINT (ACPI_ERROR,
                         ("AmlStoreObjectToNTE: Assign wrong type %s to %s (must be type Num/Str/Buf)\n",
-                                Gbl_NsTypeNames[ValDesc->Common.Type],
-                                Gbl_NsTypeNames[DestinationType]));
+                                CmGetTypeName (ValDesc->Common.Type),
+                                CmGetTypeName (DestinationType)));
                     Status = AE_AML_ERROR;
                 }
             }
@@ -318,8 +318,8 @@ AmlStoreObjectToNTE (
             Status = NsAttachObject (Entry, ValDesc, ValDesc->Common.Type);
 
             DEBUG_PRINT (ACPI_WARN, ("AmlStoreObjectToNTE: Store %s into %s via Attach\n",
-                                Gbl_NsTypeNames[ValDesc->Common.Type],
-                                Gbl_NsTypeNames[DestinationType]));
+                                CmGetTypeName (ValDesc->Common.Type),
+                                CmGetTypeName (DestinationType)));
         
             goto CleanUpAndBailOut;
             break;
@@ -515,7 +515,7 @@ AmlStoreObjectToNTE (
             
             DEBUG_PRINT (ACPI_INFO,
                 ("AmlStoreObjectToNTE: IndexField: set index returned %s\n",
-                Gbl_ExceptionNames[Status]));
+                CmFormatException (Status)));
             
             if (AE_OK == Status)
             {
@@ -525,7 +525,7 @@ AmlStoreObjectToNTE (
                                                &ValDesc->Number.Value, sizeof (ValDesc->Number.Value));
                 DEBUG_PRINT (ACPI_INFO,
                     ("AmlStoreObjectToNTE: IndexField: set data returned %s\n",
-                    Gbl_ExceptionNames[Status]));
+                    CmFormatException (Status)));
             }
             break;
     }
@@ -624,7 +624,7 @@ AmlStoreObjectToNTE (
              */
 
             DEBUG_PRINT (ACPI_WARN, ("AmlStoreObjectToNTE: Store into %s not implemented\n",
-                            Gbl_NsTypeNames[NsGetType (Entry)]));
+                            CmGetTypeName (NsGetType (Entry))));
         
             Status = AE_NOT_IMPLEMENTED;
             break;
