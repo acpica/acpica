@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.126 $
+ *       $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -169,7 +169,7 @@ AcpiExConvertToString (
 
 ACPI_STATUS
 AcpiExConvertToTargetType (
-    ACPI_OBJECT_TYPE8       DestinationType,
+    ACPI_OBJECT_TYPE        DestinationType,
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState);
@@ -548,7 +548,7 @@ AcpiExNameSegment (
 
 ACPI_STATUS
 AcpiExGetNameString (
-    ACPI_OBJECT_TYPE8       DataType,
+    ACPI_OBJECT_TYPE        DataType,
     UINT8                   *InAmlAddress,
     NATIVE_CHAR             **OutNameString,
     UINT32                  *OutNameLength);
@@ -589,7 +589,7 @@ AcpiExStoreObjectToNode (
 ACPI_STATUS
 AcpiExResolveObject (
     ACPI_OPERAND_OBJECT     **SourceDescPtr,
-    ACPI_OBJECT_TYPE8       TargetType,
+    ACPI_OBJECT_TYPE        TargetType,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS

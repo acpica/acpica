@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.145 $
+ *       $Revision: 1.148 $
  *
  *****************************************************************************/
 
@@ -275,7 +275,7 @@ typedef enum
 
 typedef struct acpi_node
 {
-    UINT8                   DataType;
+    UINT8                   Descriptor;     /* Used to differentiate object descriptor types */
     UINT8                   Type;           /* Type associated with this name */
     UINT16                  OwnerId;
     UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
@@ -350,7 +350,7 @@ typedef struct
 typedef struct
 {
     NATIVE_CHAR             *Name;
-    ACPI_OBJECT_TYPE8       Type;
+    UINT8                   Type;
     NATIVE_CHAR             *Val;
 
 } PREDEFINED_NAMES;
@@ -543,6 +543,8 @@ typedef struct acpi_control_state
     ACPI_STATE_COMMON
     struct acpi_parse_obj   *PredicateOp;
     UINT8                   *AmlPredicateStart;     /* Start of if/while predicate */
+    UINT8                   *PackageEnd;            /* End of if/while block */
+    UINT16                  Opcode;
 
 } ACPI_CONTROL_STATE;
 
