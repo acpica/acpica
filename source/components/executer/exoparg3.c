@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -280,7 +280,7 @@ AcpiExOpcode_3A_1T_1R (
             if ((Index + Length) >
                 Operand[0]->String.Length)
             {
-                Length = (ACPI_SIZE) Operand[0]->String.Length - 
+                Length = (ACPI_SIZE) Operand[0]->String.Length -
                             (ACPI_SIZE) Index;
             }
 
