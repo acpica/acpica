@@ -230,7 +230,7 @@ NsRootInitialize (void)
 
     for (InitVal = Gbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
-        Status = NsLookup (NULL, InitVal->Name, InitVal->Type, 
+        Status = NsLookup (NULL, InitVal->Name, (OBJECT_TYPE_INTERNAL) InitVal->Type, 
                                     IMODE_LoadPass2, NS_NO_UPSEARCH, NULL, &NewEntry);
 
         /* 
@@ -243,7 +243,7 @@ NsRootInitialize (void)
         {
             /* Entry requests an initial value, allocate a descriptor for it. */
             
-            ObjDesc = CmCreateInternalObject (InitVal->Type);
+            ObjDesc = CmCreateInternalObject ((OBJECT_TYPE_INTERNAL) InitVal->Type);
             if (!ObjDesc)
             {
                 Status = AE_NO_MEMORY;
@@ -352,7 +352,7 @@ ACPI_STATUS
 NsLookup (
     ACPI_GENERIC_STATE      *ScopeInfo,
     char                    *Pathname, 
-    ACPI_OBJECT_TYPE        Type, 
+    OBJECT_TYPE_INTERNAL    Type, 
     OPERATING_MODE          InterpreterMode,
 	UINT32					Flags,
     ACPI_WALK_STATE			*WalkState,
@@ -367,8 +367,8 @@ NsLookup (
     UINT32                  i;
     ACPI_NAME               SimpleName;
     BOOLEAN                 NullNamePath = FALSE;
-    ACPI_OBJECT_TYPE        TypeToCheckFor;
-    ACPI_OBJECT_TYPE        ThisSearchType;
+    OBJECT_TYPE_INTERNAL    TypeToCheckFor;
+    OBJECT_TYPE_INTERNAL    ThisSearchType;
 
 
     FUNCTION_TRACE ("NsLookup");
