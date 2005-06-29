@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.41 $
+ *       $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -122,6 +122,7 @@
 /*
  *  Function prototypes called from Acpi* APIs
  */
+
 ACPI_STATUS
 AcpiRsGetPrtMethodData (
     ACPI_HANDLE             Handle,
@@ -136,12 +137,6 @@ AcpiRsGetCrsMethodData (
 ACPI_STATUS
 AcpiRsGetPrsMethodData (
     ACPI_HANDLE             Handle,
-    ACPI_BUFFER             *RetBuffer);
-
-ACPI_STATUS
-AcpiRsGetMethodData (
-    ACPI_HANDLE             Handle,
-    char                    *Path,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
@@ -166,8 +161,60 @@ AcpiRsCreatePciRoutingTable (
 
 
 /*
- * rsdump
+ * Function prototypes called from AcpiRsCreate*
  */
+void
+AcpiRsDumpIrq (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpAddress16 (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpAddress32 (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpAddress64 (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpDma (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpIo (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpExtendedIrq (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpFixedIo (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpFixedMemory32 (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpMemory24 (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpMemory32 (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpStartDependFns (
+    ACPI_RESOURCE_DATA      *Data);
+
+void
+AcpiRsDumpVendorSpecific (
+    ACPI_RESOURCE_DATA      *Data);
+
 void
 AcpiRsDumpResourceList (
     ACPI_RESOURCE           *Resource);
@@ -176,62 +223,6 @@ void
 AcpiRsDumpIrqList (
     UINT8                   *RouteTable);
 
-static void
-AcpiRsDumpIrq (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpAddress16 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpAddress32 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpAddress64 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpDma (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpIo (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpExtendedIrq (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpFixedIo (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpFixedMemory32 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpMemory24 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpMemory32 (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpStartDependFns (
-    ACPI_RESOURCE_DATA      *Data);
-
-static void
-AcpiRsDumpVendorSpecific (
-    ACPI_RESOURCE_DATA      *Data);
-
-
-/*
- * rscalc
- */
 ACPI_STATUS
 AcpiRsGetByteStreamStart (
     UINT8                   *ByteStreamBuffer,

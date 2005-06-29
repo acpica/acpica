@@ -12,7 +12,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -141,7 +141,7 @@
 #define ACPI_SIGNAL_FATAL           0
 #define ACPI_SIGNAL_BREAKPOINT      1
 
-typedef struct acpi_signal_fatal_info
+typedef struct AcpiFatalInfo
 {
     UINT32                  Type;
     UINT32                  Code;
@@ -151,8 +151,22 @@ typedef struct acpi_signal_fatal_info
 
 
 /*
+ * Types specific to the OS service interfaces
+ */
+
+typedef UINT32
+(ACPI_SYSTEM_XFACE *OSD_HANDLER) (
+    void                    *Context);
+
+typedef void
+(ACPI_SYSTEM_XFACE *OSD_EXECUTION_CALLBACK) (
+    void                    *Context);
+
+
+/*
  * OSL Initialization and shutdown primitives
  */
+
 ACPI_STATUS
 AcpiOsInitialize (
     void);
@@ -165,15 +179,11 @@ AcpiOsTerminate (
 /*
  * ACPI Table interfaces
  */
+
 ACPI_STATUS
 AcpiOsGetRootPointer (
     UINT32                  Flags,
     ACPI_POINTER            *Address);
-
-ACPI_STATUS
-AcpiOsPredefinedOverride (
-    const ACPI_PREDEFINED_NAMES *InitVal,
-    ACPI_STRING                 *NewVal);
 
 ACPI_STATUS
 AcpiOsTableOverride (
@@ -184,6 +194,7 @@ AcpiOsTableOverride (
 /*
  * Synchronization primitives
  */
+
 ACPI_STATUS
 AcpiOsCreateSemaphore (
     UINT32                  MaxUnits,
@@ -198,35 +209,18 @@ ACPI_STATUS
 AcpiOsWaitSemaphore (
     ACPI_HANDLE             Handle,
     UINT32                  Units,
-    UINT16                  Timeout);
+    UINT32                  Timeout);
 
 ACPI_STATUS
 AcpiOsSignalSemaphore (
     ACPI_HANDLE             Handle,
     UINT32                  Units);
 
-ACPI_STATUS
-AcpiOsCreateLock (
-    ACPI_HANDLE             *OutHandle);
-
-void
-AcpiOsDeleteLock (
-    ACPI_HANDLE             Handle);
-
-void
-AcpiOsAcquireLock (
-    ACPI_HANDLE             Handle,
-    UINT32                  Flags);
-
-void
-AcpiOsReleaseLock (
-    ACPI_HANDLE             Handle,
-    UINT32                  Flags);
-
 
 /*
  * Memory allocation and mapping
  */
+
 void *
 AcpiOsAllocate (
     ACPI_SIZE               Size);
@@ -255,21 +249,23 @@ AcpiOsGetPhysicalAddress (
 /*
  * Interrupt handlers
  */
+
 ACPI_STATUS
 AcpiOsInstallInterruptHandler (
     UINT32                  InterruptNumber,
-    ACPI_OSD_HANDLER        ServiceRoutine,
+    OSD_HANDLER             ServiceRoutine,
     void                    *Context);
 
 ACPI_STATUS
 AcpiOsRemoveInterruptHandler (
     UINT32                  InterruptNumber,
-    ACPI_OSD_HANDLER        ServiceRoutine);
+    OSD_HANDLER             ServiceRoutine);
 
 
 /*
  * Threads and Scheduling
  */
+
 UINT32
 AcpiOsGetThreadId (
     void);
@@ -277,16 +273,13 @@ AcpiOsGetThreadId (
 ACPI_STATUS
 AcpiOsQueueForExecution (
     UINT32                  Priority,
-    ACPI_OSD_EXEC_CALLBACK  Function,
-    void                    *Context);
-
-void
-AcpiOsWaitEventsComplete (
+    OSD_EXECUTION_CALLBACK  Function,
     void                    *Context);
 
 void
 AcpiOsSleep (
-    ACPI_INTEGER            Milliseconds);
+    UINT32                  Seconds,
+    UINT32                  Milliseconds);
 
 void
 AcpiOsStall (
@@ -296,77 +289,71 @@ AcpiOsStall (
 /*
  * Platform and hardware-independent I/O interfaces
  */
+
 ACPI_STATUS
 AcpiOsReadPort (
     ACPI_IO_ADDRESS         Address,
-    UINT32                  *Value,
+    void                    *Value,
     UINT32                  Width);
 
 ACPI_STATUS
 AcpiOsWritePort (
     ACPI_IO_ADDRESS         Address,
-    UINT32                  Value,
+    ACPI_INTEGER            Value,
     UINT32                  Width);
 
 
 /*
  * Platform and hardware-independent physical memory interfaces
  */
+
 ACPI_STATUS
 AcpiOsReadMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  *Value,
+    void                    *Value,
     UINT32                  Width);
 
 ACPI_STATUS
 AcpiOsWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Value,
+    ACPI_INTEGER            Value,
     UINT32                  Width);
 
 
 /*
  * Platform and hardware-independent PCI configuration space access
- * Note: Can't use "Register" as a parameter, changed to "Reg" --
- * certain compilers complain.
  */
+
 ACPI_STATUS
 AcpiOsReadPciConfiguration (
     ACPI_PCI_ID             *PciId,
-    UINT32                  Reg,
+    UINT32                  Register,
     void                    *Value,
     UINT32                  Width);
 
 ACPI_STATUS
 AcpiOsWritePciConfiguration (
     ACPI_PCI_ID             *PciId,
-    UINT32                  Reg,
+    UINT32                  Register,
     ACPI_INTEGER            Value,
     UINT32                  Width);
 
-/*
- * Interim function needed for PCI IRQ routing
- */
-void
-AcpiOsDerivePciId(
-    ACPI_HANDLE             Rhandle,
-    ACPI_HANDLE             Chandle,
-    ACPI_PCI_ID             **PciId);
 
 /*
  * Miscellaneous
  */
+
 BOOLEAN
 AcpiOsReadable (
     void                    *Pointer,
-    ACPI_SIZE               Length);
+    UINT32                  Length);
 
 BOOLEAN
 AcpiOsWritable (
     void                    *Pointer,
-    ACPI_SIZE               Length);
+    UINT32                  Length);
 
-UINT64
+UINT32
 AcpiOsGetTimer (
     void);
 
@@ -378,14 +365,15 @@ AcpiOsSignal (
 /*
  * Debug print routines
  */
+
 void ACPI_INTERNAL_VAR_XFACE
 AcpiOsPrintf (
-    const char              *Format,
+    const NATIVE_CHAR       *Format,
     ...);
 
 void
 AcpiOsVprintf (
-    const char              *Format,
+    const NATIVE_CHAR       *Format,
     va_list                 Args);
 
 void
@@ -396,42 +384,22 @@ AcpiOsRedirectOutput (
 /*
  * Debug input
  */
+
 UINT32
 AcpiOsGetLine (
-    char                    *Buffer);
+    NATIVE_CHAR             *Buffer);
 
-
-/*
- * Directory manipulation
- */
-void *
-AcpiOsOpenDirectory (
-    char                    *Pathname,
-    char                    *WildcardSpec,
-    char                    RequestedFileType);
-
-/* RequesteFileType values */
-
-#define REQUEST_FILE_ONLY                   0
-#define REQUEST_DIR_ONLY                    1
-
-
-char *
-AcpiOsGetNextFilename (
-    void                    *DirHandle);
-
-void
-AcpiOsCloseDirectory (
-    void                    *DirHandle);
 
 /*
  * Debug
  */
+
 void
 AcpiOsDbgAssert(
     void                    *FailedAssertion,
     void                    *FileName,
     UINT32                  LineNumber,
-    char                    *Message);
+    NATIVE_CHAR             *Message);
+
 
 #endif /* __ACPIOSXF_H__ */
