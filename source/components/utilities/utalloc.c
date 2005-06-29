@@ -359,6 +359,13 @@ CmDeleteElementFromAllocList (
             }
         }       
         
+        /* Mark the segment as deleted */
+
+        if (Element->Size > sizeof (void *))
+        {
+            *((void **) Element->Address) = (void *) 0x00DEAD00;
+        }
+
         OsdFree (Element);
     }
             
@@ -394,6 +401,7 @@ CmDumpCurrentAllocations (
     ACPI_STRING             Module)
 {
     ALLOCATION_INFO         *Element = HeadAllocPtr;
+    UINT32                  i;
     
 
     FUNCTION_TRACE ("CmDumpCurrentAllocations");
@@ -404,26 +412,49 @@ CmDumpCurrentAllocations (
         DEBUG_PRINT (TRACE_ALLOCATIONS, ("No outstanding allocations.\n"));
         return_VOID;
     }
-    
-    for (;;)
+
+
+    /*
+     * Walk the allocation list.
+     */
+
+    for (i = 1; ; i++)  /* Just a counter */
     {
         if ((Element->Component & Component) &&
             ((Module == NULL) || (0 == strcmp (Module, Element->Module))))
         {
             DEBUG_PRINT (TRACE_ALLOCATIONS,
-                ("%08x bytes at %p from file %s (line %d)\n",
-                Element->Size, Element->Address, Element->Module, Element->Line));
+                ("%p: Length %04x %10.10s Line %d",
+                Element->Address, Element->Size, Element->Module, Element->Line));
+
+            /* Most of the elements will be internal objects. */
+
+            if (Element->Size == sizeof (ACPI_OBJECT_INTERNAL))
+            {
+                DEBUG_PRINT_RAW (TRACE_ALLOCATIONS, (" Type %s", 
+                    NsTypeNames[((ACPI_OBJECT_INTERNAL *)(Element->Address))->Type]));
+            }
+
+            DEBUG_PRINT_RAW (TRACE_ALLOCATIONS, ("\n")); 
         }
         
         if (Element->Next == NULL)
         {
-            return_VOID;
+            break;
         }
         
         Element = Element->Next;
     }
 
-    /* won't ever get here. */
+
+    DEBUG_PRINT (TRACE_ALLOCATIONS,
+        ("Total number of unfreed allocations = %d\n", i));
+            
+    DEBUG_PRINT (TRACE_ALLOCATIONS,
+        ("Stack Ptrs: Obj=%d Pkg=%d Mth=%d\n",
+            AmlObjStackLevel(), AmlPkgStackLevel(), AmlMthStackLevel()));
+ 
+    return_VOID;
 }   
 
 #endif  /* Debug routines for memory leak detection */
@@ -570,7 +601,7 @@ _CmFree (
 
 /*****************************************************************************
  * 
- * FUNCTION:    _AllocateObjectDesc
+ * FUNCTION:    _CmAllocateObjectDesc
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
@@ -585,7 +616,7 @@ _CmFree (
  ****************************************************************************/
 
 void *
-_AllocateObjectDesc (
+_CmAllocateObjectDesc (
     char                    *ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId)
@@ -616,62 +647,4 @@ _AllocateObjectDesc (
     }
 
     return_VALUE (NewDesc);
-}
-
-
-
-/*****************************************************************************
- * 
- * FUNCTION:    LocalDeleteObject
- *
- * PARAMETERS:  **ObjDesc           - Descriptor to be deleted
- *
- * DESCRIPTION: If the passed descriptor pointer does not point into the
- *              AML block and is not an NsHandle, free the descriptor.
- *
- *              Note that the parameter is the address of the descriptor
- *              pointer, so that the descriptor pointer can be set to NULL
- *              after the descriptor is freed.
- *
- ****************************************************************************/
-
-void
-LocalDeleteObject (
-    ACPI_OBJECT_INTERNAL    **ObjDesc)
-{
-
-    FUNCTION_TRACE ("LocalDeleteObject");
-    DEBUG_PRINT (ACPI_INFO, ("LocalDeleteObject: Obj %x at %p\n", *ObjDesc, ObjDesc));
-
-
-    /*
-     * Be very careful about what we delete
-     */
-
-    /* 
-     * XXX: This is not the best solution!
-     * XXX: And may not work in all cases!!
-     */
-
-
-    if ((ACPI_OBJECT_INTERNAL **) 0 !=    ObjDesc  &&
-        (ACPI_OBJECT_INTERNAL *) 0 !=    *ObjDesc  &&
-        !AmlIsInPCodeBlock ((UINT8 *)    *ObjDesc) &&
-        !IS_NS_HANDLE                   (*ObjDesc) &&
-        !AmlIsMethodValue               (*ObjDesc) &&
-        !IsNsValue                      (*ObjDesc))
-    {
-
-        DEBUG_PRINT (ACPI_INFO, ("LocalDeleteObject: Actually deleting %x\n", *ObjDesc));
-
-        CmFree (*ObjDesc);
-
-        DEBUG_PRINT (ACPI_INFO, ("LocalDeleteObject: Successfully deleted %x\n", *ObjDesc));
-
-    }
-
-    /* In all cases, set the pointer to null */
-
-    *ObjDesc = NULL;
-    return_VOID;
 }
