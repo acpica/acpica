@@ -207,6 +207,9 @@
 
 /* prefixed opcodes */
 
+#define AML_EXTOP                   0x005b
+
+
 #define AML_MutexOp                 0x5b01
 #define AML_EventOp                 0x5b02
 #define AML_ShiftRightBitOp         0x5b10
@@ -235,6 +238,104 @@
 #define AML_ThermalZoneOp           0x5b85
 #define AML_IndexFieldOp            0x5b86
 #define AML_BankFieldOp             0x5b87
+
+
+/* Bogus opcodes (they are actually two separate opcodes) */
+
+#define AML_LGREATEREQUAL           0x9295
+#define AML_LLESSEQUAL              0x9294
+#define AML_LNOTEQUAL               0x9293
+
+
+/* Internal opcodes */
+
+#define AML_NAMEPATH                0x002d
+#define AML_NAMEDFIELD              0x0030
+#define AML_RESERVEDFIELD           0x0031
+#define AML_ACCESSFIELD             0x0032
+#define AML_BYTELIST                0x0033
+#define AML_STATICSTRING            0x0034
+#define AML_METHODCALL              0x0035
+
+
+
+
+/*
+ * argument types
+ */
+#define AML_ASCIICHARLIST_ARG       'A'
+#define AML_BYTEDATA_ARG            'b'
+#define AML_BYTELIST_ARG            'B'
+#define AML_DWORDDATA_ARG           'd'
+#define AML_DATAOBJECT_ARG          'o'
+#define AML_DATAOBJECTLIST_ARG      'O'
+#define AML_FIELDLIST_ARG           'F'
+#define AML_NAMESTRING_ARG          'n'
+#define AML_OBJECTLIST_ARG          'P'
+#define AML_PKGLENGTH_ARG           'p'
+#define AML_SUPERNAME_ARG           's'
+#define AML_TARGET_ARG              'l'
+#define AML_TERMARG_ARG             't'
+#define AML_TERMLIST_ARG            'T'
+#define AML_WORDDATA_ARG            'w'
+
+
+/*
+ * hash offsets
+ */
+#define AML_EXTOP_HASH_OFFSET       22
+#define AML_LNOT_HASH_OFFSET        19
+
+
+/*
+ * opcode groups and types
+ */
+
+#define OPGRP_NAMED                 0x01
+#define OPGRP_FIELD                 0x02
+#define OPGRP_BYTELIST              0x04
+
+#define OPTYPE_UNDEFINED            0
+
+
+#define OPTYPE_LITERAL              1
+#define OPTYPE_CONSTANT             2
+#define OPTYPE_METHOD_ARGUMENT      3
+#define OPTYPE_LOCAL_VARIABLE       4
+#define OPTYPE_DATA_TERM            5
+
+/* Type 1 opcodes */
+
+#define OPTYPE_MONADIC1             6
+#define OPTYPE_DYADIC1              7
+
+
+/* Type 2 opcodes */
+
+#define OPTYPE_MONADIC2             8
+#define OPTYPE_MONADIC2R            9
+#define OPTYPE_DYADIC2              10
+#define OPTYPE_DYADIC2R             11
+#define OPTYPE_DYADIC2S             12
+#define OPTYPE_INDEX                13
+#define OPTYPE_MATCH                14
+
+/* Generic for an op that returns a value */
+
+#define OPTYPE_METHOD_CALL          15
+
+
+/* Misc */
+
+#define OPTYPE_CREATE_FIELD         16
+#define OPTYPE_FATAL                17
+#define OPTYPE_CONTROL              18
+#define OPTYPE_RECONFIGURATION      19
+#define OPTYPE_NAMED_OBJECT         20
+
+#define OPTYPE_BOGUS                21
+
+
 
 
 /* Comparison operation codes for MatchOp operator */
@@ -402,334 +503,6 @@ char *Gbl_UpdateRules[NUM_UPDATE_RULES] =
 };
 
 
-
-
-/******************************************************************************
- * 
- * AML Decoding tables.  These tables are used by the recursive parser only.
- *
- * TBD: remove these tables when the Rparser is obsoleted
- *
- *****************************************************************************/
-
-
-#ifdef _RPARSER
-
-/* primary decoder */
-
-UINT8 Gbl_Aml[NUM_OPCODES] = 
-{
-/*          x0                      x1                      x2                      x3          */
-/*          x4                      x5                      x6                      x7          */
-/*          x8                      x9                      xa                      xb          */
-/*          xc                      xd                      xe                      xf          */
-/* 0x */    AML_ZeroOp,             AML_OneOp,              AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_AliasOp,            AML_UNASSIGNED,
-            AML_NameOp,             AML_UNASSIGNED,         AML_ByteOp,             AML_WordOp,
-            AML_DWordOp,            AML_StringOp,           AML_UNASSIGNED,         AML_UNASSIGNED,
-/* 1x */    AML_ScopeOp,            AML_BufferOp,           AML_PackageOp,          AML_UNASSIGNED,
-            AML_MethodOp,           AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-/* 2x */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_DualNamePrefix,     AML_MultiNamePrefixOp,
-/* 3x */    AML_NameCharSubseq,     AML_NameCharSubseq,     AML_NameCharSubseq,     AML_NameCharSubseq,
-            AML_NameCharSubseq,     AML_NameCharSubseq,     AML_NameCharSubseq,     AML_NameCharSubseq,
-            AML_NameCharSubseq,     AML_NameCharSubseq,     AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-/* 4x */    AML_UNASSIGNED,         AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,
-            AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,
-            AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,
-            AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,
-/* 5x */    AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,
-            AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,
-            AML_NameCharFirst,      AML_NameCharFirst,      AML_NameCharFirst,      AML_OpPrefix,
-            AML_RootPrefix,         AML_UNASSIGNED,         AML_ParentPrefix,       AML_NameCharFirst,
-/* 6x */    AML_Local_Op,           AML_Local_Op,           AML_Local_Op,           AML_Local_Op,
-            AML_Local_Op,           AML_Local_Op,           AML_Local_Op,           AML_Local_Op,
-            AML_Arg_Op,             AML_Arg_Op,             AML_Arg_Op,             AML_Arg_Op,
-            AML_Arg_Op,             AML_Arg_Op,             AML_Arg_Op,             AML_UNASSIGNED,
-/* 7x */    AML_StoreOp,            AML_RefOfOp,            AML_AddOp,              AML_ConcatOp,
-            AML_SubtractOp,         AML_IncrementOp,        AML_DecrementOp,        AML_MultiplyOp,
-            AML_DivideOp,           AML_ShiftLeftOp,        AML_ShiftRightOp,       AML_BitAndOp,
-            AML_BitNandOp,          AML_BitOrOp,            AML_BitNorOp,           AML_BitXorOp,
-/* 8x */    AML_BitNotOp,           AML_FindSetLeftBitOp,   AML_FindSetRightBitOp,  AML_DerefOfOp,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_NotifyOp,           AML_SizeOfOp,
-            AML_IndexOp,            AML_MatchOp,            AML_DWordFieldOp,       AML_WordFieldOp,
-            AML_ByteFieldOp,        AML_BitFieldOp,         AML_TypeOp,             AML_UNASSIGNED,
-/* 9x */    AML_LAndOp,             AML_LOrOp,              AML_LNotOp,             AML_LEqualOp,
-            AML_LGreaterOp,         AML_LLessOp,            AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-/* ax */    AML_IfOp,               AML_ElseOp,             AML_WhileOp,            AML_NoopCode,
-            AML_ReturnOp,           AML_BreakOp,            AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-/* bx */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-/* cx */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_BreakPointOp,       AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-/* dx */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-/* ex */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-/* fx */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,         AML_OnesOp
-};
-
-
-
-/* prefixed decoder */
-
-UINT16 Gbl_Pfx[NUM_OPCODES] = 
-{
-/*          x0                      x1                      x2                      x3          */
-/*          x4                      x5                      x6                      x7          */
-/*          x8                      x9                      xa                      xb          */
-/*          xc                      xd                      xe                      xf          */
-/* 0x */    AML_UNASSIGNED,         AML_MutexOp,            AML_EventOp,           AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* 1x */    AML_ShiftRightBitOp,    AML_ShiftLeftBitOp,     AML_CondRefOfOp,       AML_CreateFieldOp,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* 2x */    AML_LoadOp,             AML_StallOp,            AML_SleepOp,           AML_AcquireOp,
-            AML_SignalOp,           AML_WaitOp,             AML_ResetOp,           AML_ReleaseOp,
-            AML_FromBCDOp,          AML_ToBCDOp,            AML_UnLoadOp,          AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* 3x */    AML_RevisionOp,         AML_DebugOp,            AML_FatalOp,           AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* 4x */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* 5x */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* 6x */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* 7x */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* 8x */    AML_RegionOp,           AML_DefFieldOp,         AML_DeviceOp,          AML_ProcessorOp,
-            AML_PowerResOp,         AML_ThermalZoneOp,      AML_IndexFieldOp,      AML_BankFieldOp,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* 9x */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* ax */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* bx */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* cx */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* dx */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* ex */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-/* fx */    AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED,
-            AML_UNASSIGNED,         AML_UNASSIGNED,         AML_UNASSIGNED,        AML_UNASSIGNED
-};
-
-#endif
-
-
-/******************************************************************************
- * 
- * AML Opcode name tables.  Used for debug output only
- *
- *****************************************************************************/
-
-
-/* TBD: there are some places where the release version uses these tables!! */
-
-/* #ifdef ACPI_DEBUG */
-
-/* primary op names */
-
-char *Gbl_ShortOps[NUM_OPCODES] = 
-{
-/*          x0                  x1                  x2                  x3          */
-/*          x4                  x5                  x6                  x7          */
-/*          x8                  x9                  xa                  xb          */
-/*          xc                  xd                  xe                  xf          */
-/* 0x */    "ZeroOp",           "OneOp",            "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "AliasOp",          "*ERROR*",
-            "NameOp",           "*ERROR*",          "ByteOp",           "WordOp",
-            "DWordOp",          "StringOp",         "*ERROR*",          "*ERROR*",
-/* 1x */    "ScopeOp",          "BufferOp",         "PackageOp",        "*ERROR*",
-            "MethodOp",         "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 2x */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "DualNamePrefix",   "MultiNamePrefixOp",
-/* 3x */    "*NAME*",           "*NAME*",           "*NAME*",           "*NAME*",
-            "*NAME*",           "*NAME*",           "*NAME*",           "*NAME*",
-            "*NAME*",           "*NAME*",           "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 4x */    "*ERROR*",          "*NAME*",           "*NAME*",           "*NAME*",
-            "*NAME*",           "*NAME*",           "*NAME*",           "*NAME*",
-            "*NAME*",           "*NAME*",           "*NAME*",           "*NAME*",
-            "*NAME*",           "*NAME*",           "*NAME*",           "*NAME*",
-/* 5x */    "*NAME*",           "*NAME*",           "*NAME*",           "*NAME*",
-            "*NAME*",           "*NAME*",           "*NAME*",           "*NAME*",
-            "*NAME*",           "*NAME*",           "*NAME*",           "*PREFIX*",
-            "RootPrefix",       "*ERROR*",          "ParentPrefix",     "*NAME*",
-/* 6x */    "Local0",           "Local1",           "Local2",           "Local3",
-            "Local4",           "Local5",           "Local6",           "Local7",
-            "Arg0",             "Arg1",             "Arg2",             "Arg3",
-            "Arg4",             "Arg5",             "Arg6",             "*ERROR*",
-/* 7x */    "StoreOp",          "RefOfOp",          "AddOp",            "ConcatOp",
-            "SubtractOp",       "IncrementOp",      "DecrementOp",      "MultiplyOp",
-            "DivideOp",         "ShiftLeftOp",      "ShiftRightOp",     "AndOp",
-            "NandOp",           "OrOp",             "NorOp",            "XorOp",
-/* 8x */    "NotOp",            "FindSetLeftBitOp", "FindSetRightBitOp","DerefOfOp",
-            "*ERROR*",          "*ERROR*",          "NotifyOp",         "SizeOfOp",
-            "IndexOp",          "MatchOp",          "DWordFieldOp",     "WordFieldOp",
-            "ByteFieldOp",      "BitFieldOp",       "TypeOp",           "*ERROR*",
-/* 9x */    "LAndOp",           "LOrOp",            "LNotOp",           "LEqualOp",
-            "LGreaterOp",       "LLessOp",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* ax */    "IfOp",             "ElseOp",           "WhileOp",          "NoOp",
-            "ReturnOp",         "BreakOp",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* bx */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* cx */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "BreakPointOp",     "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* dx */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* ex */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* fx */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "OnesOp"
-};
-
-
-
-/* prefixed op names */
-
-char *Gbl_LongOps[NUM_OPCODES] = 
-{
-/*          x0                  x1                  x2                  x3          */
-/*          x4                  x5                  x6                  x7          */
-/*          x8                  x9                  xa                  xb          */
-/*          xc                  xd                  xe                  xf          */
-/* 0x */    "*ERROR*",          "MutexOp",          "EventOp",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 1x */    "ShiftRightBitOp", "ShiftLeftBitOp",    "CondRefOfOp",      "CreateFieldOp",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 2x */    "LoadOp",           "StallOp",          "SleepOp",          "AcquireOp",
-            "SignalOp",         "WaitOp",           "ResetOp",          "ReleaseOp",
-            "FromBCDOp",        "ToBCDOp",           "UnLoadOp",        "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 3x */    "RevisionOp",       "DebugOp",          "FatalOp",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 4x */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 5x */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 6x */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 7x */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 8x */    "OpRegionOp",       "FieldOp",          "DeviceOp",     "ProcessorOp",
-            "PowerResOp",       "ThermalZoneOp", "IndexFieldOp",    "BankFieldOp",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* 9x */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* ax */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* bx */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* cx */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* dx */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* ex */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-/* fx */    "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*ERROR*",
-            "*ERROR*",          "*ERROR*",          "*ERROR*",          "*RESERVED*"
-};
-
-/* #endif */
 
 
 #endif /* DEFINE_AML_GLOBALS */
