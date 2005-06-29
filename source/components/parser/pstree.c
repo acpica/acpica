@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiPsGetArg (
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (ACPI_GET_OP_CLASS (OpInfo) == AML_CLASS_UNKNOWN)
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
         /* Invalid opcode or ASCII character */
 
@@ -162,7 +162,7 @@ AcpiPsGetArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(ACPI_GET_OP_FLAGS (OpInfo) & AML_HAS_ARGS))
+    if (!(OpInfo->Flags & AML_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
@@ -215,7 +215,7 @@ AcpiPsAppendArg (
     /* Get the info structure for this opcode */
 
     OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
-    if (ACPI_GET_OP_CLASS (OpInfo) == AML_CLASS_UNKNOWN)
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
         /* Invalid opcode */
 
@@ -225,7 +225,7 @@ AcpiPsAppendArg (
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(ACPI_GET_OP_FLAGS (OpInfo) & AML_HAS_ARGS))
+    if (!(OpInfo->Flags & AML_HAS_ARGS))
     {
         /* Has no linked argument objects */
 

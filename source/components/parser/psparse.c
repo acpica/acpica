@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -298,20 +298,18 @@ AcpiPsCompleteThisOp (
     ACPI_PARSE_OBJECT       *Prev;
     ACPI_PARSE_OBJECT       *Next;
     const ACPI_OPCODE_INFO  *ParentInfo;
-    UINT32                  OpcodeClass;
     ACPI_PARSE_OBJECT       *ReplacementOp = NULL;
 
 
     FUNCTION_TRACE_PTR ("PsCompleteThisOp", Op);
 
 
-    OpcodeClass = ACPI_GET_OP_CLASS (WalkState->OpInfo);
 
 
     /* Delete this op and the subtree below it if asked to */
 
     if (((WalkState->ParseFlags & ACPI_PARSE_TREE_MASK) == ACPI_PARSE_DELETE_TREE) &&
-        (OpcodeClass != AML_CLASS_ARGUMENT))
+        (WalkState->OpInfo->Class != AML_CLASS_ARGUMENT))
     {
         /* Make sure that we only delete this subtree */
 
@@ -323,7 +321,7 @@ AcpiPsCompleteThisOp (
              */
             ParentInfo  = AcpiPsGetOpcodeInfo (Op->Parent->Opcode);
 
-            switch (ACPI_GET_OP_CLASS (ParentInfo))
+            switch (ParentInfo->Class)
             {
             case AML_CLASS_CONTROL:        /* IF, ELSE, WHILE only */
                 break;
@@ -648,7 +646,7 @@ AcpiPsParseLoop (
              * 3) An unknown/invalid opcode
              */
             WalkState->OpInfo = AcpiPsGetOpcodeInfo (WalkState->Opcode);
-            switch (ACPI_GET_OP_CLASS (WalkState->OpInfo))
+            switch (WalkState->OpInfo->Class)
             {
             case AML_CLASS_ASCII:
             case AML_CLASS_PREFIX:
