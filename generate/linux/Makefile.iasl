@@ -5,8 +5,9 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	aslcompile.c aslerror.c aslfiles.c asllength.c \
 	asllisting.c aslload.c asllookup.c aslmain.c aslmap.c aslopcodes.c \
 	asloperands.c aslresource.c aslrestype1.c aslrestype2.c \
-	asltree.c aslutils.c asltransform.c \
+	asltree.c aslutils.c asltransform.c aslfold.c aslstubs.c \
 	../utilities/utalloc.c \
+	../utilities/utcopy.c \
 	../utilities/utdebug.c \
 	../utilities/utdelete.c \
 	../utilities/utglobal.c \
@@ -25,10 +26,38 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	../interpreter/parser/psutils.c \
 	../interpreter/dispatcher/dswscope.c \
 	../interpreter/dispatcher/dswstate.c \
+	../interpreter/dispatcher/dsfield.c \
+	../interpreter/dispatcher/dsobject.c \
+	../interpreter/dispatcher/dsopcode.c \
+	../interpreter/dispatcher/dsutils.c \
+	../interpreter/dispatcher/dswexec.c \
+	../interpreter/executer/exconfig.c \
+	../interpreter/executer/exconvrt.c \
+	../interpreter/executer/excreate.c \
+	../interpreter/executer/exdump.c \
+	../interpreter/executer/exfield.c \
+	../interpreter/executer/exfldio.c \
+	../interpreter/executer/exmisc.c \
+	../interpreter/executer/exmutex.c \
+	../interpreter/executer/exnames.c \
+	../interpreter/executer/exoparg1.c \
+	../interpreter/executer/exoparg2.c \
+	../interpreter/executer/exoparg3.c \
+	../interpreter/executer/exoparg6.c \
+	../interpreter/executer/exprep.c \
+	../interpreter/executer/exregion.c \
+	../interpreter/executer/exresnte.c \
+	../interpreter/executer/exresolv.c \
+	../interpreter/executer/exresop.c \
+	../interpreter/executer/exstore.c \
+	../interpreter/executer/exstoren.c \
+	../interpreter/executer/exstorob.c \
+	../interpreter/executer/exsystem.c \
+	../interpreter/executer/exutils.c \
 	../osunixxf.c
 
 NOMAN=	YES
-CFLAGS+= -Wall -Wno-unused -Wstrict-prototypes -D_LINUX -D_ACPI_ASL_COMPILER -I../include 
+CFLAGS+= -Wall -O2 -Wno-unused -Wstrict-prototypes -D_LINUX -D_ACPI_ASL_COMPILER -I../include 
 
 #YACC=	yacc
 YACC=	bison
