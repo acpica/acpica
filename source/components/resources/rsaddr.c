@@ -169,7 +169,7 @@ AcpiRsAddress16Resource (
      */
     Buffer += 1;
 
-    Temp16 = *(UINT16 *)Buffer;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     *BytesConsumed = Temp16 + 3;
 

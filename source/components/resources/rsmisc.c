@@ -298,7 +298,7 @@ AcpiRsVendorResource (
 
         /* Dereference */
 
-        Temp16 = *(UINT16 *)Buffer;
+        MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
         /* Calculate bytes consumed */
 
@@ -408,7 +408,7 @@ AcpiRsVendorStream (
 
         Temp16 = (UINT16) LinkedList->Data.VendorSpecific.Length;
 
-        *(UINT16 *)Buffer = Temp16;
+        MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
         Buffer += 2;
     }

@@ -179,7 +179,7 @@ AcpiRsIrqResource (
      * Point to the 16-bits of Bytes 1 and 2
      */
     Buffer += 1;
-    Temp16 = *(UINT16 *)Buffer;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     OutputStruct->Data.Irq.NumberOfInterrupts = 0;
 
@@ -331,7 +331,7 @@ AcpiRsIrqStream (
         Temp16 |= 0x1 << Temp8;
     }
 
-    *(UINT16 *)Buffer = Temp16;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     Buffer += 2;
 
@@ -415,7 +415,7 @@ AcpiRsExtendedIrqResource (
      * Point past the Descriptor to get the number of bytes consumed
      */
     Buffer += 1;
-    Temp16 = *(UINT16 *)Buffer;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     *BytesConsumed = Temp16 + 3;
     OutputStruct->Id = ExtendedIrq;

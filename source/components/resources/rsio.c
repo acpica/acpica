@@ -184,7 +184,7 @@ AcpiRsIoResource (
      * Check MinBase Address
      */
     Buffer += 1;
-    Temp16 = *(UINT16 *)Buffer;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     OutputStruct->Data.Io.MinBaseAddress = Temp16;
 
@@ -192,7 +192,7 @@ AcpiRsIoResource (
      * Check MaxBase Address
      */
     Buffer += 2;
-    Temp16 = *(UINT16 *)Buffer;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     OutputStruct->Data.Io.MaxBaseAddress = Temp16;
 
@@ -353,7 +353,7 @@ AcpiRsIoStream (
      */
     Temp16 = (UINT16) LinkedList->Data.Io.MinBaseAddress;
 
-    *(UINT16 *)Buffer = Temp16;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     Buffer += 2;
 
@@ -362,7 +362,7 @@ AcpiRsIoStream (
      */
     Temp16 = (UINT16) LinkedList->Data.Io.MaxBaseAddress;
 
-    *(UINT16 *)Buffer = Temp16;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     Buffer += 2;
 
@@ -436,7 +436,7 @@ AcpiRsFixedIoStream (
      */
     Temp16 = (UINT16) LinkedList->Data.FixedIo.BaseAddress;
 
-    *(UINT16 *)Buffer = Temp16;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     Buffer += 2;
 

@@ -170,7 +170,7 @@ AcpiRsMemory24Resource (
      */
     Buffer += 1;
 
-    Temp16 = *(UINT16 *)Buffer;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     Buffer += 2;
 
@@ -190,7 +190,7 @@ AcpiRsMemory24Resource (
     /*
      * Get MinBaseAddress (Bytes 4-5)
      */
-    Temp16 = *(UINT16 *)Buffer;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     Buffer += 2;
 
@@ -199,7 +199,7 @@ AcpiRsMemory24Resource (
     /*
      * Get MaxBaseAddress (Bytes 6-7)
      */
-    Temp16 = *(UINT16 *)Buffer;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     Buffer += 2;
 
@@ -208,7 +208,7 @@ AcpiRsMemory24Resource (
     /*
      * Get Alignment (Bytes 8-9)
      */
-    Temp16 = *(UINT16 *)Buffer;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     Buffer += 2;
 
@@ -217,7 +217,7 @@ AcpiRsMemory24Resource (
     /*
      * Get RangeLength (Bytes 10-11)
      */
-    Temp16 = *(UINT16 *)Buffer;
+    MOVE_UNALIGNED16_TO_16 (&Temp16, Buffer);
 
     OutputStruct->Data.Memory24.RangeLength = Temp16;
 
