@@ -169,8 +169,37 @@ AmlExecMonadic1 (
     }
 
 
-    AmlDumpObjStack (MODE_Exec, LongOps[opcode & 0x00ff], 1, "after AmlPrepObjStack");
+    /* Get the operand from the stack */
+
+    AmlDumpObjStack (IMODE_Execute, Gbl_LongOps[opcode & 0x00ff], 1, "after AmlPrepObjStack");
     ObjDesc = AmlObjStackGetValue (STACK_TOP);
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_AML_ERROR);
+    }
+
+    /* ObjDesc can be an NTE - extract the object from the NTE */
+
+    if (IS_NS_HANDLE (ObjDesc))
+    {
+        if (((NAME_TABLE_ENTRY *) ObjDesc)->Object)
+        {
+            /* Valid object, get it */
+
+            ObjDesc = ((NAME_TABLE_ENTRY *) ObjDesc)->Object;
+
+            /* The object is deleted below, we must clear the entry */
+
+            ((NAME_TABLE_ENTRY *) ObjDesc)->Object = NULL;
+        }
+
+        else
+        {
+            /* No object, just exit */
+
+            return_ACPI_STATUS (AE_OK);
+        }
+    }
 
 
     /* Examine the opcode */
@@ -182,11 +211,11 @@ AmlExecMonadic1 (
 
     case AML_ReleaseOp:
 
-        if (TYPE_Mutex != ObjDesc->Type)
+        if (ACPI_TYPE_Mutex != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AmlExecMonadic1/ReleaseOp: Needed Mutex, found %d\n",
-                    ObjDesc->Type));
+                    ObjDesc->Common.Type));
            return_ACPI_STATUS (AE_AML_ERROR);
         }
 
@@ -198,10 +227,10 @@ AmlExecMonadic1 (
 
     case AML_ResetOp:
 
-        if (TYPE_Event != ObjDesc->Type)
+        if (ACPI_TYPE_Event != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->Type));
+                    "AmlExecMonadic1/ResetOp: Needed Event, found %d\n", ObjDesc->Common.Type));
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
@@ -213,10 +242,10 @@ AmlExecMonadic1 (
     
     case AML_SignalOp:
 
-        if (TYPE_Event != ObjDesc->Type)
+        if (ACPI_TYPE_Event != ObjDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->Type));
+                    "AmlExecMonadic1/SignalOp: Needed Event, found %d\n", ObjDesc->Common.Type));
             return_ACPI_STATUS (AE_AML_ERROR);
         }
 
@@ -301,7 +330,7 @@ AmlExecMonadic2R (
         }
     }
 
-    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 2, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], 2, "after AmlPrepObjStack");
 
     ResDesc = AmlObjStackGetValue (STACK_TOP);
     ObjDesc = AmlObjStackGetValue (1);
@@ -393,7 +422,7 @@ AmlExecMonadic2R (
     case AML_CondRefOfOp:
         
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2R: %s unimplemented\n",
-                (opcode > ACPI_UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
+                (opcode > ACPI_UCHAR_MAX) ? Gbl_LongOps[opcode & 0x00ff] : Gbl_ShortOps[opcode]));
         return_ACPI_STATUS (AE_AML_ERROR);
 
 
@@ -460,7 +489,7 @@ AmlExecMonadic2 (
         return_ACPI_STATUS (Status);
     }
 
-    AmlDumpObjStack (MODE_Exec, ShortOps[opcode], 1, "after AmlPrepObjStack");
+    AmlDumpObjStack (IMODE_Execute, Gbl_ShortOps[opcode], 1, "after AmlPrepObjStack");
 
     ObjDesc = AmlObjStackGetValue (STACK_TOP);
 
@@ -482,7 +511,7 @@ AmlExecMonadic2 (
     case AML_DecrementOp:
     case AML_IncrementOp:
 
-        if ((Status = AmlObjStackPushIfExec (MODE_Exec)) != AE_OK)
+        if ((Status = AmlObjStackPush ()) != AE_OK)
         {
             REPORT_ERROR ("AmlExecMonadic2/IncDec: stack overflow");
             return_ACPI_STATUS (AE_AML_ERROR);
@@ -490,7 +519,7 @@ AmlExecMonadic2 (
 
         /* Duplicate the Lvalue on the top of the object stack */
         
-        ResDesc = CmAllocateObjectDesc ();
+        ResDesc = CmCreateInternalObject (ObjDesc->Common.Type);
         if (!ResDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -550,7 +579,7 @@ AmlExecMonadic2 (
         
         /* This case uses Status to hold the type encoding */
         
-        if (TYPE_Lvalue == ObjDesc->Type)
+        if (INTERNAL_TYPE_Lvalue == ObjDesc->Common.Type)
         {
             /* 
              * Not a Name -- an indirect name pointer would have
@@ -562,7 +591,7 @@ AmlExecMonadic2 (
                 
                 /* Constants are of type Number */
                 
-                Status = (INT32) TYPE_Number;
+                Status = (INT32) ACPI_TYPE_Number;
                 break;
 
 
@@ -570,7 +599,7 @@ AmlExecMonadic2 (
                 
                 /* Per spec, Debug object is of type Region */
                 
-                Status = (INT32) TYPE_Region;
+                Status = (INT32) ACPI_TYPE_Region;
                 break;
 
 
@@ -612,7 +641,7 @@ AmlExecMonadic2 (
              */
             Status = (INT32) NsGetType ((ACPI_HANDLE) ObjDesc);
 
-            ObjDesc = CmCreateInternalObject (TYPE_Number);
+            ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
             if (!ObjDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
@@ -626,7 +655,7 @@ AmlExecMonadic2 (
             AmlObjStackSetValue (STACK_TOP, ObjDesc);
         }
         
-        ObjDesc->Type = (UINT8) TYPE_Number;
+        ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
         ObjDesc->Number.Value = (UINT32) Status;
         break;
 
@@ -635,34 +664,34 @@ AmlExecMonadic2 (
 
     case AML_SizeOfOp:
 
-        switch (ObjDesc->Type)
+        switch (ObjDesc->Common.Type)
         {
 
-        case TYPE_Buffer:
+        case ACPI_TYPE_Buffer:
 
             ObjDesc->Number.Value = ObjDesc->Buffer.Length;
-            ObjDesc->Type = (UINT8) TYPE_Number;
+            ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
             break;
 
 
-        case TYPE_String:
+        case ACPI_TYPE_String:
 
             ObjDesc->Number.Value = ObjDesc->String.Length;
-            ObjDesc->Type = (UINT8) TYPE_Number;
+            ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
             break;
 
 
-        case TYPE_Package:
+        case ACPI_TYPE_Package:
 
             ObjDesc->Number.Value = ObjDesc->Package.Count;
-            ObjDesc->Type = (UINT8) TYPE_Number;
+            ObjDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
             break;
 
 
         default:
 
            DEBUG_PRINT (ACPI_ERROR, (
-                    "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->Type));
+                    "AmlExecMonadic2: Needed aggregate, found %d\n", ObjDesc->Common.Type));
             return_ACPI_STATUS (AE_AML_ERROR);
 
         }
@@ -676,7 +705,7 @@ AmlExecMonadic2 (
     case AML_DerefOfOp:
 
         DEBUG_PRINT (ACPI_ERROR, ("AmlExecMonadic2: %s unimplemented\n",
-                (opcode > ACPI_UCHAR_MAX) ? LongOps[opcode & 0x00ff] : ShortOps[opcode]));
+                (opcode > ACPI_UCHAR_MAX) ? Gbl_LongOps[opcode & 0x00ff] : Gbl_ShortOps[opcode]));
 
         AmlObjStackPush ();  /*  dummy return value  */
 
