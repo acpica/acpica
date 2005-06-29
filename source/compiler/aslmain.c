@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.59 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -385,12 +385,10 @@ AslCommandLine (
         switch (optarg[0])
         {
         case 'a':
-            AslCompilerdebug = 1; /* same as yydebug */
             DoCompile = FALSE;
             break;
 
         case 'c':
-            AslCompilerdebug = 1; /* same as yydebug */
             break;
 
         default:
@@ -663,20 +661,20 @@ main (
         }
 
         AcpiGbl_DbOpt_disasm = TRUE;
-        Status = AdAmlDisassemble (AslToFile, Gbl_Files[ASL_FILE_INPUT].Filename, 
+        Status = AdAmlDisassemble (AslToFile, Gbl_Files[ASL_FILE_INPUT].Filename,
                                              &Gbl_Files[ASL_FILE_INPUT].Filename);
         if (ACPI_FAILURE (Status))
         {
             return -1;
         }
 
-        Gbl_Files[ASL_FILE_INPUT].Filename = 
-            FlGenerateFilename (Gbl_Files[ASL_FILE_INPUT].Filename, 
+        Gbl_Files[ASL_FILE_INPUT].Filename =
+            FlGenerateFilename (Gbl_Files[ASL_FILE_INPUT].Filename,
                 FILE_SUFFIX_DISASSEMBLY);
 
         if (DoCompile)
         {
-            AcpiOsPrintf ("\nCompiling \"%s\"\n", 
+            AcpiOsPrintf ("\nCompiling \"%s\"\n",
                 Gbl_Files[ASL_FILE_INPUT].Filename);
         }
     }
