@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,6 +121,7 @@
 #include "actypes.h"
 #include "actbl.h"
 
+
 /*
  * Global interfaces
  */
@@ -153,6 +154,23 @@ ACPI_STATUS
 AcpiFormatException (
     ACPI_STATUS             Exception,
     ACPI_BUFFER             *OutBuffer);
+
+
+/*
+ * ACPI Memory manager
+ */
+
+void *
+AcpiAllocate (
+    UINT32                  Size);
+
+void *
+AcpiCallocate (
+    UINT32                  Size);
+
+void
+AcpiFree (
+    void                    *Address);
 
 
 /*
@@ -256,7 +274,7 @@ AcpiGetParent (
 
 
 /*
- * AcpiEvent handler interfaces
+ * Event handler interfaces
  */
 
 ACPI_STATUS
@@ -374,6 +392,10 @@ AcpiSetFirmwareWakingVector (
 ACPI_STATUS
 AcpiGetFirmwareWakingVector (
     ACPI_PHYSICAL_ADDRESS   *PhysicalAddress);
+
+ACPI_STATUS
+AcpiEnterSleepState (
+    UINT8 SleepState);
 
 ACPI_STATUS
 AcpiGetProcessorThrottlingInfo (
