@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -731,6 +731,7 @@ AdDeferredParse (
     /* Parse the method */
 
     WalkState->ParseFlags &= ~ACPI_PARSE_DELETE_TREE;
+    WalkState->ParseFlags |= ACPI_PARSE_DISASSEMBLE;
     Status = AcpiPsParseAml (WalkState);
 
     /*
@@ -1052,6 +1053,7 @@ AdParseTable (
     }
 
     WalkState->ParseFlags &= ~ACPI_PARSE_DELETE_TREE;
+    WalkState->ParseFlags |= ACPI_PARSE_DISASSEMBLE;
 
     Status = AcpiPsParseAml (WalkState);
     if (ACPI_FAILURE (Status))
@@ -1064,6 +1066,7 @@ AdParseTable (
     TableDesc.AmlStart = AmlStart;
     TableDesc.AmlLength = AmlLength;
     fprintf (stderr, "Pass 2 parse of [%4.4s]\n", (char *) Table->Signature);
+    WalkState->ParseFlags |= ACPI_PARSE_DISASSEMBLE;
 
     Status = AcpiNsOneCompleteParse (2, &TableDesc);
     if (ACPI_FAILURE (Status))
