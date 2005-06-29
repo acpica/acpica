@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource.h - ASL resource descriptors
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -446,6 +446,9 @@ typedef union asl_resource_desc
     ASL_WORD_ADDRESS_DESC       Was;
     ASL_EXTENDED_XRUPT_DESC     Exx;
     ASL_GENERAL_REGISTER_DESC   Grg;
+    UINT32                      U32Item;
+    UINT16                      U16Item;
+    UINT8                       U8Item;
 
 } ASL_RESOURCE_DESC;
 
