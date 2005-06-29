@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -160,6 +160,44 @@ AeGpeHandler (
     AcpiOsPrintf ("Received a GPE at handler\n");
 }
 
+void
+AfInstallGpeBlock (void)
+{
+    ACPI_STATUS                 Status;
+    ACPI_HANDLE                 Handle;
+    ACPI_HANDLE                 Handle2 = NULL;
+    ACPI_HANDLE                 Handle3 = NULL;
+    ACPI_GENERIC_ADDRESS        BlockAddress;
+
+
+    Status = AcpiGetHandle (NULL, "\\_GPE", &Handle);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    BlockAddress.AddressSpaceId = 0;
+    BlockAddress.Address = 0x87654321;
+
+    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
+
+    Status = AcpiGetHandle (NULL, "\\GPE2", &Handle2);
+    if (ACPI_SUCCESS (Status))
+    {
+        Status = AcpiInstallGpeBlock (Handle2, &BlockAddress, 8, 8);
+    }
+
+    Status = AcpiGetHandle (NULL, "\\GPE3", &Handle3);
+    if (ACPI_SUCCESS (Status))
+    {
+        Status = AcpiInstallGpeBlock (Handle3, &BlockAddress, 8, 11);
+    }
+
+//    Status = AcpiRemoveGpeBlock (Handle);
+//    Status = AcpiRemoveGpeBlock (Handle2);
+//    Status = AcpiRemoveGpeBlock (Handle3);
+
+}
 
 /******************************************************************************
  *
@@ -343,6 +381,8 @@ main (
         AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
         AcpiEnableEvent (ACPI_EVENT_GLOBAL, 0);
         AcpiEnableGpe (NULL, 0, 0);
+
+        AfInstallGpeBlock ();
     }
 
 #if ACPI_MACHINE_WIDTH == 16
