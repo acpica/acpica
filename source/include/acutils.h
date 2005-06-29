@@ -157,6 +157,10 @@ CmPopGenericState (
 
 
 ACPI_GENERIC_STATE *
+CmCreateGenericState (
+    void);
+
+ACPI_GENERIC_STATE *
 CmCreateUpdateState (
     ACPI_OBJECT_INTERNAL    *Object,
     UINT16                  Action);
@@ -165,11 +169,9 @@ ACPI_GENERIC_STATE *
 CmCreateControlState (
     void);
 
-
 void
 CmDeleteGenericState (
     ACPI_GENERIC_STATE      *State);
-
 
 void
 CmDeleteGenericStateCache (
