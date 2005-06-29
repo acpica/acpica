@@ -151,7 +151,7 @@ ACPI_STATUS
 NsSearchOneScope (
     UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
-    ACPI_OBJECT_TYPE        Type, 
+    OBJECT_TYPE_INTERNAL    Type, 
     NAME_TABLE_ENTRY        **RetEntry, 
     NS_SEARCH_DATA          *RetInfo)
 {
@@ -326,7 +326,7 @@ ACPI_STATUS
 NsSearchParentTree (
     UINT32                  EntryName, 
     NAME_TABLE_ENTRY        *NameTable, 
-    ACPI_OBJECT_TYPE        Type, 
+    OBJECT_TYPE_INTERNAL    Type, 
     NAME_TABLE_ENTRY        **RetEntry)
 {
     ACPI_STATUS             Status;
@@ -355,7 +355,7 @@ NsSearchParentTree (
         while (ParentEntry)
         {
             /* Search parent scope */
-            /* TBD: Why ACPI_TYPE_Any? */
+            /* TBD: [Investigate] Why ACPI_TYPE_Any? */
 
             Status = NsSearchOneScope (EntryName, ParentEntry->Scope, ACPI_TYPE_Any, RetEntry, NULL);
             if (Status == AE_OK)
@@ -522,7 +522,7 @@ NsInitializeEntry (
     NAME_TABLE_ENTRY        *NameTable, 
     UINT32                  Position, 
     UINT32                  EntryName, 
-    ACPI_OBJECT_TYPE        Type, 
+    OBJECT_TYPE_INTERNAL    Type, 
     NAME_TABLE_ENTRY        *PreviousEntry)
 {
     NAME_TABLE_ENTRY        *NewEntry;
@@ -648,7 +648,7 @@ NsSearchAndEnter (
     ACPI_WALK_STATE			*WalkState,
     NAME_TABLE_ENTRY        *NameTable,
     OPERATING_MODE          InterpreterMode, 
-    ACPI_OBJECT_TYPE        Type, 
+    OBJECT_TYPE_INTERNAL    Type, 
     UINT32                  Flags,
     NAME_TABLE_ENTRY        **RetEntry)
 {
