@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -763,12 +763,12 @@ AdDeferredParse (
         switch (Op->Common.AmlOpcode)
         {
         case AML_PACKAGE_OP:
-        case AML_VAR_PACKAGE_OP:
             ExtraOp = Op->Common.Value.Arg;
             ExtraOp = ExtraOp->Common.Next;
             Op->Common.Value.Arg = ExtraOp->Common.Value.Arg;
             break;
 
+        case AML_VAR_PACKAGE_OP:
         case AML_BUFFER_OP:
         default:
             ExtraOp = Op->Common.Value.Arg;
