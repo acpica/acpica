@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.49 $
+ *              $Revision: 1.51 $
  *
  ******************************************************************************/
 
@@ -413,7 +413,7 @@ AcpiDbDecodeInternalObject (
     {
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf (" %.8X%.8X", HIDWORD (ObjDesc->Integer.Value), 
+        AcpiOsPrintf (" %.8X%.8X", HIDWORD (ObjDesc->Integer.Value),
                                    LODWORD (ObjDesc->Integer.Value));
         break;
 
@@ -425,7 +425,7 @@ AcpiDbDecodeInternalObject (
 
         if (ObjDesc->String.Length > 24)
         {
-            AcpiOsPrintf ("...");     
+            AcpiOsPrintf ("...");
         }
         else
         {
@@ -525,6 +525,10 @@ AcpiDbDisplayInternalObject (
 
             case AML_ONE_OP:
                 AcpiOsPrintf ("[Const]     One (1)");
+                break;
+
+            case AML_REVISION_OP:
+                AcpiOsPrintf ("[Const]     Revision (%X)", ACPI_CA_VERSION);
                 break;
 
             case AML_LOCAL_OP:
