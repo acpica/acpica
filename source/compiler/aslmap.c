@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -623,6 +623,7 @@ AcpiDsMapOpcodeToDataType (
         case AML_BYTE_OP:
         case AML_WORD_OP:
         case AML_DWORD_OP:
+        case AML_QWORD_OP:
 
             DataType = ACPI_TYPE_INTEGER;
             break;
