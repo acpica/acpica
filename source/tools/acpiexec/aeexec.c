@@ -524,7 +524,7 @@ AdSecondPassParse (
         {
             Method = (ACPI_DEFERRED_OP *) Op;
             Status = AcpiPsParseAml (Op, Method->Body, Method->BodyLength, 0,
-                        NULL, NULL);
+                        NULL, NULL, NULL, NULL, NULL);
 
 
             BaseAmlOffset = (Method->Value.Arg)->AmlOffset + 1;
