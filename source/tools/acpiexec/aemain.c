@@ -133,21 +133,7 @@
         MODULE_NAME         ("aemain");
 
 
-extern char                    *Version;
-extern char                    LineBuf[80];
-extern char                    CommandBuf[40];
-extern char                    ArgBuf[40];
-extern char                    ScopeBuf[40];
-extern char                    DebugFilename[40];
-extern FILE                    *DebugFile;
-extern char                    *Buffer;
-extern char                    *Filename;
-
-
-extern int                     opt_tables;
-extern int                     opt_disasm;
-extern int                     opt_stats;
-extern int                     opt_parse_jit;
+char                    *Version = "X003";
    
 
 /******************************************************************************
@@ -179,73 +165,6 @@ usage (void)
 
 /******************************************************************************
  * 
- * FUNCTION:    AeDisplayHelp
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print a usage message
- *
- *****************************************************************************/
-
-
-void
-AeInitializeSubsystem (void)
-{
-    ACPI_STATUS             Status;
-
-    AcpiInitialize (NULL);
-
-    if (opt_parse_jit)
-    {
-        Gbl_WhenToParseMethods = METHOD_PARSE_JUST_IN_TIME; // | METHOD_DELETE_AT_COMPLETION;
-    }
-
-    /* Always have to get the tables! */
-
-    Status = AdGetTables (Filename);   
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("Could not get ACPI tables (Exception %s)\n", Gbl_ExceptionNames[Status]);
-        goto Cleanup;
-    }
-
-    /* Always parse the tables, only option is what to display */
-
-    Status = AdParseTables ();
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("Could not parse ACPI tables (Exception %s)\n", Gbl_ExceptionNames[Status]);
-        goto Cleanup;
-    }
-
-    Status = AeInstallHandlers ();
-
-/*
-    Status = AcpiLoadNamespace ();
-    if (ACPI_FAILURE (Status))
-    {
-        printf ("Could not load the namespace (Exception %s)\n", Gbl_ExceptionNames[Status]);
-        goto Cleanup;
-    }
-
-*/
-
-
-
-Cleanup:
-    if (ACPI_FAILURE (Status))
-    {
-        if (DsdtPtr)
-            free (DsdtPtr);
-    }
-
-}
-
-
-/******************************************************************************
- * 
  * FUNCTION:    main
  *
  * PARAMETERS:  argc, argv
@@ -262,6 +181,7 @@ main (
     char                    **argv)
 {      
     int                     j;
+    ACPI_STATUS             Status;
 
 
     /* Init globals */
@@ -272,11 +192,6 @@ main (
 
 
     printf ("ACPI AML Execution/Debug Utility version %s\n", Version);
-    if (argc < 2)
-    {
-        usage ();
-        return 0;
-    }
 
     /* Get the command line options */
 
@@ -314,18 +229,35 @@ main (
         return -1;
     }                      
     
+
+    /* Init ACPI and start debugger thread */
+
+    AcpiInitialize (NULL);
+
+
     /* Standalone filename is the only argument */
 
     if (argv[optind])
     {
         opt_tables = TRUE;
         Filename = argv[optind];
+        Status = DbLoadAcpiTable (Filename);
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
+
+        /* TBD:
+         * Need a way to call this after the "LOAD" command
+         */
+        AeInstallHandlers ();
     }
 
 
-    AeInitializeSubsystem ();
 
-    DbInitialize  ();
+    /* Enter the debugger command loop */
+
+    DbUserCommands (DB_COMMAND_PROMPT, NULL);
 
     return 0;
 }
