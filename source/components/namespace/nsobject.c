@@ -187,6 +187,9 @@ NsAttachObject (
         return_VOID;
     }
 
+    DEBUG_PRINT (TRACE_EXEC,("NsAttachObject: Install obj %p into NTE %p\n",
+                    Object, handle));
+    
     ThisEntry = (NAME_TABLE_ENTRY *) handle;
 
     /* 
@@ -236,7 +239,7 @@ NsAttachObject (
     /*
      * Check if value points into the AML code
      */
-    else if (AmlIsInPCodeBlock ((UINT8 *) Object))
+    else if (NsIsInSystemTable (Object))
     {
         /* Object points into the AML stream.  Check for a recognized OpCode */
     
@@ -314,7 +317,7 @@ NsAttachObject (
             NsDumpPathname (handle, "NsAttachObject confused: setting bogus type for  ", 
                             ACPI_INFO, _COMPONENT);
 
-            if (AmlIsInPCodeBlock((UINT8 *) Object))
+            if (NsIsInSystemTable (Object))
             {
                 DEBUG_PRINT (ACPI_INFO,
                             ("AML-stream code %02x\n", *(UINT8 *) Object));
@@ -467,8 +470,8 @@ NsDetachObject (
 
     /* Not every value is an object allocated via CmCallocate, must check */
 
-    if (!AmlIsInPCodeBlock ((UINT8 *)    ObjDesc)) /*&&
-        !IS_NS_HANDLE                   (ObjDesc))*/
+    if (!NsIsInSystemTable (ObjDesc)) /*&&
+        !IS_NS_HANDLE      (ObjDesc))*/
     {
 
         /* Delete the object (and all subobjects) */
