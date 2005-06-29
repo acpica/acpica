@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -339,6 +339,7 @@ main (
 
     case 's':
         AcpiGbl_EnableInterpreterSlack = TRUE;
+        printf ("Enabling AML Interpreter slack mode\n");
         break;
 
     case 'v':
