@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  ******************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiNsCreateNode (
         return_PTR (NULL);
     }
 
-    INCREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMESPACE_NODE));
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].TotalAllocated++);
 
     Node->DataType       = ACPI_DESC_TYPE_NAMED;
     Node->Name           = AcpiName;
@@ -211,7 +211,7 @@ AcpiNsDeleteNode (
     }
 
 
-    DECREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMESPACE_NODE));
+    ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].TotalFreed++);
 
     /*
      * Detach an object if there is one
@@ -413,7 +413,7 @@ AcpiNsDeleteChildren (
 
         /* Now we can free this child object */
 
-        DECREMENT_NAME_TABLE_METRICS (sizeof (ACPI_NAMESPACE_NODE));
+        ACPI_MEM_TRACKING (AcpiGbl_MemoryLists[ACPI_MEM_LIST_NSNODE].TotalFreed++);
 
         DEBUG_PRINTP (ACPI_INFO, ("Object %p, Remaining %X\n",
             ChildNode, AcpiGbl_CurrentNodeCount));

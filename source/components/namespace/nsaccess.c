@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.128 $
+ *              $Revision: 1.129 $
  *
  ******************************************************************************/
 
@@ -230,23 +230,12 @@ AcpiNsRootInitialize (void)
 
             case ACPI_TYPE_STRING:
 
-                ObjDesc->String.Length = STRLEN (InitVal->Val);
-
                 /*
-                 * Allocate a buffer for the string.  All
-                 * String.Pointers must be allocated buffers!
-                 * (makes deletion simpler)
+                 * Build an object around the static string
                  */
-                ObjDesc->String.Pointer = ACPI_MEM_ALLOCATE (
-                                                (ObjDesc->String.Length + 1));
-                if (!ObjDesc->String.Pointer)
-                {
-                    AcpiUtRemoveReference (ObjDesc);
-                    Status = AE_NO_MEMORY;
-                    goto UnlockAndExit;
-                }
-
-                STRCPY (ObjDesc->String.Pointer, InitVal->Val);
+                ObjDesc->String.Length = STRLEN (InitVal->Val);
+                ObjDesc->String.Pointer = InitVal->Val;
+                ObjDesc->Common.Flags |= AOPOBJ_STATIC_POINTER;
                 break;
 
 
