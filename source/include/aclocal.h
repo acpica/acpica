@@ -178,7 +178,8 @@ typedef struct NAME_TABLE_ENTRY
 {
     UINT8                   DataType;
     UINT8                   Type;           /* Type associated with this name */
-    UINT16                  Fill1;
+    UINT8                   Fill1;
+    UINT8                   Flags;
 
     struct NAME_TABLE_ENTRY *ParentScope;   /* Previous level of names */
     struct NAME_TABLE_ENTRY *ParentEntry;   /* Actual parent NTE */
@@ -194,6 +195,10 @@ typedef struct NAME_TABLE_ENTRY
 #define INVALID_HANDLE      0
 #define NULL_HANDLE         INVALID_HANDLE
 
+
+/* NTE flags */
+
+#define NTE_AML_ATTACHMENT  0x1
 
 /* 
  * Stack of currently executing control methods 
