@@ -121,6 +121,7 @@
 #include <hardware.h>
 #include <namesp.h>
 #include <events.h>
+#include <parser.h>
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cminit");
@@ -462,6 +463,13 @@ CmSubsystemShutdown (void)
     /* Flush the local cache(s) */
 
     CmDeleteGenericStateCache ();
+    CmDeleteObjectCache ();
+
+    /* Close the Parser */
+
+    /* TBD: PsTerminate () */
+
+    PsDeleteParseCache ();
 
     /* Debug only - display leftover memory allocation, if any */
 
