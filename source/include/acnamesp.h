@@ -374,11 +374,10 @@ NsFindNames (
     INT32                   MaxDepth);
 
 ACPI_STATUS
-NsGetHandle (
+NsGetNte (
     char                    *Name, 
     ACPI_HANDLE             Scope,
-    ACPI_HANDLE             *OutHandle);
-
+    NAME_TABLE_ENTRY      **OutNte);
 
 /*
  * Object management for NTEs - nsobject
@@ -516,6 +515,10 @@ NsMarkNS(
 NAME_TABLE_ENTRY *
 NsConvertHandleToEntry (
     ACPI_HANDLE             Handle);
+
+ACPI_HANDLE
+NsConvertEntryToHandle(
+    NAME_TABLE_ENTRY *Nte);
 
 void
 NsTerminate (
