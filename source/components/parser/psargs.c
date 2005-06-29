@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -437,7 +437,7 @@ AcpiPsGetNextNamepath (
             {
                 ACPI_REPORT_NSERROR (Path, Status);
 
-                AcpiOsPrintf ("SearchNode %p StartNode %p ReturnNode %p\n", 
+                AcpiOsPrintf ("SearchNode %p StartNode %p ReturnNode %p\n",
                     ScopeInfo.Scope.Node, ParserState->StartNode, Node);
 
 
