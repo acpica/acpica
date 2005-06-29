@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource.h - ASL resource descriptors
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -126,6 +126,7 @@
 #define ASL_RESNAME_BASEADDRESS                 "_BAS"
 #define ASL_RESNAME_BUSMASTER                   "_BM_"  /* Master(1), Slave(0) */
 #define ASL_RESNAME_DECODE                      "_DEC"
+#define ASL_RESNAME_DMA                         "_DMA"
 #define ASL_RESNAME_DMATYPE                     "_TYP"  /* Compatible(0), A(1), B(2), F(3) */
 #define ASL_RESNAME_GRANULARITY                 "_GRA"
 #define ASL_RESNAME_INTERRUPT                   "_INT"
