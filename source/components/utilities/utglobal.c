@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -243,10 +243,8 @@ UINT8                       AcpiGbl_NsProperties[] =
     NSP_NORMAL,                 /* 30 While            */
     NSP_NEWSCOPE,               /* 31 Scope            */
     NSP_LOCAL,                  /* 32 DefAny           */
-    NSP_NORMAL,                 /* 33 Method Arg       */
-    NSP_NORMAL,                 /* 34 Method Local     */
-    NSP_NORMAL,                 /* 35 Extra            */
-    NSP_NORMAL                  /* 36 Invalid          */
+    NSP_NORMAL,                 /* 33 Extra            */
+    NSP_NORMAL                  /* 34 Invalid          */
 };
 
 
@@ -364,10 +362,8 @@ static NATIVE_CHAR          *AcpiGbl_NsTypeNames[] =    /* printable names of AC
     /* 30 */ "While",
     /* 31 */ "Scope",
     /* 32 */ "DefAny",
-    /* 33 */ "MethodArg",
-    /* 34 */ "MethodLcl",
-    /* 35 */ "Extra",
-    /* 36 */ "Invalid"
+    /* 33 */ "Extra",
+    /* 34 */ "Invalid"
 };
 
 
