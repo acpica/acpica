@@ -117,6 +117,7 @@
 #ifndef __HARDWARE_H__
 #define __HARDWARE_H__
 
+#include <errata.h>
 
 /* Sleep states */
 
@@ -243,6 +244,30 @@ enum
     #define CLEAR           0
 #endif
 
+ACPI_STATUS
+HwInitialize();
+
+ACPI_STATUS
+HwShutdown();
+
+ACPI_STATUS
+HwShutdownErrataHandling();
+
+ACPI_STATUS
+HwInitErrataHandling();
+
+ACPI_STATUS
+HwGetInstalledHandler(ACPI_ERRATA_HANDLER *Handler,
+                 ACPI_FUNCTION Function);
+
+ACPI_STATUS
+HwInstallHandler(ACPI_ERRATA_HANDLER *NewHandler);
+
+ACPI_STATUS
+HwInstallErrata(ACPI_ERRATA_HANDLER *HandlerList);
+
+ACPI_STATUS
+HwInitializeSystemInfo();
 
 ACPI_STATUS
 HwSetMode (
@@ -287,7 +312,7 @@ HwClearGpe (
 
 ACPI_STATUS
 HwObtainSleepTypeRegisterData (
-    char                    *SleepStateReq,
+    UINT8                   SleepState,
     UINT8                   *Slp_TypA,
     UINT8                   *Slp_TypB);
 
