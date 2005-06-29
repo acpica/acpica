@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.35 $
+ * $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -771,7 +771,7 @@ UINT32
 AcpiCmStrtoul (
     const NATIVE_CHAR       *String,
     NATIVE_CHAR             **Terminator,
-    NATIVE_UINT             Base)
+    UINT32                  Base)
 {
     UINT32                  converted = 0;
     UINT32                  index;
