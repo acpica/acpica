@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -632,8 +632,9 @@ AcpiUtDumpAllocations (
                 {
                 case ACPI_DESC_TYPE_INTERNAL:
                     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OK,
-                            " ObjType %s",
-                            AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT  *)(&Element->UserSpace))->Common.Type)));
+                            " ObjType %9.9s R%d",
+                            AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *)(&Element->UserSpace))->Common.Type),
+                            ((ACPI_OPERAND_OBJECT *)(&Element->UserSpace))->Common.ReferenceCount));
                     break;
 
                 case ACPI_DESC_TYPE_PARSER:
