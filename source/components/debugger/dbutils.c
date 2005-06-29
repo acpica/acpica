@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.49 $
+ *              $Revision: 1.52 $
  *
  ******************************************************************************/
 
@@ -129,7 +129,7 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          ACPI_DEBUGGER
-        MODULE_NAME         ("dbutils")
+        ACPI_MODULE_NAME    ("dbutils")
 
 
 /*******************************************************************************
@@ -152,7 +152,7 @@ AcpiDbSetOutputDestination (
 
     AcpiGbl_DbOutputFlags = (UINT8) OutputFlags;
 
-    if ((OutputFlags & DB_REDIRECTABLE_OUTPUT) && AcpiGbl_DbOutputToFile)
+    if ((OutputFlags & ACPI_DB_REDIRECTABLE_OUTPUT) && AcpiGbl_DbOutputToFile)
     {
         AcpiDbgLevel = AcpiGbl_DbDebugLevel;
     }
@@ -229,8 +229,9 @@ AcpiDbDumpObject (
 
     case ACPI_TYPE_INTEGER:
 
-        AcpiOsPrintf ("[Integer] = %8.8X%8.8X\n", HIDWORD (ObjDesc->Integer.Value),
-                                               LODWORD (ObjDesc->Integer.Value));
+        AcpiOsPrintf ("[Integer] = %8.8X%8.8X\n",
+                    ACPI_HIDWORD (ObjDesc->Integer.Value),
+                    ACPI_LODWORD (ObjDesc->Integer.Value));
         break;
 
 
@@ -247,7 +248,7 @@ AcpiDbDumpObject (
 
     case ACPI_TYPE_BUFFER:
 
-        AcpiOsPrintf ("[Buffer] = ");
+        AcpiOsPrintf ("[Buffer] Length %.2X = ", ObjDesc->Buffer.Length);
         AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         break;
 
@@ -312,7 +313,7 @@ AcpiDbPrepNamestring (
         return;
     }
 
-    STRUPR (Name);
+    ACPI_STRUPR (Name);
 
     /* Convert a leading forward slash to a backslash */
 
@@ -369,7 +370,7 @@ AcpiDbSecondPassParse (
     ACPI_WALK_STATE         *WalkState;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     AcpiOsPrintf ("Pass two parse ....\n");
@@ -475,8 +476,8 @@ AcpiDbLocalNsLookup (
      * Lookup the name.
      * (Uses root node as the search starting point)
      */
-    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, IMODE_EXECUTE,
-                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Node);
+    Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
+                                    ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not locate name: %s %s\n", Name, AcpiFormatException (Status));
