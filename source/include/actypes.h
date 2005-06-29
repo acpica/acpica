@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.133 $
+ *       $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -312,9 +312,10 @@ typedef UINT32                          ACPI_TABLE_TYPE;
 #define ACPI_TABLE_RSDT                 (ACPI_TABLE_TYPE) 6
 #define ACPI_TABLE_SSDT                 (ACPI_TABLE_TYPE) 7
 #define ACPI_TABLE_SBST                 (ACPI_TABLE_TYPE) 8
-#define ACPI_TABLE_BOOT                 (ACPI_TABLE_TYPE) 9
-#define ACPI_TABLE_MAX                  9
-#define NUM_ACPI_TABLES                 10
+#define ACPI_TABLE_SPIC                 (ACPI_TABLE_TYPE) 9
+#define ACPI_TABLE_BOOT                 (ACPI_TABLE_TYPE) 10
+#define ACPI_TABLE_MAX                  10
+#define NUM_ACPI_TABLES                 (ACPI_TABLE_MAX+1)
 
 
 /*
