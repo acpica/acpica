@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.36 $
+ * $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -672,38 +672,6 @@ AcpiCmToLower (
 {
 
     return (IS_UPPER(c) ? ((c)+0x20) : (c));
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    strupr
- *
- * PARAMETERS:  SrcString       - The source string to convert to
- *
- * RETURN:      SrcString
- *
- * DESCRIPTION: Convert string to uppercase
- *
- ******************************************************************************/
-
-NATIVE_CHAR *
-AcpiCmStrupr (
-    NATIVE_CHAR             *SrcString)
-{
-    NATIVE_CHAR             *String;
-
-
-    /* Walk entire string, uppercasing the letters */
-
-    for (String = SrcString; *String; )
-    {
-        *String = (char) AcpiCmToUpper (*String);
-        String++;
-    }
-
-
-    return (SrcString);
 }
 
 
