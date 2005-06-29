@@ -252,6 +252,10 @@ ACPI_EXTERN ACPI_OBJECT_INTERNAL       *Gbl_ObjectCache;
 ACPI_EXTERN UINT16                      Gbl_ObjectCacheDepth;
 ACPI_EXTERN UINT32                      Gbl_ObjectCacheRequests;
 ACPI_EXTERN UINT32                      Gbl_ObjectCacheHits;
+ACPI_EXTERN ACPI_WALK_STATE            *Gbl_WalkStateCache;
+ACPI_EXTERN UINT16                      Gbl_WalkStateCacheDepth;
+ACPI_EXTERN UINT32                      Gbl_WalkStateCacheRequests;
+ACPI_EXTERN UINT32                      Gbl_WalkStateCacheHits;
 
 extern		BOOLEAN                     Gbl_Shutdown;
 extern      UINT32                      Gbl_SystemFlags;
