@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -475,7 +475,7 @@ AeRegionHandler (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION, "Operation Region request on %s at 0x%X\n",
             AcpiUtGetRegionName (RegionObject->Region.SpaceId),
-            Address));
+            (UINT32) Address));
 
     if (RegionObject->Region.SpaceId == ACPI_ADR_SPACE_SMBUS)
     {
@@ -630,8 +630,8 @@ AeRegionHandler (
         ((ACPI_INTEGER)(RegionElement->Address) + RegionElement->Length))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_WARN, 
-            "Request on [%4.4s] is beyond region limit Req-%lX+%lX, Base=%lX, Len-%lX\n",
-            &((RegionObject->Region.Node)->Name), (UINT32) Address,
+            "Request on [%4.4s] is beyond region limit Req-%X+%X, Base=%X, Len-%X\n",
+            (RegionObject->Region.Node)->Name.Ascii, (UINT32) Address,
             ByteWidth, (UINT32)(RegionElement->Address),
             RegionElement->Length));
 
@@ -793,7 +793,7 @@ AeExceptionHandler (
     Exception = AcpiFormatException (AmlStatus);
     AcpiOsPrintf (
         "**** AcpiExec Exception: %s during execution of method [%4.4s] Opcode [%s] @%X\n",
-        Exception, &Name, AcpiPsGetOpcodeName (Opcode), AmlOffset);
+        Exception, (char *) &Name, AcpiPsGetOpcodeName (Opcode), AmlOffset);
 
     /*
      * Invoke the _ERR method if present

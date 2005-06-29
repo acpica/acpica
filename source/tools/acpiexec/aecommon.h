@@ -134,13 +134,7 @@
 #include "acinterp.h"
 #include "acapps.h"
 
-
-extern UINT8                    *DsdtPtr;
-extern UINT32                   AcpiDsdtLength;
-extern UINT8                    *AmlStart;
-extern UINT32                   AmlLength;
 extern FILE                     *AcpiGbl_DebugFile;
-
 
 /*
  * Debug Regions
@@ -183,8 +177,6 @@ typedef union ptr_ovl
 #define GET_PHYSICAL_ADDRESS(ptr)       (((((UINT32)GET_SEGMENT(ptr)) << 4)) + GET_OFFSET(ptr))
 #define PTR_OVL_BUILD_PTR(p,b,o)        {p.ovl.base=b;p.ovl.offset=o;}
 
-
-#define PARAM_LIST(pl)                  pl
 
 #define TEST_OUTPUT_LEVEL(lvl)          if ((lvl) & OutputLevel)
 
