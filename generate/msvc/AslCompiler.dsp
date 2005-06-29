@@ -213,10 +213,6 @@ SOURCE=..\..\AslCompiler\aslopcodes.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\AslCompiler\aslosd.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\AslCompiler\aslresource.c
 # End Source File
 # Begin Source File
@@ -238,6 +234,10 @@ SOURCE=..\..\AslCompiler\aslutils.c
 # Begin Source File
 
 SOURCE=..\..\Tools\Common\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\OsInterface\WinApp\oswinxf.c
 # End Source File
 # End Group
 # Begin Group "Parser"
@@ -296,7 +296,7 @@ SOURCE=../../AslCompiler/AslCompiler.l
 InputPath=../../AslCompiler/AslCompiler.l
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	flex.exe -PAslCompiler -i -o$(InputPath).c $(InputPath)
+	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -o$(InputPath).c $(InputPath)
 
 # End Custom Build
 
@@ -307,7 +307,7 @@ InputPath=../../AslCompiler/AslCompiler.l
 InputPath=../../AslCompiler/AslCompiler.l
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	flex.exe -PAslCompiler -i -o$(InputPath).c $(InputPath)
+	..\..\ThirdPartyTools\BisonFlex\flex.exe -PAslCompiler -i -o$(InputPath).c $(InputPath)
 
 # End Custom Build
 
@@ -325,7 +325,7 @@ SOURCE=../../AslCompiler/AslCompiler.y
 InputPath=../../AslCompiler/AslCompiler.y
 
 BuildCmds= \
-	bison.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
+	..\..\ThirdPartyTools\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
@@ -341,7 +341,7 @@ BuildCmds= \
 InputPath=../../AslCompiler/AslCompiler.y
 
 BuildCmds= \
-	bison.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
+	..\..\ThirdPartyTools\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(InputPath).c $(InputPath)
 
 "$(InputPath).c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
