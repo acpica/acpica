@@ -14,15 +14,18 @@
  | FILENAME: amlopsys.c
  |__________________________________________________________________________
  |
- | $Revision: 1.4 $
- | $Date: 2005/06/29 17:56:35 $
+ | $Revision: 1.5 $
+ | $Date: 2005/06/29 17:56:36 $
  | $Log: exsystem.c,v $
- | Revision 1.4  2005/06/29 17:56:35  aystarik
- | Major cleanup
+ | Revision 1.5  2005/06/29 17:56:36  aystarik
+ | Removed hungarian notation
  |
  | 
- | date	99.01.20.17.40.00;	author rmoore1;	state Exp;
+ | date	99.02.16.21.22.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 5     2/16/99 1:22p Rmoore1
+ * Removed hungarian notation
  * 
  * 4     1/20/99 9:40a Rmoore1
  * Major cleanup
@@ -40,14 +43,14 @@
 // Change inc_error() etc. to dKinc_error() etc. (error key logging).
 // 
 //    Rev 1.3   14 May 1998 16:49:38   phutchis
-// Remove "return S_SUCCESS;" from void function vReleaseGlobalLock().
+// Remove "return S_SUCCESS;" from void function ReleaseGlobalLock().
 // 
 //    Rev 1.2   30 Apr 1998 07:23:48   calingle
 // Added two functions one to get ownership of the Global Lock and another to Release
 // ownership of the Global Lock.
 //
 //    Rev 1.1   13 Mar 1998 07:39:04   calingle
-// Added *obj to the iDoNotifyOp function.
+// Added *ObjDesc to the DoNotifyOp function.
 //
 //    Rev 1.0   13 Mar 1998 07:23:42   calingle
 // Initial revision.
@@ -76,13 +79,13 @@
 
 /* Global Variables */
 
-ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE * pFACS;
-extern char     *pcWhy;
+ACPI_EXTERN FIRMWARE_ACPI_CONTROL_STRUCTURE * FACS;
+extern char     *Why;
 
 
 /******************************************************************************
  * 
- * FUNCTION:    wThreadId
+ * FUNCTION:    ThreadId
  *
  * PARAMETERS:  void
  *
@@ -95,7 +98,7 @@ extern char     *pcWhy;
  ******************************************************************************/
 
 WORD 
-wThreadId(void)
+ThreadId (void)
 {
     return (1);
 }
@@ -104,9 +107,9 @@ wThreadId(void)
 
 /******************************************************************************
  * 
- * FUNCTION:    iDoNotifyOp 
+ * FUNCTION:    DoNotifyOp 
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *val -    The value of the opcode to be
+ * PARAMETERS:  OBJECT_DESCRIPTOR *ValDesc -    The value of the opcode to be
  *                                          executed.
  *
  * RETURN:      S_SUCCESS or S_ERROR (S_SUCCESS for now only)
@@ -116,40 +119,40 @@ wThreadId(void)
  ******************************************************************************/
 
 int
-iDoNotifyOp (OBJECT_DESCRIPTOR *val, OBJECT_DESCRIPTOR *obj)
+DoNotifyOp (OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    fprintf_bu (iLstFileHandle, LOGFILE,
-                "NotifyOp: %s %s ", apcNsTypeNames[obj->bValTyp],
-                pcNsFullyQualifiedName(obj->sDevice.nDevice));
+    fprintf_bu (LstFileHandle, LOGFILE,
+                "NotifyOp: %s %s ", NsTypeNames[ObjDesc->ValType],
+                NsFullyQualifiedName (ObjDesc->Device.Device));
     
-    switch (val->sNumber.dNumber)
+    switch (ValDesc->Number.Number)
     {
         case 0:
-            fprintf_bu (iLstFileHandle, LOGFILE,
+            fprintf_bu (LstFileHandle, LOGFILE,
                             "Re-enumerate Devices ");
             break;
 
         case 1:
-            fprintf_bu (iLstFileHandle, LOGFILE, "Ejection Request ");
+            fprintf_bu (LstFileHandle, LOGFILE, "Ejection Request ");
             break;
 
         case 2:
-            fprintf_bu (iLstFileHandle, LOGFILE, "Device Wake ");
+            fprintf_bu (LstFileHandle, LOGFILE, "Device Wake ");
             break;
 
         case 0x80:
-            fprintf_bu (iLstFileHandle, LOGFILE, "Status Change ");
+            fprintf_bu (LstFileHandle, LOGFILE, "Status Change ");
             break;
 
         default:
-            fprintf_bu (iLstFileHandle, LOGFILE, "%lx ",
-                    val->sNumber.dNumber);
+            fprintf_bu (LstFileHandle, LOGFILE, "%lx ",
+                    ValDesc->Number.Number);
             break;
     }
 
-    fprintf_bu (iLstFileHandle, LOGFILE, "[not implemented]");
-    _dKinc_warning ("0000", PACRLF, __LINE__, __FILE__,
-                        iLstFileHandle, LOGFILE);
+    fprintf_bu (LstFileHandle, LOGFILE, "[not implemented]");
+    _Kinc_warning ("0000", PACRLF, __LINE__, __FILE__,
+                        LstFileHandle, LOGFILE);
 
     return S_SUCCESS;
 }
@@ -157,9 +160,9 @@ iDoNotifyOp (OBJECT_DESCRIPTOR *val, OBJECT_DESCRIPTOR *obj)
 
 /******************************************************************************
  * 
- * FUNCTION:    vDoSuspend
+ * FUNCTION:    DoSuspend
  *
- * PARAMETERS:  DWORD dTime - The amount of time to suspend
+ * PARAMETERS:  DWORD HowLong - The amount of time to suspend
  *
  * RETURN:      void
  *
@@ -170,63 +173,63 @@ iDoNotifyOp (OBJECT_DESCRIPTOR *val, OBJECT_DESCRIPTOR *obj)
  ******************************************************************************/
 
 void
-vDoSuspend (DWORD dTime)
+DoSuspend (DWORD HowLong)
 {
-    bsleep ((WORD) (dTime / (DWORD) 1000), (WORD) (dTime % (DWORD) 1000));
+    bsleep ((WORD) (HowLong / (DWORD) 1000), (WORD) (HowLong % (DWORD) 1000));
 }
 
 
 /******************************************************************************
  * 
- * FUNCTION:    iAcquireOpRqst
+ * FUNCTION:    AcquireOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *sTime - The 'time to delay' object descriptor
- *              OBJECT_DESCRIPTOR *sOb   - The object descriptor for this op
+ * PARAMETERS:  OBJECT_DESCRIPTOR *TimeDesc - The 'time to delay' object descriptor
+ *              OBJECT_DESCRIPTOR *ObjDesc   - The object descriptor for this op
  *
  * RETURN:      S_SUCCESS/S_ERROR
  *
  * DESCRIPTION: Provides an access point to perform synchronization operations
  *              within the AML.  Current implementation is for single thread
  *              OS only.  This function will cause a lock to be generated
- *              for the Mutex pointed to by sOb.
+ *              for the Mutex pointed to by ObjDesc.
  *              Timeout is being ignored for now since this is single threaded.
  *
  ******************************************************************************/
 
 int
-iAcquireOpRqst (OBJECT_DESCRIPTOR *sTime, OBJECT_DESCRIPTOR *sOb)
+AcquireOpRqst (OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    WORD        wCurrentId;
-    int         iRetVal = S_SUCCESS;
+    WORD        CurrentId;
+    int         RetVal = S_SUCCESS;
 
 
-    if (sOb->sMutex.wLockCount == 0)
+    if (ObjDesc->Mutex.LockCount == 0)
     {
-        sOb->sMutex.wThreadId = wThreadId ();
+        ObjDesc->Mutex.ThreadId = ThreadId ();
     }
     
-    else if (sOb->sMutex.wThreadId != (wCurrentId = wThreadId ()))
+    else if (ObjDesc->Mutex.ThreadId != (CurrentId = ThreadId ()))
     {
-        sprintf (acWhyBuf, "Thread %02Xh attemted to Aquire a resource owned "
-                "by thread %02Xh", wCurrentId, sOb->sMutex.wThreadId);
-        pcWhy = acWhyBuf;
-        iRetVal = S_ERROR;
+        sprintf (WhyBuf, "Thread %02Xh attemted to Aquire a resource owned "
+                "by thread %02Xh", CurrentId, ObjDesc->Mutex.ThreadId);
+        Why = WhyBuf;
+        RetVal = S_ERROR;
     }
 
-    if (S_SUCCESS == iRetVal)
+    if (S_SUCCESS == RetVal)
     {
-        sOb->sMutex.wLockCount++;
+        ObjDesc->Mutex.LockCount++;
     }
 
-    return (iRetVal);
+    return (RetVal);
 }
 
 
 /******************************************************************************
  * 
- * FUNCTION:    iReleaseOpRqst
+ * FUNCTION:    ReleaseOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *sOb  - The object descriptor for this op
+ * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc  - The object descriptor for this op
  *
  * RETURN:      S_SUCCESS/S_ERROR
  *
@@ -234,46 +237,46 @@ iAcquireOpRqst (OBJECT_DESCRIPTOR *sTime, OBJECT_DESCRIPTOR *sOb)
  *              within the AML.  Current implementation is for single thread
  *              OS only.  This operation is a request to release a previously
  *              acquired Mutex.  If the Mutex variable is set then it will be
- *              decremented.  Otherwise S_ERROR will be returned with pcWhy
+ *              decremented.  Otherwise S_ERROR will be returned with Why
  *              set to explain.
  *
  ******************************************************************************/
 
 int
-iReleaseOpRqst (OBJECT_DESCRIPTOR *sOb)
+ReleaseOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
-    WORD        wCurrentId;
-    int         iRetVal = S_SUCCESS;
+    WORD        CurrentId;
+    int         RetVal = S_SUCCESS;
 
 
-    if (sOb->sMutex.wLockCount == 0)
+    if (ObjDesc->Mutex.LockCount == 0)
     {
-        pcWhy = "Attempting to Release a Mutex that is not locked";
-        iRetVal == S_ERROR;
+        Why = "Attempting to Release a Mutex that is not locked";
+        RetVal == S_ERROR;
     }
     
-    else if (sOb->sMutex.wThreadId != (wCurrentId = wThreadId ()))
+    else if (ObjDesc->Mutex.ThreadId != (CurrentId = ThreadId ()))
     {
-        sprintf (acWhyBuf, "Thread %02Xh attemted to Release a Mutex owned "
-                    "by thread %02Xh", wCurrentId, sOb->sMutex.wThreadId);
-        pcWhy = acWhyBuf;
-        iRetVal = S_ERROR;
+        sprintf (WhyBuf, "Thread %02Xh attemted to Release a Mutex owned "
+                    "by thread %02Xh", CurrentId, ObjDesc->Mutex.ThreadId);
+        Why = WhyBuf;
+        RetVal = S_ERROR;
     }
     
-    if (S_SUCCESS == iRetVal)
+    if (S_SUCCESS == RetVal)
     {
-        sOb->sMutex.wLockCount--;
+        ObjDesc->Mutex.LockCount--;
     }
 
-    return (iRetVal);
+    return (RetVal);
 }
 
 
 /******************************************************************************
  * 
- * FUNCTION:    iSignalOpRqst
+ * FUNCTION:    SignalOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *sOb  - The object descriptor for this op
+ * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc  - The object descriptor for this op
  *
  * RETURN:      S_SUCCESS
  *
@@ -287,20 +290,20 @@ iReleaseOpRqst (OBJECT_DESCRIPTOR *sOb)
  ******************************************************************************/
 
 int
-iSignalOpRqst(OBJECT_DESCRIPTOR *sOb)
+SignalOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
 
-    sOb->sEvent.wSignalCount++;
+    ObjDesc->Event.SignalCount++;
     return (S_SUCCESS);
 }
 
 
 /******************************************************************************
  * 
- * FUNCTION:    iWaitOpRqst
+ * FUNCTION:    WaitOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *sTime - The 'time to delay' object descriptor
- *              OBJECT_DESCRIPTOR *sOb   - The object descriptor for this op
+ * PARAMETERS:  OBJECT_DESCRIPTOR *TimeDesc - The 'time to delay' object descriptor
+ *              OBJECT_DESCRIPTOR *ObjDesc   - The object descriptor for this op
  *
  * RETURN:      S_SUCCESS/S_ERROR
  *
@@ -317,34 +320,34 @@ iSignalOpRqst(OBJECT_DESCRIPTOR *sOb)
  ******************************************************************************/
 
 int
-iWaitOpRqst(OBJECT_DESCRIPTOR *sTime, OBJECT_DESCRIPTOR *sOb)
+WaitOpRqst(OBJECT_DESCRIPTOR *TimeDesc, OBJECT_DESCRIPTOR *ObjDesc)
 {
-    int         iRetVal = S_SUCCESS;
+    int         RetVal = S_SUCCESS;
 
 
-    if (0 == sOb->sEvent.wSignalCount)
+    if (0 == ObjDesc->Event.SignalCount)
     {
         /* Error for single threaded OS */
         
-        pcWhy = "Waiting for a signal that has not occured.  In a single threaded"
+        Why = "Waiting for a signal that has not occured.  In a single threaded"
                 "\nOperating System the signal would never be received.";
-        iRetVal = S_ERROR;
+        RetVal = S_ERROR;
     }
     
     else
     {
-        sOb->sEvent.wSignalCount--;
+        ObjDesc->Event.SignalCount--;
     }
 
-    return (iRetVal);
+    return (RetVal);
 }
 
 
 /******************************************************************************
  * 
- * FUNCTION:    iResetOpRqst
+ * FUNCTION:    ResetOpRqst
  *
- * PARAMETERS:  OBJECT_DESCRIPTOR *sOb  - The object descriptor for this op
+ * PARAMETERS:  OBJECT_DESCRIPTOR *ObjDesc  - The object descriptor for this op
  *
  * RETURN:      S_SUCCESS/S_ERROR
  *
@@ -356,20 +359,20 @@ iWaitOpRqst(OBJECT_DESCRIPTOR *sTime, OBJECT_DESCRIPTOR *sOb)
  ******************************************************************************/
 
 int
-iResetOpRqst(OBJECT_DESCRIPTOR *sOb)
+ResetOpRqst (OBJECT_DESCRIPTOR *ObjDesc)
 {
-    int         iRetVal = S_SUCCESS;
+    int         RetVal = S_SUCCESS;
 
 
-    sOb->sEvent.wSignalCount = 0;
+    ObjDesc->Event.SignalCount = 0;
 
-    return (iRetVal);
+    return (RetVal);
 }
 
 
 /***************************************************************************
  * 
- * FUNCTION:    iGetGlobalLock
+ * FUNCTION:    GetGlobalLock
  *
  * RETURN:      S_SUCCESS/S_ERROR
  *
@@ -380,43 +383,43 @@ iResetOpRqst(OBJECT_DESCRIPTOR *sOb)
  **************************************************************************/
 
 int
-iGetGlobalLock(void)
+GetGlobalLock(void)
 {
-    DWORD           dGlobalLockReg = pFACS->dGlobalLock;
-    int             iRetVal;
+    DWORD           GlobalLockReg = FACS->GlobalLock;
+    int             RetVal;
 
 
-    if (dGlobalLockReg & GL_OWNED)
+    if (GlobalLockReg & GL_OWNED)
     {
-        pcWhy = "The Global Lock is owned by another process\n"\
+        Why = "The Global Lock is owned by another process\n"\
                 "This is a single threaded implementation. There is no way some\n"\
                 "other process can own the Global Lock!";
-        iRetVal = S_ERROR;
+        RetVal = S_ERROR;
     }
     
     else
     {
         /* Its not owned so take ownership and return S_SUCCESS */
         
-        pFACS->dGlobalLock |= GL_OWNED;
-        iRetVal = S_SUCCESS;
+        FACS->GlobalLock |= GL_OWNED;
+        RetVal = S_SUCCESS;
     }
     
-    return (iRetVal);
+    return (RetVal);
 }
 
 
 /***************************************************************************
  * 
- * FUNCTION:    vReleaseGlobalLock
+ * FUNCTION:    ReleaseGlobalLock
  *
  * DESCRIPTION: Releases the ownership of the Global Lock.
  *
  **************************************************************************/
 
 void
-vReleaseGlobalLock (void)
+ReleaseGlobalLock (void)
 {
     
-    pFACS->dGlobalLock &= 0xFFFFFFFF ^ GL_OWNED;
+    FACS->GlobalLock &= 0xFFFFFFFF ^ GL_OWNED;
 }
