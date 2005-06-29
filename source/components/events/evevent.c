@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -871,7 +871,7 @@ UINT32
 AcpiEvGpeDispatch (
     UINT32                  GpeNumber)
 {
-	ACPI_GPE_LEVEL_INFO     GpeInfo;
+        ACPI_GPE_LEVEL_INFO     GpeInfo;
 
     FUNCTION_TRACE ("EvGpeDispatch");
 
@@ -891,65 +891,65 @@ AcpiEvGpeDispatch (
      */
     AcpiHwDisableGpe (GpeNumber);
 
-	GpeInfo = AcpiGbl_GpeInfo [GpeNumber];
+        GpeInfo = AcpiGbl_GpeInfo [GpeNumber];
 
-	/*
-	 * Edge-Triggered?
-	 * ---------------
-	 * If edge-triggered, clear the GPE status bit now.  Note that
-	 * level-triggered events are cleared after the GPE is serviced.
-	 */
-	if (GpeInfo.Type & ACPI_EVENT_EDGE_TRIGGERED) 
+        /*
+         * Edge-Triggered?
+         * ---------------
+         * If edge-triggered, clear the GPE status bit now.  Note that
+         * level-triggered events are cleared after the GPE is serviced.
+         */
+        if (GpeInfo.Type & ACPI_EVENT_EDGE_TRIGGERED) 
     {
-		AcpiHwClearGpe (GpeNumber);
-	}
+                AcpiHwClearGpe (GpeNumber);
+        }
 
-	/*
-	 * Function Handler (e.g. EC)?
-	 */
-	if (GpeInfo.Handler) 
+        /*
+         * Function Handler (e.g. EC)?
+         */
+        if (GpeInfo.Handler) 
     {
-		/* Invoke function handler (at interrupt level). */
-		GpeInfo.Handler (GpeInfo.Context);
+                /* Invoke function handler (at interrupt level). */
+                GpeInfo.Handler (GpeInfo.Context);
 
-		/* Level-Triggered? */
-		if (GpeInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED) 
+                /* Level-Triggered? */
+                if (GpeInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED) 
         {
-			AcpiHwClearGpe (GpeNumber);
-		}
+                        AcpiHwClearGpe (GpeNumber);
+                }
 
-		/* Enable GPE */
-		AcpiHwEnableGpe (GpeNumber);
-	}
-	/*
-	 * Method Handler (e.g. _Exx/_Lxx)?
-	 */
-	else if (GpeInfo.MethodHandle)
+                /* Enable GPE */
+                AcpiHwEnableGpe (GpeNumber);
+        }
+        /*
+         * Method Handler (e.g. _Exx/_Lxx)?
+         */
+        else if (GpeInfo.MethodHandle)
     {
-		if (ACPI_FAILURE(AcpiOsQueueForExecution (OSD_PRIORITY_GPE, 
+                if (ACPI_FAILURE(AcpiOsQueueForExecution (OSD_PRIORITY_GPE, 
             AcpiEvAsynchExecuteGpeMethod, (void*)(NATIVE_UINT)GpeNumber)))
-		{
-			/*
-			 * Shoudn't occur, but if it does report an error. Note that
-			 * the GPE will remain disabled until the ACPI Core Subsystem
-			 * is restarted, or the handler is removed/reinstalled.
-			 */
-			REPORT_ERROR (("AcpiEvGpeDispatch: Unable to queue handler for GPE bit [%X]\n", GpeNumber));
-		}
-	}
-	/*
-	 * No Handler? Report an error and leave the GPE disabled.
-	 */
-	else 
+                {
+                        /*
+                         * Shoudn't occur, but if it does report an error. Note that
+                         * the GPE will remain disabled until the ACPI Core Subsystem
+                         * is restarted, or the handler is removed/reinstalled.
+                         */
+                        REPORT_ERROR (("AcpiEvGpeDispatch: Unable to queue handler for GPE bit [%X]\n", GpeNumber));
+                }
+        }
+        /*
+         * No Handler? Report an error and leave the GPE disabled.
+         */
+        else 
     {
-		REPORT_ERROR (("AcpiEvGpeDispatch: No installed handler for GPE [%X]\n", GpeNumber));
+                REPORT_ERROR (("AcpiEvGpeDispatch: No installed handler for GPE [%X]\n", GpeNumber));
 
-		/* Level-Triggered? */
-		if (GpeInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED) 
+                /* Level-Triggered? */
+                if (GpeInfo.Type & ACPI_EVENT_LEVEL_TRIGGERED) 
         {
-			AcpiHwClearGpe (GpeNumber);
-		}
-	}
+                        AcpiHwClearGpe (GpeNumber);
+                }
+        }
 
     return_VALUE (INTERRUPT_HANDLED);
 }
