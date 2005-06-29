@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -625,7 +625,8 @@ AcpiEvTerminate (void)
     ACPI_STATUS             Status;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_GPE_BLOCK_INFO     *NextGpeBlock;
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo;
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
+    ACPI_GPE_XRUPT_INFO     *NextGpeXruptInfo;
 
 
     ACPI_FUNCTION_TRACE ("EvTerminate");
@@ -643,7 +644,7 @@ AcpiEvTerminate (void)
          */
         for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
         {
-            Status = AcpiDisableEvent ((UINT32) i, ACPI_EVENT_FIXED, 0);
+            Status = AcpiDisableEvent ((UINT32) i, 0);
             if (ACPI_FAILURE (Status))
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not disable fixed event %d\n", (UINT32) i));
@@ -651,25 +652,9 @@ AcpiEvTerminate (void)
         }
 
         /*
-         * Disable all GPEs
+         * Disable all GPEs in all GPE blocks
          */
-        GpeBlock = AcpiGbl_GpeBlockListHead;
-        while (GpeBlock)
-        {
-            GpeEventInfo = GpeBlock->EventInfo;
-            for (i = 0; i < (GpeBlock->RegisterCount * 8); i++)
-            {
-                Status = AcpiHwDisableGpe (GpeEventInfo);
-                if (ACPI_FAILURE (Status))
-                {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not disable GPE %d\n", (UINT32) i));
-                }
-
-                GpeEventInfo++;
-            }
-
-            GpeBlock = GpeBlock->Next;
-        }
+        Status = AcpiEvWalkGpeList (AcpiHwDisableGpeBlock);
 
         /*
          * Remove SCI handler
@@ -696,17 +681,23 @@ AcpiEvTerminate (void)
     /*
      * Free global GPE blocks and related info structures
      */
-    GpeBlock = AcpiGbl_GpeBlockListHead;
-    while (GpeBlock)
+    GpeXruptInfo = AcpiGbl_GpeXruptListHead;
+    while (GpeXruptInfo)
     {
-        NextGpeBlock = GpeBlock->Next;
-        ACPI_MEM_FREE (GpeBlock->EventInfo);
-        ACPI_MEM_FREE (GpeBlock->RegisterInfo);
-        ACPI_MEM_FREE (GpeBlock);
+        GpeBlock = GpeXruptInfo->GpeBlockListHead;
+        while (GpeBlock)
+        {
+            NextGpeBlock = GpeBlock->Next;
+            ACPI_MEM_FREE (GpeBlock->EventInfo);
+            ACPI_MEM_FREE (GpeBlock->RegisterInfo);
+            ACPI_MEM_FREE (GpeBlock);
 
-        GpeBlock = NextGpeBlock;
+            GpeBlock = NextGpeBlock;
+        }
+        NextGpeXruptInfo = GpeXruptInfo->Next;
+        ACPI_MEM_FREE (GpeXruptInfo);
+        GpeXruptInfo = NextGpeXruptInfo;
     }
-
     return_VOID;
 }
 

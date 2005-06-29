@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -152,9 +152,9 @@ AcpiEvInitialize (
     }
 
     /*
-     * Initialize the Fixed and General Purpose AcpiEvents prior.  This is
-     * done prior to enabling SCIs to prevent interrupts from occurring
-     * before handers are installed.
+     * Initialize the Fixed and General Purpose Events. This is
+     * done prior to enabling SCIs to prevent interrupts from 
+     * occurring before handers are installed.
      */
     Status = AcpiEvFixedEventInitialize ();
     if (ACPI_FAILURE (Status))
