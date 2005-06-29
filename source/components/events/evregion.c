@@ -1030,7 +1030,7 @@ EvAddrHandlerHelper (
                  *  bail out telling the walk routine to not traverse this
                  *  branch.  This preserves the scoping rule for handlers.
                  */
-                return (AE_DEPTH);
+                return (AE_CTRL_DEPTH);
             }
 
             /*
