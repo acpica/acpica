@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -428,11 +428,14 @@ AcpiEvGpeInitialize (void)
      *  FADT table contain zeros. The GPE0_LEN and GPE1_LEN do not need
      *  to be the same size."
      */
-    AcpiGbl_GpeBlockInfo[0].RegisterCount   = (UINT16) ACPI_DIV_2 (AcpiGbl_FADT->Gpe0BlkLen);
-    AcpiGbl_GpeBlockInfo[1].RegisterCount   = (UINT16) ACPI_DIV_2 (AcpiGbl_FADT->Gpe1BlkLen);
+    AcpiGbl_GpeBlockInfo[0].AddressSpaceId  = AcpiGbl_FADT->XGpe0Blk.AddressSpaceId;
+    AcpiGbl_GpeBlockInfo[1].AddressSpaceId  = AcpiGbl_FADT->XGpe1Blk.AddressSpaceId;
 
-    AcpiGbl_GpeBlockInfo[0].BlockAddress    = (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address);
-    AcpiGbl_GpeBlockInfo[1].BlockAddress    = (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address);
+    AcpiGbl_GpeBlockInfo[0].RegisterCount   = (UINT16) ACPI_DIV_16 (AcpiGbl_FADT->XGpe0Blk.RegisterBitWidth);
+    AcpiGbl_GpeBlockInfo[1].RegisterCount   = (UINT16) ACPI_DIV_16 (AcpiGbl_FADT->XGpe1Blk.RegisterBitWidth);
+
+    AcpiGbl_GpeBlockInfo[0].BlockAddress    = &AcpiGbl_FADT->XGpe0Blk;
+    AcpiGbl_GpeBlockInfo[1].BlockAddress    = &AcpiGbl_FADT->XGpe1Blk;
 
     AcpiGbl_GpeBlockInfo[0].BlockBaseNumber = 0;
     AcpiGbl_GpeBlockInfo[1].BlockBaseNumber = AcpiGbl_FADT->Gpe1Base;
@@ -531,10 +534,18 @@ AcpiEvGpeInitialize (void)
 
             /* Init the Register info for this entire GPE register (8 GPEs) */
 
-            GpeRegisterInfo->BaseGpeNumber = (UINT8)  (AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber + (ACPI_MUL_8 (i)));
-            GpeRegisterInfo->StatusAddr    = (UINT16) (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress + i);
-            GpeRegisterInfo->EnableAddr    = (UINT16) (AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress + i +
-                                                       AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount);
+            GpeRegisterInfo->BaseGpeNumber = (UINT8) (AcpiGbl_GpeBlockInfo[GpeBlock].BlockBaseNumber + (ACPI_MUL_8 (i)));
+
+            GpeRegisterInfo->StatusAddress.Address           = AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address + i;
+            GpeRegisterInfo->EnableAddress.Address           = AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address + i +
+                                                                AcpiGbl_GpeBlockInfo[GpeBlock].RegisterCount;
+
+            GpeRegisterInfo->StatusAddress.AddressSpaceId    = AcpiGbl_GpeBlockInfo[GpeBlock].AddressSpaceId;
+            GpeRegisterInfo->EnableAddress.AddressSpaceId    = AcpiGbl_GpeBlockInfo[GpeBlock].AddressSpaceId;
+            GpeRegisterInfo->StatusAddress.RegisterBitWidth  = 8;
+            GpeRegisterInfo->EnableAddress.RegisterBitWidth  = 8;
+            GpeRegisterInfo->StatusAddress.RegisterBitOffset = 8;
+            GpeRegisterInfo->EnableAddress.RegisterBitOffset = 8;
 
             /* Init the Index mapping info for each GPE number within this register */
 
@@ -552,15 +563,16 @@ AcpiEvGpeInitialize (void)
              * are cleared by writing a '1', while enable registers are cleared
              * by writing a '0'.
              */
-            AcpiOsWritePort (GpeRegisterInfo->EnableAddr, 0x00, 8);
-            AcpiOsWritePort (GpeRegisterInfo->StatusAddr, 0xFF, 8);
+
+            AcpiHwLowLevelWrite (8, 0x00, &GpeRegisterInfo->EnableAddress, 0);
+            AcpiHwLowLevelWrite (8, 0xFF, &GpeRegisterInfo->StatusAddress, 0);
 
             GpeRegister++;
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d Registers: %X at %8.8X\n",
             GpeBlock, AcpiGbl_GpeBlockInfo[0].RegisterCount,
-            AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress));
+            AcpiGbl_GpeBlockInfo[GpeBlock].BlockAddress->Address));
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "GPE Block%d Range GPE #%2.2X to GPE #%2.2X\n",
             GpeBlock, 
@@ -766,15 +778,16 @@ AcpiEvGpeDetect (void)
     {
         GpeRegisterInfo = &AcpiGbl_GpeRegisterInfo[i];
 
-        AcpiOsReadPort (GpeRegisterInfo->StatusAddr,
-                        &GpeRegisterInfo->Status, 8);
+        GpeRegisterInfo->Status = (UINT8) AcpiHwLowLevelRead (8, 
+                                        &GpeRegisterInfo->StatusAddress, 0);
 
-        AcpiOsReadPort (GpeRegisterInfo->EnableAddr,
-                        &GpeRegisterInfo->Enable, 8);
+        GpeRegisterInfo->Enable = (UINT8) AcpiHwLowLevelRead (8,
+                                        &GpeRegisterInfo->EnableAddress, 0);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
-            "GPE block at %X - Enable %08X Status %08X\n",
-            GpeRegisterInfo->EnableAddr,
+            "GPE block at %8.8X%8,8X - Enable %08X Status %08X\n",
+            ACPI_HIDWORD (GpeRegisterInfo->EnableAddress.Address),
+            ACPI_LODWORD (GpeRegisterInfo->EnableAddress.Address),
             GpeRegisterInfo->Enable,
             GpeRegisterInfo->Status));
 
