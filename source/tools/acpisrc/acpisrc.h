@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -213,7 +213,6 @@ typedef struct acpi_typed_identifier_table
 #define SRC_TYPE_UNION          2
 
 
-
 typedef struct acpi_identifier_table
 {
     char                        *Identifier;
@@ -422,7 +421,5 @@ char *
 AsRemoveData (
     char                    *StartPointer,
     char                    *EndPointer);
-
-
 
 
