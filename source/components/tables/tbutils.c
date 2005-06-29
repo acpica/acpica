@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.45 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,12 +118,10 @@
 
 #include "acpi.h"
 #include "actables.h"
-#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_TABLES
-        MODULE_NAME         ("tbutils")
-
+        ACPI_MODULE_NAME    ("tbutils")
 
 
 /*******************************************************************************
@@ -148,7 +146,7 @@ AcpiTbHandleToObject (
     ACPI_TABLE_DESC         *ListHead;
 
 
-    PROC_NAME ("TbHandleToObject");
+    ACPI_FUNCTION_NAME ("TbHandleToObject");
 
 
     for (i = 0; i < ACPI_TABLE_MAX; i++)
@@ -166,7 +164,6 @@ AcpiTbHandleToObject (
 
         } while (ListHead != &AcpiGbl_AcpiTables[i]);
     }
-
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "TableId=%X does not exist\n", TableId));
     return (AE_BAD_PARAMETER);
@@ -189,7 +186,7 @@ AcpiTbHandleToObject (
  *             name
  *          3) Table must be readable for length specified in the header
  *          4) Table checksum must be valid (with the exception of the FACS
- *              which has no checksum for some odd reason)
+ *              which has no checksum because it contains variable fields)
  *
  ******************************************************************************/
 
@@ -200,7 +197,7 @@ AcpiTbValidateTableHeader (
     ACPI_NAME               Signature;
 
 
-    PROC_NAME ("TbValidateTableHeader");
+    ACPI_FUNCTION_NAME ("TbValidateTableHeader");
 
 
     /* Verify that this is a valid address */
@@ -212,21 +209,19 @@ AcpiTbValidateTableHeader (
         return (AE_BAD_ADDRESS);
     }
 
-
     /* Ensure that the signature is 4 ASCII characters */
 
-    MOVE_UNALIGNED32_TO_32 (&Signature, &TableHeader->Signature);
+    ACPI_MOVE_UNALIGNED32_TO_32 (&Signature, TableHeader->Signature);
     if (!AcpiUtValidAcpiName (Signature))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Table signature at %p [%p] has invalid characters\n",
             TableHeader, &Signature));
 
-        REPORT_WARNING (("Invalid table signature %4.4s found\n", (char*)&Signature));
-        DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
+        ACPI_REPORT_WARNING (("Invalid table signature found: [%4.4s]\n", (char *) &Signature));
+        ACPI_DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_SIGNATURE);
     }
-
 
     /* Validate the table length */
 
@@ -234,10 +229,10 @@ AcpiTbValidateTableHeader (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Invalid length in table header %p name %4.4s\n",
-            TableHeader, (char*)&Signature));
+            TableHeader, (char *) &Signature));
 
-        REPORT_WARNING (("Invalid table header length found\n"));
-        DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
+        ACPI_REPORT_WARNING (("Invalid table header length (0x%X) found\n", TableHeader->Length));
+        ACPI_DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_HEADER);
     }
 
@@ -264,15 +259,15 @@ AcpiTbValidateTableHeader (
 ACPI_STATUS
 AcpiTbMapAcpiTable (
     ACPI_PHYSICAL_ADDRESS   PhysicalAddress,
-    UINT32                  *Size,
+    ACPI_SIZE               *Size,
     ACPI_TABLE_HEADER       **LogicalAddress)
 {
     ACPI_TABLE_HEADER       *Table;
-    UINT32                  TableSize = *Size;
+    ACPI_SIZE               TableSize = *Size;
     ACPI_STATUS             Status = AE_OK;
 
 
-    PROC_NAME ("TbMapAcpiTable");
+    ACPI_FUNCTION_NAME ("TbMapAcpiTable");
 
 
     /* If size is zero, look at the table header to get the actual size */
@@ -290,30 +285,35 @@ AcpiTbMapAcpiTable (
 
         /* Extract the full table length before we delete the mapping */
 
-        TableSize = Table->Length;
+        TableSize = (ACPI_SIZE) Table->Length;
 
+#if 0
+/* We don't want to validate the header here.  */
         /*
          * Validate the header and delete the mapping.
          * We will create a mapping for the full table below.
          */
         Status = AcpiTbValidateTableHeader (Table);
+#endif
 
         /* Always unmap the memory for the header */
 
         AcpiOsUnmapMemory (Table, sizeof (ACPI_TABLE_HEADER));
 
+#if 0
         /* Exit if header invalid */
 
         if (ACPI_FAILURE (Status))
         {
             return (Status);
         }
+#endif
     }
-
 
     /* Map the physical memory for the correct length */
 
-    Status = AcpiOsMapMemory (PhysicalAddress, TableSize, (void **) &Table);
+    Status = AcpiOsMapMemory (PhysicalAddress, TableSize, 
+                                (void **) &Table);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
@@ -325,7 +325,6 @@ AcpiTbMapAcpiTable (
 
     *Size = TableSize;
     *LogicalAddress = Table;
-
     return (Status);
 }
 
@@ -351,7 +350,7 @@ AcpiTbVerifyTableChecksum (
     ACPI_STATUS             Status = AE_OK;
 
 
-    FUNCTION_TRACE ("TbVerifyTableChecksum");
+    ACPI_FUNCTION_TRACE ("TbVerifyTableChecksum");
 
 
     /* Compute the checksum on the table */
@@ -362,13 +361,11 @@ AcpiTbVerifyTableChecksum (
 
     if (Checksum)
     {
-        REPORT_WARNING (("Invalid checksum (%X) in table %4.4s\n",
-            Checksum, (char*)&TableHeader->Signature));
+        ACPI_REPORT_WARNING (("Invalid checksum (%X) in table %4.4s\n",
+            Checksum, TableHeader->Signature));
 
         Status = AE_BAD_CHECKSUM;
     }
-
-
     return_ACPI_STATUS (Status);
 }
 
@@ -391,8 +388,8 @@ AcpiTbChecksum (
     void                    *Buffer,
     UINT32                  Length)
 {
-    UINT8                   *limit;
-    UINT8                   *rover;
+    const UINT8             *limit;
+    const UINT8             *rover;
     UINT8                   sum = 0;
 
 
@@ -407,7 +404,6 @@ AcpiTbChecksum (
             sum = (UINT8) (sum + *rover);
         }
     }
-
     return (sum);
 }
 
