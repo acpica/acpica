@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.47 $
+ *       $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -155,15 +155,6 @@
 #define MAX_OBJECT_CACHE_DEPTH      64          /* Interpreter operand objects */
 #define MAX_WALK_CACHE_DEPTH        2           /* Objects for parse tree walks (method execution) */
 
-/*
- * NameSpace Table size
- *
- * All tables are the same size to simplify the implementation.
- * Tables may be extended by allocating additional tables that
- * are in turn linked together to form a chain of tables.
- */
-
-#define NS_TABLE_SIZE               4
 
 /* String size constants */
 
