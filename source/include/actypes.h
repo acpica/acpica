@@ -462,6 +462,21 @@ typedef union AcpiObj
         union AcpiObj               *Elements;  /* Pointer to an array of ACPI_OBJECTs */
     } Package;
 
+    struct
+    {
+        ACPI_OBJECT_TYPE            Type;
+        UINT32                      ProcId;
+        UINT32                      PBLKAddress;
+        UINT32                      PBLKLength;
+    } Processor;
+
+    struct
+    {
+        ACPI_OBJECT_TYPE            Type;
+        UINT32                      SystemLevel;
+        UINT32                      ResourceOrder;
+    } PowerResource;
+
 } ACPI_OBJECT, *PACPI_OBJECT;
 
 
@@ -509,6 +524,14 @@ typedef struct
 #define SYS_MODE_LEGACY                 0x0002
 #define SYS_MODES_MASK                  0x0003
 
+/*
+ *  ACPI CPU throttling info
+ */
+typedef struct
+{
+    UINT32                  StateNumber;
+    UINT32                  PercentOfClock;
+} ACPI_CPU_THROTTLING_STATE;
 
 /*
  * ACPI Table Info.  One per ACPI table _type_
