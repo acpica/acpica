@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -127,6 +127,30 @@ ACPI_TABLE_HEADER   Header2;
 
 /******************************************************************************
  *
+ * FUNCTION:    AbValidateHeader
+ *
+ * DESCRIPTION: Check for valid ACPI table header
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AbValidateHeader (
+    ACPI_TABLE_HEADER       *Header)
+{
+
+    if (!AcpiCmValidAcpiName (* (UINT32 *) &Header->Signature))
+    {
+        printf ("Header signature is invalid\n");
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AbCompareAmlFiles
  *
  * DESCRIPTION: Compare two AML files
@@ -178,6 +202,12 @@ AbCompareAmlFiles (
         return -1;
     }
 
+    if ((!AbValidateHeader (&Header1)) ||
+        (!AbValidateHeader (&Header2)))
+    {
+        return -1;
+    }
+
     /* Table signatures must match */
 
     if ((UINT32) Header1.Signature != (UINT32) Header1.Signature)
@@ -187,19 +217,21 @@ AbCompareAmlFiles (
     }
 
 
-    /* Display header information */
+    if (!Gbl_TerseMode)
+    {
+        /* Display header information */
 
-    printf ("Signature         : %8.4s  %8.4s\n",    Header1.Signature, Header2.Signature);
-    printf ("Length            : %8.8X  %8.8X\n",    Header1.Length, Header2.Length);
-    printf ("Revision          : % 8.2X  % 8.2X\n",  Header1.Revision, Header2.Revision);
-    printf ("Checksum          : % 8.2X  % 8.2X\n",  Header1.Checksum, Header2.Checksum);
-    printf ("OEM ID            : %8.6s  %8.6s\n",    Header1.OemId, Header2.OemId);
-    printf ("OEM Table ID      : %8.8s  %8.8s\n",    Header1.OemTableId, Header2.OemTableId);
-    printf ("OEM Revision      : %8.8X  %8.8X\n",    Header1.OemRevision, Header2.OemRevision);
-    printf ("ASL Compiler ID   : %8.4s  %8.4s\n",    Header1.AslCompilerId, Header2.AslCompilerId);
-    printf ("Compiler Revision : %8.8X  %8.8X\n",    Header1.AslCompilerRevision, Header2.AslCompilerRevision);
-    printf ("\n");
-
+        printf ("Signature         : %8.4s  %8.4s\n",    Header1.Signature, Header2.Signature);
+        printf ("Length            : %8.8X  %8.8X\n",    Header1.Length, Header2.Length);
+        printf ("Revision          : % 8.2X  % 8.2X\n",  Header1.Revision, Header2.Revision);
+        printf ("Checksum          : % 8.2X  % 8.2X\n",  Header1.Checksum, Header2.Checksum);
+        printf ("OEM ID            : %8.6s  %8.6s\n",    Header1.OemId, Header2.OemId);
+        printf ("OEM Table ID      : %8.8s  %8.8s\n",    Header1.OemTableId, Header2.OemTableId);
+        printf ("OEM Revision      : %8.8X  %8.8X\n",    Header1.OemRevision, Header2.OemRevision);
+        printf ("ASL Compiler ID   : %8.4s  %8.4s\n",    Header1.AslCompilerId, Header2.AslCompilerId);
+        printf ("Compiler Revision : %8.8X  %8.8X\n",    Header1.AslCompilerRevision, Header2.AslCompilerRevision);
+        printf ("\n");
+    }
 
     /* Do the byte-by-byte compare */
 
@@ -215,7 +247,7 @@ AbCompareAmlFiles (
             Mismatches++;
             if (Mismatches > 10)
             {
-                printf ("Too many mismatches\n");
+                printf ("10 Mismatches: Too many mismatches\n");
                 return 0;
             }
         }
@@ -230,16 +262,19 @@ AbCompareAmlFiles (
     if (Actual1)
     {
         printf ("Error - file %s is longer than file %s\n", File1Path, File2Path);
+        Mismatches++;
     }
     else if (Actual2)
     {
         printf ("Error - file %s is shorter than file %s\n", File1Path, File2Path);
+        Mismatches++;
     }
     else if (!Mismatches)
     {
         printf ("Files compare exactly after header\n");
     }
 
+    printf ("%d Mismatches found\n", Mismatches);
     return 0;
 }
 
@@ -325,6 +360,13 @@ AbDumpAmlFile (
     FileBuffer = AbGetFile (File1Path, &FileSize);
     printf ("File %s contains 0x%X bytes\n\n", File1Path, FileSize);
 
+
+    if (!AbValidateHeader ((ACPI_TABLE_HEADER *) FileBuffer))
+    {
+        return -1;
+    }
+
+
     AcpiDbgLevel = ACPI_UINT32_MAX;
     AcpiCmDumpBuffer (FileBuffer, FileSize, DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
@@ -337,18 +379,35 @@ FILE                        *DebugFile = NULL;
 UINT8                       AcpiGbl_DbOutputFlags = DB_CONSOLE_OUTPUT ;
 
 
-ACPI_STATUS
-AcpiCmReleaseMutex (
-    ACPI_MUTEX_HANDLE       MutexId)
+
+
+void *
+_CmCallocate (
+    UINT32                  Size,
+    UINT32                  Component,
+    NATIVE_CHAR             *Module,
+    UINT32                  Line)
 {
-    return AE_OK;
+
+    return NULL;
 }
 
-ACPI_STATUS
-AcpiCmAcquireMutex (
-    ACPI_MUTEX_HANDLE       MutexId)
+void
+_CmFree (
+    void                    *Address,
+    UINT32                  Component,
+    NATIVE_CHAR             *Module,
+    UINT32                  Line)
 {
-    return AE_OK;
+    return;
 }
 
 
+void *
+AcpiCmMemset (
+    void                    *Dest,
+    UINT32                  Value,
+    NATIVE_UINT             Count)
+{
+    return (Dest);
+}

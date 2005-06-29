@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abmain - Main module for the acpi binary utility
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -116,10 +116,9 @@
  *****************************************************************************/
 
 
+#define _DECLARE_GLOBALS
 #include "acpibin.h"
 
-
-/* Globals */
 
 
 /******************************************************************************
@@ -137,6 +136,7 @@ AbDisplayUsage (void)
     printf ("Usage: acpibin [-cd] <File1> [<File2>]\n\n");
     printf ("Options:  -c               Compare AML files\n");
     printf ("          -d               Dump AML file\n");
+    printf ("          -t               Terse mode\n");
     printf ("\n");
     return;
 }
@@ -169,17 +169,22 @@ main (
 
     /* Command line options */
 
-    while ((j = getopt (argc, argv, "cd")) != EOF) switch(j)
+    while ((j = getopt (argc, argv, "cdt")) != EOF) switch(j)
     {
     case 'c':
         /* Compare Files */
 
-        AbCompareAmlFiles (argv[optind], argv[optind+1]);
+        Gbl_CompareMode = TRUE;
         break;
 
     case 'd':
 
-        AbDumpAmlFile (argv[optind]);
+        Gbl_DumpMode = TRUE;
+        break;
+
+    case 't':
+
+        Gbl_TerseMode = TRUE;
         break;
 
     default:
@@ -187,6 +192,16 @@ main (
         return -1;
     }
 
+
+    if (Gbl_CompareMode)
+    {
+        AbCompareAmlFiles (argv[optind], argv[optind+1]);
+    }
+
+    else if (Gbl_DumpMode)
+    {
+        AbDumpAmlFile (argv[optind]);
+    }
 
     return 0;
 }

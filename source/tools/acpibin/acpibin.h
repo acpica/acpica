@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpibinh - Include file for AcpiBin utility
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -133,8 +133,29 @@
 
 /* Globals */
 
+
+/*
+ * Global variables.  Defined in main.c only, externed in all other files
+ */
+
+#ifdef _DECLARE_GLOBALS
+#define EXTERN
+#define INIT_GLOBAL(a,b)        a=b
+#else
+#define EXTERN                  extern
+#define INIT_GLOBAL(a,b)        a
+#endif
+
+
 extern int                      optind;
 extern char                     *optarg;
+
+/* Globals */
+
+EXTERN BOOLEAN              INIT_GLOBAL (Gbl_TerseMode, FALSE);
+EXTERN BOOLEAN              INIT_GLOBAL (Gbl_CompareMode, FALSE);
+EXTERN BOOLEAN              INIT_GLOBAL (Gbl_DumpMode, FALSE);
+
 
 
 /* Prototypes */
