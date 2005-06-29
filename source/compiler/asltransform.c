@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -380,7 +380,7 @@ TrDoDefinitionBlock (
  *
  * FUNCTION:    TrDoElseif
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  Node        - Parse node for ELSEIF
  *
  * RETURN:      None
  *
@@ -394,8 +394,6 @@ TrDoElseif (
 {
     ASL_PARSE_NODE          *IfNode;
 
-
-    printf ("Found an ELSEIF  \n");
 
 
     /* Change the ELSEIF into an ELSE */
@@ -422,7 +420,7 @@ TrDoElseif (
  *
  * FUNCTION:    TrDoSwitch
  *
- * PARAMETERS:  Node        - Parse node
+ * PARAMETERS:  StartNode        - Parse node for SWITCH
  *
  * RETURN:      None
  *
