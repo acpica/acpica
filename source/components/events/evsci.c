@@ -15,15 +15,18 @@
  | legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.5 $
- | $Date: 2005/06/29 16:43:43 $
+ | $Revision: 1.6 $
+ | $Date: 2005/06/29 16:43:44 $
  | $Log: evsci.c,v $
- | Revision 1.5  2005/06/29 16:43:43  aystarik
- |
+ | Revision 1.6  2005/06/29 16:43:44  aystarik
+ | Took out Hungarian Notation
  |
  | 
- | date	99.02.04.00.08.00;	author rmoore1;	state Exp;
+ | date	99.02.12.01.27.00;	author grsmith1;	state Exp;
  |
+ * 
+ * 6     2/11/99 5:27p Grsmith1
+ * Took out Hungarian Notation
  * 
  * 5     2/03/99 4:08p Rmoore1
  * 
@@ -40,10 +43,10 @@
  * Event Handling
 // 
 //    Rev 1.4   11 Sep 1998 18:03:28   phutchis
-// Change inc_error() etc. to dKinc_error() etc. (error key logging).
+// Change inc_error() etc. to Kinc_error() etc. (error key logging).
 // 
 //    Rev 1.3   14 Aug 1998 17:46:14   jkreinem
-// Added iVerifyAcpiTablesPresent() function and NO_ACPI_TABLES_MASK
+// Added VerifyAcpiTablesPresent() function and NO_ACPI_TABLES_MASK
 // error code.
 // 
 //    Rev 1.2   13 Aug 1998 17:28:54   jkreinem
@@ -69,19 +72,19 @@
 #include "hwoverrd.h"
 #include "evsci.h"
 
-extern int  __iAcpiLibInitStatus;
+extern int  __AcpiLibInitStatus;
 
 
 /**************************************************************************
  *
- * FUNCTION:    iInitializeSCI
+ * FUNCTION:    InitializeSCI
  *
- * PARAMETERS:  iProgramSCI     TRUE if SCI can be reprogrammed to level sensitivity
+ * PARAMETERS:  ProgramSCI     TRUE if SCI can be reprogrammed to level sensitivity
  *                              FALSE if current SCI sensitivity must be preserved
  *
  * RETURN:      0 if successful; non-zero if failure encountered
  *
- * DESCRIPTION: iInitializeSCI() ensures that the system control
+ * DESCRIPTION: InitializeSCI() ensures that the system control
  *              interrupt (SCI) is properly configured.
  *              If successful, return 0. Otherwise, return non-zero.
  *
@@ -91,9 +94,9 @@ extern int  __iAcpiLibInitStatus;
 
 
 /*
-int iInitializeSCI (int iProgramSCI)
+int InitializeSCI (int ProgramSCI)
 {
-    int iErrorMask=0, iStatusOfIrq;
+    int ErrorMask=0, StatusOfIrq;
 
 
     //  Set up the System Control Interrupt (SCI) as required.
@@ -101,51 +104,51 @@ int iInitializeSCI (int iProgramSCI)
     //  If it is edge triggered, bail.
     //
 
-    iIrqEnabledAtPic (pFACP->wSciInt, &iStatusOfIrq);
-    if (SAVE_NOT_VALID == iIrqEnableSave)
+    IrqEnabledAtPic (FACP->SciInt, &StatusOfIrq);
+    if (SAVE_NOT_VALID == IrqEnableSave)
     {
-        iIrqEnableSave = iStatusOfIrq;
+        IrqEnableSave = StatusOfIrq;
         trace_bu (debug_level() >= 4, __FILE__, __LINE__,
-            "iInitializeSCI: iIrqEnableSave=%d (%sabled)", iIrqEnableSave,
-            iIrqEnableSave ? "dis" : "en");
+            "InitializeSCI: IrqEnableSave=%d (%sabled)", IrqEnableSave,
+            IrqEnableSave ? "dis" : "en");
     }
 
-    if (IRQ_DISABLE != iStatusOfIrq)
+    if (IRQ_DISABLE != StatusOfIrq)
     {   
         //  SCI interrupt already enabled
 
-        iIrqAttributesAtPic (pFACP->wSciInt, &iStatusOfIrq);
-        if (SAVE_NOT_VALID == iEdgeLevelSave)
+        IrqAttributesAtPic (FACP->SciInt, &StatusOfIrq);
+        if (SAVE_NOT_VALID == EdgeLevelSave)
         {
-            iEdgeLevelSave = iStatusOfIrq;
+            EdgeLevelSave = StatusOfIrq;
             trace_bu (debug_level() >= 4, __FILE__, __LINE__,
-                "iInitializeSCI: iEdgeLevelSave=%d (%s)", iEdgeLevelSave,
-                iEdgeLevelSave ? "level" : "edge");
+                "InitializeSCI: EdgeLevelSave=%d (%s)", EdgeLevelSave,
+                EdgeLevelSave ? "level" : "edge");
         }
 
-        if (IRQ_EDGE == iStatusOfIrq)
+        if (IRQ_EDGE == StatusOfIrq)
         {   
             //   SCI interrupt is edge sensitive
 
             printf_bu ("\nInterrupt %02Xh is Enabled/Edge sensitive and the"
-                "\nSCI handler requires it to be Level sensitive.", pFACP->wSciInt);
+                "\nSCI handler requires it to be Level sensitive.", FACP->SciInt);
 
-            if (iProgramSCI)
+            if (ProgramSCI)
             {   
                 //  set SCI to Level Triggered
 
-                iSetIrqToLevel (pFACP->wSciInt);
-                iIrqAttributesAtPic (pFACP->wSciInt, &iStatusOfIrq);
+                SetIrqToLevel (FACP->SciInt);
+                IrqAttributesAtPic (FACP->SciInt, &StatusOfIrq);
 
-                if (IRQ_EDGE == iStatusOfIrq)
+                if (IRQ_EDGE == StatusOfIrq)
                     printf_bu ("\n  Unable to reprogram SCI interrupt %d to level sensitivity",
-                        pFACP->wSciInt);
+                        FACP->SciInt);
                 else
                     printf_bu ("\n  Interrupt %02Xh reprogrammed to level sensitive\n",
-                        pFACP->wSciInt);
+                        FACP->SciInt);
             }
 
-            if (IRQ_EDGE == iStatusOfIrq)
+            if (IRQ_EDGE == StatusOfIrq)
             {   
                     //  SCI interrupt is still edge sensitive
 
@@ -153,8 +156,8 @@ int iInitializeSCI (int iProgramSCI)
                 {   
                         //  edge level sensitivity in ACPI mode
 
-                    dKinc_error ("0000", PRINT | APPEND_CRLF);
-                    iErrorMask |= SCI_LEVEL_INT_MASK;
+                    Kinc_error ("0000", PRINT | APPEND_CRLF);
+                    ErrorMask |= SCI_LEVEL_INT_MASK;
                     printf_bu ("    Failure Explanation:");
                     printf_bu ("\n      ACPI Specification 1.0(a) sections 4.7.2.5, 5.2.5, and 5.6.1");
                     printf_bu ("\n      specify that the system control interrupt must be sharable, level");
@@ -180,28 +183,28 @@ int iInitializeSCI (int iProgramSCI)
             //  SCI interrupt disabled
             //  Enable the SCI Interrupt
 
-        iEnableIrqAtPic (pFACP->wSciInt);
+        EnableIrqAtPic (FACP->SciInt);
 
             //  Set it to Level Triggered
 
-        iSetIrqToLevel (pFACP->wSciInt);
+        SetIrqToLevel (FACP->SciInt);
     }
 
 
-    return iErrorMask;
+    return ErrorMask;
 }
 
 
 /**************************************************************************
  *
- * FUNCTION:    iVerifyAcpiTablesPresent
+ * FUNCTION:    VerifyAcpiTablesPresent
  *
- * PARAMETERS:  pcTestName      pointer to test name string for log messages
+ * PARAMETERS:  TestName      pointer to test name string for log messages
  *
  * RETURN:      0               if tables are present
  *              non-zero        if ACPI tables can NOT be located
  *
- * DESCRIPTION: iVerifyAcpiTablesPresent() ensures that the current
+ * DESCRIPTION: VerifyAcpiTablesPresent() ensures that the current
  *              environment contains ACPI (namespace) tables from
  *              either the BIOS or from an input file.
  *              Return 0 if tables are present; non-zero otherwise.
@@ -209,25 +212,25 @@ int iInitializeSCI (int iProgramSCI)
  *************************************************************************/
 
 int 
-iVerifyAcpiTablesPresent (char *pcTestName)
+VerifyAcpiTablesPresent (char *TestName)
 {
-    int         iErrorMask=0;
+    int ErrorMask=0;
 
-    FUNCTION_TRACE ("iVerifyAcpiTablesPresent");
+    FUNCTION_TRACE ("VerifyAcpiTablesPresent");
 
 
-    if (__iAcpiLibInitStatus == E_NO_ACPI_TBLS)
+    if (__AcpiLibInitStatus == E_NO_ACPI_TBLS)
     {
         printf_bu ("\nACPI tables are required for %s but not available",
-                    pcTestName);
-        dKinc_error ("0002", PRINT | APPEND_CRLF);
+                    TestName);
+        Kinc_error ("0002", PRINT | APPEND_CRLF);
 
-        iErrorMask = NO_ACPI_TABLES_MASK;
+        ErrorMask = NO_ACPI_TABLES_MASK;
         printf_bu ("\nACPI tables can be loaded from an input file."
                     "\nCommand line help is available with the '/?' switch.\n");
     }
 
-    return iErrorMask;
+    return ErrorMask;
 }
 
 
@@ -235,8 +238,8 @@ iVerifyAcpiTablesPresent (char *pcTestName)
  *
  * FUNCTION:    AcpiEnable
  *
- * PARAMETERS:  pcTestName      pointer to test name string for log messages
- *              iFlags          flag bitmask (logical OR) to specify:
+ * PARAMETERS:  TestName      pointer to test name string for log messages
+ *              Flags          flag bitmask (logical OR) to specify:
  *                              ACPI_TABLES_REQUIRED, HW_OVERRIDE_SUPPORTED,
  *                              PROGRAM_SCI_LEVEL_SENSITIVITY, DISABLE_KNOWN_EVENTS
  *
@@ -251,24 +254,24 @@ iVerifyAcpiTablesPresent (char *pcTestName)
  *************************************************************************/
 
 int 
-AcpiEnable (char *pcTestName, int iFlags)
+AcpiEnable (char *TestName, int Flags)
 {
-    int             iErrorMask = 0;
+    int ErrorMask = 0;
 
     FUNCTION_TRACE ("AcpiEnable");
 
 
-    if (NULL == pcTestName)
+    if (NULL == TestName)
     {
-        pcTestName = "";    /*  create valid pointer    */
+        TestName = "";    /*  create valid pointer    */
     }
 
-    if (iFlags & ACPI_TABLES_REQUIRED)
+    if (Flags & ACPI_TABLES_REQUIRED)
     {
-        iErrorMask |= iVerifyAcpiTablesPresent (pcTestName);
+        ErrorMask |= VerifyAcpiTablesPresent (TestName);
     }
 
-    if (E_OK == iErrorMask)
+    if (E_OK == ErrorMask)
     {   
         /*  ACPI tables are available or not required   */
 
@@ -279,17 +282,17 @@ AcpiEnable (char *pcTestName, int iFlags)
              *  if we are running from an input file.
              */
 
-            if (iFlags & HW_OVERRIDE_SUPPORTED)
+            if (Flags & HW_OVERRIDE_SUPPORTED)
             {   
                 /*  hardware override supported    */
 
-                if (!iHardwareOverrideStatus ())
+                if (!HardwareOverrideStatus ())
                 {   
                     /*  hardware override not specified    */
                     
                     printf_bu ("\n%s execution from input table requires HwOverride\n",
-                                pcTestName);
-                    dKinc_error ("0003", PRINT | APPEND_CRLF);
+                                TestName);
+                    Kinc_error ("0003", PRINT | APPEND_CRLF);
                 }
             }
 
@@ -298,35 +301,35 @@ AcpiEnable (char *pcTestName, int iFlags)
                 /*  hardware override not supported    */
                 
                 printf_bu ("\n%s does NOT support execution from input table with HwOverride\n",
-                            pcTestName);
-                dKinc_error ("0004", PRINT | APPEND_CRLF);
+                            TestName);
+                Kinc_error ("0004", PRINT | APPEND_CRLF);
             }
         }
 
-        iOriginalMode = AcpiModeStatus ();
+        OriginalMode = AcpiModeStatus ();
 
         /*  do not change the SCI sensitivity while in legacy mode  */
 
 /* !!! TOO LOW LEVEL FOR OS-independent code!!
 
-      iErrorMask |= iInitializeSCI (FALSE);
+      ErrorMask |= InitializeSCI (FALSE);
 */
-        if (0 == iErrorMask)
+        if (0 == ErrorMask)
         {   
             /*  SCI configured correctly    */
 
-            if (iFlags & DISABLE_KNOWN_EVENTS)
+            if (Flags & DISABLE_KNOWN_EVENTS)
             {   
                 /*  disable any ACPI interrupt sources that may be enabled  */
 
-                iAcpiEventDisableEvent (TMR_FIXED_EVENT);
-                iAcpiEventDisableEvent (GBL_FIXED_EVENT);
-                iAcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
-                iAcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
-                iAcpiEventDisableEvent (RTC_FIXED_EVENT);
+                AcpiEventDisableEvent (TMR_FIXED_EVENT);
+                AcpiEventDisableEvent (GBL_FIXED_EVENT);
+                AcpiEventDisableEvent (PWR_BTN_FIXED_EVENT);
+                AcpiEventDisableEvent (SLP_BTN_FIXED_EVENT);
+                AcpiEventDisableEvent (RTC_FIXED_EVENT);
             }
 
-            if (wInstallSciHandler ())
+            if (InstallSciHandler ())
             {   
                 /*  SCI Interrupt Handler installed properly    */
 
@@ -338,29 +341,29 @@ AcpiEnable (char *pcTestName, int iFlags)
 
                     /*  verify SCI sensitivity while in ACPI mode   */
 /* !!! Nope, DON'T DO IT
-                    iErrorMask |= iInitializeSCI (iFlags & PROGRAM_SCI_LEVEL_SENSITIVITY);
+                    ErrorMask |= InitializeSCI (Flags & PROGRAM_SCI_LEVEL_SENSITIVITY);
 */
                 }
 
                 else
                 {
                     printf_bu ("\nUnable to transition to ACPI Mode");
-                    dKinc_error ("0005", PRINT | APPEND_CRLF);
-                    vSetNotSupported ();
-                    iErrorMask |= NO_ACPI_TRANSITION_MASK;
+                    Kinc_error ("0005", PRINT | APPEND_CRLF);
+                    SetNotSupported ();
+                    ErrorMask |= NO_ACPI_TRANSITION_MASK;
                 }
             }
 
             else
             {
                 printf_bu ("\nUnable to install the System Control Interrupt Handler");
-                dKinc_error ("0006", PRINT | APPEND_CRLF);
-                iErrorMask |= NO_SCI_HANDLER_MASK;
+                Kinc_error ("0006", PRINT | APPEND_CRLF);
+                ErrorMask |= NO_SCI_HANDLER_MASK;
             }
         }
     }
 
-    return iErrorMask;
+    return ErrorMask;
 
 }
     
@@ -382,7 +385,7 @@ AcpiEnable (char *pcTestName, int iFlags)
 
 int AcpiDisable ()
 {
-    int         iErrorMask = 0;
+    int ErrorMask = 0;
 
     FUNCTION_TRACE ("AcpiDisable");
 
@@ -391,63 +394,63 @@ int AcpiDisable ()
 
 /* Don't fuss with PIC here !!!
 
-    if (IRQ_EDGE == iEdgeLevelSave)
+    if (IRQ_EDGE == EdgeLevelSave)
     {
         trace_bu (debug_level() >= 4, __FILE__, __LINE__,
                     "iUninstallSCIHandlerXferToLegacy: Restore IRQ %d to edge sensitivity",
-                    pFACP->wSciInt);
+                    FACP->SciInt);
 
 
-        if (iSetIrqToEdge (pFACP->wSciInt))
+        if (iSetIrqToEdge (FACP->SciInt))
         {
             printf_bu ("\nUnable to restore interrupt %d to edge sensitivity",
-                pFACP->wSciInt);
+                FACP->SciInt);
             dKinc_warning ("0007", PRINT | APPEND_CRLF);
-            //  iErrorMask |= SCI_LEVEL_INT_MASK;
+            //  ErrorMask |= SCI_LEVEL_INT_MASK;
         }
         else
             printf_bu ("\nInterrupt %d restored to edge sensitivity\n",
-                pFACP->wSciInt);
+                FACP->SciInt);
 
     }
 */
 
 /* Don't fuss with PIC here !!!
 
-    if (IRQ_DISABLE == iIrqEnableSave)
+    if (IRQ_DISABLE == IrqEnableSave)
     {
         trace_bu (debug_level() >= 4, __FILE__, __LINE__,
             "iUninstallSCIHandlerXferToLegacy: Restore interrupt %d to disable",
-            pFACP->wSciInt);
+            FACP->SciInt);
 
-        if (iDisableIrqAtPic (pFACP->wSciInt))
+        if (iDisableIrqAtPic (FACP->SciInt))
         {
             printf_bu ("\nUnable to restore interrupt %d to disable",
-                pFACP->wSciInt);
+                FACP->SciInt);
             dKinc_warning ("0008", PRINT | APPEND_CRLF);
         }
 
         else
-            printf_bu ("\nInterrupt %d restored to disable\n", pFACP->wSciInt);
+            printf_bu ("\nInterrupt %d restored to disable\n", FACP->SciInt);
     }
 */
 
     /*  restore original mode   */
 
-    if (E_OK != AcpiSetMode (iOriginalMode))
+    if (E_OK != AcpiSetMode (OriginalMode))
     {
         printf_bu ("\nUnable to transition to the Original Mode");
-        dKinc_warning ("0009", PRINT | APPEND_CRLF);
+        Kinc_warning ("0009", PRINT | APPEND_CRLF);
         
-        /*  iErrorMask |= NO_LEGACY_TRANSITION_MASK;    */
+        /*  ErrorMask |= NO_LEGACY_TRANSITION_MASK;    */
     }
 
     /*  unload SCI handler  */
 
-    vUninstallSciHandler ();
+    UninstallSciHandler ();
 
 
     AcpiCleanup ();
 
-    return iErrorMask;
+    return ErrorMask;
 }
