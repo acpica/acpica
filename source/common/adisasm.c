@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -136,7 +136,7 @@
 ACPI_PARSE_OBJECT       *AcpiGbl_ParsedNamespaceRoot;
 
 
-#ifndef _ACPI_ASL_COMPILER
+#ifndef ACPI_ASL_COMPILER
 BOOLEAN
 AcpiDsIsResultUsed (
     ACPI_PARSE_OBJECT       *Op,
