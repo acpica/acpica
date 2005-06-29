@@ -2,7 +2,7 @@
  *
  * Module Name: evmisc - ACPI device notification handler dispatch
  *                       and ACPI Global Lock support
- *              $Revision: 1.42 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -122,8 +122,7 @@
 #include "achware.h"
 
 #define _COMPONENT          ACPI_EVENTS
-        MODULE_NAME         ("evmisc")
-
+        ACPI_MODULE_NAME    ("evmisc")
 
 
 /*******************************************************************************
@@ -134,7 +133,7 @@
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Returns the register index (index into the GPE register info 
+ * DESCRIPTION: Returns the register index (index into the GPE register info
  *              table) associated with this GPE.
  *
  ******************************************************************************/
@@ -149,7 +148,7 @@ AcpiEvGetGpeRegisterIndex (
         return (ACPI_GPE_INVALID);
     }
 
-    return (DIV_8 (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex));
+    return (ACPI_DIV_8 (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex));
 }
 
 
@@ -204,7 +203,7 @@ AcpiEvQueueNotifyRequest (
     ACPI_STATUS             Status = AE_OK;
 
 
-    PROC_NAME ("EvQueueNotifyRequest");
+    ACPI_FUNCTION_NAME ("EvQueueNotifyRequest");
 
 
     /*
@@ -239,20 +238,19 @@ AcpiEvQueueNotifyRequest (
         break;
     }
 
-
     /*
      * Get the notify object attached to the device Node
      */
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
     {
-
         /* We have the notify object, Get the right handler */
 
         switch (Node->Type)
         {
         case ACPI_TYPE_DEVICE:
-            if (NotifyValue <= MAX_SYS_NOTIFY)
+
+            if (NotifyValue <= ACPI_MAX_SYS_NOTIFY)
             {
                 HandlerObj = ObjDesc->Device.SysHandler;
             }
@@ -262,8 +260,10 @@ AcpiEvQueueNotifyRequest (
             }
             break;
 
+
         case ACPI_TYPE_THERMAL:
-            if (NotifyValue <= MAX_SYS_NOTIFY)
+
+            if (NotifyValue <= ACPI_MAX_SYS_NOTIFY)
             {
                 HandlerObj = ObjDesc->ThermalZone.SysHandler;
             }
@@ -277,11 +277,10 @@ AcpiEvQueueNotifyRequest (
 
     /* If there is any handler to run, schedule the dispatcher */
 
-    if ((AcpiGbl_SysNotify.Handler && (NotifyValue <= MAX_SYS_NOTIFY)) ||
-        (AcpiGbl_DrvNotify.Handler && (NotifyValue > MAX_SYS_NOTIFY))  ||
+    if ((AcpiGbl_SysNotify.Handler && (NotifyValue <= ACPI_MAX_SYS_NOTIFY)) ||
+        (AcpiGbl_DrvNotify.Handler && (NotifyValue > ACPI_MAX_SYS_NOTIFY))  ||
         HandlerObj)
     {
-
         NotifyInfo = AcpiUtCreateGenericState ();
         if (!NotifyInfo)
         {
@@ -335,14 +334,14 @@ AcpiEvNotifyDispatch (
     ACPI_OPERAND_OBJECT     *HandlerObj;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*
      * We will invoke a global notify handler if installed.
      * This is done _before_ we invoke the per-device handler attached to the device.
      */
-    if (NotifyInfo->Notify.Value <= MAX_SYS_NOTIFY)
+    if (NotifyInfo->Notify.Value <= ACPI_MAX_SYS_NOTIFY)
     {
         /* Global system notification handler */
 
@@ -431,7 +430,6 @@ AcpiEvGlobalLockHandler (
     void                    *Context)
 {
     BOOLEAN                 Acquired = FALSE;
-    void                    *GlobalLock;
 
 
     /*
@@ -439,8 +437,7 @@ AcpiEvGlobalLockHandler (
      * If we don't get it now, it will be marked pending and we will
      * take another interrupt when it becomes free.
      */
-    GlobalLock = AcpiGbl_FACS->GlobalLock;
-    ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (AcpiGbl_CommonFACS.GlobalLock, Acquired);
     if (Acquired)
     {
         /* Got the lock, now wake all threads waiting for it */
@@ -453,7 +450,7 @@ AcpiEvGlobalLockHandler (
                                     Context);
     }
 
-    return (INTERRUPT_HANDLED);
+    return (ACPI_INTERRUPT_HANDLED);
 }
 
 
@@ -473,7 +470,7 @@ AcpiEvInitGlobalLockHandler (void)
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("EvInitGlobalLockHandler");
+    ACPI_FUNCTION_TRACE ("EvInitGlobalLockHandler");
 
 
     AcpiGbl_GlobalLockPresent = TRUE;
@@ -513,10 +510,9 @@ AcpiEvAcquireGlobalLock (
 {
     ACPI_STATUS             Status = AE_OK;
     BOOLEAN                 Acquired = FALSE;
-    void                    *GlobalLock;
 
 
-    FUNCTION_TRACE ("EvAcquireGlobalLock");
+    ACPI_FUNCTION_TRACE ("EvAcquireGlobalLock");
 
 
     /* Make sure that we actually have a global lock */
@@ -530,29 +526,21 @@ AcpiEvAcquireGlobalLock (
 
     AcpiGbl_GlobalLockThreadCount++;
 
-    /* If we (OS side) have the hardware lock already, we are done */
+    /* If we (OS side vs. BIOS side) have the hardware lock already, we are done */
 
     if (AcpiGbl_GlobalLockAcquired)
     {
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Only if the FACS is valid */
-
-    if (!AcpiGbl_FACS)
-    {
-        return_ACPI_STATUS (AE_OK);
-    }
-
     /* We must acquire the actual hardware lock */
 
-    GlobalLock = AcpiGbl_FACS->GlobalLock;
-    ACPI_ACQUIRE_GLOBAL_LOCK (GlobalLock, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (AcpiGbl_CommonFACS.GlobalLock, Acquired);
     if (Acquired)
     {
        /* We got the lock */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Acquired the Global Lock\n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Acquired the HW Global Lock\n"));
 
         AcpiGbl_GlobalLockAcquired = TRUE;
         return_ACPI_STATUS (AE_OK);
@@ -564,10 +552,10 @@ AcpiEvAcquireGlobalLock (
      */
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Waiting for the HW Global Lock\n"));
 
-     /*
-      * Acquire the global lock semaphore first.
-      * Since this wait will block, we must release the interpreter
-      */
+    /*
+     * Acquire the global lock semaphore first.
+     * Since this wait will block, we must release the interpreter
+     */
     Status = AcpiExSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
                                             Timeout);
     return_ACPI_STATUS (Status);
@@ -586,42 +574,41 @@ void
 AcpiEvReleaseGlobalLock (void)
 {
     BOOLEAN                 Pending = FALSE;
-    void                    *GlobalLock;
 
 
-    FUNCTION_TRACE ("EvReleaseGlobalLock");
+    ACPI_FUNCTION_TRACE ("EvReleaseGlobalLock");
 
 
     if (!AcpiGbl_GlobalLockThreadCount)
     {
-        REPORT_WARNING(("Global Lock has not be acquired, cannot release\n"));
+        ACPI_REPORT_WARNING(("Cannot release HW Global Lock, it has not been acquired\n"));
         return_VOID;
     }
 
-   /* One fewer thread has the global lock */
+    /* One fewer thread has the global lock */
 
     AcpiGbl_GlobalLockThreadCount--;
-
-    /* Have all threads released the lock? */
-
-    if (!AcpiGbl_GlobalLockThreadCount)
+    if (AcpiGbl_GlobalLockThreadCount)
     {
-        /*
-         * No more threads holding lock, we can do the actual hardware
-         * release
-         */
-        GlobalLock = AcpiGbl_FACS->GlobalLock;
-        ACPI_RELEASE_GLOBAL_LOCK (GlobalLock, Pending);
-        AcpiGbl_GlobalLockAcquired = FALSE;
+        /* There are still some threads holding the lock, cannot release */
 
-        /*
-         * If the pending bit was set, we must write GBL_RLS to the control
-         * register
-         */
-        if (Pending)
-        {
-            AcpiHwBitRegisterWrite (ACPI_BITREG_GLOBAL_LOCK_RELEASE, 1, ACPI_MTX_LOCK);
-        }
+        return_VOID;
+    }
+
+    /*
+     * No more threads holding lock, we can do the actual hardware
+     * release
+     */
+    ACPI_RELEASE_GLOBAL_LOCK (AcpiGbl_CommonFACS.GlobalLock, Pending);
+    AcpiGbl_GlobalLockAcquired = FALSE;
+
+    /*
+     * If the pending bit was set, we must write GBL_RLS to the control
+     * register
+     */
+    if (Pending)
+    {
+        AcpiHwBitRegisterWrite (ACPI_BITREG_GLOBAL_LOCK_RELEASE, 1, ACPI_MTX_LOCK);
     }
 
     return_VOID;
@@ -644,7 +631,7 @@ void
 AcpiEvTerminate (void)
 {
 
-    FUNCTION_TRACE ("EvTerminate");
+    ACPI_FUNCTION_TRACE ("EvTerminate");
 
 
     /*
