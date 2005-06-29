@@ -120,7 +120,9 @@
 #include <acpitypes.h>
 
 /* 
- * TBD: this wastes memory.
+ * TBD: This wastes memory.
+ * TBD: Allow variable sized acpi objects
+ * TBD: Must find and fix all code that assumes constant sized object
  *
  * All variants of the ACPI_OBJECT_INTERNAL are defined with the same
  * sequence of field types, with fields that are not used in a particular
@@ -148,8 +150,8 @@
 
 #define ACPI_OBJECT_COMMON \
     UINT8                   DataType;       /* To differentiate various internal objs */\
-    UINT8                   Type;           /* See definition of NsType for values */ \
-    UINT8                   Size; \
+    UINT8                   Type;           /* ACPI_OBJECT_TYPE */\
+    UINT8                   Size;           /* Size of entire descriptor */\
     UINT8                   Flags;\
     UINT16                  ReferenceCount; /* For object deletion management */\
     UINT16                  CmFill2;\
@@ -284,13 +286,13 @@ typedef struct /* DEVICE - has handle and notification handler/context */
 
     UINT32                  Reserved1;
     UINT32                  Reserved2;
-    union AcpiObjInternal  *AddrHandler;        /* Handler for Address space */
+    UINT32                  Reserved3;
     UINT32                  Reserved4;
 
     ACPI_HANDLE             Handle;
     union AcpiObjInternal  *SysHandler;         /* Handler for system notifies */
     union AcpiObjInternal  *DrvHandler;         /* Handler for driver notifies */
-    void                    *Reserved_p4;
+    union AcpiObjInternal  *AddrHandler;        /* Handler for Address space */
     void                    *Reserved_p5;
 
 } ACPI_OBJECT_Device;
@@ -399,13 +401,13 @@ typedef struct /* PROCESSOR - has Handle and notification handler/context*/
 
     UINT32                  Reserved1;
     UINT32                  Reserved2;
-    union AcpiObjInternal   *AddrHandler;       /* Handler for Address space */
+    UINT32                  Reserved3;
     UINT32                  Reserved4;
 
     ACPI_HANDLE             Handle;
     union AcpiObjInternal   *SysHandler;        /* Handler for system notifies */
     union AcpiObjInternal   *DrvHandler;        /* Handler for driver notifies */
-    void                    *Reserved_p4;
+    union AcpiObjInternal   *AddrHandler;       /* Handler for Address space */
     void                    *Reserved_p5;
 
 } ACPI_OBJECT_Processor;
@@ -417,13 +419,13 @@ typedef struct /* THERMAL ZONE - has Handle and Handler/Context */
 
     UINT32                  Reserved1;
     UINT32                  Reserved2;
-    union AcpiObjInternal   *AddrHandler;       /* Handler for Address space */
+    UINT32                  Reserved3;
     UINT32                  Reserved4;
 
     ACPI_HANDLE             Handle;
     union AcpiObjInternal   *SysHandler;        /* Handler for system notifies */
     union AcpiObjInternal   *DrvHandler;        /* Handler for driver notifies */
-    void                    *Reserved_p4;
+    union AcpiObjInternal   *AddrHandler;       /* Handler for Address space */
     void                    *Reserved_p5;
 
 } ACPI_OBJECT_ThermalZone;
@@ -539,16 +541,16 @@ typedef struct /* ADDRESS HANDLER */
     ACPI_OBJECT_COMMON
 
     UINT16                  SpaceId;
-    UINT16                  Reserved;
-    union AcpiObjInternal   *Link;              /* Link to next handler on device */
-    union AcpiObjInternal   *RegionList;        /* regions using this handler */
+    UINT16                  Fill1;
+    UINT32                  Reserved2;
+    UINT32                  Reserved3;
     UINT32                  Reserved4;
 
     NAME_TABLE_ENTRY        *Nte;               /* Parent device */
     ADDRESS_SPACE_HANDLER   Handler;
     void                    *Context;
-    void                    *Reserved_p4;
-    void                    *Reserved_p5;
+    union AcpiObjInternal   *Link;              /* Link to next handler on device */
+    union AcpiObjInternal   *RegionList;        /* regions using this handler */
 
 } ACPI_OBJECT_AddrHandler;
 
