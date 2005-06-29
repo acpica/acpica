@@ -416,7 +416,7 @@ AmlReadField (
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
-    Status = EvAddressSpaceDispatch (RgnDesc->Region.SpaceId, ADDRESS_SPACE_READ, 
+    Status = EvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_READ, 
                                         Address, FieldBitWidth, Value);
 
     if (Status == AE_NOT_IMPLEMENTED)
@@ -498,7 +498,7 @@ AmlWriteField (
 
     /* Invoke the appropriate AddressSpace/OpRegion handler */
 
-    Status = EvAddressSpaceDispatch (RgnDesc->Region.SpaceId, ADDRESS_SPACE_WRITE, 
+    Status = EvAddressSpaceDispatch (RgnDesc, ADDRESS_SPACE_WRITE, 
                                         Address, FieldBitWidth, &Value);
 
     if (Status == AE_NOT_IMPLEMENTED)

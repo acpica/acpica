@@ -800,10 +800,10 @@ AmlDumpObjectDescriptor (
 
 		OsdPrintf ("%20s : %s\n", "Type", "Device");
 	    OsdPrintf ("%20s : %x\n", "Handle", Object->Device.Handle);
-	    OsdPrintf ("%20s : %p\n", "Handler", Object->Device.Handler);
-	    OsdPrintf ("%20s : %p\n", "Context", Object->Device.Context);
+	    OsdPrintf ("%20s : %p\n", "AddrHandler", Object->Device.AddrHandler);
+	    OsdPrintf ("%20s : %p\n", "SysHandler", Object->Device.SysHandler);
+	    OsdPrintf ("%20s : %p\n", "DrvHandler", Object->Device.DrvHandler);
         break;
-
 
 	case TYPE_Event:
 
@@ -843,13 +843,17 @@ AmlDumpObjectDescriptor (
 	    OsdPrintf ("%20s : %x\n", "Address", Object->Region.Address);
 	    OsdPrintf ("%20s : %x\n", "Length", Object->Region.Length);
 	    OsdPrintf ("%20s : %x\n", "AddressLocation", Object->Region.AddressLocation);
-	    break;
+	    OsdPrintf ("%20s : %x\n", "AddrHandler", Object->Region.AddrHandler);
+	    OsdPrintf ("%20s : %x\n", "Link", Object->Region.Link);
+ 	    break;
 
 
 	case TYPE_Power:
 
 		OsdPrintf ("%20s : %s\n", "Type", "PowerResource");
 	    OsdPrintf ("%20s : %x\n", "Handle", Object->PowerResource.Handle);
+	    OsdPrintf ("%20s : %p\n", "SysHandler", Object->PowerResource.SysHandler);
+	    OsdPrintf ("%20s : %p\n", "DrvHandler", Object->PowerResource.DrvHandler);
 	    break;
 
 
@@ -857,6 +861,8 @@ AmlDumpObjectDescriptor (
 
 		OsdPrintf ("%20s : %s\n", "Type", "Processor");
 	    OsdPrintf ("%20s : %x\n", "Handle", Object->Processor.Handle);
+	    OsdPrintf ("%20s : %p\n", "SysHandler", Object->Processor.SysHandler);
+	    OsdPrintf ("%20s : %p\n", "DrvHandler", Object->Processor.DrvHandler);
 	    break;
 
 
@@ -864,10 +870,9 @@ AmlDumpObjectDescriptor (
 
 		OsdPrintf ("%20s : %s\n", "Type", "ThermalZone");
 	    OsdPrintf ("%20s : %x\n", "Handle", Object->ThermalZone.Handle);
-	    OsdPrintf ("%20s : %p\n", "Handler", Object->ThermalZone.Handler);
-	    OsdPrintf ("%20s : %p\n", "Context", Object->ThermalZone.Context);
+	    OsdPrintf ("%20s : %p\n", "SysHandler", Object->ThermalZone.SysHandler);
+	    OsdPrintf ("%20s : %p\n", "DrvHandler", Object->ThermalZone.DrvHandler);
 	    break;
-
 
 	case TYPE_BankField:
 
@@ -904,9 +909,29 @@ AmlDumpObjectDescriptor (
 	    OsdPrintf ("%20s : %x\n", "OpCode", Object->Lvalue.OpCode);
 	    OsdPrintf ("%20s : %x\n", "Object", Object->Lvalue.Object);
 		break;
-	
 
-	case TYPE_Alias:
+
+	case TYPE_AddrHandler:
+
+		OsdPrintf ("%20s : %s\n", "Type", "Address Handler");
+	    OsdPrintf ("%20s : %x\n", "SpaceId", Object->AddrHandler.SpaceId);
+	    OsdPrintf ("%20s : %x\n", "Link", Object->AddrHandler.Link);
+	    OsdPrintf ("%20s : %x\n", "RegionList", Object->AddrHandler.RegionList);
+	    OsdPrintf ("%20s : %x\n", "Nte", Object->AddrHandler.Nte);
+	    OsdPrintf ("%20s : %x\n", "Handler", Object->AddrHandler.Handler);
+	    OsdPrintf ("%20s : %x\n", "Context", Object->AddrHandler.Context);
+		break;
+
+	case TYPE_Notfy:
+
+		OsdPrintf ("%20s : %s\n", "Type", "Notify Handler");
+	    OsdPrintf ("%20s : %x\n", "Nte", Object->NotifyHandler.Nte);
+	    OsdPrintf ("%20s : %x\n", "Handler", Object->NotifyHandler.Handler);
+	    OsdPrintf ("%20s : %x\n", "Context", Object->NotifyHandler.Context);
+		break;
+
+
+    case TYPE_Alias:
 	case TYPE_DefField:
 	case TYPE_DefFieldDefn:
 	case TYPE_BankFieldDefn:
