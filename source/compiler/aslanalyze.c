@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -485,12 +485,6 @@ AnGetBtype (
  *
  ******************************************************************************/
 
-#define ACPI_VALID_RESERVED_NAME_MAX    0x80000000
-#define ACPI_NOT_RESERVED_NAME          ACPI_UINT32_MAX
-#define ACPI_PREDEFINED_NAME            (ACPI_UINT32_MAX - 1)
-#define ACPI_EVENT_RESERVED_NAME        (ACPI_UINT32_MAX - 2)
-#define ACPI_COMPILER_RESERVED_NAME     (ACPI_UINT32_MAX - 3)
-
 static UINT32
 AnCheckForReservedName (
     ACPI_PARSE_OBJECT       *Op,
@@ -786,9 +780,8 @@ AnMethodAnalysisWalkBegin (
 
         TotalMethods++;
 
-        /*
-         * Create and init method info
-         */
+        /* Create and init method info */
+        
         MethodInfo       = UtLocalCalloc (sizeof (ASL_METHOD_INFO));
         MethodInfo->Next = WalkInfo->MethodStack;
         MethodInfo->Op = Op;
@@ -1078,9 +1071,8 @@ AnMethodAnalysisWalkBegin (
                     "with arguments");
             }
 
-            /*
-             * Typechecking for _HID
-             */
+            /* Typechecking for _HID */
+            
             else if (!ACPI_STRCMP (METHOD_NAME__HID, ReservedMethods[i].Name))
             {
                 /* Examine the second operand to typecheck it */
@@ -1470,23 +1462,20 @@ AnCheckMethodReturnValue (
     OwningOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
     if (OwningOp->Asl.CompileFlags & NODE_METHOD_NO_RETVAL)
     {
-        /*
-         * Method NEVER returns a value
-         */
+        /* Method NEVER returns a value */
+        
         AslError (ASL_ERROR, ASL_MSG_NO_RETVAL, Op, Op->Asl.ExternalName);
     }
     else if (OwningOp->Asl.CompileFlags & NODE_METHOD_SOME_NO_RETVAL)
     {
-        /*
-         * Method SOMETIMES returns a value, SOMETIMES not
-         */
+        /* Method SOMETIMES returns a value, SOMETIMES not */
+        
         AslError (ASL_WARNING, ASL_MSG_SOME_NO_RETVAL, Op, Op->Asl.ExternalName);
     }
     else if (!(ThisNodeBtype & RequiredBtypes))
     {
-        /*
-         * Method returns a value, but the type is wrong
-         */
+        /* Method returns a value, but the type is wrong */
+        
         AnFormatBtype (StringBuffer, ThisNodeBtype);
         AnFormatBtype (StringBuffer2, RequiredBtypes);
 

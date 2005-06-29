@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.135 $
+ * Module Name: aslcompiler.h - common include file for iASL
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -142,81 +142,12 @@
 #include "acpi.h"
 #include "amlresrc.h"
 #include "acdebug.h"
+
+/* Compiler headers */
+
+#include "asldefine.h"
 #include "asltypes.h"
 #include "aslglobal.h"
-
-
-/*
- * Compiler versions and names
- */
-
-#define CompilerCreatorRevision     ACPI_CA_VERSION
-
-#define IntelAcpiCA                 "Intel ACPI Component Architecture"
-#define CompilerId                  "ASL Optimizing Compiler / AML Disassembler"
-#define CompilerCopyright           "Copyright (C) 2000 - 2005 Intel Corporation"
-#define CompilerCompliance          "ACPI 3.0"
-#define CompilerName                "iasl"
-#define CompilerCreatorId           "INTL"
-
-
-/* Configuration constants */
-
-#define ASL_MAX_ERROR_COUNT         200
-#define ASL_NODE_CACHE_SIZE         1024
-#define ASL_STRING_CACHE_SIZE       32768
-
-#define ASL_FIRST_PARSE_OPCODE      PARSEOP_ACCESSAS
-#define ASL_YYTNAME_START           3
-
-/*
- * Macros
- */
-
-#define ASL_RESDESC_OFFSET(m)       ACPI_OFFSET (ASL_RESOURCE_DESC, m)
-#define ASL_PTR_DIFF(a,b)           ((UINT8 *)(b) - (UINT8 *)(a))
-#define ASL_PTR_ADD(a,b)            ((UINT8 *)(a) = ((UINT8 *)(a) + (b)))
-#define ASL_GET_CHILD_NODE(a)       (a)->Asl.Child
-#define ASL_GET_PEER_NODE(a)        (a)->Asl.Next
-#define OP_TABLE_ENTRY(a,b,c,d)     {b,d,a,c}
-
-
-#define ASL_PARSE_OPCODE_BASE       PARSEOP_ACCESSAS        /* First Lex type */
-
-
-/* Internal AML opcodes */
-
-#define AML_RAW_DATA_BYTE           (UINT16) 0xAA01 /* write one raw byte */
-#define AML_RAW_DATA_WORD           (UINT16) 0xAA02 /* write 2 raw bytes */
-#define AML_RAW_DATA_DWORD          (UINT16) 0xAA04 /* write 4 raw bytes */
-#define AML_RAW_DATA_QWORD          (UINT16) 0xAA08 /* write 8 raw bytes */
-#define AML_RAW_DATA_BUFFER         (UINT16) 0xAA0B /* raw buffer with length */
-#define AML_RAW_DATA_CHAIN          (UINT16) 0xAA0C /* chain of raw buffers */
-#define AML_PACKAGE_LENGTH          (UINT16) 0xAA10
-#define AML_UNASSIGNED_OPCODE       (UINT16) 0xEEEE
-#define AML_DEFAULT_ARG_OP          (UINT16) 0xDDDD
-
-
-/* filename suffixes for output files */
-
-#define FILE_SUFFIX_AML_CODE        "aml"
-#define FILE_SUFFIX_LISTING         "lst"
-#define FILE_SUFFIX_HEX_DUMP        "hex"
-#define FILE_SUFFIX_DEBUG           "txt"
-#define FILE_SUFFIX_SOURCE          "src"
-#define FILE_SUFFIX_NAMESPACE       "nsp"
-#define FILE_SUFFIX_ASM_SOURCE      "asm"
-#define FILE_SUFFIX_C_SOURCE        "c"
-#define FILE_SUFFIX_DISASSEMBLY     "dsl"
-#define FILE_SUFFIX_ASM_INCLUDE     "inc"
-#define FILE_SUFFIX_C_INCLUDE       "h"
-
-
-/* Misc */
-
-#define ASL_EXTERNAL_METHOD         255
-#define ASL_ABORT                   TRUE
-#define ASL_NO_ABORT                FALSE
 
 
 /*******************************************************************************
@@ -225,13 +156,9 @@
  *
  ******************************************************************************/
 
-
-void
-end_stmt (void);
-
-
-/* parser */
-
+/*
+ * parser - generated from flex/bison, lex/yacc, etc.
+ */
 int
 AslCompilerparse(
     void);
@@ -265,7 +192,6 @@ AslPushInputFileStack (
 /*
  * aslmain - entry
  */
-
 static void
 Options (
     void);
@@ -291,7 +217,6 @@ AslCommandLine (
 /*
  * aslcompile - compile mainline
  */
-
 void
 AslCompilerSignon (
     UINT32                  FileId);
@@ -324,7 +249,6 @@ FlCheckForAscii (
 /*
  * aslanalyze - semantic analysis
  */
-
 ACPI_STATUS
 AnOtherSemanticAnalysisWalkBegin (
     ACPI_PARSE_OBJECT       *Op,
@@ -420,7 +344,6 @@ AnCheckMethodReturnValue (
 /*
  * aslerror - error handling/reporting
  */
-
 void
 AslError (
     UINT8                   Level,
@@ -473,7 +396,6 @@ AeAddToErrorLog (
 /*
  * asllisting - generate all "listing" type files
  */
-
 void
 LsDoListings (
     void);
@@ -567,7 +489,6 @@ LsDoHexOutputAsm (
 /*
  * aslfold - constant folding
  */
-
 ACPI_STATUS
 OpcAmlConstantWalk (
     ACPI_PARSE_OBJECT       *Op,
@@ -596,7 +517,6 @@ OpcAmlCheckForConstant (
 /*
  * aslopcodes - generate AML opcodes
  */
-
 ACPI_STATUS
 OpcAmlOpcodeWalk (
     ACPI_PARSE_OBJECT       *Op,
@@ -635,7 +555,6 @@ OpcDoUuId (
 /*
  * asloperands - generate AML operands for the AML opcodes
  */
-
 ACPI_PARSE_OBJECT  *
 UtGetArg (
     ACPI_PARSE_OBJECT       *Op,
@@ -694,7 +613,6 @@ OpnAttachNameToNode (
 /*
  * aslopt - optmization
  */
-
 void
 OptOptimizeNamePath (
     ACPI_PARSE_OBJECT       *Op,
@@ -737,7 +655,6 @@ OptOptimizeNameDeclaration (
 /*
  * aslcodegen - code generation
  */
-
 void
 CgGenerateAmlOutput (
     void);
@@ -774,7 +691,6 @@ CgWriteNode (
 /*
  * asllength - calculate/adjust AML package lengths
  */
-
 ACPI_STATUS
 LnPackageLengthWalk (
     ACPI_PARSE_OBJECT       *Op,
@@ -832,7 +748,6 @@ MpDisplayReservedNames (
 /*
  * asltransform - parse tree transformations
  */
-
 ACPI_STATUS
 TrAmlTransformWalk (
     ACPI_PARSE_OBJECT       *Op,
@@ -880,7 +795,6 @@ TrDoSwitch (
 /*
  * asltree - parse tree support
  */
-
 ACPI_STATUS
 TrWalkParseTree (
     ACPI_PARSE_OBJECT       *Op,
@@ -973,7 +887,6 @@ TrGetNodeFlagName (
 /*
  * aslfiles - File I/O support
  */
-
 void
 AslAbort (
     void);
@@ -1050,7 +963,6 @@ FlParseInputPathname (
 /*
  * asload - load namespace in prep for cross reference
  */
-
 ACPI_STATUS
 LdLoadNamespace (
     ACPI_PARSE_OBJECT       *RootOp);
@@ -1081,7 +993,6 @@ LdNamespace1End (
 /*
  * asllookup - namespace cross reference
  */
-
 ACPI_STATUS
 LkCrossReferenceNamespace (
     void);
@@ -1132,7 +1043,6 @@ LkNamespaceLocateEnd (
 /*
  * aslutils - common compiler utilites
  */
-
 void
 DbgPrint (
     UINT32                  Type,
@@ -1237,7 +1147,6 @@ UtAttachNameseg (
 /*
  * aslresource - Resource template generation utilities
  */
-
 ASL_RESOURCE_NODE *
 RsAllocateResourceNode (
     UINT32                  Size);
@@ -1272,7 +1181,7 @@ RsDoOneResourceDescriptor (
     UINT32                  CurrentByteOffset,
     UINT8                   *State);
 
-/* values for State above */
+/* Values for State above */
 
 #define ACPI_RSTATE_NORMAL              0
 #define ACPI_RSTATE_START_DEPENDENT     1
@@ -1291,7 +1200,6 @@ RsDoResourceTemplate (
 /*
  * aslrestype1 - generate Small descriptors
  */
-
 ASL_RESOURCE_NODE *
 RsDoDmaDescriptor (
     ACPI_PARSE_OBJECT       *Op,
@@ -1356,7 +1264,6 @@ RsDoVendorSmallDescriptor (
 /*
  * aslrestype2 - generate Large descriptors
  */
-
 ASL_RESOURCE_NODE *
 RsDoInterruptDescriptor (
     ACPI_PARSE_OBJECT       *Op,

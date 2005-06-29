@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -141,9 +141,8 @@ AslCompilerSignon (
     char                    *Prefix = "";
 
 
-    /*
-     * Set line prefix depending on the destination file type
-     */
+    /* Set line prefix depending on the destination file type */
+    
     switch (FileId)
     {
     case ASL_FILE_ASM_SOURCE_OUTPUT:
@@ -210,9 +209,8 @@ AslCompilerFileHeader (
     char                    *Prefix = "";
 
 
-    /*
-     * Set line prefix depending on the destination file type
-     */
+    /* Set line prefix depending on the destination file type */
+    
     switch (FileId)
     {
     case ASL_FILE_ASM_SOURCE_OUTPUT:
@@ -303,7 +301,7 @@ CmFlushSourceCode (
  *
  * PARAMETERS:  FileInfo        - Points to an open input file
  *
- * RETURN:      Status (0 = OK)
+ * RETURN:      Status
  *
  * DESCRIPTION: Verify that the input file is entirely ASCII.
  *
@@ -568,7 +566,6 @@ CmDoCompile (
         LnPackageLengthWalk, NULL);
     UtEndEvent (i++);
 
-
     /* Code generation - emit the AML */
 
     UtBeginEvent (i, "Generate AML code and write output files");
@@ -679,10 +676,11 @@ CmCleanupAndExit (
     if (Gbl_NsLookupCount)
     {
         DbgPrint (ASL_DEBUG_OUTPUT, "\n\nMiscellaneous compile statistics\n\n");
-        DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Total Namespace searches", Gbl_NsLookupCount);
+        DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Total Namespace searches", 
+            Gbl_NsLookupCount);
         DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Time per search",
-                        ((UINT32) (AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) * 1000) /
-                        Gbl_NsLookupCount);
+            ((UINT32) (AslGbl_Events[7].EndTime - AslGbl_Events[7].StartTime) * 
+                1000) / Gbl_NsLookupCount);
     }
 
     /* Close all open files */

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -175,9 +175,8 @@ CgAmlWriteWalk (
     void                    *Context)
 {
 
-    /*
-     * Debug output
-     */
+    /* Debug output */
+    
     DbgPrint (ASL_TREE_OUTPUT,
         "%5.5d [%2d]", Op->Asl.LogicalLineNumber, Level);
     UtPrintFormattedName (Op->Asl.ParseOpcode, Level);
@@ -212,9 +211,8 @@ CgAmlWriteWalk (
                 Op->Asl.Column,
                 Op->Asl.LineNumber);
 
-    /*
-     * Generate the AML for this node
-     */
+    /* Generate the AML for this node */
+    
     CgWriteNode (Op);
     return (AE_OK);
 }
@@ -224,7 +222,8 @@ CgAmlWriteWalk (
  *
  * FUNCTION:    CgLocalWriteAmlData
  *
- * PARAMETERS:  Buffer          - Buffer to write
+ * PARAMETERS:  Op              - Current parse op
+ *              Buffer          - Buffer to write
  *              Length          - Size of data in buffer
  *
  * RETURN:      None
@@ -239,7 +238,6 @@ CgLocalWriteAmlData (
     void                    *Buffer,
     UINT32                  Length)
 {
-
 
     /* Write the raw data to the AML file */
 
@@ -422,7 +420,7 @@ CgWriteAmlOpcode (
  *
  * PARAMETERS:  Op        - The DEFINITIONBLOCK node
  *
- * RETURN:      None.
+ * RETURN:      None
  *
  * DESCRIPTION: Write a table header corresponding to the DEFINITIONBLOCK
  *
@@ -479,7 +477,7 @@ CgWriteTableHeader (
 
     TableHeader.AslCompilerRevision = CompilerCreatorRevision;
 
-    /* Table length.  Checksum zero for now, will rewrite later */
+    /* Table length. Checksum zero for now, will rewrite later */
 
     TableHeader.Length   = Gbl_TableLength;
     TableHeader.Checksum = 0;
