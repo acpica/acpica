@@ -207,6 +207,7 @@ NsDumpOneObject (
     NAME_TABLE_ENTRY        *Appendage = NULL;
     NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) ObjHandle;
     ACPI_SIZE               Size = 0;
+    UINT8                   *Value;
 
 
     LevelTmp    = Level;
@@ -288,26 +289,24 @@ NsDumpOneObject (
     DEBUG_PRINT_RAW (TRACE_TABLES,
                 ("%4.4s [%s] ", &ThisEntry->Name, NsTypeNames[Type]));
 
-    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p PE:%p N:%p",
+    DEBUG_PRINT_RAW (TRACE_TABLES, ("%p S:%p O:%p",
                 ThisEntry,
                 ThisEntry->Scope, 
-                ThisEntry->ParentEntry,
-                ThisEntry->NextEntry));
+                ThisEntry->Object));
 
 
     if (TYPE_Method == Type && ThisEntry->Object)
     {
         /* name is a Method and its AML offset/length are set */
         
-        DEBUG_PRINT_RAW (TRACE_TABLES, (" @%04x(%04lx)\n",
-                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Offset,
-                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Length));                
+        DEBUG_PRINT_RAW (TRACE_TABLES, (" @%p-%X\n",
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.Pcode,
+                    ((ACPI_OBJECT_INTERNAL *) ThisEntry->Object)->Method.PcodeLength));                
     }
     
     else
     {
-        UINT8           *Value = ThisEntry->Object;
-
+        Value = ThisEntry->Object;
 
         /* name is not a Method, or the AML offset/length are not set */
         
