@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -379,6 +379,16 @@ AsConvertFile (
     Gbl_Files++;
     VERBOSE_PRINT (("Processing %d bytes\n", strlen (FileBuffer)));
 //    TERSE_PRINT (("."));
+
+
+    if (ConversionTable->LowerCaseTable)
+    {
+        for (i = 0; ConversionTable->LowerCaseTable[i].Identifier; i++)
+        {
+            AsLowerCaseString (ConversionTable->LowerCaseTable[i].Identifier,
+                                FileBuffer);
+        }
+    }
 
 
     /* Process all the string replacements */

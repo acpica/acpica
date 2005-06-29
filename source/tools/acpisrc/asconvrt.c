@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.17 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,39 @@
 char        *HeaderBegin = "/******************************************************************************\n *\n * 1. Copyright Notice";
 
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsMatchExactWord
+ *
+ * DESCRIPTION: Check previous and next characters for whitespace
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+AsMatchExactWord (
+    char                    *Word,
+    UINT32                  WordLength)
+{
+    char                    NextChar;
+    char                    PrevChar;
+
+
+    NextChar = Word[WordLength];
+    PrevChar = * (Word -1);
+
+    if (isalnum (NextChar) ||
+        (NextChar == '_')  ||
+        isalnum (PrevChar) ||
+        (PrevChar == '_'))
+    {
+        return (FALSE);
+    }
+
+    return (TRUE);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AsPrint
@@ -141,7 +174,6 @@ AsPrint (
 
     printf ("-- %4u %28.28s : %s\n", Count, Message, Filename);
 }
-
 
 
 /******************************************************************************
@@ -208,8 +240,6 @@ AsCheckAndSkipLiterals (
     }
     return SubBuffer;
 }
-
-
 
 
 /******************************************************************************
@@ -381,7 +411,7 @@ AsTrimWhitespace (
 
     while (ReplaceCount)
     {
-        ReplaceCount = AsReplaceString ("\n\n\n\n", "\n\n\n", Buffer);
+        ReplaceCount = AsReplaceString ("\n\n\n\n", "\n\n\n", REPLACE_SUBSTRINGS, Buffer);
     }
 }
 
@@ -445,6 +475,7 @@ int
 AsReplaceString (
     char                    *Target,
     char                    *Replacement,
+    UINT8                   Type,
     char                    *Buffer)
 {
     char                    *SubString1;
@@ -467,6 +498,11 @@ AsReplaceString (
         /* Find the target string */
 
         SubString1 = strstr (SubBuffer, Target);
+        if (!SubString1)
+        {
+            return ReplaceCount;
+        }
+
 
         /*
          * Check for translation escape string -- means to ignore
@@ -495,8 +531,18 @@ AsReplaceString (
 
         /* Do the actual replace if the target was found */
 
-        else if (SubString1)
+        else
         {
+            if (Type == REPLACE_WHOLE_WORD)
+            {
+                if (!AsMatchExactWord (SubString1, TargetLength))
+                {
+                    SubBuffer = SubString1 + 1;
+                    continue;
+                }
+            }
+
+
             SubBuffer = AsReplaceData (SubString1, TargetLength, Replacement, ReplacementLength);
             ReplaceCount++;
         }
@@ -504,6 +550,94 @@ AsReplaceString (
 
     return ReplaceCount;
 }
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsLowerCaseString
+ *
+ * DESCRIPTION: LowerCase all instances of a target string with a replacement
+ *              string.  Returns count of the strings replaced.
+ *
+ ******************************************************************************/
+
+int
+AsLowerCaseString (
+    char                    *Target,
+    char                    *Buffer)
+{
+    char                    *SubString1;
+    char                    *SubString2;
+    char                    *SubBuffer;
+    int                     TargetLength;
+    int                     LowerCaseCount = 0;
+    int                     i;
+
+
+    TargetLength = strlen (Target);
+
+    SubBuffer = Buffer;
+    SubString1 = Buffer;
+
+
+    while (SubString1)
+    {
+        /* Find the target string */
+
+        SubString1 = strstr (SubBuffer, Target);
+        if (!SubString1)
+        {
+            return LowerCaseCount;
+        }
+
+
+        /*
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+
+        SubString2 = strstr (SubBuffer, "/*!");
+
+        if ((SubString2) &&
+            (SubString2 < SubString1))
+        {
+            /* Find end of the escape block starting at "Substring2" */
+
+            SubString2 = strstr (SubString2, "!*/");
+            if (!SubString2)
+            {
+                /* Didn't find terminator */
+
+                return LowerCaseCount;
+            }
+
+            /* Move buffer to end of escape block and continue */
+
+            SubBuffer = SubString2;
+        }
+
+        /* Do the actual replace if the target was found */
+
+        else
+        {
+            if (!AsMatchExactWord (SubString1, TargetLength))
+            {
+                SubBuffer = SubString1 + 1;
+                continue;
+            }
+
+            for (i = 0; i < TargetLength; i++)
+            {
+                SubString1[i] = (char) tolower (SubString1[i]);
+            }
+
+            SubBuffer = SubString1 + TargetLength;
+            LowerCaseCount++;
+        }
+    }
+
+    return LowerCaseCount;
+}
+
 
 
 /******************************************************************************
@@ -595,6 +729,15 @@ AsMixedCaseToUnderscores (
                  (isupper (SubBuffer[1])))
 
         {
+            if (isdigit (SubBuffer[0]))
+            {
+                if (isupper (*(SubBuffer-1)))
+                {
+                    SubBuffer++;
+                    continue;
+                }
+            }
+
             /*
              * Matched the pattern.
              * Find the end of this identifier (token)
@@ -617,8 +760,8 @@ AsMixedCaseToUnderscores (
 
             while (*SubString != '\n')
             {
-                /* 
-                 * If we have at least two trailing spaces, we can get rid of 
+                /*
+                 * If we have at least two trailing spaces, we can get rid of
                  * one to make up for the newly inserted underscore.  This will
                  * help preserve the alignment of the text
                  */
@@ -648,7 +791,6 @@ AsMixedCaseToUnderscores (
 }
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AsLowerCaseIdentifiers
@@ -671,7 +813,6 @@ AsLowerCaseIdentifiers (
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
-
         if ((SubBuffer[0] == '/') &&
             (SubBuffer[1] == '*') &&
             (SubBuffer[2] == '!'))
@@ -702,10 +843,24 @@ AsLowerCaseIdentifiers (
         if (SubBuffer[0] == '\"')
         {
             SubBuffer++;
-            SubBuffer = AsSkipPastChar (SubBuffer, '\"');
-            if (!SubBuffer)
+
+            /* Find the closing quote */
+
+            while (1)
             {
-                return;
+                /* Ignore escaped quote characters */
+
+                if (SubBuffer[0] == '\\')
+                {
+                    SubBuffer++;
+                }
+
+                else if (SubBuffer[0] == '\"')
+                {
+                    SubBuffer++;
+                    break;
+                }
+                SubBuffer++;
             }
         }
 
@@ -781,7 +936,7 @@ AsBracesOnSameLine (
         if (!strncmp ("\n}", SubBuffer, 2))
         {
             /*
-             * A newline followed by a closing brace closes a function 
+             * A newline followed by a closing brace closes a function
              * or struct or initializer block
              */
             BlockBegin = TRUE;
@@ -817,7 +972,7 @@ AsBracesOnSameLine (
 
                 /*
                  * Move the brace up to the previous line, UNLESS:
-                 * 
+                 *
                  * 1) There is a conditional compile on the line (starts with '#')
                  * 2) Previous line ends with an '=' (Start of initializer block)
                  * 3) Previous line ends with a comma (part of an init list)
@@ -859,13 +1014,16 @@ AsBracesOnSameLine (
 void
 AsRemoveStatement (
     char                    *Buffer,
-    char                    *Keyword)
+    char                    *Keyword,
+    UINT32                  Type)
 {
     char                    *SubString;
     char                    *SubBuffer;
     int                     StrLength;
+    int                     KeywordLength;
 
 
+    KeywordLength = strlen (Keyword);
     SubBuffer = Buffer;
     SubString = Buffer;
 
@@ -877,6 +1035,13 @@ AsRemoveStatement (
         if (SubString)
         {
             SubBuffer = SubString;
+
+            if ((Type == REPLACE_WHOLE_WORD) &&
+                (!AsMatchExactWord (SubString, KeywordLength)))
+            {
+                SubBuffer++;
+                continue;
+            }
 
             /* Find start of this line */
 
@@ -940,20 +1105,44 @@ AsRemoveConditionalCompile (
     char                    *ElsePtr;
     char                    *Comment;
     int                     StrLength;
+    int                     KeywordLength;
 
 
+    KeywordLength = strlen (Keyword);
     SubBuffer = Buffer;
     SubString = Buffer;
 
 
     while (SubString)
     {
-        Comment = strstr (SubString, "/*");
         SubBuffer = strstr (SubString, Keyword);
         if (!SubBuffer)
         {
             return;
         }
+
+        /*
+         * Check for translation escape string -- means to ignore
+         * blocks of code while replacing
+         */
+        Comment = strstr (SubString, "/*!");
+
+        if ((Comment) &&
+            (Comment < SubBuffer))
+        {
+            SubString = strstr (Comment, "!*/");
+            if (!SubString)
+            {
+                return;
+            }
+
+            SubString += 3;
+            continue;
+        }
+
+        /* Check for ordinary comment */
+
+        Comment = strstr (SubString, "/*");
 
         if ((Comment) &&
             (Comment < SubBuffer))
@@ -969,6 +1158,11 @@ AsRemoveConditionalCompile (
         }
 
         SubString = SubBuffer;
+        if (!AsMatchExactWord (SubString, KeywordLength))
+        {
+            SubString++;
+            continue;
+        }
 
         /* Find start of this line */
 
@@ -1052,6 +1246,7 @@ AsRemoveConditionalCompile (
 
         Gbl_MadeChanges = TRUE;
         memmove (SubString, SubBuffer, StrLength+1);
+
         SubBuffer = SubString;
     }
 }
@@ -1342,7 +1537,7 @@ AsTabify8 (
             }
 
             /*
-             * This mechanism limits the difference in tab counts from 
+             * This mechanism limits the difference in tab counts from
              * line to line.  It helps avoid the situation where a second
              * continuation line (which was indented correctly for tabs=4) would
              * get indented off the screen if we just blindly converted to tabs.
@@ -1512,17 +1707,20 @@ AsRemoveDebugMacros (
     char                    *Buffer)
 {
     AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG");
-    AsRemoveConditionalCompile (Buffer, "ACPI_DEBUG_TRACK_ALLOCATIONS");
 
-    AsRemoveStatement (Buffer, "DEBUG_PRINT");
-    AsRemoveStatement (Buffer, "DEBUG_EXEC");
-    AsRemoveStatement (Buffer, "FUNCTION_TRACE");
-    AsRemoveStatement (Buffer, "DUMP_");
+    AsRemoveStatement (Buffer, "ACPI_DEBUG_PRINT",      REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "ACPI_DEBUG_PRINT_RAW",  REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "DEBUG_EXEC",            REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "FUNCTION_ENTRY",        REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "PROC_NAME",             REPLACE_WHOLE_WORD);
+    AsRemoveStatement (Buffer, "FUNCTION_TRACE",        REPLACE_SUBSTRINGS);
+    AsRemoveStatement (Buffer, "DUMP_",                 REPLACE_SUBSTRINGS);
 
-    AsReplaceString ("return_VOID",         "return", Buffer);
-    AsReplaceString ("return_PTR",          "return", Buffer);
-    AsReplaceString ("return_ACPI_STATUS",  "return", Buffer);
-    AsReplaceString ("return_VALUE",        "return", Buffer);
+    AsReplaceString ("return_VOID",         "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_PTR",          "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_ACPI_STATUS",  "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_acpi_status",  "return", REPLACE_WHOLE_WORD, Buffer);
+    AsReplaceString ("return_VALUE",        "return", REPLACE_WHOLE_WORD, Buffer);
 }
 
 

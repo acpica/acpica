@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.20 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -152,30 +152,30 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
     /* Declarations first */
 
-    "UINT32_BIT  ",     "unsigned int",
+    "UINT32_BIT  ",     "unsigned int",     REPLACE_SUBSTRINGS,
 
-    "UINT32      ",     "unsigned int",
-    "UINT16        ",   "unsigned short",
-    "UINT8        ",    "unsigned char",
-    "BOOLEAN      ",    "unsigned char",
+    "UINT32      ",     "unsigned int",     REPLACE_SUBSTRINGS,
+    "UINT16        ",   "unsigned short",   REPLACE_SUBSTRINGS,
+    "UINT8        ",    "unsigned char",    REPLACE_SUBSTRINGS,
+    "BOOLEAN      ",    "unsigned char",    REPLACE_SUBSTRINGS,
 
     /* Now do embedded typecasts */
 
-    "UINT32",           "unsigned int",
-    "UINT16",           "unsigned short",
-    "UINT8",            "unsigned char",
-    "BOOLEAN",          "unsigned char",
+    "UINT32",           "unsigned int",     REPLACE_SUBSTRINGS,
+    "UINT16",           "unsigned short",   REPLACE_SUBSTRINGS,
+    "UINT8",            "unsigned char",    REPLACE_SUBSTRINGS,
+    "BOOLEAN",          "unsigned char",    REPLACE_SUBSTRINGS,
 
-    "INT32  ",          "int    ",
-    "INT32",            "int",
-    "INT16",            "short",
-    "INT8",             "char",
+    "INT32  ",          "int    ",          REPLACE_SUBSTRINGS,
+    "INT32",            "int",              REPLACE_SUBSTRINGS,
+    "INT16",            "short",            REPLACE_SUBSTRINGS,
+    "INT8",             "char",             REPLACE_SUBSTRINGS,
 
     /* Put back anything we broke (such as anything with _INT32_ in it) */
 
-    "_int_",            "_INT32_",
-    "_unsigned int_",   "_UINT32_",
-    NULL,               NULL
+    "_int_",            "_INT32_",          REPLACE_SUBSTRINGS,
+    "_unsigned int_",   "_UINT32_",         REPLACE_SUBSTRINGS,
+    NULL,               NULL,               0
 };
 
 
@@ -209,36 +209,158 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Declarations first */
 
-    "UINT32_BIT  ",     "u32         ",
+    "UINT32_BIT  ",             "u32         ",             REPLACE_WHOLE_WORD,
 
-    "UINT32      ",     "u32         ",
-    "UINT16      ",     "u16         ",
-    "UINT8       ",     "u8          ",
-    "BOOLEAN     ",     "u8          ",
+    "UINT64      ",             "u64         ",             REPLACE_WHOLE_WORD,
+    "UINT32      ",             "u32         ",             REPLACE_WHOLE_WORD,
+    "UINT16      ",             "u16         ",             REPLACE_WHOLE_WORD,
+    "UINT8       ",             "u8          ",             REPLACE_WHOLE_WORD,
+    "BOOLEAN     ",             "u8          ",             REPLACE_WHOLE_WORD,
 
     /* Now do embedded typecasts */
 
-    "UINT32",           "u32",
-    "UINT16",           "u16",
-    "UINT8",            "u8",
-    "BOOLEAN",          "u8",
+    "UINT64",                   "u64",                      REPLACE_WHOLE_WORD,
+    "UINT32",                   "u32",                      REPLACE_WHOLE_WORD,
+    "UINT16",                   "u16",                      REPLACE_WHOLE_WORD,
+    "UINT8",                    "u8",                       REPLACE_WHOLE_WORD,
+    "BOOLEAN",                  "u8",                       REPLACE_WHOLE_WORD,
 
-    "INT32  ",          "s32    ",
-    "INT32",            "s32",
-    "INT16  ",          "s16    ",
-    "INT8   ",          "s8     ",
-    "INT16",            "s16",
-    "INT8",             "s8",
+    "INT64  ",                  "s64    ",                  REPLACE_WHOLE_WORD,
+    "INT64",                    "s64",                      REPLACE_WHOLE_WORD,
+    "INT32  ",                  "s32    ",                  REPLACE_WHOLE_WORD,
+    "INT32",                    "s32",                      REPLACE_WHOLE_WORD,
+    "INT16  ",                  "s16    ",                  REPLACE_WHOLE_WORD,
+    "INT8   ",                  "s8     ",                  REPLACE_WHOLE_WORD,
+    "INT16",                    "s16",                      REPLACE_WHOLE_WORD,
+    "INT8",                     "s8",                       REPLACE_WHOLE_WORD,
 
     /* Put back anything we broke (such as anything with _INTxx_ in it) */
 
-    "_s32_",            "_INT32_",
-    "_u32_",            "_UINT32_",
-    "_s16_",            "_INT16_",
-    "_u16_",            "_UINT16_",
-    "_s8_",             "_INT8_",
-    "_u8_",             "_UINT8_",
-    NULL,               NULL
+/* No longer needed?
+
+    "_s32_",                    "_INT32_",          REPLACE_SUBSTRINGS,
+    "_u32_",                    "_UINT32_",          REPLACE_SUBSTRINGS,
+    "_s16_",                    "_INT16_",          REPLACE_SUBSTRINGS,
+    "_u16_",                    "_UINT16_",          REPLACE_SUBSTRINGS,
+    "_s8_",                     "_INT8_",          REPLACE_SUBSTRINGS,
+    "_u8_",                     "_UINT8_",          REPLACE_SUBSTRINGS,
+*/
+
+NULL,                       NULL,                       0};
+
+ACPI_IDENTIFIER_TABLE           LinuxLowerCase[] = {
+
+    /*"ACPI_IO_ADDRESS  ",        "acpi_io_address  ",*/
+    /*"ACPI_PHYSICAL_ADDRESS  ",  "acpi_physical_address  ",*/
+    /*"NATIVE_UINT  ",            "native_uint  ",*/
+    /*"NATIVE_INT  ",             "native_int  ",*/
+    /*"NATIVE_CHAR  ",            "native_char  ",*/
+
+    "ACPI_ADR_SPACE_HANDLER",
+    "ACPI_ADR_SPACE_INFO",
+    "ACPI_ADR_SPACE_SETUP",
+    "ACPI_BUFFER",
+    "ACPI_BUS_ATTRIBUTE",
+    "ACPI_COMMON_FACS",
+    "ACPI_COMMON_STATE",
+    "ACPI_CONTROL_STATE",
+    "ACPI_DEBUG_MEM_BLOCK",
+    "ACPI_DEBUG_MEM_HEADER",
+    "ACPI_DEBUG_PRINT_INFO",
+    "ACPI_DEVICE_ID",
+    "ACPI_DEVICE_INFO",
+    "ACPI_DEVICE_WALK_INFO",
+    "ACPI_EVENT_HANDLER",
+    "ACPI_EVENT_STATUS",
+    "ACPI_EVENT_TYPE",
+    "ACPI_FIELD_INFO",
+    "ACPI_FIXED_EVENT_INFO",
+    "ACPI_GENERIC_ADDRESS",
+    "ACPI_GENERIC_STATE",
+    "ACPI_GET_DEVICES_INFO",
+    "ACPI_GPE_HANDLER",
+    "ACPI_GPE_LEVEL_INFO",
+    "ACPI_GPE_REGISTERS",
+    "ACPI_HANDLE",
+    "ACPI_INTEGER",
+    "ACPI_INIT_WALK_INFO",
+    "ACPI_IO_ATTRIBUTE",
+    "ACPI_MEM_SPACE_CONTEXT",
+    "ACPI_MEMORY_ATTRIBUTE",
+    "ACPI_MUTEX",
+    "ACPI_MUTEX_INFO",
+    "ACPI_NAME",
+    "ACPI_NAMESPACE_NODE",
+    "ACPI_NAMESTRING_INFO",
+    "ACPI_NOTIFY_HANDLER",
+    "ACPI_NOTIFY_INFO",
+    "ACPI_OBJ_INFO_HEADER",
+    "ACPI_OBJECT",
+    "ACPI_OBJECT_LIST",
+    "ACPI_OBJECT_TYPE",
+    "ACPI_OBJECT_TYPE8",
+    "ACPI_OPCODE_INFO",
+    "ACPI_OPERAND_OBJECT",
+    "ACPI_OWNER_ID",
+    "ACPI_PARSE_DOWNWARDS",
+    "ACPI_PARSE_OBJECT",
+    "ACPI_PARSE_STATE",
+    "ACPI_PARSE_UPWARDS",
+    "ACPI_PARSE_VALUE",
+    "ACPI_PARSE2_OBJECT",
+    "ACPI_PCI_ID",
+    "ACPI_PKG_INFO",
+    "ACPI_PKG_STATE",
+    "ACPI_PSCOPE_STATE",
+    "ACPI_RESOURCE",
+    "ACPI_RESOURCE_ADDRESS16",
+    "ACPI_RESOURCE_ADDRESS32",
+    "ACPI_RESOURCE_ADDRESS64",
+    "ACPI_RESOURCE_ATTRIBUTE",
+    "ACPI_RESOURCE_DATA",
+    "ACPI_RESOURCE_DMA",
+    "ACPI_RESOURCE_EXT_IRQ",
+    "ACPI_RESOURCE_FIXED_IO",
+    "ACPI_RESOURCE_FIXED_MEM32",
+    "ACPI_RESOURCE_IO",
+    "ACPI_RESOURCE_IRQ",
+    "ACPI_RESOURCE_MEM24",
+    "ACPI_RESOURCE_MEM32",
+    "ACPI_RESOURCE_SOURCE",
+    "ACPI_RESOURCE_START_DPF",
+    "ACPI_RESOURCE_TYPE",
+    "ACPI_RESOURCE_VENDOR",
+    "ACPI_RESULT_VALUES",
+    "ACPI_SCOPE_STATE",
+    "ACPI_STATUS",
+    "ACPI_STRING",
+    "ACPI_SYSTEM_INFO",
+    "ACPI_TABLE_DESC",
+    "ACPI_TABLE_HEADER",
+    "ACPI_TABLE_INFO",
+    "ACPI_TABLE_TYPE",
+    "ACPI_TABLE_TYPE",
+    "ACPI_UPDATE_STATE",
+    "ACPI_WALK_CALLBACK",
+    "ACPI_WALK_INFO",
+    "ACPI_WALK_LIST",
+    "ACPI_WALK_STATE",
+    "DB_METHOD_INFO",
+    "FACS_DESCRIPTOR_REV071",
+    "FACS_DESCRIPTOR_REV1",
+    "FACS_DESCRIPTOR_REV2",
+    "FADT_DESCRIPTOR_REV071",
+    "FADT_DESCRIPTOR_REV1",
+    "FADT_DESCRIPTOR_REV2",
+    "FIND_CONTEXT",
+    "NS_SEARCH_DATA",
+    "OPERATING_MODE",
+    "PCI_ROUTING_TABLE",
+    "PREDEFINED_NAMES",
+    "UINT64_STRUCT",
+    "XSDT_DESCRIPTOR",
+
+    NULL,
 };
 
 
@@ -261,6 +383,8 @@ ACPI_CONVERSION_TABLE       LinuxConversionTable = {
 
     LinuxHeader,
     FLG_NO_CARRIAGE_RETURNS | FLG_LOWERCASE_DIRNAMES,
+
+    LinuxLowerCase,
 
     /* C source files */
 
@@ -293,7 +417,7 @@ ACPI_CONVERSION_TABLE       CleanupConversionTable = {
 
     NULL,
     FLG_DEFAULT_FLAGS,
-
+    NULL,
     /* C source files */
 
     NULL,
@@ -314,6 +438,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 
     NULL,
     FLG_NO_FILE_OUTPUT,
+    NULL,
 
     /* C source files */
 
@@ -340,14 +465,14 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    "2000, 2001, Intel Corp",     "2000, 2001, Intel Corp",
-    "ACPI_TYPE_INTEGER",     "ACPI_TYPE_INTEGER",
-    "ARGI_INTEGER",          "ARGI_INTEGER",
-    "ARGP_INTEGER",          "ARGP_INTEGER",
-    "ACPI_BTYPE_INTEGER",    "ACPI_BTYPE_INTEGER",
-    "ACPI_OBJECT_INTEGER",   "ACPI_OBJECT_INTEGER",
-    "->Integer",             "->Integer",
-    NULL,                   NULL
+    "2000, 2001, Intel Corp",     "2000, 2001, Intel Corp",     REPLACE_WHOLE_WORD,
+    "ACPI_TYPE_INTEGER",     "ACPI_TYPE_INTEGER",               REPLACE_WHOLE_WORD,
+    "ARGI_INTEGER",          "ARGI_INTEGER",                    REPLACE_WHOLE_WORD,
+    "ARGP_INTEGER",          "ARGP_INTEGER",                    REPLACE_WHOLE_WORD,
+    "ACPI_BTYPE_INTEGER",    "ACPI_BTYPE_INTEGER",              REPLACE_WHOLE_WORD,
+    "ACPI_OBJECT_INTEGER",   "ACPI_OBJECT_INTEGER",             REPLACE_WHOLE_WORD,
+    "->Integer",             "->Integer",                       REPLACE_WHOLE_WORD,
+    NULL,                   NULL, 0
 };
 
 
@@ -355,6 +480,7 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
 
     NULL,
     FLG_DEFAULT_FLAGS,
+    NULL,
 
     /* C source files */
 
@@ -528,7 +654,6 @@ main (
     UINT32                  FileType;
 
 
-
     printf ("ACPI Source Code Conversion Utility ");
     printf ("version [%s]\n", __DATE__);
 
@@ -599,7 +724,7 @@ main (
         AsDisplayUsage ();
         return -1;
     }
-        
+
     TargetPath = argv[optind+1];
 
     if (!ConversionTable)
@@ -643,7 +768,9 @@ main (
     {
         /* Process a single file */
 
-        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_HEADER);
+        /* TBD: Need to differentiate between source and header files !! */
+
+        AsProcessOneFile (ConversionTable, NULL, TargetPath, 0, SourcePath, FILE_TYPE_SOURCE);
     }
 
     /* Always display final summary and stats */

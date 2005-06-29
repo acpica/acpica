@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -214,6 +214,8 @@ typedef struct acpi_conversion_table
     char                        *NewHeader;
     UINT32                      Flags;
 
+    ACPI_IDENTIFIER_TABLE       *LowerCaseTable;
+
     ACPI_STRING_TABLE           *SourceStringTable;
     ACPI_IDENTIFIER_TABLE       *SourceLineTable;
     ACPI_IDENTIFIER_TABLE       *SourceConditionalTable;
@@ -252,12 +254,16 @@ AsReplaceData (
     char                    *BufferToAdd,
     UINT32                  LengthToAdd);
 
-
 int
 AsReplaceString (
     char                    *Target,
     char                    *Replacement,
     UINT8                   Type,
+    char                    *Buffer);
+
+int
+AsLowerCaseString (
+    char                    *Target,
     char                    *Buffer);
 
 void
