@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.96 $
+ *              $Revision: 1.99 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -181,6 +181,7 @@ enum AcpiExDebuggerCommands
     CMD_TERMINATE,
     CMD_THREADS,
     CMD_TREE,
+    CMD_TYPE,
     CMD_UNLOAD
 };
 
@@ -238,6 +239,7 @@ static const COMMAND_INFO       AcpiGbl_DbCommands[] =
     {"TERMINATE",    0},
     {"THREADS",      3},
     {"TREE",         0},
+    {"TYPE",         1},
     {"UNLOAD",       1},
     {NULL,           0}
 };
@@ -619,7 +621,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_FIND:
-        AcpiDbFindNameInNamespace (AcpiGbl_DbArgs[1]);
+        Status = AcpiDbFindNameInNamespace (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_GO:
@@ -728,7 +730,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_METHODS:
-        AcpiDbDisplayObjects ("METHOD", AcpiGbl_DbArgs[1]);
+        Status = AcpiDbDisplayObjects ("METHOD", AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_NAMESPACE:
@@ -742,7 +744,7 @@ AcpiDbCommandDispatch (
 
     case CMD_OBJECT:
         ACPI_STRUPR (AcpiGbl_DbArgs[1]);
-        AcpiDbDisplayObjects (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2]);
+        Status = AcpiDbDisplayObjects (AcpiGbl_DbArgs[1], AcpiGbl_DbArgs[2]);
         break;
 
     case CMD_OPEN:
@@ -774,7 +776,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_STATS:
-        AcpiDbDisplayStatistics (AcpiGbl_DbArgs[1]);
+        Status = AcpiDbDisplayStatistics (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_STOP:
@@ -799,6 +801,10 @@ AcpiDbCommandDispatch (
 
     case CMD_TREE:
         AcpiDbDisplayCallingTree ();
+        break;
+
+    case CMD_TYPE:
+        AcpiDbDisplayObjectType (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_UNLOAD:
