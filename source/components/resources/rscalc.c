@@ -2,7 +2,7 @@
  *
  * Module Name: rscalc - AcpiRsCalculateByteStreamLength
  *                       AcpiRsCalculateListLength
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  ******************************************************************************/
 
@@ -950,7 +950,7 @@ AcpiRsCalculatePciRoutingTableLength (
             }
         }
 
-	TempSizeNeeded += (sizeof (PCI_ROUTING_TABLE) - 1);
+        TempSizeNeeded += (sizeof (PCI_ROUTING_TABLE) - 1);
 
         /*
          * Was a String type found?
@@ -961,7 +961,7 @@ AcpiRsCalculatePciRoutingTableLength (
              * The length String.Length field includes the
              * terminating NULL
              */
-	    TempSizeNeeded += (*SubObjectList)->String.Length;
+            TempSizeNeeded += (*SubObjectList)->String.Length;
         }
 
         else
