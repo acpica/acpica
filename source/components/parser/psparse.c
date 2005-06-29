@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.129 $
+ *              $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -206,60 +206,6 @@ AcpiPsPeekOpcode (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsFindObject
- *
- * PARAMETERS:  Opcode          - Current opcode
- *              ParserState     - Current state
- *              WalkState       - Current state
- *              *Op             - Where found/new op is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Find a named object.  Two versions - one to search the parse
- *              tree (for parser-only applications such as acpidump), another
- *              to search the ACPI internal namespace (the parse tree may no
- *              longer exist)
- *
- ******************************************************************************/
-
-#ifdef PARSER_ONLY
-
-ACPI_STATUS
-AcpiPsFindObject (
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_PARSE_OBJECT       **OutOp)
-{
-    NATIVE_CHAR             *Path;
-
-
-    /* We are only interested in opcodes that have an associated name */
-
-    if (!(WalkState->OpInfo->Flags & AML_NAMED))
-    {
-        *OutOp = WalkState->Op;
-        return (AE_OK);
-    }
-
-    /* Find the name in the parse tree */
-
-    Path = AcpiPsGetNextNamestring (&WalkState->ParserState);
-
-    *OutOp = AcpiPsFind (AcpiPsGetParentScope (&WalkState->ParserState),
-                 Path, WalkState->Opcode, 1);
-
-    if (!(*OutOp))
-    {
-        return (AE_NOT_FOUND);
-    }
-
-    return (AE_OK);
-}
-
-#endif
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiPsCompleteThisOp
  *
  * PARAMETERS:  WalkState       - Current State
@@ -276,7 +222,6 @@ AcpiPsCompleteThisOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op)
 {
-#ifndef PARSER_ONLY
     ACPI_PARSE_OBJECT       *Prev;
     ACPI_PARSE_OBJECT       *Next;
     const ACPI_OPCODE_INFO  *ParentInfo;
@@ -431,10 +376,6 @@ AcpiPsCompleteThisOp (
     }
 
     return_VOID;
-
-#else
-    return;
-#endif
 }
 
 
