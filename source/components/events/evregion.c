@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace / OpRegion handler dispatch
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -153,6 +153,12 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
      * and registration must occur for a specific device.  In the case
      * system memory and IO address spaces there is currently no device
      * associated with the address space.  For these we use the root.
+     * We install the default PCI config space handler at the root so
+     * that this space is immediately available even though the we have
+     * not enumerated all the PCI Root Buses yet.  This is to conform
+     * to the ACPI specification which states that the PCI config
+     * space must be always available -- even though we are nowhere
+     * near ready to find the PCI root buses at this point.
      *
      * NOTE: We ignore AE_EXIST because this means that a handler has
      * already been installed (via AcpiInstallAddressSpaceHandler)
@@ -169,6 +175,15 @@ AcpiEvInstallDefaultAddressSpaceHandlers (
 
     Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
                                              ADDRESS_SPACE_SYSTEM_IO,
+                                             ACPI_DEFAULT_HANDLER, NULL, NULL);
+    if ((ACPI_FAILURE (Status)) &&
+        (Status != AE_EXIST))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiInstallAddressSpaceHandler (AcpiGbl_RootNode,
+                                             ADDRESS_SPACE_PCI_CONFIG,
                                              ACPI_DEFAULT_HANDLER, NULL, NULL);
     if ((ACPI_FAILURE (Status)) &&
         (Status != AE_EXIST))
