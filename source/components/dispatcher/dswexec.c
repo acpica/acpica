@@ -118,12 +118,11 @@
 #define __PSXEXEC_C__
 
 #include <acpi.h>
-#include <interpreter.h>
 #include <amlcode.h>
+#include <parser.h>
+#include <interpreter.h>
 #include <namespace.h>
 
-#include <parser.h>
-#include <psopcode.h>
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psxexec");
@@ -223,8 +222,9 @@ PsxExecEndOp (
     ACPI_GENERIC_OP         *NextOp;
     NAME_TABLE_ENTRY        *Entry;
     ACPI_GENERIC_OP         *FirstArg;
-    ACPI_OBJECT_INTERNAL    **StartOfOperands;
+//    ACPI_OBJECT_INTERNAL    **StartOfOperands;
     ACPI_OP_INFO            *OpInfo;
+    UINT32                  OperandIndex;
 
 
     FUNCTION_TRACE_PTR ("PsxExecEndOp", Op);
@@ -244,6 +244,8 @@ PsxExecEndOp (
 
     Optype = OpInfo->Type;
     FirstArg = Op->Value.Arg;
+    WalkState->NumOperands = 0;
+
 
     /* Decode the opcode */
 
@@ -284,112 +286,111 @@ PsxExecEndOp (
     case OPTYPE_CREATE_FIELD:
     case OPTYPE_FATAL:
 
-        Status = PsxCreateOperands (FirstArg);
+        Status = PsxCreateOperands (WalkState, FirstArg);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
         }
 
+        OperandIndex = WalkState->NumOperands - 1;
 
         switch (Optype)
         {
 
         case OPTYPE_MONADIC1:
 
-            /* One operand, no result */
+            /* 1 Operand, 0 ExternalResult, 0 InternalResult */
 
-            Status = AmlExecMonadic1 (Opcode);
+            Status = AmlExecMonadic1 (Opcode, &WalkState->Operands [OperandIndex]);
             break;
 
 
         case OPTYPE_MONADIC2:
 
-            /* One operand, no result */
+            /* 1 Operand, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecMonadic2 (Opcode);
+            Status = AmlExecMonadic2 (Opcode, &WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+
             break;
 
 
         case OPTYPE_MONADIC2R:
 
-            /* One operand with result value */
+            /* 1 Operand, 1 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecMonadic2R (Opcode);
+            Status = AmlExecMonadic2R (Opcode, &WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+
             break;
 
 
         case OPTYPE_DYADIC1:
 
-            /* Two operands, no result */
+            /* 2 Operands, 0 ExternalResult, 0 InternalResult */
 
-            Status = AmlExecDyadic1 (Opcode);
+            Status = AmlExecDyadic1 (Opcode, &WalkState->Operands [OperandIndex]);
+
             break;
 
 
         case OPTYPE_DYADIC2:
 
-            /* Two operands, no result */
+            /* 2 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecDyadic2 (Opcode);
+            Status = AmlExecDyadic2 (Opcode, &WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+
             break;
 
 
         case OPTYPE_DYADIC2R:
 
-            /* Two operands, one or two result values */
+            /* 2 Operands, 1 or 2 ExternalResults, 1 InternalResult */
 
-            Status = AmlExecDyadic2R (Opcode);
-
-            /* Divide (only) returns two results */
-
-            if (Op->Opcode == AML_DivideOp)
-            {
-                /* Delete the REMAINDER object (leaving only the RESULT object) */
-
-                AmlObjStackDeleteValue (STACK_TOP);
-                AmlObjStackPop (1);
-            }
+            Status = AmlExecDyadic2R (Opcode, &WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
 
             break;
 
 
-        case OPTYPE_DYADIC2S:
+        case OPTYPE_DYADIC2S:   /* Synchronization Operator */
 
-            /* Synchronization operator, two operands */
+            /* 2 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecDyadic2S (Opcode);
+            Status = AmlExecDyadic2S (Opcode, &WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+
             break;
 
 
         case OPTYPE_CREATE_FIELD:
 
-            /* Three or four operands */
+            /* 3 or 4 Operands, 0 ExternalResult, 0 InternalResult */
 
-            Status = AmlExecCreateField (Opcode);
+            Status = AmlExecCreateField (Opcode, &WalkState->Operands [OperandIndex]);
+
             break;
 
 
         case OPTYPE_FATAL:
 
-            /* Three operands */
+            /* 3 Operands, 0 ExternalResult, 0 InternalResult */
 
-            Status = AmlExecFatal ();
+            Status = AmlExecFatal (&WalkState->Operands [OperandIndex]);
             break;
 
 
-        case OPTYPE_INDEX:
+        case OPTYPE_INDEX:  /* Type 2 opcode with 3 operands */
 
-            /* Three operands */
+            /* 3 Operands, 1 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecIndex ();
+            Status = AmlExecIndex (&WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+
             break;
 
 
-        case OPTYPE_MATCH:
+        case OPTYPE_MATCH:  /* Type 2 opcode with 6 operands */
 
-            /* Six operands! */
+            /* 6 Operands, 0 ExternalResult, 1 InternalResult */
 
-            Status = AmlExecMatch ();
+            Status = AmlExecMatch (&WalkState->Operands [OperandIndex], (ACPI_OBJECT_INTERNAL **) &Op->ResultObj);
+
             break;
         }
 
@@ -397,10 +398,11 @@ PsxExecEndOp (
 
 
 
-    case OPTYPE_CONTROL:
+    case OPTYPE_CONTROL:    /* Type 1 opcode, IF/ELSE/WHILE/NOOP */
+
+        /* 1 Operand, 0 ExternalResult, 0 InternalResult */
 
         Status = PsxExecEndControlOp (WalkState, Op);
-        break;
 
         break;
 
@@ -410,16 +412,30 @@ PsxExecEndOp (
         DEBUG_PRINT (TRACE_PARSE, ("EndOp: Method invocation, Op=%X\n", Op));
 
         /*
-         * (AML_METHODCALL) Op->Entry contains the method NTE
+         * (AML_METHODCALL) Op->Value->Arg->ResultObj contains the method NTE pointer
          */
-        Entry =  Op->Entry;
-
         NextOp = FirstArg;          /* NextOp points to the op that holds the method name */
+        Entry = NextOp->ResultObj;
+
         NextOp = NextOp->Next;      /* NextOp points to first argument op */
 
-        StartOfOperands = AmlObjStackGetPtr (STACK_TOP);
 
-        Status = PsxCreateOperands (NextOp);
+        /*
+         * Get the method's arguments and put them on the operand stack
+         */
+
+        Status = PsxCreateOperands (WalkState, NextOp);
+        if (ACPI_FAILURE (Status))
+        {
+            break;
+        }
+
+        /*
+         * Since the operands will be passed to another control method, we must
+         * resolve all local references here (Local variables, arguments to *this* method, etc.)
+         */
+
+        Status = PsxResolveOperands (WalkState);
         if (ACPI_FAILURE (Status))
         {
             break;
@@ -434,31 +450,20 @@ PsxExecEndOp (
             break;
         }
 
-
-        /* Open new frame on method stack */
-        /* Get arguments and push on method stack */
-
-
-        /* Push new frame on Method stack */
-
-        Status = AmlMthStackPush (StartOfOperands);
-        if (ACPI_FAILURE (Status))
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("EndOp: Could not push Method Stack\n"));
-            break;
-        }
-
-
-        /* Tell walk loop to preempt running method and execute this method */
+        /* Tell the walk loop to preempt this running method and execute the new method */
 
         Status = AE_PENDING;
+
+        /* Return now; we don't want to disturb anything, especially the operand count! */
+
+        return_ACPI_STATUS (Status);
         break;
 
 
     case OPTYPE_RECONFIGURATION:
 
-        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Unimplemented reconfig opcode Op=%X\n",
-                        Op));
+        DEBUG_PRINT (ACPI_ERROR, ("EndOp: Unimplemented reconfig opcode=%X Op=%X\n",
+                        Op->Opcode, Op));
 
         Status = AE_NOT_IMPLEMENTED;
         break;
@@ -473,7 +478,7 @@ PsxExecEndOp (
             DEBUG_PRINT (TRACE_EXEC, ("EndOp: Executing OpRegion Address/Length Op=%X\n",
                             Op));
 
-            Status = PsxEvalRegionOperands (Op);
+            Status = PsxEvalRegionOperands (WalkState, Op);
 
 
             break;
@@ -482,6 +487,7 @@ PsxExecEndOp (
         case AML_MethodOp:
             
             /* End of execution, nothing else to do */
+
             break;
 
 
@@ -509,15 +515,19 @@ PsxExecEndOp (
         (WalkState->ControlState->Exec == CONTROL_PREDICATE_EXECUTING) &&
         (WalkState->ControlState->PredicateOp == Op))
     {
-        DEBUG_PRINT (TRACE_EXEC, ("EndOp: Completed a predicate eval, opcode Op=%X\n",
-                        Op));
+        /* Completed the predicate, the result must be a number */
 
-        /* Completed the predicate, the result must be a number on the object stack */
 
-        ObjDesc = AmlObjStackGetValue (STACK_TOP);
+/* TBD: REDO now that we have the resultobj mechanism */
+
+        ObjDesc = Op->ResultObj;
+
         if ((!ObjDesc) ||
             (ObjDesc->Common.Type != ACPI_TYPE_Number))
         {
+            DEBUG_PRINT (ACPI_ERROR, ("EndOp: Bad predicate ObjDesc=%X State=%X\n",
+                            ObjDesc, WalkState));
+
             Status = AE_AML_ERROR;
             goto Cleanup;
         }
@@ -536,10 +546,15 @@ PsxExecEndOp (
             Status = AE_FALSE;
         }
 
-        /* Delete the predicate object (we know that we don't need it anymore) and cleanup the stack */
+        DEBUG_PRINT (TRACE_EXEC, ("EndOp: Completed a predicate eval=%X Op=%X\n",
+                        WalkState->ControlState->Predicate, Op));
 
-        AmlObjStackDeleteValue (STACK_TOP);
-        AmlObjStackPop (1);
+        /* Delete the predicate result object (we know that we don't need it anymore) and cleanup the stack */
+
+        CmDeleteInternalObject (Op->ResultObj);
+        Op->ResultObj = NULL;
+
+        PsxObjStackPop (1, WalkState);
 
         WalkState->ControlState->Exec = CONTROL_NORMAL;
     }
@@ -547,10 +562,19 @@ PsxExecEndOp (
 
 Cleanup:
 
-    /* TBD: what to do with return value? */
+    if (Op->ResultObj)
+    {
+        /* TBD: Delete the result op IFF:
+         * Parent will not use the result -- such as any non-nested type2 op in a method (parent will be method)
+         */
+        PsxDeleteResultIfNotUsed (Op);
+    }
 
+    /* Always clear the object stack */
+
+    WalkState->NumOperands = 0; /* TBD Clear stack of return value, but don't delete it */
+    
     return_ACPI_STATUS (Status);
-
 }
 
 
