@@ -173,7 +173,7 @@ AcpiEnable (void)
         return_ACPI_STATUS (AE_ERROR);
     }
 
-    Gbl_OriginalMode = HwGetMode();
+    Gbl_OriginalMode = HwGetMode ();
 
     if (EvInstallSciHandler () != AE_OK)
     {   
@@ -1084,7 +1084,14 @@ AcpiInstallGpeHandler (
 
     /* Parameter validation */
 
-    if (!Handler || (GpeNumber >= (Gbl_GpeRegisterCount * sizeof(GPE_REGISTERS))))
+    if (!Handler || (GpeNumber > NUM_GPE))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Ensure that we have a valid GPE number */
+
+    if (Gbl_GpeValid[GpeNumber] == GPE_INVALID)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -1100,12 +1107,10 @@ AcpiInstallGpeHandler (
         goto Cleanup;
     }
 
-
     /* Install the handler */
 
     Gbl_GpeInfo[GpeNumber].Handler = Handler;
     Gbl_GpeInfo[GpeNumber].Context = Context;
-
 
     /* Now we can enable the GPE */
 
@@ -1143,7 +1148,14 @@ AcpiRemoveGpeHandler (
 
     /* Parameter validation */
 
-    if (!Handler || (GpeNumber >= (Gbl_GpeRegisterCount * sizeof(GPE_REGISTERS))))
+    if (!Handler || (GpeNumber > NUM_GPE))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Ensure that we have a valid GPE number */
+
+    if (Gbl_GpeValid[GpeNumber] == GPE_INVALID)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -1179,97 +1191,149 @@ Cleanup:
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiEnableGpe
+ * FUNCTION:    AcpiEnableEvent
  *
- * PARAMETERS:  GpeNumber       - The GPE number
+ * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ *              Type            - The type of event
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Enable a single GPE 
+ * DESCRIPTION: Enable an ACPI event (fixed and general purpose)
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiEnableGpe (
-    UINT32                  GpeNumber)
+AcpiEnableEvent (
+    UINT32                  Event,
+    UINT32                  Type)
 {
-    FUNCTION_TRACE ("AcpiEnableGpe");
+    ACPI_STATUS             Status = AE_OK;
 
-    /*
-     * TBD: Make sure this GpeNumber is valid, then pass RegisterIndex/BitIndex
-     *      to HwEnableGpe.
-     *
-     * UINT32                  RegisterIndex;
-     * UINT8                   BitIndex;
-     */
+    FUNCTION_TRACE ("AcpiEnableEvent");
 
-    HwEnableGpe(GpeNumber);
+    switch (Type)
+    {
+    case EVENT_FIXED:
+        /*
+         * TBD - Fixed events...
+         */
+        Status = AE_NOT_IMPLEMENTED;
+        break;
 
-    return_ACPI_STATUS (AE_OK);
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if (Gbl_GpeValid[Event] == GPE_INVALID)
+            Status = AE_BAD_PARAMETER;
+        else
+            HwEnableGpe (Event);
+
+        break;
+
+    default:
+        Status = AE_BAD_PARAMETER;
+    }
+
+    return_ACPI_STATUS (Status);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiDisableGpe
+ * FUNCTION:    AcpiDisableEvent
  *
- * PARAMETERS:  GpeNumber       - The GPE number
+ * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ *              Type            - The type of event
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Disable a single GPE 
+ * DESCRIPTION: Disable an ACPI event (fixed and general purpose)
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiDisableGpe (
-    UINT32                  GpeNumber)
+AcpiDisableEvent (
+    UINT32                  Event,
+    UINT32                  Type)
 {
-    FUNCTION_TRACE ("AcpiDisableGpe");
+    ACPI_STATUS             Status = AE_OK;
 
-    /*
-     * TBD: Make sure this GpeNumber is valid, then pass RegisterIndex/BitIndex
-     *      to HwEnableGpe.
-     *
-     * UINT32                  RegisterIndex;
-     * UINT8                   BitIndex;
-     */
+    FUNCTION_TRACE ("AcpiDisableEvent");
 
-    HwDisableGpe(GpeNumber);
+    switch (Type)
+    {
+    case EVENT_FIXED:
+        /*
+         * TBD - Fixed events...
+         */
+        Status = AE_NOT_IMPLEMENTED;
+        break;
 
-    return_ACPI_STATUS (AE_OK);
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if (Gbl_GpeValid[Event] == GPE_INVALID)
+            Status = AE_BAD_PARAMETER;
+        else
+            HwDisableGpe (Event);
+
+        break;
+
+    default:
+        Status = AE_BAD_PARAMETER;
+    }
+
+    return_ACPI_STATUS (Status);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiClearGpe
+ * FUNCTION:    AcpiClearEvent
  *
- * PARAMETERS:  GpeNumber       - The GPE number
+ * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ *              Type            - The type of event
  *
- * RETURN:      None
+ * RETURN:      Status
  *
- * DESCRIPTION: Clear a single GPE 
+ * DESCRIPTION: Clear an ACPI event (fixed and general purpose)
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiClearGpe (
-    UINT32                  GpeNumber)
+AcpiClearEvent (
+    UINT32                  Event,
+    UINT32                  Type)
 {
-    FUNCTION_TRACE ("AcpiClearGpe");
+    ACPI_STATUS             Status = AE_OK;
 
-    /*
-     * TBD: Make sure this GpeNumber is valid, then pass RegisterIndex/BitIndex
-     *      to HwEnableGpe.
-     *
-     * UINT32                  RegisterIndex;
-     * UINT8                   BitIndex;
-     */
+    FUNCTION_TRACE ("AcpiClearEvent");
 
-    HwClearGpe(GpeNumber);
+    switch (Type)
+    {
+    case EVENT_FIXED:
+        /*
+         * TBD - Fixed events...
+         */
+        Status = AE_NOT_IMPLEMENTED;
+        break;
 
-    return_ACPI_STATUS (AE_OK);
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if (Gbl_GpeValid[Event] == GPE_INVALID)
+            Status = AE_BAD_PARAMETER;
+        else
+            HwClearGpe (Event);
+
+        break;
+
+    default:
+        Status = AE_BAD_PARAMETER;
+    }
+
+    return_ACPI_STATUS (Status);
 }
-
-
