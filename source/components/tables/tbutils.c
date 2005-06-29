@@ -211,9 +211,9 @@ AcpiTbSystemTablePointer (
 
     /* Check each of the loaded SSDTs (if any)*/
 
-    TableDesc = &AcpiGbl_AcpiTables[TABLE_SSDT];
+    TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_SSDT];
 
-    for (i = 0; i < AcpiGbl_AcpiTables[TABLE_SSDT].Count; i++)
+    for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_SSDT].Count; i++)
     {
         Table = TableDesc->Pointer;
 
@@ -228,9 +228,9 @@ AcpiTbSystemTablePointer (
 
     /* Check each of the loaded PSDTs (if any)*/
 
-    TableDesc = &AcpiGbl_AcpiTables[TABLE_PSDT];
+    TableDesc = &AcpiGbl_AcpiTables[ACPI_TABLE_PSDT];
 
-    for (i = 0; i < AcpiGbl_AcpiTables[TABLE_PSDT].Count; i++)
+    for (i = 0; i < AcpiGbl_AcpiTables[ACPI_TABLE_PSDT].Count; i++)
     {
         Table = TableDesc->Pointer;
 
@@ -243,12 +243,10 @@ AcpiTbSystemTablePointer (
     }
 
 
-
     /* Pointer does not point into any system table */
 
     return (FALSE);
 }
-
 
 
 /******************************************************************************
@@ -288,7 +286,7 @@ AcpiTbValidateTableHeader (
 
     /* Ensure that the signature is 4 ASCII characters */
 
-    STORE32 (&Signature, &TableHeader->Signature);
+    MOVE_UNALIGNED32_TO_32 (&Signature, &TableHeader->Signature);
     if (!AcpiCmValidAcpiName (Signature))
     {
         DEBUG_PRINT (ACPI_ERROR, ("Table signature at %p [%X] has invalid characters\n",
@@ -342,7 +340,6 @@ AcpiTbMapAcpiTable (
     ACPI_TABLE_HEADER       *Table;
     UINT32                  TableSize = *Size;
     ACPI_STATUS             Status = AE_OK;
-
 
 
     /* If size is zero, look at the table header to get the actual size */
@@ -480,7 +477,5 @@ AcpiTbChecksum (
 
     return sum;
 }
-
-
 
 

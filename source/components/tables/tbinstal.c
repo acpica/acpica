@@ -126,7 +126,6 @@
         MODULE_NAME         ("tbinstal");
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiTbInstallTable
@@ -261,7 +260,7 @@ AcpiTbRecognizeTable (
      * even the ones whose signature we don't recognize
      */
 
-    if (TableType != TABLE_FACS)
+    if (TableType != ACPI_TABLE_FACS)
     {
         /* But don't abort if the checksum is wrong */
         /* TBD: [Future] make this a configuration option? */
@@ -314,7 +313,6 @@ AcpiTbInitTableDescriptor (
 
     ListHead    = &AcpiGbl_AcpiTables[TableType];
     TableDesc   = ListHead;
-
 
 
     /*
@@ -405,7 +403,6 @@ AcpiTbInitTableDescriptor (
 }
 
 
-
 /****************************************************************************
  *
  * FUNCTION:    AcpiTbDeleteAcpiTables
@@ -474,37 +471,37 @@ AcpiTbDeleteAcpiTable (
 
     switch (Type)
     {
-    case TABLE_RSDP:
+    case ACPI_TABLE_RSDP:
         AcpiGbl_RSDP = NULL;
         break;
 
-    case TABLE_APIC:
+    case ACPI_TABLE_APIC:
         AcpiGbl_APIC = NULL;
         break;
 
-    case TABLE_DSDT:
+    case ACPI_TABLE_DSDT:
         AcpiGbl_DSDT = NULL;
         break;
 
-    case TABLE_FACP:
+    case ACPI_TABLE_FACP:
         AcpiGbl_FACP = NULL;
         break;
 
-    case TABLE_FACS:
+    case ACPI_TABLE_FACS:
         AcpiGbl_FACS = NULL;
         break;
 
-    case TABLE_PSDT:
+    case ACPI_TABLE_PSDT:
         break;
 
-    case TABLE_RSDT:
+    case ACPI_TABLE_RSDT:
         AcpiGbl_RSDT = NULL;
         break;
 
-    case TABLE_SSDT:
+    case ACPI_TABLE_SSDT:
         break;
 
-    case TABLE_SBST:
+    case ACPI_TABLE_SBST:
         AcpiGbl_SBST = NULL;
 
     default:
@@ -591,7 +588,6 @@ AcpiTbDeleteSingleTable (
     /* Free the table descriptor (Don't delete the list head, tho) */
 
 
-
     if ((TableDesc->Prev) == (TableDesc->Next))
     {
 
@@ -616,8 +612,6 @@ AcpiTbDeleteSingleTable (
 
     return_PTR (NextDesc);
 }
-
-
 
 
 /****************************************************************************
@@ -662,6 +656,5 @@ AcpiTbFreeAcpiTablesOfType (
 
     return_VOID;
 }
-
 
 

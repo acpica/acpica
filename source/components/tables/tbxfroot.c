@@ -125,7 +125,6 @@
         MODULE_NAME         ("tbtable");
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AcpiTbGetTableRsdt
@@ -161,7 +160,7 @@ AcpiTbGetTableRsdt (
 
     /* Save the table pointers and allocation info */
 
-    Status = AcpiTbInitTableDescriptor (TABLE_RSDP, &TableInfo);
+    Status = AcpiTbInitTableDescriptor (ACPI_TABLE_RSDP, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -197,7 +196,7 @@ AcpiTbGetTableRsdt (
 
     /* Always delete the RSDP mapping */
 
-    AcpiTbDeleteAcpiTable (TABLE_RSDP);
+    AcpiTbDeleteAcpiTable (ACPI_TABLE_RSDP);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -205,7 +204,7 @@ AcpiTbGetTableRsdt (
 
     /* Save the table pointers and allocation info */
 
-    Status = AcpiTbInitTableDescriptor (TABLE_RSDT, &TableInfo);
+    Status = AcpiTbInitTableDescriptor (ACPI_TABLE_RSDT, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -249,7 +248,6 @@ AcpiTbScanMemoryForRsdp (
 {
     UINT32                  Offset;
     char                    *MemRover;
-
 
 
     /* Search from given start addr for the requested length  */
@@ -420,7 +418,6 @@ AcpiTbFindRsdp (
 
     return_ACPI_STATUS (AE_NOT_FOUND);
 }
-
 
 
 /******************************************************************************

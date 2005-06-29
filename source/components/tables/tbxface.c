@@ -158,7 +158,6 @@ AcpiLoadFirmwareTables (void)
     }
 
 
-
     /* Now get the rest of the tables */
 
     Status = AcpiTbGetAllTables (NumberOfTables, NULL);
@@ -321,7 +320,7 @@ AcpiGetTableHeader (
     Status = AE_OK;
 
     if ((Instance == 0)                 ||
-        (TableType == TABLE_RSDP)       ||
+        (TableType == ACPI_TABLE_RSDP)  ||
         (!OutTableHeader))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -443,7 +442,7 @@ AcpiGetTable (
     /*
      * Got a table ptr, assume it's ok and copy it to the user's buffer
      */
-    if (TableType == TABLE_RSDP)
+    if (TableType == ACPI_TABLE_RSDP)
     {
         /*
          *  RSD PTR is the only "table" without a header
