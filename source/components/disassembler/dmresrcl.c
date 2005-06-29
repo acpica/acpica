@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.18 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -124,6 +124,29 @@
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbresrcl")
 
+/* Local prototypes */
+
+static void
+AcpiDmSpaceFlags (
+        UINT8               Flags);
+
+static void
+AcpiDmIoFlags (
+        UINT8               Flags);
+
+static void
+AcpiDmIoFlags2 (
+        UINT8               SpecificFlags);
+
+static void
+AcpiDmMemoryFlags (
+    UINT8                   Flags,
+    UINT8                   SpecificFlags);
+
+static void
+AcpiDmMemoryFlags2 (
+    UINT8                   SpecificFlags);
+
 
 /*******************************************************************************
  *
@@ -137,7 +160,7 @@
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmSpaceFlags (
         UINT8               Flags)
 {
@@ -161,7 +184,7 @@ AcpiDmSpaceFlags (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmIoFlags (
         UINT8               Flags)
 {
@@ -185,7 +208,7 @@ AcpiDmIoFlags (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmIoFlags2 (
         UINT8               SpecificFlags)
 {
@@ -215,7 +238,7 @@ AcpiDmIoFlags2 (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmMemoryFlags (
     UINT8                   Flags,
     UINT8                   SpecificFlags)
@@ -242,7 +265,7 @@ AcpiDmMemoryFlags (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiDmMemoryFlags2 (
     UINT8                   SpecificFlags)
 {
@@ -313,21 +336,17 @@ AcpiDmWordDescriptor (
     AcpiOsPrintf ("0x%4.4X",
         (UINT32) Resource->AddressLength);
 
-    /* Optional fields */
-
-    if (Length > 13)
+    /*
+     * Optional fields:
+     * If ResourceSourceIndex (byte) exists, ResourceSource (string) must also
+     * (from ACPI specification)
+     */
+    if (Length > 14)
     {
         AcpiOsPrintf (", 0x%2.2X",
-            (UINT32) Resource->OptionalFields[0]);
-        if (Length > 14)
-        {
-            AcpiOsPrintf (", %s",
-                &Resource->OptionalFields[1]);
-        }
-        else
-        {
-            AcpiOsPrintf (",,");
-        }
+            (UINT32) Resource->OptionalFields[0]);  /* Byte 13 */
+        AcpiOsPrintf (", %s",
+            &Resource->OptionalFields[1]);          /* Bytes 14+ */
     }
     else
     {
@@ -416,21 +435,17 @@ AcpiDmDwordDescriptor (
     AcpiOsPrintf ("0x%8.8X",
         Resource->AddressLength);
 
-    /* Optional fields */
-
-    if (Length > 23)
+    /*
+     * Optional fields:
+     * If ResourceSourceIndex (byte) exists, ResourceSource (string) must also
+     * (from ACPI specification)
+     */
+    if (Length > 24)
     {
         AcpiOsPrintf (", 0x%2.2X",
-            Resource->OptionalFields[0]);
-        if (Length > 24)
-        {
-            AcpiOsPrintf (", %s",
-                &Resource->OptionalFields[1]);
-        }
-        else
-        {
-            AcpiOsPrintf (",,");
-        }
+            Resource->OptionalFields[0]);   /* Byte 23 */
+        AcpiOsPrintf (", %s",
+            &Resource->OptionalFields[1]);  /* Bytes 24+ */
     }
     else
     {
@@ -528,7 +543,8 @@ AcpiDmExtendedDescriptor (
     if (Resource->ResourceType == ACPI_IO_RANGE)
     {
         AcpiOsPrintf ("0x%8.8X%8.8X, // Type Specific Attributes\n",
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
+            ACPI_FORMAT_UINT64 (
+                ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
         AcpiDmIndent (Level + 1);
         AcpiDmIoFlags2 (Resource->SpecificFlags);
         AcpiOsPrintf (")\n");
@@ -536,7 +552,8 @@ AcpiDmExtendedDescriptor (
     else if (Resource->ResourceType == ACPI_MEMORY_RANGE)
     {
         AcpiOsPrintf ("0x%8.8X%8.8X, // Type Specific Attributes\n",
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
+            ACPI_FORMAT_UINT64 (
+                ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
         AcpiDmIndent (Level + 1);
         AcpiDmMemoryFlags2 (Resource->SpecificFlags);
         AcpiOsPrintf (")\n");
@@ -544,7 +561,8 @@ AcpiDmExtendedDescriptor (
     else
     {
         AcpiOsPrintf ("0x%8.8X%8.8X) // Type Specific Attributes\n",
-            ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
+            ACPI_FORMAT_UINT64 (
+                ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
     }
 
 }
@@ -618,21 +636,17 @@ AcpiDmQwordDescriptor (
     AcpiOsPrintf ("0x%8.8X%8.8X",
         ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressLength)));
 
-    /* Optional fields */
-
-    if (Length > 43)
+    /*
+     * Optional fields:
+     * If ResourceSourceIndex (byte) exists, ResourceSource (string) must also
+     * (from ACPI specification)
+     */
+    if (Length > 44)
     {
         AcpiOsPrintf (", 0x%2.2X",
-            Resource->OptionalFields[0]);
-        if (Length > 44)
-        {
-            AcpiOsPrintf (", %s",
-                &Resource->OptionalFields[1]);
-        }
-        else
-        {
-            AcpiOsPrintf (",,");
-        }
+            Resource->OptionalFields[0]);   /* Byte 43 */
+        AcpiOsPrintf (", %s",
+            &Resource->OptionalFields[1]);  /* Bytes 44+ */
     }
     else
     {
@@ -812,9 +826,12 @@ AcpiDmInterruptDescriptor (
         AcpiGbl_LLDecode [(Resource->Flags >> 2) & 1],
         AcpiGbl_SHRDecode [(Resource->Flags >> 3) & 1]);
 
-    /* Resource Index/Source, optional -- at end of descriptor */
-
-    if (Resource->Length > (UINT16) (4 * Resource->TableLength) + 2)
+    /*
+     * Optional fields:
+     * If ResourceSourceIndex (byte) exists, ResourceSource (string) must also
+     * (from ACPI specification)
+     */
+    if (Resource->Length > (UINT16) (4 * Resource->TableLength) + 3)
     {
         /* Get a pointer past the interrupt values */
 
@@ -871,7 +888,6 @@ AcpiDmVendorLargeDescriptor (
     AcpiDmIndent (Level);
     AcpiOsPrintf ("}\n");
 }
-
 
 #endif
 
