@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.119 $
+ *              $Revision: 1.123 $
  *
  ******************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -153,14 +153,14 @@
 ACPI_STATUS
 AcpiNsEvaluateRelative (
     ACPI_NAMESPACE_NODE     *Handle,
-    NATIVE_CHAR             *Pathname,
+    char                    *Pathname,
     ACPI_OPERAND_OBJECT     **Params,
     ACPI_OPERAND_OBJECT     **ReturnObject)
 {
     ACPI_NAMESPACE_NODE     *PrefixNode;
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node = NULL;
-    NATIVE_CHAR             *InternalPath = NULL;
+    char                    *InternalPath = NULL;
     ACPI_GENERIC_STATE      ScopeInfo;
 
 
@@ -188,7 +188,7 @@ AcpiNsEvaluateRelative (
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     PrefixNode = AcpiNsMapHandleToNode (Handle);
@@ -256,13 +256,13 @@ Cleanup:
 
 ACPI_STATUS
 AcpiNsEvaluateByName (
-    NATIVE_CHAR             *Pathname,
+    char                    *Pathname,
     ACPI_OPERAND_OBJECT     **Params,
     ACPI_OPERAND_OBJECT     **ReturnObject)
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node = NULL;
-    NATIVE_CHAR             *InternalPath = NULL;
+    char                    *InternalPath = NULL;
 
 
     ACPI_FUNCTION_TRACE ("NsEvaluateByName");
@@ -279,7 +279,7 @@ AcpiNsEvaluateByName (
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     /* Lookup the name in the namespace */
