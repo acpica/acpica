@@ -280,7 +280,7 @@ NsHandleToPathname (
         return_ACPI_STATUS (AE_NO_NAMESPACE);
     }
 
-    NamespaceWasLocked = Gbl_AcpiMutexLocked [MTX_NAMESPACE];
+    NamespaceWasLocked = Gbl_AcpiMutexInfo[MTX_NAMESPACE].Locked;
     if (!NamespaceWasLocked)
     {
         CmAcquireMutex (MTX_NAMESPACE);
