@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -246,17 +246,16 @@ AcpiEvExecuteRegMethod (
     Params[1] = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
     if (!Params[1])
     {
-        AcpiUtRemoveReference (Params[0]);
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
     }
-
-    Params[2] = NULL;
 
     /*
      *  Set up the parameter objects
      */
     Params[0]->Integer.Value  = RegionObj->Region.SpaceId;
     Params[1]->Integer.Value = Function;
+    Params[2] = NULL;
 
     /*
      *  Execute the method, no return value
@@ -264,9 +263,10 @@ AcpiEvExecuteRegMethod (
     DEBUG_EXEC(AcpiUtDisplayInitPathname (RegionObj->Region.Extra->Extra.Method_REG, "  [Method]"));
     Status = AcpiNsEvaluateByHandle (RegionObj->Region.Extra->Extra.Method_REG, Params, NULL);
 
-
-    AcpiUtRemoveReference (Params[0]);
     AcpiUtRemoveReference (Params[1]);
+
+Cleanup:
+    AcpiUtRemoveReference (Params[0]);
 
     return_ACPI_STATUS (Status);
 }
