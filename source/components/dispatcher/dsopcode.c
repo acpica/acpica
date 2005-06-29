@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -127,6 +127,24 @@
 
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dsopcode")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiDsExecuteArguments (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_NAMESPACE_NODE     *ScopeNode,
+    UINT32                  AmlLength,
+    UINT8                   *AmlStart);
+
+static ACPI_STATUS
+AcpiDsInitBufferField (
+    UINT16                  AmlOpcode,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_OPERAND_OBJECT     *BufferDesc,
+    ACPI_OPERAND_OBJECT     *OffsetDesc,
+    ACPI_OPERAND_OBJECT     *LengthDesc,
+    ACPI_OPERAND_OBJECT     *ResultDesc);
 
 
 /*******************************************************************************

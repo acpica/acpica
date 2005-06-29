@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -126,6 +126,14 @@
 
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dsfield")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiDsGetFieldNames (
+    ACPI_CREATE_FIELD_INFO  *Info,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Arg);
 
 
 /*******************************************************************************
