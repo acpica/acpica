@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.66 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -168,13 +168,15 @@ AcpiNsLoadTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "AML block at %p\n", TableDesc->AmlStart));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "AML block at %p\n",
+        TableDesc->AmlStart));
 
     /* Ignore table if there is no AML contained within */
 
     if (!TableDesc->AmlLength)
     {
-        ACPI_REPORT_WARNING (("Zero-length AML block in table [%4.4s]\n", TableDesc->Pointer->Signature));
+        ACPI_REPORT_WARNING (("Zero-length AML block in table [%4.4s]\n",
+            TableDesc->Pointer->Signature));
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -187,7 +189,8 @@ AcpiNsLoadTable (
      * to another control method, we can't continue parsing
      * because we don't know how many arguments to parse next!
      */
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Loading table into namespace ****\n"));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "**** Loading table into namespace ****\n"));
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
@@ -279,7 +282,6 @@ AcpiNsLoadTableByType (
         {
             TableDesc->LoadedIntoNamespace = TRUE;
         }
-
         break;
 
 
@@ -341,7 +343,6 @@ AcpiNsLoadTableByType (
 
             TableDesc = TableDesc->Next;
         }
-
         break;
 
 
