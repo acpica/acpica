@@ -286,7 +286,6 @@ ACPI_INIT_DATA Gbl_AcpiInitData;
 #ifdef ACPI_DEBUG
 
 char                        *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
-static char                 Gbl_BadType[] = "UNDEFINED";
 
 
 /* Names for the mutexes used in the subsystem */
@@ -340,6 +339,7 @@ CmGetMutexName (
  * indicatewhat type is actually going to be stored for this entry.
  */
 
+static char                 Gbl_BadType[] = "UNDEFINED";
 #define TYPE_NAME_LENGTH    9                       /* Maximum length of each string */
 
 static char                 *Gbl_NsTypeNames[] =    /* printable names of ACPI types */
@@ -406,7 +406,7 @@ CmGetTypeName (
     UINT32                  Type)
 {
 
-    if (Type > MAX_MTX)
+    if (Type > INTERNAL_TYPE_Invalid)
     {
         return (Gbl_BadType);
     }
