@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -1011,7 +1011,7 @@ AcpiUtDumpAllocations (
     /*
      * Walk the allocation list.
      */
-    if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_MEMORY))
+    if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_MEMORY)))
     {
         return;
     }
