@@ -118,6 +118,26 @@
 #define _ACPI_INTERNAL_H
 
 
+
+/*
+ * ACPI Table information.  We save the table address, length,
+ * and type of memory allocation (mapped or allocated) for each
+ * table for 1) when we exit, and 2) if a new table is installed
+ */
+
+#define ACPI_MEM_NOT_ALLOCATED  0
+#define ACPI_MEM_ALLOCATED      1
+#define ACPI_MEM_MAPPED         2
+
+typedef struct AcpiTableInfo
+{
+    void                *Pointer;
+    UINT32              Length;
+    UINT32              Allocation;
+
+} ACPI_TABLE_INFO;
+
+
 /* Operational mode of AML scanner */
 
 typedef enum 
