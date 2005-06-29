@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -522,17 +522,19 @@ AcpiDbDisplayPath (
     UINT32                  Name;
     BOOLEAN                 DoDot = FALSE;
     ACPI_PARSE_OBJECT       *NamePath;
+    ACPI_OPCODE_INFO        *OpInfo;
 
 
     /* We are only interested in named objects */
 
-    if (!AcpiPsIsNodeOp (Op->Opcode))
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
+    if (!(OpInfo->Flags & AML_NSNODE))
     {
         return;
     }
 
 
-    if (AcpiPsIsCreateFieldOp (Op->Opcode))
+    if (OpInfo->Flags & AML_CREATE)
     {
         /* Field creation - check for a fully qualified namepath */
 
@@ -573,42 +575,46 @@ AcpiDbDisplayPath (
             Search = Search->Parent;
         }
 
-        if (Prev && !AcpiPsIsFieldOp (Search->Opcode))
+        if (Prev)
         {
-            /* below root scope, append scope name */
-
-            if (DoDot)
+            OpInfo = AcpiPsGetOpcodeInfo (Search->Opcode);
+            if (!(OpInfo->Flags & AML_FIELD))
             {
-                /* append dot */
+                /* below root scope, append scope name */
 
-                AcpiOsPrintf (".");
-            }
-
-            if (AcpiPsIsCreateFieldOp (Search->Opcode))
-            {
-                if (Op->Opcode == AML_CREATE_FIELD_OP)
+                if (DoDot)
                 {
-                    NamePath = AcpiPsGetArg (Op, 3);
+                    /* append dot */
+
+                    AcpiOsPrintf (".");
                 }
+
+                if (OpInfo->Flags & AML_CREATE)
+                {
+                    if (Op->Opcode == AML_CREATE_FIELD_OP)
+                    {
+                        NamePath = AcpiPsGetArg (Op, 3);
+                    }
+                    else
+                    {
+                        NamePath = AcpiPsGetArg (Op, 2);
+                    }
+
+                    if ((NamePath) &&
+                        (NamePath->Value.String))
+                    {
+                        AcpiOsPrintf ("%4.4s", NamePath->Value.String);
+                    }
+                }
+
                 else
                 {
-                    NamePath = AcpiPsGetArg (Op, 2);
+                    Name = AcpiPsGetName (Search);
+                    AcpiOsPrintf ("%4.4s", &Name);
                 }
 
-                if ((NamePath) &&
-                    (NamePath->Value.String))
-                {
-                    AcpiOsPrintf ("%4.4s", NamePath->Value.String);
-                }
+                DoDot = TRUE;
             }
-
-            else
-            {
-                Name = AcpiPsGetName (Search);
-                AcpiOsPrintf ("%4.4s", &Name);
-            }
-
-            DoDot = TRUE;
         }
 
         Prev = Search;
@@ -639,7 +645,7 @@ AcpiDbDisplayOpcode (
     UINT8                   *ByteData;
     UINT32                  ByteCount;
     UINT32                  i;
-    ACPI_OPCODE_INFO        *Opc = NULL;
+    ACPI_OPCODE_INFO        *OpInfo = NULL;
     UINT32                  Name;
 
 
@@ -797,8 +803,8 @@ AcpiDbDisplayOpcode (
 
         /* Just get the opcode name and print it */
 
-        Opc = AcpiPsGetOpcodeInfo (Op->Opcode);
-        AcpiOsPrintf ("%s", Opc->Name);
+        OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
+        AcpiOsPrintf ("%s", OpInfo->Name);
 
 
 #ifndef PARSER_ONLY
@@ -814,7 +820,7 @@ AcpiDbDisplayOpcode (
     }
 
 
-    if (!Opc)
+    if (!OpInfo)
     {
         /* If there is another element in the list, add a comma */
 
@@ -829,7 +835,8 @@ AcpiDbDisplayOpcode (
      * If this is a named opcode, print the associated name value
      */
 
-    if (Op && AcpiPsIsNamedOp (Op->Opcode))
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Opcode);
+    if (Op && (OpInfo->Flags & AML_NAMED))
     {
         Name = AcpiPsGetName (Op);
         AcpiOsPrintf (" %4.4s", &Name);
