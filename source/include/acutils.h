@@ -413,7 +413,7 @@ DumpBuffer (
     INT32                   componentId);
 
 
-// assert macros
+/* assert macros */
 
 #ifdef DEBUG_ASSERT
 #undef DEBUG_ASSERT
