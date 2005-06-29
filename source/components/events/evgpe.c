@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -741,9 +741,11 @@ AcpiEvGpeDispatch (
     {
     case ACPI_GPE_DISPATCH_HANDLER:
 
-        /* Invoke the installed handler (at interrupt level) */
-
-        GpeEventInfo->Dispatch.Handler->Address ((void *)
+        /*
+         * Invoke the installed handler (at interrupt level)
+         * Ignore return status for now.  TBD: leave GPE disabled on error?
+         */
+        (void) GpeEventInfo->Dispatch.Handler->Address (
                         GpeEventInfo->Dispatch.Handler->Context);
 
         /* It is now safe to clear level-triggered events. */
