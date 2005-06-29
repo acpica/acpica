@@ -1,10 +1,10 @@
 
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -131,7 +131,7 @@ NATIVE_CHAR *SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
                                  "\\_S4_","\\_S4B","\\_S5_"};
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiHwGetBitShift
  *
@@ -161,7 +161,7 @@ AcpiHwGetBitShift (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiHwClearAcpiStatus
  *
@@ -224,7 +224,7 @@ AcpiHwClearAcpiStatus (void)
 }
 
 
-/****************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiHwObtainSleepTypeRegisterData
  *
@@ -237,8 +237,7 @@ AcpiHwClearAcpiStatus (void)
  * DESCRIPTION: AcpiHwObtainSleepTypeRegisterData() obtains the SLP_TYP and
  *              SLP_TYPb values for the sleep state requested.
  *
-
- ***************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiHwObtainSleepTypeRegisterData (
@@ -268,48 +267,75 @@ AcpiHwObtainSleepTypeRegisterData (
      */
 
     Status = AcpiNsEvaluateByName (SleepStateTable[SleepState], NULL, &ObjDesc);
-    if (ACPI_SUCCESS (Status))
+    if (ACPI_FAILURE (Status))
     {
-        if (ObjDesc)
-        {
-            /*
-             *  We got something, now ensure it is correct.  The object must
-             *  be a package and must have at least 2 numeric values as the
-             *  two elements
-             */
-
-            if ((ObjDesc->Common.Type != ACPI_TYPE_PACKAGE) ||
-                ((ObjDesc->Package.Elements[0])->Common.Type !=
-                    ACPI_TYPE_NUMBER) ||
-                ((ObjDesc->Package.Elements[1])->Common.Type !=
-                    ACPI_TYPE_NUMBER))
-            {
-                /* Invalid _Sx_ package type or value  */
-
-                REPORT_ERROR ("Object type returned from interpreter differs from expected value");
-                Status = AE_ERROR;
-            }
-            else
-            {
-                /*
-                 *  Valid _Sx_ package size, type, and value
-                 */
-                *Slp_TypA =
-                    (UINT8) (ObjDesc->Package.Elements[0])->Number.Value;
-
-                *Slp_TypB =
-                    (UINT8) (ObjDesc->Package.Elements[1])->Number.Value;
-            }
-
-            AcpiCmRemoveReference (ObjDesc);
-        }
+        return_ACPI_STATUS (Status);
     }
+
+    if (!ObjDesc)
+    {
+        REPORT_ERROR ("Missing Sleep State object");
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
+
+    /*
+     *  We got something, now ensure it is correct.  The object must
+     *  be a package and must have at least 2 numeric values as the
+     *  two elements
+     */
+
+    if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
+    {
+        /* Must be a package */
+
+        REPORT_ERROR ("Sleep State object is not of type Package");
+        Status = AE_ERROR;
+    }
+        
+    else if (ObjDesc->Package.Count < 2)
+    {
+        /* Must have at least two elements */
+
+        REPORT_ERROR ("Sleep State package does not have at least two elements");
+        Status = AE_ERROR;
+    }
+
+    else if (((ObjDesc->Package.Elements[0])->Common.Type != 
+                ACPI_TYPE_NUMBER) ||
+             ((ObjDesc->Package.Elements[1])->Common.Type !=
+                ACPI_TYPE_NUMBER))
+    {
+        /* Must have two  */
+
+        REPORT_ERROR ("Sleep State package elements are not both of type Number");
+        Status = AE_ERROR;
+    }
+
+    else
+    {
+        /*
+         *  Valid _Sx_ package size, type, and value
+         */
+        *Slp_TypA = (UINT8) (ObjDesc->Package.Elements[0])->Number.Value;
+
+        *Slp_TypB = (UINT8) (ObjDesc->Package.Elements[1])->Number.Value;
+    }
+
+
+    if (ACPI_FAILURE (Status))
+    {
+        DEBUG_PRINT (ACPI_ERROR, 
+            ("SleepTypeRegisterData: Bad Sleep object %p type %X\n",
+            ObjDesc, ObjDesc->Common.Type));
+    }
+
+    AcpiCmRemoveReference (ObjDesc);
 
     return_ACPI_STATUS (Status);
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiHwRegisterAccess
  *
@@ -732,13 +758,17 @@ AcpiHwRegisterAccess (
         Mask = (((UINT32) RegisterId) & BIT_IN_REGISTER_MASK);
         Mask = 1 << (Mask-1);
 
-        /* The base address of the GPE 0 Register Block */
-        /* Plus 1/2 the length of the GPE 0 Register Block */
-        /* The enable register is the register following the Status Register */
-        /* and each register is defined as 1/2 of the total Register Block */
+        /* 
+         * The base address of the GPE 0 Register Block
+         * Plus 1/2 the length of the GPE 0 Register Block
+         * The enable register is the register following the Status Register
+         * and each register is defined as 1/2 of the total Register Block
+         */
 
-        /* This sets the bit within EnableBit that needs to be written to */
-        /* the register indicated in Mask to a 1, all others are 0 */
+        /* 
+         * This sets the bit within EnableBit that needs to be written to
+         * the register indicated in Mask to a 1, all others are 0 
+         */
 
         if (Mask > LOW_BYTE)
         {
