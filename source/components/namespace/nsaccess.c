@@ -14,15 +14,21 @@
  | Functions for accessing ACPI namespace
  |__________________________________________________________________________
  |
- | $Revision: 1.4 $
- | $Date: 2005/06/29 18:15:22 $
+ | $Revision: 1.5 $
+ | $Date: 2005/06/29 18:15:24 $
  | $Log: nsaccess.c,v $
- | Revision 1.4  2005/06/29 18:15:22  aystarik
- | Major cleanup
+ | Revision 1.5  2005/06/29 18:15:24  aystarik
+ | hNsFindpVal was returning with no value at end of the rountine.  May
+ | have never reached the exit, but just because the compiler warned, I fixed it.
  |
  | 
- | date	99.01.20.17.40.00;	author rmoore1;	state Exp;
+ | date	99.02.09.19.50.00;	author rmosgrov;	state Exp;
  |
+ * 
+ * 5     2/09/99 11:50a Rmosgrov
+ * hNsFindpVal was returning with no value at end of the rountine.  May
+ * have never reached the exit, but just because the compiler warned, I
+ * fixed it.
  * 
  * 4     1/20/99 9:40a Rmoore1
  * Major cleanup
@@ -3528,6 +3534,8 @@ hNsFindpVal (OBJECT_DESCRIPTOR *pOD, NsHandle hSearchBase, int iMaxDepth)
             ++nThis;
         }
     }
+
+    return (NsHandle *)0;
 }
 
 
