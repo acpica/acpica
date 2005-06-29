@@ -126,6 +126,7 @@
 #include <environment.h>    /* Target environment specific items */
 #include <acpitypes.h>      /* Fundamental data types */
 #include <acpiexcep.h>      /* Local exception codes */
+#include <macros.h>         /* C macros */
 #include <internal.h>       /* Internal data types */
 #include <output.h>         /* Error output and Debug macros */
 #include <acpitables.h>     /* ACPI table definitions */
@@ -137,10 +138,7 @@
 
 /* Version string */
 
-#define ACPI_LIB_VER "032"
-#define OS_ACPI_LIB_VER "F" ## ACPI_LIB_VER
-#define ACPILIB_VERSION " ACPILIB-" ## OS_ACPI_LIB_VER
-
+#define ACPI_CA_VERSION                     "X0033"
 
 
 #define	ACPI_CHAPTER						3
