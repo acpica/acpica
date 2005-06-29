@@ -300,8 +300,8 @@ AcpiEvaluateObjectTyped (
 
 ACPI_STATUS
 AcpiGetObjectInfo (
-    ACPI_HANDLE             Device,
-    ACPI_DEVICE_INFO        *Info);
+    ACPI_HANDLE             Handle,
+    ACPI_BUFFER             *ReturnBuffer);
 
 ACPI_STATUS
 AcpiGetNextObject (
@@ -420,13 +420,28 @@ AcpiDisableGpe (
 ACPI_STATUS
 AcpiClearGpe (
     ACPI_HANDLE             GpeDevice,
-    UINT32                  GpeNumber);
+    UINT32                  GpeNumber,
+    UINT32                  Flags);
 
 ACPI_STATUS
 AcpiGetGpeStatus (
     ACPI_HANDLE             GpeDevice,
     UINT32                  GpeNumber,
+    UINT32                  Flags,
     ACPI_EVENT_STATUS       *EventStatus);
+
+ACPI_STATUS
+AcpiInstallGpeBlock (
+    ACPI_HANDLE             GpeDevice,
+    ACPI_GENERIC_ADDRESS    *GpeBlockAddress,
+    UINT32                  RegisterCount,
+    UINT32                  InterruptLevel);
+
+ACPI_STATUS
+AcpiRemoveGpeBlock (
+    ACPI_HANDLE             GpeDevice);
+
+
 
 /*
  * Resource interfaces
