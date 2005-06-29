@@ -189,6 +189,8 @@ char            *ExceptionNames[] =
 };
 
 
+ACPI_TABLE_INFO         AcpiTables[NUM_ACPI_TABLES];
+
 
 /******************************************************************************
  *
@@ -200,8 +202,8 @@ char            *ExceptionNames[] =
 
 /* Scope stack */
 
-SCOPE_STACK     ScopeStack[MAX_SCOPE_NESTING];
-SCOPE_STACK     *CurrentScope;
+SCOPE_STACK             ScopeStack[MAX_SCOPE_NESTING];
+SCOPE_STACK             *CurrentScope;
 
 
 /* 
@@ -211,19 +213,19 @@ SCOPE_STACK     *CurrentScope;
  * To avoid type punning, both are specified as strings in this table.
  */
 
-PREDEFINED_NAMES PreDefinedNames[] = {
-    {"_GPE",    TYPE_DefAny},
-    {"_PR_",    TYPE_DefAny},
-    {"_SB_",    TYPE_DefAny},
-    {"_SI_",    TYPE_DefAny},
-    {"_TZ_",    TYPE_DefAny},
-    {"_REV",    TYPE_Number, "2"},
-    {"_OS_",    TYPE_String, "Intel AML interpreter"},
-    {"_GL_",    TYPE_Mutex},
+PREDEFINED_NAMES        PreDefinedNames[] = {
+                            {"_GPE",    TYPE_DefAny},
+                            {"_PR_",    TYPE_DefAny},
+                            {"_SB_",    TYPE_DefAny},
+                            {"_SI_",    TYPE_DefAny},
+                            {"_TZ_",    TYPE_DefAny},
+                            {"_REV",    TYPE_Number, "2"},
+                            {"_OS_",    TYPE_String, "Intel AML interpreter"},
+                            {"_GL_",    TYPE_Mutex},
 
-    /* Table terminator */
+                            /* Table terminator */
 
-    {(char *)0, TYPE_Any}
+                            {(char *)0, TYPE_Any}
 };
 
 
@@ -398,11 +400,24 @@ UINT32                  EventCount[NUM_FIXED_EVENTS];
 void 
 CmInitGlobals (void)
 {
+    UINT32                  i;
+
+
     FUNCTION_TRACE ("CmInitGlobals");
 
-    
+
+    /* ACPI table structure */
+
+    for (i = 0; i < ACPI_TABLE_MAX; i++)
+    {
+        AcpiTables[i].Pointer    = NULL;
+        AcpiTables[i].Allocation = ACPI_MEM_NOT_ALLOCATED;
+        AcpiTables[i].Length     = 0;
+    }
+
+
     /* Table pointers */
-    
+
     RSDP                    = NULL;
     RSDT                    = NULL;
     FACS                    = NULL;
@@ -412,7 +427,8 @@ CmInitGlobals (void)
     PSDT                    = NULL;
     SSDT                    = NULL;
     SBDT                    = NULL;
-    
+
+
     /* Miscellaneous variables */
     
     SystemFlags             = 0;
@@ -434,7 +450,7 @@ CmInitGlobals (void)
 
     /* Namespace */
 
-   RootObject                  = &RootObjStruct;
+    RootObject                  = &RootObjStruct;
 
     RootObject->Name            = NS_ROOT;
     RootObject->Scope           = NULL;
@@ -464,49 +480,79 @@ CmInitGlobals (void)
 void
 CmLocalCleanup (void)
 {
+    UINT32                  i;
+
+
     FUNCTION_TRACE ("CmLocalCleanup");
 
 
-    /* TBD: Need method to determine if a table ptr should be freed */
+
+    /*
+     * Clear all of the table pointers
+     * TBD: get rid of these if possible!
+     */
+
+    RSDP                    = NULL;
+    RSDT                    = NULL;
+    FACS                    = NULL;
+    FACP                    = NULL;
+    MAPIC                   = NULL;
+    DSDT                    = NULL;
+    PSDT                    = NULL;
+    SSDT                    = NULL;
+    SBDT                    = NULL;
+
 
     /*
      * Free memory allocated for ACPI tables
+     * Memory can either be mapped or allocated
      */
 
-    if (RSDP != NULL)   
-        OsdFree (RSDP);
-    
-    if (RSDT != NULL)  
-        OsdFree (RSDT);
-    
-    if (FACS != NULL)  
-        OsdFree (FACS);
-    
-    if (FACP != NULL)  
-        OsdFree (FACP);
-    
-    if (MAPIC != NULL) 
-        OsdFree (MAPIC);
-    
-    if (DSDT != NULL)  
-        OsdFree (DSDT);
-    
-    if (PSDT != NULL)  
-        OsdFree (PSDT);
-    
-    if (SSDT != NULL)  
-        OsdFree (SSDT);
-    
-    if (SBDT != NULL)  
-        OsdFree (SBDT);
+    for (i = 0; i < ACPI_TABLE_MAX; i++)
+    {
+        if (AcpiTables[i].Pointer)
+        {
+            /* Valid table, determine type of memory */
+
+            switch (AcpiTables[i].Allocation)
+            {
+
+            case ACPI_MEM_NOT_ALLOCATED:
+
+                break;
+
+
+            case ACPI_MEM_ALLOCATED:
+
+                OsdFree (AcpiTables[i].Pointer);
+                break;
+
+
+            case ACPI_MEM_MAPPED:
+
+                OsdUnMapMemory (AcpiTables[i].Pointer, AcpiTables[i].Length);
+                break;
+            }
+        }
+
+        /* Clear the table entry */
+
+        AcpiTables[i].Pointer    = NULL;
+        AcpiTables[i].Allocation = ACPI_MEM_NOT_ALLOCATED;
+        AcpiTables[i].Length     = 0;
+    }
+
+    DEBUG_PRINT (ACPI_INFO, ("CmLocalCleanup: ACPI Tables freed\n"));
 
     
     /*
+     * TBD:
      * Free all objects within the namespace
      */
 
 
     /*
+     * TBD:
      * Free the namespace tables
      */
 

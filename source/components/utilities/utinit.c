@@ -131,7 +131,7 @@
  * FUNCTION:    CmGetTableRsdt
  *
  * PARAMETERS:  NumberOfTables      - Where the table count is placed
- *              FilePtr             - Input file pointer, if file is in use
+ *              TablePtr            - Input buffer pointer, optional
  *
  * RETURN:      Status
  *
@@ -146,12 +146,15 @@ CmGetTableRsdt (
 {
     ACPI_STATUS             Status = AE_OK;
     UINT32                  VersionLength;
+    ACPI_TABLE_INFO         TableInfo;
 
 
     FUNCTION_TRACE ("CmGetTableRsdt");
 
     if (*TablePtr)
     {
+        /* Get the RSDP from a buffer */
+
         VersionLength = strlen (ACPILIB_DATA_FILE_VERSION);
 
         if (strncmp (ACPILIB_DATA_FILE_VERSION, *TablePtr, VersionLength))
@@ -181,7 +184,7 @@ CmGetTableRsdt (
 
     /* Get the RSDP */
 
-    Status = NsFindRsdp (&RSDP, TablePtr);
+    Status = NsFindRsdp (TablePtr, &TableInfo);
     if (ACPI_FAILURE (Status))
     {
         REPORT_WARNING ("RSDP structure not found");
@@ -189,17 +192,22 @@ CmGetTableRsdt (
         return AE_NO_ACPI_TABLES;
     }
 
-    /* RSDP structure found */
+    /* Save the table pointers and allocation info */
+
+    RSDP = (ROOT_SYSTEM_DESCRIPTOR_POINTER *) TableInfo.Pointer;
+    AcpiTables [TABLE_RSDPTR] = TableInfo;
+
+    /* RSDP structure was found */
 
     if (!*TablePtr)
     {
-        DEBUG_PRINT (ACPI_INFO, ("RSDP located at %lXh\n", RSDP));
+        DEBUG_PRINT (ACPI_INFO, ("RSDP located at %p\n", RSDP));
     }
     
     else
     {
         DEBUG_PRINT (ACPI_INFO,
-                    ("RSDP located at %lXh\n", RsdpOriginalLocation));
+                    ("RSDP located at %lX\n", RsdpOriginalLocation));
         
         /* 
          * Since we're working from an input buffer, assume we're running on
@@ -216,13 +224,19 @@ CmGetTableRsdt (
 
     /* Get the RSDT */
 
-    Status = NsGetTable ((void *) RSDP->RsdtPhysicalAddress, TablePtr, (void *) &RSDT);
+    Status = NsGetTable ((void *) RSDP->RsdtPhysicalAddress, 
+                            TablePtr, &TableInfo);
     if (Status != AE_OK)
     {
         FUNCTION_STATUS_EXIT (Status);
         return Status;
     }
 
+
+    /* Save the table pointers and allocation info */
+
+    RSDT = (ROOT_SYSTEM_DESCRIPTION_TABLE *) TableInfo.Pointer;
+    AcpiTables [TABLE_RSDT] = TableInfo;
 
     /* Valid RSDT pointer */
 
@@ -246,8 +260,8 @@ CmGetTableRsdt (
 
     /* Valid RSDT signature, verify the checksum */
 
-    DEBUG_PRINT (ACPI_INFO,
-                ("RSDT located at %lXh\n", RSDP->RsdtPhysicalAddress));
+    DEBUG_PRINT (ACPI_INFO, ("RSDT located at %p, physical address %lX\n", 
+                            RSDT, RSDP->RsdtPhysicalAddress));
 
     Status = NsVerifyTableChecksum (RSDT);
     
@@ -266,7 +280,7 @@ CmGetTableRsdt (
  * FUNCTION:    CmGetAllTables
  *
  * PARAMETERS:  NumberOfTables      - Number of tables to get
- *              FilePtr             - Input file pointer, if file is in use
+ *              TablePtr            - Input buffer pointer, optional
  *
  * RETURN:      Status
  *
@@ -283,6 +297,7 @@ CmGetAllTables (
     ACPI_STATUS             Status = AE_OK;
     UINT32                  Index;
     ACPI_TABLE_HEADER       *TableHeader = NULL;
+    ACPI_TABLE_INFO         TableInfo;
 
     
     FUNCTION_TRACE ("CmGetAllTables");
@@ -294,13 +309,14 @@ CmGetAllTables (
     for (Index = 0; Index < NumberOfTables; Index++)
     {
         Status = NsGetTable ((void *) RSDT->TableOffsetEntry[Index], 
-                                TablePtr, (void *) &TableHeader);
+                                TablePtr, &TableInfo);
         if (ACPI_FAILURE (Status))
         {
             FUNCTION_STATUS_EXIT (Status);
             return Status;
         }
 
+        TableHeader = (ACPI_TABLE_HEADER *) TableInfo.Pointer;
         if (!TableHeader)
         {   
             continue;
@@ -311,103 +327,134 @@ CmGetAllTables (
 
         if (!strncmp (TableHeader->Signature, FACP_SIG, 4))
         {
-            FACP = (FIXED_ACPI_DESCRIPTION_TABLE *) TableHeader;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("FACP located at %lXh\n", RSDT->TableOffsetEntry[Index]));
+            /* Save the table pointers and allocation info */
+
+            FACP = (FIXED_ACPI_DESCRIPTION_TABLE *) TableInfo.Pointer;
+            AcpiTables [TABLE_FACP] = TableInfo;
+
+            DEBUG_PRINT (ACPI_INFO, ("FACP located at %p, physical address %lXh\n", 
+                                    FACP, RSDT->TableOffsetEntry[Index]));
 
             NsVerifyTableChecksum (FACP);
 
-            Status = NsGetTableFacs (TablePtr, (void *) &FACS);
+            /* Now that we have the FACP, we can get the FACS */
+
+            Status = NsGetTableFacs (TablePtr, &TableInfo);
             if (ACPI_FAILURE (Status))
             {
                 FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
-            DEBUG_PRINT (ACPI_INFO,
-                        ("FACS located at %lXh\n", FACP->FirmwareCtrl));
+            /* Save the table pointers and allocation info */
+
+            FACS = (FIRMWARE_ACPI_CONTROL_STRUCTURE *) TableInfo.Pointer;
+            AcpiTables [TABLE_FACS] = TableInfo;
+
+            DEBUG_PRINT (ACPI_INFO, ("FACS located at %p, physical address %lXh\n", 
+                                        FACS, FACP->FirmwareCtrl));
 
             /* TBD: original code used separate file for the DSDT */
-            /* Get the DSDT */
 
-            Status = NsGetTable ((void *) FACP->Dsdt, TablePtr, (void *) &DSDT);
+            /* Now that we have the FACP, we can get the DSDT */
+
+            Status = NsGetTable ((void *) FACP->Dsdt, TablePtr, &TableInfo);
             if (ACPI_FAILURE (Status))
             {
                 FUNCTION_STATUS_EXIT (Status);
                 return Status;
             }
 
-            if (DSDT)
-            {
-                /* Found the DSDT - Verify the table checksum */
+            /* Save the table pointers and allocation info */
 
-                DEBUG_PRINT (ACPI_INFO, ("DSDT located at %lXh\n", FACP->Dsdt));
-                NsVerifyTableChecksum (DSDT);
-                
-                /* Dump the DSDT Header */
+            DSDT = (ACPI_TABLE_HEADER *) TableInfo.Pointer;
+            AcpiTables [TABLE_DSDT] = TableInfo;
 
-                DEBUG_PRINT (TRACE_TABLES, ("Hex dump of DSDT Header:\n"));
-                DUMP_BUFFER ((UINT8 *) DSDT,
-                                (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER), HEX | ASCII);
-                
-                /* Dump the entire DSDT */
+            /* Found the DSDT - Verify the table checksum */
 
-                DEBUG_PRINT (TRACE_TABLES,
-                            ("Hex dump of DSDT (After header), size %d (0x%x)\n",
-                            (ACPI_SIZE)DSDT->Length, (ACPI_SIZE)DSDT->Length));
-                DUMP_BUFFER ((UINT8 *) (DSDT + 1),
-                                (ACPI_SIZE)DSDT->Length, HEX | ASCII);
-            }
+            DEBUG_PRINT (ACPI_INFO, ("DSDT located at %p, physical address %lXh\n", 
+                                    DSDT, FACP->Dsdt));
+            NsVerifyTableChecksum (DSDT);
+            
+            /* Dump the DSDT Header */
+
+            DEBUG_PRINT (TRACE_TABLES, ("Hex dump of DSDT Header:\n"));
+            DUMP_BUFFER ((UINT8 *) DSDT,
+                            (ACPI_SIZE) sizeof (ACPI_TABLE_HEADER), HEX | ASCII);
+            
+            /* Dump the entire DSDT */
+
+            DEBUG_PRINT (TRACE_TABLES,
+                        ("Hex dump of DSDT (After header), size %d (0x%x)\n",
+                        (ACPI_SIZE)DSDT->Length, (ACPI_SIZE)DSDT->Length));
+            DUMP_BUFFER ((UINT8 *) (DSDT + 1),
+                            (ACPI_SIZE)DSDT->Length, HEX | ASCII);
         }
         
         else if (!strncmp (TableHeader->Signature, APIC_SIG, 4))
         {
-            /* pointer to APIC table   */
+            /* APIC table */
+            /* Save the table pointers and allocation info */
 
-            MAPIC = (APIC_TABLE *) TableHeader;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("APIC Table located at %lXh\n", RSDT->TableOffsetEntry[Index]));
+            MAPIC = (APIC_TABLE *) TableInfo.Pointer;
+            AcpiTables [TABLE_APIC] = TableInfo;
+
+            DEBUG_PRINT (ACPI_INFO, ("APIC Table located at %p, physical address %lXh\n", 
+                                    MAPIC, RSDT->TableOffsetEntry[Index]));
+
             NsVerifyTableChecksum (MAPIC);
         }
     
         else if (!strncmp (TableHeader->Signature, PSDT_SIG, 4))
         {
-            /* pointer to PSDT table   */
+            /* PSDT table */
+            /* Save the table pointers and allocation info */
 
-            PSDT = TableHeader;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("PSDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
+            PSDT = (ACPI_TABLE_HEADER *) TableInfo.Pointer;
+            AcpiTables [TABLE_PSDT] = TableInfo;
+            
+            DEBUG_PRINT (ACPI_INFO, ("PSDT located at %p, physical address %lXh\n", 
+                                    PSDT, RSDT->TableOffsetEntry[Index]));
+
             NsVerifyTableChecksum (PSDT);
         }
 
         else if (!strncmp (TableHeader->Signature, SSDT_SIG, 4))
         {
-            /* pointer to SSDT table   */
+            /* SSDT table */
             /* TBD - need to be able to deal with multiple SSDTs */
-        
-            SSDT = TableHeader;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("SSDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
+            /* Save the table pointers and allocation info */
+
+            SSDT = (ACPI_TABLE_HEADER *) TableInfo.Pointer;
+            AcpiTables [TABLE_SSDT] = TableInfo;
+                 
+            DEBUG_PRINT (ACPI_INFO, ("SSDT located at %p, physical address %lXh\n", 
+                                    SSDT, RSDT->TableOffsetEntry[Index]));
+
             NsVerifyTableChecksum (SSDT);
         }
 
         else if (!strncmp (TableHeader->Signature, SBDT_SIG, 4))
         {
-            /* pointer to SBDT table   */
+            /* SBDT table */
+            /* Save the table pointers and allocation info */
 
-            SBDT = TableHeader;
-            DEBUG_PRINT (ACPI_INFO,
-                        ("SBDT located at %lXh\n", RSDT->TableOffsetEntry[Index]));
+            SBDT = (ACPI_TABLE_HEADER *) TableInfo.Pointer;
+            AcpiTables [TABLE_SBDT] = TableInfo;
+            
+            DEBUG_PRINT (ACPI_INFO, ("SBDT located at %p, physical address %lXh\n", 
+                                    SBDT, RSDT->TableOffsetEntry[Index]));
+
             NsVerifyTableChecksum (SBDT);
         }
 
         else
         {
-            /* pointer to unknown table    */
+            /* Unknown table */
 
-            DEBUG_PRINT (ACPI_INFO,
-                        ("Unknown table %x in RSDT with signature '%4.4s' located at %lXh\n",
-                        TableHeader, TableHeader->Signature, RSDT->TableOffsetEntry[Index]));
+            DEBUG_PRINT (ACPI_INFO, ("Unknown table %x in RSDT with signature '%4.4s' located at %p PA:%lXh\n",
+                                    TableHeader, TableHeader->Signature, 
+                                    TableInfo.Pointer, RSDT->TableOffsetEntry[Index]));
             NsVerifyTableChecksum (TableHeader);
         
             /* 
@@ -434,7 +481,7 @@ CmGetAllTables (
 
 /*******************************************************************************
  *
- * FUNCTION:    ReportFacpRegisterError
+ * FUNCTION:    CmFacpRegisterError
  *
  * PARAMETERS:  *RegisterName           - Pointer to string identifying register
  *              Value                   - Actual register contents value
@@ -448,7 +495,7 @@ CmGetAllTables (
  ******************************************************************************/
 
 void
-ReportFacpRegisterError (
+CmFacpRegisterError (
     char                    *RegisterName, 
     UINT32                  Value,
     INT32                   AcpiTestSpecSection, 
@@ -636,39 +683,39 @@ CmHardwareInitialize (void)
          */
 
         if (FACP->Pm1EvtLen < 4)
-            ReportFacpRegisterError ("PM1_EVT_LEN", (UINT32) FACP->Pm1EvtLen,
+            CmFacpRegisterError ("PM1_EVT_LEN", (UINT32) FACP->Pm1EvtLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 410); /* #410 == #435    */
 
         if (!FACP->Pm1CntLen)
-            ReportFacpRegisterError ("PM1_CNT_LEN", (UINT32) FACP->Pm1CntLen,
+            CmFacpRegisterError ("PM1_CNT_LEN", (UINT32) FACP->Pm1CntLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 415); /* #415 == #436    */
 
         if (!FACP->Pm1aEvtBlk)
-            ReportFacpRegisterError ("PM1a_EVT_BLK", FACP->Pm1aEvtBlk,
+            CmFacpRegisterError ("PM1a_EVT_BLK", FACP->Pm1aEvtBlk,
                 ACPI_TABLE_NAMESPACE_SECTION, 432);
 
         if (!FACP->Pm1aCntBlk)
-            ReportFacpRegisterError ("PM1a_CNT_BLK", FACP->Pm1aCntBlk,
+            CmFacpRegisterError ("PM1a_CNT_BLK", FACP->Pm1aCntBlk,
                 ACPI_TABLE_NAMESPACE_SECTION, 433);
 
         if (!FACP->PmTmrBlk)
-            ReportFacpRegisterError ("PM_TMR_BLK", FACP->PmTmrBlk,
+            CmFacpRegisterError ("PM_TMR_BLK", FACP->PmTmrBlk,
                 ACPI_TABLE_NAMESPACE_SECTION, 434);
 
         if (FACP->Pm2CntBlk && !FACP->Pm2CntLen)
-            ReportFacpRegisterError ("PM2_CNT_LEN", (UINT32) FACP->Pm2CntLen,
+            CmFacpRegisterError ("PM2_CNT_LEN", (UINT32) FACP->Pm2CntLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 437);
 
         if (FACP->PmTmLen < 4)
-            ReportFacpRegisterError ("PM_TM_LEN", (UINT32) FACP->PmTmLen,
+            CmFacpRegisterError ("PM_TM_LEN", (UINT32) FACP->PmTmLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 438);
 
         if (FACP->Gpe0Blk && (FACP->Gpe0BlkLen & 1))    /* length not multiple of 2    */
-            ReportFacpRegisterError ("GPE0_BLK_LEN", (UINT32) FACP->Gpe0BlkLen,
+            CmFacpRegisterError ("GPE0_BLK_LEN", (UINT32) FACP->Gpe0BlkLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 439);
 
         if (FACP->Gpe1Blk && (FACP->Gpe1BlkLen & 1))    /* length not multiple of 2    */
-            ReportFacpRegisterError ("GPE1_BLK_LEN", (UINT32) FACP->Gpe1BlkLen,
+            CmFacpRegisterError ("GPE1_BLK_LEN", (UINT32) FACP->Gpe1BlkLen,
                 ACPI_TABLE_NAMESPACE_SECTION, 440);
     }
 
