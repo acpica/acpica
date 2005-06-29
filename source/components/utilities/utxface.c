@@ -123,6 +123,7 @@
 #include <namesp.h>
 #include <interp.h>
 #include <amlcode.h>
+#include <debugger.h>
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -163,6 +164,10 @@ AcpiInitialize (ACPI_INIT_DATA *InitData)
 
     Status = CmMutexInitialize ();
 
+    /* If configured, initialize the AML debugger */
+
+    DEBUG_EXEC (DbInitialize ());
+
     return_ACPI_STATUS (Status);
 }
 
@@ -186,33 +191,12 @@ AcpiTerminate (void)
     FUNCTION_TRACE ("AcpiTerminate");
 
 
-    /* Just exit if subsystem is already shutdown */
+    CmSubsystemShutdown ();
 
-    if (Gbl_AcpiMutexTable [0] == 0)
-    {
-        return_ACPI_STATUS (AE_OK);
-    }
 
-    /* Subsystem appears active, go ahead and shut it down */
+    /* Free the mutex objects */
 
-    DEBUG_PRINT (ACPI_INFO, ("Shutting down ACPI Subsystem...\n"));
-
-    /* Close the Namespace */
-
-    NsTerminate ();
-
-    /* Close the Event Handling */
-
-    EvTerminate ();
-
-    /* Close the globals */
-
-    CmTerminate ();
-
-    /* Debug only - display leftover memory allocation, if any */
-
-    CmDumpCurrentAllocations (ACPI_UINT32_MAX, NULL);
-    BREAKPOINT3;
+    CmMutexTerminate ();
 
 
     return_ACPI_STATUS (AE_OK);
