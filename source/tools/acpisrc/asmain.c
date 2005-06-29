@@ -257,7 +257,7 @@ ACPI_IDENTIFIER_TABLE       LinuxConditionalIdentifiers[] = {
 ACPI_CONVERSION_TABLE       LinuxConversionTable = {
 
     LinuxHeader,
-    FLG_NO_CARRIAGE_RETURNS,
+    FLG_NO_CARRIAGE_RETURNS | FLG_LOWERCASE_DIRNAMES,
 
     /* C source files */
 
