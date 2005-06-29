@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  ******************************************************************************/
 
@@ -484,7 +484,7 @@ AcpiDbDisplayInternalObject (
         AcpiOsPrintf ("<Node>            Name %4.4s Type-%s",
                         &((ACPI_NAMESPACE_NODE *)ObjDesc)->Name,
                         AcpiUtGetTypeName (((ACPI_NAMESPACE_NODE *) ObjDesc)->Type));
-        
+
         if (((ACPI_NAMESPACE_NODE *) ObjDesc)->Flags & ANOBJ_METHOD_ARG)
         {
             AcpiOsPrintf (" [Method Arg]");
@@ -767,7 +767,7 @@ AcpiDbDisplayArguments (void)
     NumArgs     = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
-    AcpiOsPrintf ("Method [%4.4s] has %X arguments, max concurrency = %X\n", 
+    AcpiOsPrintf ("Method [%4.4s] has %X arguments, max concurrency = %X\n",
             &Node->Name, NumArgs, Concurrency);
 
     for (i = 0; i < NumArgs; i++)
@@ -816,7 +816,7 @@ AcpiDbDisplayResults (void)
         NumResults = WalkState->Results->Results.NumResults;
     }
 
-    AcpiOsPrintf ("Method [%4.4s] has %X stacked result objects\n", 
+    AcpiOsPrintf ("Method [%4.4s] has %X stacked result objects\n",
         &Node->Name, NumResults);
 
     for (i = 0; i < NumResults; i++)
