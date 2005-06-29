@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.134 $
+ *       $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -355,7 +355,7 @@ typedef UINT8                           OBJECT_TYPE_INTERNAL;
  * This section contains object types that do not relate to the ACPI ObjectType operator.
  * They are used for various internal purposes only.  If new predefined ACPI_TYPEs are
  * added (via the ACPI specification), these internal types must move upwards.
- * Also, values exceeding the largest official ACPI ObjectType must not overlap with 
+ * Also, values exceeding the largest official ACPI ObjectType must not overlap with
  * defined AML opcodes.
  */
 #define INTERNAL_TYPE_BEGIN             17
