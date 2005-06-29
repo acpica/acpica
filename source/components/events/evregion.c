@@ -115,8 +115,8 @@
 
 #include <acpi.h>
 #include <events.h>
-#include <namespace.h>
-#include <interpreter.h>
+#include <namesp.h>
+#include <interp.h>
 #include <amlcode.h>
 #include <methods.h>
 

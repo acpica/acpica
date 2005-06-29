@@ -22,9 +22,6 @@
  * copy of the source code appearing in this file ("Covered Code") an
  * irrevocable, perpetual, worldwide license under Intel's copyrights in the
  * base code distributed originally by Intel ("Original Intel Code") to copy,
-
-
-
  * make derivatives, distribute, use and display any portion of the Covered
  * Code in any form, with the right to sublicense such rights; and
  *
@@ -118,10 +115,10 @@
 
 #include <acpi.h>
 #include <hardware.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <events.h>
 #include <amlcode.h>
-#include <interpreter.h>
+#include <interp.h>
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evapi");
@@ -173,13 +170,13 @@ AcpiEnable (void)
         return_ACPI_STATUS (AE_ERROR);
     }
 
-    Gbl_OriginalMode = HwGetMode();
+    Gbl_OriginalMode = HwGetMode ();
 
     if (EvInstallSciHandler () != AE_OK)
     {   
         /* Unable to install SCI handler */
 
-        DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler"));
+        DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler\n"));
         return_ACPI_STATUS (AE_ERROR);
     }
     
@@ -403,128 +400,6 @@ Cleanup:
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiInstallGpeHandler
- *
- * PARAMETERS:  GpeNumber       - The GPE number.  The numbering scheme is 
- *                                bank 0 first, then bank 1.
- *              Handler         - Address of the handler
- *              Context         - Value passed to the handler on each GPE
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Install a handler for a General Purpose Event.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiInstallGpeHandler (
-    UINT32                  GpeNumber, 
-    GPE_HANDLER             Handler, 
-    void                    *Context)
-{
-    ACPI_STATUS             Status = AE_OK;
-
-    
-    FUNCTION_TRACE ("AcpiInstallGpeHandler");
-
-
-    /* Parameter validation */
-
-    if (!Handler || (GpeNumber >= Gbl_GpeRegisterCount))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    CmAcquireMutex (MTX_GP_EVENT);
-
-    /* Make sure that there isn't a handler there already */
-
-    if (Gbl_GpeInfo[GpeNumber].Handler)
-    {
-        Status = AE_EXIST;
-        goto Cleanup;
-    }
-
-
-    /* Install the handler */
-
-    Gbl_GpeInfo[GpeNumber].Handler = Handler;
-    Gbl_GpeInfo[GpeNumber].Context = Context;
-
-
-    /* Now we can enable the GPE */
-
-    HwEnableGpe (GpeNumber);
-
-Cleanup:
-    CmReleaseMutex (MTX_GP_EVENT);
-    return_ACPI_STATUS (Status);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiRemoveGpeHandler
- *
- * PARAMETERS:  GpeNumber       - The event to remove a handler
- *              Handler         - Address of the handler
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Remove a handler for a General Purpose Event.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiRemoveGpeHandler (
-    UINT32                  GpeNumber, 
-    GPE_HANDLER             Handler)
-{
-    ACPI_STATUS             Status = AE_OK;
-
-    
-    FUNCTION_TRACE ("AcpiRemoveGpeHandler");
-
-
-    /* Parameter validation */
-
-    if (!Handler || (GpeNumber >= Gbl_GpeRegisterCount))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-
-    CmAcquireMutex (MTX_GP_EVENT);
-
-    /* Make sure that the installed handler is the same */
-
-    if (Gbl_GpeInfo[GpeNumber].Handler != Handler)
-    {
-        Status = AE_BAD_PARAMETER;
-        goto Cleanup;
-    }
-
-
-    /* Disable the GPE before removing the handler */
-
-    HwDisableGpe (GpeNumber);
-
-
-    /* Remove the handler */
-
-    Gbl_GpeInfo[GpeNumber].Handler = NULL;
-    Gbl_GpeInfo[GpeNumber].Context = NULL;
-
- 
-Cleanup:
-    CmReleaseMutex (MTX_GP_EVENT);
-    return_ACPI_STATUS (Status);
-}
-
-
-/******************************************************************************
- *
  * FUNCTION:    AcpiInstallNotifyHandler
  *
  * PARAMETERS:  Device          - The device for which notifies will be handled
@@ -571,6 +446,45 @@ AcpiInstallNotifyHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+
+    /*
+     * Support for global notify handlers.  These handlers are invoked for
+     * every notifiy of the type specifiec
+     */
+
+    if (Device == ACPI_ROOT_OBJECT)
+    {
+        /*
+         *  Make sure the handler is not already installed.
+         */
+
+        if (((HandlerType == ACPI_SYSTEM_NOTIFY) && Gbl_SysNotify.Handler) ||
+            ((HandlerType == ACPI_DEVICE_NOTIFY) && Gbl_DrvNotify.Handler))
+        {
+            return_ACPI_STATUS (AE_EXIST);
+        }
+
+        if (HandlerType == ACPI_SYSTEM_NOTIFY)
+        {
+            Gbl_SysNotify.Nte = ObjEntry;
+            Gbl_SysNotify.Handler = Handler;
+            Gbl_SysNotify.Context = Context;
+        }
+
+        else
+        {
+            Gbl_DrvNotify.Nte = ObjEntry;
+            Gbl_DrvNotify.Handler = Handler;
+            Gbl_DrvNotify.Context = Context;
+        }
+
+
+        /* Global notify handler installed */
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+
     /*
      * These are the ONLY objects that can receive ACPI notifications
      */
@@ -585,7 +499,7 @@ AcpiInstallNotifyHandler (
 
     /* Check for an existing internal object */
 
-    ObjDesc = ObjEntry->Object;
+    ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
     if (ObjDesc)
     {
         /*
@@ -594,8 +508,8 @@ AcpiInstallNotifyHandler (
          *  Make sure the handler is not already installed.
          */
 
-        if (((HandlerType = ACPI_SYSTEM_NOTIFY) && ObjDesc->Device.SysHandler) ||
-            ((HandlerType = ACPI_DEVICE_NOTIFY) && ObjDesc->Device.DrvHandler))
+        if (((HandlerType == ACPI_SYSTEM_NOTIFY) && ObjDesc->Device.SysHandler) ||
+            ((HandlerType == ACPI_DEVICE_NOTIFY) && ObjDesc->Device.DrvHandler))
         {
             return_ACPI_STATUS (AE_EXIST);
         }
@@ -622,6 +536,7 @@ AcpiInstallNotifyHandler (
             return_ACPI_STATUS (Status);
         }
     }
+
 
     /* 
      *  We get here, we know that there is no handler installed
@@ -720,13 +635,10 @@ AcpiRemoveNotifyHandler (
 
     /* Check for an existing internal object */
 
-    if (!ObjEntry->Object)
+    if (!(ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry)))
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
-        
     }
-
-    ObjDesc = ObjEntry->Object;
 
     /*
      *  The object exists.
@@ -799,7 +711,7 @@ AcpiRemoveNotifyHandler (
 ACPI_STATUS
 AcpiInstallAddressSpaceHandler (
     ACPI_HANDLE             Device, 
-    UINT32                  SpaceId, 
+    ACPI_ADDRESS_SPACE_TYPE SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler, 
     void                    *Context)
 {
@@ -848,15 +760,15 @@ AcpiInstallAddressSpaceHandler (
     {
         switch (SpaceId)
         {
-        case REGION_SystemMemory:
+        case ADDRESS_SPACE_SYSTEM_MEMORY:
             Handler = AmlSystemMemorySpaceHandler;
             break;
 
-        case REGION_SystemIO:
+        case ADDRESS_SPACE_SYSTEM_IO:
             Handler = AmlSystemIoSpaceHandler;
             break;
 
-        case REGION_PCIConfig:
+        case ADDRESS_SPACE_PCI_CONFIG:
             Handler = AmlPciConfigSpaceHandler;
             break;
 
@@ -867,8 +779,7 @@ AcpiInstallAddressSpaceHandler (
 
     /* Check for an existing internal object */
 
-    ObjDesc = ObjEntry->Object;
-
+    ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
     if (ObjDesc)
     {
         /*
@@ -975,7 +886,7 @@ AcpiInstallAddressSpaceHandler (
      *  Now walk the namespace finding all of the regions this
      *  handler will manage.
      *
-     *  We start at the device and search the branch until toward
+     *  We start at the device and search the branch toward
      *  the leaf nodes until either the leaf is encountered or
      *  a device is detected that has an address handler of the
      *  same type.
@@ -983,7 +894,7 @@ AcpiInstallAddressSpaceHandler (
      *  In either case we back up and search down the remainder
      *  of the branch
      */
-    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Device, ACPI_INT_MAX, EvAddrHandlerHelper, 
+    Status = AcpiWalkNamespace (ACPI_TYPE_Any, Device, ACPI_INT32_MAX, EvAddrHandlerHelper, 
                                 HandlerObj, NULL);
 
     /*
@@ -1019,7 +930,7 @@ AcpiInstallAddressSpaceHandler (
 ACPI_STATUS
 AcpiRemoveAddressSpaceHandler (
     ACPI_HANDLE             Device, 
-    UINT32                  SpaceId, 
+    ACPI_ADDRESS_SPACE_TYPE SpaceId, 
     ADDRESS_SPACE_HANDLER   Handler)
 {
     ACPI_OBJECT_INTERNAL   *ObjDesc;
@@ -1048,12 +959,10 @@ AcpiRemoveAddressSpaceHandler (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* TBD: Mutex */
 
     /* Make sure the internal object exists */
 
-    ObjDesc = ObjEntry->Object;
-
+    ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) ObjEntry);
     if (!ObjDesc)
     {
         /*
@@ -1140,4 +1049,288 @@ AcpiRemoveAddressSpaceHandler (
         Handler, Gbl_RegionTypes[SpaceId], ObjEntry, ObjDesc));
 
     return_ACPI_STATUS (AE_NOT_EXIST);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiInstallGpeHandler
+ *
+ * PARAMETERS:  GpeNumber       - The GPE number.  The numbering scheme is 
+ *                                bank 0 first, then bank 1.
+ *              Handler         - Address of the handler
+ *              Context         - Value passed to the handler on each GPE
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a handler for a General Purpose Event.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInstallGpeHandler (
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler, 
+    void                    *Context)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+    
+    FUNCTION_TRACE ("AcpiInstallGpeHandler");
+
+
+    /* Parameter validation */
+
+    if (!Handler || (GpeNumber > NUM_GPE))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Ensure that we have a valid GPE number */
+
+    if (Gbl_GpeValid[GpeNumber] == GPE_INVALID)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    CmAcquireMutex (MTX_GP_EVENT);
+
+    /* Make sure that there isn't a handler there already */
+
+    if (Gbl_GpeInfo[GpeNumber].Handler)
+    {
+        Status = AE_EXIST;
+        goto Cleanup;
+    }
+
+    /* Install the handler */
+
+    Gbl_GpeInfo[GpeNumber].Handler = Handler;
+    Gbl_GpeInfo[GpeNumber].Context = Context;
+
+    /* Now we can enable the GPE */
+
+    HwEnableGpe (GpeNumber);
+
+Cleanup:
+    CmReleaseMutex (MTX_GP_EVENT);
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiRemoveGpeHandler
+ *
+ * PARAMETERS:  GpeNumber       - The event to remove a handler
+ *              Handler         - Address of the handler
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Remove a handler for a General Purpose Event.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiRemoveGpeHandler (
+    UINT32                  GpeNumber, 
+    GPE_HANDLER             Handler)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+    
+    FUNCTION_TRACE ("AcpiRemoveGpeHandler");
+
+
+    /* Parameter validation */
+
+    if (!Handler || (GpeNumber > NUM_GPE))
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Ensure that we have a valid GPE number */
+
+    if (Gbl_GpeValid[GpeNumber] == GPE_INVALID)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+
+    CmAcquireMutex (MTX_GP_EVENT);
+
+    /* Make sure that the installed handler is the same */
+
+    if (Gbl_GpeInfo[GpeNumber].Handler != Handler)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto Cleanup;
+    }
+
+
+    /* Disable the GPE before removing the handler */
+
+    HwDisableGpe (GpeNumber);
+
+
+    /* Remove the handler */
+
+    Gbl_GpeInfo[GpeNumber].Handler = NULL;
+    Gbl_GpeInfo[GpeNumber].Context = NULL;
+
+ 
+Cleanup:
+    CmReleaseMutex (MTX_GP_EVENT);
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEnableEvent
+ *
+ * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ *              Type            - The type of event
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Enable an ACPI event (fixed and general purpose)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEnableEvent (
+    UINT32                  Event,
+    UINT32                  Type)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+    FUNCTION_TRACE ("AcpiEnableEvent");
+
+    switch (Type)
+    {
+    case EVENT_FIXED:
+        /*
+         * TBD - Fixed events...
+         */
+        Status = AE_NOT_IMPLEMENTED;
+        break;
+
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if (Gbl_GpeValid[Event] == GPE_INVALID)
+            Status = AE_BAD_PARAMETER;
+        else
+            HwEnableGpe (Event);
+
+        break;
+
+    default:
+        Status = AE_BAD_PARAMETER;
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiDisableEvent
+ *
+ * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ *              Type            - The type of event
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Disable an ACPI event (fixed and general purpose)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDisableEvent (
+    UINT32                  Event,
+    UINT32                  Type)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+    FUNCTION_TRACE ("AcpiDisableEvent");
+
+    switch (Type)
+    {
+    case EVENT_FIXED:
+        /*
+         * TBD - Fixed events...
+         */
+        Status = AE_NOT_IMPLEMENTED;
+        break;
+
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if (Gbl_GpeValid[Event] == GPE_INVALID)
+            Status = AE_BAD_PARAMETER;
+        else
+            HwDisableGpe (Event);
+
+        break;
+
+    default:
+        Status = AE_BAD_PARAMETER;
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiClearEvent
+ *
+ * PARAMETERS:  Event           - The fixed event or GPE to be enabled
+ *              Type            - The type of event
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Clear an ACPI event (fixed and general purpose)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiClearEvent (
+    UINT32                  Event,
+    UINT32                  Type)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+    FUNCTION_TRACE ("AcpiClearEvent");
+
+    switch (Type)
+    {
+    case EVENT_FIXED:
+        /*
+         * TBD - Fixed events...
+         */
+        Status = AE_NOT_IMPLEMENTED;
+        break;
+
+    case EVENT_GPE:
+
+        /* Ensure that we have a valid GPE number */
+
+        if (Gbl_GpeValid[Event] == GPE_INVALID)
+            Status = AE_BAD_PARAMETER;
+        else
+            HwClearGpe (Event);
+
+        break;
+
+    default:
+        Status = AE_BAD_PARAMETER;
+    }
+
+    return_ACPI_STATUS (Status);
 }

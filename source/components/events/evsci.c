@@ -117,7 +117,7 @@
  *****************************************************************************/
 
 #include <acpi.h>
-#include <namespace.h>
+#include <namesp.h>
 #include <hardware.h>
 #include <events.h>
 
@@ -360,16 +360,16 @@ EvRestoreAcpiState (void)
     {
         /* Restore the fixed events */
         
-        if (OsdIn16 ((UINT16) (Gbl_FACP->Pm1aEvtBlk + 2)) != Gbl_Pm1EnableRegisterSave)
+        if (OsdIn16 (Gbl_FACP->Pm1aEvtBlk + 2) != Gbl_Pm1EnableRegisterSave)
         {
-            OsdOut16 ((UINT16) (Gbl_FACP->Pm1aEvtBlk + 2), Gbl_Pm1EnableRegisterSave);
+            OsdOut16 ((Gbl_FACP->Pm1aEvtBlk + 2), Gbl_Pm1EnableRegisterSave);
         }
         
         if (Gbl_FACP->Pm1bEvtBlk)
         {
-            if (OsdIn16 ((UINT16) (Gbl_FACP->Pm1bEvtBlk + 2)) != Gbl_Pm1EnableRegisterSave)
+            if (OsdIn16 (Gbl_FACP->Pm1bEvtBlk + 2) != Gbl_Pm1EnableRegisterSave)
             {
-                OsdOut16 ((UINT16) (Gbl_FACP->Pm1bEvtBlk + 2), Gbl_Pm1EnableRegisterSave);
+                OsdOut16 ((Gbl_FACP->Pm1bEvtBlk + 2), Gbl_Pm1EnableRegisterSave);
             }
         }
 
@@ -383,9 +383,9 @@ EvRestoreAcpiState (void)
         
         for (Index = 0; Index < Gbl_FACP->Gpe0BlkLen / 2; Index++)
         {
-            if (OsdIn8 ((UINT16) (Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2)) != Gbl_Gpe0EnableRegisterSave[Index])
+            if (OsdIn8 ((Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2)) != Gbl_Gpe0EnableRegisterSave[Index])
             {
-                OsdOut8 ((UINT16) (Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2), Gbl_Gpe0EnableRegisterSave[Index]);
+                OsdOut8 ((Gbl_FACP->Gpe0Blk + Gbl_FACP->Gpe0BlkLen / 2), Gbl_Gpe0EnableRegisterSave[Index]);
             }
         }
 
@@ -393,9 +393,9 @@ EvRestoreAcpiState (void)
         {
             for (Index = 0; Index < Gbl_FACP->Gpe1BlkLen / 2; Index++)
             {
-                if (OsdIn8 ((UINT16) (Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2)) != Gbl_Gpe1EnableRegisterSave[Index])
+                if (OsdIn8 ((Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2)) != Gbl_Gpe1EnableRegisterSave[Index])
                 {
-                    OsdOut8 ((UINT16) (Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2), Gbl_Gpe1EnableRegisterSave[Index]);
+                    OsdOut8 ((Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1BlkLen / 2), Gbl_Gpe1EnableRegisterSave[Index]);
                 }
             }
         }
