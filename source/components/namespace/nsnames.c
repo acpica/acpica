@@ -101,19 +101,10 @@
 #include <amlcode.h>
 #include <interpreter.h>
 #include <namespace.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nsnames.c"
 #define _COMPONENT          NAMESPACE
-
-
-static ST_KEY_DESC_TABLE KDT[] = {
-    {"0000", '1', "NsNameOfScope: allocation failure", "NsNameOfScope: allocation failure"},
-    {"0001", '1', "Current scope pointer trashed", "Current scope pointer trashed"},
-    {"0002", '1', "NsFindNames: allocation failure", "NsFindNames: allocation failure"},
-    {NULL, 'I', NULL, NULL}
-};
 
 
 
@@ -134,11 +125,12 @@ static ST_KEY_DESC_TABLE KDT[] = {
  ***************************************************************************/
 
 char *
-NsNameOfScope (nte *EntryToSearch)
+NsNameOfScope (
+    NAME_TABLE_ENTRY        *EntryToSearch)
 {
-    nte                 *Temp = NULL;
-    char                *NameBuffer;
-    size_t              Size;
+    NAME_TABLE_ENTRY        *Temp = NULL;
+    char                    *NameBuffer;
+    ACPI_SIZE               Size;
 
 
     FUNCTION_TRACE ("NsNameOfScope");
@@ -167,7 +159,7 @@ NsNameOfScope (nte *EntryToSearch)
     NameBuffer = LocalCallocate (Size + 1);
     if (!NameBuffer)
     {
-        REPORT_ERROR (&KDT[0]);
+        REPORT_ERROR ("NsNameOfScope: allocation failure");
         FUNCTION_EXIT;
         return NULL;
     }
@@ -218,7 +210,7 @@ NsNameOfCurrentScope (void)
         return NsNameOfScope (CurrentScope->Scope);
     }
     
-    REPORT_ERROR (&KDT[1]);
+    REPORT_ERROR ("Current scope pointer trashed");
 
     FUNCTION_EXIT;
     return NULL;
@@ -240,13 +232,16 @@ NsNameOfCurrentScope (void)
  ***************************************************************************/
 
 ACPI_STATUS
-NsHandleToPathname (NsHandle TargetHandle, UINT32 BufSize, char *UserBuffer)
+NsHandleToPathname (
+    ACPI_HANDLE             TargetHandle, 
+    UINT32                  BufSize, 
+    char                    *UserBuffer)
 {
-    nte                 *EntryToSearch = NULL;
-    nte                 *Temp = NULL;
-    static size_t       FqnSize = 0;
-    size_t              Size;
-    INT32               TraceFQN = 0;
+    NAME_TABLE_ENTRY        *EntryToSearch = NULL;
+    NAME_TABLE_ENTRY        *Temp = NULL;
+    ACPI_SIZE               FqnSize = 0;
+    ACPI_SIZE               Size;
+    INT32                   TraceFQN = 0;
 
 
     FUNCTION_TRACE ("NsHandleToPathname");
@@ -263,7 +258,11 @@ NsHandleToPathname (NsHandle TargetHandle, UINT32 BufSize, char *UserBuffer)
         return AE_NO_NAMESPACE;
     }
 
-    EntryToSearch = (nte *) TargetHandle;
+    if (!(EntryToSearch = NsConvertHandleToEntry (TargetHandle)))
+    {
+        FUNCTION_EXIT;
+        return AE_BAD_PARAMETER;
+    }
 
     /* Compute length of pathname as 5 * number of name segments */
     
@@ -339,9 +338,11 @@ NsHandleToPathname (NsHandle TargetHandle, UINT32 BufSize, char *UserBuffer)
  ***************************************************************************/
 
 BOOLEAN
-NsPatternMatch (nte *ObjEntry, char *SearchFor)
+NsPatternMatch (
+    NAME_TABLE_ENTRY        *ObjEntry, 
+    char                    *SearchFor)
 {
-    INT32           i;
+    INT32                   i;
 
 
     for (i = 0; i < ACPI_NAME_SIZE; i++)
@@ -376,21 +377,24 @@ NsPatternMatch (nte *ObjEntry, char *SearchFor)
  ***************************************************************************/
 
 void *
-NsNameCompare (NsHandle ObjHandle, UINT32 Level, void *Context)
+NsNameCompare (
+    ACPI_HANDLE             ObjHandle, 
+    UINT32                  Level, 
+    void                    *Context)
 {
-    FIND_CONTEXT        *Find = Context;
+    FIND_CONTEXT            *Find = Context;
 
 
     /* Match, yes or no? */
 
-    if (NsPatternMatch ((nte *) ObjHandle, Find->SearchFor))
+    if (NsPatternMatch ((NAME_TABLE_ENTRY *) ObjHandle, Find->SearchFor))
     {
         /* name matches pattern */
         
         if (Find->List)
         {
             DEBUG_PRINT (TRACE_NAMES, ("FindName: match found: %.4s\n",
-                            &((nte *) ObjHandle)->Name));
+                            &((NAME_TABLE_ENTRY *) ObjHandle)->Name));
 
             Find->List[*(Find->Count)] = ObjHandle;
         }
@@ -424,10 +428,14 @@ NsNameCompare (NsHandle ObjHandle, UINT32 Level, void *Context)
  ***************************************************************************/
 
 void
-NsLowFindNames (nte *ThisEntry, char *SearchFor,
-                        INT32 *Count, NsHandle List[], INT32 MaxDepth)
+NsLowFindNames (
+    NAME_TABLE_ENTRY        *ThisEntry, 
+    char                    *SearchFor,
+    INT32                   *Count, 
+    ACPI_HANDLE             List[], 
+    INT32                   MaxDepth)
 {
-    FIND_CONTEXT        Find;
+    FIND_CONTEXT            Find;
 
 
 
@@ -453,13 +461,13 @@ NsLowFindNames (nte *ThisEntry, char *SearchFor,
 
     /* Walk the namespace and find all matches */
 
-    AcpiWalkNamespace (TYPE_Any, (NsHandle) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
+    AcpiWalkNamespace (TYPE_Any, (ACPI_HANDLE) ThisEntry, MaxDepth, NsNameCompare, &Find, NULL);
 
     if (List)
     {
         /* null-terminate the output array */
         
-        List[*Count] = (NsHandle) 0;
+        List[*Count] = (ACPI_HANDLE) 0;
     }
 
     FUNCTION_EXIT;
@@ -481,19 +489,22 @@ NsLowFindNames (nte *ThisEntry, char *SearchFor,
  *
  * DESCRIPTION: Traverse the name space finding names which match a search
  *              pattern, and return an array of handles.  The end of the
- *              array is marked by the value (NsHandle)0.  A return value
- *              of (NsHandle *)0 indicates that no matching names were
+ *              array is marked by the value (ACPI_HANDLE)0.  A return value
+ *              of (ACPI_HANDLE *)0 indicates that no matching names were
  *              found or that space for the list could not be allocated.
  *              if StartHandle is NS_ALL (null) search from the root,
  *              else it is a handle whose children are to be searched.
  *
  ***************************************************************************/
 
-NsHandle *
-NsFindNames (char *SearchFor, NsHandle StartHandle, INT32 MaxDepth)
+ACPI_HANDLE *
+NsFindNames (
+    char                    *SearchFor, 
+    ACPI_HANDLE             StartHandle, 
+    INT32                   MaxDepth)
 {
-    NsHandle            *List = NULL;
-    INT32               Count;
+    ACPI_HANDLE             *List = NULL;
+    INT32                   Count;
 
 
     FUNCTION_TRACE ("NsFindNames");
@@ -516,11 +527,11 @@ NsFindNames (char *SearchFor, NsHandle StartHandle, INT32 MaxDepth)
         StartHandle = RootObject;
     }
     
-    else if (((nte *) StartHandle)->Scope)
+    else if (((NAME_TABLE_ENTRY *) StartHandle)->Scope)
     {
         /*  base has children to search */
 
-        StartHandle = ((nte *) StartHandle)->Scope;
+        StartHandle = ((NAME_TABLE_ENTRY *) StartHandle)->Scope;
     }
     
     else
@@ -556,10 +567,10 @@ NsFindNames (char *SearchFor, NsHandle StartHandle, INT32 MaxDepth)
     }
 
     Count++;                                            /* Allow for trailing null */
-    List = LocalCallocate (Count * sizeof(NsHandle));
+    List = LocalCallocate (Count * sizeof(ACPI_HANDLE));
     if (!List)
     {
-        REPORT_ERROR (&KDT[2]);
+        REPORT_ERROR ("NsFindNames: allocation failure");
         FUNCTION_EXIT;
         return NULL;
     }
