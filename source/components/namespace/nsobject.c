@@ -149,13 +149,14 @@ ACPI_STATUS
 NsAttachObject (
     ACPI_HANDLE             Handle, 
     ACPI_HANDLE             Object, 
-    UINT8                   Type)
+    OBJECT_TYPE_INTERNAL    Type)
 {
     NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) Handle;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *PreviousObjDesc;
-    ACPI_OBJECT_TYPE        ObjType = ACPI_TYPE_Any;
+    OBJECT_TYPE_INTERNAL    ObjType = ACPI_TYPE_Any;
     UINT8                   Flags;
+    UINT16                  Opcode;
 
 
     FUNCTION_TRACE ("NsAttachObject");
@@ -262,7 +263,7 @@ NsAttachObject (
 
         if (ACPI_TYPE_Any != Type)
         {
-            ObjType = (ACPI_OBJECT_TYPE) Type;
+            ObjType = Type;
         }
 
     
@@ -277,15 +278,19 @@ NsAttachObject (
     
             Flags |= NTE_AML_ATTACHMENT;
 
+            /* The next byte (perhaps the next two bytes) will be the AML opcode */
+
+            STORE16 (&Opcode, Object);
+
 
             /* Check for a recognized OpCode */
 
-            switch (*(UINT8 *) Object)
+            switch ((UINT8) Opcode)
             {
 
             case AML_OpPrefix:
 
-                if (*(UINT16 *) Object != AML_RevisionOp)
+                if (Opcode != AML_RevisionOp)
                 {
                     /* OpPrefix is unrecognized unless part of RevisionOp */
             
@@ -328,11 +333,9 @@ NsAttachObject (
 
             default:
 
-                DEBUG_PRINT (ACPI_ERROR, ("AML Opcode/Type [%x] not supported in attach\n",
-                               *(UINT16 *) Object));
+                DEBUG_PRINT (ACPI_ERROR, ("AML Opcode/Type [%x] not supported in attach\n", (UINT8) Opcode));
 
                 return_ACPI_STATUS (AE_TYPE);
-
                 break;
             }
         }
@@ -570,10 +573,10 @@ NsGetAttachedObject (
         /* handle invalid */
 
         REPORT_WARNING ("NsGetAttachedObject: Null handle");
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
-    return_VALUE (((NAME_TABLE_ENTRY *) Handle)->Object);
+    return_PTR (((NAME_TABLE_ENTRY *) Handle)->Object);
 }
 
 
@@ -653,12 +656,12 @@ NsFindAttachedObject (
 
     if (!ObjDesc)
     {
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     if (0 == MaxDepth)
     {
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     if (!Gbl_RootObject->Scope)
@@ -667,7 +670,7 @@ NsFindAttachedObject (
          * If the name space has not been initialized,
          * there surely are no matching values.
          */
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
     if (NS_ALL == StartHandle)
@@ -681,7 +684,7 @@ NsFindAttachedObject (
          * If base is not the root and has no children,
          * there is nothing to search.
          */
-        return_VALUE (NULL);
+        return_PTR (NULL);
     }
 
 
@@ -698,7 +701,7 @@ NsFindAttachedObject (
         RetObject = NULL;
     }
 
-    return_VALUE (RetObject);
+    return_PTR (RetObject);
 }
 
 
