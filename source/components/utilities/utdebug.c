@@ -251,6 +251,39 @@ FunctionStatusExit (
 
 /*****************************************************************************
  * 
+ * FUNCTION:    FunctionValueExit
+ *
+ * PARAMETERS:  ModuleName          - Caller's module name (for error output)
+ *              LineNumber          - Caller's line number (for error output)
+ *              ComponentId         - Caller's component ID (for error output)
+ *              FunctionName        - Name of Caller's function
+ *              Value               - Value to be printed with exit msg
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Function exit trace.  Prints only if TRACE_FUNCTIONS bit is
+ *              set in DebugLevel.  Prints exit value also.
+ *
+ ****************************************************************************/
+
+void
+FunctionValueExit (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId, 
+    char                    *FunctionName,
+    UINT32                  Value)
+{
+
+    DebugPrint (ModuleName, LineNumber, ComponentId, TRACE_FUNCTIONS,
+                " %2.2d Exiting Function: %s, 0x%X\n", 
+                NestingLevel, FunctionName, Value);
+    NestingLevel--;
+}
+
+
+/*****************************************************************************
+ * 
  * FUNCTION:    DebugPrint
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
