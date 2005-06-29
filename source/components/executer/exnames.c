@@ -1,17 +1,98 @@
-/*__________________________________________________________________________
- |
- |           Copyright (C) Intel Corporation 1994-1998
- |
- | All rights reserved.  No part of this program or publication may be
- | reproduced, transmitted, transcribed, stored in a retrieval system, or
- | translated into any language or computer language, in any form or by any
- | means, electronic, mechanical, magnetic, optical, chemical, manual, or
- | otherwise, without the prior written permission of Intel Corporation.
- |__________________________________________________________________________
- |
- | ModuleName: isnames - interpreter/scanner name load/execute
- |__________________________________________________________________________
-*/
+
+/******************************************************************************
+ * 
+ * Module Name: isnames - interpreter/scanner name load/execute
+ *
+ *****************************************************************************/
+
+/******************************************************************************
+ *
+ * 1. Copyright Notice
+ *
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * reserved.
+ *
+ * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
+ *
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
+ *
+ * the above copyright and patent license is granted only if the following 
+ * conditions are met:
+ *
+ * 3. Conditions 
+ *
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
+ *
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
+ *
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * Intel Code.
+ *
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
+ * without prior written authorization from Intel.
+ *
+ * 4. Disclaimer and Export Compliance
+ *
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
+ *
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * LIMITED REMEDY.
+ *
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
+ *
+ *****************************************************************************/
 
 
 #define __ISNAMES_C__
@@ -76,7 +157,7 @@ LastFullyQualifiedName (void)
 
     /* If NameString is fully qualified, just return a pointer to it. */
 
-    if (RootPrefix == NameString[0])
+    if (AML_RootPrefix == NameString[0])
     {
         return NameString;
     }
@@ -130,7 +211,7 @@ LastFullyQualifiedName (void)
              * For each ParentPrefix at the front of NameString,
              * remove one segment (4 bytes) from the end of the scope.
              */
-            for (TempPtr = NameString ; ParentPrefix == *TempPtr ; ++TempPtr )
+            for (TempPtr = NameString ; AML_ParentPrefix == *TempPtr ; ++TempPtr )
             {
                 Length -= 4;
                 if (Length < 0)
@@ -253,13 +334,13 @@ AllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
 
     if (PrefixCount < 0)
     {
-        *TempPtr++ = RootPrefix;
+        *TempPtr++ = AML_RootPrefix;
     }
     else
     {
         while (PrefixCount--)
         {
-            *TempPtr++ = ParentPrefix;
+            *TempPtr++ = AML_ParentPrefix;
         }
     }
 
@@ -269,7 +350,7 @@ AllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
     {
         /*  set up multi prefixes   */
 
-        *TempPtr++ = MultiNamePrefixOp;
+        *TempPtr++ = AML_MultiNamePrefixOp;
         *TempPtr++ = (char) NumNameSegs;
     }
 
@@ -277,7 +358,7 @@ AllocateNameString (INT32 PrefixCount, INT32 NumNameSegs)
     {
         /* Set up dual prefixes */
 
-        *TempPtr++ = DualNamePrefix;
+        *TempPtr++ = AML_DualNamePrefix;
     }
 
     /*  Terminate string following prefixes. DoSeg() will append the segment(s) */
@@ -370,7 +451,7 @@ GetEncodedPkgLen (INT32 LastPkgLen)
  *
  * FUNCTION:    DoSeg
  *
- * PARAMETERS:  OpMode      LoadExecMode      Load or Exec
+ * PARAMETERS:  OpMode      LoadExecMode      MODE_Load or MODE_Exec
  *
  * RETURN:      S_SUCCESS, S_FAILURE, or S_ERROR
  *
@@ -428,7 +509,7 @@ DoSeg (OpMode LoadExecMode)
                 strcat (NameString, CharBuf);
             }
 
-            if (fAsmFile && Load1 != LoadExecMode)
+            if (fAsmFile && MODE_Load1 != LoadExecMode)
             {
                 OsdPrintf (fAsmFile, " \"%s\",", CharBuf);
             }
@@ -454,7 +535,7 @@ DoSeg (OpMode LoadExecMode)
             LINE_SET (22, LoadExecMode);
             DEBUG_PRINT (TRACE_LOAD, (" *Bad char %02x in name*\n", Peek ()));
 
-            if (Load == LoadExecMode)
+            if (MODE_Load == LoadExecMode)
             {
                 /*  second pass load mode   */
 
@@ -482,7 +563,7 @@ DoSeg (OpMode LoadExecMode)
  * FUNCTION:    DoName
  *
  * PARAMETERS:  NsType  DataType        Data type to be associated with this name
- *              OpMode  LoadExecMode    Load or Exec
+ *              OpMode  LoadExecMode    MODE_Load or MODE_Exec
  *
  * RETURN:      S_SUCCESS, S_FAILURE, or S_ERROR
  *
@@ -513,9 +594,9 @@ BREAKPOINT3;
     LINE_SET (1, LoadExecMode);
 /*     DEBUG_PRINT (TRACE_LOAD, (" ")); REMOVE !! */
 
-    if (DefField == DataType || 
-        BankField == DataType || 
-        IndexField == DataType)
+    if (TYPE_DefField == DataType || 
+        TYPE_BankField == DataType || 
+        TYPE_IndexField == DataType)
     {   
         /*  Disallow prefixes for types associated with field names */
 
@@ -531,7 +612,7 @@ BREAKPOINT3;
         {   
             /*  examine first character of name for root or parent prefix operators */
 
-        case RootPrefix:
+        case AML_RootPrefix:
             LINE_SET (1, LoadExecMode);
             ConsumeAMLStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("RootPrefix: %x\n", Prefix));
@@ -541,14 +622,14 @@ BREAKPOINT3;
              * see comment in AllocateNameString()
              */
             PrefixCount = -1;
-            if (fAsmFile && Load1 != LoadExecMode)
+            if (fAsmFile && MODE_Load1 != LoadExecMode)
             {
-                OsdPrintf (fAsmFile, " \"%c\",", RootPrefix);
+                OsdPrintf (fAsmFile, " \"%c\",", AML_RootPrefix);
             }
 
             break;
 
-        case ParentPrefix:
+        case AML_ParentPrefix:
             do
             {
                 LINE_SET (1, LoadExecMode);
@@ -556,12 +637,12 @@ BREAKPOINT3;
                 DEBUG_PRINT (TRACE_LOAD, ("ParentPrefix: %x\n", Prefix));
 
                 ++PrefixCount;
-                if (fAsmFile && Load1 != LoadExecMode)
+                if (fAsmFile && MODE_Load1 != LoadExecMode)
                 {
-                    OsdPrintf (fAsmFile, " \"%c\",", ParentPrefix);
+                    OsdPrintf (fAsmFile, " \"%c\",", AML_ParentPrefix);
                 }
 
-            } while (PeekOp () == ParentPrefix);
+            } while (PeekOp () == AML_ParentPrefix);
             
             break;
 
@@ -573,14 +654,14 @@ BREAKPOINT3;
         {
             /* examine first character of name for name segment prefix operator */
             
-        case DualNamePrefix:
+        case AML_DualNamePrefix:
             LINE_SET (1, LoadExecMode);
             ConsumeAMLStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("DualNamePrefix: %x\n", Prefix));
 
-            if (fAsmFile && Load1 != LoadExecMode)
+            if (fAsmFile && MODE_Load1 != LoadExecMode)
             {
-                OsdPrintf (fAsmFile, " \"%c\",", DualNamePrefix);
+                OsdPrintf (fAsmFile, " \"%c\",", AML_DualNamePrefix);
             }
 
             AllocateNameString (PrefixCount, 2);
@@ -596,19 +677,19 @@ BREAKPOINT3;
 
             break;
 
-        case MultiNamePrefixOp:
+        case AML_MultiNamePrefixOp:
             LINE_SET (1, LoadExecMode);
             ConsumeAMLStreamBytes (1, &Prefix);
             DEBUG_PRINT (TRACE_LOAD, ("MultiNamePrefix: %x\n", Prefix));
 
-            if (fAsmFile && Load1 != LoadExecMode)
+            if (fAsmFile && MODE_Load1 != LoadExecMode)
             {
-                OsdPrintf (fAsmFile, " \"%c\",", MultiNamePrefixOp);
+                OsdPrintf (fAsmFile, " \"%c\",", AML_MultiNamePrefixOp);
             }
 
             NumSegments = Peek ();                      /* fetch count of segments */
 
-            if (DoByteConst (Load, 0) != S_SUCCESS)
+            if (DoByteConst (MODE_Load, 0) != S_SUCCESS)
             {
                 /* unexpected end of AML */
 
@@ -647,7 +728,7 @@ BREAKPOINT3;
 
             ConsumeAMLStreamBytes (1, NULL);    /*  consume NULL byte   */
             
-            if (fAsmFile && (Load1 != LoadExecMode))
+            if (fAsmFile && (MODE_Load1 != LoadExecMode))
             {
                 /* This is probably not the right thing to do!! */
 
@@ -683,22 +764,23 @@ BREAKPOINT3;
 
         /* Globally set this handle for use later */
 
-        if (Load1 == LoadExecMode)
+        if (MODE_Load1 == LoadExecMode)
         {
             LastMethod = handle;
         }
 
-        if (Exec == LoadExecMode && !ObjStack[ObjStackTop])
+        if (MODE_Exec == LoadExecMode && !ObjStack[ObjStackTop])
         {
             DEBUG_PRINT (ACPI_ERROR, ("DoName: Name Lookup Failure\n"));
             Excep = S_ERROR;
         }
 
-        else if (Load1 != LoadExecMode)
+        else if (MODE_Load1 != LoadExecMode)
         {   
             /*  not first pass load */
 
-            if (Any == DataType && Method == NsValType (ObjStack[ObjStackTop]))
+            if (TYPE_Any == DataType && 
+                TYPE_Method == NsGetType (ObjStack[ObjStackTop]))
             {   
                 /* 
                  * Method reference call 
@@ -707,7 +789,7 @@ BREAKPOINT3;
                  * The arg count is in the MethodFlags, which is the first
                  * byte of the Method's AML.
                  */
-                meth        *MethodPtr = (meth *) NsValPtr (ObjStack[ObjStackTop]);
+                meth        *MethodPtr = (meth *) NsGetValue (ObjStack[ObjStackTop]);
 
                 if (MethodPtr)
                 {   
@@ -733,7 +815,7 @@ BREAKPOINT3;
                         INT32       StackBeforeArgs = ObjStackTop;
 
 
-                        if (((Excep = PushIfExec (Exec)) == S_SUCCESS) &&
+                        if (((Excep = PushIfExec (MODE_Exec)) == S_SUCCESS) &&
                              (ArgCount > 0))
                         {   
                             /*  get arguments   */
@@ -754,7 +836,7 @@ BREAKPOINT3;
                                      * are values, not references.
                                      * TBD:    RefOf problem with iGetRvalue() conversion.
                                      */
-                                    if (Exec == LoadExecMode)
+                                    if (MODE_Exec == LoadExecMode)
                                     {
                                         Excep = GetRvalue ((OBJECT_DESCRIPTOR **)
                                             &ObjStack[ObjStackTop]);
@@ -770,7 +852,7 @@ BREAKPOINT3;
                             Indent (-3);    /*  decrement log display indentation level */
                         } 
 
-                        if ((S_SUCCESS == Excep) && (Exec == LoadExecMode))
+                        if ((S_SUCCESS == Excep) && (MODE_Exec == LoadExecMode))
                         {   
                             /* execution mode  */
                             /* Mark end of arg list */
@@ -812,7 +894,7 @@ BREAKPOINT3;
 
                             /* Pop scope stack */
                             
-                            NsPopCurrent (Any);
+                            NsPopCurrent (TYPE_Any);
 
                         }   /*  execution mode  */
 
@@ -837,7 +919,7 @@ BREAKPOINT3;
     {
         /* Ran out of segments after processing a prefix */
 
-        if (Load1 == LoadExecMode || Load == LoadExecMode)
+        if (MODE_Load1 == LoadExecMode || MODE_Load == LoadExecMode)
         {
             LINE_SET (16, LoadExecMode);
             DEBUG_PRINT (ACPI_ERROR, ("***Malformed Name***\n"));

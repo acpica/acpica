@@ -1,18 +1,98 @@
-/*__________________________________________________________________________
- |
- |
- |           Copyright (C) Intel Corporation 1994-1996
- |
- | All rights reserved.  No part of this program or publication may be
- | reproduced, transmitted, transcribed, stored in a retrieval system, or
- | translated into any language or computer language, in any form or by any
- | means, electronic, mechanical, magnetic, optical, chemical, manual, or
- | otherwise, without the prior written permission of Intel Corporation.
- |__________________________________________________________________________
- |
- | ModuleName: iefield - ACPI AML (p-code) execution - field manipulation
- |__________________________________________________________________________
-*/
+
+/******************************************************************************
+ * 
+ * Module Name: iefield - ACPI AML (p-code) execution - field manipulation
+ *
+ *****************************************************************************/
+
+/******************************************************************************
+ *
+ * 1. Copyright Notice
+ *
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights 
+ * reserved.
+ *
+ * 2. License
+ * 
+ * 2.1. Intel grants, free of charge, to any person ("Licensee") obtaining a 
+ * copy of the source code appearing in this file ("Covered Code") a license 
+ * under Intel's copyrights in the base code distributed originally by Intel 
+ * ("Original Intel Code") to copy, make derivatives, distribute, use and 
+ * display any portion of the Covered Code in any form; and
+ *
+ * 2.2. Intel grants Licensee a non-exclusive and non-transferable patent 
+ * license (without the right to sublicense), under only those claims of Intel
+ * patents that are infringed by the Original Intel Code, to make, use, sell, 
+ * offer to sell, and import the Covered Code and derivative works thereof 
+ * solely to the minimum extent necessary to exercise the above copyright 
+ * license, and in no event shall the patent license extend to any additions to
+ * or modifications of the Original Intel Code.  No other license or right is 
+ * granted directly or by implication, estoppel or otherwise;
+ *
+ * the above copyright and patent license is granted only if the following 
+ * conditions are met:
+ *
+ * 3. Conditions 
+ *
+ * 3.1. Redistribution of source code of any substantial portion of the Covered 
+ * Code or modification must include the above Copyright Notice, the above 
+ * License, this list of Conditions, and the following Disclaimer and Export 
+ * Compliance provision.  In addition, Licensee must cause all Covered Code to 
+ * which Licensee contributes to contain a file documenting the changes 
+ * Licensee made to create that Covered Code and the date of any change.  
+ * Licensee must include in that file the documentation of any changes made by
+ * any predecessor Licensee.  Licensee must include a prominent statement that
+ * the modification is derived, directly or indirectly, from Original Intel 
+ * Code.
+ *
+ * 3.2. Redistribution in binary form of any substantial portion of the Covered 
+ * Code or modification must reproduce the above Copyright Notice, and the 
+ * following Disclaimer and Export Compliance provision in the documentation 
+ * and/or other materials provided with the distribution.
+ *
+ * 3.3. Intel retains all right, title, and interest in and to the Original 
+ * Intel Code.
+ *
+ * 3.4. Neither the name Intel nor any other trademark owned or controlled by 
+ * Intel shall be used in advertising or otherwise to promote the sale, use or 
+ * other dealings in products derived from or relating to the Covered Code 
+ * without prior written authorization from Intel.
+ *
+ * 4. Disclaimer and Export Compliance
+ *
+ * 4.1. INTEL MAKES NO WARRANTY OF ANY KIND REGARDING ANY SOFTWARE PROVIDED 
+ * HERE.  ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE 
+ * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT,  ASSISTANCE, 
+ * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY 
+ * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A 
+ * PARTICULAR PURPOSE. 
+ *
+ * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES 
+ * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR 
+ * COSTS OF PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, OR FOR ANY INDIRECT, 
+ * SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THIS AGREEMENT, UNDER ANY 
+ * CAUSE OF ACTION OR THEORY OF LIABILITY, AND IRRESPECTIVE OF WHETHER INTEL 
+ * HAS ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.  THESE LIMITATIONS 
+ * SHALL APPLY NOTWITHSTANDING THE FAILURE OF THE ESSENTIAL PURPOSE OF ANY 
+ * LIMITED REMEDY.
+ *
+ * 4.3. Licensee shall not export, either directly or indirectly, any of this 
+ * software or system incorporating such software without first obtaining any 
+ * required license or other approval from the U. S. Department of Commerce or 
+ * any other agency or department of the United States Government.  In the 
+ * event Licensee exports any such software from the United States or re-
+ * exports any such software from a foreign destination, Licensee shall ensure
+ * that the distribution and export/re-export of the software is in compliance 
+ * with all laws, regulations, orders, or other restrictions of the U.S. Export 
+ * Administration Regulations. Licensee agrees that neither it nor any of its 
+ * subsidiaries will export/re-export any technical data, process, software, or 
+ * service, directly or indirectly, to any country for which the United States 
+ * government or any agency thereof requires an export license, other 
+ * governmental approval, or letter of assurance, without first obtaining such
+ * license, approval or letter.
+ *
+ *****************************************************************************/
 
 
 #define __IEFIELD_C__
@@ -73,7 +153,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
         Excep = S_ERROR;
     }
 
-    else if (Region != RgnDesc->ValType)
+    else if (TYPE_Region != RgnDesc->ValType)
     {
         DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Needed Region, found %d %s\n",
                         RgnDesc->ValType, NsTypeNames[RgnDesc->ValType]));
@@ -123,7 +203,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
 
                 /* Evaluate the Address opcode */
 
-                if ((Excep = DoOpCode (Exec)) == S_SUCCESS && 
+                if ((Excep = DoOpCode (MODE_Exec)) == S_SUCCESS && 
                     (Excep = GetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
                                 == S_SUCCESS)
                 {
@@ -133,11 +213,11 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
 
 
                     if (!ObjValDesc ||
-                        ObjValDesc->ValType != (UINT8) Number)
+                        ObjValDesc->ValType != (UINT8) TYPE_Number)
                     {
                         DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Address "
                                     "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh\n",
-                                    ObjValDesc, ObjValDesc->ValType, (UINT8) Number));
+                                    ObjValDesc, ObjValDesc->ValType, (UINT8) TYPE_Number));
 
                         Excep = S_ERROR;
                     }
@@ -152,7 +232,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                 {   
                     /* Evaluate the Length opcode */
 
-                    if ((Excep = DoOpCode (Exec)) == S_SUCCESS &&
+                    if ((Excep = DoOpCode (MODE_Exec)) == S_SUCCESS &&
                         (Excep = GetRvalue ((OBJECT_DESCRIPTOR **) &ObjStack[ObjStackTop]))
                                     == S_SUCCESS)
                     {
@@ -161,7 +241,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                         ObjValDesc = ObjStack[ObjStackTop];
 
                         if (!ObjValDesc ||
-                            ObjValDesc->ValType != (UINT8) Number)
+                            ObjValDesc->ValType != (UINT8) TYPE_Number)
                         {
 
                             DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Length \n"));
@@ -302,7 +382,7 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         UINT8       PciReg;
         UINT8       PciExcep;
 
-    case SystemMemory:
+    case REGION_SystemMemory:
 
         /* System memory defined to be in first Mbyte  */
         /* XXX:  Is this true on all OS/platform combinations??  */
@@ -350,7 +430,7 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         OsdUnMapMemory (PhysicalAddrPtr, 4);
         break;
 
-    case SystemIO:
+    case REGION_SystemIO:
         switch (FieldBitWidth)
         {
         /* I/O Port width */
@@ -374,7 +454,7 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         }
         break;
 
-    case PCIConfig:
+    case REGION_PCIConfig:
         PciBus = (UINT8) (Address >> 16);
         DevFunc = (UINT8) (Address >> 8);
         PciReg = (UINT8) ((Address >> 2) & 0x3f);
@@ -406,8 +486,8 @@ ReadField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 *Value, INT32 FieldBitWidth)
         }
         break;
 
-    case EmbeddedControl:
-    case SMBus:
+    case REGION_EmbeddedControl:
+    case REGION_SMBus:
 
         /* XXX - Actual read should happen here */
 
@@ -494,7 +574,7 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         UINT8       PciExcep;
 
 
-    case SystemMemory:
+    case REGION_SystemMemory:
 
         /* RBM:  Is this an issue in protected mode?  !!! */
 
@@ -538,7 +618,7 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         OsdUnMapMemory (PhysicalAddrPtr, 4);
         break;
 
-    case SystemIO:
+    case REGION_SystemIO:
         switch (FieldBitWidth)
         {
         case 8:
@@ -560,7 +640,7 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         }
         break;
 
-    case PCIConfig:
+    case REGION_PCIConfig:
         PciBus = (UINT8) (Address >> 16);
         DevFunc = (UINT8) (Address >> 8);
         PciReg = (UINT8) ((Address >> 2) & 0x3f);
@@ -591,8 +671,8 @@ WriteField (OBJECT_DESCRIPTOR *ObjDesc, UINT32 Value, INT32 FieldBitWidth)
         }
         break;
 
-    case EmbeddedControl:
-    case SMBus:
+    case REGION_EmbeddedControl:
+    case REGION_SMBus:
 
         /* XXX - Actual write should happen here */
 
@@ -640,17 +720,17 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
 
     FUNCTION_TRACE ("AccessNamedField");
 
-    ObjDesc = NsValPtr (NamedField);
+    ObjDesc = NsGetValue (NamedField);
     if (!ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("AccessNamedField:internal error: null value pointer\n"));
     }
 
-    else if (DefField != NsValType (NamedField))
+    else if (TYPE_DefField != NsGetType (NamedField))
     {
         DEBUG_PRINT (ACPI_ERROR, (
                   "AccessNamedField: Name %4.4s type %d is not a defined field\n",
-                  NamedField, NsValType (NamedField)));
+                  NamedField, NsGetType (NamedField)));
     }
 
     else
@@ -666,11 +746,11 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
         DEBUG_PRINT (ACPI_INFO, (" DatLen = %d, BitOffset = %d\n",
                     ObjDesc->FieldUnit.DatLen, ObjDesc->FieldUnit.BitOffset));
 
-        if (DefField != ObjDesc->ValType)
+        if (TYPE_DefField != ObjDesc->ValType)
         {
             DEBUG_PRINT (ACPI_ERROR, (
                     "AccessNamedField:internal error: Name %4.4s type %d does not match value-type %d at %p\n",
-                    NamedField, NsValType (NamedField), ObjDesc->ValType, ObjDesc));
+                    NamedField, NsGetType (NamedField), ObjDesc->ValType, ObjDesc));
             AmlAppendBlockOwner (ObjDesc);
         }
         else
@@ -684,25 +764,25 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
 
         switch (ObjDesc->Field.Access)
         {
-        case AnyAcc:
+        case ACCESS_AnyAcc:
             Granularity     = 8;
             MaxW            = 32;
             Type            = "UINT32";
             break;
 
-        case ByteAcc:
+        case ACCESS_ByteAcc:
             Granularity     = 8;
             MaxW            = 8;
             Type            = "UINT8";
             break;
 
-        case WordAcc:
+        case ACCESS_WordAcc:
             Granularity     = 16;
             MaxW            = 16;
             Type            = "UINT16";
             break;
 
-        case DWordAcc:
+        case ACCESS_DWordAcc:
             Granularity     = 32;
             MaxW            = 32;
             Type            = "UINT32";
@@ -735,7 +815,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
     {
         /*  Check lock rule prior to modifing the field */
         
-        if ((UINT16) Lock == ObjDesc->FieldUnit.LockRule)
+        if ((UINT16) GLOCK_AlwaysLock == ObjDesc->FieldUnit.LockRule)
         {   
             /*  Lock Rule is Lock   */
             
@@ -790,7 +870,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
 
                 switch (ObjDesc->Field.UpdateRule)
                 {
-                case Preserve:
+                case UPDATE_Preserve:
 
                     /* 
                      * Read the current contents of the byte/word/dword containing
@@ -800,14 +880,14 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
                     dValue |= OldVal & ~Mask;
                     break;
 
-                case WriteAsOnes:
+                case UPDATE_WriteAsOnes:
 
                     /* Set positions outside the field to 1's */
 
                     dValue |= ~Mask;
                     break;
 
-                case WriteAsZeros:
+                case UPDATE_WriteAsZeros:
 
                     /* 
                      * Positions outside the field are already 0
