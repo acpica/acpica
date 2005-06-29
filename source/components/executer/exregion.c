@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.43 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,7 +126,7 @@
 #include "acevents.h"
 
 
-#define _COMPONENT          INTERPRETER
+#define _COMPONENT          ACPI_EXECUTER
         MODULE_NAME         ("amregion")
 
 
@@ -159,7 +159,7 @@ AcpiAmlSystemMemorySpaceHandler (
 {
     ACPI_STATUS             Status = AE_OK;
     void                    *LogicalAddrPtr = NULL;
-    MEM_HANDLER_CONTEXT     *MemInfo = RegionContext;
+    ACPI_MEM_SPACE_CONTEXT  *MemInfo = RegionContext;
     UINT32                  Length;
 
 
@@ -247,7 +247,7 @@ AcpiAmlSystemMemorySpaceHandler (
     switch (Function)
     {
 
-    case ADDRESS_SPACE_READ:
+    case ACPI_READ_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("Read (%d width) Address=%p\n", BitWidth, Address));
@@ -270,7 +270,7 @@ AcpiAmlSystemMemorySpaceHandler (
         break;
 
 
-    case ADDRESS_SPACE_WRITE:
+    case ACPI_WRITE_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("Write (%d width) Address=%p Value %X\n",
@@ -341,7 +341,7 @@ AcpiAmlSystemIoSpaceHandler (
     switch (Function)
     {
 
-    case ADDRESS_SPACE_READ:
+    case ACPI_READ_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("Read(%d width) Address=%p\n", BitWidth, Address));
@@ -372,7 +372,7 @@ AcpiAmlSystemIoSpaceHandler (
         break;
 
 
-    case ADDRESS_SPACE_WRITE:
+    case ACPI_WRITE_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("Write(%d width) Address=%p Value %X\n",
@@ -442,7 +442,7 @@ AcpiAmlPciConfigSpaceHandler (
     UINT32                  PciBus;
     UINT32                  DevFunc;
     UINT8                   PciReg;
-    PCI_HANDLER_CONTEXT    *PCIContext;
+    ACPI_PCI_SPACE_CONTEXT  *PCIContext;
 
 
     FUNCTION_TRACE ("AmlPciConfigSpaceHandler");
@@ -462,10 +462,10 @@ AcpiAmlPciConfigSpaceHandler (
      *
      */
 
-    PCIContext = (PCI_HANDLER_CONTEXT *) RegionContext;
+    PCIContext = (ACPI_PCI_SPACE_CONTEXT *) RegionContext;
 
-    PciBus = LOWORD(PCIContext->Seg) << 16;
-    PciBus |= LOWORD(PCIContext->Bus);
+    PciBus  = LOWORD (PCIContext->Seg) << 16;
+    PciBus |= LOWORD (PCIContext->Bus);
 
     DevFunc = PCIContext->DevFunc;
 
@@ -474,7 +474,7 @@ AcpiAmlPciConfigSpaceHandler (
     switch (Function)
     {
 
-    case ADDRESS_SPACE_READ:
+    case ACPI_READ_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("R%d S(%04x) B(%04x) DF(%08x) R(%04x)\n", BitWidth,
@@ -512,7 +512,7 @@ AcpiAmlPciConfigSpaceHandler (
         break;
 
 
-    case ADDRESS_SPACE_WRITE:
+    case ACPI_WRITE_ADR_SPACE:
 
         DEBUG_PRINT ((TRACE_OPREGION | VERBOSE_INFO),
             ("W%d S(%04x) B(%04x) DF(%08x) R(%04x) D(%08x)\n", BitWidth,
