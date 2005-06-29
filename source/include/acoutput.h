@@ -20,6 +20,58 @@
 
 #include "acpiobj.h"
 
+
+/*
+ * Debug levels and component IDs.  These are used to control the
+ * granularity of the output of the DEBUG_PRINT macro -- on a per-
+ * component basis and a per-exception-type basis.
+ */
+
+/* Component IDs -- used in the global "DebugLayer" */
+
+#define GLOBAL                      0x00000001
+#define INTERPRETER                 0x00000002
+#define NAMESPACE                   0x00000004
+#define DEVICE_MANAGER              0x00000008
+#define RESOURCE_MANAGER            0x00000010
+#define EVENT_HANDLING              0x00000020
+#define MISCELLANEOUS               0x00000040
+#define OS_DEPENDENT                0x00000080
+
+#define ALL_COMPONENTS              0x000000FF
+
+
+/* Exception level or Trace level -- used in the global "DebugLevel" */
+
+#define ACPI_SUCCESS                0x00000001
+#define ACPI_INFO                   0x00000002
+#define ACPI_WARN                   0x00000004
+#define ACPI_ERROR                  0x00000008
+#define ACPI_FATAL                  0x00000010
+#define ACPI_ALL                    0x0000001F
+
+#define TRACE_LOAD                  0x00000100
+#define TRACE_OPCODE                0x00000200
+#define TRACE_STACK                 0x00000400
+#define TRACE_EXEC                  0x00000800
+#define TRACE_NAMES                 0x00001000
+#define TRACE_OPREGION              0x00002000
+#define TRACE_BFIELD                0x00004000
+#define TRACE_TRASH                 0x00008000
+#define TRACE_TABLES                0x00010000
+#define TRACE_FUNCTIONS             0x00020000
+#define TRACE_ALL                   0x000FFF00
+
+
+/* Misc defines */
+
+#define HEX                         0x01
+#define ASCII                       0x02
+#define FULL_ADDRESS                0x04
+#define CHARS_PER_LINE              16      /* used in DumpBuf function */
+
+
+
 /*
  * Debug/Error reporting table definition
  */
@@ -32,13 +84,6 @@ typedef struct
     char            *Description2;
 
 } ST_KEY_DESC_TABLE;
-
-
-
-#define HEX                 0x01
-#define ASCII               0x02
-#define FULL_ADDRESS        0x04
-#define CHARS_PER_LINE      16      /* used in DumpBuf function */
 
 
 /* Prototypes */
@@ -232,48 +277,6 @@ _LocalCallocate (
 #define DEBUG_PRINT_RAW(l,f)                        
 
 #endif
-
-
-/*
- * Debug levels and component IDs.  These are used to control the
- * granularity of the output of the DEBUG_PRINT macro -- on a per-
- * component basis and a per-exception-type basis.
- */
-
-/* Component IDs -- used in the global "DebugLayer" */
-
-#define GLOBAL                      0x00000001
-#define INTERPRETER                 0x00000002
-#define NAMESPACE                   0x00000004
-#define DEVICE_MANAGER              0x00000008
-#define RESOURCE_MANAGER            0x00000010
-#define EVENT_HANDLING              0x00000020
-#define MISCELLANEOUS               0x00000040
-#define OS_DEPENDENT                0x00000080
-
-#define ALL_COMPONENTS              0x000000FF
-
-
-/* Exception level or Trace level -- used in the global "DebugLevel" */
-
-#define ACPI_SUCCESS                0x00000001
-#define ACPI_INFO                   0x00000002
-#define ACPI_WARN                   0x00000004
-#define ACPI_ERROR                  0x00000008
-#define ACPI_FATAL                  0x00000010
-#define ACPI_ALL                    0x0000001F
-
-#define TRACE_LOAD                  0x00000100
-#define TRACE_OPCODE                0x00000200
-#define TRACE_STACK                 0x00000400
-#define TRACE_EXEC                  0x00000800
-#define TRACE_NAMES                 0x00001000
-#define TRACE_OPREGION              0x00002000
-#define TRACE_BFIELD                0x00004000
-#define TRACE_TRASH                 0x00008000
-#define TRACE_TABLES                0x00010000
-#define TRACE_FUNCTIONS             0x00020000
-#define TRACE_ALL                   0x000FFF00
 
 
 
