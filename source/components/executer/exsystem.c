@@ -119,6 +119,7 @@
 #include <acpi.h>
 #include <interp.h>
 #include <namesp.h>
+#include <hardware.h>
 
 
 #define _COMPONENT          INTERPRETER
@@ -296,7 +297,7 @@ OsAcquireMutex (
 
     if (ObjDesc->Mutex.Semaphore == Gbl_GlobalLockSemaphore)
     {
-        Status = OsGetGlobalLock ();
+        Status = EvAcquireGlobalLock ();
         return_ACPI_STATUS (Status);
     }
 
@@ -340,7 +341,7 @@ OsReleaseMutex (
      */
     if (ObjDesc->Mutex.Semaphore == Gbl_GlobalLockSemaphore)
     {
-        OsReleaseGlobalLock ();
+        EvReleaseGlobalLock ();
         return_ACPI_STATUS (AE_OK);
     }
 
@@ -451,80 +452,3 @@ OsResetEvent (
     return (Status);
 }
 
-
-/***************************************************************************
- * 
- * FUNCTION:    OsGetGlobalLock
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Attempts to gain ownership of the Global Lock.  
- *
- *              TBD: Since this
- *              is a single threaded implementation if the Global Lock
- *              ownership is not successful then the test will fail.
- *
- **************************************************************************/
-
-ACPI_STATUS
-OsGetGlobalLock(void)
-{
-    UINT32              GlobalLockReg;
-    ACPI_STATUS         Status = AE_OK;
-
-
-    FUNCTION_TRACE ("OsGetGlobalLock");
-
-    /* Acquire the global lock semaphore first */
-
-    OsLocalWaitSemaphore (Gbl_GlobalLockSemaphore, ACPI_UINT32_MAX);
-
-    if (Gbl_FACS)
-    {
-        /* Only if the FACS is valid */
-
-        GlobalLockReg = Gbl_FACS->GlobalLock;
-
-        if (GlobalLockReg & GL_OWNED)
-        {
-            DEBUG_PRINT (ACPI_ERROR, ("BIOS has the global lock!\n"));
-            OsdSignalSemaphore (Gbl_GlobalLockSemaphore, 1);
-            Status = AE_SHARE;
-        }
-    
-        else
-        {
-            /* Its not owned so take ownership and return AE_OK */
-        
-            Gbl_FACS->GlobalLock |= GL_OWNED;
-            Status = AE_OK;
-        }
-    }
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/***************************************************************************
- * 
- * FUNCTION:    OsReleaseGlobalLock
- *
- * DESCRIPTION: Releases ownership of the Global Lock.
- *
- **************************************************************************/
-
-void
-OsReleaseGlobalLock (void)
-{
-    
-    FUNCTION_TRACE ("OsReleaseGlobalLock");
-
-    OsdSignalSemaphore (Gbl_GlobalLockSemaphore, 1);
-
-    if (Gbl_FACS)
-    {
-        Gbl_FACS->GlobalLock &= 0xFFFFFFFF ^ GL_OWNED;
-    }
-
-    return_VOID;
-}
