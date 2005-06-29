@@ -144,14 +144,15 @@ typedef UINT32              ACPI_MUTEX_HANDLE;
 /*
  * Predefined handles for the mutex objects used within the subsystem
  * All mutex objects are automatically created by CmMutexInitialize.
+ * NOTE: any changes here must be reflected in the Gbl_MutexNames table also!
  */
 
 #define MTX_EXECUTE         0
 #define MTX_INTERPRETER     1
-#define MTX_NAMESPACE       2
-#define MTX_MEMORY          3
-#define MTX_GP_EVENT        4
-#define MTX_FIXED_EVENT     5
+#define MTX_TABLES          2
+#define MTX_NAMESPACE       3
+#define MTX_MEMORY          4
+#define MTX_EVENTS          5
 #define MTX_OP_REGIONS      6
 #define MTX_DEBUG_COMMAND   7
 #define MTX_DEBUGGER        8
@@ -173,6 +174,7 @@ typedef struct AcpiMutexInfo
 
 
 
+#define TABLE_ID_DSDT           0xD1D1
 
 /*****************************************************************************
  * 
@@ -219,16 +221,21 @@ typedef struct NameTableEntry
     UINT8                   Flags;
     UINT32                  Name;           /* ACPI Name, always 4 chars per ACPI spec */
 
+
     void                    *Object;        /* Pointer to attached ACPI object (optional) */
     struct NameTableEntry   *Scope;         /* Scope owned by this name (optional) */
+    struct NameTableEntry   *ParentEntry;   /* Parent NTE */
     struct NameTableEntry   *NextEntry;     /* Next NTE within this scope */
     struct NameTableEntry   *PrevEntry;     /* Previous NTE within this scope */
-    struct NameTableEntry   *ParentEntry;   /* Parent NTE */
 
+    UINT16                  TableId;        /* Owning ACPI Table */
+    UINT16                  ReferenceCount; /* Current count of references and children */
+
+    /* Align on 16-byte boundary for memory dump readability */
+/*
     DEBUG_ONLY_MEMBERS (
-    char                    *FillDebug)     /* Align on 16-byte boundary for memory dump readability */
-
-
+    char                    *FillDebug) 
+*/
 } NAME_TABLE_ENTRY;
 
 
@@ -268,6 +275,29 @@ typedef struct scope_stack
     struct scope_stack      *Next;
 
 } SCOPE_STACK;    
+
+
+
+/*
+ * ACPI Table Descriptor.  One per ACPI table
+ */
+typedef struct AcpiTableDesc
+{
+    struct AcpiTableDesc    *Prev;
+    struct AcpiTableDesc    *Next;
+    ACPI_TABLE_HEADER       *Pointer;
+    void                    *BasePointer;
+    NAME_TABLE_ENTRY        *RootEntry;
+    UINT8                   *AmlPointer;
+    UINT32                  AmlLength;
+    UINT32                  Length;
+    UINT32                  Count;
+    UINT16                  TableId;
+    UINT8                   Type;
+    UINT8                   Allocation;
+    BOOLEAN                 LoadedIntoNamespace;
+
+} ACPI_TABLE_DESC;
 
 
 typedef struct 
@@ -569,6 +599,7 @@ typedef struct acpi_walk_state
     union AcpiObjInternal   *ReturnDesc;                        /* Return object, if any */
     union AcpiObjInternal   *MethodDesc;                        /* Method descriptor if running a method */
     ACPI_GENERIC_OP         *MethodCallOp;                      /* MethodCall Op if running a method */
+    ACPI_TABLE_DESC         *TableDesc;                         /* The ACPI table whose parse tree is being walked */
     struct acpi_walk_state  *Next;                              /* Next WalkState in list */
 
     BOOLEAN                 LastPredicate;                      /* Result of last predicate */
@@ -597,6 +628,18 @@ typedef
 ACPI_STATUS (*INTERPRETER_CALLBACK) (
     ACPI_WALK_STATE         *State,
     ACPI_GENERIC_OP         *Op);
+
+
+
+/* Info used by PsInitObjects */
+
+typedef struct InitWalkInfo
+{
+    UINT32                  MethodCount;
+    UINT32                  OpRegionCount;
+    ACPI_TABLE_DESC         *TableDesc;
+
+} INIT_WALK_INFO;
 
 
 
