@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.118 $
+ *       $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -143,7 +143,7 @@ typedef UINT32                          ACPI_MUTEX_HANDLE;
 
 /*
  * Predefined handles for the mutex objects used within the subsystem
- * All mutex objects are automatically created by AcpiCmMutexInitialize.
+ * All mutex objects are automatically created by AcpiUtMutexInitialize.
  *
  * The acquire/release ordering protocol is implied via this list.  Mutexes
  * with a lower value must be acquired before mutexes with a higher value.
@@ -339,6 +339,20 @@ typedef struct
 
 #define ACPI_COPY_TYPE_SIMPLE           0
 #define ACPI_COPY_TYPE_PACKAGE          1
+
+/* Info structure used to convert external<->internal namestrings */
+
+typedef struct acpi_namestring_info
+{
+    NATIVE_CHAR             *ExternalName;
+    NATIVE_CHAR             *NextExternalChar;
+    NATIVE_CHAR             *InternalName;
+    UINT32                  Length;
+    UINT32                  NumSegments;
+    UINT32                  NumCarats;
+    BOOLEAN                 FullyQualified;
+
+} ACPI_NAMESTRING_INFO;
 
 
 /*****************************************************************************
