@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -749,8 +749,8 @@ AcpiInstallGpeBlock (
     }
 
     /*
-     * For user-installed GPE Block Devices, the GpeBlockBaseNumber is always
-     * zero, and we don't care about the GpeBlock pointer returned
+     * For user-installed GPE Block Devices, the GpeBlockBaseNumber
+     * is always zero
      */
     Status = AcpiEvCreateGpeBlock (Node, GpeBlockAddress, RegisterCount,
                     0, InterruptLevel, &GpeBlock);
@@ -780,6 +780,8 @@ AcpiInstallGpeBlock (
             goto UnlockAndExit;
         }
     }
+
+    /* Install the GPE block in the DeviceObject */
 
     ObjDesc->Device.GpeBlock = GpeBlock;
 
