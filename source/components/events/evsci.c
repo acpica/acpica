@@ -15,15 +15,17 @@
  | legacy to ACPI mode state transition functions
  |__________________________________________________________________________
  |
- | $Revision: 1.4 $
- | $Date: 2005/06/29 16:43:42 $
+ | $Revision: 1.5 $
+ | $Date: 2005/06/29 16:43:43 $
  | $Log: evsci.c,v $
- | Revision 1.4  2005/06/29 16:43:42  aystarik
- | Major cleanup
+ | Revision 1.5  2005/06/29 16:43:43  aystarik
+ |
  |
  | 
- | date	99.01.20.17.39.00;	author rmoore1;	state Exp;
+ | date	99.02.04.00.08.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 5     2/03/99 4:08p Rmoore1
  * 
  * 4     1/20/99 9:39a Rmoore1
  * Major cleanup
@@ -443,6 +445,9 @@ int AcpiDisable ()
     /*  unload SCI handler  */
 
     vUninstallSciHandler ();
+
+
+    AcpiCleanup ();
 
     return iErrorMask;
 }
