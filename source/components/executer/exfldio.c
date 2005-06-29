@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -717,17 +717,17 @@ AcpiExGetBufferDatum (
 
     case ACPI_FIELD_WORD_GRANULARITY:
 
-        ACPI_MOVE_UNALIGNED16_TO_64 (Datum, &(((UINT16 *) Buffer) [Index]));
+        ACPI_MOVE_16_TO_64 (Datum, &(((UINT16 *) Buffer) [Index]));
         break;
 
     case ACPI_FIELD_DWORD_GRANULARITY:
 
-        ACPI_MOVE_UNALIGNED32_TO_64 (Datum, &(((UINT32 *) Buffer) [Index]));
+        ACPI_MOVE_32_TO_64 (Datum, &(((UINT32 *) Buffer) [Index]));
         break;
 
     case ACPI_FIELD_QWORD_GRANULARITY:
 
-        ACPI_MOVE_UNALIGNED64_TO_64 (Datum, &(((UINT64 *) Buffer) [Index]));
+        ACPI_MOVE_64_TO_64 (Datum, &(((UINT64 *) Buffer) [Index]));
         break;
 
     default:
@@ -783,17 +783,17 @@ AcpiExSetBufferDatum (
 
     case ACPI_FIELD_WORD_GRANULARITY:
 
-        ACPI_MOVE_UNALIGNED64_TO_16 (&(((UINT16 *) Buffer)[Index]), &MergedDatum);
+        ACPI_MOVE_64_TO_16 (&(((UINT16 *) Buffer)[Index]), &MergedDatum);
         break;
 
     case ACPI_FIELD_DWORD_GRANULARITY:
 
-        ACPI_MOVE_UNALIGNED64_TO_32 (&(((UINT32 *) Buffer)[Index]), &MergedDatum);
+        ACPI_MOVE_64_TO_32 (&(((UINT32 *) Buffer)[Index]), &MergedDatum);
         break;
 
     case ACPI_FIELD_QWORD_GRANULARITY:
 
-        ACPI_MOVE_UNALIGNED64_TO_64 (&(((UINT64 *) Buffer)[Index]), &MergedDatum);
+        ACPI_MOVE_64_TO_64 (&(((UINT64 *) Buffer)[Index]), &MergedDatum);
         break;
 
     default:
