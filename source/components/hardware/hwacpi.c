@@ -1,6 +1,6 @@
 
 /******************************************************************************
- * 
+ *
  * Module Name: hwmode - Functions for ACPI<->Legacy mode switching logic
  *
  *****************************************************************************/
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,8 +116,8 @@
 
 #define __HWMODE_C__
 
-#include <acpi.h>
-#include <hardware.h>
+#include "acpi.h"
+#include "hardware.h"
 
 
 #define _COMPONENT          HARDWARE
@@ -126,7 +126,7 @@
 
 /******************************************************************************
  *
- * FUNCTION:    HwSetMode
+ * FUNCTION:    AcpiHwSetMode
  *
  * PARAMETERS:  Mode            - SYS_MODE_ACPI or SYS_MODE_LEGACY
  *
@@ -138,7 +138,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-HwSetMode (
+AcpiHwSetMode (
     UINT32                  Mode)
 {
 
@@ -146,40 +146,40 @@ HwSetMode (
 
     FUNCTION_TRACE ("HwSetMode");
 
-    
+
     if (Mode == SYS_MODE_ACPI)
     {
         /* BIOS should have disabled ALL fixed and GP events */
-        
-        OsdOut8 (Gbl_FACP->SmiCmd, Gbl_FACP->AcpiEnable);
+
+        AcpiOsdOut8 (Acpi_GblFACP->SmiCmd, Acpi_GblFACP->AcpiEnable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable ACPI mode\n"));
     }
 
     else if (Mode == SYS_MODE_LEGACY)
     {
-        /* 
+        /*
          * BIOS should clear all fixed status bits and restore fixed event
          * enable bits to default
          */
 
-        OsdOut8 (Gbl_FACP->SmiCmd, Gbl_FACP->AcpiDisable);
+        AcpiOsdOut8 (Acpi_GblFACP->SmiCmd, Acpi_GblFACP->AcpiDisable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable Legacy (non-ACPI) mode\n"));
     }
 
-    if (HwGetMode () == Mode)
+    if (AcpiHwGetMode () == Mode)
     {
         DEBUG_PRINT (ACPI_INFO, ("Mode %d successfully enabled\n", Mode));
         Status = AE_OK;
     }
-        
+
     return_ACPI_STATUS (Status);
 }
 
 
 /******************************************************************************
  *
- * FUNCTION:    Hw
- 
+ * FUNCTION:    AcpiHw
+
  *
  * PARAMETERS:  none
  *
@@ -191,13 +191,13 @@ HwSetMode (
  ******************************************************************************/
 
 UINT32
-HwGetMode (void)
+AcpiHwGetMode (void)
 {
 
     FUNCTION_TRACE ("HwGetMode");
 
-    
-    if (HwRegisterIO (ACPI_READ, MTX_LOCK, (INT32)SCI_EN))
+
+    if (AcpiHwRegisterIO (ACPI_READ, MTX_LOCK, (INT32)SCI_EN))
     {
         return_VALUE (SYS_MODE_ACPI);
     }
@@ -209,7 +209,7 @@ HwGetMode (void)
 
 /******************************************************************************
  *
- * FUNCTION:    HwGetModeCapabilities
+ * FUNCTION:    AcpiHwGetModeCapabilities
  *
  * PARAMETERS:  none
  *
@@ -221,52 +221,51 @@ HwGetMode (void)
  ******************************************************************************/
 
 UINT32
-HwGetModeCapabilities (void)
+AcpiHwGetModeCapabilities (void)
 {
 
     FUNCTION_TRACE ("HwGetModeCapabilities");
 
-    
-    if (!(Gbl_SystemFlags & SYS_MODES_MASK))
+
+    if (!(Acpi_GblSystemFlags & SYS_MODES_MASK))
     {
-        if (HwGetMode () == SYS_MODE_LEGACY)
-        {   
-            /* 
+        if (AcpiHwGetMode () == SYS_MODE_LEGACY)
+        {
+            /*
              * Assume that if this call is being made, AcpiInit has been called and
              * ACPI support has been established by the presence of the tables.
              * Therefore since we're in SYS_MODE_LEGACY, the system must support both
-             * modes 
+             * modes
              */
-            
-            Gbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
-        }
-        
-        else
-        {   
-            /* TBD!!! this may be unsafe... */
 
-            /* 
+            Acpi_GblSystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
+        }
+
+        else
+        {
+            /* TBD: [Investigate] !!! this may be unsafe... */
+            /*
              * system is is ACPI mode, so try to switch back to LEGACY to see if
-             * it is supported 
+             * it is supported
              */
-            HwSetMode (SYS_MODE_LEGACY);
-            
-            if (HwGetMode () == SYS_MODE_LEGACY)
-            {   
+            AcpiHwSetMode (SYS_MODE_LEGACY);
+
+            if (AcpiHwGetMode () == SYS_MODE_LEGACY)
+            {
                 /* Now in SYS_MODE_LEGACY, so both are supported */
-                
-                Gbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
-                HwSetMode (SYS_MODE_ACPI);
+
+                Acpi_GblSystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
+                AcpiHwSetMode (SYS_MODE_ACPI);
             }
-            
+
             else
-            {   
+            {
                 /* Still in SYS_MODE_ACPI so this must be an ACPI only system */
-                
-                Gbl_SystemFlags |= SYS_MODE_ACPI;
+
+                Acpi_GblSystemFlags |= SYS_MODE_ACPI;
             }
         }
     }
-    
-    return_VALUE (Gbl_SystemFlags & SYS_MODES_MASK);
+
+    return_VALUE (Acpi_GblSystemFlags & SYS_MODES_MASK);
 }
