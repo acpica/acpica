@@ -15,15 +15,18 @@
  | control and status registers.
  |__________________________________________________________________________
  |
- | $Revision: 1.7 $
- | $Date: 2005/06/29 16:54:06 $
+ | $Revision: 1.8 $
+ | $Date: 2005/06/29 16:54:08 $
  | $Log: hwregs.c,v $
- | Revision 1.7  2005/06/29 16:54:06  aystarik
- | Anti-Polish Complete - Compiles
+ | Revision 1.8  2005/06/29 16:54:08  aystarik
+ | 16/32/64-bit common data types
  |
  | 
- | date	99.02.16.17.35.00;	author rmosgrov;	state Exp;
+ | date	99.03.10.00.05.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 8     3/09/99 4:05p Rmoore1
+ * 16/32/64-bit common data types
  * 
  * 7     2/16/99 9:35a Rmosgrov
  * Anti-Polish Complete - Compiles
@@ -91,7 +94,7 @@
 // ACPI specification defines.
 // 
 //    Rev 1.7   16 Jul 1997 16:59:18   kdbranno
-// casted enum to int for brain dead iC386 tool.
+// casted enum to INT32 for brain dead iC386 tool.
 // 
 //    Rev 1.6   15 Jul 1997 10:14:12   kdbranno
 // Changed &= to |= at one point in iAcpiReadWriteRegister
@@ -104,11 +107,11 @@
 // bit.
 // 
 //    Rev 1.4   09 Jun 1997 13:14:26   kdbranno
-// changed casting of first parameter to Out16.  Now casts correctly.
+// changed casting of first parameter to OsdOut16.  Now casts correctly.
 //
 //    Rev 1.3   15 May 1997 11:18:56   kdbranno
 // Fixed bug in wAcpiRegisterIO ('=' became '==').  Changed inword/outword to
-// In16/Out16.
+// OsdIn16/OsdOut16.
 //
 //    Rev 1.2   16 Apr 1997 19:35:48   kdbranno
 // Redesigned and completed implementation of ACPI register access functions
@@ -131,6 +134,7 @@
 #include "acpitbls.h"
 #include "acpipriv.h"
 #include "acpiasm.h"
+#include "acpiosd.h"
 
 #ifndef RMX
 #pragma check_stack (off)
@@ -141,7 +145,7 @@
  *
  * FUNCTION:    GetBitShift
  *
- * PARAMETERS:  DWORD   Mask     - input mask to determine bit shift from.  Must
+ * PARAMETERS:  UINT32   Mask     - input mask to determine bit shift from.  Must
  *                                  have at least 1 bit set.
  *
  * RETURN:      bit location of the lsb of the mask
@@ -150,10 +154,10 @@
  *
  ******************************************************************************/
 
-int
-GetBitShift (DWORD Mask)
+INT32
+GetBitShift (UINT32 Mask)
 {
-    int             Shift;
+    INT32             Shift;
 
 
     FUNCTION_TRACE ("GetBitShift");
@@ -170,10 +174,10 @@ GetBitShift (DWORD Mask)
  *
  * FUNCTION:    AcpiRegisterIO
  *
- * PARAMETERS:  int     ReadWrite      - Either ACPI_READ or ACPI_WRITE.
- *              int     RegisterId     - index of ACPI register to access
- *              DWORD   Value          - (only used on write) value to write to the
- *                                      register.  This value is shifted all the way right.
+ * PARAMETERS:  INT32   ReadWrite      - Either ACPI_READ or ACPI_WRITE.
+ *              INT32   RegisterId     - index of ACPI register to access
+ *              UINT32  Value          - (only used on write) value to write to the
+ *                                       register.  This value is shifted all the way right.
  *
  * RETURN:      value written to or read from specified register.  This value
  *              is shifted all the way right.
@@ -182,11 +186,13 @@ GetBitShift (DWORD Mask)
  *
  ******************************************************************************/
 
-DWORD
-AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
+UINT32
+AcpiRegisterIO (INT32 ReadWrite, INT32 RegisterId, ... /* UINT32 Value */)
 {
-    DWORD           RegisterValue, Mask, Value;
-    DWORD           GpeReg=0;
+    UINT32          RegisterValue;
+    UINT32          Mask;
+    UINT32          Value;
+    UINT32          GpeReg = 0;
 
 
     FUNCTION_TRACE ("AcpiRegisterIO");
@@ -197,22 +203,22 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
         va_list         marker;
 
         va_start (marker, RegisterId);
-        Value = va_arg (marker, int);
+        Value = va_arg (marker, INT32);
         va_end (marker);
     }
 
     switch (RegisterId & REGISTER_BLOCK_MASK)
     {
         case PM1_EVT:
-            if (RegisterId < (int) TMR_EN)
+            if (RegisterId < (INT32) TMR_EN)
             {   
                 /* status register */
                 
-                RegisterValue = (DWORD) In16 ((WORD) FACP->Pm1aEvtBlk);
+                RegisterValue = (UINT32) OsdIn16 ((UINT16) FACP->Pm1aEvtBlk);
                 
                 if (FACP->Pm1bEvtBlk)
                 {
-                    RegisterValue |= (DWORD) In16 ((WORD) FACP->Pm1bEvtBlk);
+                    RegisterValue |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bEvtBlk);
                 }
 
                 switch (RegisterId)
@@ -265,14 +271,14 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
                     if (Value)
                     {
 #if 0
-                        printf_bu ("\nAbout to write %04X to %04X", (WORD) Value, 
-                                    (WORD) FACP->Pm1aEvtBlk);
+                        printf_bu ("\nAbout to write %04X to %04X", (UINT16) Value, 
+                                    (UINT16) FACP->Pm1aEvtBlk);
 #endif
-                        Out16 ((WORD) FACP->Pm1aEvtBlk, (WORD) Value);
+                        OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) Value);
                         
                         if (FACP->Pm1bEvtBlk)
                         {
-                            Out16 ((WORD) FACP->Pm1bEvtBlk, (WORD) Value);
+                            OsdOut16 ((UINT16) FACP->Pm1bEvtBlk, (UINT16) Value);
                         }
                         
                         RegisterValue = 0;
@@ -284,11 +290,11 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
             {   
                 /* enable register */
                 
-                RegisterValue = (DWORD) In16 ((WORD) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
+                RegisterValue = (UINT32) OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
                 
                 if (FACP->Pm1bEvtBlk)
                 {
-                    RegisterValue |= (DWORD) In16 ((WORD) (FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2));
+                    RegisterValue |= (UINT32) OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2));
                 }
 
                 switch (RegisterId)
@@ -325,16 +331,16 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
                     Value          &= Mask;
                     RegisterValue  |= Value;
 #if 0
-                    printf_bu ("\nAbout to write %04X to %04X", (WORD) RegisterValue, 
-                                (WORD) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
+                    printf_bu ("\nAbout to write %04X to %04X", (UINT16) RegisterValue, 
+                                (UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
 #endif
-                    Out16 ((WORD) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2), 
-                            (WORD) RegisterValue);
+                    OsdOut16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2), 
+                            (UINT16) RegisterValue);
                     
                     if (FACP->Pm1bEvtBlk)
                     {
-                        Out16 ((WORD)(FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2), 
-                                (WORD) RegisterValue);
+                        OsdOut16 ((UINT16)(FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2), 
+                                (UINT16) RegisterValue);
                     }
                 }
             }
@@ -343,7 +349,7 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
         case PM1_CONTROL:
             RegisterValue = 0;
             
-            if (RegisterId != (int) SLP_TYPb)   
+            if (RegisterId != (INT32) SLP_TYPb)   
             {
                 /* 
                  * SLP_TYPx registers are written differently
@@ -352,12 +358,12 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
                  * for A may be different than the value for B 
                  */
 
-                RegisterValue = (DWORD) In16 ((WORD)  FACP->Pm1aCntBlk);
+                RegisterValue = (UINT32) OsdIn16 ((UINT16)  FACP->Pm1aCntBlk);
             }
 
-            if (FACP->Pm1bEvtBlk && RegisterId != (int)SLP_TYPa)
+            if (FACP->Pm1bEvtBlk && RegisterId != (INT32)SLP_TYPa)
             {
-                RegisterValue |= (DWORD) In16 ((WORD) FACP->Pm1bCntBlk);
+                RegisterValue |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bCntBlk);
             }
 
             switch (RegisterId)
@@ -402,14 +408,14 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
                  * for A may be different than the value for B
                  */
                 
-                if (RegisterId != (int) SLP_TYPb)
+                if (RegisterId != (INT32) SLP_TYPb)
                 {
                     if (Mask == SLP_EN_MASK)
                     {
                         disable();  /* disable interrupts */
                     }
 
-                    Out16 ((WORD) FACP->Pm1aCntBlk, (WORD) RegisterValue);
+                    OsdOut16 ((UINT16) FACP->Pm1aCntBlk, (UINT16) RegisterValue);
                     
                     if (Mask == SLP_EN_MASK)
                     {
@@ -422,15 +428,15 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
                     }
                 }
                     
-                if (FACP->Pm1bEvtBlk && RegisterId != (int) SLP_TYPa)
+                if (FACP->Pm1bEvtBlk && RegisterId != (INT32) SLP_TYPa)
                 {
-                    Out16 ((WORD) FACP->Pm1bCntBlk, (WORD) RegisterValue);
+                    OsdOut16 ((UINT16) FACP->Pm1bCntBlk, (UINT16) RegisterValue);
                 }
             }
             break;
         
         case PM2_CONTROL:
-            RegisterValue = (DWORD) In16 ((WORD) FACP->Pm2CntBlk);
+            RegisterValue = (UINT32) OsdIn16 ((UINT16) FACP->Pm2CntBlk);
             
             switch (RegisterId)
             {
@@ -450,32 +456,32 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
                 Value          &= Mask;
                 RegisterValue  |= Value;
 #if 0
-                printf_bu ("\nAbout to write %04X to %04X", (WORD) RegisterValue, 
-                            (WORD) FACP->Pm2CntBlk);
+                printf_bu ("\nAbout to write %04X to %04X", (UINT16) RegisterValue, 
+                            (UINT16) FACP->Pm2CntBlk);
 #endif
-                Out16 ((WORD) FACP->Pm2CntBlk, (WORD) RegisterValue);
+                OsdOut16 ((UINT16) FACP->Pm2CntBlk, (UINT16) RegisterValue);
             }
             break;
         
         case PM_TIMER:
-            RegisterValue = In32 ((WORD) FACP->PmTmrBlk);
+            RegisterValue = OsdIn32 ((UINT16) FACP->PmTmrBlk);
             Mask = 0xFFFFFFFF;
             break;
         
         case GPE1_EN_BLOCK:
-            GpeReg = (FACP->Gpe1Blk + (DWORD) FACP->Gpe1Base) + (GpeReg + 
-                        ((DWORD) ((FACP->Gpe1BlkLen) / 2)));
+            GpeReg = (FACP->Gpe1Blk + (UINT32) FACP->Gpe1Base) + (GpeReg + 
+                        ((UINT32) ((FACP->Gpe1BlkLen) / 2)));
         
         case GPE1_STS_BLOCK:
             if (!GpeReg)
             {
-                GpeReg = (FACP->Gpe1Blk + (DWORD) FACP->Gpe1Base);
+                GpeReg = (FACP->Gpe1Blk + (UINT32) FACP->Gpe1Base);
             }
 
         case GPE0_EN_BLOCK:
             if (!GpeReg)
             {
-                GpeReg = FACP->Gpe0Blk + ((DWORD) ((FACP->Gpe0BlkLen) / 2));
+                GpeReg = FACP->Gpe0Blk + ((UINT32) ((FACP->Gpe0BlkLen) / 2));
             }
         
         case GPE0_STS_BLOCK:
@@ -486,7 +492,7 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
 
             /* Determine the bit to be accessed */
             
-            Mask = (((DWORD) RegisterId) & BIT_IN_REGISTER_MASK);
+            Mask = (((UINT32) RegisterId) & BIT_IN_REGISTER_MASK);
             Mask = 1 << (Mask-1);
             
             /* The base address of the GPE 0 Register Block */
@@ -507,7 +513,7 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
             
             /* Now get the current Enable Bits in the selected Reg */
             
-            RegisterValue = (DWORD) In8 ((WORD) GpeReg);
+            RegisterValue = (UINT32) OsdIn8 ((UINT16) GpeReg);
             
             if (ReadWrite == ACPI_WRITE)
             {               
@@ -519,11 +525,11 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
                 /* This write will put the iAction state into the General Purpose */
                 /* Enable Register indexed by the value in Mask */
 #if 0
-                printf_bu ("\nAbout to write %04X to %04X", (WORD) RegisterValue, 
-                            (WORD) GpeReg);
+                printf_bu ("\nAbout to write %04X to %04X", (UINT16) RegisterValue, 
+                            (UINT16) GpeReg);
 #endif
-                Out8 ((WORD) GpeReg, (BYTE) RegisterValue);
-                RegisterValue = (DWORD) In8 ((WORD) GpeReg);          
+                OsdOut8 ((UINT16) GpeReg, (UINT8) RegisterValue);
+                RegisterValue = (UINT32) OsdIn8 ((UINT16) GpeReg);          
             }
             break;
         
@@ -559,22 +565,22 @@ AcpiRegisterIO (int ReadWrite, int RegisterId, ... /* DWORD Value */)
 void 
 ClearAllAcpiChipsetStatusBits (void)
 {
-    WORD    GpeLength;
-    WORD    Index;
+    UINT16      GpeLength;
+    UINT16      Index;
 
 
     FUNCTION_TRACE ("ClearAllAcpiChipsetStatusBits");
 
 
 #if 0
-    printf_bu ("\nAbout to write %04X to %04X", ALL_STS_BITS, (WORD) FACP->Pm1aEvtBlk);
+    printf_bu ("\nAbout to write %04X to %04X", ALL_STS_BITS, (UINT16) FACP->Pm1aEvtBlk);
 #endif
 
-    Out16 ((WORD) FACP->Pm1aEvtBlk, (WORD) ALL_FIXED_STS_BITS);
+    OsdOut16 ((UINT16) FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     
     if (FACP->Pm1bEvtBlk)
     {
-        Out16 ((WORD) FACP->Pm1bEvtBlk, (WORD) ALL_FIXED_STS_BITS);
+        OsdOut16 ((UINT16) FACP->Pm1bEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     }
 
     /* now clear GPE Bits */
@@ -585,7 +591,7 @@ ClearAllAcpiChipsetStatusBits (void)
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            Out8 ((WORD) (FACP->Gpe0Blk + Index), (BYTE) 0xff);
+            OsdOut8 ((UINT16) (FACP->Gpe0Blk + Index), (UINT8) 0xff);
         }
     }
 
@@ -595,7 +601,7 @@ ClearAllAcpiChipsetStatusBits (void)
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            Out8 ((WORD) (FACP->Gpe1Blk + Index), (BYTE) 0xff);
+            OsdOut8 ((UINT16) (FACP->Gpe1Blk + Index), (UINT8) 0xff);
         }
     }
 }   
