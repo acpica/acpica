@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.67 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -617,7 +617,7 @@ AcpiDbCommandDispatch (
     case CMD_ALLOCATIONS:
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
-        AcpiUtDumpCurrentAllocations ((UINT32) -1, NULL);
+        AcpiUtDumpAllocations ((UINT32) -1, NULL);
 #endif
         break;
 
@@ -991,7 +991,6 @@ AcpiDbUserCommands (
              * Signal the debug thread that we have a command to execute,
              * and wait for the command to complete.
              */
-
             AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
             AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
         }
