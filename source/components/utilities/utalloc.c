@@ -180,7 +180,7 @@ _LocalAllocate (
     void                    *Block;
 
 
-    Block = OsdAllocate ((size_t) AllocSize);
+    Block = OsdAllocate ((ACPI_SIZE) AllocSize);
     if (!Block)
     {
         /* Report allocation error */
@@ -225,7 +225,7 @@ _LocalCallocate (
     void                    *Block;
 
 
-    Block = OsdCallocate ((size_t) AllocSize);
+    Block = OsdCallocate ((ACPI_SIZE) AllocSize);
     if (!Block)
     {
         /* Report allocation error */
@@ -266,7 +266,7 @@ LocalDeleteObject (
 {
 
     FUNCTION_TRACE ("LocalDeleteObject");
-    DEBUG_PRINT (ACPI_INFO, ("LocalDeleteObject: %x\n", *ObjDesc));
+    DEBUG_PRINT (ACPI_INFO, ("LocalDeleteObject: Obj %x at %p\n", *ObjDesc, ObjDesc));
 
 
     /*
@@ -295,6 +295,9 @@ LocalDeleteObject (
 
     }
 
+    /* In all cases, set the pointer to null */
+
+    *ObjDesc = NULL;
     FUNCTION_EXIT;
 }
 
