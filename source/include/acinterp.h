@@ -150,13 +150,13 @@ extern void CheckTrashA(char *Where,
 
 ACPI_STATUS
 AmlSetNamedFieldValue (
-    ACPI_HANDLE         NamedField, 
-    UINT32              Value);
+    ACPI_HANDLE             NamedField, 
+    UINT32                  Value);
 
 ACPI_STATUS
 AmlGetNamedFieldValue (
-    ACPI_HANDLE         NamedField, 
-    UINT32              *Value);
+    ACPI_HANDLE             NamedField, 
+    UINT32                  *Value);
 
 
 /*
@@ -165,7 +165,7 @@ AmlGetNamedFieldValue (
 
 ACPI_STATUS
 AmlExecCreateField (
-    UINT16              op);
+    UINT16                  op);
 
 ACPI_STATUS
 AmlExecFatal (
@@ -186,11 +186,11 @@ AmlExecMatch (
 
 INT32
 AmlGetRvalue (
-    ACPI_OBJECT         **StackPtr);
+    ACPI_OBJECT             **StackPtr);
 
 BOOLEAN
 AmlIsMethodValue (
-    ACPI_OBJECT         *pOD);
+    ACPI_OBJECT             *pOD);
 
 
 /*
@@ -203,46 +203,46 @@ AmlGetMethodDepth (
 
 ACPI_OBJECT_TYPE
 AmlGetMethodType (
-    INT32               Index);
+    INT32                   Index);
 
 ACPI_STATUS
 AmlGetMethodValue (
-    INT32               Index, 
-    ACPI_OBJECT         *ObjDesc);
+    INT32                   Index, 
+    ACPI_OBJECT             *ObjDesc);
 
 ACPI_STATUS
 AmlSetMethodValue (
-    INT32               Index, 
-    ACPI_OBJECT         *ObjDesc, 
-    ACPI_OBJECT         *ObjDesc2);
+    INT32                   Index, 
+    ACPI_OBJECT             *ObjDesc, 
+    ACPI_OBJECT             *ObjDesc2);
 
 ACPI_STATUS
 AmlPrepDefFieldValue (
-    ACPI_HANDLE         Region, 
-    UINT8               FldFlg, 
-    INT32               FldPos, 
-    INT32               FldLen);
+    ACPI_HANDLE             Region, 
+    UINT8                   FldFlg, 
+    INT32                   FldPos, 
+    INT32                   FldLen);
 
 ACPI_STATUS
 AmlPrepBankFieldValue (
-    ACPI_HANDLE         Region, 
-    ACPI_HANDLE         BankReg, 
-    UINT32              BankVal,
-    UINT8               FldFlg, 
-    INT32               FldPos, 
-    INT32               FldLen);
+    ACPI_HANDLE             Region, 
+    ACPI_HANDLE             BankReg, 
+    UINT32                  BankVal,
+    UINT8                   FldFlg, 
+    INT32                   FldPos, 
+    INT32                   FldLen);
 
 ACPI_STATUS
 AmlPrepIndexFieldValue(
-    ACPI_HANDLE         IndexReg, 
-    ACPI_HANDLE         DataReg,
-    UINT8               FldFlg, 
-    INT32               FldPos, 
-    INT32               FldLen);
+    ACPI_HANDLE             IndexReg, 
+    ACPI_HANDLE             DataReg,
+    UINT8                   FldFlg, 
+    INT32                   FldPos, 
+    INT32                   FldLen);
 
 ACPI_STATUS
 AmlPrepStack (
-    char                *Types);
+    char                    *Types);
 
 
 /*
@@ -255,34 +255,34 @@ OsThreadId (
 
 ACPI_STATUS
 OsDoNotifyOp (
-    ACPI_OBJECT         *val, 
-    ACPI_OBJECT         *obj);
+    ACPI_OBJECT             *val, 
+    ACPI_OBJECT             *obj);
 
 void
 OsDoSuspend(
-    UINT32              Time);
+    UINT32                  Time);
 
 ACPI_STATUS
 OsAcquireOpRqst(
-    ACPI_OBJECT         *Time, 
-    ACPI_OBJECT         *sOb);
+    ACPI_OBJECT             *Time, 
+    ACPI_OBJECT             *sOb);
 
 ACPI_STATUS
 OsReleaseOpRqst(
-    ACPI_OBJECT         *sOb);
+    ACPI_OBJECT             *sOb);
 
 ACPI_STATUS
 OsSignalOpRqst(
-    ACPI_OBJECT         *sOb);
+    ACPI_OBJECT             *sOb);
 
 ACPI_STATUS
 OsWaitOpRqst(
-    ACPI_OBJECT         *Time, 
-    ACPI_OBJECT         *sOb);
+    ACPI_OBJECT             *Time, 
+    ACPI_OBJECT             *sOb);
 
 ACPI_STATUS
 OsResetOpRqst(
-    ACPI_OBJECT         *sOb);
+    ACPI_OBJECT             *sOb);
 
 ACPI_STATUS
 OsGetGlobalLock(
@@ -299,14 +299,14 @@ OsReleaseGlobalLock(
 
 ACPI_STATUS
 AmlExecuteMethod (
-    INT32               Offset, 
-    INT32               Len, 
-    ACPI_OBJECT         **Params);
+    INT32                   Offset, 
+    INT32                   Len, 
+    ACPI_OBJECT             **Params);
 
 ACPI_STATUS
 AmlExecStore (
-    ACPI_OBJECT         *op1, 
-    ACPI_OBJECT         *res);
+    ACPI_OBJECT             *op1, 
+    ACPI_OBJECT             *res);
 
 
 /*
@@ -315,15 +315,15 @@ AmlExecStore (
 
 ACPI_STATUS
 AmlExecMonadic1 (
-    UINT16              op);
+    UINT16                  op);
 
 ACPI_STATUS
 AmlExecMonadic2R (
-    UINT16              op);
+    UINT16                  op);
 
 ACPI_STATUS
 AmlExecMonadic2 (
-    UINT16              op);
+    UINT16                  op);
 
 
 /*
@@ -332,19 +332,19 @@ AmlExecMonadic2 (
 
 ACPI_STATUS
 AmlExecDyadic1 (
-    UINT16              op);
+    UINT16                  op);
 
 ACPI_STATUS
 AmlExecDyadic2R (
-    UINT16              op);
-
+    UINT16                  op);
+        
 ACPI_STATUS
 AmlExecDyadic2S (
-    UINT16              op);
+    UINT16                  op);
 
 ACPI_STATUS
 AmlExecDyadic2 (
-    UINT16              op);
+    UINT16                  op);
 
 
 /*
@@ -353,12 +353,12 @@ AmlExecDyadic2 (
 
 ACPI_STATUS 
 AmlDoSuperName (
-    OPERATING_MODE      LoadExecMode, 
-    ACPI_OBJECT_TYPE    Define);
+    OPERATING_MODE          LoadExecMode, 
+    ACPI_OBJECT_TYPE        Define);
 
 ACPI_STATUS
 AmlDoLiteral (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 /*
  * iscode - Scanner AML code manipulation routines
@@ -366,7 +366,7 @@ AmlDoLiteral (
 
 INT32
 AmlAvail (
-    ACPI_SIZE           n);
+    ACPI_SIZE               n);
 
 INT32
 AmlPeek (
@@ -374,7 +374,7 @@ AmlPeek (
 
 INT32
 AmlGetPCodeByte (
-    ACPI_PTRDIFF        Offset);
+    ACPI_PTRDIFF            Offset);
 
 INT32
 AmlPeekOp (
@@ -382,34 +382,34 @@ AmlPeekOp (
 
 UINT8 *
 AmlConsumeBytes (
-    ACPI_SIZE           Bytes);
+    ACPI_SIZE               Bytes);
 
 ACPI_SIZE
 AmlConsumeStreamBytes (
-    ACPI_SIZE           BytesToGet, 
-    UINT8               *AmlBuffer);
+    ACPI_SIZE               BytesToGet, 
+    UINT8                   *AmlBuffer);
 
 void
 AmlConsumePackage (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 INT32
 AmlIsInPCodeBlock (
-    UINT8               *Where);
+    UINT8                   *Where);
 
 void
 AmlSetPCodeInput (
-    UINT8               *Base, 
-    INT32               Len);
+    UINT8                   *Base, 
+    INT32                   Len);
 
 ACPI_STATUS
 AmlSetMethod (
-    void                *Object);
+    void                    *Object);
 
 ACPI_STATUS
 AmlPrepExec (
-    ACPI_PTRDIFF        Offset, 
-    INT32               Len);
+    ACPI_PTRDIFF            Offset, 
+    INT32                   Len);
 
 ACPI_OBJECT_HANDLE
 AmlGetPCodeHandle (
@@ -417,11 +417,11 @@ AmlGetPCodeHandle (
 
 void
 AmlGetCurrentLocation (
-    METHOD_INFO         *Method);
+    METHOD_INFO             *Method);
 
 void
 AmlSetCurrentLocation (
-    METHOD_INFO         *Method);
+    METHOD_INFO             *Method);
 
 
 /*
@@ -430,23 +430,23 @@ AmlSetCurrentLocation (
 
 void
 AmlDumpBuffer (
-    ACPI_SIZE           Length);
+    ACPI_SIZE               Length);
 
 
 ACPI_STATUS
 AmlDumpStackEntry (
-    ACPI_OBJECT         *EntryDesc);
+    ACPI_OBJECT             *EntryDesc);
 
 void
 AmlDumpStack (
-    OPERATING_MODE      LoadExecMode, 
-    char                *pcIdent, 
-    INT32               NumLevels, 
-    char                *pcNote);
+    OPERATING_MODE          LoadExecMode, 
+    char                    *pcIdent, 
+    INT32                   NumLevels, 
+    char                    *pcNote);
 
 void
 AmlDumpObjectDescriptor (
-	ACPI_OBJECT         *Obj);
+	ACPI_OBJECT             *Obj);
 
 
 /*
@@ -455,22 +455,22 @@ AmlDumpObjectDescriptor (
 
 ACPI_STATUS
 AmlDoDataTerm (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlDoCode (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlDoDefinitionBlock (
-    char                *name, 
-    UINT8               *addr, 
-    INT32               len);
-
+    char                    *name, 
+    UINT8                   *addr, 
+    INT32                   len);
+    
 ACPI_STATUS
 AmlDoFieldElement (
-    ACPI_OBJECT_TYPE    DataType, 
-    OPERATING_MODE      LoadExecMode);
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
 
 
 /*
@@ -479,8 +479,8 @@ AmlDoFieldElement (
 
 ACPI_STATUS
 AmlDoPkg (
-    ACPI_OBJECT_TYPE    Type, 
-    OPERATING_MODE      LoadExecMode);
+    ACPI_OBJECT_TYPE        Type, 
+    OPERATING_MODE          LoadExecMode);
 
 
 /*
@@ -489,11 +489,11 @@ AmlDoPkg (
 
 ACPI_STATUS
 AmlDoNameSpaceModifier (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlDoNamedObject (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 
 /*
@@ -502,40 +502,44 @@ AmlDoNamedObject (
 
 ACPI_STATUS 
 AmlDoFieldFlag (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlDoMatchOp (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 void
 AmlDoOpByte (
-    INT32               nl, 
-    UINT16              op, 
-    OPERATING_MODE      LoadExecMode);
+    INT32                   nl, 
+    UINT16                  op, 
+    OPERATING_MODE          LoadExecMode);
 
 
 /*
  * isnames - interpreter/scanner name load/execute
  */
 
-void
+char *
 AmlAllocateNameString (
-    INT32               PrefixCount,
-    INT32               NSeg);
+    INT32                   PrefixCount,
+    INT32                   NSeg);
 
 INT32
 AmlGoodChar (
-    INT32               c);
+    INT32                   c);
+
+AmlDoSeg (
+    char                    *NameString,
+    OPERATING_MODE          LoadExecMode);
 
 INT32 
 AmlDecodePackageLength (
-    INT32               LastPkgLen);
+    INT32                   LastPkgLen);
 
 ACPI_STATUS
 AmlDoName (
-    ACPI_OBJECT_TYPE    DataType, 
-    OPERATING_MODE      LoadExecMode);
+    ACPI_OBJECT_TYPE        DataType, 
+    OPERATING_MODE          LoadExecMode);
 
 
 /*
@@ -544,11 +548,11 @@ AmlDoName (
 
 ACPI_STATUS
 AmlDoOpCode (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlDoRefOpCode (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 
 /*
@@ -557,7 +561,7 @@ AmlDoRefOpCode (
 
 ACPI_STATUS
 AmlDoType1OpCode (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 
 /*
@@ -566,8 +570,8 @@ AmlDoType1OpCode (
 
 ACPI_STATUS 
 AmlDoType2OpCode (
-    OPERATING_MODE      LoadExecMode);
-
+    OPERATING_MODE          LoadExecMode);
+    
 
 /*
  * isrdata - interpreter/scanner raw data load/execute
@@ -575,30 +579,30 @@ AmlDoType2OpCode (
 
 void 
 AmlShowHexValue (
-    INT32               ByteCount, 
-    UINT8               *AmlPtr, 
-    OPERATING_MODE      LoadExecMode, 
-    INT32               LeadSpace);
+    INT32                   ByteCount, 
+    UINT8                   *AmlPtr, 
+    OPERATING_MODE          LoadExecMode, 
+    INT32                   LeadSpace);
 
 ACPI_STATUS
 AmlDoPkgLength (
-    INT32               DoPush, 
-    OPERATING_MODE      LoadExecMode);
+    INT32                   DoPush, 
+    OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlDoByteConst (
-    OPERATING_MODE      LoadExecMode, 
-    INT32               LeadSpace);
+    OPERATING_MODE          LoadExecMode, 
+    INT32                   LeadSpace);
 
 ACPI_STATUS
 AmlDoWordConst (
-    OPERATING_MODE      LoadExecMode, 
-    INT32               LeadSpace);
+    OPERATING_MODE          LoadExecMode, 
+    INT32                   LeadSpace);
 
 ACPI_STATUS
 AmlDoDWordConst (
-    OPERATING_MODE      LoadExecMode, 
-    INT32               LeadSpace);
+    OPERATING_MODE          LoadExecMode, 
+    INT32                   LeadSpace);
 
 
 /*
@@ -611,22 +615,22 @@ AmlClearPkgStack (
 
 ACPI_STATUS
 AmlPushLength (
-    INT32               len, 
-    OPERATING_MODE      LoadExecMode);
+    INT32                   len, 
+    OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlPushExecLength (
-    INT32               len);
+    INT32                   len);
 
 ACPI_STATUS
 AmlPushExec (
-    UINT8               *Code, 
-    INT32               Len);
+    UINT8                   *Code, 
+    INT32                   Len);
 
 ACPI_STATUS
 AmlPopLength (
-    INT32               NoErrUnder, 
-    OPERATING_MODE      LoadExecMode);
+    INT32                   NoErrUnder, 
+    OPERATING_MODE          LoadExecMode);
 
 ACPI_STATUS
 AmlPopExecLength (
@@ -638,7 +642,7 @@ AmlPopExec (
 
 ACPI_STATUS
 AmlPushIfExec (
-    OPERATING_MODE      LoadExecMode);
+    OPERATING_MODE          LoadExecMode);
 
 INT32
 AmlPackageNested (
@@ -651,22 +655,22 @@ AmlPackageNested (
 
 BOOLEAN
 AmlAcquireGlobalLock (
-    UINT16              Rule);
+    UINT16                  Rule);
 
 ACPI_STATUS
 AmlReleaseGlobalLock (
-    BOOLEAN             Locked);
+    BOOLEAN                 Locked);
 
 void
 AmlAppendBlockOwner (
-    void                *Owner);
+    void                    *Owner);
 
 void
 AmlAppendOperandDiag(
-    char                *Name, 
-    INT32               Line, 
-    UINT16              OpCode, 
-    INT32               NOperands);
+    char                    *Name, 
+    INT32                   Line, 
+    UINT16                  OpCode, 
+    INT32                   NOperands);
 
 UINT32 
 AmlBufSeq (
@@ -674,37 +678,37 @@ AmlBufSeq (
 
 INT32
 DigitsNeeded (
-    INT32               val, 
-    INT32               base);
+    INT32                   val, 
+    INT32                   base);
 
 void
 LineSet (
-    INT32               n, 
-    OPERATING_MODE      LoadExecMode);
+    INT32                   n, 
+    OPERATING_MODE          LoadExecMode);
 
 void
 Indent (
-    INT32               n);
+    INT32                   n);
 
 
 /* More PLUMBER stuff (in isutils) TBD: what is this? */
 
 void
 AmlMarkPackage (
-    ACPI_OBJECT         *pOD);
+    ACPI_OBJECT             *pOD);
 
 void
 vAmlMarkObject (
-    ACPI_OBJECT         *pOD);
+    ACPI_OBJECT             *pOD);
 
 void
 MarkObjectStack (
-    INT32               *piCount);
+    INT32                   *piCount);
 
 
 void
 MarkMethodValues (
-    INT32               *Count);
+    INT32                   *Count);
 
 
 
