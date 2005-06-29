@@ -283,14 +283,24 @@ OsAcquireMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-
     FUNCTION_TRACE ("OsAcquireMutex");
 
-    if (ObjDesc)
+    if (!ObjDesc)
     {
-        Status = OsLocalWaitSemaphore (ObjDesc->Mutex.Semaphore, TimeDesc->Number.Value);
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    /*
+     * Support for the _GL_ Mutex object -- go get the global lock
+     */
+
+    if (ObjDesc->Mutex.Semaphore == Gbl_GlobalLockSemaphore)
+    {
+        Status = OsGetGlobalLock ();
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = OsLocalWaitSemaphore (ObjDesc->Mutex.Semaphore, TimeDesc->Number.Value);
     return_ACPI_STATUS (Status);
 }
 
@@ -320,11 +330,21 @@ OsReleaseMutex (
     FUNCTION_TRACE ("OsReleaseMutex");
 
     
-    if (ObjDesc)
+    if (!ObjDesc)
     {
-        Status = OsdSignalSemaphore (ObjDesc->Mutex.Semaphore, 1);
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    /*
+     * Support for the _GL_ Mutex object -- release the global lock
+     */
+    if (ObjDesc->Mutex.Semaphore == Gbl_GlobalLockSemaphore)
+    {
+        OsReleaseGlobalLock ();
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    Status = OsdSignalSemaphore (ObjDesc->Mutex.Semaphore, 1);
     return_ACPI_STATUS (Status);
 }
 
@@ -453,6 +473,12 @@ OsGetGlobalLock(void)
     ACPI_STATUS         Status = AE_OK;
 
 
+    FUNCTION_TRACE ("OsGetGlobalLock");
+
+    /* Acquire the global lock semaphore first */
+
+    OsLocalWaitSemaphore (Gbl_GlobalLockSemaphore, ACPI_UINT32_MAX);
+
     if (Gbl_FACS)
     {
         /* Only if the FACS is valid */
@@ -461,9 +487,8 @@ OsGetGlobalLock(void)
 
         if (GlobalLockReg & GL_OWNED)
         {
-            DEBUG_PRINT (ACPI_ERROR, ("The Global Lock is owned by another process\n"\
-                    "This is a single threaded implementation. There is no way some\n"\
-                    "other process can own the Global Lock!\n"));
+            DEBUG_PRINT (ACPI_ERROR, ("BIOS has the global lock!\n"));
+            OsdSignalSemaphore (Gbl_GlobalLockSemaphore, 1);
             Status = AE_SHARE;
         }
     
@@ -476,7 +501,7 @@ OsGetGlobalLock(void)
         }
     }
 
-    return (Status);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -492,8 +517,14 @@ void
 OsReleaseGlobalLock (void)
 {
     
+    FUNCTION_TRACE ("OsReleaseGlobalLock");
+
+    OsdSignalSemaphore (Gbl_GlobalLockSemaphore, 1);
+
     if (Gbl_FACS)
     {
         Gbl_FACS->GlobalLock &= 0xFFFFFFFF ^ GL_OWNED;
     }
+
+    return_VOID;
 }
