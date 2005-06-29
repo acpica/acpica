@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.42 $
+ *       $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -223,14 +223,14 @@ AcpiTbInstallTable (
 
 ACPI_STATUS
 AcpiTbMatchSignature (
-    NATIVE_CHAR             *Signature,
+    char                    *Signature,
     ACPI_TABLE_DESC         *TableInfo,
     UINT8                   SearchType);
 
 ACPI_STATUS
 AcpiTbRecognizeTable (
     ACPI_TABLE_DESC         *TableInfo,
-    UINT8                  SearchType);
+    UINT8                   SearchType);
 
 ACPI_STATUS
 AcpiTbInitTableDescriptor (
@@ -243,11 +243,11 @@ AcpiTbInitTableDescriptor (
  */
 
 void
-AcpiTbDeleteAcpiTables (
+AcpiTbDeleteAllTables (
     void);
 
 void
-AcpiTbDeleteAcpiTable (
+AcpiTbDeleteTablesByType (
     ACPI_TABLE_TYPE         Type);
 
 void
@@ -257,10 +257,6 @@ AcpiTbDeleteSingleTable (
 ACPI_TABLE_DESC *
 AcpiTbUninstallTable (
     ACPI_TABLE_DESC         *TableDesc);
-
-void
-AcpiTbFreeAcpiTablesOfType (
-    ACPI_TABLE_DESC         *TableInfo);
 
 
 /*
@@ -288,9 +284,9 @@ AcpiTbFindRsdp (
 
 ACPI_STATUS
 AcpiTbFindTable (
-    NATIVE_CHAR             *Signature,
-    NATIVE_CHAR             *OemId,
-    NATIVE_CHAR             *OemTableId,
+    char                    *Signature,
+    char                    *OemId,
+    char                    *OemTableId,
     ACPI_TABLE_HEADER       **TablePtr);
 
 ACPI_STATUS
