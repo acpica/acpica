@@ -281,6 +281,8 @@ DbPrepNamestring (
         return;
     }
 
+    STRUPR (Name);
+
     /* Convert a leading forward slash to a backslash */
 
     if (*Name == '/')
@@ -410,8 +412,11 @@ DbLocalNsLookup (
 
     /* Lookup the name */
 
-    Status = NsLookup (Gbl_CurrentScope->Scope, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
-                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, &Entry);
+    /* TBD: what scope do we use? */
+    /* Use the root scope for the start of the search */
+
+    Status = NsLookup (NULL, InternalPath, ACPI_TYPE_Any, IMODE_Execute, 
+                                    NS_NO_UPSEARCH | NS_DONT_OPEN_SCOPE, NULL, &Entry);
 
     if (ACPI_FAILURE (Status))
     {
