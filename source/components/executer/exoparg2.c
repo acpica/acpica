@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -304,8 +304,10 @@ AcpiExOpcode_2A_2T_1R (
 
         /* Quotient to ReturnDesc1, remainder to ReturnDesc2 */
 
-        Status = AcpiUtDivide (&Operand[0]->Integer.Value, &Operand[1]->Integer.Value,
-                               &ReturnDesc1->Integer.Value, &ReturnDesc2->Integer.Value);
+        Status = AcpiUtDivide (Operand[0]->Integer.Value, 
+                               Operand[1]->Integer.Value,
+                               &ReturnDesc1->Integer.Value,
+                               &ReturnDesc2->Integer.Value);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -420,9 +422,10 @@ AcpiExOpcode_2A_1T_1R (
 
         /* ReturnDesc will contain the remainder */
 
-        Status = AcpiUtDivide (&Operand[0]->Integer.Value, 
-                        &Operand[1]->Integer.Value,
-                        NULL, &ReturnDesc->Integer.Value);
+        Status = AcpiUtDivide (Operand[0]->Integer.Value, 
+                               Operand[1]->Integer.Value,
+                               NULL,
+                               &ReturnDesc->Integer.Value);
         break;
 
 
