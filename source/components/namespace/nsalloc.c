@@ -224,6 +224,12 @@ NsDeleteNamespaceSubtree (
                 CmRemoveReference (ObjDesc);
             }
 
+
+            /* Clear the NTE in case this scope is reused (e.g., a control method scope) */
+
+            ChildHandle->Type = ACPI_TYPE_Any;
+            ChildHandle->Name = 0;
+
             /* Check if this object has any children */
 
             if (NsGetNextObject (ACPI_TYPE_Any, ChildHandle, 0))
