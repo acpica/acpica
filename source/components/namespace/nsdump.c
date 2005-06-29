@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.128 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -118,9 +118,7 @@
 #define __NSDUMP_C__
 
 #include "acpi.h"
-#include "acinterp.h"
 #include "acnamesp.h"
-#include "actables.h"
 #include "acparser.h"
 
 
@@ -146,7 +144,7 @@ AcpiNsPrintPathname (
     UINT32                  NumSegments,
     char                    *Pathname)
 {
-    ACPI_FUNCTION_NAME ("AcpiNsPrintPathname");
+    ACPI_FUNCTION_NAME ("NsPrintPathname");
 
 
     if (!(AcpiDbgLevel & ACPI_LV_NAMES) || !(AcpiDbgLayer & ACPI_NAMESPACE))
@@ -342,14 +340,14 @@ AcpiNsDumpOneObject (
 
     if (!AcpiUtValidAcpiName (ThisNode->Name.Integer))
     {
-        ACPI_REPORT_WARNING (("Invalid ACPI Name %08X\n", ThisNode->Name));
+        ACPI_REPORT_WARNING (("Invalid ACPI Name %08X\n", ThisNode->Name.Integer));
     }
 
     /*
      * Now we can print out the pertinent information
      */
     AcpiOsPrintf (" %4.4s %-12s %p",
-            (char *) &ThisNode->Name, AcpiUtGetTypeName (Type), ThisNode);
+            ThisNode->Name.Ascii, AcpiUtGetTypeName (Type), ThisNode);
 
     DbgLevel = AcpiDbgLevel;
     AcpiDbgLevel = 0;
@@ -488,7 +486,7 @@ AcpiNsDumpOneObject (
                 ObjDesc->BufferField.BufferObj->Buffer.Node)
             {
                 AcpiOsPrintf (" Buf [%4.4s]",
-                        (char *) &ObjDesc->BufferField.BufferObj->Buffer.Node->Name);
+                        ObjDesc->BufferField.BufferObj->Buffer.Node->Name.Ascii);
             }
             break;
 
@@ -496,23 +494,23 @@ AcpiNsDumpOneObject (
         case INTERNAL_TYPE_REGION_FIELD:
             
             AcpiOsPrintf (" Rgn [%4.4s]",
-                    (char *) &ObjDesc->CommonField.RegionObj->Region.Node->Name);
+                    ObjDesc->CommonField.RegionObj->Region.Node->Name.Ascii);
             break;
 
 
         case INTERNAL_TYPE_BANK_FIELD:
             
             AcpiOsPrintf (" Rgn [%4.4s] Bnk [%4.4s]",
-                    (char *) &ObjDesc->CommonField.RegionObj->Region.Node->Name,
-                    (char *) &ObjDesc->BankField.BankObj->CommonField.Node->Name);
+                    ObjDesc->CommonField.RegionObj->Region.Node->Name.Ascii,
+                    ObjDesc->BankField.BankObj->CommonField.Node->Name.Ascii);
             break;
 
 
         case INTERNAL_TYPE_INDEX_FIELD:
             
             AcpiOsPrintf (" Idx [%4.4s] Dat [%4.4s]",
-                    (char *) &ObjDesc->IndexField.IndexObj->CommonField.Node->Name,
-                    (char *) &ObjDesc->IndexField.DataObj->CommonField.Node->Name);
+                    ObjDesc->IndexField.IndexObj->CommonField.Node->Name.Ascii,
+                    ObjDesc->IndexField.DataObj->CommonField.Node->Name.Ascii);
             break;
 
 
@@ -536,8 +534,10 @@ AcpiNsDumpOneObject (
                     ObjDesc->CommonField.BitLength,
                     ObjDesc->CommonField.AccessByteWidth);
             break;
+        
+        default:
+            break;
         }
-
         break;
 
 
@@ -631,7 +631,7 @@ AcpiNsDumpOneObject (
             break;
 
 
-        case ACPI_DESC_TYPE_INTERNAL:
+        case ACPI_DESC_TYPE_OPERAND:
 
             ObjType = ObjDesc->Common.Type;
 
@@ -660,7 +660,7 @@ AcpiNsDumpOneObject (
 
         /* If value is NOT an internal object, we are done */
 
-        if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_INTERNAL)
+        if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND)
         {
             goto Cleanup;
         }
@@ -671,11 +671,11 @@ AcpiNsDumpOneObject (
         switch (ObjType)
         {
         case ACPI_TYPE_STRING:
-            ObjDesc = (ACPI_OPERAND_OBJECT *) ObjDesc->String.Pointer;
+            ObjDesc = (void *) ObjDesc->String.Pointer;
             break;
 
         case ACPI_TYPE_BUFFER:
-            ObjDesc = (ACPI_OPERAND_OBJECT *) ObjDesc->Buffer.Pointer;
+            ObjDesc = (void *) ObjDesc->Buffer.Pointer;
             break;
 
         case ACPI_TYPE_BUFFER_FIELD:
@@ -683,26 +683,26 @@ AcpiNsDumpOneObject (
             break;
 
         case ACPI_TYPE_PACKAGE:
-            ObjDesc = (ACPI_OPERAND_OBJECT *) ObjDesc->Package.Elements;
+            ObjDesc = (void *) ObjDesc->Package.Elements;
             break;
 
         case ACPI_TYPE_METHOD:
-            ObjDesc = (ACPI_OPERAND_OBJECT *) ObjDesc->Method.AmlStart;
+            ObjDesc = (void *) ObjDesc->Method.AmlStart;
             break;
 
         case INTERNAL_TYPE_REGION_FIELD:
-            ObjDesc = (ACPI_OPERAND_OBJECT *) ObjDesc->Field.RegionObj;
+            ObjDesc = (void *) ObjDesc->Field.RegionObj;
             break;
 
         case INTERNAL_TYPE_BANK_FIELD:
-            ObjDesc = (ACPI_OPERAND_OBJECT *) ObjDesc->BankField.RegionObj;
+            ObjDesc = (void *) ObjDesc->BankField.RegionObj;
             break;
 
         case INTERNAL_TYPE_INDEX_FIELD:
-            ObjDesc = (ACPI_OPERAND_OBJECT *) ObjDesc->IndexField.IndexObj;
+            ObjDesc = (void *) ObjDesc->IndexField.IndexObj;
             break;
 
-       default:
+        default:
             goto Cleanup;
         }
 
@@ -750,8 +750,9 @@ AcpiNsDumpObjects (
     Info.DisplayType = DisplayType;
 
 
-    AcpiNsWalkNamespace (Type, StartHandle, MaxDepth, ACPI_NS_WALK_NO_UNLOCK, AcpiNsDumpOneObject,
-                        (void *) &Info, NULL);
+    (void) AcpiNsWalkNamespace (Type, StartHandle, MaxDepth, 
+                ACPI_NS_WALK_NO_UNLOCK, AcpiNsDumpOneObject,
+                (void *) &Info, NULL);
 }
 
 
@@ -818,6 +819,7 @@ void
 AcpiNsDumpRootDevices (void)
 {
     ACPI_HANDLE             SysBusHandle;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_NAME ("NsDumpRootDevices");
@@ -830,11 +832,17 @@ AcpiNsDumpRootDevices (void)
         return;
     }
 
-    AcpiGetHandle (0, ACPI_NS_SYSTEM_BUS, &SysBusHandle);
+    Status = AcpiGetHandle (0, ACPI_NS_SYSTEM_BUS, &SysBusHandle);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "Display of all devices in the namespace:\n"));
-    AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, ACPI_UINT32_MAX, ACPI_NS_WALK_NO_UNLOCK,
-                        AcpiNsDumpOneDevice, NULL, NULL);
+
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, SysBusHandle, 
+                ACPI_UINT32_MAX, ACPI_NS_WALK_NO_UNLOCK,
+                AcpiNsDumpOneDevice, NULL, NULL);
 }
 
 #endif
@@ -914,7 +922,7 @@ AcpiNsDumpEntry (
     Info.OwnerId = ACPI_UINT32_MAX;
     Info.DisplayType = ACPI_DISPLAY_SUMMARY;
 
-    AcpiNsDumpOneObject (Handle, 1, &Info, NULL);
+    (void) AcpiNsDumpOneObject (Handle, 1, &Info, NULL);
 }
 
 #endif
