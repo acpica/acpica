@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -340,7 +340,7 @@ AcpiEvSaveMethodInfo (
         return_ACPI_STATUS (Status);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+    ACPI_DEBUG_PRINT ((ACPI_DB_LOAD,
         "Registered GPE method %s as GPE number 0x%.2X\n",
         Name, GpeNumber));
     return_ACPI_STATUS (AE_OK);
