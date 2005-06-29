@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.29 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -334,7 +334,7 @@ _CmAllocateObjectDesc (
 
     Object->Common.DataType = ACPI_DESC_TYPE_INTERNAL;
 
-    DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size 0x%x\n",
+    DEBUG_PRINT (TRACE_ALLOCATIONS, ("AllocateObjectDesc: %p Size %X\n",
                     Object, sizeof (ACPI_OPERAND_OBJECT)));
 
     return_PTR (Object);
@@ -358,7 +358,7 @@ AcpiCmDeleteObjectDesc (
     ACPI_OPERAND_OBJECT     *Object)
 {
 
-    FUNCTION_TRACE ("AcpiCmDeleteObjectDesc");
+    FUNCTION_TRACE_PTR ("AcpiCmDeleteObjectDesc", Object);
 
 
     /* Make sure that the object isn't already in the cache */
@@ -605,7 +605,7 @@ AcpiCmGetSimpleObjectSize (
         if (InternalObj->Reference.OpCode != AML_NAMEPATH_OP)
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("CmGetSimpleObjectSize: Unsupported Reference opcode=0x%X in object %p\n",
+                ("CmGetSimpleObjectSize: Unsupported Reference opcode=%X in object %p\n",
                 InternalObj->Reference.OpCode, InternalObj));
             Status = AE_TYPE;
         }
@@ -615,7 +615,7 @@ AcpiCmGetSimpleObjectSize (
     default:
 
         DEBUG_PRINT (ACPI_ERROR,
-            ("CmGetSimpleObjectSize: Unsupported type=0x%X in object %p\n",
+            ("CmGetSimpleObjectSize: Unsupported type=%X in object %p\n",
             InternalObj->Common.Type, InternalObj));
         Status = AE_TYPE;
         break;
@@ -658,10 +658,10 @@ AcpiCmGetPackageObjectSize (
 {
 
     ACPI_OPERAND_OBJECT     *ThisInternalObj;
-    ACPI_OPERAND_OBJECT     *ParentObj[MAX_PACKAGE_DEPTH] = { 0,0,0,0,0 };
+    ACPI_OPERAND_OBJECT     *ParentObj[MAX_PACKAGE_DEPTH];
     ACPI_OPERAND_OBJECT     *ThisParent;
     UINT32                  ThisIndex;
-    UINT32                  Index[MAX_PACKAGE_DEPTH] = { 0,0,0,0,0 };
+    UINT32                  Index[MAX_PACKAGE_DEPTH];
     UINT32                  Length = 0;
     UINT32                  ObjectSpace;
     UINT32                  CurrentDepth = 0;
@@ -671,6 +671,11 @@ AcpiCmGetPackageObjectSize (
 
     FUNCTION_TRACE_PTR ("CmGetPackageObjectSize", InternalObj);
 
+
+    /* Init the package stack TBD: replace with linked list */
+
+    MEMSET(ParentObj, 0, MAX_PACKAGE_DEPTH);
+    MEMSET(Index, 0, MAX_PACKAGE_DEPTH);
 
     ParentObj[0] = InternalObj;
 
@@ -767,7 +772,7 @@ AcpiCmGetPackageObjectSize (
                  */
 
                 DEBUG_PRINT (ACPI_ERROR,
-                    ("CmGetPackageObjectSize: Pkg nested too deep (max %d)\n",
+                    ("CmGetPackageObjectSize: Pkg nested too deep (max %X)\n",
                     MAX_PACKAGE_DEPTH));
                 return_ACPI_STATUS (AE_LIMIT);
             }
