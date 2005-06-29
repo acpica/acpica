@@ -352,7 +352,7 @@ AcpiInstallAddressSpaceHandler (
      *  of the branch
      */
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Device,
-                                  ACPI_UINT32_MAX, NS_WALK_NO_UNLOCK,
+                                  ACPI_UINT32_MAX, NS_WALK_UNLOCK,
                                   AcpiEvAddrHandlerHelper,
                                   HandlerObj, NULL);
 
