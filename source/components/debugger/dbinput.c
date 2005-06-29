@@ -203,53 +203,48 @@ BOOLEAN					opt_verbose     = TRUE;
 #define CMD_NUM_COMMANDS    39
 
 
-typedef struct CommandInfo
+COMMAND_INFO                Commands[CMD_NUM_COMMANDS] = 
 {
-    char                    *Name;          /* Command Name */
-    char                    MinArgs;        /* Minimum arguments required */
-
-} COMMAND_INFO;
-
-COMMAND_INFO            Commands[CMD_NUM_COMMANDS] = {
-                            "<NOT FOUND>",  0,
-                            "<NULL>",       0,
-                            "ALLOCATIONS",  0,
-                            "ARGS",         0,
-                            "ARGUMENTS",    0,
-                            "BREAKPOINT",   1,
-                            "CALL",         0,
-                            "CLOSE",        0,
-                            "DEBUG",        1,
-                            "DUMP",         1,
-                            "EVENT",        1,
-                            "EXECUTE",      1,
-                            "EXIT",         0,
-                            "FIND",         1,
-                            "GO",           0,
-                            "HELP",         0,
-                            "?",            0,
-                            "HISTORY",      0,
-                            "!",            1,
-                            "INFORMATION",  0,
-                            "INTO",         0,
-                            "LEVEL",        0,
-                            "LIST",         0,
-                            "LOAD",         1,
-                            "LOCALS",       0,
-                            "METHODS",      0,
-                            "NAMESPACE",    0,
-                            "NOTIFY",       2,
-                            "OBJECT",       1,
-                            "OPEN",         1,
-                            "PREFIX",       0,
-                            "QUIT",         0,
-                            "RESULTS",      0,
-                            "SET",          3,
-                            "STATS",        0,
-                            "STOP",         0,
-                            "TERMINATE",    0,
-                            "TREE",         0,
-                            "UNLOAD",       0};
+    "<NOT FOUND>",  0,
+    "<NULL>",       0,
+    "ALLOCATIONS",  0,
+    "ARGS",         0,
+    "ARGUMENTS",    0,
+    "BREAKPOINT",   1,
+    "CALL",         0,
+    "CLOSE",        0,
+    "DEBUG",        1,
+    "DUMP",         1,
+    "EVENT",        1,
+    "EXECUTE",      1,
+    "EXIT",         0,
+    "FIND",         1,
+    "GO",           0,
+    "HELP",         0,
+    "?",            0,
+    "HISTORY",      0,
+    "!",            1,
+    "INFORMATION",  0,
+    "INTO",         0,
+    "LEVEL",        0,
+    "LIST",         0,
+    "LOAD",         1,
+    "LOCALS",       0,
+    "METHODS",      0,
+    "NAMESPACE",    0,
+    "NOTIFY",       2,
+    "OBJECT",       1,
+    "OPEN",         1,
+    "PREFIX",       0,
+    "QUIT",         0,
+    "RESULTS",      0,
+    "SET",          3,
+    "STATS",        0,
+    "STOP",         0,
+    "TERMINATE",    0,
+    "TREE",         0,
+    "UNLOAD",       0
+};
 
 
 
@@ -780,7 +775,7 @@ DbCommandDispatch (
         break;
     
     case CMD_METHODS:
-        DbDisplayObjects ("Methods", Args[1]);
+        DbDisplayObjects ("METHOD", Args[1]);
         break;
 
     case CMD_NAMESPACE:
