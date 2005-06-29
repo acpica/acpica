@@ -519,8 +519,8 @@ CmDumpCurrentAllocations (
         ("Total number of unfreed allocations = %d\n", i));
             
     DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
-        ("Stack Ptrs: Obj=%d Pkg=%d Mth=%d\n",
-            AmlObjStackLevel(), AmlPkgStackLevel(), AmlMthStackLevel()));
+        ("Stack Ptrs: Obj=%d Mth=%d\n",
+            AmlObjStackLevel(), AmlMthStackLevel()));
  
     return_VOID;
 }   
@@ -563,6 +563,8 @@ _CmAllocate (
 
         _REPORT_ERROR (Module, Line, Component,
             "CmAllocate: Memory allocation failure");
+
+        DEBUG_PRINT (ACPI_ERROR, ("CmAllocate: Could not allocate size 0x%x\n", Size));
 
         return_VALUE (NULL);
     }
@@ -612,6 +614,8 @@ _CmCallocate (
 
         _REPORT_ERROR (Module, Line, Component,
             "CmCallocate: Memory allocation failure");
+
+        DEBUG_PRINT (ACPI_ERROR, ("CmCallocate: Could not allocate size 0x%x\n", Size));
 
         return_VALUE (NULL);
     }
