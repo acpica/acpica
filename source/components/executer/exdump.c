@@ -338,13 +338,17 @@ AmlDumpStackEntry (OBJECT_DESCRIPTOR *EntryDesc)
                 Length = 64;
             }
 
+            /* Debug only -- dump the buffer contents */
+
             if (EntryDesc->Buffer.Buffer)
             {
+                DEBUG_PRINT (ACPI_INFO, ("Buffer Contents: "));
+                               
                 for (Buf = EntryDesc->Buffer.Buffer; Length--; ++Buf)
                 {
-                    DEBUG_PRINT (ACPI_INFO,
-                                (Length ? " %02x" : " %02x", *Buf));
+                    DEBUG_PRINT_RAW (ACPI_INFO,(Length ? " %02x" : " %02x", *Buf));
                 }
+                DEBUG_PRINT_RAW (ACPI_INFO,("\n"));
             }
 
             break;
