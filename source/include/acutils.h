@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.131 $
+ *       $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -206,7 +206,7 @@ NATIVE_CHAR *
 AcpiUtGetEventName (
     UINT32                  EventId);
 
-UINT8
+char
 AcpiUtHexToAsciiChar (
     ACPI_INTEGER            Integer,
     UINT32                  Position);
@@ -477,7 +477,7 @@ void
 AcpiUtDeleteInternalSimpleObject (
     ACPI_OPERAND_OBJECT     *Object);
 
-ACPI_STATUS
+void
 AcpiUtDeleteInternalObjectList (
     ACPI_OPERAND_OBJECT     **ObjList);
 
