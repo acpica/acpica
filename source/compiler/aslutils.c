@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.29 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,6 @@ extern const char * const       yytname[];
 #endif
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    UtLocalCalloc
@@ -152,7 +151,7 @@ UtLocalCalloc (
     void                    *Allocated;
 
 
-    Allocated = AcpiCmCallocate (Size);
+    Allocated = AcpiUtCallocate (Size);
     if (!Allocated)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
@@ -161,6 +160,9 @@ UtLocalCalloc (
             Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
         exit (1);
     }
+
+    TotalAllocations++;
+    TotalAllocated += Size;
 
     return Allocated;
 }
@@ -340,20 +342,20 @@ UtDisplaySummary (
 {
 
 
-    FlPrintFile (FileId, 
+    FlPrintFile (FileId,
         "Compilation complete. %d Errors %d Warnings\n",
          Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
 
-    FlPrintFile (FileId, 
+    FlPrintFile (FileId,
         "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
-        Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber, 
+        Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber,
         Gbl_InputByteCount, TotalKeywords);
 
     if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
-        FlPrintFile (FileId, 
+        FlPrintFile (FileId,
             "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
-            Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength, 
+            Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength,
             TotalNamedObjects, TotalExecutableOpcodes);
     }
 }
@@ -402,7 +404,7 @@ UtCheckIntegerRange (
     {
         sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
         AslCompilererror (Buffer);
-        AcpiCmFree (Node);
+        AcpiUtFree (Node);
         return NULL;
     }
 

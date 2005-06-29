@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -122,6 +122,36 @@
 #define _COMPONENT          ACPI_COMPILER
         MODULE_NAME         ("asltree")
 
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrGetNextNode
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      New parse node.  Aborts on allocation failure
+ *
+ * DESCRIPTION: Allocate a new parse node for the parse tree.  Bypass the local
+ *              dynamic memory manager for performance reasons (This has a
+ *              major impact on the speed of the compiler.)
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE *
+TrGetNextNode (void)
+{
+
+    if (Gbl_NodeCacheNext >= Gbl_NodeCacheLast)
+    {
+        Gbl_NodeCacheNext = UtLocalCalloc (sizeof (ASL_PARSE_NODE) * ASL_NODE_CACHE_SIZE);
+        Gbl_NodeCacheLast = Gbl_NodeCacheNext + ASL_NODE_CACHE_SIZE;
+    }
+
+    return (Gbl_NodeCacheNext++);
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    TrAllocateNode
@@ -141,7 +171,7 @@ TrAllocateNode (
     ASL_PARSE_NODE          *Node;
 
 
-    Node = UtLocalCalloc (sizeof (ASL_PARSE_NODE));
+    Node = TrGetNextNode ();
 
     Node->ParseOpcode       = (UINT16) ParseOpcode;
     Node->Filename          = Gbl_Files[ASL_FILE_INPUT].Filename;
