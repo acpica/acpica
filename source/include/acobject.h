@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.94 $
+ *       $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -243,6 +243,7 @@ typedef struct /* BUFFER - has length and pointer - not null terminated */
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_BUFFER_INFO
     UINT8                       *Pointer;           /* Buffer value in AML stream or in allocated space */
+    ACPI_NAMESPACE_NODE         *Node;              /* Link back to parent node */
 
 } ACPI_OBJECT_BUFFER;
 
@@ -394,7 +395,7 @@ typedef struct /* BANK FIELD */
     ACPI_COMMON_FIELD_INFO
 
     union acpi_operand_obj      *RegionObj;         /* Containing OpRegion object */
-    union acpi_operand_obj      *BankRegisterObj;   /* BankSelect Register object */
+    union acpi_operand_obj      *BankObj;           /* BankSelect Register object */
 
 } ACPI_OBJECT_BANK_FIELD;
 
