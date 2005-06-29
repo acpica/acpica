@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  ******************************************************************************/
 
@@ -120,6 +120,7 @@
 #include "acpi.h"
 #include "acnamesp.h"
 #include "amlcode.h"
+#include "acinterp.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -1278,6 +1279,8 @@ AcpiUtResolveReference (
          */
         if (SourceObject->Common.Type == INTERNAL_TYPE_REFERENCE)
         {
+            /* The constant opcodes must be resolved to actual values */
+
             switch (SourceObject->Reference.Opcode)
             {
             case AML_ZERO_OP:
@@ -1286,21 +1289,39 @@ AcpiUtResolveReference (
                 SourceObject->Integer.Value = 0;
                 break;
 
+
             case AML_ONE_OP:
 
                 SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SourceObject->Integer.Value = 1;
                 break;
 
+
             case AML_ONES_OP:
 
                 SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
                 SourceObject->Integer.Value = ACPI_INTEGER_MAX;
+
+                /* Truncate value if we are executing from a 32-bit ACPI table */
+
+                AcpiExTruncateFor32bitTable (SourceObject);
                 break;
 
+
+            case AML_REVISION_OP:
+
+                SourceObject->Common.Type  = ACPI_TYPE_INTEGER;
+                SourceObject->Integer.Value = ACPI_CA_SUPPORT_LEVEL;
+                break;
+
+
+            case AML_INT_NAMEPATH_OP:
+                break;
+
+
             default:
-                /* Other types not supported */
-                return (AE_SUPPORT);
+                /* Other types ignored */
+                break;
             }
         }
         break;
@@ -1344,7 +1365,7 @@ AcpiUtResolvePackageReferences (
 
     ACPI_FUNCTION_TRACE ("UtResolvePackageReferences");
 
-
+#if 0
     if (ObjDesc->Common.Type != ACPI_TYPE_PACKAGE)
     {
         /* The object must be a package */
@@ -1352,6 +1373,7 @@ AcpiUtResolvePackageReferences (
         ACPI_REPORT_ERROR (("Expecting a Package object\n"));
         return_ACPI_STATUS (AE_TYPE);
     }
+#endif
 
     Info.Length      = 0;
     Info.ObjectSpace = 0;
