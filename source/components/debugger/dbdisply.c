@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  ******************************************************************************/
 
@@ -1039,10 +1039,12 @@ AcpiDbDisplayGpes (void)
     GpeBlock = AcpiGbl_GpeBlockListHead;
     while (GpeBlock)
     {
-        AcpiOsPrintf ("Block %d\n", i);
-        AcpiOsPrintf ("    Registers: %d\n", GpeBlock->RegisterCount);
-        AcpiOsPrintf ("    GPE range: %d to %d\n", GpeBlock->BlockBaseNumber, 
-                        GpeBlock->BlockBaseNumber + (GpeBlock->RegisterCount * 8));
+        AcpiOsPrintf ("Block %d - %p\n", i, GpeBlock);
+        AcpiOsPrintf ("    Registers:    %d\n", GpeBlock->RegisterCount);
+        AcpiOsPrintf ("    GPE range:    %d to %d\n", GpeBlock->BlockBaseNumber, 
+                        GpeBlock->BlockBaseNumber + (GpeBlock->RegisterCount * 8) -1);
+        AcpiOsPrintf ("    RegisterInfo: %p\n", GpeBlock->RegisterInfo);
+        AcpiOsPrintf ("    EventInfo:    %p\n", GpeBlock->EventInfo);
         i++;
 
         GpeBlock = GpeBlock->Next;
