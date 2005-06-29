@@ -120,7 +120,7 @@
 
 /*
  * Ensure that the globals are actually defined only once.
- * 
+ *
  * The use of these defines allows a single list of globals (here) in order
  * to simplify maintenance of the code.
  */
@@ -131,7 +131,7 @@
 #endif
 
 
-extern      char                        *MsgAcpiErrorBreak;
+extern      INT8                        *MsgAcpiErrorBreak;
 
 /*****************************************************************************
  *
@@ -205,6 +205,7 @@ ACPI_EXTERN UINT8                      *AcpiGbl_Gpe1EnableRegisterSave;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
 ACPI_EXTERN ACPI_GENERIC_STATE         *AcpiGbl_GenericStateCache;
 ACPI_EXTERN ACPI_GENERIC_OP            *AcpiGbl_ParseCache;
+ACPI_EXTERN ACPI_EXTENDED_OP           *AcpiGbl_ExtParseCache;
 ACPI_EXTERN ACPI_OBJECT_INTERNAL       *AcpiGbl_ObjectCache;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_WalkStateCache;
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GlobalLockSemaphore;
@@ -221,6 +222,8 @@ ACPI_EXTERN UINT32                      AcpiGbl_StateCacheRequests;
 ACPI_EXTERN UINT32                      AcpiGbl_StateCacheHits;
 ACPI_EXTERN UINT32                      AcpiGbl_ParseCacheRequests;
 ACPI_EXTERN UINT32                      AcpiGbl_ParseCacheHits;
+ACPI_EXTERN UINT32                      AcpiGbl_ExtParseCacheRequests;
+ACPI_EXTERN UINT32                      AcpiGbl_ExtParseCacheHits;
 ACPI_EXTERN UINT32                      AcpiGbl_ObjectCacheRequests;
 ACPI_EXTERN UINT32                      AcpiGbl_ObjectCacheHits;
 ACPI_EXTERN UINT32                      AcpiGbl_WalkStateCacheRequests;
@@ -231,6 +234,7 @@ ACPI_EXTERN UINT32                      AcpiGbl_PsFindCount;
 
 ACPI_EXTERN UINT16                      AcpiGbl_GenericStateCacheDepth;
 ACPI_EXTERN UINT16                      AcpiGbl_ParseCacheDepth;
+ACPI_EXTERN UINT16                      AcpiGbl_ExtParseCacheDepth;
 ACPI_EXTERN UINT16                      AcpiGbl_ObjectCacheDepth;
 ACPI_EXTERN UINT16                      AcpiGbl_WalkStateCacheDepth;
 ACPI_EXTERN UINT16                      AcpiGbl_Pm1EnableRegisterSave;
