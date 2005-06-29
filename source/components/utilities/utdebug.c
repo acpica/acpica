@@ -566,7 +566,7 @@ cleanup:
 
 
 UINT8
-checksum (void *pvBuf,size_t stBufSize)
+checksum (void *pvBuf,UINT32 stBufSize)
 {
     return 0;
 }
@@ -588,6 +588,7 @@ IncIndent (void)
 {
     return 0;
 }
+
 
 
 
