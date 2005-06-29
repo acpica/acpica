@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -418,8 +418,8 @@ AcpiEvAddressSpaceDispatch (
  *
  * FUNCTION:    AcpiEvDisassociateRegionFromHandler
  *
- * PARAMETERS:  HandlerObj      - Handler Object
- *              RegionObj       - Region Object
+ * PARAMETERS:  RegionObj       - Region Object
+ *              AcpiNsIsLocked  - Namespace Region Already Locked?
  *
  * RETURN:      None
  *
@@ -430,7 +430,8 @@ AcpiEvAddressSpaceDispatch (
 
 void
 AcpiEvDisassociateRegionFromHandler(
-    ACPI_OPERAND_OBJECT     *RegionObj)
+    ACPI_OPERAND_OBJECT     *RegionObj,
+    BOOLEAN                 AcpiNsIsLocked)
 {
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -558,6 +559,7 @@ AcpiEvDisassociateRegionFromHandler(
  *
  * PARAMETERS:  HandlerObj      - Handler Object
  *              RegionObj       - Region Object
+ *              AcpiNsIsLocked  - Namespace Region Already Locked?
  *
  * RETURN:      None
  *
@@ -762,7 +764,7 @@ AcpiEvAddrHandlerHelper (
      *
      *  First disconnect region for any previous handler (if any)
      */
-    AcpiEvDisassociateRegionFromHandler (ObjDesc);
+    AcpiEvDisassociateRegionFromHandler (ObjDesc, FALSE);
 
     /*
      *  Then connect the region to the new handler
