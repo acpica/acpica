@@ -170,7 +170,7 @@ NsAllocateNameTable (
 
     DEBUG_PRINT (TRACE_EXEC, ("NsAllocateNameTable: NameTable=%p\n", NameTable));
 
-    return_VALUE (NameTable);
+    return_PTR (NameTable);
 }
 
 
