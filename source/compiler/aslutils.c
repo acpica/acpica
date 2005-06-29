@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllength - Tree walk to determine package and opcode lengths
- *              $Revision: 1.1 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -117,10 +117,72 @@
 
 
 #include "AslCompiler.h"
-
+#include "acnamesp.h"
 
 
 extern const char * const       yytname[];
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void *
+UtLocalCalloc (
+    UINT32                  Size)
+{
+    void                    *Allocated;
+
+
+    Allocated = calloc (Size, 1);
+    if (!Allocated)
+    {
+        AslError (ASL_ERROR_MEMORY_ALLOCATION, 0);
+        /*TBD: Abort */
+    }
+
+    return Allocated;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void *
+UtLocalRealloc (
+    void                    *Previous,
+    UINT32                  Size)
+{
+    void                    *Allocated;
+
+
+    Allocated = realloc (Previous, Size);
+    if (!Allocated)
+    {
+        AslError (ASL_ERROR_MEMORY_ALLOCATION, 0);
+        /*TBD: Abort */
+    }
+
+    return Allocated;
+}
 
 
 /*******************************************************************************
@@ -204,24 +266,14 @@ UtPrintFormattedName (
     UINT16                  ParseOpcode,
     UINT32                  Level)
 {
-    UINT32                  i;
-
-    
-    for (i = 0; i < Level; i++)
-    {
-        DbgPrint ("    ");
-    }
 
 
-    DbgPrint ("%-16.16s", yytname[ParseOpcode-255]);
+    DbgPrint ("%*s %-16.16s", (4 * Level), " ", yytname[ParseOpcode-255]);
         
     
     if (Level < TEXT_OFFSET)
     {
-        for (i = 0; i < (TEXT_OFFSET - Level); i++)
-        {
-            DbgPrint ("    ");
-        }
+        DbgPrint ("%*s", (TEXT_OFFSET - Level) * 4, " ");
     }
 }
 
@@ -277,6 +329,40 @@ UtDisplaySummary (
 }
 
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+UtAttachNamepathToOwner (
+    ASL_PARSE_NODE              *Node,
+    ASL_PARSE_NODE              *NameNode)
+{
+    ACPI_STATUS             Status;
+
+
+
+    Node->ExternalName = NameNode->Value.String;
+
+    Status = AcpiNsInternalizeName (NameNode->Value.String, &Node->Namepath);
+    if (ACPI_FAILURE (Status))
+    {
+        /* TBD: abort on no memory */
+    }
+
+}
+
+
+
 /*******************************************************************************
  *
  * FUNCTION:    
@@ -298,21 +384,20 @@ AslGenerateFilename (
     char                    *NewFilename;
 
 
-    NewFilename = calloc (strlen (InputFilename) + strlen (Suffix), 1);
-    if (!NewFilename)
-    {
-        return NULL;
-    }
+    NewFilename = UtLocalCalloc (strlen (InputFilename) + strlen (Suffix));
+    strcpy (NewFilename, InputFilename);
 
-    Position = strrchr (InputFilename, '.');
+    Position = strrchr (NewFilename, '.');
     if (Position)
     {
         *Position = 0;
+        strcat (Position, Suffix);
     }
 
-    strcpy (NewFilename, InputFilename);
-    strcat (NewFilename, Suffix);
-
+    else
+    {
+        strcat (NewFilename, Suffix);
+    }
 
     return NewFilename;
 }
@@ -342,7 +427,7 @@ UtOpenAllFiles (
     AslCompilerin = Gbl_AslInputFile;
     if (!Gbl_AslInputFile)
     {
-        AslError (ASL_ERROR_INPUT_FILE_OPEN);
+        AslError (ASL_ERROR_INPUT_FILE_OPEN, 0);
         return (AE_ERROR);
     }
 
@@ -352,7 +437,7 @@ UtOpenAllFiles (
     Gbl_OutputFilename = AslGenerateFilename (InputFilename, ".aml");
     if (!Gbl_OutputFilename)
     {
-        AslError (ASL_ERROR_OUTPUT_FILENAME);
+        AslError (ASL_ERROR_OUTPUT_FILENAME, 0);
         return (AE_ERROR);
     }
 
@@ -362,7 +447,7 @@ UtOpenAllFiles (
 	Gbl_OutputAmlFile = fopen (Gbl_OutputFilename, "w+b");
     if (!Gbl_OutputAmlFile)
     {
-        AslError (ASL_ERROR_OUTPUT_FILE_OPEN);
+        AslError (ASL_ERROR_OUTPUT_FILE_OPEN, 0);
         return (AE_ERROR);
     }
 
@@ -374,7 +459,7 @@ UtOpenAllFiles (
         Gbl_ListingFilename = AslGenerateFilename (InputFilename, ".lst");
         if (!Gbl_ListingFilename)
         {
-            AslError (ASL_ERROR_LISTING_FILENAME);
+            AslError (ASL_ERROR_LISTING_FILENAME, 0);
             return (AE_ERROR);
         }
 
@@ -383,7 +468,7 @@ UtOpenAllFiles (
 	    Gbl_ListingFile = fopen (Gbl_ListingFilename, "w+");
         if (!Gbl_ListingFile)
         {
-            AslError (ASL_ERROR_LISTING_FILE_OPEN);
+            AslError (ASL_ERROR_LISTING_FILE_OPEN, 0);
             return (AE_ERROR);
         }
     }
@@ -395,7 +480,7 @@ UtOpenAllFiles (
         Gbl_DebugFilename = AslGenerateFilename (InputFilename, ".txt");
         if (!Gbl_DebugFilename)
         {
-            AslError (ASL_ERROR_DEBUG_FILENAME);
+            AslError (ASL_ERROR_DEBUG_FILENAME, 0);
             return (AE_ERROR);
         }
 
@@ -404,7 +489,7 @@ UtOpenAllFiles (
 	    Gbl_DebugFile = freopen (Gbl_DebugFilename, "w+", stderr);
         if (!Gbl_DebugFile)
         {
-            AslError (ASL_ERROR_DEBUG_FILE_OPEN);
+            AslError (ASL_ERROR_DEBUG_FILE_OPEN, 0);
             return (AE_ERROR);
         }
     }
@@ -412,5 +497,9 @@ UtOpenAllFiles (
 
     return (AE_OK);
 }
+
+
+
+
 
 
