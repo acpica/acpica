@@ -557,6 +557,7 @@ AmlResolveEntryToValue (
     BOOLEAN                 AttachedAmlPointer = FALSE;
     UINT8                   AmlOpcode = 0;
     UINT32                  TempVal;
+    ACPI_OBJECT_TYPE        ObjectType;
 
 
     FUNCTION_TRACE ("AmlResolveEntryToValue");
@@ -904,31 +905,73 @@ AmlResolveEntryToValue (
     case INTERNAL_TYPE_DefField:
 
         /*
-         * TBD: Convert to generic buffer
+         * TBD: Is this the correct solution?
+         *
+         * This section was extended to convert to generic buffer if 
+         *  the return length is greater than 32 bits, but still allows
+         *  for returning a type Number for smaller values because the
+         *  caller can then apply arithmetic operators on those fields.
          *
          * XXX - Implementation limitation: Fields are implemented as type
          * XXX - Number, but they really are supposed to be type Buffer.
          * XXX - The two are interchangeable only for lengths <= 32 bits.
          */
-        Status = AmlGetNamedFieldValue ((ACPI_HANDLE) StackEntry, &TempVal, sizeof (TempVal));
-        if (AE_OK != Status)
+        if(ValDesc->Field.Length > 32)
         {
-            return_ACPI_STATUS (Status);
+            ObjectType = ACPI_TYPE_Buffer;
         }
-
-        ObjDesc = CmCreateInternalObject (ACPI_TYPE_Number);
+        else
+        {
+            ObjectType = ACPI_TYPE_Number;
+        }
+            
+        /*
+         * Create the destination buffer object and the buffer space.
+         */
+        ObjDesc = CmCreateInternalObject (ObjectType);
         if (!ObjDesc)
         {   
             /* Descriptor allocation failure  */
-            
             return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        /*
+         * Fill in the object specific details
+         */
+        if (ACPI_TYPE_Buffer == ObjectType)
+        {
+            ObjDesc->Buffer.Pointer = CmCallocate(ValDesc->Field.Length);
+            if (!ObjDesc->Buffer.Pointer)
+            {   
+                CmRemoveReference(ObjDesc);
+                /* Buffer allocation failure  */
+                return_ACPI_STATUS (AE_NO_MEMORY);
+            }
+
+            ObjDesc->Buffer.Length = ValDesc->Field.Length;
+                
+            Status = AmlGetNamedFieldValue ((ACPI_HANDLE) StackEntry, ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length);
+
+            if (AE_OK != Status)
+            {
+                return_ACPI_STATUS (Status);
+            }
+        }
+        else
+        {
+            Status = AmlGetNamedFieldValue ((ACPI_HANDLE) StackEntry, &TempVal, sizeof (TempVal));
+
+            if (AE_OK != Status)
+            {
+                return_ACPI_STATUS (Status);
+            }
+
+            ObjDesc->Number.Value = TempVal;
         }
 
 
         DEBUG_PRINT (TRACE_EXEC, ("AmlResolveEntryToValue: at DefField Entry=%p ValDesc=%p Type=%X\n", 
                         StackEntry, ValDesc, EntryType));
-
-        ObjDesc->Number.Value = TempVal;
         break;
 
 
