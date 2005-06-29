@@ -269,7 +269,7 @@ NsGetValue (
 
 INT32
 IsNsValue (
-    ACPI_OBJECT             *ObjDesc)
+    ACPI_OBJECT_INTERNAL    *ObjDesc)
 {
     ACPI_HANDLE             RetHandle;
 
@@ -346,7 +346,7 @@ NsInternalizeName (
 
     if (!DottedName || !ConvertedName)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_BAD_PARAMETER);
         return AE_BAD_PARAMETER;
     }
 
@@ -370,7 +370,7 @@ NsInternalizeName (
     InternalName = LocalCallocate ((ACPI_NAME_SIZE * i) + 4);
     if (!InternalName)
     {
-        FUNCTION_EXIT;
+        FUNCTION_STATUS_EXIT (AE_NO_MEMORY);
         return AE_NO_MEMORY;
     }
 
@@ -408,9 +408,18 @@ NsInternalizeName (
     *ConvertedName = InternalName;
 
 
-    DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] \"%s\"\n", 
-                                InternalName, InternalName));     
-    FUNCTION_EXIT;
+    if (FullyQualified)
+    {
+        DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (abs) \"\\%s\"\n", 
+                                InternalName, &InternalName[3])); 
+    }
+    else
+    {
+        DEBUG_PRINT (TRACE_EXEC,("NsInternalizeName: returning [%p] (rel) \"%s\"\n", 
+                                InternalName, &InternalName[2])); 
+    }
+
+    FUNCTION_STATUS_EXIT (AE_OK);
     return AE_OK;
 }
 
@@ -445,296 +454,4 @@ NsConvertHandleToEntry (
 
     return (NAME_TABLE_ENTRY *) Handle;
 }
-
-
-
-
-
-#ifdef PLUMBER
-
-#define MAX_STATIC_BLOCKS 10
-
-static void     **StaticBlockList[MAX_STATIC_BLOCKS];
-static INT32    NumStaticBlocks = 0;
-
-
-
-/****************************************************************************
- *
- * FUNCTION:    RegisterStaticBlockPtr
- *
- * PARAMETERS:  **BlkPtr            - Addr of static pointer to be registered
- *
- * DESCRIPTION: If compiled with bu_plumr.h, add the pointer whose address
- *              is passed to the registry.  MarkStaticBlocks() will then
- *              "mark" each block pointed to by a registered pointer.
- *
- ***************************************************************************/
-
-void
-RegisterStaticBlockPtr (
-    void                    **BlkPtr)
-{
-
-
-    if (NumStaticBlocks < MAX_STATIC_BLOCKS)
-    {
-        StaticBlockList[NumStaticBlocks++] = (void **) BlkPtr;
-    }
-
-    else
-    {
-        REPORT_WARNING ("Too many static blocks");
-    }
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    MarkStaticBlocks
- *
- * PARAMETERS:  *Count          - Count of blocks marked
- *
- * DESCRIPTION: "Mark" all blocks pointed to by registered static pointers
- *
- ***************************************************************************/
-
-void
-MarkStaticBlocks (
-    INT32                   *Count)
-{
-    INT32                   i;
-
-
-    for (i = 0; i < NumStaticBlocks; i++)
-    {
-        if (Count)
-        {
-            ++*Count;
-        }
-
-        MarkBlock (*StaticBlockList[i]);
-    }
-}
-
-#endif /* PLUMBER */
-
-#ifdef PLUMBER
-
-
-/****************************************************************************
- *
- * FUNCTION:    NsMarkNT
- *
- * PARAMETERS:  *ThisEntry          - table to be marked
- *              Size                - size of table
- *              *Count              - output count of blocks marked
- *                                    Outermost caller should preset to 0
- *
- * DESCRIPTION: "Mark" a name table and its reachable values,
- *              including descendents.
- *
- ***************************************************************************/
-
-static void
-NsMarkNT (
-    nte                 *ThisEntry, 
-    INT32               Size, 
-    INT32               *Count)
-{
-    nte                 *Appendage;
-
-
-    FUNCTION_TRACE ("NsMarkNT");
-
-
-    if (!ThisEntry)
-    {
-        FUNCTION_EXIT;
-        return;
-    }
-
-    if (Count)
-    {
-        ++*Count;
-    }
-
-    MarkBlock ((void *) &NEXTSEG (ThisEntry));
-
-
-    /* Locate appendage, if any, before losing original scope pointer */
-    
-    Appendage = NEXTSEG (ThisEntry);
-
-    /* for all entries in this NT */
-    
-    while (Size--)
-    {
-        if (ThisEntry->NameSeg)
-        {
-            /* non-empty entry -- mark anything it points to */
-
-            switch (NsGetType (ThisEntry))
-            {
-                ACPI_OBJECT             *ptrVal;
-                meth                    *Method;
-
-
-            case String:
-                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
-                
-                /* 
-                 * Check for the value pointer in the name table entry
-                 * pointing to a string definition in the AML stream,
-                 * in which case no allocated storage is involved.
-                 */
-
-                if (ptrVal && StringOp != *(UINT8 *) ptrVal)
-                {
-                    /* Avoid marking value if it is in the AML stream */
-                    
-                    if (!IsInPCodeBlock (ptrVal->String.String))
-                    {
-                        MarkBlock (ptrVal->String.String);
-                    }
-                    MarkBlock (ptrVal);
-                }
-                break;
-
-            case Buffer:
-                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
-                
-                /* 
-                 * Check for the value pointer in the name table entry
-                 * pointing to a buffer definition in the AML stream,
-                 * in which case no allocated storage is involved.
-                 */
-                
-                if (ptrVal && BufferOp != *(UINT8 *) ptrVal)
-                { 
-                    MarkBlock (ptrVal->sBuffer.pbBuffer);
-                    MarkBlock (ptrVal);
-                }
-                break;
-
-            case Package:
-                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
-                
-                /* 
-                 * Check for the value pointer in the name table entry
-                 * pointing to a package definition in the AML stream,
-                 * in which case no allocated storage is involved.
-                 */
-
-                if (ptrVal && PackageOp != *(UINT8 *) ptrVal)
-                {
-                    AmlMarkPackage (ptrVal);
-                }
-                break;
-
-            case Method:
-                Method = (meth *) NsGetValue (ThisEntry);
-                if (Method)
-                {
-                    MarkBlock(Method);
-                }
-
-            case BankField:
-            case DefField:
-            case FieldUnit:
-            case IndexField:
-            case Region:
-                ptrVal = (ACPI_OBJECT *) NsGetValue (ThisEntry);
-                if (ptrVal)
-                {
-                    AmlMarkObject (ptrVal);
-                }
-
-            default:
-                
-                /* No other types should own storage beyond the nte itself */
-                
-                break;
-
-            }   /* switch */
-
-
-            if (ThisEntry->ChildScope)
-            {
-                NsMarkNT (ThisEntry->ChildScope, TABLSIZE, Count);
-            }
-        }
-
-        if (0 == Size && Appendage)
-        {
-            /* Just examined last entry, but table has an appendage.  */
-            
-            ThisEntry = Appendage;
-            Size += TABLSIZE;
-
-            if (Count)
-            {
-                ++*Count;
-            }
-
-            MarkBlock ((void *) &NEXTSEG (ThisEntry));
-            Appendage = NEXTSEG (ThisEntry);
-        }
-        
-        else
-        {
-            ThisEntry++;
-        }
-    
-    } /* while */
-
-    FUNCTION_EXIT;
-}
-
-
-/****************************************************************************
- *
- * FUNCTION:    NsMarkNS()
- *
- * PARAMETERS:  none
- *
- * DESCRIPTION: If compiled with bu_plumr.h, traverse the name space
- *              "marking" all name tables and reachable values.
- *
- * RETURN:      The number of blocks marked
- *
- ***************************************************************************/
-
-INT32
-NsMarkNS (void)
-{
-    INT32           Count = 0;
-
-
-    FUNCTION_TRACE ("NsMarkNS");
-
-
-    if (!Root)
-    {
-        /* 
-         * If the name space has not been initialized,
-         * there is nothing to mark.
-         */
-        FUNCTION_EXIT;
-        return 0;
-    }
-
-    NsMarkNT (Root, NsRootSize, &Count);
-    MarkStaticBlocks (&Count);
-    MarkMethodValues (&Count);
-    MarkObjectStack (&Count);
-
-
-    FUNCTION_EXIT;
-    return Count;
-}
-
-
-#endif  /* PLUMBER */
-
 
