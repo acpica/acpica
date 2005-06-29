@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amcreate - Named object creation
- *              $Revision: 1.43 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -159,8 +159,160 @@
  *
  ******************************************************************************/
 
+
 ACPI_STATUS
 AcpiAmlExecCreateField (
+    UINT8                   *AmlPtr,
+    UINT32                  AmlLength,
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *TmpDesc;
+
+
+    FUNCTION_TRACE ("AmlExecCreateField");
+
+
+    /* Create the region descriptor */
+
+    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_FIELD_UNIT);
+    if (!ObjDesc)
+    {
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+    }
+
+    /* Construct the field object */
+
+    ObjDesc->FieldUnit.Access       = (UINT8) ACCESS_ANY_ACC;
+    ObjDesc->FieldUnit.LockRule     = (UINT8) GLOCK_NEVER_LOCK;
+    ObjDesc->FieldUnit.UpdateRule   = (UINT8) UPDATE_PRESERVE;
+
+    /*
+     * Allocate a method object for this field unit
+     */
+
+    ObjDesc->FieldUnit.Extra = AcpiCmCreateInternalObject (
+                                        INTERNAL_TYPE_EXTRA);
+    if (!ObjDesc->FieldUnit.Extra)
+    {
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+    }
+
+    /*
+     * Remember location in AML stream of the field unit
+     * opcode and operands -- since the buffer and index
+     * operands must be evaluated.
+     */
+
+    ObjDesc->FieldUnit.Extra->Extra.Pcode       = AmlPtr;
+    ObjDesc->FieldUnit.Extra->Extra.PcodeLength = AmlLength;
+    ObjDesc->FieldUnit.Node = Node;
+
+
+/*
+    Status = AcpiNsAttachObject (Node, ObjDesc,
+                                (UINT8) ACPI_TYPE_FIELD_UNIT);
+
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+*/
+
+    /*
+     * This operation is supposed to cause the destination Name to refer
+     * to the defined FieldUnit -- it must not store the constructed
+     * FieldUnit object (or its current value) in some location that the
+     * Name may already be pointing to.  So, if the Name currently contains
+     * a reference which would cause AcpiAmlExecStore() to perform an indirect
+     * store rather than setting the value of the Name itself, clobber that
+     * reference before calling AcpiAmlExecStore().
+     */
+
+    /* Type of Name's existing value */
+
+    switch (AcpiNsGetType (Node))
+    {
+
+    case ACPI_TYPE_FIELD_UNIT:
+
+    case INTERNAL_TYPE_ALIAS:
+    case INTERNAL_TYPE_BANK_FIELD:
+    case INTERNAL_TYPE_DEF_FIELD:
+    case INTERNAL_TYPE_INDEX_FIELD:
+
+        TmpDesc = AcpiNsGetAttachedObject (Node);
+        if (TmpDesc)
+        {
+            /*
+             * There is an existing object here;  delete it and zero out the
+             * object field within the Node
+             */
+
+            DUMP_PATHNAME (Node,
+                "AmlExecCreateField: Removing Current Reference",
+                TRACE_BFIELD, _COMPONENT);
+
+            DUMP_ENTRY (Node, TRACE_BFIELD);
+            DUMP_STACK_ENTRY (TmpDesc);
+
+            AcpiCmRemoveReference (TmpDesc);
+            AcpiNsAttachObject ((ACPI_NAMESPACE_NODE *) Node, NULL,
+                                    ACPI_TYPE_ANY);
+        }
+
+        /* Set the type to ANY (or the store below will fail) */
+
+        ((ACPI_NAMESPACE_NODE *) Node)->Type = ACPI_TYPE_ANY;
+
+        break;
+
+
+    default:
+
+        break;
+    }
+
+
+    /* Store constructed field descriptor in result location */
+
+    Status = AcpiAmlExecStore (ObjDesc, (ACPI_OPERAND_OBJECT *) Node, WalkState);
+
+    /*
+     * If the field descriptor was not physically stored (or if a failure
+     * above), we must delete it
+     */
+    if (ObjDesc->Common.ReferenceCount <= 1)
+    {
+        AcpiCmRemoveReference (ObjDesc);
+    }
+
+
+    return_ACPI_STATUS (AE_OK);
+
+
+Cleanup:
+
+    /* Delete region object and method subobject */
+
+    if (ObjDesc)
+    {
+        /* Remove deletes both objects! */
+
+        AcpiCmRemoveReference (ObjDesc);
+        ObjDesc = NULL;
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+static ACPI_STATUS
+AcpiAmlExecCreateField_original (
     UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState)
 {
@@ -213,7 +365,7 @@ AcpiAmlExecCreateField (
     }
 
 
-    Offset = OffDesc->Number.Value;
+    Offset = (UINT32) OffDesc->Number.Value;
 
 
     /*
@@ -345,7 +497,6 @@ AcpiAmlExecCreateField (
         FieldDesc->FieldUnit.BitOffset    = (UINT8) (BitOffset % 8);
         FieldDesc->FieldUnit.Offset       = DIV_8 (BitOffset);
         FieldDesc->FieldUnit.Container    = SrcDesc;
-        FieldDesc->FieldUnit.Sequence     = SrcDesc->Buffer.Sequence;
 
         /* An additional reference for SrcDesc */
 
@@ -705,7 +856,7 @@ AcpiAmlExecCreateRegion (
     ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     *ObjDescRegion;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *Node;
 
 
@@ -722,10 +873,7 @@ AcpiAmlExecCreateRegion (
          * Should this return an error, or should we just keep
          * going?  How do we handle the OEM region handlers?
          */
-
-        DEBUG_PRINT (TRACE_LOAD,
-            ("AmlDoNode: Type out of range [*???*]\n"));
-        REPORT_WARNING ("Unable to decode the RegionSpace");
+        REPORT_WARNING (("Invalid AddressSpace type %X\n", RegionSpace));
     }
 
     DEBUG_PRINT (TRACE_LOAD, ("AmlDoNode: Region Type [%s]\n",
@@ -738,8 +886,8 @@ AcpiAmlExecCreateRegion (
 
     /* Create the region descriptor */
 
-    ObjDescRegion = AcpiCmCreateInternalObject (ACPI_TYPE_REGION);
-    if (!ObjDescRegion)
+    ObjDesc = AcpiCmCreateInternalObject (ACPI_TYPE_REGION);
+    if (!ObjDesc)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
@@ -748,34 +896,35 @@ AcpiAmlExecCreateRegion (
     /*
      * Allocate a method object for this region.
      */
-    ObjDescRegion->Region.Method =  AcpiCmCreateInternalObject (
-                                        ACPI_TYPE_METHOD);
-    if (!ObjDescRegion->Region.Method)
+
+    ObjDesc->Region.Extra =  AcpiCmCreateInternalObject (
+                                        INTERNAL_TYPE_EXTRA);
+    if (!ObjDesc->Region.Extra)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
     }
 
-    /* Init the region from the operands */
-
-    ObjDescRegion->Region.SpaceId       = (UINT16) RegionSpace;
-    ObjDescRegion->Region.Address       = 0;
-    ObjDescRegion->Region.Length        = 0;
-    ObjDescRegion->Region.RegionFlags   = 0;
-
     /*
      * Remember location in AML stream of address & length
      * operands since they need to be evaluated at run time.
      */
-    ObjDescRegion->Region.Method->Method.Pcode       = AmlPtr;
-    ObjDescRegion->Region.Method->Method.PcodeLength = AmlLength;
+
+    ObjDesc->Region.Extra->Extra.Pcode       = AmlPtr;
+    ObjDesc->Region.Extra->Extra.PcodeLength = AmlLength;
+
+    /* Init the region from the operands */
+
+    ObjDesc->Region.SpaceId       = (UINT8) RegionSpace;
+    ObjDesc->Region.Address       = 0;
+    ObjDesc->Region.Length        = 0;
 
 
     /* Install the new region object in the parent Node */
 
-    ObjDescRegion->Region.Node = Node;
+    ObjDesc->Region.Node = Node;
 
-    Status = AcpiNsAttachObject (Node, ObjDescRegion,
+    Status = AcpiNsAttachObject (Node, ObjDesc,
                                 (UINT8) ACPI_TYPE_REGION);
 
     if (ACPI_FAILURE (Status))
@@ -788,7 +937,7 @@ AcpiAmlExecCreateRegion (
      * Namespace is NOT locked at this point.
      */
 
-    Status = AcpiEvInitializeRegion (ObjDescRegion, FALSE);
+    Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
 
     if (ACPI_FAILURE (Status))
     {
@@ -809,12 +958,12 @@ Cleanup:
     {
         /* Delete region object and method subobject */
 
-        if (ObjDescRegion)
+        if (ObjDesc)
         {
             /* Remove deletes both objects! */
 
-            AcpiCmRemoveReference (ObjDescRegion);
-            ObjDescRegion = NULL;
+            AcpiCmRemoveReference (ObjDesc);
+            ObjDesc = NULL;
         }
     }
 
@@ -890,7 +1039,7 @@ AcpiAmlExecCreateProcessor (
 
     /* Second arg is the PBlock Address */
 
-    ObjDesc->Processor.PblkAddress = (ACPI_IO_ADDRESS) Arg->Value.Integer;
+    ObjDesc->Processor.Address = (ACPI_IO_ADDRESS) Arg->Value.Integer;
 
     /* Move to next arg and check existence */
 
@@ -903,7 +1052,7 @@ AcpiAmlExecCreateProcessor (
 
     /* Third arg is the PBlock Length */
 
-    ObjDesc->Processor.PblkLength = (UINT8) Arg->Value.Integer;
+    ObjDesc->Processor.Length = (UINT8) Arg->Value.Integer;
 
     return_ACPI_STATUS (AE_OK);
 }
