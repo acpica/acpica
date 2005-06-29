@@ -1,8 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
+ *              $Revision: 1.31 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -124,20 +125,24 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbdisasm");
+        MODULE_NAME         ("dbdisasm")
 
 
 #define MAX_SHOW_ENTRY      128
+#define BLOCK_PAREN         1
+#define BLOCK_BRACE         2
+#define DB_NO_OP_INFO       "            [%2.2d]  "
+#define DB_FULL_OP_INFO     "%5.5X #%4.4X [%2.2d]  "
 
 
-INT8                        *INDENT_STRING = "....";
+NATIVE_CHAR                 *INDENT_STRING = "....";
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbBlockType
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Op              - Object to be examined
  *
  * RETURN:      Status
  *
@@ -145,12 +150,9 @@ INT8                        *INDENT_STRING = "....";
  *
  ******************************************************************************/
 
-#define BLOCK_PAREN 1
-#define BLOCK_BRACE 2
-
-INT32
+UINT32
 AcpiDbBlockType (
-    ACPI_GENERIC_OP *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
 
     switch (Op->Opcode)
@@ -167,6 +169,7 @@ AcpiDbBlockType (
 
 }
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiPsDisplayObjectPathname
@@ -175,10 +178,10 @@ AcpiDbBlockType (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Diplay the pathname associated with a named object.  Two versions.
- *              One searches the parse tree (for parser-only applications such
- *              as AcpiDump), and the other searches the ACPI namespace (the
- *              parse tree is probably deleted)
+ * DESCRIPTION: Diplay the pathname associated with a named object.  Two
+ *              versions. One searches the parse tree (for parser-only
+ *              applications suchas AcpiDump), and the other searches the
+ *              ACPI namespace (the parse tree is probably deleted)
  *
  ******************************************************************************/
 
@@ -186,9 +189,9 @@ AcpiDbBlockType (
 
 ACPI_STATUS
 AcpiPsDisplayObjectPathname (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *TargetOp;
+    ACPI_PARSE_OBJECT       *TargetOp;
 
 
     AcpiOsPrintf ("  (Path ");
@@ -223,32 +226,32 @@ AcpiPsDisplayObjectPathname (
 
 ACPI_STATUS
 AcpiPsDisplayObjectPathname (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *Nte;
-    INT8                    Buffer[MAX_SHOW_ENTRY];
+    ACPI_NAMESPACE_NODE     *Node;
+    NATIVE_CHAR             Buffer[MAX_SHOW_ENTRY];
     UINT32                  BufferSize = MAX_SHOW_ENTRY;
 
 
     AcpiOsPrintf ("  (Path ");
 
-    /* Just get the NTE out of the Op object */
+    /* Just get the Node out of the Op object */
 
-    Nte = Op->AcpiNamedObject;
-    if (!Nte)
+    Node = Op->Node;
+    if (!Node)
     {
         /*
-         * No NTE, so we can't get the pathname since the object
+         * No Named obj,  so we can't get the pathname since the object
          * is not in the namespace.  This can happen during single
          * stepping where a dynamic named object is *about* to be created.
          */
         return (AE_OK);
     }
 
-    /* Convert NTE/handle to a full pathname */
+    /* Convert NamedDesc/handle to a full pathname */
 
-    Status = AcpiNsHandleToPathname (Nte, &BufferSize, Buffer);
+    Status = AcpiNsHandleToPathname (Node, &BufferSize, Buffer);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("****Could not get pathname****)");
@@ -266,25 +269,24 @@ AcpiPsDisplayObjectPathname (
  *
  * FUNCTION:    AcpiDbDisplayOp
  *
- * PARAMETERS:  None
+ * PARAMETERS:  Origin          - Starting object
+ *              NumOpcodes      - Max number of opcodes to be displayed
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION: Show op and its children
+ * DESCRIPTION: Display parser object and its children
  *
  ******************************************************************************/
 
-#define DB_NO_OP_INFO       "            [%2.2d]  "
-#define DB_FULL_OP_INFO     "%5.5X #%4.4X [%2.2d]  "
-
 void
 AcpiDbDisplayOp (
-    ACPI_GENERIC_OP         *Origin,
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Origin,
     UINT32                  NumOpcodes)
 {
-    ACPI_GENERIC_OP         *Op = Origin;
-    ACPI_GENERIC_OP         *arg;
-    ACPI_GENERIC_OP         *depth;
+    ACPI_PARSE_OBJECT       *Op = Origin;
+    ACPI_PARSE_OBJECT       *arg;
+    ACPI_PARSE_OBJECT       *depth;
     UINT32                  DepthCount = 0;
     UINT32                  LastDepth = 0;
     UINT32                  i;
@@ -372,7 +374,7 @@ AcpiDbDisplayOp (
 
             /* Now print the opcode */
 
-            AcpiDbDisplayOpcode (Op);
+            AcpiDbDisplayOpcode (WalkState, Op);
 
             /* Resolve a name reference */
 
@@ -415,7 +417,7 @@ AcpiDbDisplayOp (
 
     else
     {
-        AcpiDbDisplayOpcode (Op);
+        AcpiDbDisplayOpcode (WalkState, Op);
     }
 }
 
@@ -434,7 +436,7 @@ AcpiDbDisplayOp (
 
 void
 AcpiDbDisplayNamestring (
-    INT8                    *Name)
+    NATIVE_CHAR             *Name)
 {
     UINT32                  SegCount;
     BOOLEAN                 DoDot = FALSE;
@@ -462,7 +464,7 @@ AcpiDbDisplayNamestring (
         break;
 
     case AML_MULTI_NAME_PREFIX_OP:
-        SegCount = (INT32) GET8 (Name + 1);
+        SegCount = (UINT32) GET8 (Name + 1);
         Name += 2;
         break;
 
@@ -506,18 +508,18 @@ AcpiDbDisplayNamestring (
 
 void
 AcpiDbDisplayPath (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *Prev;
-    ACPI_GENERIC_OP         *Search;
+    ACPI_PARSE_OBJECT       *Prev;
+    ACPI_PARSE_OBJECT       *Search;
     UINT32                  Name;
     BOOLEAN                 DoDot = FALSE;
-    ACPI_GENERIC_OP         *NamePath;
+    ACPI_PARSE_OBJECT       *NamePath;
 
 
     /* We are only interested in named objects */
 
-    if (!AcpiPsIsNamedObjectOp (Op->Opcode))
+    if (!AcpiPsIsNodeOp (Op->Opcode))
     {
         return;
     }
@@ -545,7 +547,7 @@ AcpiDbDisplayPath (
         }
     }
 
-    Prev = NULL;            /* Start with root object */
+    Prev = NULL;            /* Start with Root Node */
 
     while (Prev != Op)
     {
@@ -624,12 +626,13 @@ AcpiDbDisplayPath (
 
 void
 AcpiDbDisplayOpcode (
-    ACPI_GENERIC_OP         *Op)
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op)
 {
     UINT8                   *ByteData;
     UINT32                  ByteCount;
     UINT32                  i;
-    ACPI_OP_INFO            *Opc = NULL;
+    ACPI_OPCODE_INFO        *Opc = NULL;
     UINT32                  Name;
 
 
@@ -755,7 +758,7 @@ AcpiDbDisplayOpcode (
             AcpiOsPrintf ("0x%2.2X", Op->Value.Integer);
 
             ByteCount = Op->Value.Integer;
-            ByteData = ((ACPI_BYTELIST_OP *) Op)->Data;
+            ByteData = ((ACPI_PARSE2_OBJECT *) Op)->Data;
 
             for (i = 0; i < ByteCount; i++)
             {
@@ -771,15 +774,16 @@ AcpiDbDisplayOpcode (
         /* Just get the opcode name and print it */
 
         Opc = AcpiPsGetOpcodeInfo (Op->Opcode);
-        if (Opc)
-        {
-            DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
-        }
+        DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
 
-        else
+
+#ifndef PARSER_ONLY
+        if ((Op->Opcode == AML_RETURN_VALUE_OP) &&
+            (WalkState->NumResults))
         {
-            AcpiOsPrintf ("<Opcode 0x%04x>", Op->Opcode);
+            AcpiDbDecodeInternalObject (WalkState->Results [WalkState->NumResults-1]);
         }
+#endif
 
         break;
     }
