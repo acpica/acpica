@@ -101,7 +101,6 @@
 
 #define VERBOSE_DEBUG /* TEMP!!! */
 
-/* 
 /*
  * Configuration constants for the ACPI subsystem
  *
