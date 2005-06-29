@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -410,7 +410,7 @@ AcpiExPciConfigSpaceHandler (
      *
      */
     PciId       = (ACPI_PCI_ID *) RegionContext;
-    PciRegister = (UINT16) Address;
+    PciRegister = (UINT16) (ACPI_SIZE) Address;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
         "PciConfig %d (%d) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n",
@@ -550,7 +550,7 @@ AcpiExDataTableSpaceHandler (
     FUNCTION_TRACE ("ExDataTableSpaceHandler");
 
 
-    LogicalAddrPtr = (char *) (NATIVE_UINT) Address;
+    LogicalAddrPtr = (char *) (ACPI_SIZE) Address;
 
 
    /* Perform the memory read or write */
