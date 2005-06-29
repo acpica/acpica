@@ -284,4 +284,18 @@ typedef char *va_list;
 #define BREAKPOINT3   
 #endif         
 
+
+
+/******************************************************************************
+ * 
+ * Compiler-specific
+ *
+ *****************************************************************************/
+
+#ifdef _MSC_VER                 /* disable some level-4 warnings */
+#pragma warning(disable:4100)   /* warning C4100: unreferenced formal parameter */
+#endif
+
+
+
 #endif /* __ACENV_H__ */
