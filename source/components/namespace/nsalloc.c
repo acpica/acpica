@@ -159,7 +159,7 @@ NsAllocateNameTable (
     AllocSize += sizeof (NAME_TABLE_ENTRY *);
 
   
-    NameTable = LocalCallocate (AllocSize);
+    NameTable = CmCallocate (AllocSize);
     if (NameTable)
     {
         /* Move past the appendage pointer */
@@ -233,17 +233,17 @@ NsDeleteNamespace (void)
 
         else
         {
-            /* 
-             * No more objects in this scope, now the scope/nametable can be deleted
+            /*
+             * No more objects in this scope, get the scope parent, then we can
+             * delete the scope.
              */
-            
+            AcpiGetParent (Scope, &ObjHandle);
             NsDeleteScope (Scope);
 
             /*
-             * Go back up to the parent and the 
-             * parent's scope (But only back up to where we started the search)
+             * Go back up to the parent's scope 
+             * (But only back up to where we started the search)
              */
-            AcpiGetParent (Scope, &ObjHandle);
             AcpiGetContainingScope (ObjHandle, &Scope);
         }
     }
@@ -277,12 +277,14 @@ NsDeleteValue (
 {
     NAME_TABLE_ENTRY        *Entry = Object;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    void                    *ObjPointer = NULL;;
-
+    void                    *ObjPointer = NULL;
+    
+    FUNCTION_TRACE ("NsDeleteValue");
 
     ObjDesc = Entry->Value;
     if (!ObjDesc)
     {
+    	FUNCTION_EXIT;
         return;
     }
 
@@ -291,16 +293,21 @@ NsDeleteValue (
     DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: Object=%p Value=%p Name %4.4s\n", 
                             Entry, ObjDesc, &Entry->Name));
 
-    /* Not every value is an object allocated via OsdAllocate, must check */
+    /* Not every value is an object allocated via CmCallocate, must check */
 
-    if (!AmlIsInPCodeBlock ((UINT8 *)    ObjDesc) &&
-        !IS_NS_HANDLE                   (ObjDesc))
+    if (!AmlIsInPCodeBlock ((UINT8 *)    ObjDesc)) /*&&
+        !IS_NS_HANDLE                   (ObjDesc))*/
     {
 
         /* Object was allocated, there may be some sub objects that must be deleted */
 
         switch (Entry->Type)
         {
+        case TYPE_DefField:
+            DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** Field found %p, container %p (not freeing)\n", 
+                                    ObjDesc, ObjDesc->Field.Container));
+            break;
+
         case TYPE_String:
             ObjPointer = ObjDesc->String.Pointer;
             DEBUG_PRINT (ACPI_INFO, ("NsDeleteValue: ***** String found %p, ptr %p\n", 
@@ -339,19 +346,21 @@ NsDeleteValue (
             {
                 DEBUG_PRINT (ACPI_INFO, ("Deleting Object Pointer %p \n", ObjPointer));
     
-                OsdFree (ObjPointer);
+                CmFree (ObjPointer);
             }
         }
 
 
         DEBUG_PRINT (ACPI_INFO, ("Deleting Object %p \n", ObjDesc));
     
-        OsdFree (ObjDesc);
+        CmFree (ObjDesc);
     }
 
     /* Clear the entry in all cases */
 
     Entry->Value = NULL;
+    
+    FUNCTION_EXIT;
 }
 
 
@@ -375,7 +384,7 @@ NsDeleteScope (
     NAME_TABLE_ENTRY        *ThisTable;
     char                    *AllocatedTable;
 
-
+	FUNCTION_TRACE ("NsDeleteScope");
     DEBUG_PRINT (ACPI_INFO, ("NsDeleteScope: Deleting Scope %p \n", Scope));
 
     ThisTable = (NAME_TABLE_ENTRY *) Scope;
@@ -398,9 +407,11 @@ NsDeleteScope (
         
         /* Now we can free the table */
 
-        OsdFree (AllocatedTable); 
+        CmFree (AllocatedTable); 
 
     } while (ThisTable);
+    
+    FUNCTION_EXIT;
 }
 
 
@@ -419,7 +430,7 @@ NsDeleteScope (
 void
 NsDeleteAcpiTables (void)
 {
-    UINT32                  i;
+    UINT32                      i;
 
 
     /*
@@ -449,44 +460,21 @@ NsDeleteAcpiTables (void)
 
 void
 NsDeleteAcpiTable (
-    ACPI_TABLE_TYPE         Type)
+    ACPI_TABLE_TYPE             Type)
 {
+	FUNCTION_TRACE ("NsDeleteAcpiTable");
+
 
     if (Type > ACPI_TABLE_MAX)
     {
+    	FUNCTION_EXIT;
         return;
     }
 
-    if (AcpiTables[Type].Pointer)
-    {
-        /* Valid table, determine type of memory */
 
-        switch (AcpiTables[Type].Allocation)
-        {
+    /* Free the table */
 
-        case ACPI_MEM_NOT_ALLOCATED:
-
-            break;
-
-
-        case ACPI_MEM_ALLOCATED:
-
-            OsdFree (AcpiTables[Type].Pointer);
-            break;
-
-
-        case ACPI_MEM_MAPPED:
-
-            OsdUnMapMemory (AcpiTables[Type].Pointer, AcpiTables[Type].Length);
-            break;
-        }
-    }
-
-    /* Clear the table entry */
-
-    AcpiTables[Type].Pointer    = NULL;
-    AcpiTables[Type].Allocation = ACPI_MEM_NOT_ALLOCATED;
-    AcpiTables[Type].Length     = 0;
+    NsFreeAcpiTable (&AcpiTables[Type]);
 
 
     /* Clear the appropriate "typed" global table pointer */
@@ -532,8 +520,62 @@ NsDeleteAcpiTable (
         break;
     }
 
+	FUNCTION_EXIT;
 }
 
+
+/****************************************************************************
+ *
+ * FUNCTION:    NsFreeAcpiTable
+ *
+ * PARAMETERS:  TableInfo           - A table info struct
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Free the memory associated with an internal ACPI table
+ *
+ ***************************************************************************/
+
+void
+NsFreeAcpiTable (
+    ACPI_TABLE_INFO         *TableInfo)
+{
+	FUNCTION_TRACE ("NsFreeAcpiTable");
+
+
+    if (TableInfo->Pointer)
+    {
+        /* Valid table, determine type of memory */
+
+        switch (TableInfo->Allocation)
+        {
+
+        case ACPI_MEM_NOT_ALLOCATED:
+
+            break;
+
+
+        case ACPI_MEM_ALLOCATED:
+
+            CmFree (TableInfo->Pointer);
+            break;
+
+
+        case ACPI_MEM_MAPPED:
+
+            OsdUnMapMemory (TableInfo->Pointer, TableInfo->Length);
+            break;
+        }
+    }
+
+    /* Clear the table entry */
+
+    TableInfo->Pointer    = NULL;
+    TableInfo->Allocation = ACPI_MEM_NOT_ALLOCATED;
+    TableInfo->Length     = 0;
+
+    FUNCTION_EXIT;
+}
 
 
 
