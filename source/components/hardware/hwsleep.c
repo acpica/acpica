@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -239,7 +239,7 @@ AcpiEnterSleepState (
     UINT16 PM1BControl;
 
     FUNCTION_TRACE ("AcpiEnterSleepState");
-    
+
     /*
      * _PSW methods could be run here to enable wake-on keyboard, LAN, etc.
      */
@@ -262,7 +262,7 @@ AcpiEnterSleepState (
 
     AcpiEvaluateObject(NULL, "\\_PTS", &ArgList, NULL);
     AcpiEvaluateObject(NULL, "\\_GTS", &ArgList, NULL);
-    
+
     /* clear wake status */
     AcpiHwRegisterBitAccess(ACPI_WRITE, ACPI_MTX_LOCK, WAK_STS, 1);
 
@@ -270,10 +270,10 @@ AcpiEnterSleepState (
 
     /* mask off SLP_EN and SLP_TYP fields */
     PM1AControl &= 0xC3FF;
-    
+
     /* mask in SLP_EN */
     PM1AControl |= (1 << AcpiHwGetBitShift (SLP_EN_MASK));
-    
+
     PM1BControl = PM1AControl;
 
     /* mask in SLP_TYP */
@@ -286,7 +286,7 @@ AcpiEnterSleepState (
 
     AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1A_CONTROL, PM1AControl);
     AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1B_CONTROL, PM1BControl);
-    AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1_CONTROL, 
+    AcpiHwRegisterWrite(ACPI_MTX_LOCK, PM1_CONTROL,
         (1 << AcpiHwGetBitShift (SLP_EN_MASK)));
 
     enable();
