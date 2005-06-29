@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.99 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -399,6 +399,12 @@ OpcAmlOpcodeWalk (
     UINT32                  Level,
     void                    *Context);
 
+ACPI_STATUS
+OpcAmlConstantWalk (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
 void
 OpcGenerateAmlOpcode (
     ACPI_PARSE_OBJECT       *Op);
@@ -560,7 +566,7 @@ TrDoElseif (
  * asltree - parse tree support
  */
 
-void
+ACPI_STATUS
 TrWalkParseTree (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Visitation,
@@ -568,11 +574,16 @@ TrWalkParseTree (
     ASL_WALK_CALLBACK       AscendingCallback,
     void                    *Context);
 
+ACPI_PARSE_OBJECT *
+TrAllocateNode (
+    UINT32                  ParseOpcode);
+
+
 /* Values for "Visitation" parameter above */
 
 #define ASL_WALK_VISIT_DOWNWARD     0x01
 #define ASL_WALK_VISIT_UPWARD       0x02
-#define ASL_WALK_VISIT_TWICE        0x03
+#define ASL_WALK_VISIT_TWICE        (ASL_WALK_VISIT_DOWNWARD | ASL_WALK_VISIT_UPWARD)
 
 
 char *
@@ -757,6 +768,10 @@ ACPI_STATUS
 FlOpenMiscOutputFiles (
     char                    *InputFilename);
 
+void
+MpDisplayReservedNames (
+    void);
+
 
 /* Load */
 
@@ -809,6 +824,10 @@ LsCompareOneNamespaceObject (
 /* Utils */
 
 void
+UtDisplayConstantOpcodes (
+    void);
+
+void
 UtBeginEvent (
     UINT32                  Event,
     char                    *Name);
@@ -847,6 +866,10 @@ UtConvertByteToAsmHex (
 char *
 UtGetOpName (
     UINT32                  ParseOpcode);
+
+void
+UtSetParseOpName (
+    ACPI_PARSE_OBJECT       *Op);
 
 ACPI_PARSE_OBJECT  *
 UtGetArg (
