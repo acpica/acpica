@@ -502,7 +502,8 @@ AcpiGetObjectInfo (
     Status = Execute_UID (DeviceEntry, &Uid);
     if (ACPI_SUCCESS (Status))
     {
-        STRCPY (Info->UniqueId, Uid.Data.StringPtr);
+        /* Until the underlying code works, this will crash.
+        STRCPY (Info->UniqueId, Uid.Data.StringPtr); */
         Info->Valid |= ACPI_VALID_UID;
     }
 
