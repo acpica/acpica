@@ -272,7 +272,6 @@ AcpiGetSystemInfo (
     {
         /*
          *  Caller's buffer is too small
-         *  fail the call
          */
         OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
 
@@ -286,7 +285,7 @@ AcpiGetSystemInfo (
     OutBuffer->Length = sizeof (ACPI_SYSTEM_INFO);
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
-    InfoPtr->AcpiCAVersion      = 0x1234;   /* TBD: need a version number, or use the version string */
+    InfoPtr->AcpiCAVersion      = 0x1234;   /* TBD [Future]: need a version number, or use the version string */
 
     /* System flags (ACPI capabilities) */
 
