@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.25 $
+ *       $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -138,7 +138,7 @@ AcpiTbConvertToXsdt (
     UINT32                  *NumberOfTables);
 
 ACPI_STATUS
-AcpiTbConvertTableFadt ( 
+AcpiTbConvertTableFadt (
     void);
 
 ACPI_STATUS
