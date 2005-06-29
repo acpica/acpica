@@ -694,7 +694,9 @@ EvAddrHandlerHelper (
  ******************************************************************************/
 
 ACPI_STATUS
-EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
+EvInitializeRegion (
+    ACPI_OBJECT_INTERNAL    *RegionObj,
+    BOOLEAN                 NsLocked)
 {
     ACPI_OBJECT_INTERNAL   *HandlerObj;
     ACPI_OBJECT_INTERNAL   *ObjDesc;
@@ -736,6 +738,16 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
          *  _ADR that is a peer to the region definition
          */
 
+        /*
+         * TBD: release the namespace because Execute_ADR uses NS primitives
+         * that will lock it.  However, we need a better solution than this!
+         */
+
+        if (NsLocked)
+        {
+            CmReleaseMutex (MTX_NAMESPACE);
+        }
+
         Status = Execute_ADR (Nte, &RegionObj->Region.RegionData);
         if (ACPI_FAILURE (Status))
         {
@@ -748,6 +760,11 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
              *  have a _ADR method.
              */
             RegionObj->Region.RegionData = 0;
+        }
+
+        if (NsLocked)
+        {
+            CmAcquireMutex (MTX_NAMESPACE);
         }
 
         break;
@@ -841,7 +858,7 @@ EvInitializeRegion ( ACPI_OBJECT_INTERNAL *RegionObj)
     } /* while Nte != ROOT */
 
     /*
-     *  If we get here the handler DNE, get out with error
+     *  If we get here, there is no handler for this region
      */
     DEBUG_PRINT (TRACE_OPREGION, ("Unable to find handler for region 0x%X\n", RegionObj));
 
