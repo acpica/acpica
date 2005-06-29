@@ -298,7 +298,7 @@ EvInstallDefaultAddressSpaceHandlers (
 }
 
 
-/* TBD: Move to the methods directory */
+/* TBD: [Restructure] Move to the methods directory */
 
 /**************************************************************************
  *

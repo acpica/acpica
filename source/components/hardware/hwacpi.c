@@ -120,7 +120,7 @@
 #include <hardware.h>
 
 
-#define _COMPONENT          DEVICE_MANAGER
+#define _COMPONENT          HARDWARE
         MODULE_NAME         ("hwmode");
 
 
@@ -151,7 +151,7 @@ HwSetMode (
     {
         /* BIOS should have disabled ALL fixed and GP events */
         
-        OsdOut8 ((UINT16) Gbl_FACP->SmiCmd, Gbl_FACP->AcpiEnable);
+        OsdOut8 (Gbl_FACP->SmiCmd, Gbl_FACP->AcpiEnable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable ACPI mode\n"));
     }
 
@@ -162,7 +162,7 @@ HwSetMode (
          * enable bits to default
          */
 
-        OsdOut8 ((UINT16) Gbl_FACP->SmiCmd, Gbl_FACP->AcpiDisable);
+        OsdOut8 (Gbl_FACP->SmiCmd, Gbl_FACP->AcpiDisable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable Legacy (non-ACPI) mode\n"));
     }
 
@@ -197,7 +197,7 @@ HwGetMode (void)
     FUNCTION_TRACE ("HwGetMode");
 
     
-    if (READ_ACPI_REGISTER (SCI_EN))
+    if (HwRegisterIO (ACPI_READ, MTX_LOCK, (INT32)SCI_EN))
     {
         return_VALUE (SYS_MODE_ACPI);
     }
@@ -243,8 +243,7 @@ HwGetModeCapabilities (void)
         
         else
         {   
-            /* TBD!!! this may be unsafe... */
-
+            /* TBD: [Investigate] !!! this may be unsafe... */
             /* 
              * system is is ACPI mode, so try to switch back to LEGACY to see if
              * it is supported 

@@ -237,7 +237,7 @@ EvRemoveSciHandler (void)
     FUNCTION_TRACE ("EvRemoveSciHandler");
     
 #if 0
-        /* Disable all events first ???  TBD:  Figure this out!! */
+        /* TBD:[Investigate] Figure this out!!  Disable all events first ???  */
 
         if (OriginalFixedEnableBitStatus ^ 1 << EventIndex (TMR_FIXED_EVENT))
         {
