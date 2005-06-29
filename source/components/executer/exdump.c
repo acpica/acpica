@@ -680,6 +680,7 @@ _AmlDumpObjStack (
     INT32                   LineNumber)
 {
     UINT32                  CurrentStackTop;
+    UINT32                  i;
     ACPI_OBJECT_INTERNAL    **EntryDesc;
 
     
@@ -699,12 +700,13 @@ _AmlDumpObjStack (
     CurrentStackTop = AmlObjStackLevel ();
 
     DEBUG_PRINT (ACPI_INFO, ("*************AmlDumpObjStack, TOS=%d******************\n", 
-                                CurrentStackTop));
+                    CurrentStackTop));
     DEBUG_PRINT (ACPI_INFO, ("From %12s(%d)  %s: %s\n", ModuleName, LineNumber, Ident, Note));
 
-    for (EntryDesc = AmlObjStackGetPtr (STACK_TOP);
-          /* exit condition at bottom of loop */ ;
-          --EntryDesc, --NumLevels)
+
+    /* Dump the stack starting at the top, working down */
+
+    for (i = 0; i <= CurrentStackTop; i++, NumLevels--)
     {
         /* 
          * When we have counted NumLevels down to zero, print a line.
@@ -714,21 +716,17 @@ _AmlDumpObjStack (
          */
         if (0 == NumLevels)
         {
-            DEBUG_PRINT (ACPI_INFO, ("--------\n"));
+            DEBUG_PRINT (ACPI_INFO, ("---------------------------------------------\n"));
         }
 
-        /* 
-         * Stop dumping when
-         *  - AmlDumpObjStackEntry fails on an entry other than the first, or
-         *  - the entire stack has been dumped.
-         */
-        if ((AE_OK != AmlDumpObjStackEntry (*EntryDesc) &&
-            AmlObjStackGetPtr (STACK_TOP)    != EntryDesc) || 
-            AmlObjStackGetPtr (STACK_BOTTOM) == EntryDesc)
+        EntryDesc = AmlObjStackGetPtr (i);
+
+        if (AE_OK != AmlDumpObjStackEntry (*EntryDesc))
         {
             break;
         }
     }
+
 
     return_VOID;
 }
