@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.117 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -254,8 +254,9 @@ AcpiUtValidateFadt (
  *
  ******************************************************************************/
 
-void
-AcpiUtTerminate (void)
+static void
+AcpiUtTerminate (
+    void)
 {
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_GPE_BLOCK_INFO     *NextGpeBlock;
@@ -267,8 +268,6 @@ AcpiUtTerminate (void)
 
 
     /* Free global tables, etc. */
-
-
     /* Free global GPE blocks and related info structures */
 
     GpeXruptInfo = AcpiGbl_GpeXruptListHead;
