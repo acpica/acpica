@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.64 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -269,7 +269,7 @@ AcpiNsInitializeDevices (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiNsInitOneObject (
     ACPI_HANDLE             ObjHandle,
     UINT32                  Level,
@@ -416,7 +416,7 @@ AcpiNsInitOneObject (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+static ACPI_STATUS
 AcpiNsInitOneDevice (
     ACPI_HANDLE             ObjHandle,
     UINT32                  NestingLevel,
@@ -462,7 +462,8 @@ AcpiNsInitOneDevice (
     /*
      * Run _STA to determine if we can run _INI on the device.
      */
-    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD, Pinfo.Node, "_STA"));
+    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD,
+                        Pinfo.Node, METHOD_NAME__STA));
     Status = AcpiUtExecute_STA (Pinfo.Node, &Flags);
 
     if (ACPI_FAILURE (Status))
@@ -491,8 +492,9 @@ AcpiNsInitOneDevice (
     /*
      * The device is present. Run _INI.
      */
-    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD, Pinfo.Node, "_INI"));
-    Status = AcpiNsEvaluateRelative ("_INI", &Pinfo);
+    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD,
+                        Pinfo.Node, METHOD_NAME__INI));
+    Status = AcpiNsEvaluateRelative (METHOD_NAME__INI, &Pinfo);
     if (ACPI_FAILURE (Status))
     {
         /* No _INI (AE_NOT_FOUND) means device requires no initialization */
