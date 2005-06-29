@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.1 $
+ *       $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -116,7 +116,6 @@
 
 #ifndef __ACSTRUCT_H__
 #define __ACSTRUCT_H__
-
 
 
 /*****************************************************************************
@@ -244,7 +243,6 @@ typedef struct acpi_get_devices_info
     NATIVE_CHAR             *Hid;
 
 } ACPI_GET_DEVICES_INFO;
-
 
 
 #endif
