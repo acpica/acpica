@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.106 $
+ *              $Revision: 1.108 $
  *
  ******************************************************************************/
 
@@ -127,7 +127,6 @@
         MODULE_NAME         ("nsaccess")
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsRootInitialize
@@ -147,8 +146,8 @@ AcpiNsRootInitialize (void)
 {
     ACPI_STATUS             Status = AE_OK;
     PREDEFINED_NAMES        *InitVal = NULL;
-    ACPI_NAMED_OBJECT       *NewNameDesc;
-    ACPI_OBJECT_INTERNAL    *ObjDesc;
+    ACPI_NAMESPACE_NODE     *NewNode;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
     FUNCTION_TRACE ("NsRootInitialize");
@@ -161,19 +160,19 @@ AcpiNsRootInitialize (void)
      * that AcpiNsRootInitialize() has already been called; just return.
      */
 
-    if (AcpiGbl_RootObject)
+    if (AcpiGbl_RootNode)
     {
         Status = AE_OK;
         goto UnlockAndExit;
     }
 
 
-    /* 
+    /*
      * Tell the rest of the subsystem that the root is initialized
      * (This is OK because the namespace is locked)
      */
 
-    AcpiGbl_RootObject = &AcpiGbl_RootNamedObject;
+    AcpiGbl_RootNode = &AcpiGbl_RootNodeStruct;
 
 
     /* Enter the pre-defined names in the name table */
@@ -186,10 +185,10 @@ AcpiNsRootInitialize (void)
         Status = AcpiNsLookup (NULL, InitVal->Name,
                                 (OBJECT_TYPE_INTERNAL) InitVal->Type,
                                 IMODE_LOAD_PASS2, NS_NO_UPSEARCH,
-                                NULL, &NewNameDesc);
+                                NULL, &NewNode);
 
         if (ACPI_FAILURE (Status) ||
-            (!NewNameDesc))
+            (!NewNode))
         {
             DEBUG_PRINT (ACPI_ERROR,
                 ("Could not create predefined name %s, %s\n",
@@ -299,11 +298,6 @@ AcpiNsRootInitialize (void)
                         goto UnlockAndExit;
                     }
                 }
-
-                /* TBD: [Restructure] These fields may be obsolete */
-
-                ObjDesc->Mutex.LockCount = 0;
-                ObjDesc->Mutex.ThreadId  = 0;
                 break;
 
 
@@ -314,9 +308,9 @@ AcpiNsRootInitialize (void)
                 continue;
             }
 
-            /* Store pointer to value descriptor in the Named Object */
+            /* Store pointer to value descriptor in the Node */
 
-            AcpiNsAttachObject (NewNameDesc, ObjDesc,
+            AcpiNsAttachObject (NewNode, ObjDesc,
                                 ObjDesc->Common.Type);
         }
     }
@@ -332,14 +326,14 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiNsLookup
  *
- * PARAMETERS:  PrefixNameDesc  - Search scope if name is not fully qualified
+ * PARAMETERS:  PrefixNode  - Search scope if name is not fully qualified
  *              Pathname        - Search pathname, in internal format
  *                                (as represented in the AML stream)
  *              Type            - Type associated with name
  *              InterpreterMode - IMODE_LOAD_PASS2 => add name if not found
  *              Flags           - Flags describing the search restrictions
  *              WalkState       - Current state of the walk
- *              ReturnNameDesc  - Where the Named Object is placed (if found
+ *              ReturnNode  - Where the Node is placed (if found
  *                                or created successfully)
  *
  * RETURN:      Status
@@ -359,13 +353,13 @@ AcpiNsLookup (
     OPERATING_MODE          InterpreterMode,
     UINT32                  Flags,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_NAMED_OBJECT       **ReturnNameDesc)
+    ACPI_NAMESPACE_NODE     **ReturnNode)
 {
     ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT        *PrefixNameDesc;
-    ACPI_NAMED_OBJECT       *CurrentNameDesc = NULL;
-    ACPI_NAMED_OBJECT       *ScopeToPush = NULL;
-    ACPI_NAMED_OBJECT       *ThisNameDesc = NULL;
+    ACPI_NAMESPACE_NODE      *PrefixNode;
+    ACPI_NAMESPACE_NODE     *CurrentNode = NULL;
+    ACPI_NAMESPACE_NODE     *ScopeToPush = NULL;
+    ACPI_NAMESPACE_NODE     *ThisNode = NULL;
     UINT32                  NumSegments;
     ACPI_NAME               SimpleName;
     BOOLEAN                 NullNamePath = FALSE;
@@ -377,7 +371,7 @@ AcpiNsLookup (
     FUNCTION_TRACE ("NsLookup");
 
 
-    if (!ReturnNameDesc)
+    if (!ReturnNode)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -385,10 +379,10 @@ AcpiNsLookup (
 
     AcpiGbl_NsLookupCount++;
 
-    *ReturnNameDesc = ENTRY_NOT_FOUND;
+    *ReturnNode = ENTRY_NOT_FOUND;
 
 
-    if (!AcpiGbl_RootObject)
+    if (!AcpiGbl_RootNode)
     {
         return (AE_NO_NAMESPACE);
     }
@@ -399,13 +393,13 @@ AcpiNsLookup (
      */
 
     if ((!ScopeInfo) ||
-        (!ScopeInfo->Scope.NameTable))
+        (!ScopeInfo->Scope.Node))
     {
-        PrefixNameDesc = AcpiGbl_RootObject;
+        PrefixNode = AcpiGbl_RootNode;
     }
     else
     {
-        PrefixNameDesc = ScopeInfo->Scope.NameTable;
+        PrefixNode = ScopeInfo->Scope.Node;
     }
 
 
@@ -437,7 +431,6 @@ AcpiNsLookup (
     }
 
 
-
     /* TBD: [Restructure] - Move the pathname stuff into a new procedure */
 
     /* Examine the name pointer */
@@ -448,7 +441,7 @@ AcpiNsLookup (
 
         NullNamePath = TRUE;
         NumSegments = 0;
-        ThisNameDesc = AcpiGbl_RootObject;
+        ThisNode = AcpiGbl_RootNode;
 
         DEBUG_PRINT (TRACE_NAMES,
             ("NsLookup: Null Pathname (Zero segments),  Flags=%x\n", Flags));
@@ -479,7 +472,7 @@ AcpiNsLookup (
         {
             /* Pathname is fully qualified, look in root name table */
 
-            CurrentNameDesc = AcpiGbl_RootObject;
+            CurrentNode = AcpiGbl_RootNode;
 
             /* point to segment part */
 
@@ -487,13 +480,13 @@ AcpiNsLookup (
 
             DEBUG_PRINT (TRACE_NAMES,
                 ("NsLookup: Searching from root [%p]\n",
-                CurrentNameDesc));
+                CurrentNode));
 
             /* Direct reference to root, "\" */
 
             if (!(*Pathname))
             {
-                ThisNameDesc = AcpiGbl_RootObject;
+                ThisNode = AcpiGbl_RootNode;
                 goto CheckForNewScopeAndExit;
             }
         }
@@ -502,11 +495,11 @@ AcpiNsLookup (
         {
             /* Pathname is relative to current scope, start there */
 
-            CurrentNameDesc = PrefixNameDesc;
+            CurrentNode = PrefixNode;
 
             DEBUG_PRINT (TRACE_NAMES,
                 ("NsLookup: Searching relative to pfx scope [%p]\n",
-                PrefixNameDesc));
+                PrefixNode));
 
             /*
              * Handle up-prefix (carat).  More than one prefix
@@ -521,8 +514,8 @@ AcpiNsLookup (
 
                 /*  Backup to the parent's scope  */
 
-                ThisNameDesc = AcpiNsGetParentObject (CurrentNameDesc);
-                if (!ThisNameDesc)
+                ThisNode = AcpiNsGetParentObject (CurrentNode);
+                if (!ThisNode)
                 {
                     /* Current scope has no parent scope */
 
@@ -531,7 +524,7 @@ AcpiNsLookup (
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
 
-                CurrentNameDesc = ThisNameDesc;
+                CurrentNode = ThisNode;
             }
         }
 
@@ -595,19 +588,17 @@ AcpiNsLookup (
     }
 
 
-
-
     /*
      * Search namespace for each segment of the name.
      * Loop through and verify/add each name segment.
      */
 
 
-    while (NumSegments-- && CurrentNameDesc)
+    while (NumSegments-- && CurrentNode)
     {
         /*
          * Search for the current name segment under the current
-         * named object.  The Type is significant only at the last (topmost) 
+         * named object.  The Type is significant only at the last (topmost)
          * level.  (We don't care about the types along the path, only
          * the type of the final target object.)
          */
@@ -624,9 +615,9 @@ AcpiNsLookup (
         /* Try to find the ACPI name */
 
         Status = AcpiNsSearchAndEnter (SimpleName, WalkState,
-                                        CurrentNameDesc, InterpreterMode,
+                                        CurrentNode, InterpreterMode,
                                         ThisSearchType, Flags,
-                                        &ThisNameDesc);
+                                        &ThisNode);
 
         if (ACPI_FAILURE (Status))
         {
@@ -636,7 +627,7 @@ AcpiNsLookup (
 
                 DEBUG_PRINT (TRACE_NAMES,
                     ("NsLookup: Name [%4.4s] not found in scope %X\n",
-                    &SimpleName, CurrentNameDesc));
+                    &SimpleName, CurrentNode));
             }
 
             return_ACPI_STATUS (Status);
@@ -660,30 +651,30 @@ AcpiNsLookup (
             (TypeToCheckFor     != INTERNAL_TYPE_DEF_ANY)           &&
             (TypeToCheckFor     != INTERNAL_TYPE_SCOPE)             &&
             (TypeToCheckFor     != INTERNAL_TYPE_INDEX_FIELD_DEFN)  &&
-            (ThisNameDesc->Type != ACPI_TYPE_ANY)                   &&
-            (ThisNameDesc->Type != TypeToCheckFor))
+            (ThisNode->Type != ACPI_TYPE_ANY)                   &&
+            (ThisNode->Type != TypeToCheckFor))
         {
             /* Complain about a type mismatch */
 
             REPORT_WARNING ("Type mismatch");
             DEBUG_PRINT (ACPI_WARN,
                 ("NsLookup: %4.4s, type 0x%X, checking for type 0x%X\n",
-                &SimpleName, ThisNameDesc->Type, TypeToCheckFor));
+                &SimpleName, ThisNode->Type, TypeToCheckFor));
         }
 
         /*
-         * If this is the last name segment and we are not looking for a 
+         * If this is the last name segment and we are not looking for a
          * specific type, but the type of found object is known, use that type
          * to see if it opens a scope.
          */
 
         if ((0 == NumSegments) && (ACPI_TYPE_ANY == Type))
         {
-            Type = ThisNameDesc->Type;
+            Type = ThisNode->Type;
         }
 
         if ((NumSegments || AcpiNsOpensScope (Type)) &&
-            (ThisNameDesc->Child == NULL))
+            (ThisNode->Child == NULL))
         {
             /*
              * More segments or the type implies enclosed scope,
@@ -691,11 +682,11 @@ AcpiNsLookup (
              */
 
             DEBUG_PRINT (ACPI_INFO,
-                ("NsLookup: Load mode=%d  ThisNameDesc=%x\n",
-                InterpreterMode, ThisNameDesc));
+                ("NsLookup: Load mode=%d  ThisNode=%x\n",
+                InterpreterMode, ThisNode));
         }
 
-        CurrentNameDesc = ThisNameDesc;
+        CurrentNode = ThisNode;
 
         /* point to next name segment */
 
@@ -728,7 +719,7 @@ CheckForNewScopeAndExit:
             }
             else
             {
-                ScopeToPush = ThisNameDesc;
+                ScopeToPush = ThisNode;
             }
 
             Status = AcpiDsScopeStackPush (ScopeToPush, Type,
@@ -743,7 +734,7 @@ CheckForNewScopeAndExit:
         }
     }
 
-    *ReturnNameDesc = ThisNameDesc;
+    *ReturnNode = ThisNode;
     return_ACPI_STATUS (AE_OK);
 }
 
