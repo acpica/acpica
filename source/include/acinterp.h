@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.108 $
+ *       $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -714,6 +714,24 @@ AcpiExSystemIoSpaceHandler (
 
 ACPI_STATUS
 AcpiExPciConfigSpaceHandler (
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value,
+    void                    *HandlerContext,
+    void                    *RegionContext);
+
+ACPI_STATUS
+AcpiExCmosSpaceHandler (
+    UINT32                  Function,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value,
+    void                    *HandlerContext,
+    void                    *RegionContext);
+
+ACPI_STATUS
+AcpiExPciBarSpaceHandler (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
