@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -287,7 +287,6 @@ AcpiPsxExecute (
      */
     Status = AcpiPsParseAml (WalkState);
     goto Cleanup2; /* Walk state already deleted */
-
 
 
 Cleanup3:
