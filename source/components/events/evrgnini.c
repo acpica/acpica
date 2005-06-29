@@ -116,11 +116,11 @@
 
 #define __EVRGNINI_C__
 
-#include <acpi.h>
-#include <events.h>
-#include <namesp.h>
-#include <interp.h>
-#include <amlcode.h>
+#include "acpi.h"
+#include "events.h"
+#include "namesp.h"
+#include "interp.h"
+#include "amlcode.h"
 
 #define _COMPONENT          EVENT_HANDLING
         MODULE_NAME         ("evrgnini");
@@ -129,7 +129,7 @@
 
 /*****************************************************************************
  * 
- * FUNCTION:    EvSystemMemoryRegionSetup
+ * FUNCTION:    AcpiEvSystemMemoryRegionSetup
  *
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
@@ -143,13 +143,14 @@
  ****************************************************************************/
 
 ACPI_STATUS
-EvSystemMemoryRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+AcpiEvSystemMemoryRegionSetup (
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext)
 {
     MEM_HANDLER_CONTEXT     *MemContext;
+    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
 
 
     FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
@@ -157,18 +158,23 @@ EvSystemMemoryRegionSetup (
 
     if (Function == ACPI_REGION_DEACTIVATE) 
     {
-        MemContext = HandlerContext;
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
-        *ReturnContext = MemContext->HandlerContext;
 
-        CmFree (MemContext);
+        *ReturnContext = NULL;
+        if (HandlerContext)
+        {
+            MemContext = HandlerContext;
+            *ReturnContext = MemContext->HandlerContext;
+
+            AcpiCmFree (MemContext);
+        }
         return_ACPI_STATUS (AE_OK);
     }
 
 
     /* Activate.  Create a new context */
 
-    MemContext = CmCallocate (sizeof (MEM_HANDLER_CONTEXT));
+    MemContext = AcpiCmCallocate (sizeof (MEM_HANDLER_CONTEXT));
     if (!MemContext)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -186,7 +192,7 @@ EvSystemMemoryRegionSetup (
 
 /*****************************************************************************
  * 
- * FUNCTION:    EvIoSpaceRegionSetup
+ * FUNCTION:    AcpiEvIoSpaceRegionSetup
  *
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
@@ -200,12 +206,14 @@ EvSystemMemoryRegionSetup (
  ****************************************************************************/
 
 ACPI_STATUS
-EvIoSpaceRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+AcpiEvIoSpaceRegionSetup (
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext)
 {
+    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
+
 
     FUNCTION_TRACE ("EvIoSpaceRegionSetup");
 
@@ -228,7 +236,7 @@ EvIoSpaceRegionSetup (
 
 /*****************************************************************************
  * 
- * FUNCTION:    EvPciConfigRegionSetup
+ * FUNCTION:    AcpiEvPciConfigRegionSetup
  *
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
@@ -244,8 +252,8 @@ EvIoSpaceRegionSetup (
  ****************************************************************************/
 
 ACPI_STATUS
-EvPciConfigRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+AcpiEvPciConfigRegionSetup (
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext)
@@ -255,6 +263,7 @@ EvPciConfigRegionSetup (
     PCI_HANDLER_CONTEXT     *PciContext;
     ACPI_OBJECT_INTERNAL    *HandlerObj;
     NAME_TABLE_ENTRY        *SearchScope;
+    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
 
 
     FUNCTION_TRACE ("EvPciConfigRegionSetup");
@@ -274,18 +283,24 @@ EvPciConfigRegionSetup (
 
     if (Function == ACPI_REGION_DEACTIVATE) 
     {
-        PciContext = HandlerContext;
         RegionObj->Region.RegionFlags &= ~(REGION_INITIALIZED);
-        *ReturnContext = PciContext->HandlerContext;
 
-        CmFree (PciContext);
+        *ReturnContext = NULL;
+        if (HandlerContext)
+        {
+            PciContext = HandlerContext;
+            *ReturnContext = PciContext->HandlerContext;
+
+            AcpiCmFree (PciContext);
+        }
+
         return_ACPI_STATUS (Status);
     }
 
 
     /* Create a new context */
 
-    PciContext = CmAllocate (sizeof(PCI_HANDLER_CONTEXT));
+    PciContext = AcpiCmAllocate (sizeof(PCI_HANDLER_CONTEXT));
     if (!PciContext)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -305,11 +320,11 @@ EvPciConfigRegionSetup (
     SearchScope = RegionObj->Region.Nte->ParentEntry;
 
 
-    CmReleaseMutex (MTX_NAMESPACE);
+    AcpiCmReleaseMutex (MTX_NAMESPACE);
 
-    /* Evaluate the _ADR object */
+    /* AcpiEvaluate the _ADR object */
 
-    Status = CmEvaluateNumericObject (METHOD_NAME__ADR, SearchScope, &Temp);
+    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__ADR, SearchScope, &Temp);
     /*
      *  The default is zero, since the allocation above zeroed the data, just
      *  do nothing on failures.
@@ -331,7 +346,7 @@ EvPciConfigRegionSetup (
 
     SearchScope = HandlerObj->AddrHandler.Nte;
 
-    Status = CmEvaluateNumericObject (METHOD_NAME__SEG, SearchScope, &Temp);
+    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__SEG, SearchScope, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         /*
@@ -340,7 +355,7 @@ EvPciConfigRegionSetup (
         PciContext->Seg = Temp;
     }
 
-    Status = CmEvaluateNumericObject (METHOD_NAME__BBN, SearchScope, &Temp);
+    Status = AcpiCmEvaluateNumericObject (METHOD_NAME__BBN, SearchScope, &Temp);
     if (ACPI_SUCCESS (Status))
     {
         /*
@@ -349,7 +364,7 @@ EvPciConfigRegionSetup (
         PciContext->Bus = Temp;
     }
 
-    CmAcquireMutex (MTX_NAMESPACE);
+    AcpiCmAcquireMutex (MTX_NAMESPACE);
 
     *ReturnContext = PciContext;
 
@@ -360,7 +375,7 @@ EvPciConfigRegionSetup (
 
 /*****************************************************************************
  * 
- * FUNCTION:    EvDefaultRegionSetup
+ * FUNCTION:    AcpiEvDefaultRegionSetup
  *
  * PARAMETERS:  RegionObj           - region we are interested in
  *              Function            - start or stop
@@ -374,12 +389,14 @@ EvPciConfigRegionSetup (
  ****************************************************************************/
 
 ACPI_STATUS
-EvDefaultRegionSetup (
-    ACPI_OBJECT_INTERNAL    *RegionObj,
+AcpiEvDefaultRegionSetup (
+    ACPI_HANDLE             Handle,
     UINT32                  Function,
     void                    *HandlerContext,
     void                    **ReturnContext)
 {
+    ACPI_OBJECT_INTERNAL    *RegionObj = (ACPI_OBJECT_INTERNAL *) Handle;
+
 
     FUNCTION_TRACE ("EvDefaultRegionSetup");
 
@@ -401,7 +418,7 @@ EvDefaultRegionSetup (
 
 /******************************************************************************
  *
- * FUNCTION:    EvInitializeRegion
+ * FUNCTION:    AcpiEvInitializeRegion
  *
  * PARAMETERS:  RegionObj  - Region we are initializing
  *
@@ -421,9 +438,9 @@ EvDefaultRegionSetup (
  ******************************************************************************/
 
 ACPI_STATUS
-EvInitializeRegion (
+AcpiEvInitializeRegion (
     ACPI_OBJECT_INTERNAL    *RegionObj,
-    BOOLEAN                 NsLocked)
+    BOOLEAN                 AcpiNsLocked)
 {
     ACPI_OBJECT_INTERNAL   *HandlerObj;
     ACPI_OBJECT_INTERNAL   *ObjDesc;
@@ -454,7 +471,7 @@ EvInitializeRegion (
     /*
      *  Find any "_REG" associated with this region definition
      */
-    Status = NsSearchOneScope (*RegNamePtr, Nte->Scope, ACPI_TYPE_Method, &RegEntry, NULL);
+    Status = AcpiNsSearchOneScope (*RegNamePtr, Nte->Scope, ACPI_TYPE_METHOD, &RegEntry, NULL);
     if (Status == AE_OK)
     {
         /*
@@ -467,7 +484,7 @@ EvInitializeRegion (
 
     /*
      *  The following loop depends upon the root nte having no parent
-     *  ie: Gbl_RootObject->ParentEntry being set to NULL
+     *  ie: Acpi_GblRootObject->ParentEntry being set to NULL
      */
     while (Nte)
     {
@@ -475,7 +492,7 @@ EvInitializeRegion (
          *  Check to see if a handler exists
          */
         HandlerObj = NULL;
-        ObjDesc = NsGetAttachedObject ((ACPI_HANDLE) Nte);
+        ObjDesc = AcpiNsGetAttachedObject ((ACPI_HANDLE) Nte);
         if (ObjDesc) 
         {
             /*
@@ -483,17 +500,17 @@ EvInitializeRegion (
              */
             switch (Nte->Type)
             {
-            case ACPI_TYPE_Device:
+            case ACPI_TYPE_DEVICE:
 
                 HandlerObj = ObjDesc->Device.AddrHandler;
                 break;
 
-            case ACPI_TYPE_Processor:
+            case ACPI_TYPE_PROCESSOR:
 
                 HandlerObj = ObjDesc->Processor.AddrHandler;
                 break;
 
-            case ACPI_TYPE_Thermal:
+            case ACPI_TYPE_THERMAL:
 
                 HandlerObj = ObjDesc->ThermalZone.AddrHandler;
                 break;
@@ -513,7 +530,7 @@ EvInitializeRegion (
                     /*
                      *  Found it! Now update the region and the handler
                      */
-                    EvAssociateRegionAndHandler(HandlerObj, RegionObj);
+                    AcpiEvAssociateRegionAndHandler(HandlerObj, RegionObj);
                     return_ACPI_STATUS (AE_OK);
                 }
 

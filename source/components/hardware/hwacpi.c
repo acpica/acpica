@@ -116,8 +116,8 @@
 
 #define __HWMODE_C__
 
-#include <acpi.h>
-#include <hardware.h>
+#include "acpi.h"
+#include "hardware.h"
 
 
 #define _COMPONENT          HARDWARE
@@ -126,7 +126,7 @@
 
 /******************************************************************************
  *
- * FUNCTION:    HwSetMode
+ * FUNCTION:    AcpiHwSetMode
  *
  * PARAMETERS:  Mode            - SYS_MODE_ACPI or SYS_MODE_LEGACY
  *
@@ -138,7 +138,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-HwSetMode (
+AcpiHwSetMode (
     UINT32                  Mode)
 {
 
@@ -151,7 +151,7 @@ HwSetMode (
     {
         /* BIOS should have disabled ALL fixed and GP events */
         
-        OsdOut8 (Gbl_FACP->SmiCmd, Gbl_FACP->AcpiEnable);
+        AcpiOsdOut8 (Acpi_GblFACP->SmiCmd, Acpi_GblFACP->AcpiEnable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable ACPI mode\n"));
     }
 
@@ -162,11 +162,11 @@ HwSetMode (
          * enable bits to default
          */
 
-        OsdOut8 (Gbl_FACP->SmiCmd, Gbl_FACP->AcpiDisable);
+        AcpiOsdOut8 (Acpi_GblFACP->SmiCmd, Acpi_GblFACP->AcpiDisable);
         DEBUG_PRINT (ACPI_INFO, ("Attempting to enable Legacy (non-ACPI) mode\n"));
     }
 
-    if (HwGetMode () == Mode)
+    if (AcpiHwGetMode () == Mode)
     {
         DEBUG_PRINT (ACPI_INFO, ("Mode %d successfully enabled\n", Mode));
         Status = AE_OK;
@@ -178,7 +178,7 @@ HwSetMode (
 
 /******************************************************************************
  *
- * FUNCTION:    Hw
+ * FUNCTION:    AcpiHw
  
  *
  * PARAMETERS:  none
@@ -191,13 +191,13 @@ HwSetMode (
  ******************************************************************************/
 
 UINT32
-HwGetMode (void)
+AcpiHwGetMode (void)
 {
 
     FUNCTION_TRACE ("HwGetMode");
 
     
-    if (HwRegisterIO (ACPI_READ, MTX_LOCK, (INT32)SCI_EN))
+    if (AcpiHwRegisterIO (ACPI_READ, MTX_LOCK, (INT32)SCI_EN))
     {
         return_VALUE (SYS_MODE_ACPI);
     }
@@ -209,7 +209,7 @@ HwGetMode (void)
 
 /******************************************************************************
  *
- * FUNCTION:    HwGetModeCapabilities
+ * FUNCTION:    AcpiHwGetModeCapabilities
  *
  * PARAMETERS:  none
  *
@@ -221,15 +221,15 @@ HwGetMode (void)
  ******************************************************************************/
 
 UINT32
-HwGetModeCapabilities (void)
+AcpiHwGetModeCapabilities (void)
 {
 
     FUNCTION_TRACE ("HwGetModeCapabilities");
 
     
-    if (!(Gbl_SystemFlags & SYS_MODES_MASK))
+    if (!(Acpi_GblSystemFlags & SYS_MODES_MASK))
     {
-        if (HwGetMode () == SYS_MODE_LEGACY)
+        if (AcpiHwGetMode () == SYS_MODE_LEGACY)
         {   
             /* 
              * Assume that if this call is being made, AcpiInit has been called and
@@ -238,7 +238,7 @@ HwGetModeCapabilities (void)
              * modes 
              */
             
-            Gbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
+            Acpi_GblSystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
         }
         
         else
@@ -248,24 +248,24 @@ HwGetModeCapabilities (void)
              * system is is ACPI mode, so try to switch back to LEGACY to see if
              * it is supported 
              */
-            HwSetMode (SYS_MODE_LEGACY);
+            AcpiHwSetMode (SYS_MODE_LEGACY);
             
-            if (HwGetMode () == SYS_MODE_LEGACY)
+            if (AcpiHwGetMode () == SYS_MODE_LEGACY)
             {   
                 /* Now in SYS_MODE_LEGACY, so both are supported */
                 
-                Gbl_SystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
-                HwSetMode (SYS_MODE_ACPI);
+                Acpi_GblSystemFlags |= (SYS_MODE_ACPI | SYS_MODE_LEGACY);
+                AcpiHwSetMode (SYS_MODE_ACPI);
             }
             
             else
             {   
                 /* Still in SYS_MODE_ACPI so this must be an ACPI only system */
                 
-                Gbl_SystemFlags |= SYS_MODE_ACPI;
+                Acpi_GblSystemFlags |= SYS_MODE_ACPI;
             }
         }
     }
     
-    return_VALUE (Gbl_SystemFlags & SYS_MODES_MASK);
+    return_VALUE (Acpi_GblSystemFlags & SYS_MODES_MASK);
 }

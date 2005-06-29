@@ -117,9 +117,9 @@
 
 #define __HWREGS_C__
 
-#include <acpi.h>
-#include <hardware.h>
-#include <namesp.h>
+#include "acpi.h"
+#include "hardware.h"
+#include "namesp.h"
 
 #define _COMPONENT          HARDWARE
         MODULE_NAME         ("hwregs");
@@ -135,7 +135,7 @@ ACPI_STRING SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
 
 /******************************************************************************
  *
- * FUNCTION:    HwGetBitShift
+ * FUNCTION:    AcpiHwGetBitShift
  *
  * PARAMETERS:  Mask            - Input mask to determine bit shift from.  Must
  *                                have at least 1 bit set.
@@ -147,7 +147,7 @@ ACPI_STRING SleepStateTable[] = {"\\_S0_","\\_S1_","\\_S2_","\\_S3_",
  ******************************************************************************/
 
 INT32
-HwGetBitShift (
+AcpiHwGetBitShift (
     UINT32                  Mask)
 {
     INT32                   Shift;
@@ -165,7 +165,7 @@ HwGetBitShift (
 
 /******************************************************************************
  *
- * FUNCTION:    HwClearAcpiStatus
+ * FUNCTION:    AcpiHwClearAcpiStatus
  *
  * PARAMETERS:  none
  *
@@ -176,7 +176,7 @@ HwGetBitShift (
  ******************************************************************************/
 
 void 
-HwClearAcpiStatus (void)
+AcpiHwClearAcpiStatus (void)
 {
     UINT16                  GpeLength;
     UINT16                  Index;
@@ -186,48 +186,48 @@ HwClearAcpiStatus (void)
 
 
     DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", 
-                    ALL_FIXED_STS_BITS, (UINT16) Gbl_FACP->Pm1aEvtBlk));
+                    ALL_FIXED_STS_BITS, (UINT16) Acpi_GblFACP->Pm1aEvtBlk));
 
 
-    CmAcquireMutex (MTX_HARDWARE);
+    AcpiCmAcquireMutex (MTX_HARDWARE);
 
-    OsdOut16 (Gbl_FACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
+    AcpiOsdOut16 (Acpi_GblFACP->Pm1aEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     
-    if (Gbl_FACP->Pm1bEvtBlk)
+    if (Acpi_GblFACP->Pm1bEvtBlk)
     {
-        OsdOut16 ((UINT16) Gbl_FACP->Pm1bEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
+        AcpiOsdOut16 ((UINT16) Acpi_GblFACP->Pm1bEvtBlk, (UINT16) ALL_FIXED_STS_BITS);
     }
 
     /* now clear the GPE Bits */
     
-    if (Gbl_FACP->Gpe0BlkLen)
+    if (Acpi_GblFACP->Gpe0BlkLen)
     {
-        GpeLength = (UINT16) DIV_2 (Gbl_FACP->Gpe0BlkLen);
+        GpeLength = (UINT16) DIV_2 (Acpi_GblFACP->Gpe0BlkLen);
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            OsdOut8 ((Gbl_FACP->Gpe0Blk + Index), (UINT8) 0xff);
+            AcpiOsdOut8 ((Acpi_GblFACP->Gpe0Blk + Index), (UINT8) 0xff);
         }
     }
 
-    if (Gbl_FACP->Gpe1BlkLen)
+    if (Acpi_GblFACP->Gpe1BlkLen)
     {
-        GpeLength = (UINT16) DIV_2 (Gbl_FACP->Gpe1BlkLen);
+        GpeLength = (UINT16) DIV_2 (Acpi_GblFACP->Gpe1BlkLen);
 
         for (Index = 0; Index < GpeLength; Index++)
         {
-            OsdOut8 ((Gbl_FACP->Gpe1Blk + Index), (UINT8) 0xff);
+            AcpiOsdOut8 ((Acpi_GblFACP->Gpe1Blk + Index), (UINT8) 0xff);
         }
     }
 
-    CmReleaseMutex (MTX_HARDWARE);
+    AcpiCmReleaseMutex (MTX_HARDWARE);
     return_VOID;
 }
 
 
 /****************************************************************************
  *
- * FUNCTION:    HwObtainSleepTypeRegisterData
+ * FUNCTION:    AcpiHwObtainSleepTypeRegisterData
  *
  * PARAMETERS:  SleepState        - Numeric state requested
  *              *Slp_TypA         - Pointer to byte to receive SLP_TYPa value
@@ -235,14 +235,14 @@ HwClearAcpiStatus (void)
  *
  * RETURN:      Status - ACPI status
  *
- * DESCRIPTION: HwObtainSleepTypeRegisterData() obtains the SLP_TYP and 
+ * DESCRIPTION: AcpiHwObtainSleepTypeRegisterData() obtains the SLP_TYP and 
  *              SLP_TYPb values for the sleep state requested.
  *
 
  ***************************************************************************/
 
 ACPI_STATUS
-HwObtainSleepTypeRegisterData (
+AcpiHwObtainSleepTypeRegisterData (
     UINT8                   SleepState, 
     UINT8                   *Slp_TypA,
     UINT8                   *Slp_TypB)
@@ -265,10 +265,10 @@ HwObtainSleepTypeRegisterData (
     }
 
     /*
-     *  Evaluate the namespace object containing the values for this state
+     *  AcpiEvaluate the namespace object containing the values for this state
      */
   
-    Status = NsEvaluateByName (SleepStateTable[SleepState], NULL, &ObjDesc);
+    Status = AcpiNsEvaluateByName (SleepStateTable[SleepState], NULL, &ObjDesc);
     if (AE_OK == Status)
     {  
         if (ObjDesc)
@@ -279,9 +279,9 @@ HwObtainSleepTypeRegisterData (
              *  two elements
              */
 
-            if ((ObjDesc->Common.Type != ACPI_TYPE_Package) ||
-                ((ObjDesc->Package.Elements[0])->Common.Type != ACPI_TYPE_Number) ||
-                ((ObjDesc->Package.Elements[1])->Common.Type != ACPI_TYPE_Number))
+            if ((ObjDesc->Common.Type != ACPI_TYPE_PACKAGE) ||
+                ((ObjDesc->Package.Elements[0])->Common.Type != ACPI_TYPE_NUMBER) ||
+                ((ObjDesc->Package.Elements[1])->Common.Type != ACPI_TYPE_NUMBER))
             {   
                 /* Invalid _Sx_ package type or value  */
             
@@ -297,7 +297,7 @@ HwObtainSleepTypeRegisterData (
                 *Slp_TypB = (UINT8) (ObjDesc->Package.Elements[1])->Number.Value;
             }
 
-            CmRemoveReference (ObjDesc);
+            AcpiCmRemoveReference (ObjDesc);
         }
     }
 
@@ -307,7 +307,7 @@ HwObtainSleepTypeRegisterData (
 
 /******************************************************************************
  *
- * FUNCTION:    HwRegisterIO
+ * FUNCTION:    AcpiHwRegisterIO
  *
  * PARAMETERS:  ReadWrite       - Either ACPI_READ or ACPI_WRITE.
  *              UseLock         - Lock the hardware
@@ -323,9 +323,9 @@ HwObtainSleepTypeRegisterData (
  ******************************************************************************/
 
 UINT32
-HwRegisterIO (
+AcpiHwRegisterIO (
     NATIVE_UINT             ReadWrite,
-	BOOLEAN					UseLock,	
+    BOOLEAN                 UseLock,    
     UINT32                  RegisterId,
     ...)                    /* Value (only used on write) */
 {
@@ -347,7 +347,7 @@ HwRegisterIO (
         va_end (marker);
     }
 
-    /* TBD: [Restructure] May want to split the Event code and the Control code */
+    /* TBD: [Restructure] May want to split the AcpiEvent code and the Control code */
     
     /*
      * Decode the Register ID
@@ -363,19 +363,19 @@ HwRegisterIO (
 
             if (MTX_LOCK == UseLock)
             {
-                CmAcquireMutex (MTX_HARDWARE);
+                AcpiCmAcquireMutex (MTX_HARDWARE);
             }
 
             
-            RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm1aEvtBlk);
+            RegisterValue = (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1aEvtBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1a status: Read 0x%X from 0x%X\n", 
-                            RegisterValue, Gbl_FACP->Pm1aEvtBlk));
+                            RegisterValue, Acpi_GblFACP->Pm1aEvtBlk));
             
-            if (Gbl_FACP->Pm1bEvtBlk)
+            if (Acpi_GblFACP->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) OsdIn16 (Gbl_FACP->Pm1bEvtBlk);
+                RegisterValue |= (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1bEvtBlk);
                 DEBUG_PRINT (TRACE_IO, ("PM1b status: Read 0x%X from 0x%X\n", 
-                                RegisterValue, Gbl_FACP->Pm1bEvtBlk));
+                                RegisterValue, Acpi_GblFACP->Pm1bEvtBlk));
             }
 
             switch (RegisterId)
@@ -422,18 +422,18 @@ HwRegisterIO (
                  * unchanged 
                  */
                 
-                Value <<= HwGetBitShift (Mask);
+                Value <<= AcpiHwGetBitShift (Mask);
                 Value &= Mask;
                 
                 if (Value)
                 {
-                    DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", Value, Gbl_FACP->Pm1aEvtBlk));
+                    DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", Value, Acpi_GblFACP->Pm1aEvtBlk));
 
-                    OsdOut16 (Gbl_FACP->Pm1aEvtBlk, (UINT16) Value);
+                    AcpiOsdOut16 (Acpi_GblFACP->Pm1aEvtBlk, (UINT16) Value);
                     
-                    if (Gbl_FACP->Pm1bEvtBlk)
+                    if (Acpi_GblFACP->Pm1bEvtBlk)
                     {
-                        OsdOut16 (Gbl_FACP->Pm1bEvtBlk, (UINT16) Value);
+                        AcpiOsdOut16 (Acpi_GblFACP->Pm1bEvtBlk, (UINT16) Value);
                     }
                     
                     RegisterValue = 0;
@@ -442,7 +442,7 @@ HwRegisterIO (
 
             if (MTX_LOCK == UseLock)
             {
-                CmReleaseMutex (MTX_HARDWARE);
+                AcpiCmReleaseMutex (MTX_HARDWARE);
             }
         }
         
@@ -452,20 +452,20 @@ HwRegisterIO (
             
             if (MTX_LOCK == UseLock)
             {
-                CmAcquireMutex (MTX_HARDWARE);
+                AcpiCmAcquireMutex (MTX_HARDWARE);
             }
 
-            RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm1aEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen));
+            RegisterValue = (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1aEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen));
 
             DEBUG_PRINT (TRACE_IO, ("PM1a enable: Read 0x%X from 0x%X\n", 
-                            RegisterValue, (Gbl_FACP->Pm1aEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen))));
+                            RegisterValue, (Acpi_GblFACP->Pm1aEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen))));
             
-            if (Gbl_FACP->Pm1bEvtBlk)
+            if (Acpi_GblFACP->Pm1bEvtBlk)
             {
-                RegisterValue |= (UINT32) OsdIn16 (Gbl_FACP->Pm1bEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen));
+                RegisterValue |= (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1bEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen));
 
                 DEBUG_PRINT (TRACE_IO, ("PM1b enable: Read 0x%X from 0x%X\n", 
-                                RegisterValue, (Gbl_FACP->Pm1bEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen))));
+                                RegisterValue, (Acpi_GblFACP->Pm1bEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen))));
             }
 
             switch (RegisterId)
@@ -498,25 +498,25 @@ HwRegisterIO (
             if (ReadWrite == ACPI_WRITE)
             {
                 RegisterValue  &= ~Mask;
-                Value          <<= HwGetBitShift (Mask);
+                Value          <<= AcpiHwGetBitShift (Mask);
                 Value          &= Mask;
                 RegisterValue  |= Value;
 
                 DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, 
-                                (Gbl_FACP->Pm1aEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen))));
+                                (Acpi_GblFACP->Pm1aEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen))));
 
-                OsdOut16 ((Gbl_FACP->Pm1aEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen)), 
+                AcpiOsdOut16 ((Acpi_GblFACP->Pm1aEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen)), 
                             (UINT16) RegisterValue);
                 
-                if (Gbl_FACP->Pm1bEvtBlk)
+                if (Acpi_GblFACP->Pm1bEvtBlk)
                 {
-                    OsdOut16 ((Gbl_FACP->Pm1bEvtBlk + DIV_2 (Gbl_FACP->Pm1EvtLen)), 
+                    AcpiOsdOut16 ((Acpi_GblFACP->Pm1bEvtBlk + DIV_2 (Acpi_GblFACP->Pm1EvtLen)), 
                                 (UINT16) RegisterValue);
                 }
             }
             if(MTX_LOCK == UseLock)
             {
-                CmReleaseMutex (MTX_HARDWARE);
+                AcpiCmReleaseMutex (MTX_HARDWARE);
             }
         }
         break;
@@ -528,7 +528,7 @@ HwRegisterIO (
         
         if (MTX_LOCK == UseLock)
         {
-            CmAcquireMutex (MTX_HARDWARE);
+            AcpiCmAcquireMutex (MTX_HARDWARE);
         }
 
         if (RegisterId != SLP_TYPb)   
@@ -540,16 +540,16 @@ HwRegisterIO (
              * for A may be different than the value for B 
              */
 
-            RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm1aCntBlk);
+            RegisterValue = (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1aCntBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1a control: Read 0x%X from 0x%X\n", 
-                            RegisterValue, Gbl_FACP->Pm1aCntBlk));
+                            RegisterValue, Acpi_GblFACP->Pm1aCntBlk));
         }
 
-        if (Gbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
+        if (Acpi_GblFACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
         {
-            RegisterValue |= (UINT32) OsdIn16 (Gbl_FACP->Pm1bCntBlk);
+            RegisterValue |= (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm1bCntBlk);
             DEBUG_PRINT (TRACE_IO, ("PM1b control: Read 0x%X from 0x%X\n", 
-                            RegisterValue, Gbl_FACP->Pm1bCntBlk));
+                            RegisterValue, Acpi_GblFACP->Pm1bCntBlk));
         }
 
         switch (RegisterId)
@@ -583,7 +583,7 @@ HwRegisterIO (
         if (ReadWrite == ACPI_WRITE)
         {
             RegisterValue  &= ~Mask;
-            Value          <<= HwGetBitShift (Mask);
+            Value          <<= AcpiHwGetBitShift (Mask);
             Value          &= Mask;
             RegisterValue  |= Value;
             
@@ -601,7 +601,7 @@ HwRegisterIO (
                     disable();  /* disable interrupts */
                 }
 
-                OsdOut16 (Gbl_FACP->Pm1aCntBlk, (UINT16) RegisterValue);
+                AcpiOsdOut16 (Acpi_GblFACP->Pm1aCntBlk, (UINT16) RegisterValue);
                 
                 if (Mask == SLP_EN_MASK)
                 {
@@ -614,15 +614,15 @@ HwRegisterIO (
                 }
             }
                 
-            if (Gbl_FACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
+            if (Acpi_GblFACP->Pm1bCntBlk && RegisterId != (INT32) SLP_TYPa)
             {
-                OsdOut16 (Gbl_FACP->Pm1bCntBlk, (UINT16) RegisterValue);
+                AcpiOsdOut16 (Acpi_GblFACP->Pm1bCntBlk, (UINT16) RegisterValue);
             }
         }
 
         if (MTX_LOCK == UseLock)
         {
-            CmReleaseMutex (MTX_HARDWARE);
+            AcpiCmReleaseMutex (MTX_HARDWARE);
         }
         break;
     
@@ -631,12 +631,12 @@ HwRegisterIO (
 
         if (MTX_LOCK == UseLock)
         {
-            CmAcquireMutex (MTX_HARDWARE);
+            AcpiCmAcquireMutex (MTX_HARDWARE);
         }
 
-        RegisterValue = (UINT32) OsdIn16 (Gbl_FACP->Pm2CntBlk);
+        RegisterValue = (UINT32) AcpiOsdIn16 (Acpi_GblFACP->Pm2CntBlk);
         DEBUG_PRINT (TRACE_IO, ("PM2 control: Read 0x%X from 0x%X\n", 
-                        RegisterValue, Gbl_FACP->Pm2CntBlk));
+                        RegisterValue, Acpi_GblFACP->Pm2CntBlk));
         
         switch (RegisterId)
         {
@@ -652,27 +652,27 @@ HwRegisterIO (
         if (ReadWrite == ACPI_WRITE)
         {
             RegisterValue  &= ~Mask;
-            Value          <<= HwGetBitShift (Mask);
+            Value          <<= AcpiHwGetBitShift (Mask);
             Value          &= Mask;
             RegisterValue  |= Value;
 
-            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, Gbl_FACP->Pm2CntBlk));
+            DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, Acpi_GblFACP->Pm2CntBlk));
 
-            OsdOut16 (Gbl_FACP->Pm2CntBlk, (UINT16) RegisterValue);
+            AcpiOsdOut16 (Acpi_GblFACP->Pm2CntBlk, (UINT16) RegisterValue);
         }
 
         if (MTX_LOCK == UseLock)
         {
-            CmReleaseMutex (MTX_HARDWARE);
+            AcpiCmReleaseMutex (MTX_HARDWARE);
         }
         break;
     
 
     case PM_TIMER:
 
-        RegisterValue = OsdIn32 (Gbl_FACP->PmTmrBlk);
+        RegisterValue = AcpiOsdIn32 (Acpi_GblFACP->PmTmrBlk);
         DEBUG_PRINT (TRACE_IO, ("PM_TIMER: Read 0x%X from 0x%X\n", 
-                        RegisterValue, Gbl_FACP->PmTmrBlk));
+                        RegisterValue, Acpi_GblFACP->PmTmrBlk));
 
         Mask = 0xFFFFFFFF;
         break;
@@ -680,15 +680,15 @@ HwRegisterIO (
 
     case GPE1_EN_BLOCK:
 
-        GpeReg = (Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1Base) + 
-                    (GpeReg + (DIV_2 (Gbl_FACP->Gpe1BlkLen)));
+        GpeReg = (Acpi_GblFACP->Gpe1Blk + Acpi_GblFACP->Gpe1Base) + 
+                    (GpeReg + (DIV_2 (Acpi_GblFACP->Gpe1BlkLen)));
     
 
     case GPE1_STS_BLOCK:
 
         if (!GpeReg)
         {
-            GpeReg = (Gbl_FACP->Gpe1Blk + Gbl_FACP->Gpe1Base);
+            GpeReg = (Acpi_GblFACP->Gpe1Blk + Acpi_GblFACP->Gpe1Base);
         }
 
 
@@ -696,7 +696,7 @@ HwRegisterIO (
 
         if (!GpeReg)
         {
-            GpeReg = Gbl_FACP->Gpe0Blk + DIV_2 (Gbl_FACP->Gpe0BlkLen);
+            GpeReg = Acpi_GblFACP->Gpe0Blk + DIV_2 (Acpi_GblFACP->Gpe0BlkLen);
         }
     
 
@@ -704,7 +704,7 @@ HwRegisterIO (
 
         if (!GpeReg)
         {
-            GpeReg = Gbl_FACP->Gpe0Blk;
+            GpeReg = Acpi_GblFACP->Gpe0Blk;
         }
 
         /* Determine the bit to be accessed */
@@ -732,16 +732,16 @@ HwRegisterIO (
         
         if(MTX_LOCK == UseLock)
         {
-            CmAcquireMutex (MTX_HARDWARE);
+            AcpiCmAcquireMutex (MTX_HARDWARE);
         }
 
-        RegisterValue = (UINT32) OsdIn8 (GpeReg);
+        RegisterValue = (UINT32) AcpiOsdIn8 (GpeReg);
         DEBUG_PRINT (TRACE_IO, ("GPE Enable bits: Read 0x%X from 0x%X\n", RegisterValue, GpeReg));
         
         if (ReadWrite == ACPI_WRITE)
         {               
             RegisterValue  &= ~Mask;
-            Value          <<= HwGetBitShift (Mask);
+            Value          <<= AcpiHwGetBitShift (Mask);
             Value          &= Mask;
             RegisterValue  |= Value;
            
@@ -751,13 +751,13 @@ HwRegisterIO (
 
             DEBUG_PRINT (TRACE_IO, ("About to write %04X to %04X\n", RegisterValue, GpeReg));
 
-            OsdOut8 (GpeReg, (UINT8) RegisterValue);
-            RegisterValue = (UINT32) OsdIn8 (GpeReg);          
+            AcpiOsdOut8 (GpeReg, (UINT8) RegisterValue);
+            RegisterValue = (UINT32) AcpiOsdIn8 (GpeReg);          
         }
         
         if(MTX_LOCK == UseLock)
         {
-            CmReleaseMutex (MTX_HARDWARE);
+            AcpiCmReleaseMutex (MTX_HARDWARE);
         }
         break;
     
@@ -771,7 +771,7 @@ HwRegisterIO (
 
 
     RegisterValue &= Mask;
-    RegisterValue >>= HwGetBitShift (Mask);
+    RegisterValue >>= AcpiHwGetBitShift (Mask);
 
     DEBUG_PRINT (TRACE_IO, ("Register I/O: returning 0x%X\n", RegisterValue));
     return_VALUE (RegisterValue);
