@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.45 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -226,7 +226,6 @@ TrUpdateNode (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-
     if (!Op)
     {
         return NULL;
@@ -238,6 +237,28 @@ TrUpdateNode (
         UtGetOpName (ParseOpcode));
 
     /* Assign new opcode and name */
+
+    if (Op->Asl.ParseOpcode == PARSEOP_ONES)
+    {
+        switch (ParseOpcode)
+        {
+        case PARSEOP_BYTECONST:
+            Op->Asl.Value.Integer = 0xFF;
+            break;
+
+        case PARSEOP_WORDCONST:
+            Op->Asl.Value.Integer = 0xFFFF;
+            break;
+
+        case PARSEOP_DWORDCONST:
+            Op->Asl.Value.Integer = 0xFFFFFFFF;
+            break;
+
+        default:
+            /* Don't care about others, don't need to check QWORD */
+            break;
+        }
+    }
 
     Op->Asl.ParseOpcode = (UINT16) ParseOpcode;
     UtSetParseOpName (Op);
@@ -268,6 +289,18 @@ TrUpdateNode (
     return Op;
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    TrGetNodeFlagName
+ *
+ * PARAMETERS:  Flags               - Flags word to be decoded
+ *
+ * RETURN:      Name string
+ *
+ * DESCRIPTION: Decode a flags word
+ *
+ ******************************************************************************/
 
 char *
 TrGetNodeFlagName (
@@ -320,6 +353,9 @@ TrGetNodeFlagName (
 
     case NODE_IS_TERM_ARG:
         return ("NODE_IS_TERM_ARG");
+
+    case NODE_WAS_ONES_OP:
+        return ("NODE_WAS_ONES_OP");
 
     default:
         return ("Multiple Flags (or unknown flag) set");
@@ -445,7 +481,7 @@ TrCreateValuedLeafNode (
 
     DbgPrint (ASL_PARSE_OUTPUT,
         "\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %8.8X%8.8X  ",
-        Op->Asl.LineNumber, Op, UtGetOpName(ParseOpcode), 
+        Op->Asl.LineNumber, Op, UtGetOpName(ParseOpcode),
         ACPI_HIDWORD (Value), ACPI_LODWORD (Value));
     Op->Asl.Value.Integer = Value;
 

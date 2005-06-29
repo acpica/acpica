@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -546,7 +546,7 @@ TrDoSwitch (
         {
             /* Unkown peer opcode */
 
-            printf ("Unknown parse opcode for switch statement: %s (%d)\n", 
+            printf ("Unknown parse opcode for switch statement: %s (%d)\n",
                         Next->Asl.ParseOpName, Next->Asl.ParseOpcode);
         }
     }

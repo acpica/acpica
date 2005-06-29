@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.34 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -116,6 +116,7 @@
  *****************************************************************************/
 
 #include "aslcompiler.h"
+#include "adisasm.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslfiles")
@@ -146,7 +147,7 @@ AslAbort (void)
         AePrintErrorLog (ASL_FILE_STDERR);
     }
 
-    exit (1);
+    exit (0);
 }
 
 
@@ -374,7 +375,7 @@ FlSeekFile (
     UINT32                  FileId,
     long                    Offset)
 {
-    UINT32                  Error;
+    int                     Error;
 
 
     Error = fseek (Gbl_Files[FileId].Handle, Offset, SEEK_SET);
@@ -394,21 +395,20 @@ FlSeekFile (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Close an open file.  Does not abort on error, simply logs
- *              the problem.
+ * DESCRIPTION: Close an open file.  Aborts compiler on error
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 FlCloseFile (
     UINT32                  FileId)
 {
-    UINT32                  Error;
+    int                     Error;
 
 
     if (!Gbl_Files[FileId].Handle)
     {
-        return AE_OK;
+        return;
     }
 
     Error = fclose (Gbl_Files[FileId].Handle);
@@ -417,10 +417,10 @@ FlCloseFile (
     if (Error)
     {
         FlFileError (FileId, ASL_MSG_CLOSE);
-        return (AE_ERROR);
+        AslAbort ();
     }
 
-    return (AE_OK);
+    return;
 }
 
 
@@ -499,56 +499,6 @@ FlOpenIncludeFile (
     /* Push the include file on the open input file stack */
 
     AslPushInputFileStack (IncFile, Op->Asl.Value.String);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    FlGenerateFilename
- *
- * PARAMETERS:  InputFilename       - Original ASL source filename
- *              Suffix              - New extension.
- *
- * RETURN:      New filename containing the original base + the new suffix
- *
- * DESCRIPTION: Generate a new filename from the ASL source filename and a new
- *              extension.  Used to create the *.LST, *.TXT, etc. files.
- *
- ******************************************************************************/
-
-char *
-FlGenerateFilename (
-    char                    *InputFilename,
-    char                    *Suffix)
-{
-    char                    *Position;
-    char                    *NewFilename;
-
-
-    /* Copy the original filename to a new buffer */
-
-    NewFilename = UtLocalCalloc (strlen (InputFilename) + strlen (Suffix));
-    strcpy (NewFilename, InputFilename);
-
-    /* Try to find the last dot in the filename */
-
-    Position = strrchr (NewFilename, '.');
-    if (Position)
-    {
-        /* Tack on the new suffix */
-        Position++;
-        *Position = 0;
-        strcat (Position, Suffix);
-    }
-    else
-    {
-        /* No dot, add one and then the suffix */
-
-        strcat (NewFilename, ".");
-        strcat (NewFilename, Suffix);
-    }
-
-    return NewFilename;
 }
 
 
@@ -672,7 +622,7 @@ FlOpenMiscOutputFiles (
     char                    *Filename;
 
 
-    /* Create/Open a combined source output file if asked */
+    /* Create/Open a combined source output file */
 
     Filename = FlGenerateFilename (FilenamePrefix, FILE_SUFFIX_SOURCE);
     if (!Filename)
@@ -681,9 +631,12 @@ FlOpenMiscOutputFiles (
         return (AE_ERROR);
     }
 
-    /* Open the source output file, text mode */
-
-    FlOpenFile (ASL_FILE_SOURCE_OUTPUT, Filename, "w+");
+    /*
+     * Open the source output file, binary mode (so that LF does not get
+     * expanded to CR/LF on some systems, messing up our seek
+     * calculations.)
+     */
+    FlOpenFile (ASL_FILE_SOURCE_OUTPUT, Filename, "w+b");
 
     /* Create/Open a listing output file if asked */
 
@@ -797,7 +750,7 @@ FlOpenMiscOutputFiles (
         /* TBD: hide this behind a FlReopenFile function */
 
         Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Filename = Filename;
-        Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle   = freopen (Filename, "w+", stderr);
+        Gbl_Files[ASL_FILE_DEBUG_OUTPUT].Handle   = freopen (Filename, "w+t", stderr);
 
         AslCompilerSignon (ASL_FILE_DEBUG_OUTPUT);
         AslCompilerFileHeader (ASL_FILE_DEBUG_OUTPUT);

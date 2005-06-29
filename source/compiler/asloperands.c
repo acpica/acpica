@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.38 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -546,7 +546,7 @@ OpnDoBuffer (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *InitializerOp;
-    ACPI_PARSE_OBJECT       *BufferLengthNode;
+    ACPI_PARSE_OBJECT       *BufferLengthOp;
 
     /* Optional arguments for this opcode with defaults */
 
@@ -556,16 +556,16 @@ OpnDoBuffer (
     /* Opcode and package length first */
     /* Buffer Length is next, followed by the initializer list */
 
-    BufferLengthNode = Op->Asl.Child;
-    InitializerOp = BufferLengthNode->Asl.Next;
+    BufferLengthOp = Op->Asl.Child;
+    InitializerOp = BufferLengthOp->Asl.Next;
 
     /*
      * If the BufferLength is not an INTEGER or was not specified in the ASL
      * (DEFAULT_ARG), it is a TermArg that is
      * evaluated at run-time, and we are therefore finished.
      */
-    if ((BufferLengthNode->Asl.ParseOpcode != PARSEOP_INTEGER) &&
-        (BufferLengthNode->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
+    if ((BufferLengthOp->Asl.ParseOpcode != PARSEOP_INTEGER) &&
+        (BufferLengthOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG))
     {
         return;
     }
@@ -612,11 +612,19 @@ OpnDoBuffer (
         break;
 
 
+    case PARSEOP_RAW_DATA:
+
+        /* Buffer nodes are already initialized (e.g. Unicode operator) */
+        return;
+
+
     case PARSEOP_DEFAULT_ARG:
         break;
 
 
     default:
+        AslError (ASL_ERROR, ASL_MSG_INVALID_OPERAND, InitializerOp,
+            "Unknown buffer initializer opcode");
         printf ("Unknown buffer initializer opcode [%s]\n",
                         UtGetOpName (InitializerOp->Asl.ParseOpcode));
         return;
@@ -624,16 +632,16 @@ OpnDoBuffer (
 
     /* Check if initializer list is longer than the buffer length */
 
-    if (BufferLengthNode->Asl.Value.Integer > BufferLength)
+    if (BufferLengthOp->Asl.Value.Integer > BufferLength)
     {
-        BufferLength = BufferLengthNode->Asl.Value.Integer32;
+        BufferLength = BufferLengthOp->Asl.Value.Integer32;
     }
 
     if (!BufferLength)
     {
         /* No length AND no items -- issue a warning */
 
-        AslError (ASL_WARNING, ASL_MSG_BUFFER_LENGTH, BufferLengthNode, NULL);
+        AslError (ASL_WARNING, ASL_MSG_BUFFER_LENGTH, BufferLengthOp, NULL);
 
         /* But go ahead and put the buffer length of zero into the AML */
     }
@@ -642,11 +650,11 @@ OpnDoBuffer (
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-    BufferLengthNode->Asl.ParseOpcode   = PARSEOP_INTEGER;
-    BufferLengthNode->Asl.AmlOpcode     = AML_DWORD_OP;
-    BufferLengthNode->Asl.Value.Integer = BufferLength;
+    BufferLengthOp->Asl.ParseOpcode   = PARSEOP_INTEGER;
+    BufferLengthOp->Asl.AmlOpcode     = AML_DWORD_OP;
+    BufferLengthOp->Asl.Value.Integer = BufferLength;
 
-    (void) OpcSetOptimalIntegerSize (BufferLengthNode);
+    (void) OpcSetOptimalIntegerSize (BufferLengthOp);
 
     /* Remaining nodes are handled via the tree walk */
 }
@@ -669,7 +677,7 @@ OpnDoPackage (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *InitializerOp;
-    ACPI_PARSE_OBJECT       *PackageLengthNode;
+    ACPI_PARSE_OBJECT       *PackageLengthOp;
 
     /* Optional arguments for this opcode with defaults */
 
@@ -679,8 +687,8 @@ OpnDoPackage (
     /* Opcode and package length first */
     /* Buffer Length is next, followed by the initializer list */
 
-    PackageLengthNode = Op->Asl.Child;
-    InitializerOp = PackageLengthNode->Asl.Next;
+    PackageLengthOp = Op->Asl.Child;
+    InitializerOp = PackageLengthOp->Asl.Next;
 
     /*
      * We always count the number of items in the initializer list, because if
@@ -700,12 +708,12 @@ OpnDoPackage (
 
     /* Check if initializer list is longer than the buffer length */
 
-    if ((PackageLengthNode->Asl.ParseOpcode == PARSEOP_INTEGER)      ||
-        (PackageLengthNode->Asl.ParseOpcode == PARSEOP_BYTECONST))
+    if ((PackageLengthOp->Asl.ParseOpcode == PARSEOP_INTEGER)      ||
+        (PackageLengthOp->Asl.ParseOpcode == PARSEOP_BYTECONST))
     {
-        if (PackageLengthNode->Asl.Value.Integer > PackageLength)
+        if (PackageLengthOp->Asl.Value.Integer > PackageLength)
         {
-            PackageLength = PackageLengthNode->Asl.Value.Integer32;
+            PackageLength = PackageLengthOp->Asl.Value.Integer32;
         }
     }
 
@@ -713,15 +721,15 @@ OpnDoPackage (
      * If not a variable-length package, check for a zero
      * package length
      */
-    if ((PackageLengthNode->Asl.ParseOpcode == PARSEOP_INTEGER)      ||
-        (PackageLengthNode->Asl.ParseOpcode == PARSEOP_BYTECONST)    ||
-        (PackageLengthNode->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG))
+    if ((PackageLengthOp->Asl.ParseOpcode == PARSEOP_INTEGER)      ||
+        (PackageLengthOp->Asl.ParseOpcode == PARSEOP_BYTECONST)    ||
+        (PackageLengthOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG))
     {
         if (!PackageLength)
         {
             /* No length AND no items -- issue a warning */
 
-            AslError (ASL_WARNING, ASL_MSG_PACKAGE_LENGTH, PackageLengthNode, NULL);
+            AslError (ASL_WARNING, ASL_MSG_PACKAGE_LENGTH, PackageLengthOp, NULL);
 
             /* But go ahead and put the buffer length of zero into the AML */
         }
@@ -731,10 +739,10 @@ OpnDoPackage (
      * Just set the buffer size node to be the buffer length, regardless
      * of whether it was previously an integer or a default_arg placeholder
      */
-    PackageLengthNode->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
-    PackageLengthNode->Asl.AmlLength = 1;
-    PackageLengthNode->Asl.ParseOpcode = PARSEOP_RAW_DATA;
-    PackageLengthNode->Asl.Value.Integer = PackageLength;
+    PackageLengthOp->Asl.AmlOpcode = AML_RAW_DATA_BYTE;
+    PackageLengthOp->Asl.AmlLength = 1;
+    PackageLengthOp->Asl.ParseOpcode = PARSEOP_RAW_DATA;
+    PackageLengthOp->Asl.Value.Integer = PackageLength;
 
     /* Remaining nodes are handled via the tree walk */
 }

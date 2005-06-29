@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -2849,8 +2849,8 @@ NameStringItem
 %%
 
 
-/* 
- * Local support functions 
+/*
+ * Local support functions
  */
 
 int

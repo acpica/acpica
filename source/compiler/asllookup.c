@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.59 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -404,7 +404,7 @@ void
 LkCheckFieldRange (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  RegionBitLength,
-    UINT32                  FieldBitOffset, 
+    UINT32                  FieldBitOffset,
     UINT32                  FieldBitLength,
     UINT32                  AccessBitWidth)
 {
@@ -425,7 +425,7 @@ LkCheckFieldRange (
         return;
     }
 
-    /* 
+    /*
      * Now check that the field plus AccessWidth doesn't go beyond
      * the end-of-region.  Assumes AccessBitWidth is a power of 2
      */
@@ -535,13 +535,13 @@ LkNamespaceLocateBegin (
                 {
                     /* There exists such a name, but we couldn't get to it from this scope */
 
-                    AslError (ASL_WARNING, ASL_MSG_NOT_REACHABLE, Op, Op->Asl.ExternalName);
+                    AslError (ASL_ERROR, ASL_MSG_NOT_REACHABLE, Op, Op->Asl.ExternalName);
                 }
                 else
                 {
                     /* The name doesn't exist, period */
 
-                    AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, Op, Op->Asl.ExternalName);
+                    AslError (ASL_ERROR, ASL_MSG_NOT_EXIST, Op, Op->Asl.ExternalName);
                 }
             }
             else
@@ -552,13 +552,13 @@ LkNamespaceLocateBegin (
                 {
                     /* Gave full path, the object does not exist */
 
-                    AslError (ASL_WARNING, ASL_MSG_NOT_EXIST, Op, Op->Asl.ExternalName);
+                    AslError (ASL_ERROR, ASL_MSG_NOT_EXIST, Op, Op->Asl.ExternalName);
                 }
                 else
                 {
                     /* We can't tell whether it doesn't exist or just can't be reached. */
 
-                    AslError (ASL_WARNING, ASL_MSG_NOT_FOUND, Op, Op->Asl.ExternalName);
+                    AslError (ASL_ERROR, ASL_MSG_NOT_FOUND, Op, Op->Asl.ExternalName);
                 }
             }
 
@@ -662,6 +662,12 @@ LkNamespaceLocateBegin (
             sprintf (MsgBuffer, "%s is a %s", Op->Asl.ExternalName, AcpiUtGetTypeName (Node->Type));
 
             AslError (ASL_ERROR, ASL_MSG_NOT_METHOD, Op, MsgBuffer);
+            return (AE_OK);
+        }
+
+        if (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_CONDREFOF)
+        {
+            Op->Asl.Node = Node;
             return (AE_OK);
         }
 

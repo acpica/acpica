@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.18 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -118,8 +118,6 @@
 
 #include "aslcompiler.h"
 #include "aslcompiler.y.h"
-#include "aslresource.h"
-#include "amlcode.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslrestype2")
@@ -160,7 +158,7 @@ RsGetStringDataLength (
  *
  * FUNCTION:    RsDoDwordIoDescriptor
  *
- * PARAMETERS:  Op                - Parent resource descriptor parse node
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
  *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
@@ -318,6 +316,11 @@ RsDoDwordIoDescriptor (
             RsCreateBitField (InitializerOp, ASL_RESNAME_TRANSTYPE,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Das.SpecificFlags), 5);
             break;
+
+        default:
+
+            AslError (ASL_ERROR, ASL_MSG_RESOURCE_LIST, InitializerOp, NULL);
+            break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
@@ -334,7 +337,7 @@ RsDoDwordIoDescriptor (
  *
  * FUNCTION:    RsDoDwordMemoryDescriptor
  *
- * PARAMETERS:  Op                - Parent resource descriptor parse node
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
  *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
@@ -500,6 +503,11 @@ RsDoDwordMemoryDescriptor (
             RsCreateBitField (InitializerOp, ASL_RESNAME_TYPE,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Das.SpecificFlags), 5);
             break;
+
+        default:
+
+            AslError (ASL_ERROR, ASL_MSG_RESOURCE_LIST, InitializerOp, NULL);
+            break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
@@ -516,7 +524,7 @@ RsDoDwordMemoryDescriptor (
  *
  * FUNCTION:    RsDoQwordIoDescriptor
  *
- * PARAMETERS:  Op                - Parent resource descriptor parse node
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
  *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
@@ -673,6 +681,11 @@ RsDoQwordIoDescriptor (
             RsCreateBitField (InitializerOp, ASL_RESNAME_TRANSTYPE,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.SpecificFlags), 5);
             break;
+
+        default:
+
+            AslError (ASL_ERROR, ASL_MSG_RESOURCE_LIST, InitializerOp, NULL);
+            break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
@@ -689,7 +702,7 @@ RsDoQwordIoDescriptor (
  *
  * FUNCTION:    RsDoQwordMemoryDescriptor
  *
- * PARAMETERS:  Op                - Parent resource descriptor parse node
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
  *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
@@ -854,6 +867,11 @@ RsDoQwordMemoryDescriptor (
             RsCreateBitField (InitializerOp, ASL_RESNAME_TYPE,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.SpecificFlags), 5);
             break;
+
+        default:
+
+            AslError (ASL_ERROR, ASL_MSG_RESOURCE_LIST, InitializerOp, NULL);
+            break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
@@ -870,7 +888,7 @@ RsDoQwordMemoryDescriptor (
  *
  * FUNCTION:    RsDoWordIoDescriptor
  *
- * PARAMETERS:  Op                - Parent resource descriptor parse node
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
  *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
@@ -1028,6 +1046,11 @@ RsDoWordIoDescriptor (
             RsCreateBitField (InitializerOp, ASL_RESNAME_TRANSTYPE,
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Was.SpecificFlags), 5);
             break;
+
+        default:
+
+            AslError (ASL_ERROR, ASL_MSG_RESOURCE_LIST, InitializerOp, NULL);
+            break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
@@ -1044,7 +1067,7 @@ RsDoWordIoDescriptor (
  *
  * FUNCTION:    RsDoWordBusNumberDescriptor
  *
- * PARAMETERS:  Op                - Parent resource descriptor parse node
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
  *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
@@ -1181,6 +1204,11 @@ RsDoWordBusNumberDescriptor (
 
             UtAttachNamepathToOwner (Op, InitializerOp);
             break;
+
+        default:
+
+            AslError (ASL_ERROR, ASL_MSG_RESOURCE_LIST, InitializerOp, NULL);
+            break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
@@ -1197,7 +1225,7 @@ RsDoWordBusNumberDescriptor (
  *
  * FUNCTION:    RsDoInterruptDescriptor
  *
- * PARAMETERS:  Op                - Parent resource descriptor parse node
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
  *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
@@ -1259,7 +1287,7 @@ RsDoInterruptDescriptor (
     Descriptor->Exx.Length          = 2;  /* Flags and table length byte */
     Descriptor->Exx.TableLength     = 0;
 
-    Rover = (ASL_RESOURCE_DESC *) (&(Descriptor->Exx.InterruptNumber[0]));
+    Rover = ACPI_CAST_PTR (ASL_RESOURCE_DESC, (&(Descriptor->Exx.InterruptNumber[0])));
 
     /*
      * Process all child initialization nodes
@@ -1326,7 +1354,7 @@ RsDoInterruptDescriptor (
              * Store the integer and move pointer to the next one.
              */
             Rover->U32Item = InitializerOp->Asl.Value.Integer32;
-            Rover = (ASL_RESOURCE_DESC *) (&(Rover->U32Item) + 1);
+            Rover = ACPI_PTR_ADD (ASL_RESOURCE_DESC, &(Rover->U32Item), 1);
 
             Descriptor->Exx.TableLength++;
             Descriptor->Exx.Length += 4;
@@ -1347,22 +1375,22 @@ RsDoInterruptDescriptor (
     if (HasResSourceIndex)
     {
         Rover->U8Item = ResSourceIndex;
-        Rover = (ASL_RESOURCE_DESC *) (&(Rover->U8Item) + 1);
+        Rover = ACPI_PTR_ADD (ASL_RESOURCE_DESC, &(Rover->U8Item), 1);
         Descriptor->Exx.Length += 1;
     }
 
     /*
      * Add optional ResSource string if present
      */
-    if (StringLength)
+    if (StringLength && ResSourceString)
     {
 
         strcpy ((char *) Rover, (char *) ResSourceString);
-        Rover = (ASL_RESOURCE_DESC *) (&(Rover->U8Item) + StringLength);
+        Rover = ACPI_PTR_ADD (ASL_RESOURCE_DESC, &(Rover->U8Item), StringLength);
         Descriptor->Exx.Length = (UINT16) (Descriptor->Exx.Length + StringLength);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Exx.InterruptNumber) -
+    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Exx.InterruptNumber[0]) -
                            ASL_RESDESC_OFFSET (Exx.DescriptorType))
                            + OptionIndex + StringLength;
     return (Rnode);
@@ -1373,7 +1401,7 @@ RsDoInterruptDescriptor (
  *
  * FUNCTION:    RsDoVendorLargeDescriptor
  *
- * PARAMETERS:  Op                - Parent resource descriptor parse node
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
  *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
@@ -1397,6 +1425,7 @@ RsDoVendorLargeDescriptor (
     /* Count the number of data bytes */
 
     InitializerOp = Op->Asl.Child;
+    InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
 
     for (i = 0; InitializerOp; i++)
     {
@@ -1404,10 +1433,12 @@ RsDoVendorLargeDescriptor (
     }
 
     InitializerOp = Op->Asl.Child;
-    Rnode = RsAllocateResourceNode (sizeof (ASL_LARGE_VENDOR_DESC) + (i + 1));
+    InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
+    Rnode = RsAllocateResourceNode (sizeof (ASL_LARGE_VENDOR_DESC) + (i - 1));
 
     Descriptor = Rnode->Buffer;
     Descriptor->Lgv.DescriptorType  = ACPI_RDESC_TYPE_LARGE_VENDOR;
+    Descriptor->Lgv.Length = (UINT16) i;
 
     /*
      * Process all child initialization nodes
@@ -1427,7 +1458,7 @@ RsDoVendorLargeDescriptor (
  *
  * FUNCTION:    RsDoGeneralRegisterDescriptor
  *
- * PARAMETERS:  Op                - Parent resource descriptor parse node
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
  *              CurrentByteOffset   - Offset into the resource template AML
  *                                    buffer (to track references to the desc)
  *
@@ -1490,6 +1521,11 @@ RsDoGeneralRegisterDescriptor (
                                 CurrentByteOffset + ASL_RESDESC_OFFSET (Grg.Address));
             break;
 
+
+        default:
+
+            AslError (ASL_ERROR, ASL_MSG_RESOURCE_LIST, InitializerOp, NULL);
+            break;
         }
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);

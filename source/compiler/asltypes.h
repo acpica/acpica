@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.38 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -130,8 +130,6 @@
  ******************************************************************************/
 
 
-
-
 /* Op flags for the ACPI_PARSE_OBJECT */
 
 #define NODE_VISITED                0x0001
@@ -149,6 +147,7 @@
 #define NODE_IS_BIT_OFFSET          0x1000
 #define NODE_COMPILE_TIME_CONST     0x2000
 #define NODE_IS_TERM_ARG            0x4000
+#define NODE_WAS_ONES_OP            0x8000
 
 /* Keeps information about individual control methods */
 
@@ -190,6 +189,8 @@ typedef struct asl_mapping_entry
 /* An entry in the Reserved Name information table */
 
 #define ASL_RSVD_RETURN_VALUE   0x01
+#define ASL_RSVD_RESOURCE_NAME  0x02
+#define ASL_RSVD_SCOPE          0x04
 
 typedef struct
 {
@@ -294,6 +295,7 @@ typedef struct
 #define ASL_ERROR               0
 #define ASL_WARNING             1
 #define ASL_REMARK              2
+#define ASL_NUM_REPORT_LEVELS   3
 
 
 typedef enum
@@ -362,7 +364,16 @@ typedef enum
     ASL_MSG_INVALID_TARGET,
     ASL_MSG_INVALID_CONSTANT_OP,
     ASL_MSG_CONSTANT_EVALUATION,
-    ASL_MSG_CONSTANT_FOLDED
+    ASL_MSG_CONSTANT_FOLDED,
+    ASL_MSG_INVALID_EISAID,
+    ASL_MSG_RESERVED_OPERAND_TYPE,
+    ASL_MSG_RESERVED_METHOD,
+    ASL_MSG_ALPHANUMERIC_STRING,
+    ASL_MSG_RESERVED_USE,
+    ASL_MSG_INVALID_OPERAND,
+    ASL_MSG_MISSING_ENDDEPENDENT,
+    ASL_MSG_MISSING_STARTDEPENDENT,
+    ASL_MSG_DEPENDENT_NESTING
 
 } ASL_MESSAGE_IDS;
 

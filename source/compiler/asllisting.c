@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.41 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -614,8 +614,6 @@ LsWriteOneSourceLine (
         }
 
         FlWriteFile (FileId, &FileByte, 1);
-        DbgPrint (ASL_PARSE_OUTPUT, "%c", FileByte);
-
         if (FileByte == '\n')
         {
             /*
@@ -651,7 +649,6 @@ void
 LsFinishSourceListing (
     UINT32                  FileId)
 {
-
 
     LsFlushListingBuffer (FileId);
     Gbl_CurrentAmlOffset = 0;
@@ -839,7 +836,7 @@ LsWriteNodeToListing (
 
         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
         {
-            FlPrintFile (FileId, "%s_%s_Header \\\n", 
+            FlPrintFile (FileId, "%s_%s_Header \\\n",
                 Gbl_TableSignature, Gbl_TableId);
         }
         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
@@ -953,12 +950,12 @@ LsWriteNodeToListing (
 
                         if (FileId == ASL_FILE_ASM_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "%s_%s_%s  \\\n", 
+                            FlPrintFile (FileId, "%s_%s_%s  \\\n",
                                 Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                         if (FileId == ASL_FILE_C_SOURCE_OUTPUT)
                         {
-                            FlPrintFile (FileId, "    unsigned char    %s_%s_%s [] = \n    {\n", 
+                            FlPrintFile (FileId, "    unsigned char    %s_%s_%s [] = \n    {\n",
                                 Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                     }

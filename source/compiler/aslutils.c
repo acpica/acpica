@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.45 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -117,7 +117,9 @@
 
 
 #include "aslcompiler.h"
+#include "aslcompiler.y.h"
 #include "acnamesp.h"
+#include "amlcode.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslutils")
@@ -128,6 +130,36 @@ static const char * const       *yytname = &AslCompilername[255];
 #else
 extern const char * const       yytname[];
 #endif
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsDisplayConstantOpcodes
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print AML opcodes that can be used in constant expressions.
+ *
+ ******************************************************************************/
+
+void
+UtDisplayConstantOpcodes (
+    void)
+{
+    UINT32              i;
+
+    printf ("Constant expression opcode information\n\n");
+
+    for (i = 0; i < sizeof (AcpiGbl_AmlOpInfo) / sizeof (ACPI_OPCODE_INFO); i++)
+    {
+        if (AcpiGbl_AmlOpInfo[i].Flags & AML_CONSTANT)
+        {
+            printf ("%s\n", AcpiGbl_AmlOpInfo[i].Name);
+        }
+    }
+}
 
 
 /*******************************************************************************
@@ -412,7 +444,11 @@ UtGetOpName (
     UINT32                  ParseOpcode)
 {
 
-    return ((char *) yytname [ParseOpcode - 255] + 8);
+    /*
+     * First entries (ASL_YYTNAME_START) in yytname are special reserved names.
+     * Ignore first 8 characters of the name
+     */
+    return ((char *) yytname [(ParseOpcode - ASL_FIRST_PARSE_OPCODE) + ASL_YYTNAME_START] + 8);
 }
 
 
@@ -437,8 +473,8 @@ UtDisplaySummary (
     {
         /* Compiler name and version number */
 
-        FlPrintFile (FileId, "%s %s [%s]\n",
-            CompilerId, CompilerVersion, __DATE__);
+        FlPrintFile (FileId, "%s version %X [%s]\n",
+            CompilerId, (UINT32) ACPI_CA_VERSION, __DATE__);
     }
 
     /* Input/Output summary */
@@ -657,7 +693,6 @@ UtDoConstant (
     ACPI_STATUS             Status;
     ACPI_INTEGER            Converted;
     char                    ErrBuf[64];
-
 
 
     Status = UtStrtoul64 (String, 0, &Converted);
