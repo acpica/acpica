@@ -49,6 +49,13 @@
 -esym( 534, AcpiDmDumpName)                 // Return value not always used
 -esym( 534, AcpiDmCommaIfListMember)        // Return value not always used
 
+/* Symbol exceptions for iASL compiler */
+
+-esym( 534, TrWalkParseTree)                // Return value not always used
+-esym( 534, AslCompilerparse)               // Return value not always used
+-esym( 534, OpcSetOptimalIntegerSize)       // Return value not always used
+-esym( 534, AslCompilererror)               // Return value not always used
+
 /* Global exceptions */
 
 -e717   // Allow do..while(0)
