@@ -821,7 +821,9 @@ CheckForNewScopeAndExit:
 
             if (NullNamePath)
             {
-                ScopeToPush = ThisEntry;
+                /* TBD: [Investigate] - is this the correct thing to do? */
+
+                ScopeToPush = NULL;
             }
             else
             {
