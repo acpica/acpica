@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  ******************************************************************************/
 
@@ -736,14 +736,15 @@ AcpiDbWalkForSpecificObjects (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
     UINT32                  BufSize;
-    NATIVE_CHAR             buffer[64];
+    NATIVE_CHAR             Buffer[64];
 
 
     ObjDesc = ((ACPI_NAMESPACE_NODE *)ObjHandle)->Object;
+    BufSize = sizeof (Buffer) / sizeof (*Buffer);
 
     /* Get and display the full pathname to this object */
 
-    Status = AcpiNsHandleToPathname (ObjHandle, &BufSize, buffer);
+    Status = AcpiNsHandleToPathname (ObjHandle, &BufSize, Buffer);
 
     if (ACPI_FAILURE (Status))
     {
@@ -751,7 +752,7 @@ AcpiDbWalkForSpecificObjects (
         return (AE_OK);
     }
 
-    AcpiOsPrintf ("%32s", buffer);
+    AcpiOsPrintf ("%32s", Buffer);
 
 
     /* Display short information about the object */
@@ -899,7 +900,7 @@ AcpiDbWalkAndMatchName (
 
     /* Get the full pathname to this object */
 
-    BufSize = sizeof (Buffer);
+    BufSize = sizeof (Buffer) / sizeof (*Buffer);
 
     Status = AcpiNsHandleToPathname (ObjHandle, &BufSize, Buffer);
     if (ACPI_FAILURE (Status))
