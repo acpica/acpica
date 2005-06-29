@@ -584,7 +584,7 @@ AmlExecMonadic2 (
 
         /* Store result (Result must be placed at the stack top -1) */
         
-        AmlObjStackDeleteValue (1);
+/*        AmlObjStackDeleteValue (1); */
         AmlObjStackSetValue (1, ObjDesc);
 
         Status = AmlExecStore (ObjDesc, ResDesc);
