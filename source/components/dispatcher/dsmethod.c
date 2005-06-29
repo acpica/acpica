@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -225,7 +225,7 @@ AcpiDsParseMethod (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    Status = AcpiDsInitAmlWalk (WalkState, Op, Node, 
+    Status = AcpiDsInitAmlWalk (WalkState, Op, Node,
                     ObjDesc->Method.AmlStart,
                     ObjDesc->Method.AmlLength, NULL, 1);
     if (ACPI_FAILURE (Status))
