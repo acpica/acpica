@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,6 @@
 #define ACPI_DEBUG
 #define ACPI_APPLICATION
 
-
 #include "acpi.h"
 
 
@@ -242,6 +241,7 @@ typedef struct asl_parse_node
     char                    *ExternalName;
     char                    *Namepath;
     UINT32                  LineNumber;
+    UINT32                  LogicalLineNumber;
     UINT16                  AmlOpcode;
     UINT16                  ParseOpcode;
     UINT32                  AmlLength;
@@ -292,30 +292,42 @@ extern ASL_MAPPING_ENTRY        AslKeywordMapping[];
 extern int                      yydebug;
 
 
+extern char                     hex[];
 
 /* Source code buffers and pointers for error reporting */
 
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentColumn, 0);
 EXTERN int                      INIT_GLOBAL (Gbl_CurrentLineNumber, 1);
+EXTERN int                      INIT_GLOBAL (Gbl_LogicalLineNumber, 1);
 EXTERN char                     Gbl_CurrentLineBuffer[256];
 EXTERN char                     INIT_GLOBAL (*Gbl_LineBufPtr, Gbl_CurrentLineBuffer);
 
 /* Option flags */
 
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_NsOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_DebugFlag, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_HexOutputFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_ListingFlag, FALSE);
 EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_IgnoreErrors, FALSE);
+EXTERN BOOLEAN                  INIT_GLOBAL (Gbl_SourceOutputFlag, FALSE);
 
 /* Files */
 
+EXTERN char                     INIT_GLOBAL (*Gbl_NsFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_InputFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_IncludeFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_SourceOutputFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_OutputFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_ListingFilename, NULL);
 EXTERN char                     INIT_GLOBAL (*Gbl_DebugFilename, NULL);
+EXTERN char                     INIT_GLOBAL (*Gbl_HexFilename, NULL);
 EXTERN FILE                     *Gbl_AslInputFile;
 EXTERN FILE                     *Gbl_OutputAmlFile;
 EXTERN FILE                     *Gbl_DebugFile;
 EXTERN FILE                     *Gbl_ListingFile;
+EXTERN FILE                     *Gbl_HexFile;
+EXTERN FILE                     *Gbl_NsFile;
+EXTERN FILE                     *Gbl_SourceOutputFile;
 
 /* Statistics */
 
@@ -332,6 +344,7 @@ EXTERN UINT32                   INIT_GLOBAL (WarningCount, 0);
 EXTERN ASL_PARSE_NODE           INIT_GLOBAL (*RootNode, NULL);
 EXTERN ACPI_TABLE_HEADER        TableHeader;
 EXTERN UINT32                   INIT_GLOBAL (Gbl_TableLength, 0);
+EXTERN UINT32                   INIT_GLOBAL (Gbl_SourceLine, 0);
 
 
 
@@ -368,6 +381,19 @@ typedef enum
 
 } ASL_ERROR_IDS;
 
+
+
+void
+AslDoSourceOutputFile (
+    char                    *Buffer);
+
+int
+AslPopInputFileStack (void);
+
+void
+AslPushInputFileStack (
+    FILE                    *InputFile,
+    char                    *Filename);
 
 int
 AslCompilererror(char *s);
@@ -582,6 +608,9 @@ LkNamespaceLocateEnd (
     ASL_PARSE_NODE              *PsNode,
     UINT32                      Level,
     void                        *Context);
+
+ACPI_STATUS
+LsDisplayNamespace (void);
 
 
 /* Utils */
