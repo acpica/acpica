@@ -190,6 +190,16 @@ EvNotifyDispatch (
     UINT32                  NotifyValue);
 
 
+/* Address Space handling - evregion */
+
+ACPI_STATUS
+EvAddressSpaceDispatch (
+    UINT32                  SpaceId,
+    UINT32                  Function,
+    UINT32                  Address,
+    UINT32                  BitWidth,
+    UINT32                  *Value);
+
 
 /* Debug stuff */
 
