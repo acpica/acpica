@@ -221,7 +221,7 @@ PREDEFINED_NAMES        PreDefinedNames[] = {
                             {"_TZ_",    TYPE_DefAny},
                             {"_REV",    TYPE_Number, "2"},
                             {"_OS_",    TYPE_String, "Intel AML interpreter"},
-                            {"_GL_",    TYPE_Mutex},
+                            {"_GL_",    TYPE_Mutex, "0"},
 
                             /* Table terminator */
 
