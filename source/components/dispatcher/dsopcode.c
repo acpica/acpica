@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.84 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -156,7 +156,7 @@ AcpiDsExecuteArguments (
     ACPI_PARSE_OBJECT       *Arg;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiDsExecuteArguments");
+    ACPI_FUNCTION_TRACE ("DsExecuteArguments");
 
 
     /*
