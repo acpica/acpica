@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  ******************************************************************************/
 
@@ -128,7 +128,6 @@
         ACPI_MODULE_NAME    ("dmnames")
 
 
-
 /*****************************************************************************
  *
  * FUNCTION:    AcpiDmDumpMethodInfo
@@ -189,7 +188,7 @@ AcpiDmDumpMethodInfo (
     while (NextWalkState)
     {
         AcpiOsPrintf ("    Method [%4.4s] executing: ",
-                NextWalkState->MethodNode->Name.Ascii);
+                AcpiUtGetNodeName (NextWalkState->MethodNode));
 
         /* First method is the currently executing method */
 
@@ -324,7 +323,7 @@ AcpiDmDecodeNode (
 
 
     AcpiOsPrintf ("<Node>            Name %4.4s",
-        Node->Name.Ascii);
+            AcpiUtGetNodeName (Node));
 
     if (Node->Flags & ANOBJ_METHOD_ARG)
     {
@@ -537,7 +536,8 @@ AcpiDmDisplayLocals (
         return;
     }
 
-    AcpiOsPrintf ("Local Variables for method [%4.4s]:\n", Node->Name.Ascii);
+    AcpiOsPrintf ("Local Variables for method [%4.4s]:\n",
+            AcpiUtGetNodeName (Node));
 
     for (i = 0; i < ACPI_METHOD_NUM_LOCALS; i++)
     {
@@ -589,7 +589,7 @@ AcpiDmDisplayArguments (
     Concurrency = ObjDesc->Method.Concurrency;
 
     AcpiOsPrintf ("Arguments for Method [%4.4s]:  (%X arguments defined, max concurrency = %X)\n",
-            Node->Name.Ascii, NumArgs, Concurrency);
+            AcpiUtGetNodeName (Node), NumArgs, Concurrency);
 
     for (i = 0; i < ACPI_METHOD_NUM_ARGS; i++)
     {
@@ -600,9 +600,5 @@ AcpiDmDisplayArguments (
 }
 
 #endif
-
-
-
-
 
 
