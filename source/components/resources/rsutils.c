@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  ******************************************************************************/
 
@@ -316,13 +316,13 @@ AcpiRsGetMethodData (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status;
-    
-    
+
+
     ACPI_FUNCTION_TRACE ("RsGetMethodData");
-    
-    
+
+
     /* Parameters guaranteed valid by caller */
-    
+
     /*
      * Execute the method, no parameters
      */
@@ -330,16 +330,16 @@ AcpiRsGetMethodData (
     if (ACPI_FAILURE (Status)) {
         return_ACPI_STATUS (Status);
     }
-    
+
     /*
      * Make the call to create a resource linked list from the
      * byte stream buffer that comes back from the method
      * execution.
      */
     Status = AcpiRsCreateResourceList (ObjDesc, RetBuffer);
-    
+
     /* On exit, we must delete the object returned by EvaluateObject */
-    
+
     AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.21 $
+ *              $Revision: 1.23 $
  *
  ******************************************************************************/
 
@@ -320,56 +320,61 @@ AcpiWalkResources (
     ACPI_STATUS                 Status;
     ACPI_BUFFER                 Buffer = {ACPI_ALLOCATE_BUFFER, NULL};
     ACPI_RESOURCE               *Resource;
-    
+
     ACPI_FUNCTION_TRACE ("AcpiWalkResources");
-    
-    
+
+
     if (!DeviceHandle ||
         (ACPI_STRNCMP (Path, METHOD_NAME__CRS, sizeof (METHOD_NAME__CRS)) &&
-        ACPI_STRNCMP (Path, METHOD_NAME__PRS, sizeof (METHOD_NAME__PRS)))) {
+        ACPI_STRNCMP (Path, METHOD_NAME__PRS, sizeof (METHOD_NAME__PRS))))
+    {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
-    
+
     Status = AcpiRsGetMethodData (DeviceHandle, Path, &Buffer);
-    if (ACPI_FAILURE (Status)) {
+    if (ACPI_FAILURE (Status))
+    {
         return_ACPI_STATUS (Status);
     }
-    
+
     Resource = (ACPI_RESOURCE *) Buffer.Pointer;
     for (;;) {
         if (!Resource || Resource->Id == ACPI_RSTYPE_END_TAG)
+        {
             break;
-        
+        }
+
         Status = UserFunction (Resource, Context);
-        
+
         switch (Status) {
         case AE_OK:
         case AE_CTRL_DEPTH:
-            
+
             /* Just keep going */
             Status = AE_OK;
             break;
-            
+
         case AE_CTRL_TERMINATE:
-            
+
             /* Exit now, with OK stats */
-            
+
             Status = AE_OK;
-            goto end;
-            
+            goto Cleanup;
+
         default:
-            
+
             /* All others are valid exceptions */
-            
-            goto end;
+
+            goto Cleanup;
         }
-        
+
         Resource = ACPI_NEXT_RESOURCE (Resource);
     }
-    
-end:
+
+Cleanup:
+
     AcpiOsFree (Buffer.Pointer);
-    
+
     return_ACPI_STATUS (Status);
 }
 
@@ -437,7 +442,7 @@ AcpiSetCurrentResources (
 * FUNCTION:    AcpiResourceToAddress64
 *
 * PARAMETERS:  resource                - Pointer to a resource
-*              out                     - Pointer to the users's return 
+*              out                     - Pointer to the users's return
 *                                        buffer (a struct
 *                                        acpi_resource_address64)
 *
@@ -458,7 +463,7 @@ AcpiResourceToAddress64 (
     ACPI_RESOURCE_ADDRESS16  *Address16;
     ACPI_RESOURCE_ADDRESS32  *Address32;
     ACPI_RESOURCE_ADDRESS64  *Address64;
-    
+
     switch (Resource->Id) {
     case ACPI_RSTYPE_ADDRESS16:
         Address16 = (ACPI_RESOURCE_ADDRESS16 *) &Resource->Data;
