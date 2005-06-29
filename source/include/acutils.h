@@ -131,6 +131,11 @@ CmInitGlobals (
 /* Table and hardware initialization - cminit */
 
 ACPI_STATUS
+CmInstallTable (
+    char                    **TablePtr,
+    ACPI_TABLE_INFO         *TableInfo);
+
+ACPI_STATUS
 CmGetTableRsdt (
     UINT32                  *NumberOfTables, 
     char                    **BufferPtr);
@@ -197,6 +202,7 @@ CmDeleteInternalObjectList (
     ACPI_OBJECT_INTERNAL    **ObjList);
 
 ACPI_STATUS
+
 CmBuildInternalObject (
     ACPI_OBJECT             *Obj, 
     ACPI_OBJECT_INTERNAL    *InternalObj);
@@ -213,35 +219,36 @@ SetDebugLevel (
 
 void
 FunctionTrace (
-    char                    *ModuleName, 
+    ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId, 
-    char                    *FunctionName);
+    ACPI_STRING             FunctionName);
 
 void
 FunctionExit (
-    char                    *ModuleName, 
+    ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId, 
-    char                    *FunctionName);
+    ACPI_STRING             FunctionName);
 
 void
 FunctionStatusExit (
-    char                    *ModuleName, 
+    ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId, 
-    char                    *FunctionName,
+    ACPI_STRING             FunctionName,
     ACPI_STATUS             Status);
 
 void
 DebugPrintPrefix (
-    char                    *ModuleName, 
+    ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId);
 
+
 void
 DebugPrint (
-    char                    *ModuleName, 
+    ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId, 
     INT32                   PrintLevel, 
@@ -253,31 +260,31 @@ DebugPrintRaw (
 
 void
 _ReportInfo (
-    char                    *ModuleName, 
+    ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId, 
-    char                    *Message);
+    ACPI_STRING             Message);
 
 void
 _ReportError (
-    char                    *ModuleName, 
+    ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId, 
-    char                    *Message);
+    ACPI_STRING             Message);
 
 void
 _ReportWarning (
-    char                    *ModuleName, 
+    ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId, 
-    char                    *Message);
+    ACPI_STRING             Message);
 
 void
 _ReportSuccess (
-    char                    *ModuleName, 
+    ACPI_STRING             ModuleName, 
     INT32                   LineNumber, 
     INT32                   ComponentId, 
-    char                    *Message);
+    ACPI_STRING             Message);
 
 void 
 DumpBuffer (
@@ -293,7 +300,7 @@ DumpBuffer (
 #undef DEBUG_ASSERT
 #endif
 
-#define ACPI_ASSERT(exp)	                                        \
+#define ACPI_ASSERT(exp)	                                \
     if(!(exp))												\
         OsdDbgAssert(#exp, __FILE__, __LINE__, "Failed Assertion")
 
@@ -301,13 +308,40 @@ DumpBuffer (
     if(!(exp))												\
         OsdDbgAssert(#exp, __FILE__, __LINE__, msg)
 
-
-
-
 /*
  * Memory allocation functions and related macros.
  * Macros that expand to include filename and line number
  */
+
+void *
+_CmAllocate (
+	UINT32					Size,
+	UINT32                  Component,
+	ACPI_STRING				Module,
+	INT32                   Line,
+	ACPI_STRING				Function);
+
+void *
+_CmCallocate (
+	UINT32					Size,
+	UINT32                  Component,
+	ACPI_STRING             Module,
+	INT32                   Line,
+	ACPI_STRING             Function);
+
+void
+_CmFree (
+	void					*Address,
+	UINT32                  Component,
+	ACPI_STRING             Module,
+	INT32                   Line,
+	ACPI_STRING             Function);
+
+#define CmAllocate(a)		_CmAllocate(a,_COMPONENT,_THIS_MODULE,__LINE__,ThisProc)
+#define CmCallocate(a)		_CmCallocate(a, _COMPONENT,_THIS_MODULE, __LINE__,ThisProc)
+#define CmFree(a)			_CmFree(a,_COMPONENT,_THIS_MODULE,__LINE__,ThisProc)
+
+#define AllocateObjectDesc() _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
 
 void *
 _AllocateObjectDesc (
@@ -315,35 +349,9 @@ _AllocateObjectDesc (
     INT32                   LineNumber, 
     INT32                   ComponentId); 
 
-void *
-_LocalAllocate (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
-    INT32                   AllocSize);
-
-void *
-_LocalCallocate (
-    char                    *ModuleName, 
-    INT32                   LineNumber, 
-    INT32                   ComponentId, 
-    INT32                   AllocSize);
-
-
 void
 LocalDeleteObject (
     ACPI_OBJECT_INTERNAL    **ObjDesc);
-
-
-
-/*
- * The point of these macros is to add the caller's module information - to be used
- * in case of an error during allocation
- */
-#define LocalAllocate(a)                _LocalAllocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define LocalCallocate(a)               _LocalCallocate(_THIS_MODULE,__LINE__,_COMPONENT,a)
-#define AllocateObjectDesc()            _AllocateObjectDesc(_THIS_MODULE,__LINE__,_COMPONENT)
-
 
 
 
