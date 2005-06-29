@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -145,7 +145,6 @@
         ACPI_MODULE_NAME    ("oswinxf")
 
 
-UINT32                      AcpiGbl_NextSemaphore = 0;
 #define NUM_SEMAPHORES      128
 
 typedef struct semaphore_entry
@@ -818,6 +817,7 @@ AcpiOsCreateSemaphore (
 {
 #ifdef _MULTI_THREADED
     void                *Mutex;
+    UINT32              i;
 
     ACPI_FUNCTION_NAME ("OsCreateSemaphore");
 #endif
@@ -840,6 +840,20 @@ AcpiOsCreateSemaphore (
 
 #ifdef _MULTI_THREADED
 
+    /* Find an empty slot */
+
+    for (i = 0; i < NUM_SEMAPHORES; i++)
+    {
+        if (!AcpiGbl_Semaphores[i].OsHandle)
+        {
+            break;
+        }
+    }
+    if (i >= NUM_SEMAPHORES)
+    {
+        return AE_LIMIT;
+    }
+
     /* Create an OS semaphore */
 
     Mutex = CreateSemaphore (NULL, InitialUnits, MaxUnits, NULL);
@@ -850,15 +864,14 @@ AcpiOsCreateSemaphore (
         return AE_NO_MEMORY;
     }
 
-    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].MaxUnits = (UINT16) MaxUnits;
-    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].CurrentUnits = (UINT16) InitialUnits;
-    AcpiGbl_Semaphores[AcpiGbl_NextSemaphore].OsHandle = Mutex;
+    AcpiGbl_Semaphores[i].MaxUnits = (UINT16) MaxUnits;
+    AcpiGbl_Semaphores[i].CurrentUnits = (UINT16) InitialUnits;
+    AcpiGbl_Semaphores[i].OsHandle = Mutex;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Handle=%d, Max=%d, Current=%d, OsHandle=%p\n",
-            AcpiGbl_NextSemaphore, MaxUnits, InitialUnits, Mutex));
+            i, MaxUnits, InitialUnits, Mutex));
 
-    *OutHandle = (void *) AcpiGbl_NextSemaphore;
-    AcpiGbl_NextSemaphore++;
+    *OutHandle = (void *) i;
 #endif
 
     return AE_OK;
