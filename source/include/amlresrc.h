@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amlresrc.h - AML resource descriptors
- *              $Revision: 1.21 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -173,7 +173,7 @@ typedef struct asl_resource_node
 /*
  * Resource descriptors defined in the ACPI specification.
  *
- * Alignment must be BYTE because these descriptors
+ * Packing/alignment must be BYTE because these descriptors
  * are used to overlay the AML byte stream.
  */
 #pragma pack(1)
@@ -390,7 +390,7 @@ typedef struct asl_general_register_desc
 
 #pragma pack()
 
-/* Union of all resource descriptors, sow we can allocate the worst case */
+/* Union of all resource descriptors, so we can allocate the worst case */
 
 typedef union asl_resource_desc
 {
@@ -417,7 +417,6 @@ typedef union asl_resource_desc
     UINT8                       U8Item;
 
 } ASL_RESOURCE_DESC;
-
 
 
 #endif
