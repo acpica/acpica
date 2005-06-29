@@ -358,8 +358,8 @@ NsAttachObject (
 ACPI_STATUS
 NsAttachMethod (
     ACPI_HANDLE             Handle, 
-    ACPI_PTRDIFF            Offset, 
-    INT32                   Length)
+    UINT8                   *PcodeAddr, 
+    UINT32                  PcodeLength)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     NAME_TABLE_ENTRY        *ThisEntry = (NAME_TABLE_ENTRY *) Handle;
@@ -394,7 +394,7 @@ NsAttachMethod (
     if (ObjDesc)
     {
         DEBUG_PRINT (ACPI_ERROR, ("NsAttachMethod: ***Old: %p Val %p Off %d Len %d\n",
-                                    Handle, ObjDesc, ObjDesc->Method.Offset, ObjDesc->Method.Length));
+                                    Handle, ObjDesc, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength));
 
         CmUpdateObjectReference (ObjDesc, REF_DECREMENT);
         CmDeleteInternalObject (ObjDesc);
@@ -414,8 +414,8 @@ NsAttachMethod (
 
     /* Init the method info */
 
-    ObjDesc->Method.Offset = Offset;
-    ObjDesc->Method.Length = Length;
+    ObjDesc->Method.Pcode       = PcodeAddr;
+    ObjDesc->Method.PcodeLength = PcodeLength;
 
     /* Update reference count and install */
 
@@ -423,7 +423,7 @@ NsAttachMethod (
     ThisEntry->Object = (void *) ObjDesc;
 
     DEBUG_PRINT (ACPI_INFO, ("NsAttachMethod: %p Val %p Oft %d Len %d\n",
-                            Handle, ObjDesc, ObjDesc->Method.Offset, ObjDesc->Method.Length));
+                            Handle, ObjDesc, ObjDesc->Method.Pcode, ObjDesc->Method.PcodeLength));
 
     return_ACPI_STATUS (AE_OK);
 }
