@@ -218,6 +218,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #endif /* ACPI_USE_STANDARD_HEADERS */
 
