@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.46 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -285,7 +285,6 @@ AdWriteDsdt (void)
 }
 
 
-
 /*******************************************************************************
  *
  * FUNCTION:    AdInitialize
@@ -409,7 +408,7 @@ AdAmlDisassemble (
         Status = AdGetTables (Filename);
         if (ACPI_FAILURE (Status))
         {
-            AcpiOsPrintf ("Could not get ACPI tables, %s\n", 
+            AcpiOsPrintf ("Could not get ACPI tables, %s\n",
                 AcpiFormatException (Status));
             return Status;
         }
@@ -449,7 +448,7 @@ AdAmlDisassemble (
     Status = AdParseTables ();
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not parse ACPI tables, %s\n", 
+        AcpiOsPrintf ("Could not parse ACPI tables, %s\n",
             AcpiFormatException (Status));
         goto Cleanup;
     }
@@ -503,7 +502,7 @@ AdCreateTableHeader (
 
     AcpiOsPrintf (
         "DefinitionBlock (\"DSDT.aml\", \"%4.4s\", %hd, \"%.6s\", \"%.8s\", %d)\n",
-        Table->Signature, Table->Revision, 
+        Table->Signature, Table->Revision,
         Table->OemId, Table->OemTableId, Table->OemRevision);
 }
 
@@ -546,7 +545,7 @@ AdDisplayTables (
             DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
 
         AcpiOsPrintf ("DSDT Body (Length 0x%X)\n", AmlLength);
-        AcpiUtDumpBuffer ((UINT8 *) AmlStart, AmlLength, 
+        AcpiUtDumpBuffer ((UINT8 *) AmlStart, AmlLength,
             DB_BYTE_DISPLAY, ACPI_UINT32_MAX);
     }
 
@@ -651,7 +650,7 @@ AdDeferredParse (
         return_ACPI_STATUS (AE_OK);
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing %s [%4.4s]\n", 
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Parsing %s [%4.4s]\n",
         Op->Common.AmlOpName, (char *) &Op->Named.Name));
 
     WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, Op, NULL, NULL);
@@ -666,6 +665,7 @@ AdDeferredParse (
     {
         return_ACPI_STATUS (Status);
     }
+
 
     /* Parse the method */
 
@@ -930,7 +930,7 @@ AdParseTables (
     }
 
     WalkState->ParseFlags &= ~ACPI_PARSE_DELETE_TREE;
-    
+
     Status = AcpiPsParseAml (WalkState);
     if (ACPI_FAILURE (Status))
     {
