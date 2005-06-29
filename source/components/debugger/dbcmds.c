@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  ******************************************************************************/
 
@@ -724,7 +724,7 @@ AcpiDbSetMethodData (
         ObjDesc = WalkState->Arguments[Index].Object;
 
         AcpiOsPrintf ("Arg%d: ", Index);
-        AcpiDbDisplayInternalObject (ObjDesc, WalkState);
+        AcpiDmDisplayInternalObject (ObjDesc, WalkState);
         break;
 
     case 'L':
@@ -746,7 +746,7 @@ AcpiDbSetMethodData (
         ObjDesc = WalkState->LocalVariables[Index].Object;
 
         AcpiOsPrintf ("Local%d: ", Index);
-        AcpiDbDisplayInternalObject (ObjDesc, WalkState);
+        AcpiDmDisplayInternalObject (ObjDesc, WalkState);
         break;
 
     default:
