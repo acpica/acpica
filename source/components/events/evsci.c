@@ -113,114 +113,11 @@
  * into one element for each bit in the GPE
  * registers 
  */
-#ifdef _DEBUG
-volatile UINT32         	EventCount[NUM_EVENTS];   
-#endif
-
-/******************************************************************************
- *
- * FUNCTION:    FixedEventHandler
- *
- * PARAMETERS:  Event				Event type, defined in events.h
- *
- * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
- *
- * DESCRIPTION: Clears the status bit for the requested event, calls the
- *              handler that previously registered for the event.
- *
- ******************************************************************************/
-
-/* TBD - is this needed?  i think it's old dos code...
-stack probes MUST be off for any function call in a BU ISR
-#pragma check_stack (off)
-*/
-
-static INT32
-FixedEventHandler (
-	INT32 Event)
-{
-	/* Clear the status bit, increment the event counter. */
-	WRITE_ACPI_REGISTER (TMR_STS + Event, 1);
-	
-#ifdef _DEBUG
-	EventCount[Event]++;
-#endif
-
-	/* If we got here there must be a handler installed for the
-       event.  But check, just in case. */
-	if (NULL == FixedEventHandlers[Event])
-	{
-		DEBUG_PRINT (TRACE_INTERRUPTS,
-			("Unhandled fixed event %08x!!!\n", Event));
-
-        return INTERRUPT_NOT_HANDLED;
-	}
-	
-	return (FixedEventHandlers[Event]) ();
-}
-	
-
-/******************************************************************************
- *
- * FUNCTION:    GpeEventHandler
- *
- * PARAMETERS:
- *
- * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
- *
- * DESCRIPTION: Clears the status bit for the requested event
- *
- * The Gpe handler differs from the fixed events in that it clears the enable
- * bit rather than the status bit to clear the interrupt.  This allows
- * software outside of interrupt context to determine what caused the SCI and
- * dispatch the correct AML. 
- *
- ******************************************************************************/
-
-static INT32
-GpeEventHandler (UINT16 Index, UINT32 GpeBase, UINT16 GpeLength)
-{
-    UINT8               GpeStatus;
-    UINT8               GpeEnable;
-    UINT8               Bit;
-
-    /* Read the entire status byte because we don't know which bit may be set */
-
-    GpeStatus = OsdIn8 ((UINT16) (GpeBase + Index));
-
-    if (!GpeStatus)
-    {
-    	return INTERRUPT_NOT_HANDLED;
-    }
-    
-    /*  GPE status bit set  */
-    /* Read the entire byte because we don't know which bit may be set */
-
-    GpeEnable = OsdIn8 ((UINT16) (GpeBase + Index + GpeLength));
-
-    /* verify the set status bit has a matching enable bit set */
-
-    Bit = GpeEnable & GpeStatus;
-    
-    if (!Bit)
-    {
-    	return INTERRUPT_NOT_HANDLED;
-    }
-    
-    /*  matching status and enable bit(s) set   */
-
-    OsdOut8 ((UINT16) (GpeBase + GpeLength + Index), (UINT8) (GpeEnable & ~Bit));
-#ifdef _DEBUG
-    EventCount[GENERAL_EVENT]++;
-#endif
-
-    return INTERRUPT_HANDLED;
-}   
 
 
 /******************************************************************************
  *
- * FUNCTION:    SciHandler
+ * FUNCTION:    EvSciHandler
  *
  * PARAMETERS:  none
  *
@@ -233,103 +130,44 @@ GpeEventHandler (UINT16 Index, UINT32 GpeBase, UINT16 GpeLength)
  ******************************************************************************/
 
 UINT32 
-SciHandler (void)
+EvSciHandler (void)
 {
-	/* CHANGE: if multiple SCI's happen concurrently and only one of them
-		is handled, what should be returned?
-	*/
-	
-    INT32 		InterruptHandled = INTERRUPT_NOT_HANDLED;
-	UINT32      StatusRegister = 0;
-    UINT32      EnableRegister = 0;
-	UINT16 		Index;
-	UINT16		GpeLength;
-        
+    INT32               InterruptHandled = INTERRUPT_NOT_HANDLED;
+       
+    
+    /* 
+     * CHANGE: if multiple SCI's happen concurrently and only one of them
+     *  is handled, what should be returned?
+     */
+    
+
     DEBUG_PRINT (TRACE_INTERRUPTS, ("Entered SCI handler\n"));
 
-	if (! READ_ACPI_REGISTER (SCI_EN))
+    if (! READ_ACPI_REGISTER (SCI_EN))
     {
-    	DEBUG_PRINT (TRACE_INTERRUPTS, ("Not an SCI\n"));
-    	return INTERRUPT_NOT_HANDLED;
-    }	
+        DEBUG_PRINT (TRACE_INTERRUPTS, ("Not an SCI\n"));
+        return INTERRUPT_NOT_HANDLED;
+    }   
     
     /* Determine if the SCI was a fixed event ot a GPE. */
+
     DEBUG_PRINT (TRACE_INTERRUPTS, ("Got an SCI\n"));
 
-    /* 
-     * Read the fixed feature status and enable registers, as all the cases
-     * depend on their values.  
+
+    /*
+     * Check for and dispatch any Fixed Events that have occurred
      */
 
-    StatusRegister = (UINT32) OsdIn16 ((UINT16) FACP->Pm1aEvtBlk);
-    if (FACP->Pm1bEvtBlk)
-    {
-    	StatusRegister |= (UINT32) OsdIn16 ((UINT16) FACP->Pm1bEvtBlk);
-    }
-        
-    /* This really isn't necessary.
-    EnableRegister = (UINT32)
-    	OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + FACP->Pm1EvtLen / 2));
-    
-    if (FACP->Pm1bEvtBlk)
-    {
-        EnableRegister |= (UINT32)
-        	OsdIn16 ((UINT16) (FACP->Pm1bEvtBlk + FACP->Pm1EvtLen / 2));
-    }
-    */
-        
-    DEBUG_PRINT (TRACE_INTERRUPTS,
-    	("Enable: %08x\tStatus: %08x\n", EnableRegister, StatusRegister));
+    InterruptHandled &= EvFixedEventDetect ();
 
-	/* If the SCI was a fixed event, invoke the handler with the event type. */
-    
-    if (StatusRegister & 1)
-    {
-        /* power management timer roll over */
-        InterruptHandled &= FixedEventHandler (PMTIMER_EVENT);
-    }
 
-    if (StatusRegister & 32)
-    {
-        /* global event */
-        InterruptHandled &= FixedEventHandler (GLOBAL_EVENT);
-    }
-
-    if (StatusRegister & 256)
-    {
-        /* power button event */
-        InterruptHandled &= FixedEventHandler (POWER_BUTTON_EVENT);
-    }
-
-    if (StatusRegister & 512)
-    {
-        /* sleep button event */
-        InterruptHandled &= FixedEventHandler (SLEEP_BUTTON_EVENT);
-    }
-   
-    /* Check for a general purpose event handler */
-    
-    /* CHANGE: This checks every single GPE every single time.... */
-            
-    GpeLength = FACP->Gpe0BlkLen / 2;
-
-    for (Index = 0; Index < GpeLength && InterruptHandled == FALSE; Index++)
-    {
-    	InterruptHandled &= GpeEventHandler (Index, FACP->Gpe0Blk, GpeLength);
-    }
-
-    /* 
-     * GPE1 checking will not be done if InterruptHandled == TRUE or 
-     * FACP->bGpe1BlkLen == 0 which is the case if GPE1 does not exist 
+    /*
+     * Check for and dispatch any GPEs that have occurred
      */
 
-    GpeLength = FACP->Gpe1BlkLen / 2;
+    InterruptHandled &= EvGpeDetect ();
 
-    for (Index = 0; Index < GpeLength && InterruptHandled == FALSE; Index++)
-    {
-	    InterruptHandled &= GpeEventHandler (Index, FACP->Gpe1Blk, GpeLength);
-    }
-    
+ 
     return InterruptHandled;
 }
 
@@ -339,28 +177,28 @@ SciHandler (void)
 
 /******************************************************************************
  *
- * FUNCTION:    InstallSciHandler
+ * FUNCTION:    EvInstallSciHandler
  *
  * PARAMETERS:  none
  *
- * RETURN:      Handle to BU ISR
+ * RETURN:      Status
  *
  * DESCRIPTION: Installs SCI handler.
  *
  ******************************************************************************/
 
 UINT32 
-InstallSciHandler (void)
+EvInstallSciHandler (void)
 {
-	UINT32 Except = AE_OK;
-	 
-    FUNCTION_TRACE ("InstallSciHandler");
+    UINT32 Except = AE_OK;
+     
+    FUNCTION_TRACE ("EvInstallSciHandler");
    
     if (!SciHandle)
     {
         Except = OsdInstallInterruptHandler (
                             (UINT32) FACP->SciInt,
-                            SciHandler,
+                            EvSciHandler,
                             &SciHandle);
     }
 
@@ -371,7 +209,7 @@ InstallSciHandler (void)
 
 /******************************************************************************
  *
- * FUNCTION:    UninstallSciHandler
+ * FUNCTION:    EvRemoveSciHandler
  *
  * PARAMETERS:  none
  *
@@ -384,9 +222,9 @@ InstallSciHandler (void)
  ******************************************************************************/
 
 ACPI_STATUS
-UninstallSciHandler (void)
+EvRemoveSciHandler (void)
 {
-    FUNCTION_TRACE ("UninstallSciHandler");
+    FUNCTION_TRACE ("EvRemoveSciHandler");
     
     if (SciHandle)
     {
@@ -432,7 +270,7 @@ UninstallSciHandler (void)
 
 /******************************************************************************
  *
- * FUNCTION:    SciCount
+ * FUNCTION:    EvSciCount
  *
  * PARAMETERS:  char * EventName        name (fully qualified name from namespace 
  *                                      or one of the fixed event names defined above)
@@ -449,19 +287,21 @@ UninstallSciHandler (void)
 #ifdef _DEBUG
 
 INT32 
-SciCount (UINT32 Event)
+EvSciCount (UINT32 Event)
 {
-      /* 
-       * Elements correspond to counts for TMR, NOT_USED, GBL, 
-       * PWR_BTN, SLP_BTN, RTC, and GENERAL respectively. 
-       */
-    INT32 Count;
-    
-    FUNCTION_TRACE ("SciCount");
-    
-    if (Event >= NUM_EVENTS)
+    INT32           Count;
+
+    FUNCTION_TRACE ("EvSciCount");
+
+
+    /* 
+     * Elements correspond to counts for TMR, NOT_USED, GBL, 
+     * PWR_BTN, SLP_BTN, RTC, and GENERAL respectively. 
+     */
+
+    if (Event >= NUM_FIXED_EVENTS)
     {
-    	Count = -1;	
+        Count = -1; 
     }
     else
     {
@@ -474,114 +314,33 @@ SciCount (UINT32 Event)
 
 #endif
 
-/**************************************************************************
- *
- * FUNCTION:    AcpiEnable
- *
- * PARAMETERS:  Flags           flag bitmask (logical OR) to specify:
- *                              ACPI_TABLES_REQUIRED, HW_OVERRIDE_SUPPORTED,
- *                              PROGRAM_SCI_LEVEL_SENSITIVITY, DISABLE_KNOWN_EVENTS
- *
- * RETURN:      0 if successful; non-zero if failure encountered
- *
- * DESCRIPTION: Ensures that the system
- *              control interrupt (SCI) is properly configured, disables
- *              SCI event sources, installs the SCI handler, and
- *              transfers the system into ACPI mode.
- *              If successful, return 0. Otherwise, return non-zero.
- *
- *************************************************************************/
-
-ACPI_STATUS
-AcpiEnable ()
-{
-    FUNCTION_TRACE ("AcpiEnable");
-
-    if (AcpiLibInitStatus == AE_NO_ACPI_TABLES)
-    {
-        /*	ACPI tables are not available	*/
-        DEBUG_PRINT (ACPI_WARN, ("No ACPI tables present!\n"));
-		FUNCTION_EXIT;
-		return AE_NO_ACPI_TABLES;
-    }
-
-    /*  ACPI tables are available or not required   */
-
-    if (LEGACY_MODE == AcpiModeCapabilities ())
-    {   
-    	/*  no ACPI mode support provided by BIOS   */
-        /*  The only way to get through sign_on() without ACPI support is
-         *  if we are running from an input file.
-         */
-
-		/* TBD:	verify input file specified	*/
-
-        DEBUG_PRINT (ACPI_WARN, ("Only legacy mode supported!\n"));
-		FUNCTION_EXIT;;
-		return AE_ERROR;
-	}
-
-    OriginalMode = AcpiGetMode();
-
-    if (InstallSciHandler () != AE_OK)
-    {   
-    	/* Unable to install SCI handler	*/
-        DEBUG_PRINT (ACPI_FATAL, ("Unable to install System Control Interrupt Handler"));
-		FUNCTION_EXIT;;
-		return AE_ERROR;
-	}
-
-    /*  SCI Interrupt Handler installed properly    */
-
-	if (ACPI_MODE != OriginalMode)
-	{	
-        /*	legacy mode	*/
-				
-        if (AE_OK != AcpiSetMode (ACPI_MODE))
-		{	
-			/*	Unable to transition to ACPI Mode	*/
-			DEBUG_PRINT (ACPI_FATAL, ("Could not transition to ACPI mode.\n"));
-			FUNCTION_EXIT;;
-			return AE_ERROR;	
-		}
-		else
-    	{
-			DEBUG_PRINT (ACPI_OK, ("Transition to ACPI mode successful\n"));
-        }
-    }
-
-    FUNCTION_EXIT;
-    return AE_OK;
-
-}
-    
-
 
 /******************************************************************************
  *
- * FUNCTION:    RestoreAcpiState
+ * FUNCTION:    EvRestoreAcpiState
  *
  * PARAMETERS:  none
  *
  * RETURN:      none
  *
- * DESCRIPTION: Exit function registered by AcpiInit().  This function will
- *              free memory allocated for table storage.
+ * DESCRIPTION: Restore the original ACPI state of the machine
  *
  ******************************************************************************/
 
 void
-RestoreAcpiState (void)
+EvRestoreAcpiState (void)
 {
-    INT32 Index;
+    INT32           Index;
 
-    FUNCTION_TRACE ("RestoreAcpiState");
 
-    /* restore state of chipset enable bits. */
+    FUNCTION_TRACE ("EvRestoreAcpiState");
+
+
+    /* Restore the state of the chipset enable bits. */
     
     if (RestoreAcpiChipset == TRUE)
     {
-        /* restore the fixed events */
+        /* Restore the fixed events */
         
         if (OsdIn16 ((UINT16) (FACP->Pm1aEvtBlk + 2)) != Pm1EnableRegisterSave)
         {
@@ -596,11 +355,13 @@ RestoreAcpiState (void)
             }
         }
 
-        /* insure all status bits are clear */
-        
-        ClearAllAcpiChipsetStatusBits ();
 
-        /* restore the GPEs */
+        /* Ensure that all status bits are clear */
+        
+        HwClearAcpiStatus ();
+
+
+        /* Now restore the GPEs */
         
         for (Index = 0; Index < FACP->Gpe0BlkLen / 2; Index++)
         {
@@ -632,46 +393,3 @@ RestoreAcpiState (void)
 }
 
 
-/**************************************************************************
- *
- * FUNCTION:    AcpiDisable
- *
- * PARAMETERS:  none
- *
- * RETURN:      0 if successful; non-zero if failure encountered
- *
- * DESCRIPTION: Returns the system to original ACPI/legacy mode, and 
- *              uninstalls the SCI interrupt handler.
- *              If successful, return 0. Otherwise, return non-zero.
- *
- *************************************************************************/
-
-ACPI_STATUS     
-AcpiDisable ()
-{
-    UINT32 Except;
-
-    FUNCTION_TRACE ("AcpiDisable");
-
-    /* Restore original mode   */
-
-    if (AE_OK != AcpiSetMode (OriginalMode))
-    {
-        DEBUG_PRINT (ACPI_ERROR, ("Unable to transition to original mode"));
-        Except = AE_ERROR;    
-    }
-    else
-    {
-        /* Unload the SCI interrupt handler  */
-
-    	UninstallSciHandler ();
-        RestoreAcpiState ();
-        AcpiLocalCleanup ();
-        
-        Except = AE_OK;
-        
-    }
-
-	FUNCTION_EXIT;
-    return Except;
-}
