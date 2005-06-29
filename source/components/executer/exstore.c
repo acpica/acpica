@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.143 $
+ *              $Revision: 1.145 $
  *
  *****************************************************************************/
 
@@ -251,7 +251,7 @@ AcpiExStore (
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see ACPI Specification
          */
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Write to Debug Object: ****: \n"));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "**** Write to Debug Object: ****:\n\n"));
 
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[ACPI Debug] %s: ",
                         AcpiUtGetTypeName (ValDesc->Common.Type)));
@@ -291,6 +291,7 @@ AcpiExStore (
             break;
         }
 
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INFO, "\n"));
         break;
 
 
@@ -358,7 +359,7 @@ AcpiExStoreObjectToIndex (
     UINT8                   Value = 0;
 
 
-    FUNCTION_TRACE ("AcpiExStoreObjectToIndex");
+    FUNCTION_TRACE ("ExStoreObjectToIndex");
 
 
     /*
