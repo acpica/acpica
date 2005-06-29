@@ -270,6 +270,8 @@ AmlExecStore (
     ACPI_OBJECT_INTERNAL    *DeleteDestDesc = NULL;
     UINT8                   *Location=NULL;
     UINT32                  Mask;
+    UINT8                   *Buffer;
+    UINT32                  Length;
 
 
 
@@ -419,10 +421,7 @@ AmlExecStore (
                 /* Perform the update (Set Bank Select) */
 
                 Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
-                                            DestDesc->BankField.Value);
-
-                DEBUG_PRINT (ACPI_INFO,
-                            ("AmlExecStore: set bank select returned %s\n", Gbl_ExceptionNames[Status]));
+                                            &DestDesc->BankField.Value, sizeof (DestDesc->BankField.Value));
             }
 
 
@@ -431,9 +430,7 @@ AmlExecStore (
                 /* Set bank select successful, next set data value  */
                 
                 Status = AmlSetNamedFieldValue (DestDesc->BankField.BankSelect,
-                                               ValDesc->BankField.Value);
-                DEBUG_PRINT (ACPI_INFO,
-                            ("AmlExecStore: set bank select returned %s\n", Gbl_ExceptionNames[Status]));
+                                               &ValDesc->BankField.Value, sizeof (ValDesc->BankField.Value));
             }
             
             break;  /* Global Lock released below  */
@@ -447,15 +444,19 @@ AmlExecStore (
              */
 
             if ((ValDesc->Common.Type != ACPI_TYPE_Number) && 
-               ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+                (ValDesc->Common.Type != ACPI_TYPE_Buffer) &&
+                (ValDesc->Common.Type != ACPI_TYPE_String) &&
+                (Status = AmlGetRvalue (&ValDesc)) != AE_OK)
             {
                 DeleteDestDesc = DestDesc;
             }
 
-            else if (ValDesc->Common.Type != ACPI_TYPE_Number)
+            else if ((ValDesc->Common.Type != ACPI_TYPE_Number) && 
+                     (ValDesc->Common.Type != ACPI_TYPE_Buffer) &&
+                     (ValDesc->Common.Type != ACPI_TYPE_String))
             {
                 DEBUG_PRINT (ACPI_ERROR, 
-                        ("AmlExecStore/DefField: Value assigned to Field must be Number, not %d\n",
+                        ("AmlExecStore/DefField: Assign wrong type to Field [0x%X] (must be type Num/Str/Buf)\n",
                         ValDesc->Common.Type));
 
                 DeleteDestDesc = DestDesc;
@@ -498,7 +499,25 @@ AmlExecStore (
 
                 /* Perform the update */
                 
-                Status = AmlSetNamedFieldValue (TempHandle, ValDesc->Number.Value);
+                switch (ValDesc->Common.Type)
+                {
+                case ACPI_TYPE_Number:
+                    Buffer = (UINT8 *) &ValDesc->Number.Value;
+                    Length = sizeof (ValDesc->Number.Value);
+                    break;
+
+                case ACPI_TYPE_Buffer:
+                    Buffer = (UINT8 *) ValDesc->Buffer.Pointer;
+                    Length = ValDesc->Buffer.Length; 
+                    break;
+
+                case ACPI_TYPE_String:
+                    Buffer = (UINT8 *) ValDesc->String.Pointer;
+                    Length = ValDesc->String.Length; 
+                    break;
+                }
+
+                Status = AmlSetNamedFieldValue (TempHandle, Buffer, Length);
             }
                 
             break;      /* Global Lock released below   */
@@ -566,7 +585,7 @@ AmlExecStore (
                 /* perform the update (Set index) */
 
                 Status = AmlSetNamedFieldValue (DestDesc->IndexField.Index,
-                                               DestDesc->IndexField.Value);
+                                               &DestDesc->IndexField.Value, sizeof (DestDesc->IndexField.Value));
                 DEBUG_PRINT (ACPI_INFO,
                             ("AmlExecStore: IndexField: set index returned %s\n", Gbl_ExceptionNames[Status]));
             }
@@ -576,7 +595,7 @@ AmlExecStore (
                 /* set index successful, next set Data value */
                 
                 Status = AmlSetNamedFieldValue (DestDesc->IndexField.Data,
-                                               ValDesc->Number.Value);
+                                               &ValDesc->Number.Value, sizeof (ValDesc->Number.Value));
                 DEBUG_PRINT (ACPI_INFO,
                             ("AmlExecStore: IndexField: set data returned %s\n", Gbl_ExceptionNames[Status]));
             }
@@ -747,6 +766,87 @@ AmlExecStore (
         break;  /* Case NameOp */
 
 
+    case AML_IndexOp:
+        /* 
+         * Storing a number into a buffer at a location defined by an Index.
+         * If value is not a Number, try to resolve it to one.
+         */
+        if ((ValDesc->Common.Type != ACPI_TYPE_Number) &&
+           ((Status = AmlGetRvalue (&ValDesc)) != AE_OK))
+        {
+            DeleteDestDesc = DestDesc;
+        }
+
+        else if (ValDesc->Common.Type != ACPI_TYPE_Number)
+        {
+            DEBUG_PRINT (ACPI_ERROR, (
+                    "AmlExecStore/Index: Index value must be Number, not %d\n",
+                      ValDesc->Common.Type));
+
+            DeleteDestDesc = DestDesc;
+            Status = AE_AML_ERROR;
+        }
+
+
+        if (AE_OK == Status)
+        {
+            /* 
+             * Delete descriptor that points to name,
+             * and point to descriptor for name's value instead.
+             */
+
+            DeleteDestDesc = DestDesc;
+
+            DestDesc = NsGetAttachedObject (TempHandle);
+            if (!DestDesc)
+            {
+                DEBUG_PRINT (ACPI_ERROR, ("AmlExecStore/Index: Internal error - null old-value pointer\n"));
+                Status = AE_AML_ERROR;
+            }
+
+            else
+            {
+                DEBUG_PRINT (ACPI_INFO,
+                    ("AmlExecStore/Index: Value DestDesc=%p, Type=0x%X\n",
+                    DestDesc, DestDesc->Common.Type));
+            }
+        }
+
+
+        if (AE_OK == Status)
+        {
+            /*
+             * Valid source value and destination reference pointer.
+             *
+             * ACPI Specification 1.0B section 15.2.3.4.2.13:
+             * Destination should point to either a buffer or a package
+             */
+
+            if (DestDesc->Common.Type == ACPI_TYPE_Any)
+            {
+                DestDesc->Common.Type = ACPI_TYPE_Number;
+            }
+
+            if (DestDesc->Common.Type != ACPI_TYPE_Number)
+            {
+                DEBUG_PRINT (ACPI_INFO,
+                    ("AmlExecStore/Index: Dest type must be a number - DestDesc=%p, Type=0x%X\n",
+                    DestDesc, DestDesc->Common.Type));
+                
+                Status = AE_AML_ERROR;
+            }
+
+            else
+            {
+                /* Destination is a number, as it should be.  Store the value */
+
+                DestDesc->Number.Value = ValDesc->Number.Value;
+            }
+        }
+
+        break;
+
+
     case AML_ZeroOp: case AML_OneOp: case AML_OnesOp:
 
         /* 
@@ -786,10 +886,6 @@ AmlExecStore (
         DeleteDestDesc = DestDesc;
         break;
 
-#if 0
-    case IndexOp:
-        break;
-#endif
 
     default:
         DEBUG_PRINT (ACPI_ERROR,
