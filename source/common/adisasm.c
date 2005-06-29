@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -869,7 +869,7 @@ AdGetLocalTables (
 
     if (GetAllTables)
     {
-        ACPI_STRNCPY (TableHeader.Signature, "RSDT", 4);
+        ACPI_STRNCPY (TableHeader.Signature, RSDT_SIG, 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (!NewTable)
         {
@@ -879,7 +879,7 @@ AdGetLocalTables (
 
 #if ACPI_MACHINE_WIDTH != 64
 
-        if (!ACPI_STRNCMP (NewTable->Signature, "RSDT", 4))
+        if (!ACPI_STRNCMP (NewTable->Signature, RSDT_SIG, 4))
         {
             PointerSize = sizeof (UINT32);
         }
@@ -901,25 +901,25 @@ AdGetLocalTables (
 
         /* Get the FADT */
 
-        ACPI_STRNCPY (TableHeader.Signature, "FADT", 4);
+        ACPI_STRNCPY (TableHeader.Signature, FADT_SIG, 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (NewTable)
         {
             AcpiGbl_FADT = (void *) NewTable;
             AdWriteTable (NewTable, NewTable->Length,
-                "FADT", NewTable->OemTableId);
+                FADT_SIG, NewTable->OemTableId);
         }
         AcpiOsPrintf ("\n");
 
         /* Get the FACS */
 
-        ACPI_STRNCPY (TableHeader.Signature, "FACS", 4);
+        ACPI_STRNCPY (TableHeader.Signature, FACS_SIG, 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (NewTable)
         {
             AcpiGbl_FACS = (void *) NewTable;
             AdWriteTable (NewTable, AcpiGbl_FACS->Length,
-                "FACS", AcpiGbl_FADT->Header.OemTableId);
+                FACS_SIG, AcpiGbl_FADT->Header.OemTableId);
         }
         AcpiOsPrintf ("\n");
     }
