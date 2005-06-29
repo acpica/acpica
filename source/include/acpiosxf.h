@@ -121,10 +121,7 @@
 #define __ACPIOSD_H__
 
 #include <environment.h>
-#include <datatypes.h>
-//#include <acpiasm.h>
-//#include <acpiexcep.h>
-//#include <output.h>
+#include <acpitypes.h>
 
 
 /* Priorities for OsdQueueForExecution */
@@ -145,6 +142,30 @@ typedef
 void (*OSD_EXECUTION_CALLBACK) (
     void                    *Context);
 
+
+/*
+ * Synchronization primitived
+ */
+ 
+ACPI_STATUS
+OsdCreateSemaphore (
+	UINT32				InitialUnits,
+	ACPI_HANDLE			*OutHandle);
+
+ACPI_STATUS
+OsdDeleteSemaphore (
+	ACPI_HANDLE			Handle);
+
+ACPI_STATUS
+OsdWaitSemaphore (
+	ACPI_HANDLE			Handle,
+	UINT32				Units,
+	UINT32				Timeout);
+
+ACPI_STATUS
+OsdSignalSemaphore (
+	ACPI_HANDLE			Handle,
+	UINT32				Units);
 
 /* 
  * Memory allocation and mapping 
