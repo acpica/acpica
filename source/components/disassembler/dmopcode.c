@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisasm - parser op tree display routines
- *              $Revision: 1.29 $
+ *              $Revision: 1.40 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -124,7 +124,7 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbdisasm")
 
 
@@ -133,7 +133,6 @@
 #define BLOCK_BRACE         2
 #define DB_NO_OP_INFO       "            [%2.2d]  "
 #define DB_FULL_OP_INFO     "%5.5X #%4.4X [%2.2d]  "
-
 
 
 NATIVE_CHAR                 *INDENT_STRING = "....";
@@ -179,9 +178,9 @@ AcpiDbBlockType (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Diplay the pathname associated with a named object.  Two 
- *              versions. One searches the parse tree (for parser-only 
- *              applications suchas AcpiDump), and the other searches the 
+ * DESCRIPTION: Diplay the pathname associated with a named object.  Two
+ *              versions. One searches the parse tree (for parser-only
+ *              applications suchas AcpiDump), and the other searches the
  *              ACPI namespace (the parse tree is probably deleted)
  *
  ******************************************************************************/
@@ -195,8 +194,6 @@ AcpiPsDisplayObjectPathname (
     ACPI_PARSE_OBJECT       *TargetOp;
 
 
-    AcpiOsPrintf ("  (Path ");
-
     /* Search parent tree up to the root if necessary */
 
     TargetOp = AcpiPsFind (Op, Op->Value.Name, 0, 0);
@@ -209,17 +206,18 @@ AcpiPsDisplayObjectPathname (
          * the predefined names, just display the name as given
          */
 
-        AcpiDbDisplayNamestring (Op->Value.Name);
+        AcpiOsPrintf ("  **** Path not found in parse tree");
     }
 
     else
     {
         /* The target was found, print the name and complete path */
 
+        AcpiOsPrintf ("  (Path ");
         AcpiDbDisplayPath (TargetOp);
+        AcpiOsPrintf (")");
     }
 
-    AcpiOsPrintf (")");
     return (AE_OK);
 }
 
@@ -336,9 +334,13 @@ AcpiDbDisplayOp (
                 }
 
                 if (AcpiDbBlockType (Op) == BLOCK_PAREN)
+                {
                     AcpiOsPrintf ("(\n");
+                }
                 else
+                {
                     AcpiOsPrintf ("{\n");
+                }
             }
 
             /* Close a block if we are nested less than last time */
@@ -354,9 +356,13 @@ AcpiDbDisplayOp (
                     }
 
                     if (AcpiDbBlockType (Op) == BLOCK_PAREN)
+                    {
                         AcpiOsPrintf (")\n");
+                    }
                     else
+                    {
                         AcpiOsPrintf ("}\n");
+                    }
                 }
             }
 
@@ -379,7 +385,7 @@ AcpiDbDisplayOp (
 
             /* Resolve a name reference */
 
-            if ((Op->Opcode == AML_NAMEPATH_OP && Op->Value.Name)  &&
+            if ((Op->Opcode == AML_INT_NAMEPATH_OP && Op->Value.Name)  &&
                 (Op->Parent) &&
                 (opt_verbose))
             {
@@ -652,12 +658,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer & 0xff);
+            AcpiOsPrintf ("(UINT8)  0x%2.2X", Op->Value.Integer & ACPI_UINT8_MAX);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer & 0xff);
+            AcpiOsPrintf ("0x%2.2X", Op->Value.Integer & ACPI_UINT8_MAX);
         }
 
         break;
@@ -667,12 +673,12 @@ AcpiDbDisplayOpcode (
 
         if (opt_verbose)
         {
-            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer & 0xffff);
+            AcpiOsPrintf ("(UINT16) 0x%4.4X", Op->Value.Integer & ACPI_UINT16_MAX);
         }
 
         else
         {
-            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer & 0xffff);
+            AcpiOsPrintf ("0x%4.4X", Op->Value.Integer & ACPI_UINT16_MAX);
         }
 
         break;
@@ -708,7 +714,7 @@ AcpiDbDisplayOpcode (
         break;
 
 
-    case AML_STATICSTRING_OP:
+    case AML_INT_STATICSTRING_OP:
 
         if (Op->Value.String)
         {
@@ -723,31 +729,31 @@ AcpiDbDisplayOpcode (
         break;
 
 
-    case AML_NAMEPATH_OP:
+    case AML_INT_NAMEPATH_OP:
 
         AcpiDbDisplayNamestring (Op->Value.Name);
         break;
 
 
-    case AML_NAMEDFIELD_OP:
+    case AML_INT_NAMEDFIELD_OP:
 
         AcpiOsPrintf ("NamedField    (Length 0x%8.8X)  ", Op->Value.Integer);
         break;
 
 
-    case AML_RESERVEDFIELD_OP:
+    case AML_INT_RESERVEDFIELD_OP:
 
         AcpiOsPrintf ("ReservedField (Length 0x%8.8X)  ", Op->Value.Integer);
         break;
 
 
-    case AML_ACCESSFIELD_OP:
+    case AML_INT_ACCESSFIELD_OP:
 
         AcpiOsPrintf ("AccessField   (Length 0x%8.8X)  ", Op->Value.Integer);
         break;
 
 
-    case AML_BYTELIST_OP:
+    case AML_INT_BYTELIST_OP:
 
         if (opt_verbose)
         {
@@ -775,13 +781,18 @@ AcpiDbDisplayOpcode (
         /* Just get the opcode name and print it */
 
         Opc = AcpiPsGetOpcodeInfo (Op->Opcode);
-        DEBUG_ONLY_MEMBERS ((AcpiOsPrintf ("%s", Opc->Name)));
+        AcpiOsPrintf ("%s", Opc->Name);
 
-        if ((Op->Opcode == AML_RETURN_VALUE_OP) &&
-            (WalkState->NumResults))
+
+#ifndef PARSER_ONLY
+        if ((Op->Opcode == AML_INT_RETURN_VALUE_OP) &&
+            (WalkState->Results) &&
+            (WalkState->Results->Results.NumResults))
         {
-            AcpiDbDecodeInternalObject (WalkState->Results [WalkState->NumResults-1]);
+            AcpiDbDecodeInternalObject (WalkState->Results->Results.ObjDesc [WalkState->Results->Results.NumResults-1]);
         }
+#endif
+
         break;
     }
 

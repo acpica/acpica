@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.31 $
+ *              $Revision: 1.36 $
  *
  ******************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -127,7 +127,7 @@
 
 #ifdef ENABLE_DEBUGGER
 
-#define _COMPONENT          DEBUGGER
+#define _COMPONENT          ACPI_DEBUGGER
         MODULE_NAME         ("dbxface")
 
 
@@ -167,7 +167,7 @@ AcpiDbSingleStep (
         {
             /* Hit the breakpoint, resume single step, reset breakpoint */
 
-            AcpiOsPrintf ("***Break*** at AML offset 0x%X\n", Op->AmlOffset);
+            AcpiOsPrintf ("***Break*** at AML offset %X\n", Op->AmlOffset);
             AcpiGbl_CmSingleStep = TRUE;
             AcpiGbl_StepToNextCall = FALSE;
             WalkState->MethodBreakpoint = 0;
@@ -180,7 +180,7 @@ AcpiDbSingleStep (
      * namely, opcodes that have arguments
      */
 
-    if (Op->Opcode == AML_NAMEDFIELD_OP)
+    if (Op->Opcode == AML_INT_NAMEDFIELD_OP)
     {
         return (AE_OK);
     }
@@ -199,7 +199,7 @@ AcpiDbSingleStep (
     case OPTYPE_NAMED_OBJECT:
         switch (Op->Opcode)
         {
-        case AML_NAMEPATH_OP:
+        case AML_INT_NAMEPATH_OP:
             return (AE_OK);
             break;
         }
@@ -288,7 +288,7 @@ AcpiDbSingleStep (
 
     if (AcpiGbl_StepToNextCall)
     {
-        if (Op->Opcode != AML_METHODCALL_OP)
+        if (Op->Opcode != AML_INT_METHODCALL_OP)
         {
             /* Not a method call, just keep executing */
 
@@ -306,7 +306,7 @@ AcpiDbSingleStep (
      * by default.
      */
 
-    if (Op->Opcode == AML_METHODCALL_OP)
+    if (Op->Opcode == AML_INT_METHODCALL_OP)
     {
         AcpiGbl_CmSingleStep = FALSE;  /* No more single step while executing called method */
 
