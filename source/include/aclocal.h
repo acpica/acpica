@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.165 $
+ *       $Revision: 1.166 $
  *
  *****************************************************************************/
 
@@ -833,38 +833,6 @@ typedef struct
 #define ACPI_REGISTER_PM_TIMER                  0x07
 #define ACPI_REGISTER_PROCESSOR_BLOCK           0x08
 #define ACPI_REGISTER_SMI_COMMAND_BLOCK         0x09
-
-
-/*
- * BitRegister IDs
- * These are bitfields defined within the full ACPI registers
- */
-#define ACPI_BITREG_TIMER_STATUS                0x00
-#define ACPI_BITREG_BUS_MASTER_STATUS           0x01
-#define ACPI_BITREG_GLOBAL_LOCK_STATUS          0x02
-#define ACPI_BITREG_POWER_BUTTON_STATUS         0x03
-#define ACPI_BITREG_SLEEP_BUTTON_STATUS         0x04
-#define ACPI_BITREG_RT_CLOCK_STATUS             0x05
-#define ACPI_BITREG_WAKE_STATUS                 0x06
-
-#define ACPI_BITREG_TIMER_ENABLE                0x07
-#define ACPI_BITREG_GLOBAL_LOCK_ENABLE          0x08
-#define ACPI_BITREG_POWER_BUTTON_ENABLE         0x09
-#define ACPI_BITREG_SLEEP_BUTTON_ENABLE         0x0A
-#define ACPI_BITREG_RT_CLOCK_ENABLE             0x0B
-#define ACPI_BITREG_WAKE_ENABLE                 0x0C
-
-#define ACPI_BITREG_SCI_ENABLE                  0x0D
-#define ACPI_BITREG_BUS_MASTER_RLD              0x0E
-#define ACPI_BITREG_GLOBAL_LOCK_RELEASE         0x0F
-#define ACPI_BITREG_SLEEP_TYPE_A                0x10
-#define ACPI_BITREG_SLEEP_TYPE_B                0x11
-#define ACPI_BITREG_SLEEP_ENABLE                0x12
-
-#define ACPI_BITREG_ARB_DISABLE                 0x13
-
-#define ACPI_BITREG_MAX                         0x13
-#define ACPI_NUM_BITREG                         ACPI_BITREG_MAX + 1
 
 
 /* Masks used to access the BitRegisters */
