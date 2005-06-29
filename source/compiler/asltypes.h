@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -181,8 +181,9 @@ typedef struct asl_parse_node
 #define NODE_HAS_NO_EXIT            0x0020
 #define NODE_IF_HAS_NO_EXIT         0x0040
 #define NODE_NAME_INTERNALIZED      0x0080
-#define NODE_METHOD_NO_RETURN_VAL   0x0100
-#define NODE_RESULT_NOT_USED        0x0200
+#define NODE_METHOD_NO_RETVAL       0x0100
+#define NODE_METHOD_SOME_NO_RETVAL  0x0200
+#define NODE_RESULT_NOT_USED        0x0400
 
 
 /* Keeps information about individual control methods */
@@ -311,8 +312,10 @@ typedef enum
     ASL_MSG_ARG_COUNT_HI,
     ASL_MSG_ARG_COUNT_LO,
     ASL_MSG_NO_RETVAL,
+    ASL_MSG_SOME_NO_RETVAL,
     ASL_MSG_INTERNAL,
     ASL_MSG_BACKWARDS_OFFSET,
+    ASL_MSG_UNKNOWN_RESERVED_NAME,
 
 } ASL_MESSAGE_IDS;
 

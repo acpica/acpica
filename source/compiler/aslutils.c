@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.32 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -116,18 +116,11 @@
  *****************************************************************************/
 
 
-#include "aslcompiler.h"
+#include "AslCompiler.h"
 #include "acnamesp.h"
 
-#define _COMPONENT          ACPI_COMPILER
-        MODULE_NAME         ("aslutils")
 
-#ifdef _USE_BERKELEY_YACC
-extern const char * const       AslCompilername[];
-static const char * const       *yytname = &AslCompilername[255];
-#else
 extern const char * const       yytname[];
-#endif
 
 
 /*******************************************************************************
@@ -151,18 +144,13 @@ UtLocalCalloc (
     void                    *Allocated;
 
 
-    Allocated = AcpiUtCallocate (Size);
+    Allocated = calloc (Size, 1);
     if (!Allocated)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,
-            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-            Gbl_InputByteCount, Gbl_CurrentColumn,
-            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber, Gbl_InputFilename, NULL);
         exit (1);
     }
-
-    TotalAllocations++;
-    TotalAllocated += Size;
 
     return Allocated;
 }
@@ -186,15 +174,15 @@ UtHexCharToValue (
 {
     if (hc <= 0x39)
     {
-        return ((UINT8) (hc - 0x30));
+        return (hc - 0x30);
     }
 
     if (hc <= 0x46)
     {
-        return ((UINT8) (hc - 0x37));
+        return (hc - 0x37);
     }
 
-    return ((UINT8) (hc - 0x57));
+    return (hc - 0x57);
 }
 
 
@@ -242,7 +230,6 @@ UtConvertByteToHex (
 
 int
 DbgPrint (
-    UINT32                  Type,
     char                    *Fmt,
     ...)
 {
@@ -251,19 +238,8 @@ DbgPrint (
 
     va_start (Args, Fmt);
 
-    if (!Gbl_DebugFlag)
-    {
-        return 0;
-    }
-
-
-    if ((Type == ASL_PARSE_OUTPUT) &&
-        (!(AslCompilerdebug)))
-    {
-        return 0;
-    }
-
-    vfprintf (stderr, Fmt, Args);
+    if (Gbl_DebugFlag)
+        vfprintf (stderr, Fmt, Args);
 
     va_end (Args);
     return 0;
@@ -291,15 +267,13 @@ UtPrintFormattedName (
     UINT32                  Level)
 {
 
-    DbgPrint (ASL_TREE_OUTPUT,
-        "%*s %-16.16s", (3 * Level), " ",
-        yytname[ParseOpcode-255]);
+
+    DbgPrint ("%*s %-16.16s", (3 * Level), " ", yytname[ParseOpcode-255]);
 
 
     if (Level < TEXT_OFFSET)
     {
-        DbgPrint (ASL_TREE_OUTPUT,
-            "%*s", (TEXT_OFFSET - Level) * 3, " ");
+        DbgPrint ("%*s", (TEXT_OFFSET - Level) * 3, " ");
     }
 }
 
@@ -338,25 +312,21 @@ UtGetOpName (
 
 void
 UtDisplaySummary (
-    UINT32                  FileId)
+    FILE                    *Where)
 {
 
 
-    FlPrintFile (FileId,
-        "Compilation complete. %d Errors %d Warnings\n",
-         Gbl_ExceptionCount[ASL_ERROR], Gbl_ExceptionCount[ASL_WARNING]);
+    fprintf (Where, "Compilation complete. %d Errors %d Warnings\n",
+                Gbl_ExceptionCount[ASL_ERROR],
+                Gbl_ExceptionCount[ASL_WARNING]);
 
-    FlPrintFile (FileId,
-        "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
-        Gbl_Files[ASL_FILE_INPUT].Filename, Gbl_CurrentLineNumber,
-        Gbl_InputByteCount, TotalKeywords);
+    fprintf (Where, "ASL Input: %s - %d lines, %d bytes, %d keywords\n",
+                Gbl_InputFilename, Gbl_CurrentLineNumber, Gbl_InputByteCount, TotalKeywords);
 
     if ((Gbl_ExceptionCount[ASL_ERROR] == 0) || (Gbl_IgnoreErrors))
     {
-        FlPrintFile (FileId,
-            "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
-            Gbl_Files[ASL_FILE_AML_OUTPUT].Filename, Gbl_TableLength,
-            TotalNamedObjects, TotalExecutableOpcodes);
+        fprintf (Where, "AML Output: %s - %d bytes %d named objects %d executable opcodes\n\n",
+                    Gbl_OutputFilename, Gbl_TableLength, TotalNamedObjects, TotalExecutableOpcodes);
     }
 }
 
@@ -404,7 +374,7 @@ UtCheckIntegerRange (
     {
         sprintf (Buffer, "%s 0x%X-0x%X", ParseError, LowValue, HighValue);
         AslCompilererror (Buffer);
-        AcpiUtFree (Node);
+        free (Node);
         return NULL;
     }
 
