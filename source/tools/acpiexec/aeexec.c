@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -802,7 +802,7 @@ AeExceptionHandler (
 
     /*
      * Invoke the _ERR method if present
-     * 
+     *
      * Setup parameter object
      */
     ArgList.Count = 2;
@@ -826,7 +826,7 @@ AeExceptionHandler (
     {
         /* Override original status */
 
-        AmlStatus = (ACPI_STATUS) 
+        AmlStatus = (ACPI_STATUS)
             ((ACPI_OBJECT *) ReturnObj.Pointer)->Integer.Value;
 
         AcpiOsFree (ReturnObj.Pointer);
