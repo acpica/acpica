@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmcopy - Internal to external object translation utilities
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -602,6 +602,10 @@ AcpiCmBuildInternalSimpleObject (
 }
 
 
+#ifdef ACPI_FUTURE_IMPLEMENTATION
+
+/* Code to convert packages that are parameters to control methods */
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiCmBuildInternalPackageObject
@@ -767,6 +771,8 @@ AcpiCmBuildInternalPackageObject (
     }   /* while (1)  */
 }
 
+#endif /* Future implementation */
+
 
 /******************************************************************************
  *
@@ -797,6 +803,10 @@ AcpiCmBuildInternalObject (
         /*
          * Package objects contain other objects (which can be objects)
          * buildpackage does it all
+         *
+         * TBD: Package conversion must be completed and tested
+         * NOTE: this code converts packages as input parameters to
+         * control methods only.  This is a very, very rare case.
          */
 /*
         Status = AcpiCmBuildInternalPackageObject(InternalObj,
