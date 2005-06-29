@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  ******************************************************************************/
 
@@ -497,11 +497,9 @@ AcpiDbDumpNamespace (
                 return;
             }
         }
-
-        /* Alpha argument */
-
         else
         {
+            /* Alpha argument */
             /* The parameter is a name string that must be resolved to a Named obj*/
 
             SubtreeEntry = AcpiDbLocalNsLookup (StartArg);
@@ -624,7 +622,6 @@ AcpiDbSendNotify (
         AcpiOsPrintf ("Named object is not a device or a thermal object\n");
         break;
     }
-
 }
 
 
@@ -680,7 +677,6 @@ AcpiDbSetMethodData (
         return;
     }
 
-
     /* Create and initialize the new object */
 
     ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
@@ -691,7 +687,6 @@ AcpiDbSetMethodData (
     }
 
     ObjDesc->Integer.Value = Value;
-
 
     /* Store the new object into the target */
 
@@ -785,7 +780,6 @@ AcpiDbWalkForSpecificObjects (
 
     AcpiOsPrintf ("%32s", (char *) Buffer.Pointer);
     ACPI_MEM_FREE (Buffer.Pointer);
-
 
     /* Display short information about the object */
 
@@ -922,7 +916,6 @@ AcpiDbWalkAndMatchName (
         }
     }
 
-
     /* Get the full pathname to this object */
 
     Buffer.Length = ACPI_ALLOCATE_LOCAL_BUFFER;
@@ -1005,7 +998,6 @@ AcpiDbSetScope (
 
     AcpiDbPrepNamestring (Name);
 
-
     if (Name[0] == '\\')
     {
         /* Validate new scope from the root */
@@ -1036,7 +1028,6 @@ AcpiDbSetScope (
     AcpiGbl_DbScopeNode = Node;
     AcpiOsPrintf ("New scope: %s\n", AcpiGbl_DbScopeBuf);
     return;
-
 
 ErrorExit:
 
@@ -1098,7 +1089,6 @@ AcpiDbDisplayResources (
     {
         AcpiOsPrintf ("GetIrqRoutingTable failed: %s\n", AcpiFormatException (Status));
     }
-
     else
     {
         AcpiRsDumpIrqList ((UINT8 *) AcpiGbl_DbBuffer);
@@ -1129,7 +1119,6 @@ GetCrs:
         AcpiOsPrintf ("AcpiGetCurrentResources failed: %s\n", AcpiFormatException (Status));
         goto GetPrs;
     }
-
     else
     {
         AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE, AcpiGbl_DbBuffer));
@@ -1166,19 +1155,16 @@ GetPrs:
     {
         AcpiOsPrintf ("AcpiGetPossibleResources failed: %s\n", AcpiFormatException (Status));
     }
-
     else
     {
         AcpiRsDumpResourceList (ACPI_CAST_PTR (ACPI_RESOURCE, AcpiGbl_DbBuffer));
     }
-
 
 Cleanup:
 
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
     return;
 #endif
-
 }
 
 
@@ -1235,7 +1221,6 @@ AcpiDbIntegrityWalk (
         }
     }
 
-
     return (AE_OK);
 }
 
@@ -1263,7 +1248,6 @@ AcpiDbCheckIntegrity (void)
                     AcpiDbIntegrityWalk, (void *) &Info, NULL);
 
     AcpiOsPrintf ("Verified %d namespace nodes with %d Objects\n", Info.Nodes, Info.Objects);
-
 }
 
 
@@ -1289,11 +1273,11 @@ AcpiDbGenerateGpe (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
 
 
-    GpeNumber   = ACPI_STRTOUL (GpeArg, NULL, 10);
-    BlockNumber = ACPI_STRTOUL (BlockArg, NULL, 10);
+    GpeNumber   = ACPI_STRTOUL (GpeArg, NULL, 0);
+    BlockNumber = ACPI_STRTOUL (BlockArg, NULL, 0);
 
 
-    GpeEventInfo = AcpiEvGetGpeEventInfo (NULL, GpeNumber);
+    GpeEventInfo = AcpiEvGetGpeEventInfo ((void *) BlockNumber, GpeNumber);
     if (!GpeEventInfo)
     {
         AcpiOsPrintf ("Invalid GPE\n");
@@ -1301,7 +1285,6 @@ AcpiDbGenerateGpe (
     }
 
     AcpiEvGpeDispatch (GpeEventInfo, GpeNumber);
-
 }
 
 #endif /* ACPI_DEBUGGER */
