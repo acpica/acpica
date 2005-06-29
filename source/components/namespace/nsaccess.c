@@ -101,8 +101,6 @@
 #include <amlcode.h>
 #include <interpreter.h>
 #include <namespace.h>
-#include <stdlib.h>
-#include <string.h>
 
 
 #define _THIS_MODULE        "nsaccess.c"
