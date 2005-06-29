@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amresnte - AML Interpreter object resolution
- *              $Revision: 1.22 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -157,7 +157,9 @@
 
 ACPI_STATUS
 AcpiAmlResolveNodeToValue (
-    ACPI_NAMESPACE_NODE     **StackPtr)
+    ACPI_NAMESPACE_NODE     **StackPtr,
+    ACPI_WALK_STATE         *WalkState)
+
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *ValDesc = NULL;
@@ -168,7 +170,7 @@ AcpiAmlResolveNodeToValue (
     BOOLEAN                 Locked;
     BOOLEAN                 AttachedAmlPointer = FALSE;
     UINT8                   AmlOpcode = 0;
-    UINT32                  TempVal;
+    ACPI_INTEGER            TempVal;
     OBJECT_TYPE_INTERNAL    ObjectType;
 
 
@@ -346,7 +348,7 @@ AcpiAmlResolveNodeToValue (
         if (ACPI_TYPE_NUMBER != ValDesc->Common.Type)
         {
             DEBUG_PRINT (ACPI_ERROR,
-                ("AmlResolveToValue: Object not a Number, type %X\n", 
+                ("AmlResolveToValue: Object not a Number, type %X\n",
                 ValDesc->Common.Type));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
@@ -459,7 +461,7 @@ AcpiAmlResolveNodeToValue (
         /* Set Index value to select proper Data register */
         /* perform the update */
 
-        Status = AcpiAmlAccessNamedField (ACPI_WRITE,  
+        Status = AcpiAmlAccessNamedField (ACPI_WRITE,
                     ValDesc->BankField.BankSelect, &ValDesc->BankField.Value,
                     sizeof (ValDesc->BankField.Value));
 
@@ -644,7 +646,7 @@ AcpiAmlResolveNodeToValue (
 
         case AML_ONES_OP:
 
-            TempVal = ACPI_UINT32_MAX;
+            TempVal = ACPI_INTEGER_MAX;
             break;
 
 
@@ -667,6 +669,9 @@ AcpiAmlResolveNodeToValue (
 
         ObjDesc->Number.Value = TempVal;
 
+        /* Truncate value if we are executing from a 32-bit ACPI table */
+
+        AcpiAmlTruncateFor32bitTable (ObjDesc, WalkState);
         break;
 
 
