@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.81 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -127,7 +127,7 @@
         MODULE_NAME         ("nsdump")
 
 
-#ifdef ACPI_DEBUG
+#if defined(ACPI_DEBUG) || defined(ENABLE_DEBUGGER)
 
 /****************************************************************************
  *
@@ -305,7 +305,7 @@ AcpiNsDumpOneObject (
 
     if (!AcpiCmValidAcpiName (ThisNode->Name))
     {
-        REPORT_WARNING (("Invalid ACPI Name 0x%X\n", ThisNode->Name));
+        REPORT_WARNING (("Invalid ACPI Name %08X\n", ThisNode->Name));
     }
 
     /*
@@ -338,10 +338,10 @@ AcpiNsDumpOneObject (
         break;
 
 
-    case ACPI_TYPE_NUMBER:
+    case ACPI_TYPE_INTEGER:
 
         DEBUG_PRINT_RAW (TRACE_TABLES, (" N:%X\n",
-                    ((ACPI_OPERAND_OBJECT  *) ThisNode->Object)->Number.Value));
+                    ((ACPI_OPERAND_OBJECT  *) ThisNode->Object)->Integer.Value));
         break;
 
 
@@ -409,13 +409,13 @@ AcpiNsDumpOneObject (
 
             if (ObjType > INTERNAL_TYPE_MAX)
             {
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [UNKNOWN])\n", ObjType));
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type %X [UNKNOWN])\n", ObjType));
                 BytesToDump = 32;
             }
 
             else
             {
-                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type 0x%X [%s])\n",
+                DEBUG_PRINT_RAW (TRACE_TABLES, ("(Ptr to ACPI Object type %X [%s])\n",
                                     ObjType, AcpiCmGetTypeName (ObjType)));
                 BytesToDump = sizeof (ACPI_OPERAND_OBJECT);
             }
