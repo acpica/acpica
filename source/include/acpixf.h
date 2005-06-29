@@ -306,6 +306,14 @@ AcpiInstallGpeHandler (
     void                    *Context);
 
 ACPI_STATUS
+AcpiAcquireGlobalLock (
+    void);
+
+ACPI_STATUS
+AcpiReleaseGlobalLock (
+    void);
+
+ACPI_STATUS
 AcpiRemoveGpeHandler (
     UINT32                  GpeNumber,
     GPE_HANDLER             Handler);
