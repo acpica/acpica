@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.58 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -116,8 +116,6 @@
  *
  *****************************************************************************/
 
-//    \"([^\"]|(\\\"))*\"         { literal (); return STRING_LITERAL; }
-
 
 #include <stdlib.h>
 #include <string.h>
@@ -135,13 +133,13 @@ YYSTYPE AslCompilerlval;
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslscan")
-void
+char
 comment (void);
-void
+char
 comment2 (void);
 void
 count (int type);
-void
+char
 literal (void);
 void
 copy (void);
@@ -173,10 +171,10 @@ NamePathTail                [.]{NameSeg}
 [ \t]                       { count (0); }
 
 
-"/*"                        { comment(); }
-"//"                        { comment2(); }
+"/*"                        { if (!comment ()) yyterminate (); }
+"//"                        { if (!comment2 ()) yyterminate (); }
 
-"\""                        { literal (); return (PARSEOP_STRING_LITERAL); }
+"\""                        { if (literal ()) return (PARSEOP_STRING_LITERAL); else yyterminate (); }
 
 
 0[xX]{HexDigitChar}+ |
@@ -785,7 +783,7 @@ count (
  *
  ******************************************************************************/
 
-void
+char
 comment (void)
 {
     char                c;
@@ -803,6 +801,11 @@ loop:
     {
         InsertLineBuffer (c);
         c1 = c;
+    }
+
+    if (c == EOF)
+    {
+        goto EarlyEOF;
     }
 
     /*
@@ -827,7 +830,24 @@ loop:
         goto loop;
     }
 
+    if (c1 == EOF)
+    {
+        goto EarlyEOF;
+    }
+
     InsertLineBuffer (c1);
+    return TRUE;
+
+
+EarlyEOF:
+    /*
+     * Premature End-Of-File
+     */
+    AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                    Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                    Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+    return (FALSE);
 }
 
 
@@ -843,7 +863,7 @@ loop:
  *
  ******************************************************************************/
 
-void
+char
 comment2 (void)
 {
     char                c;
@@ -857,7 +877,20 @@ comment2 (void)
         InsertLineBuffer (c);
     }
 
+    if (c == EOF)
+    {
+        /*
+         * Premature End-Of-File
+         */
+        AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
+                        Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                        Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                        Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+        return (FALSE);
+    }
+
     InsertLineBuffer (c);
+    return (TRUE);
 }
 
 
@@ -878,7 +911,7 @@ comment2 (void)
 #define ASL_OCTAL_CONSTANT      2
 #define ASL_HEX_CONSTANT        3
 
-void
+char
 literal (void)
 {
     char                *s = MsgBuffer;
@@ -980,9 +1013,13 @@ DoCharacter:
                     continue;
                 }
 
-                /* Unknown escape sequence -- just ignore it */
+                /* Unknown escape sequence issue warning, but use the character */
 
-                continue;
+                AslCommonError (ASL_WARNING, ASL_MSG_INVALID_ESCAPE,
+                                Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                                Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                                Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+				break;
             }
             break;
 
@@ -1075,6 +1112,15 @@ DoCharacter:
         s++;
     }
 
+    /*
+     * Premature End-Of-File
+     */
+    AslCommonError (ASL_ERROR, ASL_MSG_EARLY_EOF,
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                    Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                    Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
+    return (FALSE);
+
 
 CompletedString:
     /*
@@ -1089,12 +1135,12 @@ CompletedString:
                         Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
                         Gbl_CurrentLineOffset, Gbl_CurrentColumn,
                         Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-        return;
+        return (FALSE);
     }
 
     ACPI_STRCPY (CleanString, MsgBuffer);
     AslCompilerlval.s = CleanString;
+    return (TRUE);
 }
-
 
 
