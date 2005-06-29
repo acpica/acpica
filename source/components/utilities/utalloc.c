@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local cache and memory allocation routines
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -169,7 +169,7 @@ AcpiUtReleaseToCache (
         /* Mark the object as cached */
 
         MEMSET (Object, 0xCA, CacheInfo->ObjectSize);
-        ((ACPI_OPERAND_OBJECT *) Object)->Common.DataType = ACPI_CACHED_OBJECT;
+        ACPI_SET_DESCRIPTOR_TYPE (Object, ACPI_CACHED_OBJECT);
 
         /* Put the object at the head of the cache list */
 
@@ -617,8 +617,7 @@ AcpiUtDumpAllocations (
 
                 /* Most of the elements will be internal objects. */
 
-                switch (((ACPI_OPERAND_OBJECT  *)
-                    (&Element->UserSpace))->Common.DataType)
+                switch (ACPI_GET_DESCRIPTOR_TYPE (&Element->UserSpace))
                 {
                 case ACPI_DESC_TYPE_INTERNAL:
                     AcpiOsPrintf ("ObjType %12.12s R%d",
