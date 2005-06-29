@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.1 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,7 @@
 
 #include "AslCompiler.h"
 #include "AslCompiler.y.h"
+#include "aslresource.h"
 #include "amlcode.h"
 
 
@@ -136,129 +137,113 @@
  ******************************************************************************/
 
 void
-CgDoWordBusNumberDescriptor (
+RsCreateBitField (
     ASL_PARSE_NODE              *Node,
-    ASL_RESOURCE_DESC           **DescriptorPtr)
+    char                        *Name,
+    UINT32                      ByteOffset,
+    UINT32                      BitOffset)
 {
-    ASL_RESOURCE_DESC           *Descriptor = *DescriptorPtr;
-    ASL_PARSE_NODE              *InitializerNode;
-    UINT32                      DescriptorSize = DEFAULT_RESOURCE_DESC_SIZE;
-    UINT32                      StringLength = 0;
-    UINT32                      OptionIndex = 0;
-    UINT32                      i;
 
+
+    Node->ExternalName      = Name;
+    Node->Value.Integer32   = (ByteOffset * 8) + BitOffset;
+    Node->Flags             |= NODE_IS_RESOURCE_FIELD;
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+RsCreateByteField (
+    ASL_PARSE_NODE              *Node,
+    char                        *Name,
+    UINT32                      ByteOffset)
+{
+
+
+    Node->ExternalName      = Name;
+    Node->Value.Integer32   = ByteOffset;
+    Node->Flags             |= NODE_IS_RESOURCE_FIELD;
+}
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+void
+RsSetFlagBits (
+    UINT8                       *Flags,
+    ASL_PARSE_NODE              *Node,
+    UINT8                       Position,
+    UINT8                       Default)
+{
+
+
+    if (Node->ParseOpcode == DEFAULT_ARG)
+    {
+        /* Use the default bit */
+
+        *Flags |= (Default << Position);
+    }
+
+    else
+    {
+        /* Use the bit specified in the initialization node */
+
+        *Flags |= (Node->Value.Integer8 << Position);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    
+ *
+ * PARAMETERS:  
+ *
+ * RETURN:      
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+ASL_PARSE_NODE *
+RsCompleteNodeAndGetNext (
+    ASL_PARSE_NODE              *Node)
+{
+
+
+    /* Mark this node unused */
 
     Node->ParseOpcode = DEFAULT_ARG;
 
-    Descriptor->Was.DescriptorType = RESOURCE_DESC_WORD_ADDRESS_SPACE;
-    Descriptor->Was.Length = 13;
-    Descriptor->Was.ResourceType = RESOURCE_TYPE_BUS_NUMBER_RANGE;
+    /* Move on to the next peer node in the initializer list */
 
-
-    /* TBD: add support for defaults if node= DEFAULT_ARG */
-
-    InitializerNode = Node->Child;
-    for (i = 0; i < 12; i++)
-    {
-        switch (i)
-        {
-        case 0: /* Resource Type */
-
-            Descriptor->Was.Flags |= (InitializerNode->Value.Integer8 & 0x01);
-            break;
-
-        case 1: /* MinType */
-
-            Descriptor->Was.Flags |= ((InitializerNode->Value.Integer8 & 0x01) << 2);
-            break;
-
-        case 2: /* MaxType */
-
-            Descriptor->Was.Flags |= ((InitializerNode->Value.Integer8 & 0x01) << 3);
-            break;
-
-        case 3: /* DecodeType */
-
-            Descriptor->Was.Flags |= ((InitializerNode->Value.Integer8 & 0x01) << 1);
-            break;
-
-        case 4: /* Address Granularity */
-
-            Descriptor->Was.Granularity = InitializerNode->Value.Integer16;
-            break;
-
-        case 5: /* Min Address */
-
-            Descriptor->Was.AddressMin = InitializerNode->Value.Integer16;
-            break;
-
-        case 6: /* Max Address */
-
-            Descriptor->Was.AddressMax = InitializerNode->Value.Integer16;
-            break;
-
-        case 7: /* Translation Offset */    
-
-            Descriptor->Was.TranslationOffset = InitializerNode->Value.Integer16;
-            break;
-
-        case 8: /* Address Length */
-
-            Descriptor->Was.AddressLength = InitializerNode->Value.Integer16;
-            break;
-
-        case 9: /* ResSourceIndex [Optional Field - BYTE] */
-
-            if (InitializerNode->ParseOpcode != DEFAULT_ARG)
-            {
-                Descriptor->Was.OptionalFields[0] = InitializerNode->Value.Integer8;
-                OptionIndex++;
-            }
-            break;
-
-        case 10: /* ResSource  [Optional Field - STRING] */
-
-            if ((InitializerNode->ParseOpcode != DEFAULT_ARG) &&
-                (InitializerNode->Value.Pointer))
-            {
-                StringLength = strlen (InitializerNode->Value.Pointer);
-                if (StringLength)
-                {
-                    DescriptorSize += StringLength;                     /* Null terminator already accounted for */
-                    Descriptor = realloc (Descriptor, DescriptorSize);
-                    if (!Descriptor)
-                    {
-                        printf ("no memory\n");
-                        return;
-                    }
-                    strcpy (&Descriptor->Was.OptionalFields[OptionIndex], 
-                            InitializerNode->Value.Pointer);
-                }
-            }
-            break;
-
-        case 11: /* ResourceTag */
-
-            /* TBD:  What to do with this? Just mark unused for now */
-            break;
-
-        }
-
-        /* Mark this node unused */
-
-        InitializerNode->ParseOpcode = DEFAULT_ARG;
-
-        /* Move on to the next peer node in the initializer list */
-
-        InitializerNode = ASL_GET_PEER_NODE (InitializerNode);
-    }
-
-
-
-    *DescriptorPtr = (ASL_RESOURCE_DESC *) (((char *) Descriptor->Was.OptionalFields) + 
-                            (OptionIndex + StringLength));
-    return;
+    return (ASL_GET_PEER_NODE (Node));
 }
+
+
 
 
 /*******************************************************************************
@@ -287,13 +272,8 @@ CgDoResourceTemplate (
 
     /* Allocate a worst-case descriptor */
 
-    Descriptor = calloc (DEFAULT_RESOURCE_DESC_SIZE, 1);
+    Descriptor = UtLocalCalloc (DEFAULT_RESOURCE_DESC_SIZE);
     StartOfDescriptor = Descriptor;
-    if (!Descriptor)
-    {
-        printf ("out of memory\n");
-        return;
-    }
 
     /* ResourceTemplate Opcode is first (Node) */
     /* Buffer Length node is first child */
@@ -309,7 +289,7 @@ CgDoResourceTemplate (
     DescriptorTypeNode = ASL_GET_PEER_NODE (BufferNode);
 
 
-    /* Process all resource descriptor in the list */
+    /* Process all resource descriptors in the list */
 
     while (DescriptorTypeNode)
     {
@@ -317,8 +297,85 @@ CgDoResourceTemplate (
 
         switch (DescriptorTypeNode->ParseOpcode)
         {
+        case DMA:
+            RsDoDmaDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case DWORDIO:
+            RsDoDwordIoDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case DWORDMEMORY:
+            RsDoDwordMemoryDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case ENDDEPENDENTFN:
+            RsDoEndDependentDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case FIXEDIO:
+            RsDoFixedIoDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case INTERRUPT:
+            RsDoInterruptDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case IO:
+            CgDoIoDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case IRQ:
+            RsDoIrqDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case IRQNOFLAGS:
+            RsDoIrqNoFlagsDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case MEMORY24:
+            RsDoMemory24Descriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case MEMORY32:
+            RsDoMemory32Descriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case MEMORY32FIXED:
+            RsDoMemory32FixedDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case QWORDIO:
+            RsDoQwordIoDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case QWORDMEMORY:
+            RsDoQwordMemoryDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case REGISTER:
+            break;
+
+        case STARTDEPENDENTFN:
+            RsDoStartDependentDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case STARTDEPENDENTFN_NOPRI:
+            RsDoStartDependentNoPriDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case VENDORLONG:
+            break;
+
+        case VENDORSHORT:
+            break;
+
         case WORDBUSNUMBER:
             CgDoWordBusNumberDescriptor (DescriptorTypeNode, &Descriptor);
+            break;
+
+        case WORDIO:
+            RsDoWordIoDescriptor (DescriptorTypeNode, &Descriptor);
             break;
 
         default:
@@ -327,20 +384,44 @@ CgDoResourceTemplate (
             break;
         }
 
+
+
+        /* 
+         * Mark original node as unused, but head of a resource descriptor.
+         * This allows the resource to be installed in the namespace so that
+         * references to the descriptor can be resolved.
+         */
+        DescriptorTypeNode->ParseOpcode = DEFAULT_ARG;
+        DescriptorTypeNode->Flags = NODE_IS_RESOURCE_DESC;
+
+
         /* Get the next descriptor in the list */
 
         DescriptorTypeNode = ASL_GET_PEER_NODE (DescriptorTypeNode);
+        if (DescriptorTypeNode)
+        {
+            ValidDataLength = (((char *) Descriptor) - ((char *) StartOfDescriptor));
+
+            StartOfDescriptor = UtLocalRealloc (StartOfDescriptor, 
+                                    ValidDataLength + DEFAULT_RESOURCE_DESC_SIZE);
+
+            Descriptor = (ASL_RESOURCE_DESC *) (((char *) StartOfDescriptor) + ValidDataLength);
+        }
     }
 
-    /* Insert the EndTag descriptor after all other descriptors have been processed */
+
+
+    /*
+     * Insert the EndTag descriptor after all other descriptors have been processed 
+     */
 
     Descriptor->Et.DescriptorType = RESOURCE_DESC_END_TAG;
     Descriptor->Et.Checksum = 0;
 
-
     /* Length of the entire buffer is the end of the EndTag minus the start pointer */
 
     ValidDataLength = ((char *) &Descriptor->Et.Checksum - (char *) StartOfDescriptor + 1);
+
 
     /*
      * Transform the nodes into the following
