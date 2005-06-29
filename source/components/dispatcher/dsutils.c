@@ -398,7 +398,7 @@ DsCreateOperand (
 
             DEBUG_PRINT (TRACE_DISPATCH, ("DsCreateOperand: Null namepath: Arg=%p\n", Arg));
 
-            /* TBD: anything else needed for the zero op lvalue? */
+            /* TBD: [Investigate] anything else needed for the zero op lvalue? */
         }
 
         else
@@ -571,7 +571,7 @@ DsResolveOperands (
      */
     
     /*
-     * TBD: Note from previous parser:
+     * TBD: [Investigate] Note from previous parser:
      *   RefOf problem with AmlResolveToValue() conversion.
      */
 

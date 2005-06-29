@@ -195,7 +195,7 @@ DsInitOneObject (
 
         Status = DsParseMethod (ObjHandle);
 
-        /* TBD: what do we do with an error? */
+        /* TBD: [Errors] what do we do with an error? */
 
         if (ACPI_FAILURE (Status))
         {
@@ -497,7 +497,7 @@ DsBuildInternalSimpleObj (
 
         /*
          * The reference will be a Reference
-         * TBD: unless we really need a separate type of INTERNAL_TYPE_reference
+         * TBD: [Restructure] unless we really need a separate type of INTERNAL_TYPE_reference
          *      change DsMapOpcodeToDataType to handle this case 
          */
         Type = INTERNAL_TYPE_Reference;
