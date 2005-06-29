@@ -1,9 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
  * Module Name: dbxface - AML Debugger external interfaces
- *              $Revision: 1.26 $
+ *              $Revision: 1.31 $
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -128,30 +128,33 @@
 #ifdef ENABLE_DEBUGGER
 
 #define _COMPONENT          DEBUGGER
-        MODULE_NAME         ("dbxface");
+        MODULE_NAME         ("dbxface")
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbSingleStep
  *
- * PARAMETERS:
+ * PARAMETERS:  WalkState       - Current walk
+ *              Op              - Current executing op
+ *              OpType          - Type of the current AML Opcode
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Called just before execution of an AML opcode.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 ACPI_STATUS
 AcpiDbSingleStep (
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         *Op,
+    ACPI_PARSE_OBJECT       *Op,
     UINT8                   OpType)
 {
-    ACPI_GENERIC_OP         *Next;
+    ACPI_PARSE_OBJECT       *Next;
     ACPI_STATUS             Status = AE_OK;
     UINT32                  OriginalDebugLevel;
+    ACPI_PARSE_OBJECT       *DisplayOp;
 
 
     /* Is there a breakpoint set? */
@@ -228,9 +231,20 @@ AcpiDbSingleStep (
         Next = Op->Next;
         Op->Next = NULL;
 
+
+        DisplayOp = Op;
+        if (Op->Parent)
+        {
+            if ((Op->Parent->Opcode == AML_IF_OP) ||
+                (Op->Parent->Opcode == AML_WHILE_OP))
+            {
+                DisplayOp = Op->Parent;
+            }
+        }
+
         /* Now we can display it */
 
-        AcpiDbDisplayOp (Op, ACPI_UINT32_MAX);
+        AcpiDbDisplayOp (WalkState, DisplayOp, ACPI_UINT32_MAX);
 
         if ((Op->Opcode == AML_IF_OP) ||
             (Op->Opcode == AML_WHILE_OP))
@@ -247,6 +261,7 @@ AcpiDbSingleStep (
 
         else if (Op->Opcode == AML_ELSE_OP)
         {
+            /* TBD */
         }
 
 
@@ -299,7 +314,7 @@ AcpiDbSingleStep (
 
         /* TBD: [Future] don't kill the user breakpoint! */
 
-        WalkState->MethodBreakpoint = Op->AmlOffset + 1;  /* Must be non-zero! */
+        WalkState->MethodBreakpoint = /* Op->AmlOffset + */ 1;  /* Must be non-zero! */
     }
 
 
@@ -357,17 +372,17 @@ AcpiDbSingleStep (
 }
 
 
-/******************************************************************************
+/*******************************************************************************
  *
  * FUNCTION:    AcpiDbInitialize
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Init and start debugger
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 int
 AcpiDbInitialize (void)
