@@ -381,7 +381,6 @@ AmlResolveObjectToValue (
 
             StackDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
             StackDesc->Number.Value = 0;
-            Status = AE_OK;
             break;
 
 
@@ -389,7 +388,6 @@ AmlResolveObjectToValue (
 
             StackDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
             StackDesc->Number.Value = 1;
-            Status = AE_OK;
             break;
 
 
@@ -397,7 +395,6 @@ AmlResolveObjectToValue (
 
             StackDesc->Common.Type = (UINT8) ACPI_TYPE_Number;
             StackDesc->Number.Value = 0xFFFFFFFF;
-            Status = AE_OK;
             break;
 
 
@@ -417,26 +414,27 @@ AmlResolveObjectToValue (
                 {
                     /*
                      * Valid obj descriptor, copy pointer to return value
+                     * (i.e., dereference the package index)
                      */
                     CmRemoveReference (StackDesc);     /* Delete the Reference object */
                     CmAddReference (ObjDesc);          /* Increment the return value object */
                     *StackPtr = ObjDesc;
-                    Status = AE_OK;
                 }
 
                 else
                 {
-                    /* Invalid obj descriptor */
+                    /* NULL object descriptor means an unitialized element of the package, can't deref it */
 
-                    DEBUG_PRINT (ACPI_ERROR, ("AmlResolveObjectToValue: Null package ptr in obj %p\n", StackDesc));
-                    Status = AE_AML_INTERNAL;
+                    DEBUG_PRINT (ACPI_ERROR, ("AmlResolveObjectToValue: Attempt to deref an Index to NULL pkg element Idx=%p\n", StackDesc));
+                    Status = AE_AML_UNINITIALIZED_ELEMENT;
                 }
                 break;
 
             default:
-                /* Invalid obj descriptor */
+                /* Invalid reference OBJ*/
 
-                DEBUG_PRINT (ACPI_ERROR, ("AmlResolveObjectToValue: Bad target type in obj %p\n", StackDesc));
+                DEBUG_PRINT (ACPI_ERROR, ("AmlResolveObjectToValue: Unknown TargetType %d in Index/Reference obj %p\n", 
+                                StackDesc->Reference.TargetType, StackDesc));
                 Status = AE_AML_INTERNAL;   
                 break;
             }
@@ -452,8 +450,8 @@ AmlResolveObjectToValue (
 
         default:
 
-            DEBUG_PRINT (ACPI_ERROR, ("AmlResolveObjectToValue: Unknown Reference subtype %02x\n",
-                            Opcode));
+            DEBUG_PRINT (ACPI_ERROR, ("AmlResolveObjectToValue: Unknown Reference object subtype %02x in %p\n",
+                            Opcode, StackDesc));
             Status = AE_AML_INTERNAL;
 
         }   /* switch (Opcode) */
