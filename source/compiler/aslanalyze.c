@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -491,6 +491,89 @@ AnGetBtype (
 }
 
 
+#define ACPI_VALID_RESERVED_NAME_MAX    0x80000000
+#define ACPI_NOT_RESERVED_NAME          ACPI_UINT32_MAX
+#define ACPI_PREDEFINED_NAME            (ACPI_UINT32_MAX - 1)
+#define ACPI_EVENT_RESERVED_NAME        (ACPI_UINT32_MAX - 2)
+#define ACPI_COMPILER_RESERVED_NAME     (ACPI_UINT32_MAX - 3)
+
+UINT32
+AnCheckForReservedName (
+    ACPI_PARSE_OBJECT       *Op,
+    char                    *Name)
+{
+    UINT32                  i;
+
+    /* All reserved names are prefixed with a single underscore */
+
+    if (Name[0] != '_')
+    {
+        return (ACPI_NOT_RESERVED_NAME);
+    }
+
+    /* Check for a standard reserved method name */
+
+    for (i = 0; ReservedMethods[i].Name; i++)
+    {
+        if (!ACPI_STRCMP (Name, ReservedMethods[i].Name))
+        {
+            if (ReservedMethods[i].Flags & ASL_RSVD_SCOPE)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
+                return (ACPI_PREDEFINED_NAME);
+            }
+            else if (ReservedMethods[i].Flags & ASL_RSVD_RESOURCE_NAME)
+            {
+                AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
+                return (ACPI_PREDEFINED_NAME);
+            }
+
+            /* Return index into reserved array */
+
+            return i;
+        }
+    }
+
+    /*
+     * Now check for the "special" reserved names --
+     * GPE:  _Lxx
+     * GPE:  _Exx
+     * EC:   _Qxx
+     */
+    if ((Name[1] == 'L') ||
+        (Name[1] == 'E') ||
+        (Name[1] == 'Q'))
+    {
+        /* The next two characters must be hex digits */
+
+        if ((isxdigit (Name[2])) &&
+            (isxdigit (Name[3])))
+        {
+            return (ACPI_EVENT_RESERVED_NAME);
+        }
+    }
+
+
+    /* Check for the names reserved for the compiler itself: _T_x */
+
+    else if ((Op->Asl.ExternalName[1] == 'T') &&
+             (Op->Asl.ExternalName[2] == '_'))
+    {
+        AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
+        return (ACPI_COMPILER_RESERVED_NAME);
+    }
+
+    /*
+     * The name didn't match any of the known reserved names.  Flag it as a
+     * warning, since the entire namespace starting with an underscore is
+     * reserved by the ACPI spec.
+     */
+    AslError (ASL_WARNING, ASL_MSG_UNKNOWN_RESERVED_NAME, Op, Op->Asl.ExternalName);
+
+    return (ACPI_NOT_RESERVED_NAME);
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AnCheckForReservedMethod
@@ -510,112 +593,70 @@ AnCheckForReservedMethod (
     ACPI_PARSE_OBJECT       *Op,
     ASL_METHOD_INFO         *MethodInfo)
 {
-    UINT32                  i;
+    UINT32                  Index;
 
 
-    /* All reserved names are prefixed with a single underscore */
+    /* Check for a match against the reserved name list */
 
-    if (Op->Asl.ExternalName[0] != '_')
+    Index = AnCheckForReservedName (Op, Op->Asl.ExternalName);
+
+    switch (Index)
     {
-        return;
-    }
+    case ACPI_NOT_RESERVED_NAME:
+    case ACPI_PREDEFINED_NAME:
+    case ACPI_COMPILER_RESERVED_NAME:
 
-    /* Check for a standard reserved method name */
+        /* Just return, nothing to do */
+        break;
 
-    for (i = 0; ReservedMethods[i].Name; i++)
-    {
-        if (!ACPI_STRCMP (Op->Asl.ExternalName, ReservedMethods[i].Name))
-        {
-            if (ReservedMethods[i].Flags & ASL_RSVD_SCOPE)
-            {
-                AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
-            }
-            else if (ReservedMethods[i].Flags & ASL_RSVD_RESOURCE_NAME)
-            {
-                AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
-            }
-            else
-            {
-                Gbl_ReservedMethods++;
 
-                /* Matched a reserved method name */
-
-                if (MethodInfo->NumArguments != ReservedMethods[i].NumArguments)
-                {
-                    sprintf (MsgBuffer, " %s requires %d",
-                                ReservedMethods[i].Name,
-                                ReservedMethods[i].NumArguments);
-
-                    if (MethodInfo->NumArguments > ReservedMethods[i].NumArguments)
-                    {
-                        AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op, MsgBuffer);
-                    }
-                    else
-                    {
-                        AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_LO, Op, MsgBuffer);
-                    }
-                }
-
-                if (MethodInfo->NumReturnNoValue &&
-                    ReservedMethods[i].Flags & ASL_RSVD_RETURN_VALUE)
-                {
-                    sprintf (MsgBuffer, "%s",
-                                ReservedMethods[i].Name);
-
-                    AslError (ASL_WARNING, ASL_MSG_RESERVED_RETURN_VALUE, Op, MsgBuffer);
-                }
-            }
-
-            return;
-        }
-    }
-
-    /*
-     * Now check for the "special" reserved names --
-     * GPE:  _Lxx
-     * GPE:  _Exx
-     * EC:   _Qxx
-     */
-    if ((Op->Asl.ExternalName[1] == 'L') ||
-        (Op->Asl.ExternalName[1] == 'E') ||
-        (Op->Asl.ExternalName[1] == 'Q'))
-    {
+    case ACPI_EVENT_RESERVED_NAME:
 
         Gbl_ReservedMethods++;
 
-        /* The next two characters must be hex digits */
+        /* NumArguments must be zero for all _Lxx, _Exx, and _Qxx methods */
 
-        if ((isxdigit (Op->Asl.ExternalName[2])) &&
-            (isxdigit (Op->Asl.ExternalName[3])) &&
-            (MethodInfo->NumArguments != 0))
+        if (MethodInfo->NumArguments != 0)
         {
             sprintf (MsgBuffer, " %s requires %d",
                         Op->Asl.ExternalName, 0);
 
             AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op, MsgBuffer);
         }
+        break;
 
-        return;
+
+    default:
+
+        Gbl_ReservedMethods++;
+
+        /* Matched a reserved method name */
+
+        if (MethodInfo->NumArguments != ReservedMethods[Index].NumArguments)
+        {
+            sprintf (MsgBuffer, " %s requires %d",
+                        ReservedMethods[Index].Name,
+                        ReservedMethods[Index].NumArguments);
+
+            if (MethodInfo->NumArguments > ReservedMethods[Index].NumArguments)
+            {
+                AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op, MsgBuffer);
+            }
+            else
+            {
+                AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_LO, Op, MsgBuffer);
+            }
+        }
+
+        if (MethodInfo->NumReturnNoValue &&
+            ReservedMethods[Index].Flags & ASL_RSVD_RETURN_VALUE)
+        {
+            sprintf (MsgBuffer, "%s", ReservedMethods[Index].Name);
+
+            AslError (ASL_WARNING, ASL_MSG_RESERVED_RETURN_VALUE, Op, MsgBuffer);
+        }
+        break;
     }
-
-
-    /* Check for the names reserved for the compiler itself: _T_x */
-
-    if ((Op->Asl.ExternalName[1] == 'T') &&
-        (Op->Asl.ExternalName[2] == '_'))
-    {
-        AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
-        return;
-    }
-
-
-    /*
-     * The name didn't match any of the known reserved names.  Flag it as a
-     * warning, since the entire namespace starting with an underscore is
-     * reserved by the ACPI spec.
-     */
-    AslError (ASL_WARNING, ASL_MSG_UNKNOWN_RESERVED_NAME, Op, Op->Asl.ExternalName);
-    return;
 }
 
 
@@ -823,6 +864,79 @@ AnMethodAnalysisWalkBegin (
         {
             AslError (ASL_ERROR, ASL_MSG_NO_WHILE, Op, NULL);
         }
+        break;
+
+
+    case PARSEOP_DEVICE:
+    case PARSEOP_EVENT:
+    case PARSEOP_MUTEX:
+    case PARSEOP_OPERATIONREGION:
+    case PARSEOP_POWERRESOURCE:
+    case PARSEOP_PROCESSOR:
+    case PARSEOP_THERMALZONE:
+
+        /* 
+         * The first operand is a name to be created in the namespace.
+         * Check against the reserved list.
+         */
+        i = AnCheckForReservedName (Op, Op->Asl.ExternalName);
+        if (i < ACPI_VALID_RESERVED_NAME_MAX)
+        {
+            AslError (ASL_ERROR, ASL_MSG_RESERVED_USE, Op, Op->Asl.ExternalName);
+        }
+        break;
+
+
+    case PARSEOP_NAME:
+
+        i = AnCheckForReservedName (Op, Op->Asl.ExternalName);
+        if (i < ACPI_VALID_RESERVED_NAME_MAX)
+        {
+            if (ReservedMethods[i].NumArguments > 0)
+            {
+                /*
+                 * This reserved name must be a control method because
+                 * it must have arguments
+                 */
+                AslError (ASL_ERROR, ASL_MSG_RESERVED_METHOD, Op, "with arguments");
+            }
+
+            /*
+             * Typechecking for _HID
+             */
+            else if (!ACPI_STRCMP ("_HID", ReservedMethods[i].Name))
+            {
+                /* Examine the second operand to typecheck it */
+
+                Next = Op->Asl.Child->Asl.Next;
+
+                if ((Next->Asl.ParseOpcode != PARSEOP_INTEGER) &&
+                    (Next->Asl.ParseOpcode != PARSEOP_STRING_LITERAL))
+                {
+                    /* _HID must be a string or an integer */
+
+                    AslError (ASL_ERROR, ASL_MSG_RESERVED_OPERAND_TYPE, Next, "String or Integer");
+                }
+
+                if (Next->Asl.ParseOpcode == PARSEOP_STRING_LITERAL)
+                {
+                    /*
+                     * _HID is a string, all characters must be alphanumeric.  
+                     * One of the things we want to catch here is the use of
+                     * a leading asterisk in the string.
+                     */
+                    for (i = 0; Next->Asl.Value.String[i]; i++)
+                    {
+                        if (!isalnum (Next->Asl.Value.String[i]))
+                        {
+                            AslError (ASL_ERROR, ASL_MSG_ALPHANUMERIC_STRING, Next, Next->Asl.Value.String);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         break;
 
 
