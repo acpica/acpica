@@ -493,6 +493,7 @@ AmlExecMonadic2 (
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     ACPI_OBJECT_INTERNAL    *ResDesc;
+    ACPI_OBJECT_INTERNAL    *TempDesc;
     ACPI_STATUS             Status;
     UINT32                  Type;
 
@@ -554,20 +555,20 @@ AmlExecMonadic2 (
 
         if (VALID_DESCRIPTOR_TYPE (ObjDesc, DESC_TYPE_NTE))
         {
-            ResDesc = ObjDesc;
+            TempDesc = ObjDesc;
         }
 
         else
         {
             /* Duplicate the Lvalue on the top of the object stack */
         
-            ResDesc = CmCreateInternalObject (ObjDesc->Common.Type);
-            if (!ResDesc)
+            TempDesc = CmCreateInternalObject (ObjDesc->Common.Type);
+            if (!TempDesc)
             {
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
 
-            Status = CmCopyInternalObject (ObjDesc, ResDesc);
+            Status = CmCopyInternalObject (ObjDesc, TempDesc);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
@@ -576,7 +577,7 @@ AmlExecMonadic2 (
         
         /* Push went into unused space, so no need to DeleteObject() */
         
-        AmlObjStackSetValue (STACK_TOP, ResDesc);
+        AmlObjStackSetValue (STACK_TOP, TempDesc);
 
         /* Convert the top copy to a Number */
         
@@ -587,27 +588,29 @@ AmlExecMonadic2 (
             return_ACPI_STATUS (Status);
         }
 
-        /* Get the Number in ObjDesc and the Lvalue in ResDesc */
+        /* Get the Number (now it is an object for sure), and the result descriptor */
         
-        ObjDesc = AmlObjStackGetValue (STACK_TOP);
+        TempDesc = AmlObjStackGetValue (STACK_TOP);
         ResDesc = AmlObjStackGetValue (1);
 
         /* Do the actual increment or decrement */
         
         if (AML_IncrementOp == opcode)
         {
-            ObjDesc->Number.Value++;
+            TempDesc->Number.Value++;
         }
         else
         {
-            ObjDesc->Number.Value--;
+            TempDesc->Number.Value--;
         }
 
         /* Store the result */
 
-        Status = AmlExecStore (ObjDesc, ResDesc);
+        Status = AmlExecStore (TempDesc, ResDesc);
 
-        AmlObjStackDeleteValue (1);          
+        /* Delete the temporary descriptor */
+
+        AmlObjStackDeleteValue (STACK_TOP);          
         AmlObjStackPop (1);                 /* Remove top entry */
 
         return_ACPI_STATUS (Status);
