@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *       $Revision: 1.48 $
+ *       $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -333,14 +333,7 @@ NATIVE_CHAR          *AcpiGbl_ExceptionNames_Ctrl[] =
     "AE_CTRL_TRANSFER",
 };
 
-#else
-NATIVE_CHAR          *AcpiGbl_ExceptionNames_Env[];
-NATIVE_CHAR          *AcpiGbl_ExceptionNames_Pgm[];
-NATIVE_CHAR          *AcpiGbl_ExceptionNames_Tbl[];
-NATIVE_CHAR          *AcpiGbl_ExceptionNames_Aml[];
-NATIVE_CHAR          *AcpiGbl_ExceptionNames_Ctrl[];
-
-#endif /* DEFINE_ACPI_GLOBALS */
+#endif /* ACPI GLOBALS */
 
 
 #endif /* __ACEXCEP_H__ */
