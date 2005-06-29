@@ -197,7 +197,8 @@
 
 /* Max number of objects in the state object cache */
 
-#define MAX_STATE_CACHE_DEPTH       16
+#define MAX_STATE_CACHE_DEPTH       24
+#define MAX_PARSE_CACHE_DEPTH       512
 
 #endif /* _CONFIG_H */
 
