@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -225,7 +225,7 @@ AcpiDbDecodeAndDisplayObject (
     NATIVE_CHAR             *OutputType)
 {
     void                    *ObjPtr;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
     UINT32                  Display = DB_BYTE_DISPLAY;
     NATIVE_CHAR             Buffer[80];
     ACPI_BUFFER             RetBuf;
@@ -272,15 +272,15 @@ AcpiDbDecodeAndDisplayObject (
 
         if (VALID_DESCRIPTOR_TYPE ((ObjPtr), ACPI_DESC_TYPE_NAMED))
         {
-            /* This is an NTE */
+            /* This is a Named Object */
 
             if (!AcpiOsReadable (ObjPtr, sizeof (ACPI_NAMED_OBJECT)))
             {
-                AcpiOsPrintf ("Cannot read entire NTE at address %p\n", ObjPtr);
+                AcpiOsPrintf ("Cannot read entire Named object at address %p\n", ObjPtr);
                 return;
             }
 
-            Entry = ObjPtr;
+            NameDesc = ObjPtr;
             goto DumpNte;
         }
 
@@ -330,18 +330,18 @@ AcpiDbDecodeAndDisplayObject (
     }
 
 
-    /* The parameter is a name string that must be resolved to an NTE */
+    /* The parameter is a name string that must be resolved to a Named obj */
 
-    Entry = AcpiDbLocalNsLookup (Target);
-    if (!Entry)
+    NameDesc = AcpiDbLocalNsLookup (Target);
+    if (!NameDesc)
     {
         return;
     }
 
 DumpNte:
-    /* Now dump the NTE */
+    /* Now dump the Named obj */
 
-    Status = AcpiGetName (Entry, ACPI_FULL_PATHNAME, &RetBuf);
+    Status = AcpiGetName (NameDesc, ACPI_FULL_PATHNAME, &RetBuf);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not convert name to pathname\n");
@@ -349,26 +349,26 @@ DumpNte:
     }
 
     AcpiOsPrintf ("Object Pathname:  %s\n", RetBuf.Pointer);
-    if (!AcpiOsReadable (Entry, sizeof (ACPI_NAMED_OBJECT)))
+    if (!AcpiOsReadable (NameDesc, sizeof (ACPI_NAMED_OBJECT)))
     {
-        AcpiOsPrintf ("Invalid NTE at address %p\n", Entry);
+        AcpiOsPrintf ("Invalid Named object at address %p\n", NameDesc);
         return;
     }
 
-    AcpiCmDumpBuffer ((void *) Entry, sizeof (ACPI_NAMED_OBJECT), Display, ACPI_UINT32_MAX);
-    AcpiAmlDumpAcpiNamedObject (Entry, 1);
+    AcpiCmDumpBuffer ((void *) NameDesc, sizeof (ACPI_NAMED_OBJECT), Display, ACPI_UINT32_MAX);
+    AcpiAmlDumpAcpiNamedObject (NameDesc, 1);
 
-    if (Entry->Object)
+    if (NameDesc->Object)
     {
-        AcpiOsPrintf ("\nAttached Object (0x%p):\n", Entry->Object);
-        if (!AcpiOsReadable (Entry->Object, sizeof (ACPI_OBJECT_INTERNAL)))
+        AcpiOsPrintf ("\nAttached Object (0x%p):\n", NameDesc->Object);
+        if (!AcpiOsReadable (NameDesc->Object, sizeof (ACPI_OBJECT_INTERNAL)))
         {
-            AcpiOsPrintf ("Invalid internal ACPI Object at address %p\n", Entry->Object);
+            AcpiOsPrintf ("Invalid internal ACPI Object at address %p\n", NameDesc->Object);
             return;
         }
 
-        AcpiCmDumpBuffer (Entry->Object, sizeof (ACPI_OBJECT_INTERNAL), Display, ACPI_UINT32_MAX);
-        AcpiAmlDumpObjectDescriptor (Entry->Object, 1);
+        AcpiCmDumpBuffer (NameDesc->Object, sizeof (ACPI_OBJECT_INTERNAL), Display, ACPI_UINT32_MAX);
+        AcpiAmlDumpObjectDescriptor (NameDesc->Object, 1);
     }
 }
 
@@ -445,7 +445,7 @@ AcpiDbDisplayInternalObject (
 
     else if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
     {
-        AcpiOsPrintf ("<NTE>             Name %4.4s Type %s", &((ACPI_NAMED_OBJECT*)ObjDesc)->Name,
+        AcpiOsPrintf ("<Named>             Name %4.4s Type %s", &((ACPI_NAMED_OBJECT*)ObjDesc)->Name,
                                                             AcpiCmGetTypeName (((ACPI_NAMED_OBJECT*)ObjDesc)->Type));
     }
 
@@ -543,7 +543,7 @@ AcpiDbDisplayMethodInfo (
 {
     ACPI_WALK_STATE         *WalkState;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
     ACPI_GENERIC_OP         *RootOp;
     ACPI_GENERIC_OP         *Op;
     ACPI_OP_INFO            *OpInfo;
@@ -566,12 +566,12 @@ AcpiDbDisplayMethodInfo (
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->AcpiNamedObject;
+    NameDesc = WalkState->Origin->AcpiNamedObject;
 
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
-    AcpiOsPrintf ("Currently executing control method is [%4.4s]\n", &Entry->Name);
+    AcpiOsPrintf ("Currently executing control method is [%4.4s]\n", &NameDesc->Name);
     AcpiOsPrintf ("%d arguments, max concurrency = %d\n", NumArgs, Concurrency);
 
 
@@ -658,7 +658,7 @@ AcpiDbDisplayLocals (void)
     UINT32                  i;
     ACPI_WALK_STATE         *WalkState;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
 
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
@@ -669,10 +669,10 @@ AcpiDbDisplayLocals (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->AcpiNamedObject;
+    NameDesc = WalkState->Origin->AcpiNamedObject;
 
 
-    AcpiOsPrintf ("Local Variables for method [%4.4s]:\n", &Entry->Name);
+    AcpiOsPrintf ("Local Variables for method [%4.4s]:\n", &NameDesc->Name);
 
     for (i = 0; i < MTH_NUM_LOCALS; i++)
     {
@@ -703,7 +703,7 @@ AcpiDbDisplayArguments (void)
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     UINT32                  NumArgs;
     UINT32                  Concurrency;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
 
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
@@ -714,12 +714,12 @@ AcpiDbDisplayArguments (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->AcpiNamedObject;
+    NameDesc = WalkState->Origin->AcpiNamedObject;
 
     NumArgs = ObjDesc->Method.ParamCount;
     Concurrency = ObjDesc->Method.Concurrency;
 
-    AcpiOsPrintf ("Method [%4.4s] has %d arguments, max concurrency = %d\n", &Entry->Name, NumArgs, Concurrency);
+    AcpiOsPrintf ("Method [%4.4s] has %d arguments, max concurrency = %d\n", &NameDesc->Name, NumArgs, Concurrency);
 
     for (i = 0; i < NumArgs; i++)
     {
@@ -749,7 +749,7 @@ AcpiDbDisplayResults (void)
     ACPI_WALK_STATE         *WalkState;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
     UINT32                  NumResults;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
 
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
@@ -760,10 +760,10 @@ AcpiDbDisplayResults (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->AcpiNamedObject;
+    NameDesc = WalkState->Origin->AcpiNamedObject;
     NumResults = WalkState->NumResults - WalkState->CurrentResult;
 
-    AcpiOsPrintf ("Method [%4.4s] has %d stacked result objects\n", &Entry->Name, NumResults);
+    AcpiOsPrintf ("Method [%4.4s] has %d stacked result objects\n", &NameDesc->Name, NumResults);
 
     for (i = WalkState->CurrentResult; i < WalkState->NumResults; i++)
     {
@@ -792,7 +792,7 @@ AcpiDbDisplayCallingTree (void)
     UINT32                  i;
     ACPI_WALK_STATE         *WalkState;
     ACPI_OBJECT_INTERNAL    *ObjDesc;
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
 
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
@@ -803,16 +803,16 @@ AcpiDbDisplayCallingTree (void)
     }
 
     ObjDesc = WalkState->MethodDesc;
-    Entry = WalkState->Origin->AcpiNamedObject;
+    NameDesc = WalkState->Origin->AcpiNamedObject;
 
     AcpiOsPrintf ("Current Control Method Call Tree\n");
 
     for (i = 0; WalkState; i++)
     {
         ObjDesc = WalkState->MethodDesc;
-        Entry = WalkState->Origin->AcpiNamedObject;
+        NameDesc = WalkState->Origin->AcpiNamedObject;
 
-        AcpiOsPrintf ("    [%4.4s]\n", &Entry->Name);
+        AcpiOsPrintf ("    [%4.4s]\n", &NameDesc->Name);
 
         WalkState = WalkState->Next;
     }

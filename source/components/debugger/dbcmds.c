@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -176,22 +176,22 @@ AcpiDbWalkForReferences (
     void                    **ReturnValue)
 {
     ACPI_OBJECT_INTERNAL    *ObjDesc = (ACPI_OBJECT_INTERNAL *) Context;
-    ACPI_NAMED_OBJECT       *Entry = (ACPI_NAMED_OBJECT *) ObjHandle;
+    ACPI_NAMED_OBJECT       *NameDesc = (ACPI_NAMED_OBJECT *) ObjHandle;
 
 
-    if (Entry == (void *) ObjDesc)
+    if (NameDesc == (void *) ObjDesc)
     {
-        AcpiOsPrintf ("Object is a Named Object [%4.4s]\n", &Entry->Name);
+        AcpiOsPrintf ("Object is a Named Object [%4.4s]\n", &NameDesc->Name);
     }
 
-    if (Entry->Object == ObjDesc)
+    if (NameDesc->Object == ObjDesc)
     {
-        AcpiOsPrintf ("Reference at Entry->Object %p [%4.4s]\n", Entry, &Entry->Name);
+        AcpiOsPrintf ("Reference at NameDesc->Object %p [%4.4s]\n", NameDesc, &NameDesc->Name);
     }
 
-    if (Entry->ChildTable == (void *) ObjDesc)
+    if (NameDesc->Child == (void *) ObjDesc)
     {
-        AcpiOsPrintf ("Reference at Entry->ChildTable %p [%4.4s]\n", Entry, &Entry->Name);
+        AcpiOsPrintf ("Reference at NameDesc->Child %p [%4.4s]\n", NameDesc, &NameDesc->Name);
     }
 
     return (AE_OK);
@@ -437,7 +437,7 @@ AcpiDbDumpNamespace (
     if (StartArg)
     {
 
-        /* Check if numeric argument, must be an NTE */
+        /* Check if numeric argument, must be a Named Object */
 
         if ((StartArg[0] >= 0x30) && (StartArg[0] <= 0x39))
         {
@@ -449,7 +449,7 @@ AcpiDbDumpNamespace (
             }
             if (!VALID_DESCRIPTOR_TYPE ((SubtreeEntry), ACPI_DESC_TYPE_NAMED))
             {
-                AcpiOsPrintf ("Address %p is not a valid NTE\n", SubtreeEntry);
+                AcpiOsPrintf ("Address %p is not a valid Named object\n", SubtreeEntry);
                 return;
             }
         }
@@ -459,7 +459,7 @@ AcpiDbDumpNamespace (
         else
         {
 
-            /* The parameter is a name string that must be resolved to an NTE */
+            /* The parameter is a name string that must be resolved to a Named obj*/
 
             SubtreeEntry = AcpiDbLocalNsLookup (StartArg);
             if (!SubtreeEntry)
@@ -550,27 +550,27 @@ AcpiDbSendNotify (
     NATIVE_CHAR             *Name,
     UINT32                  Value)
 {
-    ACPI_NAMED_OBJECT       *Entry;
+    ACPI_NAMED_OBJECT       *NameDesc;
 
 
-    /* Translate name to an NTE */
+    /* Translate name to an Named object */
 
-    Entry = AcpiDbLocalNsLookup (Name);
-    if (!Entry)
+    NameDesc = AcpiDbLocalNsLookup (Name);
+    if (!NameDesc)
     {
         return;
     }
 
-    /* Decode NTE type */
+    /* Decode Named object type */
 
-    switch (Entry->Type)
+    switch (NameDesc->Type)
     {
     case ACPI_TYPE_DEVICE:
     case ACPI_TYPE_THERMAL:
 
          /* Send the notify */
 
-        AcpiEvNotifyDispatch (Entry, Value);
+        AcpiEvNotifyDispatch (NameDesc, Value);
         break;
 
     default:
