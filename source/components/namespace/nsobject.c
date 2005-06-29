@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.50 $
+ *              $Revision: 1.52 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 #include "actables.h"
 
 
-#define _COMPONENT          NAMESPACE
+#define _COMPONENT          ACPI_NAMESPACE
         MODULE_NAME         ("nsobject")
 
 
@@ -495,7 +495,7 @@ AcpiNsDetachObject (
  *
  * FUNCTION:    AcpiNsGetAttachedObject
  *
- * PARAMETERS:  Handle              - Parent Node to be examined
+ * PARAMETERS:  Node             - Parent Node to be examined
  *
  * RETURN:      Current value of the object field from the Node whose
  *              handle is passed
@@ -504,20 +504,20 @@ AcpiNsDetachObject (
 
 void *
 AcpiNsGetAttachedObject (
-    ACPI_HANDLE             Handle)
+    ACPI_NAMESPACE_NODE     *Node)
 {
-    FUNCTION_TRACE_PTR ("NsGetAttachedObject", Handle);
+    FUNCTION_TRACE_PTR ("NsGetAttachedObject", Node);
 
 
-    if (!Handle)
+    if (!Node)
     {
         /* handle invalid */
 
-        DEBUG_PRINT (ACPI_WARN, ("NsGetAttachedObject: Null handle\n"));
+        DEBUG_PRINT (ACPI_WARN, ("NsGetAttachedObject: Null Node ptr\n"));
         return_PTR (NULL);
     }
 
-    return_PTR (((ACPI_NAMESPACE_NODE *) Handle)->Object);
+    return_PTR (Node->Object);
 }
 
 
