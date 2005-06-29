@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  ******************************************************************************/
 
@@ -284,13 +284,15 @@ AcpiUtSetIntegerWidth (
 
     if (Revision <= 1)
     {
-        AcpiGbl_IntegerBitWidth  = 32;
-        AcpiGbl_IntegerByteWidth = 4;
+        AcpiGbl_IntegerBitWidth    = 32;
+        AcpiGbl_IntegerNybbleWidth = 8;
+        AcpiGbl_IntegerByteWidth   = 4;
     }
     else
     {
-        AcpiGbl_IntegerBitWidth  = 64;
-        AcpiGbl_IntegerByteWidth = 8;
+        AcpiGbl_IntegerBitWidth    = 64;
+        AcpiGbl_IntegerNybbleWidth = 16;
+        AcpiGbl_IntegerByteWidth   = 8;
     }
 }
 
