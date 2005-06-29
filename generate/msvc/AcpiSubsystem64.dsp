@@ -50,7 +50,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"bin\acpica64.lib" /machine:IA64
+# ADD LIB32 /out:"bin\acpica64.lib" /machine:IA64
+# SUBTRACT LIB32 /nologo
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
@@ -80,7 +81,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=xilink6.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"bin\acpica_dbg64.lib" /machine:IA64
+# ADD LIB32 /out:"bin\acpica_dbg64.lib" /machine:IA64
+# SUBTRACT LIB32 /nologo
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
