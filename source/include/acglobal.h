@@ -1,7 +1,7 @@
-
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
+ *       $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -190,7 +190,6 @@ extern      ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES];
  * (The table maps local handles to the real OS handles)
  */
 ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_AcpiMutexInfo [NUM_MTX];
-extern      ACPI_INIT_DATA              AcpiGbl_AcpiInitData;
 
 
 /*****************************************************************************
@@ -204,9 +203,9 @@ ACPI_EXTERN UINT8                      *AcpiGbl_Gpe0EnableRegisterSave;
 ACPI_EXTERN UINT8                      *AcpiGbl_Gpe1EnableRegisterSave;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
 ACPI_EXTERN ACPI_GENERIC_STATE         *AcpiGbl_GenericStateCache;
-ACPI_EXTERN ACPI_GENERIC_OP            *AcpiGbl_ParseCache;
-ACPI_EXTERN ACPI_EXTENDED_OP           *AcpiGbl_ExtParseCache;
-ACPI_EXTERN ACPI_OBJECT_INTERNAL       *AcpiGbl_ObjectCache;
+ACPI_EXTERN ACPI_PARSE_OBJECT          *AcpiGbl_ParseCache;
+ACPI_EXTERN ACPI_PARSE2_OBJECT         *AcpiGbl_ExtParseCache;
+ACPI_EXTERN ACPI_OPERAND_OBJECT        *AcpiGbl_ObjectCache;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_WalkStateCache;
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GlobalLockSemaphore;
 
@@ -267,8 +266,8 @@ extern      UINT32                      AcpiGbl_StartupFlags;
 #define NUM_PREDEFINED_NAMES            9
 
 
-ACPI_EXTERN ACPI_NAMED_OBJECT           AcpiGbl_RootNamedObject;
-ACPI_EXTERN ACPI_NAMED_OBJECT          *AcpiGbl_RootObject;
+ACPI_EXTERN ACPI_NAMESPACE_NODE         AcpiGbl_RootNodeStruct;
+ACPI_EXTERN ACPI_NAMESPACE_NODE        *AcpiGbl_RootNode;
 
 extern      UINT8                       AcpiGbl_NsProperties[NUM_NS_TYPES];
 extern      PREDEFINED_NAMES            AcpiGbl_PreDefinedNames [NUM_PREDEFINED_NAMES];
@@ -304,7 +303,7 @@ ACPI_EXTERN UINT32                      AcpiGbl_PCodeBlockLen;
 ACPI_EXTERN UINT32                      AcpiGbl_PCodeLen;
 
 ACPI_EXTERN UINT32                      AcpiGbl_BufSeq;             /* Counts allocated Buffer descriptors */
-ACPI_EXTERN UINT32                      AcpiGbl_NamedObjectErr;     /* Indicate if inc_error should be called */
+ACPI_EXTERN UINT32                      AcpiGbl_NodeErr;     /* Indicate if inc_error should be called */
 
 /*
  * Handle to the last method found - used during pass1 of load
@@ -329,9 +328,9 @@ ACPI_EXTERN UINT8                       AcpiGbl_CmSingleStep;
  *
  ****************************************************************************/
 
-ACPI_EXTERN ACPI_GENERIC_OP             *AcpiGbl_ParsedNamespaceRoot;
+ACPI_EXTERN ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
 
-extern ACPI_OP_INFO                     AcpiGbl_AmlOpInfo[];
+extern ACPI_OPCODE_INFO                 AcpiGbl_AmlOpInfo[];
 extern UINT8                            AcpiGbl_AmlOpInfoIndex[256];
 
 
@@ -401,9 +400,9 @@ ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentObjectCount;
 ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentObjectSize;
 ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectCount;
 ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectSize;
-ACPI_EXTERN UINT32                      AcpiGbl_CurrentNamedObjectCount;
-ACPI_EXTERN UINT32                      AcpiGbl_CurrentNamedObjectSize;
-ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentNamedObjectCount;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentNodeCount;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentNodeSize;
+ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentNodeCount;
 
 #endif
 
