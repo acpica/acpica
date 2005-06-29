@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.59 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -162,7 +162,7 @@ BOOLEAN                 opt_ini_methods = TRUE;
  * This list of commands must match the string table below it
  */
 
-enum AcpiAmlDebuggerCommands
+enum AcpiExDebuggerCommands
 {
     CMD_NOT_FOUND = 0,
     CMD_NULL,
@@ -356,7 +356,7 @@ AcpiDbDisplayHelp (
         AcpiOsPrintf ("Go                                  Allow method to run to completion\n");
         AcpiOsPrintf ("Information                         Display info about the current method\n");
         AcpiOsPrintf ("Into                                Step into (not over) a method call\n");
-        AcpiOsPrintf ("List [# of AcpiAml Opcodes]             Display method ASL statements\n");
+        AcpiOsPrintf ("List [# of Aml Opcodes]             Display method ASL statements\n");
         AcpiOsPrintf ("Locals                              Display method local variables\n");
         AcpiOsPrintf ("Results                             Display method result stack\n");
         AcpiOsPrintf ("Set <A|L> <#> <Value>               Set method data (Arguments/Locals)\n");
@@ -600,7 +600,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_ALLOCATIONS:
-        AcpiCmDumpCurrentAllocations ((UINT32) -1, NULL);
+        AcpiUtDumpCurrentAllocations ((UINT32) -1, NULL);
         break;
 
     case CMD_ARGS:
@@ -761,7 +761,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_OBJECT:
-        AcpiDbDisplayObjects (Args[1], Args[2]);
+        AcpiDbDisplayObjects (STRUPR (Args[1]), Args[2]);
         break;
 
     case CMD_OPEN:
@@ -806,7 +806,7 @@ AcpiDbCommandDispatch (
 
     case CMD_TERMINATE:
         AcpiDbSetOutputDestination (DB_REDIRECTABLE_OUTPUT);
-        AcpiCmSubsystemShutdown ();
+        AcpiUtSubsystemShutdown ();
 
         /* TBD: [Restructure] Need some way to re-initialize without re-creating the semaphores! */
 
@@ -840,7 +840,7 @@ AcpiDbCommandDispatch (
 
         /* Shutdown */
 
-        /* AcpiCmSubsystemShutdown (); */
+        /* AcpiUtSubsystemShutdown (); */
         AcpiDbCloseDebugFile ();
 
         AcpiGbl_DbTerminateThreads = TRUE;
@@ -885,9 +885,9 @@ AcpiDbExecuteThread (
         AcpiGbl_MethodExecuting = FALSE;
         AcpiGbl_StepToNextCall = FALSE;
 
-        AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
+        AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_READY);
         Status = AcpiDbCommandDispatch (LineBuf, NULL, NULL);
-        AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+        AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
     }
 }
 
@@ -974,8 +974,8 @@ AcpiDbUserCommands (
              * and wait for the command to complete.
              */
 
-            AcpiCmReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
-            AcpiCmAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
+            AcpiUtReleaseMutex (ACPI_MTX_DEBUG_CMD_READY);
+            AcpiUtAcquireMutex (ACPI_MTX_DEBUG_CMD_COMPLETE);
         }
 
         else
