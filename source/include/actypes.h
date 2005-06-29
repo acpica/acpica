@@ -385,6 +385,13 @@ typedef UINT32                          ACPI_EVENT_TYPE;
 #define GPE_MAX                         0xFF
 #define NUM_GPE                         256
 
+
+/* Notify types */
+
+#define ACPI_SYSTEM_NOTIFY              0
+#define ACPI_DEVICE_NOTIFY              1
+#define ACPI_MAX_NOTIFY_HANDLER_TYPE    1
+
 #define MAX_SYS_NOTIFY                  0x7f
 
 /* 
