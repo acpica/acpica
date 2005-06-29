@@ -1,7 +1,7 @@
+
 /******************************************************************************
- *
- * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.96 $
+ * 
+ * Name: environment.h - Generation environment specific items
  *
  *****************************************************************************/
 
@@ -9,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
- * All rights reserved.
+ * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
+ * reserved.
  *
  * 2. License
  *
@@ -38,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions
+ * 3. Conditions 
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -48,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee
+ * documentation of any changes made by any predecessor Licensee.  Licensee 
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -86,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE.
+ * PARTICULAR PURPOSE. 
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -114,58 +114,23 @@
  *
  *****************************************************************************/
 
-#ifndef __ACENV_H__
-#define __ACENV_H__
-
-
-/*
- * Configuration for ACPI tools and utilities
- */
-
-#ifdef _ACPI_DUMP_APP
-#define ACPI_DEBUG
-#define ACPI_APPLICATION
-#define ENABLE_DEBUGGER
-#define ACPI_DISASSEMBLER
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define PARSER_ONLY
-#endif
-
-#ifdef _ACPI_EXEC_APP
-#undef DEBUGGER_THREADING
-#define DEBUGGER_THREADING      DEBUGGER_SINGLE_THREADED
-#define ACPI_DEBUG
-#define ACPI_APPLICATION
-#define ENABLE_DEBUGGER
-#define ACPI_DISASSEMBLER
-#define ACPI_USE_SYSTEM_CLIBRARY
-#endif
-
-#ifdef _ACPI_ASL_COMPILER
-#define ACPI_DEBUG
-#define ACPI_APPLICATION
-#define ACPI_DISASSEMBLER
-#define PARSER_ONLY
-#define ACPI_USE_SYSTEM_CLIBRARY
-#endif
+#ifndef __ENVIRONMENT_H__
+#define __ENVIRONMENT_H__
 
 /*
- * Environment configuration.  The purpose of this file is to interface to the
- * local generation environment.
+ * Standard C library headers.
+ * We want to keep these to a minimum.
+ * 
+ * The ACPI subsystem only uses low level functions that do not call OS
+ * system services and may therefore be inlined in the code.
  *
- * 1) ACPI_USE_SYSTEM_CLIBRARY - Define this if linking to an actual C library.
- *      Otherwise, local versions of string/memory functions will be used.
- * 2) ACPI_USE_STANDARD_HEADERS - Define this if linking to a C library and
- *      the standard header files may be used.
- *
- * The ACPI subsystem only uses low level C library functions that do not call
- * operating system services and may therefore be inlined in the code.
- *
- * It may be necessary to tailor these include files to the target
+ * It may be necessary to tailor these include files to the target 
  * generation environment.
  *
  *
  * Functions and constants used from each header:
+ *
+ * stdio.h:     sprintf
  *
  * string.h:    memcpy
  *              memset
@@ -175,259 +140,19 @@
  *              strlen
  *              strncmp
  *              strncat
- *              strncpy
+ *              strncpy 
  *
  * stdlib.h:    strtoul
  *
  * stdarg.h:    va_list
- *              va_arg
  *              va_start
  *              va_end
  *
  */
 
-/*! [Begin] no source code translation */
-
-#if defined(_LINUX)
-#include "aclinux.h"
-
-#elif defined(_AED_EFI)
-#include "acefi.h"
-
-#elif defined(WIN32)
-#include "acwin.h"
-
-#elif defined(WIN64)
-#include "acwin64.h"
-
-#elif defined(MSDOS)        /* Must appear after WIN32 and WIN64 check */
-#include "acdos16.h"
-
-#elif defined(__FreeBSD__)
-#include "acfreebsd.h"
-
-#elif defined(MODESTO)
-#include "acmodesto.h"
-
-#elif defined(NETWARE)
-#include "acnetware.h"
-
-#else
-
-/* All other environments */
-
-#define ACPI_USE_STANDARD_HEADERS
-
-#define COMPILER_DEPENDENT_INT64   long long
-#define COMPILER_DEPENDENT_UINT64  unsigned long long
-
-
-/* Name of host operating system (returned by the _OS_ namespace object) */
-
-#define ACPI_OS_NAME         "Intel ACPI/CA Core Subsystem"
-
-/* This macro is used to tag functions as "printf-like" because
- * some compilers can catch printf format string problems. MSVC
- * doesn't, so this is proprocessed away.
- */
-#define ACPI_PRINTF_LIKE_FUNC
-
-#endif
-
-/*
- * Memory allocation tracking.  Used only if
- * 1) This is the debug version
- * 2) This is NOT a 16-bit version of the code (not enough real-mode memory)
- */
-#ifdef ACPI_DEBUG
-#if ACPI_MACHINE_WIDTH != 16
-#define ACPI_DBG_TRACK_ALLOCATIONS
-#endif
-#endif
-
-/*! [End] no source code translation !*/
-
-
-/*
- * Debugger threading model
- * Use single threaded if the entire subsystem is contained in an application
- * Use multiple threaded when the subsystem is running in the kernel.
- *
- * By default the model is single threaded if ACPI_APPLICATION is set,
- * multi-threaded if ACPI_APPLICATION is not set.
- */
-#define DEBUGGER_SINGLE_THREADED    0
-#define DEBUGGER_MULTI_THREADED     1
-
-#ifdef ACPI_APPLICATION
-#define DEBUGGER_THREADING          DEBUGGER_SINGLE_THREADED
-
-#else
-#define DEBUGGER_THREADING          DEBUGGER_MULTI_THREADED
-#endif
-
-
-/******************************************************************************
- *
- * C library configuration
- *
- *****************************************************************************/
-
-#ifdef ACPI_USE_SYSTEM_CLIBRARY
-/*
- * Use the standard C library headers.
- * We want to keep these to a minimum.
- *
- */
-
-#ifdef ACPI_USE_STANDARD_HEADERS
-/*
- * Use the standard headers from the standard locations
- */
+#include <stdio.h>
+#include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 
-#endif /* ACPI_USE_STANDARD_HEADERS */
-
-/*
- * We will be linking to the standard Clib functions
- */
-
-#define ACPI_STRSTR(s1,s2)      strstr((s1), (s2))
-#define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
-#define ACPI_STRLEN(s)          (ACPI_SIZE) strlen((s))
-#define ACPI_STRCPY(d,s)        (void) strcpy((d), (s))
-#define ACPI_STRNCPY(d,s,n)     (void) strncpy((d), (s), (ACPI_SIZE)(n))
-#define ACPI_STRNCMP(d,s,n)     strncmp((d), (s), (ACPI_SIZE)(n))
-#define ACPI_STRCMP(d,s)        strcmp((d), (s))
-#define ACPI_STRCAT(d,s)        (void) strcat((d), (s))
-#define ACPI_STRNCAT(d,s,n)     strncat((d), (s), (ACPI_SIZE)(n))
-#define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (ACPI_SIZE)(n))
-#define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (ACPI_SIZE)(n))
-#define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (ACPI_SIZE)(n))
-#define ACPI_TOUPPER            toupper
-#define ACPI_TOLOWER            tolower
-#define ACPI_IS_XDIGIT          isxdigit
-#define ACPI_IS_DIGIT           isdigit
-#define ACPI_IS_SPACE           isspace
-#define ACPI_IS_UPPER           isupper
-#define ACPI_IS_PRINT           isprint
-
-/******************************************************************************
- *
- * Not using native C library, use local implementations
- *
- *****************************************************************************/
-#else
-
-/*
- * Use local definitions of C library macros and functions
- * NOTE: The function implementations may not be as efficient
- * as an inline or assembly code implementation provided by a
- * native C library.
- */
-
-#ifndef va_arg
-
-#ifndef _VALIST
-#define _VALIST
-typedef char *va_list;
-#endif /* _VALIST */
-
-/*
- * Storage alignment properties
- */
-
-#define  _AUPBND                (sizeof (NATIVE_INT) - 1)
-#define  _ADNBND                (sizeof (NATIVE_INT) - 1)
-
-/*
- * Variable argument list macro definitions
- */
-
-#define _Bnd(X, bnd)            (((sizeof (X)) + (bnd)) & (~(bnd)))
-#define va_arg(ap, T)           (*(T *)(((ap) += (_Bnd (T, _AUPBND))) - (_Bnd (T,_ADNBND))))
-#define va_end(ap)              (void) 0
-#define va_start(ap, A)         (void) ((ap) = (((char *) &(A)) + (_Bnd (A,_AUPBND))))
-
-#endif /* va_arg */
-
-
-#define ACPI_STRSTR(s1,s2)      AcpiUtStrstr  ((s1), (s2))
-#define ACPI_STRUPR(s)          (void) AcpiUtStrupr ((s))
-#define ACPI_STRLEN(s)          (ACPI_SIZE) AcpiUtStrlen  ((s))
-#define ACPI_STRCPY(d,s)        (void) AcpiUtStrcpy  ((d), (s))
-#define ACPI_STRNCPY(d,s,n)     (void) AcpiUtStrncpy ((d), (s), (ACPI_SIZE)(n))
-#define ACPI_STRNCMP(d,s,n)     AcpiUtStrncmp ((d), (s), (ACPI_SIZE)(n))
-#define ACPI_STRCMP(d,s)        AcpiUtStrcmp  ((d), (s))
-#define ACPI_STRCAT(d,s)        (void) AcpiUtStrcat  ((d), (s))
-#define ACPI_STRNCAT(d,s,n)     AcpiUtStrncat ((d), (s), (ACPI_SIZE)(n))
-#define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s), (ACPI_SIZE)(n))
-#define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy  ((d), (s), (ACPI_SIZE)(n))
-#define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset  ((d), (v), (ACPI_SIZE)(n))
-#define ACPI_TOUPPER            AcpiUtToUpper
-#define ACPI_TOLOWER            AcpiUtToLower
-
-#endif /* ACPI_USE_SYSTEM_CLIBRARY */
-
-
-/******************************************************************************
- *
- * Assembly code macros
- *
- *****************************************************************************/
-
-/*
- * Handle platform- and compiler-specific assembly language differences.
- * These should already have been defined by the platform includes above.
- *
- * Notes:
- * 1) Interrupt 3 is used to break into a debugger
- * 2) Interrupts are turned off during ACPI register setup
- */
-
-/* Unrecognized compiler, use defaults */
-
-#ifndef ACPI_ASM_MACROS
-
-/*
- * Calling conventions:
- *
- * ACPI_SYSTEM_XFACE        - Interfaces to host OS (handlers, threads)
- * ACPI_EXTERNAL_XFACE      - External ACPI interfaces 
- * ACPI_INTERNAL_XFACE      - Internal ACPI interfaces
- * ACPI_INTERNAL_VAR_XFACE  - Internal variable-parameter list interfaces
- */
-#define ACPI_SYSTEM_XFACE
-#define ACPI_EXTERNAL_XFACE
-#define ACPI_INTERNAL_XFACE
-#define ACPI_INTERNAL_VAR_XFACE
-
-#define ACPI_ASM_MACROS
-#define BREAKPOINT3
-#define ACPI_DISABLE_IRQS()
-#define ACPI_ENABLE_IRQS()
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Acq)
-
-#endif /* ACPI_ASM_MACROS */
-
-
-#ifdef ACPI_APPLICATION
-
-/* Don't want software interrupts within a ring3 application */
-
-#undef BREAKPOINT3
-#define BREAKPOINT3
-#endif
-
-
-/******************************************************************************
- *
- * Compiler-specific information is contained in the compiler-specific
- * headers.
- *
- *****************************************************************************/
-#endif /* __ACENV_H__ */
+#endif /* __ENVIRONMENT_H__ */
