@@ -182,6 +182,22 @@ extern UINT32                   SizeOfAcpiObjects;
 
 
 
+typedef struct CommandInfo
+{
+    char                    *Name;          /* Command Name */
+    char                    MinArgs;        /* Minimum arguments required */
+
+} COMMAND_INFO;
+
+
+typedef struct ArgumentInfo
+{
+    char                    *Name;          /* Argument Name */
+
+} ARGUMENT_INFO;
+
+
+
 #define PARAM_LIST(pl)                  pl
 
 #define DBTEST_OUTPUT_LEVEL(lvl)        if (opt_verbose)
