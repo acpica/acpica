@@ -2,7 +2,7 @@
  *
  * Module Name: evevent - Fixed and General Purpose AcpiEvent
  *                          handling and dispatch
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -874,8 +874,6 @@ AcpiEvGpeDispatch (
     ACPI_GPE_LEVEL_INFO     GpeInfo;
 
     FUNCTION_TRACE ("EvGpeDispatch");
-
-    /*DEBUG_INCREMENT_EVENT_COUNT (EVENT_GENERAL);*/
 
     /*
      * Valid GPE number?
