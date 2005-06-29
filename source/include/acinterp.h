@@ -512,10 +512,6 @@ void
 AmlConsumePackage (
     OPERATING_MODE          LoadExecMode);
 
-INT32
-AmlIsInPCodeBlock (
-    UINT8                   *Where);
-
 void
 AmlSetPCodeInput (
     UINT8                   *Base, 
@@ -801,7 +797,7 @@ AmlDoDWordConst (
 
 BOOLEAN
 AmlAcquireGlobalLock (
-    UINT16                  Rule);
+    UINT32                  Rule);
 
 ACPI_STATUS
 AmlReleaseGlobalLock (
