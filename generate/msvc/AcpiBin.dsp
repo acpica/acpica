@@ -130,6 +130,10 @@ SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utcache.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utdebug.c
 # End Source File
 # Begin Source File
@@ -143,6 +147,14 @@ SOURCE=..\..\source\COMPONENTS\utilities\utmath.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utmutex.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # End Group
 # End Group
