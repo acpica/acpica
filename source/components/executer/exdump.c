@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -740,7 +740,7 @@ AcpiExDumpObjectDescriptor (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  Flags)
 {
-    ACPI_OPCODE_INFO        *OpInfo;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     FUNCTION_TRACE ("ExDumpObjectDescriptor");
