@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.83 $
+ *              $Revision: 1.85 $
  *
  ******************************************************************************/
 
@@ -281,31 +281,21 @@ AcpiUtDeleteInternalObj (
     }
 
 
-    /*
-     * Delete any allocated memory found above
-     */
+    /* Free any allocated memory (pointer within the object) found above */
+
     if (ObjPointer)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Deleting Obj Ptr %p \n", ObjPointer));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Deleting Object Subptr %p\n", 
+                ObjPointer));
         ACPI_MEM_FREE (ObjPointer);
     }
 
-    /* Only delete the object if it was dynamically allocated */
+    /* Now the object can be safely deleted */
 
-    if (Object->Common.Flags & AOPOBJ_STATIC_ALLOCATION)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object %p [%s] static allocation, no delete\n",
-            Object, AcpiUtGetTypeName (Object->Common.Type)));
-    }
-
-    if (!(Object->Common.Flags & AOPOBJ_STATIC_ALLOCATION))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Deleting object %p [%s]\n",
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Deleting Object %p [%s]\n",
             Object, AcpiUtGetTypeName (Object->Common.Type)));
 
-        AcpiUtDeleteObjectDesc (Object);
-    }
-
+    AcpiUtDeleteObjectDesc (Object);
     return_VOID;
 }
 
@@ -509,16 +499,14 @@ AcpiUtUpdateObjectReference (
         return_ACPI_STATUS (AE_OK);
     }
 
-
     /*
-     * Make sure that this isn't a namespace handle or an AML pointer
+     * Make sure that this isn't a namespace handle
      */
-    if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED))
+    if (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_NAMED)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Object %p is NS handle\n", Object));
         return_ACPI_STATUS (AE_OK);
     }
-
 
     State = AcpiUtCreateUpdateState (Object, Action);
 
@@ -534,7 +522,6 @@ AcpiUtUpdateObjectReference (
          */
         switch (Object->Common.Type)
         {
-
         case ACPI_TYPE_DEVICE:
 
             Status = AcpiUtCreateUpdateStateAndPush (Object->Device.AddrHandler,
@@ -653,7 +640,6 @@ AcpiUtUpdateObjectReference (
             break;
         }
 
-
         /*
          * Now we can update the count in the main object.  This can only
          * happen after we update the sub-objects in case this causes the
@@ -661,12 +647,10 @@ AcpiUtUpdateObjectReference (
          */
         AcpiUtUpdateRefCount (Object, Action);
 
-
         /* Move on to the next object to be updated */
 
         State = AcpiUtPopGenericState (&StateList);
     }
-
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -735,7 +719,7 @@ AcpiUtRemoveReference (
      *
      */
     if (!Object ||
-        (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED)))
+        (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_NAMED))
 
     {
         return_VOID;
