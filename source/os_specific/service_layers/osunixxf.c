@@ -834,20 +834,20 @@ AcpiOsSleep (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Current time in milliseconds
+ * RETURN:      Current time in 100 nanosecond units
  *
- * DESCRIPTION: Get the current system time (in milliseconds).
+ * DESCRIPTION: Get the current system time
  *
  *****************************************************************************/
 
-UINT32
+UINT64
 AcpiOsGetTimer (void)
 {
     struct timeval  time;
 
     gettimeofday(&time, NULL);
 
-    return ((time.tv_sec/1000) + (time.tv_usec*1000));
+    return (((UINT64)(time.tv_sec/1000) + (time.tv_usec*1000)) * 10000);
 }
 
 
