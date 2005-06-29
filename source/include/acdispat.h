@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.30 $
+ *       $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -129,6 +129,8 @@
 #define MTH_TYPE_ARG                1
 
 
+
+
 /* Common interfaces */
 
 ACPI_STATUS
@@ -178,6 +180,13 @@ AcpiDsExecEndControlOp (
 
 
 /* dsexec - Parser/Interpreter interface, method execution callbacks */
+
+
+ACPI_STATUS
+AcpiDsGetPredicateValue (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  HasResultObj);
 
 ACPI_STATUS
 AcpiDsExecBeginOp (
@@ -409,7 +418,8 @@ AcpiDsInitializeRegion (
 
 BOOLEAN
 AcpiDsIsResultUsed (
-    ACPI_PARSE_OBJECT       *Op);
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState);
 
 void
 AcpiDsDeleteResultIfNotUsed (
