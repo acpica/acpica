@@ -151,6 +151,38 @@
 
 
 
+/* TBD: MOVE! */
+
+ACPI_STATUS
+NsEvaluateByHandle (
+    NsHandle            Handle, 
+    OBJECT_DESCRIPTOR   *ReturnObject,
+    OBJECT_DESCRIPTOR   **Params);
+
+ACPI_STATUS
+NsEvaluateByName (
+    char                *Pathname, 
+    OBJECT_DESCRIPTOR   *ReturnObject,
+    OBJECT_DESCRIPTOR   **Params);
+
+ACPI_STATUS
+NsEvaluateRelative (
+    NsHandle            Handle, 
+    char                *Pathname, 
+    OBJECT_DESCRIPTOR   *ReturnObject,
+    OBJECT_DESCRIPTOR   **Params);
+
+
+ACPI_STATUS
+NsExecuteControlMethod (
+    nte                 *MethodNte, 
+    OBJECT_DESCRIPTOR   **Params);
+
+ACPI_STATUS
+NsGetObjectValue (
+    nte                 *ObjectNte);
+
+
 /*
  * ACPI Table functions - nstables
  */
