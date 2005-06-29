@@ -159,6 +159,7 @@ CmGetSimpleObjectSize (
     UINT32                  *ObjLength)
 {
     UINT32                  Length;
+    ACPI_STATUS             Status = AE_OK;
 
 
     FUNCTION_TRACE ("CmGetSimpleObjectSize");
@@ -189,15 +190,15 @@ CmGetSimpleObjectSize (
 
 
     default:
-        return AE_TYPE;
+        Status = AE_TYPE;
         break;
     }
 
 
     *ObjLength = Length;
     
-    FUNCTION_STATUS_EXIT (AE_OK);
-    return AE_OK;
+    FUNCTION_STATUS_EXIT (Status);
+    return Status;
 }
 
 
@@ -1016,14 +1017,7 @@ CmDeleteInternalObjectList (
     }
 
 
-    /* 
-     * Free the object block.  The object block base will be the first
-     * pointer in the parameter list.
-     */
-
-    CmFree (ObjList[0]);
-
-    /* Now free the parameter pointer list */
+    /* Free the combined parameter pointer list and object array */
 
     CmFree (ObjList);
 
