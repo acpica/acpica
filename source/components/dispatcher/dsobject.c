@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -779,6 +779,16 @@ AcpiDsCreateNode (
 
     FUNCTION_TRACE_PTR ("DsCreateNode", Op);
 
+
+    /*
+     * Because of the execution pass through the non-control-method
+     * parts of the table, we can arrive here twice.  Only init
+     * the named object node the first time through
+     */
+    if (Node->Object)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
 
     if (!Op->Value.Arg)
     {

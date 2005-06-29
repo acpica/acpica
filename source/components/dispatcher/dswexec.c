@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.75 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -129,20 +129,21 @@
 #define _COMPONENT          ACPI_DISPATCHER
         MODULE_NAME         ("dswexec")
 
-
-ACPI_EXECUTE_OP         AcpiGbl_OpClassDispatch [] = {
+/*
+ * Dispatch tables for opcode classes 
+ */
+ACPI_EXECUTE_OP         AcpiGbl_OpTypeDispatch [] = {
                             AcpiExOpcode_1A_0T_0R,
                             AcpiExOpcode_1A_0T_1R,
-                            NULL,
+                            AcpiExOpcode_1A_1T_0R,
                             AcpiExOpcode_1A_1T_1R,
                             AcpiExOpcode_2A_0T_0R,
                             AcpiExOpcode_2A_0T_1R,
                             AcpiExOpcode_2A_1T_1R,
                             AcpiExOpcode_2A_2T_1R,
-                            AcpiExOpcode_3A_1T_0R,
+                            AcpiExOpcode_3A_0T_0R,
+                            AcpiExOpcode_3A_1T_1R,
                             AcpiExOpcode_6A_0T_1R};
-
-
 
 /*****************************************************************************
  *
@@ -529,15 +530,21 @@ AcpiDsExecEndOp (
          * routine.  There is one routine per opcode "type" based upon the
          * number of opcode arguments and return type.
          */
-        Status = AcpiGbl_OpClassDispatch [OpType] (WalkState);
+        Status = AcpiGbl_OpTypeDispatch [OpType] (WalkState);
 
 
-        /* Clear the operand stack */
+        /* Delete argument objects and clear the operand stack */
 
         for (i = 0; i < WalkState->NumOperands; i++)
         {
+            /*
+             * Remove a reference to all operands, including both 
+             * "Arguments" and "Targets".
+             */
+            AcpiUtRemoveReference (WalkState->Operands[i]);
             WalkState->Operands[i] = NULL;
         }
+
         WalkState->NumOperands = 0;
 
         /*
@@ -633,7 +640,9 @@ AcpiDsExecEndOp (
             break;
 
 
-        case AML_TYPE_NAMED_OBJECT:
+        case AML_TYPE_NAMED_FIELD:
+        case AML_TYPE_NAMED_COMPLEX:
+        case AML_TYPE_NAMED_SIMPLE:
 
             Status = AcpiDsLoad2EndOp (WalkState);
             if (ACPI_FAILURE (Status))
@@ -641,10 +650,8 @@ AcpiDsExecEndOp (
                 break;
             }
 
-            switch (Op->Opcode)
+            if (Op->Opcode == AML_REGION_OP)
             {
-            case AML_REGION_OP:
-
                 ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                     "Executing OpRegion Address/Length Op=%X\n", Op));
 
@@ -655,25 +662,6 @@ AcpiDsExecEndOp (
                 }
 
                 Status = AcpiDsResultStackPop (WalkState);
-                break;
-
-
-            case AML_METHOD_OP:
-                break;
-
-
-            case AML_ALIAS_OP:
-
-                /* Alias creation was already handled by call
-                to psxload above */
-                break;
-
-
-            default:
-                /* Nothing needs to be done */
-
-                Status = AE_OK;
-                break;
             }
 
             break;

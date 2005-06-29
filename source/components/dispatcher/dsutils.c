@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.77 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -720,6 +720,11 @@ AcpiDsMapOpcodeToDataType (
         return (DataType);
     }
 
+
+/*
+ * TBD: Use op class
+ */
+
     switch (OpInfo->Type)
     {
 
@@ -789,7 +794,7 @@ AcpiDsMapOpcodeToDataType (
     case AML_TYPE_EXEC_2A_0T_1R:
     case AML_TYPE_EXEC_2A_1T_1R:
     case AML_TYPE_EXEC_2A_2T_1R:
-    case AML_TYPE_EXEC_3A_0T_0R:
+    case AML_TYPE_EXEC_3A_1T_1R:
     case AML_TYPE_EXEC_6A_0T_1R:
     case AML_TYPE_RETURN:
 
@@ -805,13 +810,19 @@ AcpiDsMapOpcodeToDataType (
         break;
 
 
-    case AML_TYPE_NAMED_OBJECT:
+    case AML_TYPE_NAMED_FIELD:
+    case AML_TYPE_NAMED_SIMPLE:
+    case AML_TYPE_NAMED_COMPLEX:
+    case AML_TYPE_NAMED_NO_OBJ:
 
         DataType = AcpiDsMapNamedOpcodeToDataType (Opcode);
         break;
 
 
+    case AML_TYPE_EXEC_1A_0T_0R:
     case AML_TYPE_EXEC_2A_0T_0R:
+    case AML_TYPE_EXEC_3A_0T_0R:
+    case AML_TYPE_EXEC_1A_1T_0R:
     case AML_TYPE_CONTROL:
 
         /* No mapping needed at this time */
