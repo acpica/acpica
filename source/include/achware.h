@@ -260,6 +260,11 @@ enum
 
 
 
+UINT32
+HwGetModeCapabilities (
+    void);
+
+
 /* Register I/O Prototypes */
 
 UINT32
@@ -307,11 +312,11 @@ AcpiGoToSleep (
 /* ACPI Timer prototypes */
 
 UINT32
-AcpiPmtTicks (
+HwPmtTicks (
     void);
 
-INT32
-AcpiPmtResolution (
+UINT32
+HwPmtResolution (
     void);
 
 #endif /* __HARDWARE_H__ */
