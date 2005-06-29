@@ -121,8 +121,8 @@
 #include <acpi.h>
 #include <amlcode.h>
 #include <parser.h>
-#include <interpreter.h>
-#include <namespace.h>
+#include <interp.h>
+#include <namesp.h>
 
 
 #define _COMPONENT          NAMESPACE
@@ -155,7 +155,7 @@ NsEvaluateRelative (
     NAME_TABLE_ENTRY        *RelObjEntry, 
     char                    *Pathname, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    *ReturnObject)
+    ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
@@ -241,7 +241,7 @@ ACPI_STATUS
 NsEvaluateByName (
     char                    *Pathname, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    *ReturnObject)
+    ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_STATUS             Status;
     NAME_TABLE_ENTRY        *ObjEntry = NULL;
@@ -323,7 +323,7 @@ ACPI_STATUS
 NsEvaluateByHandle (
     NAME_TABLE_ENTRY        *ObjEntry, 
     ACPI_OBJECT_INTERNAL    **Params,
-    ACPI_OBJECT_INTERNAL    *ReturnObject)
+    ACPI_OBJECT_INTERNAL    **ReturnObject)
 {
     ACPI_STATUS             Status;
     ACPI_OBJECT_INTERNAL    *LocalReturnObject;
@@ -338,7 +338,7 @@ NsEvaluateByHandle (
     {
         /* 
          * If the name space has not been initialized, the Method has surely
-         * not been defined and there is nothing to execute.
+         * not been defined and there is therefore nothing to execute.
          */
 
         DEBUG_PRINT (ACPI_ERROR, ("NsEvaluateByHandle: Name space not initialized - method not defined\n"));
@@ -354,8 +354,7 @@ NsEvaluateByHandle (
     {
         /* Initialize the return value to an invalid object */
 
-        CmInitStaticObject (ReturnObject);
-        ReturnObject->Common.Type = INTERNAL_TYPE_Invalid;
+        *ReturnObject = NULL;
     }
 
 
@@ -395,9 +394,10 @@ BREAKPOINT3;
 
         if (ReturnObject)
         {
-            /* Valid return object, copy the returned object that is on the stack */
+            /* Valid return object, copy the pointer to the returned object */
 
-            Status = CmCopyInternalObject (LocalReturnObject, ReturnObject);
+            LocalReturnObject->Common.ReferenceCount++;
+            *ReturnObject = LocalReturnObject;
         }
 
 
