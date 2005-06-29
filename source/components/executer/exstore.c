@@ -14,15 +14,18 @@
  | FILENAME: amlexec.c - ACPI AML (p-code) execution
  |__________________________________________________________________________
  |
- | $Revision: 1.13 $
- | $Date: 2005/06/29 17:50:58 $
+ | $Revision: 1.14 $
+ | $Date: 2005/06/29 17:51:00 $
  | $Log: exstore.c,v $
- | Revision 1.13  2005/06/29 17:50:58  aystarik
- | New version of DEBUG_PRINT
+ | Revision 1.14  2005/06/29 17:51:00  aystarik
+ | Header cleanup;  Split debug switch into component_id and level
  |
  | 
- | date	99.04.02.22.39.00;	author rmoore1;	state Exp;
+ | date	99.04.05.23.10.00;	author rmoore1;	state Exp;
  |
+ * 
+ * 14    4/05/99 4:10p Rmoore1
+ * Header cleanup;  Split debug switch into component_id and level
  * 
  * 13    4/02/99 2:39p Rmoore1
  * New version of DEBUG_PRINT
@@ -61,177 +64,6 @@
  * 
  * 1     1/11/99 2:11p Rmoore1
  * AML Interpreter
-// 
-//    Rev 1.32   11 Sep 1998 18:03:16   phutchis
-// Change inc_error() etc. to Kinc_error() etc. (error key logging).
-// 
-//    Rev 1.31   09 Jun 1998 14:26:32   calingle
-// fixed the way the opcode was being evaluated in SetupField.  Now GetRvalue is called to get the pr
-// oper data on the stack.
-//
-//    Rev 1.30   01 Jun 1998 17:52:52   phutchis
-// Include failing AML offset in error messages concerning operands.
-//
-// Correct implementation of LNotOp.
-//
-//    Rev 1.29   30 Apr 1998 07:22:52   calingle
-// Added in code to complete support for BankFields.  Also added support for
-// checking the LockRule prior to modification and if it is set to Lock then
-// a call is made to take ownership of the global lock.
-//
-//    Rev 1.28   13 Mar 1998 13:34:14   calingle
-// added in calls for the synchronization code.  The functions are in
-// amlopsys.c for now.  The functions are OS specific and currently only
-// DOS is supported.
-//
-//    Rev 1.27   13 Mar 1998 11:16:20   phutchis
-// Leave operand descriptors on ObjStack[] during operator execution
-//   to fix GC problems.
-// Fix GC problem in ExecStore() when the destination is a direct name pointer.
-// Add support for Buffer sequence numbering.
-// Correct PrepStack call for ConcatOp in ExecDyadic2R()
-//
-//    Rev 1.26   06 Mar 1998 14:19:16   phutchis
-// Fixed garbage collection problem:  Must not allow any further allocation
-// call (malloc_bu or calloc_bu) to occur after a block has been allocated
-// and before the pointer to it has been stored in a globally-findable
-// location (e.g. in a name table entry or on a stack).  This is because
-// allocation can cause garbage collection which will silently delete the
-// apparently-unreferenced block.
-//
-// Also improved messages for some "internal error" conditions.
-//
-//    Rev 1.25   03 Mar 1998 16:31:16   phutchis
-// Added tracing of Field operations in Buffers under control of TraceBufFld.
-// In GetRvalue():
-//   Fixed glitch in debug identification of Local being fetched;
-//   Included the value of the Local in the debug report if its type is Number;
-//   Added similar debug reporting for Args as for Locals.
-// Fixed major bug in ExecCreateField():
-//   Field creation is supposed to cause the destination Name to refer to
-//   the defined FieldUnit -- it should not store the constructed FieldUnit
-//   object (or its current value) in some location that the Name may already
-//   be pointing to.
-//
-//    Rev 1.24   19 Feb 1998 11:48:34   phutchis
-// Added more details and spec reference to comments re semantics of NotifyOp,
-// and fixed associated messages to print completely.
-//
-//    Rev 1.23   05 Feb 1998 11:56:44   phutchis
-// Added GetMethodDepth() and made several minor changes
-//   to support calling a Method from within another Method.
-// Added debug surrounding call of GetMethodValue() in GetRvalue().
-// Improved diagnosis of unexpected Lvalues in PrepStack().
-// Added MarkMethodValues() and IsMethodValue() to support improved
-//   storage management; delete descriptors when overlaid on stack.
-//
-//    Rev 1.22   08 Jan 1998 15:58:02   phutchis
-// Fix uninitialized pointer introduced in rev 1.16.
-//
-//    Rev 1.21   24 Dec 1997 14:26:34   phutchis
-// Clear package and object stacks before starting method execution.
-//
-//    Rev 1.20   10 Dec 1997 10:59:30   kdbranno
-// Added casting to shut up iC386 remarks.
-//
-//    Rev 1.19   10 Dec 1997 08:45:48   phutchis
-// Fix PrepStack() stack underflow bug.
-// Add AmlAppendOperandDiag(), and call it when PrepStack() returns
-//   S_ERROR, to identify calling location and opcode being processed.
-//
-//    Rev 1.18   02 Dec 1997 13:34:24   nburke
-// Added a conditional vFunctionHello call to every function in the file.
-//
-//    Rev 1.17   26 Nov 1997 16:19:32   phutchis
-// Code inspection rework:
-//   Added #include "acpirio.h" for ACPI_READ and ACPI_WRITE definitions.
-//   Added #include <limits.h> for UCHAR_MAX definition.
-//   Added PRINT_XXX macro so logfile notes of XXX stuff are selectable
-//     at compile time.
-//   Added comments and parameter validation throughout.
-//   Improved error detection and reporting.
-//   Changed most allocation failures to call KFatalError(())
-//   Fixed some storage leaks.
-//   Replaced hard-coded constants with #defines where appropriate.
-//   Combine the nearly identical logic of GetNamedFieldValue() and
-//     SetNamedFieldValue() into a single function AccessNamedFieldValue().
-//   Renamed parameters of ExecStore() and rearranged logic for clarity.
-//
-//    Rev 1.16   21 Nov 1997 16:49:06   phutchis
-// Fixed GetRvalue() to work properly when the input is an OBJECT_DESCRIPTOR
-// of type FieldUnit.  (It was already handling the case where the input was
-// an NsHandle and the name's value was of type FieldUnit.)
-//
-//    Rev 1.15   17 Nov 1997 15:16:42   phutchis
-// In ExecStore() when the result is a field and the value to be stored is not
-//   a Number, call GetRvalue() to try to convert the value to a Number.  Fixes
-//   problem of incorrectly logging an error when both source and destination
-//   are fields.
-// Rework identified in amlscan code inspection:
-//   Replaced MAXLEVEL with new AML_METHOD_MAX_NEST in sizing MethodStack[].
-//   Revised PrepBankFieldValue() to possibly work.
-//
-//    Rev 1.14   06 Nov 1997 11:56:26   calingle
-// added return S_SUCCESS at end of case Device in GetRvalue.
-//
-//    Rev 1.13   05 Nov 1997 08:50:10   calingle
-// removed #include <bu_plumr.h>
-//
-//    Rev 1.12   04 Nov 1997 16:55:10   phutchis
-// Handle Device case in GetRvalue().
-// This just returns an NsHandle, which seems to be adequate for current use
-// in acpiirt, but may need to be revisited in the future.
-//
-//    Rev 1.11   31 Oct 1997 16:10:28   phutchis
-// Revise PCI configuration space access function calls to match new acfglib.
-// Rework identified in acpinmsp code inspection:
-//   Changed return-value symbols SUCCESS, FAILURE, ERROR, and RETURN to
-//     S_SUCCESS, S_FAILURE, S_ERROR, and S_RETURN, to forestall collisions
-//     with other subsystems.
-//   Changed empty formal parameter lists to "(void)".
-//
-//    Rev 1.10   24 Sep 1997 15:12:04   phutchis
-// Add #include of bu_plumr.h to audit allocation and find leaks.
-// Add allocation comments to function headers.
-// Add comments to SetMethodValue() to clarify flow.
-// Fix storage leaks in ExecMonadic1() and ExecMonadic2().
-//
-//    Rev 1.9   29 Jul 1997 14:36:40   phutchis
-// Handle passing of parameters to methods:
-//   Add Params parameter to AmlExec()
-//   Undefine locals and unused parameters when entering a method
-// Fix problem with converting a Buffer from in-line AML to an object
-// Fix stack overlay problem during first access to a Region
-// Properly handle alignment of accesses to the Region when a Field is unaligned
-//
-//    Rev 1.8   11 Jul 1997 16:03:42   phutchis
-// Fix problem with converting a package from in-line AML to an object.
-//
-//    Rev 1.7   08 Jul 1997 17:05:58   phutchis
-// Fix handling of nested #include of amlpriv.h
-//
-//    Rev 1.6   20 Jun 1997 11:52:54   phutchis
-// Clean up handling of uninitialized values
-//
-//    Rev 1.5   19 Jun 1997 16:37:56   phutchis
-// Added test for SystemMemory access above 1MB when running in real mode
-//
-//    Rev 1.4   19 Jun 1997 15:31:46   phutchis
-// Implement reads and writes to OperationRegion's defined in SystemMemory,
-// SystemIO, and PCIConfig spaces; and tracing of such operations.
-// EmbeddedControl and SMBus spaces are not implemented.
-//
-//    Rev 1.3   11 Jun 1997 15:53:34   phutchis
-// Add runtime support for DefField and IndexField.
-// Generate messages in XXX areas so that logfile records work needed.
-// Improve checktrash facility.
-// Add some debug capability.
-//
-//    Rev 1.2   14 May 1997 16:56:54   phutchis
-// Generate debug/trace output only if debug level > 0
-//
-//    Rev 1.1   14 May 1997 15:16:26   phutchis
-// Fixed ic386 complaints, mostly casting enum's
 //
 //    Rev 1.0   13 May 1997 17:34:48   phutchis
 // Initial revision.
@@ -240,7 +72,6 @@
 */
 
 #define __AMLEXEC_C__
-#define _THIS_MODULE    "amlexec.c"
 
 #include <acpi.h>
 #include <acpirio.h>
@@ -251,6 +82,9 @@
 #include <string.h>
 #include <limits.h>
 
+
+#define _THIS_MODULE        "amlexec.c"
+#define _COMPONENT          INTERPRETER
 
 extern char *NsTypeNames[];
 extern char *RV[];
@@ -413,7 +247,7 @@ GetMethodValue (INT32 Index, OBJECT_DESCRIPTOR *ObjDesc)
             }
 
 #ifdef HACK
-            DEBUG_PRINT (AML_WARN, (" ** GetMethodValue: ret uninit as 4 **\n"));
+            DEBUG_PRINT (ACPI_WARN, (" ** GetMethodValue: ret uninit as 4 **\n"));
             ObjDesc->Number.ValType = (UINT8) Number;
             ObjDesc->Number.Number = 0x4;
             Excep = S_SUCCESS;
@@ -699,26 +533,26 @@ PrepDefFieldValue (NsHandle Region, UINT8 FldFlg, INT32 FldPos, INT32 FldLen)
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (AML_INFO, (" ** PrepDefFieldValue: hard 8 **\n"));
+        DEBUG_PRINT (ACPI_INFO, (" ** PrepDefFieldValue: hard 8 **\n"));
 
         ObjDesc->Field.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->Field.Offset     = (UINT32) FldPos / 8;
         ObjDesc->Field.Container  = NsValPtr (Region);
 
 
-        DEBUG_PRINT (AML_INFO, ("PrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
+        DEBUG_PRINT (ACPI_INFO, ("PrepDefFieldValue: set nte %p (%4.4s) val = %p\n",
                         ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
 
         DUMP_STACK_ENTRY (ObjDesc);
         DUMP_ENTRY (Region);
-        DEBUG_PRINT (AML_INFO, ("\t%p \n", ObjDesc->Field.Container));
+        DEBUG_PRINT (ACPI_INFO, ("\t%p \n", ObjDesc->Field.Container));
 
         if (ObjDesc->Field.Container)
         {
             DUMP_STACK_ENTRY (ObjDesc->Field.Container);
         }
 
-        DEBUG_PRINT (AML_INFO,
+        DEBUG_PRINT (ACPI_INFO,
                     ("============================================================\n"));
 
         /* 
@@ -820,7 +654,7 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (AML_INFO, (" ** PrepBankFieldValue: hard 8 **\n"));
+        DEBUG_PRINT (ACPI_INFO, (" ** PrepBankFieldValue: hard 8 **\n"));
 
         ObjDesc->BankField.BitOffset  = (UINT16) FldPos % 8;
         ObjDesc->BankField.Offset     = (UINT32) FldPos / 8;
@@ -829,14 +663,14 @@ PrepBankFieldValue (NsHandle Region, NsHandle BankReg, UINT32 BankVal,
         ObjDesc->BankField.BankSelect = NsValPtr (BankReg);
 
 
-        DEBUG_PRINT (AML_INFO, ("PrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
+        DEBUG_PRINT (ACPI_INFO, ("PrepBankFieldValue: set nte %p (%4.4s) val = %p\n",
                         ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
         
         DUMP_STACK_ENTRY (ObjDesc);
         DUMP_ENTRY (Region);
         DUMP_ENTRY (BankReg);
 
-        DEBUG_PRINT (AML_INFO,
+        DEBUG_PRINT (ACPI_INFO,
                     ("============================================================\n"));
 
         /* 
@@ -929,21 +763,21 @@ PrepIndexFieldValue (NsHandle IndexReg, NsHandle DataReg,
 
         /* XXX - should use width of data register, not hardcoded 8 */
 
-        DEBUG_PRINT (AML_INFO, (" ** PrepIndexFieldValue: hard 8 **\n"));
+        DEBUG_PRINT (ACPI_INFO, (" ** PrepIndexFieldValue: hard 8 **\n"));
 
         ObjDesc->IndexField.BitOffset = (UINT16) FldPos % 8;
         ObjDesc->IndexField.IndexVal  = (UINT32) FldPos / 8;
         ObjDesc->IndexField.Index     = IndexReg;
         ObjDesc->IndexField.Data      = DataReg;
 
-        DEBUG_PRINT (AML_INFO, ("PrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
+        DEBUG_PRINT (ACPI_INFO, ("PrepIndexFieldValue: set nte %p (%4.4s) val = %p\n",
                         ObjStack[ObjStackTop], ObjStack[ObjStackTop], ObjDesc));
 
         DUMP_STACK_ENTRY (ObjDesc);
         DUMP_ENTRY (IndexReg);
         DUMP_ENTRY (DataReg);
 
-        DEBUG_PRINT (AML_INFO,
+        DEBUG_PRINT (ACPI_INFO,
                     ("============================================================\n"));
 
         /* 
@@ -1032,7 +866,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
     {   
         /* Everything is valid */
 
-        DEBUG_PRINT (AML_INFO, ("SetupField: \n"));
+        DEBUG_PRINT (ACPI_INFO, ("SetupField: \n"));
 
         /* 
          * If the address and length have not been previously evaluated,
@@ -1069,7 +903,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                     {
                         Why = "SetupField: Malformed Region/Address";
 
-                        DEBUG_PRINT (AML_ERROR, ("SetupFld: Malformed Region/Address "
+                        DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Address "
                                     "ObjValDesc = %p, ObjValDesc->ValType = %02Xh, Number = %02Xh\n",
                                     ObjValDesc, ObjValDesc->ValType, (UINT8) Number));
 
@@ -1098,7 +932,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                             ObjValDesc->ValType != (UINT8) Number)
                         {
 
-                            DEBUG_PRINT (AML_ERROR, ("SetupFld: Malformed Region/Length \n"));
+                            DEBUG_PRINT (ACPI_ERROR, ("SetupFld: Malformed Region/Length \n"));
 
                             Why = "SetupField: Malformed Region/Length";
                             Excep = S_ERROR;
@@ -1147,7 +981,7 @@ SetupField (OBJECT_DESCRIPTOR *ObjDesc, OBJECT_DESCRIPTOR *RgnDesc, INT32 FieldB
                     ObjDesc->Field.Offset, FieldBitWidth, RgnDesc->Region.Length);
             Why = WhyBuf;
 
-            DEBUG_PRINT (AML_ERROR, ("SetupFld: field address/width out of bounds\n"));
+            DEBUG_PRINT (ACPI_ERROR, ("SetupFld: field address/width out of bounds\n"));
             DUMP_STACK_ENTRY (RgnDesc);
             DUMP_STACK_ENTRY (ObjDesc);
 
@@ -1642,13 +1476,13 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
     {
         /* ObjDesc valid and NamedField is defined field    */
 
-        DEBUG_PRINT (AML_INFO,
+        DEBUG_PRINT (ACPI_INFO,
                     ("in AccessNamedField: DefField type and ValPtr OK in nte \n"));
         DUMP_ENTRY (NamedField);
 
-        DEBUG_PRINT (AML_INFO, ("ObjDesc = %p, ObjDesc->ValType = %d\n",
+        DEBUG_PRINT (ACPI_INFO, ("ObjDesc = %p, ObjDesc->ValType = %d\n",
                     ObjDesc, ObjDesc->ValType));
-        DEBUG_PRINT (AML_INFO, (" DatLen = %d, BitOffset = %d\n",
+        DEBUG_PRINT (ACPI_INFO, (" DatLen = %d, BitOffset = %d\n",
                     ObjDesc->FieldUnit.DatLen, ObjDesc->FieldUnit.BitOffset));
 
         if (DefField != ObjDesc->ValType)
@@ -1816,7 +1650,7 @@ AccessNamedField (INT32 Mode, NsHandle NamedField, UINT32 *Value)
             if (S_SUCCESS == Excep)
             {
 
-                DEBUG_PRINT (AML_INFO, (" invoking WriteField\n"));
+                DEBUG_PRINT (ACPI_INFO, (" invoking WriteField\n"));
 
                 /* perform the update */
 
@@ -1958,7 +1792,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
     FUNCTION_TRACE ("ExecStore");
 
-    DEBUG_PRINT (AML_INFO, ("entered ExecStore: Val=%p, Dest=%p\n", 
+    DEBUG_PRINT (ACPI_INFO, ("entered ExecStore: Val=%p, Dest=%p\n", 
                     ValDesc, DestDesc));
 
     if (!ValDesc || !DestDesc)
@@ -2052,7 +1886,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
             Why = WhyBuf;
             Excep = S_ERROR;
 #else
-            DEBUG_PRINT (AML_WARN,
+            DEBUG_PRINT (ACPI_WARN,
                         ("ExecStore/NameOp: Store into %s not implemented\n",
                         NsTypeNames[NsValType(TempHandle)]));
             Excep = S_SUCCESS;
@@ -2145,7 +1979,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 Excep = SetNamedFieldValue (DestDesc->BankField.BankSelect,
                                             DestDesc->BankField.BankVal);
 
-                DEBUG_PRINT (AML_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("ExecStore: set bank select returned %s\n", RV[Excep]));
             }
 
@@ -2156,7 +1990,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 
                 Excep = SetNamedFieldValue (DestDesc->BankField.BankSelect,
                                             ValDesc->BankField.BankVal);
-                DEBUG_PRINT (AML_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("ExecStore: set bank select returned %s\n", RV[Excep]));
             }
             
@@ -2330,7 +2164,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
                 Excep = SetNamedFieldValue (DestDesc->IndexField.Index,
                                             DestDesc->IndexField.IndexVal);
-                DEBUG_PRINT (AML_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("ExecStore: IndexField: set index returned %s\n", RV[Excep]));
             }
 
@@ -2340,7 +2174,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 
                 Excep = SetNamedFieldValue (DestDesc->IndexField.Data,
                                             ValDesc->Number.Number);
-                DEBUG_PRINT (AML_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("ExecStore: IndexField: set data returned %s\n", RV[Excep]));
             }
 
@@ -2387,7 +2221,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
                 else
                 {
-                    DEBUG_PRINT (AML_INFO,
+                    DEBUG_PRINT (ACPI_INFO,
                         ("ExecStore: FieldUnit: name's value DestDesc=%p, DestDesc->ValType=%02Xh\n",
                         DestDesc, DestDesc->ValType));
                 }
@@ -2413,7 +2247,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                 char *FullyQN = NsFullyQualifiedName (TempHandle);
 
 
-                DEBUG_PRINT (AML_ERROR,
+                DEBUG_PRINT (ACPI_ERROR,
                             ("ExecStore/FieldUnit: bad container in %s (%p)\n",
                              FullyQN, TempHandle));
                 DUMP_ENTRY (TempHandle);
@@ -2524,7 +2358,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
 
             if (Stacked)
             {
-                DEBUG_PRINT (AML_INFO, ("ExecStore: set %s (%p)\n",
+                DEBUG_PRINT (ACPI_INFO, ("ExecStore: set %s (%p)\n",
                              NsFullyQualifiedName (TempHandle), TempHandle));
                 DUMP_ENTRY (TempHandle);
                 DUMP_STACK_ENTRY (DestDesc);
@@ -2566,7 +2400,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
          * Storing to the Debug object causes the value stored to be
          * displayed and otherwise has no effect -- see sec. 15.2.3.3.3.
          */
-        DEBUG_PRINT (AML_INFO, ("DebugOp: \n"));
+        DEBUG_PRINT (ACPI_INFO, ("DebugOp: \n"));
         DUMP_STACK_ENTRY (ValDesc);
 
         DELETE (DestDesc);
@@ -2583,7 +2417,7 @@ ExecStore(OBJECT_DESCRIPTOR *ValDesc, OBJECT_DESCRIPTOR *DestDesc)
                     DestDesc->Lvalue.OpCode);
         Why = WhyBuf;
         
-        DEBUG_PRINT (AML_ERROR,
+        DEBUG_PRINT (ACPI_ERROR,
                     ("ExecStore:internal error: Unknown Lvalue subtype %02x\n",
                     DestDesc->Lvalue.OpCode));
         
@@ -2731,7 +2565,7 @@ GetFieldUnitValue (OBJECT_DESCRIPTOR *FieldDesc, OBJECT_DESCRIPTOR *ResultDesc)
         ResultDesc->Number.Number
             = *(UINT32 *) Location >> FieldDesc->FieldUnit.BitOffset & Mask;
 
-        DEBUG_PRINT (AML_INFO,
+        DEBUG_PRINT (ACPI_INFO,
             ("** Read from buffer %p byte %ld bit %d width %d addr %p mask %08lx val %08lx\n",
             FieldDesc->FieldUnit.Container->Buffer.Buffer,
             FieldDesc->FieldUnit.Offset,
@@ -2810,7 +2644,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
 
             MvIndex = (*StackPtr)->Lvalue.OpCode - Local0;
 
-            DEBUG_PRINT (AML_INFO,
+            DEBUG_PRINT (ACPI_INFO,
                         ("GetRvalue:Lcl%d: before GetMethodValue %p %p %08lx \n",
                         MvIndex,
                         StackPtr, *StackPtr, *(UINT32 *)* StackPtr));
@@ -2818,7 +2652,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             Excep = GetMethodValue (LCLBASE + (*StackPtr)->Lvalue.OpCode - Local0,
                                     *StackPtr);
 
-            DEBUG_PRINT (AML_INFO,
+            DEBUG_PRINT (ACPI_INFO,
                         ("GetRvalue:Lcl%d: iGMV Excep=%s %p %p %08lx \n",
                         MvIndex, RV[Excep], StackPtr, *StackPtr,
                         *(UINT32 *)* StackPtr));
@@ -2827,7 +2661,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {
                 /* Value is a Number */
                 
-                DEBUG_PRINT (AML_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("[%ld] \n", (*StackPtr)->Number.Number));
             }
             break;
@@ -2852,7 +2686,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
             {
                 /* Value is a Number */
                 
-                DEBUG_PRINT (AML_INFO,
+                DEBUG_PRINT (ACPI_INFO,
                             ("[%ld] \n", (*StackPtr)->Number.Number));
             }
 
@@ -3430,7 +3264,7 @@ GetRvalue (OBJECT_DESCRIPTOR **StackPtr)
                         NsTypeNames[NsValType ((NsHandle)* StackPtr)]));
           
 #ifdef HACK
-            DEBUG_PRINT (AML_WARN,
+            DEBUG_PRINT (ACPI_WARN,
                         ("** GetRvalue: Fetch from %s not implemented, using value 0\n",
                         NsTypeNames[NsValType ((NsHandle)* StackPtr)]));
             
@@ -5243,7 +5077,7 @@ ExecFatal (void)
     CodeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 1];
     TypeDesc = (OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop - 2];
 
-    DEBUG_PRINT (AML_INFO,
+    DEBUG_PRINT (ACPI_INFO,
                 ("FatalOp: Type %x Code %x Arg %x <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
                 TypeDesc->Number.Number, CodeDesc->Number.Number,
                 ArgDesc->Number.Number));
@@ -5656,9 +5490,9 @@ AmlExec (INT32 Offset, INT32 Length, OBJECT_DESCRIPTOR **Params)
         {
             if (S_RETURN == Excep)
             {
-                DEBUG_PRINT (AML_INFO, ("Method returned: \n"));
+                DEBUG_PRINT (ACPI_INFO, ("Method returned: \n"));
                 DUMP_STACK_ENTRY ((OBJECT_DESCRIPTOR *) ObjStack[ObjStackTop]);
-                DEBUG_PRINT (AML_INFO, (" at stack level %d\n", ObjStackTop));
+                DEBUG_PRINT (ACPI_INFO, (" at stack level %d\n", ObjStackTop));
             }
 
             PopExec ();            /* package stack -- inverse of AmlPrepExec() */
