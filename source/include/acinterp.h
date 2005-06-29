@@ -705,6 +705,10 @@ AmlDoName (
  */
 
 BOOLEAN
+AmlValidateObjectType (
+    ACPI_OBJECT_TYPE        Type);
+
+BOOLEAN
 AmlAcquireGlobalLock (
     UINT32                  Rule);
 
