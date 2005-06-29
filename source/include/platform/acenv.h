@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.57 $
+ *       $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -403,6 +403,10 @@ typedef char *va_list;
 #define halt()                  __asm {hlt}
 #define wbinvd()                __asm {WBINVD}
 
+#ifdef ACPI_APPLICATION
+#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       (Acq = 0xFF)
+#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       (Pnd = 0)
+#else
 
 #define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       __asm {     \
         __asm mov           ecx, GLptr              \
@@ -433,6 +437,8 @@ typedef char *va_list;
         __asm and           eax, 1                  \
         __asm mov           Pnd, al                 \
 }
+
+#endif
 
 /*! [End] no source code translation !*/
 
