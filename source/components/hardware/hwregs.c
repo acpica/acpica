@@ -325,7 +325,7 @@ HwObtainSleepTypeRegisterData (
 UINT32
 HwRegisterIO (
     NATIVE_UINT             ReadWrite,
-	BOOLEAN					UseLock,	
+    BOOLEAN                 UseLock,    
     UINT32                  RegisterId,
     ...)                    /* Value (only used on write) */
 {
@@ -347,7 +347,7 @@ HwRegisterIO (
         va_end (marker);
     }
 
-    /* TBD: May want to split the Event code and the Control code */
+    /* TBD: [Restructure] May want to split the Event code and the Control code */
     
     /*
      * Decode the Register ID
