@@ -170,7 +170,7 @@ vDisplayTable (void *pHeader, int iDisplayBitFlags)
 }
 
 void
-vFunctionHello (char * FileName, char * FunctionName)
+vFunctionTrace (char * FileName, char * FunctionName)
 {
 
     OsdPrintf (NULL, "Enter Module: %10s, Function: %s\n", FileName, FunctionName);
@@ -217,7 +217,7 @@ GetMasterLogHandle (void)
 }
 
 
-/* Pointer stuff, must get rid of this eventually
+/* Pointer stuff, must get rid of this eventually */
 
 size_t sPtrOffset (void *pvPtr)
 {
