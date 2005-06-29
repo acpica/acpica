@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.97 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -122,9 +122,9 @@
         ACPI_MODULE_NAME    ("utdebug")
 
 
-UINT32          AcpiGbl_PrevThreadId = 0xFFFFFFFF;
-char            *AcpiGbl_FnEntryStr = "----Entry";
-char            *AcpiGbl_FnExitStr  = "----Exit-";
+static UINT32   AcpiGbl_PrevThreadId = 0xFFFFFFFF;
+static char     *AcpiGbl_FnEntryStr = "----Entry";
+static char     *AcpiGbl_FnExitStr  = "----Exit-";
 
 
 #ifdef ACPI_DEBUG
@@ -596,8 +596,8 @@ AcpiUtDumpBuffer (
     UINT32                  Display,
     UINT32                  ComponentId)
 {
-    UINT32                  i = 0;
-    UINT32                  j;
+    NATIVE_UINT             i = 0;
+    NATIVE_UINT             j;
     UINT32                  Temp32;
     UINT8                   BufChar;
 

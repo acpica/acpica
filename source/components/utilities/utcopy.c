@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.95 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -117,7 +117,6 @@
 #define __UTCOPY_C__
 
 #include "acpi.h"
-#include "acinterp.h"
 #include "acnamesp.h"
 #include "amlcode.h"
 
@@ -186,10 +185,10 @@ AcpiUtCopyIsimpleToEsimple (
 
         ExternalObject->String.Pointer = (NATIVE_CHAR *) DataSpace;
         ExternalObject->String.Length  = InternalObject->String.Length;
-        *BufferSpaceUsed = ACPI_ROUND_UP_TO_NATIVE_WORD (InternalObject->String.Length + 1);
+        *BufferSpaceUsed = ACPI_ROUND_UP_TO_NATIVE_WORD ((ACPI_SIZE) InternalObject->String.Length + 1);
 
         ACPI_MEMCPY ((void *) DataSpace, (void *) InternalObject->String.Pointer,
-                    InternalObject->String.Length + 1);
+                    (ACPI_SIZE) InternalObject->String.Length + 1);
         break;
 
 
@@ -248,12 +247,12 @@ AcpiUtCopyIsimpleToEsimple (
             Buffer.Length = MAX_STRING_LENGTH;
             Buffer.Pointer = DataSpace;
 
-            Status = AcpiNsHandleToPathname ((ACPI_HANDLE *) InternalObject->Reference.Node,
+            Status = AcpiNsHandleToPathname ((ACPI_HANDLE) InternalObject->Reference.Node,
                         &Buffer);
 
             /* Converted (external) string length is returned from above */
 
-            ExternalObject->String.Length = Buffer.Length;
+            ExternalObject->String.Length = (UINT32) Buffer.Length;
             *BufferSpaceUsed = ACPI_ROUND_UP_TO_NATIVE_WORD (Buffer.Length);
             break;
 
@@ -354,7 +353,7 @@ AcpiUtCopyIelementToEelement (
          */
         TargetObject->Type              = ACPI_TYPE_PACKAGE;
         TargetObject->Package.Count     = SourceObject->Package.Count;
-        TargetObject->Package.Elements  = (ACPI_OBJECT *) Info->FreeSpace;
+        TargetObject->Package.Elements  = ACPI_CAST_PTR (ACPI_OBJECT, Info->FreeSpace);
 
         /*
          * Pass the new package object back to the package walk routine
@@ -366,7 +365,7 @@ AcpiUtCopyIelementToEelement (
          * update the buffer length counter
          */
         ObjectSpace = ACPI_ROUND_UP_TO_NATIVE_WORD (
-                            TargetObject->Package.Count * sizeof (ACPI_OBJECT));
+                            (ACPI_SIZE) TargetObject->Package.Count * sizeof (ACPI_OBJECT));
         break;
 
 
@@ -416,7 +415,7 @@ AcpiUtCopyIpackageToEpackage (
     /*
      * First package at head of the buffer
      */
-    ExternalObject = (ACPI_OBJECT *) Buffer;
+    ExternalObject = ACPI_CAST_PTR (ACPI_OBJECT, Buffer);
 
     /*
      * Free space begins right after the first package
@@ -428,7 +427,7 @@ AcpiUtCopyIpackageToEpackage (
 
     ExternalObject->Type               = InternalObject->Common.Type;
     ExternalObject->Package.Count      = InternalObject->Package.Count;
-    ExternalObject->Package.Elements   = (ACPI_OBJECT *) Info.FreeSpace;
+    ExternalObject->Package.Elements   = ACPI_CAST_PTR (ACPI_OBJECT, Info.FreeSpace);
 
     /*
      * Build an array of ACPI_OBJECTS in the buffer
@@ -558,7 +557,7 @@ AcpiUtCopyEsimpleToIsimple (
 
     case ACPI_TYPE_STRING:
 
-        InternalObject->String.Pointer = ACPI_MEM_CALLOCATE (ExternalObject->String.Length + 1);
+        InternalObject->String.Pointer = ACPI_MEM_CALLOCATE ((ACPI_SIZE) ExternalObject->String.Length + 1);
         if (!InternalObject->String.Pointer)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -591,6 +590,10 @@ AcpiUtCopyEsimpleToIsimple (
     case ACPI_TYPE_INTEGER:
 
         InternalObject->Integer.Value   = ExternalObject->Integer.Value;
+        break;
+
+    default:
+        /* Other types can't get here */
         break;
     }
 
@@ -764,6 +767,7 @@ AcpiUtCopySimpleObject (
         DestDesc->Common.Flags = SourceDesc->Common.Flags;
 
         /* Fall through to common string/buffer case */
+        /*lint -fallthrough */
 
     case ACPI_TYPE_STRING:
 
@@ -785,6 +789,10 @@ AcpiUtCopySimpleObject (
             ACPI_MEMCPY (DestDesc->String.Pointer, SourceDesc->String.Pointer,
                          SourceDesc->String.Length);
         }
+        break;
+
+    default:
+        /* Nothing to do for other simple objects */
         break;
     }
 
@@ -916,7 +924,7 @@ AcpiUtCopyIpackageToIpackage (
     /*
      * Create the object array and walk the source package tree
      */
-    DestObj->Package.Elements = ACPI_MEM_CALLOCATE ((SourceObj->Package.Count + 1) *
+    DestObj->Package.Elements = ACPI_MEM_CALLOCATE (((ACPI_SIZE) SourceObj->Package.Count + 1) *
                                                     sizeof (void *));
     if (!DestObj->Package.Elements)
     {
