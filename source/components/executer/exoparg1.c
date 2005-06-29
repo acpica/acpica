@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ammonad - ACPI AML (p-code) execution for monadic operators
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -900,7 +900,7 @@ AcpiAmlExecMonadic2 (
             /*
              * It's not a Reference, so it must be a direct name pointer.
              */
-            Type = AcpiNsGetType ((ACPI_HANDLE) ObjDesc);
+            Type = AcpiNsGetType ((ACPI_NAMESPACE_NODE *) ObjDesc);
         }
 
         /* Allocate a descriptor to hold the type. */
@@ -922,7 +922,7 @@ AcpiAmlExecMonadic2 (
 
         if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_NAMED))
         {
-            ObjDesc = AcpiNsGetAttachedObject (ObjDesc);
+            ObjDesc = AcpiNsGetAttachedObject ((ACPI_NAMESPACE_NODE *) ObjDesc);
         }
 
         if (!ObjDesc)
