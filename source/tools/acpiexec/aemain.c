@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -237,6 +237,7 @@ usage (void)
     printf ("        -?                  Display this message\n");
     printf ("        -b [Method]         Batch mode method execution\n");
     printf ("        -i                  Do not run STA/INI methods\n");
+    printf ("        -s                  Enable Interpreter Slack Mode\n");
     printf ("        -x DebugLevel       Specify debug output level\n");
     printf ("        -v                  Verbose init output\n");
 }
@@ -337,7 +338,7 @@ main (
         break;
 
     case 's':
-        AcpiGbl_DbOpt_stats = TRUE;
+        AcpiGbl_EnableInterpreterSlack = TRUE;
         break;
 
     case 'v':
