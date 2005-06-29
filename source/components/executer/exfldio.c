@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfldio - Aml Field I/O
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -560,7 +560,6 @@ AcpiAmlWriteFieldDataWithUpdateRule (
     /* Start with the new bits  */
 
     MergedValue = FieldValue;
-
 
 
     /* Decode the update rule */
