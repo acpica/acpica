@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.109 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,7 @@
 #include "acevents.h"
 #include "acnamesp.h"
 #include "acinterp.h"
+#include "amlcode.h"
 
 
 #define _COMPONENT          MISCELLANEOUS
@@ -288,6 +289,8 @@ ACPI_TABLE_SUPPORT          AcpiGbl_AcpiTableData[NUM_ACPI_TABLES] =
 NATIVE_CHAR                 *MsgAcpiErrorBreak = "*** Break on ACPI_ERROR ***\n";
 
 
+
+
 /*****************************************************************************
  *
  * FUNCTION:    AcpiCmGetMutexName
@@ -393,7 +396,105 @@ AcpiCmGetTypeName (
     return (AcpiGbl_NsTypeNames[Type]);
 }
 
+
+
+
+
+/* Region type decoding */
+
+NATIVE_CHAR *AcpiGbl_RegionTypes[NUM_REGION_TYPES] =
+{
+    "SystemMemory",
+    "SystemIO",
+    "PCIConfig",
+    "EmbeddedControl",
+    "SMBus",
+    "CMOS",
+    "PCIBarTarget",
+};
+
+
+/*****************************************************************************
+ *
+ * FUNCTION:    AcpiCmGetRegionName
+ *
+ * PARAMETERS:  None.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Translate a Space ID into a name string (Debug only)
+ *
+ ****************************************************************************/
+
+NATIVE_CHAR *
+AcpiCmGetRegionName (
+    UINT8                   SpaceId)
+{
+
+    if (SpaceId >= USER_REGION_BEGIN)
+    {
+        return ("UserDefinedRegion");
+    }
+
+    else if (SpaceId >= NUM_REGION_TYPES)
+    {
+        return ("InvalidSpaceID");
+    }
+
+    return (AcpiGbl_RegionTypes[SpaceId]);
+}
+
+
+
+
+
+/* Data used in keeping track of fields */
+
+NATIVE_CHAR *AcpiGbl_FENames[NUM_FIELD_NAMES] =
+{
+    "skip",
+    "?access?"
+};              /* FE = Field Element */
+
+
+
+NATIVE_CHAR *AcpiGbl_MatchOps[NUM_MATCH_OPS] =
+{
+    "Error",
+    "MTR",
+    "MEQ",
+    "MLE",
+    "MLT",
+    "MGE",
+    "MGT"
+};
+
+
+/* Access type decoding */
+
+NATIVE_CHAR *AcpiGbl_AccessTypes[NUM_ACCESS_TYPES] =
+{
+    "AnyAcc",
+    "ByteAcc",
+    "WordAcc",
+    "DWordAcc",
+    "BlockAcc",
+    "SMBSendRecvAcc",
+    "SMBQuickAcc"
+};
+
+
+/* Update rule decoding */
+
+NATIVE_CHAR *AcpiGbl_UpdateRules[NUM_UPDATE_RULES] =
+{
+    "Preserve",
+    "WriteAsOnes",
+    "WriteAsZeros"
+};
+
 #endif
+
 
 
 /*****************************************************************************
@@ -667,11 +768,6 @@ AcpiCmInitGlobals (
     AcpiGbl_WalkStateCacheDepth         = 0;
     AcpiGbl_WalkStateCacheRequests      = 0;
     AcpiGbl_WalkStateCacheHits          = 0;
-
-
-    /* Parser */
-
-    AcpiGbl_ParsedNamespaceRoot         = NULL;
 
     /* Hardware oriented */
 
