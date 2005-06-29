@@ -409,12 +409,6 @@ AcpiGetNextObject (
     NAME_TABLE_ENTRY        *ThisEntry;
 
 
-    if (!RetHandle)
-    {
-        return AE_BAD_PARAMETER;
-    }
-    *RetHandle = NULL;
-
 
     if (Type > ACPI_TYPE_MAX)
     {
@@ -477,7 +471,11 @@ AcpiGetNextObject (
             return AE_NOT_FOUND;
         }
 
-        *RetHandle = NsConvertEntryToHandle (ThisEntry);
+        if (RetHandle)
+        {
+            *RetHandle = NsConvertEntryToHandle (ThisEntry);
+        }
+
         return AE_OK;
     }
 
@@ -490,7 +488,11 @@ AcpiGetNextObject (
 
         if (ThisEntry->Type == Type)
         {
-            *RetHandle = NsConvertEntryToHandle (ThisEntry);
+            if (RetHandle)
+            {
+                *RetHandle = NsConvertEntryToHandle (ThisEntry);
+            }
+
             return AE_OK;
         }
 
@@ -647,12 +649,11 @@ AcpiWalkNamespace (
     void                    *Context, 
     void                    **ReturnValue)
 {
+    ACPI_STATUS             Status;
     ACPI_HANDLE             ChildHandle;
     ACPI_HANDLE             ParentHandle;
     ACPI_OBJECT_TYPE        ChildType;
-    ACPI_HANDLE             Dummy;
     UINT32                  Level;
-    void                    *UserReturnVal;
 
 
     FUNCTION_TRACE ("AcpiWalkNamespace");
@@ -674,13 +675,6 @@ AcpiWalkNamespace (
         StartObject = Gbl_RootObject;
     }
 
-    /* Init return value, if any */
-
-    if (ReturnValue)
-    {
-        *ReturnValue = NULL;
-    }
-
 
     /* Null child means "get first object" */
 
@@ -699,6 +693,7 @@ AcpiWalkNamespace (
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
+        Status = AE_OK;
         if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle, &ChildHandle)))
         {
             /* Found an object, Get the type if we are not searching for ANY */
@@ -712,35 +707,40 @@ AcpiWalkNamespace (
             {
                 /* Found a matching object, invoke the user callback function */
 
-        	    if ((UserReturnVal = UserFunction (ChildHandle, Level, Context)) != NULL)
+                Status = UserFunction (ChildHandle, Level, Context, ReturnValue);
+                switch (Status)
                 {
-                    /* Non-zero from user function means "exit now" */
+                case AE_OK:
+                case AE_DEPTH:
+                    break;                          /* Just keep going */
 
-                    if (ReturnValue)
-                    {
-                        /* Pass return value back to the caller */
+                case AE_TERMINATE:
+                    return_ACPI_STATUS (AE_OK);     /* Exit now, with OK status */
+                    break;
 
-                        *ReturnValue = UserReturnVal;
-                    }
-
-                    return_ACPI_STATUS (AE_OK);
+                default:
+                    return_ACPI_STATUS (Status);    /* All others are valid exceptions */
+                    break;
                 }
             }
 
             /* 
              * Depth first search:
-             * Attempt to go down another level in the namespace if we are allowed to .
+             * Attempt to go down another level in the namespace if we are allowed to.
+             * Don't go any further if we have reached the caller specified maximum depth
+             * or if the user function has specified that the maximum depth has been reached.
              */
 
-            if (Level < MaxDepth &&
-        	    ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ChildHandle, 0, &Dummy)))
+            if ((Level < MaxDepth) && (Status != AE_DEPTH))
             {
-                /* There is at least one child of this object, visit the object */
+                if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ChildHandle, 0, NULL)))
+                {
+                    /* There is at least one child of this object, visit the object */
 
-                Level++;
-                ParentHandle    = ChildHandle;
-                ChildHandle     = 0;
-   			    continue;
+                    Level++;
+                    ParentHandle    = ChildHandle;
+                    ChildHandle     = 0;
+                }
             }
         }
 
