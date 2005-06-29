@@ -1,8 +1,7 @@
 /******************************************************************************
  *
- * Module Name: evmisc - ACPI device notification handler dispatch
- *                       and ACPI Global Lock support
- *              $Revision: 1.44 $
+ * Module Name: evmisc - Miscellaneous event manager support functions
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -122,8 +121,42 @@
 #include "achware.h"
 
 #define _COMPONENT          ACPI_EVENTS
-        MODULE_NAME         ("evmisc")
+        ACPI_MODULE_NAME    ("evmisc")
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvIsNotifyObject
+ *
+ * PARAMETERS:  Node            - Node to check
+ *
+ * RETURN:      TRUE if notifies allowed on this object
+ *
+ * DESCRIPTION: Check type of node for a object that supports notifies.
+ *
+ *              TBD: This could be replaced by a flag bit in the node.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiEvIsNotifyObject (
+    ACPI_NAMESPACE_NODE     *Node)
+{
+    switch (Node->Type)
+    {
+    case ACPI_TYPE_DEVICE:
+    case ACPI_TYPE_PROCESSOR:
+    case ACPI_TYPE_POWER:
+    case ACPI_TYPE_THERMAL:
+        /*
+         * These are the ONLY objects that can receive ACPI notifications
+         */
+        return (TRUE);
+
+    default:
+        return (FALSE);
+    }
+}
 
 
 /*******************************************************************************
@@ -134,7 +167,7 @@
  *
  * RETURN:      None.
  *
- * DESCRIPTION: Returns the register index (index into the GPE register info 
+ * DESCRIPTION: Returns the register index (index into the GPE register info
  *              table) associated with this GPE.
  *
  ******************************************************************************/
@@ -149,7 +182,7 @@ AcpiEvGetGpeRegisterIndex (
         return (ACPI_GPE_INVALID);
     }
 
-    return (DIV_8 (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex));
+    return (ACPI_DIV_8 (AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex));
 }
 
 
@@ -204,7 +237,7 @@ AcpiEvQueueNotifyRequest (
     ACPI_STATUS             Status = AE_OK;
 
 
-    PROC_NAME ("EvQueueNotifyRequest");
+    ACPI_FUNCTION_NAME ("EvQueueNotifyRequest");
 
 
     /*
@@ -251,7 +284,7 @@ AcpiEvQueueNotifyRequest (
         {
         case ACPI_TYPE_DEVICE:
 
-            if (NotifyValue <= MAX_SYS_NOTIFY)
+            if (NotifyValue <= ACPI_MAX_SYS_NOTIFY)
             {
                 HandlerObj = ObjDesc->Device.SysHandler;
             }
@@ -264,7 +297,7 @@ AcpiEvQueueNotifyRequest (
 
         case ACPI_TYPE_THERMAL:
 
-            if (NotifyValue <= MAX_SYS_NOTIFY)
+            if (NotifyValue <= ACPI_MAX_SYS_NOTIFY)
             {
                 HandlerObj = ObjDesc->ThermalZone.SysHandler;
             }
@@ -278,8 +311,8 @@ AcpiEvQueueNotifyRequest (
 
     /* If there is any handler to run, schedule the dispatcher */
 
-    if ((AcpiGbl_SysNotify.Handler && (NotifyValue <= MAX_SYS_NOTIFY)) ||
-        (AcpiGbl_DrvNotify.Handler && (NotifyValue > MAX_SYS_NOTIFY))  ||
+    if ((AcpiGbl_SysNotify.Handler && (NotifyValue <= ACPI_MAX_SYS_NOTIFY)) ||
+        (AcpiGbl_DrvNotify.Handler && (NotifyValue > ACPI_MAX_SYS_NOTIFY))  ||
         HandlerObj)
     {
         NotifyInfo = AcpiUtCreateGenericState ();
@@ -325,7 +358,7 @@ AcpiEvQueueNotifyRequest (
  *
  ******************************************************************************/
 
-void
+void ACPI_SYSTEM_XFACE
 AcpiEvNotifyDispatch (
     void                    *Context)
 {
@@ -335,14 +368,14 @@ AcpiEvNotifyDispatch (
     ACPI_OPERAND_OBJECT     *HandlerObj;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*
      * We will invoke a global notify handler if installed.
      * This is done _before_ we invoke the per-device handler attached to the device.
      */
-    if (NotifyInfo->Notify.Value <= MAX_SYS_NOTIFY)
+    if (NotifyInfo->Notify.Value <= ACPI_MAX_SYS_NOTIFY)
     {
         /* Global system notification handler */
 
@@ -397,7 +430,7 @@ AcpiEvNotifyDispatch (
  *
  ******************************************************************************/
 
-static void
+static void ACPI_SYSTEM_XFACE
 AcpiEvGlobalLockThread (
     void                    *Context)
 {
@@ -451,7 +484,7 @@ AcpiEvGlobalLockHandler (
                                     Context);
     }
 
-    return (INTERRUPT_HANDLED);
+    return (ACPI_INTERRUPT_HANDLED);
 }
 
 
@@ -471,7 +504,7 @@ AcpiEvInitGlobalLockHandler (void)
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("EvInitGlobalLockHandler");
+    ACPI_FUNCTION_TRACE ("EvInitGlobalLockHandler");
 
 
     AcpiGbl_GlobalLockPresent = TRUE;
@@ -513,7 +546,7 @@ AcpiEvAcquireGlobalLock (
     BOOLEAN                 Acquired = FALSE;
 
 
-    FUNCTION_TRACE ("EvAcquireGlobalLock");
+    ACPI_FUNCTION_TRACE ("EvAcquireGlobalLock");
 
 
     /* Make sure that we actually have a global lock */
@@ -577,12 +610,12 @@ AcpiEvReleaseGlobalLock (void)
     BOOLEAN                 Pending = FALSE;
 
 
-    FUNCTION_TRACE ("EvReleaseGlobalLock");
+    ACPI_FUNCTION_TRACE ("EvReleaseGlobalLock");
 
 
     if (!AcpiGbl_GlobalLockThreadCount)
     {
-        REPORT_WARNING(("Cannot release HW Global Lock, it has not been acquired\n"));
+        ACPI_REPORT_WARNING(("Cannot release HW Global Lock, it has not been acquired\n"));
         return_VOID;
     }
 
@@ -632,7 +665,7 @@ void
 AcpiEvTerminate (void)
 {
 
-    FUNCTION_TRACE ("EvTerminate");
+    ACPI_FUNCTION_TRACE ("EvTerminate");
 
 
     /*
