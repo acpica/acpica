@@ -304,13 +304,13 @@ AcpiOsStall (
 ACPI_STATUS
 AcpiOsReadPort (
     ACPI_IO_ADDRESS         Address,
-    void                    *Value,
+    UINT32                  *Value,
     UINT32                  Width);
 
 ACPI_STATUS
 AcpiOsWritePort (
     ACPI_IO_ADDRESS         Address,
-    ACPI_INTEGER            Value,
+    UINT32                  Value,
     UINT32                  Width);
 
 
@@ -321,13 +321,13 @@ AcpiOsWritePort (
 ACPI_STATUS
 AcpiOsReadMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    void                    *Value,
+    UINT32                  *Value,
     UINT32                  Width);
 
 ACPI_STATUS
 AcpiOsWriteMemory (
     ACPI_PHYSICAL_ADDRESS   Address,
-    ACPI_INTEGER            Value,
+    UINT32                  Value,
     UINT32                  Width);
 
 
