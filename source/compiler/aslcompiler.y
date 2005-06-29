@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -410,6 +410,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> UPDATERULE_ONES
 %token <i> UPDATERULE_PRESERVE
 %token <i> UPDATERULE_ZEROS
+%token <i> VAR_PACKAGE
 %token <i> VENDORLONG
 %token <i> VENDORSHORT
 %token <i> WAIT
@@ -657,9 +658,8 @@ AslLocalAllocate (unsigned int Size);
 %type <n> PackageList
 %type <n> PackageListTail
 %type <n> PackageElement
-/*
-%type <n> VarPackageTerm
-*/
+
+%type <n> VarPackageLengthTerm
 
 
 %type <n> EISAIDTerm
@@ -2290,6 +2290,10 @@ PackageTerm
         PackageLengthTerm
         ')' '{'
             PackageList '}'         {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
+    | PACKAGE '('                   {$$ = TrCreateLeafNode (VAR_PACKAGE);}
+        VarPackageLengthTerm
+        ')' '{'
+            PackageList '}'         {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
     | PACKAGE '('
         error ')'                   {$$ = AslDoError(); yyerrok;}
     ;
@@ -2297,7 +2301,10 @@ PackageTerm
 PackageLengthTerm
     :                               {$$ = NULL;}
     | ByteConstExpr                 {}
-    | TermArg                       {}
+    ;
+
+VarPackageLengthTerm
+    : TermArg                       {}
     ;
 
 PackageList
