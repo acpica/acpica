@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: cmclib - Local implementation of C library functions
- * $Revision: 1.31 $
+ * $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, 2000, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999, 2000, 2001, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -767,7 +767,7 @@ AcpiCmStrstr (
  *
  ******************************************************************************/
 
-UINT32
+NATIVE_UINT
 AcpiCmStrtoul (
     const NATIVE_CHAR       *String,
     NATIVE_CHAR             **Terminator,
@@ -777,7 +777,7 @@ AcpiCmStrtoul (
     UINT32                  index;
     UINT32                  sign;
     const NATIVE_CHAR       *StringStart;
-    UINT32                  ReturnValue = 0;
+    NATIVE_UINT             ReturnValue = 0;
     ACPI_STATUS             Status = AE_OK;
 
 
