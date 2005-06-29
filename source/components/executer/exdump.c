@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amdump - Interpreter debug output routines
- *              $Revision: 1.89 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -545,22 +545,16 @@ AcpiAmlDumpOperand (
         }
 
         else if (ACPI_TYPE_BUFFER !=
-                EntryDesc->FieldUnit.Container->Common.Type)
+                     EntryDesc->FieldUnit.Container->Common.Type)
         {
             DEBUG_PRINT_RAW (ACPI_INFO, ("*not a Buffer* \n"));
         }
 
         else
         {
-            if (EntryDesc->FieldUnit.Sequence
-                    != EntryDesc->FieldUnit.Container->Buffer.Sequence)
-            {
-                DEBUG_PRINT_RAW (ACPI_INFO, ("[stale] %lx \n",
-                    EntryDesc->FieldUnit.Sequence));
-            }
-
             DUMP_STACK_ENTRY (EntryDesc->FieldUnit.Container);
         }
+
         break;
 
 
@@ -820,7 +814,6 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : 0x%X\n", "Length", ObjDesc->FieldUnit.Length);
         AcpiOsPrintf ("%20s : 0x%X\n", "BitOffset", ObjDesc->FieldUnit.BitOffset);
         AcpiOsPrintf ("%20s : 0x%X\n", "Offset", ObjDesc->FieldUnit.Offset);
-        AcpiOsPrintf ("%20s : 0x%X\n", "Sequence", ObjDesc->FieldUnit.Sequence);
         AcpiOsPrintf ("%20s : 0x%p\n", "Container", ObjDesc->FieldUnit.Container);
         break;
 
@@ -828,7 +821,6 @@ AcpiAmlDumpObjectDescriptor (
     case ACPI_TYPE_DEVICE:
 
         AcpiOsPrintf ("%20s : %s\n",   "Type", "Device");
-        AcpiOsPrintf ("%20s : 0x%X\n", "Handle", ObjDesc->Device.Handle);
         AcpiOsPrintf ("%20s : 0x%p\n", "AddrHandler", ObjDesc->Device.AddrHandler);
         AcpiOsPrintf ("%20s : 0x%p\n", "SysHandler", ObjDesc->Device.SysHandler);
         AcpiOsPrintf ("%20s : 0x%p\n", "DrvHandler", ObjDesc->Device.DrvHandler);
@@ -837,10 +829,7 @@ AcpiAmlDumpObjectDescriptor (
     case ACPI_TYPE_EVENT:
 
         AcpiOsPrintf ("%20s : %s\n",   "Type", "Event");
-        AcpiOsPrintf ("%20s : 0x%X\n", "SignalCount", ObjDesc->Event.SignalCount);
         AcpiOsPrintf ("%20s : 0x%X\n", "Semaphore", ObjDesc->Event.Semaphore);
-        AcpiOsPrintf ("%20s : 0x%X\n", "LockCount", ObjDesc->Event.LockCount);
-        AcpiOsPrintf ("%20s : 0x%X\n", "ThreadId", ObjDesc->Event.ThreadId);
         break;
 
 
@@ -860,8 +849,6 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : %s\n",   "Type", "Mutex");
         AcpiOsPrintf ("%20s : 0x%X\n", "SyncLevel", ObjDesc->Mutex.SyncLevel);
         AcpiOsPrintf ("%20s : 0x%p\n", "Semaphore", ObjDesc->Mutex.Semaphore);
-        AcpiOsPrintf ("%20s : 0x%X\n", "LockCount", ObjDesc->Mutex.LockCount);
-        AcpiOsPrintf ("%20s : 0x%X\n", "ThreadId", ObjDesc->Mutex.ThreadId);
         break;
 
 
@@ -872,7 +859,6 @@ AcpiAmlDumpObjectDescriptor (
         AcpiOsPrintf ("%20s : 0x%X\n", "Flags", ObjDesc->Region.Flags);
         AcpiOsPrintf ("%20s : 0x%X\n", "Address", ObjDesc->Region.Address);
         AcpiOsPrintf ("%20s : 0x%X\n", "Length", ObjDesc->Region.Length);
-        AcpiOsPrintf ("%20s : 0x%p\n", "Method", ObjDesc->Region.Method);
         AcpiOsPrintf ("%20s : 0x%p\n", "AddrHandler", ObjDesc->Region.AddrHandler);
         AcpiOsPrintf ("%20s : 0x%p\n", "Next", ObjDesc->Region.Next);
         break;
@@ -881,7 +867,6 @@ AcpiAmlDumpObjectDescriptor (
     case ACPI_TYPE_POWER:
 
         AcpiOsPrintf ("%20s : %s\n",   "Type", "PowerResource");
-        AcpiOsPrintf ("%20s : 0x%p\n", "Handle", ObjDesc->PowerResource.Handle);
         AcpiOsPrintf ("%20s : 0x%p\n", "SysHandler", ObjDesc->PowerResource.SysHandler);
         AcpiOsPrintf ("%20s : 0x%p\n", "DrvHandler", ObjDesc->PowerResource.DrvHandler);
         break;
@@ -898,7 +883,6 @@ AcpiAmlDumpObjectDescriptor (
     case ACPI_TYPE_THERMAL:
 
         AcpiOsPrintf ("%20s : %s\n",   "Type", "ThermalZone");
-        AcpiOsPrintf ("%20s : 0x%p\n", "Handle", ObjDesc->ThermalZone.Handle);
         AcpiOsPrintf ("%20s : 0x%p\n", "SysHandler", ObjDesc->ThermalZone.SysHandler);
         AcpiOsPrintf ("%20s : 0x%p\n", "DrvHandler", ObjDesc->ThermalZone.DrvHandler);
         break;

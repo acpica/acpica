@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: amfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -210,7 +210,7 @@ AcpiAmlSetupField (
 
 
     /*
-     * If the address and length have not been previously evaluated,
+     * If the Region Address and Length have not been previously evaluated,
      * evaluate them and save the results.
      */
     if (!(RgnDesc->Region.Flags & AOPOBJ_DATA_VALID))
@@ -221,6 +221,17 @@ AcpiAmlSetupField (
         {
             return_ACPI_STATUS (Status);
         }
+    }
+
+
+    if ((ObjDesc->Common.Type == ACPI_TYPE_FIELD_UNIT) &&
+        (!(ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)))
+    {
+        /*
+         * Field Buffer and Index have not been previously evaluated,
+         */
+        DEBUG_PRINT (ACPI_ERROR, ("Uninitialized field!\n"));
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
     if (RgnDesc->Region.Length <
