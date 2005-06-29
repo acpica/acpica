@@ -315,7 +315,7 @@ Cleanup:
     {
         /* Check if the return object is valid */
 
-        if (ReturnPtr->Common.Type != TYPE_Invalid)
+        if (ReturnPtr->Common.Type != INTERNAL_TYPE_Invalid)
         {
             /*
              *  Find out how large a buffer is needed to contain the
@@ -463,7 +463,7 @@ AcpiGetNextObject (
 
     /* If any type is OK, we are done */
 
-    if (Type == TYPE_Any)
+    if (Type == ACPI_TYPE_Any)
     {
         /* Make sure this is valid entry first */
 
@@ -477,7 +477,7 @@ AcpiGetNextObject (
             return AE_NOT_FOUND;
         }
 
-        *RetHandle = NsConvertEntryToHandle(ThisEntry);
+        *RetHandle = NsConvertEntryToHandle (ThisEntry);
         return AE_OK;
     }
 
@@ -490,7 +490,7 @@ AcpiGetNextObject (
 
         if (ThisEntry->Type == Type)
         {
-            *RetHandle = NsConvertEntryToHandle(ThisEntry);
+            *RetHandle = NsConvertEntryToHandle (ThisEntry);
             return AE_OK;
         }
 
@@ -534,7 +534,7 @@ AcpiGetType (
 
     if (Handle == ACPI_ROOT_OBJECT)
     {
-        *RetType = TYPE_Any;
+        *RetType = ACPI_TYPE_Any;
         return AE_OK;
     }
 
@@ -649,6 +649,7 @@ AcpiWalkNamespace (
 {
     ACPI_HANDLE             ChildHandle;
     ACPI_HANDLE             ParentHandle;
+    ACPI_OBJECT_TYPE        ChildType;
     ACPI_HANDLE             Dummy;
     UINT32                  Level;
     void                    *UserReturnVal;
@@ -685,6 +686,7 @@ AcpiWalkNamespace (
 
     ParentHandle    = StartObject;
     ChildHandle     = 0;
+    ChildType       = ACPI_TYPE_Any;
     Level           = 1;
 
     /* 
@@ -697,40 +699,61 @@ AcpiWalkNamespace (
     {
         /* Get the next typed object in this scope.  Null returned if not found */
 
-        if (ACPI_SUCCESS (AcpiGetNextObject (Type, ParentHandle, ChildHandle, &ChildHandle)) &&
-        	0 != (UserReturnVal = UserFunction (ChildHandle, Level, Context)))
+        if (ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ParentHandle, ChildHandle, &ChildHandle)))
         {
-            /* Non-zero from user function means "exit now" */
+            /* Found an object, Get the type if we are not searching for ANY */
 
-            if (ReturnValue)
+            if (Type != ACPI_TYPE_Any)
             {
-                /* Pass return value back to the caller */
-
-                *ReturnValue = UserReturnVal;
+                AcpiGetType (ChildHandle, &ChildType);
             }
 
-            return_ACPI_STATUS (AE_OK);
+            if (ChildType == Type)
+            {
+                /* Found a matching object, invoke the user callback function */
+
+        	    if ((UserReturnVal = UserFunction (ChildHandle, Level, Context)) != NULL)
+                {
+                    /* Non-zero from user function means "exit now" */
+
+                    if (ReturnValue)
+                    {
+                        /* Pass return value back to the caller */
+
+                        *ReturnValue = UserReturnVal;
+                    }
+
+                    return_ACPI_STATUS (AE_OK);
+                }
+            }
+
+            /* 
+             * Depth first search:
+             * Attempt to go down another level in the namespace if we are allowed to .
+             */
+
+            if (Level < MaxDepth &&
+        	    ACPI_SUCCESS (AcpiGetNextObject (ACPI_TYPE_Any, ChildHandle, 0, &Dummy)))
+            {
+                /* There is at least one child of this object, visit the object */
+
+                Level++;
+                ParentHandle    = ChildHandle;
+                ChildHandle     = 0;
+   			    continue;
+            }
         }
 
-        /* Go down another level in the namespace if we are allowed to */
-
-        if (Level < MaxDepth &&
-        	ACPI_SUCCESS (AcpiGetNextObject (TYPE_Any, ChildHandle, 0, &Dummy)))
+        else
         {
-            /* There is at least one child of this object, visit the object */
-
-            Level++;
-            ParentHandle    = ChildHandle;
-            ChildHandle     = 0;
-   			continue;
+            /* 
+             * No more children in this object (AcpiGetNextObject failed), 
+             * go back upwards in the namespace tree to the object's parent.
+             */
+            Level--;
+            ChildHandle = ParentHandle;
+            AcpiGetParent (ParentHandle, &ParentHandle);
         }
-        
-        /* 
-         * No more children in this object, go back up to the object's parent
-         */
-        Level--;
-        ChildHandle = ParentHandle;
-        AcpiGetParent (ParentHandle, &ParentHandle);
     }
 
 
