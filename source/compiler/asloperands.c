@@ -1,8 +1,8 @@
 
 /******************************************************************************
  *
- * Module Name: asloperands - AML opcode generation
- *              $Revision: 1.23 $
+ * Module Name: asloperands - AML operand processing
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -686,13 +686,21 @@ OpnDoPackage (
     }
 
 
-    if (!PackageLength)
+    /*
+     * If not a variable-length package, check for a zero 
+     * package length
+     */
+    if ((PackageLengthNode->ParseOpcode == INTEGER)      ||
+        (PackageLengthNode->ParseOpcode == DEFAULT_ARG))
     {
-        /* No length AND no items -- issue a warning */
+        if (!PackageLength)
+        {
+            /* No length AND no items -- issue a warning */
 
-        AslError (ASL_WARNING, ASL_MSG_PACKAGE_LENGTH, PackageLengthNode, NULL);
+            AslError (ASL_WARNING, ASL_MSG_PACKAGE_LENGTH, PackageLengthNode, NULL);
 
-        /* But go ahead and put the buffer length of zero into the AML */
+            /* But go ahead and put the buffer length of zero into the AML */
+        }
     }
 
 
