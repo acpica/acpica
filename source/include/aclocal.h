@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.121 $
+ *       $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,10 @@
 typedef void*                           ACPI_MUTEX;
 typedef UINT32                          ACPI_MUTEX_HANDLE;
 
+
+#define ACPI_MEMORY_MODE                0x01
+#define ACPI_LOGICAL_ADDRESSING         0x00
+#define ACPI_PHYSICAL_ADDRESSING        0x01
 
 /* Object descriptor types */
 
@@ -290,6 +294,8 @@ typedef struct acpi_node
 #define ANOBJ_METHOD_NO_RETVAL          0x20
 #define ANOBJ_METHOD_SOME_NO_RETVAL     0x40
 
+#define ANOBJ_IS_BIT_OFFSET             0x80
+
 
 /*
  * ACPI Table Descriptor.  One per ACPI table
@@ -372,6 +378,7 @@ typedef struct acpi_namestring_info
 /* Status bits. */
 
 #define ACPI_STATUS_PMTIMER             0x0001
+#define ACPI_STATUS_BUSMASTER           0x0010
 #define ACPI_STATUS_GLOBAL              0x0020
 #define ACPI_STATUS_POWER_BUTTON        0x0100
 #define ACPI_STATUS_SLEEP_BUTTON        0x0200
@@ -592,15 +599,12 @@ typedef union acpi_gen_state
 
 typedef
 ACPI_STATUS (*ACPI_PARSE_DOWNWARDS) (
-    UINT16                  Opcode,
-    struct acpi_parse_obj   *Op,
     struct acpi_walk_state  *WalkState,
     struct acpi_parse_obj   **OutOp);
 
 typedef
 ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
-    struct acpi_walk_state  *WalkState,
-    struct acpi_parse_obj   *Op);
+    struct acpi_walk_state  *WalkState);
 
 
 /*****************************************************************************
@@ -622,15 +626,30 @@ ACPI_STATUS (*ACPI_PARSE_UPWARDS) (
 #define ACPI_GET_OP_ARGS(a)             ((a)->Flags & ACPI_OP_ARGS_MASK)
 #define ACPI_GET_OP_TYPE(a)             ((a)->Flags & ACPI_OP_TYPE_MASK)
 
+/*
+ * Flags byte: 0-4 (5 bits) = Opcode Class  (0x001F
+ *             5   (1 bit)  = Has arguments flag
+ *             6-7 (2 bits) = Reserved
+ */
+#define AML_NO_ARGS         0
+#define AML_HAS_ARGS        0x0020
+#define AML_NSOBJECT        0x0100
+#define AML_NSOPCODE        0x0200
+#define AML_NSNODE          0x0400
+#define AML_NAMED           0x0800
+#define AML_DEFER           0x1000
+#define AML_FIELD           0x2000
+#define AML_CREATE          0x4000
+
 
 /*
  * AML opcode, name, and argument layout
  */
 typedef struct acpi_opcode_info
 {
-    UINT8                   Flags;          /* Opcode type, HasArgs flag */
     UINT32                  ParseArgs;      /* Grammar/Parse time arguments */
     UINT32                  RuntimeArgs;    /* Interpret time arguments */
+    UINT16                  Flags;          /* Opcode type, HasArgs flag */
 
 #ifdef _OPCODE_NAMES
     NATIVE_CHAR             *Name;          /* op name (debug only) */
@@ -641,7 +660,11 @@ typedef struct acpi_opcode_info
 
 typedef union acpi_parse_val
 {
-    UINT32                  Integer;        /* integer constant */
+    ACPI_INTEGER            Integer;        /* integer constant (Up to 64 bits) */
+    UINT64_STRUCT           Integer64;      /* Structure overlay for 2 32-bit Dwords */
+    UINT32                  Integer32;      /* integer constant, 32 bits only */
+    UINT16                  Integer16;      /* integer constant, 16 bits only */
+    UINT8                   Integer8;       /* integer constant, 8 bits only */
     UINT32                  Size;           /* bytelist or field size */
     NATIVE_CHAR             *String;        /* NULL terminated string */
     UINT8                   *Buffer;        /* buffer or string */
@@ -716,22 +739,7 @@ typedef struct acpi_parse_state
 
 
 /* PCI */
-
 #define PCI_ROOT_HID_STRING             "PNP0A03"
-#define PCI_ROOT_HID_VALUE              0x030AD041       /* EISAID("PNP0A03") */
-
-
-/* Sleep states */
-
-#define SLWA_DEBUG_LEVEL                4
-#define GTS_CALL                        0
-#define GTS_WAKE                        1
-
-/* Cx States */
-
-#define MAX_CX_STATE_LATENCY            0xFFFFFFFF
-#define MAX_CX_STATES                   4
-
 
 /*
  * The #define's and enum below establish an abstract way of identifying what
@@ -916,9 +924,35 @@ typedef struct acpi_parse_state
 
 typedef struct
 {
-    NATIVE_CHAR             Buffer[ACPI_DEVICE_ID_LENGTH];
+    char            Buffer[ACPI_DEVICE_ID_LENGTH];
 
 } ACPI_DEVICE_ID;
+
+
+/*****************************************************************************
+ *
+ * Miscellaneous
+ *
+ ****************************************************************************/
+
+#define ASCII_ZERO                      0x30
+
+/*****************************************************************************
+ *
+ * Debugger
+ *
+ ****************************************************************************/
+
+typedef struct dbmethodinfo
+{
+    ACPI_HANDLE             ThreadGate;
+    NATIVE_CHAR             *Name;
+    NATIVE_CHAR             **Args;
+    UINT32                  Flags;
+    UINT32                  NumLoops;
+    NATIVE_CHAR             Pathname[128];
+
+} DB_METHOD_INFO;
 
 
 /*****************************************************************************
@@ -927,28 +961,80 @@ typedef struct
  *
  ****************************************************************************/
 
+typedef struct
+{
+    UINT32                  ComponentId;
+    NATIVE_CHAR             *ProcName;
+    NATIVE_CHAR             *ModuleName;
+
+} ACPI_DEBUG_PRINT_INFO;
+
 
 /* Entry for a memory allocation (debug only) */
 
-#ifdef ACPI_DEBUG
 
 #define MEM_MALLOC                      0
 #define MEM_CALLOC                      1
 #define MAX_MODULE_NAME                 16
 
-typedef struct AcpiAllocationInfo
-{
-    struct AcpiAllocationInfo   *Previous;
-    struct AcpiAllocationInfo   *Next;
-    void                        *Address;
-    UINT32                      Size;
-    UINT32                      Component;
-    UINT32                      Line;
-    NATIVE_CHAR                 Module[MAX_MODULE_NAME];
+#define ACPI_COMMON_DEBUG_MEM_HEADER \
+    struct AcpiDebugMemBlock    *Previous; \
+    struct AcpiDebugMemBlock    *Next; \
+    UINT32                      Size; \
+    UINT32                      Component; \
+    UINT32                      Line; \
+    NATIVE_CHAR                 Module[MAX_MODULE_NAME]; \
     UINT8                       AllocType;
 
-} ACPI_ALLOCATION_INFO;
 
+typedef struct
+{
+    ACPI_COMMON_DEBUG_MEM_HEADER
+
+} ACPI_DEBUG_MEM_HEADER;
+
+typedef struct AcpiDebugMemBlock
+{
+    ACPI_COMMON_DEBUG_MEM_HEADER
+    UINT64                      UserSpace;
+
+} ACPI_DEBUG_MEM_BLOCK;
+
+
+#define ACPI_MEM_LIST_GLOBAL            0
+#define ACPI_MEM_LIST_NSNODE            1
+
+#define ACPI_MEM_LIST_FIRST_CACHE_LIST  2
+#define ACPI_MEM_LIST_STATE             2
+#define ACPI_MEM_LIST_PSNODE            3
+#define ACPI_MEM_LIST_PSNODE_EXT        4
+#define ACPI_MEM_LIST_OPERAND           5
+#define ACPI_MEM_LIST_WALK              6
+#define ACPI_MEM_LIST_MAX               6
+#define ACPI_NUM_MEM_LISTS              7
+
+
+typedef struct
+{
+    void                        *ListHead;
+    UINT16                      LinkOffset;
+    UINT16                      MaxCacheDepth;
+    UINT16                      CacheDepth;
+    UINT16                      ObjectSize;
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+
+    /* Statistics for debug memory tracking only */
+
+    UINT32                      TotalAllocated;
+    UINT32                      TotalFreed;
+    UINT32                      CurrentTotalSize;
+    UINT32                      CacheRequests;
+    UINT32                      CacheHits;
+    char                        *ListName;
 #endif
+
+} ACPI_MEMORY_LIST;
+
 
 #endif /* __ACLOCAL_H__ */

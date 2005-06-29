@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.106 $
+ *       $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -271,15 +271,11 @@ AcpiExWriteDataToField (
 
 ACPI_STATUS
 AcpiExTriadic (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExHexadic (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExCreateBufferField (
@@ -290,7 +286,6 @@ AcpiExCreateBufferField (
 
 ACPI_STATUS
 AcpiExReconfiguration (
-    UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
@@ -444,20 +439,15 @@ AcpiExSystemWaitSemaphore (
 
 ACPI_STATUS
 AcpiExMonadic1 (
-    UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExMonadic2 (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExMonadic2R (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
@@ -466,26 +456,19 @@ AcpiExMonadic2R (
 
 ACPI_STATUS
 AcpiExDyadic1 (
-    UINT16                  Opcode,
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExDyadic2 (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExDyadic2R (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiExDyadic2S (
-    UINT16                  Opcode,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_OPERAND_OBJECT     **ReturnDesc);
+    ACPI_WALK_STATE         *WalkState);
 
 
 /*
