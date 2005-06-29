@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.69 $
+ *              $Revision: 1.74 $
  *
  ******************************************************************************/
 
@@ -123,7 +123,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsnames")
+        ACPI_MODULE_NAME    ("nsnames")
 
 
 /*******************************************************************************
@@ -151,7 +151,7 @@ AcpiNsBuildExternalPath (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    PROC_NAME ("NsBuildExternalPath");
+    ACPI_FUNCTION_NAME ("NsBuildExternalPath");
 
 
     /* Special case for root */
@@ -175,7 +175,7 @@ AcpiNsBuildExternalPath (
 
         /* Put the name into the buffer */
 
-        MOVE_UNALIGNED32_TO_32 ((NameBuffer + Index), &ParentNode->Name);
+        ACPI_MOVE_UNALIGNED32_TO_32 ((NameBuffer + Index), &ParentNode->Name);
         ParentNode = AcpiNsGetParentNode (ParentNode);
 
         /* Prefix name with the path separator */
@@ -222,7 +222,7 @@ AcpiNsGetExternalPathname (
     ACPI_SIZE               Size;
 
 
-    FUNCTION_TRACE_PTR ("NsGetExternalPathname", Node);
+    ACPI_FUNCTION_TRACE_PTR ("NsGetExternalPathname", Node);
 
 
     /* Calculate required buffer size based on depth below root */
@@ -234,7 +234,7 @@ AcpiNsGetExternalPathname (
     NameBuffer = ACPI_MEM_CALLOCATE (Size);
     if (!NameBuffer)
     {
-        REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
+        ACPI_REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
         return_PTR (NULL);
     }
 
@@ -266,7 +266,7 @@ AcpiNsGetPathnameLength (
     ACPI_NAMESPACE_NODE     *NextNode;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*
@@ -292,40 +292,26 @@ AcpiNsGetPathnameLength (
  *
  * PARAMETERS:  TargetHandle            - Handle of named object whose name is
  *                                        to be found
- *              BufSize                 - Size of the buffer provided
- *              UserBuffer              - Where the pathname is returned
+ *              Buffer                  - Where the pathname is returned
  *
  * RETURN:      Status, Buffer is filled with pathname if status is AE_OK
  *
  * DESCRIPTION: Build and return a full namespace pathname
- *
- * MUTEX:       Locks Namespace
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiNsHandleToPathname (
     ACPI_HANDLE             TargetHandle,
-    ACPI_SIZE               *BufSize,
-    NATIVE_CHAR             *UserBuffer)
+    ACPI_BUFFER             *Buffer)
 {
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_SIZE               UserBufSize;
-    ACPI_SIZE               Size;
+    ACPI_SIZE               RequiredSize;
 
 
-    FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
+    ACPI_FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
 
-
-    if (!AcpiGbl_RootNode)
-    {
-        /*
-         * If the name space has not been initialized,
-         * this function should not have been called.
-         */
-        return_ACPI_STATUS (AE_NO_NAMESPACE);
-    }
 
     Node = AcpiNsMapHandleToNode (TargetHandle);
     if (!Node)
@@ -333,32 +319,24 @@ AcpiNsHandleToPathname (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Set return length to the required path length */
+    /* Determine size required for the caller buffer */
 
-    Size = AcpiNsGetPathnameLength (Node);
+    RequiredSize = AcpiNsGetPathnameLength (Node);
 
-    /* Always return the required/used size */
+    /* Validate/Allocate/Clear caller buffer */
 
-    UserBufSize = *BufSize;
-    *BufSize = Size;
-
-    /* Check if the user buffer is sufficiently large */
-
-    if (Size > UserBufSize)
+    Status = AcpiUtInitializeBuffer (Buffer, RequiredSize);
+    if (ACPI_FAILURE (Status))
     {
-        Status = AE_BUFFER_OVERFLOW;
-        goto Exit;
+        return_ACPI_STATUS (Status);
     }
 
-    /* Build the path in the user buffer */
+    /* Build the path in the caller buffer */
 
-    AcpiNsBuildExternalPath (Node, Size, UserBuffer);
+    AcpiNsBuildExternalPath (Node, RequiredSize, Buffer->Pointer);
 
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", UserBuffer, Size));
-
-Exit:
-    return_ACPI_STATUS (Status);
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "%s [%X] \n", (char *) Buffer->Pointer, RequiredSize));
+    return_ACPI_STATUS (AE_OK);
 }
 
 

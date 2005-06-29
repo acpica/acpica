@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nswalk - Functions for walking the ACPI namespace
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nswalk")
+        ACPI_MODULE_NAME    ("nswalk")
 
 
 /*******************************************************************************
@@ -154,7 +154,7 @@ AcpiNsGetNextNode (
     ACPI_NAMESPACE_NODE     *NextNode = NULL;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     if (!ChildNode)
@@ -252,7 +252,7 @@ AcpiNsWalkNamespace (
     UINT32                  Level;
 
 
-    FUNCTION_TRACE ("NsWalkNamespace");
+    ACPI_FUNCTION_TRACE ("NsWalkNamespace");
 
 
     /* Special case for the namespace Root Node */

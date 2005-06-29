@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.149 $
+ *              $Revision: 1.150 $
  *
  ******************************************************************************/
 
@@ -124,7 +124,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsaccess")
+        ACPI_MODULE_NAME    ("nsaccess")
 
 
 /*******************************************************************************
@@ -144,13 +144,13 @@
 ACPI_STATUS
 AcpiNsRootInitialize (void)
 {
-    ACPI_STATUS             Status = AE_OK;
-    const PREDEFINED_NAMES  *InitVal = NULL;
-    ACPI_NAMESPACE_NODE     *NewNode;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_STATUS                 Status = AE_OK;
+    const ACPI_PREDEFINED_NAMES *InitVal = NULL;
+    ACPI_NAMESPACE_NODE         *NewNode;
+    ACPI_OPERAND_OBJECT         *ObjDesc;
 
 
-    FUNCTION_TRACE ("NsRootInitialize");
+    ACPI_FUNCTION_TRACE ("NsRootInitialize");
 
 
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -179,7 +179,7 @@ AcpiNsRootInitialize (void)
     for (InitVal = AcpiGbl_PreDefinedNames; InitVal->Name; InitVal++)
     {
         Status = AcpiNsLookup (NULL, InitVal->Name, InitVal->Type,
-                        IMODE_LOAD_PASS2, NS_NO_UPSEARCH, NULL, &NewNode);
+                        ACPI_IMODE_LOAD_PASS2, ACPI_NS_NO_UPSEARCH, NULL, &NewNode);
 
         if (ACPI_FAILURE (Status) || (!NewNode)) /* Must be on same line for code converter */
         {
@@ -270,7 +270,7 @@ AcpiNsRootInitialize (void)
 
 
             default:
-                REPORT_ERROR (("Unsupported initial type value %X\n",
+                ACPI_REPORT_ERROR (("Unsupported initial type value %X\n",
                     InitVal->Type));
                 AcpiUtRemoveReference (ObjDesc);
                 ObjDesc = NULL;
@@ -322,7 +322,7 @@ AcpiNsLookup (
     ACPI_GENERIC_STATE      *ScopeInfo,
     NATIVE_CHAR             *Pathname,
     ACPI_OBJECT_TYPE        Type,
-    OPERATING_MODE          InterpreterMode,
+    ACPI_INTERPRETER_MODE   InterpreterMode,
     UINT32                  Flags,
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     **ReturnNode)
@@ -335,10 +335,10 @@ AcpiNsLookup (
     ACPI_NAME               SimpleName;
     ACPI_OBJECT_TYPE        TypeToCheckFor;
     ACPI_OBJECT_TYPE        ThisSearchType;
-    UINT32                  LocalFlags = Flags & ~NS_ERROR_IF_FOUND;
+    UINT32                  LocalFlags = Flags & ~ACPI_NS_ERROR_IF_FOUND;
 
 
-    FUNCTION_TRACE ("NsLookup");
+    ACPI_FUNCTION_TRACE ("NsLookup");
 
 
     if (!ReturnNode)
@@ -347,7 +347,7 @@ AcpiNsLookup (
     }
 
     AcpiGbl_NsLookupCount++;
-    *ReturnNode = ENTRY_NOT_FOUND;
+    *ReturnNode = ACPI_ENTRY_NOT_FOUND;
 
     if (!AcpiGbl_RootNode)
     {
@@ -465,7 +465,7 @@ AcpiNsLookup (
                 {
                     /* Current scope has no parent scope */
 
-                    REPORT_ERROR (
+                    ACPI_REPORT_ERROR (
                         ("ACPI path has too many parent prefixes (^) - reached beyond root node\n"));
                     return_ACPI_STATUS (AE_NOT_FOUND);
                 }
@@ -534,7 +534,7 @@ AcpiNsLookup (
             break;
         }
 
-        DEBUG_EXEC (AcpiNsPrintPathname (NumSegments, Pathname));
+        ACPI_DEBUG_EXEC (AcpiNsPrintPathname (NumSegments, Pathname));
     }
 
     /*
@@ -560,7 +560,7 @@ AcpiNsLookup (
 
         /* Extract one ACPI name from the front of the pathname */
 
-        MOVE_UNALIGNED32_TO_32 (&SimpleName, Pathname);
+        ACPI_MOVE_UNALIGNED32_TO_32 (&SimpleName, Pathname);
 
         /* Try to find the ACPI name */
 
@@ -606,7 +606,7 @@ AcpiNsLookup (
         {
             /* Complain about a type mismatch */
 
-            REPORT_WARNING (
+            ACPI_REPORT_WARNING (
                 ("NsLookup: %4.4s, type %X, checking for type %X\n",
                 (char *) &SimpleName, ThisNode->Type, TypeToCheckFor));
         }
@@ -630,7 +630,7 @@ AcpiNsLookup (
     /*
      * Always check if we need to open a new scope
      */
-    if (!(Flags & NS_DONT_OPEN_SCOPE) && (WalkState))
+    if (!(Flags & ACPI_NS_DONT_OPEN_SCOPE) && (WalkState))
     {
         /*
          * If entry is a type which opens a scope, push the new scope on the

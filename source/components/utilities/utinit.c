@@ -1,9 +1,9 @@
-/*******************************************************************************
+/******************************************************************************
  *
- * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.18 $
+ * Module Name: utinit - Common ACPI subsystem initialization
+ *              $Revision: 1.108 $
  *
- ******************************************************************************/
+ *****************************************************************************/
 
 /******************************************************************************
  *
@@ -115,224 +115,217 @@
  *****************************************************************************/
 
 
-#define __RSXFACE_C__
+#define __UTINIT_C__
 
 #include "acpi.h"
-#include "acinterp.h"
+#include "achware.h"
 #include "acnamesp.h"
-#include "acresrc.h"
+#include "acevents.h"
 
-#define _COMPONENT          ACPI_RESOURCES
-        ACPI_MODULE_NAME    ("rsxface")
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("utinit")
+
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiGetIrqRoutingTable
+ * FUNCTION:    AcpiUtFadtRegisterError
  *
- * PARAMETERS:  DeviceHandle    - a handle to the Bus device we are querying
- *              RetBuffer       - a pointer to a buffer to receive the
- *                                current resources for the device
+ * PARAMETERS:  *RegisterName           - Pointer to string identifying register
+ *              Value                   - Actual register contents value
+ *              AcpiTestSpecSection     - TDS section containing assertion
+ *              AcpiAssertion           - Assertion number being tested
+ *
+ * RETURN:      AE_BAD_VALUE
+ *
+ * DESCRIPTION: Display failure message and link failure to TDS assertion
+ *
+ ******************************************************************************/
+
+static void
+AcpiUtFadtRegisterError (
+    NATIVE_CHAR             *RegisterName,
+    UINT32                  Value,
+    ACPI_SIZE               Offset)
+{
+
+    ACPI_REPORT_WARNING (
+        ("Invalid FADT value %s=%lX at offset %lX FADT=%p\n",
+        RegisterName, Value, Offset, AcpiGbl_FADT));
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiUtValidateFadt
+ *
+ * PARAMETERS:  None
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This function is called to get the IRQ routing table for a
- *              specific bus.  The caller must first acquire a handle for the
- *              desired bus.  The routine table is placed in the buffer pointed
- *              to by the RetBuffer variable parameter.
- *
- *              If the function fails an appropriate status will be returned
- *              and the value of RetBuffer is undefined.
- *
- *              This function attempts to execute the _PRT method contained in
- *              the object indicated by the passed DeviceHandle.
+ * DESCRIPTION: Validate various ACPI registers in the FADT
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetIrqRoutingTable  (
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer)
+AcpiUtValidateFadt (
+    void)
 {
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE ("AcpiGetIrqRoutingTable ");
-
 
     /*
-     * Must have a valid handle and buffer, So we have to have a handle
-     * and a return buffer structure, and if there is a non-zero buffer length
-     * we also need a valid pointer in the buffer. If it's a zero buffer length,
-     * we'll be returning the needed buffer size, so keep going.
+     * Verify Fixed ACPI Description Table fields,
+     * but don't abort on any problems, just display error
      */
-    if (!DeviceHandle)
+    if (AcpiGbl_FADT->Pm1EvtLen < 4)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        AcpiUtFadtRegisterError ("PM1_EVT_LEN",
+                        (UINT32) AcpiGbl_FADT->Pm1EvtLen,
+                        ACPI_FADT_OFFSET (Pm1EvtLen));
     }
 
-    Status = AcpiUtValidateBuffer (RetBuffer);
-    if (ACPI_FAILURE (Status))
+    if (!AcpiGbl_FADT->Pm1CntLen)
     {
-        return_ACPI_STATUS (Status);
+        AcpiUtFadtRegisterError ("PM1_CNT_LEN", 0,
+                        ACPI_FADT_OFFSET (Pm1CntLen));
     }
 
-    Status = AcpiRsGetPrtMethodData (DeviceHandle, RetBuffer);
-    return_ACPI_STATUS (Status);
+    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1aEvtBlk.Address))
+    {
+        AcpiUtFadtRegisterError ("X_PM1a_EVT_BLK", 0,
+                        ACPI_FADT_OFFSET (XPm1aEvtBlk.Address));
+    }
+
+    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1aCntBlk.Address))
+    {
+        AcpiUtFadtRegisterError ("X_PM1a_CNT_BLK", 0,
+                        ACPI_FADT_OFFSET (XPm1aCntBlk.Address));
+    }
+
+    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address))
+    {
+        AcpiUtFadtRegisterError ("X_PM_TMR_BLK", 0,
+                        ACPI_FADT_OFFSET (XPmTmrBlk.Address));
+    }
+
+    if ((ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm2CntBlk.Address) &&
+        !AcpiGbl_FADT->Pm2CntLen))
+    {
+        AcpiUtFadtRegisterError ("PM2_CNT_LEN",
+                        (UINT32) AcpiGbl_FADT->Pm2CntLen,
+                        ACPI_FADT_OFFSET (Pm2CntLen));
+    }
+
+    if (AcpiGbl_FADT->PmTmLen < 4)
+    {
+        AcpiUtFadtRegisterError ("PM_TM_LEN",
+                        (UINT32) AcpiGbl_FADT->PmTmLen,
+                        ACPI_FADT_OFFSET (PmTmLen));
+    }
+
+    /* Length of GPE blocks must be a multiple of 2 */
+
+    if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address) &&
+        (AcpiGbl_FADT->Gpe0BlkLen & 1))
+    {
+        AcpiUtFadtRegisterError ("(x)GPE0_BLK_LEN",
+                        (UINT32) AcpiGbl_FADT->Gpe0BlkLen,
+                        ACPI_FADT_OFFSET (Gpe0BlkLen));
+    }
+
+    if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address) &&
+        (AcpiGbl_FADT->Gpe1BlkLen & 1))
+    {
+        AcpiUtFadtRegisterError ("(x)GPE1_BLK_LEN",
+                        (UINT32) AcpiGbl_FADT->Gpe1BlkLen,
+                        ACPI_FADT_OFFSET (Gpe1BlkLen));
+    }
+
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiUtTerminate
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: free memory allocated for table storage.
+ *
+ ******************************************************************************/
+
+void
+AcpiUtTerminate (void)
+{
+
+    ACPI_FUNCTION_TRACE ("UtTerminate");
+
+
+    /* Free global tables, etc. */
+
+    /* Nothing to do at this time */
+
+    return_VOID;
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiGetCurrentResources
+ * FUNCTION:    AcpiUtSubsystemShutdown
  *
- * PARAMETERS:  DeviceHandle    - a handle to the device object for the
- *                                device we are querying
- *              RetBuffer       - a pointer to a buffer to receive the
- *                                current resources for the device
+ * PARAMETERS:  none
  *
- * RETURN:      Status
+ * RETURN:      none
  *
- * DESCRIPTION: This function is called to get the current resources for a
- *              specific device.  The caller must first acquire a handle for
- *              the desired device.  The resource data is placed in the buffer
- *              pointed to by the RetBuffer variable parameter.
- *
- *              If the function fails an appropriate status will be returned
- *              and the value of RetBuffer is undefined.
- *
- *              This function attempts to execute the _CRS method contained in
- *              the object indicated by the passed DeviceHandle.
+ * DESCRIPTION: Shutdown the various subsystems.  Don't delete the mutex
+ *              objects here -- because the AML debugger may be still running.
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiGetCurrentResources (
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer)
+AcpiUtSubsystemShutdown (void)
 {
-    ACPI_STATUS             Status;
 
+    ACPI_FUNCTION_TRACE ("UtSubsystemShutdown");
 
-    ACPI_FUNCTION_TRACE ("AcpiGetCurrentResources");
+    /* Just exit if subsystem is already shutdown */
 
-
-    /*
-     * Must have a valid handle and buffer, So we have to have a handle
-     * and a return buffer structure, and if there is a non-zero buffer length
-     * we also need a valid pointer in the buffer. If it's a zero buffer length,
-     * we'll be returning the needed buffer size, so keep going.
-     */
-    if (!DeviceHandle)
+    if (AcpiGbl_Shutdown)
     {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "ACPI Subsystem is already terminated\n"));
+        return_ACPI_STATUS (AE_OK);
     }
 
-    Status = AcpiUtValidateBuffer (RetBuffer);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
+    /* Subsystem appears active, go ahead and shut it down */
 
-    Status = AcpiRsGetCrsMethodData (DeviceHandle, RetBuffer);
-    return_ACPI_STATUS (Status);
+    AcpiGbl_Shutdown = TRUE;
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Shutting down ACPI Subsystem...\n"));
+
+    /* Close the Namespace */
+
+    AcpiNsTerminate ();
+
+    /* Close the AcpiEvent Handling */
+
+    AcpiEvTerminate ();
+
+    /* Close the globals */
+
+    AcpiUtTerminate ();
+
+    /* Purge the local caches */
+
+    AcpiPurgeCachedObjects ();
+
+    /* Debug only - display leftover memory allocation, if any */
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+    AcpiUtDumpAllocations (ACPI_UINT32_MAX, NULL);
+#endif
+
+    return_ACPI_STATUS (AE_OK);
 }
 
 
-/*******************************************************************************
- *
- * FUNCTION:    AcpiGetPossibleResources
- *
- * PARAMETERS:  DeviceHandle    - a handle to the device object for the
- *                                device we are querying
- *              RetBuffer       - a pointer to a buffer to receive the
- *                                resources for the device
- *
- * RETURN:      Status
- *
- * DESCRIPTION: This function is called to get a list of the possible resources
- *              for a specific device.  The caller must first acquire a handle
- *              for the desired device.  The resource data is placed in the
- *              buffer pointed to by the RetBuffer variable.
- *
- *              If the function fails an appropriate status will be returned
- *              and the value of RetBuffer is undefined.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiGetPossibleResources (
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE ("AcpiGetPossibleResources");
-
-
-    /*
-     * Must have a valid handle and buffer, So we have to have a handle
-     * and a return buffer structure, and if there is a non-zero buffer length
-     * we also need a valid pointer in the buffer. If it's a zero buffer length,
-     * we'll be returning the needed buffer size, so keep going.
-     */
-    if (!DeviceHandle)
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = AcpiUtValidateBuffer (RetBuffer);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    Status = AcpiRsGetPrsMethodData (DeviceHandle, RetBuffer);
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiSetCurrentResources
- *
- * PARAMETERS:  DeviceHandle    - a handle to the device object for the
- *                                device we are changing the resources of
- *              InBuffer        - a pointer to a buffer containing the
- *                                resources to be set for the device
- *
- * RETURN:      Status
- *
- * DESCRIPTION: This function is called to set the current resources for a
- *              specific device.  The caller must first acquire a handle for
- *              the desired device.  The resource data is passed to the routine
- *              the buffer pointed to by the InBuffer variable.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiSetCurrentResources (
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *InBuffer)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE ("AcpiSetCurrentResources");
-
-
-    /*
-     * Must have a valid handle and buffer
-     */
-    if ((!DeviceHandle)       ||
-        (!InBuffer)           ||
-        (!InBuffer->Pointer)  ||
-        (!InBuffer->Length))
-    {
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    Status = AcpiRsSetSrsMethodData (DeviceHandle, InBuffer);
-    return_ACPI_STATUS (Status);
-}

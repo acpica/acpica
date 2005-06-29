@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  ******************************************************************************/
 
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nseval")
+        ACPI_MODULE_NAME    ("nseval")
 
 
 /*******************************************************************************
@@ -165,7 +165,7 @@ AcpiNsEvaluateRelative (
     ACPI_GENERIC_STATE      ScopeInfo;
 
 
-    FUNCTION_TRACE ("NsEvaluateRelative");
+    ACPI_FUNCTION_TRACE ("NsEvaluateRelative");
 
 
     /*
@@ -200,7 +200,7 @@ AcpiNsEvaluateRelative (
 
     ScopeInfo.Scope.Node = PrefixNode;
     Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY,
-                            IMODE_EXECUTE, NS_NO_UPSEARCH, NULL,
+                            ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH, NULL,
                             &Node);
 
     AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -262,7 +262,7 @@ AcpiNsEvaluateByName (
     NATIVE_CHAR             *InternalPath = NULL;
 
 
-    FUNCTION_TRACE ("NsEvaluateByName");
+    ACPI_FUNCTION_TRACE ("NsEvaluateByName");
 
 
     /* Build an internal name string for the method */
@@ -278,7 +278,7 @@ AcpiNsEvaluateByName (
     /* Lookup the name in the namespace */
 
     Status = AcpiNsLookup (NULL, InternalPath, ACPI_TYPE_ANY,
-                            IMODE_EXECUTE, NS_NO_UPSEARCH, NULL,
+                            ACPI_IMODE_EXECUTE, ACPI_NS_NO_UPSEARCH, NULL,
                             &Node);
 
     AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -346,7 +346,7 @@ AcpiNsEvaluateByHandle (
     ACPI_OPERAND_OBJECT     *LocalReturnObject;
 
 
-    FUNCTION_TRACE ("NsEvaluateByHandle");
+    ACPI_FUNCTION_TRACE ("NsEvaluateByHandle");
 
 
     /* Check if namespace has been initialized */
@@ -477,7 +477,7 @@ AcpiNsExecuteControlMethod (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("NsExecuteControlMethod");
+    ACPI_FUNCTION_TRACE ("NsExecuteControlMethod");
 
 
     /* Verify that there is a method associated with this object */
@@ -495,7 +495,7 @@ AcpiNsExecuteControlMethod (
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Control method at Offset %p Length %x]\n",
         ObjDesc->Method.AmlStart + 1, ObjDesc->Method.AmlLength - 1));
 
-    DUMP_PATHNAME (MethodNode, "NsExecuteControlMethod: Executing",
+    ACPI_DUMP_PATHNAME (MethodNode, "NsExecuteControlMethod: Executing",
         ACPI_LV_NAMES, _COMPONENT);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "At offset %p\n",
@@ -551,7 +551,7 @@ AcpiNsGetObjectValue (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("NsGetObjectValue");
+    ACPI_FUNCTION_TRACE ("NsGetObjectValue");
 
 
     /*

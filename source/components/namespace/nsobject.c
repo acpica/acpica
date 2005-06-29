@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsobject")
+        ACPI_MODULE_NAME    ("nsobject")
 
 
 /*******************************************************************************
@@ -159,7 +159,7 @@ AcpiNsAttachObject (
     ACPI_OBJECT_TYPE        ObjectType = ACPI_TYPE_ANY;
 
 
-    FUNCTION_TRACE ("NsAttachObject");
+    ACPI_FUNCTION_TRACE ("NsAttachObject");
 
 
     /*
@@ -169,7 +169,7 @@ AcpiNsAttachObject (
     {
         /* Invalid handle */
 
-        REPORT_ERROR (("NsAttachObject: Null NamedObj handle\n"));
+        ACPI_REPORT_ERROR (("NsAttachObject: Null NamedObj handle\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -177,7 +177,7 @@ AcpiNsAttachObject (
     {
         /* Null object */
 
-        REPORT_ERROR (("NsAttachObject: Null object, but type not ACPI_TYPE_ANY\n"));
+        ACPI_REPORT_ERROR (("NsAttachObject: Null object, but type not ACPI_TYPE_ANY\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -185,7 +185,7 @@ AcpiNsAttachObject (
     {
         /* Not a name handle */
 
-        REPORT_ERROR (("NsAttachObject: Invalid handle\n"));
+        ACPI_REPORT_ERROR (("NsAttachObject: Invalid handle\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -301,7 +301,7 @@ AcpiNsDetachObject (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    FUNCTION_TRACE ("NsDetachObject");
+    ACPI_FUNCTION_TRACE ("NsDetachObject");
 
 
     ObjDesc = Node->Object;
@@ -353,7 +353,7 @@ ACPI_OPERAND_OBJECT *
 AcpiNsGetAttachedObject (
     ACPI_NAMESPACE_NODE     *Node)
 {
-    FUNCTION_TRACE_PTR ("NsGetAttachedObject", Node);
+    ACPI_FUNCTION_TRACE_PTR ("NsGetAttachedObject", Node);
 
 
     if (!Node)
@@ -389,7 +389,7 @@ ACPI_OPERAND_OBJECT *
 AcpiNsGetSecondaryObject (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    FUNCTION_TRACE_PTR ("AcpiNsGetSecondaryObject", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR ("AcpiNsGetSecondaryObject", ObjDesc);
 
 
     if ((!ObjDesc)                                   ||

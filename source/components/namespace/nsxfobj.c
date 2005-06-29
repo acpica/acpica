@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
  *                         ACPI Object oriented interfaces
- *              $Revision: 1.103 $
+ *              $Revision: 1.106 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsxfobj")
+        ACPI_MODULE_NAME    ("nsxfobj")
 
 
 /*******************************************************************************
@@ -159,11 +159,10 @@ AcpiEvaluateObject (
     ACPI_OPERAND_OBJECT     **InternalParams = NULL;
     ACPI_OPERAND_OBJECT     *InternalReturnObj = NULL;
     ACPI_SIZE               BufferSpaceNeeded;
-    ACPI_SIZE               UserBufferLength;
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("AcpiEvaluateObject");
+    ACPI_FUNCTION_TRACE ("AcpiEvaluateObject");
 
 
     /*
@@ -177,7 +176,8 @@ AcpiEvaluateObject (
          * Allocate a new parameter block for the internal objects
          * Add 1 to count to allow for null terminated internal list
          */
-        InternalParams = ACPI_MEM_CALLOCATE ((ExternalParams->Count + 1) * sizeof (void *));
+        InternalParams = ACPI_MEM_CALLOCATE ((ExternalParams->Count + 1) * 
+                                                sizeof (void *));
         if (!InternalParams)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -212,7 +212,8 @@ AcpiEvaluateObject (
         /*
          *  The path is fully qualified, just evaluate by name
          */
-        Status = AcpiNsEvaluateByName (Pathname, InternalParams, &InternalReturnObj);
+        Status = AcpiNsEvaluateByName (Pathname, InternalParams, 
+                    &InternalReturnObj);
     }
     else if (!Handle)
     {
@@ -223,11 +224,13 @@ AcpiEvaluateObject (
          */
         if (!Pathname)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Both Handle and Pathname are NULL\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                "Both Handle and Pathname are NULL\n"));
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Handle is NULL and Pathname is relative\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, 
+                "Handle is NULL and Pathname is relative\n"));
         }
 
         Status = AE_BAD_PARAMETER;
@@ -245,7 +248,8 @@ AcpiEvaluateObject (
              * The null pathname case means the handle is for
              * the actual object to be evaluated
              */
-            Status = AcpiNsEvaluateByHandle (Handle, InternalParams, &InternalReturnObj);
+            Status = AcpiNsEvaluateByHandle (Handle, InternalParams, 
+                            &InternalReturnObj);
         }
         else
         {
@@ -253,7 +257,7 @@ AcpiEvaluateObject (
             * Both a Handle and a relative Pathname
             */
             Status = AcpiNsEvaluateRelative (Handle, Pathname, InternalParams,
-                                                &InternalReturnObj);
+                            &InternalReturnObj);
         }
     }
 
@@ -264,10 +268,11 @@ AcpiEvaluateObject (
      */
     if (ReturnBuffer)
     {
-        UserBufferLength = ReturnBuffer->Length;
-        ReturnBuffer->Length = 0;
-
-        if (InternalReturnObj)
+        if (!InternalReturnObj)
+        {
+            ReturnBuffer->Length = 0;
+        }
+        else
         {
             if (ACPI_GET_DESCRIPTOR_TYPE (InternalReturnObj) == ACPI_DESC_TYPE_NAMED)
             {
@@ -280,7 +285,8 @@ AcpiEvaluateObject (
                  * support for various types at a later date if necessary.
                  */
                 Status = AE_TYPE;
-                InternalReturnObj = NULL;   /* No need to delete an Node */
+                InternalReturnObj = NULL;   /* No need to delete a NS Node */
+                ReturnBuffer->Length = 0;
             }
 
             if (ACPI_SUCCESS (Status))
@@ -293,23 +299,17 @@ AcpiEvaluateObject (
                                                 &BufferSpaceNeeded);
                 if (ACPI_SUCCESS (Status))
                 {
-                    /*
-                     * Check if there is enough room in the
-                     * caller's buffer
-                     */
-                    if (UserBufferLength < BufferSpaceNeeded)
+                    /* Validate/Allocate/Clear caller buffer */
+
+                    Status = AcpiUtInitializeBuffer (ReturnBuffer, BufferSpaceNeeded);
+                    if (ACPI_FAILURE (Status))
                     {
                         /*
-                         * Caller's buffer is too small, can't
-                         * give him partial results fail the call
-                         * but return the buffer size needed
+                         * Caller's buffer is too small or a new one can't be allocated
                          */
                         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                            "Needed buffer size %X, received %X\n",
-                            BufferSpaceNeeded, UserBufferLength));
-
-                        ReturnBuffer->Length = BufferSpaceNeeded;
-                        Status = AE_BUFFER_OVERFLOW;
+                            "Needed buffer size %X, %s\n",
+                            BufferSpaceNeeded, AcpiFormatException (Status)));
                     }
                     else
                     {
@@ -318,7 +318,6 @@ AcpiEvaluateObject (
                          */
                         Status = AcpiUtCopyIobjectToEobject (InternalReturnObj,
                                         ReturnBuffer);
-                        ReturnBuffer->Length = BufferSpaceNeeded;
                     }
                 }
             }
@@ -603,7 +602,7 @@ AcpiWalkNamespace (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiWalkNamespace");
+    ACPI_FUNCTION_TRACE ("AcpiWalkNamespace");
 
 
     /* Parameter validation */
@@ -622,7 +621,7 @@ AcpiWalkNamespace (
      * must be allowed to make Acpi calls itself.
      */
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    Status = AcpiNsWalkNamespace (Type, StartObject, MaxDepth, NS_WALK_UNLOCK,
+    Status = AcpiNsWalkNamespace (Type, StartObject, MaxDepth, ACPI_NS_WALK_UNLOCK,
                     UserFunction, Context, ReturnValue);
 
     AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -762,7 +761,7 @@ AcpiGetDevices (
     ACPI_GET_DEVICES_INFO   Info;
 
 
-    FUNCTION_TRACE ("AcpiGetDevices");
+    ACPI_FUNCTION_TRACE ("AcpiGetDevices");
 
 
     /* Parameter validation */
@@ -789,7 +788,7 @@ AcpiGetDevices (
     AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
     Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE,
                                     ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                                    NS_WALK_UNLOCK,
+                                    ACPI_NS_WALK_UNLOCK,
                                     AcpiNsGetDeviceCallback, &Info,
                                     ReturnValue);
 

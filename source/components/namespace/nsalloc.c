@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  ******************************************************************************/
 
@@ -123,7 +123,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsalloc")
+        ACPI_MODULE_NAME    ("nsalloc")
 
 
 /*******************************************************************************
@@ -145,7 +145,7 @@ AcpiNsCreateNode (
     ACPI_NAMESPACE_NODE     *Node;
 
 
-    FUNCTION_TRACE ("NsCreateNode");
+    ACPI_FUNCTION_TRACE ("NsCreateNode");
 
 
     Node = ACPI_MEM_CALLOCATE (sizeof (ACPI_NAMESPACE_NODE));
@@ -185,7 +185,7 @@ AcpiNsDeleteNode (
     ACPI_NAMESPACE_NODE     *NextNode;
 
 
-    FUNCTION_TRACE_PTR ("NsDeleteNode", Node);
+    ACPI_FUNCTION_TRACE_PTR ("NsDeleteNode", Node);
 
 
     ParentNode = AcpiNsGetParentNode (Node);
@@ -254,7 +254,7 @@ AcpiNsInstallNode (
     ACPI_NAMESPACE_NODE     *ChildNode;
 
 
-    FUNCTION_TRACE ("NsInstallNode");
+    ACPI_FUNCTION_TRACE ("NsInstallNode");
 
 
     /*
@@ -374,7 +374,7 @@ AcpiNsDeleteChildren (
     UINT8                   Flags;
 
 
-    FUNCTION_TRACE_PTR ("NsDeleteChildren", ParentNode);
+    ACPI_FUNCTION_TRACE_PTR ("NsDeleteChildren", ParentNode);
 
 
     if (!ParentNode)
@@ -457,7 +457,7 @@ AcpiNsDeleteNamespaceSubtree (
     UINT32                  Level = 1;
 
 
-    FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
+    ACPI_FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
 
 
     if (!ParentNode)
@@ -545,7 +545,7 @@ AcpiNsRemoveReference (
     ACPI_NAMESPACE_NODE     *ThisNode;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*
@@ -602,7 +602,7 @@ AcpiNsDeleteNamespaceByOwner (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    FUNCTION_TRACE_U32 ("NsDeleteNamespaceByOwner", OwnerId);
+    ACPI_FUNCTION_TRACE_U32 ("NsDeleteNamespaceByOwner", OwnerId);
 
 
     ParentNode    = AcpiGbl_RootNode;

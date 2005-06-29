@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 #include "actables.h"
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsutils")
+        ACPI_MODULE_NAME    ("nsutils")
 
 
 /*******************************************************************************
@@ -183,12 +183,12 @@ ACPI_OBJECT_TYPE
 AcpiNsGetType (
     ACPI_NAMESPACE_NODE     *Node)
 {
-    FUNCTION_TRACE ("NsGetType");
+    ACPI_FUNCTION_TRACE ("NsGetType");
 
 
     if (!Node)
     {
-        REPORT_WARNING (("NsGetType: Null Node ptr"));
+        ACPI_REPORT_WARNING (("NsGetType: Null Node ptr"));
         return_VALUE (ACPI_TYPE_ANY);
     }
 
@@ -211,18 +211,18 @@ UINT32
 AcpiNsLocal (
     ACPI_OBJECT_TYPE        Type)
 {
-    FUNCTION_TRACE ("NsLocal");
+    ACPI_FUNCTION_TRACE ("NsLocal");
 
 
     if (!AcpiUtValidObjectType (Type))
     {
         /* Type code out of range  */
 
-        REPORT_WARNING (("NsLocal: Invalid Object Type\n"));
-        return_VALUE (NSP_NORMAL);
+        ACPI_REPORT_WARNING (("NsLocal: Invalid Object Type\n"));
+        return_VALUE (ACPI_NS_NORMAL);
     }
 
-    return_VALUE ((UINT32) AcpiGbl_NsProperties[Type] & NSP_LOCAL);
+    return_VALUE ((UINT32) AcpiGbl_NsProperties[Type] & ACPI_NS_LOCAL);
 }
 
 
@@ -248,7 +248,7 @@ AcpiNsGetInternalNameLength (
     UINT32                  i;
 
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     NextExternalChar = Info->ExternalName;
@@ -333,7 +333,7 @@ AcpiNsBuildInternalName (
     UINT32                  i;
 
 
-    FUNCTION_TRACE ("NsBuildInternalName");
+    ACPI_FUNCTION_TRACE ("NsBuildInternalName");
 
 
     /* Setup the correct prefixes, counts, and pointers */
@@ -472,7 +472,7 @@ AcpiNsInternalizeName (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("NsInternalizeName");
+    ACPI_FUNCTION_TRACE ("NsInternalizeName");
 
 
     if ((!ExternalName)      ||
@@ -540,7 +540,7 @@ AcpiNsExternalizeName (
     UINT32                  RequiredLength;
 
 
-    FUNCTION_TRACE ("NsExternalizeName");
+    ACPI_FUNCTION_TRACE ("NsExternalizeName");
 
 
     if (!InternalNameLength     ||
@@ -632,7 +632,7 @@ AcpiNsExternalizeName (
      */
     if (RequiredLength > InternalNameLength)
     {
-        REPORT_ERROR (("NsExternalizeName: Invalid internal name\n"));
+        ACPI_REPORT_ERROR (("NsExternalizeName: Invalid internal name\n"));
         return_ACPI_STATUS (AE_BAD_PATHNAME);
     }
 
@@ -697,7 +697,7 @@ AcpiNsMapHandleToNode (
     ACPI_HANDLE             Handle)
 {
 
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     /*
@@ -785,7 +785,7 @@ AcpiNsTerminate (void)
     ACPI_NAMESPACE_NODE     *ThisNode;
 
 
-    FUNCTION_TRACE ("NsTerminate");
+    ACPI_FUNCTION_TRACE ("NsTerminate");
 
 
     ThisNode = AcpiGbl_RootNode;
@@ -836,18 +836,18 @@ UINT32
 AcpiNsOpensScope (
     ACPI_OBJECT_TYPE        Type)
 {
-    FUNCTION_TRACE_U32 ("NsOpensScope", Type);
+    ACPI_FUNCTION_TRACE_U32 ("NsOpensScope", Type);
 
 
     if (!AcpiUtValidObjectType (Type))
     {
         /* type code out of range  */
 
-        REPORT_WARNING (("NsOpensScope: Invalid Object Type %X\n", Type));
-        return_VALUE (NSP_NORMAL);
+        ACPI_REPORT_WARNING (("NsOpensScope: Invalid Object Type %X\n", Type));
+        return_VALUE (ACPI_NS_NORMAL);
     }
 
-    return_VALUE (((UINT32) AcpiGbl_NsProperties[Type]) & NSP_NEWSCOPE);
+    return_VALUE (((UINT32) AcpiGbl_NsProperties[Type]) & ACPI_NS_NEWSCOPE);
 }
 
 
@@ -885,7 +885,7 @@ AcpiNsGetNodeByPath (
     NATIVE_CHAR             *InternalPath = NULL;
 
 
-    FUNCTION_TRACE_PTR ("NsGetNodeByPath", Pathname);
+    ACPI_FUNCTION_TRACE_PTR ("NsGetNodeByPath", Pathname);
 
 
     if (!Pathname)
@@ -912,8 +912,8 @@ AcpiNsGetNodeByPath (
     /* Lookup the name in the namespace */
 
     Status = AcpiNsLookup (&ScopeInfo, InternalPath,
-                            ACPI_TYPE_ANY, IMODE_EXECUTE,
-                            (Flags | NS_DONT_OPEN_SCOPE),
+                            ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
+                            (Flags | ACPI_NS_DONT_OPEN_SCOPE),
                             NULL, ReturnNode);
     if (ACPI_FAILURE (Status))
     {
@@ -950,7 +950,7 @@ AcpiNsFindParentName (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    FUNCTION_TRACE ("NsFindParentName");
+    ACPI_FUNCTION_TRACE ("NsFindParentName");
 
 
     if (ChildNode)
@@ -1033,7 +1033,7 @@ ACPI_NAMESPACE_NODE *
 AcpiNsGetParentNode (
     ACPI_NAMESPACE_NODE     *Node)
 {
-    FUNCTION_ENTRY ();
+    ACPI_FUNCTION_ENTRY ();
 
 
     if (!Node)

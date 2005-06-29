@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.50 $
+ *              $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsload")
+        ACPI_MODULE_NAME    ("nsload")
 
 
 /*******************************************************************************
@@ -149,7 +149,7 @@ AcpiNsLoadNamespace (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("AcpiLoadNameSpace");
+    ACPI_FUNCTION_TRACE ("AcpiLoadNameSpace");
 
 
     /* There must be at least a DSDT installed */
@@ -206,7 +206,7 @@ AcpiNsOneCompleteParse (
     ACPI_WALK_STATE         *WalkState;
 
 
-    FUNCTION_TRACE ("NsOneCompleteParse");
+    ACPI_FUNCTION_TRACE ("NsOneCompleteParse");
 
 
     /* Create and init a Root Node */
@@ -268,7 +268,7 @@ AcpiNsParseTable (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("NsParseTable");
+    ACPI_FUNCTION_TRACE ("NsParseTable");
 
 
     /*
@@ -327,8 +327,19 @@ AcpiNsLoadTable (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("NsLoadTable");
+    ACPI_FUNCTION_TRACE ("NsLoadTable");
 
+
+    /* Check if table contains valid AML (must be DSDT, PSDT, SSDT, etc.) */
+
+    if (!(AcpiGbl_AcpiTableData[TableDesc->Type].Flags & ACPI_TABLE_EXECUTABLE))
+    {
+        /* Just ignore this table */
+
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Check validity of the AML start and length */
 
     if (!TableDesc->AmlStart)
     {
@@ -405,7 +416,7 @@ AcpiNsLoadTableByType (
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    FUNCTION_TRACE ("NsLoadTableByType");
+    ACPI_FUNCTION_TRACE ("NsLoadTableByType");
 
 
     AcpiUtAcquireMutex (ACPI_MTX_TABLES);
@@ -546,7 +557,7 @@ AcpiNsDeleteSubtree (
     UINT32                  Level;
 
 
-    FUNCTION_TRACE ("NsDeleteSubtree");
+    ACPI_FUNCTION_TRACE ("NsDeleteSubtree");
 
 
     ParentHandle = StartHandle;
@@ -630,7 +641,7 @@ AcpiNsUnloadNamespace (
     ACPI_STATUS             Status;
 
 
-    FUNCTION_TRACE ("NsUnloadNameSpace");
+    ACPI_FUNCTION_TRACE ("NsUnloadNameSpace");
 
 
     /* Parameter validation */

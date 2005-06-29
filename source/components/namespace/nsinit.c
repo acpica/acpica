@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 #include "acinterp.h"
 
 #define _COMPONENT          ACPI_NAMESPACE
-        MODULE_NAME         ("nsinit")
+        ACPI_MODULE_NAME    ("nsinit")
 
 
 /*******************************************************************************
@@ -147,7 +147,7 @@ AcpiNsInitializeObjects (
     ACPI_INIT_WALK_INFO     Info;
 
 
-    FUNCTION_TRACE ("NsInitializeObjects");
+    ACPI_FUNCTION_TRACE ("NsInitializeObjects");
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
@@ -209,7 +209,7 @@ AcpiNsInitializeDevices (
     ACPI_DEVICE_WALK_INFO   Info;
 
 
-    FUNCTION_TRACE ("NsInitializeDevices");
+    ACPI_FUNCTION_TRACE ("NsInitializeDevices");
 
 
     Info.DeviceCount = 0;
@@ -270,7 +270,7 @@ AcpiNsInitOneObject (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    PROC_NAME ("NsInitOneObject");
+    ACPI_FUNCTION_NAME ("NsInitOneObject");
 
 
     Info->ObjectCount++;
@@ -396,7 +396,7 @@ AcpiNsInitOneDevice (
     ACPI_DEVICE_WALK_INFO  *Info = (ACPI_DEVICE_WALK_INFO *) Context;
 
 
-    FUNCTION_TRACE ("NsInitOneDevice");
+    ACPI_FUNCTION_TRACE ("NsInitOneDevice");
 
 
     if (!(AcpiDbgLevel & ACPI_LV_INIT))
@@ -420,7 +420,7 @@ AcpiNsInitOneDevice (
     /*
      * Run _STA to determine if we can run _INI on the device.
      */
-    DEBUG_EXEC (AcpiUtDisplayInitPathname (Node, "_STA  [Method]"));
+    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (Node, "_STA  [Method]"));
     Status = AcpiUtExecute_STA (Node, &Flags);
     if (ACPI_FAILURE (Status))
     {
@@ -442,7 +442,7 @@ AcpiNsInitOneDevice (
     /*
      * The device is present. Run _INI.
      */
-    DEBUG_EXEC (AcpiUtDisplayInitPathname (ObjHandle, "_INI  [Method]"));
+    ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ObjHandle, "_INI  [Method]"));
     Status = AcpiNsEvaluateRelative (ObjHandle, "_INI", NULL, NULL);
     if (AE_NOT_FOUND == Status)
     {
