@@ -267,7 +267,7 @@ extern      UINT32                      AcpiGbl_StartupFlags;
 #define NUM_PREDEFINED_NAMES            9
 
 
-ACPI_EXTERN ACPI_NAME_TABLE             AcpiGbl_RootNameTable;
+ACPI_EXTERN ACPI_NAMED_OBJECT           AcpiGbl_RootNamedObject;
 ACPI_EXTERN ACPI_NAMED_OBJECT          *AcpiGbl_RootObject;
 
 extern      UINT8                       AcpiGbl_NsProperties[NUM_NS_TYPES];
@@ -401,8 +401,9 @@ ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentObjectCount;
 ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentObjectSize;
 ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectCount;
 ACPI_EXTERN UINT32                      AcpiGbl_RunningObjectSize;
-ACPI_EXTERN UINT32                      AcpiGbl_CurrentNameTableCount;
-ACPI_EXTERN UINT32                      AcpiGbl_CurrentNameTableSize;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentNamedObjectCount;
+ACPI_EXTERN UINT32                      AcpiGbl_CurrentNamedObjectSize;
+ACPI_EXTERN UINT32                      AcpiGbl_MaxConcurrentNamedObjectCount;
 
 #endif
 
