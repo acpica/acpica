@@ -105,6 +105,10 @@ PostBuild_Cmds=copy Debug\iasl.exe ..\..\Libraries
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\AslCompiler\asllisting.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Common\cmalloc.c
 # End Source File
 # Begin Source File
@@ -214,6 +218,10 @@ SOURCE=..\..\AslCompiler\aslmap.c
 # Begin Source File
 
 SOURCE=..\..\AslCompiler\aslopcodes.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\AslCompiler\asloperands.c
 # End Source File
 # Begin Source File
 
