@@ -121,10 +121,143 @@
 #include <interp.h>
 #include <namesp.h>
 #include <pnp.h>
+#include <tables.h>
 
 
 #define _COMPONENT          MISCELLANEOUS
         MODULE_NAME         ("cmobject");
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    _CmCreateInternalObject
+ *
+ * PARAMETERS:  Address             - Address of the memory to deallocate
+ *              Component           - Component type of caller
+ *              Module              - Source file name of caller
+ *              Line                - Line number of caller
+ *              Type                - ACPI Type of the new object
+ * 
+ * RETURN:      Object              - The new object.  Null on failure
+ * 
+ * DESCRIPTION: Create and initialize a new internal object.
+ * 
+ * NOTE:
+ *      We always allocate the worst-case object descriptor because these
+ *      objects are cached, and we want them to be one-size-satisifies-any-request.
+ *      This in itself may not be the most memory efficient, but the efficiency
+ *      of the object cache should more than make up for this!
+ *
+ ******************************************************************************/
+
+ACPI_OBJECT_INTERNAL *
+_CmCreateInternalObject (
+    char                    *ModuleName, 
+    INT32                   LineNumber, 
+    INT32                   ComponentId,
+    ACPI_OBJECT_TYPE        Type)
+{
+    ACPI_OBJECT_INTERNAL    *Object;
+
+
+    FUNCTION_TRACE_STR ("CmCreateInternalObject", CmGetTypeName (Type));
+
+
+    /* Allocate the raw object descriptor */
+
+    Object = _CmAllocateObjectDesc (ModuleName, LineNumber, ComponentId);
+    if (!Object)
+    {   
+        /* Allocation failure */
+
+        return_VALUE (NULL);
+    }
+
+    /* Save the object type in the object descriptor */
+
+    Object->Common.Type = (UINT8) Type;
+    Object->Common.Size = (UINT8) sizeof (ACPI_OBJECT_INTERNAL);
+
+    /* Init the reference count */
+
+    Object->Common.ReferenceCount = 1;
+
+    /* Any per-type initialization should go here */
+    
+
+    /* Memory allocation metrics - compiled out in non debug mode. */
+
+    INCREMENT_OBJECT_METRICS (sizeof (ACPI_OBJECT_INTERNAL));
+
+    return_VALUE (Object);
+}
+
+
+
+/******************************************************************************
+ * 
+ * FUNCTION:    CmValidInternalObject
+ *
+ * PARAMETERS:  Operand             - Object to be validated
+ *
+ * RETURN:      Validate a pointer to be an ACPI_OBJECT_INTERNAL
+ *
+ *****************************************************************************/
+
+BOOLEAN
+CmValidInternalObject (
+    void                    *Object)
+{
+
+    /* Check for a null pointer */
+
+    if (!Object)
+    {
+        DEBUG_PRINT (ACPI_INFO, ("CmValidInternalObject: **** Null Object Ptr\n"));
+        return FALSE;
+    }
+
+    /* Check for a pointer within one of the ACPI tables */
+
+    if (TbSystemTablePointer (Object))
+    {
+        DEBUG_PRINT (ACPI_INFO, ("CmValidInternalObject: **** Object %p is a Pcode Ptr\n",
+                        Object));
+        return FALSE;
+    }
+
+    /* Check the descriptor type field */
+
+    if (!VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_ACPI_OBJ))
+    {
+        /* Not an ACPI internal object, do some further checking */
+
+        if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_NTE))
+        {
+            DEBUG_PRINT (ACPI_INFO, ("CmValidInternalObject: **** Obj %p is NTE, not ACPI obj\n",
+                            Object));
+        }
+
+        else if (VALID_DESCRIPTOR_TYPE (Object, DESC_TYPE_PARSER))
+        {
+            DEBUG_PRINT (ACPI_INFO, ("CmValidInternalObject: **** Obj %p is a parser obj, not ACPI obj\n",
+                            Object));
+        }
+
+        else
+        {
+            DEBUG_PRINT (ACPI_INFO, ("CmValidInternalObject: **** Obj %p is of unknown type\n",
+                            Object));
+        }
+
+        return FALSE;
+    }
+
+
+    /* The object appears to be a valid ACPI_OBJECT_INTERNAL */
+
+    return TRUE;
+}
 
 
 /*****************************************************************************
