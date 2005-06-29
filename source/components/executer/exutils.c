@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -366,6 +366,8 @@ AcpiExReleaseGlobalLock (
             ACPI_REPORT_ERROR (("Could not release ACPI Global Lock\n"));
         }
     }
+
+    return_VOID;
 }
 
 
