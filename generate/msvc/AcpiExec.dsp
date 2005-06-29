@@ -475,6 +475,10 @@ SOURCE=..\..\Tools\AcpiExec\getopt.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Debugger\dbapi.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Debugger\dbcmds.c
 # End Source File
 # Begin Source File
@@ -483,11 +487,23 @@ SOURCE=..\..\Subsystem\Debugger\dbdisasm.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Subsystem\Debugger\dbdisply.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Subsystem\Debugger\dbfileio.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Subsystem\Debugger\dbinput.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbstats.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Subsystem\Debugger\dbutils.c
 # End Source File
 # End Group
 # End Group
