@@ -306,6 +306,7 @@ SOURCE=..\..\source_linux\components\hardware\hwsleep.c
 # Begin Source File
 
 SOURCE=..\..\source_linux\components\hardware\hwtimer.c
+# ADD CPP /Ze
 # End Source File
 # Begin Source File
 
