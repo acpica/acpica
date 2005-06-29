@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.79 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -148,7 +148,7 @@
 
 ACPI_OPERAND_OBJECT  *
 AcpiUtCreateInternalObjectDbg (
-    NATIVE_CHAR             *ModuleName,
+    char                    *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId,
     ACPI_OBJECT_TYPE        Type)
@@ -226,7 +226,7 @@ AcpiUtCreateBufferObject (
     ACPI_SIZE               BufferSize)
 {
     ACPI_OPERAND_OBJECT     *BufferDesc;
-    UINT8                   *Buffer;
+    UINT8                   *Buffer = NULL;
 
 
     ACPI_FUNCTION_TRACE_U32 ("UtCreateBufferObject", BufferSize);
@@ -241,15 +241,20 @@ AcpiUtCreateBufferObject (
         return_PTR (NULL);
     }
 
-    /* Allocate the actual buffer */
+    /* Create an actual buffer only if size > 0 */
 
-    Buffer = ACPI_MEM_CALLOCATE (BufferSize);
-    if (!Buffer)
+    if (BufferSize > 0)
     {
-        ACPI_REPORT_ERROR (("CreateBuffer: could not allocate size %X\n", 
-            (UINT32) BufferSize));
-        AcpiUtRemoveReference (BufferDesc);
-        return_PTR (NULL);
+        /* Allocate the actual buffer */
+
+        Buffer = ACPI_MEM_CALLOCATE (BufferSize);
+        if (!Buffer)
+        {
+            ACPI_REPORT_ERROR (("CreateBuffer: could not allocate size %X\n",
+                (UINT32) BufferSize));
+            AcpiUtRemoveReference (BufferDesc);
+            return_PTR (NULL);
+        }
     }
 
     /* Complete buffer object initialization */
@@ -347,7 +352,7 @@ AcpiUtValidInternalObject (
 
 void *
 AcpiUtAllocateObjectDescDbg (
-    NATIVE_CHAR             *ModuleName,
+    char                    *ModuleName,
     UINT32                  LineNumber,
     UINT32                  ComponentId)
 {
