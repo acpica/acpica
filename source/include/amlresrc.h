@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource.h - ASL resource descriptors
- *              $Revision: 1.11 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -147,39 +147,6 @@
 #define ASL_RESNAME_TRANSTYPE                   "_TRS"  /* Sparse(1), Dense(0) */
 #define ASL_RESNAME_TYPE                        "_TTP"  /* Translation(1), Static (0) */
 #define ASL_RESNAME_XFERTYPE                    "_SIZ"  /* 8(0), 8And16(1), 16(2) */
-
-
-/* ResourceType values */
-
-#define RESOURCE_TYPE_MEMORY_RANGE              0
-#define RESOURCE_TYPE_IO_RANGE                  1
-#define RESOURCE_TYPE_BUS_NUMBER_RANGE          2
-
-
-/*
- * Small resource descriptors
- */
-#define RESOURCE_DESC_IRQ_FORMAT                0x22
-#define RESOURCE_DESC_DMA_FORMAT                0x2A
-#define RESOURCE_DESC_START_DEPENDENT           0x30
-#define RESOURCE_DESC_END_DEPENDENT             0x38
-#define RESOURCE_DESC_IO_PORT                   0x47
-#define RESOURCE_DESC_FIXED_IO_PORT             0x4B
-#define RESOURCE_DESC_SMALL_VENDOR              0x70
-#define RESOURCE_DESC_END_TAG                   0x79
-
-/*
- * Large resource descriptors
- */
-#define RESOURCE_DESC_MEMORY_24                 0x81
-#define RESOURCE_DESC_GENERAL_REGISTER          0x82
-#define RESOURCE_DESC_LARGE_VENDOR              0x84
-#define RESOURCE_DESC_MEMORY_32                 0x85
-#define RESOURCE_DESC_FIXED_MEMORY_32           0x86
-#define RESOURCE_DESC_DWORD_ADDRESS_SPACE       0x87
-#define RESOURCE_DESC_WORD_ADDRESS_SPACE        0x88
-#define RESOURCE_DESC_EXTENDED_XRUPT            0x89
-#define RESOURCE_DESC_QWORD_ADDRESS_SPACE       0x8A
 
 
 typedef struct asl_resource_node
