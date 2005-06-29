@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -379,67 +379,7 @@ AcpiExConvertToBuffer (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiExConvertToDecimalAscii
- *
- * PARAMETERS:  Integer
- *
- * RETURN:      Actual string length
- *
- * DESCRIPTION: Convert an ACPI Integer to a decimal string
- *
- ******************************************************************************/
-
-UINT32
-AcpiExConvertToDecimalAscii (
-    ACPI_INTEGER            Integer,
-    UINT32                  Length,
-    UINT8                   *Where)
-{
-    UINT32                  i;
-    UINT32                  j;
-    UINT32                  k;
-    BOOLEAN                 LeadingZero = TRUE;
-    ACPI_INTEGER            Digit;
-
-
-    for (i = ACPI_MAX_DECIMAL_DIGITS, k = 0; i > 0 ; i--)
-    {
-        /* Divide by nth factor of 10 */
-
-        Digit = Integer;
-        for (j = 1; j < i; j++)
-        {
-            Digit = ACPI_DIVIDE (Digit, 10);
-        }
-
-        /* Create the decimal digit */
-
-        if (Digit != 0)
-        {
-            LeadingZero = FALSE;
-        }
-
-        if (!LeadingZero)
-        {
-            Where[k] = (UINT8) (0x30 + ACPI_MODULO (Digit, 10));
-            k++;
-        }
-    }
-
-    Where[k] = 0;
-    if (!k)
-    {
-        Where [0] = 0x30;
-        Where [1] = 0;
-        k = 1;
-    }
-    return (k);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExConvertToHexAscii
+ * FUNCTION:    AcpiExConvertAscii
  *
  * PARAMETERS:  Integer
  *
@@ -450,16 +390,18 @@ AcpiExConvertToDecimalAscii (
  ******************************************************************************/
 
 UINT32
-AcpiExConvertToHexAscii (
+AcpiExConvertToAscii (
     ACPI_INTEGER            Integer,
-    UINT32                  Length,
-    UINT8                   *Where)
+    UINT32                  Base,
+    UINT8                   *String)
 {
     UINT32                  i;
     UINT32                  j;
-    UINT32                  k;
+    UINT32                  k = 0;
     UINT8                   HexDigit;
+    ACPI_INTEGER            Digit;
     BOOLEAN                 LeadingZero = TRUE;
+    UINT32                  Length = sizeof (ACPI_INTEGER);
 
 
     /******** TBD: DEBUG only 
@@ -477,35 +419,76 @@ AcpiExConvertToHexAscii (
     buf = _ui64toa (Integer, sbuf, 16);
     printf ("3): %s\n", sbuf);
 
-    printf ("4): %s\n", Where);
+    printf ("4): %s\n", String);
 ***************************************************/
 
 
-    /* Copy the integer to the buffer */
-
-    for (i = 0, j = ((Length * 2) -1), k = 0; i < (Length * 2); i++, j--)
+    switch (Base)
     {
+    case 10:
 
-        HexDigit = AcpiGbl_HexToAscii [(Integer >> (j * 4)) & 0xF];
-        if (HexDigit != 0x30)
+        for (i = ACPI_MAX_DECIMAL_DIGITS; i > 0 ; i--)
         {
-            LeadingZero = FALSE;
-        }
+            /* Divide by nth factor of 10 */
 
-        if (!LeadingZero)
-        {
-            Where[k] = HexDigit;
-            k++;
+            Digit = Integer;
+            for (j = 1; j < i; j++)
+            {
+                Digit = ACPI_DIVIDE (Digit, 10);
+            }
+
+            /* Create the decimal digit */
+
+            if (Digit != 0)
+            {
+                LeadingZero = FALSE;
+            }
+
+            if (!LeadingZero)
+            {
+                String[k] = (UINT8) (ASCII_ZERO + ACPI_MODULO (Digit, 10));
+                k++;
+            }
         }
+        break;
+
+    case 16:
+
+        /* Copy the integer to the buffer */
+
+        for (i = 0, j = ((Length * 2) -1); i < (Length * 2); i++, j--)
+        {
+
+            HexDigit = AcpiUtHexToAsciiChar (Integer, (j * 4));
+            if (HexDigit != ASCII_ZERO)
+            {
+                LeadingZero = FALSE;
+            }
+
+            if (!LeadingZero)
+            {
+                String[k] = HexDigit;
+                k++;
+            }
+        }
+        break;
+
+    default:
+        break;
     }
 
-    Where [k] = 0;
+    /*
+     * Since leading zeros are supressed, we must check for the case where
+     * the integer equals 0.  
+     *
+     * Finally, null terminate the string and return the length
+     */
     if (!k)
     {
-        Where [0] = 0x30;
-        Where [1] = 0;
+        String [0] = ASCII_ZERO;
         k = 1;
     }
+    String [k] = 0;
 
     return (k);
 }
@@ -569,8 +552,7 @@ AcpiExConvertToString (
 
         /* Need enough space for one ASCII integer plus null terminator */
 
-        RetDesc->String.Length = (IntegerSize * 2) + 1;
-        NewBuf = ACPI_MEM_CALLOCATE (RetDesc->String.Length);
+        NewBuf = ACPI_MEM_CALLOCATE ((IntegerSize * 2) + 1);
         if (!NewBuf)
         {
             REPORT_ERROR
@@ -582,17 +564,19 @@ AcpiExConvertToString (
 
         /* Convert */
 
-        i = AcpiExConvertToHexAscii (ObjDesc->Integer.Value, IntegerSize, NewBuf);
+        i = AcpiExConvertToAscii (ObjDesc->Integer.Value, 16, NewBuf);
 
         /* Null terminate at the correct place */
 
         if (MaxLength < i)
         {
             NewBuf[MaxLength] = 0;
+            RetDesc->String.Length = MaxLength;
         }
         else
         {
             NewBuf [i] = 0;
+            RetDesc->String.Length = i;
         }
 
         RetDesc->Buffer.Pointer = NewBuf;
@@ -655,7 +639,7 @@ AcpiExConvertToString (
         Index = 0;
         for (i = 0; i < (StringLength/3); i++)
         {
-            AcpiExConvertToHexAscii (Pointer[i], 1, &NewBuf[Index]);
+            AcpiExConvertToAscii (Pointer[i], 16, &NewBuf[Index]);
             NewBuf[Index + 2] = ' ';
             Index += 3;
         }
