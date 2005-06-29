@@ -216,7 +216,6 @@ typedef UINT32                          ACPI_IO_ADDRESS;
 typedef UINT8                           BOOLEAN;
 typedef UINT32                          UINT32_BIT;
 typedef NATIVE_INT                      ACPI_PTRDIFF;
-typedef NATIVE_UINT                     ACPI_SIZE;
 
 
 /*
