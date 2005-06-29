@@ -124,11 +124,11 @@
  */
 
 #include "acpi.h"
-#include "parser.h"
-#include "dispatch.h"
+#include "acparser.h"
+#include "acdispat.h"
 #include "amlcode.h"
-#include "namesp.h"
-#include "debugger.h"
+#include "acnamesp.h"
+#include "acdebug.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("psparse");
@@ -169,7 +169,7 @@ AcpiPsDeleteCompletedOp (
  *
  * FUNCTION:    AcpiPsDeleteParseTree
  *
- * PARAMETERS:  Root            - Root of tree (or subtree) to delete
+ * PARAMETERS:  SubtreeRoot         - Root of tree (or subtree) to delete
  *
  * RETURN:      None
  *
@@ -179,34 +179,49 @@ AcpiPsDeleteCompletedOp (
 
 void
 AcpiPsDeleteParseTree (
-    ACPI_GENERIC_OP         *Root)
+    ACPI_GENERIC_OP         *SubtreeRoot)
 {
-    ACPI_GENERIC_OP         *Op;
-    ACPI_WALK_STATE         WalkState;
+    ACPI_WALK_STATE         *WalkState;
+    ACPI_WALK_LIST          WalkList;
 
 
-    WalkState.Origin = Root;
-    Op = Root;
+    /* Create and initialize a new walk list */
 
-    /* TBD: [Restructure] hack for root case */
-
-    if (Op == AcpiGbl_ParsedNamespaceRoot)
+    WalkList.WalkState = NULL;
+    WalkState = AcpiDsCreateWalkState (TABLE_ID_DSDT, NULL, NULL, &WalkList);
+    if (!WalkState)
     {
-        Op = AcpiPsGetChild (Op);
+        return;
     }
 
-    /* Save root until last, so that we know when the tree has been walked */
+    WalkState->ParserState          = NULL;
+    WalkState->ParseFlags           = 0;
+    WalkState->DescendingCallback   = NULL;
+    WalkState->AscendingCallback    = NULL;
 
-    WalkState.NextOp = Op;
-    WalkState.NextOpInfo = NEXT_OP_DOWNWARD;
 
-    while (WalkState.NextOp)
+    WalkState->Origin = SubtreeRoot;
+    WalkState->NextOp = SubtreeRoot;
+
+   
+    /* Head downward in the tree */
+
+    WalkState->NextOpInfo = NEXT_OP_DOWNWARD;
+
+    /* Visit all nodes in the subtree */
+
+    while (WalkState->NextOp)
     {
-        AcpiPsGetNextWalkOp (&WalkState, WalkState.NextOp,
+        AcpiPsGetNextWalkOp (WalkState, WalkState->NextOp,
                                 AcpiPsDeleteCompletedOp);
     }
+
+    /* We are done with this walk */
+
+    AcpiDsDeleteWalkState (WalkState); 
 }
 #endif
+
 
 /*******************************************************************************
  *
@@ -356,94 +371,110 @@ AcpiPsCreateState (
 ACPI_STATUS
 AcpiPsFindObject (
     UINT16                  Opcode,
-    ACPI_PARSE_STATE        *ParserState,
+    ACPI_GENERIC_OP         *Op,
     ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         **Op)
+    ACPI_GENERIC_OP         **OutOp)
 {
     char                    *Path;
 
 
     /* Find the name in the parse tree */
 
-    Path = AcpiPsGetNextNamestring (ParserState);
+    Path = AcpiPsGetNextNamestring (WalkState->ParserState);
 
-    *Op = AcpiPsFind (AcpiPsGetParentScope (ParserState),
+    *OutOp = AcpiPsFind (AcpiPsGetParentScope (WalkState->ParserState),
                  Path, Opcode, 1);
 
-    if (!(*Op))
+    if (!(*OutOp))
     {
         return AE_NOT_FOUND;
     }
 
     return AE_OK;
 }
-#else
 
-ACPI_STATUS
-AcpiPsFindObject (
-    UINT16                  Opcode,
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_WALK_STATE         *WalkState,
-    ACPI_GENERIC_OP         **OutOp)
-{
-    char                    *Path;
-    ACPI_GENERIC_OP         *Op;
-    OBJECT_TYPE_INTERNAL    DataType;
-    ACPI_STATUS             Status;
-    ACPI_NAMED_OBJECT       *Entry = NULL;
-
-
-    FUNCTION_TRACE ("PsFindInNamespace");
-
-
-    /*
-     * The full parse tree has already been deleted -- therefore, we are parsing
-     * a control method.  We can lookup the name in the namespace instead of
-     * the parse tree!
-     */
-
-
-    Path = AcpiPsGetNextNamestring (ParserState);
-
-    /* Map the raw opcode into an internal object type */
-
-    DataType = AcpiDsMapNamedOpcodeToDataType (Opcode);
-
-    /*
-     * Enter the object into the namespace
-     * LOAD_PASS1 means Create if not found
-     */
-
-    Status = AcpiNsLookup (WalkState->ScopeInfo, Path, DataType,
-                            IMODE_LOAD_PASS1,
-                            NS_NO_UPSEARCH, WalkState, &Entry);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Create a new op */
-
-    Op = AcpiPsAllocOp (Opcode);
-    if (!Op)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    /* Initialize */
-
-    ((ACPI_NAMED_OP *)Op)->Name = Entry->Name;
-    Op->AcpiNamedObject = Entry;
-
-
-    AcpiPsAppendArg (AcpiPsGetParentScope (ParserState), Op);
-
-    *OutOp = Op;
-
-
-    return_ACPI_STATUS (AE_OK);
-}
 #endif
+
+
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsCompleteThisOp
+ *
+ * PARAMETERS:  WalkState       - Current State
+ *              Op              - Op to complete
+ *
+ * RETURN:      TRUE if Op and subtree was deleted
+ *
+ * DESCRIPTION: Perform any cleanup at the completion of an Op.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiPsCompleteThisOp (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_GENERIC_OP         *Op)
+{
+#ifndef PARSER_ONLY
+    ACPI_GENERIC_OP         *Prev;
+    ACPI_GENERIC_OP         *Next;
+
+
+    DEBUG_PRINT (TRACE_PARSE,
+        ("CompleteThisOp:  Completing Op=%p\n", Op));
+
+
+    
+    /* Delete this op and the subtree below it if asked to */
+
+    if ((WalkState->ParseFlags & PARSE_DELETE_TREE) &&
+       (AcpiPsIsNamespaceObjectOp (Op->Opcode) &&
+       (Op->Opcode != AML_NAMEPATH_OP)))
+    {
+        /* Make sure that we only delete this subtree */
+
+        if (Op->Parent)
+        {
+            /* We must unlink this op from the parent tree */
+
+            Prev = Op->Parent->Value.Arg;
+            if (Prev == Op)
+            {
+                /* This op is the first in the list */
+
+                Op->Parent->Value.Arg = Op->Next;
+            }
+
+            /* Search the parent list */
+
+            else while (Prev)
+            {
+                /* Traverse all siblings in the parent's argument list */
+
+                Next = Prev->Next;
+                if (Next == Op)
+                {
+                    Prev->Next = Op->Next;
+                    Next = NULL;
+                }
+
+                Prev = Next;
+            }
+
+        }
+        
+        /* Now we can actually delete the subtree rooted at op */
+
+        AcpiPsDeleteParseTree (Op);
+
+        return TRUE;
+    }
+#endif
+
+    return FALSE;
+}
+
 
 
 /*******************************************************************************
@@ -461,9 +492,7 @@ AcpiPsFindObject (
 
 ACPI_STATUS
 AcpiPsParseLoop (
-    ACPI_PARSE_STATE        *ParserState,
-    ACPI_WALK_STATE         *WalkState,
-    UINT32                  ParseFlags)
+    ACPI_WALK_STATE         *WalkState)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_OP         *Op = NULL;     /* current op */
@@ -475,14 +504,13 @@ AcpiPsParseLoop (
     ACPI_PTRDIFF            AmlOffset;
     UINT16                  Opcode;
     ACPI_GENERIC_OP         PreOp;
+    ACPI_PARSE_STATE        *ParserState;  
 
 
-#ifndef PARSER_ONLY
-    OBJECT_TYPE_INTERNAL    DataType;
-#endif
+    FUNCTION_TRACE_PTR ("PsParseLoop", WalkState);
 
-    FUNCTION_TRACE_PTR ("PsParseLoop", ParserState);
 
+    ParserState = WalkState->ParserState;
 
     /*
      * Iterative parsing loop, while there is more aml to process:
@@ -558,10 +586,17 @@ AcpiPsParseLoop (
 
                 INCREMENT_ARG_LIST (ArgTypes);
 
-                Status = AcpiPsFindObject (Opcode, ParserState, WalkState, &Op);
-                if (ACPI_FAILURE (Status))
+                if (WalkState->DescendingCallback != NULL)
                 {
-                    return_ACPI_STATUS (AE_NOT_FOUND);
+                    /* 
+                     * Find the object.  This will either insert the object into
+                     * the namespace or simply look it up
+                     */
+                    Status = WalkState->DescendingCallback (Opcode, NULL, WalkState, &Op);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return_ACPI_STATUS (AE_NOT_FOUND);
+                    }
                 }
 
                 AcpiPsAppendArg (Op, PreOp.Value.Arg);
@@ -720,52 +755,27 @@ AcpiPsParseLoop (
                                                     DeferredOp->Body;
                     }
                 }
-
-
-#ifndef PARSER_ONLY
-                DataType = AcpiDsMapNamedOpcodeToDataType (Op->Opcode);
-
-                if (Op->Opcode == AML_NAME_OP)
-                {
-                    if (Op->Value.Arg)
-                    {
-                        DataType = AcpiDsMapOpcodeToDataType (
-                                        (Op->Value.Arg)->Opcode, NULL);
-                        ((ACPI_NAMED_OBJECT*)Op->AcpiNamedObject)->Type =
-                                        (UINT8) DataType;
-                    }
-                }
-
-                /* Pop the scope stack */
-
-                if (AcpiNsOpensScope (DataType))
-                {
-
-                    DEBUG_PRINT (TRACE_DISPATCH,
-                        ("AmlEndNamespaceScope: Popping scope for Op %p type [%s]\n",
-                        Op, AcpiCmGetTypeName (DataType)));
-                    AcpiDsScopeStackPop (WalkState);
-                }
-#endif
             }
 
 
+            /* This op complete, notify the dispatcher */
+
+            if (WalkState->AscendingCallback != NULL)
+            {
+                WalkState->AscendingCallback (WalkState, Op);
+            }
             ParserState->Scope->ArgCount--;
 
+            /* Close this Op (may result in parse subtree deletion) */
 
-            /* Delete op if asked to */
+            AcpiPsCompleteThisOp (WalkState, Op);
 
-#ifndef PARSER_ONLY
-            if (ParseFlags & PARSE_DELETE_TREE)
-            {
-                AcpiPsDeleteParseTree (Op);
-            }
-#endif
-
+            /* This scope complete? */
 
             if (AcpiPsHasCompletedScope (ParserState))
             {
                 AcpiPsPopScope (ParserState, &Op, &ArgTypes);
+                DEBUG_PRINT (TRACE_PARSE, ("ParseLoop:  Popped scope, Op=%p\n", Op));
             }
 
             else
@@ -784,6 +794,23 @@ AcpiPsParseLoop (
 
     } /* while ParserState->Aml */
 
+
+    /* 
+     * Complete the last Op (if not completed), and clear the scope stack.  
+     * It is easily possible to end an AML "package" with an unbounded number 
+     * of open scopes (such as when several AML blocks are closed with 
+     * sequential closing braces).  We want to terminate each one cleanly.
+     */
+    do
+    {
+        if (Op)
+        {
+            AcpiPsCompleteThisOp (WalkState, Op);
+        }
+
+        AcpiPsPopScope (ParserState, &Op, &ArgTypes);
+
+    } while (Op);
 
     return_ACPI_STATUS (Status);
 }
@@ -809,7 +836,9 @@ AcpiPsParseAml (
     ACPI_GENERIC_OP         *StartScope,
     UINT8                   *Aml,
     UINT32                  AmlSize,
-    UINT32                  ParseFlags)
+    UINT32                  ParseFlags,
+    ACPI_PARSE_DOWNWARDS    DescendingCallback,
+    ACPI_PARSE_UPWARDS      AscendingCallback)
 {
     ACPI_STATUS             Status;
     ACPI_PARSE_STATE        *ParserState;
@@ -825,7 +854,7 @@ AcpiPsParseAml (
         StartScope, Aml, AmlSize));
 
 
-    /* Initialize parser state and scope */
+    /* Create and initialize a new parser state */
 
     ParserState = AcpiPsCreateState (Aml, AmlSize);
     if (!ParserState)
@@ -836,7 +865,7 @@ AcpiPsParseAml (
     AcpiPsInitScope (ParserState, StartScope);
 
 
-    /* Initialize a new walk list */
+    /* Create and initialize a new walk list */
 
     WalkList.WalkState = NULL;
 
@@ -846,6 +875,11 @@ AcpiPsParseAml (
         Status = AE_NO_MEMORY;
         goto Cleanup;
     }
+
+    WalkState->ParserState          = ParserState;
+    WalkState->ParseFlags           = ParseFlags;
+    WalkState->DescendingCallback   = DescendingCallback;
+    WalkState->AscendingCallback    = AscendingCallback;
 
 
     /* Setup the current scope */
@@ -867,7 +901,7 @@ AcpiPsParseAml (
 
     /* Create the parse tree */
 
-    Status = AcpiPsParseLoop (ParserState, WalkState, ParseFlags);
+    Status = AcpiPsParseLoop (WalkState);
 
 
 Cleanup:

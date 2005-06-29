@@ -116,10 +116,10 @@
 
 #include "acpi.h"
 #include "amlcode.h"
-#include "parser.h"
-#include "dispatch.h"
-#include "namesp.h"
-#include "interp.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "acnamesp.h"
+#include "acinterp.h"
 
 #define _COMPONENT          PARSER
         MODULE_NAME         ("pswalk");
@@ -145,7 +145,7 @@ ACPI_STATUS
 AcpiPsGetNextWalkOp (
     ACPI_WALK_STATE         *WalkState,
     ACPI_GENERIC_OP         *Op,
-    INTERPRETER_CALLBACK    AscendingCallback)
+    ACPI_PARSE_UPWARDS      AscendingCallback)
 {
     ACPI_GENERIC_OP         *Next;
     ACPI_GENERIC_OP         *Parent;
@@ -242,6 +242,19 @@ AcpiPsGetNextWalkOp (
 
 
         default:
+            /*
+             * If we are back to the starting point, the walk is complete.
+             */
+            if (Op == WalkState->Origin)
+            {
+                /* Reached the point of origin, the walk is complete */
+
+                WalkState->PrevOp       = Op;
+                WalkState->NextOp       = NULL;
+
+                return_ACPI_STATUS (Status);
+            }
+
             /*
              * Check for a sibling to the current op.  A sibling means
              * we are still going "downward" in the tree.
@@ -452,8 +465,8 @@ ACPI_STATUS
 AcpiPsWalkLoop (
     ACPI_WALK_LIST          *WalkList,
     ACPI_GENERIC_OP         *StartOp,
-    INTERPRETER_CALLBACK    DescendingCallback,
-    INTERPRETER_CALLBACK    AscendingCallback)
+    ACPI_PARSE_DOWNWARDS    DescendingCallback,
+    ACPI_PARSE_UPWARDS      AscendingCallback)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_WALK_STATE         *WalkState;
@@ -472,7 +485,7 @@ AcpiPsWalkLoop (
     {
         if (WalkState->NextOpInfo != NEXT_OP_UPWARD)
         {
-            Status = DescendingCallback (WalkState, Op);
+            Status = DescendingCallback (Op->Opcode, Op, WalkState, NULL);
         }
 
         /*
@@ -556,8 +569,8 @@ AcpiPsWalkParsedAml (
     ACPI_OBJECT_INTERNAL    **Params,
     ACPI_OBJECT_INTERNAL    **CallerReturnDesc,
     ACPI_OWNER_ID           OwnerId,
-    INTERPRETER_CALLBACK    DescendingCallback,
-    INTERPRETER_CALLBACK    AscendingCallback)
+    ACPI_PARSE_DOWNWARDS    DescendingCallback,
+    ACPI_PARSE_UPWARDS      AscendingCallback)
 {
     ACPI_GENERIC_OP         *Op;
     ACPI_WALK_STATE         *WalkState;

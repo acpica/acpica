@@ -115,7 +115,7 @@
 
 
 #include "acpi.h"
-#include "parser.h"
+#include "acparser.h"
 #include "amlcode.h"
 
 #define _COMPONENT          PARSER
@@ -332,6 +332,7 @@ AcpiPsDeleteParseCache (
         Next = AcpiGbl_ParseCache->Next;
         AcpiCmFree (AcpiGbl_ParseCache);
         AcpiGbl_ParseCache = Next;
+        AcpiGbl_ParseCacheDepth--;
     }
 
     return_VOID;
