@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed and General Purpose Even handling and dispatch
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -543,7 +543,7 @@ AcpiEvGpeInitialize (void)
                 GpeNumber = GpeRegisterInfo->BaseGpeNumber + j;
                 AcpiGbl_GpeNumberToIndex[GpeNumber].NumberIndex = (UINT8) GpeNumberIndex;
 
-                AcpiGbl_GpeNumberInfo[GpeNumberIndex].BitMask = AcpiGbl_DecodeTo8bit[i];
+                AcpiGbl_GpeNumberInfo[GpeNumberIndex].BitMask = AcpiGbl_DecodeTo8bit[j];
                 GpeNumberIndex++;
             }
 
