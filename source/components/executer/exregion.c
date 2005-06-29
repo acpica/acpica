@@ -302,15 +302,15 @@ AmlSystemIoSpaceHandler (
         /* I/O Port width */
 
         case 8:
-            *Value = (UINT32) OsdIn8 (Address);
+            *Value = (UINT32) OsdIn8 ((ACPI_IO_ADDRESS) Address);
             break;
 
         case 16:
-            *Value = (UINT32) OsdIn16 (Address);
+            *Value = (UINT32) OsdIn16 ((ACPI_IO_ADDRESS) Address);
             break;
 
         case 32:
-            *Value = OsdIn32 (Address);
+            *Value = OsdIn32 ((ACPI_IO_ADDRESS) Address);
             break;
 
         default:
@@ -331,15 +331,15 @@ AmlSystemIoSpaceHandler (
         {
         /* I/O Port width */
         case 8:
-            OsdOut8 (Address, (UINT8) *Value);
+            OsdOut8 ((ACPI_IO_ADDRESS) Address, (UINT8) *Value);
             break;
 
         case 16:
-            OsdOut16 (Address, (UINT16) *Value);
+            OsdOut16 ((ACPI_IO_ADDRESS) Address, (UINT16) *Value);
             break;
 
         case 32:
-            OsdOut32 (Address, *Value);
+            OsdOut32 ((ACPI_IO_ADDRESS) Address, *Value);
             break;
 
         default:
