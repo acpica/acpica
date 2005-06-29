@@ -187,7 +187,7 @@ AcpiDsParseMethod (
     if ((ObjDesc->Method.Concurrency != INFINITE_CONCURRENCY) &&
         (!ObjDesc->Method.Semaphore))
     {
-        Status = AcpiOsdCreateSemaphore (ObjDesc->Method.Concurrency, &ObjDesc->Method.Semaphore);
+        Status = AcpiOsCreateSemaphore (1, ObjDesc->Method.Concurrency, &ObjDesc->Method.Semaphore);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -327,7 +327,7 @@ AcpiDsBeginMethodExecution (
 
     if (ObjDesc->Method.Semaphore)
     {
-        Status = OsLocalWaitSemaphore (ObjDesc->Method.Semaphore, WAIT_FOREVER);
+        Status = AcpiAmlSystemWaitSemaphore (ObjDesc->Method.Semaphore, WAIT_FOREVER);
     }
 
 
@@ -567,7 +567,7 @@ AcpiDsTerminateControlMethod (
 
     if (WalkState->MethodDesc->Method.Semaphore)
     {
-        Status = AcpiOsdSignalSemaphore (WalkState->MethodDesc->Method.Semaphore, 1);
+        Status = AcpiOsSignalSemaphore (WalkState->MethodDesc->Method.Semaphore, 1);
     }
 
     /* Decrement the thread count on the method parse tree */
@@ -615,8 +615,5 @@ UnlockAndExit:
     AcpiCmReleaseMutex (MTX_PARSER);
     return_ACPI_STATUS (AE_OK);
 }
-
-
-
 
 
