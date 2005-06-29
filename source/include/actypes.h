@@ -431,6 +431,13 @@ ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
     UINT32                  *Value,
     void                    *Context);
 
+typedef struct
+{
+    UINT16      SegNum;
+    UINT16      BusNum;
+    UINT16      DevNum;
+    UINT16      FuncNum;
+} PCI_HANDLER_CONTEXT;
 
 typedef
 void * (*WALK_CALLBACK) (
