@@ -261,6 +261,18 @@ PsxInitObjectFromOp (
     ACPI_GENERIC_OP         *Arg;
     ACPI_BYTELIST_OP        *ByteList;
     ACPI_OBJECT_INTERNAL    *ArgDesc;
+    ACPI_OP_INFO            *OpInfo;
+
+
+
+    OpInfo = PsGetOpcodeInfo (Opcode);
+    if (!OpInfo)
+    {
+        /* Unknown opcode */
+
+        return AE_TYPE;
+    }
+
 
 
     /* Get and prepare the first argument */
@@ -343,17 +355,31 @@ PsxInitObjectFromOp (
 
 
     case INTERNAL_TYPE_Lvalue:
-        ObjDesc->Lvalue.OpCode = Opcode;
 
-        /* 
-         * TBD:
-         * Special case for debugOp, this could be removed now that there is room for a 2-byte opcode 
-         * in the Lvalue object
-         */
-        if (Opcode == AML_DebugOp)
+        switch (OpInfo->Type)
         {
-            ObjDesc->Lvalue.OpCode = Debug1;
+        case OPTYPE_LOCAL_VARIABLE:
+
+            /* Split the opcode into a base opcode + offset */
+
+            ObjDesc->Lvalue.OpCode = AML_LocalOp;
+            ObjDesc->Lvalue.Offset = Opcode - AML_LocalOp;
+            break;
+
+        case OPTYPE_METHOD_ARGUMENT:
+
+            /* Split the opcode into a base opcode + offset */
+
+            ObjDesc->Lvalue.OpCode = AML_ArgOp;
+            ObjDesc->Lvalue.Offset = Opcode - AML_ArgOp;
+            break;
+
+        default: /* CONSTANTs, etc. */
+
+            ObjDesc->Lvalue.OpCode = Opcode;
+            break;
         }
+
         break;
 
 
