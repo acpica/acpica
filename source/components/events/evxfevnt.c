@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.72 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -337,18 +337,33 @@ AcpiEnableGpe (
         goto UnlockAndExit;
     }
 
-    /* Enable the requested GPE number */
-
-    Status = AcpiHwEnableGpe (GpeEventInfo);
-    if (ACPI_FAILURE (Status))
-    {
-        goto UnlockAndExit;
-    }
+    /* Check for Wake vs Runtime GPE */
 
     if (Flags & ACPI_EVENT_WAKE_ENABLE)
     {
+        /* Ensure the requested wake GPE is disabled */
+
+        Status = AcpiHwDisableGpe (GpeEventInfo);
+        if (ACPI_FAILURE (Status))
+        {
+            goto UnlockAndExit;
+        }
+
+        /* Defer Enable of Wake GPE until sleep time */
+
         AcpiHwEnableGpeForWakeup (GpeEventInfo);
     }
+    else
+    {
+        /* Enable the requested runtime GPE  */
+
+        Status = AcpiHwEnableGpe (GpeEventInfo);
+        if (ACPI_FAILURE (Status))
+        {
+            goto UnlockAndExit;
+        }
+    }
+
 
 UnlockAndExit:
     if (Flags & ACPI_NOT_ISR)
@@ -774,7 +789,11 @@ AcpiInstallGpeBlock (
         }
 
         Status = AcpiNsAttachObject (Node, ObjDesc, ACPI_TYPE_DEVICE);
+
+        /* Remove local reference to the object */
+
         AcpiUtRemoveReference (ObjDesc);
+
         if (ACPI_FAILURE (Status))
         {
             goto UnlockAndExit;
