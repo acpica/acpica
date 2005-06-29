@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.108 $
+ *       $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -305,6 +305,7 @@
 #define ACPI_STRCAT(d,s)        (void) strcat((d), (s))
 #define ACPI_STRNCAT(d,s,n)     strncat((d), (s), (ACPI_SIZE)(n))
 #define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMCMP(s1,s2,n)    memcmp((s1), (s2), (ACPI_SIZE)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (ACPI_SIZE)(n))
 
@@ -368,6 +369,7 @@ typedef char *va_list;
 #define ACPI_STRCAT(d,s)        (void) AcpiUtStrcat  ((d), (s))
 #define ACPI_STRNCAT(d,s,n)     AcpiUtStrncat ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s), (ACPI_SIZE)(n))
+#define ACPI_MEMCMP(s1,s2,n)    AcpiUtMemcmp((s1), (s2), (ACPI_SIZE)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy  ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset  ((d), (v), (ACPI_SIZE)(n))
 #define ACPI_TOUPPER            AcpiUtToUpper
