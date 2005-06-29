@@ -170,7 +170,7 @@ DumpBuffer (
     {
         /* Print current offset */
 
-        OsdPrintf (NULL, "%05X    ", i);
+        OsdPrintf ("%05X    ", i);
 
 
         /* Print 16 hex chars */
@@ -184,7 +184,7 @@ DumpBuffer (
             /* Make sure that the char doesn't get sign-extended! */
 
             BufChar = Buffer[i + j];
-            OsdPrintf (NULL, "%02X ", BufChar);
+            OsdPrintf ("%02X ", BufChar);
         }
 
         /* 
@@ -202,22 +202,22 @@ DumpBuffer (
                 (BufChar > 0x2F && BufChar < 0x61) ||
                 (BufChar > 0x60 && BufChar < 0x7F))
 
-                OsdPrintf (NULL, "%c", BufChar);
+                OsdPrintf ("%c", BufChar);
             else
-                OsdPrintf (NULL, ".");
+                OsdPrintf (".");
                 
         }
 
         /* Done with that line. */
 
-        OsdPrintf (NULL, "\n");
+        OsdPrintf ("\n");
         i += 16;
     }
 
     return;
 
 cleanup:
-    OsdPrintf (NULL, "\n");
+    OsdPrintf ("\n");
     return;
 
 }
