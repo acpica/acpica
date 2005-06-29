@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.89 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -682,7 +682,7 @@ AcpiNsExternalizeName (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsConvertHandleToEntry
+ * FUNCTION:    AcpiNsMapHandleToNode
  *
  * PARAMETERS:  Handle          - Handle to be converted to an Node
  *
@@ -690,10 +690,13 @@ AcpiNsExternalizeName (
  *
  * DESCRIPTION: Convert a namespace handle to a real Node
  *
+ * Note: Real integer handles allow for more verification
+ *       and keep all pointers within this subsystem.
+ *
  ******************************************************************************/
 
 ACPI_NAMESPACE_NODE *
-AcpiNsConvertHandleToEntry (
+AcpiNsMapHandleToNode (
     ACPI_HANDLE             Handle)
 {
 
@@ -701,9 +704,7 @@ AcpiNsConvertHandleToEntry (
 
 
     /*
-     * Simple implementation for now;
-     * TBD: [Future] Real integer handles allow for more verification
-     * and keep all pointers within this subsystem!
+     * Simple implementation.
      */
     if (!Handle)
     {
@@ -715,10 +716,9 @@ AcpiNsConvertHandleToEntry (
         return (AcpiGbl_RootNode);
     }
 
-
     /* We can at least attempt to verify the handle */
 
-    if (!VALID_DESCRIPTOR_TYPE (Handle, ACPI_DESC_TYPE_NAMED))
+    if (ACPI_GET_DESCRIPTOR_TYPE (Handle) != ACPI_DESC_TYPE_NAMED)
     {
         return (NULL);
     }
@@ -747,8 +747,6 @@ AcpiNsConvertEntryToHandle (
 
     /*
      * Simple implementation for now;
-     * TBD: [Future] Real integer handles allow for more verification
-     * and keep all pointers within this subsystem!
      */
     return ((ACPI_HANDLE) Node);
 
@@ -973,7 +971,7 @@ AcpiNsFindParentName (
         if (ParentNode)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Parent of %p [%4.4s] is %p [%4.4s]\n",
-                ChildNode, &ChildNode->Name, ParentNode, &ParentNode->Name));
+                ChildNode, (char*)&ChildNode->Name, ParentNode, (char*)&ParentNode->Name));
 
             if (ParentNode->Name)
             {
@@ -982,7 +980,7 @@ AcpiNsFindParentName (
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "unable to find parent of %p (%4.4s)\n",
-            ChildNode, &ChildNode->Name));
+            ChildNode, (char*)&ChildNode->Name));
     }
 
     return_VALUE (ACPI_UNKNOWN_NAME);
@@ -1074,21 +1072,21 @@ AcpiNsGetParentObject (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsGetNextValidObject
+ * FUNCTION:    AcpiNsGetNextValidNode
  *
  * PARAMETERS:  Node       - Current table entry
  *
- * RETURN:      Next valid object in the table.  NULL if no more valid
- *              objects
+ * RETURN:      Next valid Node in the linked node list.  NULL if no more valid
+ *              nodess
  *
- * DESCRIPTION: Find the next valid object within a name table.
+ * DESCRIPTION: Find the next valid node within a name table.
  *              Useful for implementing NULL-end-of-list loops.
  *
  ******************************************************************************/
 
 
 ACPI_NAMESPACE_NODE *
-AcpiNsGetNextValidObject (
+AcpiNsGetNextValidNode (
     ACPI_NAMESPACE_NODE     *Node)
 {
 

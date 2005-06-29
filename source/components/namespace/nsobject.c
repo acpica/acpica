@@ -2,7 +2,7 @@
  *
  * Module Name: nsobject - Utilities for objects attached to namespace
  *                         table entries
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  ******************************************************************************/
 
@@ -181,7 +181,7 @@ AcpiNsAttachObject (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    if (!VALID_DESCRIPTOR_TYPE (Node, ACPI_DESC_TYPE_NAMED))
+    if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
     {
         /* Not a name handle */
 
@@ -211,7 +211,7 @@ AcpiNsAttachObject (
      * If the source object is a namespace Node with an attached object,
      * we will use that (attached) object
      */
-    else if (VALID_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_NAMED) &&
+    else if ((ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_NAMED) &&
             ((ACPI_NAMESPACE_NODE *) Object)->Object)
     {
         /*
@@ -314,7 +314,7 @@ AcpiNsDetachObject (
     /* Clear the entry in all cases */
 
     Node->Object = NULL;
-    if (VALID_DESCRIPTOR_TYPE (ObjDesc, ACPI_DESC_TYPE_INTERNAL))
+    if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_INTERNAL)
     {
         Node->Object = ObjDesc->Common.NextObject;
         if (Node->Object &&
@@ -363,8 +363,8 @@ AcpiNsGetAttachedObject (
     }
 
     if (!Node->Object ||
-       ((!(VALID_DESCRIPTOR_TYPE (Node->Object, ACPI_DESC_TYPE_INTERNAL))) &&
-        (!(VALID_DESCRIPTOR_TYPE (Node->Object, ACPI_DESC_TYPE_NAMED))))   ||
+            ((ACPI_GET_DESCRIPTOR_TYPE (Node->Object) != ACPI_DESC_TYPE_INTERNAL)  &&
+             (ACPI_GET_DESCRIPTOR_TYPE (Node->Object) != ACPI_DESC_TYPE_NAMED))    ||
         (Node->Object->Common.Type == INTERNAL_TYPE_DATA))
     {
         return_PTR (NULL);
