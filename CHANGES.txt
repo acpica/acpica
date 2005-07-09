@@ -1,4 +1,25 @@
 ----------------------------------------
+11 February 2004.  Summary of changes for version 20040211:
+
+1) ACPI CA Core Subsystem:
+
+Completed investigation and implementation of the call-by-reference mechanism for control method arguments.
+
+Fixed a problem where a store of an object into an indexed package could fail if the store occurs within a different method than the method that created the package.
+
+Fixed a problem where the ToDecimal operator could return incorrect results.
+
+Fixed a problem where the CopyObject operator could fail on some of the more obscure objects (e.g., Reference objects.)
+
+Improved the output of the Debug object to display buffer, package, and index objects.
+
+Fixed a problem where constructs of the form “RefOf (ArgX)” did not return the expected result.
+
+Added permanent ACPI_REPORT_ERROR macros for all instances of the ACPI_AML_INTERNAL exception.
+
+Integrated latest version of acfreebsd.h
+
+----------------------------------------
 16 January 2004.  Summary of changes for version 20040116:
 
 The purpose of this release is primarily to update the copyright years in each module, thus causing a huge number of diffs.  There are a few small functional changes, however.
