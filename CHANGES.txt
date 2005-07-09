@@ -1,4 +1,36 @@
 ------------------------------------------
+Summary of changes for this label: 06_15_01
+
+
+ACPI CA Core Subsystem:
+
+Fixed a problem where a DWORD-accessed field within a Buffer object
+would get its byte address inadvertently rounded down to the nearest
+DWORD.  Buffers are always Byte-accessible.
+
+
+ASL Compiler, version X2024:
+
+Fixed a problem where the Switch() operator would either fault or hang
+the compiler.  Note however, that the AML code for this ACPI 2.0 operator
+is not yet implemented.
+
+Compiler uses the new AcpiOsGetTimer interface to obtain compile timings.
+
+Implementation of the CreateField operator automatically converts a
+reference to a named field within a resource descriptor from a byte offset
+to a bit offset if required.
+
+Added some missing named fields from the resource descriptor support.
+These are the names that are automatically created by the compiler to
+reference fields within a descriptor.  They are only valid at compile time
+and are not passed through to the AML interpreter.
+
+Resource descriptor named fields are now typed as Integers and subject to
+compile-time typechecking when used in expressions.
+
+
+------------------------------------------
 Summary of changes for this label: 05_18_01
 
 
