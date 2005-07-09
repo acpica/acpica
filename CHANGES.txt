@@ -1,4 +1,46 @@
 ----------------------------------------
+17 June 2005.  Summary of changes for version 20050617:
+
+1) ACPI CA Core Subsystem:
+
+Moved the object cache operations into the OS interface layer (OSL) to allow the host OS to handle these operations if desired (for example, the Linux OSL will invoke the slab allocator). This support is optional; the compile time define ACPI_USE_LOCAL_CACHE may be used to utilize the original cache code in the ACPI CA core. The new OSL interfaces are shown below. See utalloc.c for an example implementation, and acpiosxf.h for the exact interface definitions. With assistance from Alexey Starikovskiy.
+    AcpiOsCreateCache
+    AcpiOsDeleteCache
+    AcpiOsPurgeCache
+    AcpiOsAcquireObject
+    AcpiOsReleaseObject
+
+Modified the interfaces to AcpiOsAcquireLock and AcpiOsReleaseLock to return and restore a flags parameter. This fits better with many OS lock models. Note: the current execution state (interrupt handler or not) is no longer passed to these interfaces. If necessary, the OSL must determine this state by itself, a simple and fast operation. With assistance from Alexey Starikovskiy.
+
+Fixed a problem in the ACPI table handling where a valid XSDT was assumed present if the revision of the RSDP was 2 or greater. According to the ACPI specification, the XSDT is optional in all cases, and the table manager therefore now checks for both an RSDP >=2 and a valid XSDT pointer. Otherwise, the RSDT pointer is used. Some ACPI 2.0 compliant BIOSs contain only the RSDT.
+
+Fixed an interpreter problem with the Mid() operator in the case of an input string where the resulting output string is of zero length. It now correctly returns a valid, null terminated string object instead of a string object with a null pointer.
+
+Fixed a problem with the control method argument handling to allow a store to an Arg object that already contains an object of type Device. The Device object is now correctly overwritten. Previously, an error was returned.
+
+Enhanced the debugger Find command to emit object values in addition to the found object pathnames. The output format is the same as the dump namespace command.
+
+Enhanced the debugger Set command. It now has the ability to set the value of any Named integer object in the namespace (Previously, only method locals and args could be set.)
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.1K Code, 11.6K Data,  89.7K Total
+    Debug Version:     164.0K Code, 69.3K Data, 233.3K Total
+  Current Release:
+    Non-Debug Version:  78.3K Code, 11.6K Data,  89.9K Total
+    Debug Version:     164.0K Code, 69.1K Data, 233.1K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a regression in the disassembler where if/else/while constructs were output incorrectly. This problem was introduced in the previous release (20050526). This problem also affected the single-step disassembly in the debugger.
+
+Fixed a problem where compiling the reserved _OSI method would randomly (but rarely) produce compile errors.
+
+Enhanced the disassembler to emit compilable code in the face of incorrect AML resource descriptors. If the optional ResourceSourceIndex is present, but the ResourceSource is not, do not emit the ResourceSourceIndex in the disassembly. Otherwise, the resulting code cannot be compiled without errors.
+
+----------------------------------------
 26 May 2005.  Summary of changes for version 20050526:
 
 1) ACPI CA Core Subsystem:
