@@ -1,4 +1,61 @@
 ----------------------------------------
+Summary of changes for this label: 08_31_01
+
+
+ACPI CA Core Subsystem:
+
+A bug with interpreter implementation of the ASL Divide operator was found
+and fixed.  The implicit function return value (not the explicit store
+operands) was returning the remainder instead of the quotient.  This was a
+longstanding bug and it fixes several known outstanding issues on various
+platforms.
+
+The ACPI_DEBUG_PRINT and function trace entry/exit macros have been further
+optimized for size.  There are 700 invocations of the DEBUG_PRINT macro
+alone, so each optimization reduces the size of the debug version of the
+subsystem significantly.
+
+A stack trace mechanism has been implemented.  The maximum stack usage is about
+2K on 32-bit platforms.  The debugger command "stat stack" will display the
+current maximum stack usage.
+
+All public symbols and global variables within the subsystem are now prefixed
+with the string "Acpi".  This keeps all of the symbols grouped together in a
+kernel map, and avoids conflicts with other kernel subsystems.
+
+Most of the internal fixed lookup tables have been moved into the code segment
+via the const operator.
+
+Several enhancements have been made to the interpreter to both reduce the code
+size and improve performance.  
+
+Current core subsystem library code sizes are shown below.  These are the code
+and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0
+compiler, and these values do not include any ACPI driver or OSPM code.
+ The debug version of the code includes the full debug trace mechanism which
+contains over 700 invocations of the DEBUG_PRINT macro, 500 function entry
+macro invocations, and over 900 function exit macro invocations -- leading
+to a much larger code and data size.  Note that these values will vary
+depending on the efficiency of the compiler and the compiler options used
+during generation.
+
+        Non-Debug Version:  64K Code,   5K Data,   69K Total
+        Debug Version:     137K Code,  58K Data,  195K Total
+
+
+Linux:
+
+Implemented wbinvd() macro, pending a kernel-wide definition.
+
+Fixed /proc/acpi/event to handle poll() and short reads.
+
+
+ASL Compiler, version X2026:
+
+Fixed a problem introduced in the previous label where the AML code emitted  for package objects produced packages with zero length.
+
+
+----------------------------------------
 Summary of changes for this label: 08_16_01
 
 ACPI CA Core Subsystem:
