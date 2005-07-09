@@ -1,4 +1,43 @@
 ----------------------------------------
+18 September 2002.  Summary of changes for this release.
+
+
+1) ACPI CA Core Subsystem version 20020918:
+
+Fixed a reported problem with reference chaining (via the Index() and RefOf() operators) in the ObjectType() and SizeOf() operators.  The definition of these operators includes the dereferencing of all chained references to return information on the base object.
+
+Fixed a problem with stores to indexed package elements – the existing code would not complete the store if an “implicit conversion” was not performed.  In other words, if the existing object (package element) was to be replaced completely, the code didn’t handle this case.
+
+Relaxed typechecking on the ASL "Scope" operator to allow the target name to refer to an object of type Integer, String, or Buffer, in addition to the scoping object types (Device, predefined Scopes, Processor, PowerResource, and ThermalZone.)  This allows existing AML code that has workarounds for a bug in Windows to function properly.  A warning is issued, however.  This affects both the AML interpreter and the iASL compiler. Below is an example of this type of ASL code:
+
+      Name(DEB,0x00)
+      Scope(DEB)
+      {
+
+Fixed some reported problems with 64-bit integer support in the local implementation of C library functions (clib.c)
+
+
+2) Linux
+
+Use ACPI fix map region instead of IOAPIC region, since it is undefined in non-SMP.
+
+Ensure that the SCI has the proper polarity and trigger, even on systems that do not have an interrupt override entry in the MADT.
+
+2.5 big driver reorganization (Pat Mochel)
+
+Use early table mapping code from acpitable.c (Andi Kleen)
+
+New blacklist entries (Andi Kleen)
+
+Blacklist improvements. Split blacklist code out into a separate file. Move checking the blacklist to very early. Previously, we would use ACPI tables, and then halfway through init, check the blacklist -- too late. Now, it's early enough to completely fall-back to non-ACPI.
+
+
+3) iASL Compiler/Disassembler version 20020918:
+
+Fixed a problem where the typechecking code didn’t know that an alias could point to a method.  In other words, aliases were not being dereferenced during typechecking.
+
+
+----------------------------------------
 29 August 2002.  Summary of changes for this release.
 
 1) ACPI CA Core Subsystem Version 20020829:
