@@ -1,4 +1,31 @@
 ----------------------------------------
+
+12 December 2002.  Summary of changes for version 20021212.
+
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem where the creation of a zero-length AML Buffer would cause a fault.  
+
+Fixed a problem where a Buffer object that pointed to a static AML buffer (in an ACPI table) could inadvertently be deleted, causing memory corruption.
+
+Fixed a problem where a user buffer (passed in to the external ACPI CA interfaces) could be overwritten if the buffer was too small to complete the operation, causing memory corruption.
+
+Fixed a problem in the Buffer-to-String conversion code where a string of length one was always returned, regardless of the size of the input Buffer object.
+
+Removed the NATIVE_CHAR data type across the entire source due to lack of need and lack of consistent use.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  72.1K Code,   9.5K Data,   81.6K Total
+    Debug Version:     152.7K Code,  62.7K Data,  215.4K Total
+  Current Release:
+    Non-Debug Version:  72.0K Code,   9.5K Data,   81.5K Total
+    Debug Version:     153.0K Code,  62.9K Data,  215.9K Total
+
+
+----------------------------------------
 05 December 2002.  Summary of changes for version 20021205.
 
 1) ACPI CA Core Subsystem:
