@@ -1,4 +1,40 @@
 ----------------------------------------
+01 November 2002.  Summary of changes for version 20021101.
+
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem where platforms that have a GPE1 block but no GPE0 block were not handled correctly.  This resulted in a "GPE overlap" error message.  GPE0 is no longer required.
+
+Removed code added in the previous release that inserted nodes into the namespace in alphabetical order.  This caused some side-effects on various machines.  The root cause of the problem is still under investigation since in theory, the internal ordering of the namespace nodes should not matter.
+
+Enhanced error reporting for the case where a named object is not found during control method execution.  The full ACPI namepath (name reference) of the object that was not found is displayed in this case.
+
+Note: as a result of the overhaul of the namespace object types in the previous release, the namespace nodes for the predefined scopes (_TZ, _PR, etc.) are now of the type ACPI_TYPE_LOCAL_SCOPE instead of ACPI_TYPE_ANY.  This simplifies the namespace management code but may affect code that walks the namespace tree looking for specific object types.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  70.7K Code,   8.6K Data,   79.3K Total
+    Debug Version:     151.7K Code,  62.4K Data,  214.1K Total
+  Current Release:
+    Non-Debug Version:  71.4K Code,   9.0K Data,   80.4K Total
+    Debug Version:     152.3K Code,  63.0K Data,  215.3K Total
+
+
+2) Linux
+
+Fixed a problem introduced in the previous release where the Processor and Thermal objects were not recognized and installed in /proc.  This was related to the scope type change described above.
+
+
+3) iASL Compiler/Disassembler
+
+Implemented the -g option to get all of the required ACPI tables from the registry and save them to files (Windows version of the compiler only.)  The required tables are the FADT, FACS, and DSDT.
+
+Added ACPI table checksum validation during table disassembly in order to catch corrupted tables.
+
+
+----------------------------------------
 22 October 2002.  Summary of changes for version 20021022.
 
 1) ACPI CA Core Subsystem:
