@@ -1,4 +1,139 @@
 ------------------------------------------
+Summary of changes for this label: 03_02_01
+
+
+Linux OS Services Layer (OSL):
+
+Major revision of all Linux-specific code.
+
+Modularized all ACPI-specific drivers.
+
+Added new thermal zone and power resource drivers.
+
+Revamped /proc interface (new functionality is under /proc/acpi).
+
+New kernel configuration options.
+
+
+Linux known issues:
+
+New kernel configuration options not documented in Configure.help yet.
+
+Module dependencies not currently implemented. If used, they should be loaded
+in this order: busmgr, power, ec, system, processor, battery, ac_adapter,
+button, thermal.
+
+IBM 600E - entering S5 may reboot instead of shutting down.
+
+IBM 600E - Sleep button may generate "Invalid <NULL> context" message.
+
+Some systems may fail with "execution mutex already acquired" message.
+
+
+ACPI CA Core Subsystem:
+
+Added a new OSL Interface, AcpiOsGetThreadId.  This was required for the 
+deadlock detection code. Defined to return a non-zero, 32-bit thread ID
+for the currently executing thread.  May be a non-zero constant integer
+on single-thread systems.
+
+Implemented deadlock detection for internal subsystem mutexes.  We may add
+conditional compilation for this code (debug only) later.
+
+ASL/AML Mutex object semantics are now fully supported.  This includes
+multiple acquires/releases by owner and support for the Mutex SyncLevel parameter.
+
+A new “Force Release” mechanism automatically frees all ASL Mutexes that have
+been acquired but not released when a thread exits the interpreter.  This
+forces conformance to the ACPI spec (“All mutexes must be released when an
+invocation exits”) and prevents deadlocked ASL threads.  This mechanism can
+be expanded (later) to monitor other resource acquisitions if OEM ASL code
+continues to misbehave (which it will).
+
+Several new ACPI exception codes have been added for the Mutex support.
+
+Recursive method calls are now allowed and supported (the ACPI spec does
+in fact allow recursive method calls.)  The number of recursive calls is
+subject to the restrictions imposed by the SERIALIZED method keyword and
+SyncLevel (ACPI 2.0) method parameter.
+
+Implemented support for the SyncLevel parameter for control methods (ACPI
+2.0 feature)
+
+Fixed a deadlock problem when multiple threads attempted to use the interpreter.
+
+Fixed a problem where the string length of a String package element was not
+always set in a package returned from AcpiEvaluateObject.
+
+Fixed a problem where the length of a String package element was not always
+included in the length of the overall package returned from AcpiEvaluateObject.
+
+Added external interfaces (Acpi*) to the ACPI debug memory manager.  This
+manager keeps a list of all outstanding allocations, and can therefore
+detect memory leaks and attempts to free memory blocks more than once.
+Useful for code such as the power manager, etc.  May not be appropriate
+for device drivers.  Performance with the debug code enabled is slow.
+
+The ACPI Global Lock is now an optional hardware element.
+
+
+ASL Compiler Version X2015:
+
+Integrated changes to allow the compiler to be generated on multiple platforms.
+
+Linux makefile added to generate the compiler on Linux
+
+
+Source Code:
+
+All platform-specific headers have been moved to their own subdirectory,
+Include/Platform.
+
+New source file added, Interpreter/ammutex.c
+
+New header file, Include/acstruct.h
+
+
+Documentation:
+
+The programmer reference has been updated for the following new interfaces:
+AcpiOsGetThreadId
+AcpiAllocate
+AcpiCallocate
+AcpiFree
+
+
+------------------------------------------
+Summary of changes for this label: 02_08_01
+
+Core ACPI CA Subsystem:
+Fixed a problem where an error was incorrectly returned if the return
+resource buffer was larger than the actual data (in the resource interfaces).
+
+References to named objects within packages are resolved to the full pathname
+string before packages are returned directly (via the AcpiEvaluateObject
+interface) or indirectly via the resource interfaces.
+
+Linux OS Services Layer (OSL):
+
+Improved /proc battery interface.
+
+Added C-state debugging output and other miscellaneous fixes.
+
+ASL Compiler Version X2014:
+
+All defined method arguments can now be used as local variables, including the
+ones that are not actually passed in as parameters.  The compiler tracks
+initialization of the arguments and issues an exception if they are used
+without prior assignment (just like locals).
+
+The -o option now specifies a filename prefix that is used for all output files,
+including the AML output file.  Otherwise, the default behavior is as follows: 
+1) the AML goes to the file specified in the DSDT.  2) all other output files
+use the input source filename as the base.
+
+
+------------------------------------------
 Summary of changes for this label: 01_25_01
 
 Core ACPI CA Subsystem:
