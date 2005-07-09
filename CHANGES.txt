@@ -1,4 +1,38 @@
 ----------------------------------------
+22 September 2004.  Summary of changes for version 20040922:
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem with the implementation of the LNot() operator where "Ones" was not returned for the TRUE case. Changed the code to return Ones instead of (!Arg) which was usually 1. This change affects iASL constant folding for this operator also.
+
+Fixed a problem in AcpiUtInitializeBuffer where an existing buffer was not initialized properly -- Now zero the entire buffer in this case where the buffer already exists.
+
+Changed the interface to AcpiOsSleep from (UINT32 Seconds, UINT32 Milliseconds) to simply (ACPI_INTEGER Milliseconds). This simplifies all related code considerably. This will require changes/updates to all OS interface layers (OSLs.)
+
+Implemented a new external interface, AcpiInstallExceptionHandler, to allow a system exception handler to be installed. This handler is invoked upon any run-time exception that occurs during control method execution.
+
+Added support for the DSDT in AcpiTbFindTable. This allows the DataTableRegion() operator to access the local copy of the DSDT.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  77.8K Code,  11.4K Data,   89.2K Total
+    Debug Version:     164.2K Code,  68.2K Data,  232.4K Total
+  Current Release:
+    Non-Debug Version:  77.9K Code,  11.4K Data,   89.3K Total
+    Debug Version:     164.5K Code,  68.3K Data,  232.8K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a problem with constant folding and the LNot operator. LNot was returning 1 in the TRUE case, not Ones as per the ACPI specification. This could result in the generation of an incorrect folded/reduced constant.
+
+End-Of-File is now allowed within a "//"-style comment.  A parse error no longer occurs if such a comment is at the very end of the input ASL source file.
+
+Implemented the "-r" option to override the Revision in the table header. The initial use of this option will be to simplify the evaluation of the AML interpreter by allowing a single ASL source module to be compiled for either 32-bit or 64-bit integers.
+
+
+----------------------------------------
 27 August 2004.  Summary of changes for version 20040827:
 
 1) ACPI CA Core Subsystem:
