@@ -1,4 +1,39 @@
 ----------------------------------------
+13 May 2005.  Summary of changes for version 20050513:
+
+1) ACPI CA Core Subsystem:
+
+Implemented support for PCI Express root bridges -- added support for device PNP0A08 in the root bridge search within AcpiEvPciConfigRegionSetup.
+
+The interpreter now automatically truncates incoming 64-bit constants to 32 bits if currently executing out of a 32-bit ACPI table (Revision < 2). This also affects the iASL compiler constant folding. (Note: as per below, the iASL compiler no longer allows 64-bit constants within 32-bit tables.)
+
+Fixed a problem where string and buffer objects with "static" pointers (pointers to initialization data within an ACPI table) were not handled consistently. The internal object copy operation now always copies the data to a newly allocated buffer, regardless of whether the source object is static or not.
+
+Fixed a problem with the FromBCD operator where an implicit result conversion was improperly performed while storing the result to the target operand. Since this is an "explicit conversion" operator, the implicit conversion should never be performed on the output.
+
+Fixed a problem with the CopyObject operator where a copy to an existing named object did not always completely overwrite the existing object stored at name. Specifically, a buffer-to-buffer copy did not delete the existing buffer.
+
+Replaced "InterruptLevel" with "InterruptNumber" in all GPE interfaces and structs for consistency.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.2K Code, 11.6K Data,  89.8K Total
+    Debug Version:     163.7K Code, 69.3K Data, 233.0K Total
+  Current Release: (Same sizes)
+    Non-Debug Version:  78.2K Code, 11.6K Data,  89.8K Total
+    Debug Version:     163.7K Code, 69.3K Data, 233.0K Total
+
+
+2) iASL Compiler/Disassembler:
+
+The compiler now emits a warning if an attempt is made to generate a 64-bit integer constant from within a 32-bit ACPI table (Revision < 2). The integer is truncated to 32 bits.
+
+Fixed a problem with large package objects: if the static length of the package is greater than 255, the "variable length package" opcode is emitted. Previously, this caused an error. This requires an update to the ACPI spec, since it currently (incorrectly) states that packages larger than 255 elements are not allowed.
+
+The disassembler now correctly handles variable length packages and packages larger than 255 elements.
+
+----------------------------------------
 08 April 2005.  Summary of changes for version 20050408:
 
 1) ACPI CA Core Subsystem:
