@@ -1,4 +1,74 @@
 ------------------------------------------
+Summary of changes for this label: 05_18_01
+
+
+ACPI CA Core Subsystem:
+
+Fixed a couple of problems in the Field support code where bits from
+adjacent fields could be returned along with the proper field bits.
+Restructured the field support code to improve performance, readability
+and maintainability.
+
+New DEBUG_PRINTP macro automatically inserts the procedure name into the
+output, saving hundreds of copies of procedure name strings within the
+source, shrinking the memory footprint of the debug version of the core
+subsystem.
+
+
+Source Code Structure:
+
+The source code directory tree was restructured to reflect the current
+organization of the component architecture.  Some files and directories
+have been moved and/or renamed.
+
+
+Linux:
+
+Fixed leaking kacpidpc processes.
+
+Fixed queueing event data even when /proc/acpi/event is not opened.
+
+
+ASL Compiler, version X2020:
+
+Memory allocation performance enhancement - over 24X compile time
+improvement on large ASL files.  Parse nodes and namestring buffers are
+now allocated from a large internal compiler buffer.
+
+The temporary .SRC file is deleted unless the “-s” option is specified
+
+The “-d” debug output option now sends all output to the .DBG file instead
+of the console.
+
+“External” second parameter is now optional
+
+“ElseIf” syntax now properly allows the predicate
+
+Last operand to “Load” now recognized as a Target operand
+
+Debug object can now be used anywhere as a normal object.
+
+ResourceTemplate now returns an object of type BUFFER
+
+EISAID now returns an object of type INTEGER
+
+“Index” now works with a STRING operand
+
+“LoadTable” now accepts optional parameters
+
+“ToString” length parameter is now optional
+
+“Interrupt (ResourceType,” parse error fixed.
+
+“Register” with a user-defined region space parse error fixed
+
+Escaped backslash at the end of a string (“\\”) scan/parse error fixed
+
+“Revision” is now an object of type INTEGER.
+
+
+
+------------------------------------------
 Summary of changes for this label: 05_02_01
 
 Linux:
