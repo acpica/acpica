@@ -1,5 +1,5 @@
 ----------------------------------------
-02 December 2003.  Summary of changes for version 20031202:
+03 December 2003.  Summary of changes for version 20031203:
 
 1) ACPI CA Core Subsystem:
 
@@ -19,6 +19,10 @@ Fixed a problem in AcpiTbGetTablePtr() where a garbage pointer could be returned
 
 Within the support for IRQ resources, restructured the handling of the active and edge/level bits.
 
+Fixed a few problems in AcpiPsxExecute() where memory could be leaked under certain error conditions.
+
+Improved error messages for the cases where the ACPI mode could not be entered.
+
 Code and Data Size: Current and previous core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
 
   Previous Release (20031029):
@@ -30,7 +34,7 @@ Code and Data Size: Current and previous core subsystem library sizes are shown 
 
 2) iASL Compiler/Disassembler:
 
-Implemented a fix for the iASL disassembler on 64-bit platforms where a bad index was generated.
+Implemented a fix for the iASL disassembler where a bad index was generated.  This was most noticeable on 64-bit platforms
 
 
 ----------------------------------------
