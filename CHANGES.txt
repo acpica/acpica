@@ -1,4 +1,36 @@
 ----------------------------------------
+14 January 2005.  Summary of changes for version 20050114:
+
+Added 2005 copyright to all module headers.  This affects every module in the core subsystem, iASL compiler, and the utilities.
+
+1) ACPI CA Core Subsystem:
+
+Fixed an issue with the String-to-Buffer conversion code where the string null terminator was not included in the buffer after conversion, but there is existing ASL that assumes the string null terminator is included. This is the root of the ACPI_AML_BUFFER_LIMIT regression. This problem was introduced in the previous version when the code was updated to correctly set the converted buffer size as per the ACPI specification. The ACPI spec is ambiguous and will be updated to specify that the null terminator must be included in the converted buffer. This also affects the ToBuffer() ASL operator.
+
+Fixed a problem with the Mid() ASL/AML operator where it did not work correctly on Buffer objects. Newly created sub-buffers were not being marked as initialized.
+
+Fixed a problem in AcpiTbFindTable where incorrect string compares were performed on the OemId and OemTableId table header fields.  These fields are not null terminated, so strncmp is now used instead of strcmp.
+
+Implemented a restriction on the Store() ASL/AML operator to align the behavior with the ACPI specification.  Previously, any object could be used as the source operand.  Now, the only objects that may be used are Integers, Buffers, Strings, Packages, Object References, and DDB Handles.  If necessary, the original behavior can be restored by enabling the EnableInterpreterSlack flag.
+
+Enhanced the optional "implicit return" support to allow an implicit return value from methods that are invoked externally via the AcpiEvaluateObject interface.  This enables implicit returns from the _STA and _INI methods, for example.
+
+Changed the Revision() ASL/AML operator to return the current version of the AML interpreter, in the YYYYMMDD format. Previously, it incorrectly returned the supported ACPI version (This is the function of the _REV method).
+
+Updated the _REV predefined method to return the currently supported version of ACPI, now 3.
+
+Implemented batch mode option for the AcpiExec utility (-b).
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.3K Code,  11.5K Data,   89.8K Total
+    Debug Version:     165.3K Code,  69.4K Data,  234.7K Total
+  Current Release:
+    Non-Debug Version:  78.4K Code,  11.5K Data,   89.9K Total
+    Debug Version:     165.4K Code,  69.4K Data,  234.8K Total
+
+----------------------------------------
 10 December 2004.  Summary of changes for version 20041210:
 
 ACPI 3.0 support is nearing completion in both the iASL compiler and the ACPI CA core subsystem.
