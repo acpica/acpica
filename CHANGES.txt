@@ -1,4 +1,31 @@
 ----------------------------------------
+19 June 2003.  Summary of changes for version 20030619:
+
+1) ACPI CA Core Subsystem:
+
+Fix To/FromBCD, eliminating the need for an arch-specific #define.
+
+Do not acquire a semaphore in the S5 shutdown path.
+
+Fix ex_digits_needed for 0. (Takayoshi Kochi)
+
+Fix sleep/stall code reversal. (Andi Kleen)
+
+Revert a change having to do with control method calling semantics.
+
+2) Linux:
+
+acpiphp update (Takayoshi Kochi)
+
+Export acpi_disabled for sonypi (Stelian Pop)
+
+Mention acpismp=force in config help
+
+Re-add acpitable.c and acpismp=force. This improves backwards compatibility and also cleans up the code to a significant degree.
+
+Add ASUS Value-add driver (Karol Kozimor and Julien Lerouge)
+
+----------------------------------------
 22 May 2003.  Summary of changes for version 20030522:
 
 1) ACPI CA Core Subsystem:
