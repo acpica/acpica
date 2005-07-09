@@ -1,4 +1,89 @@
 ------------------------------------------
+Summary of changes for this label: 01_25_01
+
+Core ACPI CA Subsystem:
+Restructured the implementation of object store support within the 
+interpreter.  This includes support for the Store operator as well 
+as any ASL operators that include a target operand.
+
+Partially implemented support for Implicit Result-to-Target conversion.
+This is when a result object is converted on the fly to the type of 
+an existing target object.  Completion of this support is pending 
+further analysis of the ACPI specification concerning this matter.
+
+CPU-specific code has been removed from the subsystem (hardware directory).
+
+New Power Management Timer functions added
+
+Linux OS Services Layer (OSL):
+Moved system state transition code to the core, fixed it, and modified 
+Linux OSL accordingly. 
+
+Fixed C2 and C3 latency calculations. 
+
+We no longer use the compilation date for the version message on 
+initialization, but retrieve the version from AcpiGetSystemInfo().
+
+Incorporated for fix Sony VAIO machines.
+
+Documentation: 
+The Programmer Reference has been updated and reformatted.
+
+ASL Compiler: 
+Version X2013:
+Fixed a problem where the line numbering and error reporting could get out 
+of sync in the presence of multiple include files.
+
+
+------------------------------------------
+Summary of changes for this label: 01_15_01
+
+Core ACPI CA Subsystem:
+
+Implemented support for type conversions in the execution of the ASL 
+Concatenate operator (The second operand is converted to match the type 
+of the first operand before concatenation.)
+
+Support for implicit source operand conversion is partially implemented.  
+The ASL source operand types Integer, Buffer, and String are freely 
+interchangeable for most ASL operators and are converted by the interpreter 
+on the fly as required.  Implicit Target operand conversion (where the 
+result is converted to the target type before storing) is not yet implemented.
+
+Support for 32-bit and 64-bit BCD integers is implemented.
+
+Problem fixed where a field read on an aligned field could cause a read 
+past the end of the field.
+
+New exception, AE_AML_NO_RETURN_VALUE, is returned when a method does not
+return a value, but the caller expects one.  (The ASL compiler flags
+this as a warning.)
+
+ASL Compiler:
+
+Version X2011:
+1.	Static typechecking of all operands is implemented. This prevents the
+        use of invalid objects (such as using a Package where an Integer is 
+        required) at compile time instead of at interpreter run-time. 
+2.	The ASL source line is printed with ALL errors and warnings. 
+3.	Bug fix for source EOF without final linefeed. 
+4.	Debug option is split into a parse trace and a namespace trace. 
+5.	Namespace output option (-n) includes initial values for integers
+        and strings. 
+6.	Parse-only option added for quick syntax checking. 
+7.	Compiler checks for duplicate ACPI name declarations
+
+Version X2012:
+1.      Relaxed typechecking to allow interchangeability between strings,
+        integers, and buffers.  These types are now converted by the 
+        interpreter at runtime.
+2.      Compiler reports time taken by each internal subsystem in the debug
+        output file.
+
+
+
+
+------------------------------------------
 Summary of changes for this label: 12_14_00
 
 ASL Compiler:
