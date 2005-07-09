@@ -1,4 +1,29 @@
 ----------------------------------------
+Summary of changes for this release: 03_08_02
+
+
+1) ACPI CA Core Subsystem Version 20020308:
+
+Fixed a problem with AML Fields where the use of the "AccessAny" keyword could cause an interpreter error due to attempting to read or write beyond the end of the parent Operation Region.
+
+Fixed a problem in the SystemMemory Operation Region handler where an attempt was made to map memory beyond the end of the region.  This was the root cause of the "AE_ERROR" and "AE_NO_MEMORY" errors on some Linux systems.
+
+Fixed a problem where the interpreter/namespace "search to root" algorithm was not functioning for some object types.  Relaxed the internal restriction on the search to allow upsearches for all external object types as well as most internal types.
+
+
+2) Linux:
+
+We now use safe_halt() macro versus individual calls to sti | hlt.
+
+Writing to the processor limit interface should now work. "echo 1" will increase the limit, 2 will decrease, and 0 will reset to the default.
+
+
+3) ASL compiler:
+
+Fixed segfault on Linux version.
+
+
+----------------------------------------
 Summary of changes for this release: 02_25_02
 
 1) ACPI CA Core Subsystem:
