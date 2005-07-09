@@ -1,4 +1,83 @@
 ----------------------------------------
+Summary of changes for this label: 12_05_01
+
+
+1) ACPI CA Core Subsystem:
+
+The ACPI 2.0 CopyObject operator is fully implemented.  This operator creates
+a new copy of an object (and is also used to bypass the "implicit conversion"
+mechanism of the Store operator.)
+
+The ACPI 2.0 semantics for the SizeOf operator are fully implemented.  The
+change is that performing a SizeOf on a reference object causes an automatic
+dereference of the object to tha actual value before the size is evaluated.
+This behavior was undefined in ACPI 1.0.
+
+The ACPI 2.0 semantics for the Extended IRQ resource descriptor have been
+implemented.  The interrupt polarity and mode are now independently set.
+
+Fixed a problem where ASL Constants (Zero, One, Ones, Revision) appearing in
+Package objects were not properly converted to integers when the internal
+Package was converted to an external object (via the AcpiEvaluateObject
+interface.)
+
+Fixed a problem with the namespace object deletion mechanism for objects
+created by control methods.  There were two parts to this problem: 1)
+Objects created during the initialization phase method parse were not
+being deleted, and 2) The object owner ID mechanism to track objects was
+broken.
+
+Fixed a problem where the use of the ASL Scope operator within a control
+method would result in an invalid opcode exception.  
+
+Fixed a problem introduced in the previous label where the buffer length
+required for the _PRT structure was not being returned correctly.
+
+Code and Data Size: Current core subsystem library sizes are shown below.
+These are the code and data sizes for the acpica.lib produced by the
+Microsoft Visual C++ 6.0 compiler, and these values do not include any
+ACPI driver or OSPM code.  The debug version of the code includes the
+debug output trace mechanism and has a larger code and data size.  Note
+that these values will vary depending on the efficiency of the compiler
+and the compiler options used during generation.
+
+  Previous Release (11_20_01)
+    Non-Debug Version:  64.1K Code,   5.3K Data,   69.4K Total
+    Debug Version:     135.1K Code,  55.4K Data,  190.5K Total
+
+  Current Release:
+    Non-Debug Version:  64.7K Code,   5.3K Data,   70.0K Total
+    Debug Version:     136.2K Code,  55.6K Data,  191.8K Total
+
+
+2) Linux:
+
+Updated all files to apply cleanly against 2.4.16.
+
+Added basic PCI Interrupt Routing Table (PRT) support for IA32
+(acpi_pci.c), and unified the PRT code for IA32 and IA64.  This version
+supports both static and dyanmic PRT entries, but dynamic entries are
+treated as if they were static (not yet reconfigurable).  Architecture-
+specific code to use this data is absent on IA32 but should be available
+shortly.
+
+Changed the initialization sequence to start the ACPI interpreter
+(acpi_init) prior to initialization of the PCI driver (pci_init) in
+init/main.c.  This ordering is required to support PRT and facilitate
+other (future) enhancement.  A side effect is that the ACPI bus driver
+and certain device drivers can no longer be loaded as modules.
+
+Modified the 'make menuconfig' options to allow PCI Interrupt Routing
+support to be included without the ACPI Bus and other device drivers.
+
+
+3) ASL Compiler, version X2033:
+
+Fixed some issues with the use of the new CopyObject and DataTableRegion
+operators.  Both are fully functional.
+
+
+----------------------------------------
 Summary of changes for this label: 11_20_01
 
 
