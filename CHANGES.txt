@@ -1,3 +1,17 @@
+Summary of changes for this label: 9_29_00
+
+New table initialization interfaces:
+AcpiInitializeSubsystem no longer has any parameters
+AcpiFindRootPointer - Find the RSDP (if necessary)
+AcpiLoadTables (RSDP) - load all tables found at RSDP->RSDT
+Obsolete Interfaces
+AcpiLoadFirmwareTables - replaced by AcpiLoadTables
+
+Note: These interface changes require changes to all existing OSDs
+
+The PCI_Config default address space handler is always installed at the root
+namespace object.
+
 -------------------------------------------
 Summary of changes for this label: 09_15_00
 
