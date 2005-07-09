@@ -1,4 +1,30 @@
 ----------------------------------------
+08 July 2005.  Summary of changes for version 20050708:
+
+1) ACPI CA Core Subsystem:
+
+The use of the CPU stack in the debug version of the subsystem has been considerably reduced. Previously, a debug structure was declared in every function that used the debug macros. This structure has been removed in favor of declaring the individual elements as parameters to the debug functions. This reduces the cumulative stack use during nested execution of ACPI function calls at the cost of a small increase in the code size of the debug version of the subsystem. With assistance from Alexey Starikovskiy and Len Brown.
+
+Added the ACPI_GET_FUNCTION_NAME macro to enable the compiler-dependent headers to define a macro that will return the current function name at runtime (such as __FUNCTION__ or _func_, etc.) The function name is used by the debug trace output. If ACPI_GET_FUNCTION_NAME is not defined in the compiler-dependent header, the function name is saved on the CPU stack (one pointer per function.) This mechanism is used because apparently there exists no standard ANSI-C defined macro that that returns the function name.
+
+Redesigned and reimplemented the "Owner ID" mechanism used to track namespace objects created/deleted by ACPI tables and control method execution. A bitmap is now used to allocate and free the IDs, thus solving the wraparound problem present in the previous implementation. The size of the namespace node descriptor was reduced by 2 bytes as a result (Alexey Starikovskiy).
+
+Removed the UINT32_BIT and UINT16_BIT types that were used for the bitfield flag definitions within the headers for the predefined ACPI tables. These have been replaced by UINT8_BIT in order to increase the code portability of the subsystem. If the use of UINT8 remains a problem, we may be forced to eliminate bitfields entirely because of a lack of portability.
+
+Enhanced the performance of the AcpiUtUpdateObjectReference procedure. This is a frequently used function and this improvement increases the performance of the entire subsystem (Alexey Starikovskiy).
+
+Fixed several possible memory leaks and the inverse - premature object deletion (Alexey Starikovskiy).
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.6K Code, 11.5K Data,  90.1K Total
+    Debug Version:     165.2K Code, 69.6K Data, 234.8K Total
+  Current Release:
+    Non-Debug Version:  78.6K Code, 11.6K Data,  90.2K Total
+    Debug Version:     170.0K Code, 69.7K Data, 239.7K Total
+
+----------------------------------------
 24 June 2005.  Summary of changes for version 20050624:
 
 1) ACPI CA Core Subsystem:
