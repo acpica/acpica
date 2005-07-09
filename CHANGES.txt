@@ -1,4 +1,46 @@
 ----------------------------------------
+29 October 2003.  Summary of changes for version 20031029:
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem where a level-triggered GPE with an associated _Lxx control method was incorrectly cleared twice.
+
+Fixed a problem with the Field support code where an access can occur beyond the end-of-region if the field is non-aligned but extends to the very end of the parent region (resulted in an AE_AML_REGION_LIMIT exception.)
+
+Fixed a problem with ACPI Fixed Events where an RT Clock handler would not get invoked on an RTC event.  The RTC event bitmasks for the PM1 registers were not being initialized properly.
+
+Implemented support for executing _STA and _INI methods for Processor objects.  Although this is currently not part of the ACPI specification, there is existing ASL code that depends on the init-time execution of these methods.
+
+Implemented and deployed a GetDescriptorName function to decode the various types of internal descriptors.  Guards against null descriptors during debug output also.
+
+Implemented and deployed a GetNodeName function to extract the 4-character namespace node name.  This function simplifies the debug and error output, as well as guarding against null pointers during output.
+
+Implemented and deployed the ACPI_FORMAT_UINT64 helper macro to simplify the debug and error output of 64-bit integers.  This macro replaces the HIDWORD and LODWORD macros for dumping these integers.
+
+Updated the implementation of the Stall() operator to only call AcpiOsStall(), and also return an error if the operand is larger than 255.  This preserves the required behavior of not relinquishing the processor, as would happen if AcpiOsSleep() was called for "long stalls".
+
+Constructs of the form "Store(LocalX,LocalX)" where LocalX is not initialized are now treated as NOOPs.
+
+Cleaned up a handful of warnings during 64-bit generation.
+
+Fixed a reported error where and incorrect GPE number was passed to the GPE dispatch handler.  This value is only used for error output, however.  Used this opportunity to clean up and streamline the GPE dispatch code.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release (20031002):
+    Non-Debug Version:  74.1K Code,   9.7K Data,   83.8K Total
+    Debug Version:     157.9K Code,  64.8K Data,  222.7K Total
+  Current Release:
+    Non-Debug Version:  74.4K Code,  10.1K Data,   84.5K Total
+    Debug Version:     158.3K Code,  65.0K Data,  223.3K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Updated the iASL compiler to return an error if the operand to the Stall() operator is larger than 255.
+
+
+----------------------------------------
 02 October 2003.  Summary of changes for version 20031002:
 
 
