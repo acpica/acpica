@@ -1,4 +1,38 @@
 ----------------------------------------
+11 November 2002.  Summary of changes for version 20021111.
+
+
+0) ACPI Specification 2.0B is released and is now available at:  http://www.acpi.info/index.html
+
+
+1) ACPI CA Core Subsystem:
+
+Implemented support for the ACPI 2.0 SMBus Operation Regions.  This includes the early detection and handoff of the request to the SMBus region handler (avoiding all of the complex field support code), and support for the bidirectional return packet from an SMBus write operation.  This paves the way for the development of SMBus drivers in each host operating system.
+
+Fixed a problem where the semaphore WAIT_FOREVER constant was defined as 32 bits, but must be 16 bits according to the ACPI specification.  This had the side effect of causing ASL Mutex/Event timeouts even though the ASL code requested a wait forever.  Changed all internal references to the ACPI timeout parameter to 16 bits to prevent future problems.  Changed the name of WAIT_FOREVER to ACPI_WAIT_FOREVER.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  71.4K Code,   9.0K Data,   80.4K Total
+    Debug Version:     152.3K Code,  63.0K Data,  215.3K Total
+  Current Release:
+    Non-Debug Version:  71.9K Code,   9.1K Data,   81.0K Total
+    Debug Version:     153.1K Code,  63.3K Data,  216.4K Total
+
+
+2) Linux
+
+Module loading/unloading fixes (John Cagle)
+
+
+3) iASL Compiler/Disassembler
+
+Added support for the SMBBlockProcessCall keyword (ACPI 2.0)
+
+Implemented support for the disassembly of all SMBus protocol keywords (SMBQuick, SMBWord, etc.)
+
+----------------------------------------
 01 November 2002.  Summary of changes for version 20021101.
 
 
