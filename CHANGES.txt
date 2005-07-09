@@ -1,3 +1,32 @@
+------------------------------------------
+Summary of changes for this label: 10_20_00
+
+Fix for CBN_._STA issue.  This fix will allow correct access to CBN_ OpRegions
+when the _STA returns 0x8.  This code will most likely change as we gain further
+understanding of Microsoft's position on this issue. 
+
+Support to convert ACPI constants (Ones, Zeros, One) to actual values before
+a package object is returned
+
+Fix for method call as predicate to if/while construct causing incorrect
+if/while behavior
+
+Fix for Else block package lengths sometimes calculated wrong (if block > 63 bytes)
+
+Fix for Processor object length field, was always zero
+
+Table load abort if FACP sanity check fails
+
+Fix for problem with Scope(name) if name already exists
+
+Warning emitted if a named object referenced cannot be found (resolved)
+during method execution.
+
+
+
+
+
+------------------------------------------
 Summary of changes for this label: 9_29_00
 
 New table initialization interfaces:
