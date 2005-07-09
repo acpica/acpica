@@ -1,4 +1,26 @@
 ----------------------------------------
+14 July 2003.  Summary of changes for version 20030619:
+
+1) ACPI CA Core Subsystem:
+
+Parse SSDTs in order discovered, as opposed to reverse order (Hrvoje Habjanic)
+
+Fixes from FreeBSD and NetBSD. (Frank van der Linden, Thomas Klausner,
+   Nate Lawson)
+
+
+2) Linux:
+
+Dynamically allocate SDT list (suggested by Andi Kleen)
+
+proc function return value cleanups (Andi Kleen)
+
+Correctly handle NMI watchdog during long stalls (Andrew Morton)
+
+Make it so acpismp=force works (reported by Andrew Morton)
+
+
+----------------------------------------
 19 June 2003.  Summary of changes for version 20030619:
 
 1) ACPI CA Core Subsystem:
