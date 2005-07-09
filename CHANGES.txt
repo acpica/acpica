@@ -1,4 +1,44 @@
 ----------------------------------------
+11 June 2002.  Summary of changes for this release.
+
+
+1) ACPI CA Core Subsystem Version 20020611:
+
+Fixed a reported problem where constants such as Zero and One appearing within _PRT packages were not handled correctly within the resource manager code.  Originally reported against the ASL compiler because the code generator now optimizes integers to their minimal AML representation (i.e. AML constants if possible.)  The _PRT code now handles all AML constant opcodes correctly (Zero, One, Ones, Revision).
+
+Fixed a problem with the Concatenate operator in the AML interpreter where a buffer result object was incorrectly marked as not fully evaluated, causing a run-time error of AE_AML_INTERNAL.
+
+All package sub-objects are now fully resolved before they are returned from the external ACPI interfaces.  This means that name strings are resolved to object handles, and constant operators (Zero, One, Ones, Revision) are resolved to Integers.
+
+Implemented immediate resolution of the AML Constant opcodes (Zero, One, Ones, Revision) to Integer objects upon detection within the AML stream. This has simplified and reduced the generated code size of the subsystem by eliminating about 10 switch statements for these constants (which previously were contained in Reference objects.)  The complicating issues are that the Zero opcode is used as a "placeholder" for unspecified optional target operands and stores to constants are defined to be no-ops.
+
+Code and Data Size: Current core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  69.3K Code,   7.4K Data,   76.7K Total
+    Debug Version:     143.8K Code,  58.8K Data,  202.6K Total
+  Current Release:
+    Non-Debug Version:  68.7K Code,   7.4K Data,   76.1K Total
+    Debug Version:     142.9K Code,  58.7K Data,  201.6K Total
+
+
+2) Linux
+
+Added preliminary support for obtaining _TRA data for PCI root bridges (Bjorn Helgaas).
+
+
+3) iASL Compiler Version X2046:
+
+Fixed a problem where the "_DDN" reserved name was defined to be a control method with one argument.  There are no arguments, and _DDN does not have to be a control method.
+
+Fixed a problem with the Linux version of the compiler where the source lines printed with error messages were the wrong lines.  This turned out to be the "LF versus CR/LF" difference between Windows and Unix.  This appears to be the longstanding issue concerning listing output and error messages.
+
+Fixed a problem with the Linux version of compiler where opcode names within error messages were wrong.  This was caused by a slight difference in the output of the Flex tool on Linux versus Windows.
+
+Fixed a problem with the Linux compiler where the hex output files contained some garbage data caused by an internal buffer overrun.
+
+
+----------------------------------------
 17 May 2002.  Summary of changes for this release.
 
 
