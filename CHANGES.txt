@@ -1,4 +1,38 @@
 ----------------------------------------
+22 November 2002.  Summary of changes for version 20021122.
+
+
+1) ACPI CA Core Subsystem:
+
+Fixed a reported problem where an object stored to a Method Local or Arg was not copied to a new object during the store – the object pointer was simply copied to the Local/Arg.  This caused all subsequent operations on the Local/Arg to also affect the original source of the store operation.
+
+Fixed a problem where a store operation to a Method Local or Arg was not completed properly if the Local/Arg contained a reference (from RefOf) to a named field.  The general-purpose store-to-namespace-node code is now used so that this case is handled automatically.
+
+Fixed a problem where the internal object copy routine would cause a protection fault if the object being copied was a Package and contained either 1) a NULL package element or 2) a nested sub-package.
+
+Fixed a problem with the GPE initialization that resulted from an ambiguity in the ACPI specification.  One section of the specification states that both the address and length of the GPE block must be zero if the block is not supported.  Another section implies that only the address need be zero if the block is not supported.  The code has been changed so that both the address and the length must be non-zero to indicate a valid GPE block (i.e., if either the address or the length is zero, the GPE block is invalid.)
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  71.3K Code,   9.0K Data,   80.3K Total
+    Debug Version:     152.7K Code,  63.2K Data,  215.5K Total
+  Current Release:
+    Non-Debug Version:  71.4K Code,   9.0K Data,   80.4K Total
+    Debug Version:     152.9K Code,  63.3K Data,  216.2K Total
+
+
+2) Linux
+
+Cleaned up EC driver. Exported an external EC read/write interface. By going through this, other drivers (most notably sonypi) will be able to serialize access to the EC.
+
+
+3) iASL Compiler/Disassembler
+
+Implemented support to optionally generate include files for both ASM and C (the -i switch).  This simplifies BIOS development by automatically creating include files that contain external declarations for the symbols that are created within the (optionally generated) ASM and C AML source files.
+
+
+----------------------------------------
 15 November 2002.  Summary of changes for version 20021115.
 
 1) ACPI CA Core Subsystem:
@@ -35,6 +69,7 @@ Fixed a compilation error when CONFIG_SOFTWARE_SUSPEND is not set. (Shawn Starr)
 
 
 3) iASL Compiler/Disassembler
+
 
 Changed the default location of output files.  All output files are now placed in the current directory by default instead of in the directory of the source file.  This change may affect some existing makefiles, but it brings the behavior of the compiler in line with other similar tools.  The location of the output files can be overridden with the –p command line switch.  
 
@@ -82,6 +117,7 @@ Implemented support for the disassembly of all SMBus protocol keywords (SMBQuick
 Fixed a problem where platforms that have a GPE1 block but no GPE0 block were not handled correctly.  This resulted in a "GPE overlap" error message.  GPE0 is no longer required.
 
 Removed code added in the previous release that inserted nodes into the namespace in alphabetical order.  This caused some side-effects on various machines.  The root cause of the problem is still under investigation since in theory, the internal ordering of the namespace nodes should not matter.
+
 
 Enhanced error reporting for the case where a named object is not found during control method execution.  The full ACPI namepath (name reference) of the object that was not found is displayed in this case.
 
@@ -560,6 +596,7 @@ Added support to allow the compiler to be integrated into the MS VC++ developmen
 
 Implemented support for compile-time constant folding for the Type3, Type4, and Type5 opcodes first defined in the ACPI 2.0 specification.  This allows the ASL writer to use expressions instead of Integer/Buffer/String constants in terms that must evaluate to constants at compile time and will also simplify the emitted AML in any such sub-expressions that can be folded (evaluated at compile-time.)  This increases the size of the compiler significantly because a portion of the ACPI CA AML interpreter is included within the compiler in order to pre-evaluate constant expressions.
 
+
 Fixed a problem with the "Unicode" ASL macro that caused the compiler to fault.  (This macro is used in conjunction with the _STR reserved name.)
 
 Implemented an AML opcode optimization to use the Zero, One, and Ones opcodes where possible to further reduce the size of integer constants and thus reduce the overall size of the generated AML code.
@@ -591,6 +628,7 @@ Fixed a problem where the per-ACPI-table integer width (32 or 64) was stored onl
 Fixed a problem where NULL extended fields (X fields) in an ACPI 2.0 ACPI FADT caused the table load to fail.  Although the existing ACPI specification is a bit fuzzy on this topic, the new behavior is to fall back on a ACPI 1.0 field if the corresponding ACPI 2.0 X field is zero (even though the table revision indicates a full ACPI 2.0 table.)  The ACPI specification will be updated to clarify this issue.
 
 Fixed a problem with the SystemMemory operation region handler where memory was always accessed byte-wise even if the AML-specified access width was larger than a byte.  This caused problems on systems with memory-mapped I/O.  Memory is now accessed with the width specified.  On systems that do not support non-aligned transfers, a check is made to guarantee proper address alignment before proceeding in order to avoid an AML-caused alignment fault within the kernel.
+
 
 Fixed a problem with the ExtendedIrq resource where only one byte of the 4-byte Irq field was extracted.
 
@@ -778,6 +816,7 @@ Improved thermal zone code.
 
 
 3) ASL Compiler, version X2039:
+
 
 Implemented the new compiler restriction on ASL String hex/octal escapes to non-null, ASCII values.  An error results if an invalid value is used.  (This will require an ACPI 2.0 specification change.)
 
@@ -1095,6 +1134,7 @@ Current core subsystem library code sizes are shown below.  These are the code a
      Debug Version:       138K Code,    58K Data,    196K Total
 
      This Label:
+
      Non-Debug Version:  63.9K Code,   5.1K Data,   69.0K Total
      Debug Version:     136.7K Code,  57.4K Data,  194.2K Total
 
@@ -1246,6 +1286,7 @@ Added a new interface named AcpiOsGetRootPointer to allow the OSL to perform the
 Added a new interface named AcpiOsSignal to provide a generic "function code and pointer" interface for various miscellaneous signals and notifications that must be made to the host OS.   The first such signals are intended to support the ASL Fatal and Breakpoint operators.  In the latter case, the AcpiOsBreakpoint interface has been obsoleted.
 
 The definition of the AcpiFormatException interface has been changed to simplify its use.  The caller no longer must supply a buffer to the call; A pointer to a const string is now returned directly.  This allows the call to be easily used in printf statements, etc. since the caller does not have to manage a local buffer.
+
 
  ASL Compiler, Version X2025:
 
@@ -1460,6 +1501,7 @@ New kernel configuration options.
 
 New kernel configuration options not documented in Configure.help yet.
 
+
 Module dependencies not currently implemented. If used, they should be loaded in this order: busmgr, power, ec, system, processor, battery, ac_adapter, button, thermal.
 
 Modules will not load if CONFIG_MODVERSION is set.
@@ -1599,6 +1641,7 @@ This is the first official release of the compiler. Since the compiler requires 
 
 ------------------------------------------
 Summary of changes for this label: 12_08_00
+
 
 Fixed a problem where named references within the ASL definition of both OperationRegions and CreateXXXFields did not work properly.  The symptom was an AE_AML_OPERAND_TYPE during initialization of the region/field. This is similar (but not related internally) to the problem that was fixed in the last label.
 
