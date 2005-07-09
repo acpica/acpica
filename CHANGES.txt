@@ -1,3 +1,56 @@
+28 February 2003.  Summary of changes for version 20030228.
+
+
+1) ACPI CA Core Subsystem:
+
+The GPE handling and dispatch code has been completely overhauled in preparation for support of GPE Block Devices (ID ACPI0006).  This affects internal data structures and code only; there should be no differences visible externally.  One new file has been added, evgpeblk.c
+
+The FADT fields GPE0_BLK_LEN and GPE1_BLK_LEN are now the only fields that are used to determine the GPE block lengths.  The REGISTER_BIT_WIDTH field of the X_GPEx_BLK extended address structures are ignored.  This is per the ACPI specification but it isn't very clear.  The full 256 Block 0/1 GPEs are now supported (the use of REGISTER_BIT_WIDTH limited the number of GPEs to 128).
+
+In the SCI interrupt handler, removed the read of the PM1_CONTROL register to look at the SCI_EN bit.  On some machines, this read causes an SMI event and greatly slows down SCI events.  (This may in fact be the cause of slow battery status response on some systems.)  
+
+Fixed a problem where a store of a NULL string to a package object could cause the premature deletion of the object.  This was seen during execution of the battery _BIF method on some systems, resulting in no battery data being returned.
+
+Added AcpiWalkResources interface to simplify parsing of resource lists.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  72.0K Code,   9.5K Data,   81.5K Total
+    Debug Version:     153.0K Code,  62.9K Data,  215.9K Total
+  Current Release:
+    Non-Debug Version:  72.3K Code,   9.5K Data,   81.8K Total
+    Debug Version:     154.0K Code,  63.4K Data,  217.4K Total
+
+
+2) Linux
+
+S3 fixes (Ole Rohne)
+
+Update ACPI PHP driver with to use new acpi_walk_resource API (Bjorn Helgaas)
+
+Add S4BIOS support (Pavel Machek)
+
+Map in entire table before performing checksum (John Stultz)
+
+Expand the mem= cmdline to allow the specification of reserved and ACPI DATA blocks (Pavel Machek)
+
+Never use ACPI on VISWS
+
+Fix derive_pci_id (Ducrot Bruno, Alvaro Lopez)
+
+Revert a change that allowed P_BLK lengths to be 4 or 5. This is causing us to think that some systems support C2 when they really don't.
+
+Do not count processor objects for non-present CPUs (Thanks to Dominik Brodowski)
+
+
+3) iASL Compiler:
+
+Fixed a problem where ASL include files could not be found and opened.
+
+Added support for the _PDC reserved name.
+
+
 22 January 2003.  Summary of changes for version 20030122.
 
 
