@@ -1,4 +1,77 @@
 ----------------------------------------
+Summary of changes for this label: 11_20_01
+
+
+20 November 2001.  Summary of changes for this release.
+
+
+1) ACPI CA Core Subsystem:
+
+Updated Index support to match ACPI 2.0 semantics.  Storing a Integer, String,
+or Buffer to an Index of a Buffer will store only the least-significant byte
+of the source to the Indexed buffer byte.  Multiple writes are not performed.
+
+Fixed a problem where the access type used in an AccessAs ASL operator was not
+recorded correctly into the field object.
+
+Fixed a problem where ASL Event objects were created in a signalled state.
+Events are now created in an unsignalled state.
+
+The internal object cache is now purged after table loading and initialization
+to reduce the use of dynamic kernel memory -- on the assumption that object
+use is greatest during the parse phase of the entire table (versus the
+run-time use of individual control methods.)
+
+ACPI 2.0 variable-length packages are now fully operational.
+
+Code and Data Size: Code and Data optimizations have permitted new feature
+development with an actual reduction in the library size.  Current core
+subsystem library sizes are shown below.  These are the code and data sizes
+for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and
+these values do not include any ACPI driver or OSPM code.  The debug version
+of the code includes the debug output trace mechanism and has a larger code
+and data size.  Note that these values will vary depending on the efficiency
+of the compiler and the compiler options used during generation.
+
+  Previous Release (11_09_01):
+    Non-Debug Version:  63.7K Code,   5.2K Data,   68.9K Total
+    Debug Version:     134.5K Code,  55.4K Data,  189.9K Total
+
+  Current Release:
+    Non-Debug Version:  64.1K Code,   5.3K Data,   69.4K Total
+    Debug Version:     135.1K Code,  55.4K Data,  190.5K Total
+
+
+2) Linux:
+
+Enhanced the ACPI boot-time initialization code to allow the use of Local
+APIC tables for processor enumeration on IA-32, and to pave the way for a
+fully MPS-free boot (on SMP systems) in the near future.  This functionality
+replaces arch/i386/kernel/acpitables.c, which was introduced in an earlier
+2.4.15-preX release.  To enable this feature you must add "acpi_boot=on"
+to the kernel command line -- see the help entry for CONFIG_ACPI_BOOT for
+more information.  An IA-64 release is in the works...
+
+Restructured the configuration options to allow boot-time table parsing support
+without inclusion of the ACPI Interpreter (and other) code.
+
+NOTE: This release does not include fixes for the reported events, power-down,
+and thermal passive cooling issues (coming soon).
+
+
+3) ASL Compiler:
+
+Added additional typechecking for Fields within restricted access Operation
+Regions.  All fields within EC and CMOS regions must be declared with ByteAcc.
+All fields withing SMBus regions must be declared with the BufferAcc access
+type.
+
+Fixed a problem where the listing file output of control methods no longer
+interleaved the actual AML code with the ASL source code.
+
+
+
+----------------------------------------
 Summary of changes for this label: 11_09_01
 
 1) ACPI CA Core Subsystem:
