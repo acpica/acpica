@@ -1,4 +1,65 @@
 ----------------------------------------
+Summary of changes for this release: 03_29_02
+
+1) ACPI CA Core Subsystem Version 20020329:
+
+Implemented support for late evaluation of TermArg operands to Buffer and Package objects.  This allows complex expressions to be used in the declarations of these object types.
+
+Fixed an ACPI 1.0 compatibility issue when reading Fields. In ACPI 1.0, if the field was larger than 32 bits, it was returned as a buffer – otherwise it was returned as an integer.  In ACPI 2.0, the field is returned as a buffer only if the field is larger than 64 bits.  The TableRevision is now considered when making this conversion to avoid incompatibility with existing ASL code.
+
+Implemented logical addressing for AcpiOsGetRootPointer.  This allows an RSDP with either a logical or physical address.  With this support, the host OS can now override all ACPI tables with one logical RSDP.  Includes implementation of  “typed” pointer support to allow a common data type for both physical and logical pointers internally.  This required a change to the AcpiOsGetRootPointer interface.
+
+Implemented the use of ACPI 2.0 Generic Address Structures for all GPE, Fixed Event, and PM Timer I/O.  This allows the use of memory mapped I/O for these ACPI features.
+
+Initialization now ignores not only non-required tables (All tables other than the FADT, FACS, DSDT, and SSDTs), but also does not validate the table headers of unrecognized tables.
+
+Fixed a problem where a notify handler could only be installed/removed on an object of type Device.  All "notify" objects are now supported -- Devices, Processor, Power, and Thermal.
+
+Removed most verbosity from the ACPI_DB_INFO debug level.  Only critical information is returned when this debug level is enabled.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  65.4K Code,   6.2K Data,   71.6K Total
+    Debug Version:     138.0K Code,  56.6K Data,  194.6K Total
+  Current Release:
+    Non-Debug Version:  66.6K Code,   6.5K Data,   73.1K Total
+    Debug Version:     139.8K Code,  57.4K Data,  197.2K Total
+
+
+2) Linux:
+
+The processor driver (acpi_processor.c) now fully supports ACPI 2.0-based processor performance control (e.g. Intel(R) SpeedStep(TM) technology) Note that older laptops that only have the Intel "applet" interface are not supported through this.  The 'limit' and 'performance' interface (/proc) are fully functional.  [Note that basic policy for controlling performance state transitions will be included in the next version of ospmd.]  The idle handler was modified to more aggressively use C2, and PIIX4 errata handling underwent a complete overhaul (big thanks to Dominik Brodowski).
+
+Added support for ACPI-PCI device binding (acpi_pci_root.c). _ADR-based devices in the ACPI namespace are now dynamically bound (associated) with their PCI counterparts (e.g. PCI1->01:00.0).  This allows, among other things, ACPI to resolve bus numbers for subordinate PCI bridges.
+
+Enhanced PCI IRQ routing to get the proper bus number for _PRT entries defined underneath PCI bridges.
+
+Added IBM 600E to bad bios list due to invalid _ADR value for PIIX4 PCI-ISA bridge, resulting in improper PCI IRQ routing.
+
+In the process of adding full MADT support (e.g. IOAPIC) for IA32 (acpi.c, mpparse.c) -- stay tuned.
+
+Added back visual differentiation between fixed-feature and control-method buttons in dmesg.  Buttons are also subtyped (e.g. button/power/PWRF) to simplify button identification.
+
+We no longer use -Wno-unused when compiling debug. Please ignore any "_THIS_MODULE defined but not used" messages.
+
+Can now shut down the system using "magic sysrq" key.
+
+
+3) iASL Compiler version 2041:
+
+Fixed a problem where conversion errors for hex/octal/decimal constants were not reported.
+
+Implemented a fix for the General Register template Address field.  This field was 8 bits when it should be 64.
+
+Fixed a problem where errors/warnings were no longer being emitted within the listing output file.
+
+Implemented the ACPI 2.0A restriction on ACPI Table Signatures to exactly 4 characters, alphanumeric only.
+
+
+
+
+----------------------------------------
 Summary of changes for this release: 03_08_02
 
 
