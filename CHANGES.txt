@@ -1,4 +1,71 @@
 ----------------------------------------
+Summary of changes for this label: 12_18_01
+
+1) Linux
+
+Enhanced blacklist with reason and severity fields. Any table's signature may
+now be used to identify a blacklisted system.
+
+Call _PIC control method to inform the firmware which interrupt model the OS
+is using. Turn on any disabled link devices.
+
+
+2) ACPI CA Core Subsystem:
+
+Implemented ACPI 2.0 semantics for the "Break" operator (Exit from while loop)
+
+Completed implementation of the ACPI 2.0 "Continue", "ConcatenateResTemplate",
+"DataTableRegion", and "LoadTable" operators.  All new ACPI 2.0 operators are
+now implemented in both the ASL compiler and the AML interpreter.  The only
+remaining ACPI 2.0 task is support for the String data type in the DerefOf
+operator.
+
+Fixed a problem with AcquireMutex where the status code was lost if the caller
+had to actually wait for the mutex.
+
+Increased the maximum ASL Field size from 64K bits to 4G bits.
+
+Completed implementation of the external Global Lock interfaces --
+AcpiAcquireGlobalLock and AcpiReleaseGlobalLock.  The Timeout and Handler
+parameters were added.
+
+Completed another pass at removing warnings and issues when compiling with
+64-bit compilers.  The code now compiles cleanly with the Intel 64-bit
+C/C++ compiler.  Most notably, the pointer add and subtract (diff) macros
+have changed considerably.
+
+Created and deployed a new ACPI_SIZE type that is 64-bits wide on 64-bit
+platforms, 32-bits on all others.  This type is used wherever memory
+allocation and/or the C sizeof() operator is used, and affects the OSL
+memory allocation interfaces AcpiOsAllocate and AcpiOsCallocate.
+
+Implemented sticky user breakpoints in the AML debugger.  
+
+Code and Data Size: Current core subsystem library sizes are shown below.
+These are the code and data sizes for the acpica.lib produced by the
+Microsoft Visual C++ 6.0 compiler, and these values do not include any
+ACPI driver or OSPM code.  The debug version of the code includes the
+debug output trace mechanism and has a larger code and data size.
+Note that these values will vary depending on the efficiency of the
+compiler and the compiler options used during generation.
+
+  Previous Release (12_05_01)
+    Non-Debug Version:  64.7K Code,   5.3K Data,   70.0K Total
+    Debug Version:     136.2K Code,  55.6K Data,  191.8K Total
+  Current Release:
+    Non-Debug Version:  66.1K Code,   5.5K Data,   71.6K Total
+    Debug Version:     138.3K Code,  55.9K Data,  194.2K Total
+
+
+3) ASL Compiler, version X2034:
+
+Now checks for (and generates an error if detected) the use of a Break or
+Continue statement without an enclosing While statement.
+
+Successfully generated the compiler with the Intel 64-bit C compiler.
+
+
+----------------------------------------
 Summary of changes for this label: 12_05_01
 
 
