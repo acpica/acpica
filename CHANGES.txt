@@ -1,4 +1,39 @@
 ----------------------------------------
+26 May 2005.  Summary of changes for version 20050526:
+
+1) ACPI CA Core Subsystem:
+
+Implemented support to execute Type 1 and Type 2 AML opcodes appearing at the module level (not within a control method.) These opcodes are executed exactly once at the time the table is loaded. This type of code was legal up until the release of ACPI 2.0B (2002) and is now supported within ACPI CA in order to provide backwards compatibility with earlier BIOS implementations. This eliminates the "Encountered executable code at module level" warning that was previously generated upon detection of such code.
+
+Fixed a problem in the interpreter where an AE_NOT_FOUND exception could inadvertently be generated during the lookup of namespace objects in the second pass parse of ACPI tables and control methods. It appears that this problem could occur during the resolution of forward references to namespace objects.
+
+Added the ACPI_MUTEX_DEBUG #ifdef to the AcpiUtReleaseMutex function, corresponding to the same #ifdef in the AcpiUtAcquireMutex function. This allows the deadlock detection debug code to be compiled out in the normal case, improving mutex performance (and overall subsystem performance) considerably.
+
+Implemented a handful of miscellaneous fixes for possible memory leaks on error conditions and error handling control paths. These fixes were suggested by FreeBSD and the Coverity Prevent source code analysis tool.
+
+Added a check for a null RSDT pointer in AcpiGetFirmwareTable (tbxfroot.c) to prevent a fault in this error case.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.2K Code, 11.6K Data,  89.8K Total
+    Debug Version:     163.7K Code, 69.3K Data, 233.0K Total
+  Current Release:
+    Non-Debug Version:  78.1K Code, 11.6K Data,  89.7K Total
+    Debug Version:     164.0K Code, 69.3K Data, 233.3K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Implemented support to allow Type 1 and Type 2 ASL operators to appear at the module level (not within a control method.) These operators will be executed once at the time the table is loaded. This type of code was legal up until the release of ACPI 2.0B (2002) and is now supported by the iASL compiler in order to provide backwards compatibility with earlier BIOS ASL code.
+
+The ACPI integer width (specified via the table revision ID or the -r override, 32 or 64 bits) is now used internally during compile-time constant folding to ensure that constants are truncated to 32 bits if necessary. Previously, the revision ID value was only emitted in the AML table header.
+
+An error message is now generated for the Mutex and Method operators if the SyncLevel parameter is outside the legal range of 0 through 15.
+
+Fixed a problem with the Method operator ParameterTypes list handling (ACPI 3.0). Previously, more than 2 types or 2 arguments generated a syntax error.  The actual underlying implementation of method argument typechecking is still under development, however.
+
+----------------------------------------
 13 May 2005.  Summary of changes for version 20050513:
 
 1) ACPI CA Core Subsystem:
