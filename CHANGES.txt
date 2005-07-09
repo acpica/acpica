@@ -52,7 +52,8 @@ Fixed /proc/acpi/event to handle poll() and short reads.
 
 ASL Compiler, version X2026:
 
-Fixed a problem introduced in the previous label where the AML code emitted  for package objects produced packages with zero length.
+Fixed a problem introduced in the previous label where the AML code emitted
+for package objects produced packages with zero length.
 
 
 ----------------------------------------
