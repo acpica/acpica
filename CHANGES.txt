@@ -1,4 +1,35 @@
 ----------------------------------------
+03 December 2004.  Summary of changes for version 20041203:
+
+1) ACPI CA Core Subsystem:
+
+The low-level field insertion/extraction code (exfldio) has been completely rewritten to eliminate unnecessary complexity, bugs, and boundary conditions.
+
+Fixed a problem in the ToInteger, ToBuffer, ToHexString, and ToDecimalString operators where the input operand could be inadvertently deleted if no conversion was necessary (e.g., if the input to ToInteger was an Integer object.)
+
+Fixed a problem with the ToDecimalString and ToHexString where an incorrect exception code was returned if the resulting string would be > 200 chars.  AE_STRING_LIMIT is now returned.
+
+Fixed a problem with the Concatenate operator where AE_OK was always returned, even if the operation failed.
+
+Fixed a problem in oswinxf (used by AcpiExec and iASL) to allow > 128 semaphores to be allocated.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.5K Code,  11.5K Data,   90.0K Total
+    Debug Version:     165.2K Code,  68.6K Data,  233.8K Total
+  Current Release:
+    Non-Debug Version:  78.3K Code,  11.5K Data,   89.8K Total
+    Debug Version:     164.7K Code,  68.5K Data,  233.2K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed typechecking for the ObjectType and SizeOf operators.  Problem was recently introduced in 20041119.
+
+Fixed a problem with the ToUUID macro where the upper nybble of each buffer byte was inadvertently set to zero.
+
+----------------------------------------
 19 November 2004.  Summary of changes for version 20041119:
 
 1) ACPI CA Core Subsystem:
