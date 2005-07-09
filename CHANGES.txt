@@ -1,4 +1,33 @@
 ------------------------------------------
+Summary of changes for this label: 05_02_01
+
+Linux:
+
+/proc/acpi/event now blocks properly.
+
+Removed /proc/sys/acpi. You can still dump your DSDT from /proc/acpi/dsdt.
+
+
+ACPI CA Core Subsystem:
+
+Fixed a problem introduced in the previous label where some of the “small”
+resource descriptor types were not recognized.
+
+Improved error messages for the case where an ASL Field is outside the range
+of the parent operation region.
+
+
+ASL Compiler, version X2018:
+
+Added error detection for ASL Fields that extend beyond the length of the
+parent operation region (only if the length of the region is known at
+compile time.)  This includes fields that have a minimum access width
+that is smaller than the parent region, and individual field units that
+are partially or entirely beyond the extent of the parent.
+
+
+
+------------------------------------------
 Summary of changes for this label: 04_27_01
 
 
