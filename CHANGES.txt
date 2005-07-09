@@ -9,6 +9,8 @@ now be used to identify a blacklisted system.
 Call _PIC control method to inform the firmware which interrupt model the OS
 is using. Turn on any disabled link devices.
 
+Cleaned up busmgr /proc error handling (Andreas Dilger)
+
 
 2) ACPI CA Core Subsystem:
 
