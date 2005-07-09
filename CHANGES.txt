@@ -1,4 +1,31 @@
 ----------------------------------------
+19 November 2004.  Summary of changes for version 20041119:
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem in the internal ConvertToInteger routine where new integers were not truncated to 32 bits for 32-bit ACPI tables. This routine converts buffers and strings to integers.
+
+Implemented support to store a value to an Index() on a String object. This is an ACPI 2.0 feature that had not yet been implemented.
+
+Implemented new behavior for storing objects to individual package elements (via the Index() operator). The previous behavior was to invoke the implicit conversion rules if an object was already present at the index.  The new behavior is to simply delete any existing object and directly store the new object. Although the ACPI specification seems unclear on this subject, other ACPI implementations behave in this manner.  (This is the root of the AE_BAD_HEX_CONSTANT issue.)
+
+Modified the RSDP memory scan mechanism to support the extended checksum for ACPI 2.0 (and above) RSDPs. Note that the search continues until a valid RSDP signature is found with a valid checksum.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.5K Code,  11.5K Data,   90.0K Total
+    Debug Version:     165.2K Code,  68.6K Data,  233.8K Total
+  Current Release:
+    Non-Debug Version:  78.5K Code,  11.5K Data,   90.0K Total
+    Debug Version:     165.2K Code,  68.6K Data,  233.8K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a missing semicolon in the aslcompiler.y file.
+
+----------------------------------------
 05 November 2004.  Summary of changes for version 20041105:
 
 1) ACPI CA Core Subsystem:
