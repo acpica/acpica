@@ -1,4 +1,33 @@
 ----------------------------------------
+08 April 2005.  Summary of changes for version 20050408:
+
+1) ACPI CA Core Subsystem:
+
+Fixed three cases in the interpreter where an “index” argument to an ASL function was still (internally) 32 bits instead of the required 64 bits. This was the Index argument to the Index, Mid, and Match operators.
+
+The “strupr” function is now permanently local (AcpiUtStrupr), since this is not a POSIX-defined function and not present in most kernel-level C libraries. All references to the C library strupr function have been removed from the headers.
+
+Completed the deployment of static functions/prototypes. All prototypes with the static attribute have been moved from the headers to the owning C file.
+
+Implemented an extract option (-e) for the AcpiBin utility (AML binary utility). This option allows the utility to extract individual ACPI tables from the output of AcpiDmp. It provides the same functionality of the acpixtract.pl perl script without the worry of setting the correct perl options. AcpiBin runs on Windows and has not yet been generated/validated in the Linux/Unix environment (but should be soon).
+ 
+Updated and fixed the table dump option for AcpiBin (-d). This option converts a single ACPI table to a hex/ascii file, similar to the output of AcpiDmp.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.0K Code, 11.6K Data,  89.6K Total
+    Debug Version:     163.5K Code, 69.3K Data, 232.8K Total
+  Current Release:
+    Non-Debug Version:  78.2K Code, 11.6K Data,  89.8K Total
+    Debug Version:     163.7K Code, 69.3K Data, 233.0K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Disassembler fix: Added a check to ensure that the table length found in the ACPI table header within the input file is not longer than the actual input file size. This indicates some kind of file or table corruption.
+
+----------------------------------------
 29 March 2005.  Summary of changes for version 20050329:
 
 1) ACPI CA Core Subsystem:
