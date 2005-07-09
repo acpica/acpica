@@ -7,6 +7,10 @@ Project: "AcpiBin"=.\AcpiBin.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/generate/msvc", SVBAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<4>
@@ -19,6 +23,10 @@ Project: "AcpiDump"=.\AcpiDump.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/generate/msvc", SVBAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<4>
@@ -31,6 +39,10 @@ Project: "AcpiExec"=.\AcpiExec.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/generate/msvc", SVBAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<4>
@@ -43,6 +55,10 @@ Project: "AcpiSrc"=.\AcpiSrc.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/generate/msvc", SVBAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<4>
@@ -55,6 +71,10 @@ Project: "AcpiSrc_Linux"=.\AcpiSrc_Linux.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/generate/msvc", SVBAAAAA
+    ..\..
+    end source code control
 }}}
 
 Package=<4>
@@ -99,6 +119,10 @@ Project: "AcpiSubsystem_Linux"=.\AcpiSubsystem_Linux.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/Acpi/generate/msvc", SVBAAAAA
+    .
+    end source code control
 }}}
 
 Package=<4>
