@@ -1,4 +1,45 @@
 ----------------------------------------
+19 April 2002.  Summary of changes for this release.
+
+1) ACPI CA Core Subsystem Version 20020419:
+
+The source code base for the Core Subsystem has been completely cleaned with PC-lint (FlexLint) for both 32-bit and 64-bit versions.  The Lint option files used are included in the /acpi/generate/lint directory.
+
+Implemented enhanced status/error checking across the entire Hardware manager subsystem.  Any hardware errors (reported from the OSL) are now bubbled up and will abort a running control method.
+
+Fixed a problem where the per-ACPI-table integer width (32 or 64) was stored only with control method nodes, causing a fault when non-control method code was executed during table loading.  The solution implemented uses a global variable to indicate table width across the entire ACPI subsystem.  Therefore, ACPI CA does not support mixed integer widths across different ACPI tables (DSDT, SSDT).
+
+Fixed a problem where NULL extended fields (X fields) in an ACPI 2.0 ACPI FADT caused the table load to fail.  Although the existing ACPI specification is a bit fuzzy on this topic, the new behavior is to fall back on a ACPI 1.0 field if the corresponding ACPI 2.0 X field is zero (even though the table revision indicates a full ACPI 2.0 table.)  The ACPI specification will be updated to clarify this issue.
+
+Fixed a problem with the SystemMemory operation region handler where memory was always accessed byte-wise even if the AML-specified access width was larger than a byte.  This caused problems on systems with memory-mapped I/O.  Memory is now accessed with the width specified.  On systems that do not support non-aligned transfers, a check is made to guarantee proper address alignment before proceeding in order to avoid an AML-caused alignment fault within the kernel.
+
+Fixed a problem with the ExtendedIrq resource where only one byte of the 4-byte Irq field was extracted.
+
+Fixed the AcpiExDigitsNeeded() procedure to support _UID.  This function was out of date and required a rewrite.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  66.6K Code,   6.5K Data,   73.1K Total
+    Debug Version:     139.8K Code,  57.4K Data,  197.2K Total
+  Current Release:
+    Non-Debug Version:  68.5K Code,   7.0K Data,   75.5K Total
+    Debug Version:     142.4K Code,  58.3K Data,  200.7K Total
+
+
+2) Linux
+
+PCI IRQ routing fixes (Dominik Brodowski)
+
+
+3) iASL Compiler Version X2042:
+
+Implemented an additional compile-time error check for a field unit whose size + minimum access width would cause a run-time access beyond the end-of-region.  Previously, only the field size itself was checked.
+
+The Core subsystem and iASL compiler now share a common parse object in preparation for compile-time evaluation of the type 3/4/5 ASL operators.
+
+
+----------------------------------------
 Summary of changes for this release: 03_29_02
 
 1) ACPI CA Core Subsystem Version 20020329:
