@@ -1,3 +1,101 @@
+----------------------------------------
+Summary of changes for this label: 07_17_01
+
+ACPI CA Core Subsystem:
+
+Added a new interface named AcpiGetFirmwareTable to obtain any ACPI table via
+the ACPI signature.  The interface can be called at any time during kernel
+initialization, even before the kernel virtual memory manager is initialized
+and paging is enabled.  This allows kernel subsystems to obtain ACPI tables
+very early, even before the ACPI CA subsystem is initialized.
+
+Fixed a problem where Fields defined with the AnyAcc attribute could be
+resolved to the incorrect address under the following conditions: 1) the
+field width is larger than 8 bits and 2) the parent operation region is not
+defined on a DWORD boundary.
+
+Fixed a problem where the interpreter is not being locked during namespace
+initialization (during execution of the _INI control methods), causing an
+error when an attempt is made to release it later.
+
+ACPI 2.0 support in the AML Interpreter has begun and will be ongoing
+throughout the rest of this year.  In this label, The Mod operator is
+implemented.
+
+Added a new data type to contain full PCI addresses named ACPI_PCI_ID.
+This structure contains the PCI Segment, Bus, Device, and Function values.
+
+
+Linux:
+
+Enhanced the Linux version of the source code to change most capitalized
+ACPI type names to lowercase. For example, all instances of ACPI_STATUS are
+changed to acpi_status.  This will result in a large diff, but the change is
+strictly cosmetic and aligns the CA code closer to the Linux coding standard.
+
+OSL Interfaces:
+
+The interfaces to the PCI configuration space have been changed to add the PCI
+Segment number and to split the single 32-bit combined DeviceFunction field
+into two 16-bit fields.  This was accomplished by moving the four values that
+define an address in PCI configuration space (segment, bus, device, and
+function) to the new ACPI_PCI_ID structure. 
+
+The changes to the PCI configuration space interfaces led to a reexamination
+of the complete set of address space access interfaces for PCI, I/O, and
+Memory.  The previously existing 18 interfaces have proven difficult to
+maintain (any small change must be propagated across at least 6 interfaces)
+and do not easily allow for future expansion to 64 bits if necessary.  Also,
+on some systems, it would not be appropriate to demultiplex the access
+width (8, 16, 32,or 64) before calling the OSL if the corresponding native
+OS interfaces contain a similar access width parameter.  For these reasons,
+the 18 address space interfaces have been replaced by these 6 new ones:
+
+	AcpiOsReadPciConfiguration
+	AcpiOsWritePciConfiguration
+	AcpiOsReadMemory
+	AcpiOsWriteMemory
+	AcpiOsReadPort
+	AcpiOsWritePort
+
+Added a new interface named AcpiOsGetRootPointer to allow the OSL to perform
+the platform and/or OS-specific actions necessary to obtain the ACPI RSDP
+table pointer.  On IA-32 platforms, this interface will simply call down
+to the CA core to perform the low-memory search for the table.  On IA-64,
+the RSDP is obtained from EFI.  Migrating this interface to the OSL allows
+the CA core to remain OS and platform independent.
+
+Added a new interface named AcpiOsSignal to provide a generic "function code
+and pointer" interface for various miscellaneous signals and notifications
+that must be made to the host OS.   The first such signals are intended to
+support the ASL Fatal and Breakpoint operators.  In the latter case, the
+AcpiOsBreakpoint interface has been obsoleted.
+
+The definition of the AcpiFormatException interface has been changed to
+simplify its use.  The caller no longer must supply a buffer to the call;
+A pointer to a const string is now returned directly.  This allows the
+call to be easily used in printf statements, etc. since the caller does
+not have to manage a local buffer.
+
+
+ASL Compiler, Version X2025:
+
+The ACPI 2.0 Switch/Case/Default operators have been implemented and are
+fully functional.  They will work with all ACPI 1.0 interpreters, since the
+operators are simply translated to If/Else pairs.
+
+The ACPI 2.0 ElseIf operator is implemented and will also work with 1.0
+interpreters, for the same reason.
+
+Implemented support for ACPI 2.0 variable-length packages.  These packages
+have a separate opcode, and their size is determined by the interpreter
+at run-time.
+
+Documentation
+The ACPI CA Programmer Reference has been updated to reflect the new interfaces
+and changes to existing interfaces.
+
+
 ------------------------------------------
 Summary of changes for this label: 06_15_01
 
