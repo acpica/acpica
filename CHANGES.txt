@@ -1,4 +1,46 @@
 ----------------------------------------
+29 March 2005.  Summary of changes for version 20050329:
+
+1) ACPI CA Core Subsystem:
+
+An error is now generated if an attempt is made to create a Buffer Field of length zero (A CreateField with a length operand of zero.)
+
+The interpreter now issues a warning whenever executable code at the module level is detected during ACPI table load. This will give some idea of the prevalence of this type of code.
+
+Implemented support for references to named objects (other than control methods) within package objects.
+
+Enhanced package object output for the debug object. Package objects are now completely dumped, showing all elements.
+
+Enhanced miscellaneous object output for the debug object. Any object can now be written to the debug object (for example, a device object can be written, and the type of the object will be displayed.)
+
+The "static" qualifier has been added to all local functions across both the core subsystem and the iASL compiler.
+
+The number of "long" lines (> 80 chars) within the source has been significantly reduced, by about 1/3.
+
+Cleaned up all header files to ensure that all CA/iASL functions are prototyped (even static functions) and the formatting is consistent.
+
+Two new header files have been added, acopcode.h and acnames.h.
+
+Removed several obsolete functions that were no longer used.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.3K Code, 11.5K Data,  89.8K Total
+    Debug Version:     165.4K Code, 69.7K Data, 236.1K Total
+  Current Release:
+    Non-Debug Version:  78.0K Code, 11.6K Data,  89.6K Total
+    Debug Version:     163.5K Code, 69.3K Data, 232.8K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a problem with the resource descriptor generation/support. For the ResourceSourceIndex and the ResourceSource fields, both must be present, or both must be not present - can't have one without the other.
+
+The compiler now returns non-zero from the main procedure if any errors have occurred during the compilation.
+
+
+----------------------------------------
 09 March 2005.  Summary of changes for version 20050309:
 
 1) ACPI CA Core Subsystem:
