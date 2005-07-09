@@ -1,4 +1,39 @@
 ----------------------------------------
+24 June 2005.  Summary of changes for version 20050624:
+
+1) ACPI CA Core Subsystem:
+
+Modified the new OSL cache interfaces to use ACPI_CACHE_T as the type for the host-defined cache object. This allows the OSL implementation to define and type this object in any manner desired, simplifying the OSL implementation. For example, ACPI_CACHE_T is defined as kmem_cache_t for Linux, and should be defined in the OS-specific header file for other operating systems as required.
+
+Changed the interface to AcpiOsAcquireObject to directly return the requested object as the function return (instead of ACPI_STATUS.) This change was made for performance reasons, since this is the purpose of the interface in the first place. AcpiOsAcquireObject is now similar to the AcpiOsAllocate interface.
+
+Implemented a new AML debugger command named Businfo. This command displays information about all devices that have an associate _PRT object. The _ADR, _HID, _UID, and _CID are displayed for these devices.
+
+Modified the initialization sequence in AcpiInitializeSubsystem to call the OSL interface AcpiOslInitialize first, before any local initialization. This change was required because the global initialization now calls OSL interfaces.
+
+Enhanced the Dump command to display the entire contents of Package objects (including all sub-objects and their values.) 
+
+Restructured the code base to split some files because of size and/or because the code logically belonged in a separate file. New files are listed below. All makefiles and project files included in the ACPI CA release have been updated.
+    utilities/utcache.c           /* Local cache interfaces */
+    utilities/utmutex.c           /* Local mutex support */
+    utilities/utstate.c           /* State object support */
+    interpreter/parser/psloop.c   /* Main AML parse loop */
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.3K Code, 11.6K Data,  89.9K Total
+    Debug Version:     164.0K Code, 69.1K Data, 233.1K Total
+  Current Release:
+    Non-Debug Version:  78.6K Code, 11.5K Data,  90.1K Total
+    Debug Version:     165.2K Code, 69.6K Data, 234.8K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a regression introduced in version 20050513 where the use of a Package object within a Case() statement caused a compile time exception. The original behavior has been restored (a Match() operator is emitted.)
+
+----------------------------------------
 17 June 2005.  Summary of changes for version 20050617:
 
 1) ACPI CA Core Subsystem:
