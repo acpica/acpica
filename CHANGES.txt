@@ -1,4 +1,46 @@
 ------------------------------------------
+Summary of changes for this label: 04_27_01
+
+
+ACPI CA Core Subsystem:
+
+Fixed a problem where the namespace mutex could be released at the
+wrong time during execution of AcpiRemoveAddressSpaceHandler.
+
+Added optional thread ID output for debug traces, to simplify
+debugging of multiple threads.  Added context switch notification
+when the debug code realizes that a different thread is now executing
+ACPI code.
+
+Some additional external data types have been prefixed with the string
+“ACPI_” for consistency.  This may effect existing code.  The data types
+affected are the external callback typedefs - e.g., WALK_CALLBACK becomes
+ACPI_WALK_CALLBACK.
+
+
+Linux:
+
+Fixed an issue with the OSL semaphore implementation where a thread was
+waking up with an error from receiving a SIGCHLD signal.
+
+Linux version of ACPI CA now uses the system C library for string
+manipulation routines instead of a local implementation.
+
+Cleaned up comments and removed TBDs.
+
+
+ASL Compiler, version X2017:
+
+Enhanced error detection and reporting for all file I/O operations.
+
+
+Documentation:
+
+Programmer Reference updated to version 1.06.
+
+
+
+------------------------------------------
 Summary of changes for this label: 04_13_01
 
 
