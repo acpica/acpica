@@ -1,0 +1,212 @@
+-------------------------------------------
+Summary of changes for this label: 09_01_00
+
+Namespace manager data structures have been reworked to change the primary 
+object from a table to a single object.  This has resulted in dynamic memory 
+savings of 3X within the namespace and 2X overall in the ACPI CA subsystem.
+
+Fixed problem where the call to AcpiEvFindPciRootBuses was inadvertently left 
+commented out.
+
+Reduced the warning count when generating the source with the GCC compiler.
+
+Revision numbers added to each module header showing the SourceSafe version
+of the file.  Please refer to this version number when giving us feedback
+or comments on individual modules.
+
+The main object types within the subsystem have been renamed to clarify their 
+purpose:
+
+ACPI_INTERNAL_OBJECT		-> ACPI_OPERAND_OBJECT
+ACPI_GENERIC_OP			-> ACPI_PARSE_OBJECT
+ACPI_NAME_TABLE_ENTRY		-> ACPI_NAMESPACE_NODE
+
+NOTE: no changes to the initialization sequence are included in this label. 
+
+-------------------------------------------
+Summary of changes for this label: 08_23_00
+
+Fixed problem where TerminateControlMethod was being called multiple times per 
+method
+
+Fixed debugger problem where single stepping caused a semaphore to be 
+oversignalled
+
+Improved performance through additional parse object caching - added 
+ACPI_EXTENDED_OP type
+
+-------------------------------------------
+Summary of changes for this label: 08_10_00
+
+Parser/Interpreter integration:  Eliminated the creation of complete parse trees 
+for ACPI tables and control methods.  Instead, parse subtrees are created and 
+then deleted as soon as they are processed (Either entered into the namespace or 
+executed by the interpreter).  This reduces the use of dynamic kernel memory 
+significantly. (about 10X)
+
+Exception codes broken into classes and renumbered.  Be sure to recompile all 
+code that includes acexcep.h.  Hopefully we won't have to renumber the codes 
+again now that they are split into classes (environment, programmer, AML code, 
+ACPI table, and internal).
+
+Fixed some additional alignment issues in the Resource Manager subcomponent
+
+Implemented semaphore tracking in the AcpiExec utility, and fixed several places 
+where mutexes/semaphores were being unlocked without a corresponding lock 
+operation.  There are no known semaphore or mutex "leaks" at this time.
+
+Fixed the case where an ASL Return operator is used to return an unnamed 
+package.
+
+-------------------------------------------
+Summary of changes for this label: 07_28_00
+
+Fixed a problem with the way addresses were calculated in AcpiAmlReadFieldData() 
+and AcpiAmlWriteFieldData(). This problem manifested itself when a Field was 
+created with WordAccess or DwordAccess, but the field unit defined within the 
+Field was less than a Word or Dword. 
+
+Fixed a problem in AmlDumpOperands() module's loop to pull operands off of the 
+operand stack to display information. The problem manifested itself as a TLB 
+error on 64-bit systems when accessing an operand stack with two or more 
+operands. 
+
+Fixed a problem with the PCI configuration space handlers where context was 
+getting confused between accesses. This required a change to the generic address 
+space handler and address space setup definitions. Handlers now get both a 
+global handler context (this is the one passed in by the user when executing 
+AcpiInstallAddressSpaceHandler() and a specific region context that is unique to 
+each region (For example, the _ADR, _SEG and _BBN values associated with a 
+specific region). The generic function definitions have changed to the 
+following: 
+
+typedef
+ACPI_STATUS (*ADDRESS_SPACE_HANDLER) (
+UINT32 Function,
+UINT32 Address,
+UINT32 BitWidth,
+UINT32 *Value,
+void *HandlerContext, // This used to be void *Context
+void *RegionContext); // This is an additional parameter 
+
+typedef
+ACPI_STATUS (*ADDRESS_SPACE_SETUP) (
+ACPI_HANDLE RegionHandle,
+UINT32 Function,
+void *HandlerContext, 
+void **RegionContext); // This used to be **ReturnContext
+
+-------------------------------------------
+Summary of changes for this label: 07_21_00
+
+Major file consolidation and rename.  All files within the interpreter have been 
+renamed as well as most header files.  This was done to prevent collisions with 
+existing files in the host OSs -- filenames such as "config.h" and "global.h" 
+seem to be quite common.  The VC project files have been updated.  All makefiles 
+will require modification.
+
+The parser/interpreter integration continues in Phase 5 with the implementation 
+of a complete 2-pass parse (the AML is parsed twice) for each table;  This 
+avoids the construction of a huge parse tree and therefore reduces the amount of 
+dynamic memory required by the subsystem.  Greater use of the parse object cache 
+means that performance is unaffected. 
+
+Many comments from the two code reviews have been rolled in.
+
+The 64-bit alignment support is complete.
+
+-------------------------------------------
+Summary of changes for this label: 06_30_00
+
+With a nod and a tip of the hat to the technology of yesteryear, we've added 
+support in the source code for 80 column output devices.  The code is now mostly 
+constrained to 80 columns or less to support environments and editors that 1) 
+cannot display or print more than 80 characters on a single line, and 2) cannot 
+disable line wrapping.
+
+A major restructuring of the namespace data structure has been completed.  The 
+result is 1) cleaner and more understandable/maintainable code, and 2) a 
+significant reduction in the dynamic memory requirement for each named ACPI 
+object (almost half).
+
+-------------------------------------------
+Summary of changes for this label: 06_23_00
+
+Linux support has been added.  In order to obtain approval to get the ACPI CA 
+subsystem into the Linux kernel, we've had to make quite a few changes to the 
+base subsystem that will affect all users (all the changes are generic and OS-
+independent).  The effects of these global changes have been somewhat far 
+reaching.  Files have been merged and/or renamed and interfaces have been 
+renamed.   The major changes are described below.
+
+Osd* interfaces renamed to AcpiOs* to eliminate namespace pollution/confusion 
+within our target kernels.  All OSD interfaces must be modified to match the new 
+naming convention.
+
+Files merged across the subsystem.  A number of the smaller source and header 
+files have been merged to reduce the file count and increase the density of the 
+existing files.  There are too many to list here.  In general, makefiles that 
+call out individual files will require rebuilding.
+
+Interpreter files renamed.  All interpreter files now have the prefix am* 
+instead of ie* and is*.
+
+Header files renamed:  The acapi.h file is now acpixf.h.  The acpiosd.h file is 
+now acpiosxf.h.  We are removing references to the acronym "API" since it is 
+somewhat windowsy. The new name is "external interface" or xface or xf in the 
+filenames.j
+
+All manifest constants have been forced to upper case (some were mixed case.)  
+Also, the string "ACPI_" has been prepended to many (not all) of the constants, 
+typedefs, and structs.
+
+The globals "DebugLevel" and "DebugLayer" have been renamed "AcpiDbgLevel" and 
+"AcpiDbgLayer" respectively.
+
+All other globals within the subsystem are now prefixed with "AcpiGbl_"
+Internal procedures within the subsystem are now prefixed with "Acpi" (with only 
+a few exceptions).  The original two-letter abbreviation for the subcomponent 
+remains after "Acpi" - for example, CmCallocate became AcpiCmCallocate.
+
+Added a source code translation/conversion utility.  Used to generate the Linux 
+source code, it can be modified to generate other types of source as well. Can 
+also be used to cleanup existing source by removing extraneous spaces and blank 
+lines.  Found in tools/acpisrc/*
+
+OsdUnMapMemory was renamed to OsdUnmapMemory and then AcpiOsUnmapMemory.  (UnMap 
+became Unmap).
+
+A "MaxUnits" parameter has been added to AcpiOsCreateSemaphore.  When set to 
+one, this indicates that the caller wants to use the semaphore as a mutex, not a 
+counting semaphore.  ACPI CA uses both types.  However, implementers of this 
+call may want to use different OS primitives depending on the type of semaphore 
+requested.  For example, some operating systems provide separate "mutex" and 
+"semaphore" interfaces - where the mutex interface is much faster because it 
+doesn't have all the overhead of a full semaphore implementation.
+
+Fixed a deadlock problem where a method that accesses the PCI address space can 
+block forever if it is the first access to the space.
+
+-------------------------------------------
+Summary of changes for this label: 06_02_00
+
+Support for environments that cannot handle unaligned data accesses (e.g. 
+firmware and OS environments devoid of alignment handler technology namely 
+SAL/EFI and the IA-64 Linux kernel) has been added (via configurable macros) in 
+these three areas:
+- Transfer of data from the raw AML byte stream is done via byte moves instead of 
+  word/dword/qword moves.
+- External objects are aligned within the user buffer, including package
+  elements (sub-objects).
+- Conversion of name strings to UINT32 Acpi Names is now done byte-wise.
+
+The Store operator was modified to mimic Microsoft's implementation when storing 
+to a Buffer Field.
+
+Added a check of the BM_STS bit before entering C3. 
+
+The methods subdirectory has been obsoleted and removed.  A new file, cmeval.c 
+subsumes the functionality.
+
+A 16-bit (DOS) version of AcpiExec has been developed.  The makefile is under 
+the acpiexec directory.
