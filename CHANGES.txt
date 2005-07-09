@@ -1,4 +1,64 @@
 ----------------------------------------
+15 August 2002.  Summary of changes for this release.
+
+1) ACPI CA Core Subsystem Version 20020815:
+
+Fixed a reported problem where a Store to a method argument that contains a reference did not perform the indirect store correctly.  This problem was created during the conversion to the new reference object model – the indirect store to a method argument code was not updated to reflect the new model.
+
+Reworked the ACPI mode change code to better conform to ACPI 2.0, handle corner cases, and improve code legibility (Kochi Takayoshi)
+
+Fixed a problem with the pathname parsing for the carat (^) prefix.  The heavy use of the carat operator by the new namepath optimization in the iASL compiler uncovered a problem with the AML interpreter handling of this prefix.  In the case where one or more carats precede a single nameseg, the nameseg was treated as standalone and the search rule (to root) was inadvertently applied.  This could cause both the iASL compiler and the interpreter to find the wrong object or to miss the error that should occur if the object does not exist at that exact pathname.
+
+Found and fixed the problem where the HP Pavilion DSDT would not load.  This was a relatively minor tweak to the table loading code (a problem caused by the unexpected encounter with a method invocation not within a control method), but it does not solve the overall issue of the execution of AML code at the table level.  This investigation is still ongoing.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  69.1K Code,   8.2K Data,   77.3K Total
+    Debug Version:     149.4K Code,  61.6K Data,  211.0K Total
+  Current Release:
+    Non-Debug Version:  69.6K Code,   8.3K Data,   77.9K Total
+    Debug Version:     150.0K Code,  61.7K Data,  211.7K Total
+
+
+2) Linux
+
+Remove redundant slab.h include (Brad Hards)
+
+Fix several bugs in thermal.c (Herbert Nachtnebel)
+
+Make CONFIG_ACPI_BOOT work properly (Pavel Machek)
+
+Change acpi_system_suspend to use updated irq functions (Pavel Machek)
+
+Export acpi_get_firmware_table (Matthew Wilcox)
+
+Use proper root proc entry for ACPI (Kochi Takayoshi)
+
+Fix early-boot table parsing (Bjorn Helgaas)
+
+
+3) iASL Compiler/Disassembler
+
+Reworked the compiler options to make them more consistent and to use two-letter options where appropriate.  We were running out of sensible letters.   This may break some makefiles, so check the current options list by invoking the compiler with no parameters.
+
+Completed the design and implementation of the ASL namepath optimization option for the compiler.  This option optimizes all references to named objects to the shortest possible path.  The first attempt tries to utilize a single nameseg (4 characters) and the “search-to-root” algorithm used by the interpreter.  If that cannot be used (because either the name is not in the search path or there is a conflict with another object with the same name), the pathname is optimized using the carat prefix (usually a shorter string than specifying the entire path from the root.)
+
+Implemented support to obtain the DSDT from the Windows registry (when the disassembly option is specified with no input file).  Added this code as the implementation for AcpiOsTableOverride in the Windows OSL.  Migrated the 16-bit code (used in the AcpiDump utility) to scan memory for the DSDT to the AcpiOsTableOverride function in the DOS OSL to make the disassembler truly OS independent.
+
+Implemented a new option to disassemble and compile in one step.  When used without an input filename, this option will grab the DSDT from the local machine, disassemble it, and compile it in one step.
+
+Added a warning message for invalid escapes (a backslash followed by any character other than the allowable escapes).  This catches the quoted string error “\_SB_” (which should be “\\_SB_” ).  Also, there are numerous instances in the ACPI specification where this error occurs.
+
+Added a compiler option to disable all optimizations.  This is basically the “compatibility mode” because by using this option, the AML code will come out exactly the same as other ASL compilers.  
+
+Added error messages for incorrectly ordered dependent resource functions.  This includes: missing EndDependentFn macro at end of dependent resource list, nested dependent function macros (both start and end), and missing StartDependentFn macro.  These are common errors that should be caught at compile time.
+
+Implemented _OSI support for the disassembler and compiler.  _OSI must be included in the namespace for proper disassembly (because the disassembler must know the number of arguments.)
+
+Added an “optimization” message type that is optional (off by default).  This message is used for all optimizations – including constant folding, integer optimization, and namepath optimization.
+
+----------------------------------------
 25 July 2002.  Summary of changes for this release.
 
 
