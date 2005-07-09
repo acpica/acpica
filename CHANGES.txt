@@ -1,3 +1,22 @@
+28 March 2003.  Summary of changes for version 20030328.
+
+1) ACPI CA Core Subsystem:
+
+The GPE Block Device support has been completed.  New interfaces are AcpiInstallGpeBlock and AcpiRemoveGpeBlock.  The Event interfaces (enable, disable, clear, getstatus) have been split into separate interfaces for Fixed Events and General Purpose Events (GPEs) in order to support GPE Block Devices properly.
+
+Fixed a problem where the error message "Failed to acquire semaphore" would appear during operations on the embedded controller (EC). 
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  72.3K Code,   9.5K Data,   81.8K Total
+    Debug Version:     154.0K Code,  63.4K Data,  217.4K Total
+  Current Release:
+    Non-Debug Version:  73.7K Code,   9.5K Data,   83.2K Total
+    Debug Version:     156.1K Code,  63.6K Data,  219.7K Total
+
+
+----------------------------------------
 28 February 2003.  Summary of changes for version 20030228.
 
 
@@ -51,6 +70,7 @@ Fixed a problem where ASL include files could not be found and opened.
 Added support for the _PDC reserved name.
 
 
+----------------------------------------
 22 January 2003.  Summary of changes for version 20030122.
 
 
