@@ -1,4 +1,40 @@
 ----------------------------------------
+25 January 2005.  Summary of changes for version 20050125:
+
+1) ACPI CA Core Subsystem:
+
+Fixed a recently introduced problem with the Global Lock where the underlying semaphore was not created.  This problem was introduced in version 20050114, and caused an AE_AML_NO_OPERAND exception during an Acquire() operation on _GL.
+
+The local object cache is now optional, and is disabled by default. Both AcpiExec and the iASL compiler enable the cache because they run in user mode and this enhances their performance. #define ACPI_ENABLE_OBJECT_CACHE to enable the local cache.
+
+Fixed an issue in the internal function AcpiUtEvaluateObject concerning the optional "implicit return" support where an error was returned if no return object was expected, but one was implicitly returned. AE_OK is now returned in this case and the implicitly returned object is deleted. AcpiUtEvaluateObject is only occasionally used, and only to execute reserved methods such as _STA and _INI where the return type is known up front.
+
+Fixed a few issues with the internal convert-to-integer code. It now returns an error if an attempt is made to convert a null string, a string of only blanks/tabs, or a zero-length buffer. This affects both implicit conversion and explicit conversion via the ToInteger() operator.
+
+The internal debug code in AcpiUtAcquireMutex has been commented out. It is not needed for normal operation and should increase the performance of the entire subsystem. The code remains in case it is needed for debug purposes again.
+
+The AcpiExec source and makefile are included in the Unix/Linux package for the first time.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.4K Code,  11.5K Data,   89.9K Total
+    Debug Version:     165.4K Code,  69.4K Data,  234.8K Total
+  Current Release:
+    Non-Debug Version:  78.1K Code,  11.5K Data,   89.6K Total
+    Debug Version:     164.8K Code,  69.2K Data,  234.0K Total
+
+2) iASL Compiler/Disassembler:
+
+Switch/Case support: A warning is now issued if the type of the Switch value cannot be determined at compile time. For example, Switch(Arg0) will generate the warning, and the type is assumed to be an integer. As per the ACPI spec, use a construct such as Switch(ToInteger(Arg0)) to eliminate the warning.
+
+Switch/Case support: Implemented support for buffer and string objects as the switch value.  This is an ACPI 3.0 feature, now that LEqual supports buffers and strings.
+
+Switch/Case support: The emitted code for the LEqual() comparisons now uses the switch value as the first operand, not the second. The case value is now the second operand, and this allows the case value to be implicitly converted to the type of the switch value, not the other way around.
+
+Switch/Case support: Temporary variables are now emitted immediately within the control method, not at the global level. This means that there are now 36 temps available per-method, not 36 temps per-module as was the case with the earlier implementation (_T_0 through _T_9 and _T_A through _T_Z.)
+
+----------------------------------------
 14 January 2005.  Summary of changes for version 20050114:
 
 Added 2005 copyright to all module headers.  This affects every module in the core subsystem, iASL compiler, and the utilities.
