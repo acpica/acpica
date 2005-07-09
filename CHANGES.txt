@@ -1,4 +1,39 @@
 ----------------------------------------
+02 December 2003.  Summary of changes for version 20031202:
+
+1) ACPI CA Core Subsystem:
+
+Changed the initialization of Operation Regions during subsystem init to perform two entire walks of the ACPI namespace; The first to initialize the regions themselves, the second to execute the _REG methods.  This fixed some interdependencies across _REG methods found on some machines.
+
+Fixed a problem where a Store(Local0, Local1) could simply update the object reference count, and not create a new copy of the object if the Local1 is uninitialized.
+
+Implemented support for the _SST reserved method during sleep transitions.
+
+Implemented support to clear the SLP_TYP and SLP_EN bits when waking up, this is apparently required by some machines.
+
+When sleeping, clear the wake status only if SleepState is not S5.
+
+Fixed a problem in AcpiRsExtendedIrqResource() where an incorrect pointer arithmetic advanced a string pointer too far.
+
+Fixed a problem in AcpiTbGetTablePtr() where a garbage pointer could be returned if the requested table has not been loaded.
+
+Within the support for IRQ resources, restructured the handling of the active and edge/level bits.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release (20031029):
+    Non-Debug Version:  74.4K Code,  10.1K Data,   84.5K Total
+    Debug Version:     158.3K Code,  65.0K Data,  223.3K Total
+  Current Release:
+    Non-Debug Version:  74.8K Code,  10.1K Data,   84.9K Total
+    Debug Version:     158.7K Code,  65.1K Data,  223.8K Total
+
+2) iASL Compiler/Disassembler:
+
+Implemented a fix for the iASL disassembler on 64-bit platforms where a bad index was generated.
+
+
+----------------------------------------
 29 October 2003.  Summary of changes for version 20031029:
 
 1) ACPI CA Core Subsystem:
