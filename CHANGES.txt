@@ -1,4 +1,39 @@
 ----------------------------------------
+05 November 2004.  Summary of changes for version 20041105:
+
+1) ACPI CA Core Subsystem:
+
+Implemented support for FADT revision 2.  This was an interim table (between ACPI 1.0 and ACPI 2.0) that adds support for the FADT reset register.
+
+Implemented optional support to allow uninitialized LocalX and ArgX variables in a control method.  The variables are initialized to an Integer object with a value of zero.  This support is enabled by setting the AcpiGbl_EnableInterpreterSlack flag to TRUE.
+
+Implemented support for Integer objects for the SizeOf operator.  Either 4 or 8 is returned, depending on the current integer size (32-bit or 64-bit, depending on the parent table revision).
+
+Fixed a problem in the implementation of the SizeOf and ObjectType operators where the operand was resolved to a value too early, causing incorrect return values for some objects.
+
+Fixed some possible memory leaks during exceptional conditions.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.0K Code,  11.5K Data,   89.5K Total
+    Debug Version:     164.8K Code,  68.6K Data,  233.4K Total
+  Current Release:
+    Non-Debug Version:  78.5K Code,  11.5K Data,   90.0K Total
+    Debug Version:     165.2K Code,  68.6K Data,  233.8K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Implemented support for all ACPI 3.0 reserved names and methods.
+
+Implemented all ACPI 3.0 grammar elements in the front-end, including support for semicolons.
+
+Implemented the ACPI 3.0 Function() and ToUUID() macros
+
+Fixed a problem in the disassembler where a Scope() operator would not be emitted properly if the target of the scope was in another table.
+
+----------------------------------------
 15 October 2004.  Summary of changes for version 20041015:
 
 Note:  ACPI CA is currently undergoing an in-depth and complete formal evaluation to test/verify the following areas. Other suggestions are welcome. This will result in an increase in the frequency of releases and the number of bug fixes in the next few months.
