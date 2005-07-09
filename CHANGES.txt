@@ -1,4 +1,38 @@
 ----------------------------------------
+27 August 2004.  Summary of changes for version 20040827:
+
+1) ACPI CA Core Subsystem:
+
+- Implemented support for implicit object conversion in the non-numeric logical operators (LEqual, LGreater, LGreaterEqual, LLess, LLessEqual, and LNotEqual.)  Any combination of Integers/Strings/Buffers may now be used; the second operand is implicitly converted on the fly to match the type of the first operand.  For example:
+
+    LEqual (Source1, Source2)
+
+Source1 and Source2 must each evaluate to an integer, a string, or a buffer. The data type of Source1 dictates the required type of Source2. Source2 is implicitly converted if necessary to match the type of Source1.
+
+- Updated and corrected the behavior of the string conversion support.  The rules concerning conversion of buffers to strings (according to the ACPI specification) are as follows:
+
+ToDecimalString – explicit byte-wise conversion of buffer to string of decimal values (0-255) separated by commas. ToHexString – explicit byte-wise conversion of buffer to string of hex values (0-FF) separated by commas. ToString – explicit byte-wise conversion of buffer to string.  Byte-by-byte copy with no transform except NULL terminated. Any other implicit buffer-to-string conversion - byte-wise conversion of buffer to string of hex values (0-FF) separated by spaces.
+
+- Fixed typo in definition of AcpiGbl_EnableInterpreterSlack.
+
+- Fixed a problem in AcpiNsGetPathnameLength where the returned length was one byte too short in the case of a node in the root scope.  This could cause a fault during debug output.
+
+- Code and Data Size: Current and previous core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  77.9K Code,  11.5K Data,   89.4K Total
+    Debug Version:     164.1K Code,  68.3K Data,  232.4K Total
+  Current Release:
+    Non-Debug Version:  77.8K Code,  11.4K Data,   89.2K Total
+    Debug Version:     164.2K Code,  68.2K Data,  232.4K Total
+
+
+2) iASL Compiler/Disassembler:
+
+- Fixed a Linux generation error.
+
+
+----------------------------------------
 16 August 2004.  Summary of changes for version 20040816:
 
 1) ACPI CA Core Subsystem:
