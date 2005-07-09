@@ -23,6 +23,8 @@ Module dependencies not currently implemented. If used, they should be loaded
 in this order: busmgr, power, ec, system, processor, battery, ac_adapter,
 button, thermal.
 
+Modules will not load if CONFIG_MODVERSION is set.
+
 IBM 600E - entering S5 may reboot instead of shutting down.
 
 IBM 600E - Sleep button may generate "Invalid <NULL> context" message.
