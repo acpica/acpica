@@ -1,4 +1,55 @@
 ----------------------------------------
+
+02 October 2002.  Summary of changes for this release.
+
+
+1) ACPI CA Core Subsystem version 20021002:
+
+Fixed a problem where a store/copy of a string to an existing string did not always set the string length properly in the String object.
+
+Fixed a reported problem with the ToString operator where the behavior was identical to the ToHexString operator instead of just simply converting a raw buffer to a string data type.
+
+Fixed a problem where CopyObject and the other “explicit” conversion operators were not updating the internal namespace node type as part of the store operation.
+
+Fixed a memory leak during implicit source operand conversion where the original object was not deleted if it was converted to a new object of a different type.
+
+Enhanced error messages for all problems associated with namespace lookups.  Common procedure generates and prints the lookup name as well as the formatted status.
+
+Completed implementation of a new design for the Alias support within the namespace.  The existing design did not handle the case where a new object was assigned to one of the two names due to the use of an explicit conversion operator, resulting in the two names pointing to two different objects.  The new design simply points the Alias name to the original name node – not to the object.  This results in a level of indirection that must be handled in the name resolution mechanism.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  69.6K Code,   8.3K Data,   77.9K Total
+    Debug Version:     150.0K Code,  61.7K Data,  211.7K Total
+  Current Release:
+    Non-Debug Version:  70.7K Code,   8.6K Data,   79.3K Total
+    Debug Version:     151.7K Code,  62.4K Data,  214.1K Total
+
+
+2) Linux
+
+Initialize thermal driver's timer before it is used. (Knut Neumann)
+
+Allow handling negative celsius values. (Kochi Takayoshi)
+
+Fix thermal management and make trip points. R/W (Pavel Machek)
+
+Fix /proc/acpi/sleep. (P. Christeas)
+
+IA64 fixes. (David Mosberger)
+
+Fix reversed logic in blacklist code. (Sergio Monteiro Basto)
+
+Replace ACPI_DEBUG define with ACPI_DEBUG_OUTPUT. (Dominik Brodowski)
+
+
+3) iASL Compiler/Disassembler
+
+Clarified some warning/error messages.
+
+
+----------------------------------------
 18 September 2002.  Summary of changes for this release.
 
 
