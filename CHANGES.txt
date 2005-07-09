@@ -1,4 +1,45 @@
 ----------------------------------------
+10 December 2004.  Summary of changes for version 20041210:
+
+ACPI 3.0 support is nearing completion in both the iASL compiler and the ACPI CA core subsystem.
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem in the ToDecimalString operator where the resulting string length was incorrectly calculated. The length is now calculated exactly, eliminating incorrect AE_STRING_LIMIT exceptions.
+
+Fixed a problem in the ToHexString operator to allow a maximum 200 character string to be produced.
+
+Fixed a problem in the internal string-to-buffer and buffer-to-buffer copy routine where the length of the resulting buffer was not truncated to the new size (if the target buffer already existed).
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.3K Code,  11.5K Data,   89.8K Total
+    Debug Version:     164.7K Code,  68.5K Data,  233.2K Total
+  Current Release:
+    Non-Debug Version:  78.3K Code,  11.5K Data,   89.8K Total
+    Debug Version:     165.3K Code,  69.4K Data,  234.7K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Implemented the new ACPI 3.0 resource template macros - DWordSpace, ExtendedIO, ExtendedMemory, ExtendedSpace, QWordSpace, and WordSpace. Includes support in the disassembler.
+
+Implemented support for the new (ACPI 3.0) parameter to the Register macro, AccessSize.
+
+Fixed a problem where the _HE resource name for the Interrupt macro was referencing bit 0 instead of bit 1.
+
+Implemented check for maximum 255 interrupts in the Interrupt macro.
+
+Fixed a problem with the predefined resource descriptor names where incorrect AML code was generated if the offset within the resource buffer was 0 or 1.  The optimizer shortened the AML code to a single byte opcode but did not update the surrounding package lengths.
+
+Changes to the Dma macro:  All channels within the channel list must be in the range 0-7.  Maximum 8 channels can be specified. BusMaster operand is optional (default is BusMaster).
+
+Implemented check for maximum 7 data bytes for the VendorShort macro.
+
+The ReadWrite parameter is now optional for the Memory32 and similar macros.
+
+----------------------------------------
 03 December 2004.  Summary of changes for version 20041203:
 
 1) ACPI CA Core Subsystem:
