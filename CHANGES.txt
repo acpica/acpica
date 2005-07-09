@@ -1,4 +1,44 @@
 ----------------------------------------
+15 July 2004.  Summary of changes for version 20040715:
+
+1) ACPI CA Core Subsystem:
+
+Restructured the internal HW GPE interfaces to pass/track the current state of interrupts (enabled/disabled) in order to avoid possible deadlock and increase flexibility of the interfaces.
+
+Implemented a "lexicographical compare" for String and Buffer objects within the logical operators -- LGreater, LLess, LGreaterEqual, and LLessEqual -- as per further clarification to the ACPI specification.  Behavior is similar to C library "strcmp".
+
+Completed a major reduction in CPU stack use for the AcpiGetFirmwareTable external function.  In the 32-bit non-debug case, the stack use has been reduced from 168 bytes to 32 bytes.
+
+Deployed a new run-time configuration flag, AcpiGbl_EnableInterpreterSlack, whose purpose is to allow the AML interpreter to forgive certain bad AML constructs.  Default setting is FALSE.
+
+Implemented the first use of AcpiGbl_EnableInterpreterSlack in the Field IO support code.  If enabled, it allows field access to go beyond the end of a region definition if the field is within the region length rounded up to the next access width boundary (a common coding error.)
+
+Renamed OSD_HANDLER to ACPI_OSD_HANDLER, and OSD_EXECUTION_CALLBACK to ACPI_OSD_EXEC_CALLBACK for consistency with other ACPI symbols.  Also, these symbols are lowercased by the latest version of the AcpiSrc tool.
+
+The prototypes for the PCI interfaces in acpiosxf.h have been updated to rename "Register" to simply "Reg" to prevent certain compilers from complaining.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  77.8K Code,  11.5K Data,   89.3K Total
+    Debug Version:     163.8K Code,  68.2K Data,  232.0K Total
+  Current Release:
+    Non-Debug Version:  78.0K Code,  11.5K Data,   89.5K Total
+    Debug Version:     164.1K Code,  68.2K Data,  232.3K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Implemented full support for Package objects within the Case() operator.  Note: The Break() operator is currently not supported within Case blocks (TermLists) as there is some question about backward compatibility with ACPI 1.0 interpreters.
+
+Fixed a problem where complex terms were not supported properly within the Switch() operator.
+
+Eliminated extraneous warning for compiler-emitted reserved names of the form "_T_x".  (Used in Switch/Case operators.)
+
+Eliminated optimization messages for "_T_x" objects and small constants within the DefinitionBlock operator.
+
+
+----------------------------------------
 15 June 2004.  Summary of changes for version 20040615:
 
 1) ACPI CA Core Subsystem:
