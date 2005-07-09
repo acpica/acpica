@@ -4,6 +4,81 @@ Summary of changes for this label: 08_31_01
 
 ACPI CA Core Subsystem:
 
+The AcpiEnableEvent and AcpiDisableEvent interfaces have been modified to allow
+individual GPE levels to be flagged as wake-enabled (i.e., these GPEs are to
+remain enabled when the platform sleeps.)
+
+The AcpiEnterSleepState and AcpiLeaveSleepState interfaces now support
+wake-enabled GPEs.  This means that upon entering the sleep state, all GPEs
+that are not wake-enabled are disabled.  When leaving the sleep state, these
+GPEs are reenabled.
+
+A local double-precision divide/modulo module has been added to enhance
+portability to OS kernels where a 64-bit math library is not available.  The
+new module is “utmath.c”.
+
+Several optimizations have been made to reduce the use of CPU stack. 
+Originally over 2K, the maximum stack usage is now below 2K at 1860 
+bytes (1.82k)
+
+Fixed a problem with the AcpiGetFirmwareTable interface where the root table
+pointer was not mapped into a logical address properly.
+
+Fixed a problem where a NULL pointer was being dereferenced in the interpreter
+code for the ASL Notify operator.
+
+Fixed a problem where the use of the ASL Revision operator returned an error.
+This operator now returns the current version of the ACPI CA core subsystem.
+
+Fixed a problem where objects passed as control method parameters to
+AcpiEvaluateObject were always deleted at method termination.  However, these
+objects may end up being stored into the namespace by the called method.  The
+object reference count mechanism was applied to these objects instead of a
+force delete.
+
+Fixed a problem where static strings or buffers (contained in the AML code)
+that are declared as package elements within the ASL code could cause a fault
+because the interpreter would attempt to delete them.  These objects are now
+marked with the “static object” flag to prevent any attempt to delete them.
+
+Implemented an interpreter optimization to use operands directly from the state
+object instead of extracting the operands to local variables.  This reduces
+stack use and code size, and improves performance.
+
+The module exxface.c was eliminated as it was an unnecessary extra layer of
+code.
+
+Current core subsystem library code sizes are shown below.  These are the code
+and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0
+compiler, and these values do not include any ACPI driver or OSPM code. 
+The debug version of the code includes the full debug trace mechanism --
+leading to a much larger code and data size.  Note that these values will
+vary depending on the efficiency of the compiler and the compiler options
+used during generation.
+
+  Non-Debug Version:  65K Code,   5K Data,   70K Total  (Previously 69K)
+  Debug Version:     138K Code,  58K Data,  196K Total  (Previously 195K)
+
+Linux:
+
+Support for ACPI 2.0 64-bit integers has been added.   All ACPI Integer objects
+are now 64 bits wide
+
+All Acpi data types and structures are now in lower case.  Only Acpi macros are
+upper case for differentiation.
+
+
+Documentation:
+
+Changes to the external interfaces as described above.
+
+
+----------------------------------------
+Summary of changes for this label: 08_31_01
+
+
+ACPI CA Core Subsystem:
+
 A bug with interpreter implementation of the ASL Divide operator was found
 and fixed.  The implicit function return value (not the explicit store
 operands) was returning the remainder instead of the quotient.  This was a
