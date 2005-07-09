@@ -1,4 +1,38 @@
 ----------------------------------------
+02 October 2003.  Summary of changes for version 20031002:
+
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem with Index Fields where the index was not incremented for fields that require multiple writes to the index/data registers (Fields that are wider than the data register.)
+
+Fixed a problem with all Field objects where a write could go beyond the end-of-field if the field was larger than the access granularity and therefore required multiple writes to complete the request.  An extra write beyond the end of the field could happen inadvertently.
+
+Fixed a problem with Index Fields where a BUFFER_OVERFLOW error would incorrectly be returned if the width of the Data Register was larger than the specified field access width.
+
+Completed fixes for LoadTable() and Unload() and verified their operation.  Implemented full support for the "DdbHandle" object throughout the ACPI CA subsystem.
+
+Implemented full support for the MADT and ECDT tables in the ACPI CA header files.  Even though these tables are not directly consumed by ACPI CA, the header definitions are useful for ACPI device drivers.
+
+Integrated resource descriptor fixes posted to the Linux ACPI list.  This included checks for minimum descriptor length, and support for trailing NULL strings within descriptors that have optional string elements.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release (20030918):
+    Non-Debug Version:  73.9K Code,   9.7K Data,   83.6K Total
+    Debug Version:     157.3K Code,  64.5K Data,  221.8K Total
+  Current Release:
+    Non-Debug Version:  74.1K Code,   9.7K Data,   83.8K Total
+    Debug Version:     157.9K Code,  64.8K Data,  222.7K Total
+
+
+2) iASL Compiler:
+
+Implemented detection of non-ASCII characters within the input source ASL file.  This catches attempts to compile binary (AML) files early in the compile, with an informative error message.
+
+Fixed a problem where the disassembler would fault if the output filename could not be generated or if the output file could not be opened.
+
+----------------------------------------
 18 September 2003.  Summary of changes for version 20030918:
 
 
