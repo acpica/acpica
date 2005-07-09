@@ -1,4 +1,66 @@
 ----------------------------------------
+03 May 2002.  Summary of changes for this release.
+
+
+1) ACPI CA Core Subsystem Version 20020503:
+
+Added support a new OSL interface that allows the host operating system software to override the DSDT found in the firmware - AcpiOsTableOverride.  With this interface, the OSL can examine the version of the firmware DSDT and replace it with a different one if desired.
+
+Added new external interfaces for accessing ACPI registers from device drivers and other system software - AcpiGetRegister and AcpiSetRegister.  This was simply an externalization of the existing AcpiHwBitRegister interfaces.
+
+Fixed a regression introduced in the previous build where the ASL/AML CreateField operator always returned an error, "destination must be a NS Node".
+
+Extended the maximum time (before failure) to successfully enable ACPI mode to 3 seconds.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  68.5K Code,   7.0K Data,   75.5K Total
+    Debug Version:     142.4K Code,  58.3K Data,  200.7K Total
+  Current Release:
+    Non-Debug Version:  68.8K Code,   7.1K Data,   75.9K Total
+    Debug Version:     142.9K Code,  58.4K Data,  201.3K Total
+
+
+2) Linux
+
+Enhanced ACPI init code for SMP. We are now fully MPS and $PIR-free. While 3 out of 4 of our in-house systems work fine, the last one still hangs when testing the LAPIC timer.
+
+Renamed many files in 2.5 kernel release to omit "acpi_" from the name.
+
+Added warning on boot for Presario 711FR.
+
+Sleep improvements (Pavel Machek)
+
+ACPI can now be built without CONFIG_PCI enabled.
+
+IA64: Fixed memory map functions (JI Lee)
+
+
+3) iASL Compiler Version X2043:
+
+Added support to allow the compiler to be integrated into the MS VC++ development environment for one-button compilation of single files or entire projects -- with error-to-source-line mapping.
+
+Implemented support for compile-time constant folding for the Type3, Type4, and Type5 opcodes first defined in the ACPI 2.0 specification.  This allows the ASL writer to use expressions instead of Integer/Buffer/String constants in terms that must evaluate to constants at compile time and will also simplify the emitted AML in any such sub-expressions that can be folded (evaluated at compile-time.)  This increases the size of the compiler significantly because a portion of the ACPI CA AML interpreter is included within the compiler in order to pre-evaluate constant expressions.
+
+Fixed a problem with the "Unicode" ASL macro that caused the compiler to fault.  (This macro is used in conjunction with the _STR reserved name.)
+
+Implemented an AML opcode optimization to use the Zero, One, and Ones opcodes where possible to further reduce the size of integer constants and thus reduce the overall size of the generated AML code.
+
+Implemented error checking for new reserved terms for ACPI version 2.0A.
+
+Implemented the -qr option to display the current list of ACPI reserved names known to the compiler.
+
+Implemented the -qc option to display the current list of ASL operators that are allowed within constant expressions and can therefore be folded at compile time if the operands are constants.
+
+
+4) Documentation
+
+Updated the Programmer's Reference for new interfaces, data types, and memory allocation model options.
+
+Updated the iASL Compiler User Reference to apply new format and add information about new features and options.
+
+----------------------------------------
 19 April 2002.  Summary of changes for this release.
 
 1) ACPI CA Core Subsystem Version 20020419:
