@@ -1,4 +1,89 @@
 ----------------------------------------
+Summary of changes for this label: 11_02_01
+
+1) ACPI CA Core Subsystem:
+
+ACPI 2.0 Support: Implemented ACPI 2.0 64-bit Field access (QWordAcc keyword).
+  All ACPI 2.0 64-bit support is now implemented.
+
+OSL Interfaces: Several of the OSL (AcpiOs*) interfaces required changes to
+ support ACPI 2.0 Qword field access.  Read/Write PciConfiguration(),
+ Read/Write Memory(), and Read/Write Port() now accept an ACPI_INTEGER
+ (64 bits) as the value parameter.  Also, the value parameter for the address
+ space handler interface is now an ACPI_INTEGER.  OSL implementations of these
+ interfaces must now handle the case where the Width parameter is 64.
+
+Index Fields: Fixed a problem where unaligned bit assembly and disassembly for
+ IndexFields was not supported correctly.  
+
+Index and Bank Fields:  Nested Index and Bank Fields are now supported.
+  During field access, a check is performed to ensure that the value written
+ to an Index or Bank register is not out of the range of the register.  The
+ Index (or Bank) register is written before each access to the field data.
+  Future support will include allowing individual IndexFields to be wider than
+ the DataRegister width.
+
+Fields: Fixed a problem where the AML interpreter was incorrectly attempting
+ to write beyond the end of a Field/OpRegion.  This was a boundary case that
+ occurred when a DWORD field was written to a BYTE access OpRegion, forcing
+ multiple writes and causing the interpreter to write one datum too many.
+
+Fields: Fixed a problem with Field/OpRegion access where the starting bit
+ address of a field was incorrectly calculated if the current access type
+ was wider than a byte (WordAcc, DwordAcc, or QwordAcc).
+
+Fields: Fixed a problem where forward references to individual FieldUnits
+ (individual Field names within a Field definition) were not resolved during
+ the AML table load.
+
+Fields: Fixed a problem where forward references from a Field definition to
+ the parent Operation Region definition were not resolved during the AML
+ table load.
+
+Fields: Duplicate FieldUnit names within a scope are now detected during AML
+ table load.
+
+Acpi Interfaces: Fixed a problem where the AcpiGetName() interface returned
+ an incorrect name for the root node.
+
+Code and Data Size: Code and Data optimizations have permitted new feature
+ development with an actual reduction in the library size.  Current core
+ subsystem library sizes are shown below.  These are the code and data
+ sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler,
+ and these values do not include any ACPI driver or OSPM code.  The debug
+ version of the code includes the debug output trace mechanism and has a
+ larger code and data size.  Note that these values will vary depending on
+ the efficiency of the compiler and the compiler options used during
+ generation.
+
+  Previous Release (10_18_01):
+    Non-Debug Version:  63.9K Code,   5.1K Data,   69.0K Total
+    Debug Version:     136.7K Code,  57.4K Data,  194.2K Total
+
+  Current Release:
+    Non-Debug Version:  63.7K Code,   5.2K Data,   68.9K Total
+    Debug Version:     134.5K Code,  55.4K Data,  189.9K Total
+
+
+2) Linux:
+
+Improved /proc processor output (Pavel Machek)
+Re-added MODULE_LICENSE("GPL") to all modules.
+
+
+3) ASL Compiler version X2030:
+
+Duplicate FieldUnit names within a scope are now detected and flagged
+as errors.
+
+
+4) Documentation:
+
+Programmer Reference updated to reflect OSL and address space handler
+interface changes described above.
+ 
+
+----------------------------------------
 Summary of changes for this label: 10_18_01
 
 ACPI CA Core Subsystem:
