@@ -1,9 +1,32 @@
 ------------------------------------------
+Summary of changes for this label: 11_15_00
+
+ACPI 2.0 table support with backwards support for ACPI 1.0 and the 0.71
+extensions.  Note: although we can read ACPI 2.0 BIOS tables, the AML 
+interpreter does NOT have support for the new 2.0 ASL grammar terms
+at this time.
+
+All ACPI hardware access is via the GAS structures in the ACPI 2.0 FADT.  
+
+All physical memory addresses across all platforms are now 64 bits wide.
+Logical address width remains dependent on the platform (i.e., “void *”).
+
+AcpiOsMapMemory interface changed to a 64-bit physical address.
+
+The AML interpreter integer size is now 64 bits, as per the ACPI 2.0
+specification.
+
+For backwards compatibility with ACPI 1.0, ACPI tables with a revision number
+less than 2 use 32-bit integers only.
+
+Fixed a problem where the evaluation of OpRegion operands did not always
+resolve them to numbers properly.
+
+------------------------------------------
 Summary of changes for this label: 10_20_00
 
 Fix for CBN_._STA issue.  This fix will allow correct access to CBN_ OpRegions
-when the _STA returns 0x8.  This code will most likely change as we gain further
-understanding of Microsoft's position on this issue. 
+when the _STA returns 0x8.
 
 Support to convert ACPI constants (Ones, Zeros, One) to actual values before
 a package object is returned
