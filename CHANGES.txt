@@ -1,3 +1,49 @@
+22 January 2003.  Summary of changes for version 20030122.
+
+
+1) ACPI CA Core Subsystem:
+
+Added a check for constructs of the form:  Store (Local0, Local0) where Local0 is not initialized.  Apparently, some BIOS programmers believe that this is a NOOP.  Since this store doesn't do anything anyway, the new prototype behavior will ignore this error.  This is a case where we can relax the strict checking in the interpreter in the name of compatibility.
+  
+
+2) Linux
+
+The AcpiSrc Source Conversion Utility has been released with the Linux package for the first time.  This is the utility that is used to convert the ACPI CA base source code to the Linux version.
+
+(Both) Handle P_BLK lengths shorter than 6 more gracefully
+
+(Both) Move more headers to include/acpi, and delete an unused header.
+
+(Both) Move drivers/acpi/include directory to include/acpi
+
+(Both) Boot functions don't use cmdline, so don't pass it around
+
+(Both) Remove include of unused header (Adrian Bunk)
+
+(Both) acpiphp.h includes both linux/acpi.h and acpi_bus.h. Since the
+former now also includes the latter, acpiphp.h only needs the one, now.
+
+(2.5) Make it possible to select method of bios restoring after S3
+resume. [=> no more ugly ifdefs] (Pavel Machek)
+
+(2.5) Make proc write interfaces work (Pavel Machek)
+
+(2.5) Properly init/clean up in cpufreq/acpi (Dominik Brodowski)
+
+(2.5) Break out ACPI Perf code into its own module, under cpufreq (Dominik Brodowski)
+
+(2.4) S4BIOS support (Ducrot Bruno)
+
+(2.4) Fix acpiphp_glue.c for latest ACPI struct changes (Sergio Visinoni)
+
+
+3) iASL Compiler:
+
+Added support to disassemble SSDT and PSDTs.
+
+Implemented support to obtain SSDTs from the Windows registry if available.
+
+
 ----------------------------------------
 09 January 2003.  Summary of changes for version 20030109.
 
