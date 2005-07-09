@@ -1,4 +1,44 @@
 ----------------------------------------
+28 February 2005.  Summary of changes for version 20050228:
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem where the result of an Index() operator (an object reference) must increment the reference count on the target object for the life of the object reference.
+
+Implemented AML Interpreter and Debugger support for the new ACPI 3.0 Extended Address (IO, Memory, Space), QwordSpace, DwordSpace, and WordSpace resource descriptors.
+
+Implemented support in the _OSI method for the ACPI 3.0 "Extended Address Space Descriptor" string, indicating interpreter support for the descriptors above.
+
+Implemented header support for the new ACPI 3.0 FADT flag bits.
+
+Implemented header support for the new ACPI 3.0 PCI Express bits for the PM1 status/enable registers.
+
+Updated header support for the MADT processor local Apic struct and MADT platform interrupt source struct for new ACPI 3.0 fields.
+
+Implemented header support for the SRAT and SLIT ACPI tables.
+
+Implemented the -s switch in AcpiExec to enable the "InterpeterSlack" flag at runtime.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.2K Code, 11.5K Data,  89.7K Total
+    Debug Version:     164.9K Code, 69.2K Data, 234.1K Total
+  Current Release:
+    Non-Debug Version:  78.3K Code, 11.5K Data,  89.8K Total
+    Debug Version:     165.4K Code, 69.6K Data, 236.0K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a problem with the internal 64-bit String-to-integer conversion with strings less than two characters long.
+
+Fixed a problem with constant folding where the result of the Index() operator can not be considered a constant. This means that Index() cannot be a type3 opcode and this will require an update to the ACPI specification.
+
+Disassembler: Implemented support for the TTP, MTP, and TRS resource descriptor fields. These fields were inadvertently ignored and not output in the disassembly of the resource descriptor.
+
+
+ ----------------------------------------
 11 February 2005.  Summary of changes for version 20050211:
 
 1) ACPI CA Core Subsystem:
