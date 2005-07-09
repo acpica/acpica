@@ -1,3 +1,28 @@
+----------------------------------------
+24 April 2003.  Summary of changes for version 20030424.
+
+
+1) ACPI CA Core Subsystem:
+
+Support for big-endian systems has been implemented.  Most of the support has been invisibly added behind big-endian versions of the ACPI_MOVE_* macros.
+
+Fixed a problem in AcpiHwDisableGpeBlock() and AcpiHwClearGpeBlock() where an incorrect offset was passed to the low level hardware write routine.  The offset parameter was actually eliminated from the low level read/write routines because they had become obsolete.
+
+Fixed a problem where a handler object was deleted twice during the removal of a fixed event handler.
+
+
+2) Linux:
+
+A fix for SMP systems with link devices was contributed by Compaq's Dan Zink.
+
+(2.5) Return whether we handled the interrupt in our IRQ handler. (Linux ISRs no longer return void, so we can propagate the handler return value from the ACPI CA core back to the OS.)
+
+
+3) Documentation:  
+
+The ACPI CA Programmer Reference has been updated to reflect new interfaces and changes to existing interfaces.
+
+----------------------------------------
 28 March 2003.  Summary of changes for version 20030328.
 
 1) ACPI CA Core Subsystem:
