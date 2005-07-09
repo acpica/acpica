@@ -1,5 +1,5 @@
 ----------------------------------------
-Summary of changes for this label: 08_31_01
+Summary of changes for this label: 09_20_01
 
 
 ACPI CA Core Subsystem:
