@@ -1,4 +1,37 @@
 ----------------------------------------
+15 June 2004.  Summary of changes for version 20040615:
+
+1) ACPI CA Core Subsystem:
+
+Implemented support for Buffer and String objects (as per ACPI 2.0) for the following ASL operators:  LEqual, LGreater, LLess, LGreaterEqual, and LLessEqual.
+
+All directory names in the entire source package are lower case, as they were in earlier releases.
+
+Implemented "Disassemble" command in the AML debugger that will disassemble a single control method.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  77.7K Code,  11.5K Data,   89.2K Total
+    Debug Version:     163.3K Code,  67.2K Data,  230.5K Total
+  Current Release:
+    Non-Debug Version:  77.8K Code,  11.5K Data,   89.3K Total
+    Debug Version:     163.8K Code,  68.2K Data,  232.0K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Implemented support for Buffer and String objects (as per ACPI 2.0) for the following ASL operators:  LEqual, LGreater, LLess, LGreaterEqual, and LLessEqual.
+
+All directory names in the entire source package are lower case, as they were in earlier releases.
+
+Fixed a fault when using the -g or -d<nofilename> options if the FADT was not found.
+
+Fixed an issue with the Windows version of the compiler where later versions of Windows place the FADT in the registry under the name "FADT" and not "FACP" as earlier versions did.  This applies when using the -g or -d<nofilename> options.  The compiler now looks for both strings as necessary.
+
+Fixed a problem with compiler namepath optimization where a namepath within the Scope() operator could not be optimized if the namepath was a subpath of the current scope path.
+
+----------------------------------------
 27 May 2004.  Summary of changes for version 20040527:
 
 1) ACPI CA Core Subsystem:
