@@ -1,4 +1,39 @@
 ----------------------------------------
+11 February 2005.  Summary of changes for version 20050211:
+
+1) ACPI CA Core Subsystem:
+
+Implemented ACPI 3.0 support for implicit conversion within the Match() operator. MatchObjects can now be of type integer, buffer, or string instead of just type integer.  Package elements are implicitly converted to the type of the MatchObject. This change aligns the behavior of Match() with the behavior of the other logical operators (LLess(), etc.) It also requires an errata change to the ACPI specification as this support was intended for ACPI 3.0, but was inadvertently omitted.
+
+Fixed a problem with the internal implicit "to buffer" conversion. Strings that are converted to buffers will cause buffer truncation if the string is smaller than the target buffer. Integers that are converted to buffers will not cause buffer truncation, only zero extension (both as per the ACPI spec.) The problem was introduced when code was added to truncate the buffer, but this should not be performed in all cases, only the string case.
+
+Fixed a problem with the Buffer and Package operators where the interpreter would get confused if two such operators were used as operands to an ASL operator (such as LLess(Buffer(1){0},Buffer(1){1}). The internal result stack was not being popped after the execution of these operators, resulting in an AE_NO_RETURN_VALUE exception.
+
+Fixed a problem with constructs of the form Store(Index(...),...). The reference object returned from Index was inadvertently resolved to an actual value. This problem was introduced in version 20050114 when the behavior of Store() was modified to restrict the object types that can be used as the source operand (to match the ACPI specification.)
+
+Reduced excessive stack use within the AcpiGetObjectInfo procedure.
+
+Added a fix to aclinux.h to allow generation of AcpiExec on Linux.
+
+Updated the AcpiSrc utility to add the FADT_DESCRIPTOR_REV2_MINUS struct.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.1K Code, 11.5K Data,  89.6K Total
+    Debug Version:     164.8K Code, 69.2K Data, 234.0K Total
+  Current Release:
+    Non-Debug Version:  78.2K Code, 11.5K Data,  89.7K Total
+    Debug Version:     164.9K Code, 69.2K Data, 234.1K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a code generation problem in the constant folding optimization code where incorrect code was generated if a constant was reduced to a buffer object (i.e., a reduced type 5 opcode.)
+
+Fixed a typechecking problem for the ToBuffer operator. Caused by an incorrect return type in the internal opcode information table.
+
+----------------------------------------
 25 January 2005.  Summary of changes for version 20050125:
 
 1) ACPI CA Core Subsystem:
