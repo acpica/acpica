@@ -1,4 +1,45 @@
 ----------------------------------------
+02 July 2002.  Summary of changes for this release.
+
+
+1) ACPI CA Core Subsystem Version 20020702:
+
+The Table Manager code has been restructured to add several new features.  Tables that are not required by the core subsystem (other than the FADT, DSDT, FACS, PSDTs, etc.) are no longer validated in any way and are returned from AcpiGetFirmwareTable if requested.  The AcpiOsTableOverride interface is now called for each table that is loaded by the subsystem in order to allow the host to override any table it chooses.  Previously, only the DSDT could be overridden.  Added one new files, tbrsdt.c and tbgetall.c.
+
+Fixed a problem with the conversion of internal package objects to external objects (when a package is returned from a control method.)  The return buffer length was set to zero instead of the proper length of the package object.
+
+Fixed a reported problem with the use of the RefOf and DeRefOf operators when passing reference arguments to control methods.  A new type of Reference object is used internally for references produced by the RefOf operator.
+
+Added additional error messages in the Resource Manager to explain AE_BAD_DATA errors when they occur during resource parsing.
+
+Split the AcpiEnableSubsystem into two primitives to enable a finer granularity initialization sequence.  These two calls should be called in this order: AcpiEnableSubsystem (flags), AcpiInitializeObjects (flags).  The flags parameter remains the same.
+
+
+2) Linux
+
+Updated the ACPI utilities module to understand the new style of fully resolved package objects that are now returned from the core subsystem.  This eliminates errors of the form:
+ 
+    ACPI: PCI Interrupt Routing Table [\_SB_.PCI0.PPB_._PRT]
+    acpi_utils-0430 [145] acpi_evaluate_reference: 
+        Invalid element in package (not a device reference)
+
+The method evaluation utility uses the new buffer allocation scheme instead of calling AcpiEvaluate Object twice.
+
+Added support for ECDT. This allows the use of the Embedded Controller before the namespace has been fully initialized, which is necessary for ACPI 2.0 support, and for some laptops to initialize properly. (Laptops using ECDT are still rare, so only limited testing was performed of the added functionality.)
+
+Fixed memory leaks in the EC driver.
+
+Eliminated a brittle code structure in acpi_bus_init().
+
+Eliminated the acpi_evaluate() helper function in utils.c. It is no longer needed since acpi_evaluate_object can optionally allocate memory for the return object.
+
+Implemented fix for keyboard hang when getting battery readings on some systems (Stephen White)
+
+PCI IRQ routing update (Dominik Brodowski)
+
+Fix an ifdef to allow compilation on UP with LAPIC but no IOAPIC support
+
+----------------------------------------
 11 June 2002.  Summary of changes for this release.
 
 
@@ -295,6 +336,7 @@ Summary of changes for this release: 02_25_02
 
 1) ACPI CA Core Subsystem:
 
+
 Fixed a problem where the GPE bit masks were not initialized properly, causing erratic GPE behavior.
 
 Implemented limited support for multiple calling conventions.  The code can be generated with either the VPL (variable parameter list, or "C") convention, or the FPL (fixed parameter list, or "Pascal") convention.  The core subsystem is about 3.4% smaller when generated with FPL.
@@ -448,6 +490,7 @@ Fixed a problem where incorrect AML was generated for the case where an ASL name
 ) with no trailing name segments.
 
 The compiler has been successfully generated with a 64-bit C compiler.
+
 
 
 
@@ -1109,6 +1152,7 @@ Linux OS Services Layer (OSL):
 
 Improved /proc battery interface.
 
+
 Added C-state debugging output and other miscellaneous fixes.
 
 ASL Compiler Version X2014:
@@ -1132,11 +1176,13 @@ Linux OS Services Layer (OSL): Moved system state transition code to the core, f
 
 Fixed C2 and C3 latency calculations. 
 
+
 We no longer use the compilation date for the version message on  initialization, but retrieve the version from AcpiGetSystemInfo().
 
 Incorporated for fix Sony VAIO machines.
 
 Documentation:  The Programmer Reference has been updated and reformatted.
+
 
 ASL Compiler:  Version X2013: Fixed a problem where the line numbering and error reporting could get out  of sync in the presence of multiple include files.
 
@@ -1354,6 +1400,7 @@ Files merged across the subsystem.  A number of the smaller source and header  f
 Interpreter files renamed.  All interpreter files now have the prefix am*  instead of ie* and is*.
 
 Header files renamed:  The acapi.h file is now acpixf.h.  The acpiosd.h file is  now acpiosxf.h.  We are removing references to the acronym "API" since it is  somewhat windowsy. The new name is "external interface" or xface or xf in the  filenames.j
+
 
 All manifest constants have been forced to upper case (some were mixed case.)   Also, the string "ACPI_" has been prepended to many (not all) of the constants,  typedefs, and structs.
 
