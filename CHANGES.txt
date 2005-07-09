@@ -1,4 +1,27 @@
 ----------------------------------------
+20 February 2004.  Summary of changes for version 20040220:
+
+1) ACPI CA Core Subsystem:
+
+Implemented execution of _SxD methods for Device objects in the GetObjectInfo interface.
+
+Fixed calls to _SST method to pass the correct arguments.
+
+Added a call to _SST on wake to restore to "working" state.
+
+Check for End-Of-Buffer failure case in the WalkResources interface.
+
+Integrated fix for 64-bit alignment issue in acglobal.h by moving two structures to the beginning of the file.
+
+After wake, clear GPE status register(s) before enabling GPEs.
+
+After wake, clear/enable power button.  (Perhaps we should clear/enable all fixed events upon wake.)
+
+Fixed a couple of possible memory leaks in the Namespace manager.
+
+Integrated latest acnetbsd.h file.
+
+----------------------------------------
 11 February 2004.  Summary of changes for version 20040211:
 
 1) ACPI CA Core Subsystem:
