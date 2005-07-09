@@ -1,4 +1,31 @@
 ----------------------------------------
+Summary of changes for this release: 02_25_02
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem where the GPE bit masks were not initialized properly, causing erratic GPE behavior.
+
+Implemented limited support for multiple calling conventions.  The code can be generated with either the VPL (variable parameter list, or "C") convention, or the FPL (fixed parameter list, or "Pascal") convention.  The core subsystem is about 3.4% smaller when generated with FPL.
+
+
+2) Linux
+
+Re-add some /proc/acpi/event functionality that was lost during the rewrite
+
+Resolved issue with /proc events for fixed-feature buttons showing up as the system device.
+
+Fixed checks on C2/C3 latencies to be inclusive of maximum values.
+
+Replaced AE_ERRORs in acpi_osl.c with more specific error codes.
+
+Changed ACPI PRT option from "pci=noacpi-routing" to "pci=noacpi"
+
+Fixed limit interface & usage to fix bugs with passive cooling hysterisis.
+
+Restructured PRT support.
+
+
+----------------------------------------
 Summary of changes for this label: 02_14_02
 
 
