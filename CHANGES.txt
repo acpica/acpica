@@ -1,4 +1,45 @@
 ----------------------------------------
+Summary of changes for this label: 11_09_01
+
+1) ACPI CA Core Subsystem:
+
+Implemented ACPI 2.0-defined support for writes to fields with a Buffer,
+String, or Integer source operand that is smaller than the target field.
+In these cases, the source operand is zero-extended to fill the target
+field.
+
+Fixed a problem where a Field starting bit offset (within the parent operation
+region) was calculated incorrectly if the alignment of the field differed from
+the access width.  This affected CreateWordField, CreateDwordField,
+CreateQwordField, and possibly other fields that use the "AccessAny" keyword.
+
+Fixed a problem introduced in the 11_02_01 release where indirect stores
+through method arguments did not operate correctly.
+
+2) Linux:
+
+Implemented boot-time ACPI table parsing support (CONFIG_ACPI_BOOT) for IA32
+and IA64 UP/SMP systems.  This code facilitates the use of ACPI tables
+(e.g. MADT, SRAT) rather than legacy BIOS interfaces (e.g. MPS) for the
+configuration of system processors, memory, and interrupts during
+setup_arch().  Note that this patch does not include the required
+architecture-specific changes required to apply this information --
+subsequent patches will be posted for both IA32 and IA64 to achieve this.
+
+Added low-level sleep support for IA32 platforms, courtesy of Pat Mochel.
+This allows IA32 systems to transition to/from various sleeping states
+(e.g. S1, S3), although the lack of a centralized driver model and
+power-manageable drivers will prevent its (successful) use on most systems.
+
+Revamped the ACPI 'menuconfig' layout: created new "ACPI Support" submenu,
+unified IA32 and IA64 options, added new "Boot using ACPI tables"
+option, etc.
+
+Increased the default timeout for the EC driver from 1ms to 10ms (1000
+cycles of 10us) to try to address AE_TIME errors during EC transactions.
+
+
+----------------------------------------
 Summary of changes for this label: 11_02_01
 
 1) ACPI CA Core Subsystem:
