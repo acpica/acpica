@@ -1,4 +1,61 @@
 ----------------------------------------
+09 March 2005.  Summary of changes for version 20050309:
+
+1) ACPI CA Core Subsystem:
+
+The string-to-buffer implicit conversion code has been modified again after a change to the ACPI specification.  In order to match the behavior of the other major ACPI implementation, the target buffer is no longer truncated if the source string is smaller than an existing target buffer. This change requires an update to the ACPI spec, and should eliminate the recent AE_AML_BUFFER_LIMIT issues.
+
+The "implicit return" support was rewritten to a new algorithm that solves the general case. Rather than attempt to determine when a method is about to exit, the result of every ASL operator is saved momentarily until the very next ASL operator is executed. Therefore, no matter how the method exits, there will always be a saved implicit return value. This feature is only enabled with the AcpiGbl_EnableInterpreterSlack flag, and should eliminate AE_AML_NO_RETURN_VALUE errors when enabled.
+
+Implemented implicit conversion support for the predicate (operand) of the If, Else, and While operators. String and Buffer arguments are automatically converted to Integers.
+
+Changed the string-to-integer conversion behavior to match the new ACPI errata: "If no integer object exists, a new integer is created. The ASCII string is interpreted as a hexadecimal constant. Each string character is interpreted as a hexadecimal value (‘0’-‘9’, ‘A’-‘F’, ‘a’, ‘f’), starting with the first character as the most significant digit, and ending with the first non-hexadecimal character or end-of-string." This means that the first non-hex character terminates the conversion and this is the code that was changed.
+
+Fixed a problem where the ObjectType operator would fail (fault) when used on an Index of a Package which pointed to a null package element. The operator now properly returns zero (Uninitialized) in this case.
+
+Fixed a problem where the While operator used excessive memory by not properly popping the result stack during execution. There was no memory leak after execution, however. (Code provided by Valery Podrezov.)
+
+Fixed a problem where references to control methods within Package objects caused the method to be invoked, instead of producing a reference object pointing to the method.
+
+Restructured and simplified the pswalk.c module (AcpiPsDeleteParseTree) to improve performance and reduce code size. (Code provided by Alexey Starikovskiy.)
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.3K Code, 11.5K Data,  89.8K Total
+    Debug Version:     165.4K Code, 69.6K Data, 236.0K Total
+  Current Release:
+    Non-Debug Version:  78.3K Code, 11.5K Data,  89.8K Total
+    Debug Version:     165.4K Code, 69.7K Data, 236.1K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a problem with the Return operator with no arguments. Since the AML grammar for the byte encoding requires an operand for the Return opcode, the compiler now emits a Return(Zero) for this case.  An ACPI specification update has been written for this case.
+
+For tables other than the DSDT, namepath optimization is automatically disabled. This is because SSDTs can be loaded anywhere in the namespace, the compiler has no knowledge of where, and thus cannot optimize namepaths.
+
+Added "ProcessorObj" to the ObjectTypeKeyword list. This object type was inadvertently omitted from the ACPI specification, and will require an update to the spec.
+
+The source file scan for ASCII characters is now optional (-a). This change was made because some vendors place non-ascii characters within comments. However, the scan is simply a brute-force byte compare to ensure all characters in the file are in the range 0x00 to 0x7F.
+
+Fixed a problem with the CondRefOf operator where the compiler was inappropriately checking for the existence of the target. Since the point of the operator is to check for the existence of the target at run-time, the compiler no longer checks for the target existence.
+
+Fixed a problem where errors generated from the internal AML interpreter during constant folding were not handled properly, causing a fault.
+
+Fixed a problem with overly aggressive range checking for the Stall operator. The valid range (max 255) is now only checked if the operand is of type Integer. All other operand types cannot be statically checked.
+
+Fixed a problem where control method references within the RefOf, DeRefOf, and ObjectType operators were not treated properly. They are now treated as actual references, not method invocations.
+
+Fixed and enhanced the "list namespace" option (-ln). This option was broken a number of releases ago.
+
+Improved error handling for the Field, IndexField, and BankField operators. The compiler now cleanly reports and recovers from errors in the field component (FieldUnit) list.
+
+Fixed a disassembler problem where the optional ResourceDescriptor fields TRS and TTP were not always handled correctly.
+
+Disassembler - Comments in output now use "//" instead of "/*"
+
+----------------------------------------
 28 February 2005.  Summary of changes for version 20050228:
 
 1) ACPI CA Core Subsystem:
