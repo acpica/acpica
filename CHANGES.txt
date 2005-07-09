@@ -1,4 +1,40 @@
 ----------------------------------------
+05 December 2002.  Summary of changes for version 20021205.
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem where a store to a String or Buffer object could cause corruption of the DSDT if the object type being stored was the same as the target object type and the length of the object being stored was equal to or smaller than the original (existing) target object.  This was seen to cause corruption of battery _BIF buffers if the _BIF method modified the buffer on the fly.
+
+Fixed a problem where an internal error was generated if a control method invocation was used in an OperationRegion, Buffer, or Package declaration.  This was caused by the deferred parsing of the control method and thus the deferred creation of the internal method object.  The solution to this problem was to create the internal method object at the moment the method is encountered in the first pass – so that subsequent references to the method will able to obtain the required parameter count and thus properly parse the method invocation.  This problem presented itself as an AE_AML_INTERNAL during the pass 1 parse phase during table load.
+
+Fixed a problem where the internal String object copy routine did not always allocate sufficient memory for the target String object and caused memory corruption.  This problem was seen to cause “Allocation already present in list!” errors as memory allocation became corrupted.
+
+Implemented a new function for the evaluation of namespace objects that allows the specification of the allowable return object types.  This simplifies a lot of code that checks for a return object of one or more specific objects returned from the evaluation (such as _STA, etc.)  This may become and external function if it would be useful to ACPI-related drivers.
+
+Completed another round of prefixing #defines with “ACPI_” for clarity.
+
+Completed additional code restructuring to allow more modular linking for iASL compiler and AcpiExec.  Several files were split creating new files.  New files:  nsparse.c dsinit.c evgpe.c
+
+Implemented an abort mechanism to terminate an executing control method via the AML debugger.  This feature is useful for debugging control methods that depend (wait) for specific hardware responses.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  71.4K Code,   9.0K Data,   80.4K Total
+    Debug Version:     152.9K Code,  63.3K Data,  216.2K Total
+  Current Release:
+    Non-Debug Version:  72.1K Code,   9.5K Data,   81.6K Total
+    Debug Version:     152.7K Code,  62.7K Data,  215.4K Total
+
+
+2) iASL Compiler/Disassembler
+
+Fixed a compiler code generation problem for “Interrupt” Resource Descriptors.  If specified in the ASL, the optional “Resource Source Index” and “Resource Source” fields were not inserted into the correct location within the AML resource descriptor, creating an invalid descriptor.
+
+Fixed a disassembler problem for “Interrupt” resource descriptors.  The optional “Resource Source Index” and “Resource Source” fields were ignored.
+
+
+----------------------------------------
 22 November 2002.  Summary of changes for version 20021122.
 
 
