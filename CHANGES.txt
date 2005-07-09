@@ -1,4 +1,67 @@
 ----------------------------------------
+17 May 2002.  Summary of changes for this release.
+
+
+1) ACPI CA Core Subsystem Version 20020517:
+
+Implemented a workaround to an BIOS bug discovered on the HP OmniBook where the FADT revision number and the table size are inconsistent (ACPI 2.0 revision vs. ACPI 1.0 table size).  The new behavior is to fallback to using only the ACPI 1.0 fields of the FADT if the table is too small to be a ACPI 2.0 table as claimed by the revision number.  Although this is a BIOS bug, this is a case where the workaround is simple enough and with no side effects, so it seemed prudent to add it.  A warning message is issued, however.
+
+Implemented minimum size checks for the fixed-length ACPI tables -- the FADT and FACS, as well as consistency checks between the revision number and the table size.
+
+Fixed a reported problem in the table override support where the new table pointer was incorrectly treated as a physical address instead of a logical address.
+
+Eliminated the use of the AE_AML_ERROR exception and replaced it with more descriptive codes.
+
+Fixed a problem where an exception would occur if an ASL Field was defined with no named Field Units underneath it (used by some index fields).
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  68.8K Code,   7.1K Data,   75.9K Total
+    Debug Version:     142.9K Code,  58.4K Data,  201.3K Total
+  Current Release:
+    Non-Debug Version:  69.3K Code,   7.4K Data,   76.7K Total
+    Debug Version:     143.8K Code,  58.8K Data,  202.6K Total
+ 
+
+
+2) Linux
+
+Much work done on ACPI init (MADT and PCI IRQ routing support). (Paul D. and Dominik Brodowski)
+
+Fix PCI IRQ-related panic on boot (Sam Revitch)
+
+Set BM_ARB_DIS when entering a sleep state (Ducrot Bruno)
+
+Fix "MHz" typo (Dominik Brodowski)
+
+Fix RTC year 2000 issue (Dominik Brodowski)
+
+Preclude multiple button proc entries (Eric Brunet)
+
+Moved arch-specific code out of include/platform/aclinux.h
+
+3) iASL Compiler Version X2044:
+
+Implemented error checking for the string used in the EISAID macro (Usually used in the definition of the _HID object.)  The code now strictly enforces the PnP format - exactly 7 characters, 3 uppercase letters and 4 hex digits.
+
+If a raw string is used in the definition of the _HID object (instead of the EISAID macro), the string must contain all alphanumeric characters (e.g., "*PNP0011" is not allowed because of the asterisk.)
+
+Implemented checking for invalid use of ACPI reserved names for most of the name creation operators (Name, Device, Event, Mutex, OperationRegion, PowerResource, Processor, and ThermalZone.)  Previously, this check was only performed for control methods.  
+
+Implemented an additional check on the Name operator to emit an error if a reserved name that must be implemented in ASL as a control method is used.  We know that a reserved name must be a method if it is defined with input arguments.
+
+The warning emitted when a namespace object reference is not found during the cross reference phase has been changed into an error.  The "External" directive should be used for names defined in other modules.
+
+
+4) Tools and Utilities
+
+The 16-bit tools (adump16 and aexec16) have been regenerated and tested.
+
+Fixed a problem with the output of both acpidump and adump16 where the indentation of closing parentheses and brackets was not aligned properly with the parent block.
+
+
+----------------------------------------
 03 May 2002.  Summary of changes for this release.
 
 
