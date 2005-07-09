@@ -1,4 +1,55 @@
 ----------------------------------------
+09 January 2003.  Summary of changes for version 20030109.
+
+1) ACPI CA Core Subsystem:
+
+Changed the behavior of the internal Buffer-to-String conversion function.  The current ACPI specification states that the contents of the buffer are "converted to a string of two-character hexadecimal numbers, each separated by a space".  Unfortunately, this definition is not backwards compatible with existing ACPI 1.0 implementations (although the behavior was not defined in the ACPI 1.0 specification).  The new behavior simply copies data from the buffer to the string until a null character is found or the end of the buffer is reached.  The new String object is always null terminated.  This problem was seen during the generation of _BIF battery data where incorrect strings were returned for battery type, etc.  This will also require an errata to the ACPI specification.
+
+Renamed all instances of NATIVE_UINT and NATIVE_INT to ACPI_NATIVE_UINT and ACPI_NATIVE_INT, respectively.
+
+Copyright in all module headers (both Linux and non-Linux) has be updated to 2003.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  72.0K Code,   9.5K Data,   81.5K Total
+    Debug Version:     153.0K Code,  62.9K Data,  215.9K Total
+  Current Release:
+    Non-Debug Version:  72.0K Code,   9.5K Data,   81.5K Total
+    Debug Version:     153.0K Code,  62.9K Data,  215.9K Total
+
+
+2) Linux
+
+Fixed an oops on module insertion/removal (Matthew Tippett)
+
+(2.4) Fix to handle dynamic size of mp_irqs (Joerg Prante)
+
+(2.5) Replace pr_debug (Randy Dunlap)
+
+(2.5) Remove usage of CPUFREQ_ALL_CPUS (Dominik Brodowski)
+
+(Both) Eliminate spawning of thread from timer callback, in favor of schedule_work()
+
+(Both) Show Lid status in /proc (Zdenek OGAR Skalak)
+
+(Both) Added define for Fixed Function HW region (Matthew Wilcox)
+
+(Both) Add missing statics to button.c (Pavel Machek)
+
+Several changes have been made to the source code translation utility that generates the Linux Code in order to make the code more "Linux-like":
+
+All typedefs on structs and unions have been removed in keeping with the Linux coding style.
+
+Removed the non-Linux SourceSafe module revision number from each module header.
+
+Completed major overhaul of symbols to be lowercased for linux.  Doubled the number of symbols that are lowercased.
+
+Fixed a problem where identifiers within procedure headers and within quotes were not fully lower cased (they were left with a starting capital.)
+
+Some C macros whose only purpose is to allow the generation of 16-bit code are now completely removed in the Linux code, increasing readability and maintainability.
+
+----------------------------------------
 
 12 December 2002.  Summary of changes for version 20021212.
 
