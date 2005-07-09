@@ -1,4 +1,34 @@
 ------------------------------------------
+Summary of changes for this label: 12_01_00
+
+Fixed a problem where method invocations within the ASL definition of
+both OperationRegions and CreateXXXFields did not work properly.  The
+symptom was an AE_AML_OPERAND_TYPE during initialization of the
+region/field:
+
+  nsinit-0209: AE_AML_OPERAND_TYPE while getting region arguments [DEBG]
+  ammonad-0284: Exec_monadic2_r/Not: bad operand(s) (0x3005)
+
+Fixed a problem where operators with more than one nested subexpression
+would fail.  The symptoms were varied, by mostly AE_AML_OPERAND_TYPE
+errors.  This was actually a rather serious problem that has gone
+unnoticed until now.
+
+  Subtract (Add (1,2), Multiply (3,4))
+
+Fixed a problem where AcpiGetHandle didn’t quite get fixed in the previous
+build (The prefix part of a relative path was handled incorrectly).
+
+Fixed a problem where Operation Region initialization failed if the
+operation region name was a “namepath” instead of a simple “nameseg”.
+Symptom was an AE_NO_OPERAND error.
+
+Fixed a problem where an assignment to a local variable via the indirect
+RefOf mechanism only worked for the first such assignment.  Subsequent
+assignments were ignored.
+
+
+------------------------------------------
 Summary of changes for this label: 11_15_00
 
 ACPI 2.0 table support with backwards support for ACPI 1.0 and the 0.71
