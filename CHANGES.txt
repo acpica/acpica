@@ -1,4 +1,40 @@
 ----------------------------------------
+29 August 2002.  Summary of changes for this release.
+
+1) ACPI CA Core Subsystem Version 20020829:
+
+If the target of a Scope() operator already exists, it must be an object type that actually opens a scope -- such as a Device, Method, Scope, etc.  This is a fatal runtime error.  Similar error check has been added to the iASL compiler also.
+
+Tightened up the namespace load to disallow multiple names in the same scope.  This previously was allowed if both objects were of the same type.  (i.e., a lookup was the same as entering a new name).
+
+
+2) Linux
+
+Ensure that the ACPI interrupt has the proper trigger and polarity.
+
+local_irq_disable is extraneous. (Matthew Wilcox)
+
+Make "acpi=off" actually do what it says, and not use the ACPI interpreter *or* the tables.
+
+Added arch-neutral support for parsing SLIT and SRAT tables (Kochi Takayoshi)
+
+
+3) iASL Compiler/Disassembler  Version 20020829:
+
+Implemented namepath optimization for name declarations.  For example, a declaration like "Method (\_SB_.ABCD)" would get optimized to "Method (ABCD)" if the declaration is within the \_SB_ scope.  This optimization is in addition to the named reference path optimization first released in the previous version. This would seem to complete all possible optimizations for namepaths within the ASL/AML.
+
+If the target of a Scope() operator already exists, it must be an object type that actually opens a scope -- such as a Device, Method, Scope, etc.
+
+Implemented a check and warning for unreachable code in the same block below a Return() statement.
+
+Fixed a problem where the listing file was not generated if the compiler aborted if the maximum error count was exceeded (200).
+
+Fixed a problem where the typechecking of method return values was broken.  This includes the check for a return value when the method is invoked as a TermArg (a return value is expected.)
+
+Fixed a reported problem where EOF conditions during a quoted string or comment caused a fault.
+
+
+----------------------------------------
 15 August 2002.  Summary of changes for this release.
 
 1) ACPI CA Core Subsystem Version 20020815:
