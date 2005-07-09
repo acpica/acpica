@@ -1,4 +1,51 @@
 ------------------------------------------
+Summary of changes for this label: 03_13_01
+
+
+ACPI CA Core Subsystem:
+
+During ACPI initialization, the _SB_._INI method is now run if present.
+
+Notify handler fix - notifies are deferred until the parent method
+completes execution.  This fixes the “mutex already acquired” issue
+seen occasionally.
+
+Part of the “implicit conversion” rules in ACPI 2.0 have been found to
+cause compatibility problems with existing ASL/AML.  The convert
+“result-to-target-type” implementation has been removed for stores
+to method Args and Locals.  Source operand conversion is still fully
+implemented.  Possible changes to ACPI 2.0 specification pending.
+
+Fix to AcpiRsCalculatePciRoutingTableLength to return correct length.
+
+Fix for compiler warnings for 64-bit compiles.
+
+
+Linux:
+
+/proc output aligned for easier parsing.
+
+Release-version compile problem fixed.
+
+New kernel configuration options documented in Configure.help.
+
+IBM 600E - Fixed Sleep button may generate "Invalid <NULL> context"
+message.
+
+
+OSPM:
+
+Power resource driver integrated with bus manager.
+
+Fixed kernel fault during active cooling for thermal zones.
+
+Source Code:
+
+The source code tree has been restructured.
+
+
+
+------------------------------------------
 Summary of changes for this label: 03_02_01
 
 
