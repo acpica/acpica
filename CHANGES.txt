@@ -1,4 +1,44 @@
 ----------------------------------------
+25 July 2002.  Summary of changes for this release.
+
+
+1) ACPI CA Core Subsystem Version 20020725:
+
+The AML Disassembler has been enhanced to produce compilable ASL code and has been integrated into the iASL compiler (see below) as well as the single-step disassembly for the AML debugger and the disassembler for the AcpiDump utility.  All ACPI 2.0A opcodes, resource templates and macros are fully supported.  The disassembler has been tested on over 30 different AML files, producing identical AML when the resulting disassembled ASL file is recompiled with the same ASL compiler.
+
+Modified the Resource Manager to allow zero interrupts and zero dma channels during the GetCurrentResources call.  This was causing problems on some platforms.
+
+Added the AcpiOsRedirectOutput interface to the OSL to simplify output redirection for the AcpiOsPrintf and AcpiOsVprintf interfaces.
+
+Code and Data Size: Current core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release 
+    Non-Debug Version:  68.7K Code,   7.4K Data,   76.1K Total
+    Debug Version:     142.9K Code,  58.7K Data,  201.6K Total
+  Current Release:
+    Non-Debug Version:  69.1K Code,   8.2K Data,   77.3K Total
+    Debug Version:     149.4K Code,  61.6K Data,  211.0K Total
+
+
+2) Linux
+
+Fixed a panic in the EC driver (Dominik Brodowski)
+
+Implemented checksum of the R/XSDT itself during Linux table scan (Richard Schaal)
+
+
+3) iASL compiler
+
+The AML disassembler is integrated into the compiler.  The "-d" option invokes the disassembler  to completely disassemble an input AML file, producing as output a text ASL file with the extension ".dsl" (to avoid name collisions with existing .asl source files.)  A future enhancement will allow the disassembler to obtain the BIOS DSDT from the registry under Windows.
+
+Fixed a problem with the VendorShort and VendorLong resource descriptors where an invalid AML sequence was created.
+
+Implemented a fix for BufferData term in the ASL parser.  It was inadvertently defined twice, allowing invalid syntax to pass and causing reduction conflicts.
+
+Fixed a problem where the Ones opcode could get converted to a value of zero if "Ones" was used where a byte, word or dword value was expected.  The 64-bit value is now truncated to the correct size with the correct value.
+
+
+----------------------------------------
 02 July 2002.  Summary of changes for this release.
 
 
