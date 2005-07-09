@@ -1,4 +1,49 @@
 ----------------------------------------
+22 May 2003.  Summary of changes for version 20030522:
+
+1) ACPI CA Core Subsystem:
+
+Found and fixed a reported problem where an AE_NOT_FOUND error occurred occasionally during _BST evaluation.  This turned out to be an Owner ID allocation issue where a called method did not get a new ID assigned to it.  Eventually, (after 64k calls), the Owner ID UINT16 would wraparound so that the ID would be the same as the caller’s and the called method would delete the caller’s namespace.
+
+Implemented extended error reporting for control methods that are aborted due to a run-time exception.  Output includes the exact AML instruction that caused the method abort, a dump of the method locals and arguments at the time of the abort, and a trace of all nested control method calls.
+
+Modified the interpreter to allow the creation of buffers of zero length from the AML code. Implemented new code to ensure that no attempt is made to actually allocate a memory buffer (of length zero) – instead, a simple buffer object with a NULL buffer pointer and length zero is created.  A warning is no longer issued when the AML attempts to create a zero-length buffer.
+
+Implemented a workaround for the “leading asterisk issue” in _HIDs, _UIDs, and _CIDs in the AML interpreter.  One leading asterisk is automatically removed if present in any HID, UID, or CID strings.  The iASL compiler will still flag this asterisk as an error, however.
+
+Implemented full support for _CID methods that return a package of multiple CIDs (Compatible IDs).  The AcpiGetObjectInfo() interface now additionally returns a device _CID list if present.  This required a change to the external interface in order to pass an ACPI_BUFFER object as a parameter since the _CID list is of variable length.
+
+Fixed a problem with the new AE_SAME_HANDLER exception where handler initialization code did not know about this exception.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release (20030509):
+    Non-Debug Version:  73.4K Code,   9.7K Data,   83.1K Total
+    Debug Version:     156.1K Code,  63.9K Data,  220.0K Total
+  Current Release:
+    Non-Debug Version:  73.7K Code,   9.7K Data,   83.4K Total
+    Debug Version:     156.9K Code,  64.2K Data,  221.1K Total
+
+
+2) Linux:
+
+Fixed a bug in which we would reinitialize the ACPI interrupt after it was already working, thus disabling all ACPI and the IRQs for any other device sharing the interrupt. (Thanks to Stian Jordet)
+
+Toshiba driver update (John Belmonte)
+
+Return only 0 or 1 for our interrupt handler status (Andrew Morton)
+
+
+3) iASL Compiler:
+
+Fixed a reported problem where multiple (nested) ElseIf() statements were not handled correctly by the compiler, resulting in incorrect warnings and incorrect AML code.  This was a problem in both the ASL parser and the code generator.
+
+
+4) Documentation:
+
+Added changes to existing interfaces, new exception codes, and new text concerning reference count object management versus garbage collection.
+
+----------------------------------------
 09 May 2003.  Summary of changes for version 20030509.
 
 
