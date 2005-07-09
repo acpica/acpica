@@ -1,4 +1,51 @@
 ----------------------------------------
+15 October 2004.  Summary of changes for version 20041015:
+
+Note:  ACPI CA is currently undergoing an in-depth and complete formal evaluation to test/verify the following areas. Other suggestions are welcome. This will result in an increase in the frequency of releases and the number of bug fixes in the next few months.
+  - Functional tests for all ASL/AML operators
+  - All implicit/explicit type conversions
+  - Bit fields and operation regions
+  - 64-bit math support and 32-bit-only "truncated" math support
+  - Exceptional conditions, both compiler and interpreter
+  - Dynamic object deletion and memory leaks
+  - ACPI 3.0 support when implemented
+  - External interfaces to the ACPI subsystem
+
+
+1) ACPI CA Core Subsystem:
+
+Fixed two alignment issues on 64-bit platforms - within debug statements in AcpiEvGpeDetect and AcpiEvCreateGpeBlock. Removed references to the Address field within the non-aligned ACPI generic address structure.
+
+Fixed a problem in the Increment and Decrement operators where incorrect operand resolution could result in the inadvertent modification of the original integer when the integer is passed into another method as an argument and the arg is then incremented/decremented.
+
+Fixed a problem in the FromBCD operator where the upper 32-bits of a 64-bit BCD number were truncated during conversion.
+
+Fixed a problem in the ToDecimal operator where the length of the resulting string could be set incorrectly too long if the input operand was a Buffer object.
+
+Fixed a problem in the Logical operators (LLess, etc.) where a NULL byte (0) within a buffer would prematurely terminate a compare between buffer objects.
+
+Added a check for string overflow (>200 characters as per the ACPI specification) during the Concatenate operator with two string operands.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  77.8K Code,  11.5K Data,   89.3K Total
+    Debug Version:     164.6K Code,  68.5K Data,  233.1K Total
+  Current Release:
+    Non-Debug Version:  78.0K Code,  11.5K Data,   89.5K Total
+    Debug Version:     164.8K Code,  68.6K Data,  233.4K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Allow the use of the ObjectType operator on uninitialized Locals and Args (returns 0 as per the ACPI specification).
+
+Fixed a problem where the compiler would fault if there was a syntax error in the FieldName of all of the various CreateXXXField operators.
+
+Disallow the use of lower case letters within the EISAID macro, as per the ACPI specification.  All EISAID strings must be of the form "UUUNNNN" Where U is an uppercase letter and N is a hex digit.
+
+
+----------------------------------------
 06 October 2004.  Summary of changes for version 20041006:
 
 1) ACPI CA Core Subsystem:
