@@ -1,4 +1,45 @@
 ----------------------------------------
+06 October 2004.  Summary of changes for version 20041006:
+
+1) ACPI CA Core Subsystem:
+
+Implemented support for the ACPI 3.0 Timer operator. This ASL function implements a 64-bit timer with 100 nanosecond granularity.
+
+Defined a new OSL interface, AcpiOsGetTimer. This interface is used to implement the ACPI 3.0 Timer operator.  This allows the host OS to implement the timer with the best clock available. Also, it keeps the core subsystem out of the clock handling business, since the host OS (usually) performs this function.
+
+Fixed an alignment issue on 64-bit platforms. The HwLowLevelRead(Write) functions use a 64-bit address which is part of the packed ACPI Generic Address Structure. Since the structure is non-aligned, the alignment macros are now used to extract the address to a local variable before use.
+
+Fixed a problem where the ToInteger operator assumed all input strings were hexadecimal. The operator now handles both decimal strings and hex strings (prefixed with "0x").
+
+Fixed a problem where the string length in the string object created as a result of the internal ConvertToString procedure could be incorrect. This potentially affected all implicit conversions and also the ToDecimalString and ToHexString operators.
+
+Fixed two problems in the ToString operator. If the length parameter was zero, an incorrect string object was created and the value of the input length parameter was inadvertently changed from zero to Ones.
+
+Fixed a problem where the optional ResourceSource string in the ExtendedIRQ resource macro was ignored.
+
+Simplified the interfaces to the internal division functions, reducing code size and complexity.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  77.9K Code,  11.4K Data,   89.3K Total
+    Debug Version:     164.5K Code,  68.3K Data,  232.8K Total
+  Current Release:
+    Non-Debug Version:  77.8K Code,  11.5K Data,   89.3K Total
+    Debug Version:     164.6K Code,  68.5K Data,  233.1K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Implemented support for the ACPI 3.0 Timer operator.
+
+Fixed a problem where the Default() operator was inadvertently ignored in a Switch/Case block.  This was a problem in the translation of the Switch statement to If...Else pairs.
+
+Added support to allow a standalone Return operator, with no parentheses (or operands).
+
+Fixed a problem with code generation for the ElseIf operator where the translated Else...If parse tree was improperly constructed leading to the loss of some code.
+
+----------------------------------------
 22 September 2004.  Summary of changes for version 20040922:
 
 1) ACPI CA Core Subsystem:
