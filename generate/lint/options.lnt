@@ -47,7 +47,7 @@
 
 /* Symbol exceptions */
 
--esym( 528, _THIS_MODULE)                   // Symbol not always used, but always present
+-esym( 528, _AcpiModuleName)                // Symbol not always used, but always present
 -esym( 550, CurrentSp)                      // Used to track stack use
 -esym( 534, AcpiDmDumpName)                 // Return value not always used
 -esym( 534, AcpiDmCommaIfListMember)        // Return value not always used
