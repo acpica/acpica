@@ -1,4 +1,56 @@
 ----------------------------------------
+Summary of changes for this label: 08_16_01
+
+ACPI CA Core Subsystem:
+
+The following ACPI 2.0 ASL operators have been implemented in the AML
+interpreter (These are already supported by the Intel ASL compiler): 
+ToDecimalString, ToHexString, ToString, ToInteger, and ToBuffer.
+
+Support for 64-bit AML constants is implemented in the AML parser, debugger,
+and disassembler.
+
+The internal memory tracking mechanism (leak detection code) has been upgraded
+to reduce the memory overhead (a separate tracking block is no longer allocated
+for each memory allocation), and now supports all of the internal object
+caches.
+
+The data structures and code for the internal object caches have been coelesced
+and optimized so that there is a single cache and memory list data structure
+and a single group of functions that implement generic cache management. 
+This has reduced the code size in both the debug and release versions of the
+subsystem.
+
+The DEBUG_PRINT macro(s) have been optimized for size and replaced by
+ACPI_DEBUG_PRINT.  The syntax for this macro is slightly different, because
+it generates a single call to an internal function.  This results in a savings
+of about 90 bytes per invocation, resulting in an overall code and data
+savings of about 16% in the debug version of the subsystem.
+
+
+Linux:
+
+Fixed C3 disk corruption problems and re-enabled C3 on supporting machines.
+
+Integrated low-level sleep code by Patrick Mochel.
+
+Further tweaked source code Linuxization.
+
+Other minor fixes.
+
+
+ASL Compiler:
+
+Support for ACPI 2.0 variable length packages is fixed/completed.
+
+Fixed a problem where the optional length parameter for the ACPI 2.0
+ToString operator.
+
+Fixed multiple extraneous error messages when a syntax error is detected
+within the declaration line of a control method.
+
+
+----------------------------------------
 Summary of changes for this label: 07_17_01
 
 ACPI CA Core Subsystem:
