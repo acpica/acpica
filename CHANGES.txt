@@ -1,4 +1,83 @@
 ----------------------------------------
+Summary of changes for this label: 10_18_01
+
+ACPI CA Core Subsystem:
+
+Fixed a problem with the internal object reference count mechanism that
+occasionally caused premature object deletion. This resolves all of the
+outstanding problem reports where an object is deleted in the middle of an
+interpreter evaluation.  Although this problem only showed up in rather
+obscure cases, the solution to the problem involved an adjustment of all
+reference counts involving objects attached to namespace nodes.
+
+Fixed a problem with Field support in the interpreter where writing to an
+aligned field whose length is an exact multiple (2 or greater) of the field
+access granularity would cause an attempt to write beyond the end of the
+field.
+
+The top level AML opcode execution functions within the interpreter have been
+renamed with a more meaningful and consistent naming convention.  The modules
+exmonad.c and exdyadic.c were eliminated.  New modules are exoparg1.c,
+exoparg2.c, exoparg3.c, and exoparg6.c.
+
+Support for the ACPI 2.0 "Mid" ASL operator has been implemented.
+
+Fixed a problem where the AML debugger was causing some internal objects to
+not be deleted during subsystem termination.
+
+Fixed a problem with the external AcpiEvaluateObject interface where the
+subsystem would fault if the named object to be evaluated refered to a
+constant such as Zero, Ones, etc.
+
+Fixed a problem with IndexFields and BankFields where the subsystem would
+fault if the index, data, or bank registers were not defined in the same
+scope as the field itself. 
+
+Added printf format string checking for compilers that support this
+feature.  Corrected more than 50 instances of issues with format specifiers
+within invocations of ACPI_DEBUG_PRINT throughout the core subsystem code.
+
+The ASL "Revision" operator now returns the ACPI support level implemented
+in the core - the value “2” since the ACPI 2.0 support is more than 50%
+implemented.
+
+Enhanced the output of the AML debugger "dump namespace" command to output
+in a more human-readable form.
+
+Current core subsystem library code sizes are shown below.  These are the
+code and data sizes for the acpica.lib produced by the Microsoft Visual
+C++ 6.0 compiler, and these values do not include any ACPI driver or
+OSPM code.  The debug version of the code includes the full debug trace
+mechanism -- leading to a much larger code and data size.  Note that
+these values will vary depending on the efficiency of the compiler and
+the compiler options used during generation.
+
+     Previous Label (09_20_01):
+    Non-Debug Version:    65K Code,     5K Data,     70K Total
+    Debug Version:       138K Code,    58K Data,    196K Total
+
+     This Label:
+    Non-Debug Version:  63.9K Code,   5.1K Data,   69.0K Total
+    Debug Version:     136.7K Code,  57.4K Data,  194.2K Total
+
+Linux:
+
+Implemented a "Bad BIOS Blacklist" to track machines that have known
+ASL/AML problems.  
+
+Enhanced the /proc interface for the thermal zone driver and added support
+for _HOT (the critical suspend trip point).  The 'info' file now includes
+threshold/policy information, and allows setting of _SCP (cooling
+preference) and _TZP (polling frequency) values to the 'info' file.
+Examples: "echo tzp=5 > info" sets the polling frequency to 5 seconds,
+and "echo scp=1 > info" sets the cooling preference to the passive/quiet
+mode (if supported by the ASL).
+
+Implemented a workaround for a gcc bug that resuted in an OOPs when loading
+the control method battery driver.
+
+
+----------------------------------------
 Summary of changes for this label: 09_20_01
 
 
