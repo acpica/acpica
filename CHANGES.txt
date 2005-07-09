@@ -1,4 +1,39 @@
 ------------------------------------------
+Summary of changes for this label: 04_13_01
+
+
+ACPI CA Core Subsystem:
+
+Restructured support for BufferFields and RegionFields.  BankFields
+support is now fully operational.  All known 32-bit limitations on
+field sizes have been removed.  Both BufferFields and (Operation)
+RegionFields are now supported by the same field management code.
+
+Resource support now supports QWORD address and IO resources.
+The 16/32/64 bit address structures and the Extended IRQ
+structure have been changed to properly handle Source Resource
+strings.
+
+A ThreadId of -1 is now used to indicate a “mutex not acquired”
+condition internally and must never be returned by AcpiOsThreadId.
+This reserved value was changed from 0 since Unix systems allow a
+thread ID of 0.
+
+Linux:
+
+Driver code reorganized to enhance portability
+
+Added a kernel configuration option to control ACPI_DEBUG
+
+Fixed the EC driver to honor _GLK.
+
+ASL Compiler, version X2016:
+
+Fixed support for the “FixedHw” keyword.  Previously, the FixedHw
+address space was set to 0, not 0x7f as it should be.
+
+
+------------------------------------------
 Summary of changes for this label: 03_13_01
 
 
