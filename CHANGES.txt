@@ -1,4 +1,30 @@
 -------------------------------------------
+Summary of changes for this label: 09_15_00
+
+The new initialization architecture is implemented.  New interfaces are:
+AcpiInitializeSubsystem (replaces AcpiInitialize)
+AcpiEnableSubsystem
+Obsolete Interfaces:
+AcpiLoadNamespace (Namespace is automatically loaded when a table is loaded)
+
+The ACPI_OPERAND_OBJECT has been optimized to shrink its size from 52 bytes
+to 32 bytes.  There is usually one of these for every namespace object, so
+the memory savings is significant.
+
+Implemented just-in-time evaluation of the CreateField operators.
+
+Bug fixes for IA-64 support have been integrated.
+
+Additional code review comments have been implemented
+
+The so-called “third pass parse” has been replaced by a final walk through the
+namespace to initialize all operation regions (address spaces) and fields that
+have not yet been initialized during the execution of the various _INI and REG
+methods.
+
+New file - namespace/nsinit.c
+
+-------------------------------------------
 Summary of changes for this label: 09_01_00
 
 Namespace manager data structures have been reworked to change the primary 
