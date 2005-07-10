@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  ******************************************************************************/
 
@@ -529,7 +529,7 @@ AcpiUtUpdateObjectReference (
     ACPI_OPERAND_OBJECT     *Object,
     UINT16                  Action)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
     ACPI_GENERIC_STATE      *StateList = NULL;
     ACPI_OPERAND_OBJECT     *NextObject = NULL;
     ACPI_GENERIC_STATE      *State;
@@ -539,24 +539,17 @@ AcpiUtUpdateObjectReference (
     ACPI_FUNCTION_TRACE_PTR ("UtUpdateObjectReference", Object);
 
 
-    /* Ignore a null object ptr */
-
-    if (!Object)
-    {
-        return_ACPI_STATUS (AE_OK);
-    }
-
-    /* Make sure that this isn't a namespace handle */
-
-    if (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_NAMED)
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
-            "Object %p is NS handle\n", Object));
-        return_ACPI_STATUS (AE_OK);
-    }
-
     while (Object)
     {
+        /* Make sure that this isn't a namespace handle */
+
+        if (ACPI_GET_DESCRIPTOR_TYPE (Object) == ACPI_DESC_TYPE_NAMED)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+                "Object %p is NS handle\n", Object));
+            return_ACPI_STATUS (AE_OK);
+        }
+
         /*
          * All sub-objects must have their reference count incremented also.
          * Different object types have different subobjects.
