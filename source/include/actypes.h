@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.281 $
+ *       $Revision: 1.282 $
  *
  *****************************************************************************/
 
@@ -279,7 +279,9 @@ typedef UINT32                          ACPI_SIZE;
 
 
 /*
- * Miscellaneous common types
+ * This type is used for bitfields in ACPI tables. The only type that is
+ * even remotely portable is UINT8. Anything else is not portable, so
+ * do not add any more bitfield types.
  */
 typedef UINT8                           UINT8_BIT;
 typedef ACPI_NATIVE_UINT                ACPI_PTRDIFF;

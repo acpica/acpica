@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - ACPI 1.0 tables
- *       $Revision: 1.30 $
+ *       $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -140,10 +140,14 @@ typedef struct facs_descriptor_rev1
     UINT32                  HardwareSignature;      /* Hardware configuration signature */
     UINT32                  FirmwareWakingVector;   /* ACPI OS waking vector */
     UINT32                  GlobalLock;             /* Global Lock */
-    UINT8_BIT               S4Bios_f        : 1;    /* Indicates if S4BIOS support is present */
-    UINT8_BIT                               : 7;    /* Reserved, must be zero */
-    UINT8                   Reserved1 [3];          /* Reserved, must be zero */
-    UINT8                   Reserved2 [40];         /* Reserved, must be zero */
+
+    /* Flags (32 bits) */
+
+    UINT8_BIT               S4Bios_f        : 1;    /* 00:    S4BIOS support is present */
+    UINT8_BIT                               : 7;    /* 01-07: Reserved, must be zero */
+    UINT8                   Reserved1[3];           /* 08-31: Reserved, must be zero */
+
+    UINT8                   Reserved2[40];          /* Reserved, must be zero */
 
 } FACS_DESCRIPTOR_REV1;
 
@@ -163,7 +167,7 @@ typedef struct fadt_descriptor_rev1
     UINT8                   AcpiEnable;             /* Value to write to smi_cmd to enable ACPI */
     UINT8                   AcpiDisable;            /* Value to write to smi_cmd to disable ACPI */
     UINT8                   S4BiosReq;              /* Value to write to SMI CMD to enter S4BIOS state */
-    UINT8                   Reserved2;              /* Reserved - must be zero */
+    UINT8                   Reserved2;              /* Reserved, must be zero */
     UINT32                  Pm1aEvtBlk;             /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
     UINT32                  Pm1bEvtBlk;             /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
     UINT32                  Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
@@ -179,7 +183,7 @@ typedef struct fadt_descriptor_rev1
     UINT8                   Gpe0BlkLen;             /* Byte Length of ports at gpe0_blk */
     UINT8                   Gpe1BlkLen;             /* Byte Length of ports at gpe1_blk */
     UINT8                   Gpe1Base;               /* Offset in gpe model where gpe1 events start */
-    UINT8                   Reserved3;              /* Reserved */
+    UINT8                   Reserved3;              /* Reserved, must be zero */
     UINT16                  Plvl2Lat;               /* Worst case HW latency to enter/exit C2 state */
     UINT16                  Plvl3Lat;               /* Worst case HW latency to enter/exit C3 state */
     UINT16                  FlushSize;              /* Size of area read to flush caches */
@@ -189,18 +193,21 @@ typedef struct fadt_descriptor_rev1
     UINT8                   DayAlrm;                /* Index to day-of-month alarm in RTC CMOS RAM */
     UINT8                   MonAlrm;                /* Index to month-of-year alarm in RTC CMOS RAM */
     UINT8                   Century;                /* Index to century in RTC CMOS RAM */
-    UINT8                   Reserved4[3];           /* Reserved - must be zero */
-    UINT8_BIT               WbInvd          : 1;    /* The wbinvd instruction works properly */
-    UINT8_BIT               WbInvdFlush     : 1;    /* The wbinvd flushes but does not invalidate */
-    UINT8_BIT               ProcC1          : 1;    /* All processors support C1 state */
-    UINT8_BIT               Plvl2Up         : 1;    /* C2 state works on MP system */
-    UINT8_BIT               PwrButton       : 1;    /* Power button is handled as a generic feature */
-    UINT8_BIT               SleepButton     : 1;    /* Sleep button is handled as a generic feature, or not present */
-    UINT8_BIT               FixedRTC        : 1;    /* RTC wakeup stat not in fixed register space */
-    UINT8_BIT               Rtcs4           : 1;    /* RTC wakeup stat not possible from S4 */
-    UINT8_BIT               TmrValExt       : 1;    /* The tmr_val width is 32 bits (0 = 24 bits) */
-    UINT8_BIT                               : 7;    /* Reserved - must be zero */
-    UINT8                   Reserved5[2];           /* Reserved - must be zero */
+    UINT8                   Reserved4[3];           /* Reserved, must be zero */
+
+    /* Flags (32 bits) */
+
+    UINT8_BIT               WbInvd          : 1;    /* 00:    The wbinvd instruction works properly */
+    UINT8_BIT               WbInvdFlush     : 1;    /* 01:    The wbinvd flushes but does not invalidate */
+    UINT8_BIT               ProcC1          : 1;    /* 02:    All processors support C1 state */
+    UINT8_BIT               Plvl2Up         : 1;    /* 03:    C2 state works on MP system */
+    UINT8_BIT               PwrButton       : 1;    /* 04:    Power button is handled as a generic feature */
+    UINT8_BIT               SleepButton     : 1;    /* 05:    Sleep button is handled as a generic feature, or not present */
+    UINT8_BIT               FixedRTC        : 1;    /* 06:    RTC wakeup stat not in fixed register space */
+    UINT8_BIT               Rtcs4           : 1;    /* 07:    RTC wakeup stat not possible from S4 */
+    UINT8_BIT               TmrValExt       : 1;    /* 08:    tmr_val width is 32 bits (0 = 24 bits) */
+    UINT8_BIT                               : 7;    /* 09-15: Reserved, must be zero */
+    UINT8                   Reserved5[2];           /* 16-31: Reserved, must be zero */
 
 } FADT_DESCRIPTOR_REV1;
 

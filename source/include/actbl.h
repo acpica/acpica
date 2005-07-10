@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.70 $
+ *       $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -167,7 +167,7 @@ typedef struct rsdp_descriptor /* Root System Descriptor Pointer */
     UINT32                  Length;                 /* XSDT Length in bytes including hdr */
     UINT64                  XsdtPhysicalAddress;    /* 64-bit physical address of XSDT */
     UINT8                   ExtendedChecksum;       /* Checksum of entire table */
-    char                    Reserved [3];           /* Reserved field must be 0 */
+    char                    Reserved [3];           /* Reserved, must be zero */
 
 } RSDP_DESCRIPTOR;
 
@@ -215,9 +215,12 @@ typedef struct multiple_apic_table
 {
     ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
     UINT32                  LocalApicAddress;       /* Physical address of local APIC */
-    UINT8_BIT               PCATCompat      : 1;    /* A one indicates system also has dual 8259s */
-    UINT8_BIT                               : 7;
-    UINT8                   Reserved1[3];
+
+    /* Flags (32 bits) */
+
+    UINT8_BIT               PCATCompat      : 1;    /* 00:    System also has dual 8259s */
+    UINT8_BIT                               : 7;    /* 01-07: Reserved, must be zero */
+    UINT8                   Reserved1[3];           /* 08-31: Reserved, must be zero */
 
 } MULTIPLE_APIC_TABLE;
 
@@ -259,18 +262,18 @@ typedef struct apic_header
 #define TRIGGER_RESERVED        2
 #define TRIGGER_LEVEL           3
 
-/* Common flag definitions */
+/* Common flag definitions (16 bits each) */
 
 #define MPS_INTI_FLAGS \
-    UINT8_BIT               Polarity        : 2;    /* Polarity of APIC I/O input signals */\
-    UINT8_BIT               TriggerMode     : 2;    /* Trigger mode of APIC input signals */\
-    UINT8_BIT                               : 4;    /* Reserved, must be zero */\
-    UINT8                   Reserved1;
+    UINT8_BIT               Polarity        : 2;    /* 00-01: Polarity of APIC I/O input signals */\
+    UINT8_BIT               TriggerMode     : 2;    /* 02-03: Trigger mode of APIC input signals */\
+    UINT8_BIT                               : 4;    /* 04-07: Reserved, must be zero */\
+    UINT8                   Reserved1;              /* 08-15: Reserved, must be zero */
 
 #define LOCAL_APIC_FLAGS \
-    UINT8_BIT               ProcessorEnabled: 1;    /* Processor is usable if set */\
-    UINT8_BIT                               : 7;    /* Reserved, must be zero */\
-    UINT8                   Reserved2;
+    UINT8_BIT               ProcessorEnabled: 1;    /* 00:    Processor is usable if set */\
+    UINT8_BIT                               : 7;    /* 01-07: Reserved, must be zero */\
+    UINT8                   Reserved2;              /* 08-15: Reserved, must be zero */
 
 /* Sub-structures for MADT */
 
@@ -323,7 +326,7 @@ typedef struct madt_local_apic_nmi
 typedef struct madt_address_override
 {
     APIC_HEADER_DEF
-    UINT16                  Reserved;               /* Reserved - must be zero */
+    UINT16                  Reserved;               /* Reserved, must be zero */
     UINT64                  Address;                /* APIC physical address */
 
 } MADT_ADDRESS_OVERRIDE;
@@ -332,7 +335,7 @@ typedef struct madt_io_sapic
 {
     APIC_HEADER_DEF
     UINT8                   IoSapicId;              /* I/O SAPIC ID */
-    UINT8                   Reserved;               /* Reserved - must be zero */
+    UINT8                   Reserved;               /* Reserved, must be zero */
     UINT32                  InterruptBase;          /* Glocal interrupt for SAPIC start */
     UINT64                  Address;                /* SAPIC physical address */
 
@@ -344,7 +347,7 @@ typedef struct madt_local_sapic
     UINT8                   ProcessorId;            /* ACPI processor id */
     UINT8                   LocalSapicId;           /* SAPIC ID */
     UINT8                   LocalSapicEid;          /* SAPIC EID */
-    UINT8                   Reserved [3];           /* Reserved - must be zero */
+    UINT8                   Reserved [3];           /* Reserved, must be zero */
     LOCAL_APIC_FLAGS
     UINT32                  ProcessorUID;           /* Numeric UID - ACPI 3.0 */
     char                    ProcessorUIDString[1];  /* String UID  - ACPI 3.0 */
