@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -491,7 +491,7 @@ AnGetBtype (
 
         if (Op->Asl.ParseOpcode == PARSEOP_METHODCALL)
         {
-            ReferencedNode = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
+            ReferencedNode = Node->Op;
             if (!ReferencedNode)
             {
                printf ("No back ptr to Op: type %X\n", Node->Type);
@@ -1445,8 +1445,7 @@ AnMethodTypingWalkEnd (
                  * The method is untyped at this time (typically a forward
                  *  reference). We must recursively type the method here
                  */
-                TrWalkParseTree (ACPI_CAST_PTR (
-                    ACPI_PARSE_OBJECT, Op->Asl.Child->Asl.Node->Object),
+                TrWalkParseTree (Op->Asl.Child->Asl.Node->Op,
                     ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
                     AnMethodTypingWalkEnd, NULL);
 
@@ -1504,7 +1503,7 @@ AnCheckMethodReturnValue (
 
     /* Examine the parent op of this method */
 
-    OwningOp = ACPI_CAST_PTR (ACPI_PARSE_OBJECT, Node->Object);
+    OwningOp = Node->Op;
     if (OwningOp->Asl.CompileFlags & NODE_METHOD_NO_RETVAL)
     {
         /* Method NEVER returns a value */
