@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.48 $
+ *       $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,6 @@
 /*
  * tbconvrt - Table conversion routines
  */
-
 ACPI_STATUS
 AcpiTbConvertToXsdt (
     ACPI_TABLE_DESC         *TableInfo);
@@ -144,26 +143,10 @@ AcpiTbGetTableCount (
     RSDP_DESCRIPTOR         *RSDP,
     ACPI_TABLE_HEADER       *RSDT);
 
-static void
-AcpiTbInitGenericAddress (
-    ACPI_GENERIC_ADDRESS    *NewGasStruct,
-    UINT8                   RegisterBitWidth,
-    ACPI_PHYSICAL_ADDRESS   Address);
-
-static void
-AcpiTbConvertFadt1 (
-    FADT_DESCRIPTOR_REV2   *LocalFadt,
-    FADT_DESCRIPTOR_REV1   *OriginalFadt);
-
-static void
-AcpiTbConvertFadt2 (
-    FADT_DESCRIPTOR_REV2   *LocalFadt,
-    FADT_DESCRIPTOR_REV2   *OriginalFadt);
 
 /*
  * tbget - Table "get" routines
  */
-
 ACPI_STATUS
 AcpiTbGetTable (
     ACPI_POINTER            *Address,
@@ -198,50 +181,21 @@ ACPI_STATUS
 AcpiTbValidateRsdt (
     ACPI_TABLE_HEADER       *TablePtr);
 
-static ACPI_STATUS
-AcpiTbGetThisTable (
-    ACPI_POINTER            *Address,
-    ACPI_TABLE_HEADER       *Header,
-    ACPI_TABLE_DESC         *TableInfo);
-
-static ACPI_STATUS
-AcpiTbTableOverride (
-    ACPI_TABLE_HEADER       *Header,
-    ACPI_TABLE_DESC         *TableInfo);
 
 /*
  * tbgetall - get multiple required tables
  */
-
 ACPI_STATUS
 AcpiTbGetRequiredTables (
     void);
-
-static ACPI_STATUS
-AcpiTbGetPrimaryTable (
-    ACPI_POINTER            *Address,
-    ACPI_TABLE_DESC         *TableInfo);
-
-static ACPI_STATUS
-AcpiTbGetSecondaryTable (
-    ACPI_POINTER            *Address,
-    ACPI_STRING             Signature,
-    ACPI_TABLE_DESC         *TableInfo);
 
 
 /*
  * tbinstall - Table installation
  */
-
 ACPI_STATUS
 AcpiTbInstallTable (
     ACPI_TABLE_DESC         *TableInfo);
-
-static ACPI_STATUS
-AcpiTbMatchSignature (
-    char                    *Signature,
-    ACPI_TABLE_DESC         *TableInfo,
-    UINT8                   SearchType);
 
 ACPI_STATUS
 AcpiTbRecognizeTable (
@@ -257,7 +211,6 @@ AcpiTbInitTableDescriptor (
 /*
  * tbremove - Table removal and deletion
  */
-
 void
 AcpiTbDeleteAllTables (
     void);
@@ -278,7 +231,6 @@ AcpiTbUninstallTable (
 /*
  * tbxfroot - RSDP, RSDT utilities
  */
-
 ACPI_STATUS
 AcpiTbFindTable (
     char                    *Signature,
@@ -290,21 +242,14 @@ ACPI_STATUS
 AcpiTbGetTableRsdt (
     void);
 
-static ACPI_STATUS
-AcpiTbFindRsdp (
-    ACPI_TABLE_DESC         *TableInfo,
-    UINT32                  Flags);
-
-static UINT8 *
-AcpiTbScanMemoryForRsdp (
-    UINT8                   *StartAddress,
-    UINT32                  Length);
+ACPI_STATUS
+AcpiTbValidateRsdp (
+    RSDP_DESCRIPTOR         *Rsdp);
 
 
 /*
  * tbutils - common table utilities
  */
-
 ACPI_STATUS
 AcpiTbVerifyTableChecksum (
     ACPI_TABLE_HEADER       *TableHeader);
@@ -317,12 +262,5 @@ AcpiTbChecksum (
 ACPI_STATUS
 AcpiTbValidateTableHeader (
     ACPI_TABLE_HEADER       *TableHeader);
-
-#ifdef ACPI_OBSOLETE_FUNCTIONS
-ACPI_STATUS
-AcpiTbHandleToObject (
-    UINT16                  TableId,
-    ACPI_TABLE_DESC         **TableDesc);
-#endif
 
 #endif /* __ACTABLES_H__ */
