@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Table data structures defined in ACPI specification
- *       $Revision: 1.68 $
+ *       $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -209,18 +209,17 @@ typedef struct acpi_table_header /* ACPI common table header */
 #define DUAL_PIC                0
 #define MULTIPLE_APIC           1
 
-
 /* Master MADT */
 
 typedef struct multiple_apic_table
 {
     ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
     UINT32                  LocalApicAddress;       /* Physical address of local APIC */
-    UINT32_BIT              PCATCompat      : 1;    /* A one indicates system also has dual 8259s */
-    UINT32_BIT              Reserved1       : 31;
+    UINT8_BIT               PCATCompat      : 1;    /* A one indicates system also has dual 8259s */
+    UINT8_BIT                               : 7;
+    UINT8                   Reserved1[3];
 
 } MULTIPLE_APIC_TABLE;
-
 
 /* Values for Type in APIC_HEADER_DEF */
 
@@ -263,13 +262,15 @@ typedef struct apic_header
 /* Common flag definitions */
 
 #define MPS_INTI_FLAGS \
-    UINT16_BIT              Polarity        : 2;    /* Polarity of APIC I/O input signals */\
-    UINT16_BIT              TriggerMode     : 2;    /* Trigger mode of APIC input signals */\
-    UINT16_BIT              Reserved1       : 12;   /* Reserved, must be zero */
+    UINT8_BIT               Polarity        : 2;    /* Polarity of APIC I/O input signals */\
+    UINT8_BIT               TriggerMode     : 2;    /* Trigger mode of APIC input signals */\
+    UINT8_BIT                               : 4;    /* Reserved, must be zero */\
+    UINT8                   Reserved1;
 
 #define LOCAL_APIC_FLAGS \
-    UINT32_BIT              ProcessorEnabled: 1;    /* Processor is usable if set */\
-    UINT32_BIT              Reserved2       : 31;   /* Reserved, must be zero */
+    UINT8_BIT               ProcessorEnabled: 1;    /* Processor is usable if set */\
+    UINT8_BIT                               : 7;    /* Reserved, must be zero */\
+    UINT8                   Reserved2;
 
 /* Sub-structures for MADT */
 

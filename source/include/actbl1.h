@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - ACPI 1.0 tables
- *       $Revision: 1.25 $
+ *       $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -124,7 +124,7 @@
  */
 typedef struct rsdt_descriptor_rev1
 {
-    ACPI_TABLE_HEADER       Header;                 /* ACPI Table header */
+    ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
     UINT32                  TableOffsetEntry [1];   /* Array of pointers to other */
                                                     /* ACPI tables */
 } RSDT_DESCRIPTOR_REV1;
@@ -140,9 +140,10 @@ typedef struct facs_descriptor_rev1
     UINT32                  HardwareSignature;      /* Hardware configuration signature */
     UINT32                  FirmwareWakingVector;   /* ACPI OS waking vector */
     UINT32                  GlobalLock;             /* Global Lock */
-    UINT32_BIT              S4Bios_f        : 1;    /* Indicates if S4BIOS support is present */
-    UINT32_BIT              Reserved1       : 31;   /* Must be 0 */
-    UINT8                   Resverved3 [40];        /* Reserved - must be zero */
+    UINT8_BIT               S4Bios_f        : 1;    /* Indicates if S4BIOS support is present */
+    UINT8_BIT                               : 7;    /* Reserved, must be zero */
+    UINT8                   Reserved1 [3];          /* Reserved, must be zero */
+    UINT8                   Reserved2 [40];         /* Reserved, must be zero */
 
 } FACS_DESCRIPTOR_REV1;
 
@@ -152,7 +153,7 @@ typedef struct facs_descriptor_rev1
  */
 typedef struct fadt_descriptor_rev1
 {
-    ACPI_TABLE_HEADER       Header;                 /* ACPI Table header */
+    ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
     UINT32                  FirmwareCtrl;           /* Physical address of FACS */
     UINT32                  Dsdt;                   /* Physical address of DSDT */
     UINT8                   Model;                  /* System Interrupt Model */
@@ -188,19 +189,18 @@ typedef struct fadt_descriptor_rev1
     UINT8                   DayAlrm;                /* Index to day-of-month alarm in RTC CMOS RAM */
     UINT8                   MonAlrm;                /* Index to month-of-year alarm in RTC CMOS RAM */
     UINT8                   Century;                /* Index to century in RTC CMOS RAM */
-    UINT8                   Reserved4;              /* Reserved */
-    UINT8                   Reserved4a;             /* Reserved */
-    UINT8                   Reserved4b;             /* Reserved */
-    UINT32_BIT              WbInvd          : 1;    /* The wbinvd instruction works properly */
-    UINT32_BIT              WbInvdFlush     : 1;    /* The wbinvd flushes but does not invalidate */
-    UINT32_BIT              ProcC1          : 1;    /* All processors support C1 state */
-    UINT32_BIT              Plvl2Up         : 1;    /* C2 state works on MP system */
-    UINT32_BIT              PwrButton       : 1;    /* Power button is handled as a generic feature */
-    UINT32_BIT              SleepButton     : 1;    /* Sleep button is handled as a generic feature, or not present */
-    UINT32_BIT              FixedRTC        : 1;    /* RTC wakeup stat not in fixed register space */
-    UINT32_BIT              Rtcs4           : 1;    /* RTC wakeup stat not possible from S4 */
-    UINT32_BIT              TmrValExt       : 1;    /* The tmr_val width is 32 bits (0 = 24 bits) */
-    UINT32_BIT              Reserved5       : 23;   /* Reserved - must be zero */
+    UINT8                   Reserved4[3];           /* Reserved - must be zero */
+    UINT8_BIT               WbInvd          : 1;    /* The wbinvd instruction works properly */
+    UINT8_BIT               WbInvdFlush     : 1;    /* The wbinvd flushes but does not invalidate */
+    UINT8_BIT               ProcC1          : 1;    /* All processors support C1 state */
+    UINT8_BIT               Plvl2Up         : 1;    /* C2 state works on MP system */
+    UINT8_BIT               PwrButton       : 1;    /* Power button is handled as a generic feature */
+    UINT8_BIT               SleepButton     : 1;    /* Sleep button is handled as a generic feature, or not present */
+    UINT8_BIT               FixedRTC        : 1;    /* RTC wakeup stat not in fixed register space */
+    UINT8_BIT               Rtcs4           : 1;    /* RTC wakeup stat not possible from S4 */
+    UINT8_BIT               TmrValExt       : 1;    /* The tmr_val width is 32 bits (0 = 24 bits) */
+    UINT8_BIT                               : 7;    /* Reserved - must be zero */
+    UINT8                   Reserved5[2];           /* Reserved - must be zero */
 
 } FADT_DESCRIPTOR_REV1;
 
