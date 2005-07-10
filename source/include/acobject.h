@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.127 $
+ *       $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -208,6 +208,7 @@ typedef struct acpi_object_integer
 
 } ACPI_OBJECT_INTEGER;
 
+
 /*
  * Note: The String and Buffer object must be identical through the Pointer
  * element.  There is code that depends on this.
@@ -277,7 +278,7 @@ typedef struct acpi_object_method
     ACPI_INTERNAL_METHOD            Implementation;
     UINT8                           Concurrency;
     UINT8                           ThreadCount;
-    ACPI_OWNER_ID                   OwningId;
+    ACPI_OWNER_ID                   OwnerId;
 
 } ACPI_OBJECT_METHOD;
 
@@ -565,7 +566,6 @@ typedef union acpi_operand_object
  * ACPI_DESCRIPTOR - objects that share a common descriptor identifier
  *
  *****************************************************************************/
-
 
 /* Object descriptor types */
 

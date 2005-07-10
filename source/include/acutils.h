@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.176 $
+ *       $Revision: 1.177 $
  *
  *****************************************************************************/
 
@@ -193,10 +193,6 @@ AcpiUtHexToAsciiChar (
 BOOLEAN
 AcpiUtValidObjectType (
     ACPI_OBJECT_TYPE        Type);
-
-ACPI_OWNER_ID
-AcpiUtAllocateOwnerId (
-    UINT32                  IdType);
 
 
 /*
@@ -670,6 +666,14 @@ AcpiUtShortDivide (
 /*
  * utmisc
  */
+ACPI_STATUS
+AcpiUtAllocateOwnerId (
+    ACPI_OWNER_ID           *OwnerId);
+
+ACPI_STATUS
+AcpiUtReleaseOwnerId (
+    ACPI_OWNER_ID           OwnerId);
+
 ACPI_STATUS
 AcpiUtWalkPackageTree (
     ACPI_OPERAND_OBJECT     *SourceObject,

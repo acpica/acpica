@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.33 $
+ *       $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -144,7 +144,6 @@ typedef struct acpi_walk_state
     UINT8                       WalkType;
     ACPI_OWNER_ID               OwnerId;                            /* Owner of objects created during the walk */
     BOOLEAN                     LastPredicate;                      /* Result of last predicate */
-    UINT8                       Reserved;                           /* For alignment */
     UINT8                       CurrentResult;                      /* */
     UINT8                       NextOpInfo;                         /* Info about NextOp */
     UINT8                       NumOperands;                        /* Stack pointer for Operands[] array */
@@ -230,7 +229,7 @@ typedef struct acpi_device_walk_info
 typedef struct acpi_walk_info
 {
     UINT32                  DebugLevel;
-    UINT32                  OwnerId;
+    ACPI_OWNER_ID           OwnerId;
     UINT8                   DisplayType;
 
 } ACPI_WALK_INFO;

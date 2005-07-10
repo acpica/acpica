@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.210 $
+ *       $Revision: 1.211 $
  *
  *****************************************************************************/
 
@@ -129,6 +129,13 @@ typedef UINT32                          ACPI_MUTEX_HANDLE;
 #define AML_NUM_OPCODES                 0x7F
 
 
+/* Forward declarations */
+
+struct acpi_walk_state;
+struct acpi_obj_mutex;
+union acpi_parse_object;
+
+
 /*****************************************************************************
  *
  * Mutex typedefs and structs
@@ -189,32 +196,30 @@ static char                 *AcpiGbl_MutexNames[] =
 #endif
 
 
+/* Owner IDs are used to track namespace nodes for selective deletion */
+
+typedef UINT8                           ACPI_OWNER_ID;
+#define ACPI_OWNER_ID_MAX               0xFF
+
+/* This Thread ID means that the mutex is not in use (unlocked) */
+
+#define ACPI_MUTEX_NOT_ACQUIRED         (UINT32) -1
+
 /* Table for the global mutexes */
 
 typedef struct acpi_mutex_info
 {
     ACPI_MUTEX                  Mutex;
     UINT32                      UseCount;
-    UINT32                      OwnerId;
+    UINT32                      ThreadId;
 
 } ACPI_MUTEX_INFO;
-
-/* This owner ID means that the mutex is not in use (unlocked) */
-
-#define ACPI_MUTEX_NOT_ACQUIRED         (UINT32) (-1)
 
 
 /* Lock flag parameter for various interfaces */
 
 #define ACPI_MTX_DO_NOT_LOCK            0
 #define ACPI_MTX_LOCK                   1
-
-
-typedef UINT16                          ACPI_OWNER_ID;
-#define ACPI_OWNER_TYPE_TABLE           0x0
-#define ACPI_OWNER_TYPE_METHOD          0x1
-#define ACPI_FIRST_METHOD_ID            0x0001
-#define ACPI_FIRST_TABLE_ID             0xF000
 
 
 /* Field access granularities */
@@ -260,13 +265,20 @@ typedef struct acpi_namespace_node
 {
     UINT8                       Descriptor;     /* Used to differentiate object descriptor types */
     UINT8                       Type;           /* Type associated with this name */
-    UINT16                      OwnerId;
+    UINT16                      ReferenceCount; /* Current count of references and children */
     ACPI_NAME_UNION             Name;           /* ACPI Name, always 4 chars per ACPI spec */
     union acpi_operand_object   *Object;        /* Pointer to attached ACPI object (optional) */
     struct acpi_namespace_node  *Child;         /* First child */
     struct acpi_namespace_node  *Peer;          /* Next peer*/
-    UINT16                      ReferenceCount; /* Current count of references and children */
+    UINT8                       OwnerId;        /* Who created this node */
     UINT8                       Flags;
+
+    /* Fields used by the ASL compiler only */
+
+#ifdef ACPI_ASL_COMPILER
+    UINT32                      Value;
+    union acpi_parse_object     *Op;
+#endif
 
 } ACPI_NAMESPACE_NODE;
 
@@ -298,7 +310,7 @@ typedef struct acpi_table_desc
     UINT64                  PhysicalAddress;
     UINT32                  AmlLength;
     ACPI_SIZE               Length;
-    ACPI_OWNER_ID           TableId;
+    ACPI_OWNER_ID           OwnerId;
     UINT8                   Type;
     UINT8                   Allocation;
     BOOLEAN                 LoadedIntoNamespace;
@@ -511,13 +523,6 @@ typedef struct acpi_field_info
 #define ACPI_CONTROL_PREDICATE_EXECUTING     0xC2
 #define ACPI_CONTROL_PREDICATE_FALSE         0xC3
 #define ACPI_CONTROL_PREDICATE_TRUE          0xC4
-
-
-/* Forward declarations */
-
-struct acpi_walk_state;
-struct acpi_obj_mutex;
-union acpi_parse_object;
 
 
 #define ACPI_STATE_COMMON                  /* Two 32-bit fields and a pointer */\
