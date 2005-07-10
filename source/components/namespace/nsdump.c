@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.168 $
+ *              $Revision: 1.169 $
  *
  *****************************************************************************/
 
@@ -284,7 +284,7 @@ AcpiNsDumpOneObject (
 
     /* Check if the owner matches */
 
-    if ((Info->OwnerId != ACPI_UINT32_MAX) &&
+    if ((Info->OwnerId != ACPI_OWNER_ID_MAX) &&
         (Info->OwnerId != ThisNode->OwnerId))
     {
         return (AE_OK);
