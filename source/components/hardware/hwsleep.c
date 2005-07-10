@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.77 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -369,14 +369,14 @@ AcpiEnterSleepState (
      * 1) Disable/Clear all GPEs
      * 2) Enable all wakeup GPEs
      */
-    Status = AcpiHwDisableAllGpes ();
+    Status = AcpiHwDisableAllGpes (ACPI_ISR);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
     AcpiGbl_SystemAwakeAndRunning = FALSE;
 
-    Status = AcpiHwEnableAllWakeupGpes ();
+    Status = AcpiHwEnableAllWakeupGpes (ACPI_ISR);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -531,14 +531,14 @@ AcpiEnterSleepStateS4bios (
      * 1) Disable/Clear all GPEs
      * 2) Enable all wakeup GPEs
      */
-    Status = AcpiHwDisableAllGpes ();
+    Status = AcpiHwDisableAllGpes (ACPI_ISR);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
     AcpiGbl_SystemAwakeAndRunning = FALSE;
 
-    Status = AcpiHwEnableAllWakeupGpes ();
+    Status = AcpiHwEnableAllWakeupGpes (ACPI_ISR);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -671,14 +671,14 @@ AcpiLeaveSleepState (
      * 1) Disable/Clear all GPEs
      * 2) Enable all runtime GPEs
      */
-    Status = AcpiHwDisableAllGpes ();
+    Status = AcpiHwDisableAllGpes (ACPI_NOT_ISR);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
     AcpiGbl_SystemAwakeAndRunning = TRUE;
 
-    Status = AcpiHwEnableAllRuntimeGpes ();
+    Status = AcpiHwEnableAllRuntimeGpes (ACPI_NOT_ISR);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
