@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.43 $
+ *       $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -146,8 +146,8 @@
 typedef struct rsdt_descriptor_rev2
 {
     ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
-    UINT32                  TableOffsetEntry [1];   /* Array of pointers to  */
-                                                    /* ACPI table headers */
+    UINT32                  TableOffsetEntry[1];    /* Array of pointers to ACPI tables */
+
 } RSDT_DESCRIPTOR_REV2;
 
 
@@ -157,8 +157,8 @@ typedef struct rsdt_descriptor_rev2
 typedef struct xsdt_descriptor_rev2
 {
     ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
-    UINT64                  TableOffsetEntry [1];   /* Array of pointers to  */
-                                                    /* ACPI table headers */
+    UINT64                  TableOffsetEntry[1];    /* Array of pointers to ACPI tables */
+
 } XSDT_DESCRIPTOR_REV2;
 
 
@@ -167,10 +167,10 @@ typedef struct xsdt_descriptor_rev2
  */
 typedef struct facs_descriptor_rev2
 {
-    char                    Signature[4];           /* ACPI signature */
+    char                    Signature[4];           /* ASCII table signature */
     UINT32                  Length;                 /* Length of structure, in bytes */
     UINT32                  HardwareSignature;      /* Hardware configuration signature */
-    UINT32                  FirmwareWakingVector;   /* 32bit physical address of the Firmware Waking Vector. */
+    UINT32                  FirmwareWakingVector;   /* 32-bit physical address of the Firmware Waking Vector. */
     UINT32                  GlobalLock;             /* Global Lock used to synchronize access to shared hardware resources */
 
     /* Flags (32 bits) */
@@ -179,7 +179,7 @@ typedef struct facs_descriptor_rev2
     UINT8_BIT                               : 7;    /* 01-07: Reserved, must be zero */
     UINT8                   Reserved1[3];           /* 08-31: Reserved, must be zero */
 
-    UINT64                  XFirmwareWakingVector;  /* 64bit physical address of the Firmware Waking Vector. */
+    UINT64                  XFirmwareWakingVector;  /* 64-bit physical address of the Firmware Waking Vector. */
     UINT8                   Version;                /* Version of this table */
     UINT8                   Reserved3[31];          /* Reserved, must be zero */
 

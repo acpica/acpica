@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - ACPI 1.0 tables
- *       $Revision: 1.31 $
+ *       $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -125,8 +125,8 @@
 typedef struct rsdt_descriptor_rev1
 {
     ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
-    UINT32                  TableOffsetEntry [1];   /* Array of pointers to other */
-                                                    /* ACPI tables */
+    UINT32                  TableOffsetEntry[1];    /* Array of pointers to ACPI tables */
+
 } RSDT_DESCRIPTOR_REV1;
 
 
@@ -135,8 +135,8 @@ typedef struct rsdt_descriptor_rev1
  */
 typedef struct facs_descriptor_rev1
 {
-    char                    Signature[4];           /* ACPI Signature */
-    UINT32                  Length;                 /* Length of structure, in bytes */
+    char                    Signature[4];           /* ASCII table signature */
+    UINT32                  Length;                 /* Length of structure in bytes */
     UINT32                  HardwareSignature;      /* Hardware configuration signature */
     UINT32                  FirmwareWakingVector;   /* ACPI OS waking vector */
     UINT32                  GlobalLock;             /* Global Lock */
@@ -161,7 +161,7 @@ typedef struct fadt_descriptor_rev1
     UINT32                  FirmwareCtrl;           /* Physical address of FACS */
     UINT32                  Dsdt;                   /* Physical address of DSDT */
     UINT8                   Model;                  /* System Interrupt Model */
-    UINT8                   Reserved1;              /* Reserved */
+    UINT8                   Reserved1;              /* Reserved, must be zero */
     UINT16                  SciInt;                 /* System vector of SCI interrupt */
     UINT32                  SmiCmd;                 /* Port address of SMI command port */
     UINT8                   AcpiEnable;             /* Value to write to smi_cmd to enable ACPI */
