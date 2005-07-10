@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.34 $
+ *       $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -236,11 +236,11 @@ typedef struct acpi_walk_info
 
 /* Display Types */
 
-#define ACPI_DISPLAY_SUMMARY    0
-#define ACPI_DISPLAY_OBJECTS    1
-#define ACPI_DISPLAY_MASK       1
+#define ACPI_DISPLAY_SUMMARY    (UINT8) 0
+#define ACPI_DISPLAY_OBJECTS    (UINT8) 1
+#define ACPI_DISPLAY_MASK       (UINT8) 1
 
-#define ACPI_DISPLAY_SHORT      2
+#define ACPI_DISPLAY_SHORT      (UINT8) 2
 
 typedef struct acpi_get_devices_info
 {
