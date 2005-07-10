@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -156,7 +156,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
     /* Declarations first */
 
-    {"UINT32_BIT  ",     "unsigned int",     REPLACE_SUBSTRINGS},
+    {"UINT8_BIT  ",      "unsigned char",    REPLACE_SUBSTRINGS},
 
     {"UINT32      ",     "unsigned int",     REPLACE_SUBSTRINGS},
     {"UINT16        ",   "unsigned short",   REPLACE_SUBSTRINGS},
@@ -231,8 +231,7 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Declarations first */
 
-    {"UINT16_BIT  ",             "u16                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"UINT32_BIT  ",             "u32                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"UINT8_BIT   ",             "u8                  ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"INT64       ",             "s64                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"UINT64      ",             "u64                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"UINT32      ",             "u32                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
