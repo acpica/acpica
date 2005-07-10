@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -533,7 +533,7 @@ AcpiExResolveOperands (
              * But we can implicitly convert from a STRING or INTEGER
              * Aka - "Implicit Source Operand Conversion"
              */
-            Status = AcpiExConvertToBuffer (ObjDesc, StackPtr);
+            tatus = AcpiExConvertToBuffer (ObjDesc, StackPtr);
             if (ACPI_FAILURE (Status))
             {
                 if (Status == AE_TYPE)
@@ -546,6 +546,11 @@ AcpiExResolveOperands (
                 }
 
                 return_ACPI_STATUS (Status);
+            }
+
+            if (ObjDesc != *StackPtr)
+            {
+                AcpiUtRemoveReference (ObjDesc);
             }
             goto NextOperand;
 
