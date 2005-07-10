@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -514,8 +514,12 @@ AcpiPsParseLoop (
                     INCREMENT_ARG_LIST (WalkState->ArgTypes);
                 }
 
-#if 0
+
                 /* Special processing for certain opcodes */
+
+    /* TBD (remove): Temporary mechanism to disable this code if needed */
+
+#ifndef ACPI_NO_MODULE_LEVEL_CODE
 
                 if ((WalkState->PassNumber <= ACPI_IMODE_LOAD_PASS1) &&
                    ((WalkState->ParseFlags & ACPI_PARSE_DISASSEMBLE) == 0))
