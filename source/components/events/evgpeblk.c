@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.44 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -214,7 +214,6 @@ AcpiEvValidGpeEvent (
  * FUNCTION:    AcpiEvWalkGpeList
  *
  * PARAMETERS:  GpeWalkCallback     - Routine called for each GPE block
- *              Flags               - ACPI_NOT_ISR or ACPI_ISR
  *
  * RETURN:      Status
  *
@@ -224,18 +223,18 @@ AcpiEvValidGpeEvent (
 
 ACPI_STATUS
 AcpiEvWalkGpeList (
-    ACPI_GPE_CALLBACK       GpeWalkCallback,
-    UINT32                  Flags)
+    ACPI_GPE_CALLBACK       GpeWalkCallback)
 {
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
     ACPI_STATUS             Status = AE_OK;
+    UINT32                  Flags;
 
 
     ACPI_FUNCTION_TRACE ("EvWalkGpeList");
 
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, Flags);
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
 
     /* Walk the interrupt level descriptor list */
 
@@ -593,6 +592,7 @@ AcpiEvGetGpeXruptBlock (
     ACPI_GPE_XRUPT_INFO     *NextGpeXrupt;
     ACPI_GPE_XRUPT_INFO     *GpeXrupt;
     ACPI_STATUS             Status;
+    UINT32                  Flags;
 
 
     ACPI_FUNCTION_TRACE ("EvGetGpeXruptBlock");
@@ -623,7 +623,7 @@ AcpiEvGetGpeXruptBlock (
 
     /* Install new interrupt descriptor with spin lock */
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
     if (AcpiGbl_GpeXruptListHead)
     {
         NextGpeXrupt = AcpiGbl_GpeXruptListHead;
@@ -639,7 +639,7 @@ AcpiEvGetGpeXruptBlock (
     {
         AcpiGbl_GpeXruptListHead = GpeXrupt;
     }
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
 
     /* Install new interrupt handler if not SCI_INT */
 
@@ -678,6 +678,7 @@ AcpiEvDeleteGpeXrupt (
     ACPI_GPE_XRUPT_INFO     *GpeXrupt)
 {
     ACPI_STATUS             Status;
+    UINT32                  Flags;
 
 
     ACPI_FUNCTION_TRACE ("EvDeleteGpeXrupt");
@@ -702,7 +703,7 @@ AcpiEvDeleteGpeXrupt (
 
     /* Unlink the interrupt block with lock */
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
     if (GpeXrupt->Previous)
     {
         GpeXrupt->Previous->Next = GpeXrupt->Next;
@@ -712,7 +713,7 @@ AcpiEvDeleteGpeXrupt (
     {
         GpeXrupt->Next->Previous = GpeXrupt->Previous;
     }
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
 
     /* Free the block */
 
@@ -742,6 +743,7 @@ AcpiEvInstallGpeBlock (
     ACPI_GPE_BLOCK_INFO     *NextGpeBlock;
     ACPI_GPE_XRUPT_INFO     *GpeXruptBlock;
     ACPI_STATUS             Status;
+    UINT32                  Flags;
 
 
     ACPI_FUNCTION_TRACE ("EvInstallGpeBlock");
@@ -762,7 +764,7 @@ AcpiEvInstallGpeBlock (
 
     /* Install the new block at the end of the list with lock */
 
-    AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
     if (GpeXruptBlock->GpeBlockListHead)
     {
         NextGpeBlock = GpeXruptBlock->GpeBlockListHead;
@@ -780,7 +782,7 @@ AcpiEvInstallGpeBlock (
     }
 
     GpeBlock->XruptBlock = GpeXruptBlock;
-    AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
 
 UnlockAndExit:
     Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
@@ -805,6 +807,7 @@ AcpiEvDeleteGpeBlock (
     ACPI_GPE_BLOCK_INFO     *GpeBlock)
 {
     ACPI_STATUS             Status;
+    UINT32                  Flags;
 
 
     ACPI_FUNCTION_TRACE ("EvInstallGpeBlock");
@@ -834,7 +837,7 @@ AcpiEvDeleteGpeBlock (
     {
         /* Remove the block on this interrupt with lock */
 
-        AcpiOsAcquireLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
+        Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
         if (GpeBlock->Previous)
         {
             GpeBlock->Previous->Next = GpeBlock->Next;
@@ -848,7 +851,7 @@ AcpiEvDeleteGpeBlock (
         {
             GpeBlock->Next->Previous = GpeBlock->Previous;
         }
-        AcpiOsReleaseLock (AcpiGbl_GpeLock, ACPI_NOT_ISR);
+        AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
     }
 
     /* Free the GpeBlock */
