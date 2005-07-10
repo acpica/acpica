@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.169 $
+ *              $Revision: 1.170 $
  *
  *****************************************************************************/
 
@@ -1077,21 +1077,11 @@ AcpiExOpcode_1A_0T_1R (
                      * add another reference to the referenced object, however.
                      */
                     ReturnDesc = *(Operand[0]->Reference.Where);
-                    if (!ReturnDesc)
+                    if (ReturnDesc)
                     {
-                        /*
-                         * We can't return a NULL dereferenced value.  This is
-                         * an uninitialized package element and is thus a
-                         * severe error.
-                         */
-                        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                            "NULL package element obj %p\n",
-                            Operand[0]));
-                        Status = AE_AML_UNINITIALIZED_ELEMENT;
-                        goto Cleanup;
+	                    AcpiUtAddReference (ReturnDesc);
                     }
 
-                    AcpiUtAddReference (ReturnDesc);
                     break;
 
 
