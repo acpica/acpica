@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -514,6 +514,7 @@ AcpiPsParseLoop (
                     INCREMENT_ARG_LIST (WalkState->ArgTypes);
                 }
 
+#if 0
                 /* Special processing for certain opcodes */
 
                 if ((WalkState->PassNumber <= ACPI_IMODE_LOAD_PASS1) &&
@@ -543,7 +544,7 @@ AcpiPsParseLoop (
                         break;
                     }
                 }
-
+#endif
                 switch (Op->Common.AmlOpcode)
                 {
                 case AML_METHOD_OP:

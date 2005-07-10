@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.75 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -131,13 +131,16 @@
  *
  * FUNCTION:    AcpiPsxExecute
  *
- * PARAMETERS:  Info->Node          - A method object containing both the AML
- *                                    address and length.
- *              **Params            - List of parameters to pass to method,
+ * PARAMETERS:  Info            - Method info block, contains:
+ *                  Node            - Method Node to execute
+ *                  Parameters      - List of parameters to pass to the method,
  *                                    terminated by NULL. Params itself may be
  *                                    NULL if no parameters are being passed.
- *              **ReturnObjDesc     - Return object from execution of the
- *                                    method.
+ *                  ReturnObject    - Where to put method's return value (if
+ *                                    any). If NULL, no value is returned.
+ *                  ParameterType   - Type of Parameter list
+ *                  ReturnObject    - Where to put method's return value (if
+ *                                    any). If NULL, no value is returned.
  *
  * RETURN:      Status
  *
@@ -215,11 +218,15 @@ AcpiPsxExecute (
      * objects (such as Operation Regions) can be created during the
      * first pass parse.
      */
-    ObjDesc->Method.OwningId = AcpiUtAllocateOwnerId (ACPI_OWNER_TYPE_METHOD);
+    Status = AcpiUtAllocateOwnerId (&ObjDesc->Method.OwnerId);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup2;
+    }
 
     /* Create and initialize a new walk state */
 
-    WalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwningId,
+    WalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwnerId,
                                     NULL, NULL, NULL);
     if (!WalkState)
     {
@@ -282,9 +289,8 @@ AcpiPsxExecute (
         goto Cleanup3;
     }
 
-    /*
-     * The walk of the parse tree is where we actually execute the method
-     */
+    /* The walk of the parse tree is where we actually execute the method */
+
     Status = AcpiPsParseAml (WalkState);
     goto Cleanup2; /* Walk state already deleted */
 
@@ -305,7 +311,8 @@ Cleanup1:
         {
             /* Ignore errors, just do them all */
 
-            (void) AcpiUtUpdateObjectReference (Info->Parameters[i], REF_DECREMENT);
+            (void) AcpiUtUpdateObjectReference (
+                        Info->Parameters[i], REF_DECREMENT);
         }
     }
 
