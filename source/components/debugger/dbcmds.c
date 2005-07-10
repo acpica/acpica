@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  ******************************************************************************/
 
@@ -396,7 +396,7 @@ AcpiDbDisplayLocks (
     for (i = 0; i < MAX_MUTEX; i++)
     {
         AcpiOsPrintf ("%26s : %s\n", AcpiUtGetMutexName (i),
-                    AcpiGbl_MutexInfo[i].OwnerId == ACPI_MUTEX_NOT_ACQUIRED
+                    AcpiGbl_MutexInfo[i].ThreadId == ACPI_MUTEX_NOT_ACQUIRED
                         ? "Locked" : "Unlocked");
     }
 }
@@ -726,7 +726,7 @@ AcpiDbDumpNamespace (
 
     AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);
     AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_SUMMARY, MaxDepth,
-        ACPI_UINT32_MAX, SubtreeEntry);
+        ACPI_OWNER_ID_MAX, SubtreeEntry);
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
 }
 
@@ -751,10 +751,10 @@ AcpiDbDumpNamespaceByOwner (
 {
     ACPI_HANDLE             SubtreeEntry = AcpiGbl_RootNode;
     UINT32                  MaxDepth = ACPI_UINT32_MAX;
-    UINT16                  OwnerId;
+    ACPI_OWNER_ID           OwnerId;
 
 
-    OwnerId = (UINT16) ACPI_STRTOUL (OwnerArg, NULL, 0);
+    OwnerId = (ACPI_OWNER_ID) ACPI_STRTOUL (OwnerArg, NULL, 0);
 
     /* Now we can check for the depth argument */
 
@@ -1001,7 +1001,7 @@ AcpiDbWalkForSpecificObjects (
         return (AE_OK);
     }
 
-    Info.OwnerId = ACPI_UINT32_MAX;
+    Info.OwnerId = ACPI_OWNER_ID_MAX;
     Info.DebugLevel = ACPI_UINT32_MAX;
     Info.DisplayType = ACPI_DISPLAY_SUMMARY | ACPI_DISPLAY_SHORT;
 
@@ -1159,7 +1159,7 @@ AcpiDbWalkAndMatchName (
     }
     else
     {
-        Info.OwnerId = ACPI_UINT32_MAX;
+        Info.OwnerId = ACPI_OWNER_ID_MAX;
         Info.DebugLevel = ACPI_UINT32_MAX;
         Info.DisplayType = ACPI_DISPLAY_SUMMARY | ACPI_DISPLAY_SHORT;
 
