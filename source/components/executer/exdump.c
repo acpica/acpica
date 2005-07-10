@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.185 $
+ *              $Revision: 1.186 $
  *
  *****************************************************************************/
 
@@ -934,7 +934,7 @@ AcpiExDumpObjectDescriptor (
         AcpiExOutInteger ("ParamCount",     ObjDesc->Method.ParamCount);
         AcpiExOutInteger ("Concurrency",    ObjDesc->Method.Concurrency);
         AcpiExOutPointer ("Semaphore",      ObjDesc->Method.Semaphore);
-        AcpiExOutInteger ("OwningId",       ObjDesc->Method.OwningId);
+        AcpiExOutInteger ("OwnerId",        ObjDesc->Method.OwnerId);
         AcpiExOutInteger ("AmlLength",      ObjDesc->Method.AmlLength);
         AcpiExOutPointer ("AmlStart",       ObjDesc->Method.AmlStart);
         break;

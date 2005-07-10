@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -593,7 +593,7 @@ AcpiExUnloadTable (
      * Delete the entire namespace under this table Node
      * (Offset contains the TableId)
      */
-    AcpiNsDeleteNamespaceByOwner (TableInfo->TableId);
+    AcpiNsDeleteNamespaceByOwner (TableInfo->OwnerId);
 
     /* Delete the table itself */
 
