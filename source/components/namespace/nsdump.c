@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.169 $
+ *              $Revision: 1.170 $
  *
  *****************************************************************************/
 
@@ -801,7 +801,7 @@ AcpiNsDumpTables (
     }
 
     AcpiNsDumpObjects (ACPI_TYPE_ANY, ACPI_DISPLAY_OBJECTS, MaxDepth,
-            ACPI_UINT32_MAX, SearchHandle);
+            ACPI_OWNER_ID_MAX, SearchHandle);
     return_VOID;
 }
 #endif
