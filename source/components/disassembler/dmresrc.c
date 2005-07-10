@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.16 $
+ *              $Revision: 1.19 $
  *
  ******************************************************************************/
 
@@ -214,7 +214,8 @@ AcpiDmResourceDescriptor (
         if (CurrentByte & ACPI_RDESC_TYPE_LARGE)
         {
             DescriptorId = CurrentByte;
-            Length = (* (ACPI_CAST_PTR (UINT16, &ByteData[CurrentByteOffset + 1])));
+            Length = (* (ACPI_CAST_PTR (UINT16,
+                            &ByteData[CurrentByteOffset + 1])));
             CurrentByteOffset += 3;
         }
         else
@@ -293,8 +294,8 @@ AcpiDmResourceDescriptor (
             if (DependentFns)
             {
                 /*
-                 * Close an open StartDependentDescriptor.  This indicates a missing
-                 * EndDependentDescriptor.
+                 * Close an open StartDependentDescriptor.  This indicates a
+                 * missing EndDependentDescriptor.
                  */
                 Level--;
                 DependentFns = FALSE;
@@ -305,8 +306,8 @@ AcpiDmResourceDescriptor (
                 AcpiOsPrintf ("//*** Missing EndDependentFunctions descriptor");
 
                 /*
-                 * We could fix the problem, but then the ASL would not match the AML
-                 * So, we don't do this:
+                 * We could fix the problem, but then the ASL would not match
+                 * the AML, so we don't do this:
                  * AcpiDmEndDependentDescriptor (DescriptorBody, Length, Level);
                  */
             }
@@ -466,7 +467,8 @@ AcpiDmIsResourceDescriptor (
         if (CurrentByte & ACPI_RDESC_TYPE_LARGE)
         {
             DescriptorId = CurrentByte;
-            Length = (* (ACPI_CAST_PTR (UINT16, (&ByteData[CurrentByteOffset + 1]))));
+            Length = (* (ACPI_CAST_PTR (UINT16,
+                            (&ByteData[CurrentByteOffset + 1]))));
             CurrentByteOffset += 3;
         }
         else
@@ -538,6 +540,5 @@ AcpiDmIsResourceDescriptor (
 
     return (FALSE);
 }
-
 
 #endif
