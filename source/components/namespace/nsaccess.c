@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.189 $
+ *              $Revision: 1.190 $
  *
  ******************************************************************************/
 
@@ -247,7 +247,7 @@ AcpiNsRootInitialize (
 
                 /*
                  * iASL Compiler cheats by putting parameter count
-                 * in the OwnerID
+                 * in the OwnerID (ParamCount max is 7)
                  */
                 NewNode->OwnerId = ObjDesc->Method.ParamCount;
 #else

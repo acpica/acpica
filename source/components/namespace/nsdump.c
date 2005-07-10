@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.167 $
+ *              $Revision: 1.168 $
  *
  *****************************************************************************/
 
@@ -704,7 +704,7 @@ AcpiNsDumpObjects (
     ACPI_OBJECT_TYPE        Type,
     UINT8                   DisplayType,
     UINT32                  MaxDepth,
-    UINT32                  OwnerId,
+    ACPI_OWNER_ID           OwnerId,
     ACPI_HANDLE             StartHandle)
 {
     ACPI_WALK_INFO          Info;
@@ -748,7 +748,7 @@ AcpiNsDumpEntry (
 
 
     Info.DebugLevel = DebugLevel;
-    Info.OwnerId = ACPI_UINT32_MAX;
+    Info.OwnerId = ACPI_OWNER_ID_MAX;
     Info.DisplayType = ACPI_DISPLAY_SUMMARY;
 
     (void) AcpiNsDumpOneObject (Handle, 1, &Info, NULL);

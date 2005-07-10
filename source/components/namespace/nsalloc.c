@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  ******************************************************************************/
 
@@ -272,7 +272,7 @@ AcpiNsInstallNode (
     ACPI_NAMESPACE_NODE     *Node,          /* New Child*/
     ACPI_OBJECT_TYPE        Type)
 {
-    UINT16                  OwnerId = 0;
+    ACPI_OWNER_ID           OwnerId = 0;
     ACPI_NAMESPACE_NODE     *ChildNode;
 #ifdef ACPI_ALPHABETIC_NAMESPACE
 
@@ -664,7 +664,7 @@ AcpiNsRemoveReference (
 
 void
 AcpiNsDeleteNamespaceByOwner (
-    UINT16                  OwnerId)
+    ACPI_OWNER_ID            OwnerId)
 {
     ACPI_NAMESPACE_NODE     *ChildNode;
     ACPI_NAMESPACE_NODE     *DeletionNode;
@@ -749,6 +749,7 @@ AcpiNsDeleteNamespaceByOwner (
         }
     }
 
+    (void) AcpiUtReleaseOwnerId (OwnerId);
     return_VOID;
 }
 
