@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  ******************************************************************************/
 
@@ -123,6 +123,106 @@
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utmisc")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtAllocateOwnerId
+ *
+ * PARAMETERS:  OwnerId         - Where the new owner ID is returned
+ *
+ * DESCRIPTION: Allocate a table or method owner id
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUtAllocateOwnerId (
+    ACPI_OWNER_ID           *OwnerId)
+{
+    ACPI_NATIVE_UINT        i;
+    ACPI_STATUS             Status;
+    
+    
+    ACPI_FUNCTION_TRACE ("UtAllocateOwnerId");
+    
+    
+    Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Find a free owner ID */
+
+    for (i = 0; i < 32; i++) 
+    {
+        if (!(AcpiGbl_OwnerIdMask & (1 << i)))
+        {
+            AcpiGbl_OwnerIdMask |= (1 << i);
+            *OwnerId = (ACPI_OWNER_ID) i;
+            goto exit;
+        }
+    }
+
+    /* 
+     * If we are here, all OwnerIds have been allocated. This probably should
+     * not happen since the IDs are reused after deallocation. The IDs are
+     * allocated upon table load (one per table) and method execution, and
+     * they are released when a table is unloaded or a method completes
+     * execution.
+     */
+    Status = AE_OWNER_ID_LIMIT;
+    ACPI_REPORT_ERROR ((
+        "Could not allocate new OwnerId (32 max), AE_OWNER_ID_LIMIT\n"));
+
+exit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtReleaseOwnerId
+ *
+ * PARAMETERS:  OwnerId         - A previously allocated owner ID
+ *
+ * DESCRIPTION: Release a table or method owner id
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUtReleaseOwnerId (
+    ACPI_OWNER_ID           OwnerId)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE ("UtReleaseOwnerId");
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Free the owner ID */
+
+    if (AcpiGbl_OwnerIdMask & (1 << OwnerId))
+    {
+        AcpiGbl_OwnerIdMask ^= (1 << OwnerId);
+    }
+    else
+    {
+        /* This OwnerId has not been allocated */
+
+        Status = AE_NOT_EXIST;
+    }
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
+    return_ACPI_STATUS (Status);
+}
 
 
 /*******************************************************************************

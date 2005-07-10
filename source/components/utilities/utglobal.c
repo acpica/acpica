@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.212 $
+ *              $Revision: 1.213 $
  *
  *****************************************************************************/
 
@@ -822,73 +822,6 @@ AcpiUtValidObjectType (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtAllocateOwnerId
- *
- * PARAMETERS:  IdType          - Type of ID (method or table)
- *
- * DESCRIPTION: Allocate a table or method owner id
- *
- * NOTE: This algorithm has a wraparound problem at 64K method invocations, and
- *       should be revisited (TBD)
- *
- ******************************************************************************/
-
-ACPI_OWNER_ID
-AcpiUtAllocateOwnerId (
-    UINT32                  IdType)
-{
-    ACPI_OWNER_ID           OwnerId = 0xFFFF;
-
-
-    ACPI_FUNCTION_TRACE ("UtAllocateOwnerId");
-
-
-    if (ACPI_FAILURE (AcpiUtAcquireMutex (ACPI_MTX_CACHES)))
-    {
-        return (0);
-    }
-
-    switch (IdType)
-    {
-    case ACPI_OWNER_TYPE_TABLE:
-
-        OwnerId = AcpiGbl_NextTableOwnerId;
-        AcpiGbl_NextTableOwnerId++;
-
-        /* Check for wraparound */
-
-        if (AcpiGbl_NextTableOwnerId == ACPI_FIRST_METHOD_ID)
-        {
-            AcpiGbl_NextTableOwnerId = ACPI_FIRST_TABLE_ID;
-            ACPI_REPORT_WARNING (("Table owner ID wraparound\n"));
-        }
-        break;
-
-
-    case ACPI_OWNER_TYPE_METHOD:
-
-        OwnerId = AcpiGbl_NextMethodOwnerId;
-        AcpiGbl_NextMethodOwnerId++;
-
-        if (AcpiGbl_NextMethodOwnerId == ACPI_FIRST_TABLE_ID)
-        {
-            /* Check for wraparound */
-
-            AcpiGbl_NextMethodOwnerId = ACPI_FIRST_METHOD_ID;
-        }
-        break;
-
-    default:
-        break;
-    }
-
-    (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
-    return_VALUE (OwnerId);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiUtInitGlobals
  *
  * PARAMETERS:  None
@@ -932,7 +865,7 @@ AcpiUtInitGlobals (
     for (i = 0; i < NUM_MUTEX; i++)
     {
         AcpiGbl_MutexInfo[i].Mutex          = NULL;
-        AcpiGbl_MutexInfo[i].OwnerId        = ACPI_MUTEX_NOT_ACQUIRED;
+        AcpiGbl_MutexInfo[i].ThreadId       = ACPI_MUTEX_NOT_ACQUIRED;
         AcpiGbl_MutexInfo[i].UseCount       = 0;
     }
 
@@ -973,8 +906,7 @@ AcpiUtInitGlobals (
     AcpiGbl_NsLookupCount               = 0;
     AcpiGbl_PsFindCount                 = 0;
     AcpiGbl_AcpiHardwarePresent         = TRUE;
-    AcpiGbl_NextTableOwnerId            = ACPI_FIRST_TABLE_ID;
-    AcpiGbl_NextMethodOwnerId           = ACPI_FIRST_METHOD_ID;
+    AcpiGbl_OwnerIdMask                 = 0;
     AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
     AcpiGbl_DbOutputFlags               = ACPI_DB_CONSOLE_OUTPUT;
 

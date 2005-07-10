@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmutex - local mutex support
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  ******************************************************************************/
 
@@ -239,7 +239,7 @@ AcpiUtCreateMutex (
     {
         Status = AcpiOsCreateSemaphore (1, 1,
                         &AcpiGbl_MutexInfo[MutexId].Mutex);
-        AcpiGbl_MutexInfo[MutexId].OwnerId = ACPI_MUTEX_NOT_ACQUIRED;
+        AcpiGbl_MutexInfo[MutexId].ThreadId = ACPI_MUTEX_NOT_ACQUIRED;
         AcpiGbl_MutexInfo[MutexId].UseCount = 0;
     }
 
@@ -277,7 +277,7 @@ AcpiUtDeleteMutex (
     Status = AcpiOsDeleteSemaphore (AcpiGbl_MutexInfo[MutexId].Mutex);
 
     AcpiGbl_MutexInfo[MutexId].Mutex = NULL;
-    AcpiGbl_MutexInfo[MutexId].OwnerId = ACPI_MUTEX_NOT_ACQUIRED;
+    AcpiGbl_MutexInfo[MutexId].ThreadId = ACPI_MUTEX_NOT_ACQUIRED;
 
     return_ACPI_STATUS (Status);
 }
@@ -360,7 +360,7 @@ AcpiUtAcquireMutex (
             ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
         AcpiGbl_MutexInfo[MutexId].UseCount++;
-        AcpiGbl_MutexInfo[MutexId].OwnerId = ThisThreadId;
+        AcpiGbl_MutexInfo[MutexId].ThreadId = ThisThreadId;
     }
     else
     {
@@ -410,7 +410,7 @@ AcpiUtReleaseMutex (
     /*
      * Mutex must be acquired in order to release it!
      */
-    if (AcpiGbl_MutexInfo[MutexId].OwnerId == ACPI_MUTEX_NOT_ACQUIRED)
+    if (AcpiGbl_MutexInfo[MutexId].ThreadId == ACPI_MUTEX_NOT_ACQUIRED)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Mutex [%s] is not acquired, cannot release\n",
@@ -451,7 +451,7 @@ AcpiUtReleaseMutex (
 
     /* Mark unlocked FIRST */
 
-    AcpiGbl_MutexInfo[MutexId].OwnerId = ACPI_MUTEX_NOT_ACQUIRED;
+    AcpiGbl_MutexInfo[MutexId].ThreadId = ACPI_MUTEX_NOT_ACQUIRED;
 
     Status = AcpiOsSignalSemaphore (AcpiGbl_MutexInfo[MutexId].Mutex, 1);
 
