@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.170 $
+ *              $Revision: 1.171 $
  *
  *****************************************************************************/
 
@@ -1024,6 +1024,7 @@ AcpiExOpcode_1A_0T_1R (
              */
             ReturnDesc = AcpiNsGetAttachedObject (
                             (ACPI_NAMESPACE_NODE *) Operand[0]);
+            AcpiUtAddReference (ReturnDesc);
         }
         else
         {
