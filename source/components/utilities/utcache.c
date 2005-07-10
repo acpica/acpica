@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcache - local cache allocation routines
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -148,6 +148,9 @@ AcpiOsCreateCache (
     ACPI_MEMORY_LIST        *Cache;
 
 
+    ACPI_FUNCTION_ENTRY ();
+
+
     if (!CacheName || !ReturnCache || (ObjectSize < 16))
     {
         return (AE_BAD_PARAMETER);
@@ -239,7 +242,10 @@ AcpiOsDeleteCache (
     ACPI_STATUS             Status;
 
 
-    /* Purge all objects in the cache */
+    ACPI_FUNCTION_ENTRY ();
+
+
+   /* Purge all objects in the cache */
 
     Status = AcpiOsPurgeCache (Cache);
     if (ACPI_FAILURE (Status))
@@ -342,7 +348,7 @@ AcpiOsAcquireObject (
     void                    *Object;
 
 
-    ACPI_FUNCTION_NAME ("UtAcquireFromCache");
+    ACPI_FUNCTION_NAME ("OsAcquireObject");
 
 
     if (!Cache)
@@ -372,7 +378,7 @@ AcpiOsAcquireObject (
 
         ACPI_MEM_TRACKING (Cache->Hits++);
         ACPI_MEM_TRACKING (ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "Object %p from %s\n", Object, Cache->ListName)));
+            "Object %p from %s cache\n", Object, Cache->ListName)));
 
         Status = AcpiUtReleaseMutex (ACPI_MTX_CACHES);
         if (ACPI_FAILURE (Status))
