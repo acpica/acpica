@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  ******************************************************************************/
 
@@ -1640,7 +1640,7 @@ AcpiDbBusWalk (
     if (ACPI_SUCCESS (Status))
     {
         AcpiOsPrintf (" _CID=%s", Cid->Id[0].Value);
-        ACPI_MEM_FREE (Cid);    
+        ACPI_MEM_FREE (Cid);
     }
 
     AcpiOsPrintf ("\n");

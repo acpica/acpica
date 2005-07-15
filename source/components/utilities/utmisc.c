@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  ******************************************************************************/
 
@@ -141,11 +141,11 @@ AcpiUtAllocateOwnerId (
 {
     ACPI_NATIVE_UINT        i;
     ACPI_STATUS             Status;
-    
-    
+
+
     ACPI_FUNCTION_TRACE ("UtAllocateOwnerId");
-    
-    
+
+
     Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
     if (ACPI_FAILURE (Status))
     {
@@ -154,7 +154,7 @@ AcpiUtAllocateOwnerId (
 
     /* Find a free owner ID */
 
-    for (i = 0; i < 32; i++) 
+    for (i = 0; i < 32; i++)
     {
         if (!(AcpiGbl_OwnerIdMask & (1 << i)))
         {
@@ -164,7 +164,7 @@ AcpiUtAllocateOwnerId (
         }
     }
 
-    /* 
+    /*
      * If we are here, all OwnerIds have been allocated. This probably should
      * not happen since the IDs are reused after deallocation. The IDs are
      * allocated upon table load (one per table) and method execution, and

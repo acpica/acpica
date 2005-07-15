@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -477,9 +477,9 @@ AcpiDmDescendingOp (
     {
         /* In verbose mode, print the AML offset, opcode and depth count */
 
-        VERBOSE_PRINT ((DB_FULL_OP_INFO, 
-            (Info->WalkState->MethodNode ? 
-                &Info->WalkState->MethodNode->Name : 
+        VERBOSE_PRINT ((DB_FULL_OP_INFO,
+            (Info->WalkState->MethodNode ?
+                &Info->WalkState->MethodNode->Name :
                 (ACPI_NAME_UNION *) "   "),
             (UINT32) Op->Common.AmlOffset, Op->Common.AmlOpcode));
 

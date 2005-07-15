@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.160 $
+ *       $Revision: 1.161 $
  *
  *****************************************************************************/
 
@@ -569,7 +569,7 @@
 /*
  * If ACPI_GET_FUNCTION_NAME was not defined in the compiler-dependent header,
  * define it now. This is the case where there the compiler does not support
- * a __FUNCTION__ macro or equivalent. We save the function name on the 
+ * a __FUNCTION__ macro or equivalent. We save the function name on the
  * local stack.
  */
 #ifndef ACPI_GET_FUNCTION_NAME

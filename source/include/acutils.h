@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.177 $
+ *       $Revision: 1.178 $
  *
  *****************************************************************************/
 
@@ -753,7 +753,6 @@ AcpiUtAcquireMutex (
 ACPI_STATUS
 AcpiUtReleaseMutex (
     ACPI_MUTEX_HANDLE       MutexId);
-
 
 
 /*

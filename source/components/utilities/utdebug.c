@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -333,7 +333,7 @@ AcpiUtTrace (
     AcpiGbl_NestingLevel++;
     AcpiUtTrackStackPtr ();
 
-    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS, 
+    AcpiUtDebugPrint (ACPI_LV_FUNCTIONS,
         LineNumber, FunctionName, ModuleName, ComponentId,
         "%s\n", AcpiGbl_FnEntryStr);
 }
