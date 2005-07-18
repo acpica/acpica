@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.161 $
+ *       $Revision: 1.162 $
  *
  *****************************************************************************/
 
@@ -578,8 +578,10 @@
  * The Name parameter should be the procedure name as a quoted string.
  * This is declared as a local string ("MyFunctionName") so that it can
  * be also used by the function exit macros below.
+ * Note: (const char) is used to be compatible with the debug interfaces
+ * and macros such as __FUNCTION__.
  */
-#define ACPI_FUNCTION_NAME(Name)        char *_AcpiFunctionName = Name;
+#define ACPI_FUNCTION_NAME(Name)        const char *_AcpiFunctionName = Name;
 
 #else
 /* Compiler supports __FUNCTION__ (or equivalent) -- Ignore this macro */

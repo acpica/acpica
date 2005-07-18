@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -208,7 +208,7 @@ void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrint (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
-    char                    *FunctionName,
+    const char              *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     char                    *Format,
@@ -286,7 +286,7 @@ void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrintRaw (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
-    char                    *FunctionName,
+    const char              *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     char                    *Format,
@@ -325,7 +325,7 @@ AcpiUtDebugPrintRaw (
 void
 AcpiUtTrace (
     UINT32                  LineNumber,
-    char                    *FunctionName,
+    const char              *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId)
 {
@@ -359,7 +359,7 @@ AcpiUtTrace (
 void
 AcpiUtTracePtr (
     UINT32                  LineNumber,
-    char                    *FunctionName,
+    const char              *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     void                    *Pointer)
@@ -393,7 +393,7 @@ AcpiUtTracePtr (
 void
 AcpiUtTraceStr (
     UINT32                  LineNumber,
-    char                    *FunctionName,
+    const char              *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     char                    *String)
@@ -428,7 +428,7 @@ AcpiUtTraceStr (
 void
 AcpiUtTraceU32 (
     UINT32                  LineNumber,
-    char                    *FunctionName,
+    const char              *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     UINT32                  Integer)
@@ -462,7 +462,7 @@ AcpiUtTraceU32 (
 void
 AcpiUtExit (
     UINT32                  LineNumber,
-    char                    *FunctionName,
+    const char              *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId)
 {
@@ -495,7 +495,7 @@ AcpiUtExit (
 void
 AcpiUtStatusExit (
     UINT32                  LineNumber,
-    char                    *FunctionName,
+    const char              *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     ACPI_STATUS             Status)
@@ -540,7 +540,7 @@ AcpiUtStatusExit (
 void
 AcpiUtValueExit (
     UINT32                  LineNumber,
-    char                    *FunctionName,
+    const char              *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     ACPI_INTEGER            Value)
@@ -575,7 +575,7 @@ AcpiUtValueExit (
 void
 AcpiUtPtrExit (
     UINT32                  LineNumber,
-    char                    *FunctionName,
+    const char              *FunctionName,
     char                    *ModuleName,
     UINT32                  ComponentId,
     UINT8                   *Ptr)
