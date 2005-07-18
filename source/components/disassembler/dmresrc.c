@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  ******************************************************************************/
 
@@ -303,7 +303,7 @@ AcpiDmResourceDescriptor (
                 AcpiOsPrintf ("}\n");
                 AcpiDmIndent (Level);
 
-                AcpiOsPrintf ("//*** Missing EndDependentFunctions descriptor");
+                AcpiOsPrintf ("/*** Missing EndDependentFunctions descriptor ***/\n");
 
                 /*
                  * We could fix the problem, but then the ASL would not match
