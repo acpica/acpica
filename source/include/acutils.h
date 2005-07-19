@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.179 $
+ *       $Revision: 1.180 $
  *
  *****************************************************************************/
 
@@ -670,9 +670,9 @@ ACPI_STATUS
 AcpiUtAllocateOwnerId (
     ACPI_OWNER_ID           *OwnerId);
 
-ACPI_STATUS
+void
 AcpiUtReleaseOwnerId (
-    ACPI_OWNER_ID           OwnerId);
+    ACPI_OWNER_ID           *OwnerId);
 
 ACPI_STATUS
 AcpiUtWalkPackageTree (

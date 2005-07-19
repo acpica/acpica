@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  ******************************************************************************/
 
@@ -131,7 +131,11 @@
  *
  * PARAMETERS:  OwnerId         - Where the new owner ID is returned
  *
- * DESCRIPTION: Allocate a table or method owner id
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Allocate a table or method owner ID. The owner ID is used to
+ *              track objects created by the table or method, to be deleted
+ *              when the method exits or the table is unloaded.
  *
  ******************************************************************************/
 
@@ -146,6 +150,8 @@ AcpiUtAllocateOwnerId (
     ACPI_FUNCTION_TRACE ("UtAllocateOwnerId");
 
 
+    /* Mutex for the global ID mask */
+
     Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
     if (ACPI_FAILURE (Status))
     {
@@ -159,7 +165,7 @@ AcpiUtAllocateOwnerId (
         if (!(AcpiGbl_OwnerIdMask & (1 << i)))
         {
             AcpiGbl_OwnerIdMask |= (1 << i);
-            *OwnerId = (ACPI_OWNER_ID) i;
+            *OwnerId = (ACPI_OWNER_ID) (i + 1);
             goto exit;
         }
     }
@@ -171,6 +177,7 @@ AcpiUtAllocateOwnerId (
      * they are released when a table is unloaded or a method completes
      * execution.
      */
+    *OwnerId = 0;
     Status = AE_OWNER_ID_LIMIT;
     ACPI_REPORT_ERROR ((
         "Could not allocate new OwnerId (32 max), AE_OWNER_ID_LIMIT\n"));
@@ -185,43 +192,58 @@ exit:
  *
  * FUNCTION:    AcpiUtReleaseOwnerId
  *
- * PARAMETERS:  OwnerId         - A previously allocated owner ID
+ * PARAMETERS:  OwnerIdPtr          - Pointer to a previously allocated OwnerID
  *
- * DESCRIPTION: Release a table or method owner id
+ * RETURN:      None. No error is returned because we are either exiting a 
+ *              control method or unloading a table. Either way, we would
+ *              ignore any error anyway.
+ *
+ * DESCRIPTION: Release a table or method owner ID.  Valid IDs are 1 - 32
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiUtReleaseOwnerId (
-    ACPI_OWNER_ID           OwnerId)
+    ACPI_OWNER_ID           *OwnerIdPtr)
 {
+    ACPI_OWNER_ID           OwnerId = *OwnerIdPtr;
     ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE ("UtReleaseOwnerId");
 
 
+    /* Always clear the input OwnerId (zero is an invalid ID) */
+
+    *OwnerIdPtr = 0;
+
+    /* Zero is not a valid OwnerID */
+
+    if ((OwnerId == 0) || (OwnerId > 32))
+    {
+        ACPI_REPORT_ERROR (("Invalid OwnerId: %2.2X\n", OwnerId));
+        return_VOID;
+    }
+
+    /* Mutex for the global ID mask */
+
     Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        return_VOID;
     }
 
-    /* Free the owner ID */
+    OwnerId--; /* Normalize to zero */
+
+    /* Free the owner ID only if it is valid */
 
     if (AcpiGbl_OwnerIdMask & (1 << OwnerId))
     {
         AcpiGbl_OwnerIdMask ^= (1 << OwnerId);
     }
-    else
-    {
-        /* This OwnerId has not been allocated */
-
-        Status = AE_NOT_EXIST;
-    }
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
-    return_ACPI_STATUS (Status);
+    return_VOID;
 }
 
 

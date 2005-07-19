@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.35 $
+ *       $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -288,8 +288,10 @@ typedef union acpi_aml_operands
 typedef struct acpi_parameter_info
 {
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_OPERAND_OBJECT     **Parameters;
     ACPI_OPERAND_OBJECT     *ReturnObject;
+    UINT8                   PassNumber;
     UINT8                   ParameterType;
     UINT8                   ReturnObjectType;
 

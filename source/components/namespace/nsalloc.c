@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  ******************************************************************************/
 
@@ -675,6 +675,11 @@ AcpiNsDeleteNamespaceByOwner (
     ACPI_FUNCTION_TRACE_U32 ("NsDeleteNamespaceByOwner", OwnerId);
 
 
+    if (OwnerId == 0)
+    {
+        return_VOID;
+    }
+
     ParentNode    = AcpiGbl_RootNode;
     ChildNode     = NULL;
     DeletionNode  = NULL;
@@ -749,7 +754,6 @@ AcpiNsDeleteNamespaceByOwner (
         }
     }
 
-    (void) AcpiUtReleaseOwnerId (OwnerId);
     return_VOID;
 }
 

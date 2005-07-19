@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -345,6 +345,7 @@ AcpiUnloadTable (
          * simply a position within the hierarchy
          */
         AcpiNsDeleteNamespaceByOwner (TableDesc->OwnerId);
+        AcpiUtReleaseOwnerId (&TableDesc->OwnerId);
         TableDesc = TableDesc->Next;
     }
 

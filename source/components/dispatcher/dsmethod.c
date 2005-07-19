@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -132,12 +132,11 @@
  *
  * FUNCTION:    AcpiDsParseMethod
  *
- * PARAMETERS:  ObjHandle       - Method node
+ * PARAMETERS:  Node        - Method node
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Call the parser and parse the AML that is associated with the
- *              method.
+ * DESCRIPTION: Parse the AML that is associated with the method.
  *
  * MUTEX:       Assumes parser is locked
  *
@@ -145,31 +144,29 @@
 
 ACPI_STATUS
 AcpiDsParseMethod (
-    ACPI_HANDLE             ObjHandle)
+    ACPI_NAMESPACE_NODE     *Node)
 {
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_PARSE_OBJECT       *Op;
-    ACPI_NAMESPACE_NODE     *Node;
     ACPI_WALK_STATE         *WalkState;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsParseMethod", ObjHandle);
+    ACPI_FUNCTION_TRACE_PTR ("DsParseMethod", Node);
 
 
     /* Parameter Validation */
 
-    if (!ObjHandle)
+    if (!Node)
     {
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** Parsing [%4.4s] **** NamedObj=%p\n",
-        AcpiUtGetNodeName (ObjHandle), ObjHandle));
+        AcpiUtGetNodeName (Node), Node));
 
     /* Extract the method object from the method Node */
 
-    Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (!ObjDesc)
     {
@@ -252,10 +249,18 @@ AcpiDsParseMethod (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "**** [%4.4s] Parsed **** NamedObj=%p Op=%p\n",
-        AcpiUtGetNodeName (ObjHandle), ObjHandle, Op));
+        AcpiUtGetNodeName (Node), Node, Op));
+
+    /*
+     * Delete the parse tree. We simply re-parse the method for every
+     * execution since there isn't much overhead (compared to keeping lots
+     * of parse trees around)
+     */
+    AcpiNsDeleteNamespaceSubtree (Node);
+    AcpiNsDeleteNamespaceByOwner (ObjDesc->Method.OwnerId);
 
 Cleanup2:
-    (void) AcpiUtReleaseOwnerId (ObjDesc->Method.OwnerId);
+    AcpiUtReleaseOwnerId (&ObjDesc->Method.OwnerId);
 
 Cleanup:
     AcpiPsDeleteParseTree (Op);
@@ -490,7 +495,7 @@ AcpiDsCallControlMethod (
     /* On error, we must delete the new walk state */
 
 Cleanup:
-    (void) AcpiUtReleaseOwnerId (ObjDesc->Method.OwnerId);
+    AcpiUtReleaseOwnerId (&ObjDesc->Method.OwnerId);
     if (NextWalkState && (NextWalkState->MethodDesc))
     {
         /* Decrement the thread count on the method parse tree */
@@ -675,9 +680,8 @@ AcpiDsTerminateControlMethod (
         if ((WalkState->MethodDesc->Method.Concurrency == 1) &&
             (!WalkState->MethodDesc->Method.Semaphore))
         {
-            Status = AcpiOsCreateSemaphore (1,
-                                    1,
-                                    &WalkState->MethodDesc->Method.Semaphore);
+            Status = AcpiOsCreateSemaphore (1, 1,
+                        &WalkState->MethodDesc->Method.Semaphore);
         }
 
         /*
@@ -709,6 +713,8 @@ AcpiDsTerminateControlMethod (
          */
         AcpiNsDeleteNamespaceByOwner (WalkState->MethodDesc->Method.OwnerId);
         Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        AcpiUtReleaseOwnerId (&WalkState->MethodDesc->Method.OwnerId);
+
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);

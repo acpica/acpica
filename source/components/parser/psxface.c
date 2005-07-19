@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -126,13 +126,25 @@
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psxface")
 
+/* Local Prototypes */
 
+static ACPI_STATUS
+AcpiPsExecutePass (
+    ACPI_PARAMETER_INFO     *Info);
+
+static void
+AcpiPsUpdateParameterList (
+    ACPI_PARAMETER_INFO     *Info,
+    UINT16                  Action);
+
+    
 /*******************************************************************************
  *
- * FUNCTION:    AcpiPsxExecute
+ * FUNCTION:    AcpiPsExecuteMethod
  *
  * PARAMETERS:  Info            - Method info block, contains:
  *                  Node            - Method Node to execute
+ *                  ObjDesc         - Method object
  *                  Parameters      - List of parameters to pass to the method,
  *                                    terminated by NULL. Params itself may be
  *                                    NULL if no parameters are being passed.
@@ -141,6 +153,7 @@
  *                  ParameterType   - Type of Parameter list
  *                  ReturnObject    - Where to put method's return value (if
  *                                    any). If NULL, no value is returned.
+ *                  PassNumber      - Parse or execute pass
  *
  * RETURN:      Status
  *
@@ -149,68 +162,28 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiPsxExecute (
+AcpiPsExecuteMethod (
     ACPI_PARAMETER_INFO     *Info)
 {
     ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    UINT32                  i;
-    ACPI_PARSE_OBJECT       *Op;
-    ACPI_WALK_STATE         *WalkState;
 
 
-    ACPI_FUNCTION_TRACE ("PsxExecute");
+    ACPI_FUNCTION_TRACE ("PsExecuteMethod");
 
 
-    /* Validate the Node and get the attached object */
+    /* Validate the Info and method Node */
 
     if (!Info || !Info->Node)
     {
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
-    ObjDesc = AcpiNsGetAttachedObject (Info->Node);
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_NULL_OBJECT);
-    }
-
     /* Init for new method, wait on concurrency semaphore */
 
-    Status = AcpiDsBeginMethodExecution (Info->Node, ObjDesc, NULL);
+    Status = AcpiDsBeginMethodExecution (Info->Node, Info->ObjDesc, NULL);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
-    }
-
-    if ((Info->ParameterType == ACPI_PARAM_ARGS) &&
-        (Info->Parameters))
-    {
-        /*
-         * The caller "owns" the parameters, so give each one an extra
-         * reference
-         */
-        for (i = 0; Info->Parameters[i]; i++)
-        {
-            AcpiUtAddReference (Info->Parameters[i]);
-        }
-    }
-
-    /*
-     * 1) Perform the first pass parse of the method to enter any
-     * named objects that it creates into the namespace
-     */
-    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-        "**** Begin Method Parse **** Entry=%p obj=%p\n",
-        Info->Node, ObjDesc));
-
-    /* Create and init a Root Node */
-
-    Op = AcpiPsCreateScopeOp ();
-    if (!Op)
-    {
-        Status = AE_NO_MEMORY;
-        goto Cleanup1;
     }
 
     /*
@@ -218,103 +191,55 @@ AcpiPsxExecute (
      * objects (such as Operation Regions) can be created during the
      * first pass parse.
      */
-    Status = AcpiUtAllocateOwnerId (&ObjDesc->Method.OwnerId);
+    Status = AcpiUtAllocateOwnerId (&Info->ObjDesc->Method.OwnerId);
     if (ACPI_FAILURE (Status))
     {
-        goto Cleanup2;
-    }
-
-    /* Create and initialize a new walk state */
-
-    WalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwnerId,
-                                    NULL, NULL, NULL);
-    if (!WalkState)
-    {
-        Status = AE_NO_MEMORY;
-        goto Cleanup2;
-    }
-
-    Status = AcpiDsInitAmlWalk (WalkState, Op, Info->Node,
-                    ObjDesc->Method.AmlStart,
-                    ObjDesc->Method.AmlLength, NULL, 1);
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup3;
-    }
-
-    /* Parse the AML */
-
-    Status = AcpiPsParseAml (WalkState);
-    AcpiPsDeleteParseTree (Op);
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup1; /* Walk state is already deleted */
+        return_ACPI_STATUS (Status);
     }
 
     /*
-     * 2) Execute the method.  Performs second pass parse simultaneously
+     * The caller "owns" the parameters, so give each one an extra
+     * reference
+     */
+    AcpiPsUpdateParameterList (Info, REF_INCREMENT);
+
+    /*
+     * 1) Perform the first pass parse of the method to enter any
+     *    named objects that it creates into the namespace
+     */
+    ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+        "**** Begin Method Parse **** Entry=%p obj=%p\n",
+        Info->Node, Info->ObjDesc));
+
+    Info->PassNumber = 1;
+    Status = AcpiPsExecutePass (Info);
+    if (ACPI_FAILURE (Status))
+    {
+        goto Cleanup;
+    }
+
+    /*
+     * 2) Execute the method. Performs second pass parse simultaneously
      */
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "**** Begin Method Execution **** Entry=%p obj=%p\n",
-        Info->Node, ObjDesc));
+        Info->Node, Info->ObjDesc));
 
-    /* Create and init a Root Node */
+    Info->PassNumber = 3;
+    Status = AcpiPsExecutePass (Info);
 
-    Op = AcpiPsCreateScopeOp ();
-    if (!Op)
+
+Cleanup:
+    if (Info->ObjDesc->Method.OwnerId)
     {
-        Status = AE_NO_MEMORY;
-        goto Cleanup1;
+        AcpiUtReleaseOwnerId (&Info->ObjDesc->Method.OwnerId);
     }
 
-    /* Init new op with the method name and pointer back to the NS node */
+    /* Take away the extra reference that we gave the parameters above */
 
-    AcpiPsSetName (Op, Info->Node->Name.Integer);
-    Op->Common.Node = Info->Node;
+    AcpiPsUpdateParameterList (Info, REF_DECREMENT);
 
-    /* Create and initialize a new walk state */
-
-    WalkState = AcpiDsCreateWalkState (0, NULL, NULL, NULL);
-    if (!WalkState)
-    {
-        Status = AE_NO_MEMORY;
-        goto Cleanup2;
-    }
-
-    Status = AcpiDsInitAmlWalk (WalkState, Op, Info->Node,
-                    ObjDesc->Method.AmlStart,
-                    ObjDesc->Method.AmlLength, Info, 3);
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup3;
-    }
-
-    /* The walk of the parse tree is where we actually execute the method */
-
-    Status = AcpiPsParseAml (WalkState);
-    goto Cleanup2; /* Walk state already deleted */
-
-
-Cleanup3:
-    AcpiDsDeleteWalkState (WalkState);
-
-Cleanup2:
-    AcpiPsDeleteParseTree (Op);
-
-Cleanup1:
-    if ((Info->ParameterType == ACPI_PARAM_ARGS) &&
-        (Info->Parameters))
-    {
-        /* Take away the extra reference that we gave the parameters above */
-
-        for (i = 0; Info->Parameters[i]; i++)
-        {
-            /* Ignore errors, just do them all */
-
-            (void) AcpiUtUpdateObjectReference (
-                        Info->Parameters[i], REF_DECREMENT);
-        }
-    }
+    /* Exit now if error above */
 
     if (ACPI_FAILURE (Status))
     {
@@ -334,6 +259,109 @@ Cleanup1:
         Status = AE_CTRL_RETURN_VALUE;
     }
 
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsUpdateParameterList
+ *
+ * PARAMETERS:  Info            - See ACPI_PARAMETER_INFO
+ *                                (Used: ParameterType and Parameters)
+ *              Action          - Add or Remove reference
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Update reference count on all method parameter objects
+ *
+ ******************************************************************************/
+
+static void
+AcpiPsUpdateParameterList (
+    ACPI_PARAMETER_INFO     *Info,
+    UINT16                  Action)
+{
+    ACPI_NATIVE_UINT        i;
+
+
+    if ((Info->ParameterType == ACPI_PARAM_ARGS) &&
+        (Info->Parameters))
+    {
+        /* Update reference count for each parameter */
+
+        for (i = 0; Info->Parameters[i]; i++)
+        {
+            /* Ignore errors, just do them all */
+
+            (void) AcpiUtUpdateObjectReference (Info->Parameters[i], Action);
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsExecutePass
+ *
+ * PARAMETERS:  Info            - See ACPI_PARAMETER_INFO
+ *                                (Used: PassNumber, Node, and ObjDesc)
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Single AML pass: Parse or Execute a control method
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiPsExecutePass (
+    ACPI_PARAMETER_INFO     *Info)
+{
+    ACPI_STATUS             Status;
+    ACPI_PARSE_OBJECT       *Op;
+    ACPI_WALK_STATE         *WalkState;
+
+
+    ACPI_FUNCTION_TRACE ("PsExecutePass");
+
+
+    /* Create and init a Root Node */
+
+    Op = AcpiPsCreateScopeOp ();
+    if (!Op)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    /* Create and initialize a new walk state */
+
+    WalkState = AcpiDsCreateWalkState (
+                    Info->ObjDesc->Method.OwnerId, NULL, NULL, NULL);
+    if (!WalkState)
+    {
+        Status = AE_NO_MEMORY;
+        goto Cleanup;
+    }
+
+    Status = AcpiDsInitAmlWalk (WalkState, Op, Info->Node,
+                    Info->ObjDesc->Method.AmlStart,
+                    Info->ObjDesc->Method.AmlLength, 
+                    Info->PassNumber == 1 ? NULL : Info,
+                    Info->PassNumber);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiDsDeleteWalkState (WalkState);
+        goto Cleanup;
+    }
+
+    /* Parse the AML */
+
+    Status = AcpiPsParseAml (WalkState);
+
+    /* Walk state was deleted by ParseAml */
+
+Cleanup:
+    AcpiPsDeleteParseTree (Op);
     return_ACPI_STATUS (Status);
 }
 
