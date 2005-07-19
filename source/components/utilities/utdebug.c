@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.120 $
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,12 @@ static UINT32   AcpiGbl_PrevThreadId = 0xFFFFFFFF;
 static char     *AcpiGbl_FnEntryStr = "----Entry";
 static char     *AcpiGbl_FnExitStr  = "----Exit-";
 
+/* Local prototypes */
+
+static const char *
+AcpiUtTrimFunctionName (
+    const char              *FunctionName);
+
 
 /*******************************************************************************
  *
@@ -145,7 +151,7 @@ void
 AcpiUtInitStackPtrTrace (
     void)
 {
-    UINT32              CurrentSp;
+    UINT32                  CurrentSp;
 
 
     AcpiGbl_EntryStackPointer = ACPI_PTR_DIFF (&CurrentSp, NULL);
@@ -168,7 +174,7 @@ void
 AcpiUtTrackStackPtr (
     void)
 {
-    ACPI_SIZE           CurrentSp;
+    ACPI_SIZE               CurrentSp;
 
 
     CurrentSp = ACPI_PTR_DIFF (&CurrentSp, NULL);
@@ -182,6 +188,36 @@ AcpiUtTrackStackPtr (
     {
         AcpiGbl_DeepestNesting = AcpiGbl_NestingLevel;
     }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtTrimFunctionName
+ *
+ * PARAMETERS:  FunctionName        - Ascii string containing a procedure name
+ *
+ * RETURN:      Updated pointer to the function name
+ *
+ * DESCRIPTION: Remove the "Acpi" prefix from the function name, if present.
+ *              This allows compiler macros such as __FUNCTION__ to be used
+ *              with no change to the debug output.
+ *
+ ******************************************************************************/
+
+static const char *
+AcpiUtTrimFunctionName (
+    const char              *FunctionName)
+{
+
+    /* All Function names are longer than 4 chars, check is safe */
+
+    if (*((UINT32 *) FunctionName) == 'ipcA')
+    {
+        return (FunctionName + 4);
+    }
+
+    return (FunctionName);
 }
 
 
@@ -256,7 +292,7 @@ AcpiUtDebugPrint (
     }
 
     AcpiOsPrintf ("[%02ld] %-22.22s: ",
-        AcpiGbl_NestingLevel, FunctionName);
+        AcpiGbl_NestingLevel, AcpiUtTrimFunctionName (FunctionName));
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
