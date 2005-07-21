@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  ******************************************************************************/
 
@@ -253,7 +253,7 @@ AcpiUtReleaseOwnerId (
  *
  * PARAMETERS:  SrcString       - The source string to convert
  *
- * RETURN:      Converted SrcString (same as input pointer)
+ * RETURN:      None
  *
  * DESCRIPTION: Convert string to uppercase
  *
@@ -261,7 +261,7 @@ AcpiUtReleaseOwnerId (
  *
  ******************************************************************************/
 
-char *
+void
 AcpiUtStrupr (
     char                    *SrcString)
 {
@@ -273,7 +273,7 @@ AcpiUtStrupr (
 
     if (!SrcString)
     {
-        return (NULL);
+        return;
     }
 
     /* Walk entire string, uppercasing the letters */
@@ -283,7 +283,7 @@ AcpiUtStrupr (
         *String = (char) ACPI_TOUPPER (*String);
     }
 
-    return (SrcString);
+    return;
 }
 
 

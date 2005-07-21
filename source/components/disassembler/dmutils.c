@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmutils - AML disassembler utilities
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  ******************************************************************************/
 
@@ -118,7 +118,6 @@
 #include "acpi.h"
 #include "amlcode.h"
 #include "acdisasm.h"
-#include "acnamesp.h"
 
 
 #ifdef ACPI_DISASSEMBLER

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.129 $
+ *              $Revision: 1.130 $
  *
  ******************************************************************************/
 
@@ -720,7 +720,7 @@ AcpiDbDumpNamespace (
 
     AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
     AcpiOsPrintf ("ACPI Namespace (from %4.4s (%p) subtree):\n",
-        &((ACPI_NAMESPACE_NODE *) SubtreeEntry)->Name, SubtreeEntry);
+        ((ACPI_NAMESPACE_NODE *) SubtreeEntry)->Name.Ascii, SubtreeEntry);
 
     /* Display the subtree */
 
@@ -1005,7 +1005,7 @@ AcpiDbWalkForSpecificObjects (
 
     /* Dump short info about the object */
 
-    AcpiNsDumpOneObject (ObjHandle, NestingLevel, Info, NULL);
+    (void) AcpiNsDumpOneObject (ObjHandle, NestingLevel, Info, NULL);
     return (AE_OK);
 }
 
@@ -1124,7 +1124,7 @@ AcpiDbWalkAndMatchName (
         Info.DisplayType = ACPI_DISPLAY_SUMMARY | ACPI_DISPLAY_SHORT;
 
         AcpiOsPrintf ("%32s", (char *) Buffer.Pointer);
-        AcpiNsDumpOneObject (ObjHandle, NestingLevel, &Info, NULL);
+        (void) AcpiNsDumpOneObject (ObjHandle, NestingLevel, &Info, NULL);
         ACPI_MEM_FREE (Buffer.Pointer);
     }
 

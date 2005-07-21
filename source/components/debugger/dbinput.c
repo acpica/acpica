@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  ******************************************************************************/
 
@@ -654,7 +654,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_DISASSEMBLE:
-        AcpiDbDisassembleMethod (AcpiGbl_DbArgs[1]);
+        (void) AcpiDbDisassembleMethod (AcpiGbl_DbArgs[1]);
         break;
 
     case CMD_DUMP:

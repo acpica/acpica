@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.36 $
+ *       $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -229,6 +229,7 @@ typedef struct acpi_device_walk_info
 typedef struct acpi_walk_info
 {
     UINT32                  DebugLevel;
+    UINT32                  Count;
     ACPI_OWNER_ID           OwnerId;
     UINT8                   DisplayType;
 

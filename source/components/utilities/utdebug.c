@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -212,7 +212,7 @@ AcpiUtTrimFunctionName (
 
     /* All Function names are longer than 4 chars, check is safe */
 
-    if (*((UINT32 *) FunctionName) == 'ipcA')
+    if (*(ACPI_CAST_PTR (UINT32, FunctionName)) == 'ipcA')
     {
         return (FunctionName + 4);
     }

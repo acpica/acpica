@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -128,8 +128,6 @@
 #include "acparser.h"
 #include "acdispat.h"
 #include "amlcode.h"
-#include "acnamesp.h"
-#include "acinterp.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psloop")

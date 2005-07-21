@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  ******************************************************************************/
 
@@ -128,7 +128,7 @@
         ACPI_MODULE_NAME    ("dmwalk")
 
 
-#define DB_FULL_OP_INFO     "[%4.4s] @%5.5X #%4.4hX:  "
+#define DB_FULL_OP_INFO     "[%4.4s] @%5.5X #%4.4X:  "
 
 /* Local prototypes */
 
@@ -479,9 +479,8 @@ AcpiDmDescendingOp (
 
         VERBOSE_PRINT ((DB_FULL_OP_INFO,
             (Info->WalkState->MethodNode ?
-                &Info->WalkState->MethodNode->Name :
-                (ACPI_NAME_UNION *) "   "),
-            (UINT32) Op->Common.AmlOffset, Op->Common.AmlOpcode));
+                Info->WalkState->MethodNode->Name.Ascii : "   "),
+            Op->Common.AmlOffset, (UINT32) Op->Common.AmlOpcode));
 
         if (Op->Common.AmlOpcode == AML_SCOPE_OP)
         {

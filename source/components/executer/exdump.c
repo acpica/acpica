@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.186 $
+ *              $Revision: 1.187 $
  *
  *****************************************************************************/
 
@@ -699,7 +699,7 @@ AcpiExDumpReference (
         }
         else
         {
-           AcpiOsPrintf ("%s\n", RetBuf.Pointer);
+           AcpiOsPrintf ("%s\n", (char *) RetBuf.Pointer);
            ACPI_MEM_FREE (RetBuf.Pointer);
         }
     }
