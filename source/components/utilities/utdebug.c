@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -734,8 +734,8 @@ AcpiUtDumpBuffer (
         }
 
         /*
-         * Print the ASCII equivalent characters
-         * But watch out for the bad unprintable ones...
+         * Print the ASCII equivalent characters but watch out for the bad
+         * unprintable ones (printable chars are 0x20 through 0x7E)
          */
         AcpiOsPrintf (" ");
         for (j = 0; j < 16; j++)
@@ -747,9 +747,7 @@ AcpiUtDumpBuffer (
             }
 
             BufChar = Buffer[i + j];
-            if ((BufChar > 0x1F && BufChar < 0x2E) ||
-                (BufChar > 0x2F && BufChar < 0x61) ||
-                (BufChar > 0x60 && BufChar < 0x7F))
+            if (ACPI_IS_PRINT (BufChar))
             {
                 AcpiOsPrintf ("%c", BufChar);
             }
