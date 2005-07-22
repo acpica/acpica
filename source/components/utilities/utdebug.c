@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -214,7 +214,16 @@ AcpiUtTrimFunctionName (
 
     if (*(ACPI_CAST_PTR (UINT32, FunctionName)) == 'ipcA')
     {
+        /* This is the case where the original source has not been modified */
+
         return (FunctionName + 4);
+    }
+
+    if (*(ACPI_CAST_PTR (UINT32, FunctionName)) == 'ipca')
+    {
+        /* This is the case where the source has been 'linuxized' */
+
+        return (FunctionName + 5);
     }
 
     return (FunctionName);
