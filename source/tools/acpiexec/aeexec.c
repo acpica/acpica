@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.82 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -114,18 +114,7 @@
  *
  *****************************************************************************/
 
-
-#include "acpi.h"
-#include "acparser.h"
-#include "amlcode.h"
-#include "acnamesp.h"
-#include "acdebug.h"
-#include "actables.h"
 #include "aecommon.h"
-
-#include <stdio.h>
-#include <signal.h>
-
 
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("aeexec")
@@ -141,6 +130,9 @@ UINT32                      AcpiDsdtLength;
 DEBUG_REGIONS               AeRegions;
 RSDP_DESCRIPTOR             LocalRsdp;
 
+/*
+ * Misc ACPI tables to be installed
+ */
 unsigned char Ssdt1Code[] =
 {
     0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "SSDT0..." */
@@ -195,7 +187,7 @@ RSDT_DESCRIPTOR_REV1        *LocalRSDT;
  *
  * FUNCTION:    AeCtrlCHandler
  *
- * PARAMETERS:
+ * PARAMETERS:  Sig
  *
  * RETURN:      none
  *
@@ -369,11 +361,11 @@ AeBuildLocalTables (
  *
  * FUNCTION:    AeInstallTables
  *
- * PARAMETERS:
+ * PARAMETERS:  None
  *
  * RETURN:      Status
  *
- * DESCRIPTION:
+ * DESCRIPTION: Install the various ACPI tables
  *
  *****************************************************************************/
 
@@ -384,6 +376,10 @@ AeInstallTables (void)
 
 
     Status = AcpiLoadTables ();
+
+    /* Test the code that ignores multiple loads of same SSDT */
+
+    (void) AcpiLoadTable ((ACPI_TABLE_HEADER *) Ssdt1Code);
 
 #if 0
     Status = AcpiLoadTable ((ACPI_TABLE_HEADER *) &LocalFADT);
@@ -409,7 +405,8 @@ AeInstallTables (void)
  *
  * FUNCTION:    AeLocalGetRootPointer
  *
- * PARAMETERS:
+ * PARAMETERS:  Flags       - not used
+ *              Address     - Where the root pointer is returned
  *
  * RETURN:      Status
  *
@@ -482,7 +479,7 @@ AeRegionHandler (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION, "Operation Region request on %s at 0x%X\n",
             AcpiUtGetRegionName (RegionObject->Region.SpaceId),
-            Address));
+            (UINT32) Address));
 
     if (RegionObject->Region.SpaceId == ACPI_ADR_SPACE_SMBUS)
     {
@@ -636,9 +633,11 @@ AeRegionHandler (
     if (((ACPI_INTEGER) Address + ByteWidth) >
         ((ACPI_INTEGER)(RegionElement->Address) + RegionElement->Length))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Request on [%4.4s] is beyond region limit Req-%lX+%lX, Base=%lX, Len-%lX\n",
-                &((RegionObject->Region.Node)->Name), (UINT32) Address, ByteWidth, (UINT32)(RegionElement->Address),
-                RegionElement->Length));
+        ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
+            "Request on [%4.4s] is beyond region limit Req-%X+%X, Base=%X, Len-%X\n",
+            (RegionObject->Region.Node)->Name.Ascii, (UINT32) Address,
+            ByteWidth, (UINT32)(RegionElement->Address),
+            RegionElement->Length));
 
         return AE_AML_REGION_LIMIT;
     }
@@ -798,7 +797,7 @@ AeExceptionHandler (
     Exception = AcpiFormatException (AmlStatus);
     AcpiOsPrintf (
         "**** AcpiExec Exception: %s during execution of method [%4.4s] Opcode [%s] @%X\n",
-        Exception, &Name, AcpiPsGetOpcodeName (Opcode), AmlOffset);
+        Exception, (char *) &Name, AcpiPsGetOpcodeName (Opcode), AmlOffset);
 
     /*
      * Invoke the _ERR method if present
@@ -929,11 +928,11 @@ AeInstallHandlers (void)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Could not install an OpRegion handler for %s space(%d), %s\n",
-                AcpiUtGetRegionName((UINT8) SpaceId[i]), SpaceId[i], AcpiFormatException (Status)));
+                AcpiUtGetRegionName((UINT8) SpaceId[i]), SpaceId[i],
+                AcpiFormatException (Status)));
             return (Status);
         }
     }
-
 
     /*
      * Initialize the global Region Handler space

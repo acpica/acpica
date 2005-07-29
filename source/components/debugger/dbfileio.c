@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  ******************************************************************************/
 
@@ -450,6 +450,13 @@ AeLocalLoadTable (
     Status = AcpiTbInstallTable (&TableInfo);
     if (ACPI_FAILURE (Status))
     {
+        if (Status == AE_ALREADY_EXISTS)
+        {
+            /* Table already exists, no error */
+
+            Status = AE_OK;
+        }
+
         /* Free table allocated by AcpiTbGetTable */
 
         AcpiTbDeleteSingleTable (&TableInfo);

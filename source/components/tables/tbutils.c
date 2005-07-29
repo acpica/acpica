@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.59 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -123,50 +123,76 @@
 #define _COMPONENT          ACPI_TABLES
         ACPI_MODULE_NAME    ("tbutils")
 
+/* Local prototypes */
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+ACPI_STATUS
+AcpiTbHandleToObject (
+    UINT16                  TableId,
+    ACPI_TABLE_DESC         **TableDesc);
+#endif
+
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbHandleToObject
+ * FUNCTION:    AcpiTbIsTableInstalled
  *
- * PARAMETERS:  TableId             - Id for which the function is searching
- *              TableDesc           - Pointer to return the matching table
- *                                      descriptor.
+ * PARAMETERS:  NewTableDesc        - Descriptor for new table being installed
  *
- * RETURN:      Search the tables to find one with a matching TableId and
- *              return a pointer to that table descriptor.
+ * RETURN:      Status - AE_ALREADY_EXISTS if the table is already installed
+ *
+ * DESCRIPTION: Determine if an ACPI table is already installed
+ *
+ * MUTEX:       Table data structures should be locked
  *
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiTbHandleToObject (
-    UINT16                  TableId,
-    ACPI_TABLE_DESC         **TableDesc)
+AcpiTbIsTableInstalled (
+    ACPI_TABLE_DESC         *NewTableDesc)
 {
-    UINT32                  i;
-    ACPI_TABLE_DESC         *ListHead;
+    ACPI_TABLE_DESC         *TableDesc;
 
 
-    ACPI_FUNCTION_NAME ("TbHandleToObject");
+    ACPI_FUNCTION_TRACE ("TbIsTableInstalled");
 
 
-    for (i = 0; i < ACPI_TABLE_MAX; i++)
+    /* Get the list descriptor and first table descriptor */
+
+    TableDesc = AcpiGbl_TableLists[NewTableDesc->Type].Next;
+
+    /* Examine all installed tables of this type */
+
+    while (TableDesc)
     {
-        ListHead = &AcpiGbl_AcpiTables[i];
-        do
+        /* Compare Revision and OemTableId */
+
+        if ((TableDesc->LoadedIntoNamespace) &&
+            (TableDesc->Pointer->Revision == 
+                    NewTableDesc->Pointer->Revision) &&
+            (!ACPI_MEMCMP (TableDesc->Pointer->OemTableId,
+                    NewTableDesc->Pointer->OemTableId, 8)))
         {
-            if (ListHead->TableId == TableId)
-            {
-                *TableDesc = ListHead;
-                return (AE_OK);
-            }
+            /* This table is already installed */
 
-            ListHead = ListHead->Next;
+            ACPI_DEBUG_PRINT ((ACPI_DB_TABLES,
+                "Table [%4.4s] already installed: Rev %X OemTableId [%8.8s]\n",
+                NewTableDesc->Pointer->Signature,
+                NewTableDesc->Pointer->Revision,
+                NewTableDesc->Pointer->OemTableId));
 
-        } while (ListHead != &AcpiGbl_AcpiTables[i]);
+            NewTableDesc->OwnerId       = TableDesc->OwnerId;
+            NewTableDesc->InstalledDesc = TableDesc;
+
+            return_ACPI_STATUS (AE_ALREADY_EXISTS);
+        }
+
+        /* Get next table on the list */
+
+        TableDesc = TableDesc->Next;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "TableId=%X does not exist\n", TableId));
-    return (AE_BAD_PARAMETER);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -206,6 +232,7 @@ AcpiTbValidateTableHeader (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
             "Cannot read table header at %p\n", TableHeader));
+
         return (AE_BAD_ADDRESS);
     }
 
@@ -220,6 +247,7 @@ AcpiTbValidateTableHeader (
 
         ACPI_REPORT_WARNING (("Invalid table signature found: [%4.4s]\n",
             (char *) &Signature));
+
         ACPI_DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_SIGNATURE);
     }
@@ -234,6 +262,7 @@ AcpiTbValidateTableHeader (
 
         ACPI_REPORT_WARNING (("Invalid table header length (0x%X) found\n",
             (UINT32) TableHeader->Length));
+
         ACPI_DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_HEADER);
     }
@@ -274,8 +303,10 @@ AcpiTbVerifyTableChecksum (
 
     if (Checksum)
     {
-        ACPI_REPORT_WARNING (("Invalid checksum in table [%4.4s] (%02X, sum %02X is not zero)\n",
-            TableHeader->Signature, (UINT32) TableHeader->Checksum, (UINT32) Checksum));
+        ACPI_REPORT_WARNING ((
+            "Invalid checksum in table [%4.4s] (%02X, sum %02X is not zero)\n",
+            TableHeader->Signature, (UINT32) TableHeader->Checksum,
+            (UINT32) Checksum));
 
         Status = AE_BAD_CHECKSUM;
     }
@@ -290,7 +321,7 @@ AcpiTbVerifyTableChecksum (
  * PARAMETERS:  Buffer              - Buffer to checksum
  *              Length              - Size of the buffer
  *
- * RETURNS      8 bit checksum of buffer
+ * RETURN:      8 bit checksum of buffer
  *
  * DESCRIPTION: Computes an 8 bit checksum of the buffer(length) and returns it.
  *
@@ -319,5 +350,52 @@ AcpiTbChecksum (
     }
     return (sum);
 }
+
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbHandleToObject
+ *
+ * PARAMETERS:  TableId             - Id for which the function is searching
+ *              TableDesc           - Pointer to return the matching table
+ *                                      descriptor.
+ *
+ * RETURN:      Search the tables to find one with a matching TableId and
+ *              return a pointer to that table descriptor.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiTbHandleToObject (
+    UINT16                  TableId,
+    ACPI_TABLE_DESC         **ReturnTableDesc)
+{
+    UINT32                  i;
+    ACPI_TABLE_DESC         *TableDesc;
+
+
+    ACPI_FUNCTION_NAME ("TbHandleToObject");
+
+
+    for (i = 0; i < ACPI_TABLE_MAX; i++)
+    {
+        TableDesc = AcpiGbl_TableLists[i].Next;
+        while (TableDesc)
+        {
+            if (TableDesc->TableId == TableId)
+            {
+                *ReturnTableDesc = TableDesc;
+                return (AE_OK);
+            }
+
+            TableDesc = TableDesc->Next;
+        }
+    }
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "TableId=%X does not exist\n", TableId));
+    return (AE_BAD_PARAMETER);
+}
+#endif
 
 

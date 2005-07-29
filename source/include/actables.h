@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.51 $
+ *       $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -250,6 +250,10 @@ AcpiTbValidateRsdp (
 /*
  * tbutils - common table utilities
  */
+ACPI_STATUS
+AcpiTbIsTableInstalled (
+    ACPI_TABLE_DESC         *NewTableDesc);
+
 ACPI_STATUS
 AcpiTbVerifyTableChecksum (
     ACPI_TABLE_HEADER       *TableHeader);
