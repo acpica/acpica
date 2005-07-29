@@ -10,6 +10,7 @@ c:\acpi\generate\lint\co.lnt
 -e46    // Compiler supports bitfields other than int
 -d_IA64
 -dWIN64
+-d_MAC
 +fll            // enable long long
 
 -si4 -sl4 -sp8 -sll8
