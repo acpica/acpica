@@ -1,4 +1,35 @@
 ----------------------------------------
+29 July 2005.  Summary of changes for version 20050729:
+
+1) ACPI CA Core Subsystem:
+
+Implemented support to ignore an attempt to install/load a particular ACPI table more than once. Apparently there exists BIOS code that repeatedly attempts to load the same SSDT upon certain events. With assistance from Venkatesh Pallipadi.
+
+Restructured the main interface to the AML parser in order to correctly handle all exceptional conditions. This will prevent leakage of the OwnerId resource and should eliminate the AE_OWNER_ID_LIMIT exceptions seen on some machines. With assistance from Alexey Starikovskiy.
+
+Support for "module level code" has been disabled in this version due to a number of issues that have appeared on various machines. The support can be enabled by defining ACPI_ENABLE_MODULE_LEVEL_CODE during subsystem compilation. When the issues are fully resolved, the code will be enabled by default again.
+
+Modified the internal functions for debug print support to define the FunctionName parameter as a (const char *) for compatibility with compiler built-in macros such as __FUNCTION__, etc.
+
+Linted the entire ACPICA source tree for both 32-bit and 64-bit.
+
+Implemented support to display an object count summary for the AML Debugger commands Object and Methods.
+
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.6K Code, 11.6K Data,  90.2K Total
+    Debug Version:     170.0K Code, 69.7K Data, 239.7K Total
+  Current Release:
+    Non-Debug Version:  78.6K Code, 11.7K Data,  90.3K Total
+    Debug Version:     167.0K Code, 69.9K Data, 236.9K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a regression that appeared in the 20050708 version of the compiler where an error message was inadvertently emitted for invocations of the _OSI reserved control method.
+
+----------------------------------------
 08 July 2005.  Summary of changes for version 20050708:
 
 1) ACPI CA Core Subsystem:
