@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -517,7 +517,7 @@ AcpiPsParseLoop (
 
     /* TBD (remove): Temporary mechanism to disable this code if needed */
 
-#ifndef ACPI_NO_MODULE_LEVEL_CODE
+#ifdef ACPI_ENABLE_MODULE_LEVEL_CODE
 
                 if ((WalkState->PassNumber <= ACPI_IMODE_LOAD_PASS1) &&
                    ((WalkState->ParseFlags & ACPI_PARSE_DISASSEMBLE) == 0))
@@ -535,6 +535,9 @@ AcpiPsParseLoop (
                     case AML_IF_OP:
                     case AML_ELSE_OP:
                     case AML_WHILE_OP:
+
+                        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+                            "Pass1: Skipping an If/Else/While body\n"));
 
                         /* Skip body of if/else/while in pass 1 */
 
