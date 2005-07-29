@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -297,7 +297,7 @@ AcpiTbVerifyTableChecksum (
 
     /* Compute the checksum on the table */
 
-    Checksum = AcpiTbChecksum (TableHeader, TableHeader->Length);
+    Checksum = AcpiTbGenerateChecksum (TableHeader, TableHeader->Length);
 
     /* Return the appropriate exception */
 
@@ -316,7 +316,7 @@ AcpiTbVerifyTableChecksum (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbChecksum
+ * FUNCTION:    AcpiTbGenerateChecksum
  *
  * PARAMETERS:  Buffer              - Buffer to checksum
  *              Length              - Size of the buffer
@@ -328,7 +328,7 @@ AcpiTbVerifyTableChecksum (
  ******************************************************************************/
 
 UINT8
-AcpiTbChecksum (
+AcpiTbGenerateChecksum (
     void                    *Buffer,
     UINT32                  Length)
 {

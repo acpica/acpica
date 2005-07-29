@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -287,7 +287,7 @@ AeBuildLocalTables (
         ACPI_STRNCPY (LocalDSDT.Signature, DSDT_SIG, 4);
         LocalDSDT.Revision   = 1;
         LocalDSDT.Length     = sizeof (ACPI_TABLE_HEADER);
-        LocalDSDT.Checksum   = (UINT8) (0 - AcpiTbChecksum (&LocalDSDT, LocalDSDT.Length));
+        LocalDSDT.Checksum   = (UINT8) (0 - AcpiTbGenerateChecksum (&LocalDSDT, LocalDSDT.Length));
 
         AcpiGbl_DSDT = &LocalDSDT;
 
@@ -298,8 +298,8 @@ AeBuildLocalTables (
 
     /* Set checksums for both RSDT and RSDP */
 
-    LocalRSDT->Checksum = (UINT8) (0 - AcpiTbChecksum (LocalRSDT, LocalRSDT->Length));
-    LocalRSDP.Checksum  = (UINT8) (0 - AcpiTbChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
+    LocalRSDT->Checksum = (UINT8) (0 - AcpiTbGenerateChecksum (LocalRSDT, LocalRSDT->Length));
+    LocalRSDP.Checksum  = (UINT8) (0 - AcpiTbGenerateChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
 
     /* Build a FADT so we can test the hardware/event init */
 
@@ -328,7 +328,7 @@ AeBuildLocalTables (
 
     /* Complete the FADT with the checksum */
 
-    LocalFADT.Checksum = (UINT8) (0 - AcpiTbChecksum (&LocalFADT, LocalFADT.Length));
+    LocalFADT.Checksum = (UINT8) (0 - AcpiTbGenerateChecksum (&LocalFADT, LocalFADT.Length));
 
     /* Build a FACS */
 

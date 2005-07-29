@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -167,7 +167,7 @@ AcpiTbValidateRsdp (
 
     /* Check the standard checksum */
 
-    if (AcpiTbChecksum (Rsdp, ACPI_RSDP_CHECKSUM_LENGTH) != 0)
+    if (AcpiTbGenerateChecksum (Rsdp, ACPI_RSDP_CHECKSUM_LENGTH) != 0)
     {
         return (AE_BAD_CHECKSUM);
     }
@@ -175,7 +175,7 @@ AcpiTbValidateRsdp (
     /* Check extended checksum if table version >= 2 */
 
     if ((Rsdp->Revision >= 2) &&
-        (AcpiTbChecksum (Rsdp, ACPI_RSDP_XCHECKSUM_LENGTH) != 0))
+        (AcpiTbGenerateChecksum (Rsdp, ACPI_RSDP_XCHECKSUM_LENGTH) != 0))
     {
         return (AE_BAD_CHECKSUM);
     }
