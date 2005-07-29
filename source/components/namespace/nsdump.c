@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.170 $
+ *              $Revision: 1.171 $
  *
  *****************************************************************************/
 
@@ -160,6 +160,9 @@ AcpiNsPrintPathname (
     UINT32                  NumSegments,
     char                    *Pathname)
 {
+    ACPI_NATIVE_UINT        i;
+
+
     ACPI_FUNCTION_NAME ("NsPrintPathname");
 
 
@@ -174,7 +177,13 @@ AcpiNsPrintPathname (
 
     while (NumSegments)
     {
-        AcpiOsPrintf ("%4.4s", Pathname);
+        for (i = 0; i < 4; i++)
+        {
+            ACPI_IS_PRINT (Pathname[i]) ? 
+                AcpiOsPrintf ("%c", Pathname[i]) : 
+                AcpiOsPrintf ("?");
+        }
+        //AcpiOsPrintf ("%4.4s", Pathname);
         Pathname += ACPI_NAME_SIZE;
 
         NumSegments--;
