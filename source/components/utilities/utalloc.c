@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.146 $
+ *              $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -148,7 +148,7 @@ static ACPI_STATUS
 AcpiUtCreateList (
     char                    *ListName,
     UINT16                  ObjectSize,
-    ACPI_HANDLE             *ReturnCache);
+    ACPI_MEMORY_LIST        **ReturnCache);
 #endif
 
 
@@ -518,7 +518,7 @@ static ACPI_STATUS
 AcpiUtCreateList (
     char                    *ListName,
     UINT16                  ObjectSize,
-    ACPI_HANDLE             *ReturnCache)
+    ACPI_MEMORY_LIST        **ReturnCache)
 {
     ACPI_MEMORY_LIST        *Cache;
 
