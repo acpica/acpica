@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnames.h - Global names and strings
- *       $Revision: 1.2 $
+ *       $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -150,6 +150,11 @@
 
 #define ACPI_NS_ROOT_PATH       "\\"
 #define ACPI_NS_SYSTEM_BUS      "_SB_"
+
+/*! [Begin] no source code translation (not handled by acpisrc) */
+#define ACPI_FUNCTION_PREFIX1   'ipcA'
+#define ACPI_FUNCTION_PREFIX2   'ipca'
+/*! [End] no source code translation !*/
 
 
 #endif  /* __ACNAMES_H__  */
