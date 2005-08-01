@@ -68,4 +68,3 @@
 -e750   // Ignore non-referenced local macros (_MODULE_NAME, _COMPONENT, etc.)
 -e834   // - followed by + is "confusing" NOT.
 -e820   // Allow Boolean test of a parenthesized assignment
--e742   // Allow multi-character constants
