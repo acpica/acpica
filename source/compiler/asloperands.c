@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.54 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -810,10 +810,14 @@ OpnDoPackage (
     {
         /*
          * This is the case if the PackageLength was left empty - Package()
-         * The package length becomes the length of the initializer list 
+         * The package length becomes the length of the initializer list
          */
         Op->Asl.Child->Asl.ParseOpcode = PARSEOP_INTEGER;
         Op->Asl.Child->Asl.Value.Integer = PackageLength;
+
+        /* Set the AML opcode */
+
+        (void) OpcSetOptimalIntegerSize (Op->Asl.Child);
     }
 
     /* If not a variable-length package, check for a zero package length */
