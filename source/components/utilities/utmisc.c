@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  ******************************************************************************/
 
@@ -164,6 +164,10 @@ AcpiUtAllocateOwnerId (
     {
         if (!(AcpiGbl_OwnerIdMask & (1 << i)))
         {
+            ACPI_DEBUG_PRINT ((ACPI_DB_VALUES,
+                "Current OwnerId mask: %8.8X New ID: %2.2X\n",
+                AcpiGbl_OwnerIdMask, (i + 1)));
+
             AcpiGbl_OwnerIdMask |= (1 << i);
             *OwnerId = (ACPI_OWNER_ID) (i + 1);
             goto exit;
@@ -210,7 +214,7 @@ AcpiUtReleaseOwnerId (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtReleaseOwnerId");
+    ACPI_FUNCTION_TRACE_U32 ("UtReleaseOwnerId", OwnerId);
 
 
     /* Always clear the input OwnerId (zero is an invalid ID) */
