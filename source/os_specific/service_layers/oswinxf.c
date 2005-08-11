@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.61 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -164,9 +164,29 @@ AeLocalGetRootPointer (
     ACPI_POINTER            *Address);
 
 FILE                        *AcpiGbl_OutputFile;
-UINT64                      TimerFrequency2;
+UINT64                      TimerFrequency;
 
-#ifndef _ACPI_EXEC_APP
+
+/******************************************************************************
+ *
+ * FUNCTION:    OsTerminate
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Nothing to do for windows
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsTerminate (void)
+{
+    return AE_OK;
+}
+
+
+#ifndef ACPI_EXEC_APP
 /* Used by both iASL and AcpiDump applications */
 
 CHAR                s[500];
@@ -326,7 +346,7 @@ ACPI_STATUS
 AcpiOsInitialize (void)
 {
     UINT32                  i;
-    LARGE_INTEGER           TimerFrequency;
+    LARGE_INTEGER           LocalTimerFrequency;
 
 
     AcpiGbl_OutputFile = stdout;
@@ -336,21 +356,14 @@ AcpiOsInitialize (void)
         AcpiGbl_Semaphores[i].OsHandle = NULL;
     }
 
-    TimerFrequency2 = 0;
-    if (QueryPerformanceFrequency (&TimerFrequency))
+    TimerFrequency = 0;
+    if (QueryPerformanceFrequency (&LocalTimerFrequency))
     {
-        /* Convert ticks/sec to ticks/100nsec */
+        /* Frequency is in ticks per second */
 
-        TimerFrequency2 = TimerFrequency.QuadPart / 10000;
+        TimerFrequency = LocalTimerFrequency.QuadPart;
     }
 
-    return AE_OK;
-}
-
-
-ACPI_STATUS
-AcpiOsTerminate (void)
-{
     return AE_OK;
 }
 
@@ -427,7 +440,7 @@ AcpiOsTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
     ACPI_TABLE_HEADER       **NewTable)
 {
-#ifndef _ACPI_EXEC_APP
+#ifndef ACPI_EXEC_APP
     char                    TableName[ACPI_NAME_SIZE + 1];
 #endif
 
@@ -440,7 +453,7 @@ AcpiOsTableOverride (
     *NewTable = NULL;
 
 
-#ifdef _ACPI_EXEC_APP
+#ifdef ACPI_EXEC_APP
 
     /* This code exercises the table override mechanism in the core */
 
@@ -493,14 +506,16 @@ AcpiOsGetTimer (
     LARGE_INTEGER           Timer;
 
 
+//        return ((UINT64) GetTickCount() * 10000);
+
     /* Attempt to use hi-granularity timer first */
 
-    if (TimerFrequency2 &&
+    if (TimerFrequency &&
         QueryPerformanceCounter (&Timer))
     {
         /* Convert to 100 nanosecond ticks */
 
-        return ((UINT64) (Timer.QuadPart / TimerFrequency2));
+        return ((UINT64) ((Timer.QuadPart * (UINT64) 10000000) / TimerFrequency));
     }
 
     /* Fall back to the lo-granularity timer */
@@ -1072,12 +1087,12 @@ AcpiOsDeleteLock (
 }
 
 
-void
+UINT32
 AcpiOsAcquireLock (
-    ACPI_HANDLE             Handle,
-    UINT32                  Flags)
+    ACPI_HANDLE             Handle)
 {
     AcpiOsWaitSemaphore (Handle, 1, 0xFFFF);
+    return (0);
 }
 
 
