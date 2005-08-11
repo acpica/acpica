@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfold - Constant folding
- *              $Revision: 1.15 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,26 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslfold")
+
+/* Local prototypes */
+
+static ACPI_STATUS
+OpcAmlEvaluationWalk1 (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static ACPI_STATUS
+OpcAmlEvaluationWalk2 (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static ACPI_STATUS
+OpcAmlCheckForConstant (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
 
 
 /*******************************************************************************

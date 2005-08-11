@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.47 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,8 @@
 /*
  * Global variables.  Defined in aslmain.c only, externed in all other files
  */
+
+#undef ASL_EXTERN
 
 #ifdef _DECLARE_GLOBALS
 #define ASL_EXTERN
@@ -255,8 +257,13 @@ ASL_EXTERN FILE                     *AcpiGbl_DebugFile; /* Placeholder for oswin
 ASL_EXTERN ASL_ANALYSIS_WALK_INFO   AnalysisWalkInfo;
 ASL_EXTERN ACPI_TABLE_HEADER        TableHeader;
 extern const ASL_RESERVED_INFO      ReservedMethods[];
-ASL_EXTERN ASL_EVENT_INFO           AslGbl_Events[21];
 
+/* Event timing */
+
+#define ASL_NUM_EVENTS              19
+ASL_EXTERN ASL_EVENT_INFO           AslGbl_Events[ASL_NUM_EVENTS];
+ASL_EXTERN UINT8                    AslGbl_NextEvent;
+ASL_EXTERN UINT8                    AslGbl_NamespaceEvent;
 
 /* Scratch buffers */
 

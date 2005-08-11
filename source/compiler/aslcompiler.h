@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file for iASL
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -343,18 +343,18 @@ OpcAmlConstantWalk (
     UINT32                  Level,
     void                    *Context);
 
-ACPI_STATUS
-OpcAmlConstantWalkUp (
-    ACPI_PARSE_OBJECT       *Op,
-    UINT32                  Level,
-    void                    *Context);
-
 
 /*
  * aslopcodes - generate AML opcodes
  */
 ACPI_STATUS
 OpcAmlOpcodeWalk (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+ACPI_STATUS
+OpcAmlOpcodeUpdateWalk (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context);
@@ -631,14 +631,13 @@ void
 UtDisplayConstantOpcodes (
     void);
 
-void
+UINT8
 UtBeginEvent (
-    UINT32                  Event,
     char                    *Name);
 
 void
 UtEndEvent (
-    UINT32                  Event);
+    UINT8                   Event);
 
 void *
 UtLocalCalloc (

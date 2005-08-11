@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslopcode - AML opcode generation
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -148,6 +148,45 @@ OpcDoEisaId (
 static void
 OpcDoUuId (
     ACPI_PARSE_OBJECT       *Op);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    OpcAmlOpcodeUpdateWalk
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Opcode update walk, ascending callback
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+OpcAmlOpcodeUpdateWalk (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context)
+{
+
+    /*
+     * Handle the Package() case where the actual opcode cannot be determined
+     * until the PackageLength operand has been folded and minimized.
+     * (PackageOp versus VarPackageOp)
+     *
+     * This is (as of ACPI 3.0) the only case where the AML opcode can change
+     * based upon the value of a parameter.
+     *
+     * The parser always inserts a VarPackage opcode, which can possibly be
+     * optimized to a Package opcode.
+     */
+    if (Op->Asl.ParseOpcode == PARSEOP_VAR_PACKAGE)
+    {
+        OpnDoPackage (Op);
+    }
+
+    return (AE_OK);
+}
 
 
 /*******************************************************************************

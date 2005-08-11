@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -118,9 +118,6 @@
 
 #ifndef __ASLTYPES_H
 #define __ASLTYPES_H
-
-
-#include <time.h>
 
 
 /*******************************************************************************
@@ -290,8 +287,8 @@ ACPI_STATUS (*ASL_WALK_CALLBACK) (
 
 typedef struct asl_event_info
 {
-    time_t                      StartTime;
-    time_t                      EndTime;
+    UINT64                      StartTime;
+    UINT64                      EndTime;
     char                        *EventName;
     BOOLEAN                     Valid;
 
