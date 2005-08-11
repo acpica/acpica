@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -165,15 +165,21 @@ AcpiTbIsTableInstalled (
 
     while (TableDesc)
     {
-        /* Compare Revision and OemTableId */
-
+        /*
+         * If the table lengths match, perform a full bytewise compare. This
+         * means that we will allow tables with duplicate OemTableId(s), as
+         * long as the tables are different in some way.
+         *
+         * Checking if the table has been loaded into the namespace means that
+         * we don't check for duplicate tables during the initial installation
+         * of tables within the RSDT/XSDT.
+         */
         if ((TableDesc->LoadedIntoNamespace) &&
-            (TableDesc->Pointer->Revision == 
-                    NewTableDesc->Pointer->Revision) &&
-            (!ACPI_MEMCMP (TableDesc->Pointer->OemTableId,
-                    NewTableDesc->Pointer->OemTableId, 8)))
+            (TableDesc->Pointer->Length == NewTableDesc->Pointer->Length) &&
+            (!ACPI_MEMCMP (TableDesc->Pointer, NewTableDesc->Pointer,
+                NewTableDesc->Pointer->Length)))
         {
-            /* This table is already installed */
+            /* Match: this table is already installed */
 
             ACPI_DEBUG_PRINT ((ACPI_DB_TABLES,
                 "Table [%4.4s] already installed: Rev %X OemTableId [%8.8s]\n",
