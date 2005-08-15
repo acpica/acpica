@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -212,14 +212,14 @@ AcpiUtTrimFunctionName (
 
     /* All Function names are longer than 4 chars, check is safe */
 
-    if (*(ACPI_CAST_PTR (UINT32, FunctionName)) == ACPI_FUNCTION_PREFIX1)
+    if (*(ACPI_CAST_PTR (UINT32, FunctionName)) == ACPI_PREFIX_MIXED)
     {
         /* This is the case where the original source has not been modified */
 
         return (FunctionName + 4);
     }
 
-    if (*(ACPI_CAST_PTR (UINT32, FunctionName)) == ACPI_FUNCTION_PREFIX2)
+    if (*(ACPI_CAST_PTR (UINT32, FunctionName)) == ACPI_PREFIX_LOWER)
     {
         /* This is the case where the source has been 'linuxized' */
 

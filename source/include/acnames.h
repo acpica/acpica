@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnames.h - Global names and strings
- *       $Revision: 1.4 $
+ *       $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -144,15 +144,14 @@
 
 /* Definitions of the predefined namespace names  */
 
-#define ACPI_UNKNOWN_NAME       (UINT32) 0x3F3F3F3F     /* Unknown name is  "????" */
-#define ACPI_ROOT_NAME          (UINT32) 0x5F5F5F5C     /* Root name is     "\___" */
+#define ACPI_UNKNOWN_NAME       (UINT32) 0x3F3F3F3F     /* Unknown name is "????" */
+#define ACPI_ROOT_NAME          (UINT32) 0x5F5F5F5C     /* Root name is    "\___" */
 
-#define ACPI_FUNCTION_PREFIX1   (UINT32) 0x69706341     /* 'ipcA' */
-#define ACPI_FUNCTION_PREFIX2   (UINT32) 0x69706361     /* 'ipca' */
+#define ACPI_PREFIX_MIXED       (UINT32) 0x69706341     /* "Acpi" */
+#define ACPI_PREFIX_LOWER       (UINT32) 0x69706361     /* "acpi" */
 
 #define ACPI_NS_ROOT_PATH       "\\"
 #define ACPI_NS_SYSTEM_BUS      "_SB_"
-
 
 #endif  /* __ACNAMES_H__  */
 
