@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -176,8 +176,10 @@ AcpiTbIsTableInstalled (
          */
         if ((TableDesc->LoadedIntoNamespace) &&
             (TableDesc->Pointer->Length == NewTableDesc->Pointer->Length) &&
-            (!ACPI_MEMCMP (TableDesc->Pointer, NewTableDesc->Pointer,
-                NewTableDesc->Pointer->Length)))
+            (!ACPI_MEMCMP (
+                (const char *) TableDesc->Pointer, 
+                (const char *) NewTableDesc->Pointer,
+                (ACPI_SIZE) NewTableDesc->Pointer->Length)))
         {
             /* Match: this table is already installed */
 
