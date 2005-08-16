@@ -1,4 +1,29 @@
 ----------------------------------------
+15 August 2005.  Summary of changes for version 20050815:
+ 
+1) ACPI CA Core Subsystem:
+ 
+Implemented a full bytewise compare to determine if a table load request is attempting to load a duplicate table. The compare is performed if the table signatures and table lengths match. This will allow different tables with the same OEM Table ID and revision to be loaded – probably against the ACPI specification, but discovered in the field nonetheless.
+ 
+Added the changes.txt logfile to each of the zipped release packages.
+ 
+Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+ 
+  Previous Release:
+    Non-Debug Version:  78.6K Code, 11.7K Data,  90.3K Total
+    Debug Version:     167.0K Code, 69.9K Data, 236.9K Total
+  Current Release:
+    Non-Debug Version:  78.6K Code, 11.7K Data,  90.3K Total
+    Debug Version:     170.0K Code, 69.9K Data, 239.9K Total
+ 
+ 
+2) iASL Compiler/Disassembler:
+ 
+Fixed a problem where incorrect AML code could be generated for Package objects if optimization is disabled (via the –oa switch).
+ 
+Fixed a problem with where incorrect AML code is generated for variable-length packages when the package length is not specified and the number of initializer values is greater than 255.
+ 
+----------------------------------------
 29 July 2005.  Summary of changes for version 20050729:
 
 1) ACPI CA Core Subsystem:
