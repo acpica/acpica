@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -210,7 +210,8 @@ LsDoOneNamespaceObject (
     }
 
 
-    if (ObjDesc->Common.Descriptor == ACPI_DESC_TYPE_OPERAND)
+    if ((ObjDesc) &&
+        (ObjDesc->Common.Descriptor == ACPI_DESC_TYPE_OPERAND))
     {
         switch (Node->Type)
         {
