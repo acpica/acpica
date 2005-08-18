@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -803,6 +803,10 @@ UtAttachNamepathToOwner (
     /* Full external path */
 
     Op->Asl.ExternalName = NameOp->Asl.Value.String;
+
+    /* Save the NameOp for possible error reporting later */
+
+    Op->Asl.ParentMethod = (void *) NameOp;
 
     /* Last nameseg of the path */
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -319,14 +319,23 @@ LdLoadResourceElements (
 
 
     /*
-     * Enter the resouce name into the namespace
-     * This opens a scope
+     * Enter the resource name into the namespace. Name must not already exist.
+     * This opens a scope, so later field names are guaranteed to be new/unique.
      */
     Status = AcpiNsLookup (WalkState->ScopeInfo, Op->Asl.Namepath,
                 ACPI_TYPE_LOCAL_RESOURCE, ACPI_IMODE_LOAD_PASS1,
-                ACPI_NS_NO_UPSEARCH, WalkState, &Node);
+                ACPI_NS_NO_UPSEARCH | ACPI_NS_ERROR_IF_FOUND,
+                WalkState, &Node);
     if (ACPI_FAILURE (Status))
     {
+        if (Status == AE_ALREADY_EXISTS)
+        {
+            /* Actual node causing the error was saved in ParentMethod */
+
+            AslError (ASL_ERROR, ASL_MSG_NAME_EXISTS,
+                (ACPI_PARSE_OBJECT *) Op->Asl.ParentMethod, Op->Asl.Namepath);
+            return (AE_OK);
+        }
         return (Status);
     }
 
