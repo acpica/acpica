@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file for iASL
- *              $Revision: 1.141 $
+ *              $Revision: 1.142 $
  *
  *****************************************************************************/
 
@@ -728,6 +728,10 @@ RsSetFlagBits (
 
 ACPI_PARSE_OBJECT *
 RsCompleteNodeAndGetNext (
+    ACPI_PARSE_OBJECT       *Op);
+
+void
+RsCheckListForDuplicates (
     ACPI_PARSE_OBJECT       *Op);
 
 ASL_RESOURCE_NODE *
