@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -396,6 +396,7 @@ typedef enum
     ASL_MSG_SEEK,
     ASL_MSG_SINGLE_NAME_OPTIMIZATION,
     ASL_MSG_SOME_NO_RETVAL,
+    ASL_MSG_STRING_LENGTH,
     ASL_MSG_SWITCH_TYPE,
     ASL_MSG_SYNC_LEVEL,
     ASL_MSG_SYNTAX,
@@ -503,6 +504,7 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_SEEK */                       "Could not seek file",
 /*    ASL_MSG_SINGLE_NAME_OPTIMIZATION */   "NamePath optimized to NameSeg (uses run-time search path)",
 /*    ASL_MSG_SOME_NO_RETVAL */             "Called method may not always return a value",
+/*    ASL_MSG_STRING_LENGTH */              "String constant too long (200 max)",
 /*    ASL_MSG_SWITCH_TYPE */                "Switch expression is not a static Integer/Buffer/String data type, defaulting to Integer",
 /*    ASL_MSG_SYNC_LEVEL */                 "SyncLevel must be in the range 0-15",
 /*    ASL_MSG_SYNTAX */                     "",
