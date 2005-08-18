@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -186,15 +186,35 @@ AslCompilerSignon (
         break;
     }
 
-    /* Compiler signon with copyright */
-
+    /* 
+     * Compiler signon with copyright
+     */
     FlPrintFile (FileId,
-        "%s\n%s%s\n%s%s version %X [%s]\n%s%s\n%sSupports ACPI Specification Revision 3.0\n%s\n",
+        "%s\n%s%s\n%s",
         Prefix,
         Prefix, IntelAcpiCA,
-        Prefix, CompilerId, ACPI_CA_VERSION, __DATE__,
+        Prefix);
+
+    /* Running compiler or disassembler? */
+
+    if (Gbl_DisasmFlag)
+    {
+        FlPrintFile (FileId,
+            "%s", DisassemblerId);
+    }
+    else
+    {
+        FlPrintFile (FileId,
+            "%s", CompilerId);
+    }
+    
+    /* Version, build date, copyright, compliance */
+
+    FlPrintFile (FileId,
+        " version %X [%s]\n%s%s\n%s%s\n%s\n",
+        (UINT32) ACPI_CA_VERSION, __DATE__,
         Prefix, CompilerCopyright,
-        Prefix,
+        Prefix, CompilerCompliance,
         Prefix);
 }
 

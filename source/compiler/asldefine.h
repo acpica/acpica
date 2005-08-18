@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asldefine.h - Common defines for the iASL compiler
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -126,9 +126,10 @@
 #define CompilerCreatorRevision     ACPI_CA_VERSION
 
 #define IntelAcpiCA                 "Intel ACPI Component Architecture"
-#define CompilerId                  "ASL Optimizing Compiler / AML Disassembler"
+#define CompilerId                  "ASL Optimizing Compiler"
+#define DisassemblerId              "AML Disassembler"
 #define CompilerCopyright           "Copyright (C) 2000 - 2005 Intel Corporation"
-#define CompilerCompliance          "ACPI 3.0"
+#define CompilerCompliance          "Supports ACPI Specification Revision 3.0"
 #define CompilerName                "iasl"
 #define CompilerCreatorId           "INTL"
 
