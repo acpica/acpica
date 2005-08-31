@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.282 $
+ *       $Revision: 1.283 $
  *
  *****************************************************************************/
 
@@ -1276,14 +1276,25 @@ typedef struct acpi_resource_source
 
 } ACPI_RESOURCE_SOURCE;
 
+/* Fields common to all address descriptors, 16/32/64 bit */
+
+#define ACPI_RESOURCE_ADDRESS_COMMON \
+    UINT32                      ResourceType; \
+    UINT32                      ProducerConsumer; \
+    UINT32                      Decode; \
+    UINT32                      MinAddressFixed; \
+    UINT32                      MaxAddressFixed; \
+    ACPI_RESOURCE_ATTRIBUTE     Attribute;
+
+typedef struct acpi_resource_address
+{
+    ACPI_RESOURCE_ADDRESS_COMMON
+
+} ACPI_RESOURCE_ADDRESS;
+
 typedef struct acpi_resource_address16
 {
-    UINT32                      ResourceType;
-    UINT32                      ProducerConsumer;
-    UINT32                      Decode;
-    UINT32                      MinAddressFixed;
-    UINT32                      MaxAddressFixed;
-    ACPI_RESOURCE_ATTRIBUTE     Attribute;
+    ACPI_RESOURCE_ADDRESS_COMMON
     UINT32                      Granularity;
     UINT32                      MinAddressRange;
     UINT32                      MaxAddressRange;
@@ -1295,12 +1306,7 @@ typedef struct acpi_resource_address16
 
 typedef struct acpi_resource_address32
 {
-    UINT32                      ResourceType;
-    UINT32                      ProducerConsumer;
-    UINT32                      Decode;
-    UINT32                      MinAddressFixed;
-    UINT32                      MaxAddressFixed;
-    ACPI_RESOURCE_ATTRIBUTE     Attribute;
+    ACPI_RESOURCE_ADDRESS_COMMON
     UINT32                      Granularity;
     UINT32                      MinAddressRange;
     UINT32                      MaxAddressRange;
@@ -1312,12 +1318,7 @@ typedef struct acpi_resource_address32
 
 typedef struct acpi_resource_address64
 {
-    UINT32                      ResourceType;
-    UINT32                      ProducerConsumer;
-    UINT32                      Decode;
-    UINT32                      MinAddressFixed;
-    UINT32                      MaxAddressFixed;
-    ACPI_RESOURCE_ATTRIBUTE     Attribute;
+    ACPI_RESOURCE_ADDRESS_COMMON
     UINT64                      Granularity;
     UINT64                      MinAddressRange;
     UINT64                      MaxAddressRange;
@@ -1373,6 +1374,7 @@ typedef union acpi_resource_data
     ACPI_RESOURCE_MEM24         Memory24;
     ACPI_RESOURCE_MEM32         Memory32;
     ACPI_RESOURCE_FIXED_MEM32   FixedMemory32;
+    ACPI_RESOURCE_ADDRESS       Address;        /* Common 16/32/64 address fields */
     ACPI_RESOURCE_ADDRESS16     Address16;
     ACPI_RESOURCE_ADDRESS32     Address32;
     ACPI_RESOURCE_ADDRESS64     Address64;
