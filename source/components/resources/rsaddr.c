@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  ******************************************************************************/
 
@@ -122,6 +122,210 @@
 #define _COMPONENT          ACPI_RESOURCES
         ACPI_MODULE_NAME    ("rsaddr")
 
+/* Local prototypes */
+
+static void
+AcpiRsDecodeGeneralFlags (
+    ACPI_RESOURCE_DATA      *Resource,
+    UINT8                   Flags);
+
+static UINT8
+AcpiRsEncodeGeneralFlags (
+    ACPI_RESOURCE_DATA      *Resource);
+
+static void
+AcpiRsDecodeSpecificFlags (
+    ACPI_RESOURCE_DATA      *Resource,
+    UINT8                   Flags);
+
+static UINT8
+AcpiRsEncodeSpecificFlags (
+    ACPI_RESOURCE_DATA      *Resource);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsDecodeGeneralFlags
+ *
+ * PARAMETERS:  Resource            - Address resource data struct
+ *              Flags               - Actual flag byte
+ *
+ * RETURN:      Decoded flag bits in resource struct
+ *
+ * DESCRIPTION: Decode a general flag byte to an address resource struct
+ *
+ ******************************************************************************/
+
+static void
+AcpiRsDecodeGeneralFlags (
+    ACPI_RESOURCE_DATA      *Resource,
+    UINT8                   Flags)
+{
+    ACPI_FUNCTION_ENTRY ();
+
+    
+    /* Producer / Consumer - flag bit[0] */
+
+    Resource->Address.ProducerConsumer = (UINT32) (Flags & 0x01);
+
+    /* Decode (_DEC) - flag bit[1] */
+
+    Resource->Address.Decode = (UINT32) ((Flags >> 1) & 0x01);
+
+    /* Min Address Fixed (_MIF) - flag bit[2] */
+
+    Resource->Address.MinAddressFixed = (UINT32) ((Flags >> 2) & 0x01);
+
+    /* Max Address Fixed (_MAF) - flag bit[3] */
+
+    Resource->Address.MaxAddressFixed = (UINT32) ((Flags >> 3) & 0x01);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsEncodeGeneralFlags
+ *
+ * PARAMETERS:  Resource            - Address resource data struct
+ *
+ * RETURN:      Encoded general flag byte
+ *
+ * DESCRIPTION: Construct a general flag byte from an address resource struct
+ *
+ ******************************************************************************/
+
+static UINT8
+AcpiRsEncodeGeneralFlags (
+    ACPI_RESOURCE_DATA      *Resource)
+{
+    UINT8                   Flags;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /* Producer / Consumer - flag bit[0] */
+
+    Flags = (UINT8) (Resource->Address.ProducerConsumer & 0x01);
+
+    /* Decode (_DEC) - flag bit[1] */
+
+    Flags |= (UINT8) ((Resource->Address.Decode & 0x01) << 1);
+
+    /* Min Address Fixed (_MIF) - flag bit[2] */
+
+    Flags |= (UINT8) ((Resource->Address.MinAddressFixed & 0x01) << 2);
+
+    /* Max Address Fixed (_MAF) - flag bit[3] */
+
+    Flags |= (UINT8) ((Resource->Address.MaxAddressFixed & 0x01) << 3);
+
+    return (Flags);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsDecodeSpecificFlags
+ *
+ * PARAMETERS:  Resource            - Address resource data struct
+ *              Flags               - Actual flag byte
+ *
+ * RETURN:      Decoded flag bits in attribute struct
+ *
+ * DESCRIPTION: Decode a type-specific flag byte to an attribute struct.
+ *              Type-specific flags are only defined for the Memory and IO
+ *              resource types.
+ *
+ ******************************************************************************/
+
+static void
+AcpiRsDecodeSpecificFlags (
+    ACPI_RESOURCE_DATA      *Resource,
+    UINT8                   Flags)
+{
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if (Resource->Address.ResourceType == ACPI_MEMORY_RANGE)
+    {
+        /* Write Status (_RW) - flag bit[0] */
+
+        Resource->Address.Attribute.Memory.ReadWriteAttribute =
+            (UINT16) (Flags & 0x01);
+
+        /* Memory Attributes (_MEM) - flag bits[2:1] */
+
+        Resource->Address.Attribute.Memory.CacheAttribute =
+            (UINT16) ((Flags >> 1) & 0x03);
+    }
+    else if (Resource->Address.ResourceType == ACPI_IO_RANGE)
+    {
+        /* Ranges (_RNG) - flag bits[1:0] */
+
+        Resource->Address.Attribute.Io.RangeAttribute =
+            (UINT16) (Flags & 0x03);
+
+        /* Translations (_TTP and _TRS) - flag bits[5:4] */
+
+        Resource->Address.Attribute.Io.TranslationAttribute =
+            (UINT16) ((Flags >> 4) & 0x03);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsEncodeSpecificFlags
+ *
+ * PARAMETERS:  Resource            - Address resource data struct
+ *
+ * RETURN:      Encoded type-specific flag byte
+ *
+ * DESCRIPTION: Construct a type-specific flag byte from an attribute struct.
+ *              Type-specific flags are only defined for the Memory and IO
+ *              resource types.
+ *
+ ******************************************************************************/
+
+static UINT8
+AcpiRsEncodeSpecificFlags (
+    ACPI_RESOURCE_DATA      *Resource)
+{
+    UINT8                   Flags = 0;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if (Resource->Address.ResourceType == ACPI_MEMORY_RANGE)
+    {
+        /* Write Status (_RW) - flag bit[0] */
+
+        Flags = (UINT8)
+            (Resource->Address.Attribute.Memory.ReadWriteAttribute & 0x01);
+
+        /* Memory Attributes (_MEM) - flag bits[2:1] */
+
+        Flags |= (UINT8)
+            ((Resource->Address.Attribute.Memory.CacheAttribute & 0x03) << 1);
+    }
+    else if (Resource->Address.ResourceType == ACPI_IO_RANGE)
+    {
+        /* Ranges (_RNG) - flag bits[1:0] */
+
+        Flags = (UINT8)
+            (Resource->Address.Attribute.Io.RangeAttribute & 0x03);
+
+        /* Translations (_TTP and _TRS) - flag bits[5:4] */
+
+        Flags |= (UINT8)
+            ((Resource->Address.Attribute.Io.TranslationAttribute & 0x03) << 4);
+    }
+
+    return (Flags);
+}
+
 
 /*******************************************************************************
  *
@@ -196,51 +400,12 @@ AcpiRsAddress16Resource (
     /* Get the General Flags (Byte4) */
 
     Buffer += 1;
-    Temp8 = *Buffer;
-
-    /* Producer / Consumer */
-
-    OutputStruct->Data.Address16.ProducerConsumer = Temp8 & 0x01;
-
-    /* Decode */
-
-    OutputStruct->Data.Address16.Decode = (Temp8 >> 1) & 0x01;
-
-    /* Min Address Fixed */
-
-    OutputStruct->Data.Address16.MinAddressFixed = (Temp8 >> 2) & 0x01;
-
-    /* Max Address Fixed */
-
-    OutputStruct->Data.Address16.MaxAddressFixed = (Temp8 >> 3) & 0x01;
+    AcpiRsDecodeGeneralFlags (&OutputStruct->Data, *Buffer);
 
     /* Get the Type Specific Flags (Byte5) */
 
     Buffer += 1;
-    Temp8 = *Buffer;
-
-    if (ACPI_MEMORY_RANGE == OutputStruct->Data.Address16.ResourceType)
-    {
-        OutputStruct->Data.Address16.Attribute.Memory.ReadWriteAttribute =
-                (UINT16) (Temp8 & 0x01);
-        OutputStruct->Data.Address16.Attribute.Memory.CacheAttribute =
-                (UINT16) ((Temp8 >> 1) & 0x03);
-    }
-    else
-    {
-        if (ACPI_IO_RANGE == OutputStruct->Data.Address16.ResourceType)
-        {
-            OutputStruct->Data.Address16.Attribute.Io.RangeAttribute =
-                (UINT16) (Temp8 & 0x03);
-            OutputStruct->Data.Address16.Attribute.Io.TranslationAttribute =
-                (UINT16) ((Temp8 >> 4) & 0x03);
-        }
-        else
-        {
-            /* BUS_NUMBER_RANGE == Address16.Data->ResourceType */
-            /* Nothing needs to be filled in */
-        }
-    }
+    AcpiRsDecodeSpecificFlags (&OutputStruct->Data, *Buffer);
 
     /* Get Granularity (Bytes 6-7) */
 
@@ -396,40 +561,12 @@ AcpiRsAddress16Stream (
 
     /* Set the general flags */
 
-    Temp8 = (UINT8) (LinkedList->Data.Address16.ProducerConsumer & 0x01);
-
-    Temp8 |= (LinkedList->Data.Address16.Decode & 0x01) << 1;
-    Temp8 |= (LinkedList->Data.Address16.MinAddressFixed & 0x01) << 2;
-    Temp8 |= (LinkedList->Data.Address16.MaxAddressFixed & 0x01) << 3;
-
-    *Buffer = Temp8;
+    *Buffer = AcpiRsEncodeGeneralFlags (&LinkedList->Data);
     Buffer += 1;
 
     /* Set the type specific flags */
 
-    Temp8 = 0;
-
-    if (ACPI_MEMORY_RANGE == LinkedList->Data.Address16.ResourceType)
-    {
-        Temp8 = (UINT8)
-            (LinkedList->Data.Address16.Attribute.Memory.ReadWriteAttribute &
-             0x01);
-
-        Temp8 |=
-            (LinkedList->Data.Address16.Attribute.Memory.CacheAttribute &
-             0x03) << 1;
-    }
-    else if (ACPI_IO_RANGE == LinkedList->Data.Address16.ResourceType)
-    {
-        Temp8 = (UINT8)
-            (LinkedList->Data.Address16.Attribute.Io.RangeAttribute &
-             0x03);
-        Temp8 |=
-            (LinkedList->Data.Address16.Attribute.Io.TranslationAttribute &
-             0x03) << 4;
-    }
-
-    *Buffer = Temp8;
+    *Buffer = AcpiRsEncodeSpecificFlags (&LinkedList->Data);
     Buffer += 1;
 
     /* Set the address space granularity */
@@ -475,7 +612,7 @@ AcpiRsAddress16Stream (
                 LinkedList->Data.Address16.ResourceSource.StringPtr);
 
         /*
-         * Buffer needs to be set to the length of the sting + one for the
+         * Buffer needs to be set to the length of the string + one for the
          * terminating null
          */
         Buffer += (ACPI_SIZE)(ACPI_STRLEN (
@@ -572,52 +709,12 @@ AcpiRsAddress32Resource (
     /* Get the General Flags (Byte4) */
 
     Buffer += 1;
-    Temp8 = *Buffer;
-
-    /* Producer / Consumer */
-
-    OutputStruct->Data.Address32.ProducerConsumer = Temp8 & 0x01;
-
-    /* Decode */
-
-    OutputStruct->Data.Address32.Decode = (Temp8 >> 1) & 0x01;
-
-    /* Min Address Fixed */
-
-    OutputStruct->Data.Address32.MinAddressFixed = (Temp8 >> 2) & 0x01;
-
-    /* Max Address Fixed */
-
-    OutputStruct->Data.Address32.MaxAddressFixed = (Temp8 >> 3) & 0x01;
+    AcpiRsDecodeGeneralFlags (&OutputStruct->Data, *Buffer);
 
     /* Get the Type Specific Flags (Byte5) */
 
     Buffer += 1;
-    Temp8 = *Buffer;
-
-    if (ACPI_MEMORY_RANGE == OutputStruct->Data.Address32.ResourceType)
-    {
-        OutputStruct->Data.Address32.Attribute.Memory.ReadWriteAttribute =
-                (UINT16) (Temp8 & 0x01);
-
-        OutputStruct->Data.Address32.Attribute.Memory.CacheAttribute =
-                (UINT16) ((Temp8 >> 1) & 0x03);
-    }
-    else
-    {
-        if (ACPI_IO_RANGE == OutputStruct->Data.Address32.ResourceType)
-        {
-            OutputStruct->Data.Address32.Attribute.Io.RangeAttribute =
-                (UINT16) (Temp8 & 0x03);
-            OutputStruct->Data.Address32.Attribute.Io.TranslationAttribute =
-                (UINT16) ((Temp8 >> 4) & 0x03);
-        }
-        else
-        {
-            /* BUS_NUMBER_RANGE == OutputStruct->Data.Address32.ResourceType */
-            /* Nothing needs to be filled in */
-        }
-    }
+    AcpiRsDecodeSpecificFlags (&OutputStruct->Data, *Buffer);
 
     /* Get Granularity (Bytes 6-9) */
 
@@ -772,39 +869,12 @@ AcpiRsAddress32Stream (
 
     /* Set the general flags */
 
-    Temp8 = (UINT8) (LinkedList->Data.Address32.ProducerConsumer & 0x01);
-    Temp8 |= (LinkedList->Data.Address32.Decode & 0x01) << 1;
-    Temp8 |= (LinkedList->Data.Address32.MinAddressFixed & 0x01) << 2;
-    Temp8 |= (LinkedList->Data.Address32.MaxAddressFixed & 0x01) << 3;
-
-    *Buffer = Temp8;
+    *Buffer = AcpiRsEncodeGeneralFlags (&LinkedList->Data);
     Buffer += 1;
 
     /* Set the type specific flags */
 
-    Temp8 = 0;
-
-    if (ACPI_MEMORY_RANGE == LinkedList->Data.Address32.ResourceType)
-    {
-        Temp8 = (UINT8)
-            (LinkedList->Data.Address32.Attribute.Memory.ReadWriteAttribute &
-            0x01);
-
-        Temp8 |=
-            (LinkedList->Data.Address32.Attribute.Memory.CacheAttribute &
-             0x03) << 1;
-    }
-    else if (ACPI_IO_RANGE == LinkedList->Data.Address32.ResourceType)
-    {
-        Temp8 = (UINT8)
-            (LinkedList->Data.Address32.Attribute.Io.RangeAttribute &
-             0x03);
-        Temp8 |=
-            (LinkedList->Data.Address32.Attribute.Io.TranslationAttribute &
-             0x03) << 4;
-    }
-
-    *Buffer = Temp8;
+    *Buffer = AcpiRsEncodeSpecificFlags (&LinkedList->Data);
     Buffer += 1;
 
     /* Set the address space granularity */
@@ -850,7 +920,7 @@ AcpiRsAddress32Stream (
             LinkedList->Data.Address32.ResourceSource.StringPtr);
 
         /*
-         * Buffer needs to be set to the length of the sting + one for the
+         * Buffer needs to be set to the length of the string + one for the
          *  terminating null
          */
         Buffer += (ACPI_SIZE)(ACPI_STRLEN (
@@ -947,52 +1017,12 @@ AcpiRsAddress64Resource (
     /* Get the General Flags (Byte4) */
 
     Buffer += 1;
-    Temp8 = *Buffer;
-
-    /* Producer / Consumer */
-
-    OutputStruct->Data.Address64.ProducerConsumer = Temp8 & 0x01;
-
-    /* Decode */
-
-    OutputStruct->Data.Address64.Decode = (Temp8 >> 1) & 0x01;
-
-    /* Min Address Fixed */
-
-    OutputStruct->Data.Address64.MinAddressFixed = (Temp8 >> 2) & 0x01;
-
-    /* Max Address Fixed */
-
-    OutputStruct->Data.Address64.MaxAddressFixed = (Temp8 >> 3) & 0x01;
+    AcpiRsDecodeGeneralFlags (&OutputStruct->Data, *Buffer);
 
     /* Get the Type Specific Flags (Byte5) */
 
     Buffer += 1;
-    Temp8 = *Buffer;
-
-    if (ACPI_MEMORY_RANGE == OutputStruct->Data.Address64.ResourceType)
-    {
-        OutputStruct->Data.Address64.Attribute.Memory.ReadWriteAttribute =
-                (UINT16) (Temp8 & 0x01);
-
-        OutputStruct->Data.Address64.Attribute.Memory.CacheAttribute =
-                (UINT16) ((Temp8 >> 1) & 0x03);
-    }
-    else
-    {
-        if (ACPI_IO_RANGE == OutputStruct->Data.Address64.ResourceType)
-        {
-            OutputStruct->Data.Address64.Attribute.Io.RangeAttribute =
-                (UINT16) (Temp8 & 0x03);
-            OutputStruct->Data.Address64.Attribute.Io.TranslationAttribute =
-                (UINT16) ((Temp8 >> 4) & 0x03);
-        }
-        else
-        {
-            /* BUS_NUMBER_RANGE == OutputStruct->Data.Address64.ResourceType */
-            /* Nothing needs to be filled in */
-        }
-    }
+    AcpiRsDecodeSpecificFlags (&OutputStruct->Data, *Buffer);
 
     if (ResourceType == ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE)
     {
@@ -1170,39 +1200,12 @@ AcpiRsAddress64Stream (
 
     /* Set the general flags */
 
-    Temp8 = (UINT8) (LinkedList->Data.Address64.ProducerConsumer & 0x01);
-    Temp8 |= (LinkedList->Data.Address64.Decode & 0x01) << 1;
-    Temp8 |= (LinkedList->Data.Address64.MinAddressFixed & 0x01) << 2;
-    Temp8 |= (LinkedList->Data.Address64.MaxAddressFixed & 0x01) << 3;
-
-    *Buffer = Temp8;
+    *Buffer = AcpiRsEncodeGeneralFlags (&LinkedList->Data);
     Buffer += 1;
 
     /* Set the type specific flags */
 
-    Temp8 = 0;
-
-    if (ACPI_MEMORY_RANGE == LinkedList->Data.Address64.ResourceType)
-    {
-        Temp8 = (UINT8)
-            (LinkedList->Data.Address64.Attribute.Memory.ReadWriteAttribute &
-            0x01);
-
-        Temp8 |=
-            (LinkedList->Data.Address64.Attribute.Memory.CacheAttribute &
-             0x03) << 1;
-    }
-    else if (ACPI_IO_RANGE == LinkedList->Data.Address64.ResourceType)
-    {
-        Temp8 = (UINT8)
-            (LinkedList->Data.Address64.Attribute.Io.RangeAttribute &
-             0x03);
-        Temp8 |=
-            (LinkedList->Data.Address64.Attribute.Io.RangeAttribute &
-             0x03) << 4;
-    }
-
-    *Buffer = Temp8;
+    *Buffer = AcpiRsEncodeSpecificFlags (&LinkedList->Data);
     Buffer += 1;
 
     /* Set the address space granularity */
@@ -1248,7 +1251,7 @@ AcpiRsAddress64Stream (
             LinkedList->Data.Address64.ResourceSource.StringPtr);
 
         /*
-         * Buffer needs to be set to the length of the sting + one for the
+         * Buffer needs to be set to the length of the string + one for the
          * terminating null
          */
         Buffer += (ACPI_SIZE)(ACPI_STRLEN (
