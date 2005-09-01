@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -597,6 +597,8 @@ AcpiDsLoad2BeginOp (
             if ((WalkState->OpInfo->Class == AML_CLASS_EXECUTE) ||
                 (WalkState->OpInfo->Class == AML_CLASS_CONTROL))
             {
+#ifdef ACPI_ENABLE_MODULE_LEVEL_CODE
+
                 ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
                     "Begin/EXEC: %s (fl %8.8X)\n", WalkState->OpInfo->Name,
                     WalkState->OpInfo->Flags));
@@ -605,6 +607,11 @@ AcpiDsLoad2BeginOp (
 
                 Status = AcpiDsExecBeginOp (WalkState, OutOp);
                 return_ACPI_STATUS (Status);
+#else
+                ACPI_REPORT_WARNING ((
+                    "Encountered executable code at module level, [%s]\n",
+                    AcpiPsGetOpcodeName (WalkState->Opcode)));
+#endif
             }
             return_ACPI_STATUS (AE_OK);
         }
@@ -861,6 +868,7 @@ AcpiDsLoad2EndOp (
     if (!(WalkState->OpInfo->Flags & AML_NSOBJECT))
     {
 #ifndef ACPI_NO_METHOD_EXECUTION
+#ifdef ACPI_ENABLE_MODULE_LEVEL_CODE
         /* No namespace object. Executable opcode? */
 
         if ((WalkState->OpInfo->Class == AML_CLASS_EXECUTE) ||
@@ -875,6 +883,7 @@ AcpiDsLoad2EndOp (
             Status = AcpiDsExecEndOp (WalkState);
             return_ACPI_STATUS (Status);
         }
+#endif
 #endif
         return_ACPI_STATUS (AE_OK);
     }
