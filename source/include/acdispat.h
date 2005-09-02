@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.66 $
+ *       $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -322,7 +322,7 @@ AcpiDsRestartControlMethod (
     ACPI_WALK_STATE         *WalkState,
     ACPI_OPERAND_OBJECT     *ReturnDesc);
 
-ACPI_STATUS
+void
 AcpiDsTerminateControlMethod (
     ACPI_WALK_STATE         *WalkState);
 

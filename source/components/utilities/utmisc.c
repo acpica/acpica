@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.120 $
+ *              $Revision: 1.121 $
  *
  ******************************************************************************/
 
@@ -150,6 +150,14 @@ AcpiUtAllocateOwnerId (
     ACPI_FUNCTION_TRACE ("UtAllocateOwnerId");
 
 
+    /* Guard against multiple allocations of ID to the same location */
+
+    if (*OwnerId)
+    {
+        ACPI_REPORT_ERROR (("Owner ID [%2.2X] already exists\n", *OwnerId));
+        return_ACPI_STATUS (AE_ALREADY_EXISTS);
+    }
+
     /* Mutex for the global ID mask */
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
@@ -166,7 +174,7 @@ AcpiUtAllocateOwnerId (
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_VALUES,
                 "Current OwnerId mask: %8.8X New ID: %2.2X\n",
-                AcpiGbl_OwnerIdMask, (i + 1)));
+                AcpiGbl_OwnerIdMask, (unsigned int) (i + 1)));
 
             AcpiGbl_OwnerIdMask |= (1 << i);
             *OwnerId = (ACPI_OWNER_ID) (i + 1);
@@ -237,7 +245,9 @@ AcpiUtReleaseOwnerId (
         return_VOID;
     }
 
-    OwnerId--; /* Normalize to zero */
+    /* Normalize the ID to zero */
+
+    OwnerId--;
 
     /* Free the owner ID only if it is valid */
 

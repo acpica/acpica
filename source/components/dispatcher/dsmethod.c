@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -301,6 +301,15 @@ AcpiDsBeginMethodExecution (
         return_ACPI_STATUS (AE_NULL_ENTRY);
     }
 
+    /* Prevent wraparound of thread count */
+
+    if (ObjDesc->Method.ThreadCount == ACPI_UINT8_MAX)
+    {
+        ACPI_REPORT_ERROR ((
+            "Method reached maximum reentrancy limit (255)\n"));
+        return_ACPI_STATUS (AE_AML_METHOD_LIMIT);
+    }
+
     /*
      * If there is a concurrency limit on this method, we need to
      * obtain a unit from the method semaphore.
@@ -330,6 +339,20 @@ AcpiDsBeginMethodExecution (
         Status = AcpiExSystemWaitSemaphore (ObjDesc->Method.Semaphore,
                                             ACPI_WAIT_FOREVER);
     }
+
+    /*
+     * Allocate an Owner ID for this method, only if this is the first thread
+     * to begin concurrent execution. We only need one OwnerId, even if the
+     * method is invoked recursively.
+     */
+     if (!ObjDesc->Method.OwnerId)
+     {
+         Status = AcpiUtAllocateOwnerId (&ObjDesc->Method.OwnerId);
+         if (ACPI_FAILURE (Status))
+         {
+             return_ACPI_STATUS (Status);
+         }
+     }
 
     /*
      * Increment the method parse tree thread count since it has been
@@ -388,12 +411,6 @@ AcpiDsCallControlMethod (
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
-    Status = AcpiUtAllocateOwnerId (&ObjDesc->Method.OwnerId);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Init for new method, wait on concurrency semaphore */
 
     Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc,
@@ -449,9 +466,8 @@ AcpiDsCallControlMethod (
     }
     /*
      * The resolved arguments were put on the previous walk state's operand
-     * stack.  Operands on the previous walk state stack always
-     * start at index 0.
-     * Null terminate the list of arguments
+     * stack. Operands on the previous walk state stack always
+     * start at index 0. Also, null terminate the list of arguments
      */
     ThisWalkState->Operands [ThisWalkState->NumOperands] = NULL;
 
@@ -486,23 +502,22 @@ AcpiDsCallControlMethod (
     if (ObjDesc->Method.MethodFlags & AML_METHOD_INTERNAL_ONLY)
     {
         Status = ObjDesc->Method.Implementation (NextWalkState);
-        return_ACPI_STATUS (Status);
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 
+
+Cleanup:
+    /* Decrement the thread count on the method parse tree */
+
+    if (NextWalkState && (NextWalkState->MethodDesc))
+    {
+        NextWalkState->MethodDesc->Method.ThreadCount--;
+    }
 
     /* On error, we must delete the new walk state */
 
-Cleanup:
-    AcpiUtReleaseOwnerId (&ObjDesc->Method.OwnerId);
-    if (NextWalkState && (NextWalkState->MethodDesc))
-    {
-        /* Decrement the thread count on the method parse tree */
-
-       NextWalkState->MethodDesc->Method.ThreadCount--;
-    }
-    (void) AcpiDsTerminateControlMethod (NextWalkState);
+    AcpiDsTerminateControlMethod (NextWalkState);
     AcpiDsDeleteWalkState (NextWalkState);
     return_ACPI_STATUS (Status);
 }
@@ -595,7 +610,7 @@ AcpiDsRestartControlMethod (
  *
  * PARAMETERS:  WalkState           - State of the method
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION: Terminate a control method.  Delete everything that the method
  *              created, delete all locals and arguments, and delete the parse
@@ -603,7 +618,7 @@ AcpiDsRestartControlMethod (
  *
  ******************************************************************************/
 
-ACPI_STATUS
+void
 AcpiDsTerminateControlMethod (
     ACPI_WALK_STATE         *WalkState)
 {
@@ -617,7 +632,7 @@ AcpiDsTerminateControlMethod (
 
     if (!WalkState)
     {
-        return (AE_BAD_PARAMETER);
+        return_VOID;
     }
 
     /* The current method object was saved in the walk state */
@@ -625,7 +640,7 @@ AcpiDsTerminateControlMethod (
     ObjDesc = WalkState->MethodDesc;
     if (!ObjDesc)
     {
-        return_ACPI_STATUS (AE_OK);
+        return_VOID;
     }
 
     /* Delete all arguments and locals */
@@ -640,7 +655,7 @@ AcpiDsTerminateControlMethod (
     Status = AcpiUtAcquireMutex (ACPI_MTX_PARSER);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        return_VOID;
     }
 
     /* Signal completion of the execution of this method if necessary */
@@ -652,7 +667,6 @@ AcpiDsTerminateControlMethod (
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR (("Could not signal method semaphore\n"));
-            Status = AE_OK;
 
             /* Ignore error and continue cleanup */
         }
@@ -664,8 +678,7 @@ AcpiDsTerminateControlMethod (
             "*** Not deleting method namespace, there are still %d threads\n",
             WalkState->MethodDesc->Method.ThreadCount));
     }
-
-    if (!WalkState->MethodDesc->Method.ThreadCount)
+    else /* This is the last executing thread */
     {
         /*
          * Support to dynamically change a method from NotSerialized to
@@ -699,7 +712,7 @@ AcpiDsTerminateControlMethod (
         Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
         if (ACPI_FAILURE (Status))
         {
-            return_ACPI_STATUS (Status);
+            goto Exit;
         }
 
         if (MethodNode->Child)
@@ -714,15 +727,11 @@ AcpiDsTerminateControlMethod (
         AcpiNsDeleteNamespaceByOwner (WalkState->MethodDesc->Method.OwnerId);
         Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
         AcpiUtReleaseOwnerId (&WalkState->MethodDesc->Method.OwnerId);
-
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
     }
 
-    Status = AcpiUtReleaseMutex (ACPI_MTX_PARSER);
-    return_ACPI_STATUS (Status);
+Exit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_PARSER);
+    return_VOID;
 }
 
 

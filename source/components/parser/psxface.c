@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -186,17 +186,6 @@ AcpiPsExecuteMethod (
     }
 
     /*
-     * Get a new OwnerId for objects created by this method.  Namespace
-     * objects (such as Operation Regions) can be created during the
-     * first pass parse.
-     */
-    Status = AcpiUtAllocateOwnerId (&Info->ObjDesc->Method.OwnerId);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /*
      * The caller "owns" the parameters, so give each one an extra
      * reference
      */
@@ -229,11 +218,6 @@ AcpiPsExecuteMethod (
 
 
 Cleanup:
-    if (Info->ObjDesc->Method.OwnerId)
-    {
-        AcpiUtReleaseOwnerId (&Info->ObjDesc->Method.OwnerId);
-    }
-
     /* Take away the extra reference that we gave the parameters above */
 
     AcpiPsUpdateParameterList (Info, REF_DECREMENT);
