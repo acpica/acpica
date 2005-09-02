@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  ******************************************************************************/
 
@@ -178,7 +178,7 @@ AcpiUtAllocateOwnerId (
 
             AcpiGbl_OwnerIdMask |= (1 << i);
             *OwnerId = (ACPI_OWNER_ID) (i + 1);
-            goto exit;
+            goto Exit;
         }
     }
 
@@ -194,7 +194,7 @@ AcpiUtAllocateOwnerId (
     ACPI_REPORT_ERROR ((
         "Could not allocate new OwnerId (32 max), AE_OWNER_ID_LIMIT\n"));
 
-exit:
+Exit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
     return_ACPI_STATUS (Status);
 }
@@ -206,7 +206,7 @@ exit:
  *
  * PARAMETERS:  OwnerIdPtr          - Pointer to a previously allocated OwnerID
  *
- * RETURN:      None. No error is returned because we are either exiting a 
+ * RETURN:      None. No error is returned because we are either exiting a
  *              control method or unloading a table. Either way, we would
  *              ignore any error anyway.
  *

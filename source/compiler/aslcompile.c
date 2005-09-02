@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -186,7 +186,7 @@ AslCompilerSignon (
         break;
     }
 
-    /* 
+    /*
      * Compiler signon with copyright
      */
     FlPrintFile (FileId,
@@ -207,7 +207,7 @@ AslCompilerSignon (
         FlPrintFile (FileId,
             "%s", CompilerId);
     }
-    
+
     /* Version, build date, copyright, compliance */
 
     FlPrintFile (FileId,
@@ -757,7 +757,7 @@ CmCleanupAndExit (
         DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d\n", "Total Namespace searches",
             Gbl_NsLookupCount);
         DbgPrint (ASL_DEBUG_OUTPUT, "%32s : %d usec\n", "Time per search",
-            ((UINT32) (AslGbl_Events[AslGbl_NamespaceEvent].EndTime - 
+            ((UINT32) (AslGbl_Events[AslGbl_NamespaceEvent].EndTime -
                         AslGbl_Events[AslGbl_NamespaceEvent].StartTime) /
                         10) / Gbl_NsLookupCount);
     }

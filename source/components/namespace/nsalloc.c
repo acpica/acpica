@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  ******************************************************************************/
 
@@ -694,6 +694,5 @@ AcpiNsDeleteNamespaceByOwner (
 
     return_VOID;
 }
-
 
 

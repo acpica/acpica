@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -163,7 +163,7 @@ AcpiRsDecodeGeneralFlags (
 {
     ACPI_FUNCTION_ENTRY ();
 
-    
+
     /* Producer / Consumer - flag bit[0] */
 
     Resource->Address.ProducerConsumer = (UINT32) (Flags & 0x01);

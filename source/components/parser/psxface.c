@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -136,7 +136,7 @@ AcpiPsUpdateParameterList (
     ACPI_PARAMETER_INFO     *Info,
     UINT16                  Action);
 
-    
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiPsExecuteMethod
@@ -328,7 +328,7 @@ AcpiPsExecutePass (
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, Info->Node,
                     Info->ObjDesc->Method.AmlStart,
-                    Info->ObjDesc->Method.AmlLength, 
+                    Info->ObjDesc->Method.AmlLength,
                     Info->PassNumber == 1 ? NULL : Info,
                     Info->PassNumber);
     if (ACPI_FAILURE (Status))
