@@ -1,4 +1,43 @@
 ----------------------------------------
+02 September 2005. Summary of changes for version 20050902:
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem with the internal Owner ID allocation and deallocation mechanisms for control method execution and recursive method invocation. This should eliminate the OWNER_ID_LIMIT exceptions and "Invalid OwnerId" messages seen on some systems. Recursive method invocation depth is currently limited to 255. (Alexey Starikovskiy)
+
+Completely eliminated all vestiges of support for the "module-level executable code" until this support is fully implemented and debugged. This should eliminate the NO_RETURN_VALUE exceptions seen during table load on some systems that invoke this support.
+
+Fixed a problem within the resource manager code where the transaction flags for a 64-bit address descriptor were handled incorrectly in the type-specific flag byte.
+
+Consolidated duplicate code within the address descriptor resource manager code, reducing overall subsystem code size.
+
+Fixed a fault when using the AML debugger "disassemble" command to disassemble individual control methods.
+
+Removed references to the "release_current" directory within the Unix release package.
+
+Code and Data Size: The current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.6K Code, 11.7K Data,  90.3K Total
+    Debug Version:     170.0K Code, 69.9K Data, 239.9K Total
+  Current Release:
+    Non-Debug Version:  78.4K Code, 11.8K Data,  90.2K Total
+    Debug Version:     169.6K Code, 69.9K Data, 239.5K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Implemented an error check for illegal duplicate values in the interrupt and dma lists for the following ASL macros: Dma(), Irq(), IrqNoFlags(), and Interrupt().
+
+Implemented error checking for the Irq() and IrqNoFlags() macros to detect too many values in the interrupt list (16 max) and invalid values in the list (range 0 - 15)
+
+The maximum length string literal within an ASL file is now restricted to 200 characters as per the ACPI specification.
+
+Fixed a fault when using the -ln option (generate namespace listing).
+
+Implemented an error check to determine if a DescriptorName within a resource descriptor has already been used within the current scope.
+
+----------------------------------------
 15 August 2005.  Summary of changes for version 20050815:
  
 1) ACPI CA Core Subsystem:
