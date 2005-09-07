@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -404,6 +404,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_RESOURCE_EXT_IRQ",            SRC_TYPE_STRUCT},
     {"ACPI_RESOURCE_FIXED_IO",           SRC_TYPE_STRUCT},
     {"ACPI_RESOURCE_FIXED_MEM32",        SRC_TYPE_STRUCT},
+    {"ACPI_RESOURCE_GENERIC_REG",        SRC_TYPE_STRUCT},
     {"ACPI_RESOURCE_IO",                 SRC_TYPE_STRUCT},
     {"ACPI_RESOURCE_IRQ",                SRC_TYPE_STRUCT},
     {"ACPI_RESOURCE_MEM24",              SRC_TYPE_STRUCT},

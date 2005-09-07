@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  ******************************************************************************/
 
@@ -323,7 +323,7 @@ AcpiDmResourceDescriptor (
             break;
 
 
-        case ACPI_RDESC_TYPE_GENERAL_REGISTER:
+        case ACPI_RDESC_TYPE_GENERIC_REGISTER:
 
             AcpiDmGenericRegisterDescriptor (DescriptorBody, Length, Level);
             break;
@@ -499,7 +499,7 @@ AcpiDmIsResourceDescriptor (
          * "Large" type descriptors
          */
         case ACPI_RDESC_TYPE_MEMORY_24:
-        case ACPI_RDESC_TYPE_GENERAL_REGISTER:
+        case ACPI_RDESC_TYPE_GENERIC_REGISTER:
         case ACPI_RDESC_TYPE_LARGE_VENDOR:
         case ACPI_RDESC_TYPE_MEMORY_32:
         case ACPI_RDESC_TYPE_FIXED_MEMORY_32:

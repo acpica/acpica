@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  ******************************************************************************/
 
@@ -178,6 +178,10 @@ AcpiRsDumpStartDependFns (
 
 static void
 AcpiRsDumpVendorSpecific (
+    ACPI_RESOURCE_DATA      *Data);
+
+static void
+AcpiRsDumpGenericReg (
     ACPI_RESOURCE_DATA      *Data);
 
 
@@ -1109,6 +1113,38 @@ AcpiRsDumpExtendedIrq (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiRsDumpGenericReg
+ *
+ * PARAMETERS:  Data            - pointer to the resource structure to dump.
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Prints out the various members of the Data structure type.
+ *
+ ******************************************************************************/
+
+static void
+AcpiRsDumpGenericReg (
+    ACPI_RESOURCE_DATA      *Data)
+{
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    AcpiOsPrintf ("Generic Register Resource\n");
+
+    AcpiOsPrintf ("    Space ID: %2.2X\n", (UINT8) Data->GenericReg.SpaceId);
+    AcpiOsPrintf ("    Bit Width: %2.2X\n", (UINT8) Data->GenericReg.BitWidth);
+    AcpiOsPrintf ("    Bit Offset: %2.2X\n", (UINT8) Data->GenericReg.BitOffset);
+    AcpiOsPrintf ("    Address Size: %2.2X\n", (UINT8) Data->GenericReg.AddressSize);
+
+    AcpiOsPrintf ("    Address: %8.8X%8.8X\n",
+        ACPI_FORMAT_UINT64 (Data->GenericReg.Address));
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsDumpResourceList
  *
  * PARAMETERS:  Resource        - pointer to the resource structure to dump.
@@ -1199,6 +1235,10 @@ AcpiRsDumpResourceList (
 
             case ACPI_RSTYPE_EXT_IRQ:
                 AcpiRsDumpExtendedIrq (&Resource->Data);
+                break;
+
+            case ACPI_RSTYPE_GENERIC_REG:
+                AcpiRsDumpGenericReg (&Resource->Data);
                 break;
 
             default:

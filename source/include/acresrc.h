@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.42 $
+ *       $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -412,5 +412,22 @@ AcpiRsVendorStream (
 UINT8
 AcpiRsGetResourceType (
     UINT8                   ResourceStartByte);
+
+/*
+ * rsmisc
+ */
+ACPI_STATUS
+AcpiRsGenericRegisterResource (
+    UINT8                   *ByteStreamBuffer,
+    ACPI_SIZE               *BytesConsumed,
+    UINT8                   **OutputBuffer,
+    ACPI_SIZE               *StructureSize);
+
+ACPI_STATUS
+AcpiRsGenericRegisterStream (
+    ACPI_RESOURCE           *LinkedList,
+    UINT8                   **OutputBuffer,
+    ACPI_SIZE               *BytesConsumed);
+
 
 #endif  /* __ACRESRC_H__ */

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -2765,7 +2765,7 @@ RsDoGeneralRegisterDescriptor (
     Rnode = RsAllocateResourceNode (sizeof (ASL_GENERAL_REGISTER_DESC));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Grg.DescriptorType  = ACPI_RDESC_TYPE_GENERAL_REGISTER;
+    Descriptor->Grg.DescriptorType  = ACPI_RDESC_TYPE_GENERIC_REGISTER;
     Descriptor->Grg.Length          = 12;
 
     /* Process all child initialization nodes */

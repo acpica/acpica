@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.283 $
+ *       $Revision: 1.284 $
  *
  *****************************************************************************/
 
@@ -1341,6 +1341,16 @@ typedef struct acpi_resource_ext_irq
 
 } ACPI_RESOURCE_EXT_IRQ;
 
+typedef struct acpi_resource_generic_reg
+{
+    UINT32                      SpaceId;
+    UINT32                      BitWidth;
+    UINT32                      BitOffset;
+    UINT32                      AddressSize;
+    UINT64                      Address;
+
+} ACPI_RESOURCE_GENERIC_REG;
+
 
 /* ACPI_RESOURCE_TYPEs */
 
@@ -1359,6 +1369,8 @@ typedef struct acpi_resource_ext_irq
 #define ACPI_RSTYPE_ADDRESS32           12
 #define ACPI_RSTYPE_ADDRESS64           13
 #define ACPI_RSTYPE_EXT_IRQ             14
+#define ACPI_RSTYPE_GENERIC_REG         15
+#define ACPI_RSTYPE_MAX                 15
 
 typedef UINT32                          ACPI_RESOURCE_TYPE;
 
@@ -1379,6 +1391,7 @@ typedef union acpi_resource_data
     ACPI_RESOURCE_ADDRESS32     Address32;
     ACPI_RESOURCE_ADDRESS64     Address64;
     ACPI_RESOURCE_EXT_IRQ       ExtendedIrq;
+    ACPI_RESOURCE_GENERIC_REG   GenericReg;
 
 } ACPI_RESOURCE_DATA;
 

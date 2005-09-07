@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.211 $
+ *       $Revision: 1.212 $
  *
  *****************************************************************************/
 
@@ -976,7 +976,7 @@ typedef struct acpi_bit_register_info
  * Large resource descriptor types
  */
 #define ACPI_RDESC_TYPE_MEMORY_24               0x81
-#define ACPI_RDESC_TYPE_GENERAL_REGISTER        0x82
+#define ACPI_RDESC_TYPE_GENERIC_REGISTER        0x82
 #define ACPI_RDESC_TYPE_LARGE_VENDOR            0x84
 #define ACPI_RDESC_TYPE_MEMORY_32               0x85
 #define ACPI_RDESC_TYPE_FIXED_MEMORY_32         0x86
