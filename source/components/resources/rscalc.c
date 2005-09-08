@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  ******************************************************************************/
 
@@ -660,7 +660,7 @@ AcpiRsGetListLength (
             Buffer = ByteStreamBuffer;
             Temp8 = *Buffer;
 
-            if(Temp8 & 0x01)
+            if (Temp8 & 0x01)
             {
                 BytesConsumed = 4;
             }
@@ -707,9 +707,9 @@ AcpiRsGetListLength (
 
             Temp8 = *Buffer;
 
-            for(Index = 0; Index < 8; Index++)
+            for (Index = 0; Index < 8; Index++)
             {
-                if(Temp8 & 0x1)
+                if (Temp8 & 0x1)
                 {
                     ++NumberOfChannels;
                 }
@@ -730,7 +730,7 @@ AcpiRsGetListLength (
             Buffer = ByteStreamBuffer;
             Temp8 = *Buffer;
 
-            if(Temp8 & 0x01)
+            if (Temp8 & 0x01)
             {
                 BytesConsumed = 2;
             }

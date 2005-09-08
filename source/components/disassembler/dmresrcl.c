@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  ******************************************************************************/
 
@@ -291,29 +291,29 @@ AcpiDmMemoryFlags2 (
 
 void
 AcpiDmWordDescriptor (
-    ASL_WORD_ADDRESS_DESC   *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
-    if (Resource->ResourceType >= 0xC0)
+    if (Resource->Was.ResourceType >= 0xC0)
     {
-        AcpiOsPrintf ("WordSpace (0x%2.2X, ", Resource->ResourceType);
-        AcpiDmSpaceFlags (Resource->Flags);
-        AcpiOsPrintf (" 0x%2.2X,", Resource->SpecificFlags);
+        AcpiOsPrintf ("WordSpace (0x%2.2X, ", Resource->Was.ResourceType);
+        AcpiDmSpaceFlags (Resource->Was.Flags);
+        AcpiOsPrintf (" 0x%2.2X,", Resource->Was.SpecificFlags);
     }
     else
     {
         AcpiOsPrintf ("%s (",
-            AcpiGbl_WordDecode [(Resource->ResourceType & 3)]);
+            AcpiGbl_WordDecode [(Resource->Was.ResourceType & 3)]);
 
-        AcpiDmIoFlags (Resource->Flags);
+        AcpiDmIoFlags (Resource->Was.Flags);
 
-        if ((Resource->ResourceType & 0x3) == 1)
+        if ((Resource->Was.ResourceType & 0x3) == 1)
         {
             AcpiOsPrintf (" %s,",
-                AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+                AcpiGbl_RNGDecode [(Resource->Was.SpecificFlags & 0x3)]);
         }
     }
 
@@ -322,19 +322,19 @@ AcpiDmWordDescriptor (
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%4.4X, // Address Space Granularity\n",
-        (UINT32) Resource->Granularity);
+        (UINT32) Resource->Was.Granularity);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%4.4X, // Address Range Minimum\n",
-        (UINT32) Resource->AddressMin);
+        (UINT32) Resource->Was.AddressMin);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%4.4X, // Address Range Maximum\n",
-        (UINT32) Resource->AddressMax);
+        (UINT32) Resource->Was.AddressMax);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%4.4X, // Address Translation Offset\n",
-        (UINT32) Resource->TranslationOffset);
+        (UINT32) Resource->Was.TranslationOffset);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%4.4X",
-        (UINT32) Resource->AddressLength);
+        (UINT32) Resource->Was.AddressLength);
 
     /*
      * Optional fields:
@@ -344,9 +344,9 @@ AcpiDmWordDescriptor (
     if (Length > 14)
     {
         AcpiOsPrintf (", 0x%2.2X",
-            (UINT32) Resource->OptionalFields[0]);  /* Byte 13 */
+            (UINT32) Resource->Was.OptionalFields[0]);  /* Byte 13 */
         AcpiOsPrintf (", %s",
-            &Resource->OptionalFields[1]);          /* Bytes 14+ */
+            &Resource->Was.OptionalFields[1]);          /* Bytes 14+ */
     }
     else
     {
@@ -355,17 +355,17 @@ AcpiDmWordDescriptor (
 
     /* Type-specific flags */
 
-    if (Resource->ResourceType == ACPI_IO_RANGE)
+    if (Resource->Was.ResourceType == ACPI_IO_RANGE)
     {
         AcpiOsPrintf ("\n");
         AcpiDmIndent (Level + 1);
-        AcpiDmIoFlags2 (Resource->SpecificFlags);
+        AcpiDmIoFlags2 (Resource->Was.SpecificFlags);
     }
-    else if (Resource->ResourceType == ACPI_MEMORY_RANGE)
+    else if (Resource->Was.ResourceType == ACPI_MEMORY_RANGE)
     {
         AcpiOsPrintf ("\n");
         AcpiDmIndent (Level + 1);
-        AcpiDmMemoryFlags2 (Resource->SpecificFlags);
+        AcpiDmMemoryFlags2 (Resource->Was.SpecificFlags);
     }
     AcpiOsPrintf (")\n");
 }
@@ -387,32 +387,32 @@ AcpiDmWordDescriptor (
 
 void
 AcpiDmDwordDescriptor (
-    ASL_DWORD_ADDRESS_DESC  *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
-    if (Resource->ResourceType >= 0xC0)
+    if (Resource->Das.ResourceType >= 0xC0)
     {
-        AcpiOsPrintf ("DWordSpace (0x%2.2X, ", Resource->ResourceType);
-        AcpiDmSpaceFlags (Resource->Flags);
-        AcpiOsPrintf (" 0x%2.2X,", Resource->SpecificFlags);
+        AcpiOsPrintf ("DWordSpace (0x%2.2X, ", Resource->Das.ResourceType);
+        AcpiDmSpaceFlags (Resource->Das.Flags);
+        AcpiOsPrintf (" 0x%2.2X,", Resource->Das.SpecificFlags);
     }
     else
     {
         AcpiOsPrintf ("D%s (",
-            AcpiGbl_WordDecode [(Resource->ResourceType & 3)]);
+            AcpiGbl_WordDecode [(Resource->Das.ResourceType & 3)]);
 
-        if ((Resource->ResourceType & 0x3) == 1)
+        if ((Resource->Das.ResourceType & 0x3) == 1)
         {
-            AcpiDmIoFlags (Resource->Flags);
+            AcpiDmIoFlags (Resource->Das.Flags);
             AcpiOsPrintf (" %s,",
-                AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+                AcpiGbl_RNGDecode [(Resource->Das.SpecificFlags & 0x3)]);
         }
         else
         {
-            AcpiDmMemoryFlags (Resource->Flags, Resource->SpecificFlags);
+            AcpiDmMemoryFlags (Resource->Das.Flags, Resource->Das.SpecificFlags);
         }
     }
 
@@ -421,19 +421,19 @@ AcpiDmDwordDescriptor (
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X, // Address Space Granularity\n",
-        Resource->Granularity);
+        Resource->Das.Granularity);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X, // Address Range Minimum\n",
-        Resource->AddressMin);
+        Resource->Das.AddressMin);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X, // Address Range Maximum\n",
-        Resource->AddressMax);
+        Resource->Das.AddressMax);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X, // Address Translation Offset\n",
-        Resource->TranslationOffset);
+        Resource->Das.TranslationOffset);
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X",
-        Resource->AddressLength);
+        Resource->Das.AddressLength);
 
     /*
      * Optional fields:
@@ -443,9 +443,9 @@ AcpiDmDwordDescriptor (
     if (Length > 24)
     {
         AcpiOsPrintf (", 0x%2.2X",
-            Resource->OptionalFields[0]);   /* Byte 23 */
+            Resource->Das.OptionalFields[0]);   /* Byte 23 */
         AcpiOsPrintf (", %s",
-            &Resource->OptionalFields[1]);  /* Bytes 24+ */
+            &Resource->Das.OptionalFields[1]);  /* Bytes 24+ */
     }
     else
     {
@@ -454,17 +454,17 @@ AcpiDmDwordDescriptor (
 
     /* Type-specific flags */
 
-    if (Resource->ResourceType == ACPI_IO_RANGE)
+    if (Resource->Das.ResourceType == ACPI_IO_RANGE)
     {
         AcpiOsPrintf ("\n");
         AcpiDmIndent (Level + 1);
-        AcpiDmIoFlags2 (Resource->SpecificFlags);
+        AcpiDmIoFlags2 (Resource->Das.SpecificFlags);
     }
-    else if (Resource->ResourceType == ACPI_MEMORY_RANGE)
+    else if (Resource->Das.ResourceType == ACPI_MEMORY_RANGE)
     {
         AcpiOsPrintf ("\n");
         AcpiDmIndent (Level + 1);
-        AcpiDmMemoryFlags2 (Resource->SpecificFlags);
+        AcpiDmMemoryFlags2 (Resource->Das.SpecificFlags);
     }
     AcpiOsPrintf (")\n");
 }
@@ -486,31 +486,31 @@ AcpiDmDwordDescriptor (
 
 void
 AcpiDmExtendedDescriptor (
-    ASL_EXTENDED_ADDRESS_DESC  *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
-    if (Resource->ResourceType >= 0xC0)
+    if (Resource->Eas.ResourceType >= 0xC0)
     {
-        AcpiOsPrintf ("ExtendedSpace (0x%2.2X, ", Resource->ResourceType);
-        AcpiDmSpaceFlags (Resource->Flags);
-        AcpiOsPrintf (" 0x%2.2X,", Resource->SpecificFlags);
+        AcpiOsPrintf ("ExtendedSpace (0x%2.2X, ", Resource->Eas.ResourceType);
+        AcpiDmSpaceFlags (Resource->Eas.Flags);
+        AcpiOsPrintf (" 0x%2.2X,", Resource->Eas.SpecificFlags);
     }
     else
     {
-        if (Resource->ResourceType == ACPI_IO_RANGE)
+        if (Resource->Eas.ResourceType == ACPI_IO_RANGE)
         {
             AcpiOsPrintf ("ExtendedIO (");
-            AcpiDmIoFlags (Resource->Flags);
+            AcpiDmIoFlags (Resource->Eas.Flags);
             AcpiOsPrintf (" %s,",
-                AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+                AcpiGbl_RNGDecode [(Resource->Eas.SpecificFlags & 0x3)]);
         }
         else
         {
             AcpiOsPrintf ("ExtendedMemory (");
-            AcpiDmMemoryFlags (Resource->Flags, Resource->SpecificFlags);
+            AcpiDmMemoryFlags (Resource->Eas.Flags, Resource->Eas.SpecificFlags);
         }
     }
 
@@ -519,50 +519,50 @@ AcpiDmExtendedDescriptor (
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X, // Address Space Granularity\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Granularity)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Eas.Granularity)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X, // Address Range Minimum\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMin)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Eas.AddressMin)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X, // Address Range Maximum\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMax)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Eas.AddressMax)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X, // Address Translation Offset\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TranslationOffset)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Eas.TranslationOffset)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X, // Address Length\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressLength)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Eas.AddressLength)));
 
     /* Type-specific flags */
 
     AcpiDmIndent (Level + 1);
-    if (Resource->ResourceType == ACPI_IO_RANGE)
+    if (Resource->Eas.ResourceType == ACPI_IO_RANGE)
     {
         AcpiOsPrintf ("0x%8.8X%8.8X, // Type Specific Attributes\n",
             ACPI_FORMAT_UINT64 (
-                ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
+                ACPI_GET_ADDRESS (Resource->Eas.TypeSpecificAttributes)));
         AcpiDmIndent (Level + 1);
-        AcpiDmIoFlags2 (Resource->SpecificFlags);
+        AcpiDmIoFlags2 (Resource->Eas.SpecificFlags);
         AcpiOsPrintf (")\n");
     }
-    else if (Resource->ResourceType == ACPI_MEMORY_RANGE)
+    else if (Resource->Eas.ResourceType == ACPI_MEMORY_RANGE)
     {
         AcpiOsPrintf ("0x%8.8X%8.8X, // Type Specific Attributes\n",
             ACPI_FORMAT_UINT64 (
-                ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
+                ACPI_GET_ADDRESS (Resource->Eas.TypeSpecificAttributes)));
         AcpiDmIndent (Level + 1);
-        AcpiDmMemoryFlags2 (Resource->SpecificFlags);
+        AcpiDmMemoryFlags2 (Resource->Eas.SpecificFlags);
         AcpiOsPrintf (")\n");
     }
     else
     {
         AcpiOsPrintf ("0x%8.8X%8.8X) // Type Specific Attributes\n",
             ACPI_FORMAT_UINT64 (
-                ACPI_GET_ADDRESS (Resource->TypeSpecificAttributes)));
+                ACPI_GET_ADDRESS (Resource->Eas.TypeSpecificAttributes)));
     }
 
 }
@@ -584,32 +584,32 @@ AcpiDmExtendedDescriptor (
 
 void
 AcpiDmQwordDescriptor (
-    ASL_QWORD_ADDRESS_DESC  *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
-    if (Resource->ResourceType >= 0xC0)
+    if (Resource->Qas.ResourceType >= 0xC0)
     {
-        AcpiOsPrintf ("QWordSpace (0x%2.2X, ", Resource->ResourceType);
-        AcpiDmSpaceFlags (Resource->Flags);
-        AcpiOsPrintf (" 0x%2.2X,", Resource->SpecificFlags);
+        AcpiOsPrintf ("QWordSpace (0x%2.2X, ", Resource->Qas.ResourceType);
+        AcpiDmSpaceFlags (Resource->Qas.Flags);
+        AcpiOsPrintf (" 0x%2.2X,", Resource->Qas.SpecificFlags);
     }
     else
     {
         AcpiOsPrintf ("Q%s (",
-            AcpiGbl_WordDecode [(Resource->ResourceType & 3)]);
+            AcpiGbl_WordDecode [(Resource->Qas.ResourceType & 3)]);
 
-        if ((Resource->ResourceType & 0x3) == 1)
+        if ((Resource->Qas.ResourceType & 0x3) == 1)
         {
-            AcpiDmIoFlags (Resource->Flags);
+            AcpiDmIoFlags (Resource->Qas.Flags);
             AcpiOsPrintf (" %s,",
-                AcpiGbl_RNGDecode [(Resource->SpecificFlags & 0x3)]);
+                AcpiGbl_RNGDecode [(Resource->Qas.SpecificFlags & 0x3)]);
         }
         else
         {
-            AcpiDmMemoryFlags (Resource->Flags, Resource->SpecificFlags);
+            AcpiDmMemoryFlags (Resource->Qas.Flags, Resource->Qas.SpecificFlags);
         }
     }
 
@@ -618,23 +618,23 @@ AcpiDmQwordDescriptor (
     AcpiOsPrintf ("\n");
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X, // Address Space Granularity\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Granularity)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Qas.Granularity)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X, // Address Range Minimum\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMin)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Qas.AddressMin)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X, // Address Range Maximum\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressMax)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Qas.AddressMax)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X, // Address Translation Offset\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->TranslationOffset)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Qas.TranslationOffset)));
 
     AcpiDmIndent (Level + 1);
     AcpiOsPrintf ("0x%8.8X%8.8X",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->AddressLength)));
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Qas.AddressLength)));
 
     /*
      * Optional fields:
@@ -644,9 +644,9 @@ AcpiDmQwordDescriptor (
     if (Length > 44)
     {
         AcpiOsPrintf (", 0x%2.2X",
-            Resource->OptionalFields[0]);   /* Byte 43 */
+            Resource->Qas.OptionalFields[0]);   /* Byte 43 */
         AcpiOsPrintf (", %s",
-            &Resource->OptionalFields[1]);  /* Bytes 44+ */
+            &Resource->Qas.OptionalFields[1]);  /* Bytes 44+ */
     }
     else
     {
@@ -655,17 +655,17 @@ AcpiDmQwordDescriptor (
 
     /* Type-specific flags */
 
-    if (Resource->ResourceType == ACPI_IO_RANGE)
+    if (Resource->Qas.ResourceType == ACPI_IO_RANGE)
     {
         AcpiOsPrintf ("\n");
         AcpiDmIndent (Level + 1);
-        AcpiDmIoFlags2 (Resource->SpecificFlags);
+        AcpiDmIoFlags2 (Resource->Qas.SpecificFlags);
     }
-    else if (Resource->ResourceType == ACPI_MEMORY_RANGE)
+    else if (Resource->Qas.ResourceType == ACPI_MEMORY_RANGE)
     {
         AcpiOsPrintf ("\n");
         AcpiDmIndent (Level + 1);
-        AcpiDmMemoryFlags2 (Resource->SpecificFlags);
+        AcpiDmMemoryFlags2 (Resource->Qas.SpecificFlags);
     }
     AcpiOsPrintf (")\n");
 }
@@ -687,18 +687,18 @@ AcpiDmQwordDescriptor (
 
 void
 AcpiDmMemory24Descriptor (
-    ASL_MEMORY_24_DESC      *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Memory24 (%s, 0x%4.4X, 0x%4.4X, 0x%4.4X, 0x%4.4X)\n",
-        AcpiGbl_RWDecode [Resource->Information & 1],
-        (UINT32) Resource->AddressMin,
-        (UINT32) Resource->AddressMax,
-        (UINT32) Resource->Alignment,
-        (UINT32) Resource->RangeLength);
+        AcpiGbl_RWDecode [Resource->M24.Information & 1],
+        (UINT32) Resource->M24.AddressMin,
+        (UINT32) Resource->M24.AddressMax,
+        (UINT32) Resource->M24.Alignment,
+        (UINT32) Resource->M24.RangeLength);
 }
 
 
@@ -718,24 +718,24 @@ AcpiDmMemory24Descriptor (
 
 void
 AcpiDmMemory32Descriptor (
-    ASL_MEMORY_32_DESC      *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Memory32 (%s, 0x%8.8X, 0x%8.8X, 0x%8.8X, 0x%8.8X)\n",
-        AcpiGbl_RWDecode [Resource->Information & 1],
-        Resource->AddressMin,
-        Resource->AddressMax,
-        Resource->Alignment,
-        Resource->RangeLength);
+        AcpiGbl_RWDecode [Resource->M32.Information & 1],
+        Resource->M32.AddressMin,
+        Resource->M32.AddressMax,
+        Resource->M32.Alignment,
+        Resource->M32.RangeLength);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmFixedMem32Descriptor
+ * FUNCTION:    AcpiDmFixedMemory32Descriptor
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Length              - Length of the descriptor in bytes
@@ -748,17 +748,17 @@ AcpiDmMemory32Descriptor (
  ******************************************************************************/
 
 void
-AcpiDmFixedMem32Descriptor (
-    ASL_FIXED_MEMORY_32_DESC *Resource,
+AcpiDmFixedMemory32Descriptor (
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Memory32Fixed (%s, 0x%8.8X, 0x%8.8X)\n",
-        AcpiGbl_RWDecode [Resource->Information & 1],
-        Resource->BaseAddress,
-        Resource->RangeLength);
+        AcpiGbl_RWDecode [Resource->F32.Information & 1],
+        Resource->F32.BaseAddress,
+        Resource->F32.RangeLength);
 }
 
 
@@ -778,7 +778,7 @@ AcpiDmFixedMem32Descriptor (
 
 void
 AcpiDmGenericRegisterDescriptor (
-    ASL_GENERAL_REGISTER_DESC *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -786,12 +786,12 @@ AcpiDmGenericRegisterDescriptor (
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Register (");
 
-    AcpiDmAddressSpace (Resource->AddressSpaceId);
+    AcpiDmAddressSpace (Resource->Grg.AddressSpaceId);
 
     AcpiOsPrintf ("0x%2.2X, 0x%2.2X, 0x%8.8X%8.8X)\n",
-        (UINT32) Resource->BitWidth,
-        (UINT32) Resource->BitOffset,
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Address)));
+        (UINT32) Resource->Grg.BitWidth,
+        (UINT32) Resource->Grg.BitOffset,
+        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->Grg.Address)));
 }
 
 
@@ -811,7 +811,7 @@ AcpiDmGenericRegisterDescriptor (
 
 void
 AcpiDmInterruptDescriptor (
-    ASL_EXTENDED_XRUPT_DESC *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -821,21 +821,21 @@ AcpiDmInterruptDescriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Interrupt (%s, %s, %s, %s",
-        AcpiGbl_ConsumeDecode [(Resource->Flags & 1)],
-        AcpiGbl_HEDecode [(Resource->Flags >> 1) & 1],
-        AcpiGbl_LLDecode [(Resource->Flags >> 2) & 1],
-        AcpiGbl_SHRDecode [(Resource->Flags >> 3) & 1]);
+        AcpiGbl_ConsumeDecode [(Resource->Exx.Flags & 1)],
+        AcpiGbl_HEDecode [(Resource->Exx.Flags >> 1) & 1],
+        AcpiGbl_LLDecode [(Resource->Exx.Flags >> 2) & 1],
+        AcpiGbl_SHRDecode [(Resource->Exx.Flags >> 3) & 1]);
 
     /*
      * Optional fields:
      * If ResourceSourceIndex (byte) exists, ResourceSource (string) must also
      * (from ACPI specification)
      */
-    if (Resource->Length > (UINT16) (4 * Resource->TableLength) + 3)
+    if (Resource->Exx.Length > (UINT16) (4 * Resource->Exx.TableLength) + 3)
     {
         /* Get a pointer past the interrupt values */
 
-        Rover = ((UINT8 *) Resource) + ((4 * Resource->TableLength) + 5);
+        Rover = ((UINT8 *) Resource) + ((4 * Resource->Exx.TableLength) + 5);
 
         /* Resource Index */
         /* Resource Source */
@@ -846,10 +846,10 @@ AcpiDmInterruptDescriptor (
     AcpiOsPrintf (")\n");
     AcpiDmIndent (Level);
     AcpiOsPrintf ("{\n");
-    for (i = 0; i < Resource->TableLength; i++)
+    for (i = 0; i < Resource->Exx.TableLength; i++)
     {
         AcpiDmIndent (Level + 1);
-        AcpiOsPrintf ("0x%8.8X,\n", (UINT32) Resource->InterruptNumber[i]);
+        AcpiOsPrintf ("0x%8.8X,\n", (UINT32) Resource->Exx.InterruptNumber[i]);
     }
 
     AcpiDmIndent (Level);
@@ -873,7 +873,7 @@ AcpiDmInterruptDescriptor (
 
 void
 AcpiDmVendorLargeDescriptor (
-    ASL_LARGE_VENDOR_DESC   *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -884,7 +884,7 @@ AcpiDmVendorLargeDescriptor (
 
     AcpiOsPrintf ("{\n");
 
-    AcpiDmDisasmByteList (Level + 1, (UINT8 *) Resource->VendorDefined, Length);
+    AcpiDmDisasmByteList (Level + 1, (UINT8 *) Resource->Lgv.VendorDefined, Length);
     AcpiDmIndent (Level);
     AcpiOsPrintf ("}\n");
 }

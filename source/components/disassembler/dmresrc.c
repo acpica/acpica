@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -125,6 +125,102 @@
         ACPI_MODULE_NAME    ("dbresrc")
 
 
+/* Dispatch tables for Resource disassembly functions */
+
+typedef
+void (*ACPI_RESOURCE_HANDLER) (
+    ASL_RESOURCE_DESC       *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+static ACPI_RESOURCE_HANDLER    AcpiGbl_SmResourceDispatch [] = 
+{
+    NULL,                           /* 0x00, Reserved */
+    NULL,                           /* 0x01, Reserved */
+    NULL,                           /* 0x02, Reserved */
+    NULL,                           /* 0x03, Reserved */
+    AcpiDmIrqDescriptor,            /* ACPI_RDESC_TYPE_IRQ_FORMAT */
+    AcpiDmDmaDescriptor,            /* ACPI_RDESC_TYPE_DMA_FORMAT */
+    AcpiDmStartDependentDescriptor, /* ACPI_RDESC_TYPE_START_DEPENDENT */
+    AcpiDmEndDependentDescriptor,   /* ACPI_RDESC_TYPE_END_DEPENDENT */
+    AcpiDmIoDescriptor,             /* ACPI_RDESC_TYPE_IO_PORT */
+    AcpiDmFixedIoDescriptor,        /* ACPI_RDESC_TYPE_FIXED_IO_PORT */
+    NULL,                           /* 0x0A, Reserved */
+    NULL,                           /* 0x0B, Reserved */
+    NULL,                           /* 0x0C, Reserved */
+    NULL,                           /* 0x0D, Reserved */
+    AcpiDmVendorSmallDescriptor,    /* ACPI_RDESC_TYPE_SMALL_VENDOR */
+    NULL                            /* ACPI_RDESC_TYPE_END_TAG (not used) */
+};
+
+static ACPI_RESOURCE_HANDLER    AcpiGbl_LgResourceDispatch [] = 
+{
+    NULL,                           /* 0x00, Reserved */
+    AcpiDmMemory24Descriptor,       /* ACPI_RDESC_TYPE_MEMORY_24 */
+    AcpiDmGenericRegisterDescriptor,/* ACPI_RDESC_TYPE_GENERIC_REGISTER */
+    NULL,                           /* 0x03, Reserved */
+    AcpiDmVendorLargeDescriptor,    /* ACPI_RDESC_TYPE_LARGE_VENDOR */
+    AcpiDmMemory32Descriptor,       /* ACPI_RDESC_TYPE_MEMORY_32 */
+    AcpiDmFixedMemory32Descriptor,  /* ACPI_RDESC_TYPE_FIXED_MEMORY_32 */
+    AcpiDmDwordDescriptor,          /* ACPI_RDESC_TYPE_DWORD_ADDRESS_SPACE */
+    AcpiDmWordDescriptor,           /* ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE */
+    AcpiDmInterruptDescriptor,      /* ACPI_RDESC_TYPE_EXTENDED_XRUPT */
+    AcpiDmQwordDescriptor,          /* ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE */
+    AcpiDmExtendedDescriptor        /* ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE */
+};
+
+
+/* Local prototypes */
+
+static ACPI_RESOURCE_HANDLER
+AcpiDmGetResourceHandler (
+    UINT8                   ResourceType);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmGetResourceHandler
+ *
+ * PARAMETERS:  ResourceType        - Byte 0 of a resource descriptor
+ *
+ * RETURN:      Pointer to the resource conversion handler
+ *
+ * DESCRIPTION: Extract the Resource Type/Name from the first byte of
+ *              a resource descriptor.
+ *
+ ******************************************************************************/
+
+static ACPI_RESOURCE_HANDLER
+AcpiDmGetResourceHandler (
+    UINT8                   ResourceType)
+{
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /* Determine if this is a small or large resource */
+
+    if (ResourceType & ACPI_RDESC_TYPE_LARGE)
+    {
+        /* Large Resource Type -- bits 6:0 contain the name */
+
+        if (ResourceType > ACPI_RDESC_LARGE_MAX)
+        {
+            return (NULL);
+        }
+
+        return (AcpiGbl_LgResourceDispatch [
+                    (ResourceType & ACPI_RDESC_LARGE_MASK)]);
+    }
+    else
+    {
+        /* Small Resource Type -- bits 6:3 contain the name */
+
+        return (AcpiGbl_SmResourceDispatch [
+                    ((ResourceType & ACPI_RDESC_SMALL_MASK) >> 3)]);
+    }
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmBitList
@@ -202,6 +298,7 @@ AcpiDmResourceDescriptor (
     void                    *DescriptorBody;
     UINT32                  Level;
     BOOLEAN                 DependentFns = FALSE;
+    ACPI_RESOURCE_HANDLER   Handler;
 
 
     Level = Info->Level;
@@ -210,6 +307,8 @@ AcpiDmResourceDescriptor (
     {
         CurrentByte = ByteData[CurrentByteOffset];
         DescriptorBody = &ByteData[CurrentByteOffset];
+
+        /* Large vs. Small resource descriptors */
 
         if (CurrentByte & ACPI_RDESC_TYPE_LARGE)
         {
@@ -227,25 +326,10 @@ AcpiDmResourceDescriptor (
 
         CurrentByteOffset += (ACPI_NATIVE_UINT) Length;
 
-        /* Determine type of resource */
+        /* Descriptor pre-processing */
 
         switch (DescriptorId)
         {
-        /*
-         * "Small" type descriptors
-         */
-        case ACPI_RDESC_TYPE_IRQ_FORMAT:
-
-            AcpiDmIrqDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_DMA_FORMAT:
-
-            AcpiDmDmaDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
         case ACPI_RDESC_TYPE_START_DEPENDENT:
 
             /* Finish a previous StartDependentFns */
@@ -256,137 +340,66 @@ AcpiDmResourceDescriptor (
                 AcpiDmIndent (Level);
                 AcpiOsPrintf ("}\n");
             }
-
-            AcpiDmStartDependentDescriptor (DescriptorBody, Length, Level);
-            DependentFns = TRUE;
-            Level++;
             break;
-
 
         case ACPI_RDESC_TYPE_END_DEPENDENT:
 
             Level--;
             DependentFns = FALSE;
-            AcpiDmEndDependentDescriptor (DescriptorBody, Length, Level);
             break;
-
-
-        case ACPI_RDESC_TYPE_IO_PORT:
-
-            AcpiDmIoDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_FIXED_IO_PORT:
-
-            AcpiDmFixedIoDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_SMALL_VENDOR:
-
-            AcpiDmVendorSmallDescriptor (DescriptorBody, Length, Level);
-            break;
-
 
         case ACPI_RDESC_TYPE_END_TAG:
+
+            /* Normal exit, the resource list is finished */
 
             if (DependentFns)
             {
                 /*
-                 * Close an open StartDependentDescriptor.  This indicates a
+                 * Close an open StartDependentDescriptor. This indicates a
                  * missing EndDependentDescriptor.
                  */
                 Level--;
                 DependentFns = FALSE;
-                AcpiDmIndent (Level);
-                AcpiOsPrintf ("}\n");
-                AcpiDmIndent (Level);
 
-                AcpiOsPrintf ("/*** Missing EndDependentFunctions descriptor ***/\n");
+                /* Go ahead and insert EndDependentFn() */
 
-                /*
-                 * We could fix the problem, but then the ASL would not match
-                 * the AML, so we don't do this:
-                 * AcpiDmEndDependentDescriptor (DescriptorBody, Length, Level);
-                 */
+                AcpiDmEndDependentDescriptor (DescriptorBody, Length, Level);
+
+                AcpiDmIndent (Level);
+                AcpiOsPrintf ("/*** Disassembler: EndDependentFunctions descriptor was missing in AML, inserted EndDependentFn () ***/\n");
             }
             return;
 
-
-        /*
-         * "Large" type descriptors
-         */
-        case ACPI_RDESC_TYPE_MEMORY_24:
-
-            AcpiDmMemory24Descriptor (DescriptorBody, Length, Level);
+        default: 
             break;
+        }
 
+        /* Get the handler associated with this Descriptor Type */
 
-        case ACPI_RDESC_TYPE_GENERIC_REGISTER:
-
-            AcpiDmGenericRegisterDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_LARGE_VENDOR:
-
-            AcpiDmVendorLargeDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_MEMORY_32:
-
-            AcpiDmMemory32Descriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_FIXED_MEMORY_32:
-
-            AcpiDmFixedMem32Descriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_DWORD_ADDRESS_SPACE:
-
-            AcpiDmDwordDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE:
-
-            AcpiDmWordDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_EXTENDED_XRUPT:
-
-            AcpiDmInterruptDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE:
-
-            AcpiDmQwordDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        case ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE:
-
-            AcpiDmExtendedDescriptor (DescriptorBody, Length, Level);
-            break;
-
-
-        default:
+        Handler = AcpiDmGetResourceHandler (DescriptorId);
+        if (!Handler)
+        {
             /*
-             * Anything else is unrecognized.
+             * Invalid Descriptor Type.
              *
-             * Since the entire resource buffer has been already walked and
+             * Since the entire resource buffer has been previously walked and
              * validated, this is a very serious error indicating that someone
              * overwrote the buffer.
              */
-            AcpiOsPrintf ("//*** Unknown Resource type (%X)\n", DescriptorId);
+            AcpiOsPrintf ("/*** Unknown Resource type (%X) ***/\n", DescriptorId);
             return;
+        }
+
+        /* Disassemble the resource structure */
+
+        Handler (DescriptorBody, Length, Level);
+
+        /* Descriptor post-processing */
+
+        if (DescriptorId == ACPI_RDESC_TYPE_START_DEPENDENT)
+        {
+            DependentFns = TRUE;
+            Level++;
         }
     }
 }

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amlresrc.h - AML resource descriptors
- *              $Revision: 1.28 $
+ *              $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -398,7 +398,7 @@ typedef struct asl_extended_xrupt_desc
 } ASL_EXTENDED_XRUPT_DESC;
 
 
-typedef struct asl_general_register_desc
+typedef struct asl_generic_register_desc
 {
     UINT8                       DescriptorType;
     UINT16                      Length;
@@ -408,7 +408,7 @@ typedef struct asl_general_register_desc
     UINT8                       AccessSize; /* ACPI 3.0, was Reserved */
     UINT64                      Address;
 
-} ASL_GENERAL_REGISTER_DESC;
+} ASL_GENERIC_REGISTER_DESC;
 
 /* restore default alignment */
 
@@ -420,10 +420,10 @@ typedef union asl_resource_desc
 {
     ASL_IRQ_FORMAT_DESC         Irq;
     ASL_DMA_FORMAT_DESC         Dma;
-    ASL_START_DEPENDENT_DESC    Std;
-    ASL_END_DEPENDENT_DESC      End;
     ASL_IO_PORT_DESC            Iop;
     ASL_FIXED_IO_PORT_DESC      Fio;
+    ASL_START_DEPENDENT_DESC    Std;
+    ASL_END_DEPENDENT_DESC      End;
     ASL_SMALL_VENDOR_DESC       Smv;
     ASL_END_TAG_DESC            Et;
 
@@ -436,7 +436,7 @@ typedef union asl_resource_desc
     ASL_WORD_ADDRESS_DESC       Was;
     ASL_EXTENDED_ADDRESS_DESC   Eas;
     ASL_EXTENDED_XRUPT_DESC     Exx;
-    ASL_GENERAL_REGISTER_DESC   Grg;
+    ASL_GENERIC_REGISTER_DESC   Grg;
     UINT32                      U32Item;
     UINT16                      U16Item;
     UINT8                       U8Item;

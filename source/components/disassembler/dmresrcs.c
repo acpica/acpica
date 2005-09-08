@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcs.c - "Small" Resource Descriptor disassembly
- *              $Revision: 1.2 $
+ *              $Revision: 1.7 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -121,7 +121,7 @@
 
 #ifdef ACPI_DISASSEMBLER
 
-#define _COMPONENT          ACPI_DEBUGGER
+#define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dbresrcs")
 
 
@@ -141,7 +141,7 @@
 
 void
 AcpiDmIrqDescriptor (
-    ASL_IRQ_FORMAT_DESC     *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -153,12 +153,12 @@ AcpiDmIrqDescriptor (
     if (Length & 1)
     {
         AcpiOsPrintf ("%s, %s, %s",
-            AcpiGbl_HEDecode [Resource->Flags & 1],
-            AcpiGbl_LLDecode [(Resource->Flags >> 3) & 1],
-            AcpiGbl_SHRDecode [(Resource->Flags >> 4) & 1]);
+            AcpiGbl_HEDecode [Resource->Irq.Flags & 1],
+            AcpiGbl_LLDecode [(Resource->Irq.Flags >> 3) & 1],
+            AcpiGbl_SHRDecode [(Resource->Irq.Flags >> 4) & 1]);
     }
 
-    AcpiDmBitList (Resource->IrqMask);
+    AcpiDmBitList (Resource->Irq.IrqMask);
 }
 
 
@@ -178,18 +178,18 @@ AcpiDmIrqDescriptor (
 
 void
 AcpiDmDmaDescriptor (
-    ASL_DMA_FORMAT_DESC     *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("DMA (%s, %s, %s",
-            AcpiGbl_TYPDecode [(Resource->Flags >> 5) & 3],
-            AcpiGbl_BMDecode  [(Resource->Flags >> 2) & 1],
-            AcpiGbl_SIZDecode [(Resource->Flags >> 0) & 3]);
+            AcpiGbl_TYPDecode [(Resource->Dma.Flags >> 5) & 3],
+            AcpiGbl_BMDecode  [(Resource->Dma.Flags >> 2) & 1],
+            AcpiGbl_SIZDecode [(Resource->Dma.Flags >> 0) & 3]);
 
-    AcpiDmBitList (Resource->DmaChannelMask);
+    AcpiDmBitList (Resource->Dma.DmaChannelMask);
 }
 
 
@@ -209,18 +209,18 @@ AcpiDmDmaDescriptor (
 
 void
 AcpiDmIoDescriptor (
-    ASL_IO_PORT_DESC        *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("IO (%s, 0x%4.4X, 0x%4.4X, 0x%2.2X, 0x%2.2X)\n",
-        AcpiGbl_IoDecode [(Resource->Information & 1)],
-        (UINT32) Resource->AddressMin,
-        (UINT32) Resource->AddressMax,
-        (UINT32) Resource->Alignment,
-        (UINT32) Resource->Length);
+        AcpiGbl_IoDecode [(Resource->Iop.Information & 1)],
+        (UINT32) Resource->Iop.AddressMin,
+        (UINT32) Resource->Iop.AddressMax,
+        (UINT32) Resource->Iop.Alignment,
+        (UINT32) Resource->Iop.Length);
 }
 
 
@@ -240,15 +240,15 @@ AcpiDmIoDescriptor (
 
 void
 AcpiDmFixedIoDescriptor (
-    ASL_FIXED_IO_PORT_DESC  *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("FixedIO (0x%4.4X, 0x%2.2X)\n",
-        (UINT32) Resource->BaseAddress,
-        (UINT32) Resource->Length);
+        (UINT32) Resource->Fio.BaseAddress,
+        (UINT32) Resource->Fio.Length);
 }
 
 
@@ -268,7 +268,7 @@ AcpiDmFixedIoDescriptor (
 
 void
 AcpiDmStartDependentDescriptor (
-    ASL_START_DEPENDENT_DESC *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -278,8 +278,8 @@ AcpiDmStartDependentDescriptor (
     if (Length & 1)
     {
         AcpiOsPrintf ("StartDependentFn (0x%2.2X, 0x%2.2X)\n",
-            (UINT32) Resource->Flags & 3,
-            (UINT32) (Resource->Flags >> 2) & 3);
+            (UINT32) Resource->Std.Flags & 3,
+            (UINT32) (Resource->Std.Flags >> 2) & 3);
     }
     else
     {
@@ -307,7 +307,7 @@ AcpiDmStartDependentDescriptor (
 
 void
 AcpiDmEndDependentDescriptor (
-    ASL_START_DEPENDENT_DESC *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -335,7 +335,7 @@ AcpiDmEndDependentDescriptor (
 
 void
 AcpiDmVendorSmallDescriptor (
-    ASL_SMALL_VENDOR_DESC   *Resource,
+    ASL_RESOURCE_DESC       *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -343,10 +343,9 @@ AcpiDmVendorSmallDescriptor (
     AcpiDmIndent (Level);
     AcpiOsPrintf ("VendorShort () {");
 
-    AcpiDmDisasmByteList (0, (UINT8 *) Resource->VendorDefined, Length);
+    AcpiDmDisasmByteList (0, (UINT8 *) Resource->Smv.VendorDefined, Length);
     AcpiOsPrintf ("}\n");
 }
 
 #endif
-
 

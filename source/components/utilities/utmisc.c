@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  ******************************************************************************/
 
@@ -1010,7 +1010,7 @@ AcpiUtGetResourceEndTag (
     while (Buffer < EndBuffer)
     {
         BufferByte = *Buffer;
-        if (BufferByte & ACPI_RDESC_TYPE_MASK)
+        if (BufferByte & ACPI_RDESC_TYPE_LARGE)
         {
             /* Large Descriptor - Length is next 2 bytes */
 

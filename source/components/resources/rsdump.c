@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  ******************************************************************************/
 
@@ -184,6 +184,41 @@ static void
 AcpiRsDumpGenericReg (
     ACPI_RESOURCE_DATA      *Data);
 
+static void
+AcpiRsDumpEndDependFns (
+    ACPI_RESOURCE_DATA      *Data);
+
+static void
+AcpiRsDumpEndTag (
+    ACPI_RESOURCE_DATA      *Data);
+
+
+/* Dispatch table for dump resource functions */
+
+typedef
+void (*ACPI_DUMP_RESOURCE) (
+    ACPI_RESOURCE_DATA      *Data);
+
+static ACPI_DUMP_RESOURCE   AcpiGbl_DumpResourceDispatch [] = 
+{
+    AcpiRsDumpIrq,            /* ACPI_RSTYPE_IRQ */
+    AcpiRsDumpDma,            /* ACPI_RSTYPE_DMA */
+    AcpiRsDumpStartDependFns, /* ACPI_RSTYPE_START_DPF */
+    AcpiRsDumpEndDependFns,   /* ACPI_RSTYPE_END_DPF */
+    AcpiRsDumpIo,             /* ACPI_RSTYPE_IO */
+    AcpiRsDumpFixedIo,        /* ACPI_RSTYPE_FIXED_IO */
+    AcpiRsDumpVendorSpecific, /* ACPI_RSTYPE_VENDOR */
+    AcpiRsDumpEndTag,         /* ACPI_RSTYPE_END_TAG */
+    AcpiRsDumpMemory24,       /* ACPI_RSTYPE_MEM24 */
+    AcpiRsDumpMemory32,       /* ACPI_RSTYPE_MEM32 */
+    AcpiRsDumpFixedMemory32,  /* ACPI_RSTYPE_FIXED_MEM32 */
+    AcpiRsDumpAddress16,      /* ACPI_RSTYPE_ADDRESS16 */
+    AcpiRsDumpAddress32,      /* ACPI_RSTYPE_ADDRESS32 */
+    AcpiRsDumpAddress64,      /* ACPI_RSTYPE_ADDRESS64 */
+    AcpiRsDumpExtendedIrq,    /* ACPI_RSTYPE_EXT_IRQ */
+    AcpiRsDumpGenericReg      /* ACPI_RSTYPE_GENERIC_REG */
+};
+
 
 /*******************************************************************************
  *
@@ -219,7 +254,7 @@ AcpiRsDumpIrq (
     AcpiOsPrintf ("    %s\n",
         ACPI_SHARED == IrqData->SharedExclusive ? "Shared" : "Exclusive");
 
-    AcpiOsPrintf ("    %X Interrupts ( ", IrqData->NumberOfInterrupts);
+    AcpiOsPrintf ("    %u Interrupts ( ", IrqData->NumberOfInterrupts);
 
     for (Index = 0; Index < IrqData->NumberOfInterrupts; Index++)
     {
@@ -302,7 +337,7 @@ AcpiRsDumpDma (
         break;
     }
 
-    AcpiOsPrintf ("    Number of Channels: %X ( ",
+    AcpiOsPrintf ("    %u Channels ( ",
         DmaData->NumberOfChannels);
 
     for (Index = 0; Index < DmaData->NumberOfChannels; Index++)
@@ -1140,6 +1175,55 @@ AcpiRsDumpGenericReg (
 
     AcpiOsPrintf ("    Address: %8.8X%8.8X\n",
         ACPI_FORMAT_UINT64 (Data->GenericReg.Address));
+    return;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsDumpEndDependFns
+ *
+ * PARAMETERS:  Data            - pointer to the resource structure to dump.
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print type, no data.
+ *
+ ******************************************************************************/
+
+static void
+AcpiRsDumpEndDependFns (
+    ACPI_RESOURCE_DATA      *Data)
+{
+    ACPI_FUNCTION_ENTRY ();
+
+
+    AcpiOsPrintf ("EndDependentFunctions Resource\n");
+    return;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsDumpEndTag
+ *
+ * PARAMETERS:  Data            - pointer to the resource structure to dump.
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print type, no data.
+ *
+ ******************************************************************************/
+
+static void
+AcpiRsDumpEndTag (
+    ACPI_RESOURCE_DATA      *Data)
+{
+    ACPI_FUNCTION_ENTRY ();
+
+
+    AcpiOsPrintf ("EndTag Resource\n");
+    return;
 }
 
 
@@ -1160,98 +1244,47 @@ AcpiRsDumpResourceList (
     ACPI_RESOURCE       *Resource)
 {
     UINT8               Count = 0;
-    BOOLEAN             Done = FALSE;
 
 
     ACPI_FUNCTION_ENTRY ();
 
 
-    if (AcpiDbgLevel & ACPI_LV_RESOURCES && _COMPONENT & AcpiDbgLayer)
+    if (!(AcpiDbgLevel & ACPI_LV_RESOURCES) || !( _COMPONENT & AcpiDbgLayer))
     {
-        while (!Done)
-        {
-            AcpiOsPrintf ("Resource structure %X.\n", Count++);
-
-            switch (Resource->Id)
-            {
-            case ACPI_RSTYPE_IRQ:
-                AcpiRsDumpIrq (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_DMA:
-                AcpiRsDumpDma (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_START_DPF:
-                AcpiRsDumpStartDependFns (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_END_DPF:
-                AcpiOsPrintf ("EndDependentFunctions Resource\n");
-                /* AcpiRsDumpEndDependentFunctions (Resource->Data);*/
-                break;
-
-            case ACPI_RSTYPE_IO:
-                AcpiRsDumpIo (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_FIXED_IO:
-                AcpiRsDumpFixedIo (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_VENDOR:
-                AcpiRsDumpVendorSpecific (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_END_TAG:
-                /*RsDumpEndTag (Resource->Data);*/
-                AcpiOsPrintf ("EndTag Resource\n");
-                Done = TRUE;
-                break;
-
-            case ACPI_RSTYPE_MEM24:
-                AcpiRsDumpMemory24 (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_MEM32:
-                AcpiRsDumpMemory32 (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_FIXED_MEM32:
-                AcpiRsDumpFixedMemory32 (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_ADDRESS16:
-                AcpiRsDumpAddress16 (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_ADDRESS32:
-                AcpiRsDumpAddress32 (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_ADDRESS64:
-                AcpiRsDumpAddress64 (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_EXT_IRQ:
-                AcpiRsDumpExtendedIrq (&Resource->Data);
-                break;
-
-            case ACPI_RSTYPE_GENERIC_REG:
-                AcpiRsDumpGenericReg (&Resource->Data);
-                break;
-
-            default:
-                AcpiOsPrintf ("Invalid resource type\n");
-                break;
-
-            }
-
-            Resource = ACPI_PTR_ADD (ACPI_RESOURCE, Resource, Resource->Length);
-        }
+        return;
     }
 
-    return;
+    /* Dump all resource descriptors in the list */
+
+    while (1)
+    {
+        AcpiOsPrintf ("Resource structure %X.\n", Count++);
+
+        /* Check ID range before dispatch */
+
+        if (Resource->Id > ACPI_RSTYPE_MAX)
+        {
+            AcpiOsPrintf (
+                "Invalid descriptor type (%X) in resource list\n",
+                Resource->Id);
+            return;
+        }
+
+        /* Dump the resource descriptor */
+
+        AcpiGbl_DumpResourceDispatch[Resource->Id] (&Resource->Data);
+
+        /* Exit on end tag */
+
+        if (Resource->Id == ACPI_RSTYPE_END_TAG)
+        {
+            return;
+        }
+
+        /* Get the next resource structure */
+
+        Resource = ACPI_PTR_ADD (ACPI_RESOURCE, Resource, Resource->Length);
+    }
 }
 
 /*******************************************************************************
@@ -1262,7 +1295,7 @@ AcpiRsDumpResourceList (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Dispatches the structures to the correct dump routine.
+ * DESCRIPTION: Print IRQ routing table
  *
  ******************************************************************************/
 
@@ -1272,40 +1305,42 @@ AcpiRsDumpIrqList (
 {
     UINT8                   *Buffer = RouteTable;
     UINT8                   Count = 0;
-    BOOLEAN                 Done = FALSE;
     ACPI_PCI_ROUTING_TABLE  *PrtElement;
 
 
     ACPI_FUNCTION_ENTRY ();
 
 
-    if (AcpiDbgLevel & ACPI_LV_RESOURCES && _COMPONENT & AcpiDbgLayer)
+    if (!(AcpiDbgLevel & ACPI_LV_RESOURCES) || !( _COMPONENT & AcpiDbgLayer))
     {
-        PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
-
-        while (!Done)
-        {
-            AcpiOsPrintf ("PCI IRQ Routing Table structure %X.\n", Count++);
-
-            AcpiOsPrintf ("    Address: %8.8X%8.8X\n",
-                ACPI_FORMAT_UINT64 (PrtElement->Address));
-
-            AcpiOsPrintf ("    Pin: %X\n", PrtElement->Pin);
-
-            AcpiOsPrintf ("    Source: %s\n", PrtElement->Source);
-
-            AcpiOsPrintf ("    SourceIndex: %X\n", PrtElement->SourceIndex);
-
-            Buffer += PrtElement->Length;
-            PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
-            if (0 == PrtElement->Length)
-            {
-                Done = TRUE;
-            }
-        }
+        return;
     }
 
-    return;
+    PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
+
+    /* Dump all table elements */
+
+    while (1)
+    {
+        AcpiOsPrintf ("PCI IRQ Routing Table structure %X.\n", Count++);
+
+        AcpiOsPrintf ("    Address: %8.8X%8.8X\n",
+            ACPI_FORMAT_UINT64 (PrtElement->Address));
+
+        AcpiOsPrintf ("    Pin: %X\n", PrtElement->Pin);
+        AcpiOsPrintf ("    Source: %s\n", PrtElement->Source);
+        AcpiOsPrintf ("    SourceIndex: %X\n", PrtElement->SourceIndex);
+
+        Buffer += PrtElement->Length;
+        PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
+
+        /* Exit on null length element */
+
+        if (!PrtElement->Length)
+        {
+            return;
+        }
+    }
 }
 
 #endif
