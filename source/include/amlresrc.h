@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amlresrc.h - AML resource descriptors
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -267,10 +267,19 @@ typedef struct asl_end_tag_desc
 
 /* LARGE descriptors */
 
+#define ASL_LARGE_HEADER_COMMON \
+    UINT8                       DescriptorType;\
+    UINT16                      Length;
+
+typedef struct asl_large_header
+{
+    ASL_LARGE_HEADER_COMMON
+
+} ASL_LARGE_HEADER;
+
 typedef struct asl_memory_24_desc
 {
-    UINT8                       DescriptorType;
-    UINT16                      Length;
+    ASL_LARGE_HEADER_COMMON
     UINT8                       Information;
     UINT16                      AddressMin;
     UINT16                      AddressMax;
@@ -282,8 +291,7 @@ typedef struct asl_memory_24_desc
 
 typedef struct asl_large_vendor_desc
 {
-    UINT8                       DescriptorType;
-    UINT16                      Length;
+    ASL_LARGE_HEADER_COMMON
     UINT8                       VendorDefined[1];
 
 } ASL_LARGE_VENDOR_DESC;
@@ -291,8 +299,7 @@ typedef struct asl_large_vendor_desc
 
 typedef struct asl_memory_32_desc
 {
-    UINT8                       DescriptorType;
-    UINT16                      Length;
+    ASL_LARGE_HEADER_COMMON
     UINT8                       Information;
     UINT32                      AddressMin;
     UINT32                      AddressMax;
@@ -304,8 +311,7 @@ typedef struct asl_memory_32_desc
 
 typedef struct asl_fixed_memory_32_desc
 {
-    UINT8                       DescriptorType;
-    UINT16                      Length;
+    ASL_LARGE_HEADER_COMMON
     UINT8                       Information;
     UINT32                      BaseAddress;
     UINT32                      RangeLength;
@@ -315,8 +321,7 @@ typedef struct asl_fixed_memory_32_desc
 
 typedef struct asl_extended_address_desc
 {
-    UINT8                       DescriptorType;
-    UINT16                      Length;
+    ASL_LARGE_HEADER_COMMON
     UINT8                       ResourceType;
     UINT8                       Flags;
     UINT8                       SpecificFlags;
@@ -337,8 +342,7 @@ typedef struct asl_extended_address_desc
 
 typedef struct asl_qword_address_desc
 {
-    UINT8                       DescriptorType;
-    UINT16                      Length;
+    ASL_LARGE_HEADER_COMMON
     UINT8                       ResourceType;
     UINT8                       Flags;
     UINT8                       SpecificFlags;
@@ -354,8 +358,7 @@ typedef struct asl_qword_address_desc
 
 typedef struct asl_dword_address_desc
 {
-    UINT8                       DescriptorType;
-    UINT16                      Length;
+    ASL_LARGE_HEADER_COMMON
     UINT8                       ResourceType;
     UINT8                       Flags;
     UINT8                       SpecificFlags;
@@ -371,8 +374,7 @@ typedef struct asl_dword_address_desc
 
 typedef struct asl_word_address_desc
 {
-    UINT8                       DescriptorType;
-    UINT16                      Length;
+    ASL_LARGE_HEADER_COMMON
     UINT8                       ResourceType;
     UINT8                       Flags;
     UINT8                       SpecificFlags;
@@ -388,8 +390,7 @@ typedef struct asl_word_address_desc
 
 typedef struct asl_extended_xrupt_desc
 {
-    UINT8                       DescriptorType;
-    UINT16                      Length;
+    ASL_LARGE_HEADER_COMMON
     UINT8                       Flags;
     UINT8                       TableLength;
     UINT32                      InterruptNumber[1];
@@ -400,8 +401,7 @@ typedef struct asl_extended_xrupt_desc
 
 typedef struct asl_generic_register_desc
 {
-    UINT8                       DescriptorType;
-    UINT16                      Length;
+    ASL_LARGE_HEADER_COMMON
     UINT8                       AddressSpaceId;
     UINT8                       BitWidth;
     UINT8                       BitOffset;
@@ -427,6 +427,7 @@ typedef union asl_resource_desc
     ASL_SMALL_VENDOR_DESC       Smv;
     ASL_END_TAG_DESC            Et;
 
+    ASL_LARGE_HEADER            Lhd;
     ASL_MEMORY_24_DESC          M24;
     ASL_LARGE_VENDOR_DESC       Lgv;
     ASL_MEMORY_32_DESC          M32;

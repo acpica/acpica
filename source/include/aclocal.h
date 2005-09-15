@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.213 $
+ *       $Revision: 1.214 $
  *
  *****************************************************************************/
 
@@ -956,6 +956,7 @@ typedef struct acpi_bit_register_info
 #define ACPI_RDESC_TYPE_SMALL                   0x00
 
 #define ACPI_RDESC_SMALL_MASK                   0x78 /* Bits 6:3 contain the type */
+#define ACPI_RDESC_SMALL_LENGTH_MASK            0x07 /* Bits 2:0 contain the length */
 #define ACPI_RDESC_LARGE_MASK                   0x7F /* Bits 6:0 contain the type */
 
 
@@ -992,6 +993,13 @@ typedef struct acpi_bit_register_info
 #define ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE  0x8B
 #define ACPI_RDESC_LARGE_MAX                    0x8B
 
+/*
+ * Minimum lengths for descriptors with optional fields
+ */
+#define ACPI_RDESC_QWORD_MIN                    43
+#define ACPI_RDESC_DWORD_MIN                    23
+#define ACPI_RDESC_WORD_MIN                     13
+#define ACPI_RDESC_EXT_XRUPT_MIN                 6
 
 
 /*****************************************************************************

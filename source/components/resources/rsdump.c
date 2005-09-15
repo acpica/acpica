@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -478,9 +478,9 @@ AcpiRsDumpFixedIo (
 
 
     AcpiOsPrintf ("Fixed Io Resource\n");
-    AcpiOsPrintf ("    Range base address: %08X", FixedIoData->BaseAddress);
+    AcpiOsPrintf ("    Range base address: %08X\n", FixedIoData->BaseAddress);
 
-    AcpiOsPrintf ("    Range length: %08X", FixedIoData->RangeLength);
+    AcpiOsPrintf ("    Range length: %08X\n", FixedIoData->RangeLength);
 
     return;
 }
@@ -515,7 +515,7 @@ AcpiRsDumpVendorSpecific (
 
     for (Index = 0; Index < VendorData->Length; Index++)
     {
-        AcpiOsPrintf ("    Byte %X: %08X\n",
+        AcpiOsPrintf ("    Byte %X: %2.2X\n",
             Index, VendorData->Reserved[Index]);
     }
 
@@ -870,7 +870,7 @@ AcpiRsDumpAddress32 (
             break;
 
         default:
-            AcpiOsPrintf ("    Type Specific: Invalid Range attribute");
+            AcpiOsPrintf ("    Type Specific: Invalid Range attribute\n");
             break;
         }
 
@@ -1014,7 +1014,7 @@ AcpiRsDumpAddress64 (
             break;
 
         default:
-            AcpiOsPrintf ("    Type Specific: Invalid Range attribute");
+            AcpiOsPrintf ("    Type Specific: Invalid Range attribute\n");
             break;
         }
 
@@ -1135,10 +1135,10 @@ AcpiRsDumpExtendedIrq (
 
     if(0xFF != ExtIrqData->ResourceSource.Index)
     {
-        AcpiOsPrintf ("    Resource Source Index: %X",
+        AcpiOsPrintf ("    Resource Source Index: %X\n",
             ExtIrqData->ResourceSource.Index);
 
-        AcpiOsPrintf ("    Resource Source: %s",
+        AcpiOsPrintf ("    Resource Source: %s\n",
             ExtIrqData->ResourceSource.StringPtr);
     }
 
@@ -1258,7 +1258,7 @@ AcpiRsDumpResourceList (
 
     while (1)
     {
-        AcpiOsPrintf ("Resource structure %X.\n", Count++);
+        AcpiOsPrintf ("Resource structure 0x%0X:\n", Count++);
 
         /* Check ID range before dispatch */
 

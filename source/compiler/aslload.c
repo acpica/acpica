@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -267,7 +267,9 @@ LdLoadFieldElements (
             {
                 if (Status != AE_ALREADY_EXISTS)
                 {
-                     return (Status);
+                    AslError (ASL_ERROR, ASL_MSG_CORE_EXCEPTION, Child,
+                        Child->Asl.Value.String);
+                    return (Status);
                 }
 
                 /*
