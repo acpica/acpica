@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  ******************************************************************************/
 
@@ -127,7 +127,7 @@
 
 typedef
 ACPI_STATUS (*ACPI_STREAM_HANDLER) (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -379,7 +379,7 @@ AcpiRsByteStreamToList (
  *
  * FUNCTION:    AcpiRsListToByteStream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  Resource                - Pointer to the resource linked list
  *              ByteSteamSizeNeeded     - Calculated size of the byte stream
  *                                        needed from calling
  *                                        AcpiRsGetByteStreamLength()
@@ -398,7 +398,7 @@ AcpiRsByteStreamToList (
 
 ACPI_STATUS
 AcpiRsListToByteStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     ACPI_SIZE               ByteStreamSizeNeeded,
     UINT8                   *OutputBuffer)
 {
@@ -414,19 +414,19 @@ AcpiRsListToByteStream (
 
     while (1)
     {
-        /* Check ID range before dispatch */
+        /* Validate Type before dispatch */
 
-        if (LinkedList->Id > ACPI_RSTYPE_MAX)
+        if (Resource->Type > ACPI_RSTYPE_MAX)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
                 "Invalid descriptor type (%X) in resource list\n",
-                LinkedList->Id));
+                Resource->Type));
             return_ACPI_STATUS (AE_BAD_DATA);
         }
 
         /* Perform the conversion, per resource type */
 
-        Status = AcpiGbl_StreamDispatch[LinkedList->Id] (LinkedList,
+        Status = AcpiGbl_StreamDispatch[Resource->Type] (Resource,
                     &Buffer, &BytesConsumed);
         if (ACPI_FAILURE (Status))
         {
@@ -435,7 +435,7 @@ AcpiRsListToByteStream (
 
         /* Check for end-of-list */
 
-        if (LinkedList->Id == ACPI_RSTYPE_END_TAG)
+        if (Resource->Type == ACPI_RSTYPE_END_TAG)
         {
             /* An End Tag indicates the end of the Resource Template */
 
@@ -448,8 +448,8 @@ AcpiRsListToByteStream (
 
         /* Point to the next input resource object */
 
-        LinkedList = ACPI_PTR_ADD (ACPI_RESOURCE,
-                        LinkedList, LinkedList->Length);
+        Resource = ACPI_PTR_ADD (ACPI_RESOURCE,
+                        Resource, Resource->Length);
     }
 }
 

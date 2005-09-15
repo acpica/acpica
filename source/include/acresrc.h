@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.43 $
+ *       $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -210,7 +210,7 @@ AcpiRsByteStreamToList (
 
 ACPI_STATUS
 AcpiRsListToByteStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     ACPI_SIZE               ByteStreamSizeNeeded,
     UINT8                   *OutputBuffer);
 
@@ -230,13 +230,13 @@ AcpiRsFixedIoResource (
 
 ACPI_STATUS
 AcpiRsIoStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsFixedIoStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -249,7 +249,7 @@ AcpiRsIrqResource (
 
 ACPI_STATUS
 AcpiRsIrqStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -262,7 +262,7 @@ AcpiRsDmaResource (
 
 ACPI_STATUS
 AcpiRsDmaStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -275,7 +275,7 @@ AcpiRsAddress16Resource (
 
 ACPI_STATUS
 AcpiRsAddress16Stream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -288,7 +288,7 @@ AcpiRsAddress32Resource (
 
 ACPI_STATUS
 AcpiRsAddress32Stream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -301,7 +301,7 @@ AcpiRsAddress64Resource (
 
 ACPI_STATUS
 AcpiRsAddress64Stream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -321,13 +321,13 @@ AcpiRsEndDependFnsResource (
 
 ACPI_STATUS
 AcpiRsStartDependFnsStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsEndDependFnsStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -340,7 +340,7 @@ AcpiRsMemory24Resource (
 
 ACPI_STATUS
 AcpiRsMemory24Stream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -360,13 +360,13 @@ AcpiRsFixedMemory32Resource (
 
 ACPI_STATUS
 AcpiRsMemory32RangeStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
 ACPI_STATUS
 AcpiRsFixedMemory32Stream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -379,7 +379,7 @@ AcpiRsExtendedIrqResource (
 
 ACPI_STATUS
 AcpiRsExtendedIrqStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -392,7 +392,7 @@ AcpiRsEndTagResource (
 
 ACPI_STATUS
 AcpiRsEndTagStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -405,7 +405,7 @@ AcpiRsVendorResource (
 
 ACPI_STATUS
 AcpiRsVendorStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
@@ -425,7 +425,7 @@ AcpiRsGenericRegisterResource (
 
 ACPI_STATUS
 AcpiRsGenericRegisterStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 

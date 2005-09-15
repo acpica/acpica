@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  ******************************************************************************/
 
@@ -184,7 +184,7 @@ AcpiRsGenericRegisterResource (
 
     /* Fill out the structure */
 
-    OutputStruct->Id = ACPI_RSTYPE_GENERIC_REG;
+    OutputStruct->Type = ACPI_RSTYPE_GENERIC_REG;
 
     /* Get SpaceId (Byte 3) */
 
@@ -229,7 +229,7 @@ AcpiRsGenericRegisterResource (
  *
  * FUNCTION:    AcpiRsGenericRegisterStream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  Resource                - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
@@ -243,7 +243,7 @@ AcpiRsGenericRegisterResource (
 
 ACPI_STATUS
 AcpiRsGenericRegisterStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed)
 {
@@ -267,27 +267,27 @@ AcpiRsGenericRegisterStream (
 
     /* Set SpaceId (Byte 3) */
 
-    *Buffer = (UINT8) LinkedList->Data.GenericReg.SpaceId;
+    *Buffer = (UINT8) Resource->Data.GenericReg.SpaceId;
     Buffer += 1;
 
     /* Set RegisterBitWidth (Byte 4) */
 
-    *Buffer = (UINT8) LinkedList->Data.GenericReg.BitWidth;
+    *Buffer = (UINT8) Resource->Data.GenericReg.BitWidth;
     Buffer += 1;
 
     /* Set RegisterBitOffset (Byte 5) */
 
-    *Buffer = (UINT8) LinkedList->Data.GenericReg.BitOffset;
+    *Buffer = (UINT8) Resource->Data.GenericReg.BitOffset;
     Buffer += 1;
 
     /* Set AddressSize (Byte 6) */
 
-    *Buffer = (UINT8) LinkedList->Data.GenericReg.AddressSize;
+    *Buffer = (UINT8) Resource->Data.GenericReg.AddressSize;
     Buffer += 1;
 
     /* Set RegisterAddress (Bytes 7-14) */
 
-    ACPI_MOVE_64_TO_64 (Buffer, &LinkedList->Data.GenericReg.Address);
+    ACPI_MOVE_64_TO_64 (Buffer, &Resource->Data.GenericReg.Address);
     Buffer += 8;
 
     /* Return the number of bytes consumed in this operation */
@@ -338,7 +338,7 @@ AcpiRsEndTagResource (
 
     /* Fill out the structure */
 
-    OutputStruct->Id = ACPI_RSTYPE_END_TAG;
+    OutputStruct->Type = ACPI_RSTYPE_END_TAG;
 
     /* Set the Length parameter */
 
@@ -355,7 +355,7 @@ AcpiRsEndTagResource (
  *
  * FUNCTION:    AcpiRsEndTagStream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  Resource                - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
@@ -369,7 +369,7 @@ AcpiRsEndTagResource (
 
 ACPI_STATUS
 AcpiRsEndTagStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed)
 {
@@ -380,9 +380,9 @@ AcpiRsEndTagStream (
     ACPI_FUNCTION_TRACE ("RsEndTagStream");
 
 
-    /* The descriptor field is static */
+    /* The Descriptor Type field is static */
 
-    *Buffer = 0x79;
+    *Buffer = ACPI_RDESC_TYPE_END_TAG | 0x01;
     Buffer += 1;
 
     /*
@@ -445,7 +445,7 @@ AcpiRsVendorResource (
 
     Temp8 = *Buffer;
 
-    if (Temp8 & 0x80)
+    if (Temp8 & ACPI_RDESC_TYPE_LARGE)
     {
         /* Large Item, point to the length field */
 
@@ -478,7 +478,7 @@ AcpiRsVendorResource (
         Buffer += 1;
     }
 
-    OutputStruct->Id = ACPI_RSTYPE_VENDOR;
+    OutputStruct->Type = ACPI_RSTYPE_VENDOR;
     OutputStruct->Data.VendorSpecific.Length = Temp16;
 
     for (Index = 0; Index < Temp16; Index++)
@@ -509,7 +509,7 @@ AcpiRsVendorResource (
  *
  * FUNCTION:    AcpiRsVendorStream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  Resource                - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
@@ -523,7 +523,7 @@ AcpiRsVendorResource (
 
 ACPI_STATUS
 AcpiRsVendorStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed)
 {
@@ -538,14 +538,14 @@ AcpiRsVendorStream (
 
     /* Dereference the length to find if this is a large or small item. */
 
-    if(LinkedList->Data.VendorSpecific.Length > 7)
+    if (Resource->Data.VendorSpecific.Length > 7)
     {
         /* Large Item, Set the descriptor field and length bytes */
 
-        *Buffer = 0x84;
+        *Buffer = ACPI_RDESC_TYPE_LARGE_VENDOR;
         Buffer += 1;
 
-        Temp16 = (UINT16) LinkedList->Data.VendorSpecific.Length;
+        Temp16 = (UINT16) Resource->Data.VendorSpecific.Length;
 
         ACPI_MOVE_16_TO_16 (Buffer, &Temp16);
         Buffer += 2;
@@ -554,8 +554,8 @@ AcpiRsVendorStream (
     {
         /* Small Item, Set the descriptor field */
 
-        Temp8 = 0x70;
-        Temp8 |= (UINT8) LinkedList->Data.VendorSpecific.Length;
+        Temp8 = ACPI_RDESC_TYPE_SMALL_VENDOR;
+        Temp8 |= (UINT8) Resource->Data.VendorSpecific.Length;
 
         *Buffer = Temp8;
         Buffer += 1;
@@ -563,9 +563,9 @@ AcpiRsVendorStream (
 
     /* Loop through all of the Vendor Specific fields */
 
-    for (Index = 0; Index < LinkedList->Data.VendorSpecific.Length; Index++)
+    for (Index = 0; Index < Resource->Data.VendorSpecific.Length; Index++)
     {
-        Temp8 = LinkedList->Data.VendorSpecific.Reserved[Index];
+        Temp8 = Resource->Data.VendorSpecific.Reserved[Index];
 
         *Buffer = Temp8;
         Buffer += 1;
@@ -622,7 +622,7 @@ AcpiRsStartDependFnsResource (
 
     *BytesConsumed = (Temp8 & 0x01) + 1;
 
-    OutputStruct->Id = ACPI_RSTYPE_START_DPF;
+    OutputStruct->Type = ACPI_RSTYPE_START_DPF;
 
     /* Point to Byte 1 if it is used */
 
@@ -710,7 +710,7 @@ AcpiRsEndDependFnsResource (
 
     /*  Fill out the structure */
 
-    OutputStruct->Id = ACPI_RSTYPE_END_DPF;
+    OutputStruct->Type = ACPI_RSTYPE_END_DPF;
 
     /* Set the Length parameter */
 
@@ -727,7 +727,7 @@ AcpiRsEndDependFnsResource (
  *
  * FUNCTION:    AcpiRsStartDependFnsStream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  Resource                - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - UINT32 pointer that is filled with
  *                                        the number of bytes of the
@@ -742,7 +742,7 @@ AcpiRsEndDependFnsResource (
 
 ACPI_STATUS
 AcpiRsStartDependFnsStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed)
 {
@@ -754,27 +754,27 @@ AcpiRsStartDependFnsStream (
 
 
     /*
-     * The descriptor field is set based upon whether a byte is needed
+     * The descriptor type field is set based upon whether a byte is needed
      * to contain Priority data.
      */
     if (ACPI_ACCEPTABLE_CONFIGURATION ==
-            LinkedList->Data.StartDpf.CompatibilityPriority &&
+            Resource->Data.StartDpf.CompatibilityPriority &&
         ACPI_ACCEPTABLE_CONFIGURATION ==
-            LinkedList->Data.StartDpf.PerformanceRobustness)
+            Resource->Data.StartDpf.PerformanceRobustness)
     {
-        *Buffer = 0x30;
+        *Buffer = ACPI_RDESC_TYPE_START_DEPENDENT;
     }
     else
     {
-        *Buffer = 0x31;
+        *Buffer = ACPI_RDESC_TYPE_START_DEPENDENT | 0x01;
         Buffer += 1;
 
         /* Set the Priority Byte Definition */
 
         Temp8 = 0;
-        Temp8 = (UINT8) ((LinkedList->Data.StartDpf.PerformanceRobustness &
+        Temp8 = (UINT8) ((Resource->Data.StartDpf.PerformanceRobustness &
                             0x03) << 2);
-        Temp8 |= (LinkedList->Data.StartDpf.CompatibilityPriority &
+        Temp8 |= (Resource->Data.StartDpf.CompatibilityPriority &
                             0x03);
         *Buffer = Temp8;
     }
@@ -792,7 +792,7 @@ AcpiRsStartDependFnsStream (
  *
  * FUNCTION:    AcpiRsEndDependFnsStream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  Resource                - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
@@ -806,7 +806,7 @@ AcpiRsStartDependFnsStream (
 
 ACPI_STATUS
 AcpiRsEndDependFnsStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed)
 {
@@ -816,9 +816,9 @@ AcpiRsEndDependFnsStream (
     ACPI_FUNCTION_TRACE ("RsEndDependFnsStream");
 
 
-    /* The descriptor field is static */
+    /* The Descriptor Type field is static */
 
-    *Buffer = 0x38;
+    *Buffer = ACPI_RDESC_TYPE_END_DEPENDENT;
     Buffer += 1;
 
     /* Return the number of bytes consumed in this operation */

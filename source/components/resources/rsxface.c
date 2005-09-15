@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  ******************************************************************************/
 
@@ -366,7 +366,7 @@ AcpiWalkResources (
 
     for (;;)
     {
-        if (!Resource || Resource->Id == ACPI_RSTYPE_END_TAG)
+        if (!Resource || Resource->Type == ACPI_RSTYPE_END_TAG)
         {
             break;
         }
@@ -487,7 +487,7 @@ AcpiResourceToAddress64 (
     ACPI_RESOURCE_ADDRESS32     *Address32;
 
 
-    switch (Resource->Id)
+    switch (Resource->Type)
     {
     case ACPI_RSTYPE_ADDRESS16:
 

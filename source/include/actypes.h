@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.284 $
+ *       $Revision: 1.285 $
  *
  *****************************************************************************/
 
@@ -1397,7 +1397,7 @@ typedef union acpi_resource_data
 
 typedef struct acpi_resource
 {
-    ACPI_RESOURCE_TYPE          Id;
+    ACPI_RESOURCE_TYPE          Type;
     UINT32                      Length;
     ACPI_RESOURCE_DATA          Data;
 

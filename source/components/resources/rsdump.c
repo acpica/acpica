@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  ******************************************************************************/
 
@@ -1260,23 +1260,23 @@ AcpiRsDumpResourceList (
     {
         AcpiOsPrintf ("Resource structure 0x%0X:\n", Count++);
 
-        /* Check ID range before dispatch */
+        /* Validate Type before dispatch */
 
-        if (Resource->Id > ACPI_RSTYPE_MAX)
+        if (Resource->Type > ACPI_RSTYPE_MAX)
         {
             AcpiOsPrintf (
                 "Invalid descriptor type (%X) in resource list\n",
-                Resource->Id);
+                Resource->Type);
             return;
         }
 
         /* Dump the resource descriptor */
 
-        AcpiGbl_DumpResourceDispatch[Resource->Id] (&Resource->Data);
+        AcpiGbl_DumpResourceDispatch[Resource->Type] (&Resource->Data);
 
         /* Exit on end tag */
 
-        if (Resource->Id == ACPI_RSTYPE_END_TAG)
+        if (Resource->Type == ACPI_RSTYPE_END_TAG)
         {
             return;
         }

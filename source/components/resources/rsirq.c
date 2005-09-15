@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -170,7 +170,7 @@ AcpiRsIrqResource (
      */
     Temp8 = *Buffer;
     *BytesConsumed = (Temp8 & 0x03) + 1;
-    OutputStruct->Id = ACPI_RSTYPE_IRQ;
+    OutputStruct->Type = ACPI_RSTYPE_IRQ;
 
     /* Point to the 16-bits of Bytes 1 and 2 */
 
@@ -263,7 +263,7 @@ AcpiRsIrqResource (
  *
  * FUNCTION:    AcpiRsIrqStream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  Resource                - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
@@ -277,7 +277,7 @@ AcpiRsIrqResource (
 
 ACPI_STATUS
 AcpiRsIrqStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed)
 {
@@ -295,16 +295,16 @@ AcpiRsIrqStream (
      * The descriptor field is set based upon whether a third byte is
      * needed to contain the IRQ Information.
      */
-    if (ACPI_EDGE_SENSITIVE == LinkedList->Data.Irq.EdgeLevel &&
-        ACPI_ACTIVE_HIGH == LinkedList->Data.Irq.ActiveHighLow &&
-        ACPI_EXCLUSIVE == LinkedList->Data.Irq.SharedExclusive)
+    if (ACPI_EDGE_SENSITIVE == Resource->Data.Irq.EdgeLevel &&
+        ACPI_ACTIVE_HIGH == Resource->Data.Irq.ActiveHighLow &&
+        ACPI_EXCLUSIVE == Resource->Data.Irq.SharedExclusive)
     {
-        *Buffer = 0x22;
+        *Buffer = ACPI_RDESC_TYPE_IRQ_FORMAT | 0x02;
         IRQInfoByteNeeded = FALSE;
     }
     else
     {
-        *Buffer = 0x23;
+        *Buffer = ACPI_RDESC_TYPE_IRQ_FORMAT | 0x03;
         IRQInfoByteNeeded = TRUE;
     }
 
@@ -314,10 +314,10 @@ AcpiRsIrqStream (
     /* Loop through all of the interrupts and set the mask bits */
 
     for(Index = 0;
-        Index < LinkedList->Data.Irq.NumberOfInterrupts;
+        Index < Resource->Data.Irq.NumberOfInterrupts;
         Index++)
     {
-        Temp8 = (UINT8) LinkedList->Data.Irq.Interrupts[Index];
+        Temp8 = (UINT8) Resource->Data.Irq.Interrupts[Index];
         Temp16 |= 0x1 << Temp8;
     }
 
@@ -329,11 +329,11 @@ AcpiRsIrqStream (
     if (IRQInfoByteNeeded)
     {
         Temp8 = 0;
-        Temp8 = (UINT8) ((LinkedList->Data.Irq.SharedExclusive &
+        Temp8 = (UINT8) ((Resource->Data.Irq.SharedExclusive &
                           0x01) << 4);
 
-        if (ACPI_LEVEL_SENSITIVE == LinkedList->Data.Irq.EdgeLevel &&
-            ACPI_ACTIVE_LOW == LinkedList->Data.Irq.ActiveHighLow)
+        if (ACPI_LEVEL_SENSITIVE == Resource->Data.Irq.EdgeLevel &&
+            ACPI_ACTIVE_LOW == Resource->Data.Irq.ActiveHighLow)
         {
             Temp8 |= 0x08;
         }
@@ -407,7 +407,7 @@ AcpiRsExtendedIrqResource (
     }
 
     *BytesConsumed = Temp16 + 3;
-    OutputStruct->Id = ACPI_RSTYPE_EXT_IRQ;
+    OutputStruct->Type = ACPI_RSTYPE_EXT_IRQ;
 
     /* Point to the Byte3 */
 
@@ -549,7 +549,7 @@ AcpiRsExtendedIrqResource (
  *
  * FUNCTION:    AcpiRsExtendedIrqStream
  *
- * PARAMETERS:  LinkedList              - Pointer to the resource linked list
+ * PARAMETERS:  Resource                - Pointer to the resource linked list
  *              OutputBuffer            - Pointer to the user's return buffer
  *              BytesConsumed           - Pointer to where the number of bytes
  *                                        used in the OutputBuffer is returned
@@ -563,7 +563,7 @@ AcpiRsExtendedIrqResource (
 
 ACPI_STATUS
 AcpiRsExtendedIrqStream (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed)
 {
@@ -588,8 +588,8 @@ AcpiRsExtendedIrqStream (
 
     /* Set the Interrupt vector flags */
 
-    Temp8 = (UINT8)(LinkedList->Data.ExtendedIrq.ProducerConsumer & 0x01);
-    Temp8 |= ((LinkedList->Data.ExtendedIrq.SharedExclusive & 0x01) << 3);
+    Temp8 = (UINT8)(Resource->Data.ExtendedIrq.ProducerConsumer & 0x01);
+    Temp8 |= ((Resource->Data.ExtendedIrq.SharedExclusive & 0x01) << 3);
 
     /*
      * Set the Interrupt Mode
@@ -600,51 +600,51 @@ AcpiRsExtendedIrqStream (
      *
      * - Edge/Level are defined opposite in the table vs the headers
      */
-    if (ACPI_EDGE_SENSITIVE == LinkedList->Data.ExtendedIrq.EdgeLevel)
+    if (ACPI_EDGE_SENSITIVE == Resource->Data.ExtendedIrq.EdgeLevel)
     {
         Temp8 |= 0x2;
     }
 
     /* Set the Interrupt Polarity */
 
-    Temp8 |= ((LinkedList->Data.ExtendedIrq.ActiveHighLow & 0x1) << 2);
+    Temp8 |= ((Resource->Data.ExtendedIrq.ActiveHighLow & 0x1) << 2);
 
     *Buffer = Temp8;
     Buffer += 1;
 
     /* Set the Interrupt table length */
 
-    Temp8 = (UINT8) LinkedList->Data.ExtendedIrq.NumberOfInterrupts;
+    Temp8 = (UINT8) Resource->Data.ExtendedIrq.NumberOfInterrupts;
 
     *Buffer = Temp8;
     Buffer += 1;
 
-    for (Index = 0; Index < LinkedList->Data.ExtendedIrq.NumberOfInterrupts;
+    for (Index = 0; Index < Resource->Data.ExtendedIrq.NumberOfInterrupts;
          Index++)
     {
         ACPI_MOVE_32_TO_32 (Buffer,
-                        &LinkedList->Data.ExtendedIrq.Interrupts[Index]);
+                        &Resource->Data.ExtendedIrq.Interrupts[Index]);
         Buffer += 4;
     }
 
     /* Resource Source Index and Resource Source are optional */
 
-    if (0 != LinkedList->Data.ExtendedIrq.ResourceSource.StringLength)
+    if (0 != Resource->Data.ExtendedIrq.ResourceSource.StringLength)
     {
-        *Buffer = (UINT8) LinkedList->Data.ExtendedIrq.ResourceSource.Index;
+        *Buffer = (UINT8) Resource->Data.ExtendedIrq.ResourceSource.Index;
         Buffer += 1;
 
         /* Copy the string */
 
         ACPI_STRCPY ((char *) Buffer,
-            LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr);
+            Resource->Data.ExtendedIrq.ResourceSource.StringPtr);
 
         /*
          * Buffer needs to be set to the length of the string + one for the
          * terminating null
          */
         Buffer += (ACPI_SIZE) (ACPI_STRLEN (
-            LinkedList->Data.ExtendedIrq.ResourceSource.StringPtr) + 1);
+            Resource->Data.ExtendedIrq.ResourceSource.StringPtr) + 1);
     }
 
     /* Return the number of bytes consumed in this operation */

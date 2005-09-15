@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -318,7 +318,7 @@ AcpiRsGetResourceSizes (
  *
  * FUNCTION:    AcpiRsGetResourceLength
  *
- * PARAMETERS:  Resource        - Pointer to the resource descriptor
+ * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *
  * RETURN:      Byte length of the (AML byte stream) descriptor. By definition,
  *              this does not include the size of the descriptor header and the
@@ -362,7 +362,7 @@ AcpiRsGetResourceLength (
  *
  * FUNCTION:    AcpiRsStructOptionLength
  *
- * PARAMETERS:  ResourceSource  - Pointer to optional descriptor field
+ * PARAMETERS:  ResourceSource      - Pointer to optional descriptor field
  *
  * RETURN:      Status
  *
@@ -455,7 +455,7 @@ AcpiRsStreamOptionLength (
  *
  * FUNCTION:    AcpiRsGetByteStreamLength
  *
- * PARAMETERS:  LinkedList          - Pointer to the resource linked list
+ * PARAMETERS:  Resource            - Pointer to the resource linked list
  *              SizeNeeded          - Where the required size is returned
  *
  * RETURN:      Status
@@ -468,7 +468,7 @@ AcpiRsStreamOptionLength (
 
 ACPI_STATUS
 AcpiRsGetByteStreamLength (
-    ACPI_RESOURCE           *LinkedList,
+    ACPI_RESOURCE           *Resource,
     ACPI_SIZE               *SizeNeeded)
 {
     ACPI_SIZE               ByteStreamSizeNeeded = 0;
@@ -480,24 +480,24 @@ AcpiRsGetByteStreamLength (
 
     /* Traverse entire list of internal resource descriptors */
 
-    while (LinkedList)
+    while (Resource)
     {
         /* Validate the descriptor type */
 
-        if (LinkedList->Id > ACPI_RSTYPE_MAX)
+        if (Resource->Type > ACPI_RSTYPE_MAX)
         {
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
         }
 
         /* Get the base size of the (external stream) resource descriptor */
 
-        SegmentSize = AcpiGbl_StreamSizes [LinkedList->Id];
+        SegmentSize = AcpiGbl_StreamSizes [Resource->Type];
 
         /*
          * Augment the base size for descriptors with optional and/or
          * variable-length fields
          */
-        switch (LinkedList->Id)
+        switch (Resource->Type)
         {
         case ACPI_RSTYPE_VENDOR:
             /*
@@ -506,7 +506,7 @@ AcpiRsGetByteStreamLength (
              * it will be created as a Small Resource data type, otherwise it
              * is a Large Resource data type.
              */
-            if (LinkedList->Data.VendorSpecific.Length > 7)
+            if (Resource->Data.VendorSpecific.Length > 7)
             {
                 /* Base size of a Large resource descriptor */
 
@@ -515,7 +515,7 @@ AcpiRsGetByteStreamLength (
 
             /* Add the size of the vendor-specific data */
 
-            SegmentSize += LinkedList->Data.VendorSpecific.Length;
+            SegmentSize += Resource->Data.VendorSpecific.Length;
             break;
 
 
@@ -537,7 +537,7 @@ AcpiRsGetByteStreamLength (
              * Add the size of the optional ResourceSource info
              */
             SegmentSize += AcpiRsStructOptionLength (
-                            &LinkedList->Data.Address16.ResourceSource);
+                            &Resource->Data.Address16.ResourceSource);
             break;
 
 
@@ -547,7 +547,7 @@ AcpiRsGetByteStreamLength (
              * Add the size of the optional ResourceSource info
              */
             SegmentSize += AcpiRsStructOptionLength (
-                            &LinkedList->Data.Address32.ResourceSource);
+                            &Resource->Data.Address32.ResourceSource);
             break;
 
 
@@ -557,7 +557,7 @@ AcpiRsGetByteStreamLength (
              * Add the size of the optional ResourceSource info
              */
             SegmentSize += AcpiRsStructOptionLength (
-                            &LinkedList->Data.Address64.ResourceSource);
+                            &Resource->Data.Address64.ResourceSource);
             break;
 
 
@@ -568,12 +568,12 @@ AcpiRsGetByteStreamLength (
              * required 1 (4 bytes for each UINT32 interrupt number)
              */
             SegmentSize += (((ACPI_SIZE)
-                LinkedList->Data.ExtendedIrq.NumberOfInterrupts - 1) * 4);
+                Resource->Data.ExtendedIrq.NumberOfInterrupts - 1) * 4);
 
             /* Add the size of the optional ResourceSource info */
 
             SegmentSize += AcpiRsStructOptionLength (
-                            &LinkedList->Data.ExtendedIrq.ResourceSource);
+                            &Resource->Data.ExtendedIrq.ResourceSource);
             break;
 
 
@@ -587,8 +587,8 @@ AcpiRsGetByteStreamLength (
 
         /* Point to the next object */
 
-        LinkedList = ACPI_PTR_ADD (ACPI_RESOURCE,
-                        LinkedList, LinkedList->Length);
+        Resource = ACPI_PTR_ADD (ACPI_RESOURCE,
+                        Resource, Resource->Length);
     }
 
     /* Did not find an END_TAG descriptor */
