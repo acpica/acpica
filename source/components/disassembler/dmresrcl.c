@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  ******************************************************************************/
 
@@ -346,8 +346,8 @@ AcpiDmWordDescriptor (
         AcpiOsPrintf (", 0x%2.2X",
             (UINT32) Resource->Was.OptionalFields[0]);  /* Byte 13 */
         AcpiUtPrintString (
-            &Resource->Was.OptionalFields[1],           /* Bytes 14+ */
-            ACPI_UINT8_MAX);  
+            (char *) &Resource->Was.OptionalFields[1],  /* Bytes 14+ */
+            ACPI_UINT8_MAX);
         AcpiOsPrintf (",");
     }
     else
@@ -445,10 +445,10 @@ AcpiDmDwordDescriptor (
     if (Length > 24)
     {
         AcpiOsPrintf (", 0x%2.2X",
-            Resource->Das.OptionalFields[0]);   /* Byte 23 */
+            Resource->Das.OptionalFields[0]);           /* Byte 23 */
         AcpiUtPrintString (
-            &Resource->Das.OptionalFields[1],   /* Bytes 24+ */
-            ACPI_UINT8_MAX);  
+            (char *) &Resource->Das.OptionalFields[1],  /* Bytes 24+ */
+            ACPI_UINT8_MAX);
         AcpiOsPrintf (",");
     }
     else
@@ -648,10 +648,10 @@ AcpiDmQwordDescriptor (
     if (Length > 44)
     {
         AcpiOsPrintf (", 0x%2.2X, ",
-            Resource->Qas.OptionalFields[0]);   /* Byte 43 */
+            Resource->Qas.OptionalFields[0]);           /* Byte 43 */
         AcpiUtPrintString (
-            &Resource->Qas.OptionalFields[1],   /* Bytes 44+ */
-            ACPI_UINT8_MAX);  
+            (char *) &Resource->Qas.OptionalFields[1],  /* Bytes 44+ */
+            ACPI_UINT8_MAX);
         AcpiOsPrintf (",");
     }
     else
@@ -849,7 +849,7 @@ AcpiDmInterruptDescriptor (
 
         /* Resource Source */
 
-        AcpiUtPrintString ((char *) &Rover[1], ACPI_UINT8_MAX);  
+        AcpiUtPrintString ((char *) &Rover[1], ACPI_UINT8_MAX);
     }
 
     AcpiOsPrintf (")\n");
