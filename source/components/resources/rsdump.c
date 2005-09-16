@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  ******************************************************************************/
 
@@ -251,7 +251,7 @@ typedef
 void (*ACPI_DUMP_RESOURCE) (
     ACPI_RESOURCE_DATA      *Data);
 
-static ACPI_DUMP_RESOURCE   AcpiGbl_DumpResourceDispatch [] = 
+static ACPI_DUMP_RESOURCE   AcpiGbl_DumpResourceDispatch [] =
 {
     AcpiRsDumpIrq,            /* ACPI_RSTYPE_IRQ */
     AcpiRsDumpDma,            /* ACPI_RSTYPE_DMA */
@@ -421,7 +421,7 @@ AcpiRsDumpResourceSource (
         (UINT8) ResourceSource->Index);
 
     AcpiRsOutString ("Resource Source",
-        ResourceSource->StringPtr ? 
+        ResourceSource->StringPtr ?
             ResourceSource->StringPtr : "[Not Specified]");
 }
 
@@ -641,7 +641,7 @@ AcpiRsDumpIrq (
     AcpiRsOutString ("Sharing",
         ACPI_SHARED == Resource->Irq.SharedExclusive ? "Shared" : "Exclusive");
 
-    AcpiRsOutInteger8 ("Interrupt Count", 
+    AcpiRsOutInteger8 ("Interrupt Count",
         (UINT8) Resource->Irq.NumberOfInterrupts);
 
     AcpiRsOutTitle ("Interrupt List");
@@ -1026,7 +1026,7 @@ AcpiRsDumpAddress16 (
     AcpiRsOutInteger16 ("Granularity",
         (UINT16) Resource->Address16.Granularity);
 
-    AcpiRsOutInteger16 ("Address Range Min", 
+    AcpiRsOutInteger16 ("Address Range Min",
         (UINT16) Resource->Address16.MinAddressRange);
 
     AcpiRsOutInteger16 ("Address Range Max",
@@ -1068,7 +1068,7 @@ AcpiRsDumpAddress32 (
     AcpiRsOutInteger32 ("Granularity",
          Resource->Address32.Granularity);
 
-    AcpiRsOutInteger32 ("Address Range Min", 
+    AcpiRsOutInteger32 ("Address Range Min",
         Resource->Address32.MinAddressRange);
 
     AcpiRsOutInteger32 ("Address Range Max",
@@ -1110,7 +1110,7 @@ AcpiRsDumpAddress64 (
     AcpiRsOutInteger64 ("Granularity",
         Resource->Address64.Granularity);
 
-    AcpiRsOutInteger64 ("Address Range Min", 
+    AcpiRsOutInteger64 ("Address Range Min",
         Resource->Address64.MinAddressRange);
 
     AcpiRsOutInteger64 ("Address Range Max",
@@ -1292,7 +1292,7 @@ AcpiRsDumpIrqList (
 
     PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
 
-    /* Dump all table elements */
+    /* Dump all table elements, Exit on null length element */
 
     while (PrtElement->Length)
     {
@@ -1308,8 +1308,6 @@ AcpiRsDumpIrqList (
         Buffer += PrtElement->Length;
         PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE, Buffer);
         Count++;
-
-        /* Exit on null length element */
     }
 }
 

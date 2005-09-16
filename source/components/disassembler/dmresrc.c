@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  ******************************************************************************/
 
@@ -133,7 +133,7 @@ void (*ACPI_RESOURCE_HANDLER) (
     UINT32                  Length,
     UINT32                  Level);
 
-static ACPI_RESOURCE_HANDLER    AcpiGbl_SmResourceDispatch [] = 
+static ACPI_RESOURCE_HANDLER    AcpiGbl_SmResourceDispatch [] =
 {
     NULL,                           /* 0x00, Reserved */
     NULL,                           /* 0x01, Reserved */
@@ -153,7 +153,7 @@ static ACPI_RESOURCE_HANDLER    AcpiGbl_SmResourceDispatch [] =
     NULL                            /* ACPI_RDESC_TYPE_END_TAG (not used) */
 };
 
-static ACPI_RESOURCE_HANDLER    AcpiGbl_LgResourceDispatch [] = 
+static ACPI_RESOURCE_HANDLER    AcpiGbl_LgResourceDispatch [] =
 {
     NULL,                           /* 0x00, Reserved */
     AcpiDmMemory24Descriptor,       /* ACPI_RDESC_TYPE_MEMORY_24 */
@@ -370,7 +370,7 @@ AcpiDmResourceDescriptor (
             }
             return;
 
-        default: 
+        default:
             break;
         }
 

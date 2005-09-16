@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  ******************************************************************************/
 
@@ -126,12 +126,12 @@
         ACPI_MODULE_NAME    ("rscalc")
 
 
-/* 
+/*
  * Base sizes for external resource descriptors, indexed by internal type.
  * Includes size of the descriptor header (1 byte for small descriptors,
  * 3 bytes for large descriptors)
  */
-static UINT8 AcpiGbl_StreamSizes [] = 
+static UINT8 AcpiGbl_StreamSizes [] =
 {
      4,         /* ACPI_RSTYPE_IRQ (Byte 3 is optional, but always created) */
      3,         /* ACPI_RSTYPE_DMA */
@@ -163,7 +163,7 @@ typedef struct acpi_resource_sizes
 
 } ACPI_RESOURCE_SIZES;
 
-static ACPI_RESOURCE_SIZES      AcpiGbl_SmResourceSizes [] = 
+static ACPI_RESOURCE_SIZES      AcpiGbl_SmResourceSizes [] =
 {
      0,  0,                                                 /* 0x00, Reserved */
      0,  0,                                                 /* 0x01, Reserved */
@@ -183,8 +183,8 @@ static ACPI_RESOURCE_SIZES      AcpiGbl_SmResourceSizes [] =
      2,  ACPI_RESOURCE_LENGTH,                              /* ACPI_RDESC_TYPE_END_TAG */
 };
 
-static ACPI_RESOURCE_SIZES    AcpiGbl_LgResourceSizes [] = 
-{   
+static ACPI_RESOURCE_SIZES    AcpiGbl_LgResourceSizes [] =
+{
      0,  0,                                                 /* 0x00, Reserved */
     12,  ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_MEM24),        /* ACPI_RDESC_TYPE_MEMORY_24 */
     15,  ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_GENERIC_REG),  /* ACPI_RDESC_TYPE_GENERIC_REGISTER */
@@ -232,7 +232,7 @@ AcpiRsStreamOptionLength (
  *
  * RETURN:      Number of bits set within the field
  *
- * DESCRIPTION: Count the number of bits set in a resource field. Used for 
+ * DESCRIPTION: Count the number of bits set in a resource field. Used for
  *              (Short descriptor) interrupt and DMA lists.
  *
  ******************************************************************************/
@@ -366,7 +366,7 @@ AcpiRsGetResourceLength (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Common code to handle optional ResourceSourceIndex and 
+ * DESCRIPTION: Common code to handle optional ResourceSourceIndex and
  *              ResourceSource fields in some Large descriptors. Used during
  *              list-to-stream conversion
  *
@@ -381,7 +381,7 @@ AcpiRsStructOptionLength (
 
     /*
      * If the ResourceSource string is valid, return the size of the string
-     * (StringLength includes the NULL terminator) plus the size of the 
+     * (StringLength includes the NULL terminator) plus the size of the
      * ResourceSourceIndex (1).
      */
     if (ResourceSource->StringPtr)
@@ -400,10 +400,10 @@ AcpiRsStructOptionLength (
  * PARAMETERS:  ResourceLength      - Length from the resource header
  *              MinimumTotalLength  - Minimum length of this resource, before
  *                                    any optional fields. Includes header size
- *                                        
+ *
  * RETURN:      Length of optional string (0 if no string present)
  *
- * DESCRIPTION: Common code to handle optional ResourceSourceIndex and 
+ * DESCRIPTION: Common code to handle optional ResourceSourceIndex and
  *              ResourceSource fields in some Large descriptors. Used during
  *              stream-to-list conversion
  *
@@ -432,7 +432,7 @@ AcpiRsStreamOptionLength (
 
     /*
      * If the length of the actual resource descriptor is greater than the ACPI
-     * spec-defined minimum length, it means that a ResourceSourceIndex exists 
+     * spec-defined minimum length, it means that a ResourceSourceIndex exists
      * and is followed by a (required) null terminated string. The string length
      * (including the null terminator) is the resource length minus the minimum
      * length, minus one byte for the ResourceSourceIndex itself.
@@ -448,7 +448,6 @@ AcpiRsStreamOptionLength (
 
     return (ACPI_ROUND_UP_TO_32BITS (StringLength));
 }
-
 
 
 /*******************************************************************************
@@ -564,7 +563,7 @@ AcpiRsGetByteStreamLength (
         case ACPI_RSTYPE_EXT_IRQ:
             /*
              * Extended IRQ Resource:
-             * Add the size of each additional optional interrupt beyond the 
+             * Add the size of each additional optional interrupt beyond the
              * required 1 (4 bytes for each UINT32 interrupt number)
              */
             SegmentSize += (((ACPI_SIZE)
@@ -672,7 +671,7 @@ AcpiRsGetListLength (
                  */
                 ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
 
-                ExtraStructBytes = (AcpiRsCountSetBits (Temp16) * 
+                ExtraStructBytes = (AcpiRsCountSetBits (Temp16) *
                                         sizeof (UINT32));
                 break;
 
@@ -682,7 +681,7 @@ AcpiRsGetListLength (
                  * DMA Resource:
                  * Get the number of bits set in the DMA channels byte
                  */
-                ExtraStructBytes = (AcpiRsCountSetBits ((UINT16) *Buffer) * 
+                ExtraStructBytes = (AcpiRsCountSetBits ((UINT16) *Buffer) *
                                         sizeof (UINT32));
                 break;
 
@@ -734,7 +733,7 @@ AcpiRsGetListLength (
                  * 32-Bit or 16-bit Address Resource:
                  * Add the size of any optional data (ResourceSource)
                  */
-                ExtraStructBytes = AcpiRsStreamOptionLength (ResourceLength, 
+                ExtraStructBytes = AcpiRsStreamOptionLength (ResourceLength,
                                         ResourceInfo->MinimumStreamSize);
                 break;
 
@@ -748,7 +747,7 @@ AcpiRsGetListLength (
                 Buffer++;
 
                 /*
-                 * Add 4 bytes for each additional interrupt. Note: at least one 
+                 * Add 4 bytes for each additional interrupt. Note: at least one
                  * interrupt is required and is included in the minimum
                  * descriptor size
                  */
@@ -757,7 +756,7 @@ AcpiRsGetListLength (
                 /* Add the size of any optional data (ResourceSource) */
 
                 ExtraStructBytes += AcpiRsStreamOptionLength (
-                                        ResourceLength - ExtraStructBytes, 
+                                        ResourceLength - ExtraStructBytes,
                                         ResourceInfo->MinimumStreamSize);
                 break;
 
@@ -769,7 +768,7 @@ AcpiRsGetListLength (
                  * Ensure a 64-bit boundary for the structure
                  */
                 ExtraStructBytes = ACPI_ROUND_UP_TO_64BITS (
-                    AcpiRsStreamOptionLength (ResourceLength, 
+                    AcpiRsStreamOptionLength (ResourceLength,
                                         ResourceInfo->MinimumStreamSize));
                 break;
 

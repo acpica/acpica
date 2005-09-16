@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -131,7 +131,7 @@ ACPI_STATUS (*ACPI_STREAM_HANDLER) (
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *BytesConsumed);
 
-static ACPI_STREAM_HANDLER      AcpiGbl_StreamDispatch [] = 
+static ACPI_STREAM_HANDLER      AcpiGbl_StreamDispatch [] =
 {
     AcpiRsIrqStream,                /* ACPI_RSTYPE_IRQ */
     AcpiRsDmaStream,                /* ACPI_RSTYPE_DMA */
@@ -161,7 +161,7 @@ ACPI_STATUS (*ACPI_RESOURCE_HANDLER) (
     UINT8                   **OutputBuffer,
     ACPI_SIZE               *StructureSize);
 
-static ACPI_RESOURCE_HANDLER    AcpiGbl_SmResourceDispatch [] = 
+static ACPI_RESOURCE_HANDLER    AcpiGbl_SmResourceDispatch [] =
 {
     NULL,                           /* 0x00, Reserved */
     NULL,                           /* 0x01, Reserved */
@@ -181,7 +181,7 @@ static ACPI_RESOURCE_HANDLER    AcpiGbl_SmResourceDispatch [] =
     AcpiRsEndTagResource            /* ACPI_RDESC_TYPE_END_TAG */
 };
 
-static ACPI_RESOURCE_HANDLER    AcpiGbl_LgResourceDispatch [] = 
+static ACPI_RESOURCE_HANDLER    AcpiGbl_LgResourceDispatch [] =
 {
     NULL,                           /* 0x00, Reserved */
     AcpiRsMemory24Resource,         /* ACPI_RDESC_TYPE_MEMORY_24 */
