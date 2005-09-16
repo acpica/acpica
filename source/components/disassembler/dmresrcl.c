@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -345,8 +345,10 @@ AcpiDmWordDescriptor (
     {
         AcpiOsPrintf (", 0x%2.2X",
             (UINT32) Resource->Was.OptionalFields[0]);  /* Byte 13 */
-        AcpiOsPrintf (", %s",
-            &Resource->Was.OptionalFields[1]);          /* Bytes 14+ */
+        AcpiUtPrintString (
+            &Resource->Was.OptionalFields[1],           /* Bytes 14+ */
+            ACPI_UINT8_MAX);  
+        AcpiOsPrintf (",");
     }
     else
     {
@@ -444,8 +446,10 @@ AcpiDmDwordDescriptor (
     {
         AcpiOsPrintf (", 0x%2.2X",
             Resource->Das.OptionalFields[0]);   /* Byte 23 */
-        AcpiOsPrintf (", %s",
-            &Resource->Das.OptionalFields[1]);  /* Bytes 24+ */
+        AcpiUtPrintString (
+            &Resource->Das.OptionalFields[1],   /* Bytes 24+ */
+            ACPI_UINT8_MAX);  
+        AcpiOsPrintf (",");
     }
     else
     {
@@ -643,10 +647,12 @@ AcpiDmQwordDescriptor (
      */
     if (Length > 44)
     {
-        AcpiOsPrintf (", 0x%2.2X",
+        AcpiOsPrintf (", 0x%2.2X, ",
             Resource->Qas.OptionalFields[0]);   /* Byte 43 */
-        AcpiOsPrintf (", %s",
-            &Resource->Qas.OptionalFields[1]);  /* Bytes 44+ */
+        AcpiUtPrintString (
+            &Resource->Qas.OptionalFields[1],   /* Bytes 44+ */
+            ACPI_UINT8_MAX);  
+        AcpiOsPrintf (",");
     }
     else
     {
@@ -838,9 +844,12 @@ AcpiDmInterruptDescriptor (
         Rover = ((UINT8 *) Resource) + ((4 * Resource->Exx.TableLength) + 5);
 
         /* Resource Index */
+
+        AcpiOsPrintf (", 0x%X, ", (UINT32) Rover[0]);
+
         /* Resource Source */
 
-        AcpiOsPrintf (", 0x%X, \"%s\"", (UINT32) Rover[0], (char *) &Rover[1]);
+        AcpiUtPrintString ((char *) &Rover[1], ACPI_UINT8_MAX);  
     }
 
     AcpiOsPrintf (")\n");
