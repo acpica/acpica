@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -658,7 +658,7 @@ RsDoResourceTemplate (
     ACPI_PARSE_OBJECT       *BufferOp;
     ACPI_PARSE_OBJECT       *DescriptorTypeOp;
     ACPI_PARSE_OBJECT       *LastOp = NULL;
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     UINT32                  CurrentByteOffset = 0;
     ASL_RESOURCE_NODE       HeadRnode;
     ASL_RESOURCE_NODE       *PreviousRnode;
@@ -715,12 +715,12 @@ RsDoResourceTemplate (
      * Insert the EndTag descriptor after all other descriptors have
      * been processed
      */
-    Rnode = RsAllocateResourceNode (sizeof (ASL_END_TAG_DESC));
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_END_TAG));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Et.DescriptorType = ACPI_RDESC_TYPE_END_TAG |
+    Descriptor->EndTag.DescriptorType = ACPI_RESOURCE_NAME_END_TAG |
                                         ASL_RDESC_END_TAG_SIZE;
-    Descriptor->Et.Checksum = 0;
+    Descriptor->EndTag.Checksum = 0;
 
     CurrentByteOffset += RsLinkDescriptorChain (&PreviousRnode, Rnode);
 

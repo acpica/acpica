@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.22 $
+ *       $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -333,61 +333,61 @@ AcpiDmDecodeAttribute (
  */
 void
 AcpiDmWordDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmDwordDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmExtendedDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmQwordDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmMemory24Descriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmMemory32Descriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmFixedMemory32Descriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmGenericRegisterDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmInterruptDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmVendorLargeDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
@@ -397,43 +397,43 @@ AcpiDmVendorLargeDescriptor (
  */
 void
 AcpiDmIrqDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmDmaDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmIoDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmFixedIoDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmStartDependentDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmEndDependentDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
 void
 AcpiDmVendorSmallDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 

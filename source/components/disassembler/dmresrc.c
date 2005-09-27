@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -129,7 +129,7 @@
 
 typedef
 void (*ACPI_RESOURCE_HANDLER) (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level);
 
@@ -139,34 +139,34 @@ static ACPI_RESOURCE_HANDLER    AcpiGbl_SmResourceDispatch [] =
     NULL,                           /* 0x01, Reserved */
     NULL,                           /* 0x02, Reserved */
     NULL,                           /* 0x03, Reserved */
-    AcpiDmIrqDescriptor,            /* ACPI_RDESC_TYPE_IRQ_FORMAT */
-    AcpiDmDmaDescriptor,            /* ACPI_RDESC_TYPE_DMA_FORMAT */
-    AcpiDmStartDependentDescriptor, /* ACPI_RDESC_TYPE_START_DEPENDENT */
-    AcpiDmEndDependentDescriptor,   /* ACPI_RDESC_TYPE_END_DEPENDENT */
-    AcpiDmIoDescriptor,             /* ACPI_RDESC_TYPE_IO_PORT */
-    AcpiDmFixedIoDescriptor,        /* ACPI_RDESC_TYPE_FIXED_IO_PORT */
+    AcpiDmIrqDescriptor,            /* ACPI_RESOURCE_NAME_IRQ_FORMAT */
+    AcpiDmDmaDescriptor,            /* ACPI_RESOURCE_NAME_DMA_FORMAT */
+    AcpiDmStartDependentDescriptor, /* ACPI_RESOURCE_NAME_START_DEPENDENT */
+    AcpiDmEndDependentDescriptor,   /* ACPI_RESOURCE_NAME_END_DEPENDENT */
+    AcpiDmIoDescriptor,             /* ACPI_RESOURCE_NAME_IO_PORT */
+    AcpiDmFixedIoDescriptor,        /* ACPI_RESOURCE_NAME_FIXED_IO_PORT */
     NULL,                           /* 0x0A, Reserved */
     NULL,                           /* 0x0B, Reserved */
     NULL,                           /* 0x0C, Reserved */
     NULL,                           /* 0x0D, Reserved */
-    AcpiDmVendorSmallDescriptor,    /* ACPI_RDESC_TYPE_SMALL_VENDOR */
-    NULL                            /* ACPI_RDESC_TYPE_END_TAG (not used) */
+    AcpiDmVendorSmallDescriptor,    /* ACPI_RESOURCE_NAME_SMALL_VENDOR */
+    NULL                            /* ACPI_RESOURCE_NAME_END_TAG (not used) */
 };
 
 static ACPI_RESOURCE_HANDLER    AcpiGbl_LgResourceDispatch [] =
 {
     NULL,                           /* 0x00, Reserved */
-    AcpiDmMemory24Descriptor,       /* ACPI_RDESC_TYPE_MEMORY_24 */
-    AcpiDmGenericRegisterDescriptor,/* ACPI_RDESC_TYPE_GENERIC_REGISTER */
+    AcpiDmMemory24Descriptor,       /* ACPI_RESOURCE_NAME_MEMORY_24 */
+    AcpiDmGenericRegisterDescriptor,/* ACPI_RESOURCE_NAME_GENERIC_REGISTER */
     NULL,                           /* 0x03, Reserved */
-    AcpiDmVendorLargeDescriptor,    /* ACPI_RDESC_TYPE_LARGE_VENDOR */
-    AcpiDmMemory32Descriptor,       /* ACPI_RDESC_TYPE_MEMORY_32 */
-    AcpiDmFixedMemory32Descriptor,  /* ACPI_RDESC_TYPE_FIXED_MEMORY_32 */
-    AcpiDmDwordDescriptor,          /* ACPI_RDESC_TYPE_DWORD_ADDRESS_SPACE */
-    AcpiDmWordDescriptor,           /* ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE */
-    AcpiDmInterruptDescriptor,      /* ACPI_RDESC_TYPE_EXTENDED_XRUPT */
-    AcpiDmQwordDescriptor,          /* ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE */
-    AcpiDmExtendedDescriptor        /* ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE */
+    AcpiDmVendorLargeDescriptor,    /* ACPI_RESOURCE_NAME_LARGE_VENDOR */
+    AcpiDmMemory32Descriptor,       /* ACPI_RESOURCE_NAME_MEMORY_32 */
+    AcpiDmFixedMemory32Descriptor,  /* ACPI_RESOURCE_NAME_FIXED_MEMORY_32 */
+    AcpiDmDwordDescriptor,          /* ACPI_RESOURCE_NAME_DWORD_ADDRESS_SPACE */
+    AcpiDmWordDescriptor,           /* ACPI_RESOURCE_NAME_WORD_ADDRESS_SPACE */
+    AcpiDmInterruptDescriptor,      /* ACPI_RESOURCE_NAME_EXTENDED_XRUPT */
+    AcpiDmQwordDescriptor,          /* ACPI_RESOURCE_NAME_QWORD_ADDRESS_SPACE */
+    AcpiDmExtendedDescriptor        /* ACPI_RESOURCE_NAME_EXTENDED_ADDRESS_SPACE */
 };
 
 
@@ -199,24 +199,24 @@ AcpiDmGetResourceHandler (
 
     /* Determine if this is a small or large resource */
 
-    if (ResourceType & ACPI_RDESC_TYPE_LARGE)
+    if (ResourceType & ACPI_RESOURCE_NAME_LARGE)
     {
         /* Large Resource Type -- bits 6:0 contain the name */
 
-        if (ResourceType > ACPI_RDESC_LARGE_MAX)
+        if (ResourceType > ACPI_RESOURCE_NAME_LARGE_MAX)
         {
             return (NULL);
         }
 
         return (AcpiGbl_LgResourceDispatch [
-                    (ResourceType & ACPI_RDESC_LARGE_MASK)]);
+                    (ResourceType & ACPI_RESOURCE_NAME_LARGE_MASK)]);
     }
     else
     {
         /* Small Resource Type -- bits 6:3 contain the name */
 
         return (AcpiGbl_SmResourceDispatch [
-                    ((ResourceType & ACPI_RDESC_SMALL_MASK) >> 3)]);
+                    ((ResourceType & ACPI_RESOURCE_NAME_SMALL_MASK) >> 3)]);
     }
 }
 
@@ -310,7 +310,7 @@ AcpiDmResourceDescriptor (
 
         /* Large vs. Small resource descriptors */
 
-        if (CurrentByte & ACPI_RDESC_TYPE_LARGE)
+        if (CurrentByte & ACPI_RESOURCE_NAME_LARGE)
         {
             DescriptorId = CurrentByte;
             Length = (* (ACPI_CAST_PTR (UINT16,
@@ -330,7 +330,7 @@ AcpiDmResourceDescriptor (
 
         switch (DescriptorId)
         {
-        case ACPI_RDESC_TYPE_START_DEPENDENT:
+        case ACPI_RESOURCE_NAME_START_DEPENDENT:
 
             /* Finish a previous StartDependentFns */
 
@@ -342,13 +342,13 @@ AcpiDmResourceDescriptor (
             }
             break;
 
-        case ACPI_RDESC_TYPE_END_DEPENDENT:
+        case ACPI_RESOURCE_NAME_END_DEPENDENT:
 
             Level--;
             DependentFns = FALSE;
             break;
 
-        case ACPI_RDESC_TYPE_END_TAG:
+        case ACPI_RESOURCE_NAME_END_TAG:
 
             /* Normal exit, the resource list is finished */
 
@@ -396,7 +396,7 @@ AcpiDmResourceDescriptor (
 
         /* Descriptor post-processing */
 
-        if (DescriptorId == ACPI_RDESC_TYPE_START_DEPENDENT)
+        if (DescriptorId == ACPI_RESOURCE_NAME_START_DEPENDENT)
         {
             DependentFns = TRUE;
             Level++;
@@ -462,7 +462,7 @@ AcpiDmIsResourceDescriptor (
 
     /* The list must have a valid 2-byte END_TAG */
 
-    if (ByteData[ByteCount-2] != (ACPI_RDESC_TYPE_END_TAG | 1))
+    if (ByteData[ByteCount-2] != (ACPI_RESOURCE_NAME_END_TAG | 1))
     {
         return FALSE;
     }
@@ -477,7 +477,7 @@ AcpiDmIsResourceDescriptor (
 
         /* Large or small resource? */
 
-        if (CurrentByte & ACPI_RDESC_TYPE_LARGE)
+        if (CurrentByte & ACPI_RESOURCE_NAME_LARGE)
         {
             DescriptorId = CurrentByte;
             Length = (* (ACPI_CAST_PTR (UINT16,
@@ -500,34 +500,34 @@ AcpiDmIsResourceDescriptor (
         /*
          * "Small" type descriptors
          */
-        case ACPI_RDESC_TYPE_IRQ_FORMAT:
-        case ACPI_RDESC_TYPE_DMA_FORMAT:
-        case ACPI_RDESC_TYPE_START_DEPENDENT:
-        case ACPI_RDESC_TYPE_END_DEPENDENT:
-        case ACPI_RDESC_TYPE_IO_PORT:
-        case ACPI_RDESC_TYPE_FIXED_IO_PORT:
-        case ACPI_RDESC_TYPE_SMALL_VENDOR:
+        case ACPI_RESOURCE_NAME_IRQ:
+        case ACPI_RESOURCE_NAME_DMA:
+        case ACPI_RESOURCE_NAME_START_DEPENDENT:
+        case ACPI_RESOURCE_NAME_END_DEPENDENT:
+        case ACPI_RESOURCE_NAME_IO:
+        case ACPI_RESOURCE_NAME_FIXED_IO:
+        case ACPI_RESOURCE_NAME_VENDOR_SMALL:
 
         /*
          * "Large" type descriptors
          */
-        case ACPI_RDESC_TYPE_MEMORY_24:
-        case ACPI_RDESC_TYPE_GENERIC_REGISTER:
-        case ACPI_RDESC_TYPE_LARGE_VENDOR:
-        case ACPI_RDESC_TYPE_MEMORY_32:
-        case ACPI_RDESC_TYPE_FIXED_MEMORY_32:
-        case ACPI_RDESC_TYPE_DWORD_ADDRESS_SPACE:
-        case ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE:
-        case ACPI_RDESC_TYPE_EXTENDED_XRUPT:
-        case ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE:
-        case ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE:
+        case ACPI_RESOURCE_NAME_MEMORY24:
+        case ACPI_RESOURCE_NAME_GENERIC_REGISTER:
+        case ACPI_RESOURCE_NAME_VENDOR_LARGE:
+        case ACPI_RESOURCE_NAME_MEMORY32:
+        case ACPI_RESOURCE_NAME_FIXED_MEMORY32:
+        case ACPI_RESOURCE_NAME_ADDRESS32:
+        case ACPI_RESOURCE_NAME_ADDRESS16:
+        case ACPI_RESOURCE_NAME_EXTENDED_IRQ:
+        case ACPI_RESOURCE_NAME_ADDRESS64:
+        case ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64:
 
             /* Valid descriptor ID, keep going */
 
             break;
 
 
-        case ACPI_RDESC_TYPE_END_TAG:
+        case ACPI_RESOURCE_NAME_END_TAG:
 
             /* We must be at the end of the ByteList */
 

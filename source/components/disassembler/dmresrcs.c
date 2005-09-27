@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcs.c - "Small" Resource Descriptor disassembly
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  ******************************************************************************/
 
@@ -141,7 +141,7 @@
 
 void
 AcpiDmIrqDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -178,7 +178,7 @@ AcpiDmIrqDescriptor (
 
 void
 AcpiDmDmaDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -209,18 +209,18 @@ AcpiDmDmaDescriptor (
 
 void
 AcpiDmIoDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("IO (%s, 0x%4.4X, 0x%4.4X, 0x%2.2X, 0x%2.2X)\n",
-        AcpiGbl_IoDecode [(Resource->Iop.Information & 1)],
-        (UINT32) Resource->Iop.AddressMin,
-        (UINT32) Resource->Iop.AddressMax,
-        (UINT32) Resource->Iop.Alignment,
-        (UINT32) Resource->Iop.Length);
+        AcpiGbl_IoDecode [(Resource->Io.Information & 1)],
+        (UINT32) Resource->Io.Minimum,
+        (UINT32) Resource->Io.Maximum,
+        (UINT32) Resource->Io.Alignment,
+        (UINT32) Resource->Io.AddressLength);
 }
 
 
@@ -240,15 +240,15 @@ AcpiDmIoDescriptor (
 
 void
 AcpiDmFixedIoDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("FixedIO (0x%4.4X, 0x%2.2X)\n",
-        (UINT32) Resource->Fio.BaseAddress,
-        (UINT32) Resource->Fio.Length);
+        (UINT32) Resource->FixedIo.Address,
+        (UINT32) Resource->FixedIo.AddressLength);
 }
 
 
@@ -268,7 +268,7 @@ AcpiDmFixedIoDescriptor (
 
 void
 AcpiDmStartDependentDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -278,8 +278,8 @@ AcpiDmStartDependentDescriptor (
     if (Length & 1)
     {
         AcpiOsPrintf ("StartDependentFn (0x%2.2X, 0x%2.2X)\n",
-            (UINT32) Resource->Std.Flags & 3,
-            (UINT32) (Resource->Std.Flags >> 2) & 3);
+            (UINT32) Resource->StartDpf.Flags & 3,
+            (UINT32) (Resource->StartDpf.Flags >> 2) & 3);
     }
     else
     {
@@ -307,7 +307,7 @@ AcpiDmStartDependentDescriptor (
 
 void
 AcpiDmEndDependentDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -335,7 +335,7 @@ AcpiDmEndDependentDescriptor (
 
 void
 AcpiDmVendorSmallDescriptor (
-    ASL_RESOURCE_DESC       *Resource,
+    AML_RESOURCE            *Resource,
     UINT32                  Length,
     UINT32                  Level)
 {
@@ -343,7 +343,8 @@ AcpiDmVendorSmallDescriptor (
     AcpiDmIndent (Level);
     AcpiOsPrintf ("VendorShort () {");
 
-    AcpiDmDisasmByteList (0, (UINT8 *) Resource->Smv.VendorDefined, Length);
+    AcpiDmDisasmByteList (0, 
+        ((UINT8 *) Resource) + sizeof (AML_RESOURCE_SMALL_HEADER), Length);
     AcpiOsPrintf ("}\n");
 }
 

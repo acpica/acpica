@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asldefine.h - Common defines for the iASL compiler
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@
 /*
  * Macros
  */
-#define ASL_RESDESC_OFFSET(m)       ACPI_OFFSET (ASL_RESOURCE_DESC, m)
+#define ASL_RESDESC_OFFSET(m)       ACPI_OFFSET (AML_RESOURCE, m)
 #define ASL_PTR_DIFF(a,b)           ((UINT8 *)(b) - (UINT8 *)(a))
 #define ASL_PTR_ADD(a,b)            ((UINT8 *)(a) = ((UINT8 *)(a) + (b)))
 #define ASL_GET_CHILD_NODE(a)       (a)->Asl.Child

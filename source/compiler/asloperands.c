@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -722,9 +722,9 @@ OpnDoBuffer (
 
     if (!BufferLength)
     {
-        /* No length AND no items -- issue a warning */
+        /* No length AND no items -- issue notice */
 
-        AslError (ASL_WARNING, ASL_MSG_BUFFER_LENGTH, BufferLengthOp, NULL);
+        AslError (ASL_REMARK, ASL_MSG_BUFFER_LENGTH, BufferLengthOp, NULL);
 
         /* But go ahead and put the buffer length of zero into the AML */
     }

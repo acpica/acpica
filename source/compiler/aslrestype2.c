@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 
 /* Local prototypes */
 
-static UINT32
+static UINT16
 RsGetStringDataLength (
     ACPI_PARSE_OBJECT       *InitializerOp);
 
@@ -142,7 +142,7 @@ RsGetStringDataLength (
  *
  ******************************************************************************/
 
-static UINT32
+static UINT16
 RsGetStringDataLength (
     ACPI_PARSE_OBJECT       *InitializerOp)
 {
@@ -151,7 +151,7 @@ RsGetStringDataLength (
     {
         if (InitializerOp->Asl.ParseOpcode == PARSEOP_STRING_LITERAL)
         {
-            return (strlen (InitializerOp->Asl.Value.String) + 1);
+            return ((UINT16) (strlen (InitializerOp->Asl.Value.String) + 1));
         }
         InitializerOp = ASL_GET_PEER_NODE (InitializerOp);
     }
@@ -179,11 +179,12 @@ RsDoDwordIoDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
+    UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
+    UINT8                   *OptionalFields;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
 
@@ -191,20 +192,21 @@ RsDoDwordIoDescriptor (
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_DWORD_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_ADDRESS32) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Das.DescriptorType  = ACPI_RDESC_TYPE_DWORD_ADDRESS_SPACE;
-    Descriptor->Das.ResourceType    = ACPI_RESOURCE_TYPE_IO_RANGE;
+    Descriptor->Address32.DescriptorType = ACPI_RESOURCE_NAME_ADDRESS32;
+    Descriptor->Address32.ResourceType   = ACPI_ADDRESS_TYPE_IO_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Das.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Das.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Das.ResourceType));
+    OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS32);
+    Descriptor->Address32.ResourceLength = (UINT16) 
+        (sizeof (AML_RESOURCE_ADDRESS32) - 
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -214,75 +216,75 @@ RsDoDwordIoDescriptor (
         {
         case 0: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 0, 1);
             break;
 
         case 1: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Flags), 2);
             break;
 
         case 2: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Flags), 3);
             break;
 
         case 3: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Flags), 1);
             break;
 
         case 4: /* Range Type */
 
-            RsSetFlagBits (&Descriptor->Das.SpecificFlags, InitializerOp, 0, 3);
+            RsSetFlagBits (&Descriptor->Address32.SpecificFlags, InitializerOp, 0, 3);
             RsCreateBitField (InitializerOp, ASL_RESNAME_RANGETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.SpecificFlags), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.SpecificFlags), 0);
             break;
 
         case 5: /* Address Granularity */
 
-            Descriptor->Das.Granularity =
+            Descriptor->Address32.Granularity =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Granularity));
             break;
 
         case 6: /* Address Min */
 
-            Descriptor->Das.AddressMin =
+            Descriptor->Address32.Minimum =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Minimum));
             break;
 
         case 7: /* Address Max */
 
-            Descriptor->Das.AddressMax =
+            Descriptor->Address32.Maximum =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Maximum));
             break;
 
         case 8: /* Translation Offset */
 
-            Descriptor->Das.TranslationOffset =
+            Descriptor->Address32.TranslationOffset =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.TranslationOffset));
             break;
 
         case 9: /* Address Length */
 
-            Descriptor->Das.AddressLength =
+            Descriptor->Address32.AddressLength =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.AddressLength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.AddressLength));
             break;
 
         case 10: /* ResSourceIndex [Optional Field - BYTE] */
@@ -291,10 +293,9 @@ RsDoDwordIoDescriptor (
             {
                 /* Found a valid ResourceSourceIndex */
 
-                Descriptor->Das.OptionalFields[0] =
-                    (UINT8) InitializerOp->Asl.Value.Integer;
+                OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
-                Descriptor->Das.Length++;
+                Descriptor->Address32.ResourceLength++;
                 ResSourceIndex = TRUE;
             }
             break;
@@ -308,11 +309,11 @@ RsDoDwordIoDescriptor (
                 {
                     /* Found a valid ResourceSource */
 
-                    Descriptor->Das.Length =
-                        (UINT16) (Descriptor->Das.Length + StringLength);
+                    Descriptor->Address32.ResourceLength = (UINT16) 
+                        (Descriptor->Address32.ResourceLength + StringLength);
 
                     strcpy ((char *)
-                        &Descriptor->Das.OptionalFields[OptionIndex],
+                        &OptionalFields[OptionIndex],
                         InitializerOp->Asl.Value.String);
 
                     /* ResourceSourceIndex must also be valid */
@@ -343,16 +344,16 @@ RsDoDwordIoDescriptor (
 
         case 13: /* Type */
 
-            RsSetFlagBits (&Descriptor->Das.SpecificFlags, InitializerOp, 4, 0);
+            RsSetFlagBits (&Descriptor->Address32.SpecificFlags, InitializerOp, 4, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.SpecificFlags), 4);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.SpecificFlags), 4);
             break;
 
         case 14: /* Translation Type */
 
-            RsSetFlagBits (&Descriptor->Das.SpecificFlags, InitializerOp, 5, 0);
+            RsSetFlagBits (&Descriptor->Address32.SpecificFlags, InitializerOp, 5, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TRANSTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.SpecificFlags), 5);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.SpecificFlags), 5);
             break;
 
         default:
@@ -364,9 +365,8 @@ RsDoDwordIoDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Das.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Das.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS32) +
+                            OptionIndex + StringLength;
     return (Rnode);
 }
 
@@ -390,10 +390,11 @@ RsDoDwordMemoryDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
+    UINT8                   *OptionalFields;
+    UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
@@ -402,20 +403,22 @@ RsDoDwordMemoryDescriptor (
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_DWORD_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_ADDRESS32) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Das.DescriptorType  = ACPI_RDESC_TYPE_DWORD_ADDRESS_SPACE;
-    Descriptor->Das.ResourceType    = ACPI_RESOURCE_TYPE_MEMORY_RANGE;
+    Descriptor->Address32.DescriptorType = ACPI_RESOURCE_NAME_ADDRESS32;
+    Descriptor->Address32.ResourceType   = ACPI_ADDRESS_TYPE_MEMORY_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Das.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Das.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Das.ResourceType));
+    OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS32);
+    Descriptor->Address32.ResourceLength = (UINT16) 
+        (sizeof (AML_RESOURCE_ADDRESS32) - 
+         sizeof (AML_RESOURCE_LARGE_HEADER));
+
 
     /* Process all child initialization nodes */
 
@@ -425,92 +428,91 @@ RsDoDwordMemoryDescriptor (
         {
         case 0: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 0, 1);
             break;
 
         case 1: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Flags), 1);
             break;
 
         case 2: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Flags), 2);
             break;
 
         case 3: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Flags), 3);
             break;
 
         case 4: /* Memory Type */
 
-            RsSetFlagBits (&Descriptor->Das.SpecificFlags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address32.SpecificFlags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MEMTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.SpecificFlags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.SpecificFlags), 1);
             break;
 
         case 5: /* Read/Write Type */
 
-            RsSetFlagBits (&Descriptor->Das.SpecificFlags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address32.SpecificFlags, InitializerOp, 0, 1);
             RsCreateBitField (InitializerOp, ASL_RESNAME_READWRITETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.SpecificFlags), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.SpecificFlags), 0);
             break;
 
         case 6: /* Address Granularity */
 
-            Descriptor->Das.Granularity =
+            Descriptor->Address32.Granularity =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Granularity));
             break;
 
         case 7: /* Min Address */
 
-            Descriptor->Das.AddressMin =
+            Descriptor->Address32.Minimum =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Minimum));
             break;
 
         case 8: /* Max Address */
 
-            Descriptor->Das.AddressMax =
+            Descriptor->Address32.Maximum =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Maximum));
             break;
 
         case 9: /* Translation Offset */
 
-            Descriptor->Das.TranslationOffset =
+            Descriptor->Address32.TranslationOffset =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Das.AddressLength =
+            Descriptor->Address32.AddressLength =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.AddressLength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.AddressLength));
             break;
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                Descriptor->Das.OptionalFields[0] =
-                    (UINT8) InitializerOp->Asl.Value.Integer;
+                OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
-                Descriptor->Das.Length++;
+                Descriptor->Address32.ResourceLength++;
                 ResSourceIndex = TRUE;
             }
             break;
@@ -522,11 +524,11 @@ RsDoDwordMemoryDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Das.Length =
-                        (UINT16) (Descriptor->Das.Length + StringLength);
+                    Descriptor->Address32.ResourceLength = (UINT16) 
+                        (Descriptor->Address32.ResourceLength + StringLength);
 
                     strcpy ((char *)
-                        &Descriptor->Das.OptionalFields[OptionIndex],
+                        &OptionalFields[OptionIndex],
                         InitializerOp->Asl.Value.String);
 
                     /* ResourceSourceIndex must also be valid */
@@ -558,16 +560,16 @@ RsDoDwordMemoryDescriptor (
 
         case 14: /* Address Range */
 
-            RsSetFlagBits (&Descriptor->Das.SpecificFlags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address32.SpecificFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MEMATTRIBUTES,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.SpecificFlags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.SpecificFlags), 3);
             break;
 
         case 15: /* Type */
 
-            RsSetFlagBits (&Descriptor->Das.SpecificFlags, InitializerOp, 5, 0);
+            RsSetFlagBits (&Descriptor->Address32.SpecificFlags, InitializerOp, 5, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.SpecificFlags), 5);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.SpecificFlags), 5);
             break;
 
         default:
@@ -579,9 +581,8 @@ RsDoDwordMemoryDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Das.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Das.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS32) +
+                            OptionIndex + StringLength;
     return (Rnode);
 }
 
@@ -605,10 +606,11 @@ RsDoDwordSpaceDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
+    UINT8                   *OptionalFields;
+    UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
@@ -617,19 +619,20 @@ RsDoDwordSpaceDescriptor (
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_DWORD_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_ADDRESS32) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Das.DescriptorType  = ACPI_RDESC_TYPE_DWORD_ADDRESS_SPACE;
+    Descriptor->Address32.DescriptorType = ACPI_RESOURCE_NAME_ADDRESS32;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Das.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Das.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Das.ResourceType));
+    OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS32);
+    Descriptor->Address32.ResourceLength = (UINT16) 
+        (sizeof (AML_RESOURCE_ADDRESS32) - 
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -639,90 +642,89 @@ RsDoDwordSpaceDescriptor (
         {
         case 0: /* Resource Type */
 
-            Descriptor->Das.ResourceType =
+            Descriptor->Address32.ResourceType =
                 (UINT8) InitializerOp->Asl.Value.Integer;
             break;
 
         case 1: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 0, 1);
             break;
 
         case 2: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Flags), 1);
             break;
 
         case 3: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Flags), 2);
             break;
 
         case 4: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Das.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address32.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Flags), 3);
             break;
 
         case 5: /* Type-Specific flags */
 
-            Descriptor->Das.SpecificFlags =
+            Descriptor->Address32.SpecificFlags =
                 (UINT8) InitializerOp->Asl.Value.Integer;
             break;
 
         case 6: /* Address Granularity */
 
-            Descriptor->Das.Granularity =
+            Descriptor->Address32.Granularity =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Granularity));
             break;
 
         case 7: /* Min Address */
 
-            Descriptor->Das.AddressMin =
+            Descriptor->Address32.Minimum =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Minimum));
             break;
 
         case 8: /* Max Address */
 
-            Descriptor->Das.AddressMax =
+            Descriptor->Address32.Maximum =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.Maximum));
             break;
 
         case 9: /* Translation Offset */
 
-            Descriptor->Das.TranslationOffset =
+            Descriptor->Address32.TranslationOffset =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Das.AddressLength =
+            Descriptor->Address32.AddressLength =
                 (UINT32) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Das.AddressLength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address32.AddressLength));
             break;
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                Descriptor->Das.OptionalFields[0] =
-                    (UINT8) InitializerOp->Asl.Value.Integer;
+                OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
-                Descriptor->Das.Length++;
+                Descriptor->Address32.ResourceLength++;
                 ResSourceIndex = TRUE;
             }
             break;
@@ -734,11 +736,11 @@ RsDoDwordSpaceDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Das.Length =
-                        (UINT16) (Descriptor->Das.Length + StringLength);
+                    Descriptor->Address32.ResourceLength = (UINT16) 
+                        (Descriptor->Address32.ResourceLength + StringLength);
 
                     strcpy ((char *)
-                        &Descriptor->Das.OptionalFields[OptionIndex],
+                        &OptionalFields[OptionIndex],
                         InitializerOp->Asl.Value.String);
 
                     /* ResourceSourceIndex must also be valid */
@@ -777,9 +779,8 @@ RsDoDwordSpaceDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Das.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Das.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS32) +
+                            OptionIndex + StringLength;
     return (Rnode);
 }
 
@@ -803,32 +804,28 @@ RsDoExtendedIoDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
-    UINT32                  OptionIndex = 0;
+    UINT16                  StringLength = 0;
+//    UINT32                  OptionIndex = 0;
     UINT32                  i;
 
 
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_EXTENDED_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Eas.DescriptorType  = ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE;
-    Descriptor->Eas.ResourceType    = ACPI_RESOURCE_TYPE_IO_RANGE;
-    Descriptor->Eas.RevisionID      = ASL_EXTENDED_ADDRESS_DESC_REVISION;
+    Descriptor->ExtAddress64.DescriptorType  = ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64;
+    Descriptor->ExtAddress64.ResourceType    = ACPI_ADDRESS_TYPE_IO_RANGE;
+    Descriptor->ExtAddress64.RevisionID      = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
 
-    /*
-     * Initial descriptor length -- may be enlarged if there are
-     * optional fields present
-     */
-    Descriptor->Eas.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Eas.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Eas.ResourceType));
+    Descriptor->ExtAddress64.ResourceLength  = (UINT16) 
+        (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -838,77 +835,77 @@ RsDoExtendedIoDescriptor (
         {
         case 0: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 0, 1);
             break;
 
         case 1: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Flags), 2);
             break;
 
         case 2: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Flags), 3);
             break;
 
         case 3: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Flags), 1);
             break;
 
         case 4: /* Range Type */
 
-            RsSetFlagBits (&Descriptor->Eas.SpecificFlags, InitializerOp, 0, 3);
+            RsSetFlagBits (&Descriptor->ExtAddress64.SpecificFlags, InitializerOp, 0, 3);
             RsCreateBitField (InitializerOp, ASL_RESNAME_RANGETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.SpecificFlags), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 0);
             break;
 
         case 5: /* Address Granularity */
 
-            Descriptor->Eas.Granularity = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Granularity));
            break;
 
         case 6: /* Address Min */
 
-            Descriptor->Eas.AddressMin = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Minimum));
             break;
 
         case 7: /* Address Max */
 
-            Descriptor->Eas.AddressMax = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Maximum));
             break;
 
         case 8: /* Translation Offset */
 
-            Descriptor->Eas.TranslationOffset = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.TranslationOffset = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TranslationOffset));
             break;
 
         case 9: /* Address Length */
 
-            Descriptor->Eas.AddressLength = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.AddressLength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.AddressLength));
             break;
 
         case 10: /* Type-Specific Attributes */
 
-            Descriptor->Eas.TypeSpecificAttributes = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.TypeSpecificAttributes = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TYPESPECIFICATTRIBUTES,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.TypeSpecificAttributes));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecificAttributes));
             break;
 
         case 11: /* ResourceTag */
@@ -918,16 +915,16 @@ RsDoExtendedIoDescriptor (
 
         case 12: /* Type */
 
-            RsSetFlagBits (&Descriptor->Eas.SpecificFlags, InitializerOp, 4, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.SpecificFlags, InitializerOp, 4, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.SpecificFlags), 4);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 4);
             break;
 
         case 13: /* Translation Type */
 
-            RsSetFlagBits (&Descriptor->Eas.SpecificFlags, InitializerOp, 5, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.SpecificFlags, InitializerOp, 5, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TRANSTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.SpecificFlags), 5);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 5);
             break;
 
         default:
@@ -939,9 +936,7 @@ RsDoExtendedIoDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Eas.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Eas.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + StringLength;
     return (Rnode);
 }
 
@@ -965,32 +960,27 @@ RsDoExtendedMemoryDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
-    UINT32                  OptionIndex = 0;
+    UINT16                  StringLength = 0;
     UINT32                  i;
 
 
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_EXTENDED_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Eas.DescriptorType  = ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE;
-    Descriptor->Eas.ResourceType    = ACPI_RESOURCE_TYPE_MEMORY_RANGE;
-    Descriptor->Eas.RevisionID      = ASL_EXTENDED_ADDRESS_DESC_REVISION;
+    Descriptor->ExtAddress64.DescriptorType  = ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64;
+    Descriptor->ExtAddress64.ResourceType    = ACPI_ADDRESS_TYPE_MEMORY_RANGE;
+    Descriptor->ExtAddress64.RevisionID      = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
 
-    /*
-     * Initial descriptor length -- may be enlarged if there are
-     * optional fields present
-     */
-    Descriptor->Eas.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Eas.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Eas.ResourceType));
+    Descriptor->ExtAddress64.ResourceLength  = (UINT16) 
+        (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -1000,84 +990,84 @@ RsDoExtendedMemoryDescriptor (
         {
         case 0: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 0, 1);
             break;
 
         case 1: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Flags), 1);
             break;
 
         case 2: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Flags), 2);
             break;
 
         case 3: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Flags), 3);
             break;
 
         case 4: /* Memory Type */
 
-            RsSetFlagBits (&Descriptor->Eas.SpecificFlags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.SpecificFlags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MEMTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.SpecificFlags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 1);
             break;
 
         case 5: /* Read/Write Type */
 
-            RsSetFlagBits (&Descriptor->Eas.SpecificFlags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->ExtAddress64.SpecificFlags, InitializerOp, 0, 1);
             RsCreateBitField (InitializerOp, ASL_RESNAME_READWRITETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.SpecificFlags), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 0);
             break;
 
         case 6: /* Address Granularity */
 
-            Descriptor->Eas.Granularity = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Granularity));
             break;
 
         case 7: /* Min Address */
 
-            Descriptor->Eas.AddressMin = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Minimum));
             break;
 
         case 8: /* Max Address */
 
-            Descriptor->Eas.AddressMax = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Maximum));
             break;
 
         case 9: /* Translation Offset */
 
-            Descriptor->Eas.TranslationOffset = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.TranslationOffset = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Eas.AddressLength = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.AddressLength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.AddressLength));
             break;
 
         case 11: /* Type-Specific Attributes */
 
-            Descriptor->Eas.TypeSpecificAttributes = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.TypeSpecificAttributes = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TYPESPECIFICATTRIBUTES,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.TypeSpecificAttributes));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecificAttributes));
             break;
 
         case 12: /* ResourceTag */
@@ -1088,16 +1078,16 @@ RsDoExtendedMemoryDescriptor (
 
         case 13: /* Address Range */
 
-            RsSetFlagBits (&Descriptor->Eas.SpecificFlags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.SpecificFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MEMATTRIBUTES,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.SpecificFlags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 3);
             break;
 
         case 14: /* Type */
 
-            RsSetFlagBits (&Descriptor->Eas.SpecificFlags, InitializerOp, 5, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.SpecificFlags, InitializerOp, 5, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.SpecificFlags), 5);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.SpecificFlags), 5);
             break;
 
         default:
@@ -1109,9 +1099,7 @@ RsDoExtendedMemoryDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Eas.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Eas.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + StringLength;
     return (Rnode);
 }
 
@@ -1135,31 +1123,26 @@ RsDoExtendedSpaceDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
-    UINT32                  OptionIndex = 0;
+    UINT16                  StringLength = 0;
     UINT32                  i;
 
 
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_EXTENDED_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Eas.DescriptorType  = ACPI_RDESC_TYPE_EXTENDED_ADDRESS_SPACE;
-    Descriptor->Eas.RevisionID      = ASL_EXTENDED_ADDRESS_DESC_REVISION;
+    Descriptor->ExtAddress64.DescriptorType  = ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64;
+    Descriptor->ExtAddress64.RevisionID      = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
 
-    /*
-     * Initial descriptor length -- may be enlarged if there are
-     * optional fields present
-     */
-    Descriptor->Eas.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Eas.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Eas.ResourceType));
+    Descriptor->ExtAddress64.ResourceLength  = (UINT16) 
+        (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -1169,82 +1152,82 @@ RsDoExtendedSpaceDescriptor (
         {
         case 0: /* Resource Type */
 
-            Descriptor->Eas.ResourceType =
+            Descriptor->ExtAddress64.ResourceType =
                 (UINT8) InitializerOp->Asl.Value.Integer;
             break;
 
         case 1: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 0, 1);
             break;
 
         case 2: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Flags), 1);
             break;
 
         case 3: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Flags), 2);
             break;
 
         case 4: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Eas.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->ExtAddress64.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Flags), 3);
             break;
 
         case 5: /* Type-Specific flags */
 
-            Descriptor->Eas.SpecificFlags =
+            Descriptor->ExtAddress64.SpecificFlags =
                 (UINT8) InitializerOp->Asl.Value.Integer;
             break;
 
         case 6: /* Address Granularity */
 
-            Descriptor->Eas.Granularity = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Granularity));
             break;
 
         case 7: /* Min Address */
 
-            Descriptor->Eas.AddressMin = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Minimum));
             break;
 
         case 8: /* Max Address */
 
-            Descriptor->Eas.AddressMax = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.Maximum));
             break;
 
         case 9: /* Translation Offset */
 
-            Descriptor->Eas.TranslationOffset = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.TranslationOffset = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Eas.AddressLength = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.AddressLength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.AddressLength));
             break;
 
         case 11: /* Type-Specific Attributes */
 
-            Descriptor->Eas.TypeSpecificAttributes = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.TypeSpecificAttributes = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TYPESPECIFICATTRIBUTES,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Eas.TypeSpecificAttributes));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecificAttributes));
             break;
 
         case 12: /* ResourceTag */
@@ -1261,9 +1244,7 @@ RsDoExtendedSpaceDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Eas.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Eas.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) + StringLength;
     return (Rnode);
 }
 
@@ -1287,10 +1268,11 @@ RsDoQwordIoDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
+    UINT8                   *OptionalFields;
+    UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
@@ -1299,20 +1281,21 @@ RsDoQwordIoDescriptor (
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_QWORD_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_ADDRESS64) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Qas.DescriptorType  = ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE;
-    Descriptor->Qas.ResourceType    = ACPI_RESOURCE_TYPE_IO_RANGE;
+    Descriptor->Address64.DescriptorType  = ACPI_RESOURCE_NAME_ADDRESS64;
+    Descriptor->Address64.ResourceType    = ACPI_ADDRESS_TYPE_IO_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Qas.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Qas.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Qas.ResourceType));
+    OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS64);
+    Descriptor->Address64.ResourceLength = (UINT16) 
+        (sizeof (AML_RESOURCE_ADDRESS64) - 
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -1322,80 +1305,79 @@ RsDoQwordIoDescriptor (
         {
         case 0: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 0, 1);
             break;
 
         case 1: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Flags), 2);
             break;
 
         case 2: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Flags), 3);
             break;
 
         case 3: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Flags), 1);
             break;
 
         case 4: /* Range Type */
 
-            RsSetFlagBits (&Descriptor->Qas.SpecificFlags, InitializerOp, 0, 3);
+            RsSetFlagBits (&Descriptor->Address64.SpecificFlags, InitializerOp, 0, 3);
             RsCreateBitField (InitializerOp, ASL_RESNAME_RANGETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.SpecificFlags), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.SpecificFlags), 0);
             break;
 
         case 5: /* Address Granularity */
 
-            Descriptor->Qas.Granularity = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Granularity));
            break;
 
         case 6: /* Address Min */
 
-            Descriptor->Qas.AddressMin = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Minimum));
             break;
 
         case 7: /* Address Max */
 
-            Descriptor->Qas.AddressMax = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Maximum));
             break;
 
         case 8: /* Translation Offset */
 
-            Descriptor->Qas.TranslationOffset = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.TranslationOffset = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.TranslationOffset));
             break;
 
         case 9: /* Address Length */
 
-            Descriptor->Qas.AddressLength = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.AddressLength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.AddressLength));
             break;
 
         case 10: /* ResSourceIndex [Optional Field - BYTE] */
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                Descriptor->Qas.OptionalFields[0] =
-                    (UINT8) InitializerOp->Asl.Value.Integer;
+                OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
-                Descriptor->Qas.Length++;
+                Descriptor->Address64.ResourceLength++;
                 ResSourceIndex = TRUE;
             }
             break;
@@ -1407,11 +1389,11 @@ RsDoQwordIoDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Qas.Length =
-                        (UINT16) (Descriptor->Qas.Length + StringLength);
+                    Descriptor->Address64.ResourceLength = (UINT16) 
+                        (Descriptor->Address64.ResourceLength + StringLength);
 
                     strcpy ((char *)
-                        &Descriptor->Qas.OptionalFields[OptionIndex],
+                        &OptionalFields[OptionIndex],
                         InitializerOp->Asl.Value.String);
 
                     /* ResourceSourceIndex must also be valid */
@@ -1442,16 +1424,16 @@ RsDoQwordIoDescriptor (
 
         case 13: /* Type */
 
-            RsSetFlagBits (&Descriptor->Qas.SpecificFlags, InitializerOp, 4, 0);
+            RsSetFlagBits (&Descriptor->Address64.SpecificFlags, InitializerOp, 4, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.SpecificFlags), 4);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.SpecificFlags), 4);
             break;
 
         case 14: /* Translation Type */
 
-            RsSetFlagBits (&Descriptor->Qas.SpecificFlags, InitializerOp, 5, 0);
+            RsSetFlagBits (&Descriptor->Address64.SpecificFlags, InitializerOp, 5, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TRANSTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.SpecificFlags), 5);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.SpecificFlags), 5);
             break;
 
         default:
@@ -1463,9 +1445,8 @@ RsDoQwordIoDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Qas.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Qas.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS64) +
+                            OptionIndex + StringLength;
     return (Rnode);
 }
 
@@ -1489,10 +1470,11 @@ RsDoQwordMemoryDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
+    UINT8                   *OptionalFields;
+    UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
@@ -1501,20 +1483,21 @@ RsDoQwordMemoryDescriptor (
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_QWORD_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_ADDRESS64) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Qas.DescriptorType  = ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE;
-    Descriptor->Qas.ResourceType    = ACPI_RESOURCE_TYPE_MEMORY_RANGE;
+    Descriptor->Address64.DescriptorType  = ACPI_RESOURCE_NAME_ADDRESS64;
+    Descriptor->Address64.ResourceType    = ACPI_ADDRESS_TYPE_MEMORY_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Qas.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Qas.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Qas.ResourceType));
+    OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS64);
+    Descriptor->Address64.ResourceLength = (UINT16) 
+        (sizeof (AML_RESOURCE_ADDRESS64) - 
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -1524,87 +1507,86 @@ RsDoQwordMemoryDescriptor (
         {
         case 0: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 0, 1);
             break;
 
         case 1: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Flags), 1);
             break;
 
         case 2: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Flags), 2);
             break;
 
         case 3: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Flags), 3);
             break;
 
         case 4: /* Memory Type */
 
-            RsSetFlagBits (&Descriptor->Qas.SpecificFlags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address64.SpecificFlags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MEMTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.SpecificFlags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.SpecificFlags), 1);
             break;
 
         case 5: /* Read/Write Type */
 
-            RsSetFlagBits (&Descriptor->Qas.SpecificFlags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address64.SpecificFlags, InitializerOp, 0, 1);
             RsCreateBitField (InitializerOp, ASL_RESNAME_READWRITETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.SpecificFlags), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.SpecificFlags), 0);
             break;
 
         case 6: /* Address Granularity */
 
-            Descriptor->Qas.Granularity = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Granularity));
             break;
 
         case 7: /* Min Address */
 
-            Descriptor->Qas.AddressMin = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Minimum));
             break;
 
         case 8: /* Max Address */
 
-            Descriptor->Qas.AddressMax = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Maximum));
             break;
 
         case 9: /* Translation Offset */
 
-            Descriptor->Qas.TranslationOffset = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.TranslationOffset = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Qas.AddressLength = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.AddressLength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.AddressLength));
             break;
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                Descriptor->Qas.OptionalFields[0] =
-                    (UINT8) InitializerOp->Asl.Value.Integer;
+                OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
-                Descriptor->Qas.Length++;
+                Descriptor->Address64.ResourceLength++;
                 ResSourceIndex = TRUE;
             }
             break;
@@ -1616,11 +1598,11 @@ RsDoQwordMemoryDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Qas.Length =
-                        (UINT16) (Descriptor->Qas.Length + StringLength);
+                    Descriptor->Address64.ResourceLength = (UINT16) 
+                        (Descriptor->Address64.ResourceLength + StringLength);
 
                     strcpy ((char *)
-                        &Descriptor->Qas.OptionalFields[OptionIndex],
+                        &OptionalFields[OptionIndex],
                         InitializerOp->Asl.Value.String);
 
                     /* ResourceSourceIndex must also be valid */
@@ -1652,16 +1634,16 @@ RsDoQwordMemoryDescriptor (
 
         case 14: /* Address Range */
 
-            RsSetFlagBits (&Descriptor->Qas.SpecificFlags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address64.SpecificFlags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MEMATTRIBUTES,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.SpecificFlags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.SpecificFlags), 3);
             break;
 
         case 15: /* Type */
 
-            RsSetFlagBits (&Descriptor->Qas.SpecificFlags, InitializerOp, 5, 0);
+            RsSetFlagBits (&Descriptor->Address64.SpecificFlags, InitializerOp, 5, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.SpecificFlags), 5);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.SpecificFlags), 5);
             break;
 
         default:
@@ -1673,9 +1655,8 @@ RsDoQwordMemoryDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Qas.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Qas.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS64) +
+                            OptionIndex + StringLength;
     return (Rnode);
 }
 
@@ -1699,10 +1680,11 @@ RsDoQwordSpaceDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
+    UINT8                   *OptionalFields;
+    UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
@@ -1711,19 +1693,20 @@ RsDoQwordSpaceDescriptor (
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_QWORD_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_ADDRESS64) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Qas.DescriptorType  = ACPI_RDESC_TYPE_QWORD_ADDRESS_SPACE;
+    Descriptor->Address64.DescriptorType  = ACPI_RESOURCE_NAME_ADDRESS32;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Qas.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Qas.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Qas.ResourceType));
+    OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS64);
+    Descriptor->Address64.ResourceLength = (UINT16) 
+        (sizeof (AML_RESOURCE_ADDRESS64) - 
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -1733,85 +1716,84 @@ RsDoQwordSpaceDescriptor (
         {
         case 0: /* Resource Type */
 
-            Descriptor->Qas.ResourceType =
+            Descriptor->Address64.ResourceType =
                 (UINT8) InitializerOp->Asl.Value.Integer;
             break;
 
         case 1: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 0, 1);
             break;
 
         case 2: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Flags), 1);
             break;
 
         case 3: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Flags), 2);
             break;
 
         case 4: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Qas.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address64.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Flags), 3);
             break;
 
         case 5: /* Type-Specific flags */
 
-            Descriptor->Qas.SpecificFlags =
+            Descriptor->Address64.SpecificFlags =
                 (UINT8) InitializerOp->Asl.Value.Integer;
             break;
 
         case 6: /* Address Granularity */
 
-            Descriptor->Qas.Granularity = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Granularity = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Granularity));
             break;
 
         case 7: /* Min Address */
 
-            Descriptor->Qas.AddressMin = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Minimum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Minimum));
             break;
 
         case 8: /* Max Address */
 
-            Descriptor->Qas.AddressMax = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.Maximum = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.Maximum));
             break;
 
         case 9: /* Translation Offset */
 
-            Descriptor->Qas.TranslationOffset = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.TranslationOffset = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Qas.AddressLength = InitializerOp->Asl.Value.Integer;
+            Descriptor->Address64.AddressLength = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Qas.AddressLength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address64.AddressLength));
             break;
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                Descriptor->Qas.OptionalFields[0] =
-                    (UINT8) InitializerOp->Asl.Value.Integer;
+                OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
-                Descriptor->Qas.Length++;
+                Descriptor->Address64.ResourceLength++;
                 ResSourceIndex = TRUE;
             }
             break;
@@ -1823,11 +1805,11 @@ RsDoQwordSpaceDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Qas.Length =
-                        (UINT16) (Descriptor->Qas.Length + StringLength);
+                    Descriptor->Address64.ResourceLength = (UINT16) 
+                        (Descriptor->Address64.ResourceLength + StringLength);
 
                     strcpy ((char *)
-                        &Descriptor->Qas.OptionalFields[OptionIndex],
+                        &OptionalFields[OptionIndex],
                         InitializerOp->Asl.Value.String);
 
                     /* ResourceSourceIndex must also be valid */
@@ -1865,9 +1847,8 @@ RsDoQwordSpaceDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Qas.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Qas.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS64) +
+                            OptionIndex + StringLength;
     return (Rnode);
 }
 
@@ -1891,10 +1872,11 @@ RsDoWordIoDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
+    UINT8                   *OptionalFields;
+    UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
@@ -1903,20 +1885,21 @@ RsDoWordIoDescriptor (
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_WORD_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_ADDRESS16) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Was.DescriptorType  = ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE;
-    Descriptor->Was.ResourceType    = ACPI_RESOURCE_TYPE_IO_RANGE;
+    Descriptor->Address16.DescriptorType  = ACPI_RESOURCE_NAME_ADDRESS16;
+    Descriptor->Address16.ResourceType    = ACPI_ADDRESS_TYPE_IO_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Was.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Was.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Was.ResourceType));
+    OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS16);
+    Descriptor->Address16.ResourceLength = (UINT16) 
+        (sizeof (AML_RESOURCE_ADDRESS16) - 
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -1926,80 +1909,79 @@ RsDoWordIoDescriptor (
         {
         case 0: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 0, 1);
             break;
 
         case 1: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Flags), 2);
             break;
 
         case 2: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Flags), 3);
             break;
 
         case 3: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Flags), 1);
             break;
 
         case 4: /* Range Type */
 
-            RsSetFlagBits (&Descriptor->Was.SpecificFlags, InitializerOp, 0, 3);
+            RsSetFlagBits (&Descriptor->Address16.SpecificFlags, InitializerOp, 0, 3);
             RsCreateBitField (InitializerOp, ASL_RESNAME_RANGETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.SpecificFlags), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.SpecificFlags), 0);
             break;
 
         case 5: /* Address Granularity */
 
-            Descriptor->Was.Granularity = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Granularity = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Granularity));
             break;
 
         case 6: /* Address Min */
 
-            Descriptor->Was.AddressMin = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Minimum = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Minimum));
             break;
 
         case 7: /* Address Max */
 
-            Descriptor->Was.AddressMax = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.Maximum = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Maximum));
             break;
 
         case 8: /* Translation Offset */
 
-            Descriptor->Was.TranslationOffset = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.TranslationOffset = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.TranslationOffset));
             break;
 
         case 9: /* Address Length */
 
-            Descriptor->Was.AddressLength = (UINT16) InitializerOp->Asl.Value.Integer;
+            Descriptor->Address16.AddressLength = (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                 CurrentByteOffset + ASL_RESDESC_OFFSET (Was.AddressLength));
+                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.AddressLength));
             break;
 
         case 10: /* ResSourceIndex [Optional Field - BYTE] */
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                Descriptor->Was.OptionalFields[0] =
-                    (UINT8) InitializerOp->Asl.Value.Integer;
+                OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
-                Descriptor->Was.Length++;
+                Descriptor->Address16.ResourceLength++;
                 ResSourceIndex = TRUE;
             }
             break;
@@ -2011,11 +1993,11 @@ RsDoWordIoDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Was.Length =
-                        (UINT16) (Descriptor->Was.Length +StringLength);
+                    Descriptor->Address16.ResourceLength = (UINT16) 
+                        (Descriptor->Address16.ResourceLength + StringLength);
 
                     strcpy ((char *)
-                        &Descriptor->Was.OptionalFields[OptionIndex],
+                        &OptionalFields[OptionIndex],
                         InitializerOp->Asl.Value.String);
 
                     /* ResourceSourceIndex must also be valid */
@@ -2046,16 +2028,16 @@ RsDoWordIoDescriptor (
 
         case 13: /* Type */
 
-            RsSetFlagBits (&Descriptor->Was.SpecificFlags, InitializerOp, 4, 0);
+            RsSetFlagBits (&Descriptor->Address16.SpecificFlags, InitializerOp, 4, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.SpecificFlags), 4);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.SpecificFlags), 4);
             break;
 
         case 14: /* Translation Type */
 
-            RsSetFlagBits (&Descriptor->Was.SpecificFlags, InitializerOp, 5, 0);
+            RsSetFlagBits (&Descriptor->Address16.SpecificFlags, InitializerOp, 5, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_TRANSTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.SpecificFlags), 5);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.SpecificFlags), 5);
             break;
 
         default:
@@ -2067,9 +2049,8 @@ RsDoWordIoDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Was.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Was.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
+                            OptionIndex + StringLength;
     return (Rnode);
 }
 
@@ -2093,10 +2074,11 @@ RsDoWordBusNumberDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
+    UINT8                   *OptionalFields;
+    UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
@@ -2105,20 +2087,21 @@ RsDoWordBusNumberDescriptor (
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_WORD_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_ADDRESS16) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Was.DescriptorType  = ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE;
-    Descriptor->Was.ResourceType    = ACPI_RESOURCE_TYPE_BUS_NUMBER_RANGE;
+    Descriptor->Address16.DescriptorType  = ACPI_RESOURCE_NAME_ADDRESS16;
+    Descriptor->Address16.ResourceType    = ACPI_ADDRESS_TYPE_BUS_NUMBER_RANGE;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Was.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Was.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Was.ResourceType));
+    OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS16);
+    Descriptor->Address16.ResourceLength = (UINT16) 
+        (sizeof (AML_RESOURCE_ADDRESS16) - 
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -2128,78 +2111,77 @@ RsDoWordBusNumberDescriptor (
         {
         case 0: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 0, 1);
             break;
 
         case 1: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Flags), 2);
             break;
 
         case 2: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Flags), 3);
             break;
 
         case 3: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Flags), 1);
             break;
 
         case 4: /* Address Granularity */
 
-            Descriptor->Was.Granularity =
+            Descriptor->Address16.Granularity =
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Granularity));
             break;
 
         case 5: /* Min Address */
 
-            Descriptor->Was.AddressMin =
+            Descriptor->Address16.Minimum =
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Minimum));
             break;
 
         case 6: /* Max Address */
 
-            Descriptor->Was.AddressMax =
+            Descriptor->Address16.Maximum =
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Maximum));
             break;
 
         case 7: /* Translation Offset */
 
-            Descriptor->Was.TranslationOffset =
+            Descriptor->Address16.TranslationOffset =
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.TranslationOffset));
             break;
 
         case 8: /* Address Length */
 
-            Descriptor->Was.AddressLength =
+            Descriptor->Address16.AddressLength =
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                 CurrentByteOffset + ASL_RESDESC_OFFSET (Was.AddressLength));
+                 CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.AddressLength));
             break;
 
         case 9: /* ResSourceIndex [Optional Field - BYTE] */
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                Descriptor->Was.OptionalFields[0] =
-                    (UINT8) InitializerOp->Asl.Value.Integer;
+                OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
-                Descriptor->Was.Length++;
+                Descriptor->Address16.ResourceLength++;
                 ResSourceIndex = TRUE;
             }
             break;
@@ -2211,11 +2193,11 @@ RsDoWordBusNumberDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Was.Length =
-                        (UINT16) (Descriptor->Was.Length + StringLength);
+                    Descriptor->Address16.ResourceLength = (UINT16) 
+                        (Descriptor->Address16.ResourceLength + StringLength);
 
                     strcpy ((char *)
-                        &Descriptor->Was.OptionalFields[OptionIndex],
+                        &OptionalFields[OptionIndex],
                         InitializerOp->Asl.Value.String);
 
                     /* ResourceSourceIndex must also be valid */
@@ -2253,9 +2235,8 @@ RsDoWordBusNumberDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Was.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Was.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
+                            OptionIndex + StringLength;
     return (Rnode);
 }
 
@@ -2279,10 +2260,11 @@ RsDoWordSpaceDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
+    UINT8                   *OptionalFields;
+    UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
     BOOLEAN                 ResSourceIndex = FALSE;
@@ -2291,19 +2273,20 @@ RsDoWordSpaceDescriptor (
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
 
-    Rnode = RsAllocateResourceNode (sizeof (ASL_WORD_ADDRESS_DESC) +
-                                    StringLength);
+    Rnode = RsAllocateResourceNode (
+                sizeof (AML_RESOURCE_ADDRESS16) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Was.DescriptorType  = ACPI_RDESC_TYPE_WORD_ADDRESS_SPACE;
+    Descriptor->Address16.DescriptorType  = ACPI_RESOURCE_NAME_ADDRESS16;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Was.Length =
-        (UINT16) (ASL_RESDESC_OFFSET (Was.OptionalFields[0]) -
-                  ASL_RESDESC_OFFSET (Was.ResourceType));
+    OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS16);
+    Descriptor->Address16.ResourceLength = (UINT16) 
+        (sizeof (AML_RESOURCE_ADDRESS16) - 
+         sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
 
@@ -2313,90 +2296,89 @@ RsDoWordSpaceDescriptor (
         {
         case 0: /* Resource Type */
 
-            Descriptor->Was.ResourceType =
+            Descriptor->Address16.ResourceType =
                 (UINT8) InitializerOp->Asl.Value.Integer;
             break;
 
         case 1: /* Resource Usage */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 0, 1);
             break;
 
         case 2: /* DecodeType */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Flags), 1);
             break;
 
         case 3: /* MinType */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MINTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Flags), 2);
             break;
 
         case 4: /* MaxType */
 
-            RsSetFlagBits (&Descriptor->Was.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->Address16.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_MAXTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Flags), 3);
             break;
 
         case 5: /* Type-Specific flags */
 
-            Descriptor->Was.SpecificFlags =
+            Descriptor->Address16.SpecificFlags =
                 (UINT8) InitializerOp->Asl.Value.Integer;
             break;
 
         case 6: /* Address Granularity */
 
-            Descriptor->Was.Granularity =
+            Descriptor->Address16.Granularity =
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_GRANULARITY,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.Granularity));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Granularity));
             break;
 
         case 7: /* Min Address */
 
-            Descriptor->Was.AddressMin =
+            Descriptor->Address16.Minimum =
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MINADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.AddressMin));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Minimum));
             break;
 
         case 8: /* Max Address */
 
-            Descriptor->Was.AddressMax =
+            Descriptor->Address16.Maximum =
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_MAXADDR,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.AddressMax));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.Maximum));
             break;
 
         case 9: /* Translation Offset */
 
-            Descriptor->Was.TranslationOffset =
+            Descriptor->Address16.TranslationOffset =
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TRANSLATION,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.TranslationOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.TranslationOffset));
             break;
 
         case 10: /* Address Length */
 
-            Descriptor->Was.AddressLength =
+            Descriptor->Address16.AddressLength =
                 (UINT16) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_LENGTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Was.AddressLength));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Address16.AddressLength));
             break;
 
         case 11: /* ResSourceIndex [Optional Field - BYTE] */
 
             if (InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
             {
-                Descriptor->Was.OptionalFields[0] =
-                    (UINT8) InitializerOp->Asl.Value.Integer;
+                OptionalFields[0] = (UINT8) InitializerOp->Asl.Value.Integer;
                 OptionIndex++;
-                Descriptor->Was.Length++;
+                Descriptor->Address16.ResourceLength++;
                 ResSourceIndex = TRUE;
             }
             break;
@@ -2408,11 +2390,11 @@ RsDoWordSpaceDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Was.Length =
-                        (UINT16) (Descriptor->Was.Length + StringLength);
+                    Descriptor->Address16.ResourceLength = (UINT16) 
+                        (Descriptor->Address16.ResourceLength + StringLength);
 
                     strcpy ((char *)
-                        &Descriptor->Was.OptionalFields[OptionIndex],
+                        &OptionalFields[OptionIndex],
                         InitializerOp->Asl.Value.String);
 
                     /* ResourceSourceIndex must also be valid */
@@ -2450,9 +2432,8 @@ RsDoWordSpaceDescriptor (
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Was.OptionalFields[0]) -
-                           ASL_RESDESC_OFFSET (Was.DescriptorType))
-                           + OptionIndex + StringLength;
+    Rnode->BufferLength = sizeof (AML_RESOURCE_ADDRESS16) +
+                            OptionIndex + StringLength;
     return (Rnode);
 }
 
@@ -2476,11 +2457,11 @@ RsDoInterruptDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
-    ASL_RESOURCE_DESC       *Rover = NULL;
+    AML_RESOURCE            *Descriptor;
+    AML_RESOURCE            *Rover = NULL;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
-    UINT32                  StringLength = 0;
+    UINT16                  StringLength = 0;
     UINT32                  OptionIndex = 0;
     UINT32                  i;
     BOOLEAN                 HasResSourceIndex = FALSE;
@@ -2511,20 +2492,21 @@ RsDoInterruptDescriptor (
     }
 
     InitializerOp = Op->Asl.Child;
-    Rnode = RsAllocateResourceNode (sizeof (ASL_EXTENDED_XRUPT_DESC) +
-                                    OptionIndex + StringLength);
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_EXTENDED_IRQ) + 
+                1 + OptionIndex + StringLength);
+
     Descriptor = Rnode->Buffer;
-    Descriptor->Exx.DescriptorType  = ACPI_RDESC_TYPE_EXTENDED_XRUPT;
+    Descriptor->ExtendedIrq.DescriptorType  = ACPI_RESOURCE_NAME_EXTENDED_IRQ;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
      * optional fields present
      */
-    Descriptor->Exx.Length          = 2;  /* Flags and table length byte */
-    Descriptor->Exx.TableLength     = 0;
+    Descriptor->ExtendedIrq.ResourceLength  = 2;  /* Flags and table length byte */
+    Descriptor->ExtendedIrq.TableLength     = 0;
 
-    Rover = ACPI_CAST_PTR (ASL_RESOURCE_DESC,
-                (&(Descriptor->Exx.InterruptNumber[0])));
+    Rover = ACPI_CAST_PTR (AML_RESOURCE,
+                (&(Descriptor->ExtendedIrq.InterruptNumber[0])));
 
     /* Process all child initialization nodes */
 
@@ -2534,28 +2516,28 @@ RsDoInterruptDescriptor (
         {
         case 0: /* Resource Usage (Default: consumer (1) */
 
-            RsSetFlagBits (&Descriptor->Exx.Flags, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->ExtendedIrq.Flags, InitializerOp, 0, 1);
             break;
 
         case 1: /* Interrupt Type (or Mode - edge/level) */
 
-            RsSetFlagBits (&Descriptor->Exx.Flags, InitializerOp, 1, 0);
+            RsSetFlagBits (&Descriptor->ExtendedIrq.Flags, InitializerOp, 1, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_INTERRUPTTYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Exx.Flags), 1);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtendedIrq.Flags), 1);
             break;
 
         case 2: /* Interrupt Level (or Polarity - Active high/low) */
 
-            RsSetFlagBits (&Descriptor->Exx.Flags, InitializerOp, 2, 0);
+            RsSetFlagBits (&Descriptor->ExtendedIrq.Flags, InitializerOp, 2, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_INTERRUPTLEVEL,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Exx.Flags), 2);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtendedIrq.Flags), 2);
             break;
 
         case 3: /* Share Type - Default: exclusive (0) */
 
-            RsSetFlagBits (&Descriptor->Exx.Flags, InitializerOp, 3, 0);
+            RsSetFlagBits (&Descriptor->ExtendedIrq.Flags, InitializerOp, 3, 0);
             RsCreateBitField (InitializerOp, ASL_RESNAME_INTERRUPTSHARE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Exx.Flags), 3);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtendedIrq.Flags), 3);
             break;
 
         case 4: /* ResSourceIndex [Optional Field - BYTE] */
@@ -2609,7 +2591,7 @@ RsDoInterruptDescriptor (
 
             /* Maximum 255 interrupts allowed for this descriptor */
 
-            if (Descriptor->Exx.TableLength == 255)
+            if (Descriptor->ExtendedIrq.TableLength == 255)
             {
                 AslError (ASL_ERROR, ASL_MSG_EX_INTERRUPT_LIST,
                     InitializerOp, NULL);
@@ -2627,9 +2609,9 @@ RsDoInterruptDescriptor (
             /* Save the integer and move pointer to the next one */
 
             Rover->U32Item = (UINT32) InitializerOp->Asl.Value.Integer;
-            Rover = ACPI_PTR_ADD (ASL_RESOURCE_DESC, &(Rover->U32Item), 4);
-            Descriptor->Exx.TableLength++;
-            Descriptor->Exx.Length += 4;
+            Rover = ACPI_PTR_ADD (AML_RESOURCE, &(Rover->U32Item), 4);
+            Descriptor->ExtendedIrq.TableLength++;
+            Descriptor->ExtendedIrq.ResourceLength += 4;
 
             /* Case 7: First interrupt number in list */
 
@@ -2643,7 +2625,7 @@ RsDoInterruptDescriptor (
 
                 RsCreateByteField (InitializerOp, ASL_RESNAME_INTERRUPT,
                     CurrentByteOffset +
-                    ASL_RESDESC_OFFSET (Exx.InterruptNumber[0]));
+                    ASL_RESDESC_OFFSET (ExtendedIrq.InterruptNumber[0]));
             }
         }
 
@@ -2656,8 +2638,8 @@ RsDoInterruptDescriptor (
     if (HasResSourceIndex)
     {
         Rover->U8Item = ResSourceIndex;
-        Rover = ACPI_PTR_ADD (ASL_RESOURCE_DESC, &(Rover->U8Item), 1);
-        Descriptor->Exx.Length += 1;
+        Rover = ACPI_PTR_ADD (AML_RESOURCE, &(Rover->U8Item), 1);
+        Descriptor->ExtendedIrq.ResourceLength += 1;
     }
 
     /* Add optional ResSource string if present */
@@ -2667,13 +2649,14 @@ RsDoInterruptDescriptor (
 
         strcpy ((char *) Rover, (char *) ResSourceString);
         Rover = ACPI_PTR_ADD (
-                    ASL_RESOURCE_DESC, &(Rover->U8Item), StringLength);
-        Descriptor->Exx.Length =
-            (UINT16) (Descriptor->Exx.Length + StringLength);
+                    AML_RESOURCE, &(Rover->U8Item), StringLength);
+
+        Descriptor->ExtendedIrq.ResourceLength = (UINT16) 
+            (Descriptor->ExtendedIrq.ResourceLength + StringLength);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (Exx.InterruptNumber[0]) -
-                           ASL_RESDESC_OFFSET (Exx.DescriptorType))
+    Rnode->BufferLength = (ASL_RESDESC_OFFSET (ExtendedIrq.InterruptNumber[0]) -
+                           ASL_RESDESC_OFFSET (ExtendedIrq.DescriptorType))
                            + OptionIndex + StringLength;
     return (Rnode);
 }
@@ -2698,9 +2681,10 @@ RsDoVendorLargeDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
+    UINT8                   *VendorData;
     UINT32                  i;
 
 
@@ -2716,18 +2700,21 @@ RsDoVendorLargeDescriptor (
 
     InitializerOp = Op->Asl.Child;
     InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
-    Rnode = RsAllocateResourceNode (sizeof (ASL_LARGE_VENDOR_DESC) + (i - 1));
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_VENDOR_LARGE) + i);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Lgv.DescriptorType  = ACPI_RDESC_TYPE_LARGE_VENDOR;
-    Descriptor->Lgv.Length = (UINT16) i;
+    Descriptor->VendorLarge.DescriptorType  = ACPI_RESOURCE_NAME_VENDOR_LARGE;
+    Descriptor->VendorLarge.ResourceLength = (UINT16) i;
+
+    /* Point to end-of-descriptor for vendor data */
+
+    VendorData = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_LARGE_HEADER);
 
     /* Process all child initialization nodes */
 
     for (i = 0; InitializerOp; i++)
     {
-        Descriptor->Lgv.VendorDefined[i] =
-            (UINT8) InitializerOp->Asl.Value.Integer;
+        VendorData[i] = (UINT8) InitializerOp->Asl.Value.Integer;
 
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
@@ -2755,18 +2742,18 @@ RsDoGeneralRegisterDescriptor (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  CurrentByteOffset)
 {
-    ASL_RESOURCE_DESC       *Descriptor;
+    AML_RESOURCE            *Descriptor;
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
     UINT32                  i;
 
 
     InitializerOp = Op->Asl.Child;
-    Rnode = RsAllocateResourceNode (sizeof (ASL_GENERIC_REGISTER_DESC));
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_GENERIC_REGISTER));
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Grg.DescriptorType  = ACPI_RDESC_TYPE_GENERIC_REGISTER;
-    Descriptor->Grg.Length          = 12;
+    Descriptor->GenericReg.DescriptorType = ACPI_RESOURCE_NAME_GENERIC_REGISTER;
+    Descriptor->GenericReg.ResourceLength = 12;
 
     /* Process all child initialization nodes */
 
@@ -2776,37 +2763,37 @@ RsDoGeneralRegisterDescriptor (
         {
         case 0: /* Address space */
 
-            Descriptor->Grg.AddressSpaceId = (UINT8) InitializerOp->Asl.Value.Integer;
+            Descriptor->GenericReg.AddressSpaceId = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_ADDRESSSPACE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Grg.AddressSpaceId));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GenericReg.AddressSpaceId));
            break;
 
         case 1: /* Register Bit Width */
 
-            Descriptor->Grg.BitWidth = (UINT8) InitializerOp->Asl.Value.Integer;
+            Descriptor->GenericReg.BitWidth = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_REGISTERBITWIDTH,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Grg.BitWidth));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GenericReg.BitWidth));
             break;
 
         case 2: /* Register Bit Offset */
 
-            Descriptor->Grg.BitOffset = (UINT8) InitializerOp->Asl.Value.Integer;
+            Descriptor->GenericReg.BitOffset = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_REGISTERBITOFFSET,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Grg.BitOffset));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GenericReg.BitOffset));
             break;
 
         case 3: /* Register Address */
 
-            Descriptor->Grg.Address = InitializerOp->Asl.Value.Integer;
+            Descriptor->GenericReg.Address = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_ADDRESS,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Grg.Address));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GenericReg.Address));
             break;
 
         case 4: /* Access Size (ACPI 3.0) */
 
-            Descriptor->Grg.AccessSize = (UINT8) InitializerOp->Asl.Value.Integer;
+            Descriptor->GenericReg.AccessSize = (UINT8) InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_ACCESSSIZE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Grg.AccessSize));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (GenericReg.AccessSize));
             break;
 
         default:

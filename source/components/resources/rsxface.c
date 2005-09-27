@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  ******************************************************************************/
 
@@ -134,9 +134,9 @@
     ACPI_COPY_FIELD(Out, In, MaxAddressFixed);           \
     ACPI_COPY_FIELD(Out, In, Attribute);                 \
     ACPI_COPY_FIELD(Out, In, Granularity);               \
-    ACPI_COPY_FIELD(Out, In, MinAddressRange);           \
-    ACPI_COPY_FIELD(Out, In, MaxAddressRange);           \
-    ACPI_COPY_FIELD(Out, In, AddressTranslationOffset);  \
+    ACPI_COPY_FIELD(Out, In, Minimum);                   \
+    ACPI_COPY_FIELD(Out, In, Maximum);                   \
+    ACPI_COPY_FIELD(Out, In, TranslationOffset);         \
     ACPI_COPY_FIELD(Out, In, AddressLength);             \
     ACPI_COPY_FIELD(Out, In, ResourceSource);
 
@@ -366,7 +366,7 @@ AcpiWalkResources (
 
     for (;;)
     {
-        if (!Resource || Resource->Type == ACPI_RSTYPE_END_TAG)
+        if (!Resource || Resource->Type == ACPI_RESOURCE_TYPE_END_TAG)
         {
             break;
         }
@@ -489,19 +489,19 @@ AcpiResourceToAddress64 (
 
     switch (Resource->Type)
     {
-    case ACPI_RSTYPE_ADDRESS16:
+    case ACPI_RESOURCE_TYPE_ADDRESS16:
 
         Address16 = (ACPI_RESOURCE_ADDRESS16 *) &Resource->Data;
         ACPI_COPY_ADDRESS (Out, Address16);
         break;
 
-    case ACPI_RSTYPE_ADDRESS32:
+    case ACPI_RESOURCE_TYPE_ADDRESS32:
 
         Address32 = (ACPI_RESOURCE_ADDRESS32 *) &Resource->Data;
         ACPI_COPY_ADDRESS (Out, Address32);
         break;
 
-    case ACPI_RSTYPE_ADDRESS64:
+    case ACPI_RESOURCE_TYPE_ADDRESS64:
 
         /* Simple copy for 64 bit source */
 

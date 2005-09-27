@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  ******************************************************************************/
 
@@ -1010,7 +1010,7 @@ AcpiUtGetResourceEndTag (
     while (Buffer < EndBuffer)
     {
         BufferByte = *Buffer;
-        if (BufferByte & ACPI_RDESC_TYPE_LARGE)
+        if (BufferByte & ACPI_RESOURCE_NAME_LARGE)
         {
             /* Large Descriptor - Length is next 2 bytes */
 
@@ -1020,7 +1020,7 @@ AcpiUtGetResourceEndTag (
         {
             /* Small Descriptor.  End Tag will be found here */
 
-            if ((BufferByte & ACPI_RDESC_SMALL_MASK) == ACPI_RDESC_TYPE_END_TAG)
+            if ((BufferByte & ACPI_RESOURCE_NAME_SMALL_MASK) == ACPI_RESOURCE_NAME_END_TAG)
             {
                 /* Found the end tag descriptor, all done. */
 
