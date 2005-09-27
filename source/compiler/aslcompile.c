@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -577,7 +577,7 @@ CmDoCompile (
     /* Semantic error checking part two - typing of method returns */
 
     Event = UtBeginEvent ("Determine object types returned by methods");
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Method typing \n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Method typing\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE,
         AnMethodTypingWalkBegin,
         AnMethodTypingWalkEnd, NULL);
@@ -586,7 +586,7 @@ CmDoCompile (
     /* Semantic error checking part three - operand type checking */
 
     Event = UtBeginEvent ("Analyze AML operand types");
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Operand type checking \n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - Operand type checking\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE,
         AnOperandTypecheckWalkBegin,
         AnOperandTypecheckWalkEnd, &AnalysisWalkInfo);
@@ -595,7 +595,7 @@ CmDoCompile (
     /* Semantic error checking part four - other miscellaneous checks */
 
     Event = UtBeginEvent ("Miscellaneous analysis");
-    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - miscellaneous \n\n");
+    DbgPrint (ASL_DEBUG_OUTPUT, "\nSemantic analysis - miscellaneous\n\n");
     TrWalkParseTree (RootNode, ASL_WALK_VISIT_TWICE,
         AnOtherSemanticAnalysisWalkBegin,
         AnOtherSemanticAnalysisWalkEnd, &AnalysisWalkInfo);

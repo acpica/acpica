@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  ******************************************************************************/
 
@@ -1043,7 +1043,7 @@ AcpiDbDisplayObjects (
 
     AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
     AcpiOsPrintf (
-        "Objects of type [%s] defined in the current ACPI Namespace: \n",
+        "Objects of type [%s] defined in the current ACPI Namespace:\n",
         AcpiUtGetTypeName (Type));
 
     AcpiDbSetOutputDestination (ACPI_DB_REDIRECTABLE_OUTPUT);

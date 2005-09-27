@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.191 $
+ *              $Revision: 1.192 $
  *
  ******************************************************************************/
 
@@ -601,7 +601,7 @@ AcpiNsLookup (
             Path++;
 
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
-                "Multi Pathname (%d Segments, Flags=%X) \n",
+                "Multi Pathname (%d Segments, Flags=%X)\n",
                 NumSegments, Flags));
             break;
 
