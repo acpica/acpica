@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  ******************************************************************************/
 
@@ -148,6 +148,7 @@ AcpiRsGetIrqResource (
     UINT16                  Temp16 = 0;
     UINT32                  InterruptCount = 0;
     UINT32                  i;
+    UINT32                  ResourceLength;
 
 
     ACPI_FUNCTION_TRACE ("RsGetIrqResource");
@@ -170,16 +171,16 @@ AcpiRsGetIrqResource (
 
     /* Zero interrupts is valid */
 
-    Resource->Length = 0;
+    ResourceLength = 0;
     Resource->Data.Irq.InterruptCount = InterruptCount;
     if (InterruptCount > 0)
     {
         /* Calculate the structure size based upon the number of interrupts */
 
-        Resource->Length = (UINT32) (InterruptCount - 1) * 4;
+        ResourceLength = (UINT32) (InterruptCount - 1) * 4;
     }
 
-    /* Get Flags Byte 3 if it is used */
+    /* Get Flags (Byte 3) if it is used */
 
     if (AmlResourceLength == 3)
     {
@@ -216,8 +217,8 @@ AcpiRsGetIrqResource (
     else
     {
         /*
-         * Assume Edge Sensitive, Active High, Non-Sharable
-         * per ACPI Specification
+         * Default configuration: assume Edge Sensitive, Active High,
+         * Non-Sharable as per the ACPI Specification
          */
         Resource->Data.Irq.Triggering = ACPI_EDGE_SENSITIVE;
         Resource->Data.Irq.Polarity = ACPI_ACTIVE_HIGH;
@@ -227,7 +228,7 @@ AcpiRsGetIrqResource (
     /* Complete the resource header */
 
     Resource->Type = ACPI_RESOURCE_TYPE_IRQ;
-    Resource->Length += ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_IRQ);
+    Resource->Length = ResourceLength + ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_IRQ);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -307,8 +308,7 @@ AcpiRsSetIrqResource (
 
     /* Complete the AML descriptor header */
 
-    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_IRQ,
-        DescriptorLength, Aml);
+    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_IRQ, DescriptorLength, Aml);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -347,7 +347,7 @@ AcpiRsGetExtIrqResource (
     Temp8 = Aml->ExtendedIrq.Flags;
     Resource->Data.ExtendedIrq.ProducerConsumer =  Temp8 & 0x01;
     Resource->Data.ExtendedIrq.Polarity         = (Temp8 >> 2) & 0x01;
-    Resource->Data.ExtendedIrq.Sharable  = (Temp8 >> 3) & 0x01;
+    Resource->Data.ExtendedIrq.Sharable         = (Temp8 >> 3) & 0x01;
 
     /*
      * Check for Interrupt Mode
@@ -382,16 +382,16 @@ AcpiRsGetExtIrqResource (
     /* Get every IRQ in the table, each is 32 bits */
 
     AcpiRsMoveData (Resource->Data.ExtendedIrq.Interrupts,
-            Aml->ExtendedIrq.InterruptNumber,
-            (UINT16) Temp8, ACPI_MOVE_TYPE_32_TO_32);
+        Aml->ExtendedIrq.InterruptNumber,
+        (UINT16) Temp8, ACPI_MOVE_TYPE_32_TO_32);
 
     /* Get the optional ResourceSource (index and string) */
 
-    Resource->Length += AcpiRsGetResourceSource (AmlResourceLength,
-                            (ACPI_SIZE) Resource->Length +
-                                sizeof (AML_RESOURCE_EXTENDED_IRQ),
-                            &Resource->Data.ExtendedIrq.ResourceSource,
-                            Aml, OutResourceString);
+    Resource->Length += 
+        AcpiRsGetResourceSource (AmlResourceLength,
+            (ACPI_SIZE) Resource->Length + sizeof (AML_RESOURCE_EXTENDED_IRQ),
+            &Resource->Data.ExtendedIrq.ResourceSource,
+            Aml, OutResourceString);
 
     /* Complete the resource header */
 
@@ -442,7 +442,7 @@ AcpiRsSetExtIrqResource (
      *
      * - Edge/Level are defined opposite in the table vs the headers
      */
-    if (ACPI_EDGE_SENSITIVE == Resource->Data.ExtendedIrq.Triggering)
+    if (Resource->Data.ExtendedIrq.Triggering == ACPI_EDGE_SENSITIVE)
     {
         Aml->ExtendedIrq.Flags |= 0x02;
     }
@@ -458,9 +458,9 @@ AcpiRsSetExtIrqResource (
     /* Set each interrupt value */
 
     AcpiRsMoveData (Aml->ExtendedIrq.InterruptNumber,
-            Resource->Data.ExtendedIrq.Interrupts,
-            (UINT16) Resource->Data.ExtendedIrq.InterruptCount,
-            ACPI_MOVE_TYPE_32_TO_32);
+        Resource->Data.ExtendedIrq.Interrupts,
+        (UINT16) Resource->Data.ExtendedIrq.InterruptCount,
+        ACPI_MOVE_TYPE_32_TO_32);
 
     /* Resource Source Index and Resource Source are optional */
 

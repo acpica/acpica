@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -264,7 +264,7 @@ AcpiRsStreamOptionLength (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetByteStreamLength
+ * FUNCTION:    AcpiRsGetAmlLength
  *
  * PARAMETERS:  Resource            - Pointer to the resource linked list
  *              SizeNeeded          - Where the required size is returned
@@ -278,15 +278,15 @@ AcpiRsStreamOptionLength (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetByteStreamLength (
+AcpiRsGetAmlLength (
     ACPI_RESOURCE           *Resource,
     ACPI_SIZE               *SizeNeeded)
 {
-    ACPI_SIZE               ByteStreamSizeNeeded = 0;
+    ACPI_SIZE               AmlSizeNeeded = 0;
     ACPI_SIZE               SegmentSize;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetByteStreamLength");
+    ACPI_FUNCTION_TRACE ("RsGetAmlLength");
 
 
     /* Traverse entire list of internal resource descriptors */
@@ -335,7 +335,7 @@ AcpiRsGetByteStreamLength (
              * End Tag:
              * We are done -- return the accumulated total size.
              */
-            *SizeNeeded = ByteStreamSizeNeeded + SegmentSize;
+            *SizeNeeded = AmlSizeNeeded + SegmentSize;
 
             /* Normal exit */
 
@@ -394,7 +394,7 @@ AcpiRsGetByteStreamLength (
 
         /* Update the total */
 
-        ByteStreamSizeNeeded += SegmentSize;
+        AmlSizeNeeded += SegmentSize;
 
         /* Point to the next object */
 
@@ -412,9 +412,9 @@ AcpiRsGetByteStreamLength (
  *
  * FUNCTION:    AcpiRsGetListLength
  *
- * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource byte stream
- *              ByteStreamBufferLength  - Size of ByteStreamBuffer
- *              SizeNeeded              - Where the size needed is returned
+ * PARAMETERS:  AmlBuffer           - Pointer to the resource byte stream
+ *              AmlBufferLength     - Size of AmlBuffer
+ *              SizeNeeded          - Where the size needed is returned
  *
  * RETURN:      Status
  *
@@ -426,8 +426,8 @@ AcpiRsGetByteStreamLength (
 
 ACPI_STATUS
 AcpiRsGetListLength (
-    UINT8                   *ByteStreamBuffer,
-    UINT32                  ByteStreamBufferLength,
+    UINT8                   *AmlBuffer,
+    UINT32                  AmlBufferLength,
     ACPI_SIZE               *SizeNeeded)
 {
     UINT8                   *Buffer;
@@ -444,11 +444,11 @@ AcpiRsGetListLength (
     ACPI_FUNCTION_TRACE ("RsGetListLength");
 
 
-    while (BytesParsed < ByteStreamBufferLength)
+    while (BytesParsed < AmlBufferLength)
     {
         /* The next byte in the stream is the resource descriptor type */
 
-        ResourceType = AcpiRsGetResourceType (*ByteStreamBuffer);
+        ResourceType = AcpiRsGetResourceType (*AmlBuffer);
 
         /* Get the base stream size and structure sizes for the descriptor */
 
@@ -461,7 +461,7 @@ AcpiRsGetListLength (
         /* Get the Length field from the input resource descriptor */
 
         ResourceLength = AcpiRsGetResourceLength (
-                            ACPI_CAST_PTR (AML_RESOURCE, ByteStreamBuffer));
+                            ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
 
         /* Augment the size for descriptors with optional fields */
 
@@ -473,7 +473,7 @@ AcpiRsGetListLength (
              * Small resource descriptors
              */
             HeaderLength = sizeof (AML_RESOURCE_SMALL_HEADER);
-            Buffer = ByteStreamBuffer + HeaderLength;
+            Buffer = AmlBuffer + HeaderLength;
 
             switch (ResourceType)
             {
@@ -513,7 +513,7 @@ AcpiRsGetListLength (
                  * End Tag:
                  * Terminate the loop now
                  */
-                ByteStreamBufferLength = BytesParsed;
+                AmlBufferLength = BytesParsed;
                 break;
 
 
@@ -527,7 +527,7 @@ AcpiRsGetListLength (
              * Large resource descriptors
              */
             HeaderLength = sizeof (AML_RESOURCE_LARGE_HEADER);
-            Buffer = ByteStreamBuffer + HeaderLength;
+            Buffer = AmlBuffer + HeaderLength;
 
             switch (ResourceType)
             {
@@ -602,7 +602,7 @@ AcpiRsGetListLength (
          */
         Temp16 = (UINT16) (HeaderLength + ResourceLength);
         BytesParsed += Temp16;
-        ByteStreamBuffer += Temp16;
+        AmlBuffer += Temp16;
     }
 
     /* This is the data the caller needs */

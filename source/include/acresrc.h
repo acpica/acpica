@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.45 $
+ *       $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -197,11 +197,11 @@ AcpiRsSetSrsMethodData (
 
 ACPI_STATUS
 AcpiRsCreateResourceList (
-    ACPI_OPERAND_OBJECT     *ByteStreamBuffer,
+    ACPI_OPERAND_OBJECT     *AmlBuffer,
     ACPI_BUFFER             *OutputBuffer);
 
 ACPI_STATUS
-AcpiRsCreateByteStream (
+AcpiRsCreateAmlResources (
     ACPI_RESOURCE           *LinkedListBuffer,
     ACPI_BUFFER             *OutputBuffer);
 
@@ -227,19 +227,19 @@ AcpiRsDumpIrqList (
  * rscalc
  */
 ACPI_STATUS
-AcpiRsGetByteStreamStart (
-    UINT8                   *ByteStreamBuffer,
-    UINT8                   **ByteStreamStart,
+AcpiRsGetAmlStart (
+    UINT8                   *AmlBuffer,
+    UINT8                   **AmlStart,
     UINT32                  *Size);
 
 ACPI_STATUS
 AcpiRsGetListLength (
-    UINT8                   *ByteStreamBuffer,
-    UINT32                  ByteStreamBufferLength,
+    UINT8                   *AmlBuffer,
+    UINT32                  AmlBufferLength,
     ACPI_SIZE               *SizeNeeded);
 
 ACPI_STATUS
-AcpiRsGetByteStreamLength (
+AcpiRsGetAmlLength (
     ACPI_RESOURCE           *LinkedListBuffer,
     ACPI_SIZE               *SizeNeeded);
 
@@ -249,15 +249,15 @@ AcpiRsGetPciRoutingTableLength (
     ACPI_SIZE               *BufferSizeNeeded);
 
 ACPI_STATUS
-AcpiRsByteStreamToList (
-    UINT8                   *ByteStreamBuffer,
-    UINT32                  ByteStreamBufferLength,
+AcpiRsConvertAmlToResources (
+    UINT8                   *AmlBuffer,
+    UINT32                  AmlBufferLength,
     UINT8                   *OutputBuffer);
 
 ACPI_STATUS
-AcpiRsListToByteStream (
+AcpiRsConvertResourcesToAml (
     ACPI_RESOURCE           *Resource,
-    ACPI_SIZE               ByteStreamSizeNeeded,
+    ACPI_SIZE               AmlSizeNeeded,
     UINT8                   *OutputBuffer);
 
 

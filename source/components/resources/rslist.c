@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  ******************************************************************************/
 
@@ -138,7 +138,7 @@ AcpiRsValidateResourceLength (
  *
  * FUNCTION:    AcpiRsValidateResourceLength
  *
- * PARAMETERS:  ResourceType        - Byte 0 of a resource descriptor
+ * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *
  * RETURN:      Status - AE_OK if the resource length appears valid
  *
@@ -253,12 +253,12 @@ AcpiRsGetResourceHandler (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsByteStreamToList
+ * FUNCTION:    AcpiRsConvertAmlToResources
  *
- * PARAMETERS:  ByteStreamBuffer        - Pointer to the resource byte stream
- *              ByteStreamBufferLength  - Length of ByteStreamBuffer
- *              OutputBuffer            - Pointer to the buffer that will
- *                                        contain the output structures
+ * PARAMETERS:  AmlBuffer           - Pointer to the resource byte stream
+ *              AmlBufferLength     - Length of AmlBuffer
+ *              OutputBuffer        - Pointer to the buffer that will
+ *                                    contain the output structures
  *
  * RETURN:      Status
  *
@@ -268,9 +268,9 @@ AcpiRsGetResourceHandler (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsByteStreamToList (
-    UINT8                   *ByteStreamBuffer,
-    UINT32                  ByteStreamBufferLength,
+AcpiRsConvertAmlToResources (
+    UINT8                   *AmlBuffer,
+    UINT32                  AmlBufferLength,
     UINT8                   *OutputBuffer)
 {
     UINT8                   *Buffer = OutputBuffer;
@@ -282,16 +282,16 @@ AcpiRsByteStreamToList (
     ACPI_GET_RESOURCE_HANDLER  Handler;
 
 
-    ACPI_FUNCTION_TRACE ("RsByteStreamToList");
+    ACPI_FUNCTION_TRACE ("RsConvertAmlToResources");
 
 
     /* Loop until end-of-buffer or an EndTag is found */
 
-    while (BytesParsed < ByteStreamBufferLength)
+    while (BytesParsed < AmlBufferLength)
     {
         /* Get the handler associated with this Descriptor Type */
 
-        Handler = AcpiRsGetResourceHandler (*ByteStreamBuffer);
+        Handler = AcpiRsGetResourceHandler (*AmlBuffer);
         if (!Handler)
         {
             /* No handler indicates invalid resource type */
@@ -300,17 +300,17 @@ AcpiRsByteStreamToList (
         }
 
         ResourceLength = AcpiRsGetResourceLength (
-            ACPI_CAST_PTR (AML_RESOURCE, ByteStreamBuffer));
+            ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
 
         DescriptorLength = AcpiRsGetDescriptorLength (
-            ACPI_CAST_PTR (AML_RESOURCE, ByteStreamBuffer));
+            ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
 
         /*
          * Perform limited validation of the resource length, based upon
          * what we know about the resource type
          */
         Status = AcpiRsValidateResourceLength (
-                    ACPI_CAST_PTR (AML_RESOURCE, ByteStreamBuffer));
+                    ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -318,10 +318,13 @@ AcpiRsByteStreamToList (
 
         /* Convert a byte stream resource to local resource struct */
 
-        Status = Handler (ACPI_CAST_PTR (AML_RESOURCE, ByteStreamBuffer),
+        Status = Handler (ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer),
                     ResourceLength, ACPI_CAST_PTR (ACPI_RESOURCE, Buffer));
         if (ACPI_FAILURE (Status))
         {
+            ACPI_REPORT_ERROR ((
+                "Could not convert AML resource (type %X) to resource, %s\n",
+                *AmlBuffer, AcpiFormatException (Status)));
             return_ACPI_STATUS (Status);
         }
 
@@ -332,7 +335,7 @@ AcpiRsByteStreamToList (
 
         /* Normal exit on completion of an EndTag resource descriptor */
 
-        if (AcpiRsGetResourceType (*ByteStreamBuffer) == ACPI_RESOURCE_NAME_END_TAG)
+        if (AcpiRsGetResourceType (*AmlBuffer) == ACPI_RESOURCE_NAME_END_TAG)
         {
             return_ACPI_STATUS (AE_OK);
         }
@@ -340,7 +343,7 @@ AcpiRsByteStreamToList (
         /* Update counter and point to the next input resource */
 
         BytesParsed += DescriptorLength;
-        ByteStreamBuffer += DescriptorLength;
+        AmlBuffer += DescriptorLength;
 
         /* Point to the next structure in the output buffer */
 
@@ -355,17 +358,15 @@ AcpiRsByteStreamToList (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsListToByteStream
+ * FUNCTION:    AcpiRsConvertResourcesToAml
  *
- * PARAMETERS:  Resource                - Pointer to the resource linked list
- *              ByteSteamSizeNeeded     - Calculated size of the byte stream
- *                                        needed from calling
- *                                        AcpiRsGetByteStreamLength()
- *                                        The size of the OutputBuffer is
- *                                        guaranteed to be >=
- *                                        ByteStreamSizeNeeded
- *              OutputBuffer            - Pointer to the buffer that will
- *                                        contain the byte stream
+ * PARAMETERS:  Resource            - Pointer to the resource linked list
+ *              AmlSizeNeeded       - Calculated size of the byte stream
+ *                                    needed from calling AcpiRsGetAmlLength()
+ *                                    The size of the OutputBuffer is
+ *                                    guaranteed to be >= AmlSizeNeeded
+ *              OutputBuffer        - Pointer to the buffer that will
+ *                                    contain the byte stream
  *
  * RETURN:      Status
  *
@@ -375,16 +376,16 @@ AcpiRsByteStreamToList (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsListToByteStream (
+AcpiRsConvertResourcesToAml (
     ACPI_RESOURCE           *Resource,
-    ACPI_SIZE               ByteStreamSizeNeeded,
+    ACPI_SIZE               AmlSizeNeeded,
     UINT8                   *OutputBuffer)
 {
     UINT8                   *AmlBuffer = OutputBuffer;
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("RsListToByteStream");
+    ACPI_FUNCTION_TRACE ("RsConvertResourcesToAml");
 
 
     /* Convert each resource descriptor in the list */
@@ -407,6 +408,8 @@ AcpiRsListToByteStream (
                     ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
         if (ACPI_FAILURE (Status))
         {
+            ACPI_REPORT_ERROR (("Could not convert resource (type %X) to AML, %s\n",
+                Resource->Type, AcpiFormatException (Status)));
             return_ACPI_STATUS (Status);
         }
 

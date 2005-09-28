@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsio - IO and DMA resource descriptors
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  ******************************************************************************/
 
@@ -214,8 +214,7 @@ AcpiRsSetIoResource (
 
     /* Complete the AML descriptor header */
 
-    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_IO,
-        sizeof (AML_RESOURCE_IO), Aml);
+    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_IO, sizeof (AML_RESOURCE_IO), Aml);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -418,8 +417,7 @@ AcpiRsSetDmaResource (
 
     /* Complete the AML descriptor header */
 
-    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_DMA,
-        sizeof (AML_RESOURCE_DMA), Aml);
+    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_DMA, sizeof (AML_RESOURCE_DMA), Aml);
     return_ACPI_STATUS (AE_OK);
 }
 

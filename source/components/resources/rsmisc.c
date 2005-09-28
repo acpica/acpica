@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -305,7 +305,7 @@ AcpiRsSetVendorResource (
 
 
     ResourceLength = Resource->Data.Vendor.ByteLength;
-    Source = Resource->Data.Vendor.ByteData;
+    Source = ACPI_CAST_PTR (UINT8, Resource->Data.Vendor.ByteData);
 
     /* Length determines if this is a large or small resource */
 

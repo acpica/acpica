@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  ******************************************************************************/
 
@@ -458,15 +458,16 @@ AcpiRsGetAddress16Resource (
 
     /* Get the optional ResourceSource (index and string) */
 
-    Resource->Length = AcpiRsGetResourceSource (AmlResourceLength,
-                            sizeof (AML_RESOURCE_ADDRESS16),
-                            &Resource->Data.Address16.ResourceSource,
-                            Aml, NULL);
+    Resource->Length = 
+        ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS16) +
+
+        AcpiRsGetResourceSource (AmlResourceLength,
+            sizeof (AML_RESOURCE_ADDRESS16),
+            &Resource->Data.Address16.ResourceSource, Aml, NULL);
 
     /* Complete the resource header */
 
     Resource->Type = ACPI_RESOURCE_TYPE_ADDRESS16;
-    Resource->Length += ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS16);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -519,8 +520,7 @@ AcpiRsSetAddress16Resource (
 
     /* Complete the AML descriptor header */
 
-    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_ADDRESS16,
-        DescriptorLength, Aml);
+    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_ADDRESS16, DescriptorLength, Aml);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -633,8 +633,7 @@ AcpiRsSetAddress32Resource (
 
     /* Complete the AML descriptor header */
 
-    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_ADDRESS32,
-        DescriptorLength, Aml);
+    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_ADDRESS32, DescriptorLength, Aml);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -684,14 +683,15 @@ AcpiRsGetAddress64Resource (
 
     /* Get the optional ResourceSource (index and string) */
 
-    Resource->Length = AcpiRsGetResourceSource (AmlResourceLength,
-                            sizeof (AML_RESOURCE_ADDRESS64),
-                            &Resource->Data.Address64.ResourceSource,
-                            Aml, NULL);
+    Resource->Length = 
+        ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS64) +
+
+        AcpiRsGetResourceSource (AmlResourceLength,
+            sizeof (AML_RESOURCE_ADDRESS64),
+            &Resource->Data.Address64.ResourceSource, Aml, NULL);
 
     /* Complete the resource header */
 
-    Resource->Length += ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS64);
     Resource->Type = ACPI_RESOURCE_TYPE_ADDRESS64;
     return_ACPI_STATUS (AE_OK);
 }
@@ -745,8 +745,7 @@ AcpiRsSetAddress64Resource (
 
     /* Complete the AML descriptor header */
 
-    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_ADDRESS64,
-        DescriptorLength, Aml);
+    AcpiRsSetResourceHeader (ACPI_RESOURCE_NAME_ADDRESS64, DescriptorLength, Aml);
     return_ACPI_STATUS (AE_OK);
 }
 
