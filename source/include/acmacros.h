@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.162 $
+ *       $Revision: 1.163 $
  *
  *****************************************************************************/
 
@@ -606,6 +606,9 @@
  * bad form, but having a separate exit macro is very ugly and difficult to maintain.
  * One of the FUNCTION_TRACE macros above must be used in conjunction with these macros
  * so that "_AcpiFunctionName" is defined.
+ *
+ * Note: the DO_WHILE0 macro is used to prevent some compilers from complaining
+ * about these constructs.
  */
 #ifdef ACPI_USE_DO_WHILE_0
 #define ACPI_DO_WHILE0(a)               do a while(0)
@@ -613,10 +616,56 @@
 #define ACPI_DO_WHILE0(a)               a
 #endif
 
-#define return_VOID                     ACPI_DO_WHILE0 ({AcpiUtExit(ACPI_DEBUG_PARAMETERS);return;})
-#define return_ACPI_STATUS(s)           ACPI_DO_WHILE0 ({AcpiUtStatusExit(ACPI_DEBUG_PARAMETERS,(s));return((s));})
-#define return_VALUE(s)                 ACPI_DO_WHILE0 ({AcpiUtValueExit(ACPI_DEBUG_PARAMETERS,(ACPI_INTEGER)(s));return((s));})
-#define return_PTR(s)                   ACPI_DO_WHILE0 ({AcpiUtPtrExit(ACPI_DEBUG_PARAMETERS,(UINT8 *)(s));return((s));})
+#define return_VOID                     ACPI_DO_WHILE0 ({ \
+                                            AcpiUtExit (ACPI_DEBUG_PARAMETERS); \
+                                            return;})
+/*
+ * There are two versions of most of the return macros. The default version is
+ * safer, since it avoids side-effects by guaranteeing that the argument will
+ * not be evaluated twice.
+ * 
+ * A less-safe version of the macros is provided for optional use if the
+ * compiler uses excessive CPU stack (for example, this may happen in the
+ * debug case if code optimzation is disabled.)
+ */
+#ifndef ACPI_SIMPLE_RETURN_MACROS
+
+#define return_ACPI_STATUS(s)           ACPI_DO_WHILE0 ({ \
+                                            register ACPI_STATUS _s = (s); \
+                                            AcpiUtStatusExit (ACPI_DEBUG_PARAMETERS, _s); \
+                                            return (_s); })
+#define return_PTR(s)                   ACPI_DO_WHILE0 ({ \
+                                            register void *_s = (void *) (s); \
+                                            AcpiUtPtrExit (ACPI_DEBUG_PARAMETERS, (UINT8 *) _s); \
+                                            return (_s); })
+#define return_VALUE(s)                 ACPI_DO_WHILE0 ({ \
+                                            register ACPI_INTEGER _s = (s); \
+                                            AcpiUtValueExit (ACPI_DEBUG_PARAMETERS, _s); \
+                                            return (_s); })
+#define return_UINT8(s)                 ACPI_DO_WHILE0 ({ \
+                                            register UINT8 _s = (UINT8) (s); \
+                                            AcpiUtValueExit (ACPI_DEBUG_PARAMETERS, _s); \
+                                            return (_s); })
+#define return_UINT32(s)                ACPI_DO_WHILE0 ({ \
+                                            register UINT32 _s = (UINT32) (s); \
+                                            AcpiUtValueExit (ACPI_DEBUG_PARAMETERS, _s); \
+                                            return (_s); })
+#else /* Use original less-safe macros */
+
+#define return_ACPI_STATUS(s)           ACPI_DO_WHILE0 ({ \
+                                            AcpiUtStatusExit (ACPI_DEBUG_PARAMETERS, (s)); \
+                                            return((s)); })
+#define return_PTR(s)                   ACPI_DO_WHILE0 ({ \
+                                            AcpiUtPtrExit (ACPI_DEBUG_PARAMETERS, (UINT8 *) (s)); \
+                                            return((s)); })
+#define return_VALUE(s)                 ACPI_DO_WHILE0 ({ \
+                                            AcpiUtValueExit (ACPI_DEBUG_PARAMETERS, (ACPI_INTEGER) (s)); \
+                                            return((s)); })
+#define return_UINT8(s)                 return_VALUE(s)
+#define return_UINT32(s)                return_VALUE(s)
+
+#endif /* ACPI_SIMPLE_RETURN_MACROS */
+
 
 /* Conditional execution */
 
@@ -698,6 +747,8 @@
 #define return_VOID                     return
 #define return_ACPI_STATUS(s)           return(s)
 #define return_VALUE(s)                 return(s)
+#define return_UINT8(s)                 return(s)
+#define return_UINT32(s)                return(s)
 #define return_PTR(s)                   return(s)
 
 #endif

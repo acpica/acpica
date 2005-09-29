@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.79 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,16 @@
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psargs")
 
+/* Local prototypes */
+
+static UINT32
+AcpiPsGetNextPackageLength (
+    ACPI_PARSE_STATE        *ParserState);
+
+static ACPI_PARSE_OBJECT *
+AcpiPsGetNextField (
+    ACPI_PARSE_STATE        *ParserState);
+
 
 /*******************************************************************************
  *
@@ -192,7 +202,7 @@ AcpiPsGetNextPackageLength (
         break;
     }
 
-    return_VALUE (Length);
+    return_UINT32 (Length);
 }
 
 
