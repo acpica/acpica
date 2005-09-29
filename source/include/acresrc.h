@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.46 $
+ *       $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,8 @@
 #ifndef __ACRESRC_H__
 #define __ACRESRC_H__
 
+/* Need the AML resource descriptor structs */
+
 #include "amlresrc.h"
 
 
@@ -226,12 +228,6 @@ AcpiRsDumpIrqList (
 /*
  * rscalc
  */
-ACPI_STATUS
-AcpiRsGetAmlStart (
-    UINT8                   *AmlBuffer,
-    UINT8                   **AmlStart,
-    UINT32                  *Size);
-
 ACPI_STATUS
 AcpiRsGetListLength (
     UINT8                   *AmlBuffer,
