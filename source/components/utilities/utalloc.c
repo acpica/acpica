@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.147 $
+ *              $Revision: 1.148 $
  *
  *****************************************************************************/
 
@@ -415,7 +415,7 @@ AcpiUtAllocate (
     if (!Size)
     {
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtAllocate: Attempt to allocate zero bytes\n"));
+                ("UtAllocate: Attempt to allocate zero bytes, allocating 1 byte\n"));
         Size = 1;
     }
 
@@ -467,8 +467,8 @@ AcpiUtCallocate (
     if (!Size)
     {
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtCallocate: Attempt to allocate zero bytes\n"));
-        return_PTR (NULL);
+                ("UtCallocate: Attempt to allocate zero bytes, allocating 1 byte\n"));
+        Size = 1;
     }
 
     Allocation = AcpiOsAllocate (Size);
