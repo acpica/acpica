@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.18 $
+ *       $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -127,7 +127,6 @@
 
 #define ACPI_MACHINE_WIDTH      32
 
-#define strupr                  _strupr
 #define isascii                 __isascii
 
 #define ACPI_USE_STANDARD_HEADERS
@@ -144,7 +143,7 @@
 
 #define ACPI_ASM_MACROS
 #ifdef ACPI_APPLICATION
-#define BREAKPOINT3 
+#define BREAKPOINT3
 #define ACPI_DISABLE_IRQS()
 #define ACPI_ENABLE_IRQS()
 #define ACPI_FLUSH_CPU_CACHE()
@@ -155,6 +154,9 @@
 #define ACPI_FLUSH_CPU_CACHE()  __asm {WBINVD}
 #endif
 
+#ifdef _DEBUG
+#define ACPI_SIMPLE_RETURN_MACROS
+#endif
 
 /*
  * For Acpi applications, we don't want to try to access the global lock
