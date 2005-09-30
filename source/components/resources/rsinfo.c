@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsinfo - Dispatch and Info tables
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  ******************************************************************************/
 
@@ -134,28 +134,6 @@
  */
 
 
-/* Macros used in the tables below */
-
-#define ACPI_LARGE_RESOURCE_LENGTHS(r) \
-    sizeof(AML_RESOURCE_##r) - sizeof(AML_RESOURCE_LARGE_HEADER),\
-    ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_##r)
-
-#define ACPI_SMALL_RESOURCE_LENGTHS(r) \
-    sizeof(AML_RESOURCE_##r) - sizeof(AML_RESOURCE_SMALL_HEADER),\
-    ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_##r)
-
-/* Small descriptors with no associated data (header only) */
-
-#define ACPI_SMALL_RESOURCE_LENGTHS2(r) \
-    sizeof(AML_RESOURCE_##r) - sizeof(AML_RESOURCE_SMALL_HEADER),\
-    ACPI_RESOURCE_LENGTH
-
-/* Redirect large/small Vendor resources to common internal format */
-
-#define ACPI_RESOURCE_VENDOR_SMALL  ACPI_RESOURCE_VENDOR
-#define ACPI_RESOURCE_VENDOR_LARGE  ACPI_RESOURCE_VENDOR
-
-
 /* Dispatch table for resource-to-AML (Set Resource) conversion functions */
 
 ACPI_SET_RESOURCE_HANDLER           AcpiGbl_SetResourceDispatch [] =
@@ -273,44 +251,49 @@ UINT8                               AcpiGbl_AmlResourceSizes [] =
 };
 
 
+/* Macros used in the tables below */
+
+#define ACPI_RLARGE(r)          sizeof (r) - sizeof (AML_RESOURCE_LARGE_HEADER)
+#define ACPI_RSMALL(r)          sizeof (r) - sizeof (AML_RESOURCE_SMALL_HEADER)
+
 /*
- * Base sizes of resource descriptors, both the actual AML stream length and
- * size of the internal struct representation.
+ * Base sizes of resource descriptors, both the AML stream resource length
+ * (minus size of header and length fields),and the size of the internal
+ * struct representation.
  */
 ACPI_RESOURCE_INFO                  AcpiGbl_SmResourceInfo [] =
 {
-    {0, 0, 0},                                             /* 0x00, Reserved */
-    {0, 0, 0},                                             /* 0x01, Reserved */
-    {0, 0, 0},                                             /* 0x02, Reserved */
-    {0, 0, 0},                                             /* 0x03, Reserved */
-    {2, ACPI_SMALL_RESOURCE_LENGTHS (IRQ)},                /* 0x04, ACPI_RESOURCE_NAME_IRQ */
-    {0, ACPI_SMALL_RESOURCE_LENGTHS (DMA)},                /* 0x05, ACPI_RESOURCE_NAME_DMA */
-    {2, ACPI_SMALL_RESOURCE_LENGTHS (START_DEPENDENT)},    /* 0x06, ACPI_RESOURCE_NAME_START_DEPENDENT */
-    {0, ACPI_SMALL_RESOURCE_LENGTHS2 (END_DEPENDENT)},     /* 0x07, ACPI_RESOURCE_NAME_END_DEPENDENT */
-    {0, ACPI_SMALL_RESOURCE_LENGTHS (IO)},                 /* 0x08, ACPI_RESOURCE_NAME_IO */
-    {0, ACPI_SMALL_RESOURCE_LENGTHS (FIXED_IO)},           /* 0x09, ACPI_RESOURCE_NAME_FIXED_IO */
-    {0, 0, 0},                                             /* 0x0A, Reserved */
-    {0, 0, 0},                                             /* 0x0B, Reserved */
-    {0, 0, 0},                                             /* 0x0C, Reserved */
-    {0, 0, 0},                                             /* 0x0D, Reserved */
-    {1, ACPI_SMALL_RESOURCE_LENGTHS (VENDOR_SMALL)},       /* 0x0E, ACPI_RESOURCE_NAME_VENDOR_SMALL */
-    {0, ACPI_SMALL_RESOURCE_LENGTHS2 (END_TAG)}            /* 0x0F, ACPI_RESOURCE_NAME_END_TAG */
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {2, ACPI_RSMALL (AML_RESOURCE_IRQ),                 ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_IRQ)},
+    {0, ACPI_RSMALL (AML_RESOURCE_DMA),                 ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_DMA)},
+    {2, ACPI_RSMALL (AML_RESOURCE_START_DEPENDENT),     ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_START_DEPENDENT)},
+    {0, ACPI_RSMALL (AML_RESOURCE_END_DEPENDENT),       ACPI_RESOURCE_LENGTH},
+    {0, ACPI_RSMALL (AML_RESOURCE_IO),                  ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_IO)},
+    {0, ACPI_RSMALL (AML_RESOURCE_FIXED_IO),            ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_FIXED_IO)},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 0},
+    {1, ACPI_RSMALL (AML_RESOURCE_VENDOR_SMALL),        ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_VENDOR)},
+    {0, ACPI_RSMALL (AML_RESOURCE_END_TAG),             ACPI_RESOURCE_LENGTH}
 };
 
 ACPI_RESOURCE_INFO                  AcpiGbl_LgResourceInfo [] =
 {
-    {0, 0, 0},                                             /* 0x00, Reserved */
-    {0, ACPI_LARGE_RESOURCE_LENGTHS (MEMORY24)},           /* 0x01, ACPI_RESOURCE_NAME_MEMORY24 */
-    {0, ACPI_LARGE_RESOURCE_LENGTHS (GENERIC_REGISTER)},   /* 0x02, ACPI_RESOURCE_NAME_GENERIC_REGISTER */
-    {0, 0, 0},                                             /* 0x03, Reserved */
-    {1, ACPI_LARGE_RESOURCE_LENGTHS (VENDOR_LARGE)},       /* 0x04, ACPI_RESOURCE_NAME_VENDOR_LARGE */
-    {0, ACPI_LARGE_RESOURCE_LENGTHS (MEMORY32)},           /* 0x05, ACPI_RESOURCE_NAME_MEMORY32 */
-    {0, ACPI_LARGE_RESOURCE_LENGTHS (FIXED_MEMORY32)},     /* 0x06, ACPI_RESOURCE_NAME_FIXED_MEMORY32 */
-    {1, ACPI_LARGE_RESOURCE_LENGTHS (ADDRESS32)},          /* 0x07, ACPI_RESOURCE_NAME_ADDRESS32 */
-    {1, ACPI_LARGE_RESOURCE_LENGTHS (ADDRESS16)},          /* 0x08, ACPI_RESOURCE_NAME_ADDRESS16 */
-    {1, ACPI_LARGE_RESOURCE_LENGTHS (EXTENDED_IRQ)},       /* 0x09, ACPI_RESOURCE_NAME_EXTENDED_IRQ */
-    {1, ACPI_LARGE_RESOURCE_LENGTHS (ADDRESS64)},          /* 0x0A, ACPI_RESOURCE_NAME_ADDRESS64 */
-    {0, ACPI_LARGE_RESOURCE_LENGTHS (EXTENDED_ADDRESS64)}  /* 0x0B, ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64 */
+    {0, 0, 0},
+    {0, ACPI_RLARGE (AML_RESOURCE_MEMORY24),            ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_MEMORY24)},
+    {0, ACPI_RLARGE (AML_RESOURCE_GENERIC_REGISTER),    ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_GENERIC_REGISTER)},
+    {0, 0, 0},
+    {1, ACPI_RLARGE (AML_RESOURCE_VENDOR_LARGE),        ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_VENDOR)},
+    {0, ACPI_RLARGE (AML_RESOURCE_MEMORY32),            ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_MEMORY32)},
+    {0, ACPI_RLARGE (AML_RESOURCE_FIXED_MEMORY32),      ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_FIXED_MEMORY32)},
+    {1, ACPI_RLARGE (AML_RESOURCE_ADDRESS32),           ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS32)},
+    {1, ACPI_RLARGE (AML_RESOURCE_ADDRESS16),           ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS16)},
+    {1, ACPI_RLARGE (AML_RESOURCE_EXTENDED_IRQ),        ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_EXTENDED_IRQ)},
+    {1, ACPI_RLARGE (AML_RESOURCE_ADDRESS64),           ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_ADDRESS64)},
+    {0, ACPI_RLARGE (AML_RESOURCE_EXTENDED_ADDRESS64),  ACPI_SIZEOF_RESOURCE (ACPI_RESOURCE_EXTENDED_ADDRESS64)}
 };
-
 
