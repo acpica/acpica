@@ -4,6 +4,7 @@
 c:\acpi\generate\lint\co-msc60.lnt
 //c:\acpi\generate\lint\lib-w32.lnt
 
+-dACPI_MACHINE_WIDTH=32
 -dWIN32=1
 -d_MSC_VER=1
 +fll            // enable long long

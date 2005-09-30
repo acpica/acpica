@@ -52,7 +52,7 @@
 -esym( 534, AcpiDmDumpName)                 // Return value not always used
 -esym( 534, AcpiDmCommaIfListMember)        // Return value not always used
 
-/* Symbol exceptions for iASL compiler */
+/* Symbol exceptions for generation of iASL compiler */
 
 -esym( 534, TrWalkParseTree)                // Return value not always used
 -esym( 534, AslCompilerparse)               // Return value not always used
@@ -61,6 +61,7 @@
 
 /* Global exceptions */
 
+-e716   // Allow while(1)
 -e717   // Allow do..while(0)
 -e801   // Allow judicious use of goto without incurring complaint
 -e818   // Don't make suggestions about const to avoid "const" pollution
@@ -68,3 +69,4 @@
 -e750   // Ignore non-referenced local macros (_MODULE_NAME, _COMPONENT, etc.)
 -e834   // - followed by + is "confusing" NOT.
 -e820   // Allow Boolean test of a parenthesized assignment
+-e778   // Allow constant expressions to evaluate to zero

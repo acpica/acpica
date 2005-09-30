@@ -6,6 +6,8 @@ c:\acpi\generate\lint\co.lnt
 
 /* IA-64 */
 
+-dACPI_MACHINE_WIDTH=64
+
 -e747	// Compiler supports parameter conversions
 -e46    // Compiler supports bitfields other than int
 -d_IA64
