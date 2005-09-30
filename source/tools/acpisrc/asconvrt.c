@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.51 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -490,14 +490,14 @@ AsReplaceString (
          * blocks of code while replacing
          */
 
-        SubString2 = strstr (SubBuffer, "/*!");
+        SubString2 = strstr (SubBuffer, AS_START_IGNORE);
 
         if ((SubString2) &&
             (SubString2 < SubString1))
         {
             /* Find end of the escape block starting at "Substring2" */
 
-            SubString2 = strstr (SubString2, "!*/");
+            SubString2 = strstr (SubString2, AS_STOP_IGNORE);
             if (!SubString2)
             {
                 /* Didn't find terminator */
@@ -670,9 +670,12 @@ AsBracesOnSameLine (
             BlockBegin = TRUE;
         }
 
-        /* Move every standalone brace up to the previous line */
-
-        if (*SubBuffer == '{')
+        /* 
+         * Move every standalone brace up to the previous line
+         * Check for digit will ignore initializer lists surrounded by braces.
+         * This will work until we we need more complex detection.
+         */
+        if ((*SubBuffer == '{') && !isdigit (SubBuffer[1]))
         {
             if (BlockBegin)
             {
@@ -1342,5 +1345,97 @@ Next:
         SubBuffer += KeywordLength;
     }
 }
+
+#ifdef ACPI_FUTURE_IMPLEMENTATION
+/******************************************************************************
+ *
+ * FUNCTION:    AsTrimComments
+ *
+ * DESCRIPTION: Finds 3-line comments with only a single line of text
+ *
+ ******************************************************************************/
+
+void
+AsTrimComments (
+    char                    *Buffer,
+    char                    *Filename)
+{
+    char                    *SubBuffer = Buffer;
+    char                    *Ptr1;
+    char                    *Ptr2;
+    UINT32                  LineCount;
+    UINT32                  ShortCommentCount = 0;
+
+
+    while (1)
+    {
+        /* Find comment open, within procedure level */
+
+        SubBuffer = strstr (SubBuffer, "    /*");
+        if (!SubBuffer)
+        {
+            goto Exit;
+        }
+
+        /* Find comment terminator */
+
+        Ptr1 = strstr (SubBuffer, "*/");
+        if (!Ptr1)
+        {
+            goto Exit;
+        }
+
+        /* Find next EOL (from original buffer) */
+
+        Ptr2 = strstr (SubBuffer, "\n");
+        if (!Ptr2)
+        {
+            goto Exit;
+        }
+
+        /* Ignore one-line comments */
+
+        if (Ptr1 < Ptr2)
+        {
+            /* Normal comment, ignore and continue; */
+
+            SubBuffer = Ptr2;
+            continue;
+        }
+
+        /* Examine multi-line comment */
+
+        LineCount = 1;
+        while (Ptr1 > Ptr2)
+        {
+            /* Find next EOL */
+
+            Ptr2++;
+            Ptr2 = strstr (Ptr2, "\n");
+            if (!Ptr2)
+            {
+                goto Exit;
+            }
+
+            LineCount++;
+        }
+
+        SubBuffer = Ptr1;
+
+        if (LineCount <= 3)
+        {
+            ShortCommentCount++;
+        }
+    }
+
+
+Exit:
+
+    if (ShortCommentCount)
+    {
+        AsPrint ("Short Comments found", ShortCommentCount, Filename);
+    }
+}
+#endif
 
 
