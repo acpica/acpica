@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -127,6 +127,14 @@
 
 /* Local Prototypes */
 
+static void
+AcpiPsStartTrace (
+    ACPI_PARAMETER_INFO     *Info);
+
+static void
+AcpiPsStopTrace (
+    ACPI_PARAMETER_INFO     *Info);
+
 static ACPI_STATUS
 AcpiPsExecutePass (
     ACPI_PARAMETER_INFO     *Info);
@@ -135,6 +143,163 @@ static void
 AcpiPsUpdateParameterList (
     ACPI_PARAMETER_INFO     *Info,
     UINT16                  Action);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDebugTrace  
+ *
+ * PARAMETERS:  MethodName      - Valid ACPI name string
+ *              DebugLevel      - Optional level mask. 0 to use default
+ *              DebugLayer      - Optional layer mask. 0 to use default
+ *              Flags           - bit 1: one shot(1) or persistent(0)
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: External interface to enable debug tracing during control
+ *              method execution
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDebugTrace (
+    char                    *Name,
+    UINT32                  DebugLevel,
+    UINT32                  DebugLayer,
+    UINT32                  Flags)
+{
+    ACPI_STATUS             Status;
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* TBDs: Validate name, allow full path or just nameseg */
+
+    AcpiGbl_TraceMethodName = *(UINT32 *) Name;
+    AcpiGbl_TraceFlags = Flags;
+
+    if (DebugLevel)
+    {
+        AcpiGbl_TraceDbgLevel = DebugLevel;
+    }
+    if (DebugLayer)
+    {
+        AcpiGbl_TraceDbgLayer = DebugLayer;
+    }
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsStartTrace
+ *
+ * PARAMETERS:  Info        - Method info struct
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Start control method execution trace
+ *
+ ******************************************************************************/
+
+static void
+AcpiPsStartTrace (
+    ACPI_PARAMETER_INFO     *Info)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    if ((!AcpiGbl_TraceMethodName) ||
+        (AcpiGbl_TraceMethodName != Info->Node->Name.Integer))
+    {
+        goto Exit;
+    }
+
+    AcpiGbl_OriginalDbgLevel = AcpiDbgLevel;
+    AcpiGbl_OriginalDbgLayer = AcpiDbgLayer;
+
+    AcpiDbgLevel = 0x00FFFFFF;
+    AcpiDbgLayer = ACPI_UINT32_MAX;
+
+    if (AcpiGbl_TraceDbgLevel)
+    {
+        AcpiDbgLevel = AcpiGbl_TraceDbgLevel;
+    }
+    if (AcpiGbl_TraceDbgLayer)
+    {
+        AcpiDbgLayer = AcpiGbl_TraceDbgLayer;
+    }
+
+
+Exit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsStopTrace
+ *
+ * PARAMETERS:  Info        - Method info struct
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Stop control method execution trace
+ *
+ ******************************************************************************/
+
+static void
+AcpiPsStopTrace (
+    ACPI_PARAMETER_INFO     *Info)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    if ((!AcpiGbl_TraceMethodName) ||
+        (AcpiGbl_TraceMethodName != Info->Node->Name.Integer))
+    {
+        goto Exit;
+    }
+
+    /* Disable further tracing if type is one-shot */
+
+    if (AcpiGbl_TraceFlags & 1)
+    {
+        AcpiGbl_TraceMethodName = 0;
+        AcpiGbl_TraceDbgLevel = 0;
+        AcpiGbl_TraceDbgLayer = 0;
+    }
+
+    AcpiDbgLevel = AcpiGbl_OriginalDbgLevel;
+    AcpiDbgLayer = AcpiGbl_OriginalDbgLayer;
+
+Exit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+}
 
 
 /*******************************************************************************
@@ -191,6 +356,10 @@ AcpiPsExecuteMethod (
      */
     AcpiPsUpdateParameterList (Info, REF_INCREMENT);
 
+    /* Begin tracing if requested */
+
+    AcpiPsStartTrace (Info);
+
     /*
      * 1) Perform the first pass parse of the method to enter any
      *    named objects that it creates into the namespace
@@ -218,6 +387,10 @@ AcpiPsExecuteMethod (
 
 
 Cleanup:
+    /* End optional tracing */
+
+    AcpiPsStopTrace (Info);
+
     /* Take away the extra reference that we gave the parameters above */
 
     AcpiPsUpdateParameterList (Info, REF_DECREMENT);
