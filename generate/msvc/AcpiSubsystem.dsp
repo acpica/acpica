@@ -417,6 +417,10 @@ SOURCE=..\..\source\components\resources\rsdump.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\resources\rsinfo.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\resources\rsio.c
 # End Source File
 # Begin Source File

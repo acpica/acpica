@@ -402,6 +402,10 @@ SOURCE=..\..\source_linux\COMPONENTS\resources\rsdump.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\resources\rsinfo.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\COMPONENTS\resources\rsio.c
 # End Source File
 # Begin Source File

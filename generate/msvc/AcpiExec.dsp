@@ -214,6 +214,18 @@ SOURCE=..\..\source\components\interpreter\executer\exnames.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\executer\exoparg1.c
+
+!IF  "$(CFG)" == "AcpiExec - Win32 Release"
+
+# SUBTRACT CPP /FA<none>
+
+!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
+
+# ADD CPP /Ob0
+# SUBTRACT CPP /Og /FA<none>
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -619,6 +631,10 @@ SOURCE=..\..\source\components\resources\rscreate.c
 # Begin Source File
 
 SOURCE=..\..\source\components\resources\rsdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\resources\rsinfo.c
 # End Source File
 # Begin Source File
 

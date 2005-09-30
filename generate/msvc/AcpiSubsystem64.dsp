@@ -25,7 +25,7 @@ CFG=AcpiSubsystem64 - Win32 Debug
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""$/Acpi Components/Subsystem", CQBAAAAA"
 # PROP Scc_LocalPath "..\.."
-CPP=xicl6.exe
+CPP=cl.exe
 RSC=rc.exe
 
 !IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
@@ -41,14 +41,14 @@ RSC=rc.exe
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /Gz /MT /Za /W4 /Gm /GX /Zi /O1 /I "..\..\source\Include" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
+# ADD CPP /Gz /MT /Za /W4 /Gm /GX /Zi /O1 /I "..\..\source\Include" /D "NDEBUG" /D "ACPILIB_GEN" /D "DRIVER" /D "ACPI_LIBRARY" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
 # SUBTRACT CPP /nologo /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /out:"bin\acpica64.lib" /machine:IA64
 # SUBTRACT LIB32 /nologo
@@ -73,14 +73,14 @@ PostBuild_Cmds=copy bin\acpica64.lib ..\..\libraries\acpica64.lib	dir ..\..\libr
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /Gz /MT /Za /W4 /Gm /GX /Zi /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_DEBUG" /D "_DEBUG" /D "ENABLE_DEBUGGER" /D "ACPI_DISASSEMBLER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
+# ADD CPP /Gz /MT /Za /W4 /Gm /GX /Zi /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_DEBUG_OUTPUT" /D "_DEBUG" /D "ACPI_DEBUGGER" /D "ACPI_DISASSEMBLER" /D "ACPI_LIBRARY" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
 # SUBTRACT CPP /nologo
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LIB32=xilink6.exe -lib
+LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /out:"bin\acpica_dbg64.lib" /machine:IA64
 # SUBTRACT LIB32 /nologo
@@ -108,6 +108,10 @@ PostBuild_Cmds=copy bin\acpica_dbg64.lib ..\..\libraries\acpica_dbg64.lib	dir ..
 
 SOURCE=..\..\source\components\utilities\utalloc.c
 # ADD CPP /nologo
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utcache.c
 # End Source File
 # Begin Source File
 
@@ -156,8 +160,16 @@ SOURCE=..\..\source\components\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utmutex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utobject.c
 # ADD CPP /nologo
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # Begin Source File
 
@@ -171,6 +183,14 @@ SOURCE=..\..\source\components\utilities\utxface.c
 # Begin Source File
 
 SOURCE=..\..\source\components\events\evevent.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\EVENTS\evgpe.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\SOURCE\COMPONENTS\EVENTS\evgpeblk.c
 # End Source File
 # Begin Source File
 
@@ -363,6 +383,10 @@ SOURCE=..\..\source\components\namespace\nsobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\namespace\nssearch.c
 # End Source File
 # Begin Source File
@@ -404,6 +428,10 @@ SOURCE=..\..\source\components\resources\rscreate.c
 # Begin Source File
 
 SOURCE=..\..\source\components\resources\rsdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\resources\rsinfo.c
 # End Source File
 # Begin Source File
 
@@ -479,6 +507,10 @@ SOURCE=..\..\source\components\interpreter\parser\psargs.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\interpreter\parser\psloop.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\interpreter\parser\psopcode.c
 # End Source File
 # Begin Source File
@@ -512,6 +544,10 @@ SOURCE=..\..\source\components\interpreter\parser\psxface.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\dispatcher\dsfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsinit.c
 # End Source File
 # Begin Source File
 
@@ -560,6 +596,10 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmbuffer.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\Disassembler\dmnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\SOURCE\COMPONENTS\disassembler\dmobject.c
 # End Source File
 # Begin Source File
 
@@ -696,11 +736,19 @@ SOURCE=..\..\source\Include\platform\acmsvc.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\include\acnames.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\Include\acnamesp.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\Include\acobject.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\include\acopcode.h
 # End Source File
 # Begin Source File
 
