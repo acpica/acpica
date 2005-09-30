@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  ******************************************************************************/
 
@@ -147,6 +147,11 @@ static void
 AcpiDmMemoryFlags2 (
     UINT8                   SpecificFlags);
 
+static void
+AcpiDmResourceSource (
+    AML_RESOURCE            *Resource,
+    ACPI_SIZE               MinimumLength);
+
 
 /*******************************************************************************
  *
@@ -274,6 +279,20 @@ AcpiDmMemoryFlags2 (
         AcpiGbl_TTPDecode [(SpecificFlags & 0x20) >> 5]);
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmResourceSource
+ *
+ * PARAMETERS:  Resource        - Raw AML descriptor
+ *              MinimumLength   - descriptor length without optional fields
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Dump optional ResourceSource fields of an address descriptor
+ *
+ ******************************************************************************/
+
 static void
 AcpiDmResourceSource (
     AML_RESOURCE            *Resource,
@@ -293,6 +312,7 @@ AcpiDmResourceSource (
 
 }
  
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmWordDescriptor
