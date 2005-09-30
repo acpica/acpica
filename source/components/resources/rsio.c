@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsio - IO and DMA resource descriptors
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetIoResource
+ * FUNCTION:    AcpiRsGetIo
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -140,12 +140,12 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetIoResource (
+AcpiRsGetIo (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetIoResource");
+    ACPI_FUNCTION_TRACE ("RsGetIo");
 
 
     /* Get the Decode flag */
@@ -176,7 +176,7 @@ AcpiRsGetIoResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetIoResource
+ * FUNCTION:    AcpiRsSetIo
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -189,11 +189,11 @@ AcpiRsGetIoResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetIoResource (
+AcpiRsSetIo (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_TRACE ("RsSetIoResource");
+    ACPI_FUNCTION_TRACE ("RsSetIo");
 
 
     /* I/O Information Byte */
@@ -221,7 +221,7 @@ AcpiRsSetIoResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetFixedIoResource
+ * FUNCTION:    AcpiRsGetFixedIo
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -236,12 +236,12 @@ AcpiRsSetIoResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetFixedIoResource (
+AcpiRsGetFixedIo (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetFixedIoResource");
+    ACPI_FUNCTION_TRACE ("RsGetFixedIo");
 
 
     /*
@@ -263,7 +263,7 @@ AcpiRsGetFixedIoResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetFixedIoResource
+ * FUNCTION:    AcpiRsSetFixedIo
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -276,11 +276,11 @@ AcpiRsGetFixedIoResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetFixedIoResource (
+AcpiRsSetFixedIo (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_TRACE ("RsSetFixedIoResource");
+    ACPI_FUNCTION_TRACE ("RsSetFixedIo");
 
 
     /*
@@ -302,7 +302,7 @@ AcpiRsSetFixedIoResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetDmaResource
+ * FUNCTION:    AcpiRsGetDma
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -317,7 +317,7 @@ AcpiRsSetFixedIoResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetDmaResource (
+AcpiRsGetDma (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
@@ -327,7 +327,7 @@ AcpiRsGetDmaResource (
     UINT8                   Temp8;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetDmaResource");
+    ACPI_FUNCTION_TRACE ("RsGetDma");
 
 
     /* Decode the DMA channel bits */
@@ -377,7 +377,7 @@ AcpiRsGetDmaResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetDmaResource
+ * FUNCTION:    AcpiRsSetDma
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -390,14 +390,14 @@ AcpiRsGetDmaResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetDmaResource (
+AcpiRsSetDma (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
     UINT8                   i;
 
 
-    ACPI_FUNCTION_TRACE ("RsSetDmaResource");
+    ACPI_FUNCTION_TRACE ("RsSetDma");
 
 
     /* Convert channel list to 8-bit DMA channel bitmask */

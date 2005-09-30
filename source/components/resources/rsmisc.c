@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetGenericRegResource
+ * FUNCTION:    AcpiRsGetGenericReg
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -140,12 +140,12 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetGenericRegResource (
+AcpiRsGetGenericReg (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetGenericRegResource");
+    ACPI_FUNCTION_TRACE ("RsGetGenericReg");
 
 
     /*
@@ -173,7 +173,7 @@ AcpiRsGetGenericRegResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetGenericRegResource
+ * FUNCTION:    AcpiRsSetGenericReg
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -186,11 +186,11 @@ AcpiRsGetGenericRegResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetGenericRegResource (
+AcpiRsSetGenericReg (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_TRACE ("RsSetGenericRegResource");
+    ACPI_FUNCTION_TRACE ("RsSetGenericReg");
 
 
     /*
@@ -218,7 +218,7 @@ AcpiRsSetGenericRegResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetVendorResource
+ * FUNCTION:    AcpiRsGetVendor
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -233,7 +233,7 @@ AcpiRsSetGenericRegResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetVendorResource (
+AcpiRsGetVendor (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
@@ -241,7 +241,7 @@ AcpiRsGetVendorResource (
     UINT8                   *AmlByteData;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetVendorResource");
+    ACPI_FUNCTION_TRACE ("RsGetVendor");
 
 
     /* Determine if this is a large or small vendor specific item */
@@ -279,7 +279,7 @@ AcpiRsGetVendorResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetVendorResource
+ * FUNCTION:    AcpiRsSetVendor
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -292,7 +292,7 @@ AcpiRsGetVendorResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetVendorResource (
+AcpiRsSetVendor (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
@@ -301,7 +301,7 @@ AcpiRsSetVendorResource (
     UINT8                   *Destination;
 
 
-    ACPI_FUNCTION_TRACE ("RsSetVendorResource");
+    ACPI_FUNCTION_TRACE ("RsSetVendor");
 
 
     ResourceLength = Resource->Data.Vendor.ByteLength;
@@ -341,7 +341,7 @@ AcpiRsSetVendorResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetStartDpfResource
+ * FUNCTION:    AcpiRsGetStartDpf
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -356,12 +356,12 @@ AcpiRsSetVendorResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetStartDpfResource (
+AcpiRsGetStartDpf (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetStartDpfResource");
+    ACPI_FUNCTION_TRACE ("RsGetStartDpf");
 
 
     /* Get the flags byte if present */
@@ -409,7 +409,7 @@ AcpiRsGetStartDpfResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetStartDpfResource
+ * FUNCTION:    AcpiRsSetStartDpf
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -422,11 +422,11 @@ AcpiRsGetStartDpfResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetStartDpfResource (
+AcpiRsSetStartDpf (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_TRACE ("RsSetStartDpfResource");
+    ACPI_FUNCTION_TRACE ("RsSetStartDpf");
 
 
     /*
@@ -458,7 +458,7 @@ AcpiRsSetStartDpfResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetEndDpfResource
+ * FUNCTION:    AcpiRsGetEndDpf
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -473,12 +473,12 @@ AcpiRsSetStartDpfResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetEndDpfResource (
+AcpiRsGetEndDpf (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetEndDpfResource");
+    ACPI_FUNCTION_TRACE ("RsGetEndDpf");
 
 
     /* Complete the resource header */
@@ -491,7 +491,7 @@ AcpiRsGetEndDpfResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetEndDpfResource
+ * FUNCTION:    AcpiRsSetEndDpf
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -504,11 +504,11 @@ AcpiRsGetEndDpfResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetEndDpfResource (
+AcpiRsSetEndDpf (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_TRACE ("RsSetEndDpfResource");
+    ACPI_FUNCTION_TRACE ("RsSetEndDpf");
 
 
     /* Complete the AML descriptor header */
@@ -521,7 +521,7 @@ AcpiRsSetEndDpfResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetEndTagResource
+ * FUNCTION:    AcpiRsGetEndTag
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -536,12 +536,12 @@ AcpiRsSetEndDpfResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetEndTagResource (
+AcpiRsGetEndTag (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetEndTagResource");
+    ACPI_FUNCTION_TRACE ("RsGetEndTag");
 
 
     /* Complete the resource header */
@@ -554,7 +554,7 @@ AcpiRsGetEndTagResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetEndTagResource
+ * FUNCTION:    AcpiRsSetEndTag
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -567,11 +567,11 @@ AcpiRsGetEndTagResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetEndTagResource (
+AcpiRsSetEndTag (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_TRACE ("RsSetEndTagResource");
+    ACPI_FUNCTION_TRACE ("RsSetEndTag");
 
 
     /*

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.47 $
+ *       $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -261,35 +261,35 @@ AcpiRsConvertResourcesToAml (
  * rsio
  */
 ACPI_STATUS
-AcpiRsGetIoResource (
+AcpiRsGetIo (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetIoResource (
+AcpiRsSetIo (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetFixedIoResource (
+AcpiRsGetFixedIo (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetFixedIoResource (
+AcpiRsSetFixedIo (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetDmaResource (
+AcpiRsGetDma (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetDmaResource (
+AcpiRsSetDma (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
@@ -298,24 +298,24 @@ AcpiRsSetDmaResource (
  * rsirq
  */
 ACPI_STATUS
-AcpiRsGetIrqResource (
+AcpiRsGetIrq (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetIrqResource (
+AcpiRsSetIrq (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetExtIrqResource (
+AcpiRsGetExtIrq (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetExtIrqResource (
+AcpiRsSetExtIrq (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
@@ -324,46 +324,46 @@ AcpiRsSetExtIrqResource (
  * rsaddr
  */
 ACPI_STATUS
-AcpiRsGetAddress16Resource (
+AcpiRsGetAddress16 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetAddress16Resource (
+AcpiRsSetAddress16 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetAddress32Resource (
+AcpiRsGetAddress32 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetAddress32Resource (
+AcpiRsSetAddress32 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetAddress64Resource (
+AcpiRsGetAddress64 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetAddress64Resource (
+AcpiRsSetAddress64 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetExtAddress64Resource (
+AcpiRsGetExtAddress64 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetExtAddress64Resource (
+AcpiRsSetExtAddress64 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
@@ -372,35 +372,35 @@ AcpiRsSetExtAddress64Resource (
  * rsmemory
  */
 ACPI_STATUS
-AcpiRsGetMemory24Resource (
+AcpiRsGetMemory24 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetMemory24Resource (
+AcpiRsSetMemory24 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetMemory32Resource (
+AcpiRsGetMemory32 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetMemory32Resource (
+AcpiRsSetMemory32 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetFixedMemory32Resource (
+AcpiRsGetFixedMemory32 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetFixedMemory32Resource (
+AcpiRsSetFixedMemory32 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
@@ -409,57 +409,57 @@ AcpiRsSetFixedMemory32Resource (
  * rsmisc
  */
 ACPI_STATUS
-AcpiRsGetGenericRegResource (
+AcpiRsGetGenericReg (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetGenericRegResource (
+AcpiRsSetGenericReg (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetVendorResource (
+AcpiRsGetVendor (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetVendorResource (
+AcpiRsSetVendor (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetStartDpfResource (
+AcpiRsGetStartDpf (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetStartDpfResource (
+AcpiRsSetStartDpf (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetEndDpfResource (
+AcpiRsGetEndDpf (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetEndDpfResource (
+AcpiRsSetEndDpf (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
 ACPI_STATUS
-AcpiRsGetEndTagResource (
+AcpiRsGetEndTag (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource);
 
 ACPI_STATUS
-AcpiRsSetEndTagResource (
+AcpiRsSetEndTag (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml);
 
@@ -551,7 +551,7 @@ AcpiRsDumpIo (
     ACPI_RESOURCE_DATA      *Resource);
 
 void
-AcpiRsDumpExtendedIrq (
+AcpiRsDumpExtIrq (
     ACPI_RESOURCE_DATA      *Resource);
 
 void
@@ -571,11 +571,11 @@ AcpiRsDumpMemory32 (
     ACPI_RESOURCE_DATA      *Resource);
 
 void
-AcpiRsDumpStartDependFns (
+AcpiRsDumpStartDpf (
     ACPI_RESOURCE_DATA      *Resource);
 
 void
-AcpiRsDumpVendorSpecific (
+AcpiRsDumpVendor (
     ACPI_RESOURCE_DATA      *Resource);
 
 void
@@ -583,7 +583,7 @@ AcpiRsDumpGenericReg (
     ACPI_RESOURCE_DATA      *Resource);
 
 void
-AcpiRsDumpEndDependFns (
+AcpiRsDumpEndDpf (
     ACPI_RESOURCE_DATA      *Resource);
 
 void

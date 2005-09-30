@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmem24 - Memory resource descriptors
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetMemory24Resource
+ * FUNCTION:    AcpiRsGetMemory24
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -140,12 +140,12 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetMemory24Resource (
+AcpiRsGetMemory24 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetMemory24Resource");
+    ACPI_FUNCTION_TRACE ("RsGetMemory24");
 
 
     /* Get the Read/Write bit */
@@ -173,7 +173,7 @@ AcpiRsGetMemory24Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetMemory24Resource
+ * FUNCTION:    AcpiRsSetMemory24
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -186,11 +186,11 @@ AcpiRsGetMemory24Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetMemory24Resource (
+AcpiRsSetMemory24 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_TRACE ("RsSetMemory24Resource");
+    ACPI_FUNCTION_TRACE ("RsSetMemory24");
 
 
     /* Set the Information Byte */
@@ -218,7 +218,7 @@ AcpiRsSetMemory24Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetMemory32Resource
+ * FUNCTION:    AcpiRsGetMemory32
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -233,12 +233,12 @@ AcpiRsSetMemory24Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetMemory32Resource (
+AcpiRsGetMemory32 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetMemory32Resource");
+    ACPI_FUNCTION_TRACE ("RsGetMemory32");
 
 
     /* Get the Read/Write bit */
@@ -266,7 +266,7 @@ AcpiRsGetMemory32Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetMemory32Resource
+ * FUNCTION:    AcpiRsSetMemory32
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -279,11 +279,11 @@ AcpiRsGetMemory32Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetMemory32Resource (
+AcpiRsSetMemory32 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_TRACE ("RsSetMemory32Resource");
+    ACPI_FUNCTION_TRACE ("RsSetMemory32");
 
 
     /* Set the Information Byte */
@@ -311,7 +311,7 @@ AcpiRsSetMemory32Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetFixedMemory32Resource
+ * FUNCTION:    AcpiRsGetFixedMemory32
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -326,12 +326,12 @@ AcpiRsSetMemory32Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetFixedMemory32Resource (
+AcpiRsGetFixedMemory32 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetFixedMemory32Resource");
+    ACPI_FUNCTION_TRACE ("RsGetFixedMemory32");
 
 
     /* Get the Read/Write bit */
@@ -359,7 +359,7 @@ AcpiRsGetFixedMemory32Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetFixedMemory32Resource
+ * FUNCTION:    AcpiRsSetFixedMemory32
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -372,11 +372,11 @@ AcpiRsGetFixedMemory32Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetFixedMemory32Resource (
+AcpiRsSetFixedMemory32 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_TRACE ("RsSetFixedMemory32Resource");
+    ACPI_FUNCTION_TRACE ("RsSetFixedMemory32");
 
 
     /* Set the Information Byte */

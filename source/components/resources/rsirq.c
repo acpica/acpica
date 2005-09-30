@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  ******************************************************************************/
 
@@ -125,7 +125,7 @@
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetIrqResource
+ * FUNCTION:    AcpiRsGetIrq
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -140,7 +140,7 @@
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetIrqResource (
+AcpiRsGetIrq (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
@@ -151,7 +151,7 @@ AcpiRsGetIrqResource (
     UINT32                  ResourceLength;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetIrqResource");
+    ACPI_FUNCTION_TRACE ("RsGetIrq");
 
 
     /* Get the IRQ mask (bytes 1:2) */
@@ -235,7 +235,7 @@ AcpiRsGetIrqResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetIrqResource
+ * FUNCTION:    AcpiRsSetIrq
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -248,7 +248,7 @@ AcpiRsGetIrqResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetIrqResource (
+AcpiRsSetIrq (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
@@ -257,7 +257,7 @@ AcpiRsSetIrqResource (
     UINT8                   i;
 
 
-    ACPI_FUNCTION_TRACE ("RsSetIrqResource");
+    ACPI_FUNCTION_TRACE ("RsSetIrq");
 
 
     /* Convert interrupt list to 16-bit IRQ bitmask */
@@ -315,7 +315,7 @@ AcpiRsSetIrqResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetExtIrqResource
+ * FUNCTION:    AcpiRsGetExtIrq
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -330,7 +330,7 @@ AcpiRsSetIrqResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetExtIrqResource (
+AcpiRsGetExtIrq (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
@@ -339,7 +339,7 @@ AcpiRsGetExtIrqResource (
     UINT8                   Temp8;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetExtIrqResource");
+    ACPI_FUNCTION_TRACE ("RsGetExtIrq");
 
 
     /* Get the flag bits */
@@ -403,7 +403,7 @@ AcpiRsGetExtIrqResource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetExtIrqResource
+ * FUNCTION:    AcpiRsSetExtIrq
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -416,14 +416,14 @@ AcpiRsGetExtIrqResource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetExtIrqResource (
+AcpiRsSetExtIrq (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
     ACPI_SIZE               DescriptorLength;
 
 
-    ACPI_FUNCTION_TRACE ("RsSetExtIrqResource");
+    ACPI_FUNCTION_TRACE ("RsSetExtIrq");
 
 
     /* Set the Interrupt vector flags */

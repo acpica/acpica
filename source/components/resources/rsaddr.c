@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  ******************************************************************************/
 
@@ -415,7 +415,7 @@ AcpiRsGetAddressCommon (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetAddress16Resource
+ * FUNCTION:    AcpiRsGetAddress16
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -430,12 +430,12 @@ AcpiRsGetAddressCommon (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetAddress16Resource (
+AcpiRsGetAddress16 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetAddress16Resource");
+    ACPI_FUNCTION_TRACE ("RsGetAddress16");
 
 
     /* Get the Resource Type, general flags, and type-specific flags */
@@ -474,7 +474,7 @@ AcpiRsGetAddress16Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetAddress16Resource
+ * FUNCTION:    AcpiRsSetAddress16
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -487,14 +487,14 @@ AcpiRsGetAddress16Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetAddress16Resource (
+AcpiRsSetAddress16 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
     ACPI_SIZE               DescriptorLength;
 
 
-    ACPI_FUNCTION_TRACE ("RsSetAddress16Resource");
+    ACPI_FUNCTION_TRACE ("RsSetAddress16");
 
 
     /* Set the Resource Type, General Flags, and Type-Specific Flags */
@@ -527,7 +527,7 @@ AcpiRsSetAddress16Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetAddress32Resource
+ * FUNCTION:    AcpiRsGetAddress32
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -542,13 +542,13 @@ AcpiRsSetAddress16Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetAddress32Resource (
+AcpiRsGetAddress32 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
 
-    ACPI_FUNCTION_TRACE ("RsGetAddress32Resource");
+    ACPI_FUNCTION_TRACE ("RsGetAddress32");
 
 
     /* Get the Resource Type, general flags, and type-specific flags */
@@ -587,7 +587,7 @@ AcpiRsGetAddress32Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetAddress32Resource
+ * FUNCTION:    AcpiRsSetAddress32
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -600,14 +600,14 @@ AcpiRsGetAddress32Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetAddress32Resource (
+AcpiRsSetAddress32 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
     ACPI_SIZE               DescriptorLength;
 
 
-    ACPI_FUNCTION_TRACE ("RsSetAddress32Resource");
+    ACPI_FUNCTION_TRACE ("RsSetAddress32");
 
 
     /* Set the Resource Type, General Flags, and Type-Specific Flags */
@@ -640,7 +640,7 @@ AcpiRsSetAddress32Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetAddress64Resource
+ * FUNCTION:    AcpiRsGetAddress64
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -655,12 +655,12 @@ AcpiRsSetAddress32Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetAddress64Resource (
+AcpiRsGetAddress64 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
-    ACPI_FUNCTION_TRACE ("RsGetAddress64Resource");
+    ACPI_FUNCTION_TRACE ("RsGetAddress64");
 
 
     /* Get the Resource Type, general Flags, and type-specific Flags */
@@ -699,7 +699,7 @@ AcpiRsGetAddress64Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetAddress64Resource
+ * FUNCTION:    AcpiRsSetAddress64
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -712,14 +712,14 @@ AcpiRsGetAddress64Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetAddress64Resource (
+AcpiRsSetAddress64 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
     ACPI_SIZE               DescriptorLength;
 
 
-    ACPI_FUNCTION_TRACE ("RsSetAddress64Resource");
+    ACPI_FUNCTION_TRACE ("RsSetAddress64");
 
 
     /* Set the Resource Type, General Flags, and Type-Specific Flags */
@@ -752,7 +752,7 @@ AcpiRsSetAddress64Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetExtAddress64Resource
+ * FUNCTION:    AcpiRsGetExtAddress64
  *
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              AmlResourceLength   - Length of the resource from the AML header
@@ -767,13 +767,13 @@ AcpiRsSetAddress64Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsGetExtAddress64Resource (
+AcpiRsGetExtAddress64 (
     AML_RESOURCE            *Aml,
     UINT16                  AmlResourceLength,
     ACPI_RESOURCE           *Resource)
 {
 
-    ACPI_FUNCTION_TRACE ("RsGetExtAddress64Resource");
+    ACPI_FUNCTION_TRACE ("RsGetExtAddress64");
 
 
     /* Get the Resource Type, general flags, and type-specific flags */
@@ -815,7 +815,7 @@ AcpiRsGetExtAddress64Resource (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsSetExtAddress64Resource
+ * FUNCTION:    AcpiRsSetExtAddress64
  *
  * PARAMETERS:  Resource            - Pointer to the resource descriptor
  *              Aml                 - Where the AML descriptor is returned
@@ -828,11 +828,11 @@ AcpiRsGetExtAddress64Resource (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiRsSetExtAddress64Resource (
+AcpiRsSetExtAddress64 (
     ACPI_RESOURCE           *Resource,
     AML_RESOURCE            *Aml)
 {
-    ACPI_FUNCTION_TRACE ("RsSetExtAddress64Resource");
+    ACPI_FUNCTION_TRACE ("RsSetExtAddress64");
 
 
     /* Set the Resource Type, General Flags, and Type-Specific Flags */

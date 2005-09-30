@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  ******************************************************************************/
 
@@ -302,7 +302,6 @@ AcpiRsDumpShortByteList (
     AcpiOsPrintf ("\n");
 }
 
-
 static void
 AcpiRsDumpMemoryAttribute (
     UINT32                      ReadWriteAttribute)
@@ -312,6 +311,7 @@ AcpiRsDumpMemoryAttribute (
         ACPI_READ_WRITE_MEMORY == ReadWriteAttribute ?
             "Read/Write" : "Read-Only");
 }
+
 
 /*******************************************************************************
  *
@@ -648,7 +648,7 @@ AcpiRsDumpDma (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsDumpStartDependFns
+ * FUNCTION:    AcpiRsDumpStartDpf
  *
  * PARAMETERS:  Resource        - Pointer to an internal resource descriptor
  *
@@ -659,7 +659,7 @@ AcpiRsDumpDma (
  ******************************************************************************/
 
 void
-AcpiRsDumpStartDependFns (
+AcpiRsDumpStartDpf (
     ACPI_RESOURCE_DATA      *Resource)
 {
     ACPI_FUNCTION_ENTRY ();
@@ -778,7 +778,7 @@ AcpiRsDumpFixedIo (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsDumpVendorSpecific
+ * FUNCTION:    AcpiRsDumpVendor
  *
  * PARAMETERS:  Resource        - Pointer to an internal resource descriptor
  *
@@ -789,7 +789,7 @@ AcpiRsDumpFixedIo (
  ******************************************************************************/
 
 void
-AcpiRsDumpVendorSpecific (
+AcpiRsDumpVendor (
     ACPI_RESOURCE_DATA      *Resource)
 {
     ACPI_FUNCTION_ENTRY ();
@@ -1084,7 +1084,7 @@ AcpiRsDumpExtAddress64 (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsDumpExtendedIrq
+ * FUNCTION:    AcpiRsDumpExtIrq
  *
  * PARAMETERS:  Resource        - Pointer to an internal resource descriptor
  *
@@ -1095,7 +1095,7 @@ AcpiRsDumpExtAddress64 (
  ******************************************************************************/
 
 void
-AcpiRsDumpExtendedIrq (
+AcpiRsDumpExtIrq (
     ACPI_RESOURCE_DATA      *Resource)
 {
     ACPI_FUNCTION_ENTRY ();
@@ -1169,7 +1169,7 @@ AcpiRsDumpGenericReg (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsDumpEndDependFns
+ * FUNCTION:    AcpiRsDumpEndDpf
  *
  * PARAMETERS:  Resource        - Pointer to an internal resource descriptor
  *
@@ -1180,7 +1180,7 @@ AcpiRsDumpGenericReg (
  ******************************************************************************/
 
 void
-AcpiRsDumpEndDependFns (
+AcpiRsDumpEndDpf (
     ACPI_RESOURCE_DATA      *Resource)
 {
     ACPI_FUNCTION_ENTRY ();

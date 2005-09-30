@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -152,6 +152,8 @@ AcpiRsMoveData (
 {
     ACPI_NATIVE_UINT        i;
 
+
+    /* One move per item */
 
     for (i = 0; i < ItemCount; i++)
     {
