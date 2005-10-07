@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  ******************************************************************************/
 
@@ -119,6 +119,7 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
+#include "amlresrc.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -984,13 +985,143 @@ AcpiUtGenerateChecksum (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiUtGetResourceType
+ *
+ * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
+ *
+ * RETURN:      The Resource Type with no extraneous bits (except the
+ *              Large/Small descriptor bit -- this is left alone)
+ *
+ * DESCRIPTION: Extract the Resource Type/Name from the first byte of
+ *              a resource descriptor.
+ *
+ ******************************************************************************/
+
+UINT8
+AcpiUtGetResourceType (
+    void                    *Aml)
+{
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /*
+     * Byte 0 contains the descriptor name (Resource Type)
+     * Determine if this is a small or large resource
+     */
+    if (*((UINT8 *) Aml) & ACPI_RESOURCE_NAME_LARGE)
+    {
+        /* Large Resource Type -- bits 6:0 contain the name */
+
+        return (*((UINT8 *) Aml));
+    }
+    else
+    {
+        /* Small Resource Type -- bits 6:3 contain the name */
+
+        return ((UINT8) (*((UINT8 *) Aml) & ACPI_RESOURCE_NAME_SMALL_MASK));
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetResourceLength
+ *
+ * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
+ *
+ * RETURN:      Byte Length
+ *
+ * DESCRIPTION: Get the "Resource Length" of a raw AML descriptor. By
+ *              definition, this does not include the size of the descriptor
+ *              header or the length field itself.
+ *
+ ******************************************************************************/
+
+UINT16
+AcpiUtGetResourceLength (
+    void                    *Aml)
+{
+    UINT16                  ResourceLength;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /*
+     * Byte 0 contains the descriptor name (Resource Type)
+     * Determine if this is a small or large resource
+     */
+    if (*((UINT8 *) Aml) & ACPI_RESOURCE_NAME_LARGE)
+    {
+        /* Large Resource type -- bytes 1-2 contain the 16-bit length */
+
+        ACPI_MOVE_16_TO_16 (&ResourceLength, &((UINT8 *) Aml)[1]);
+
+    }
+    else
+    {
+        /* Small Resource type -- bits 2:0 of byte 0 contain the length */
+
+        ResourceLength = (UINT16) (*((UINT8 *) Aml) &
+                                    ACPI_RESOURCE_NAME_SMALL_LENGTH_MASK);
+    }
+
+    return (ResourceLength);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetDescriptorLength
+ *
+ * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
+ *
+ * RETURN:      Byte length
+ *
+ * DESCRIPTION: Get the total byte length of a raw AML descriptor, including the
+ *              length of the descriptor header and the length field itself.
+ *              Used to walk descriptor lists.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiUtGetDescriptorLength (
+    void                    *Aml)
+{
+    UINT32                  DescriptorLength;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /* First get the Resource Length (Does not include header length) */
+
+    DescriptorLength = AcpiUtGetResourceLength (Aml);
+
+    /* Determine if this is a small or large resource */
+
+    if (*((UINT8 *) Aml) & ACPI_RESOURCE_NAME_LARGE)
+    {
+        DescriptorLength += sizeof (AML_RESOURCE_LARGE_HEADER);
+    }
+    else
+    {
+        DescriptorLength += sizeof (AML_RESOURCE_SMALL_HEADER);
+    }
+
+    return (DescriptorLength);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiUtGetResourceEndTag
  *
  * PARAMETERS:  ObjDesc         - The resource template buffer object
  *
  * RETURN:      Pointer to the end tag
  *
- * DESCRIPTION: Find the END_TAG resource descriptor in a resource template
+ * DESCRIPTION: Find the END_TAG resource descriptor in an AML resource template
  *
  ******************************************************************************/
 
@@ -999,41 +1130,30 @@ UINT8 *
 AcpiUtGetResourceEndTag (
     ACPI_OPERAND_OBJECT     *ObjDesc)
 {
-    UINT8                   BufferByte;
-    UINT8                   *Buffer;
-    UINT8                   *EndBuffer;
+    UINT8                   *Aml;
+    UINT8                   *EndAml;
 
 
-    Buffer    = ObjDesc->Buffer.Pointer;
-    EndBuffer = Buffer + ObjDesc->Buffer.Length;
+    Aml    = ObjDesc->Buffer.Pointer;
+    EndAml = Aml + ObjDesc->Buffer.Length;
 
-    while (Buffer < EndBuffer)
+    /* Walk the resource template, one descriptor per loop */
+
+    while (Aml < EndAml)
     {
-        BufferByte = *Buffer;
-        if (BufferByte & ACPI_RESOURCE_NAME_LARGE)
+        if (AcpiUtGetResourceType (Aml) == ACPI_RESOURCE_NAME_END_TAG)
         {
-            /* Large Descriptor - Length is next 2 bytes */
+            /* Found the end_tag descriptor, all done */
 
-            Buffer += ((*(Buffer+1) | (*(Buffer+2) << 8)) + 3);
+            return (Aml);
         }
-        else
-        {
-            /* Small Descriptor.  End Tag will be found here */
 
-            if ((BufferByte & ACPI_RESOURCE_NAME_SMALL_MASK) == ACPI_RESOURCE_NAME_END_TAG)
-            {
-                /* Found the end tag descriptor, all done. */
+        /* Point to the next resource descriptor */
 
-                return (Buffer);
-            }
-
-            /* Length is in the header */
-
-            Buffer += ((BufferByte & 0x07) + 1);
-        }
+        Aml += AcpiUtGetResourceLength (Aml);
     }
 
-    /* End tag not found */
+    /* End tag was not found */
 
     return (NULL);
 }
