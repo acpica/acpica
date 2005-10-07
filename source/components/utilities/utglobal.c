@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.214 $
+ *              $Revision: 1.215 $
  *
  *****************************************************************************/
 
@@ -540,11 +540,13 @@ AcpiUtGetRegionName (
 
 static const char        *AcpiGbl_EventTypes[ACPI_NUM_FIXED_EVENTS] =
 {
+/*! [Begin] no source code translation (keep these strings as-is) */
     "PM_Timer",
     "GlobalLock",
     "PowerButton",
     "SleepButton",
     "RealTimeClock",
+/*! [End] no source code translation !*/
 };
 
 
@@ -588,6 +590,7 @@ static const char           AcpiGbl_BadType[] = "UNDEFINED";
 
 static const char           *AcpiGbl_NsTypeNames[] =
 {
+/*! [Begin] no source code translation (keep these strings as-is) */
     /* 00 */ "Untyped",
     /* 01 */ "Integer",
     /* 02 */ "String",
@@ -619,6 +622,7 @@ static const char           *AcpiGbl_NsTypeNames[] =
     /* 28 */ "Extra",
     /* 29 */ "Data",
     /* 30 */ "Invalid"
+/*! [End] no source code translation !*/
 };
 
 
@@ -720,6 +724,7 @@ AcpiUtGetNodeName (
 
 static const char           *AcpiGbl_DescTypeNames[] =
 {
+/*! [Begin] no source code translation (keep these ASL Keywords as-is) */
     /* 00 */ "Invalid",
     /* 01 */ "Cached",
     /* 02 */ "State-Generic",
