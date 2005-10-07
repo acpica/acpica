@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.163 $
+ *       $Revision: 1.164 $
  *
  *****************************************************************************/
 
@@ -644,11 +644,11 @@
                                             return (_s); })
 #define return_UINT8(s)                 ACPI_DO_WHILE0 ({ \
                                             register UINT8 _s = (UINT8) (s); \
-                                            AcpiUtValueExit (ACPI_DEBUG_PARAMETERS, _s); \
+                                            AcpiUtValueExit (ACPI_DEBUG_PARAMETERS, (ACPI_INTEGER) _s); \
                                             return (_s); })
 #define return_UINT32(s)                ACPI_DO_WHILE0 ({ \
                                             register UINT32 _s = (UINT32) (s); \
-                                            AcpiUtValueExit (ACPI_DEBUG_PARAMETERS, _s); \
+                                            AcpiUtValueExit (ACPI_DEBUG_PARAMETERS, (ACPI_INTEGER) _s); \
                                             return (_s); })
 #else /* Use original less-safe macros */
 
