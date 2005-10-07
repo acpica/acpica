@@ -213,14 +213,14 @@ void
 AcpiOsDeleteLock (
     ACPI_HANDLE             Handle);
 
-UINT32
+ACPI_NATIVE_UINT
 AcpiOsAcquireLock (
     ACPI_HANDLE             Handle);
 
 void
 AcpiOsReleaseLock (
     ACPI_HANDLE             Handle,
-    UINT32                  Flags);
+    ACPI_NATIVE_UINT        Flags);
 
 
 /*

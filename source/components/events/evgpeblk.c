@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -228,7 +228,7 @@ AcpiEvWalkGpeList (
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
     ACPI_STATUS             Status = AE_OK;
-    UINT32                  Flags;
+    ACPI_NATIVE_UINT        Flags;
 
 
     ACPI_FUNCTION_TRACE ("EvWalkGpeList");
@@ -592,7 +592,7 @@ AcpiEvGetGpeXruptBlock (
     ACPI_GPE_XRUPT_INFO     *NextGpeXrupt;
     ACPI_GPE_XRUPT_INFO     *GpeXrupt;
     ACPI_STATUS             Status;
-    UINT32                  Flags;
+    ACPI_NATIVE_UINT        Flags;
 
 
     ACPI_FUNCTION_TRACE ("EvGetGpeXruptBlock");
@@ -678,7 +678,7 @@ AcpiEvDeleteGpeXrupt (
     ACPI_GPE_XRUPT_INFO     *GpeXrupt)
 {
     ACPI_STATUS             Status;
-    UINT32                  Flags;
+    ACPI_NATIVE_UINT        Flags;
 
 
     ACPI_FUNCTION_TRACE ("EvDeleteGpeXrupt");
@@ -743,7 +743,7 @@ AcpiEvInstallGpeBlock (
     ACPI_GPE_BLOCK_INFO     *NextGpeBlock;
     ACPI_GPE_XRUPT_INFO     *GpeXruptBlock;
     ACPI_STATUS             Status;
-    UINT32                  Flags;
+    ACPI_NATIVE_UINT        Flags;
 
 
     ACPI_FUNCTION_TRACE ("EvInstallGpeBlock");
@@ -807,7 +807,7 @@ AcpiEvDeleteGpeBlock (
     ACPI_GPE_BLOCK_INFO     *GpeBlock)
 {
     ACPI_STATUS             Status;
-    UINT32                  Flags;
+    ACPI_NATIVE_UINT        Flags;
 
 
     ACPI_FUNCTION_TRACE ("EvInstallGpeBlock");
