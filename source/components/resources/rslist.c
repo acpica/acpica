@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  ******************************************************************************/
 
@@ -169,7 +169,7 @@ AcpiRsValidateResourceLength (
         return (AE_AML_INVALID_RESOURCE_TYPE);
     }
 
-    ResourceLength = AcpiRsGetResourceLength (Aml);
+    ResourceLength = AcpiUtGetResourceLength (Aml);
     MinimumAmlResourceLength = ResourceInfo->MinimumAmlResourceLength;
 
     /* Validate based upon the type of resource, fixed length or variable */
@@ -299,11 +299,8 @@ AcpiRsConvertAmlToResources (
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
         }
 
-        ResourceLength = AcpiRsGetResourceLength (
-            ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
-
-        DescriptorLength = AcpiRsGetDescriptorLength (
-            ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
+        ResourceLength = AcpiUtGetResourceLength (AmlBuffer);
+        DescriptorLength = AcpiUtGetDescriptorLength (AmlBuffer);
 
         /*
          * Perform limited validation of the resource length, based upon
@@ -335,7 +332,7 @@ AcpiRsConvertAmlToResources (
 
         /* Normal exit on completion of an EndTag resource descriptor */
 
-        if (AcpiRsGetResourceType (*AmlBuffer) == ACPI_RESOURCE_NAME_END_TAG)
+        if (AcpiUtGetResourceType (AmlBuffer) == ACPI_RESOURCE_NAME_END_TAG)
         {
             return_ACPI_STATUS (AE_OK);
         }
@@ -434,8 +431,7 @@ AcpiRsConvertResourcesToAml (
         /* Extract the total length of the new descriptor */
         /* Set the AmlBuffer to point to the next (output) resource descriptor */
 
-        AmlBuffer += AcpiRsGetDescriptorLength (
-                        ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
+        AmlBuffer += AcpiUtGetDescriptorLength (AmlBuffer);
 
         /* Point to the next input resource descriptor */
 

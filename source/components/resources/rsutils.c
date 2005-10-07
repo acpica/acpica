@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  ******************************************************************************/
 
@@ -244,98 +244,6 @@ AcpiRsGetResourceInfo (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetResourceLength
- *
- * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
- *
- * RETURN:      Byte Length
- *
- * DESCRIPTION: Get the "Resource Length" of a raw AML descriptor. By
- *              definition, this does not include the size of the descriptor
- *              header or the length field itself.
- *
- ******************************************************************************/
-
-UINT16
-AcpiRsGetResourceLength (
-    AML_RESOURCE            *Aml)
-{
-    UINT16                  ResourceLength;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Determine if this is a small or large resource */
-
-    if (Aml->LargeHeader.DescriptorType & ACPI_RESOURCE_NAME_LARGE)
-    {
-        /* Large Resource type -- bytes 1-2 contain the 16-bit length */
-
-        ACPI_MOVE_16_TO_16 (&ResourceLength, &Aml->LargeHeader.ResourceLength);
-
-    }
-    else
-    {
-        /* Small Resource type -- bits 2:0 of byte 0 contain the length */
-
-        ResourceLength = (UINT16) (Aml->SmallHeader.DescriptorType &
-                                    ACPI_RESOURCE_NAME_SMALL_LENGTH_MASK);
-    }
-
-    return (ResourceLength);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiRsGetDescriptorLength
- *
- * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
- *
- * RETURN:      Byte length
- *
- * DESCRIPTION: Get the total byte length of a raw AML descriptor, including the
- *              length of the descriptor header and the length field itself.
- *              Used to walk descriptor lists.
- *
- ******************************************************************************/
-
-UINT32
-AcpiRsGetDescriptorLength (
-    AML_RESOURCE            *Aml)
-{
-    UINT32                  DescriptorLength;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Determine if this is a small or large resource */
-
-    if (Aml->LargeHeader.DescriptorType & ACPI_RESOURCE_NAME_LARGE)
-    {
-        /* Large Resource type -- bytes 1-2 contain the 16-bit length */
-
-        ACPI_MOVE_16_TO_32 (&DescriptorLength, &Aml->LargeHeader.ResourceLength);
-        DescriptorLength += sizeof (AML_RESOURCE_LARGE_HEADER);
-
-    }
-    else
-    {
-        /* Small Resource type -- bits 2:0 of byte 0 contain the length */
-
-        DescriptorLength = (UINT32) (Aml->SmallHeader.DescriptorType &
-                                    ACPI_RESOURCE_NAME_SMALL_LENGTH_MASK);
-        DescriptorLength += sizeof (AML_RESOURCE_SMALL_HEADER);
-    }
-
-    return (DescriptorLength);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiRsSetResourceHeader
  *
  * PARAMETERS:  DescriptorType      - Byte to be inserted as the type
@@ -388,44 +296,6 @@ AcpiRsSetResourceHeader (
         /* Insert length into the descriptor type byte */
 
         Aml->SmallHeader.DescriptorType |= (UINT8) ResourceLength;
-    }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiRsGetResourceType
- *
- * PARAMETERS:  ResourceType        - Byte 0 of a resource descriptor
- *
- * RETURN:      The Resource Type with no extraneous bits (except the
- *              Large/Small descriptor bit -- this is left alone)
- *
- * DESCRIPTION: Extract the Resource Type/Name from the first byte of
- *              a resource descriptor.
- *
- ******************************************************************************/
-
-UINT8
-AcpiRsGetResourceType (
-    UINT8                   ResourceType)
-{
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Determine if this is a small or large resource */
-
-    if (ResourceType & ACPI_RESOURCE_NAME_LARGE)
-    {
-        /* Large Resource Type -- bits 6:0 contain the name */
-
-        return (ResourceType);
-    }
-    else
-    {
-        /* Small Resource Type -- bits 6:3 contain the name */
-
-        return ((UINT8) (ResourceType & ACPI_RESOURCE_NAME_SMALL_MASK));
     }
 }
 

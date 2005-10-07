@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -448,7 +448,7 @@ AcpiRsGetListLength (
     {
         /* The next byte in the stream is the resource descriptor type */
 
-        ResourceType = AcpiRsGetResourceType (*AmlBuffer);
+        ResourceType = AcpiUtGetResourceType (AmlBuffer);
 
         /* Get the base stream size and structure sizes for the descriptor */
 
@@ -460,8 +460,7 @@ AcpiRsGetListLength (
 
         /* Get the Length field from the input resource descriptor */
 
-        ResourceLength = AcpiRsGetResourceLength (
-                            ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
+        ResourceLength = AcpiUtGetResourceLength (AmlBuffer);
 
         /* Augment the size for descriptors with optional fields */
 
