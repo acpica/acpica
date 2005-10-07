@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.48 $
+ *       $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -494,18 +494,6 @@ AcpiRsSetResourceSource (
     AML_RESOURCE            *Aml,
     ACPI_SIZE               MinimumLength,
     ACPI_RESOURCE_SOURCE    *ResourceSource);
-
-UINT8
-AcpiRsGetResourceType (
-    UINT8                   ResourceStartByte);
-
-UINT32
-AcpiRsGetDescriptorLength (
-    AML_RESOURCE            *Aml);
-
-UINT16
-AcpiRsGetResourceLength (
-    AML_RESOURCE            *Aml);
 
 void
 AcpiRsSetResourceHeader (
