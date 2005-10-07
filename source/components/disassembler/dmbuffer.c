@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  ******************************************************************************/
 
@@ -221,7 +221,7 @@ AcpiDmByteList (
     {
     case ACPI_DASM_RESOURCE:
 
-        AcpiDmResourceDescriptor (Info, ByteData, ByteCount);
+        AcpiDmResourceTemplate (Info, ByteData, ByteCount);
         break;
 
     case ACPI_DASM_STRING:

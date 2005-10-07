@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcs.c - "Small" Resource Descriptor disassembly
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  ******************************************************************************/
 
@@ -135,7 +135,7 @@
  *
  * RETURN:      None
  *
- * DESCRIPTION: Decode a IRQ descriptor
+ * DESCRIPTION: Decode a IRQ descriptor, either Irq() or IrqNoFlags()
  *
  ******************************************************************************/
 
@@ -150,6 +150,8 @@ AcpiDmIrqDescriptor (
     AcpiOsPrintf ("%s (",
         AcpiGbl_IrqDecode [Length & 1]);
 
+    /* Decode flags byte if present */
+
     if (Length & 1)
     {
         AcpiOsPrintf ("%s, %s, %s",
@@ -157,7 +159,9 @@ AcpiDmIrqDescriptor (
             AcpiGbl_LLDecode [(Resource->Irq.Flags >> 3) & 1],
             AcpiGbl_SHRDecode [(Resource->Irq.Flags >> 4) & 1]);
     }
+    AcpiOsPrintf (")\n");
 
+    AcpiDmIndent (Level + 1);
     AcpiDmBitList (Resource->Irq.IrqMask);
 }
 
@@ -184,11 +188,12 @@ AcpiDmDmaDescriptor (
 {
 
     AcpiDmIndent (Level);
-    AcpiOsPrintf ("DMA (%s, %s, %s",
+    AcpiOsPrintf ("DMA (%s, %s, %s)\n",
             AcpiGbl_TYPDecode [(Resource->Dma.Flags >> 5) & 3],
             AcpiGbl_BMDecode  [(Resource->Dma.Flags >> 2) & 1],
             AcpiGbl_SIZDecode [(Resource->Dma.Flags >> 0) & 3]);
 
+    AcpiDmIndent (Level + 1);
     AcpiDmBitList (Resource->Dma.DmaChannelMask);
 }
 
@@ -215,12 +220,23 @@ AcpiDmIoDescriptor (
 {
 
     AcpiDmIndent (Level);
-    AcpiOsPrintf ("IO (%s, 0x%4.4X, 0x%4.4X, 0x%2.2X, 0x%2.2X)\n",
-        AcpiGbl_IoDecode [(Resource->Io.Information & 1)],
-        (UINT32) Resource->Io.Minimum,
-        (UINT32) Resource->Io.Maximum,
-        (UINT32) Resource->Io.Alignment,
-        (UINT32) Resource->Io.AddressLength);
+    AcpiOsPrintf ("IO (%s,\n",
+        AcpiGbl_IoDecode [(Resource->Io.Information & 1)]);
+
+    AcpiDmIndent (Level + 1);
+    AcpiDmDumpInteger16 (Resource->Io.Minimum, "Address Range Minimum");
+
+    AcpiDmIndent (Level + 1);
+    AcpiDmDumpInteger16 (Resource->Io.Maximum, "Address Range Maximum");
+
+    AcpiDmIndent (Level + 1);
+    AcpiDmDumpInteger8 (Resource->Io.Alignment, "Address Alignment");
+
+    AcpiDmIndent (Level + 1);
+    AcpiDmDumpInteger8 (Resource->Io.AddressLength, "Address Length");
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf (")\n");
 }
 
 
@@ -246,9 +262,16 @@ AcpiDmFixedIoDescriptor (
 {
 
     AcpiDmIndent (Level);
-    AcpiOsPrintf ("FixedIO (0x%4.4X, 0x%2.2X)\n",
-        (UINT32) Resource->FixedIo.Address,
-        (UINT32) Resource->FixedIo.AddressLength);
+    AcpiOsPrintf ("FixedIO (\n");
+
+    AcpiDmIndent (Level + 1);
+    AcpiDmDumpInteger16 (Resource->FixedIo.Address, "Address Base");
+
+    AcpiDmIndent (Level + 1);
+    AcpiDmDumpInteger8 (Resource->FixedIo.AddressLength, "Address Length");
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf (")\n");
 }
 
 
@@ -340,12 +363,9 @@ AcpiDmVendorSmallDescriptor (
     UINT32                  Level)
 {
 
-    AcpiDmIndent (Level);
-    AcpiOsPrintf ("VendorShort () {");
-
-    AcpiDmDisasmByteList (0, 
-        ((UINT8 *) Resource) + sizeof (AML_RESOURCE_SMALL_HEADER), Length);
-    AcpiOsPrintf ("}\n");
+    AcpiDmVendorCommon ("Short ()",
+        ((UINT8 *) Resource) + sizeof (AML_RESOURCE_SMALL_HEADER),
+        Length, Level);
 }
 
 #endif

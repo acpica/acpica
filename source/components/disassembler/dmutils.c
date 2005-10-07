@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmutils - AML disassembler utilities
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  ******************************************************************************/
 
@@ -194,9 +194,9 @@ const char                      *AcpiGbl_IoDecode[2] =
 
 const char                      *AcpiGbl_WordDecode[4] =
 {
-    "WordMemory",
-    "WordIO",
-    "WordBusNumber",
+    "Memory",
+    "IO",
+    "BusNumber",
     "Unknown-resource-type"
 };
 
