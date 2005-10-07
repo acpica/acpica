@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.23 $
+ *       $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -306,13 +306,33 @@ AcpiDmIsStringBuffer (
  * dmresrc
  */
 void
-AcpiDmResourceDescriptor (
+AcpiDmDumpInteger8 (
+    UINT8                   Value,
+    char                    *Name);
+
+void
+AcpiDmDumpInteger16 (
+    UINT16                  Value,
+    char                    *Name);
+
+void
+AcpiDmDumpInteger32 (
+    UINT32                  Value,
+    char                    *Name);
+
+void
+AcpiDmDumpInteger64 (
+    UINT64                  Value,
+    char                    *Name);
+
+void
+AcpiDmResourceTemplate (
     ACPI_OP_WALK_INFO       *Info,
     UINT8                   *ByteData,
     UINT32                  ByteCount);
 
 BOOLEAN
-AcpiDmIsResourceDescriptor (
+AcpiDmIsResourceTemplate (
     ACPI_PARSE_OBJECT       *Op);
 
 void
@@ -388,6 +408,13 @@ AcpiDmInterruptDescriptor (
 void
 AcpiDmVendorLargeDescriptor (
     AML_RESOURCE            *Resource,
+    UINT32                  Length,
+    UINT32                  Level);
+
+void
+AcpiDmVendorCommon (
+    char                    *Name,
+    UINT8                   *ByteData,
     UINT32                  Length,
     UINT32                  Level);
 
