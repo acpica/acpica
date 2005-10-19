@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.148 $
+ *              $Revision: 1.149 $
  *
  *****************************************************************************/
 
@@ -1046,7 +1046,7 @@ AcpiUtDumpAllocations (
     if (!NumOutstanding)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "No outstanding allocations.\n"));
+            "No outstanding allocations\n"));
     }
     else
     {
