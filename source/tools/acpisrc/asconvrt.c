@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -708,6 +708,8 @@ AsBracesOnSameLine (
                  *
                  */
                 if ((StartOfThisLine[1] != '#') &&
+                    (*Beginning != '/') &&
+                    (*Beginning != '{') &&
                     (*Beginning != '=') &&
                     (*Beginning != ','))
                 {

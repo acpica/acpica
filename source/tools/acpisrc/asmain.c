@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -417,6 +417,8 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_RESOURCE_VENDOR",             SRC_TYPE_STRUCT},
     {"ACPI_RESULT_VALUES",               SRC_TYPE_STRUCT},
     {"ACPI_ROUND_UP_TO_32_BITS",         SRC_TYPE_SIMPLE},
+    {"ACPI_RSCONVERT_INFO",              SRC_TYPE_STRUCT},
+    {"ACPI_RSDUMP_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_SCOPE_STATE",                 SRC_TYPE_STRUCT},
     {"ACPI_SIGNAL_FATAL_INFO",           SRC_TYPE_STRUCT},
     {"ACPI_SIZE",                        SRC_TYPE_SIMPLE},
@@ -437,6 +439,9 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_WALK_CALLBACK",               SRC_TYPE_SIMPLE},
     {"ACPI_WALK_INFO",                   SRC_TYPE_STRUCT},
     {"ACPI_WALK_STATE",                  SRC_TYPE_STRUCT},
+
+    {"ACPI_RS_LENGTH",                  SRC_TYPE_SIMPLE},
+    {"ACPI_RSDESC_SIZE",                SRC_TYPE_SIMPLE},
 
     {"AML_RESOURCE",                     SRC_TYPE_UNION},
     {"AML_RESOURCE_ADDRESS",             SRC_TYPE_STRUCT},
