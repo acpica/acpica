@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.118 $
+ *       $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -282,6 +282,8 @@
  *
  *****************************************************************************/
 
+#define ACPI_IS_ASCII(c)  ((c) < 0x80)
+
 #ifdef ACPI_USE_SYSTEM_CLIBRARY
 /*
  * Use the standard C library headers.
@@ -311,7 +313,7 @@
 #define ACPI_STRCAT(d,s)        (void) strcat((d), (s))
 #define ACPI_STRNCAT(d,s,n)     strncat((d), (s), (ACPI_SIZE)(n))
 #define ACPI_STRTOUL(d,s,n)     strtoul((d), (s), (ACPI_SIZE)(n))
-#define ACPI_MEMCMP(s1,s2,n)    memcmp((s1), (s2), (ACPI_SIZE)(n))
+#define ACPI_MEMCMP(s1,s2,n)    memcmp((const char *)(s1), (const char *)(s2), (ACPI_SIZE)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) memcpy((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,s,n)      (void) memset((d), (s), (ACPI_SIZE)(n))
 
@@ -323,7 +325,6 @@
 #define ACPI_IS_UPPER(i)        isupper((int) (i))
 #define ACPI_IS_PRINT(i)        isprint((int) (i))
 #define ACPI_IS_ALPHA(i)        isalpha((int) (i))
-#define ACPI_IS_ASCII(i)        isascii((int) (i))
 
 #else
 
@@ -374,7 +375,7 @@ typedef char *va_list;
 #define ACPI_STRCAT(d,s)        (void) AcpiUtStrcat ((d), (s))
 #define ACPI_STRNCAT(d,s,n)     AcpiUtStrncat ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_STRTOUL(d,s,n)     AcpiUtStrtoul ((d), (s), (ACPI_SIZE)(n))
-#define ACPI_MEMCMP(s1,s2,n)    AcpiUtMemcmp((s1), (s2), (ACPI_SIZE)(n))
+#define ACPI_MEMCMP(s1,s2,n)    AcpiUtMemcmp((const char *)(s1), (const char *)(s2), (ACPI_SIZE)(n))
 #define ACPI_MEMCPY(d,s,n)      (void) AcpiUtMemcpy ((d), (s), (ACPI_SIZE)(n))
 #define ACPI_MEMSET(d,v,n)      (void) AcpiUtMemset ((d), (v), (ACPI_SIZE)(n))
 #define ACPI_TOUPPER            AcpiUtToUpper
