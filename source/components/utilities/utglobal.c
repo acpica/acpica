@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.215 $
+ *              $Revision: 1.216 $
  *
  *****************************************************************************/
 
@@ -741,6 +741,7 @@ static const char           *AcpiGbl_DescTypeNames[] =
     /* 13 */ "Parser",
     /* 14 */ "Operand",
     /* 15 */ "Node"
+/*! [End] no source code translation !*/
 };
 
 
