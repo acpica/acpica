@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -326,6 +326,7 @@ RsDoDwordIoDescriptor (
                 }
             }
 
+#if 0
             /*
              * Not a valid ResourceSource, ResourceSourceIndex must also
              * be invalid
@@ -335,6 +336,7 @@ RsDoDwordIoDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE,
                     InitializerOp, NULL);
             }
+#endif
             break;
 
         case 12: /* ResourceTag */
@@ -541,6 +543,7 @@ RsDoDwordMemoryDescriptor (
                 }
             }
 
+#if 0
             /*
              * Not a valid ResourceSource, ResourceSourceIndex must also
              * be invalid
@@ -550,6 +553,7 @@ RsDoDwordMemoryDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE,
                     InitializerOp, NULL);
             }
+#endif
             break;
 
         case 13: /* ResourceTag */
@@ -753,6 +757,7 @@ RsDoDwordSpaceDescriptor (
                 }
             }
 
+#if 0
             /*
              * Not a valid ResourceSource, ResourceSourceIndex must also
              * be invalid
@@ -762,6 +767,7 @@ RsDoDwordSpaceDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE,
                     InitializerOp, NULL);
             }
+#endif
             break;
 
         case 13: /* ResourceTag */
@@ -903,9 +909,9 @@ RsDoExtendedIoDescriptor (
 
         case 10: /* Type-Specific Attributes */
 
-            Descriptor->ExtAddress64.TypeSpecificAttributes = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.TypeSpecific = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TYPESPECIFICATTRIBUTES,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecificAttributes));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecific));
             break;
 
         case 11: /* ResourceTag */
@@ -1065,9 +1071,9 @@ RsDoExtendedMemoryDescriptor (
 
         case 11: /* Type-Specific Attributes */
 
-            Descriptor->ExtAddress64.TypeSpecificAttributes = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.TypeSpecific = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TYPESPECIFICATTRIBUTES,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecificAttributes));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecific));
             break;
 
         case 12: /* ResourceTag */
@@ -1225,9 +1231,9 @@ RsDoExtendedSpaceDescriptor (
 
         case 11: /* Type-Specific Attributes */
 
-            Descriptor->ExtAddress64.TypeSpecificAttributes = InitializerOp->Asl.Value.Integer;
+            Descriptor->ExtAddress64.TypeSpecific = InitializerOp->Asl.Value.Integer;
             RsCreateByteField (InitializerOp, ASL_RESNAME_TYPESPECIFICATTRIBUTES,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecificAttributes));
+                CurrentByteOffset + ASL_RESDESC_OFFSET (ExtAddress64.TypeSpecific));
             break;
 
         case 12: /* ResourceTag */
@@ -1406,6 +1412,7 @@ RsDoQwordIoDescriptor (
                 }
             }
 
+#if 0
             /*
              * Not a valid ResourceSource, ResourceSourceIndex must also
              * be invalid
@@ -1415,6 +1422,7 @@ RsDoQwordIoDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE,
                     InitializerOp, NULL);
             }
+#endif
             break;
 
         case 12: /* ResourceTag */
@@ -1615,6 +1623,7 @@ RsDoQwordMemoryDescriptor (
                 }
             }
 
+#if 0
             /*
              * Not a valid ResourceSource, ResourceSourceIndex must also
              * be invalid
@@ -1624,6 +1633,7 @@ RsDoQwordMemoryDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE,
                     InitializerOp, NULL);
             }
+#endif
             break;
 
         case 13: /* ResourceTag */
@@ -1822,6 +1832,7 @@ RsDoQwordSpaceDescriptor (
                 }
             }
 
+#if 0
             /*
              * Not a valid ResourceSource, ResourceSourceIndex must also
              * be invalid
@@ -1831,6 +1842,7 @@ RsDoQwordSpaceDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE,
                     InitializerOp, NULL);
             }
+#endif
             break;
 
         case 13: /* ResourceTag */
@@ -2010,6 +2022,7 @@ RsDoWordIoDescriptor (
                 }
             }
 
+#if 0
             /*
              * Not a valid ResourceSource, ResourceSourceIndex must also
              * be invalid
@@ -2019,6 +2032,7 @@ RsDoWordIoDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE,
                     InitializerOp, NULL);
             }
+#endif
             break;
 
         case 12: /* ResourceTag */
@@ -2210,6 +2224,7 @@ RsDoWordBusNumberDescriptor (
                 }
             }
 
+#if 0
             /*
              * Not a valid ResourceSource, ResourceSourceIndex must also
              * be invalid
@@ -2219,6 +2234,7 @@ RsDoWordBusNumberDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE,
                     InitializerOp, NULL);
             }
+#endif
             break;
 
         case 11: /* ResourceTag */
@@ -2407,6 +2423,7 @@ RsDoWordSpaceDescriptor (
                 }
             }
 
+#if 0
             /*
              * Not a valid ResourceSource, ResourceSourceIndex must also
              * be invalid
@@ -2416,6 +2433,7 @@ RsDoWordSpaceDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE,
                     InitializerOp, NULL);
             }
+#endif
             break;
 
         case 13: /* ResourceTag */
@@ -2503,10 +2521,10 @@ RsDoInterruptDescriptor (
      * optional fields present
      */
     Descriptor->ExtendedIrq.ResourceLength  = 2;  /* Flags and table length byte */
-    Descriptor->ExtendedIrq.TableLength     = 0;
+    Descriptor->ExtendedIrq.InterruptCount  = 0;
 
     Rover = ACPI_CAST_PTR (AML_RESOURCE,
-                (&(Descriptor->ExtendedIrq.InterruptNumber[0])));
+                (&(Descriptor->ExtendedIrq.Interrupts[0])));
 
     /* Process all child initialization nodes */
 
@@ -2568,6 +2586,7 @@ RsDoInterruptDescriptor (
                 }
             }
 
+#if 0
             /*
              * Not a valid ResourceSource, ResourceSourceIndex must also
              * be invalid
@@ -2577,6 +2596,7 @@ RsDoInterruptDescriptor (
                 AslError (ASL_ERROR, ASL_MSG_RESOURCE_SOURCE,
                     InitializerOp, NULL);
             }
+#endif
             break;
 
         case 6: /* ResourceTag */
@@ -2591,7 +2611,7 @@ RsDoInterruptDescriptor (
 
             /* Maximum 255 interrupts allowed for this descriptor */
 
-            if (Descriptor->ExtendedIrq.TableLength == 255)
+            if (Descriptor->ExtendedIrq.InterruptCount == 255)
             {
                 AslError (ASL_ERROR, ASL_MSG_EX_INTERRUPT_LIST,
                     InitializerOp, NULL);
@@ -2610,7 +2630,7 @@ RsDoInterruptDescriptor (
 
             Rover->U32Item = (UINT32) InitializerOp->Asl.Value.Integer;
             Rover = ACPI_PTR_ADD (AML_RESOURCE, &(Rover->U32Item), 4);
-            Descriptor->ExtendedIrq.TableLength++;
+            Descriptor->ExtendedIrq.InterruptCount++;
             Descriptor->ExtendedIrq.ResourceLength += 4;
 
             /* Case 7: First interrupt number in list */
@@ -2625,7 +2645,7 @@ RsDoInterruptDescriptor (
 
                 RsCreateByteField (InitializerOp, ASL_RESNAME_INTERRUPT,
                     CurrentByteOffset +
-                    ASL_RESDESC_OFFSET (ExtendedIrq.InterruptNumber[0]));
+                    ASL_RESDESC_OFFSET (ExtendedIrq.Interrupts[0]));
             }
         }
 
@@ -2655,7 +2675,7 @@ RsDoInterruptDescriptor (
             (Descriptor->ExtendedIrq.ResourceLength + StringLength);
     }
 
-    Rnode->BufferLength = (ASL_RESDESC_OFFSET (ExtendedIrq.InterruptNumber[0]) -
+    Rnode->BufferLength = (ASL_RESDESC_OFFSET (ExtendedIrq.Interrupts[0]) -
                            ASL_RESDESC_OFFSET (ExtendedIrq.DescriptorType))
                            + OptionIndex + StringLength;
     return (Rnode);

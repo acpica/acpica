@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -212,6 +212,7 @@ Options (
     printf ("  -d  [file]     Disassemble AML to ASL source code file (*.dsl)\n");
     printf ("  -dc [file]     Disassemble AML and immediately compile it\n");
     printf ("                 (Obtain DSDT from current system if no input file)\n");
+    printf ("  -2             Emit ACPI 2.0 compatible ASL code\n");
     printf ("  -e             Generate External() statements for unresolved symbols\n");
     printf ("  -g             Get ACPI tables and write to files (*.dat)\n");
 
@@ -356,8 +357,13 @@ AslCommandLine (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "ab:cd^efgh^i^l^o:p:r:s:t:v:x:")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "2ab:cd^efgh^i^l^o:p:r:s:t:v:x:")) != EOF) switch (j)
     {
+    case '2':
+        Gbl_Acpi2 = TRUE;
+        break;
+
+
     case 'a':
         Gbl_CheckForAscii = TRUE;
         break;

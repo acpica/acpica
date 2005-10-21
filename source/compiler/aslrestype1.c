@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -388,9 +388,9 @@ RsDoIoDescriptor (
         {
         case 0: /* Decode size */
 
-            RsSetFlagBits (&Descriptor->Io.Information, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Io.Flags, InitializerOp, 0, 1);
             RsCreateBitField (InitializerOp, ASL_RESNAME_DECODE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Io.Information), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Io.Flags), 0);
             break;
 
         case 1:  /* Min Address */
@@ -706,9 +706,9 @@ RsDoMemory24Descriptor (
         {
         case 0: /* Read/Write type */
 
-            RsSetFlagBits (&Descriptor->Memory24.Information, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Memory24.Flags, InitializerOp, 0, 1);
             RsCreateBitField (InitializerOp, ASL_RESNAME_READWRITETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Memory24.Information), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Memory24.Flags), 0);
             break;
 
         case 1: /* Min Address */
@@ -797,9 +797,9 @@ RsDoMemory32Descriptor (
         {
         case 0: /* Read/Write type */
 
-            RsSetFlagBits (&Descriptor->Memory32.Information, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->Memory32.Flags, InitializerOp, 0, 1);
             RsCreateBitField (InitializerOp, ASL_RESNAME_READWRITETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (Memory32.Information), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (Memory32.Flags), 0);
             break;
 
         case 1:  /* Min Address */
@@ -888,9 +888,9 @@ RsDoMemory32FixedDescriptor (
         {
         case 0: /* Read/Write type */
 
-            RsSetFlagBits (&Descriptor->FixedMemory32.Information, InitializerOp, 0, 1);
+            RsSetFlagBits (&Descriptor->FixedMemory32.Flags, InitializerOp, 0, 1);
             RsCreateBitField (InitializerOp, ASL_RESNAME_READWRITETYPE,
-                CurrentByteOffset + ASL_RESDESC_OFFSET (FixedMemory32.Information), 0);
+                CurrentByteOffset + ASL_RESDESC_OFFSET (FixedMemory32.Flags), 0);
             break;
 
         case 1: /* Address */
