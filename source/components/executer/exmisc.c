@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.131 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -766,8 +766,8 @@ AcpiExDoLogicalOp (
 
         /* Lexicographic compare: compare the data bytes */
 
-        Compare = ACPI_MEMCMP ((const char * ) Operand0->Buffer.Pointer,
-                    (const char * ) LocalOperand1->Buffer.Pointer,
+        Compare = ACPI_MEMCMP (Operand0->Buffer.Pointer,
+                    LocalOperand1->Buffer.Pointer,
                     (Length0 > Length1) ? Length1 : Length0);
 
         switch (Opcode)
