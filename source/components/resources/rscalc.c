@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -131,7 +131,7 @@ static UINT8
 AcpiRsCountSetBits (
     UINT16                  BitField);
 
-static ACPI_SIZE
+static ACPI_RS_LENGTH
 AcpiRsStructOptionLength (
     ACPI_RESOURCE_SOURCE    *ResourceSource);
 
@@ -189,7 +189,7 @@ AcpiRsCountSetBits (
  *
  ******************************************************************************/
 
-static ACPI_SIZE
+static ACPI_RS_LENGTH
 AcpiRsStructOptionLength (
     ACPI_RESOURCE_SOURCE    *ResourceSource)
 {
@@ -203,7 +203,7 @@ AcpiRsStructOptionLength (
      */
     if (ResourceSource->StringPtr)
     {
-        return ((ACPI_SIZE) ResourceSource->StringLength + 1);
+        return ((ACPI_RS_LENGTH) (ResourceSource->StringLength + 1));
     }
 
     return (0);
@@ -283,7 +283,7 @@ AcpiRsGetAmlLength (
     ACPI_SIZE               *SizeNeeded)
 {
     ACPI_SIZE               AmlSizeNeeded = 0;
-    ACPI_SIZE               SegmentSize;
+    ACPI_RS_LENGTH     TotalSize;
 
 
     ACPI_FUNCTION_TRACE ("RsGetAmlLength");
@@ -302,7 +302,7 @@ AcpiRsGetAmlLength (
 
         /* Get the base size of the (external stream) resource descriptor */
 
-        SegmentSize = AcpiGbl_AmlResourceSizes [Resource->Type];
+        TotalSize = AcpiGbl_AmlResourceSizes [Resource->Type];
 
         /*
          * Augment the base size for descriptors with optional and/or
@@ -321,12 +321,13 @@ AcpiRsGetAmlLength (
             {
                 /* Base size of a Large resource descriptor */
 
-                SegmentSize = sizeof (AML_RESOURCE_LARGE_HEADER);
+                TotalSize = sizeof (AML_RESOURCE_LARGE_HEADER);
             }
 
             /* Add the size of the vendor-specific data */
 
-            SegmentSize += Resource->Data.Vendor.ByteLength;
+            TotalSize = (ACPI_RS_LENGTH)
+                (TotalSize + Resource->Data.Vendor.ByteLength);
             break;
 
 
@@ -335,7 +336,7 @@ AcpiRsGetAmlLength (
              * End Tag:
              * We are done -- return the accumulated total size.
              */
-            *SizeNeeded = AmlSizeNeeded + SegmentSize;
+            *SizeNeeded = AmlSizeNeeded + TotalSize;
 
             /* Normal exit */
 
@@ -347,8 +348,9 @@ AcpiRsGetAmlLength (
              * 16-Bit Address Resource:
              * Add the size of the optional ResourceSource info
              */
-            SegmentSize += AcpiRsStructOptionLength (
-                            &Resource->Data.Address16.ResourceSource);
+            TotalSize = (ACPI_RS_LENGTH)
+                (TotalSize + AcpiRsStructOptionLength (
+                                &Resource->Data.Address16.ResourceSource));
             break;
 
 
@@ -357,8 +359,9 @@ AcpiRsGetAmlLength (
              * 32-Bit Address Resource:
              * Add the size of the optional ResourceSource info
              */
-            SegmentSize += AcpiRsStructOptionLength (
-                            &Resource->Data.Address32.ResourceSource);
+            TotalSize = (ACPI_RS_LENGTH)
+                (TotalSize + AcpiRsStructOptionLength (
+                                &Resource->Data.Address32.ResourceSource));
             break;
 
 
@@ -367,8 +370,9 @@ AcpiRsGetAmlLength (
              * 64-Bit Address Resource:
              * Add the size of the optional ResourceSource info
              */
-            SegmentSize += AcpiRsStructOptionLength (
-                            &Resource->Data.Address64.ResourceSource);
+            TotalSize = (ACPI_RS_LENGTH)
+                (TotalSize + AcpiRsStructOptionLength (
+                                &Resource->Data.Address64.ResourceSource));
             break;
 
 
@@ -378,13 +382,14 @@ AcpiRsGetAmlLength (
              * Add the size of each additional optional interrupt beyond the
              * required 1 (4 bytes for each UINT32 interrupt number)
              */
-            SegmentSize += (((ACPI_SIZE)
-                Resource->Data.ExtendedIrq.InterruptCount - 1) * 4);
+            TotalSize = (ACPI_RS_LENGTH)
+                (TotalSize +
+                ((Resource->Data.ExtendedIrq.InterruptCount - 1) * 4) +
 
-            /* Add the size of the optional ResourceSource info */
+                /* Add the size of the optional ResourceSource info */
 
-            SegmentSize += AcpiRsStructOptionLength (
-                            &Resource->Data.ExtendedIrq.ResourceSource);
+                AcpiRsStructOptionLength (
+                    &Resource->Data.ExtendedIrq.ResourceSource));
             break;
 
 
@@ -394,7 +399,7 @@ AcpiRsGetAmlLength (
 
         /* Update the total */
 
-        AmlSizeNeeded += SegmentSize;
+        AmlSizeNeeded += TotalSize;
 
         /* Point to the next object */
 

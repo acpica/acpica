@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  ******************************************************************************/
 
@@ -125,8 +125,8 @@
 
 /* Local prototypes */
 
-static ACPI_GET_RESOURCE_HANDLER
-AcpiRsGetResourceHandler (
+static ACPI_RSCONVERT_INFO *
+AcpiRsGetConversionInfo (
     UINT8                   ResourceType);
 
 static ACPI_STATUS
@@ -209,19 +209,18 @@ AcpiRsValidateResourceLength (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetResourceHandler
+ * FUNCTION:    AcpiRsGetConversionInfo
  *
  * PARAMETERS:  ResourceType        - Byte 0 of a resource descriptor
  *
- * RETURN:      Pointer to the resource conversion handler
+ * RETURN:      Pointer to the resource conversion info table
  *
- * DESCRIPTION: Extract the Resource Type/Name from the first byte of
- *              a resource descriptor.
+ * DESCRIPTION: Get the conversion table associated with this resource type
  *
  ******************************************************************************/
 
-static ACPI_GET_RESOURCE_HANDLER
-AcpiRsGetResourceHandler (
+static ACPI_RSCONVERT_INFO *
+AcpiRsGetConversionInfo (
     UINT8                   ResourceType)
 {
     ACPI_FUNCTION_ENTRY ();
@@ -277,9 +276,8 @@ AcpiRsConvertAmlToResources (
     ACPI_STATUS             Status;
     ACPI_SIZE               BytesParsed = 0;
     ACPI_RESOURCE           *Resource;
-    UINT16                  ResourceLength;
-    UINT32                  DescriptorLength;
-    ACPI_GET_RESOURCE_HANDLER  Handler;
+    ACPI_RSDESC_SIZE        DescriptorLength;
+    ACPI_RSCONVERT_INFO     *Info;
 
 
     ACPI_FUNCTION_TRACE ("RsConvertAmlToResources");
@@ -289,17 +287,16 @@ AcpiRsConvertAmlToResources (
 
     while (BytesParsed < AmlBufferLength)
     {
-        /* Get the handler associated with this Descriptor Type */
+        /* Get the conversion table associated with this Descriptor Type */
 
-        Handler = AcpiRsGetResourceHandler (*AmlBuffer);
-        if (!Handler)
+        Info = AcpiRsGetConversionInfo (*AmlBuffer);
+        if (!Info)
         {
-            /* No handler indicates invalid resource type */
+            /* No table indicates an invalid resource type */
 
             return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
         }
 
-        ResourceLength = AcpiUtGetResourceLength (AmlBuffer);
         DescriptorLength = AcpiUtGetDescriptorLength (AmlBuffer);
 
         /*
@@ -313,10 +310,12 @@ AcpiRsConvertAmlToResources (
             return_ACPI_STATUS (Status);
         }
 
-        /* Convert a byte stream resource to local resource struct */
+        /* Convert the AML byte stream resource to a local resource struct */
 
-        Status = Handler (ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer),
-                    ResourceLength, ACPI_CAST_PTR (ACPI_RESOURCE, Buffer));
+        Status = AcpiRsConvertAmlToResource (
+                    ACPI_CAST_PTR (ACPI_RESOURCE, Buffer),
+                    ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer),
+                    Info);
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR ((
@@ -379,17 +378,18 @@ AcpiRsConvertResourcesToAml (
     UINT8                   *OutputBuffer)
 {
     UINT8                   *AmlBuffer = OutputBuffer;
+    UINT8                   *EndAmlBuffer = OutputBuffer + AmlSizeNeeded;
     ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE ("RsConvertResourcesToAml");
 
 
-    /* Convert each resource descriptor in the list */
+    /* Walk the resource descriptor list, convert each descriptor */
 
-    while (1)
+    while (AmlBuffer < EndAmlBuffer)
     {
-        /* Validate Resource Descriptor Type before dispatch */
+        /* Validate the Resource Type */
 
         if (Resource->Type > ACPI_RESOURCE_TYPE_MAX)
         {
@@ -399,10 +399,11 @@ AcpiRsConvertResourcesToAml (
             return_ACPI_STATUS (AE_BAD_DATA);
         }
 
-        /* Perform the conversion per resource type */
+        /* Perform the conversion */
 
-        Status = AcpiGbl_SetResourceDispatch[Resource->Type] (Resource,
-                    ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
+        Status = AcpiRsConvertResourceToAml (Resource,
+                    ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer),
+                    AcpiGbl_SetResourceDispatch[Resource->Type]);
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR (("Could not convert resource (type %X) to AML, %s\n",
@@ -428,14 +429,22 @@ AcpiRsConvertResourcesToAml (
             return_ACPI_STATUS (AE_OK);
         }
 
-        /* Extract the total length of the new descriptor */
-        /* Set the AmlBuffer to point to the next (output) resource descriptor */
-
+        /*
+         * Extract the total length of the new descriptor and set the
+         * AmlBuffer to point to the next (output) resource descriptor
+         */
         AmlBuffer += AcpiUtGetDescriptorLength (AmlBuffer);
 
         /* Point to the next input resource descriptor */
 
         Resource = ACPI_PTR_ADD (ACPI_RESOURCE, Resource, Resource->Length);
+
+        /* Check for end-of-list, normal exit */
+
     }
+
+    /* Completed buffer, but did not find an EndTag resource descriptor */
+
+    return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
 }
 

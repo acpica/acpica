@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  ******************************************************************************/
 
@@ -132,7 +132,7 @@
     ACPI_COPY_FIELD(Out, In, Decode);                    \
     ACPI_COPY_FIELD(Out, In, MinAddressFixed);           \
     ACPI_COPY_FIELD(Out, In, MaxAddressFixed);           \
-    ACPI_COPY_FIELD(Out, In, Attribute);                 \
+    ACPI_COPY_FIELD(Out, In, Info);                      \
     ACPI_COPY_FIELD(Out, In, Granularity);               \
     ACPI_COPY_FIELD(Out, In, Minimum);                   \
     ACPI_COPY_FIELD(Out, In, Maximum);                   \

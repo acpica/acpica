@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  ******************************************************************************/
 
@@ -128,6 +128,78 @@
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiRsDecodeBitmask
+ *
+ * PARAMETERS:  Mask            - Bitmask to decode
+ *              List            - Where the converted list is returned
+ *
+ * RETURN:      Count of bits set (length of list)
+ *
+ * DESCRIPTION: Convert a bit mask into a list of values
+ *
+ ******************************************************************************/
+
+UINT8
+AcpiRsDecodeBitmask (
+    UINT16                  Mask,
+    UINT8                   *List)
+{
+    ACPI_NATIVE_UINT        i;
+    UINT8                   BitCount;
+
+
+    /* Decode the mask bits */
+
+    for (i = 0, BitCount = 0; Mask; i++)
+    {
+        if (Mask & 0x0001)
+        {
+            List[BitCount] = (UINT8) i;
+            BitCount++;
+        }
+
+        Mask >>= 1;
+    }
+
+    return (BitCount);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRsEncodeBitmask
+ *
+ * PARAMETERS:  List            - List of values to encode
+ *              Count           - Length of list
+ *
+ * RETURN:      Encoded bitmask
+ *
+ * DESCRIPTION: Convert a list of values to an encoded bitmask
+ *
+ ******************************************************************************/
+
+UINT16
+AcpiRsEncodeBitmask (
+    UINT8                   *List,
+    UINT8                   Count)
+{
+    ACPI_NATIVE_UINT        i;
+    UINT16                  Mask;
+
+
+    /* Encode the list into a single bitmask */
+
+    for (i = 0, Mask = 0; i < Count; i++)
+    {
+        Mask |= (0x0001 << List[i]);
+    }
+
+    return (Mask);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsMoveData
  *
  * PARAMETERS:  Destination         - Pointer to the destination descriptor
@@ -159,22 +231,30 @@ AcpiRsMoveData (
     {
         switch (MoveType)
         {
-        case ACPI_MOVE_TYPE_16_TO_32:
-            ACPI_MOVE_16_TO_32 (&((UINT32 *) Destination)[i],
+        /*
+         * For the 8-bit case, we can perform the move all at once
+         * since there are no alignment or endian issues
+         */
+        case ACPI_RSC_MOVE8:
+            ACPI_MEMCPY (Destination, Source, ItemCount);
+            return;
+
+        /*
+         * 16-, 32-, and 64-bit cases must use the move macros that perform
+         * endian conversion and/or accomodate hardware that cannot perform
+         * misaligned memory transfers
+         */
+        case ACPI_RSC_MOVE16:
+            ACPI_MOVE_16_TO_16 (&((UINT16 *) Destination)[i],
                                 &((UINT16 *) Source)[i]);
             break;
 
-        case ACPI_MOVE_TYPE_32_TO_16:
-            ACPI_MOVE_32_TO_16 (&((UINT16 *) Destination)[i],
-                                &((UINT32 *) Source)[i]);
-            break;
-
-        case ACPI_MOVE_TYPE_32_TO_32:
+        case ACPI_RSC_MOVE32:
             ACPI_MOVE_32_TO_32 (&((UINT32 *) Destination)[i],
                                 &((UINT32 *) Source)[i]);
             break;
 
-        case ACPI_MOVE_TYPE_64_TO_64:
+        case ACPI_RSC_MOVE64:
             ACPI_MOVE_64_TO_64 (&((UINT64 *) Destination)[i],
                                 &((UINT64 *) Source)[i]);
             break;
@@ -244,6 +324,67 @@ AcpiRsGetResourceInfo (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiRsSetResourceLength
+ *
+ * PARAMETERS:  TotalLength         - Length of the AML descriptor, including
+ *                                    the header and length fields.
+ *              Aml                 - Pointer to the raw AML descriptor
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Set the ResourceLength field of an AML
+ *              resource descriptor, both Large and Small descriptors are
+ *              supported automatically. Note: Descriptor Type field must
+ *              be valid.
+ *
+ ******************************************************************************/
+
+void
+AcpiRsSetResourceLength (
+    ACPI_RSDESC_SIZE        TotalLength,
+    AML_RESOURCE            *Aml)
+{
+    ACPI_RS_LENGTH          ResourceLength;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /* Determine if this is a small or large resource */
+
+    if (Aml->SmallHeader.DescriptorType & ACPI_RESOURCE_NAME_LARGE)
+    {
+        /* Large Resource type -- bytes 1-2 contain the 16-bit length */
+
+        ResourceLength = (ACPI_RS_LENGTH)
+            (TotalLength - sizeof (AML_RESOURCE_LARGE_HEADER));
+
+        /* Insert length into the Large descriptor length field */
+
+        ACPI_MOVE_16_TO_16 (&Aml->LargeHeader.ResourceLength, &ResourceLength);
+    }
+    else
+    {
+        /* Small Resource type -- bits 2:0 of byte 0 contain the length */
+
+        ResourceLength = (ACPI_RS_LENGTH)
+            (TotalLength - sizeof (AML_RESOURCE_SMALL_HEADER));
+
+        /* Insert length into the descriptor type byte */
+
+        Aml->SmallHeader.DescriptorType = (UINT8) 
+            
+            /* Clear any existing length, preserving descriptor type bits */
+
+            ((Aml->SmallHeader.DescriptorType & ~ACPI_RESOURCE_NAME_SMALL_LENGTH_MASK)
+
+            | ResourceLength);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiRsSetResourceHeader
  *
  * PARAMETERS:  DescriptorType      - Byte to be inserted as the type
@@ -262,41 +403,19 @@ AcpiRsGetResourceInfo (
 void
 AcpiRsSetResourceHeader (
     UINT8                   DescriptorType,
-    ACPI_SIZE               TotalLength,
+    ACPI_RSDESC_SIZE        TotalLength,
     AML_RESOURCE            *Aml)
 {
-    UINT16                  ResourceLength;
-
-
     ACPI_FUNCTION_ENTRY ();
 
 
-    /* Set the descriptor type */
+    /* Set the Descriptor Type */
 
     Aml->SmallHeader.DescriptorType = DescriptorType;
 
-    /* Determine if this is a small or large resource */
+    /* Set the Resource Length */
 
-    if (Aml->SmallHeader.DescriptorType & ACPI_RESOURCE_NAME_LARGE)
-    {
-        /* Large Resource type -- bytes 1-2 contain the 16-bit length */
-
-        ResourceLength = (UINT16) (TotalLength - sizeof (AML_RESOURCE_LARGE_HEADER));
-
-        /* Insert length into the Large descriptor length field */
-
-        ACPI_MOVE_16_TO_16 (&Aml->LargeHeader.ResourceLength, &ResourceLength);
-    }
-    else
-    {
-        /* Small Resource type -- bits 2:0 of byte 0 contain the length */
-
-        ResourceLength = (UINT16) (TotalLength - sizeof (AML_RESOURCE_SMALL_HEADER));
-
-        /* Insert length into the descriptor type byte */
-
-        Aml->SmallHeader.DescriptorType |= (UINT8) ResourceLength;
-    }
+    AcpiRsSetResourceLength (TotalLength, Aml);
 }
 
 
@@ -357,15 +476,15 @@ AcpiRsStrcpy (
  *
  ******************************************************************************/
 
-UINT16
+ACPI_RS_LENGTH
 AcpiRsGetResourceSource (
-    UINT16                  ResourceLength,
-    ACPI_SIZE               MinimumLength,
+    ACPI_RS_LENGTH          ResourceLength,
+    ACPI_RS_LENGTH          MinimumLength,
     ACPI_RESOURCE_SOURCE    *ResourceSource,
     AML_RESOURCE            *Aml,
     char                    *StringPtr)
 {
-    ACPI_SIZE               TotalLength;
+    ACPI_RSDESC_SIZE        TotalLength;
     UINT8                   *AmlResourceSource;
 
 
@@ -382,7 +501,7 @@ AcpiRsGetResourceSource (
      * Note: Some resource descriptors will have an additional null, so
      * we add 1 to the minimum length.
      */
-    if (TotalLength > (MinimumLength + 1))
+    if (TotalLength > (ACPI_RSDESC_SIZE )(MinimumLength + 1))
     {
         /* Get the ResourceSourceIndex */
 
@@ -399,17 +518,23 @@ AcpiRsGetResourceSource (
                 ((UINT8 *) ResourceSource) + sizeof (ACPI_RESOURCE_SOURCE);
         }
 
+        /*
+         * In order for the StructSize to fall on a 32-bit boundary, calculate
+         * the length of the string (+1 for the NULL terminator) and expand the
+         * StructSize to the next 32-bit boundary.
+         *
+         * Zero the entire area of the buffer.
+         */
+        TotalLength = ACPI_ROUND_UP_TO_32BITS (
+                        ACPI_STRLEN ((char *) &AmlResourceSource[1]) + 1);
+        ACPI_MEMSET (ResourceSource->StringPtr, 0, TotalLength);
+
         /* Copy the ResourceSource string to the destination */
 
         ResourceSource->StringLength = AcpiRsStrcpy (ResourceSource->StringPtr,
                                         (char *) &AmlResourceSource[1]);
 
-        /*
-         * In order for the StructSize to fall on a 32-bit boundary,
-         * calculate the length of the string and expand the
-         * StructSize to the next 32-bit boundary.
-         */
-        return ((UINT16) ACPI_ROUND_UP_TO_32BITS (ResourceSource->StringLength));
+        return ((ACPI_RS_LENGTH) TotalLength);
     }
     else
     {
@@ -434,19 +559,19 @@ AcpiRsGetResourceSource (
  *
  * RETURN:      Total length of the AML descriptor
  *
- * DESCRIPTION: Convert an optoinal ResourceSource from internal format to a
+ * DESCRIPTION: Convert an optional ResourceSource from internal format to a
  *              raw AML resource descriptor
  *
  ******************************************************************************/
 
-ACPI_SIZE
+ACPI_RSDESC_SIZE
 AcpiRsSetResourceSource (
     AML_RESOURCE            *Aml,
-    ACPI_SIZE               MinimumLength,
+    ACPI_RS_LENGTH          MinimumLength,
     ACPI_RESOURCE_SOURCE    *ResourceSource)
 {
     UINT8                   *AmlResourceSource;
-    ACPI_SIZE               DescriptorLength;
+    ACPI_RSDESC_SIZE        DescriptorLength;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -475,7 +600,7 @@ AcpiRsSetResourceSource (
          * Add the length of the string (+ 1 for null terminator) to the
          * final descriptor length
          */
-        DescriptorLength += ((ACPI_SIZE) ResourceSource->StringLength + 1);
+        DescriptorLength += ((ACPI_RSDESC_SIZE) ResourceSource->StringLength + 1);
     }
 
     /* Return the new total length of the AML descriptor */
