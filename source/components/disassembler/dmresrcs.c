@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcs.c - "Small" Resource Descriptor disassembly
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  ******************************************************************************/
 
@@ -221,7 +221,7 @@ AcpiDmIoDescriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("IO (%s,\n",
-        AcpiGbl_IoDecode [(Resource->Io.Information & 1)]);
+        AcpiGbl_IoDecode [(Resource->Io.Flags & 1)]);
 
     AcpiDmIndent (Level + 1);
     AcpiDmDumpInteger16 (Resource->Io.Minimum, "Address Range Minimum");

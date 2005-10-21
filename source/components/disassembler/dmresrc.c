@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  ******************************************************************************/
 
@@ -195,7 +195,7 @@ AcpiDmDumpInteger8 (
     UINT8                   Value,
     char                    *Name)
 {
-    AcpiOsPrintf ("0x%4.4X,             // %s\n", Value, Name);
+    AcpiOsPrintf ("0x%2.2X,               // %s\n", Value, Name);
 }
 
 void

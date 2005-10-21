@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  ******************************************************************************/
 
@@ -782,7 +782,7 @@ AcpiDmExtendedDescriptor (
     /* Extra field for this descriptor only */
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger64 (Resource->ExtAddress64.TypeSpecificAttributes,
+    AcpiDmDumpInteger64 (Resource->ExtAddress64.TypeSpecific,
         "Type-Specific Attributes");
 
     /* Type-specific flags */
@@ -818,7 +818,7 @@ AcpiDmMemory24Descriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Memory24 (%s,\n",
-        AcpiGbl_RWDecode [Resource->Memory24.Information & 1]);
+        AcpiGbl_RWDecode [Resource->Memory24.Flags & 1]);
 
     /* Dump the 4 contiguous WORD values */
 
@@ -854,7 +854,7 @@ AcpiDmMemory32Descriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Memory32 (%s,\n",
-        AcpiGbl_RWDecode [Resource->Memory32.Information & 1]);
+        AcpiGbl_RWDecode [Resource->Memory32.Flags & 1]);
 
     /* Dump the 4 contiguous DWORD values */
 
@@ -890,7 +890,7 @@ AcpiDmFixedMemory32Descriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Memory32Fixed (%s,\n",
-        AcpiGbl_RWDecode [Resource->FixedMemory32.Information & 1]);
+        AcpiGbl_RWDecode [Resource->FixedMemory32.Flags & 1]);
 
     AcpiDmIndent (Level + 1);
     AcpiDmDumpInteger32 (Resource->FixedMemory32.Address, "Address Base");
@@ -936,9 +936,19 @@ AcpiDmGenericRegisterDescriptor (
     AcpiDmDumpInteger8 (Resource->GenericReg.BitOffset, "Register Bit Offset");
 
     AcpiDmIndent (Level + 1);
-    AcpiOsPrintf ("0x%8.8X%8.8X) // %s\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Resource->GenericReg.Address)),
-        "Register Address");
+    AcpiDmDumpInteger64 (Resource->GenericReg.Address, "Register Address");
+
+    /* Optional field for ACPI 3.0 */
+
+    if (Resource->GenericReg.AccessSize)
+    {
+        AcpiDmIndent (Level + 1);
+        AcpiOsPrintf ("0x%2.2X                // %s\n",
+            Resource->GenericReg.AccessSize, "Access Size");
+    }
+
+    AcpiDmIndent (Level + 1);
+    AcpiOsPrintf (")\n");
 }
 
 
@@ -979,7 +989,7 @@ AcpiDmInterruptDescriptor (
      */
     AcpiDmResourceSource (Resource,
         sizeof (AML_RESOURCE_EXTENDED_IRQ) +
-            (Resource->ExtendedIrq.TableLength - 1) * sizeof (UINT32),
+            (Resource->ExtendedIrq.InterruptCount - 1) * sizeof (UINT32),
         Resource->ExtendedIrq.ResourceLength);
 
     /* Dump the interrupt list */
@@ -987,11 +997,11 @@ AcpiDmInterruptDescriptor (
     AcpiOsPrintf (")\n");
     AcpiDmIndent (Level);
     AcpiOsPrintf ("{\n");
-    for (i = 0; i < Resource->ExtendedIrq.TableLength; i++)
+    for (i = 0; i < Resource->ExtendedIrq.InterruptCount; i++)
     {
         AcpiDmIndent (Level + 1);
         AcpiOsPrintf ("0x%8.8X,\n",
-            (UINT32) Resource->ExtendedIrq.InterruptNumber[i]);
+            (UINT32) Resource->ExtendedIrq.Interrupts[i]);
     }
 
     AcpiDmIndent (Level);

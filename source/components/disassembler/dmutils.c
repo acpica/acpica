@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmutils - AML disassembler utilities
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  ******************************************************************************/
 
@@ -312,6 +312,14 @@ const char                      *AcpiGbl_RNGDecode[4] =
     "NonISAOnlyRanges",
     "ISAOnlyRanges",
     "EntireRange"
+};
+
+const char                      *AcpiGbl_ConfigDecode[4] =
+{
+    "0 - Good Configuration",
+    "1 - Acceptable Configuration",
+    "2 - Suboptimal Configuration",
+    "3 - ***Invalid Configuration***",
 };
 
 
