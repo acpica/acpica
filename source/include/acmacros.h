@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.164 $
+ *       $Revision: 1.165 $
  *
  *****************************************************************************/
 
@@ -277,7 +277,7 @@
 
 #define ACPI_BUFFER_INDEX(BufLen,BufOffset,ByteGran)  (BufOffset)
 
-#ifdef ACPI_MISALIGNED_TRANSFERS
+#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
 
 /* The hardware supports unaligned transfers, just do the little-endian move */
 

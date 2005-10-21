@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.50 $
+ *       $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
  * If possible, pack the following structures to byte alignment, since we
  * don't care about performance for debug output
  */
-#ifdef ACPI_MISALIGNED_TRANSFERS
+#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
 #pragma pack(1)
 #endif
 

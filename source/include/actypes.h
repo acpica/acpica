@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.287 $
+ *       $Revision: 1.288 $
  *
  *****************************************************************************/
 
@@ -198,10 +198,22 @@ typedef UINT64                          ACPI_SIZE;
 #define ACPI_MAX_PTR                    ACPI_UINT64_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT64_MAX
 
+/*
+ * In the case of the Itanium Processor Family (IPF), the hardware does not
+ * support misaligned memory transfers. Set the MISALIGNMENT_NOT_SUPPORTED flag
+ * to indicate that special precautions must be taken to avoid alignment faults.
+ * (IA64 or ia64 is currently used by existing compilers to indicate IPF.)
+ *
+ * Note: EM64T and other X86-64 processors do support misaligned transfers,
+ * so there is no need to define this flag.
+ */
+#if defined (__IA64__) || defined (__ia64__)
+#define ACPI_MISALIGNMENT_NOT_SUPPORTED
+#endif
 
 #elif ACPI_MACHINE_WIDTH == 16
 
-/*! [Begin] no source code translation (keep the typedefs) */
+/*! [Begin] no source code translation (keep the typedefs as-is) */
 
 /*
  * 16-bit type definitions
@@ -231,7 +243,6 @@ typedef char                            *ACPI_PHYSICAL_ADDRESS;
 typedef UINT16                          ACPI_SIZE;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000002
-#define ACPI_MISALIGNED_TRANSFERS
 #define ACPI_USE_NATIVE_DIVIDE                          /* No 64-bit integers, ok to use native divide */
 #define ACPI_MAX_PTR                    ACPI_UINT16_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT16_MAX
@@ -269,7 +280,6 @@ typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 typedef UINT32                          ACPI_SIZE;
 
 #define ALIGNED_ADDRESS_BOUNDARY        0x00000004
-#define ACPI_MISALIGNED_TRANSFERS
 #define ACPI_MAX_PTR                    ACPI_UINT32_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT32_MAX
 
@@ -1149,10 +1159,9 @@ typedef UINT32                          ACPI_RSDESC_SIZE;  /* Max Resource Descr
 
 
 /*
- * If possible, pack the following structures to byte alignment, since we
- * don't care about performance for debug output
+ * If possible, pack the following structures to byte alignment
  */
-#ifdef ACPI_MISALIGNED_TRANSFERS
+#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
 #pragma pack(1)
 #endif
 
@@ -1445,7 +1454,7 @@ typedef struct acpi_resource
 
 #define ACPI_NEXT_RESOURCE(Res)             (ACPI_RESOURCE *)((UINT8 *) Res + Res->Length)
 
-#ifdef ACPI_MISALIGNED_TRANSFERS
+#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
 #define ACPI_ALIGN_RESOURCE_SIZE(Length)    (Length)
 #else
 #define ACPI_ALIGN_RESOURCE_SIZE(Length)    ACPI_ROUND_UP_TO_NATIVE_WORD(Length)
