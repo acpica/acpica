@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -204,8 +204,8 @@ RsDoDwordIoDescriptor (
      * optional fields present
      */
     OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS32);
-    Descriptor->Address32.ResourceLength = (UINT16) 
-        (sizeof (AML_RESOURCE_ADDRESS32) - 
+    Descriptor->Address32.ResourceLength = (UINT16)
+        (sizeof (AML_RESOURCE_ADDRESS32) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
@@ -309,7 +309,7 @@ RsDoDwordIoDescriptor (
                 {
                     /* Found a valid ResourceSource */
 
-                    Descriptor->Address32.ResourceLength = (UINT16) 
+                    Descriptor->Address32.ResourceLength = (UINT16)
                         (Descriptor->Address32.ResourceLength + StringLength);
 
                     strcpy ((char *)
@@ -417,8 +417,8 @@ RsDoDwordMemoryDescriptor (
      * optional fields present
      */
     OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS32);
-    Descriptor->Address32.ResourceLength = (UINT16) 
-        (sizeof (AML_RESOURCE_ADDRESS32) - 
+    Descriptor->Address32.ResourceLength = (UINT16)
+        (sizeof (AML_RESOURCE_ADDRESS32) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
 
@@ -526,7 +526,7 @@ RsDoDwordMemoryDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Address32.ResourceLength = (UINT16) 
+                    Descriptor->Address32.ResourceLength = (UINT16)
                         (Descriptor->Address32.ResourceLength + StringLength);
 
                     strcpy ((char *)
@@ -634,8 +634,8 @@ RsDoDwordSpaceDescriptor (
      * optional fields present
      */
     OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS32);
-    Descriptor->Address32.ResourceLength = (UINT16) 
-        (sizeof (AML_RESOURCE_ADDRESS32) - 
+    Descriptor->Address32.ResourceLength = (UINT16)
+        (sizeof (AML_RESOURCE_ADDRESS32) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
@@ -740,7 +740,7 @@ RsDoDwordSpaceDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Address32.ResourceLength = (UINT16) 
+                    Descriptor->Address32.ResourceLength = (UINT16)
                         (Descriptor->Address32.ResourceLength + StringLength);
 
                     strcpy ((char *)
@@ -829,7 +829,7 @@ RsDoExtendedIoDescriptor (
     Descriptor->ExtAddress64.ResourceType    = ACPI_ADDRESS_TYPE_IO_RANGE;
     Descriptor->ExtAddress64.RevisionID      = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
 
-    Descriptor->ExtAddress64.ResourceLength  = (UINT16) 
+    Descriptor->ExtAddress64.ResourceLength  = (UINT16)
         (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
@@ -984,7 +984,7 @@ RsDoExtendedMemoryDescriptor (
     Descriptor->ExtAddress64.ResourceType    = ACPI_ADDRESS_TYPE_MEMORY_RANGE;
     Descriptor->ExtAddress64.RevisionID      = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
 
-    Descriptor->ExtAddress64.ResourceLength  = (UINT16) 
+    Descriptor->ExtAddress64.ResourceLength  = (UINT16)
         (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
@@ -1146,7 +1146,7 @@ RsDoExtendedSpaceDescriptor (
     Descriptor->ExtAddress64.DescriptorType  = ACPI_RESOURCE_NAME_EXTENDED_ADDRESS64;
     Descriptor->ExtAddress64.RevisionID      = AML_RESOURCE_EXTENDED_ADDRESS_REVISION;
 
-    Descriptor->ExtAddress64.ResourceLength  = (UINT16) 
+    Descriptor->ExtAddress64.ResourceLength  = (UINT16)
         (sizeof (AML_RESOURCE_EXTENDED_ADDRESS64) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
@@ -1299,8 +1299,8 @@ RsDoQwordIoDescriptor (
      * optional fields present
      */
     OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS64);
-    Descriptor->Address64.ResourceLength = (UINT16) 
-        (sizeof (AML_RESOURCE_ADDRESS64) - 
+    Descriptor->Address64.ResourceLength = (UINT16)
+        (sizeof (AML_RESOURCE_ADDRESS64) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
@@ -1395,7 +1395,7 @@ RsDoQwordIoDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Address64.ResourceLength = (UINT16) 
+                    Descriptor->Address64.ResourceLength = (UINT16)
                         (Descriptor->Address64.ResourceLength + StringLength);
 
                     strcpy ((char *)
@@ -1503,8 +1503,8 @@ RsDoQwordMemoryDescriptor (
      * optional fields present
      */
     OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS64);
-    Descriptor->Address64.ResourceLength = (UINT16) 
-        (sizeof (AML_RESOURCE_ADDRESS64) - 
+    Descriptor->Address64.ResourceLength = (UINT16)
+        (sizeof (AML_RESOURCE_ADDRESS64) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
@@ -1606,7 +1606,7 @@ RsDoQwordMemoryDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Address64.ResourceLength = (UINT16) 
+                    Descriptor->Address64.ResourceLength = (UINT16)
                         (Descriptor->Address64.ResourceLength + StringLength);
 
                     strcpy ((char *)
@@ -1714,8 +1714,8 @@ RsDoQwordSpaceDescriptor (
      * optional fields present
      */
     OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS64);
-    Descriptor->Address64.ResourceLength = (UINT16) 
-        (sizeof (AML_RESOURCE_ADDRESS64) - 
+    Descriptor->Address64.ResourceLength = (UINT16)
+        (sizeof (AML_RESOURCE_ADDRESS64) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
@@ -1815,7 +1815,7 @@ RsDoQwordSpaceDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Address64.ResourceLength = (UINT16) 
+                    Descriptor->Address64.ResourceLength = (UINT16)
                         (Descriptor->Address64.ResourceLength + StringLength);
 
                     strcpy ((char *)
@@ -1909,8 +1909,8 @@ RsDoWordIoDescriptor (
      * optional fields present
      */
     OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS16);
-    Descriptor->Address16.ResourceLength = (UINT16) 
-        (sizeof (AML_RESOURCE_ADDRESS16) - 
+    Descriptor->Address16.ResourceLength = (UINT16)
+        (sizeof (AML_RESOURCE_ADDRESS16) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
@@ -2005,7 +2005,7 @@ RsDoWordIoDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Address16.ResourceLength = (UINT16) 
+                    Descriptor->Address16.ResourceLength = (UINT16)
                         (Descriptor->Address16.ResourceLength + StringLength);
 
                     strcpy ((char *)
@@ -2113,8 +2113,8 @@ RsDoWordBusNumberDescriptor (
      * optional fields present
      */
     OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS16);
-    Descriptor->Address16.ResourceLength = (UINT16) 
-        (sizeof (AML_RESOURCE_ADDRESS16) - 
+    Descriptor->Address16.ResourceLength = (UINT16)
+        (sizeof (AML_RESOURCE_ADDRESS16) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
@@ -2207,7 +2207,7 @@ RsDoWordBusNumberDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Address16.ResourceLength = (UINT16) 
+                    Descriptor->Address16.ResourceLength = (UINT16)
                         (Descriptor->Address16.ResourceLength + StringLength);
 
                     strcpy ((char *)
@@ -2300,8 +2300,8 @@ RsDoWordSpaceDescriptor (
      * optional fields present
      */
     OptionalFields = ((UINT8 *) Descriptor) + sizeof (AML_RESOURCE_ADDRESS16);
-    Descriptor->Address16.ResourceLength = (UINT16) 
-        (sizeof (AML_RESOURCE_ADDRESS16) - 
+    Descriptor->Address16.ResourceLength = (UINT16)
+        (sizeof (AML_RESOURCE_ADDRESS16) -
          sizeof (AML_RESOURCE_LARGE_HEADER));
 
     /* Process all child initialization nodes */
@@ -2406,7 +2406,7 @@ RsDoWordSpaceDescriptor (
             {
                 if (StringLength)
                 {
-                    Descriptor->Address16.ResourceLength = (UINT16) 
+                    Descriptor->Address16.ResourceLength = (UINT16)
                         (Descriptor->Address16.ResourceLength + StringLength);
 
                     strcpy ((char *)
@@ -2510,7 +2510,7 @@ RsDoInterruptDescriptor (
     }
 
     InitializerOp = Op->Asl.Child;
-    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_EXTENDED_IRQ) + 
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_EXTENDED_IRQ) +
                 1 + OptionIndex + StringLength);
 
     Descriptor = Rnode->Buffer;
@@ -2671,7 +2671,7 @@ RsDoInterruptDescriptor (
         Rover = ACPI_PTR_ADD (
                     AML_RESOURCE, &(Rover->U8Item), StringLength);
 
-        Descriptor->ExtendedIrq.ResourceLength = (UINT16) 
+        Descriptor->ExtendedIrq.ResourceLength = (UINT16)
             (Descriptor->ExtendedIrq.ResourceLength + StringLength);
     }
 

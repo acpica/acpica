@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.165 $
+ *       $Revision: 1.166 $
  *
  *****************************************************************************/
 
@@ -623,7 +623,7 @@
  * There are two versions of most of the return macros. The default version is
  * safer, since it avoids side-effects by guaranteeing that the argument will
  * not be evaluated twice.
- * 
+ *
  * A less-safe version of the macros is provided for optional use if the
  * compiler uses excessive CPU stack (for example, this may happen in the
  * debug case if code optimzation is disabled.)

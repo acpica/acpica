@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.51 $
+ *       $Revision: 1.52 $
  *
  *****************************************************************************/
 
@@ -174,8 +174,8 @@ typedef const struct acpi_rsconvert_info
 
 #define ACPI_RSC_TABLE_SIZE(d)          (sizeof (d) / sizeof (ACPI_RSCONVERT_INFO))
 
-#define ACPI_RS_OFFSET(f)               (UINT8) ACPI_OFFSET (ACPI_RESOURCE,f) 
-#define AML_OFFSET(f)                   (UINT8) ACPI_OFFSET (AML_RESOURCE,f) 
+#define ACPI_RS_OFFSET(f)               (UINT8) ACPI_OFFSET (ACPI_RESOURCE,f)
+#define AML_OFFSET(f)                   (UINT8) ACPI_OFFSET (AML_RESOURCE,f)
 
 
 /*
@@ -258,7 +258,7 @@ AcpiRsCreatePciRoutingTable (
     ACPI_BUFFER             *OutputBuffer);
 
 
-/* 
+/*
  * rsutils
  */
 ACPI_STATUS
@@ -334,7 +334,7 @@ AcpiRsGetAddressCommon (
     AML_RESOURCE            *Aml);
 
 
-/* 
+/*
  * rsmisc
  */
 ACPI_STATUS

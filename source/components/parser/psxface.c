@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@ AcpiPsUpdateParameterList (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDebugTrace  
+ * FUNCTION:    AcpiDebugTrace
  *
  * PARAMETERS:  MethodName      - Valid ACPI name string
  *              DebugLevel      - Optional level mask. 0 to use default

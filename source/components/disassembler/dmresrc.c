@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  ******************************************************************************/
 
@@ -492,7 +492,7 @@ AcpiDmIsResourceTemplate (
     ByteData = NextOp->Named.Data;
 
     /*
-     * The absolute minimum resource template is an END_TAG (2 bytes), 
+     * The absolute minimum resource template is an END_TAG (2 bytes),
      * and the list must be terminated by a valid 2-byte END_TAG
      */
     if ((ByteCount < 2) ||

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.132 $
+ *              $Revision: 1.133 $
  *
  ******************************************************************************/
 
@@ -1347,7 +1347,7 @@ AcpiDmCompareAmlResources (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Compare the original AML with a conversion of the AML to 
+ * DESCRIPTION: Compare the original AML with a conversion of the AML to
  *              internal resource list, then back to AML.
  *
  ******************************************************************************/

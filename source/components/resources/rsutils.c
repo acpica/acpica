@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  ******************************************************************************/
 
@@ -372,8 +372,8 @@ AcpiRsSetResourceLength (
 
         /* Insert length into the descriptor type byte */
 
-        Aml->SmallHeader.DescriptorType = (UINT8) 
-            
+        Aml->SmallHeader.DescriptorType = (UINT8)
+
             /* Clear any existing length, preserving descriptor type bits */
 
             ((Aml->SmallHeader.DescriptorType & ~ACPI_RESOURCE_NAME_SMALL_LENGTH_MASK)
