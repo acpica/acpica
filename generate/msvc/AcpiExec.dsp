@@ -165,6 +165,10 @@ SOURCE=..\..\source\components\utilities\utobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utresrc.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # Begin Source File
@@ -190,6 +194,15 @@ SOURCE=..\..\source\components\interpreter\executer\excreate.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\executer\exdump.c
+
+!IF  "$(CFG)" == "AcpiExec - Win32 Release"
+
+# SUBTRACT CPP /FA<none>
+
+!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -217,12 +230,10 @@ SOURCE=..\..\source\components\interpreter\executer\exoparg1.c
 
 !IF  "$(CFG)" == "AcpiExec - Win32 Release"
 
-# SUBTRACT CPP /FA<none>
-
 !ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
 
 # ADD CPP /Ob0
-# SUBTRACT CPP /Og /FA<none>
+# SUBTRACT CPP /Og
 
 !ENDIF 
 
@@ -619,6 +630,15 @@ SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # Begin Source File
 
 SOURCE=..\..\source\components\resources\rsaddr.c
+
+!IF  "$(CFG)" == "AcpiExec - Win32 Release"
+
+# ADD CPP /FAcs
+
+!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -631,6 +651,15 @@ SOURCE=..\..\source\components\resources\rscreate.c
 # Begin Source File
 
 SOURCE=..\..\source\components\resources\rsdump.c
+
+!IF  "$(CFG)" == "AcpiExec - Win32 Release"
+
+# ADD CPP /FAcs
+
+!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 

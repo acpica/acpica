@@ -141,6 +141,10 @@ SOURCE=..\..\source_linux\COMPONENTS\utilities\utobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\utilities\utresrc.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\components\utilities\utstate.c
 # End Source File
 # Begin Source File
