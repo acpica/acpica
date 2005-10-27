@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.160 $
+ *       $Revision: 1.163 $
  *
  *****************************************************************************/
 
@@ -118,28 +118,55 @@
 #define __ACINTERP_H__
 
 
-#define ACPI_WALK_OPERANDS       (&(WalkState->Operands [WalkState->NumOperands -1]))
+#define ACPI_WALK_OPERANDS          (&(WalkState->Operands [WalkState->NumOperands -1]))
 
+/* Macros for tables used for debug output */
+
+#define ACPI_EXD_OFFSET(f)          (UINT8) ACPI_OFFSET (ACPI_OPERAND_OBJECT,f)
+#define ACPI_EXD_NSOFFSET(f)        (UINT8) ACPI_OFFSET (ACPI_NAMESPACE_NODE,f)
+#define ACPI_EXD_TABLE_SIZE(name)   (sizeof(name) / sizeof (ACPI_EXDUMP_INFO))
 
 /*
- * exxface - External interpreter interfaces
+ * If possible, pack the following structure to byte alignment, since we
+ * don't care about performance for debug output
  */
+#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
+#pragma pack(1)
+#endif
 
-ACPI_STATUS
-AcpiExLoadTable (
-    ACPI_TABLE_TYPE         TableId);
+typedef const struct acpi_exdump_info
+{
+    UINT8                   Opcode;
+    UINT8                   Offset;
+    char                    *Name;
 
-ACPI_STATUS
-AcpiExExecuteMethod (
-    ACPI_NAMESPACE_NODE     *MethodNode,
-    ACPI_OPERAND_OBJECT     **Params,
-    ACPI_OPERAND_OBJECT     **ReturnObjDesc);
+} ACPI_EXDUMP_INFO;
+
+/* Values for the Opcode field above */
+
+#define ACPI_EXD_INIT                   0
+#define ACPI_EXD_TYPE                   1
+#define ACPI_EXD_UINT8                  2
+#define ACPI_EXD_UINT16                 3
+#define ACPI_EXD_UINT32                 4
+#define ACPI_EXD_UINT64                 5
+#define ACPI_EXD_LITERAL                6
+#define ACPI_EXD_POINTER                7
+#define ACPI_EXD_ADDRESS                8
+#define ACPI_EXD_STRING                 9
+#define ACPI_EXD_BUFFER                 10
+#define ACPI_EXD_PACKAGE                11
+#define ACPI_EXD_FIELD                  12
+#define ACPI_EXD_REFERENCE              13
+
+/* restore default alignment */
+
+#pragma pack()
 
 
 /*
  * exconvrt - object conversion
  */
-
 ACPI_STATUS
 AcpiExConvertToInteger (
     ACPI_OPERAND_OBJECT     *ObjDesc,
@@ -171,17 +198,10 @@ AcpiExConvertToTargetType (
     ACPI_OPERAND_OBJECT     **ResultDesc,
     ACPI_WALK_STATE         *WalkState);
 
-static UINT32
-AcpiExConvertToAscii (
-    ACPI_INTEGER            Integer,
-    UINT16                  Base,
-    UINT8                   *String,
-    UINT8                   MaxLength);
 
 /*
  * exfield - ACPI AML (p-code) execution - field manipulation
  */
-
 ACPI_STATUS
 AcpiExCommonBufferSetup (
     ACPI_OPERAND_OBJECT     *ObjDesc,
@@ -227,7 +247,6 @@ AcpiExWriteDataToField (
 /*
  * exfldio - low level field I/O
  */
-
 ACPI_STATUS
 AcpiExExtractFromField (
     ACPI_OPERAND_OBJECT     *ObjDesc,
@@ -247,28 +266,10 @@ AcpiExAccessRegion (
     ACPI_INTEGER            *Value,
     UINT32                  ReadWrite);
 
-static ACPI_STATUS
-AcpiExFieldDatumIo (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT32                  FieldDatumByteOffset,
-    ACPI_INTEGER            *Value,
-    UINT32                  ReadWrite);
-
-static BOOLEAN
-AcpiExRegisterOverflow (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_INTEGER            Value);
-
-static ACPI_STATUS
-AcpiExSetupRegion (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT32                  FieldDatumByteOffset);
-
 
 /*
- * exmisc - ACPI AML (p-code) execution - specific opcodes
+ * exmisc - misc support routines
  */
-
 ACPI_STATUS
 AcpiExGetObjectReference (
     ACPI_OPERAND_OBJECT     *ObjDesc,
@@ -350,7 +351,6 @@ AcpiExCreateMethod (
 /*
  * exconfig - dynamic table load/unload
  */
-
 ACPI_STATUS
 AcpiExLoadOp (
     ACPI_OPERAND_OBJECT     *ObjDesc,
@@ -366,17 +366,10 @@ ACPI_STATUS
 AcpiExUnloadTable (
     ACPI_OPERAND_OBJECT     *DdbHandle);
 
-static ACPI_STATUS
-AcpiExAddTable (
-    ACPI_TABLE_HEADER       *Table,
-    ACPI_NAMESPACE_NODE     *ParentNode,
-    ACPI_OPERAND_OBJECT     **DdbHandle);
-
 
 /*
  * exmutex - mutex support
  */
-
 ACPI_STATUS
 AcpiExAcquireMutex (
     ACPI_OPERAND_OBJECT     *TimeDesc,
@@ -396,15 +389,10 @@ void
 AcpiExUnlinkMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
-static void
-AcpiExLinkMutex (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    ACPI_THREAD_STATE       *Thread);
 
 /*
- * exprep - ACPI AML (p-code) execution - prep utilities
+ * exprep - ACPI AML execution - prep utilities
  */
-
 ACPI_STATUS
 AcpiExPrepCommonFieldObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
@@ -417,23 +405,10 @@ ACPI_STATUS
 AcpiExPrepFieldValue (
     ACPI_CREATE_FIELD_INFO  *Info);
 
-static UINT32
-AcpiExGenerateAccess (
-    UINT32                  FieldBitOffset,
-    UINT32                  FieldBitLength,
-    UINT32                  RegionLength);
-
-static UINT32
-AcpiExDecodeFieldAccess (
-    ACPI_OPERAND_OBJECT     *ObjDesc,
-    UINT8                   FieldFlags,
-    UINT32                  *ReturnByteAlignment);
-
 
 /*
  * exsystem - Interface to OS services
  */
-
 ACPI_STATUS
 AcpiExSystemDoNotifyOp (
     ACPI_OPERAND_OBJECT     *Value,
@@ -478,7 +453,6 @@ AcpiExSystemWaitSemaphore (
 /*
  * exoparg1 - ACPI AML execution, 1 operand
  */
-
 ACPI_STATUS
 AcpiExOpcode_0A_0T_1R (
     ACPI_WALK_STATE         *WalkState);
@@ -502,7 +476,6 @@ AcpiExOpcode_1A_1T_0R (
 /*
  * exoparg2 - ACPI AML execution, 2 operands
  */
-
 ACPI_STATUS
 AcpiExOpcode_2A_0T_0R (
     ACPI_WALK_STATE         *WalkState);
@@ -523,7 +496,6 @@ AcpiExOpcode_2A_2T_1R (
 /*
  * exoparg3 - ACPI AML execution, 3 operands
  */
-
 ACPI_STATUS
 AcpiExOpcode_3A_0T_0R (
     ACPI_WALK_STATE         *WalkState);
@@ -536,22 +508,14 @@ AcpiExOpcode_3A_1T_1R (
 /*
  * exoparg6 - ACPI AML execution, 6 operands
  */
-
 ACPI_STATUS
 AcpiExOpcode_6A_0T_1R (
     ACPI_WALK_STATE         *WalkState);
-
-static BOOLEAN
-AcpiExDoMatch (
-    UINT32                  MatchOp,
-    ACPI_OPERAND_OBJECT     *PackageObj,
-    ACPI_OPERAND_OBJECT     *MatchObj);
 
 
 /*
  * exresolv - Object resolution and get value functions
  */
-
 ACPI_STATUS
 AcpiExResolveToValue (
     ACPI_OPERAND_OBJECT     **StackPtr,
@@ -564,15 +528,10 @@ AcpiExResolveMultiple (
     ACPI_OBJECT_TYPE        *ReturnType,
     ACPI_OPERAND_OBJECT     **ReturnDesc);
 
-static ACPI_STATUS
-AcpiExResolveObjectToValue (
-    ACPI_OPERAND_OBJECT     **StackPtr,
-    ACPI_WALK_STATE         *WalkState);
 
 /*
  * exresnte - resolve namespace node
  */
-
 ACPI_STATUS
 AcpiExResolveNodeToValue (
     ACPI_NAMESPACE_NODE     **StackPtr,
@@ -582,24 +541,16 @@ AcpiExResolveNodeToValue (
 /*
  * exresop - resolve operand to value
  */
-
 ACPI_STATUS
 AcpiExResolveOperands (
     UINT16                  Opcode,
     ACPI_OPERAND_OBJECT     **StackPtr,
     ACPI_WALK_STATE         *WalkState);
 
-static ACPI_STATUS
-AcpiExCheckObjectType (
-    ACPI_OBJECT_TYPE        TypeNeeded,
-    ACPI_OBJECT_TYPE        ThisType,
-    void                    *Object);
-
 
 /*
  * exdump - Interpreter debug output routines
  */
-
 void
 AcpiExDumpOperand (
     ACPI_OPERAND_OBJECT     *ObjDesc,
@@ -621,35 +572,14 @@ AcpiExDumpObjectDescriptor (
     UINT32                  Flags);
 
 void
-AcpiExDumpNode (
+AcpiExDumpNamespaceNode (
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  Flags);
 
-static void
-AcpiExOutString (
-    char                    *Title,
-    char                    *Value);
-
-static void
-AcpiExOutPointer (
-    char                    *Title,
-    void                    *Value);
-
-static void
-AcpiExOutInteger (
-    char                    *Title,
-    UINT32                  Value);
-
-static void
-AcpiExOutAddress (
-    char                    *Title,
-    ACPI_PHYSICAL_ADDRESS   Value);
-
 
 /*
- * exnames - interpreter/scanner name load/execute
+ * exnames - AML namestring support
  */
-
 ACPI_STATUS
 AcpiExGetNameString (
     ACPI_OBJECT_TYPE        DataType,
@@ -657,21 +587,10 @@ AcpiExGetNameString (
     char                    **OutNameString,
     UINT32                  *OutNameLength);
 
-static char *
-AcpiExAllocateNameString (
-    UINT32                  PrefixCount,
-    UINT32                  NumNameSegs);
-
-static ACPI_STATUS
-AcpiExNameSegment (
-    UINT8                   **InAmlAddress,
-    char                    *NameString);
-
 
 /*
  * exstore - Object store support
  */
-
 ACPI_STATUS
 AcpiExStore (
     ACPI_OPERAND_OBJECT     *ValDesc,
@@ -688,22 +607,10 @@ AcpiExStoreObjectToNode (
 #define ACPI_IMPLICIT_CONVERSION        TRUE
 #define ACPI_NO_IMPLICIT_CONVERSION     FALSE
 
-static ACPI_STATUS
-AcpiExStoreObjectToIndex (
-    ACPI_OPERAND_OBJECT     *ValDesc,
-    ACPI_OPERAND_OBJECT     *DestDesc,
-    ACPI_WALK_STATE         *WalkState);
-
-static void
-AcpiExDoDebugObject (
-    ACPI_OPERAND_OBJECT     *SourceDesc,
-    UINT32                  Level,
-    UINT32                  Index);
 
 /*
  * exstoren - resolve/store object
  */
-
 ACPI_STATUS
 AcpiExResolveObject (
     ACPI_OPERAND_OBJECT     **SourceDescPtr,
@@ -717,10 +624,10 @@ AcpiExStoreObjectToObject (
     ACPI_OPERAND_OBJECT     **NewDesc,
     ACPI_WALK_STATE         *WalkState);
 
+
 /*
  * exstorob - store object - buffer/string
  */
-
 ACPI_STATUS
 AcpiExStoreBufferToBuffer (
     ACPI_OPERAND_OBJECT     *SourceDesc,
@@ -735,7 +642,6 @@ AcpiExStoreStringToString (
 /*
  * excopy - object copy
  */
-
 ACPI_STATUS
 AcpiExCopyIntegerToIndexField (
     ACPI_OPERAND_OBJECT     *SourceDesc,
@@ -756,10 +662,10 @@ AcpiExCopyIntegerToBufferField (
     ACPI_OPERAND_OBJECT     *SourceDesc,
     ACPI_OPERAND_OBJECT     *TargetDesc);
 
+
 /*
  * exutils - interpreter/scanner utilities
  */
-
 ACPI_STATUS
 AcpiExEnterInterpreter (
     void);
@@ -790,16 +696,10 @@ AcpiExUnsignedIntegerToString (
     ACPI_INTEGER            Value,
     char                    *OutString);
 
-static UINT32
-AcpiExDigitsNeeded (
-    ACPI_INTEGER            Value,
-    UINT32                  Base);
-
 
 /*
  * exregion - default OpRegion handlers
  */
-
 ACPI_STATUS
 AcpiExSystemMemorySpaceHandler (
     UINT32                  Function,

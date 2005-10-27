@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  ******************************************************************************/
 
@@ -387,7 +387,7 @@ DumpNode:
 
     AcpiUtDumpBuffer ((void *) Node, sizeof (ACPI_NAMESPACE_NODE),
         Display, ACPI_UINT32_MAX);
-    AcpiExDumpNode (Node, 1);
+    AcpiExDumpNamespaceNode (Node, 1);
 
     ObjDesc = AcpiNsGetAttachedObject (Node);
     if (ObjDesc)
