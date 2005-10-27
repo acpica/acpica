@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -670,7 +670,7 @@ AsBracesOnSameLine (
             BlockBegin = TRUE;
         }
 
-        /* 
+        /*
          * Move every standalone brace up to the previous line
          * Check for digit will ignore initializer lists surrounded by braces.
          * This will work until we we need more complex detection.

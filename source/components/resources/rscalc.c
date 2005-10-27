@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -482,7 +482,7 @@ AcpiRsGetListLength (
              * Get the number of bits set in the 16-bit IRQ mask
              */
             ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
-            ExtraStructBytes = 
+            ExtraStructBytes =
                 AcpiRsCountSetBits (Temp16) * sizeof (UINT32);
             break;
 
@@ -502,7 +502,7 @@ AcpiRsGetListLength (
              * Vendor Resource:
              * Ensure a 32-bit boundary for the structure
              */
-            ExtraStructBytes = 
+            ExtraStructBytes =
                 ACPI_ROUND_UP_TO_32BITS (ResourceLength) - ResourceLength;
             break;
 
@@ -520,7 +520,7 @@ AcpiRsGetListLength (
              * Vendor Resource:
              * Add vendor data and ensure a 32-bit boundary for the structure
              */
-            ExtraStructBytes = 
+            ExtraStructBytes =
                 ACPI_ROUND_UP_TO_32BITS (ResourceLength) - ResourceLength;
             break;
 
@@ -544,7 +544,7 @@ AcpiRsGetListLength (
              */
             Buffer++;
 
-            ExtraStructBytes = 
+            ExtraStructBytes =
                 /*
                  * Add 4 bytes for each additional interrupt. Note: at
                  * least one interrupt is required and is included in
@@ -565,7 +565,7 @@ AcpiRsGetListLength (
              * Add the size of any optional data (ResourceSource)
              * Ensure a 64-bit boundary for the structure
              */
-            ExtraStructBytes = 
+            ExtraStructBytes =
                 ACPI_ROUND_UP_TO_64BITS (AcpiRsStreamOptionLength (
                     ResourceLength, MinimumAmlResourceLength));
             break;
@@ -577,7 +577,7 @@ AcpiRsGetListLength (
 
         /* Update the required buffer size for the internal descriptor structs */
 
-        Temp16 = (UINT16) (AcpiGbl_ResourceStructSizes[ResourceIndex] + 
+        Temp16 = (UINT16) (AcpiGbl_ResourceStructSizes[ResourceIndex] +
                             ExtraStructBytes);
         BufferSize += (UINT32) ACPI_ALIGN_RESOURCE_SIZE (Temp16);
 

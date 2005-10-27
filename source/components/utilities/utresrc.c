@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utresrc - Resource managment utilities
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  ******************************************************************************/
 
@@ -280,7 +280,7 @@ AcpiUtValidateResource (
 
     if (!AcpiGbl_ResourceTypes[ResourceIndex])
     {
-        return (AE_AML_INVALID_RESOURCE_TYPE);    
+        return (AE_AML_INVALID_RESOURCE_TYPE);
     }
 
 
@@ -488,7 +488,7 @@ AcpiUtGetDescriptorLength (
      * Get the Resource Length (does not include header length) and add
      * the header length (depends on if this is a small or large resource)
      */
-    return (AcpiUtGetResourceLength (Aml) + 
+    return (AcpiUtGetResourceLength (Aml) +
             AcpiUtGetResourceHeaderLength (Aml));
 }
 

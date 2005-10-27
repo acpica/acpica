@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.52 $
+ *              $Revision: 1.53 $
  *
  ******************************************************************************/
 
@@ -305,7 +305,7 @@ AcpiRsSetResourceLength (
 
     /* Length is the total descriptor length minus the header length */
 
-    ResourceLength = (ACPI_RS_LENGTH) 
+    ResourceLength = (ACPI_RS_LENGTH)
         (TotalLength - AcpiUtGetResourceHeaderLength (Aml));
 
     /* Length is stored differently for large and small descriptors */

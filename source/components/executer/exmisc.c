@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.133 $
+ *              $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -294,7 +294,7 @@ AcpiExConcatTemplate (
     }
 
     /*
-     * Copy the templates to the new buffer, 0 first, then 1 follows. One 
+     * Copy the templates to the new buffer, 0 first, then 1 follows. One
      * EndTag descriptor is copied from Operand1.
      */
     NewBuf = ReturnDesc->Buffer.Pointer;

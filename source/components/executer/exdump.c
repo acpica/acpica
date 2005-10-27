@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.189 $
+ *              $Revision: 1.190 $
  *
  *****************************************************************************/
 
@@ -481,7 +481,7 @@ AcpiExDumpObject (
 
             AcpiExOutAddress (Name, *((ACPI_PHYSICAL_ADDRESS *) Target));
             break;
-   
+
         case ACPI_EXD_STRING:
 
             AcpiUtPrintString (ObjDesc->String.Pointer, ACPI_UINT8_MAX);
@@ -492,7 +492,7 @@ AcpiExDumpObject (
 
             ACPI_DUMP_BUFFER (ObjDesc->Buffer.Pointer, ObjDesc->Buffer.Length);
             break;
-   
+
         case ACPI_EXD_PACKAGE:
 
             /* Dump the package contents */
@@ -500,12 +500,12 @@ AcpiExDumpObject (
             AcpiOsPrintf ("\nPackage Contents:\n");
             AcpiExDumpPackageObj (ObjDesc, 0, 0);
             break;
-   
+
         case ACPI_EXD_FIELD:
 
             AcpiExDumpObject (ObjDesc, AcpiExDumpFieldCommon);
             break;
-   
+
         case ACPI_EXD_REFERENCE:
 
             AcpiExOutString  ("Opcode",
@@ -1061,7 +1061,6 @@ AcpiExDumpReferenceObj (
         AcpiOsPrintf ("\nReferenced Object: %p\n", ObjDesc->Reference.Object);
     }
 }
-
 
 
 /*******************************************************************************
