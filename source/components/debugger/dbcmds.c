@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.133 $
+ *              $Revision: 1.134 $
  *
  ******************************************************************************/
 
@@ -201,6 +201,12 @@ static ARGUMENT_INFO        AcpiDbObjectTypes [] =
     {"THERMALZONES"},
     {"BUFFERFIELDS"},
     {"DDBHANDLES"},
+    {"DEBUG"},
+    {"REGIONFIELDS"},
+    {"BANKFIELDS"},
+    {"INDEXFIELDS"},
+    {"REFERENCES"},
+    {"ALIAS"},
     {NULL}           /* Must be null terminated */
 };
 
