@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -266,7 +266,6 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     {NULL,                       NULL,                       0},
 };
 
-
 ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
 
     {"ACPI_ADR_SPACE_HANDLER",           SRC_TYPE_SIMPLE},
@@ -296,6 +295,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_EVENT_STATUS",                SRC_TYPE_SIMPLE},
     {"ACPI_EVENT_TYPE",                  SRC_TYPE_SIMPLE},
     {"ACPI_EXCEPTION_HANDLER",           SRC_TYPE_SIMPLE},
+    {"ACPI_EXDUMP_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_EXTERNAL_LIST",               SRC_TYPE_STRUCT},
     {"ACPI_FIELD_INFO",                  SRC_TYPE_STRUCT},
     {"ACPI_FIND_CONTEXT",                SRC_TYPE_STRUCT},
