@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amlresrc.h - AML resource descriptors
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -171,6 +171,11 @@ typedef struct asl_resource_node
 
 } ASL_RESOURCE_NODE;
 
+
+/* Macros used to generate AML resource length fields */
+
+#define ACPI_AML_SIZE_LARGE(r)      (sizeof (r) - sizeof (AML_RESOURCE_LARGE_HEADER))
+#define ACPI_AML_SIZE_SMALL(r)      (sizeof (r) - sizeof (AML_RESOURCE_SMALL_HEADER))
 
 /*
  * Resource descriptors defined in the ACPI specification.

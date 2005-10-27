@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  ******************************************************************************/
 
@@ -148,6 +148,9 @@ AcpiRsDecodeBitmask (
     UINT8                   BitCount;
 
 
+    ACPI_FUNCTION_ENTRY ();
+
+
     /* Decode the mask bits */
 
     for (i = 0, BitCount = 0; Mask; i++)
@@ -187,6 +190,9 @@ AcpiRsEncodeBitmask (
     UINT16                  Mask;
 
 
+    ACPI_FUNCTION_ENTRY ();
+
+
     /* Encode the list into a single bitmask */
 
     for (i = 0, Mask = 0; i < Count; i++)
@@ -223,6 +229,9 @@ AcpiRsMoveData (
     UINT8                   MoveType)
 {
     ACPI_NATIVE_UINT        i;
+
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* One move per item */
@@ -268,62 +277,6 @@ AcpiRsMoveData (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiRsGetResourceInfo
- *
- * PARAMETERS:  ResourceType        - Byte 0 of a resource descriptor
- *
- * RETURN:      Pointer to the resource conversion handler
- *
- * DESCRIPTION: Extract the Resource Type/Name from the first byte of
- *              a resource descriptor.
- *
- ******************************************************************************/
-
-ACPI_RESOURCE_INFO *
-AcpiRsGetResourceInfo (
-    UINT8                   ResourceType)
-{
-    ACPI_RESOURCE_INFO      *SizeInfo;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Determine if this is a small or large resource */
-
-    if (ResourceType & ACPI_RESOURCE_NAME_LARGE)
-    {
-        /* Large Resource Type -- bits 6:0 contain the name */
-
-        if (ResourceType > ACPI_RESOURCE_NAME_LARGE_MAX)
-        {
-            return (NULL);
-        }
-
-        SizeInfo = &AcpiGbl_LgResourceInfo [
-                    (ResourceType & ACPI_RESOURCE_NAME_LARGE_MASK)];
-    }
-    else
-    {
-        /* Small Resource Type -- bits 6:3 contain the name */
-
-        SizeInfo = &AcpiGbl_SmResourceInfo [
-                    ((ResourceType & ACPI_RESOURCE_NAME_SMALL_MASK) >> 3)];
-    }
-
-    /* Zero entry indicates an invalid resource type */
-
-    if (!SizeInfo->MinimumInternalStructLength)
-    {
-        return (NULL);
-    }
-
-    return (SizeInfo);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiRsSetResourceLength
  *
  * PARAMETERS:  TotalLength         - Length of the AML descriptor, including
@@ -350,27 +303,22 @@ AcpiRsSetResourceLength (
     ACPI_FUNCTION_ENTRY ();
 
 
-    /* Determine if this is a small or large resource */
+    /* Length is the total descriptor length minus the header length */
+
+    ResourceLength = (ACPI_RS_LENGTH) 
+        (TotalLength - AcpiUtGetResourceHeaderLength (Aml));
+
+    /* Length is stored differently for large and small descriptors */
 
     if (Aml->SmallHeader.DescriptorType & ACPI_RESOURCE_NAME_LARGE)
     {
-        /* Large Resource type -- bytes 1-2 contain the 16-bit length */
-
-        ResourceLength = (ACPI_RS_LENGTH)
-            (TotalLength - sizeof (AML_RESOURCE_LARGE_HEADER));
-
-        /* Insert length into the Large descriptor length field */
+        /* Large descriptor -- bytes 1-2 contain the 16-bit length */
 
         ACPI_MOVE_16_TO_16 (&Aml->LargeHeader.ResourceLength, &ResourceLength);
     }
     else
     {
-        /* Small Resource type -- bits 2:0 of byte 0 contain the length */
-
-        ResourceLength = (ACPI_RS_LENGTH)
-            (TotalLength - sizeof (AML_RESOURCE_SMALL_HEADER));
-
-        /* Insert length into the descriptor type byte */
+        /* Small descriptor -- bits 2:0 of byte 0 contain the length */
 
         Aml->SmallHeader.DescriptorType = (UINT8)
 
@@ -409,7 +357,7 @@ AcpiRsSetResourceHeader (
     ACPI_FUNCTION_ENTRY ();
 
 
-    /* Set the Descriptor Type */
+    /* Set the Resource Type */
 
     Aml->SmallHeader.DescriptorType = DescriptorType;
 
@@ -536,16 +484,15 @@ AcpiRsGetResourceSource (
 
         return ((ACPI_RS_LENGTH) TotalLength);
     }
-    else
-    {
-        /* ResourceSource is not present */
 
-        ResourceSource->Index = 0;
-        ResourceSource->StringLength = 0;
-        ResourceSource->StringPtr = NULL;
-        return (0);
-    }
+    /* ResourceSource is not present */
+
+    ResourceSource->Index = 0;
+    ResourceSource->StringLength = 0;
+    ResourceSource->StringPtr = NULL;
+    return (0);
 }
+
 
 /*******************************************************************************
  *
@@ -826,6 +773,7 @@ AcpiRsGetMethodData (
     AcpiUtRemoveReference (ObjDesc);
     return_ACPI_STATUS (Status);
 }
+
 
 /*******************************************************************************
  *

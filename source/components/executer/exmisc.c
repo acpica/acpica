@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.132 $
+ *              $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,7 @@
 #include "acpi.h"
 #include "acinterp.h"
 #include "amlcode.h"
+#include "amlresrc.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -248,45 +249,57 @@ AcpiExConcatTemplate (
     ACPI_OPERAND_OBJECT     **ActualReturnDesc,
     ACPI_WALK_STATE         *WalkState)
 {
+    ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     UINT8                   *NewBuf;
-    UINT8                   *EndTag1;
-    UINT8                   *EndTag2;
+    UINT8                   *EndTag;
+    ACPI_SIZE               Length0;
     ACPI_SIZE               Length1;
-    ACPI_SIZE               Length2;
 
 
     ACPI_FUNCTION_TRACE ("ExConcatTemplate");
 
 
-    /* Find the EndTags in each resource template */
-
-    EndTag1 = AcpiUtGetResourceEndTag (Operand0);
-    EndTag2 = AcpiUtGetResourceEndTag (Operand1);
-    if (!EndTag1 || !EndTag2)
+    /*
+     * Find the EndTag descriptor in each resource template.
+     * Note: returned pointers point TO the EndTag, not past it.
+     *
+     * Compute the length of each resource template
+     */
+    Status = AcpiUtGetResourceEndTag (Operand0, &EndTag);
+    if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+        return_ACPI_STATUS (Status);
     }
 
-    /* Compute the length of each part */
+    Length0 = ACPI_PTR_DIFF (EndTag, Operand0->Buffer.Pointer);
 
-    Length1 = ACPI_PTR_DIFF (EndTag1, Operand0->Buffer.Pointer);
-    Length2 = ACPI_PTR_DIFF (EndTag2, Operand1->Buffer.Pointer) +
-                             2; /* Size of END_TAG */
+    Status = AcpiUtGetResourceEndTag (Operand1, &EndTag);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Include the EndTag in the second template length */
+
+    Length1 = ACPI_PTR_DIFF (EndTag, Operand1->Buffer.Pointer) +
+                sizeof (AML_RESOURCE_END_TAG);
 
     /* Create a new buffer object for the result */
 
-    ReturnDesc = AcpiUtCreateBufferObject (Length1 + Length2);
+    ReturnDesc = AcpiUtCreateBufferObject (Length0 + Length1);
     if (!ReturnDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    /* Copy the templates to the new descriptor */
-
+    /*
+     * Copy the templates to the new buffer, 0 first, then 1 follows. One 
+     * EndTag descriptor is copied from Operand1.
+     */
     NewBuf = ReturnDesc->Buffer.Pointer;
-    ACPI_MEMCPY (NewBuf, Operand0->Buffer.Pointer, Length1);
-    ACPI_MEMCPY (NewBuf + Length1, Operand1->Buffer.Pointer, Length2);
+    ACPI_MEMCPY (NewBuf, Operand0->Buffer.Pointer, Length0);
+    ACPI_MEMCPY (NewBuf + Length0, Operand1->Buffer.Pointer, Length1);
 
     /* Compute the new checksum */
 
@@ -294,7 +307,7 @@ AcpiExConcatTemplate (
             AcpiUtGenerateChecksum (ReturnDesc->Buffer.Pointer,
                                    (ReturnDesc->Buffer.Length - 1));
 
-    /* Return the completed template descriptor */
+    /* Return the completed resource template */
 
     *ActualReturnDesc = ReturnDesc;
     return_ACPI_STATUS (AE_OK);

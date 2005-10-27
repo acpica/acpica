@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.182 $
+ *       $Revision: 1.183 $
  *
  *****************************************************************************/
 
@@ -117,6 +117,15 @@
 #ifndef _ACUTILS_H
 #define _ACUTILS_H
 
+
+extern const UINT8                 AcpiGbl_ResourceAmlSizes[];
+
+/* Types for Resource descriptor entries */
+
+#define ACPI_INVALID_RESOURCE           0
+#define ACPI_FIXED_LENGTH               1
+#define ACPI_VARIABLE_LENGTH            2
+#define ACPI_SMALL_VARIABLE_LENGTH      3
 
 typedef
 ACPI_STATUS (*ACPI_PKG_CALLBACK) (
@@ -707,6 +716,11 @@ AcpiUtStrtoul64 (
 
 #define ACPI_ANY_BASE        0
 
+ACPI_STATUS
+AcpiUtValidateResource (
+    void                    *Aml,
+    UINT8                   *ReturnIndex);
+
 UINT32
 AcpiUtGetDescriptorLength (
     void                    *Aml);
@@ -716,12 +730,17 @@ AcpiUtGetResourceLength (
     void                    *Aml);
 
 UINT8
+AcpiUtGetResourceHeaderLength (
+    void                    *Aml);
+
+UINT8
 AcpiUtGetResourceType (
     void                    *Aml);
 
-UINT8 *
+ACPI_STATUS
 AcpiUtGetResourceEndTag (
-    ACPI_OPERAND_OBJECT     *ObjDesc);
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    UINT8                   **EndTag);
 
 UINT8
 AcpiUtGenerateChecksum (

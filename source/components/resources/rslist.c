@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.47 $
+ *              $Revision: 1.48 $
  *
  ******************************************************************************/
 
@@ -123,139 +123,13 @@
         ACPI_MODULE_NAME    ("rslist")
 
 
-/* Local prototypes */
-
-static ACPI_RSCONVERT_INFO *
-AcpiRsGetConversionInfo (
-    UINT8                   ResourceType);
-
-static ACPI_STATUS
-AcpiRsValidateResourceLength (
-    AML_RESOURCE            *Aml);
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiRsValidateResourceLength
- *
- * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
- *
- * RETURN:      Status - AE_OK if the resource length appears valid
- *
- * DESCRIPTION: Validate the ResourceLength. Fixed-length descriptors must
- *              have the exact length; variable-length descriptors must be
- *              at least as long as the minimum. Certain Small descriptors
- *              can vary in size by at most one byte.
- *
- ******************************************************************************/
-
-static ACPI_STATUS
-AcpiRsValidateResourceLength (
-    AML_RESOURCE            *Aml)
-{
-    ACPI_RESOURCE_INFO      *ResourceInfo;
-    UINT16                  MinimumAmlResourceLength;
-    UINT16                  ResourceLength;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Get the size and type info about this resource descriptor */
-
-    ResourceInfo = AcpiRsGetResourceInfo (Aml->SmallHeader.DescriptorType);
-    if (!ResourceInfo)
-    {
-        return (AE_AML_INVALID_RESOURCE_TYPE);
-    }
-
-    ResourceLength = AcpiUtGetResourceLength (Aml);
-    MinimumAmlResourceLength = ResourceInfo->MinimumAmlResourceLength;
-
-    /* Validate based upon the type of resource, fixed length or variable */
-
-    if (ResourceInfo->LengthType == ACPI_FIXED_LENGTH)
-    {
-        /* Fixed length resource, length must match exactly */
-
-        if (ResourceLength != MinimumAmlResourceLength)
-        {
-            return (AE_AML_BAD_RESOURCE_LENGTH);
-        }
-    }
-    else if (ResourceInfo->LengthType == ACPI_VARIABLE_LENGTH)
-    {
-        /* Variable length resource, must be at least the minimum */
-
-        if (ResourceLength < MinimumAmlResourceLength)
-        {
-            return (AE_AML_BAD_RESOURCE_LENGTH);
-        }
-    }
-    else
-    {
-        /* Small variable length resource, allowed to be (Min) or (Min-1) */
-
-        if ((ResourceLength > MinimumAmlResourceLength) ||
-            (ResourceLength < (MinimumAmlResourceLength - 1)))
-        {
-            return (AE_AML_BAD_RESOURCE_LENGTH);
-        }
-    }
-
-    return (AE_OK);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiRsGetConversionInfo
- *
- * PARAMETERS:  ResourceType        - Byte 0 of a resource descriptor
- *
- * RETURN:      Pointer to the resource conversion info table
- *
- * DESCRIPTION: Get the conversion table associated with this resource type
- *
- ******************************************************************************/
-
-static ACPI_RSCONVERT_INFO *
-AcpiRsGetConversionInfo (
-    UINT8                   ResourceType)
-{
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /* Determine if this is a small or large resource */
-
-    if (ResourceType & ACPI_RESOURCE_NAME_LARGE)
-    {
-        /* Large Resource Type -- bits 6:0 contain the name */
-
-        if (ResourceType > ACPI_RESOURCE_NAME_LARGE_MAX)
-        {
-            return (NULL);
-        }
-
-        return (AcpiGbl_LgGetResourceDispatch [
-                    (ResourceType & ACPI_RESOURCE_NAME_LARGE_MASK)]);
-    }
-    else
-    {
-        /* Small Resource Type -- bits 6:3 contain the name */
-
-        return (AcpiGbl_SmGetResourceDispatch [
-                    ((ResourceType & ACPI_RESOURCE_NAME_SMALL_MASK) >> 3)]);
-    }
-}
-
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiRsConvertAmlToResources
  *
- * PARAMETERS:  AmlBuffer           - Pointer to the resource byte stream
- *              AmlBufferLength     - Length of AmlBuffer
+ * PARAMETERS:  Aml                 - Pointer to the resource byte stream
+ *              AmlLength           - Length of Aml
  *              OutputBuffer        - Pointer to the buffer that will
  *                                    contain the output structures
  *
@@ -268,43 +142,28 @@ AcpiRsGetConversionInfo (
 
 ACPI_STATUS
 AcpiRsConvertAmlToResources (
-    UINT8                   *AmlBuffer,
-    UINT32                  AmlBufferLength,
+    UINT8                   *Aml,
+    UINT32                  AmlLength,
     UINT8                   *OutputBuffer)
 {
-    UINT8                   *Buffer = OutputBuffer;
+    ACPI_RESOURCE           *Resource = (void *) OutputBuffer;
     ACPI_STATUS             Status;
-    ACPI_SIZE               BytesParsed = 0;
-    ACPI_RESOURCE           *Resource;
-    ACPI_RSDESC_SIZE        DescriptorLength;
-    ACPI_RSCONVERT_INFO     *Info;
+    UINT8                   ResourceIndex;
+    UINT8                   *EndAml;
 
 
     ACPI_FUNCTION_TRACE ("RsConvertAmlToResources");
 
 
+    EndAml = Aml + AmlLength;
+
     /* Loop until end-of-buffer or an EndTag is found */
 
-    while (BytesParsed < AmlBufferLength)
+    while (Aml < EndAml)
     {
-        /* Get the conversion table associated with this Descriptor Type */
+        /* Validate the Resource Type and Resource Length */
 
-        Info = AcpiRsGetConversionInfo (*AmlBuffer);
-        if (!Info)
-        {
-            /* No table indicates an invalid resource type */
-
-            return_ACPI_STATUS (AE_AML_INVALID_RESOURCE_TYPE);
-        }
-
-        DescriptorLength = AcpiUtGetDescriptorLength (AmlBuffer);
-
-        /*
-         * Perform limited validation of the resource length, based upon
-         * what we know about the resource type
-         */
-        Status = AcpiRsValidateResourceLength (
-                    ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
+        Status = AcpiUtValidateResource (Aml, &ResourceIndex);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -313,40 +172,33 @@ AcpiRsConvertAmlToResources (
         /* Convert the AML byte stream resource to a local resource struct */
 
         Status = AcpiRsConvertAmlToResource (
-                    ACPI_CAST_PTR (ACPI_RESOURCE, Buffer),
-                    ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer),
-                    Info);
+                    Resource, ACPI_CAST_PTR (AML_RESOURCE, Aml),
+                    AcpiGbl_GetResourceDispatch[ResourceIndex]);
         if (ACPI_FAILURE (Status))
         {
             ACPI_REPORT_ERROR ((
-                "Could not convert AML resource (type %X) to resource, %s\n",
-                *AmlBuffer, AcpiFormatException (Status)));
+                "Could not convert AML resource (Type %X) to resource, %s\n",
+                *Aml, AcpiFormatException (Status)));
             return_ACPI_STATUS (Status);
         }
 
-        /* Set the aligned length of the new resource descriptor */
-
-        Resource = ACPI_CAST_PTR (ACPI_RESOURCE, Buffer);
-        Resource->Length = (UINT32) ACPI_ALIGN_RESOURCE_SIZE (Resource->Length);
-
         /* Normal exit on completion of an EndTag resource descriptor */
 
-        if (AcpiUtGetResourceType (AmlBuffer) == ACPI_RESOURCE_NAME_END_TAG)
+        if (AcpiUtGetResourceType (Aml) == ACPI_RESOURCE_NAME_END_TAG)
         {
             return_ACPI_STATUS (AE_OK);
         }
 
-        /* Update counter and point to the next input resource */
+        /* Point to the next input AML resource */
 
-        BytesParsed += DescriptorLength;
-        AmlBuffer += DescriptorLength;
+        Aml += AcpiUtGetDescriptorLength (Aml);
 
         /* Point to the next structure in the output buffer */
 
-        Buffer += Resource->Length;
+        Resource = ACPI_PTR_ADD (ACPI_RESOURCE, Resource, Resource->Length);
     }
 
-    /* Completed buffer, but did not find an EndTag resource descriptor */
+    /* Did not find an EndTag resource descriptor */
 
     return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
 }
@@ -377,8 +229,8 @@ AcpiRsConvertResourcesToAml (
     ACPI_SIZE               AmlSizeNeeded,
     UINT8                   *OutputBuffer)
 {
-    UINT8                   *AmlBuffer = OutputBuffer;
-    UINT8                   *EndAmlBuffer = OutputBuffer + AmlSizeNeeded;
+    UINT8                   *Aml = OutputBuffer;
+    UINT8                   *EndAml = OutputBuffer + AmlSizeNeeded;
     ACPI_STATUS             Status;
 
 
@@ -387,9 +239,9 @@ AcpiRsConvertResourcesToAml (
 
     /* Walk the resource descriptor list, convert each descriptor */
 
-    while (AmlBuffer < EndAmlBuffer)
+    while (Aml < EndAml)
     {
-        /* Validate the Resource Type */
+        /* Validate the (internal) Resource Type */
 
         if (Resource->Type > ACPI_RESOURCE_TYPE_MAX)
         {
@@ -402,7 +254,7 @@ AcpiRsConvertResourcesToAml (
         /* Perform the conversion */
 
         Status = AcpiRsConvertResourceToAml (Resource,
-                    ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer),
+                    ACPI_CAST_PTR (AML_RESOURCE, Aml),
                     AcpiGbl_SetResourceDispatch[Resource->Type]);
         if (ACPI_FAILURE (Status))
         {
@@ -413,8 +265,8 @@ AcpiRsConvertResourcesToAml (
 
         /* Perform final sanity check on the new AML resource descriptor */
 
-        Status = AcpiRsValidateResourceLength (
-                    ACPI_CAST_PTR (AML_RESOURCE, AmlBuffer));
+        Status = AcpiUtValidateResource (
+                    ACPI_CAST_PTR (AML_RESOURCE, Aml), NULL);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -431,16 +283,13 @@ AcpiRsConvertResourcesToAml (
 
         /*
          * Extract the total length of the new descriptor and set the
-         * AmlBuffer to point to the next (output) resource descriptor
+         * Aml to point to the next (output) resource descriptor
          */
-        AmlBuffer += AcpiUtGetDescriptorLength (AmlBuffer);
+        Aml += AcpiUtGetDescriptorLength (Aml);
 
         /* Point to the next input resource descriptor */
 
         Resource = ACPI_PTR_ADD (ACPI_RESOURCE, Resource, Resource->Length);
-
-        /* Check for end-of-list, normal exit */
-
     }
 
     /* Completed buffer, but did not find an EndTag resource descriptor */

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.52 $
+ *       $Revision: 1.53 $
  *
  *****************************************************************************/
 
@@ -178,23 +178,6 @@ typedef const struct acpi_rsconvert_info
 #define AML_OFFSET(f)                   (UINT8) ACPI_OFFSET (AML_RESOURCE,f)
 
 
-/*
- * Resource dispatch and info tables
- */
-typedef const struct acpi_resource_info
-{
-    UINT8                   LengthType;
-    UINT8                   MinimumAmlResourceLength;
-    UINT8                   MinimumInternalStructLength;
-
-} ACPI_RESOURCE_INFO;
-
-/* Types for LengthType above */
-
-#define ACPI_FIXED_LENGTH               0
-#define ACPI_VARIABLE_LENGTH            1
-#define ACPI_SMALL_VARIABLE_LENGTH      2
-
 typedef const struct acpi_rsdump_info
 {
     UINT8                   Opcode;
@@ -233,11 +216,9 @@ extern ACPI_RSCONVERT_INFO      *AcpiGbl_SetResourceDispatch[];
 
 /* Resource tables indexed by raw AML resource descriptor type */
 
-extern ACPI_RESOURCE_INFO       AcpiGbl_SmResourceInfo[];
-extern ACPI_RESOURCE_INFO       AcpiGbl_LgResourceInfo[];
-extern ACPI_RSCONVERT_INFO      *AcpiGbl_SmGetResourceDispatch[];
-extern ACPI_RSCONVERT_INFO      *AcpiGbl_LgGetResourceDispatch[];
+extern ACPI_RSCONVERT_INFO      *AcpiGbl_GetResourceDispatch[];
 
+extern const UINT8                 AcpiGbl_ResourceStructSizes[];
 
 /*
  * rscreate
@@ -394,10 +375,6 @@ void
 AcpiRsSetResourceLength (
     ACPI_RSDESC_SIZE        TotalLength,
     AML_RESOURCE            *Aml);
-
-ACPI_RESOURCE_INFO *
-AcpiRsGetResourceInfo (
-    UINT8                   ResourceType);
 
 
 /*
