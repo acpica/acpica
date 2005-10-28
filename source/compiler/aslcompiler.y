@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -676,7 +676,6 @@ AslLocalAllocate (unsigned int Size);
 
 %type <n> BufferTerm
 %type <n> ByteList
-%type <n> ByteListTail
 %type <n> DWordList
 %type <n> DWordListTail
 
@@ -2402,17 +2401,16 @@ BufferTermData
     | StringData                    {}
     ;
 
+/*
+ * ByteList optimized (from ACPI spec) to force immediate reduction of each byte
+ * so that the parse stack doesn't overflow on very large lists (>4000 items)
+ */
 ByteList
     :                               {$$ = NULL;}
     | ByteConstExpr
-        ByteListTail                {$$ = TrLinkPeerNode ($1,$2);}
-    ;
-
-ByteListTail
-    :                               {$$ = NULL;}
-    |  ','                          {$$ = NULL;}   /* Allows a trailing comma at list end */
-    |  ',' ByteConstExpr
-         ByteListTail               {$$ = TrLinkPeerNode ($2,$3);}
+    | ByteList ','                  /* Allows a trailing comma at list end */
+    | ByteList ','
+        ByteConstExpr               {$$ = TrLinkPeerNode ($1,$3);}
     ;
 
 DWordList
