@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -216,9 +216,6 @@ Options (
     printf ("  -e             Generate External() statements for unresolved symbols\n");
     printf ("  -g             Get ACPI tables and write to files (*.dat)\n");
 
-    printf ("\nMiscellaneous:\n");
-    printf ("  -a             Verify source file is entirely ASCII text (0x00-0x7F)\n");
-
     printf ("\nHelp:\n");
     printf ("  -h             Additional help and compiler debug options\n");
     printf ("  -hc            Display operators allowed in constant expressions\n");
@@ -357,15 +354,10 @@ AslCommandLine (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "2ab:cd^efgh^i^l^o:p:r:s:t:v:x:")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "2b:cd^efgh^i^l^o:p:r:s:t:v:x:")) != EOF) switch (j)
     {
     case '2':
         Gbl_Acpi2 = TRUE;
-        break;
-
-
-    case 'a':
-        Gbl_CheckForAscii = TRUE;
         break;
 
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -328,13 +328,93 @@ CmFlushSourceCode (
 
 /*******************************************************************************
  *
+ * FUNCTION:    FlConsume*
+ *
+ * PARAMETERS:  FileInfo        - Points to an open input file
+ *
+ * RETURN:      Number of lines consumed
+ *
+ * DESCRIPTION: Step over both types of comment during check for ascii chars
+ *
+ ******************************************************************************/
+
+ACPI_SIZE
+FlConsumeAnsiComment (
+    ASL_FILE_INFO           *FileInfo)
+{
+    UINT8                   Byte;
+    ACPI_SIZE               Count = 0;
+    BOOLEAN                 ClosingComment = FALSE;
+
+
+    while (fread (&Byte, 1, 1, FileInfo->Handle))
+    {
+        /* Scan until comment close is found */
+
+        if (ClosingComment)
+        {
+            if (Byte == '/')
+            {
+                return (Count);
+            }
+
+            if (Byte != '*')
+            {
+                /* Reset */
+
+                ClosingComment = FALSE;
+            }
+        }
+        else if (Byte == '*')
+        {
+            ClosingComment = TRUE;
+        }
+
+        /* Maintain line count */
+
+        if (Byte == 0x0A)
+        {
+            Count++;
+        }
+    }
+
+    return (Count);
+}
+
+
+void
+FlConsumeNewComment (
+    ASL_FILE_INFO           *FileInfo)
+{
+    UINT8                   Byte;
+
+
+    while (fread (&Byte, 1, 1, FileInfo->Handle))
+    {
+        /* Comment ends at newline */
+
+        if (Byte == 0x0A)
+        {
+            return;
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    FlCheckForAscii
  *
  * PARAMETERS:  FileInfo        - Points to an open input file
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Verify that the input file is entirely ASCII.
+ * DESCRIPTION: Verify that the input file is entirely ASCII. Ignores characters
+ *              within comments. Note: does not handle nested comments and does
+ *              not handle comment delimiters within string literals. However,
+ *              on the rare chance this happens and an invalid character is
+ *              missed, the parser will catch the error by failing in some
+ *              spectactular manner.
  *
  ******************************************************************************/
 
@@ -344,13 +424,40 @@ FlCheckForAscii (
 {
     UINT8                   Byte;
     ACPI_SIZE               BadBytes = 0;
-    ACPI_SIZE               Offset = 0;
+    ACPI_SIZE               Offset = 1;
+    BOOLEAN                 OpeningComment = FALSE;
 
 
     /* Read the entire file */
 
     while (fread (&Byte, 1, 1, FileInfo->Handle))
     {
+        /* Ignore comment fields (allow non-ascii within) */
+
+        if (OpeningComment)
+        {
+            /* Check for second comment open delimiter */
+
+            if (Byte == '*')
+            {
+                Offset += FlConsumeAnsiComment (FileInfo);
+            }
+
+            if (Byte == '/')
+            {
+                FlConsumeNewComment (FileInfo);
+                Offset++;
+            }
+
+            /* Reset */
+
+            OpeningComment = FALSE;
+        }
+        else if (Byte == '/')
+        {
+            OpeningComment = TRUE;
+        }
+
         /* Check for an ASCII character */
 
         if (!isascii (Byte))
@@ -358,12 +465,19 @@ FlCheckForAscii (
             if (BadBytes < 10)
             {
                 AcpiOsPrintf (
-                    "Non-ASCII character [0x%2.2X] found at file offset 0x%8.8X\n",
+                    "Non-ASCII character [0x%2.2X] found in line %u\n",
                     Byte, Offset);
             }
+
             BadBytes++;
         }
-        Offset++;
+
+        /* Update line counter */
+
+        else if (Byte == 0x0A)
+        {
+            Offset++;
+        }
     }
 
     /* Seek back to the beginning of the source file */
@@ -375,9 +489,9 @@ FlCheckForAscii (
     if (BadBytes)
     {
         AcpiOsPrintf (
-            "%d non-ASCII characters found in input file, could be a binary file\n",
+            "%u non-ASCII characters found in input source text, could be a binary file\n",
             BadBytes);
-        AslError (ASL_WARNING, ASL_MSG_NON_ASCII, NULL, FileInfo->Filename);
+        AslError (ASL_ERROR, ASL_MSG_NON_ASCII, NULL, FileInfo->Filename);
         return (AE_BAD_CHARACTER);
     }
 
@@ -420,19 +534,13 @@ CmDoCompile (
         return -1;
     }
 
-    /* Optional check for 100% ASCII source file */
+    /* Check for 100% ASCII source file (comments are ignored) */
 
-    if (Gbl_CheckForAscii)
+    Status = FlCheckForAscii (&Gbl_Files[ASL_FILE_INPUT]);
+    if (ACPI_FAILURE (Status))
     {
-        /*
-         * NOTE: This code is optional because there can be "special" characters
-         * embedded in comments (such as the "copyright" symbol, 0xA9).
-         * Just emit a warning if there are non-ascii characters present.
-         */
-
-        /* Check if the input file is 100% ASCII text */
-
-        Status = FlCheckForAscii (&Gbl_Files[ASL_FILE_INPUT]);
+        AePrintErrorLog (ASL_FILE_STDERR);
+        return -1;
     }
 
     Status = FlOpenMiscOutputFiles (Gbl_OutputFilenamePrefix);
