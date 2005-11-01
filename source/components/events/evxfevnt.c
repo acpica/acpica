@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -41,7 +41,7 @@
  * 3. Conditions
  *
  * 3.1. Redistribution of Source with Rights to Further Distribute Source.
- * Redistribution of source code of any substantial prton of the Covered
+ * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
  * and the following Disclaimer and Export Compliance provision.  In addition,
@@ -789,6 +789,14 @@ AcpiInstallGpeBlock (
      */
     Status = AcpiEvCreateGpeBlock (Node, GpeBlockAddress, RegisterCount,
                     0, InterruptNumber, &GpeBlock);
+    if (ACPI_FAILURE (Status))
+    {
+        goto UnlockAndExit;
+    }
+
+    /* Run the _PRW methods and enable the GPEs */
+
+    Status = AcpiEvInitializeGpeBlock (Node, GpeBlock);
     if (ACPI_FAILURE (Status))
     {
         goto UnlockAndExit;

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.116 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,16 @@
 #define _COMPONENT          ACPI_EVENTS
         ACPI_MODULE_NAME    ("evevent")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiEvFixedEventInitialize (
+    void);
+
+static UINT32
+AcpiEvFixedEventDispatch (
+    UINT32                  Event);
+
 
 /*******************************************************************************
  *
@@ -175,6 +185,54 @@ AcpiEvInitializeEvents (
     }
 
     return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvInstallFadtGpes
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Completes initialization of the FADT-defined GPE blocks
+ *              (0 and 1). This causes the _PRW methods to be run, so the HW
+ *              must be fully initialized at this point, including global lock
+ *              support.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvInstallFadtGpes (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE ("EvInstallFadtGpes");
+
+
+    /* Namespace must be locked */
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* FADT GPE Block 0 */
+
+    (void) AcpiEvInitializeGpeBlock (
+                AcpiGbl_FadtGpeDevice, AcpiGbl_GpeFadtBlocks[0]);
+
+    /* FADT GPE Block 1 */
+
+    (void) AcpiEvInitializeGpeBlock (
+                AcpiGbl_FadtGpeDevice, AcpiGbl_GpeFadtBlocks[1]);
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
