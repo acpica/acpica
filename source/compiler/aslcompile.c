@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -338,12 +338,12 @@ CmFlushSourceCode (
  *
  ******************************************************************************/
 
-ACPI_SIZE
+void
 FlConsumeAnsiComment (
-    ASL_FILE_INFO           *FileInfo)
+    ASL_FILE_INFO           *FileInfo,
+    ASL_FILE_STATUS         *Status)
 {
     UINT8                   Byte;
-    ACPI_SIZE               Count = 0;
     BOOLEAN                 ClosingComment = FALSE;
 
 
@@ -355,7 +355,7 @@ FlConsumeAnsiComment (
         {
             if (Byte == '/')
             {
-                return (Count);
+                return;
             }
 
             if (Byte != '*')
@@ -374,27 +374,31 @@ FlConsumeAnsiComment (
 
         if (Byte == 0x0A)
         {
-            Count++;
+            Status->Line++;
         }
-    }
 
-    return (Count);
+        Status->Offset++;
+    }
 }
 
 
 void
 FlConsumeNewComment (
-    ASL_FILE_INFO           *FileInfo)
+    ASL_FILE_INFO           *FileInfo,
+    ASL_FILE_STATUS         *Status)
 {
     UINT8                   Byte;
 
 
     while (fread (&Byte, 1, 1, FileInfo->Handle))
     {
+        Status->Offset++;
+
         /* Comment ends at newline */
 
         if (Byte == 0x0A)
         {
+            Status->Line++;
             return;
         }
     }
@@ -424,9 +428,13 @@ FlCheckForAscii (
 {
     UINT8                   Byte;
     ACPI_SIZE               BadBytes = 0;
-    ACPI_SIZE               Offset = 1;
     BOOLEAN                 OpeningComment = FALSE;
+    ASL_FILE_STATUS         Status;
 
+
+
+    Status.Line = 1;
+    Status.Offset = 0;
 
     /* Read the entire file */
 
@@ -440,13 +448,12 @@ FlCheckForAscii (
 
             if (Byte == '*')
             {
-                Offset += FlConsumeAnsiComment (FileInfo);
+                FlConsumeAnsiComment (FileInfo, &Status);
             }
 
             if (Byte == '/')
             {
-                FlConsumeNewComment (FileInfo);
-                Offset++;
+                FlConsumeNewComment (FileInfo, &Status);
             }
 
             /* Reset */
@@ -465,8 +472,8 @@ FlCheckForAscii (
             if (BadBytes < 10)
             {
                 AcpiOsPrintf (
-                    "Non-ASCII character [0x%2.2X] found in line %u\n",
-                    Byte, Offset);
+                    "Non-ASCII character [0x%2.2X] found in line %u, file offset 0x%.2X\n",
+                    Byte, Status.Line, Status.Offset);
             }
 
             BadBytes++;
@@ -476,8 +483,10 @@ FlCheckForAscii (
 
         else if (Byte == 0x0A)
         {
-            Offset++;
+            Status.Line++;
         }
+
+        Status.Offset++;
     }
 
     /* Seek back to the beginning of the source file */
