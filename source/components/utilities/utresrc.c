@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utresrc - Resource managment utilities
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  ******************************************************************************/
 
@@ -118,7 +118,6 @@
 #define __UTRESRC_C__
 
 #include "acpi.h"
-#include "acnamesp.h"
 #include "amlresrc.h"
 
 
