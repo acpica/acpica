@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -1707,7 +1707,7 @@ RsDoQwordSpaceDescriptor (
                 sizeof (AML_RESOURCE_ADDRESS64) + 1 + StringLength);
 
     Descriptor = Rnode->Buffer;
-    Descriptor->Address64.DescriptorType  = ACPI_RESOURCE_NAME_ADDRESS32;
+    Descriptor->Address64.DescriptorType = ACPI_RESOURCE_NAME_ADDRESS64;
 
     /*
      * Initial descriptor length -- may be enlarged if there are
