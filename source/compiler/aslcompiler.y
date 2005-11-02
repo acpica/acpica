@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -133,6 +133,19 @@
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslparse")
 
+/*
+ * Global Notes:
+ * 
+ * October 2005: The following list terms have been optimized (from the
+ * original ASL grammar in the ACPI specification) to force the immediate
+ * reduction of each list item so that the parse stack use doesn't increase on
+ * each list element and possibly overflow on very large lists (>4000 items).
+ * This dramatically reduces use of the parse stack overall.
+ *
+ *      ArgList, TermList, Objectlist, ByteList, DWordList, PackageList,
+ *      ResourceMacroList, and FieldUnitList 
+ */
+
 
 /*
  * Next statement is important - this makes everything public so that
@@ -166,13 +179,17 @@ AslLocalAllocate (unsigned int Size);
  */
 
 %union {
-    UINT64          i;
-    char            *s;
-    ACPI_PARSE_OBJECT  *n;
+    UINT64              i;
+    char                *s;
+    ACPI_PARSE_OBJECT   *n;
 }
 
 
 /*! [Begin] no source code translation */
+
+/* These shift/reduce conflicts are expected */
+
+%expect 64
 
 
 /*
@@ -464,7 +481,6 @@ AslLocalAllocate (unsigned int Size);
 %type <n> NameSpaceModifier
 %type <n> UserTerm
 %type <n> ArgList
-%type <n> ArgListTail
 %type <n> TermArg
 %type <n> Target
 %type <n> RequiredTarget
@@ -494,7 +510,6 @@ AslLocalAllocate (unsigned int Size);
 %type <n> ExternalTerm
 
 %type <n> FieldUnitList
-%type <n> FieldUnitListTail
 %type <n> FieldUnit
 %type <n> FieldUnitEntry
 
@@ -552,8 +567,8 @@ AslLocalAllocate (unsigned int Size);
 %type <n> SleepTerm
 %type <n> StallTerm
 %type <n> SwitchTerm
+%type <n> CaseDefaultTermList
 %type <n> CaseTermList
-%type <n> DefaultTermList
 %type <n> CaseTerm
 %type <n> DefaultTerm
 %type <n> UnloadTerm
@@ -652,19 +667,11 @@ AslLocalAllocate (unsigned int Size);
 %type <n> LocalTerm
 %type <n> DebugTerm
 
-
 %type <n> Integer
-
 %type <n> ByteConst
 %type <n> WordConst
 %type <n> DWordConst
 %type <n> QWordConst
-
-/* Useless
-%type <n> WordConst
-%type <n> QWordConst
-*/
-
 %type <n> String
 
 %type <n> ConstTerm
@@ -677,11 +684,9 @@ AslLocalAllocate (unsigned int Size);
 %type <n> BufferTerm
 %type <n> ByteList
 %type <n> DWordList
-%type <n> DWordListTail
 
 %type <n> PackageTerm
 %type <n> PackageList
-%type <n> PackageListTail
 %type <n> PackageElement
 
 %type <n> VarPackageLengthTerm
@@ -801,8 +806,8 @@ DefinitionBlockTerm
 
 TermList
     :                               {$$ = NULL;}
-    | Term TermList                 {$$ = TrLinkPeerNode (TrSetNodeFlags ($1, NODE_RESULT_NOT_USED),$2);}
-    | Term ';' TermList             {$$ = TrLinkPeerNode (TrSetNodeFlags ($1, NODE_RESULT_NOT_USED),$3);}
+    | TermList Term                 {$$ = TrLinkPeerNode (TrSetNodeFlags ($1, NODE_RESULT_NOT_USED),$2);}
+    | TermList ';' Term             {$$ = TrLinkPeerNode (TrSetNodeFlags ($1, NODE_RESULT_NOT_USED),$3);}
     ;
 
 Term
@@ -825,7 +830,7 @@ CompilerDirective
 
 ObjectList
     :                               {$$ = NULL;}
-    | Object ObjectList             {$$ = TrLinkPeerNode ($1,$2);}
+    | ObjectList Object             {$$ = TrLinkPeerNode ($1,$2);}
     | error                         {$$ = AslDoError(); yyclearin;}
     ;
 
@@ -900,21 +905,23 @@ UserTerm
 
 ArgList
     :                               {$$ = NULL;}
-    | TermArg ArgListTail           {$$ = TrLinkPeerNode ($1,$2);}
+    | TermArg
+    | ArgList ','                   /* Allows a trailing comma at list end */
+    | ArgList ','
+        TermArg                     {$$ = TrLinkPeerNode ($1,$3);}
     ;
 
-ArgListTail
-    :                               {$$ = NULL;}
-    | ',' TermArg ArgListTail       {$$ = TrLinkPeerNode ($2,$3);}
-    | ','                           {$$ = NULL;}   /* Allows a trailing comma at list end */
-    ;
-
-TermArg
-    : Type2Opcode                   {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
+/*
+Removed from TermArg due to reduce/reduce conflicts 
     | Type2IntegerOpcode            {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     | Type2StringOpcode             {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     | Type2BufferOpcode             {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     | Type2BufferOrStringOpcode     {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
+
+*/
+
+TermArg
+    : Type2Opcode                   {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     | DataObject                    {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     | NameString                    {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     | ArgTerm                       {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
@@ -937,61 +944,44 @@ SimpleTarget
     | ArgTerm                       {}
     ;
 
-/* Rules for specifying the Return type for control methods */
+/* Rules for specifying the type of one method argument or return value */
 
 ParameterTypePackage
     :                               {$$ = NULL;}
     | ObjectTypeKeyword             {$$ = $1;}
-    | '{''}'                        {$$ = NULL;}
-    | '{'
-        ObjectTypeKeyword
-      '}'                           {$$ = $2;}
-    | '{'
-        ParameterTypePackageList
-      '}'                           {$$ = $2;}
+    | ParameterTypePackage ','
+        ObjectTypeKeyword           {$$ = TrLinkPeerNodes (2,$1,$3);}
     ;
 
 ParameterTypePackageList
     :                               {$$ = NULL;}
     | ObjectTypeKeyword             {$$ = $1;}
-    | ObjectTypeKeyword ','
-        ParameterTypePackageList    {$$ = TrLinkPeerNodes (2,$1,$3);}
+    | '{' ParameterTypePackage '}'  {$$ = $2;}
     ;
 
 OptionalParameterTypePackage
     :                               {$$ = TrCreateLeafNode (PARSEOP_DEFAULT_ARG);}
-    | ','                           {$$ = TrCreateLeafNode (PARSEOP_DEFAULT_ARG);}
-    | ',' ParameterTypePackage      {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_DEFAULT_ARG),1,$2);}
+    | ',' ParameterTypePackageList  {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_DEFAULT_ARG),1,$2);}
     ;
 
-/* Rules for specifying the Argument types for control methods */
+/* Rules for specifying the types for method arguments */
 
 ParameterTypesPackage
     :                               {$$ = NULL;}
     | ObjectTypeKeyword             {$$ = $1;}
-    | '{''}'                        {$$ = NULL;}
-    | '{'
-        ObjectTypeKeyword
-      '}'                           {$$ = $2;}
-    | '{'
-        ParameterTypesPackageList
-      '}'                           {$$ = $2;}
+    | ParameterTypesPackage ','
+        ParameterTypePackage        {$$ = TrLinkPeerNodes (2,$1,$3);}
     ;
 
 ParameterTypesPackageList
     :                               {$$ = NULL;}
     | ObjectTypeKeyword             {$$ = $1;}
-    | ParameterTypesPackage         {$$ = $1;}
-    | ParameterTypesPackage ','
-        ParameterTypesPackageList   {$$ = TrLinkPeerNodes (2,$1,$3);}
-    | ParameterTypesPackage ','
-        ParameterTypesPackage       {$$ = TrLinkPeerNodes (2,$1,$3);}
+    | '{' ParameterTypesPackage '}' {$$ = $2;}
     ;
 
 OptionalParameterTypesPackage
     :                               {$$ = TrCreateLeafNode (PARSEOP_DEFAULT_ARG);}
-    | ','                           {$$ = TrCreateLeafNode (PARSEOP_DEFAULT_ARG);}
-    | ',' ParameterTypesPackage     {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_DEFAULT_ARG),1,$2);}
+    | ',' ParameterTypesPackageList {$$ = TrLinkChildren (TrCreateLeafNode (PARSEOP_DEFAULT_ARG),1,$2);}
     ;
 
 
@@ -1171,14 +1161,9 @@ BankFieldTerm
 FieldUnitList
     :                               {$$ = NULL;}
     | FieldUnit
-        FieldUnitListTail           {$$ = TrLinkPeerNode ($1,$2);}
-    ;
-
-FieldUnitListTail
-    :                               {$$ = NULL;}
-    | ','                           {$$ = NULL;}  /* Allows a trailing comma at list end */
-    | ',' FieldUnit
-            FieldUnitListTail       {$$ = TrLinkPeerNode ($2,$3);}
+    | FieldUnitList ','             /* Allows a trailing comma at list end */
+    | FieldUnitList ','
+        FieldUnit                   {$$ = TrLinkPeerNode ($1,$3);}
     ;
 
 FieldUnit
@@ -1573,26 +1558,29 @@ SwitchTerm
     : PARSEOP_SWITCH '('			{$$ = TrCreateLeafNode (PARSEOP_SWITCH);}
         TermArg
         ')' '{'
-            CaseTermList '}'
+            CaseDefaultTermList '}'
                                     {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
     | PARSEOP_SWITCH '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
 
+/*
+ * Case-Default list; allow only one Default term and unlimited Case terms
+ */
+CaseDefaultTermList
+    :                               {$$ = NULL;}
+    | CaseTermList
+        DefaultTerm
+        CaseTermList                {$$ = TrLinkPeerNode ($1,TrLinkPeerNode ($2, $3));}
+    | CaseTermList
+        CaseTerm                    {$$ = TrLinkPeerNode ($1,$2);}
+    ;
+
 CaseTermList
     :                               {$$ = NULL;}
     | CaseTerm                      {}
-    | DefaultTerm
-        DefaultTermList             {$$ = TrLinkPeerNode ($1,$2);}
-    | CaseTerm
-        CaseTermList                {$$ = TrLinkPeerNode ($1,$2);}
-    ;
-
-DefaultTermList
-    :                               {$$ = NULL;}
-    | CaseTerm                      {}
-    | CaseTerm
-        DefaultTermList             {$$ = TrLinkPeerNode ($1,$2);}
+    | CaseTermList
+        CaseTerm                    {$$ = TrLinkPeerNode ($1,$2);}
     ;
 
 CaseTerm
@@ -2401,10 +2389,6 @@ BufferTermData
     | StringData                    {}
     ;
 
-/*
- * ByteList optimized (from ACPI spec) to force immediate reduction of each byte
- * so that the parse stack doesn't overflow on very large lists (>4000 items)
- */
 ByteList
     :                               {$$ = NULL;}
     | ByteConstExpr
@@ -2416,14 +2400,9 @@ ByteList
 DWordList
     :                               {$$ = NULL;}
     | DWordConstExpr
-        DWordListTail               {$$ = TrLinkPeerNode ($1,$2);}
-    ;
-
-DWordListTail
-    :                               {$$ = NULL;}
-    | ','                           {$$ = NULL;}   /* Allows a trailing comma at list end */
-    | ',' DWordConstExpr
-        DWordListTail               {$$ = TrLinkPeerNode ($2,$3);}
+    | DWordList ','                 /* Allows a trailing comma at list end */
+    | DWordList ','
+        DWordConstExpr              {$$ = TrLinkPeerNode ($1,$3);}
     ;
 
 PackageTerm
@@ -2443,14 +2422,9 @@ VarPackageLengthTerm
 PackageList
     :                               {$$ = NULL;}
     | PackageElement
-        PackageListTail             {$$ = TrLinkPeerNode ($1,$2);}
-    ;
-
-PackageListTail
-    :                               {$$ = NULL;}
-    | ','                           {$$ = NULL;}   /* Allows a trailing comma at list end */
-    | ',' PackageElement
-        PackageListTail             {$$ = TrLinkPeerNode ($2,$3);}
+    | PackageList ','               /* Allows a trailing comma at list end */
+    | PackageList ','
+        PackageElement              {$$ = TrLinkPeerNode ($1,$3);}
     ;
 
 PackageElement
@@ -2487,8 +2461,8 @@ UnicodeTerm
 
 ResourceMacroList
     :                               {$$ = NULL;}
-    | ResourceMacroTerm
-        ResourceMacroList           {$$ = TrLinkPeerNode ($1,$2);}
+    | ResourceMacroList
+        ResourceMacroTerm           {$$ = TrLinkPeerNode ($1,$2);}
     ;
 
 ResourceMacroTerm
