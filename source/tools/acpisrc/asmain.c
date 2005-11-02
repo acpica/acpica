@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -474,6 +474,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ASL_ERROR_MSG",                    SRC_TYPE_STRUCT},
     {"ASL_EVENT_INFO",                   SRC_TYPE_STRUCT},
     {"ASL_FILE_INFO",                    SRC_TYPE_STRUCT},
+    {"ASL_FILE_STATUS",                  SRC_TYPE_STRUCT},
     {"ASL_LISTING_NODE",                 SRC_TYPE_STRUCT},
     {"ASL_MAPPING_ENTRY",                SRC_TYPE_STRUCT},
     {"ASL_METHOD_INFO",                  SRC_TYPE_STRUCT},
@@ -481,24 +482,25 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ASL_RESOURCE_NODE",                SRC_TYPE_STRUCT},
     {"ASL_WALK_CALLBACK",                SRC_TYPE_SIMPLE},
     {"COMMAND_INFO",                     SRC_TYPE_STRUCT},
-/*    {"FACS_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"FACS_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT},
     {"FACS_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT},
-/*    {"FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"FADT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT},
     {"FADT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT},
     {"FADT_DESCRIPTOR_REV2_MINUS",       SRC_TYPE_STRUCT},
     {"RSDP_DESCRIPTOR",                  SRC_TYPE_STRUCT},
-/*    {"RSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"RSDT_DESCRIPTOR_REV1",             SRC_TYPE_STRUCT},
     {"RSDT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT},
     {"UINT32_STRUCT",                    SRC_TYPE_STRUCT},
     {"UINT64_OVERLAY",                   SRC_TYPE_UNION},
     {"UINT64_STRUCT",                    SRC_TYPE_STRUCT},
-/*    {"XSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
     {"XSDT_DESCRIPTOR_REV2",             SRC_TYPE_STRUCT},
 
     {NULL}
+/* Obsolete */
+/*    {"FACS_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
+/*    {"FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
+/*    {"RSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
+/*    {"XSDT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
 };
 
 ACPI_IDENTIFIER_TABLE       LinuxAddStruct[] = {
