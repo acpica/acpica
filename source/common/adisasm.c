@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -350,9 +350,11 @@ FlGenerateFilename (
     char                    *NewFilename;
 
 
-    /* Copy the original filename to a new buffer */
-
-    NewFilename = ACPI_MEM_CALLOCATE (strlen (InputFilename) + strlen (Suffix));
+    /*
+     * Copy the original filename to a new buffer. Leave room for the worst case
+     * where we append the suffix, an added dot and the null terminator.
+     */
+    NewFilename = ACPI_MEM_CALLOCATE (strlen (InputFilename) + strlen (Suffix) + 2);
     strcpy (NewFilename, InputFilename);
 
     /* Try to find the last dot in the filename */
@@ -1066,7 +1068,6 @@ AdParseTable (
     TableDesc.AmlStart = AmlStart;
     TableDesc.AmlLength = AmlLength;
     fprintf (stderr, "Pass 2 parse of [%4.4s]\n", (char *) Table->Signature);
-    WalkState->ParseFlags |= ACPI_PARSE_DISASSEMBLE;
 
     Status = AcpiNsOneCompleteParse (2, &TableDesc);
     if (ACPI_FAILURE (Status))
