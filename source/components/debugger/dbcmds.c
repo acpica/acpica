@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.135 $
+ *              $Revision: 1.136 $
  *
  ******************************************************************************/
 
@@ -1315,12 +1315,11 @@ AcpiDmCompareAmlResources (
             AcpiOsPrintf (
                 "**** Length mismatch in descriptor [%.2X] type %2.2X, Offset %8.8X L1 %X L2 %X ****\n",
                 Count, ResourceType, Offset, Aml1Length, Aml2Length);
-            return;
         }
 
         /* Check for descriptor byte match */
 
-        if (ACPI_MEMCMP (Aml1, Aml2, Aml1Length))
+        else if (ACPI_MEMCMP (Aml1, Aml2, Aml1Length))
         {
             AcpiOsPrintf (
                 "**** Data mismatch in descriptor [%.2X] type %2.2X, Offset %8.8X ****\n",
@@ -1339,7 +1338,7 @@ AcpiDmCompareAmlResources (
         Count++;
         Offset += Aml1Length;
         Aml1 += Aml1Length;
-        Aml2 += Aml1Length;
+        Aml2 += Aml2Length;
     }
 }
 
