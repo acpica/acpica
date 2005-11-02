@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -375,7 +375,7 @@ static ACPI_RSDUMP_INFO AcpiRsDumpGeneralFlags[5] =
 
 static ACPI_RSDUMP_INFO AcpiRsDumpMemoryFlags[5] =
 {
-    {ACPI_RSD_LITERAL,  ACPI_RSD_TABLE_SIZE (AcpiRsDumpMemoryFlags),        "Resource Type",            "Memory Range"},
+    {ACPI_RSD_LITERAL,  ACPI_RSD_TABLE_SIZE (AcpiRsDumpMemoryFlags),        "Resource Type",            (void *) "Memory Range"},
     {ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET (Address.Info.Mem.WriteProtect),    "Write Protect",            AcpiGbl_RWDecode},
     {ACPI_RSD_2BITFLAG, ACPI_RSD_OFFSET (Address.Info.Mem.Caching),         "Caching",                  AcpiGbl_MEMDecode},
     {ACPI_RSD_2BITFLAG, ACPI_RSD_OFFSET (Address.Info.Mem.RangeType),       "Range Type",               AcpiGbl_MTPDecode},
@@ -384,7 +384,7 @@ static ACPI_RSDUMP_INFO AcpiRsDumpMemoryFlags[5] =
 
 static ACPI_RSDUMP_INFO AcpiRsDumpIoFlags[4] =
 {
-    {ACPI_RSD_LITERAL,  ACPI_RSD_TABLE_SIZE (AcpiRsDumpIoFlags),            "Resource Type",            "I/O Range"},
+    {ACPI_RSD_LITERAL,  ACPI_RSD_TABLE_SIZE (AcpiRsDumpIoFlags),            "Resource Type",            (void *) "I/O Range"},
     {ACPI_RSD_2BITFLAG, ACPI_RSD_OFFSET (Address.Info.Io.RangeType),        "Range Type",               AcpiGbl_RNGDecode},
     {ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET (Address.Info.Io.Translation),      "Translation",              AcpiGbl_TTPDecode},
     {ACPI_RSD_1BITFLAG, ACPI_RSD_OFFSET (Address.Info.Io.TranslationType),  "Translation Type",         AcpiGbl_TRSDecode}
@@ -421,8 +421,8 @@ AcpiRsDumpDescriptor (
     void                    *Resource,
     ACPI_RSDUMP_INFO        *Table)
 {
-    void                    *Target = NULL;
-    void                    *PreviousTarget;
+    UINT8                   *Target = NULL;
+    UINT8                   *PreviousTarget;
     char                    *Name;
     UINT8                    Count;
 
@@ -452,41 +452,41 @@ AcpiRsDumpDescriptor (
         /* Strings */
 
         case ACPI_RSD_LITERAL:
-            AcpiRsOutString (Name, (char *) Table->Pointer);
+            AcpiRsOutString (Name, ACPI_CAST_PTR (char, Table->Pointer));
             break;
 
         case ACPI_RSD_STRING:
-            AcpiRsOutString (Name, (char *) Target);
+            AcpiRsOutString (Name, ACPI_CAST_PTR (char, Target));
             break;
 
         /* Data items, 8/16/32/64 bit */
 
         case ACPI_RSD_UINT8:
-            AcpiRsOutInteger8 (Name, *(UINT8 *) Target);
+            AcpiRsOutInteger8 (Name, *ACPI_CAST_PTR (UINT8, Target));
             break;
 
         case ACPI_RSD_UINT16:
-            AcpiRsOutInteger16 (Name, *(UINT16 *) Target);
+            AcpiRsOutInteger16 (Name, *ACPI_CAST_PTR (UINT16, Target));
             break;
 
         case ACPI_RSD_UINT32:
-            AcpiRsOutInteger32 (Name, *(UINT32 *) Target);
+            AcpiRsOutInteger32 (Name, *ACPI_CAST_PTR (UINT32, Target));
             break;
 
         case ACPI_RSD_UINT64:
-            AcpiRsOutInteger64 (Name, *(UINT64 *) Target);
+            AcpiRsOutInteger64 (Name, *ACPI_CAST_PTR (UINT64, Target));
             break;
 
         /* Flags: 1-bit and 2-bit flags supported */
 
         case ACPI_RSD_1BITFLAG:
-            AcpiRsOutString (Name, (char *)
-                ((const char **) Table->Pointer)[(*(UINT8 *) Target) & 0x01]);
+            AcpiRsOutString (Name, ACPI_CAST_PTR (char,
+                Table->Pointer [*Target & 0x01]));
             break;
 
         case ACPI_RSD_2BITFLAG:
-            AcpiRsOutString (Name, (char *)
-                ((const char **) Table->Pointer)[(*(UINT8 *) Target) & 0x03]);
+            AcpiRsOutString (Name, ACPI_CAST_PTR (char,
+                Table->Pointer [*Target & 0x03]));
             break;
 
         case ACPI_RSD_SHORTLIST:
@@ -497,8 +497,7 @@ AcpiRsDumpDescriptor (
             if (PreviousTarget)
             {
                 AcpiRsOutTitle (Name);
-                AcpiRsDumpShortByteList (*((UINT8 *) PreviousTarget),
-                    (UINT8 *) Target);
+                AcpiRsDumpShortByteList (*PreviousTarget, Target);
             }
             break;
 
@@ -509,8 +508,7 @@ AcpiRsDumpDescriptor (
              */
             if (PreviousTarget)
             {
-                AcpiRsDumpByteList (*((UINT16 *) PreviousTarget),
-                    (UINT8 *) Target);
+                AcpiRsDumpByteList (*ACPI_CAST_PTR (UINT16, PreviousTarget), Target);
             }
             break;
 
@@ -521,8 +519,8 @@ AcpiRsDumpDescriptor (
              */
             if (PreviousTarget)
             {
-                AcpiRsDumpDwordList (*((UINT8 *) PreviousTarget),
-                    (UINT32 *) Target);
+                AcpiRsDumpDwordList (*PreviousTarget,
+                    ACPI_CAST_PTR (UINT32, Target));
             }
             break;
 
@@ -530,14 +528,14 @@ AcpiRsDumpDescriptor (
             /*
              * Common flags for all Address resources
              */
-            AcpiRsDumpAddressCommon ((ACPI_RESOURCE_DATA *) Target);
+            AcpiRsDumpAddressCommon (ACPI_CAST_PTR (ACPI_RESOURCE_DATA, Target));
             break;
 
         case ACPI_RSD_SOURCE:
             /*
              * Optional ResourceSource for Address resources
              */
-            AcpiRsDumpResourceSource ((ACPI_RESOURCE_SOURCE *) Target);
+            AcpiRsDumpResourceSource (ACPI_CAST_PTR (ACPI_RESOURCE_SOURCE, Target));
             break;
 
         default:
