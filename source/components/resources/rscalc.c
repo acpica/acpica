@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  ******************************************************************************/
 
@@ -283,7 +283,7 @@ AcpiRsGetAmlLength (
     ACPI_SIZE               *SizeNeeded)
 {
     ACPI_SIZE               AmlSizeNeeded = 0;
-    ACPI_RS_LENGTH     TotalSize;
+    ACPI_RS_LENGTH          TotalSize;
 
 
     ACPI_FUNCTION_TRACE ("RsGetAmlLength");
@@ -482,8 +482,7 @@ AcpiRsGetListLength (
              * Get the number of bits set in the 16-bit IRQ mask
              */
             ACPI_MOVE_16_TO_16 (&Temp16, Buffer);
-            ExtraStructBytes =
-                AcpiRsCountSetBits (Temp16) * sizeof (UINT32);
+            ExtraStructBytes = AcpiRsCountSetBits (Temp16);
             break;
 
 
@@ -492,8 +491,7 @@ AcpiRsGetListLength (
              * DMA Resource:
              * Get the number of bits set in the 8-bit DMA mask
              */
-            ExtraStructBytes =
-                AcpiRsCountSetBits (*Buffer) * sizeof (UINT32);
+            ExtraStructBytes = AcpiRsCountSetBits (*Buffer);
             break;
 
 
@@ -509,9 +507,9 @@ AcpiRsGetListLength (
 
         case ACPI_RESOURCE_NAME_END_TAG:
             /*
-             * End Tag: This is the normal exit
+             * End Tag: This is the normal exit, add size of EndTag
              */
-            *SizeNeeded = BufferSize;
+            *SizeNeeded = BufferSize + ACPI_RS_SIZE_MIN;
             return_ACPI_STATUS (AE_OK);
 
 
@@ -579,7 +577,7 @@ AcpiRsGetListLength (
 
         Temp16 = (UINT16) (AcpiGbl_ResourceStructSizes[ResourceIndex] +
                             ExtraStructBytes);
-        BufferSize += (UINT32) ACPI_ALIGN_RESOURCE_SIZE (Temp16);
+        BufferSize += (UINT32) ACPI_ROUND_UP_TO_NATIVE_WORD (Temp16);
 
         /*
          * Point to the next resource within the stream
