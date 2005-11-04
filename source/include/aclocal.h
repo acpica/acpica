@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.215 $
+ *       $Revision: 1.216 $
  *
  *****************************************************************************/
 
@@ -768,6 +768,8 @@ typedef struct acpi_parse_obj_named
 
 /* The parse node is the fundamental element of the parse tree */
 
+#define ACPI_MAX_PARSEOP_NAME   20
+
 typedef struct acpi_parse_obj_asl
 {
     ACPI_PARSE_COMMON
@@ -794,7 +796,7 @@ typedef struct acpi_parse_obj_asl
     UINT8                       AmlOpcodeLength;
     UINT8                       AmlPkgLenBytes;
     UINT8                       Extra;
-    char                        ParseOpName[12];
+    char                        ParseOpName[ACPI_MAX_PARSEOP_NAME];
 
 } ACPI_PARSE_OBJ_ASL;
 
