@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.79 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -167,6 +167,56 @@ AslMapNamedOpcodeToDataType (
     }
 
     return (ACPI_TYPE_ANY);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    MpDisplayReservedNames
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Print the table above
+ *
+ ******************************************************************************/
+
+void
+MpDisplayReservedNames (
+    void)
+{
+    UINT32              i;
+
+    printf ("Reserved name information\n\n");
+
+    for (i = 0; ReservedMethods[i].Name; i++)
+    {
+        printf ("%s    ", ReservedMethods[i].Name);
+
+        if (ReservedMethods[i].Flags & ASL_RSVD_SCOPE)
+        {
+            printf ("Reserved scope name\n");
+        }
+        else if (ReservedMethods[i].Flags & ASL_RSVD_RESOURCE_NAME)
+        {
+            printf ("Resource data type reserved field name\n");
+        }
+        else
+        {
+            printf ("Method with %d arguments, ",
+                ReservedMethods[i].NumArguments);
+
+            if (ReservedMethods[i].Flags & ASL_RSVD_RETURN_VALUE)
+            {
+                printf ("must return a value\n");
+            }
+            else
+            {
+                printf ("no return value\n");
+            }
+        }
+    }
 }
 
 
@@ -401,54 +451,6 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
 
 /*******************************************************************************
  *
- * FUNCTION:    MpDisplayReservedNames
- *
- * PARAMETERS:  None
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print the table above
- *
- ******************************************************************************/
-
-void
-MpDisplayReservedNames (
-    void)
-{
-    UINT32              i;
-
-    printf ("Reserved name information\n\n");
-
-    for (i = 0; ReservedMethods[i].Name; i++)
-    {
-        printf ("%s    ", ReservedMethods[i].Name);
-
-        if (ReservedMethods[i].Flags & ASL_RSVD_SCOPE)
-        {
-            printf ("Reserved scope name\n");
-        }
-        else if (ReservedMethods[i].Flags & ASL_RSVD_RESOURCE_NAME)
-        {
-            printf ("Resource data type reserved field name\n");
-        }
-        else
-        {
-            printf ("Method with %d arguments, ", ReservedMethods[i].NumArguments);
-            if (ReservedMethods[i].Flags & ASL_RSVD_RETURN_VALUE)
-            {
-                printf ("must return a value\n");
-            }
-            else
-            {
-                printf ("no return value\n");
-            }
-        }
-    }
-}
-
-
-/*******************************************************************************
- *
  * DATA STRUCTURE:  AslKeywordMapping
  *
  * DESCRIPTION:     Maps the ParseOpcode to the actual AML opcode.  The parse
@@ -549,6 +551,7 @@ const ASL_MAPPING_ENTRY     AslKeywordMapping [] =
 /* ELSE */                      OP_TABLE_ENTRY (AML_ELSE_OP,                0,                              NODE_AML_PACKAGE,   0),
 /* ELSEIF */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              NODE_AML_PACKAGE,   0),
 /* ENDDEPENDENTFN */            OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
+/* ENDTAG */                    OP_TABLE_ENTRY (AML_DEFAULT_ARG_OP,         0,                              0,                  0),
 /* ERRORNODE */                 OP_TABLE_ENTRY (AML_NOOP_OP,                0,                              0,                  0),
 /* EVENT */                     OP_TABLE_ENTRY (AML_EVENT_OP,               0,                              0,                  0),
 /* EXTENDEDIO */                OP_TABLE_ENTRY (AML_BYTE_OP,                0,                              0,                  0),

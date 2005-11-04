@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -430,9 +430,13 @@ UtPrintFormattedName (
     UINT32                  Level)
 {
 
+    if (Level)
+    {
+        DbgPrint (ASL_TREE_OUTPUT,
+            "%*s", (3 * Level), " ");
+    }
     DbgPrint (ASL_TREE_OUTPUT,
-        "%*s %-16.16s", (3 * Level), " ",
-        UtGetOpName (ParseOpcode));
+        " %-20.20s", UtGetOpName (ParseOpcode));
 
     if (Level < TEXT_OFFSET)
     {
@@ -459,7 +463,8 @@ UtSetParseOpName (
     ACPI_PARSE_OBJECT       *Op)
 {
 
-    strncpy (Op->Asl.ParseOpName, UtGetOpName (Op->Asl.ParseOpcode), 12);
+    strncpy (Op->Asl.ParseOpName, UtGetOpName (Op->Asl.ParseOpcode), 
+        ACPI_MAX_PARSEOP_NAME);
 }
 
 
@@ -484,7 +489,8 @@ UtGetOpName (
      * First entries (ASL_YYTNAME_START) in yytname are special reserved names.
      * Ignore first 8 characters of the name
      */
-    return ((char *) yytname [(ParseOpcode - ASL_FIRST_PARSE_OPCODE) + ASL_YYTNAME_START] + 8);
+    return ((char *) yytname 
+        [(ParseOpcode - ASL_FIRST_PARSE_OPCODE) + ASL_YYTNAME_START] + 8);
 }
 
 

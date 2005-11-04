@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -272,6 +272,7 @@ AslLocalAllocate (unsigned int Size);
 %token <i> PARSEOP_ELSE
 %token <i> PARSEOP_ELSEIF
 %token <i> PARSEOP_ENDDEPENDENTFN
+%token <i> PARSEOP_ENDTAG
 %token <i> PARSEOP_ERRORNODE
 %token <i> PARSEOP_EVENT
 %token <i> PARSEOP_EXTENDEDIO
@@ -2443,12 +2444,18 @@ EISAIDTerm
 /******* Resources and Memory ***********************************************/
 
 
+/*
+ * Note: Create two default nodes to allow conversion to a Buffer AML opcode
+ * Also, insert the EndTag at the end of the template.
+ */
 ResourceTemplateTerm
     : PARSEOP_RESOURCETEMPLATE '(' ')'
         '{'
-        ResourceMacroList '}'       {$$ = TrCreateNode (PARSEOP_RESOURCETEMPLATE,3,
+        ResourceMacroList '}'       {$$ = TrCreateNode (PARSEOP_RESOURCETEMPLATE,4,
                                           TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
-                                          TrCreateLeafNode (PARSEOP_DEFAULT_ARG),$5);}
+                                          TrCreateLeafNode (PARSEOP_DEFAULT_ARG),
+                                          $5,
+                                          TrCreateLeafNode (PARSEOP_ENDTAG));}
     ;
 
 UnicodeTerm

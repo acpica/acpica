@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -578,6 +578,10 @@ CmDoCompile (
         CmCleanupAndExit ();
         return -1;
     }
+
+    /* Optional parse tree dump, compiler debug output only */
+
+    LsDumpParseTree ();
 
     OpcGetIntegerWidth (RootNode);
     UtEndEvent (Event);

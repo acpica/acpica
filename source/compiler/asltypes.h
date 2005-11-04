@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -148,6 +148,7 @@
 #define NODE_IS_NAME_DECLARATION    0x00010000
 #define NODE_COMPILER_EMITTED       0x00020000
 #define NODE_IS_DUPLICATE           0x00040000
+#define NODE_IS_RESOURCE_DATA       0x00080000
 
 /* Keeps information about individual control methods */
 

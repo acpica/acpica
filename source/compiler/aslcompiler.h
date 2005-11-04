@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file for iASL
- *              $Revision: 1.142 $
+ *              $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -333,6 +333,9 @@ void
 LsDoHexOutput (
     void);
 
+void
+LsDumpParseTree (
+    void);
 
 /*
  * aslfold - constant folding
@@ -759,6 +762,11 @@ RsDoResourceTemplate (
 /*
  * aslrestype1 - generate Small descriptors
  */
+ASL_RESOURCE_NODE *
+RsDoEndTagDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset);
+
 ASL_RESOURCE_NODE *
 RsDoDmaDescriptor (
     ACPI_PARSE_OBJECT       *Op,

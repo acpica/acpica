@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -121,6 +121,40 @@
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslrestype1")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    RsDoEndTagDescriptor
+ *
+ * PARAMETERS:  Op                  - Parent resource descriptor parse node
+ *              CurrentByteOffset   - Offset into the resource template AML
+ *                                    buffer (to track references to the desc)
+ *
+ * RETURN:      Completed resource node
+ *
+ * DESCRIPTION: Construct a short "EndDependentFn" descriptor
+ *
+ ******************************************************************************/
+
+ASL_RESOURCE_NODE *
+RsDoEndTagDescriptor (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  CurrentByteOffset)
+{
+    AML_RESOURCE            *Descriptor;
+    ASL_RESOURCE_NODE       *Rnode;
+
+
+    Rnode = RsAllocateResourceNode (sizeof (AML_RESOURCE_END_TAG));
+
+    Descriptor = Rnode->Buffer;
+    Descriptor->EndTag.DescriptorType = ACPI_RESOURCE_NAME_END_TAG |
+                                        ASL_RDESC_END_TAG_SIZE;
+    Descriptor->EndTag.Checksum = 0;
+
+    return (Rnode);
+}
 
 
 /*******************************************************************************
