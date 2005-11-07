@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.191 $
+ *              $Revision: 1.192 $
  *
  *****************************************************************************/
 
@@ -212,13 +212,14 @@ static ACPI_EXDUMP_INFO     AcpiExDumpEvent[2] =
     {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (Event.Semaphore),             "Semaphore"}
 };
 
-static ACPI_EXDUMP_INFO     AcpiExDumpMethod[7] =
+static ACPI_EXDUMP_INFO     AcpiExDumpMethod[8] =
 {
     {ACPI_EXD_INIT,     ACPI_EXD_TABLE_SIZE (AcpiExDumpMethod),         NULL},
     {ACPI_EXD_UINT8,    ACPI_EXD_OFFSET (Method.ParamCount),            "ParamCount"},
     {ACPI_EXD_UINT8,    ACPI_EXD_OFFSET (Method.Concurrency),           "Concurrency"},
     {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (Method.Semaphore),             "Semaphore"},
     {ACPI_EXD_UINT8,    ACPI_EXD_OFFSET (Method.OwnerId),               "Owner Id"},
+    {ACPI_EXD_UINT8,    ACPI_EXD_OFFSET (Method.ThreadCount),           "Thread Count"},
     {ACPI_EXD_UINT32,   ACPI_EXD_OFFSET (Method.AmlLength),             "Aml Length"},
     {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (Method.AmlStart),              "Aml Start"}
 };
