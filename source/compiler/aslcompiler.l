@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -932,7 +932,6 @@ literal (void)
     UINT32              State = ASL_NORMAL_CHAR;
     UINT32              i = 0;
     UINT8               Digit;
-    UINT8               StringLength = 0;
     char                ConvertBuffer[4];
 
 
@@ -944,17 +943,6 @@ literal (void)
     InsertLineBuffer ('\"');
     while ((StringChar = (char) input()) != EOF)
     {
-        StringLength++;
-        if (StringLength == ACPI_MAX_STRING_CONVERSION)
-        {
-            /* Emit error only once, but keep going */
-
-            AslCommonError (ASL_ERROR, ASL_MSG_STRING_LENGTH,
-                            Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
-                            Gbl_CurrentLineOffset, Gbl_CurrentColumn,
-                            Gbl_Files[ASL_FILE_INPUT].Filename, NULL);
-        }
-
         InsertLineBuffer (StringChar);
 
 DoCharacter:

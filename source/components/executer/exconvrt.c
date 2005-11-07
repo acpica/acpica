@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -632,18 +632,10 @@ AcpiExConvertToString (
         }
 
         /*
-         * Perform the conversion.
+         * Create a new string object and string buffer
          * (-1 because of extra separator included in StringLength from above)
          */
-        StringLength--;
-        if (StringLength > ACPI_MAX_STRING_CONVERSION)  /* ACPI limit */
-        {
-            return_ACPI_STATUS (AE_AML_STRING_LIMIT);
-        }
-
-        /* Create a new string object and string buffer */
-
-        ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) StringLength);
+        ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) (StringLength - 1));
         if (!ReturnDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.195 $
+ *       $Revision: 1.196 $
  *
  *****************************************************************************/
 
@@ -173,11 +173,6 @@
 
 #define ACPI_CA_SUPPORT_LEVEL           3
 
-/* String size constants */
-
-#define ACPI_MAX_STRING_LENGTH          512
-#define ACPI_PATHNAME_MAX               256         /* A full namespace pathname */
-
 /* Maximum count for a semaphore object */
 
 #define ACPI_MAX_SEMAPHORE_COUNT        256
@@ -209,10 +204,6 @@
 
 #define ACPI_METHOD_NUM_ARGS            7
 #define ACPI_METHOD_MAX_ARG             6
-
-/* Maximum length of resulting string when converting from a buffer */
-
-#define ACPI_MAX_STRING_CONVERSION      200
 
 /* Length of _HID, _UID, and _CID values */
 

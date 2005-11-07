@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.134 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -340,7 +340,6 @@ AcpiExDoConcatenate (
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     char                    *NewBuf;
     ACPI_STATUS             Status;
-    ACPI_SIZE               NewLength;
 
 
     ACPI_FUNCTION_TRACE ("ExDoConcatenate");
@@ -369,7 +368,7 @@ AcpiExDoConcatenate (
         break;
 
     default:
-        ACPI_REPORT_ERROR (("Concat - invalid obj type: %X\n",
+        ACPI_REPORT_ERROR (("Concatanate - invalid object type: %X\n",
                 ACPI_GET_OBJECT_TYPE (Operand0)));
         Status = AE_AML_INTERNAL;
     }
@@ -411,8 +410,7 @@ AcpiExDoConcatenate (
 
         /* Copy the first integer, LSB first */
 
-        ACPI_MEMCPY (NewBuf,
-                        &Operand0->Integer.Value,
+        ACPI_MEMCPY (NewBuf, &Operand0->Integer.Value,
                         AcpiGbl_IntegerByteWidth);
 
         /* Copy the second integer (LSB first) after the first */
@@ -426,15 +424,9 @@ AcpiExDoConcatenate (
 
         /* Result of two Strings is a String */
 
-        NewLength = (ACPI_SIZE) Operand0->String.Length +
-                    (ACPI_SIZE) LocalOperand1->String.Length;
-        if (NewLength > ACPI_MAX_STRING_CONVERSION)
-        {
-            Status = AE_AML_STRING_LIMIT;
-            goto Cleanup;
-        }
-
-        ReturnDesc = AcpiUtCreateStringObject (NewLength);
+        ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE)
+                        (Operand0->String.Length +
+                        LocalOperand1->String.Length));
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
@@ -445,8 +437,7 @@ AcpiExDoConcatenate (
 
         /* Concatenate the strings */
 
-        ACPI_STRCPY (NewBuf,
-                        Operand0->String.Pointer);
+        ACPI_STRCPY (NewBuf, Operand0->String.Pointer);
         ACPI_STRCPY (NewBuf + Operand0->String.Length,
                         LocalOperand1->String.Pointer);
         break;
@@ -455,9 +446,9 @@ AcpiExDoConcatenate (
 
         /* Result of two Buffers is a Buffer */
 
-        ReturnDesc = AcpiUtCreateBufferObject (
-                            (ACPI_SIZE) Operand0->Buffer.Length +
-                            (ACPI_SIZE) LocalOperand1->Buffer.Length);
+        ReturnDesc = AcpiUtCreateBufferObject ((ACPI_SIZE)
+                        (Operand0->Buffer.Length +
+                        LocalOperand1->Buffer.Length));
         if (!ReturnDesc)
         {
             Status = AE_NO_MEMORY;
@@ -468,8 +459,7 @@ AcpiExDoConcatenate (
 
         /* Concatenate the buffers */
 
-        ACPI_MEMCPY (NewBuf,
-                        Operand0->Buffer.Pointer,
+        ACPI_MEMCPY (NewBuf, Operand0->Buffer.Pointer,
                         Operand0->Buffer.Length);
         ACPI_MEMCPY (NewBuf + Operand0->Buffer.Length,
                         LocalOperand1->Buffer.Pointer,

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.134 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -459,11 +459,6 @@ AcpiExOpcode_2A_1T_1R (
                (Operand[0]->Buffer.Pointer[Length]))
         {
             Length++;
-            if (Length > ACPI_MAX_STRING_CONVERSION)
-            {
-                Status = AE_AML_STRING_LIMIT;
-                goto Cleanup;
-            }
         }
 
         /* Allocate a new string object */
@@ -475,8 +470,10 @@ AcpiExOpcode_2A_1T_1R (
             goto Cleanup;
         }
 
-        /* Copy the raw buffer data with no transform. NULL terminated already*/
-
+        /*
+         * Copy the raw buffer data with no transform.
+         * (NULL terminated already)
+         */
         ACPI_MEMCPY (ReturnDesc->String.Pointer,
             Operand[0]->Buffer.Pointer, Length);
         break;
@@ -520,9 +517,8 @@ AcpiExOpcode_2A_1T_1R (
             }
 
             ReturnDesc->Reference.TargetType = ACPI_TYPE_PACKAGE;
-            ReturnDesc->Reference.Object     = Operand[0];
-            ReturnDesc->Reference.Where      = &Operand[0]->Package.Elements [
-                                                    Index];
+            ReturnDesc->Reference.Object = Operand[0];
+            ReturnDesc->Reference.Where = &Operand[0]->Package.Elements [Index];
         }
         else
         {
@@ -538,7 +534,7 @@ AcpiExOpcode_2A_1T_1R (
             }
 
             ReturnDesc->Reference.TargetType = ACPI_TYPE_BUFFER_FIELD;
-            ReturnDesc->Reference.Object     = Operand[0];
+            ReturnDesc->Reference.Object = Operand[0];
         }
 
         /*
@@ -549,8 +545,8 @@ AcpiExOpcode_2A_1T_1R (
 
         /* Complete the Index reference object */
 
-        ReturnDesc->Reference.Opcode     = AML_INDEX_OP;
-        ReturnDesc->Reference.Offset     = (UINT32) Index;
+        ReturnDesc->Reference.Opcode = AML_INDEX_OP;
+        ReturnDesc->Reference.Offset = (UINT32) Index;
 
         /* Store the reference to the Target */
 
