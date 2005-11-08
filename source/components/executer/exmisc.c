@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.135 $
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -301,11 +301,9 @@ AcpiExConcatTemplate (
     ACPI_MEMCPY (NewBuf, Operand0->Buffer.Pointer, Length0);
     ACPI_MEMCPY (NewBuf + Length0, Operand1->Buffer.Pointer, Length1);
 
-    /* Compute the new checksum */
+    /* Set the EndTag checksum to zero, means "ignore checksum" */
 
-    NewBuf[ReturnDesc->Buffer.Length - 1] =
-            AcpiUtGenerateChecksum (ReturnDesc->Buffer.Pointer,
-                                   (ReturnDesc->Buffer.Length - 1));
+    NewBuf[ReturnDesc->Buffer.Length - 1] = 0;
 
     /* Return the completed resource template */
 
