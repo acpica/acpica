@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -141,10 +141,11 @@ AcpiPsGetNextField (
  *
  * PARAMETERS:  ParserState         - Current parser state object
  *
- * RETURN:      Decoded package length.  On completion, the AML pointer points
+ * RETURN:      Decoded package length. On completion, the AML pointer points
  *              past the length byte or bytes.
  *
- * DESCRIPTION: Decode and return a package length field
+ * DESCRIPTION: Decode and return a package length field. 
+ *              Note: Largest package length is 28 bits, from ACPI specification
  *
  ******************************************************************************/
 
@@ -152,57 +153,43 @@ static UINT32
 AcpiPsGetNextPackageLength (
     ACPI_PARSE_STATE        *ParserState)
 {
-    UINT32                  EncodedLength;
-    UINT32                  Length = 0;
+    UINT8                   *Aml = ParserState->Aml;
+    UINT32                  PackageLength = 0;
+    ACPI_NATIVE_UINT        ByteCount;
+    UINT8                   ByteZeroMask = 0x3F; /* Default [0:5] */
 
 
     ACPI_FUNCTION_TRACE ("PsGetNextPackageLength");
 
 
-    EncodedLength = (UINT32) ACPI_GET8 (ParserState->Aml);
-    ParserState->Aml++;
+    /*
+     * Byte 0 bits [6:7] contain the number of additional bytes
+     * used to encode the package length, either 0,1,2, or 3
+     */
+    ByteCount = (Aml[0] >> 6);
+    ParserState->Aml += (ByteCount + 1);
 
-    switch (EncodedLength >> 6) /* bits 6-7 contain encoding scheme */
+    /* Get bytes 3, 2, 1 as needed */
+
+    while (ByteCount)
     {
-    case 0: /* 1-byte encoding (bits 0-5) */
+        /*
+         * Final bit positions for the package length bytes: 
+         *      Byte3->[20:27]
+         *      Byte2->[12:19]
+         *      Byte1->[04:11]
+         *      Byte0->[00:03]
+         */
+        PackageLength |= (Aml[ByteCount] << ((ByteCount << 3) - 4));
 
-        Length = (EncodedLength & 0x3F);
-        break;
-
-
-    case 1: /* 2-byte encoding (next byte + bits 0-3) */
-
-        Length = ((ACPI_GET8 (ParserState->Aml) << 04) |
-                 (EncodedLength & 0x0F));
-        ParserState->Aml++;
-        break;
-
-
-    case 2: /* 3-byte encoding (next 2 bytes + bits 0-3) */
-
-        Length = ((ACPI_GET8 (ParserState->Aml + 1) << 12) |
-                  (ACPI_GET8 (ParserState->Aml)     << 04) |
-                  (EncodedLength & 0x0F));
-        ParserState->Aml += 2;
-        break;
-
-
-    case 3: /* 4-byte encoding (next 3 bytes + bits 0-3) */
-
-        Length = ((ACPI_GET8 (ParserState->Aml + 2) << 20) |
-                  (ACPI_GET8 (ParserState->Aml + 1) << 12) |
-                  (ACPI_GET8 (ParserState->Aml)     << 04) |
-                  (EncodedLength & 0x0F));
-        ParserState->Aml += 3;
-        break;
-
-    default:
-
-        /* Can't get here, only 2 bits / 4 cases */
-        break;
+        ByteZeroMask = 0x0F; /* Use bits [0:3] of byte 0 */
+        ByteCount--;
     }
 
-    return_UINT32 (Length);
+    /* Byte 0 is a special case, either bits [0:3] or [0:5] are used */
+
+    PackageLength |= (Aml[0] & ByteZeroMask);
+    return_UINT32 (PackageLength);
 }
 
 
@@ -224,17 +211,17 @@ AcpiPsGetNextPackageEnd (
     ACPI_PARSE_STATE        *ParserState)
 {
     UINT8                   *Start = ParserState->Aml;
-    ACPI_NATIVE_UINT        Length;
+    UINT32                  PackageLength;
 
 
     ACPI_FUNCTION_TRACE ("PsGetNextPackageEnd");
 
 
-    /* Function below changes ParserState->Aml */
+    /* Function below updates ParserState->Aml */
 
-    Length = (ACPI_NATIVE_UINT) AcpiPsGetNextPackageLength (ParserState);
+    PackageLength = AcpiPsGetNextPackageLength (ParserState);
 
-    return_PTR (Start + Length); /* end of package */
+    return_PTR (Start + PackageLength); /* end of package */
 }
 
 
@@ -264,18 +251,16 @@ AcpiPsGetNextNamestring (
     ACPI_FUNCTION_TRACE ("PsGetNextNamestring");
 
 
-    /* Handle multiple prefix characters */
+    /* Point past any namestring prefix characters (backslash or carat) */
 
-    while (AcpiPsIsPrefixChar (ACPI_GET8 (End)))
+    while (AcpiPsIsPrefixChar (*End))
     {
-        /* Include prefix '\\' or '^' */
-
         End++;
     }
 
-    /* Decode the path */
+    /* Decode the path prefix character */
 
-    switch (ACPI_GET8 (End))
+    switch (*End)
     {
     case 0:
 
@@ -297,9 +282,9 @@ AcpiPsGetNextNamestring (
 
     case AML_MULTI_NAME_PREFIX_OP:
 
-        /* Multiple name segments, 4 chars each */
+        /* Multiple name segments, 4 chars each, count in next byte */
 
-        End += 2 + ((ACPI_SIZE) ACPI_GET8 (End + 1) * ACPI_NAME_SIZE);
+        End += 2 + (*(End + 1) * ACPI_NAME_SIZE);
         break;
 
     default:
@@ -310,7 +295,7 @@ AcpiPsGetNextNamestring (
         break;
     }
 
-    ParserState->Aml = (UINT8*) End;
+    ParserState->Aml = End;
     return_PTR ((char *) Start);
 }
 
@@ -449,8 +434,6 @@ AcpiPsGetNextNamepath (
 
                 AcpiOsPrintf ("SearchNode %p StartNode %p ReturnNode %p\n",
                     ScopeInfo.Scope.Node, ParserState->StartNode, Node);
-
-
             }
             else
             {
@@ -495,6 +478,10 @@ AcpiPsGetNextSimpleArg (
     UINT32                  ArgType,
     ACPI_PARSE_OBJECT       *Arg)
 {
+    UINT32                  Length;
+    UINT16                  Opcode;
+    UINT8                   *Aml = ParserState->Aml;
+
 
     ACPI_FUNCTION_TRACE_U32 ("PsGetNextSimpleArg", ArgType);
 
@@ -503,55 +490,59 @@ AcpiPsGetNextSimpleArg (
     {
     case ARGP_BYTEDATA:
 
-        AcpiPsInitOp (Arg, AML_BYTE_OP);
-        Arg->Common.Value.Integer = (UINT32) ACPI_GET8 (ParserState->Aml);
-        ParserState->Aml++;
+        /* Get 1 byte from the AML stream */
+
+        Opcode = AML_BYTE_OP;
+        Arg->Common.Value.Integer = (ACPI_INTEGER) *Aml;
+        Length = 1;
         break;
 
 
     case ARGP_WORDDATA:
 
-        AcpiPsInitOp (Arg, AML_WORD_OP);
-
         /* Get 2 bytes from the AML stream */
 
-        ACPI_MOVE_16_TO_32 (&Arg->Common.Value.Integer, ParserState->Aml);
-        ParserState->Aml += 2;
+        Opcode = AML_WORD_OP;
+        ACPI_MOVE_16_TO_64 (&Arg->Common.Value.Integer, Aml);
+        Length = 2;
         break;
 
 
     case ARGP_DWORDDATA:
 
-        AcpiPsInitOp (Arg, AML_DWORD_OP);
-
         /* Get 4 bytes from the AML stream */
 
-        ACPI_MOVE_32_TO_32 (&Arg->Common.Value.Integer, ParserState->Aml);
-        ParserState->Aml += 4;
+        Opcode = AML_DWORD_OP;
+        ACPI_MOVE_32_TO_64 (&Arg->Common.Value.Integer, Aml);
+        Length = 4;
         break;
 
 
     case ARGP_QWORDDATA:
 
-        AcpiPsInitOp (Arg, AML_QWORD_OP);
-
         /* Get 8 bytes from the AML stream */
 
-        ACPI_MOVE_64_TO_64 (&Arg->Common.Value.Integer, ParserState->Aml);
-        ParserState->Aml += 8;
+        Opcode = AML_QWORD_OP;
+        ACPI_MOVE_64_TO_64 (&Arg->Common.Value.Integer, Aml);
+        Length = 8;
         break;
 
 
     case ARGP_CHARLIST:
 
-        AcpiPsInitOp (Arg, AML_STRING_OP);
-        Arg->Common.Value.String = (char *) ParserState->Aml;
+        /* Get a pointer to the string, point past the string */
 
-        while (ACPI_GET8 (ParserState->Aml) != '\0')
+        Opcode = AML_STRING_OP;
+        Arg->Common.Value.String = ACPI_CAST_PTR (char, Aml);
+
+        /* Find the null terminator */
+
+        Length = 0;
+        while (Aml[Length])
         {
-            ParserState->Aml++;
+            Length++;
         }
-        ParserState->Aml++;
+        Length++;
         break;
 
 
@@ -560,15 +551,17 @@ AcpiPsGetNextSimpleArg (
 
         AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
         Arg->Common.Value.Name = AcpiPsGetNextNamestring (ParserState);
-        break;
+        return_VOID;
 
 
     default:
 
         ACPI_REPORT_ERROR (("Invalid ArgType %X\n", ArgType));
-        break;
+        return_VOID;
     }
 
+    AcpiPsInitOp (Arg, Opcode);
+    ParserState->Aml += Length;
     return_VOID;
 }
 
@@ -664,7 +657,7 @@ AcpiPsGetNextField (
          * Get AccessType and AccessAttrib and merge into the field Op
          * AccessType is first operand, AccessAttribute is second
          */
-        Field->Common.Value.Integer = (ACPI_GET8 (ParserState->Aml) << 8);
+        Field->Common.Value.Integer = (((UINT32) ACPI_GET8 (ParserState->Aml) << 8));
         ParserState->Aml++;
         Field->Common.Value.Integer |= ACPI_GET8 (ParserState->Aml);
         ParserState->Aml++;
