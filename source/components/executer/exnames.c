@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -329,7 +329,7 @@ AcpiExNameSegment (
             *AmlAddress, AmlAddress));
     }
 
-    *InAmlAddress = (UINT8 *) AmlAddress;
+    *InAmlAddress = ACPI_CAST_PTR (UINT8, AmlAddress);
     return_ACPI_STATUS (Status);
 }
 

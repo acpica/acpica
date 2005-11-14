@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -338,23 +338,23 @@ AcpiTbGenerateChecksum (
     void                    *Buffer,
     UINT32                  Length)
 {
-    const UINT8             *limit;
-    const UINT8             *rover;
-    UINT8                   sum = 0;
+    UINT8                   *EndBuffer;
+    UINT8                   *Rover;
+    UINT8                   Sum = 0;
 
 
     if (Buffer && Length)
     {
         /*  Buffer and Length are valid   */
 
-        limit = (UINT8 *) Buffer + Length;
+        EndBuffer = ACPI_ADD_PTR (UINT8, Buffer, Length);
 
-        for (rover = Buffer; rover < limit; rover++)
+        for (Rover = Buffer; Rover < EndBuffer; Rover++)
         {
-            sum = (UINT8) (sum + *rover);
+            Sum = (UINT8) (Sum + *Rover);
         }
     }
-    return (sum);
+    return (Sum);
 }
 
 

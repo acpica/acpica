@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcs.c - "Small" Resource Descriptor disassembly
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  ******************************************************************************/
 
@@ -364,7 +364,7 @@ AcpiDmVendorSmallDescriptor (
 {
 
     AcpiDmVendorCommon ("Short ()",
-        ((UINT8 *) Resource) + sizeof (AML_RESOURCE_SMALL_HEADER),
+        ACPI_ADD_PTR (UINT8, Resource, sizeof (AML_RESOURCE_SMALL_HEADER)),
         Length, Level);
 }
 

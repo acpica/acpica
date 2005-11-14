@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.192 $
+ *              $Revision: 1.193 $
  *
  *****************************************************************************/
 
@@ -440,7 +440,7 @@ AcpiExDumpObject (
 
     while (Count)
     {
-        Target = ((UINT8 *) ObjDesc) + Info->Offset;
+        Target = ACPI_ADD_PTR (UINT8, ObjDesc, Info->Offset);
         Name = Info->Name;
 
         switch (Info->Opcode)
@@ -459,18 +459,18 @@ AcpiExDumpObject (
 
         case ACPI_EXD_UINT16:
 
-            AcpiOsPrintf ("%20s : %4.4X\n", Name, *ACPI_CAST_PTR (UINT16, Target));
+            AcpiOsPrintf ("%20s : %4.4X\n", Name, ACPI_GET16 (Target));
             break;
 
         case ACPI_EXD_UINT32:
 
-            AcpiOsPrintf ("%20s : %8.8X\n", Name, *ACPI_CAST_PTR (UINT32, Target));
+            AcpiOsPrintf ("%20s : %8.8X\n", Name, ACPI_GET32 (Target));
             break;
 
         case ACPI_EXD_UINT64:
 
             AcpiOsPrintf ("%20s : %8.8X%8.8X\n", "Value",
-                    ACPI_FORMAT_UINT64 (*ACPI_CAST_PTR (UINT64, Target)));
+                    ACPI_FORMAT_UINT64 (ACPI_GET64 (Target)));
             break;
 
         case ACPI_EXD_POINTER:
@@ -1135,7 +1135,7 @@ AcpiExDumpPackageObj (
         AcpiOsPrintf ("[Buffer] Length %.2X = ", ObjDesc->Buffer.Length);
         if (ObjDesc->Buffer.Length)
         {
-            AcpiUtDumpBuffer ((UINT8 *) ObjDesc->Buffer.Pointer,
+            AcpiUtDumpBuffer (ACPI_CAST_PTR (UINT8, ObjDesc->Buffer.Pointer),
                     ObjDesc->Buffer.Length, DB_DWORD_DISPLAY, _COMPONENT);
         }
         else

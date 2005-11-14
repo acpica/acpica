@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  ******************************************************************************/
 
@@ -254,18 +254,18 @@ AcpiRsMoveData (
          * misaligned memory transfers
          */
         case ACPI_RSC_MOVE16:
-            ACPI_MOVE_16_TO_16 (&((UINT16 *) Destination)[i],
-                                &((UINT16 *) Source)[i]);
+            ACPI_MOVE_16_TO_16 (&ACPI_CAST_PTR (UINT16, Destination)[i],
+                                &ACPI_CAST_PTR (UINT16, Source)[i]);
             break;
 
         case ACPI_RSC_MOVE32:
-            ACPI_MOVE_32_TO_32 (&((UINT32 *) Destination)[i],
-                                &((UINT32 *) Source)[i]);
+            ACPI_MOVE_32_TO_32 (&ACPI_CAST_PTR (UINT32, Destination)[i],
+                                &ACPI_CAST_PTR (UINT32, Source)[i]);
             break;
 
         case ACPI_RSC_MOVE64:
-            ACPI_MOVE_64_TO_64 (&((UINT64 *) Destination)[i],
-                                &((UINT64 *) Source)[i]);
+            ACPI_MOVE_64_TO_64 (&ACPI_CAST_PTR (UINT64, Destination)[i],
+                                &ACPI_CAST_PTR (UINT64, Source)[i]);
             break;
 
         default:
@@ -440,7 +440,7 @@ AcpiRsGetResourceSource (
 
 
     TotalLength = ResourceLength + sizeof (AML_RESOURCE_LARGE_HEADER);
-    AmlResourceSource = ((UINT8 *) Aml) + MinimumLength;
+    AmlResourceSource = ACPI_ADD_PTR (UINT8, Aml, MinimumLength);
 
     /*
      * ResourceSource is present if the length of the descriptor is longer than
@@ -462,8 +462,8 @@ AcpiRsGetResourceSource (
              * String destination pointer is not specified; Set the String
              * pointer to the end of the current ResourceSource structure.
              */
-            ResourceSource->StringPtr = (char *)
-                ((UINT8 *) ResourceSource) + sizeof (ACPI_RESOURCE_SOURCE);
+            ResourceSource->StringPtr = ACPI_ADD_PTR (char, ResourceSource,
+                sizeof (ACPI_RESOURCE_SOURCE));
         }
 
         /*
@@ -532,7 +532,7 @@ AcpiRsSetResourceSource (
     {
         /* Point to the end of the AML descriptor */
 
-        AmlResourceSource = ((UINT8 *) Aml) + MinimumLength;
+        AmlResourceSource = ACPI_ADD_PTR (UINT8, Aml, MinimumLength);
 
         /* Copy the ResourceSourceIndex */
 

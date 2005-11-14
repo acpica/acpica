@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  ******************************************************************************/
 
@@ -225,11 +225,13 @@ AcpiDmMemoryFields (
         switch (Type)
         {
         case 16:
-            AcpiDmDumpInteger16 (((UINT16 *) Source)[i], AcpiDmMemoryNames[i]);
+            AcpiDmDumpInteger16 (ACPI_CAST_PTR (UINT16, Source)[i],
+                AcpiDmMemoryNames[i]);
             break;
 
         case 32:
-            AcpiDmDumpInteger32 (((UINT32 *) Source)[i], AcpiDmMemoryNames[i]);
+            AcpiDmDumpInteger32 (ACPI_CAST_PTR (UINT32, Source)[i],
+                AcpiDmMemoryNames[i]);
             break;
 
         default:
@@ -241,7 +243,7 @@ AcpiDmMemoryFields (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDm
+ * FUNCTION:    AcpiDmAddressFields
  *
  * PARAMETERS:  Source              - Pointer to the contiguous data fields
  *              Type                - 16, 32, or 64 (bit)
@@ -271,15 +273,18 @@ AcpiDmAddressFields (
         switch (Type)
         {
         case 16:
-            AcpiDmDumpInteger16 (((UINT16 *) Source)[i], AcpiDmAddressNames[i]);
+            AcpiDmDumpInteger16 (ACPI_CAST_PTR (UINT16, Source)[i],
+                AcpiDmAddressNames[i]);
             break;
 
         case 32:
-            AcpiDmDumpInteger32 (((UINT32 *) Source)[i], AcpiDmAddressNames[i]);
+            AcpiDmDumpInteger32 (ACPI_CAST_PTR (UINT32, Source)[i],
+                AcpiDmAddressNames[i]);
             break;
 
         case 64:
-            AcpiDmDumpInteger64 (((UINT64 *) Source)[i], AcpiDmAddressNames[i]);
+            AcpiDmDumpInteger64 (ACPI_CAST_PTR (UINT64, Source)[i],
+                AcpiDmAddressNames[i]);
             break;
 
         default:
@@ -601,7 +606,7 @@ AcpiDmResourceSource (
 
     /* Get a pointer to the ResourceSource */
 
-    AmlResourceSource = ((UINT8 *) Resource) + MinimumTotalLength;
+    AmlResourceSource = ACPI_ADD_PTR (UINT8, Resource, MinimumTotalLength);
 
     /*
      * Always emit the ResourceSourceIndex (Byte)
@@ -1071,7 +1076,7 @@ AcpiDmVendorLargeDescriptor (
 {
 
     AcpiDmVendorCommon ("Long () ",
-        ((UINT8 *) Resource) + sizeof (AML_RESOURCE_LARGE_HEADER),
+        ACPI_ADD_PTR (UINT8, Resource, sizeof (AML_RESOURCE_LARGE_HEADER)),
         Length, Level);
 }
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -229,7 +229,6 @@ typedef struct asl_file_status
     UINT32                  Offset;
 
 } ASL_FILE_STATUS;
-
 
 
 /* File types */

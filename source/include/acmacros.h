@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.168 $
+ *       $Revision: 1.169 $
  *
  *****************************************************************************/
 
@@ -182,13 +182,20 @@
  * Extract a byte of data using a pointer.  Any more than a byte and we
  * get into potential aligment issues -- see the STORE macros below
  */
-#define ACPI_GET8(addr)                 (*(UINT8*)(addr))
+#define ACPI_GET8(ptr)                  *ACPI_CAST_PTR (UINT8, ptr)
+#define ACPI_GET16(ptr)                 *ACPI_CAST_PTR (UINT16, ptr)
+#define ACPI_GET32(ptr)                 *ACPI_CAST_PTR (UINT32, ptr)
+#define ACPI_GET64(ptr)                 *ACPI_CAST_PTR (UINT64, ptr)
+#define ACPI_SET8(ptr)                  *ACPI_CAST_PTR (UINT8, ptr)
+#define ACPI_SET16(ptr)                 *ACPI_CAST_PTR (UINT16, ptr)
+#define ACPI_SET32(ptr)                 *ACPI_CAST_PTR (UINT32, ptr)
+#define ACPI_SET64(ptr)                 *ACPI_CAST_PTR (UINT64, ptr)
 
 /* Pointer manipulation */
 
 #define ACPI_CAST_PTR(t, p)             ((t *)(void *)(p))
 #define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **)(void *)(p))
-#define ACPI_ADD_PTR(t,a,b)          ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8, (a)) + (ACPI_NATIVE_UINT)(b)))
+#define ACPI_ADD_PTR(t,a,b)             ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8, (a)) + (ACPI_NATIVE_UINT)(b)))
 #define ACPI_PTR_DIFF(a,b)              (ACPI_NATIVE_UINT) ((char *)(a) - (char *)(b))
 
 /* Pointer/Integer type conversions */
@@ -449,7 +456,7 @@
                                                         (b) & 0xFF, ((b) >> 8) & 0xFF, \
                                                         (c) & 0xFF, ((c) >> 8) & 0xFF, \
                                                         (d0), (d1), (d2), (d3), (d4), (d5), (d6), (d7)
- 
+
 /*
  * An ACPI_NAMESPACE_NODE * can appear in some contexts,
  * where a pointer to an ACPI_OPERAND_OBJECT  can also

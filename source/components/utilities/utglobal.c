@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.216 $
+ *              $Revision: 1.217 $
  *
  *****************************************************************************/
 
@@ -697,7 +697,7 @@ AcpiUtGetNodeName (
 
     /* Name must be a valid ACPI name */
 
-    if (!AcpiUtValidAcpiName (* (UINT32 *) Node->Name.Ascii))
+    if (!AcpiUtValidAcpiName (ACPI_GET32 (Node->Name.Ascii)))
     {
         return ("????");
     }

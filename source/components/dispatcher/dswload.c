@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -403,7 +403,7 @@ AcpiDsLoad1BeginOp (
     Op->Named.Name = Node->Name.Integer;
 
 #if (defined (ACPI_NO_METHOD_EXECUTION) || defined (ACPI_CONSTANT_EVAL_ONLY))
-    Op->Named.Path = (UINT8 *) Path;
+    Op->Named.Path = ACPI_CAST_PTR (UINT8, Path);
 #endif
 
 

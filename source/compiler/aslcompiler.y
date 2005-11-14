@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -135,7 +135,7 @@
 
 /*
  * Global Notes:
- * 
+ *
  * October 2005: The following list terms have been optimized (from the
  * original ASL grammar in the ACPI specification) to force the immediate
  * reduction of each list item so that the parse stack use doesn't increase on
@@ -143,7 +143,7 @@
  * This dramatically reduces use of the parse stack overall.
  *
  *      ArgList, TermList, Objectlist, ByteList, DWordList, PackageList,
- *      ResourceMacroList, and FieldUnitList 
+ *      ResourceMacroList, and FieldUnitList
  */
 
 
@@ -913,7 +913,7 @@ ArgList
     ;
 
 /*
-Removed from TermArg due to reduce/reduce conflicts 
+Removed from TermArg due to reduce/reduce conflicts
     | Type2IntegerOpcode            {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     | Type2StringOpcode             {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}
     | Type2BufferOpcode             {$$ = TrSetNodeFlags ($1, NODE_IS_TERM_ARG);}

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -697,7 +697,7 @@ RsDoResourceTemplate (
 
     /*
      * Process all resource descriptors in the list
-     * Note: It is assumed that the EndTag node has been automatically 
+     * Note: It is assumed that the EndTag node has been automatically
      * inserted at the end of the template by the parser.
      */
     State = ACPI_RSTATE_NORMAL;

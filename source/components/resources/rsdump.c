@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  ******************************************************************************/
 
@@ -434,7 +434,7 @@ AcpiRsDumpDescriptor (
     while (Count)
     {
         PreviousTarget = Target;
-        Target = ((UINT8 *) Resource) + Table->Offset;
+        Target = ACPI_ADD_PTR (UINT8, Resource, Table->Offset);
         Name = Table->Name;
 
         switch (Table->Opcode)
@@ -462,19 +462,19 @@ AcpiRsDumpDescriptor (
         /* Data items, 8/16/32/64 bit */
 
         case ACPI_RSD_UINT8:
-            AcpiRsOutInteger8 (Name, *ACPI_CAST_PTR (UINT8, Target));
+            AcpiRsOutInteger8 (Name, ACPI_GET8 (Target));
             break;
 
         case ACPI_RSD_UINT16:
-            AcpiRsOutInteger16 (Name, *ACPI_CAST_PTR (UINT16, Target));
+            AcpiRsOutInteger16 (Name, ACPI_GET16 (Target));
             break;
 
         case ACPI_RSD_UINT32:
-            AcpiRsOutInteger32 (Name, *ACPI_CAST_PTR (UINT32, Target));
+            AcpiRsOutInteger32 (Name, ACPI_GET32 (Target));
             break;
 
         case ACPI_RSD_UINT64:
-            AcpiRsOutInteger64 (Name, *ACPI_CAST_PTR (UINT64, Target));
+            AcpiRsOutInteger64 (Name, ACPI_GET64 (Target));
             break;
 
         /* Flags: 1-bit and 2-bit flags supported */
@@ -508,7 +508,7 @@ AcpiRsDumpDescriptor (
              */
             if (PreviousTarget)
             {
-                AcpiRsDumpByteList (*ACPI_CAST_PTR (UINT16, PreviousTarget), Target);
+                AcpiRsDumpByteList (ACPI_GET16 (PreviousTarget), Target);
             }
             break;
 
@@ -735,8 +735,8 @@ AcpiRsDumpIrqList (
         AcpiOsPrintf ("\n[%02X] PCI IRQ Routing Table Package\n", Count);
         AcpiRsDumpDescriptor (PrtElement, AcpiRsDumpPrt);
 
-        PrtElement = ACPI_CAST_PTR (ACPI_PCI_ROUTING_TABLE,
-                        ((UINT8 *) PrtElement) + PrtElement->Length);
+        PrtElement = ACPI_ADD_PTR (ACPI_PCI_ROUTING_TABLE,
+                        PrtElement, PrtElement->Length);
     }
 }
 

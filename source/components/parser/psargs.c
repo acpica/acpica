@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -144,7 +144,7 @@ AcpiPsGetNextField (
  * RETURN:      Decoded package length. On completion, the AML pointer points
  *              past the length byte or bytes.
  *
- * DESCRIPTION: Decode and return a package length field. 
+ * DESCRIPTION: Decode and return a package length field.
  *              Note: Largest package length is 28 bits, from ACPI specification
  *
  ******************************************************************************/
@@ -174,7 +174,7 @@ AcpiPsGetNextPackageLength (
     while (ByteCount)
     {
         /*
-         * Final bit positions for the package length bytes: 
+         * Final bit positions for the package length bytes:
          *      Byte3->[20:27]
          *      Byte2->[12:19]
          *      Byte1->[04:11]

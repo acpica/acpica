@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -430,7 +430,6 @@ FlCheckForAscii (
     ACPI_SIZE               BadBytes = 0;
     BOOLEAN                 OpeningComment = FALSE;
     ASL_FILE_STATUS         Status;
-
 
 
     Status.Line = 1;

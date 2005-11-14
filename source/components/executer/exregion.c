@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -285,20 +285,20 @@ AcpiExSystemMemorySpaceHandler (
         switch (BitWidth)
         {
         case 8:
-            *Value = (ACPI_INTEGER) *((UINT8 *) LogicalAddrPtr);
+            *Value = (ACPI_INTEGER) ACPI_GET8 (LogicalAddrPtr);
             break;
 
         case 16:
-            *Value = (ACPI_INTEGER) *((UINT16 *) LogicalAddrPtr);
+            *Value = (ACPI_INTEGER) ACPI_GET16 (LogicalAddrPtr);
             break;
 
         case 32:
-            *Value = (ACPI_INTEGER) *((UINT32 *) LogicalAddrPtr);
+            *Value = (ACPI_INTEGER) ACPI_GET32 (LogicalAddrPtr);
             break;
 
 #if ACPI_MACHINE_WIDTH != 16
         case 64:
-            *Value = (ACPI_INTEGER) *((UINT64 *) LogicalAddrPtr);
+            *Value = (ACPI_INTEGER) ACPI_GET64 (LogicalAddrPtr);
             break;
 #endif
         default:
@@ -312,20 +312,20 @@ AcpiExSystemMemorySpaceHandler (
         switch (BitWidth)
         {
         case 8:
-            *(UINT8 *) LogicalAddrPtr = (UINT8) *Value;
+            ACPI_SET8 (LogicalAddrPtr) = (UINT8) *Value;
             break;
 
         case 16:
-            *(UINT16 *) LogicalAddrPtr = (UINT16) *Value;
+            ACPI_SET16 (LogicalAddrPtr) = (UINT16) *Value;
             break;
 
         case 32:
-            *(UINT32 *) LogicalAddrPtr = (UINT32) *Value;
+            ACPI_SET32 ( LogicalAddrPtr) = (UINT32) *Value;
             break;
 
 #if ACPI_MACHINE_WIDTH != 16
         case 64:
-            *(UINT64 *) LogicalAddrPtr = (UINT64) *Value;
+            ACPI_SET64 (LogicalAddrPtr) = (UINT64) *Value;
             break;
 #endif
 

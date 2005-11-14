@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -971,7 +971,7 @@ AcpiEvCreateGpeInfoBlocks (
         }
 
         /* Disable all GPEs within this register */
-         
+
         Status = AcpiHwLowLevelWrite (ACPI_GPE_REGISTER_WIDTH, 0x00,
                     &ThisRegister->EnableAddress);
         if (ACPI_FAILURE (Status))

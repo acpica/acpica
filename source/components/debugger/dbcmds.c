@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.137 $
+ *              $Revision: 1.138 $
  *
  ******************************************************************************/
 
@@ -1488,7 +1488,7 @@ AcpiDbDisplayResources (
         goto GetCrs;
     }
 
-    AcpiRsDumpIrqList ((UINT8 *) AcpiGbl_DbBuffer);
+    AcpiRsDumpIrqList (ACPI_CAST_PTR (UINT8, AcpiGbl_DbBuffer));
 
 
     /* _CRS */
