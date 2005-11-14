@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.169 $
+ *       $Revision: 1.170 $
  *
  *****************************************************************************/
 
@@ -187,7 +187,7 @@ ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_EnableInterpreterSlack, FALSE)
  * Only change this if the ASL code is poorly written and cannot handle
  * reentrancy even though methods are marked "NotSerialized".
  */
-ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_AllMethodsSerialized, TRUE);
+ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_AllMethodsSerialized, FALSE);
 
 /*
  * Create the predefined _OSI method in the namespace? Default is TRUE
