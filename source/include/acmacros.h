@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.167 $
+ *       $Revision: 1.168 $
  *
  *****************************************************************************/
 
@@ -188,12 +188,12 @@
 
 #define ACPI_CAST_PTR(t, p)             ((t *)(void *)(p))
 #define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **)(void *)(p))
-#define ACPI_PTR_ADD(t,a,b)             ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8, (a)) + (ACPI_NATIVE_UINT)(b)))
+#define ACPI_ADD_PTR(t,a,b)          ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8, (a)) + (ACPI_NATIVE_UINT)(b)))
 #define ACPI_PTR_DIFF(a,b)              (ACPI_NATIVE_UINT) ((char *)(a) - (char *)(b))
 
 /* Pointer/Integer type conversions */
 
-#define ACPI_TO_POINTER(i)              ACPI_PTR_ADD (void, (void *) NULL,(ACPI_NATIVE_UINT)i)
+#define ACPI_TO_POINTER(i)              ACPI_ADD_PTR (void, (void *) NULL,(ACPI_NATIVE_UINT)i)
 #define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p,(void *) NULL)
 #define ACPI_OFFSET(d,f)                (ACPI_SIZE) ACPI_PTR_DIFF (&(((d *)0)->f),(void *) NULL)
 #define ACPI_FADT_OFFSET(f)             ACPI_OFFSET (FADT_DESCRIPTOR, f)

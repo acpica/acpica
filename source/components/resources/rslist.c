@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.49 $
+ *              $Revision: 1.50 $
  *
  ******************************************************************************/
 
@@ -194,7 +194,7 @@ AcpiRsConvertAmlToResources (
 
         /* Point to the next structure in the output buffer */
 
-        Resource = ACPI_PTR_ADD (ACPI_RESOURCE, Resource, Resource->Length);
+        Resource = ACPI_ADD_PTR (ACPI_RESOURCE, Resource, Resource->Length);
     }
 
     /* Did not find an EndTag resource descriptor */
@@ -288,7 +288,7 @@ AcpiRsConvertResourcesToAml (
 
         /* Point to the next input resource descriptor */
 
-        Resource = ACPI_PTR_ADD (ACPI_RESOURCE, Resource, Resource->Length);
+        Resource = ACPI_ADD_PTR (ACPI_RESOURCE, Resource, Resource->Length);
     }
 
     /* Completed buffer, but did not find an EndTag resource descriptor */

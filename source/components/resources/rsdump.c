@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  ******************************************************************************/
 
@@ -689,7 +689,7 @@ AcpiRsDumpResourceList (
 
         /* Point to the next resource structure */
 
-        ResourceList = ACPI_PTR_ADD (ACPI_RESOURCE, ResourceList,
+        ResourceList = ACPI_ADD_PTR (ACPI_RESOURCE, ResourceList,
                             ResourceList->Length);
 
         /* Exit when END_TAG descriptor is reached */

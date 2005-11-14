@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -2629,7 +2629,7 @@ RsDoInterruptDescriptor (
             /* Save the integer and move pointer to the next one */
 
             Rover->U32Item = (UINT32) InitializerOp->Asl.Value.Integer;
-            Rover = ACPI_PTR_ADD (AML_RESOURCE, &(Rover->U32Item), 4);
+            Rover = ACPI_ADD_PTR (AML_RESOURCE, &(Rover->U32Item), 4);
             Descriptor->ExtendedIrq.InterruptCount++;
             Descriptor->ExtendedIrq.ResourceLength += 4;
 
@@ -2658,7 +2658,7 @@ RsDoInterruptDescriptor (
     if (HasResSourceIndex)
     {
         Rover->U8Item = ResSourceIndex;
-        Rover = ACPI_PTR_ADD (AML_RESOURCE, &(Rover->U8Item), 1);
+        Rover = ACPI_ADD_PTR (AML_RESOURCE, &(Rover->U8Item), 1);
         Descriptor->ExtendedIrq.ResourceLength += 1;
     }
 
@@ -2668,7 +2668,7 @@ RsDoInterruptDescriptor (
     {
 
         strcpy ((char *) Rover, (char *) ResSourceString);
-        Rover = ACPI_PTR_ADD (
+        Rover = ACPI_ADD_PTR (
                     AML_RESOURCE, &(Rover->U8Item), StringLength);
 
         Descriptor->ExtendedIrq.ResourceLength = (UINT16)

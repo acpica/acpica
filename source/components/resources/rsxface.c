@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  ******************************************************************************/
 
@@ -372,7 +372,7 @@ AcpiWalkResources (
     /* Buffer now contains the resource list */
 
     Resource = ACPI_CAST_PTR (ACPI_RESOURCE, Buffer.Pointer);
-    ResourceEnd = ACPI_PTR_ADD (ACPI_RESOURCE, Buffer.Pointer, Buffer.Length);
+    ResourceEnd = ACPI_ADD_PTR (ACPI_RESOURCE, Buffer.Pointer, Buffer.Length);
 
     /* Walk the resource list until the EndTag is found (or buffer end) */
 
@@ -409,7 +409,7 @@ AcpiWalkResources (
 
         /* Get the next resource descriptor */
 
-        Resource = ACPI_PTR_ADD (ACPI_RESOURCE, Resource, Resource->Length);
+        Resource = ACPI_ADD_PTR (ACPI_RESOURCE, Resource, Resource->Length);
     }
 
     ACPI_MEM_FREE (Buffer.Pointer);

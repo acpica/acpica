@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  ******************************************************************************/
 
@@ -403,7 +403,7 @@ AcpiRsGetAmlLength (
 
         /* Point to the next object */
 
-        Resource = ACPI_PTR_ADD (ACPI_RESOURCE, Resource, Resource->Length);
+        Resource = ACPI_ADD_PTR (ACPI_RESOURCE, Resource, Resource->Length);
     }
 
     /* Did not find an EndTag resource descriptor */
