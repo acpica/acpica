@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -179,7 +179,7 @@ AcpiDebugTrace (
 
     /* TBDs: Validate name, allow full path or just nameseg */
 
-    AcpiGbl_TraceMethodName = *(UINT32 *) Name;
+    AcpiGbl_TraceMethodName = *ACPI_CAST_PTR (UINT32, Name);
     AcpiGbl_TraceFlags = Flags;
 
     if (DebugLevel)
