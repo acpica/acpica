@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utresrc - Resource managment utilities
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  ******************************************************************************/
 
@@ -497,8 +497,9 @@ AcpiUtGetDescriptorLength (
  * FUNCTION:    AcpiUtGetResourceEndTag
  *
  * PARAMETERS:  ObjDesc         - The resource template buffer object
+ *              EndTag          - Where the pointer to the EndTag is returned
  *
- * RETURN:      Pointer to the end tag
+ * RETURN:      Status, pointer to the end tag
  *
  * DESCRIPTION: Find the EndTag resource descriptor in an AML resource template
  *
