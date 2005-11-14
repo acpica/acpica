@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.166 $
+ *       $Revision: 1.167 $
  *
  *****************************************************************************/
 
@@ -184,9 +184,11 @@
  */
 #define ACPI_GET8(addr)                 (*(UINT8*)(addr))
 
-/* Pointer arithmetic */
+/* Pointer manipulation */
 
-#define ACPI_PTR_ADD(t,a,b)             (t *) (void *)((char *)(a) + (ACPI_NATIVE_UINT)(b))
+#define ACPI_CAST_PTR(t, p)             ((t *)(void *)(p))
+#define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **)(void *)(p))
+#define ACPI_PTR_ADD(t,a,b)             ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8, (a)) + (ACPI_NATIVE_UINT)(b)))
 #define ACPI_PTR_DIFF(a,b)              (ACPI_NATIVE_UINT) ((char *)(a) - (char *)(b))
 
 /* Pointer/Integer type conversions */
@@ -195,9 +197,6 @@
 #define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p,(void *) NULL)
 #define ACPI_OFFSET(d,f)                (ACPI_SIZE) ACPI_PTR_DIFF (&(((d *)0)->f),(void *) NULL)
 #define ACPI_FADT_OFFSET(f)             ACPI_OFFSET (FADT_DESCRIPTOR, f)
-
-#define ACPI_CAST_PTR(t, p)             ((t *)(void *)(p))
-#define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **)(void *)(p))
 
 #if ACPI_MACHINE_WIDTH == 16
 #define ACPI_STORE_POINTER(d,s)         ACPI_MOVE_32_TO_32(d,s)
@@ -444,6 +443,13 @@
 #define ACPI_REGISTER_PREPARE_BITS(Val, Pos, Mask)      ((Val << Pos) & Mask)
 #define ACPI_REGISTER_INSERT_VALUE(Reg, Pos, Mask, Val)  Reg = (Reg & (~(Mask))) | ACPI_REGISTER_PREPARE_BITS(Val, Pos, Mask)
 
+/* Generate a UUID */
+
+#define ACPI_INIT_UUID(a,b,c,d0,d1,d2,d3,d4,d5,d6,d7)   (a) & 0xFF, ((a) >> 8) & 0xFF, ((a) >> 16) & 0xFF, ((a) >> 24) & 0xFF, \
+                                                        (b) & 0xFF, ((b) >> 8) & 0xFF, \
+                                                        (c) & 0xFF, ((c) >> 8) & 0xFF, \
+                                                        (d0), (d1), (d2), (d3), (d4), (d5), (d6), (d7)
+ 
 /*
  * An ACPI_NAMESPACE_NODE * can appear in some contexts,
  * where a pointer to an ACPI_OPERAND_OBJECT  can also

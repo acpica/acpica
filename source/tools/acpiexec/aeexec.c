@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -944,4 +944,151 @@ AeInstallHandlers (void)
     return Status;
 }
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeGpeHandler
+ *
+ * DESCRIPTION: GPE handler for acpiexec
+ *
+ *****************************************************************************/
+
+UINT32
+AeGpeHandler (
+    void                        *Context)
+{
+
+
+    AcpiOsPrintf ("Received a GPE at handler\n");
+    return (0);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AfInstallGpeBlock
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Various GPE initialization
+ *
+ *****************************************************************************/
+
+void
+AfInstallGpeBlock (
+    void)
+{
+    ACPI_STATUS                 Status;
+    ACPI_HANDLE                 Handle;
+    ACPI_HANDLE                 Handle2 = NULL;
+    ACPI_HANDLE                 Handle3 = NULL;
+    ACPI_GENERIC_ADDRESS        BlockAddress;
+
+
+    Status = AcpiGetHandle (NULL, "\\_GPE", &Handle);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    BlockAddress.AddressSpaceId = 0;
+#if ACPI_MACHINE_WIDTH != 16
+    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x8000000076540000);
+#else
+    ACPI_STORE_ADDRESS (BlockAddress.Address, 0x76540000);
+#endif
+
+//    Status = AcpiInstallGpeBlock (Handle, &BlockAddress, 4, 8);
+
+    /* Above should fail, ignore */
+
+    Status = AcpiGetHandle (NULL, "\\GPE2", &Handle2);
+    if (ACPI_SUCCESS (Status))
+    {
+        Status = AcpiInstallGpeBlock (Handle2, &BlockAddress, 8, 8);
+
+        AcpiInstallGpeHandler (Handle2, 8, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+        AcpiSetGpeType (Handle2, 8, ACPI_GPE_TYPE_WAKE);
+        AcpiEnableGpe (Handle2, 8, 0);
+    }
+
+    Status = AcpiGetHandle (NULL, "\\GPE3", &Handle3);
+    if (ACPI_SUCCESS (Status))
+    {
+        Status = AcpiInstallGpeBlock (Handle3, &BlockAddress, 8, 11);
+    }
+
+//    Status = AcpiRemoveGpeBlock (Handle);
+//    Status = AcpiRemoveGpeBlock (Handle2);
+//    Status = AcpiRemoveGpeBlock (Handle3);
+
+}
+
+
+void
+AeMiscellaneousTests (
+    void)
+{
+    ACPI_HANDLE             Handle;
+    ACPI_BUFFER             ReturnBuf;
+    char                    Buffer[32];
+    ACPI_VENDOR_UUID        Uuid = {0, ACPI_INIT_UUID (0,0,0,0,0,0,0,0,0,0,0)};
+    ACPI_STATUS             Status;
+
+        
+    ReturnBuf.Length = 32;
+    ReturnBuf.Pointer = Buffer;
+
+    AcpiGetName (AcpiGbl_RootNode, ACPI_FULL_PATHNAME, &ReturnBuf);
+    AcpiEnableEvent (ACPI_EVENT_GLOBAL, 0);
+
+    AcpiInstallGpeHandler (NULL, 0, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    AcpiSetGpeType (NULL, 0, ACPI_GPE_TYPE_WAKE_RUN);
+    AcpiEnableGpe (NULL, 0, ACPI_NOT_ISR);
+    AcpiRemoveGpeHandler (NULL, 0, AeGpeHandler);
+
+    AcpiInstallGpeHandler (NULL, 0, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    AcpiSetGpeType (NULL, 0, ACPI_GPE_TYPE_WAKE_RUN);
+    AcpiEnableGpe (NULL, 0, ACPI_NOT_ISR);
+
+    AcpiInstallGpeHandler (NULL, 1, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+    AcpiSetGpeType (NULL, 1, ACPI_GPE_TYPE_RUNTIME);
+    AcpiEnableGpe (NULL, 1, ACPI_NOT_ISR);
+
+    AcpiInstallGpeHandler (NULL, 2, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    AcpiSetGpeType (NULL, 2, ACPI_GPE_TYPE_WAKE);
+    AcpiEnableGpe (NULL, 2, ACPI_NOT_ISR);
+
+    AcpiInstallGpeHandler (NULL, 3, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+    AcpiSetGpeType (NULL, 3, ACPI_GPE_TYPE_WAKE_RUN);
+
+    AcpiInstallGpeHandler (NULL, 4, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    AcpiSetGpeType (NULL, 4, ACPI_GPE_TYPE_RUNTIME);
+
+    AcpiInstallGpeHandler (NULL, 5, ACPI_GPE_EDGE_TRIGGERED, AeGpeHandler, NULL);
+    AcpiSetGpeType (NULL, 5, ACPI_GPE_TYPE_WAKE);
+
+    AcpiInstallGpeHandler (NULL, 0x19, ACPI_GPE_LEVEL_TRIGGERED, AeGpeHandler, NULL);
+    AcpiSetGpeType (NULL, 0x19, ACPI_GPE_TYPE_WAKE_RUN);
+    AcpiEnableGpe (NULL, 0x19, ACPI_NOT_ISR);
+
+    AfInstallGpeBlock ();
+
+
+    Status = AcpiGetHandle (NULL, "RSRC", &Handle);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    ReturnBuf.Length = ACPI_ALLOCATE_BUFFER;
+
+    Status = AcpiGetVendorResource (Handle, "_CRS", &Uuid, &ReturnBuf);
+    if (ACPI_SUCCESS (Status))
+    {
+        AcpiOsFree (ReturnBuf.Pointer);
+    }
+}
 

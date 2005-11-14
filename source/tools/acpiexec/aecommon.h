@@ -229,7 +229,12 @@ AeDisplayAllMethods (
     UINT32                  DisplayCount);
 
 ACPI_STATUS
-AeInstallHandlers (void);
+AeInstallHandlers (
+    void);
+
+void
+AeMiscellaneousTests (
+    void);
 
 
 #endif /* _AECOMMON */

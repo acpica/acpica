@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.288 $
+ *       $Revision: 1.289 $
  *
  *****************************************************************************/
 
@@ -1165,6 +1165,22 @@ typedef UINT32                          ACPI_RSDESC_SIZE;  /* Max Resource Descr
 #pragma pack(1)
 #endif
 
+#define ACPI_UUID_LENGTH        16
+
+/* UUID data structures for use in vendor-defined resource descriptors */
+
+typedef struct acpi_uuid
+{
+    UINT8                   Data[ACPI_UUID_LENGTH];
+} ACPI_UUID;
+
+typedef struct acpi_vendor_uuid
+{
+    UINT8                   Subtype;
+    UINT8                   Data[ACPI_UUID_LENGTH];
+
+} ACPI_VENDOR_UUID;
+
 /*
  *  Structures used to describe device resources
  */
@@ -1227,6 +1243,17 @@ typedef struct acpi_resource_vendor
     UINT8                       ByteData[1];
 
 } ACPI_RESOURCE_VENDOR;
+
+/* Vendor resource with UUID info (introduced in ACPI 3.0) */
+
+typedef struct acpi_resource_vendor_typed
+{
+    UINT16                      ByteLength;
+    UINT8                       UuidSubtype;
+    UINT8                       Uuid[ACPI_UUID_LENGTH];
+    UINT8                       ByteData[1];
+
+} ACPI_RESOURCE_VENDOR_TYPED;
 
 typedef struct acpi_resource_end_tag
 {
@@ -1417,6 +1444,7 @@ typedef union acpi_resource_data
     ACPI_RESOURCE_IO                    Io;
     ACPI_RESOURCE_FIXED_IO              FixedIo;
     ACPI_RESOURCE_VENDOR                Vendor;
+    ACPI_RESOURCE_VENDOR_TYPED          VendorTyped;
     ACPI_RESOURCE_END_TAG               EndTag;
     ACPI_RESOURCE_MEMORY24              Memory24;
     ACPI_RESOURCE_MEMORY32              Memory32;

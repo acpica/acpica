@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.54 $
+ *       $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -216,9 +216,18 @@ extern ACPI_RSCONVERT_INFO      *AcpiGbl_SetResourceDispatch[];
 
 /* Resource tables indexed by raw AML resource descriptor type */
 
+extern const UINT8              AcpiGbl_ResourceStructSizes[];
 extern ACPI_RSCONVERT_INFO      *AcpiGbl_GetResourceDispatch[];
 
-extern const UINT8                 AcpiGbl_ResourceStructSizes[];
+
+typedef struct acpi_vendor_walk_info
+{
+    ACPI_VENDOR_UUID        *Uuid;
+    ACPI_BUFFER             *Buffer;
+    ACPI_STATUS             Status;
+
+} ACPI_VENDOR_WALK_INFO;
+
 
 /*
  * rscreate
