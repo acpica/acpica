@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -415,6 +415,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_RESOURCE_START_DEPENDENT",    SRC_TYPE_STRUCT},
     {"ACPI_RESOURCE_TYPE",               SRC_TYPE_SIMPLE},
     {"ACPI_RESOURCE_VENDOR",             SRC_TYPE_STRUCT},
+    {"ACPI_RESOURCE_VENDOR_TYPED",		 SRC_TYPE_STRUCT},
     {"ACPI_RESULT_VALUES",               SRC_TYPE_STRUCT},
     {"ACPI_ROUND_UP_TO_32_BITS",         SRC_TYPE_SIMPLE},
     {"ACPI_RSCONVERT_INFO",              SRC_TYPE_STRUCT},
@@ -436,12 +437,15 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_THREAD_STATE",                SRC_TYPE_STRUCT},
     {"ACPI_TYPED_IDENTIFIER_TABLE",      SRC_TYPE_STRUCT},
     {"ACPI_UPDATE_STATE",                SRC_TYPE_STRUCT},
+    {"ACPI_UUID",						 SRC_TYPE_STRUCT},
+    {"ACPI_VENDOR_UUID",				 SRC_TYPE_STRUCT},
+    {"ACPI_VENDOR_WALK_INFO",			 SRC_TYPE_STRUCT},
     {"ACPI_WALK_CALLBACK",               SRC_TYPE_SIMPLE},
     {"ACPI_WALK_INFO",                   SRC_TYPE_STRUCT},
     {"ACPI_WALK_STATE",                  SRC_TYPE_STRUCT},
 
-    {"ACPI_RS_LENGTH",                  SRC_TYPE_SIMPLE},
-    {"ACPI_RSDESC_SIZE",                SRC_TYPE_SIMPLE},
+    {"ACPI_RS_LENGTH",                   SRC_TYPE_SIMPLE},
+    {"ACPI_RSDESC_SIZE",                 SRC_TYPE_SIMPLE},
 
     {"AML_RESOURCE",                     SRC_TYPE_UNION},
     {"AML_RESOURCE_ADDRESS",             SRC_TYPE_STRUCT},
