@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  ******************************************************************************/
 
@@ -505,13 +505,6 @@ AcpiDbMethodThread (
 
     for (i = 0; i < Info->NumLoops; i++)
     {
-#if 0
-       if (i == 0xEFDC)
-        {
-            AcpiDbgLevel = 0x00FFFFFF;
-        }
-#endif
-
         Status = AcpiDbExecuteMethod (Info, &ReturnObj);
         if (ACPI_FAILURE (Status))
         {
@@ -543,7 +536,8 @@ AcpiDbMethodThread (
     Status = AcpiOsSignalSemaphore (Info->ThreadGate, 1);
     if (ACPI_FAILURE (Status))
     {
-        AcpiOsPrintf ("Could not signal debugger semaphore\n");
+        AcpiOsPrintf ("Could not signal debugger thread sync semaphore, %s\n",
+            AcpiFormatException (Status));
     }
 }
 

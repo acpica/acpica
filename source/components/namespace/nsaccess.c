@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.192 $
+ *              $Revision: 1.193 $
  *
  ******************************************************************************/
 
@@ -462,9 +462,9 @@ AcpiNsLookup (
     {
         /* A Null NamePath is allowed and refers to the root */
 
-        NumSegments  = 0;
-        ThisNode     = AcpiGbl_RootNode;
-        Path     = "";
+        NumSegments = 0;
+        ThisNode = AcpiGbl_RootNode;
+        Path = "";
 
         ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
             "Null Pathname (Zero segments), Flags=%X\n", Flags));
@@ -696,13 +696,13 @@ AcpiNsLookup (
          *
          * Then we have a type mismatch.  Just warn and ignore it.
          */
-        if ((NumSegments        == 0)                               &&
-            (TypeToCheckFor     != ACPI_TYPE_ANY)                   &&
-            (TypeToCheckFor     != ACPI_TYPE_LOCAL_ALIAS)           &&
-            (TypeToCheckFor     != ACPI_TYPE_LOCAL_METHOD_ALIAS)    &&
-            (TypeToCheckFor     != ACPI_TYPE_LOCAL_SCOPE)           &&
-            (ThisNode->Type     != ACPI_TYPE_ANY)                   &&
-            (ThisNode->Type     != TypeToCheckFor))
+        if ((NumSegments == 0)                                  &&
+            (TypeToCheckFor != ACPI_TYPE_ANY)                   &&
+            (TypeToCheckFor != ACPI_TYPE_LOCAL_ALIAS)           &&
+            (TypeToCheckFor != ACPI_TYPE_LOCAL_METHOD_ALIAS)    &&
+            (TypeToCheckFor != ACPI_TYPE_LOCAL_SCOPE)           &&
+            (ThisNode->Type != ACPI_TYPE_ANY)                   &&
+            (ThisNode->Type != TypeToCheckFor))
         {
             /* Complain about a type mismatch */
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.217 $
+ *              $Revision: 1.218 $
  *
  *****************************************************************************/
 
@@ -697,7 +697,7 @@ AcpiUtGetNodeName (
 
     /* Name must be a valid ACPI name */
 
-    if (!AcpiUtValidAcpiName (ACPI_GET32 (Node->Name.Ascii)))
+    if (!AcpiUtValidAcpiName (Node->Name.Integer))
     {
         return ("????");
     }
@@ -927,7 +927,6 @@ AcpiUtInitGlobals (
     /* Namespace */
 
     AcpiGbl_RootNode                    = NULL;
-
     AcpiGbl_RootNodeStruct.Name.Integer = ACPI_ROOT_NAME;
     AcpiGbl_RootNodeStruct.Descriptor   = ACPI_DESC_TYPE_NAMED;
     AcpiGbl_RootNodeStruct.Type         = ACPI_TYPE_DEVICE;
