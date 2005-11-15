@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -984,10 +984,14 @@ AcpiOsWaitSemaphore (
     {
         OsTimeout = INFINITE;
     }
+    else
+    {
+        /* Add 10ms to account for clock tick granularity */
 
-    /* Add 10ms to account for clock tick granularity */
+        OsTimeout += 10;
+    }
 
-    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout+10);
+    WaitStatus = WaitForSingleObject (AcpiGbl_Semaphores[Index].OsHandle, OsTimeout);
     if (WaitStatus == WAIT_TIMEOUT)
     {
 /* Make optional -- wait of 0 is used to detect if unit is available
@@ -1038,19 +1042,23 @@ AcpiOsSignalSemaphore (
     ACPI_FUNCTION_NAME ("OsSignalSemaphore");
 
 
-    if ((Index >= NUM_SEMAPHORES) ||
-        !AcpiGbl_Semaphores[Index].OsHandle)
+    if (Index >= NUM_SEMAPHORES)
     {
+        printf ("SignalSemaphore: Index/Handle out of range: %2.2X\n", Index);
+        return AE_BAD_PARAMETER;
+    }
+
+    if (!AcpiGbl_Semaphores[Index].OsHandle)
+    {
+        printf ("SignalSemaphore: Null OS handle, Index %2.2X\n", Index);
         return AE_BAD_PARAMETER;
     }
 
     if (Units > 1)
     {
-        printf ("SignalSemaphore: Attempt to signal %d units\n", Units);
-
+        printf ("SignalSemaphore: Attempt to signal %d units, Index %2.2X\n", Units, Index);
         return AE_NOT_IMPLEMENTED;
     }
-
 
     if ((AcpiGbl_Semaphores[Index].CurrentUnits + 1) >
         AcpiGbl_Semaphores[Index].MaxUnits)
@@ -1065,7 +1073,6 @@ AcpiOsSignalSemaphore (
     ReleaseSemaphore (AcpiGbl_Semaphores[Index].OsHandle, Units, NULL);
 
 #endif
-
 
     return (AE_OK);
 }
