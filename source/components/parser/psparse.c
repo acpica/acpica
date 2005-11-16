@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.158 $
+ *              $Revision: 1.159 $
  *
  *****************************************************************************/
 
@@ -606,12 +606,10 @@ AcpiPsParseAml (
         }
         else if ((Status != AE_OK) && (WalkState->MethodDesc))
         {
-            ACPI_REPORT_METHOD_ERROR ("Method execution failed",
+            /* Either the method parse or actual execution failed */
+
+            ACPI_REPORT_METHOD_ERROR ("Method parse/execution failed",
                 WalkState->MethodNode, NULL, Status);
-
-            /* Ensure proper cleanup */
-
-            WalkState->ParseFlags |= ACPI_PARSE_EXECUTE;
 
             /* Check for possible multi-thread reentrancy problem */
 
@@ -619,9 +617,12 @@ AcpiPsParseAml (
                 (!WalkState->MethodDesc->Method.Semaphore))
             {
                 /*
-                 * This method is marked NotSerialized, but it tried to create
+                 * Method tried to create an object twice. The probable cause is
+                 * that the method cannot handle reentrancy.
+                 *
+                 * The method is marked NotSerialized, but it tried to create
                  * a named object, causing the second thread entrance to fail.
-                 * We will workaround this by marking the method permanently
+                 * Workaround this problem by marking the method permanently
                  * as Serialized.
                  */
                 WalkState->MethodDesc->Method.MethodFlags |= AML_METHOD_SERIALIZED;
@@ -638,16 +639,26 @@ AcpiPsParseAml (
         AcpiDsScopeStackClear (WalkState);
 
         /*
-         * If we just returned from the execution of a control method,
-         * there's lots of cleanup to do
+         * If we just returned from the execution of a control method or if we
+         * encountered an error during the method parse phase, there's lots of
+         * cleanup to do
          */
-        if ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) == ACPI_PARSE_EXECUTE)
+        if (((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) == ACPI_PARSE_EXECUTE) ||
+            (ACPI_FAILURE (Status)))
         {
             if (WalkState->MethodDesc)
             {
                 /* Decrement the thread count on the method parse tree */
 
-                WalkState->MethodDesc->Method.ThreadCount--;
+                if (WalkState->MethodDesc->Method.ThreadCount)
+                {
+                    WalkState->MethodDesc->Method.ThreadCount--;
+                }
+                else
+                {
+                    ACPI_REPORT_ERROR ((
+                        "Invalid zero thread count in method\n"));
+                }
             }
 
             AcpiDsTerminateControlMethod (WalkState);
@@ -656,7 +667,6 @@ AcpiPsParseAml (
         /* Delete this walk state and all linked control states */
 
         AcpiPsCleanupScope (&WalkState->ParserState);
-
         PreviousWalkState = WalkState;
 
         ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
