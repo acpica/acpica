@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -204,15 +204,6 @@ AcpiDsInitOneObject (
     case ACPI_TYPE_METHOD:
 
         /*
-         * Print a dot for each method unless we are going to print
-         * the entire pathname
-         */
-        if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
-        {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
-        }
-
-        /*
          * Set the execution data width (32 or 64) based upon the
          * revision number of the parent ACPI table.
          * TBD: This is really for possible future support of integer width
@@ -221,6 +212,23 @@ AcpiDsInitOneObject (
         if (Info->TableDesc->Pointer->Revision == 1)
         {
             Node->Flags |= ANOBJ_DATA_WIDTH_32;
+        }
+
+#ifdef ACPI_INIT_PARSE_METHODS
+        /*
+         * Note 11/2005: Removed this code to parse all methods during table 
+         * load because it causes problems if there are any errors during the
+         * parse. Also, it seems like overkill and we probably don't want to
+         * abort a table load because of an issue with a single method.
+         */
+
+        /*
+         * Print a dot for each method unless we are going to print
+         * the entire pathname
+         */
+        if (!(AcpiDbgLevel & ACPI_LV_INIT_NAMES))
+        {
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
         }
 
         /*
@@ -237,7 +245,7 @@ AcpiDsInitOneObject (
 
             /* This parse failed, but we will continue parsing more methods */
         }
-
+#endif
         Info->MethodCount++;
         break;
 
