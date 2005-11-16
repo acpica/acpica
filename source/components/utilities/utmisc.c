@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  ******************************************************************************/
 
@@ -144,6 +144,7 @@ AcpiUtAllocateOwnerId (
     ACPI_OWNER_ID           *OwnerId)
 {
     ACPI_NATIVE_UINT        i;
+    ACPI_NATIVE_UINT        j;
     ACPI_STATUS             Status;
 
 
@@ -166,30 +167,47 @@ AcpiUtAllocateOwnerId (
         return_ACPI_STATUS (Status);
     }
 
-    /* Find a free owner ID */
-
-    for (i = 0; i < 32; i++)
+    /*
+     * Find a free owner ID, cycle through all possible IDs on repeated
+     * allocations. Note: Index for next possible ID is equal to the value
+     * of the last allocated ID.
+     */
+    for (i = 0, j = AcpiGbl_LastOwnerId; i < 32; i++, j++)
     {
-        if (!(AcpiGbl_OwnerIdMask & (1 << i)))
+        if (j >= 32)
         {
+            j = 0;  /* Wraparound to ID start */
+        }
+
+        if (!(AcpiGbl_OwnerIdMask & (1 << j)))
+        {
+            /*
+             * Found a free ID. The actual ID is the bit index plus one,
+             * making zero an invalid Owner ID. Save this as the last ID
+             * allocated and update the global ID mask.
+             */
+            AcpiGbl_LastOwnerId = (ACPI_OWNER_ID) (j + 1);
+            *OwnerId = AcpiGbl_LastOwnerId;
+
             ACPI_DEBUG_PRINT ((ACPI_DB_VALUES,
                 "Current OwnerId mask: %8.8X New ID: %2.2X\n",
-                AcpiGbl_OwnerIdMask, (unsigned int) (i + 1)));
+                AcpiGbl_OwnerIdMask, (unsigned int) AcpiGbl_LastOwnerId));
 
-            AcpiGbl_OwnerIdMask |= (1 << i);
-            *OwnerId = (ACPI_OWNER_ID) (i + 1);
+            AcpiGbl_OwnerIdMask |= (1 << j);
             goto Exit;
         }
     }
 
     /*
-     * If we are here, all OwnerIds have been allocated. This probably should
+     * All OwnerIds have been allocated. This typically should
      * not happen since the IDs are reused after deallocation. The IDs are
      * allocated upon table load (one per table) and method execution, and
      * they are released when a table is unloaded or a method completes
      * execution.
+     *
+     * If this error happens, there may be very deep nesting of invoked control
+     * methods, or there may be a bug where the IDs are not released.
      */
-    *OwnerId = 0;
     Status = AE_OWNER_ID_LIMIT;
     ACPI_REPORT_ERROR ((
         "Could not allocate new OwnerId (32 max), AE_OWNER_ID_LIMIT\n"));
