@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.291 $
+ *       $Revision: 1.292 $
  *
  *****************************************************************************/
 
@@ -1164,8 +1164,6 @@ typedef UINT32                          ACPI_RSDESC_SIZE;  /* Max Resource Descr
 #ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
 #pragma pack(1)
 #endif
-
-#define ACPI_UUID_LENGTH        16
 
 /* UUID data structures for use in vendor-defined resource descriptors */
 
