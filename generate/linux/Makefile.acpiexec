@@ -68,6 +68,7 @@ SRCS=	aeexec.c aemain.c \
 	../../interpreter/executer/exsystem.c \
 	../../interpreter/executer/exutils.c \
 	../../interpreter/parser/psargs.c \
+	../../interpreter/parser/psloop.c \
 	../../interpreter/parser/psopcode.c \
 	../../interpreter/parser/psparse.c \
 	../../interpreter/parser/psscope.c \
@@ -111,6 +112,7 @@ SRCS=	aeexec.c aemain.c \
 	../../tables/tbxface.c \
 	../../tables/tbxfroot.c \
 	../../utilities/utalloc.c \
+	../../utilities/utcache.c \
 	../../utilities/utcopy.c \
 	../../utilities/utdebug.c \
 	../../utilities/utdelete.c \
@@ -119,12 +121,15 @@ SRCS=	aeexec.c aemain.c \
 	../../utilities/utinit.c \
 	../../utilities/utmath.c \
 	../../utilities/utmisc.c \
+	../../utilities/utmutex.c \
 	../../utilities/utobject.c \
+	../../utilities/utresrc.c \
+	../../utilities/utstate.c \
 	../../utilities/utxface.c \
 	../../osunixxf.c
 
 
-CFLAGS+= -Wall -g -D_LINUX -DNDEBUG -D_CONSOLE -D_ACPI_EXEC_APP -D_MULTI_THREADED -Wstrict-prototypes -I../../include 
+CFLAGS+= -Wall -g -D_LINUX -DNDEBUG -D_CONSOLE -DACPI_EXEC_APP -D_MULTI_THREADED -Wstrict-prototypes -I../../include 
 
 
 acpiexec : $(patsubst %.c,%.o, $(SRCS))
