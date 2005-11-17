@@ -137,6 +137,11 @@
 extern FILE                    *AcpiGbl_DebugFile;
 FILE                           *AcpiGbl_OutputFile;
 
+ACPI_STATUS
+AeLocalGetRootPointer (
+    UINT32                  Flags,
+    ACPI_POINTER            *Address);
+
 
 /******************************************************************************
  *
@@ -185,7 +190,7 @@ AcpiOsGetRootPointer (
     ACPI_POINTER           *Address)
 {
 
-    return (AeLocalGetRootPointer(Flags, (ACPI_PHYSICAL_ADDRESS *) Address));
+    return (AeLocalGetRootPointer (Flags, (ACPI_PHYSICAL_ADDRESS *) Address));
 }
 
 
