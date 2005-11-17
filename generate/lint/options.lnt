@@ -28,7 +28,7 @@
 -emacro( (413), ACPI_OFFSET )               // use of NULL pointer creates a stir
 -emacro( (413), ACPI_TO_INTEGER )           // use of NULL pointer creates a stir
 -emacro( (413), ACPI_TO_POINTER )           // use of NULL pointer creates a stir
--emacro( (413), ACPI_PTR_ADD )              // use of NULL pointer creates a stir
+-emacro( (413), ACPI_ADD_PTR )              // use of NULL pointer creates a stir
 -emacro( (413), ACPI_PTR_DIFF )             // use of NULL pointer creates a stir
 -emacro( (413), ACPI_FADT_OFFSET )          // use of NULL pointer creates a stir
 -emacro( (413), ASL_RESDESC_OFFSET )        // use of NULL pointer creates a stir
@@ -41,7 +41,7 @@
 -emacro( 950, ACPI_INTERNAL_VAR_XFACE)      // Uses non-ANSI
 -emacro( 950, ACPI_SYSTEM_XFACE)            // Uses non-ANSI
 -emacro( 826, ACPI_CAST_PTR)                // Pointer cast
--emacro( 826, ACPI_PTR_ADD)                 // Pointer cast
+-emacro( 826, ACPI_ADD_PTR)                 // Pointer cast
 -emacro( 826, ACPI_LODWORD)					// Pointer cast
 -emacro( 826, ACPI_HIDWORD)					// Pointer cast
 
