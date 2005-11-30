@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -617,9 +617,23 @@ AdCreateTableHeader (
 
     time (&Timer);
 
+    /* Header and input table info */
+
     AcpiOsPrintf ("/*\n * Intel ACPI Component Architecture\n");
     AcpiOsPrintf (" * AML Disassembler version %8.8X\n", ACPI_CA_VERSION);
-    AcpiOsPrintf (" *\n * Disassembly of %s, %s */\n", Filename, ctime (&Timer));
+    AcpiOsPrintf (" *\n * Disassembly of %s, %s", Filename, ctime (&Timer));
+    AcpiOsPrintf (" *\n * Original Table Header:\n");
+    AcpiOsPrintf (" *     Signature        \"%4.4s\"\n",    Table->Signature);
+    AcpiOsPrintf (" *     Length           0x%8.8X (%u)\n", Table->Length, Table->Length);
+    AcpiOsPrintf (" *     Revision         0x%2.2X\n",      Table->Revision);
+    AcpiOsPrintf (" *     OEM ID           \"%.6s\"\n",     Table->OemId);
+    AcpiOsPrintf (" *     OEM Table ID     \"%.8s\"\n",     Table->OemTableId);
+    AcpiOsPrintf (" *     OEM Revision     0x%8.8X (%u)\n", Table->OemRevision, Table->OemRevision);
+    AcpiOsPrintf (" *     Creator ID       \"%.4s\"\n",     Table->AslCompilerId);
+    AcpiOsPrintf (" *     Creator Revision 0x%8.8X (%u)\n", Table->AslCompilerRevision, Table->AslCompilerRevision);
+    AcpiOsPrintf (" */\n");
+
+    /* Open the ASL definition block */
 
     AcpiOsPrintf (
         "DefinitionBlock (\"%4.4s.aml\", \"%4.4s\", %hd, \"%.6s\", \"%.8s\", 0x%8.8X)\n",
