@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -668,7 +668,7 @@ AnCheckForReservedMethod (
 
         if (MethodInfo->NumArguments != 0)
         {
-            sprintf (MsgBuffer, " %s requires %d",
+            sprintf (MsgBuffer, "%s requires %d",
                         Op->Asl.ExternalName, 0);
 
             AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op, MsgBuffer);
@@ -684,7 +684,7 @@ AnCheckForReservedMethod (
 
         if (MethodInfo->NumArguments != ReservedMethods[Index].NumArguments)
         {
-            sprintf (MsgBuffer, " %s requires %d",
+            sprintf (MsgBuffer, "%s requires %d",
                         ReservedMethods[Index].Name,
                         ReservedMethods[Index].NumArguments);
 
