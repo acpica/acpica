@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -661,15 +661,16 @@ TrDoSwitch (
             {
                 /*
                  * More than one Default
-                 * (Parser should catch this, should not get here)
+                 * (Parser does not catch this, must check here)
                  */
-                AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Next,
-                    "Found more than one Default()");
+                AslError (ASL_ERROR, ASL_MSG_MULTIPLE_DEFAULT, Next, NULL);
             }
+            else
+            {
+                /* Save the DEFAULT node for later, after CASEs */
 
-            /* Save the DEFAULT node for later, after CASEs */
-
-            DefaultOp = Next;
+                DefaultOp = Next;
+            }
         }
         else
         {

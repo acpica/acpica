@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -413,7 +413,8 @@ typedef enum
     ASL_MSG_UNREACHABLE_CODE,
     ASL_MSG_UNSUPPORTED,
     ASL_MSG_VENDOR_LIST,
-    ASL_MSG_WRITE
+    ASL_MSG_WRITE,
+    ASL_MSG_MULTIPLE_DEFAULT
 
 } ASL_MESSAGE_IDS;
 
@@ -520,7 +521,8 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_UNREACHABLE_CODE */           "Statement is unreachable",
 /*    ASL_MSG_UNSUPPORTED */                "Unsupported feature",
 /*    ASL_MSG_VENDOR_LIST */                "Too many vendor data bytes (7 max)",
-/*    ASL_MSG_WRITE */                      "Could not write file"
+/*    ASL_MSG_WRITE */                      "Could not write file",
+/*    ASL_MSG_MULTIPLE_DEFAULT */           "More than one Default statement within Switch construct"
 
 };
 

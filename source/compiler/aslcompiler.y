@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -569,7 +569,7 @@ AslLocalAllocate (unsigned int Size);
 %type <n> StallTerm
 %type <n> SwitchTerm
 %type <n> CaseDefaultTermList
-%type <n> CaseTermList
+//%type <n> CaseTermList
 %type <n> CaseTerm
 %type <n> DefaultTerm
 %type <n> UnloadTerm
@@ -1568,6 +1568,19 @@ SwitchTerm
 /*
  * Case-Default list; allow only one Default term and unlimited Case terms
  */
+
+CaseDefaultTermList
+    :                               {$$ = NULL;}
+    | CaseTerm  {}
+    | DefaultTerm   {}
+    | CaseDefaultTermList
+        CaseTerm                    {$$ = TrLinkPeerNode ($1,$2);}
+    | CaseDefaultTermList
+        DefaultTerm                 {$$ = TrLinkPeerNode ($1,$2);}
+
+/* Original - attempts to force zero or one default term within the switch */
+
+/*
 CaseDefaultTermList
     :                               {$$ = NULL;}
     | CaseTermList
@@ -1583,6 +1596,7 @@ CaseTermList
     | CaseTermList
         CaseTerm                    {$$ = TrLinkPeerNode ($1,$2);}
     ;
+*/
 
 CaseTerm
     : PARSEOP_CASE '('				{$$ = TrCreateLeafNode (PARSEOP_CASE);}
