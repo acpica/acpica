@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.219 $
+ *              $Revision: 1.220 $
  *
  *****************************************************************************/
 
@@ -875,6 +875,12 @@ AcpiUtInitGlobals (
         AcpiGbl_MutexInfo[i].UseCount       = 0;
     }
 
+    AcpiGbl_OwnerIdMask[7]              = 0x80000000; /* Last ID is never valid */
+    for (i = 0; i < 7; i++)
+    {
+        AcpiGbl_OwnerIdMask[i]              = 0;
+    }
+
     /* GPE support */
 
     AcpiGbl_GpeXruptListHead            = NULL;
@@ -912,8 +918,8 @@ AcpiUtInitGlobals (
     AcpiGbl_NsLookupCount               = 0;
     AcpiGbl_PsFindCount                 = 0;
     AcpiGbl_AcpiHardwarePresent         = TRUE;
-    AcpiGbl_OwnerIdMask                 = 0;
-    AcpiGbl_LastOwnerId                 = 0;
+    AcpiGbl_LastOwnerIdIndex            = 0;
+    AcpiGbl_NextOwnerIdOffset           = 0;
     AcpiGbl_TraceMethodName             = 0;
     AcpiGbl_TraceDbgLevel               = 0;
     AcpiGbl_TraceDbgLayer               = 0;

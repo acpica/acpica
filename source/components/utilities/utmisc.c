@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  ******************************************************************************/
 
@@ -145,6 +145,7 @@ AcpiUtAllocateOwnerId (
 {
     ACPI_NATIVE_UINT        i;
     ACPI_NATIVE_UINT        j;
+    ACPI_NATIVE_UINT        k;
     ACPI_STATUS             Status;
 
 
@@ -169,33 +170,51 @@ AcpiUtAllocateOwnerId (
 
     /*
      * Find a free owner ID, cycle through all possible IDs on repeated
-     * allocations. Note: Index for next possible ID is equal to the value
-     * of the last allocated ID.
+     * allocations. 9 because first index may have to be scanned twice.
      */
-    for (i = 0, j = AcpiGbl_LastOwnerId; i < 32; i++, j++)
+    for (i = 0, j = AcpiGbl_LastOwnerIdIndex; i < 9; i++, j++)
     {
-        if (j >= 32)
+        if (j >= 8)
         {
-            j = 0;  /* Wraparound to ID start */
+            j = 0;  /* Wraparound to start of mask array */
         }
 
-        if (!(AcpiGbl_OwnerIdMask & (1 << j)))
+        for (k = AcpiGbl_NextOwnerIdOffset; k < 32; k++)
         {
-            /*
-             * Found a free ID. The actual ID is the bit index plus one,
-             * making zero an invalid Owner ID. Save this as the last ID
-             * allocated and update the global ID mask.
-             */
-            AcpiGbl_LastOwnerId = (ACPI_OWNER_ID) (j + 1);
-            *OwnerId = AcpiGbl_LastOwnerId;
+            if (AcpiGbl_OwnerIdMask[j] == ACPI_UINT32_MAX)
+            {
+                /* There are no free IDs in this mask */
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_VALUES,
-                "Current OwnerId mask: %8.8X New ID: %2.2X\n",
-                AcpiGbl_OwnerIdMask, (unsigned int) AcpiGbl_LastOwnerId));
+                break;
+            }
 
-            AcpiGbl_OwnerIdMask |= (1 << j);
-            goto Exit;
+            if (!(AcpiGbl_OwnerIdMask[j] & (1 << k)))
+            {
+                /*
+                 * Found a free ID. The actual ID is the bit index plus one,
+                 * making zero an invalid Owner ID. Save this as the last ID
+                 * allocated and update the global ID mask.
+                 */
+                AcpiGbl_OwnerIdMask[j] |= (1 << k);
+
+                AcpiGbl_LastOwnerIdIndex = (UINT8) j;
+                AcpiGbl_NextOwnerIdOffset = (UINT8) (k + 1);
+
+                /*
+                 * Construct encoded ID from the index and bit position
+                 *
+                 * Note: Last [j].k (bit 255) is never used and is marked 
+                 * permanently allocated (prevents +1 overflow)
+                 */
+                *OwnerId = (ACPI_OWNER_ID) ((k + 1) + ACPI_MUL_32 (j));
+
+                ACPI_DEBUG_PRINT ((ACPI_DB_VALUES,
+                    "Allocated OwnerId: %2.2X\n", (unsigned int) *OwnerId));
+                goto Exit;
+            }
         }
+
+        AcpiGbl_NextOwnerIdOffset = 0;
     }
 
     /*
@@ -210,7 +229,7 @@ AcpiUtAllocateOwnerId (
      */
     Status = AE_OWNER_ID_LIMIT;
     ACPI_REPORT_ERROR ((
-        "Could not allocate new OwnerId (32 max), AE_OWNER_ID_LIMIT\n"));
+        "Could not allocate new OwnerId (255 max), AE_OWNER_ID_LIMIT\n"));
 
 Exit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
@@ -228,7 +247,7 @@ Exit:
  *              control method or unloading a table. Either way, we would
  *              ignore any error anyway.
  *
- * DESCRIPTION: Release a table or method owner ID.  Valid IDs are 1 - 32
+ * DESCRIPTION: Release a table or method owner ID.  Valid IDs are 1 - 255
  *
  ******************************************************************************/
 
@@ -238,6 +257,8 @@ AcpiUtReleaseOwnerId (
 {
     ACPI_OWNER_ID           OwnerId = *OwnerIdPtr;
     ACPI_STATUS             Status;
+    ACPI_NATIVE_UINT        Index;
+    UINT32                  Bit;
 
 
     ACPI_FUNCTION_TRACE_U32 ("UtReleaseOwnerId", OwnerId);
@@ -249,7 +270,7 @@ AcpiUtReleaseOwnerId (
 
     /* Zero is not a valid OwnerID */
 
-    if ((OwnerId == 0) || (OwnerId > 32))
+    if ((OwnerId == 0) || (OwnerId > 255))
     {
         ACPI_REPORT_ERROR (("Invalid OwnerId: %2.2X\n", OwnerId));
         return_VOID;
@@ -267,11 +288,21 @@ AcpiUtReleaseOwnerId (
 
     OwnerId--;
 
+    /* Decode ID to index/offset pair */
+
+    Index = ACPI_DIV_32 (OwnerId);
+    Bit = 1 << ACPI_MOD_32 (OwnerId);
+
     /* Free the owner ID only if it is valid */
 
-    if (AcpiGbl_OwnerIdMask & (1 << OwnerId))
+    if (AcpiGbl_OwnerIdMask[Index] & Bit)
     {
-        AcpiGbl_OwnerIdMask ^= (1 << OwnerId);
+        AcpiGbl_OwnerIdMask[Index] ^= Bit;
+    }
+    else
+    {
+        ACPI_REPORT_ERROR ((
+            "Release of non-allocated OwnerId: %2.2X\n", OwnerId + 1));
     }
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
