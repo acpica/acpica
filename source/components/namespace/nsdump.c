@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.172 $
+ *              $Revision: 1.173 $
  *
  *****************************************************************************/
 
@@ -323,8 +323,8 @@ AcpiNsDumpOneObject (
     /*
      * Now we can print out the pertinent information
      */
-    AcpiOsPrintf (" %-12s %p ",
-            AcpiUtGetTypeName (Type), ThisNode);
+    AcpiOsPrintf (" %-12s %p %2.2X ",
+            AcpiUtGetTypeName (Type), ThisNode, ThisNode->OwnerId);
 
     DbgLevel = AcpiDbgLevel;
     AcpiDbgLevel = 0;
