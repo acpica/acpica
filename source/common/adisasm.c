@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -621,7 +621,9 @@ AdCreateTableHeader (
 
     AcpiOsPrintf ("/*\n * Intel ACPI Component Architecture\n");
     AcpiOsPrintf (" * AML Disassembler version %8.8X\n", ACPI_CA_VERSION);
+
     AcpiOsPrintf (" *\n * Disassembly of %s, %s", Filename, ctime (&Timer));
+
     AcpiOsPrintf (" *\n * Original Table Header:\n");
     AcpiOsPrintf (" *     Signature        \"%4.4s\"\n",    Table->Signature);
     AcpiOsPrintf (" *     Length           0x%8.8X (%u)\n", Table->Length, Table->Length);
