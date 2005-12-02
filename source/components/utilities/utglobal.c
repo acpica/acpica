@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.220 $
+ *              $Revision: 1.221 $
  *
  *****************************************************************************/
 
@@ -875,11 +875,11 @@ AcpiUtInitGlobals (
         AcpiGbl_MutexInfo[i].UseCount       = 0;
     }
 
-    AcpiGbl_OwnerIdMask[7]              = 0x80000000; /* Last ID is never valid */
-    for (i = 0; i < 7; i++)
+    for (i = 0; i < ACPI_NUM_OWNERID_MASKS; i++)
     {
         AcpiGbl_OwnerIdMask[i]              = 0;
     }
+    AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS - 1] = 0x80000000; /* Last ID is never valid */
 
     /* GPE support */
 

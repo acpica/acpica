@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.172 $
+ *       $Revision: 1.173 $
  *
  *****************************************************************************/
 
@@ -299,7 +299,7 @@ ACPI_EXTERN UINT32                      AcpiGbl_OriginalMode;
 ACPI_EXTERN UINT32                      AcpiGbl_RsdpOriginalLocation;
 ACPI_EXTERN UINT32                      AcpiGbl_NsLookupCount;
 ACPI_EXTERN UINT32                      AcpiGbl_PsFindCount;
-ACPI_EXTERN UINT32                      AcpiGbl_OwnerIdMask[8];
+ACPI_EXTERN UINT32                      AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS];
 ACPI_EXTERN UINT16                      AcpiGbl_Pm1EnableRegisterSave;
 ACPI_EXTERN UINT16                      AcpiGbl_GlobalLockHandle;
 ACPI_EXTERN UINT8                       AcpiGbl_LastOwnerIdIndex;

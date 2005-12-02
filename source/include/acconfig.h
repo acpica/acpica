@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.197 $
+ *       $Revision: 1.198 $
  *
  *****************************************************************************/
 
@@ -184,6 +184,10 @@
 /* Size of cached memory mapping for system memory operation region */
 
 #define ACPI_SYSMEM_REGION_WINDOW_SIZE  4096
+
+/* OwnerId tracking. 8 entries allows for 255 OwnerIds */
+
+#define ACPI_NUM_OWNERID_MASKS          8
 
 
 /******************************************************************************

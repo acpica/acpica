@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.128 $
+ *              $Revision: 1.129 $
  *
  ******************************************************************************/
 
@@ -170,11 +170,14 @@ AcpiUtAllocateOwnerId (
 
     /*
      * Find a free owner ID, cycle through all possible IDs on repeated
-     * allocations. 9 because first index may have to be scanned twice.
+     * allocations. (ACPI_NUM_OWNERID_MASKS + 1) because first index may have
+     * to be scanned twice.
      */
-    for (i = 0, j = AcpiGbl_LastOwnerIdIndex; i < 9; i++, j++)
+    for (i = 0, j = AcpiGbl_LastOwnerIdIndex; 
+         i < (ACPI_NUM_OWNERID_MASKS + 1);
+         i++, j++)
     {
-        if (j >= 8)
+        if (j >= ACPI_NUM_OWNERID_MASKS)
         {
             j = 0;  /* Wraparound to start of mask array */
         }
