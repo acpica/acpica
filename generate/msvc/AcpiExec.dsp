@@ -365,6 +365,15 @@ SOURCE=..\..\source\components\namespace\nsxfobj.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\parser\psargs.c
+
+!IF  "$(CFG)" == "AcpiExec - Win32 Release"
+
+# ADD CPP /FAcs
+
+!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
