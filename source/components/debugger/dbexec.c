@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  ******************************************************************************/
 
@@ -399,6 +399,7 @@ AcpiDbExecute (
 {
     ACPI_STATUS             Status;
     ACPI_BUFFER             ReturnObj;
+    char                    *NameString;
 
 
 #ifdef ACPI_DEBUG_OUTPUT
@@ -419,8 +420,15 @@ AcpiDbExecute (
     }
     else
     {
-        AcpiUtStrupr (Name);
-        AcpiGbl_DbMethodInfo.Name = Name;
+        NameString = ACPI_MEM_ALLOCATE (ACPI_STRLEN (Name) + 1);
+        if (!NameString)
+        {
+            return;
+        }
+            
+        ACPI_STRCPY (NameString, Name);
+        AcpiUtStrupr (NameString);
+        AcpiGbl_DbMethodInfo.Name = NameString;
         AcpiGbl_DbMethodInfo.Args = Args;
         AcpiGbl_DbMethodInfo.Flags = Flags;
 
@@ -429,6 +437,7 @@ AcpiDbExecute (
 
         AcpiDbExecuteSetup (&AcpiGbl_DbMethodInfo);
         Status = AcpiDbExecuteMethod (&AcpiGbl_DbMethodInfo, &ReturnObj);
+        ACPI_MEM_FREE (NameString);
     }
 
     /*
