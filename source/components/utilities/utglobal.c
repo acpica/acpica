@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.221 $
+ *              $Revision: 1.222 $
  *
  *****************************************************************************/
 
@@ -520,7 +520,7 @@ AcpiUtGetRegionName (
         return ("InvalidSpaceId");
     }
 
-    return ((char *) AcpiGbl_RegionTypes[SpaceId]);
+    return (ACPI_CAST_PTR (char, AcpiGbl_RegionTypes[SpaceId]));
 }
 
 
@@ -757,10 +757,11 @@ AcpiUtGetDescriptorName (
 
     if (ACPI_GET_DESCRIPTOR_TYPE (Object) > ACPI_DESC_TYPE_MAX)
     {
-        return ((char *) AcpiGbl_BadType);
+        return (ACPI_CAST_PTR (char, AcpiGbl_BadType));
     }
 
-    return ((char *) AcpiGbl_DescTypeNames[ACPI_GET_DESCRIPTOR_TYPE (Object)]);
+    return (ACPI_CAST_PTR (char, 
+        AcpiGbl_DescTypeNames[ACPI_GET_DESCRIPTOR_TYPE (Object)]));
 
 }
 

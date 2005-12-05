@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsinfo - Dispatch and Info tables
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  ******************************************************************************/
 
@@ -255,36 +255,36 @@ const UINT8                 AcpiGbl_ResourceStructSizes[] =
 {
     /* Small descriptors */
 
-    {0},
-    {0},
-    {0},
-    {0},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_IRQ)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_DMA)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_START_DEPENDENT)},
-    {ACPI_RS_SIZE_MIN},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_IO)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_FIXED_IO)},
-    {0},
-    {0},
-    {0},
-    {0},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_VENDOR)},
-    {ACPI_RS_SIZE_MIN},
+    0,
+    0,
+    0,
+    0,
+    ACPI_RS_SIZE (ACPI_RESOURCE_IRQ),
+    ACPI_RS_SIZE (ACPI_RESOURCE_DMA),
+    ACPI_RS_SIZE (ACPI_RESOURCE_START_DEPENDENT),
+    ACPI_RS_SIZE_MIN,
+    ACPI_RS_SIZE (ACPI_RESOURCE_IO),
+    ACPI_RS_SIZE (ACPI_RESOURCE_FIXED_IO),
+    0,
+    0,
+    0,
+    0,
+    ACPI_RS_SIZE (ACPI_RESOURCE_VENDOR),
+    ACPI_RS_SIZE_MIN,
 
     /* Large descriptors */
 
-    {0},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_MEMORY24)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_GENERIC_REGISTER)},
-    {0},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_VENDOR)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_MEMORY32)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_FIXED_MEMORY32)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_ADDRESS32)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_ADDRESS16)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_EXTENDED_IRQ)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_ADDRESS64)},
-    {ACPI_RS_SIZE (ACPI_RESOURCE_EXTENDED_ADDRESS64)}
+    0,
+    ACPI_RS_SIZE (ACPI_RESOURCE_MEMORY24),
+    ACPI_RS_SIZE (ACPI_RESOURCE_GENERIC_REGISTER),
+    0,
+    ACPI_RS_SIZE (ACPI_RESOURCE_VENDOR),
+    ACPI_RS_SIZE (ACPI_RESOURCE_MEMORY32),
+    ACPI_RS_SIZE (ACPI_RESOURCE_FIXED_MEMORY32),
+    ACPI_RS_SIZE (ACPI_RESOURCE_ADDRESS32),
+    ACPI_RS_SIZE (ACPI_RESOURCE_ADDRESS16),
+    ACPI_RS_SIZE (ACPI_RESOURCE_EXTENDED_IRQ),
+    ACPI_RS_SIZE (ACPI_RESOURCE_ADDRESS64),
+    ACPI_RS_SIZE (ACPI_RESOURCE_EXTENDED_ADDRESS64)
 };
 

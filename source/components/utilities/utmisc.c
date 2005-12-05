@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.129 $
+ *              $Revision: 1.130 $
  *
  ******************************************************************************/
 
@@ -273,7 +273,7 @@ AcpiUtReleaseOwnerId (
 
     /* Zero is not a valid OwnerID */
 
-    if ((OwnerId == 0) || (OwnerId > 255))
+    if (OwnerId == 0)
     {
         ACPI_REPORT_ERROR (("Invalid OwnerId: %2.2X\n", OwnerId));
         return_VOID;

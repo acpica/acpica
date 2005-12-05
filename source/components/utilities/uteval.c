@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.57 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,19 @@
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("uteval")
 
+/* Local prototypes */
+
+static void
+AcpiUtCopyIdString (
+    char                    *Destination,
+    char                    *Source,
+    ACPI_SIZE               MaxLength);
+
+static ACPI_STATUS
+AcpiUtTranslateOneCid (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_COMPATIBLE_ID      *OneCid);
+
 
 /*******************************************************************************
  *
@@ -171,7 +184,7 @@ AcpiUtOsiImplementation (
     for (i = 0; i < ACPI_NUM_OSI_STRINGS; i++)
     {
         if (!ACPI_STRCMP (StringDesc->String.Pointer,
-                            (char *) AcpiGbl_ValidOsiStrings[i]))
+                ACPI_CAST_PTR (char, AcpiGbl_ValidOsiStrings[i])))
         {
             /* This string is supported */
 
@@ -323,9 +336,9 @@ AcpiUtEvaluateObject (
  *
  * FUNCTION:    AcpiUtEvaluateNumericObject
  *
- * PARAMETERS:  *ObjectName         - Object name to be evaluated
+ * PARAMETERS:  ObjectName          - Object name to be evaluated
  *              DeviceNode          - Node for the device
- *              *Address            - Where the value is returned
+ *              Address             - Where the value is returned
  *
  * RETURN:      Status
  *
@@ -390,7 +403,6 @@ AcpiUtCopyIdString (
     ACPI_SIZE               MaxLength)
 {
 
-
     /*
      * Workaround for ID strings that have a leading asterisk. This construct
      * is not allowed by the ACPI specification  (ID strings must be
@@ -413,7 +425,7 @@ AcpiUtCopyIdString (
  * FUNCTION:    AcpiUtExecute_HID
  *
  * PARAMETERS:  DeviceNode          - Node for the device
- *              *Hid                - Where the HID is returned
+ *              Hid                 - Where the HID is returned
  *
  * RETURN:      Status
  *
@@ -522,7 +534,7 @@ AcpiUtTranslateOneCid (
  * FUNCTION:    AcpiUtExecute_CID
  *
  * PARAMETERS:  DeviceNode          - Node for the device
- *              *Cid                - Where the CID is returned
+ *              ReturnCidList       - Where the CID list is returned
  *
  * RETURN:      Status
  *
@@ -584,10 +596,10 @@ AcpiUtExecute_CID (
     CidList->Size  = Size;
 
     /*
-     *  A _CID can return either a single compatible ID or a package of compatible
-     *  IDs.  Each compatible ID can be one of the following:
-     *  -- Number (32 bit compressed EISA ID) or
-     *  -- String (PCI ID format, e.g. "PCI\VEN_vvvv&DEV_dddd&SUBSYS_ssssssss").
+     *  A _CID can return either a single compatible ID or a package of
+     *  compatible IDs.  Each compatible ID can be one of the following:
+     *  1) Integer (32 bit compressed EISA ID) or
+     *  2) String (PCI ID format, e.g. "PCI\VEN_vvvv&DEV_dddd&SUBSYS_ssssssss")
      */
 
     /* The _CID object can be either a single CID or a package (list) of CIDs */
@@ -636,7 +648,7 @@ AcpiUtExecute_CID (
  * FUNCTION:    AcpiUtExecute_UID
  *
  * PARAMETERS:  DeviceNode          - Node for the device
- *              *Uid                - Where the UID is returned
+ *              Uid                 - Where the UID is returned
  *
  * RETURN:      Status
  *
@@ -692,7 +704,7 @@ AcpiUtExecute_UID (
  * FUNCTION:    AcpiUtExecute_STA
  *
  * PARAMETERS:  DeviceNode          - Node for the device
- *              *Flags              - Where the status flags are returned
+ *              Flags               - Where the status flags are returned
  *
  * RETURN:      Status
  *
@@ -748,7 +760,7 @@ AcpiUtExecute_STA (
  * FUNCTION:    AcpiUtExecute_Sxds
  *
  * PARAMETERS:  DeviceNode          - Node for the device
- *              *Flags              - Where the status flags are returned
+ *              Flags               - Where the status flags are returned
  *
  * RETURN:      Status
  *
@@ -776,7 +788,7 @@ AcpiUtExecute_Sxds (
     {
         Highest[i] = 0xFF;
         Status = AcpiUtEvaluateObject (DeviceNode,
-                    (char *) AcpiGbl_HighestDstateNames[i],
+                    ACPI_CAST_PTR (char, AcpiGbl_HighestDstateNames[i]),
                     ACPI_BTYPE_INTEGER, &ObjDesc);
         if (ACPI_FAILURE (Status))
         {
@@ -784,7 +796,7 @@ AcpiUtExecute_Sxds (
             {
                 ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
                     "%s on Device %4.4s, %s\n",
-                    (char *) AcpiGbl_HighestDstateNames[i],
+                    ACPI_CAST_PTR (char, AcpiGbl_HighestDstateNames[i]),
                     AcpiUtGetNodeName (DeviceNode),
                     AcpiFormatException (Status)));
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -367,7 +367,7 @@ LsAmlListingWalk (
 {
     UINT8                   FileByte;
     UINT32                  i;
-    UINT32                  FileId = (UINT32) Context;
+    UINT32                  FileId = (UINT32) ACPI_TO_INTEGER (Context);
 
 
     LsWriteNodeToListing (Op, FileId);

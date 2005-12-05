@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -1034,7 +1034,7 @@ AeMiscellaneousTests (
     ACPI_HANDLE             Handle;
     ACPI_BUFFER             ReturnBuf;
     char                    Buffer[32];
-    ACPI_VENDOR_UUID        Uuid = {0, ACPI_INIT_UUID (0,0,0,0,0,0,0,0,0,0,0)};
+    ACPI_VENDOR_UUID        Uuid = {0, {ACPI_INIT_UUID (0,0,0,0,0,0,0,0,0,0,0)}};
     ACPI_STATUS             Status;
 
 
