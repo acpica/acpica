@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -757,6 +757,15 @@ CloseThisOp:
             {
                 AcpiPsPopScope (ParserState, &Op,
                     &WalkState->ArgTypes, &WalkState->ArgCount);
+
+                if (Op->Common.AmlOpcode != AML_WHILE_OP)
+                {
+                    Status2 = AcpiDsResultStackPop (WalkState);
+                    if (ACPI_FAILURE (Status2))
+                    {
+                        return_ACPI_STATUS (Status2);
+                    }
+                }
             }
 
             /* Close this iteration of the While loop */

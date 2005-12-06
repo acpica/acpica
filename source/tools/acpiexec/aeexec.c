@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -795,9 +795,16 @@ AeExceptionHandler (
 
 
     Exception = AcpiFormatException (AmlStatus);
-    AcpiOsPrintf (
-        "**** AcpiExec Exception: %s during execution of method [%4.4s] Opcode [%s] @%X\n",
-        Exception, (char *) &Name, AcpiPsGetOpcodeName (Opcode), AmlOffset);
+    AcpiOsPrintf ("**** AcpiExec Exception: %s during execution", Exception);
+    if (Name)
+    {
+        AcpiOsPrintf (" of method [%4.4s]", (char *) &Name);
+    }
+    else
+    {
+        AcpiOsPrintf (" at module level (table load)");
+    }
+    AcpiOsPrintf (" Opcode [%s] @%X\n", AcpiPsGetOpcodeName (Opcode), AmlOffset);
 
     /*
      * Invoke the _ERR method if present

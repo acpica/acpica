@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.159 $
+ *              $Revision: 1.160 $
  *
  *****************************************************************************/
 
@@ -421,7 +421,6 @@ AcpiPsNextParseState (
     switch (CallbackStatus)
     {
     case AE_CTRL_TERMINATE:
-
         /*
          * A control method was terminated via a RETURN statement.
          * The walk of this method is complete.
@@ -435,15 +434,24 @@ AcpiPsNextParseState (
 
         ParserState->Aml = WalkState->AmlLastWhile;
         WalkState->ControlState->Common.Value = FALSE;
-        Status = AE_CTRL_BREAK;
+        Status = AcpiDsResultStackPop (WalkState);
+        if (ACPI_SUCCESS (Status))
+        {
+            Status = AE_CTRL_BREAK;
+        }
         break;
+
 
     case AE_CTRL_CONTINUE:
 
-
         ParserState->Aml = WalkState->AmlLastWhile;
-        Status = AE_CTRL_CONTINUE;
+        Status = AcpiDsResultStackPop (WalkState);
+        if (ACPI_SUCCESS (Status))
+        {
+            Status = AE_CTRL_CONTINUE;
+        }
         break;
+
 
     case AE_CTRL_PENDING:
 
@@ -459,17 +467,20 @@ AcpiPsNextParseState (
 #endif
 
     case AE_CTRL_TRUE:
-
         /*
          * Predicate of an IF was true, and we are at the matching ELSE.
          * Just close out this package
          */
         ParserState->Aml = AcpiPsGetNextPackageEnd (ParserState);
+        Status = AcpiDsResultStackPop (WalkState);
+        if (ACPI_SUCCESS (Status))
+        {
+            Status = AE_CTRL_PENDING;
+        }
         break;
 
 
     case AE_CTRL_FALSE:
-
         /*
          * Either an IF/WHILE Predicate was false or we encountered a BREAK
          * opcode.  In both cases, we do not execute the rest of the
