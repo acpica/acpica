@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -182,7 +182,7 @@ AnCheckMethodReturnValue (
  * RETURN:      The corresponding Bit-encoded types
  *
  * DESCRIPTION: Convert an encoded ARGI required argument type code into a
- *              bitfield type code.  Implements the implicit source conversion
+ *              bitfield type code. Implements the implicit source conversion
  *              rules.
  *
  ******************************************************************************/
@@ -287,7 +287,7 @@ AnMapArgTypeToBtype (
  * RETURN:      Btype corresponding to the Etype
  *
  * DESCRIPTION: Convert an encoded ACPI type to a bitfield type applying the
- *              operand conversion rules.  In other words, returns the type(s)
+ *              operand conversion rules. In other words, returns the type(s)
  *              this Etype is implicitly converted to during interpretation.
  *
  ******************************************************************************/
@@ -613,7 +613,7 @@ AnCheckForReservedName (
     }
 
     /*
-     * The name didn't match any of the known reserved names.  Flag it as a
+     * The name didn't match any of the known reserved names. Flag it as a
      * warning, since the entire namespace starting with an underscore is
      * reserved by the ACPI spec.
      */
@@ -790,7 +790,7 @@ AnMapObjTypeToBtype (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Descending callback for the analysis walk.  Check methods for :
+ * DESCRIPTION: Descending callback for the analysis walk. Check methods for:
  *              1) Initialized local variables
  *              2) Valid arguments
  *              3) Return types
@@ -1152,7 +1152,6 @@ AnMethodAnalysisWalkBegin (
                 }
             }
         }
-
         break;
 
 
@@ -1170,10 +1169,10 @@ AnMethodAnalysisWalkBegin (
  *
  * PARAMETERS:  Op            - A method parse node
  *
- * RETURN:      TRUE if last statement is an ASL RETURN.  False otherwise
+ * RETURN:      TRUE if last statement is an ASL RETURN. False otherwise
  *
  * DESCRIPTION: Walk down the list of top level statements within a method
- *              to find the last one.  Check if that last statement is in
+ *              to find the last one. Check if that last statement is in
  *              fact a RETURN statement.
  *
  ******************************************************************************/
@@ -1212,7 +1211,7 @@ AnLastStatementIsReturn (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ascending callback for analysis walk.  Complete method
+ * DESCRIPTION: Ascending callback for analysis walk. Complete method
  *              return analysis.
  *
  ******************************************************************************/
@@ -1261,14 +1260,14 @@ AnMethodAnalysisWalkEnd (
         {
             /*
              * No return statement, and execution can possibly exit
-             * via this path.  This is equivalent to Return ()
+             * via this path. This is equivalent to Return ()
              */
             MethodInfo->NumReturnNoValue++;
         }
 
         /*
          * Check for case where some return statements have a return value
-         * and some do not.  Exit without a return statement is a return with
+         * and some do not. Exit without a return statement is a return with
          * no value
          */
         if (MethodInfo->NumReturnNoValue &&
@@ -1281,7 +1280,7 @@ AnMethodAnalysisWalkEnd (
         /*
          * If there are any RETURN() statements with no value, or there is a
          * control path that allows the method to exit without a return value,
-         * we mark the method as a method that does not return a value.  This
+         * we mark the method as a method that does not return a value. This
          * knowledge can be used to check method invocations that expect a
          * returned value.
          */
@@ -1321,7 +1320,7 @@ AnMethodAnalysisWalkEnd (
         /*
          * If there is a peer node after the return statement, then this
          * node is unreachable code -- i.e., it won't be executed because of
-         *  thepreceeding Return() statement.
+         * the preceeding Return() statement.
          */
         if (Op->Asl.Next)
         {
@@ -1337,7 +1336,7 @@ AnMethodAnalysisWalkEnd (
             (Op->Asl.Next->Asl.ParseOpcode == PARSEOP_ELSE))
         {
             /*
-             * This IF has a corresponding ELSE.  The IF block has no exit,
+             * This IF has a corresponding ELSE. The IF block has no exit,
              * (it contains an unconditional Return)
              * mark the ELSE block to remember this fact.
              */
@@ -1353,7 +1352,7 @@ AnMethodAnalysisWalkEnd (
         {
             /*
              * This ELSE block has no exit and the corresponding IF block
-             * has no exit either.  Therefore, the parent node has no exit.
+             * has no exit either. Therefore, the parent node has no exit.
              */
             Op->Asl.Parent->Asl.CompileFlags |= NODE_HAS_NO_EXIT;
         }
@@ -1407,8 +1406,8 @@ AnMethodTypingWalkBegin (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ascending callback for typing walk.  Complete method
- *              return analysis.  Check methods for :
+ * DESCRIPTION: Ascending callback for typing walk. Complete the method
+ *              return analysis. Check methods for:
  *              1) Initialized local variables
  *              2) Valid arguments
  *              3) Return types
@@ -1442,17 +1441,24 @@ AnMethodTypingWalkEnd (
                 (ThisNodeBtype == (ACPI_UINT32_MAX -1)))
             {
                 /*
-                 * The method is untyped at this time (typically a forward
-                 *  reference). We must recursively type the method here
+                 * The called method is untyped at this time (typically a
+                 * forward reference). 
+                 *
+                 * Check for a recursive method call first.
                  */
-                TrWalkParseTree (Op->Asl.Child->Asl.Node->Op,
-                    ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
-                    AnMethodTypingWalkEnd, NULL);
+                if (Op->Asl.ParentMethod != Op->Asl.Child->Asl.Node->Op)
+                {
+                    /* We must type the method here */
 
-                ThisNodeBtype = AnGetBtype (Op->Asl.Child);
+                    TrWalkParseTree (Op->Asl.Child->Asl.Node->Op,
+                        ASL_WALK_VISIT_TWICE, AnMethodTypingWalkBegin,
+                        AnMethodTypingWalkEnd, NULL);
+
+                    ThisNodeBtype = AnGetBtype (Op->Asl.Child);
+                }
             }
 
-            /* Returns a value, get it's type */
+            /* Returns a value, save the value type */
 
             if (Op->Asl.ParentMethod)
             {
@@ -1550,7 +1556,7 @@ AnCheckMethodReturnValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Descending callback for the analysis walk.  Check methods for:
+ * DESCRIPTION: Descending callback for the analysis walk. Check methods for:
  *              1) Initialized local variables
  *              2) Valid arguments
  *              3) Return types
@@ -1576,7 +1582,7 @@ AnOperandTypecheckWalkBegin (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ascending callback for analysis walk.  Complete method
+ * DESCRIPTION: Ascending callback for analysis walk. Complete method
  *              return analysis.
  *
  ******************************************************************************/
@@ -1857,7 +1863,7 @@ AnOperandTypecheckWalkEnd (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Descending callback for the analysis walk.  Check methods for :
+ * DESCRIPTION: Descending callback for the analysis walk. Check methods for:
  *              1) Initialized local variables
  *              2) Valid arguments
  *              3) Return types
@@ -1883,7 +1889,7 @@ AnOtherSemanticAnalysisWalkBegin (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Ascending callback for analysis walk.  Complete method
+ * DESCRIPTION: Ascending callback for analysis walk. Complete method
  *              return analysis.
  *
  ******************************************************************************/
