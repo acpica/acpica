@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -528,37 +528,44 @@ AcpiDsLoad1EndOp (
         }
     }
 
-    if (Op->Common.AmlOpcode == AML_METHOD_OP)
+    /*
+     * If we are executing a method, do not create any namespace objects
+     * during the load phase, only during execution.
+     */
+    if (!WalkState->MethodNode)
     {
-        /*
-         * MethodOp PkgLength NameString MethodFlags TermList
-         *
-         * Note: We must create the method node/object pair as soon as we
-         * see the method declaration.  This allows later pass1 parsing
-         * of invocations of the method (need to know the number of
-         * arguments.)
-         */
-        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
-            "LOADING-Method: State=%p Op=%p NamedObj=%p\n",
-            WalkState, Op, Op->Named.Node));
-
-        if (!AcpiNsGetAttachedObject (Op->Named.Node))
+        if (Op->Common.AmlOpcode == AML_METHOD_OP)
         {
-            WalkState->Operands[0] = (void *) Op->Named.Node;
-            WalkState->NumOperands = 1;
+            /*
+             * MethodOp PkgLength NameString MethodFlags TermList
+             *
+             * Note: We must create the method node/object pair as soon as we
+             * see the method declaration.  This allows later pass1 parsing
+             * of invocations of the method (need to know the number of
+             * arguments.)
+             */
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+                "LOADING-Method: State=%p Op=%p NamedObj=%p\n",
+                WalkState, Op, Op->Named.Node));
 
-            Status = AcpiDsCreateOperands (WalkState, Op->Common.Value.Arg);
-            if (ACPI_SUCCESS (Status))
+            if (!AcpiNsGetAttachedObject (Op->Named.Node))
             {
-                Status = AcpiExCreateMethod (Op->Named.Data,
-                                    Op->Named.Length, WalkState);
-            }
-            WalkState->Operands[0] = NULL;
-            WalkState->NumOperands = 0;
+                WalkState->Operands[0] = ACPI_CAST_PTR (void, Op->Named.Node);
+                WalkState->NumOperands = 1;
 
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
+                Status = AcpiDsCreateOperands (WalkState, Op->Common.Value.Arg);
+                if (ACPI_SUCCESS (Status))
+                {
+                    Status = AcpiExCreateMethod (Op->Named.Data,
+                                        Op->Named.Length, WalkState);
+                }
+                WalkState->Operands[0] = NULL;
+                WalkState->NumOperands = 0;
+
+                if (ACPI_FAILURE (Status))
+                {
+                    return_ACPI_STATUS (Status);
+                }
             }
         }
     }
@@ -1147,12 +1154,46 @@ AcpiDsLoad2EndOp (
 
             Status = AcpiDsCreateNode (WalkState, Node, Op);
             break;
-#endif /* ACPI_NO_METHOD_EXECUTION */
 
+
+        case AML_METHOD_OP:
+            /*
+             * MethodOp PkgLength NameString MethodFlags TermList
+             *
+             * Note: We must create the method node/object pair as soon as we
+             * see the method declaration.  This allows later pass1 parsing
+             * of invocations of the method (need to know the number of
+             * arguments.)
+             */
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+                "LOADING-Method: State=%p Op=%p NamedObj=%p\n",
+                WalkState, Op, Op->Named.Node));
+
+            if (!AcpiNsGetAttachedObject (Op->Named.Node))
+            {
+                WalkState->Operands[0] = ACPI_CAST_PTR (void, Op->Named.Node);
+                WalkState->NumOperands = 1;
+
+                Status = AcpiDsCreateOperands (WalkState, Op->Common.Value.Arg);
+                if (ACPI_SUCCESS (Status))
+                {
+                    Status = AcpiExCreateMethod (Op->Named.Data,
+                                        Op->Named.Length, WalkState);
+                }
+                WalkState->Operands[0] = NULL;
+                WalkState->NumOperands = 0;
+
+                if (ACPI_FAILURE (Status))
+                {
+                    return_ACPI_STATUS (Status);
+                }
+            }
+            break;
+
+#endif /* ACPI_NO_METHOD_EXECUTION */
 
         default:
             /* All NAMED_COMPLEX opcodes must be handled above */
-            /* Note: Method objects were already created in Pass 1 */
             break;
         }
         break;
