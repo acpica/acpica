@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -737,7 +737,7 @@ AcpiUtExecute_STA (
                 "_STA on %4.4s was not found, assuming device is present\n",
                 AcpiUtGetNodeName (DeviceNode)));
 
-            *Flags = 0x0F;
+            *Flags = ACPI_UINT32_MAX;
             Status = AE_OK;
         }
 
