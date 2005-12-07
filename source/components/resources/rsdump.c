@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  ******************************************************************************/
 
@@ -119,7 +119,6 @@
 
 #include "acpi.h"
 #include "acresrc.h"
-#include "acdisasm.h"
 
 #define _COMPONENT          ACPI_RESOURCES
         ACPI_MODULE_NAME    ("rsdump")

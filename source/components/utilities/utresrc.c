@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utresrc - Resource managment utilities
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  ******************************************************************************/
 
@@ -125,6 +125,135 @@
         ACPI_MODULE_NAME    ("utmisc")
 
 
+#if defined(ACPI_DISASSEMBLER) || defined (ACPI_DEBUGGER)
+
+/*
+ * Strings used to decode resource descriptors.
+ * Used by both the disasssembler and the debugger resource dump routines
+ */
+const char                      *AcpiGbl_BMDecode[2] =
+{
+    "NotBusMaster",
+    "BusMaster"
+};
+
+const char                      *AcpiGbl_ConfigDecode[4] =
+{
+    "0 - Good Configuration",
+    "1 - Acceptable Configuration",
+    "2 - Suboptimal Configuration",
+    "3 - ***Invalid Configuration***",
+};
+
+const char                      *AcpiGbl_ConsumeDecode[2] =
+{
+    "ResourceProducer",
+    "ResourceConsumer"
+};
+
+const char                      *AcpiGbl_DECDecode[2] =
+{
+    "PosDecode",
+    "SubDecode"
+};
+
+const char                      *AcpiGbl_HEDecode[2] =
+{
+    "Level",
+    "Edge"
+};
+
+const char                      *AcpiGbl_IoDecode[2] =
+{
+    "Decode10",
+    "Decode16"
+};
+
+const char                      *AcpiGbl_LLDecode[2] =
+{
+    "ActiveHigh",
+    "ActiveLow"
+};
+
+const char                      *AcpiGbl_MaxDecode[2] =
+{
+    "MaxNotFixed",
+    "MaxFixed"
+};
+
+const char                      *AcpiGbl_MEMDecode[4] =
+{
+    "NonCacheable",
+    "Cacheable",
+    "WriteCombining",
+    "Prefetchable"
+};
+
+const char                      *AcpiGbl_MinDecode[2] =
+{
+    "MinNotFixed",
+    "MinFixed"
+};
+
+const char                      *AcpiGbl_MTPDecode[4] =
+{
+    "AddressRangeMemory",
+    "AddressRangeReserved",
+    "AddressRangeACPI",
+    "AddressRangeNVS"
+};
+
+const char                      *AcpiGbl_RNGDecode[4] =
+{
+    "InvalidRanges",
+    "NonISAOnlyRanges",
+    "ISAOnlyRanges",
+    "EntireRange"
+};
+
+const char                      *AcpiGbl_RWDecode[2] =
+{
+    "ReadOnly",
+    "ReadWrite"
+};
+
+const char                      *AcpiGbl_SHRDecode[2] =
+{
+    "Exclusive",
+    "Shared"
+};
+
+const char                      *AcpiGbl_SIZDecode[4] =
+{
+    "Transfer8",
+    "Transfer8_16",
+    "Transfer16",
+    "InvalidSize"
+};
+
+const char                      *AcpiGbl_TRSDecode[2] =
+{
+    "DenseTranslation",
+    "SparseTranslation"
+};
+
+const char                      *AcpiGbl_TTPDecode[2] =
+{
+    "TypeStatic",
+    "TypeTranslation"
+};
+
+const char                      *AcpiGbl_TYPDecode[4] =
+{
+    "Compatibility",
+    "TypeA",
+    "TypeB",
+    "TypeF"
+};
+
+#endif
+
+
 /*
  * Base sizes of the raw AML resource descriptors, indexed by resource type.
  * Zero indicates a reserved (and therefore invalid) resource type.
@@ -209,6 +338,7 @@ static const UINT8          AcpiGbl_ResourceTypes[] =
     ACPI_VARIABLE_LENGTH,
     ACPI_FIXED_LENGTH
 };
+
 
 
 /*******************************************************************************

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmutils - AML disassembler utilities
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  ******************************************************************************/
 
@@ -141,6 +141,7 @@ const char                      *AcpiGbl_FENames[ACPI_NUM_FIELD_NAMES] =
 };              /* FE = Field Element */
 #endif
 
+/* Operators for Match() */
 
 const char                      *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS] =
 {
@@ -151,7 +152,6 @@ const char                      *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS] =
     "MGE",
     "MGT"
 };
-
 
 /* Access type decoding */
 
@@ -164,7 +164,6 @@ const char                      *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES] =
     "QWordAcc",
     "BufferAcc",
 };
-
 
 /* Lock rule decoding */
 
@@ -183,14 +182,7 @@ const char                      *AcpiGbl_UpdateRules[ACPI_NUM_UPDATE_RULES] =
     "WriteAsZeros"
 };
 
-/*
- * Strings used to decode resource descriptors
- */
-const char                      *AcpiGbl_IoDecode[2] =
-{
-    "Decode10",
-    "Decode16"
-};
+/* Strings used to decode resource descriptors */
 
 const char                      *AcpiGbl_WordDecode[4] =
 {
@@ -200,126 +192,10 @@ const char                      *AcpiGbl_WordDecode[4] =
     "Unknown-resource-type"
 };
 
-const char                      *AcpiGbl_ConsumeDecode[2] =
-{
-    "ResourceProducer",
-    "ResourceConsumer"
-};
-
-const char                      *AcpiGbl_MinDecode[2] =
-{
-    "MinNotFixed",
-    "MinFixed"
-};
-
-const char                      *AcpiGbl_MaxDecode[2] =
-{
-    "MaxNotFixed",
-    "MaxFixed"
-};
-
-const char                      *AcpiGbl_DECDecode[2] =
-{
-    "PosDecode",
-    "SubDecode"
-};
-
 const char                      *AcpiGbl_IrqDecode[2] =
 {
     "IRQNoFlags",
     "IRQ"
-};
-
-const char                      *AcpiGbl_HEDecode[2] =
-{
-    "Level",
-    "Edge"
-};
-
-const char                      *AcpiGbl_LLDecode[2] =
-{
-    "ActiveHigh",
-    "ActiveLow"
-};
-
-const char                      *AcpiGbl_SHRDecode[2] =
-{
-    "Exclusive",
-    "Shared"
-};
-
-const char                      *AcpiGbl_TYPDecode[4] =
-{
-    "Compatibility",
-    "TypeA",
-    "TypeB",
-    "TypeF"
-};
-
-const char                      *AcpiGbl_BMDecode[2] =
-{
-    "NotBusMaster",
-    "BusMaster"
-};
-
-const char                      *AcpiGbl_SIZDecode[4] =
-{
-    "Transfer8",
-    "Transfer8_16",
-    "Transfer16",
-    "InvalidSize"
-};
-
-/* Type Specific Flags */
-
-const char                      *AcpiGbl_TTPDecode[2] =
-{
-    "TypeStatic",
-    "TypeTranslation"
-};
-
-const char                      *AcpiGbl_MTPDecode[4] =
-{
-    "AddressRangeMemory",
-    "AddressRangeReserved",
-    "AddressRangeACPI",
-    "AddressRangeNVS"
-};
-
-const char                      *AcpiGbl_MEMDecode[4] =
-{
-    "NonCacheable",
-    "Cacheable",
-    "WriteCombining",
-    "Prefetchable"
-};
-
-const char                      *AcpiGbl_RWDecode[2] =
-{
-    "ReadOnly",
-    "ReadWrite"
-};
-
-const char                      *AcpiGbl_TRSDecode[2] =
-{
-    "DenseTranslation",
-    "SparseTranslation"
-};
-
-const char                      *AcpiGbl_RNGDecode[4] =
-{
-    "InvalidRanges",
-    "NonISAOnlyRanges",
-    "ISAOnlyRanges",
-    "EntireRange"
-};
-
-const char                      *AcpiGbl_ConfigDecode[4] =
-{
-    "0 - Good Configuration",
-    "1 - Acceptable Configuration",
-    "2 - Suboptimal Configuration",
-    "3 - ***Invalid Configuration***",
 };
 
 
