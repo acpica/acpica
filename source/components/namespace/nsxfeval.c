@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  ******************************************************************************/
 
@@ -592,9 +592,9 @@ AcpiNsGetDeviceCallback (
         return (AE_CTRL_DEPTH);
     }
 
-    if (!(Flags & 0x01))
+    if (!(Flags & ACPI_STA_DEVICE_PRESENT))
     {
-        /* Don't return at the device or children of the device if not there */
+        /* Don't examine children of the device if not present */
 
         return (AE_CTRL_DEPTH);
     }
