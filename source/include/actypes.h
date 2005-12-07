@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.292 $
+ *       $Revision: 1.293 $
  *
  *****************************************************************************/
 
@@ -1020,6 +1020,14 @@ typedef struct acpi_compatible_id_list
 #define ACPI_VALID_CID                  0x0010
 #define ACPI_VALID_SXDS                 0x0020
 
+/* Flags for _STA method */
+
+#define ACPI_STA_DEVICE_PRESENT         0x01
+#define ACPI_STA_DEVICE_ENABLED         0x02
+#define ACPI_STA_DEVICE_UI              0x04
+#define ACPI_STA_DEVICE_OK              0x08
+#define ACPI_STA_BATTERY_PRESENT        0x10
+
 
 #define ACPI_COMMON_OBJ_INFO \
     ACPI_OBJECT_TYPE            Type;           /* ACPI object type */ \
@@ -1099,7 +1107,9 @@ typedef UINT32                          ACPI_RSDESC_SIZE;  /* Max Resource Descr
 #define ACPI_ISA_ONLY_RANGES            (UINT8) 0x02
 #define ACPI_ENTIRE_RANGE               (ACPI_NON_ISA_ONLY_RANGES | ACPI_ISA_ONLY_RANGES)
 
-#define ACPI_SPARSE_TRANSLATION         (UINT8) 0x03
+/* Type of translation - 1=Sparse, 0=Dense */
+
+#define ACPI_SPARSE_TRANSLATION         (UINT8) 0x01
 
 /*
  *  IO Port Descriptor Decode
