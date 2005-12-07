@@ -97,6 +97,7 @@ SRCS=	aeexec.c aemain.c \
 	../../resources/rscreate.c \
 	../../resources/rsdump.c \
 	../../resources/rsio.c \
+	../../resources/rsinfo.c \
 	../../resources/rsirq.c \
 	../../resources/rslist.c \
 	../../resources/rsmemory.c \
