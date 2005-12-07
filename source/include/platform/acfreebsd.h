@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acfreebsd.h - OS specific defines, etc.
- *       $Revision: 1.20 $
+ *       $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,7 @@
 #include <sys/types.h>
 #include <machine/acpica_machdep.h>
 
+#define ACPI_UINTPTR_T                  uintptr_t
 #define ACPI_USE_LOCAL_CACHE
 #define __cdecl
 
