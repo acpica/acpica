@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.170 $
+ *       $Revision: 1.171 $
  *
  *****************************************************************************/
 
@@ -191,16 +191,23 @@
 #define ACPI_SET32(ptr)                 *ACPI_CAST_PTR (UINT32, ptr)
 #define ACPI_SET64(ptr)                 *ACPI_CAST_PTR (UINT64, ptr)
 
-/* Pointer manipulation */
+/*
+ * Pointer manipulation
+ *
+ * Use C99 uintptr_t for pointer casting if available, "void *" otherwise
+ */
+#ifndef ACPI_UINTPTR_T
+#define ACPI_UINTPTR_T                  void *
+#endif
 
-#define ACPI_CAST_PTR(t, p)             ((t *)(void *)(p))
-#define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **)(void *)(p))
-#define ACPI_ADD_PTR(t,a,b)             ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8, (a)) + (ACPI_NATIVE_UINT)(b)))
-#define ACPI_PTR_DIFF(a,b)              (ACPI_NATIVE_UINT) ((char *)(a) - (char *)(b))
+#define ACPI_CAST_PTR(t, p)             ((t *) (ACPI_UINTPTR_T) (p))
+#define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **) (ACPI_UINTPTR_T) (p))
+#define ACPI_ADD_PTR(t,a,b)             ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8,(a)) + (ACPI_NATIVE_UINT)(b)))
+#define ACPI_PTR_DIFF(a,b)              (ACPI_NATIVE_UINT) (ACPI_CAST_PTR (UINT8,(a)) - ACPI_CAST_PTR (UINT8,(b)))
 
 /* Pointer/Integer type conversions */
 
-#define ACPI_TO_POINTER(i)              ACPI_ADD_PTR (void, (void *) NULL,(ACPI_NATIVE_UINT)i)
+#define ACPI_TO_POINTER(i)              ACPI_ADD_PTR (void,(void *) NULL,(ACPI_NATIVE_UINT) i)
 #define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p,(void *) NULL)
 #define ACPI_OFFSET(d,f)                (ACPI_SIZE) ACPI_PTR_DIFF (&(((d *)0)->f),(void *) NULL)
 #define ACPI_FADT_OFFSET(f)             ACPI_OFFSET (FADT_DESCRIPTOR, f)
@@ -208,7 +215,7 @@
 #if ACPI_MACHINE_WIDTH == 16
 #define ACPI_STORE_POINTER(d,s)         ACPI_MOVE_32_TO_32(d,s)
 #define ACPI_PHYSADDR_TO_PTR(i)         (void *)(i)
-#define ACPI_PTR_TO_PHYSADDR(i)         (UINT32) (char *)(i)
+#define ACPI_PTR_TO_PHYSADDR(i)         (UINT32) ACPI_CAST_PTR (UINT8,(i))
 #else
 #define ACPI_PHYSADDR_TO_PTR(i)         ACPI_TO_POINTER(i)
 #define ACPI_PTR_TO_PHYSADDR(i)         ACPI_TO_INTEGER(i)
