@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.103 $
+ *              $Revision: 1.107 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2004, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -123,15 +123,24 @@
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nssearch")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiNsSearchParentTree (
+    UINT32                  TargetName,
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OBJECT_TYPE        Type,
+    ACPI_NAMESPACE_NODE     **ReturnNode);
+
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsSearchNode
  *
- * PARAMETERS:  *TargetName         - Ascii ACPI name to search for
- *              *Node               - Starting node where search will begin
- *              Type                - Object type to match
- *              **ReturnNode        - Where the matched Named obj is returned
+ * PARAMETERS:  TargetName      - Ascii ACPI name to search for
+ *              Node            - Starting node where search will begin
+ *              Type            - Object type to match
+ *              ReturnNode      - Where the matched Named obj is returned
  *
  * RETURN:      Status
  *
@@ -174,7 +183,7 @@ AcpiNsSearchNode (
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Searching %s (%p) For [%4.4s] (%s)\n",
-                ScopeName, Node, (char *) &TargetName,
+                ScopeName, Node, ACPI_CAST_PTR (char, &TargetName),
                 AcpiUtGetTypeName (Type)));
 
             ACPI_MEM_FREE (ScopeName);
@@ -205,7 +214,8 @@ AcpiNsSearchNode (
              */
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Name [%4.4s] (%s) %p found in scope [%4.4s] %p\n",
-                (char *) &TargetName, AcpiUtGetTypeName (NextNode->Type),
+                ACPI_CAST_PTR (char, &TargetName),
+                AcpiUtGetTypeName (NextNode->Type),
                 NextNode, AcpiUtGetNodeName (Node), Node));
 
             *ReturnNode = NextNode;
@@ -232,7 +242,7 @@ AcpiNsSearchNode (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
         "Name [%4.4s] (%s) not found in search in scope [%4.4s] %p first child %p\n",
-        (char *) &TargetName, AcpiUtGetTypeName (Type),
+        ACPI_CAST_PTR (char, &TargetName), AcpiUtGetTypeName (Type),
         AcpiUtGetNodeName (Node), Node, Node->Child));
 
     return_ACPI_STATUS (AE_NOT_FOUND);
@@ -243,10 +253,10 @@ AcpiNsSearchNode (
  *
  * FUNCTION:    AcpiNsSearchParentTree
  *
- * PARAMETERS:  *TargetName         - Ascii ACPI name to search for
- *              *Node               - Starting node where search will begin
- *              Type                - Object type to match
- *              **ReturnNode        - Where the matched Node is returned
+ * PARAMETERS:  TargetName      - Ascii ACPI name to search for
+ *              Node            - Starting node where search will begin
+ *              Type            - Object type to match
+ *              ReturnNode      - Where the matched Node is returned
  *
  * RETURN:      Status
  *
@@ -287,7 +297,7 @@ AcpiNsSearchParentTree (
     if (!ParentNode)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "[%4.4s] has no parent\n",
-            (char *) &TargetName));
+            ACPI_CAST_PTR (char, &TargetName)));
         return_ACPI_STATUS (AE_NOT_FOUND);
     }
 
@@ -295,7 +305,7 @@ AcpiNsSearchParentTree (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
             "[%4.4s] type [%s] must be local to this scope (no parent search)\n",
-            (char *) &TargetName, AcpiUtGetTypeName (Type)));
+            ACPI_CAST_PTR (char, &TargetName), AcpiUtGetTypeName (Type)));
         return_ACPI_STATUS (AE_NOT_FOUND);
     }
 
@@ -303,7 +313,7 @@ AcpiNsSearchParentTree (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
         "Searching parent [%4.4s] for [%4.4s]\n",
-        AcpiUtGetNodeName (ParentNode), (char *) &TargetName));
+        AcpiUtGetNodeName (ParentNode), ACPI_CAST_PTR (char, &TargetName)));
 
     /*
      * Search parents until target is found or we have backed up to the root
@@ -341,12 +351,12 @@ AcpiNsSearchParentTree (
  *
  * PARAMETERS:  TargetName          - Ascii ACPI name to search for (4 chars)
  *              WalkState           - Current state of the walk
- *              *Node               - Starting node where search will begin
+ *              Node                - Starting node where search will begin
  *              InterpreterMode     - Add names only in ACPI_MODE_LOAD_PASS_x.
  *                                    Otherwise,search only.
  *              Type                - Object type to match
  *              Flags               - Flags describing the search restrictions
- *              **ReturnNode        - Where the Node is returned
+ *              ReturnNode          - Where the Node is returned
  *
  * RETURN:      Status
  *
@@ -450,7 +460,7 @@ AcpiNsSearchAndEnter (
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
             "%4.4s Not found in %p [Not adding]\n",
-            (char *) &TargetName, Node));
+            ACPI_CAST_PTR (char, &TargetName), Node));
 
         return_ACPI_STATUS (AE_NOT_FOUND);
     }
