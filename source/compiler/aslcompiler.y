@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -187,9 +187,11 @@ AslLocalAllocate (unsigned int Size);
 
 /*! [Begin] no source code translation */
 
-/* These shift/reduce conflicts are expected */
-
-%expect 64
+/*
+ * These shift/reduce conflicts are expected. There should be zer0
+ * reduce/reduce conflicts.
+ */
+%expect 63
 
 
 /*
@@ -968,10 +970,9 @@ OptionalParameterTypePackage
 /* Rules for specifying the types for method arguments */
 
 ParameterTypesPackage
-    :                               {$$ = NULL;}
-    | ObjectTypeKeyword             {$$ = $1;}
+    : ParameterTypePackageList      {$$ = $1;}
     | ParameterTypesPackage ','
-        ParameterTypePackage        {$$ = TrLinkPeerNodes (2,$1,$3);}
+        ParameterTypePackageList    {$$ = TrLinkPeerNodes (2,$1,$3);}
     ;
 
 ParameterTypesPackageList
