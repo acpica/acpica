@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -177,7 +177,7 @@ AcpiDsBuildInternalObject (
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                         Op->Common.Value.String,
                         ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-                        ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL, 
+                        ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL,
                         ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE, &(Op->Common.Node)));
             if (ACPI_FAILURE (Status))
             {

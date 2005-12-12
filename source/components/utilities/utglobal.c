@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.222 $
+ *              $Revision: 1.223 $
  *
  *****************************************************************************/
 
@@ -760,7 +760,7 @@ AcpiUtGetDescriptorName (
         return (ACPI_CAST_PTR (char, AcpiGbl_BadType));
     }
 
-    return (ACPI_CAST_PTR (char, 
+    return (ACPI_CAST_PTR (char,
         AcpiGbl_DescTypeNames[ACPI_GET_DESCRIPTOR_TYPE (Object)]));
 
 }

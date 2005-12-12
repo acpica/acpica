@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -1122,8 +1122,8 @@ AcpiDsLoad2EndOp (
                 {
                     return (Status);
                 }
-            }    
-            
+            }
+
             /*
              * The OpRegion is not fully parsed at this time.  Only valid
              * argument is the SpaceId. (We must save the address of the

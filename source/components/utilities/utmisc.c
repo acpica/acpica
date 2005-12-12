@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  ******************************************************************************/
 
@@ -173,7 +173,7 @@ AcpiUtAllocateOwnerId (
      * allocations. (ACPI_NUM_OWNERID_MASKS + 1) because first index may have
      * to be scanned twice.
      */
-    for (i = 0, j = AcpiGbl_LastOwnerIdIndex; 
+    for (i = 0, j = AcpiGbl_LastOwnerIdIndex;
          i < (ACPI_NUM_OWNERID_MASKS + 1);
          i++, j++)
     {
@@ -206,7 +206,7 @@ AcpiUtAllocateOwnerId (
                 /*
                  * Construct encoded ID from the index and bit position
                  *
-                 * Note: Last [j].k (bit 255) is never used and is marked 
+                 * Note: Last [j].k (bit 255) is never used and is marked
                  * permanently allocated (prevents +1 overflow)
                  */
                 *OwnerId = (ACPI_OWNER_ID) ((k + 1) + ACPI_MUL_32 (j));

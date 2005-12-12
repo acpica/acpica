@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -495,7 +495,7 @@ AcpiNsInitOneDevice (
      */
     ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD,
                         DeviceNode, METHOD_NAME__STA));
-    
+
     Pinfo.Node = DeviceNode;
     Pinfo.Parameters = NULL;
     Pinfo.ParameterType = ACPI_PARAM_ARGS;

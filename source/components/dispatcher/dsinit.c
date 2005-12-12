@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -216,7 +216,7 @@ AcpiDsInitOneObject (
 
 #ifdef ACPI_INIT_PARSE_METHODS
         /*
-         * Note 11/2005: Removed this code to parse all methods during table 
+         * Note 11/2005: Removed this code to parse all methods during table
          * load because it causes problems if there are any errors during the
          * parse. Also, it seems like overkill and we probably don't want to
          * abort a table load because of an issue with a single method.

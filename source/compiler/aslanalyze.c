@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -1442,7 +1442,7 @@ AnMethodTypingWalkEnd (
             {
                 /*
                  * The called method is untyped at this time (typically a
-                 * forward reference). 
+                 * forward reference).
                  *
                  * Check for a recursive method call first.
                  */

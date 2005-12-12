@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.294 $
+ *       $Revision: 1.295 $
  *
  *****************************************************************************/
 
@@ -168,12 +168,12 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
  * no common 64-bit integer type across the various compilation models, as
  * shown in the table below.
  *
- * Datatype  LP64 ILP64 LLP64 ILP32 LP32 
- * char      8    8     8     8     8 
- * short     16   16    16    16    16 
- * _int32         32    
- * int       32   64    32    32    16 
- * long      64   64    32    32    32 
+ * Datatype  LP64 ILP64 LLP64 ILP32 LP32
+ * char      8    8     8     8     8
+ * short     16   16    16    16    16
+ * _int32         32
+ * int       32   64    32    32    16
+ * long      64   64    32    32    32
  * long long            64    64    64
  * pointer   64   64    64    32    32
  *

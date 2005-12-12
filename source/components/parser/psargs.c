@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -426,7 +426,7 @@ AcpiPsGetNextNamepath (
              * 4) If resolving a reference in a package, allow NOT_FOUND.
              */
             if ((Status != AE_NOT_FOUND) ||
-                
+
                 ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) == ACPI_PARSE_EXECUTE) &&
                 (WalkState->Op->Common.AmlOpcode != AML_COND_REF_OF_OP) &&
                 (Arg->Common.Parent->Common.AmlOpcode != AML_PACKAGE_OP) &&

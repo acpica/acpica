@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -425,7 +425,7 @@ AcpiDbExecute (
         {
             return;
         }
-            
+
         ACPI_STRCPY (NameString, Name);
         AcpiUtStrupr (NameString);
         AcpiGbl_DbMethodInfo.Name = NameString;
