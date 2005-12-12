@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -260,7 +260,7 @@ AcpiDbDumpExternalObject (
 
     case ACPI_TYPE_STRING:
 
-        AcpiOsPrintf ("[String]  Value: ");
+        AcpiOsPrintf ("[String] Length %.2X = ", ObjDesc->String.Length);
         for (i = 0; i < ObjDesc->String.Length; i++)
         {
             AcpiOsPrintf ("%c", ObjDesc->String.Pointer[i]);
@@ -286,7 +286,7 @@ AcpiDbDumpExternalObject (
 
     case ACPI_TYPE_PACKAGE:
 
-        AcpiOsPrintf ("[Package]  Contains %d Elements:\n",
+        AcpiOsPrintf ("[Package] Contains %d Elements:\n",
                 ObjDesc->Package.Count);
 
         for (i = 0; i < ObjDesc->Package.Count; i++)
