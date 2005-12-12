@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.293 $
+ *       $Revision: 1.294 $
  *
  *****************************************************************************/
 
@@ -148,8 +148,11 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
 #endif
 
 
-/*
- * Data types - Fixed across all compilation models (16/32/64)
+/*******************************************************************************
+ *
+ * Local Data Types
+ *
+ * These types are of fixed size across all compilation models (16/32/64):
  *
  * BOOLEAN          Logical Boolean.
  * INT8             8-bit  (1 byte) signed value
@@ -160,9 +163,29 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
  * UINT32           32-bit (4 byte) unsigned value
  * INT64            64-bit (8 byte) signed value
  * UINT64           64-bit (8 byte) unsigned value
- * ACPI_NATIVE_INT  32-bit on IA-32, 64-bit on IA-64 signed value
- * ACPI_NATIVE_UINT 32-bit on IA-32, 64-bit on IA-64 unsigned value
- */
+ *
+ * COMPILER_DEPENDENT_UINT64 - This type was introduced because there is
+ * no common 64-bit integer type across the various compilation models, as
+ * shown in the table below.
+ *
+ * Datatype  LP64 ILP64 LLP64 ILP32 LP32 
+ * char      8    8     8     8     8 
+ * short     16   16    16    16    16 
+ * _int32         32    
+ * int       32   64    32    32    16 
+ * long      64   64    32    32    32 
+ * long long            64    64    64
+ * pointer   64   64    64    32    32
+ *
+ *
+ * These types represent the native word size of the target mode of the
+ * processor, and may be 16-bit, 32-bit, or 64-bit as required. They are usually
+ * used for loop counters and array indexes. Similar to size_t in the c library.
+ *
+ * ACPI_NATIVE_INT  16/32/64-bit signed value
+ * ACPI_NATIVE_UINT 16/32/64-bit unsigned value
+ *
+ ******************************************************************************/
 
 #ifndef ACPI_MACHINE_WIDTH
 #error ACPI_MACHINE_WIDTH not defined
