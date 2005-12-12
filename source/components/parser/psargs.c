@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -421,14 +421,16 @@ AcpiPsGetNextNamepath (
         {
             /*
              * 1) Any error other than NOT_FOUND is always severe
-             * 2) NOT_FOUND is only important if we are executing a method.
+             * 2) NOT_FOUND is only important if we are executing a method:
              * 3) If executing a CondRefOf opcode, NOT_FOUND is ok.
+             * 4) If resolving a reference in a package, allow NOT_FOUND.
              */
-            if ((((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) == ACPI_PARSE_EXECUTE) &&
-                (Status == AE_NOT_FOUND)                                                &&
-                (WalkState->Op->Common.AmlOpcode != AML_COND_REF_OF_OP)) ||
-
-                (Status != AE_NOT_FOUND))
+            if ((Status != AE_NOT_FOUND) ||
+                
+                ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) == ACPI_PARSE_EXECUTE) &&
+                (WalkState->Op->Common.AmlOpcode != AML_COND_REF_OF_OP) &&
+                (Arg->Common.Parent->Common.AmlOpcode != AML_PACKAGE_OP) &&
+                (Arg->Common.Parent->Common.AmlOpcode != AML_VAR_PACKAGE_OP))
             {
                 ACPI_REPORT_NSERROR (Path, Status);
 
@@ -438,9 +440,11 @@ AcpiPsGetNextNamepath (
             else
             {
                 /*
-                 * We got a NOT_FOUND during table load or we encountered
-                 * a CondRefOf(x) where the target does not exist.
-                 * Either case is ok
+                 * We got a NOT_FOUND during table load or we are executing a
+                 * method and we encountered a CondRefOf(x) where the target
+                 * does not exist, or a package element was unresolved.
+                 *
+                 * All of these cases are ok at this point.
                  */
                 Status = AE_OK;
             }
