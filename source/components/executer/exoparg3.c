@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -324,9 +324,9 @@ AcpiExOpcode_3A_1T_1R (
             goto Cleanup;
         }
 
-        if (Length > 0)
+        if (Buffer)
         {
-            /* Copy the portion requested */
+            /* We have a buffer, copy the portion requested */
 
             ACPI_MEMCPY (Buffer, Operand[0]->String.Pointer + Index,
                          Length);
