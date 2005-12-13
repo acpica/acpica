@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -205,14 +205,14 @@ AcpiDsBeginMethodExecution (
      * to begin concurrent execution. We only need one OwnerId, even if the
      * method is invoked recursively.
      */
-     if (!ObjDesc->Method.OwnerId)
-     {
-         Status = AcpiUtAllocateOwnerId (&ObjDesc->Method.OwnerId);
-         if (ACPI_FAILURE (Status))
-         {
-             return_ACPI_STATUS (Status);
-         }
-     }
+    if (!ObjDesc->Method.OwnerId)
+    {
+        Status = AcpiUtAllocateOwnerId (&ObjDesc->Method.OwnerId);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
 
     /*
      * Increment the method parse tree thread count since it has been
