@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.171 $
+ *       $Revision: 1.172 $
  *
  *****************************************************************************/
 
@@ -135,7 +135,7 @@
 
 /*
  * For 16-bit addresses, we have to assume that the upper 32 bits
- * are zero.
+ * (out of 64) are zero.
  */
 #define ACPI_LODWORD(l)                 ((UINT32)(l))
 #define ACPI_HIDWORD(l)                 ((UINT32)(0))
@@ -179,8 +179,9 @@
 #define ACPI_FORMAT_UINT64(i)           ACPI_HIDWORD(i),ACPI_LODWORD(i)
 
 /*
- * Extract a byte of data using a pointer.  Any more than a byte and we
- * get into potential aligment issues -- see the STORE macros below
+ * Extract data using a pointer.  Any more than a byte and we
+ * get into potential aligment issues -- see the STORE macros below.
+ * Use with care.
  */
 #define ACPI_GET8(ptr)                  *ACPI_CAST_PTR (UINT8, ptr)
 #define ACPI_GET16(ptr)                 *ACPI_CAST_PTR (UINT16, ptr)
@@ -193,13 +194,7 @@
 
 /*
  * Pointer manipulation
- *
- * Use C99 uintptr_t for pointer casting if available, "void *" otherwise
  */
-#ifndef ACPI_UINTPTR_T
-#define ACPI_UINTPTR_T                  void *
-#endif
-
 #define ACPI_CAST_PTR(t, p)             ((t *) (ACPI_UINTPTR_T) (p))
 #define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **) (ACPI_UINTPTR_T) (p))
 #define ACPI_ADD_PTR(t,a,b)             ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8,(a)) + (ACPI_NATIVE_UINT)(b)))
