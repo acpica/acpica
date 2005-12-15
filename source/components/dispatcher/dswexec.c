@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -831,21 +831,6 @@ AcpiDsExecEndOp (
 
 Cleanup:
 
-    /* Invoke exception handler on error */
-
-    if (ACPI_FAILURE (Status) &&
-        AcpiGbl_ExceptionHandler &&
-        !(Status & AE_CODE_CONTROL))
-    {
-        AcpiExExitInterpreter ();
-        Status = AcpiGbl_ExceptionHandler (Status,
-                    WalkState->MethodNode ?
-                        WalkState->MethodNode->Name.Integer : 0,
-                    WalkState->Opcode,
-                    WalkState->AmlOffset, NULL);
-        (void) AcpiExEnterInterpreter ();
-    }
-
     if (WalkState->ResultObj)
     {
         /* Break to debugger to display result */
@@ -869,20 +854,16 @@ Cleanup:
     }
 #endif
 
-    /* Always clear the object stack */
-
-    WalkState->NumOperands = 0;
-
-#ifdef ACPI_DISASSEMBLER
-
-    /* On error, display method locals/args */
+    /* Invoke exception handler on error */
 
     if (ACPI_FAILURE (Status))
     {
-        AcpiDmDumpMethodInfo (Status, WalkState, Op);
+        Status = AcpiDsMethodError (Status, WalkState);
     }
-#endif
 
+    /* Always clear the object stack */
+
+    WalkState->NumOperands = 0;
     return_ACPI_STATUS (Status);
 }
 
