@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -816,7 +816,7 @@ Exit:
 ACPI_STATUS
 AeLocalGetRootPointer (
     UINT32                  Flags,
-    ACPI_PHYSICAL_ADDRESS   *RsdpPhysicalAddress)
+    ACPI_POINTER            *Address)
 {
     return AE_OK;
 }
