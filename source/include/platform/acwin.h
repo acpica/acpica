@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.22 $
+ *       $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -130,6 +130,20 @@
 #define isascii                 __isascii
 
 #define ACPI_USE_STANDARD_HEADERS
+
+#ifdef ACPI_DEFINE_ALTERNATE_TYPES
+/*
+ * Types used only in (Linux) translated source, defined here to enable
+ * cross-platform compilation (i.e., generate the Linux code on Windows,
+ * for test purposes only)
+ */
+typedef int                             s32;
+typedef unsigned char                   u8;
+typedef unsigned short                  u16;
+typedef unsigned int                    u32;
+typedef COMPILER_DEPENDENT_UINT64       u64;
+#endif
+
 
 /*
  * Handle platform- and compiler-specific assembly language differences.
