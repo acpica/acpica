@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -126,8 +126,9 @@
         ACPI_MODULE_NAME    ("aemain")
 
 
-UINT8 AcpiGbl_BatchMode = FALSE;
-char  *AcpiGbl_BatchMethodName;
+BOOLEAN         AcpiGbl_BatchMode = FALSE;
+BOOLEAN         AcpiGbl_IgnoreErrors = FALSE;
+char            *AcpiGbl_BatchMethodName;
 
 #if ACPI_MACHINE_WIDTH == 16
 
@@ -164,6 +165,7 @@ usage (void)
     printf ("    Miscellaneous Options\n");
     printf ("        -?                  Display this message\n");
     printf ("        -b [Method]         Batch mode method execution\n");
+    printf ("        -e                  Do not abort methods on error\n");
     printf ("        -i                  Do not run STA/INI methods\n");
     printf ("        -s                  Enable Interpreter Slack Mode\n");
     printf ("        -x DebugLevel       Specify debug output level\n");
@@ -224,7 +226,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?b^dgio:svx:")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?b^degio:svx:")) != EOF) switch(j)
     {
     case 'b':
         AcpiGbl_BatchMode = TRUE;
@@ -242,6 +244,10 @@ main (
     case 'd':
         AcpiGbl_DbOpt_disasm = TRUE;
         AcpiGbl_DbOpt_stats = TRUE;
+        break;
+
+    case 'e':
+        AcpiGbl_IgnoreErrors = TRUE;
         break;
 
     case 'g':

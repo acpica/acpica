@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -837,6 +837,12 @@ AeExceptionHandler (
 
         AcpiOsFree (ReturnObj.Pointer);
     }
+
+    if (AcpiGbl_IgnoreErrors)
+    {
+        AmlStatus = AE_OK;
+    }
+
     return (AmlStatus);
 }
 

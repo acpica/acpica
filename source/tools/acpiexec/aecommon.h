@@ -135,6 +135,7 @@
 #include "acapps.h"
 
 extern FILE                     *AcpiGbl_DebugFile;
+extern BOOLEAN                  AcpiGbl_IgnoreErrors;
 
 /*
  * Debug Regions
