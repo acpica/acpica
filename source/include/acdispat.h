@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.67 $
+ *       $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -332,6 +332,10 @@ AcpiDsBeginMethodExecution (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_NAMESPACE_NODE     *CallingMethodNode);
 
+ACPI_STATUS
+AcpiDsMethodError (
+    ACPI_STATUS             Status,
+    ACPI_WALK_STATE         *WalkState);
 
 /*
  * dsinit
