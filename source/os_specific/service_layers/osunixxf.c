@@ -190,7 +190,7 @@ AcpiOsGetRootPointer (
     ACPI_POINTER           *Address)
 {
 
-    return (AeLocalGetRootPointer (Flags, (ACPI_PHYSICAL_ADDRESS *) Address));
+    return (AeLocalGetRootPointer (Flags, Address));
 }
 
 
