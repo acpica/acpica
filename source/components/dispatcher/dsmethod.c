@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -122,10 +122,75 @@
 #include "acdispat.h"
 #include "acinterp.h"
 #include "acnamesp.h"
+#include "acdisasm.h"
 
 
 #define _COMPONENT          ACPI_DISPATCHER
         ACPI_MODULE_NAME    ("dsmethod")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsMethodError
+ *
+ * PARAMETERS:  Status          - Execution status
+ *              WalkState       - Current state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Called on method error. Invoke the global exception handler if
+ *              present, dump the method data if the disassembler is configured
+ *
+ *              Note: Allows the exception handler to change the status code
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsMethodError (
+    ACPI_STATUS             Status,
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /* Ignore AE_OK and control exception codes */
+
+    if (ACPI_SUCCESS (Status) ||
+        (Status & AE_CODE_CONTROL))
+    {
+        return (Status);
+    }
+
+    /* Invoke the global exception handler */
+
+    if (AcpiGbl_ExceptionHandler)
+    {
+        /* Exit the interpreter, allow handler to execute methods */
+
+        AcpiExExitInterpreter ();
+
+        /*
+         * Handler can map the exception code to anything it wants, including
+         * AE_OK, in which case the executing method will not be aborted.
+         */
+        Status = AcpiGbl_ExceptionHandler (Status,
+                    WalkState->MethodNode ?
+                        WalkState->MethodNode->Name.Integer : 0,
+                    WalkState->Opcode, WalkState->AmlOffset, NULL);
+        (void) AcpiExEnterInterpreter ();
+    }
+
+#ifdef ACPI_DISASSEMBLER
+    if (ACPI_FAILURE (Status))
+    {
+        /* Display method locals/args if disassembler is present */
+
+        AcpiDmDumpMethodInfo (Status, WalkState, WalkState->Op);
+    }
+#endif
+
+    return (Status);
+}
 
 
 /*******************************************************************************
