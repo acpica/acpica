@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /Gz /W3 /GX /O2 /I "$(OutDir)\..\\" /I "..\..\source_Linux\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "DEFINE_ALTERNATE_TYPES" /FR /FD /c
+# ADD CPP /nologo /Gz /W3 /GX /O2 /I "$(OutDir)\..\\" /I "..\..\source_Linux\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
@@ -74,7 +74,7 @@ PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /Gz /W4 /Gm /GX /ZI /Od /I "$(OutDir)..\\" /I "..\..\source_Linux\Include" /I "$(OutDir)\..\\" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "DEFINE_ALTERNATE_TYPES" /FR /FD /GZ /c
+# ADD CPP /nologo /Gz /W4 /Gm /GX /ZI /Od /I "$(OutDir)..\\" /I "..\..\source_Linux\Include" /I "$(OutDir)\..\\" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
