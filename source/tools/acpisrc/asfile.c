@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.30 $
+ *              $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -367,7 +367,7 @@ AsConvertFile (
     }
 
     Gbl_Files++;
-    VERBOSE_PRINT (("Processing %d bytes\n", strlen (FileBuffer)));
+    VERBOSE_PRINT (("Processing %u bytes\n", strlen (FileBuffer)));
 
     if (ConversionTable->LowerCaseTable)
     {
@@ -518,6 +518,12 @@ AsConvertFile (
             AsTabify8 (FileBuffer);
             break;
 
+        case CVT_COUNT_SHORTMULTILINE_COMMENTS:
+
+#ifdef ACPI_FUTURE_IMPLEMENTATION
+            AsTrimComments (FileBuffer, Filename);
+#endif
+            break;
 
         default:
 
@@ -721,7 +727,7 @@ AsGetFile (
     Buffer = calloc (Size * 2, 1);
     if (!Buffer)
     {
-        printf ("Could not allocate buffer of size %d\n", Size + (Size / 10));
+        printf ("Could not allocate buffer of size %d\n", Size * 2);
         goto ErrorExit;
     }
 
@@ -739,7 +745,7 @@ AsGetFile (
 
     /* Check for unix contamination */
 
-    if (AsDetectLoneLineFeeds (Filename, Buffer))
+    if (!Gbl_IgnoreLoneLineFeeds && AsDetectLoneLineFeeds (Filename, Buffer))
     {
         return -1;
     }
