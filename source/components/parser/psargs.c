@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,7 @@
 #include "acparser.h"
 #include "amlcode.h"
 #include "acnamesp.h"
+#include "acdispat.h"
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psargs")
@@ -308,7 +309,7 @@ AcpiPsGetNextNamestring (
  *              Arg                 - Where the namepath will be stored
  *              ArgCount            - If the namepath points to a control method
  *                                    the method's argument is returned here.
- *              MethodCall          - Whether the namepath can possibly be the
+ *              PossibleMethodCall  - Whether the namepath can possibly be the
  *                                    start of a method call
  *
  * RETURN:      Status
@@ -326,11 +327,11 @@ AcpiPsGetNextNamepath (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_STATE        *ParserState,
     ACPI_PARSE_OBJECT       *Arg,
-    BOOLEAN                 MethodCall)
+    BOOLEAN                 PossibleMethodCall)
 {
     char                    *Path;
     ACPI_PARSE_OBJECT       *NameOp;
-    ACPI_STATUS             Status = AE_OK;
+    ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *MethodDesc;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_GENERIC_STATE      ScopeInfo;
@@ -340,124 +341,135 @@ AcpiPsGetNextNamepath (
 
 
     Path = AcpiPsGetNextNamestring (ParserState);
+    AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
 
-    /* Null path case is allowed */
+    /* Null path case is allowed, just exit */
 
-    if (Path)
+    if (!Path)
     {
-        /*
-         * Lookup the name in the internal namespace
-         */
-        ScopeInfo.Scope.Node = NULL;
-        Node = ParserState->StartNode;
-        if (Node)
-        {
-            ScopeInfo.Scope.Node = Node;
-        }
+        Arg->Common.Value.Name = Path;
+        return_ACPI_STATUS (AE_OK);
+    }
 
-        /*
-         * Lookup object.  We don't want to add anything new to the namespace
-         * here, however.  So we use MODE_EXECUTE.  Allow searching of the
-         * parent tree, but don't open a new scope -- we just want to lookup the
-         * object  (MUST BE mode EXECUTE to perform upsearch)
-         */
-        Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY,
-                    ACPI_IMODE_EXECUTE,
-                    ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE,
-                    NULL, &Node);
-        if (ACPI_SUCCESS (Status) && MethodCall)
-        {
-            if (Node->Type == ACPI_TYPE_METHOD)
-            {
-                /* This name is actually a control method invocation */
+    /* Setup search scope info */
 
-                MethodDesc = AcpiNsGetAttachedObject (Node);
-                ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-                    "Control Method - %p Desc %p Path=%p\n",
-                    Node, MethodDesc, Path));
-
-                NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
-                if (!NameOp)
-                {
-                    return_ACPI_STATUS (AE_NO_MEMORY);
-                }
-
-                /* Change arg into a METHOD CALL and attach name to it */
-
-                AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
-                NameOp->Common.Value.Name = Path;
-
-                /* Point METHODCALL/NAME to the METHOD Node */
-
-                NameOp->Common.Node = Node;
-                AcpiPsAppendArg (Arg, NameOp);
-
-                if (!MethodDesc)
-                {
-                    ACPI_REPORT_ERROR ((
-                        "PsGetNextNamepath: Control Method %p has no attached object\n",
-                        Node));
-                    return_ACPI_STATUS (AE_AML_INTERNAL);
-                }
-
-                ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
-                    "Control Method - %p Args %X\n",
-                    Node, MethodDesc->Method.ParamCount));
-
-                /* Get the number of arguments to expect */
-
-                WalkState->ArgCount = MethodDesc->Method.ParamCount;
-                return_ACPI_STATUS (AE_OK);
-            }
-
-            /*
-             * Else this is normal named object reference.
-             * Just init the NAMEPATH object with the pathname.
-             * (See code below)
-             */
-        }
-
-        if (ACPI_FAILURE (Status))
-        {
-            /*
-             * 1) Any error other than NOT_FOUND is always severe
-             * 2) NOT_FOUND is only important if we are executing a method:
-             * 3) If executing a CondRefOf opcode, NOT_FOUND is ok.
-             * 4) If resolving a reference in a package, allow NOT_FOUND.
-             */
-            if ((Status != AE_NOT_FOUND) ||
-
-                ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) == ACPI_PARSE_EXECUTE) &&
-                (WalkState->Op->Common.AmlOpcode != AML_COND_REF_OF_OP) &&
-                (Arg->Common.Parent->Common.AmlOpcode != AML_PACKAGE_OP) &&
-                (Arg->Common.Parent->Common.AmlOpcode != AML_VAR_PACKAGE_OP))
-            {
-                ACPI_REPORT_NSERROR (Path, Status);
-
-                AcpiOsPrintf ("SearchNode %p StartNode %p ReturnNode %p\n",
-                    ScopeInfo.Scope.Node, ParserState->StartNode, Node);
-            }
-            else
-            {
-                /*
-                 * We got a NOT_FOUND during table load or we are executing a
-                 * method and we encountered a CondRefOf(x) where the target
-                 * does not exist, or a package element was unresolved.
-                 *
-                 * All of these cases are ok at this point.
-                 */
-                Status = AE_OK;
-            }
-        }
+    ScopeInfo.Scope.Node = NULL;
+    Node = ParserState->StartNode;
+    if (Node)
+    {
+        ScopeInfo.Scope.Node = Node;
     }
 
     /*
-     * Regardless of success/failure above,
-     * Just initialize the Op with the pathname.
+     * Lookup the name in the internal namespace. We don't want to add
+     * anything new to the namespace here, however, so we use MODE_EXECUTE.
+     * Allow searching of the parent tree, but don't open a new scope -
+     * we just want to lookup the object (must be mode EXECUTE to perform
+     * the upsearch)
      */
-    AcpiPsInitOp (Arg, AML_INT_NAMEPATH_OP);
-    Arg->Common.Value.Name = Path;
+    Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
+                ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
 
+    /* 
+     * If this name is a control method invocation, we must
+     * setup the method call
+     */
+    if (ACPI_SUCCESS (Status) &&
+        PossibleMethodCall &&
+        (Node->Type == ACPI_TYPE_METHOD))
+    {
+        /* This name is actually a control method invocation */
+
+        MethodDesc = AcpiNsGetAttachedObject (Node);
+        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+            "Control Method - %p Desc %p Path=%p\n", Node, MethodDesc, Path));
+
+        NameOp = AcpiPsAllocOp (AML_INT_NAMEPATH_OP);
+        if (!NameOp)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        /* Change Arg into a METHOD CALL and attach name to it */
+
+        AcpiPsInitOp (Arg, AML_INT_METHODCALL_OP);
+        NameOp->Common.Value.Name = Path;
+
+        /* Point METHODCALL/NAME to the METHOD Node */
+
+        NameOp->Common.Node = Node;
+        AcpiPsAppendArg (Arg, NameOp);
+
+        if (!MethodDesc)
+        {
+            ACPI_REPORT_ERROR ((
+                "PsGetNextNamepath: Control Method %p has no attached object\n",
+                Node));
+            return_ACPI_STATUS (AE_AML_INTERNAL);
+        }
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
+            "Control Method - %p Args %X\n",
+            Node, MethodDesc->Method.ParamCount));
+
+        /* Get the number of arguments to expect */
+
+        WalkState->ArgCount = MethodDesc->Method.ParamCount;
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /*
+     * Special handling if the name was not found during the lookup -
+     * some NotFound cases are allowed
+     */
+    if (Status == AE_NOT_FOUND)
+    {
+        /* 1) NotFound is ok during load pass 1/2 (allow forward references) */
+
+        if ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) !=
+                ACPI_PARSE_EXECUTE)
+        {
+            Status = AE_OK;
+        }
+
+        /* 2) NotFound during a CondRefOf(x) is ok by definition */
+
+        else if (WalkState->Op->Common.AmlOpcode == AML_COND_REF_OF_OP)
+        {
+            Status = AE_OK;
+        }
+
+        /*
+         * 3) NotFound while building a Package is ok at this point, we
+         * may flag as an error later if slack mode is not enabled.
+         * (Some ASL code depends on allowing this behavior)
+         */
+        else if ((Arg->Common.Parent) &&
+            ((Arg->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
+             (Arg->Common.Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP)))
+        {
+            Status = AE_OK;
+        }
+    }
+
+    /* Final exception check (may have been changed from code above) */
+
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_REPORT_NSERROR (Path, Status);
+
+        if ((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) ==
+                ACPI_PARSE_EXECUTE)
+        {
+            /* Report a control method execution error */
+
+            Status = AcpiDsMethodError (Status, WalkState);
+        }
+    }
+
+    /* Save the namepath */
+
+    Arg->Common.Value.Name = Path;
     return_ACPI_STATUS (Status);
 }
 
