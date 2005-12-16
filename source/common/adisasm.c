@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -143,6 +143,14 @@ AcpiDsIsResultUsed (
     ACPI_WALK_STATE         *WalkState)
 {
     return TRUE;
+}
+
+ACPI_STATUS
+AcpiDsMethodError (
+    ACPI_STATUS             Status,
+    ACPI_WALK_STATE         *WalkState)
+{
+    return (Status);
 }
 #endif
 
