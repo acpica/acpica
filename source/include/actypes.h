@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.296 $
+ *       $Revision: 1.297 $
  *
  *****************************************************************************/
 
@@ -171,8 +171,8 @@
  * _int32         32
  * int       32   64    32    32    16   16
  * long      64   64    32    32    32   32
- * long long            64    64     
- * pointer   64   64    64    32    32   32 
+ * long long            64    64
+ * pointer   64   64    64    32    32   32
  *
  * Note: ILP64 and LP32 are currently not supported.
  *

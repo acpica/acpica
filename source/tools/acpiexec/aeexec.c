@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -848,7 +848,7 @@ AeExceptionHandler (
 
     if (NewAmlStatus != AmlStatus)
     {
-        AcpiOsPrintf ("**** AcpiExec: Exception override, new status %s\n", 
+        AcpiOsPrintf ("**** AcpiExec: Exception override, new status %s\n",
             AcpiFormatException (NewAmlStatus));
     }
 
