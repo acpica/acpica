@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -787,6 +787,7 @@ AeExceptionHandler (
     UINT32                  AmlOffset,
     void                    *Context)
 {
+    ACPI_STATUS             NewAmlStatus = AmlStatus;
     ACPI_STATUS             Status;
     ACPI_BUFFER             ReturnObj;
     ACPI_OBJECT_LIST        ArgList;
@@ -795,14 +796,14 @@ AeExceptionHandler (
 
 
     Exception = AcpiFormatException (AmlStatus);
-    AcpiOsPrintf ("**** AcpiExec Exception: %s during execution", Exception);
+    AcpiOsPrintf ("**** AcpiExec: Exception %s during execution ", Exception);
     if (Name)
     {
-        AcpiOsPrintf (" of method [%4.4s]", (char *) &Name);
+        AcpiOsPrintf ("of method [%4.4s]", (char *) &Name);
     }
     else
     {
-        AcpiOsPrintf (" at module level (table load)");
+        AcpiOsPrintf ("at module level (table load)");
     }
     AcpiOsPrintf (" Opcode [%s] @%X\n", AcpiPsGetOpcodeName (Opcode), AmlOffset);
 
@@ -832,18 +833,26 @@ AeExceptionHandler (
     {
         /* Override original status */
 
-        AmlStatus = (ACPI_STATUS)
+        NewAmlStatus = (ACPI_STATUS)
             ((ACPI_OBJECT *) ReturnObj.Pointer)->Integer.Value;
 
         AcpiOsFree (ReturnObj.Pointer);
     }
 
+    /* Global override */
+
     if (AcpiGbl_IgnoreErrors)
     {
-        AmlStatus = AE_OK;
+        NewAmlStatus = AE_OK;
     }
 
-    return (AmlStatus);
+    if (NewAmlStatus != AmlStatus)
+    {
+        AcpiOsPrintf ("**** AcpiExec: Exception override, new status %s\n", 
+            AcpiFormatException (NewAmlStatus));
+    }
+
+    return (NewAmlStatus);
 }
 
 
