@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -570,9 +570,10 @@ AcpiDsLoad1EndOp (
         }
     }
 
-    /* Pop the scope stack */
+    /* Pop the scope stack (only if loading a table) */
 
-    if (AcpiNsOpensScope (ObjectType))
+    if (!WalkState->MethodNode && 
+        AcpiNsOpensScope (ObjectType))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "(%s): Popping scope for Op %p\n",
             AcpiUtGetTypeName (ObjectType), Op));
