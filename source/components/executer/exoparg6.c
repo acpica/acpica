@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.22 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -336,7 +336,9 @@ AcpiExOpcode_6A_0T_1R (
         Index = Operand[5]->Integer.Value;
         if (Index >= Operand[0]->Package.Count)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Index beyond package end\n"));
+            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                "Index (%X%8.8X) beyond package end (%X)\n",
+                ACPI_FORMAT_UINT64 (Index), Operand[0]->Package.Count));
             Status = AE_AML_PACKAGE_LIMIT;
             goto Cleanup;
         }

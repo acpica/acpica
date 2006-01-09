@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmnames - AML disassembler, names, namestrings, pathnames
- *              $Revision: 1.10 $
+ *              $Revision: 1.12 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -126,6 +126,14 @@
 
 #define _COMPONENT          ACPI_CA_DEBUGGER
         ACPI_MODULE_NAME    ("dmnames")
+
+/* Local prototypes */
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+void
+AcpiDmDisplayPath (
+    ACPI_PARSE_OBJECT       *Op);
+#endif
 
 
 /*******************************************************************************

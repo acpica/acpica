@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.122 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -351,7 +351,7 @@ AcpiUtSubsystemShutdown (
 
     /* Purge the local caches */
 
-    (void) AcpiPurgeCachedObjects ();
+    (void) AcpiUtDeleteCaches ();
 
     /* Debug only - display leftover memory allocation, if any */
 

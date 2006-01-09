@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.103 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -130,9 +130,9 @@
  * FUNCTION:    AcpiGetHandle
  *
  * PARAMETERS:  Parent          - Object to search under (search scope).
- *              PathName        - Pointer to an asciiz string containing the
- *                                  name
- *              RetHandle       - Where the return handle is placed
+ *              Pathname        - Pointer to an asciiz string containing the
+ *                                name
+ *              RetHandle       - Where the return handle is returned
  *
  * RETURN:      Status
  *
@@ -304,7 +304,7 @@ UnlockAndExit:
  * FUNCTION:    AcpiGetObjectInfo
  *
  * PARAMETERS:  Handle          - Object Handle
- *              Info            - Where the info is returned
+ *              Buffer          - Where the info is returned
  *
  * RETURN:      Status
  *

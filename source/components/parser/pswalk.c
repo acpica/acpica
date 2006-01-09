@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
- *              $Revision: 1.73 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2005, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -166,17 +166,15 @@ AcpiPsDeleteParseTree (
             }
         }
 
-        /*
-         * No more children, this Op is complete.
-         */
+        /* No more children, this Op is complete. */
+
         Next = Op->Common.Next;
         Parent = Op->Common.Parent;
 
         AcpiPsFreeOp (Op);
 
-        /*
-         * If we are back to the starting point, the walk is complete.
-         */
+        /* If we are back to the starting point, the walk is complete. */
+
         if (Op == SubtreeRoot)
         {
             return_VOID;
@@ -190,5 +188,6 @@ AcpiPsDeleteParseTree (
             Op = Parent;
         }
     }
+
     return_VOID;
 }

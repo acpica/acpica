@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asremove - Source conversion - removal functions
- *              $Revision: 1.1 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -137,7 +137,6 @@ AsRemoveStatement (
 {
     char                    *SubString;
     char                    *SubBuffer;
-    int                     StrLength;
     int                     KeywordLength;
 
 
@@ -192,11 +191,9 @@ AsRemoveStatement (
                 SubBuffer++;
             }
 
-            StrLength = strlen (SubBuffer);
+            /* Remove the lines */
 
-            Gbl_MadeChanges = TRUE;
-            memmove (SubString, SubBuffer, StrLength+1);
-            SubBuffer = SubString;
+            SubBuffer = AsRemoveData (SubString, SubBuffer);
         }
     }
 }
@@ -222,7 +219,6 @@ AsRemoveConditionalCompile (
     char                    *EndifPtr;
     char                    *ElsePtr;
     char                    *Comment;
-    int                     StrLength;
     int                     KeywordLength;
 
 
@@ -243,12 +239,12 @@ AsRemoveConditionalCompile (
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
-        Comment = strstr (SubString, "/*!");
+        Comment = strstr (SubString, AS_START_IGNORE);
 
         if ((Comment) &&
             (Comment < SubBuffer))
         {
-            SubString = strstr (Comment, "!*/");
+            SubString = strstr (Comment, AS_STOP_IGNORE);
             if (!SubString)
             {
                 return;
@@ -331,9 +327,7 @@ AsRemoveConditionalCompile (
 
             /* Remove the #ifdef .... #else code */
 
-            StrLength = strlen (SubBuffer);
-            Gbl_MadeChanges = TRUE;
-            memmove (SubString, SubBuffer, StrLength+1);
+            AsRemoveData (SubString, SubBuffer);
 
             /* Next, we will remove the #endif statement */
 
@@ -357,12 +351,9 @@ AsRemoveConditionalCompile (
             return;
         }
 
-        StrLength = strlen (SubBuffer);
+        /* Remove the lines */
 
-        Gbl_MadeChanges = TRUE;
-        memmove (SubString, SubBuffer, StrLength+1);
-
-        SubBuffer = SubString;
+        SubBuffer = AsRemoveData (SubString, SubBuffer);
     }
 }
 
@@ -383,7 +374,6 @@ AsRemoveMacro (
 {
     char                    *SubString;
     char                    *SubBuffer;
-    int                     StrLength;
     int                     NestLevel;
 
 
@@ -407,11 +397,9 @@ AsRemoveMacro (
             }
             SubString++;
 
-            StrLength = strlen (SubBuffer);
-            Gbl_MadeChanges = TRUE;
+            /* Remove the macro name and opening paren */
 
-            memmove (SubBuffer, SubString, StrLength+1);
-            SubString = SubBuffer;
+            SubString = AsRemoveData (SubBuffer, SubString);
 
             NestLevel = 1;
             while (*SubString)
@@ -433,12 +421,9 @@ AsRemoveMacro (
                 }
             }
 
+            /* Remove the closing paren */
 
-            StrLength = strlen (SubString);
-            Gbl_MadeChanges = TRUE;
-
-            memmove (SubString-1, SubString, StrLength+1);
-            SubBuffer = SubString;
+            SubBuffer = AsRemoveData (SubString-1, SubString);
         }
     }
 }
@@ -460,7 +445,6 @@ AsRemoveLine (
 {
     char                    *SubString;
     char                    *SubBuffer;
-    int                     StrLength;
 
 
     SubBuffer = Buffer;
@@ -491,11 +475,92 @@ AsRemoveLine (
                 return;
             }
 
-            StrLength = strlen (SubBuffer);
-            Gbl_MadeChanges = TRUE;
+            /* Remove the line */
 
-            memmove (SubString, SubBuffer, StrLength+1);
-            SubBuffer = SubString;
+            SubBuffer = AsRemoveData (SubString, SubBuffer);
+        }
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsReduceTypedefs
+ *
+ * DESCRIPTION: Eliminate certain typedefs
+ *
+ ******************************************************************************/
+
+void
+AsReduceTypedefs (
+    char                    *Buffer,
+    char                    *Keyword)
+{
+    char                    *SubString;
+    char                    *SubBuffer;
+    int                     NestLevel;
+
+
+    SubBuffer = Buffer;
+    SubString = Buffer;
+
+
+    while (SubString)
+    {
+        SubString = strstr (SubBuffer, Keyword);
+
+        if (SubString)
+        {
+            /* Remove the typedef itself */
+
+            SubBuffer = SubString + strlen ("typedef") + 1;
+            SubBuffer = AsRemoveData (SubString, SubBuffer);
+
+            /* Find the opening brace of the struct or union */
+
+            while (*SubString != '{')
+            {
+                SubString++;
+            }
+            SubString++;
+
+            /* Find the closing brace.  Handles nested braces */
+
+            NestLevel = 1;
+            while (*SubString)
+            {
+                if (*SubString == '{')
+                {
+                    NestLevel++;
+                }
+                else if (*SubString == '}')
+                {
+                    NestLevel--;
+                }
+
+                SubString++;
+
+                if (NestLevel == 0)
+                {
+                    break;
+                }
+            }
+
+            /* Remove an extra line feed if present */
+
+            if (!strncmp (SubString - 3, "\n\n", 2))
+            {
+                *(SubString -2) = '}';
+                SubString--;
+            }
+
+            /* Find the end of the typedef name */
+
+            SubBuffer = AsSkipUntilChar (SubString, ';');
+
+            /* And remove the typedef name */
+
+            SubBuffer = AsRemoveData (SubString, SubBuffer);
         }
     }
 }
@@ -563,9 +628,9 @@ AsRemoveEmptyBlocks (
                         break;
                     }
 
-                    memmove (BlockStart, SubBuffer, strlen (SubBuffer) +1);
+                    /* Remove the block */
 
-                    SubBuffer = BlockStart;
+                    SubBuffer = AsRemoveData (BlockStart, SubBuffer);
                     BlockCount++;
                     AnotherPassRequired = TRUE;
                     continue;
@@ -582,7 +647,6 @@ AsRemoveEmptyBlocks (
         AsPrint ("Code blocks deleted", BlockCount, Filename);
     }
 }
-
 
 
 /******************************************************************************

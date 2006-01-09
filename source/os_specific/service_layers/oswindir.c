@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: oswindir - Windows directory access interfaces
- *              $Revision: 1.3 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2003, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -296,7 +296,7 @@ AcpiOsGetNextFilename (
  *
  * PARAMETERS:  DirHandle           - Created via AcpiOsOpenDirectory
  *
- * RETURN:      None.   
+ * RETURN:      None.
  *
  * DESCRIPTION: Close the open directory and cleanup.
  *

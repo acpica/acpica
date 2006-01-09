@@ -1,6 +1,7 @@
 /******************************************************************************
- * 
- * Module Name: pstree - Parser op tree manipulation/traversal/search 
+ *
+ * Module Name: pstree - Parser op tree manipulation/traversal/search
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -8,8 +9,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -37,9 +38,9 @@
  * The above copyright and patent license is granted only if the following
  * conditions are met:
  *
- * 3. Conditions 
+ * 3. Conditions
  *
- * 3.1. Redistribution of Source with Rights to Further Distribute Source.  
+ * 3.1. Redistribution of Source with Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification with rights to further distribute source must include
  * the above Copyright Notice, the above License, this list of Conditions,
@@ -47,11 +48,11 @@
  * Licensee must cause all Covered Code to which Licensee contributes to
  * contain a file documenting the changes Licensee made to create that Covered
  * Code and the date of any change.  Licensee must include in that file the
- * documentation of any changes made by any predecessor Licensee.  Licensee 
+ * documentation of any changes made by any predecessor Licensee.  Licensee
  * must include a prominent statement that the modification is derived,
  * directly or indirectly, from Original Intel Code.
  *
- * 3.2. Redistribution of Source with no Rights to Further Distribute Source.  
+ * 3.2. Redistribution of Source with no Rights to Further Distribute Source.
  * Redistribution of source code of any substantial portion of the Covered
  * Code or modification without rights to further distribute source must
  * include the following Disclaimer and Export Compliance provision in the
@@ -85,7 +86,7 @@
  * INSTALLATION, TRAINING OR OTHER SERVICES.  INTEL WILL NOT PROVIDE ANY
  * UPDATES, ENHANCEMENTS OR EXTENSIONS.  INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
- * PARTICULAR PURPOSE. 
+ * PARTICULAR PURPOSE.
  *
  * 4.2. IN NO EVENT SHALL INTEL HAVE ANY LIABILITY TO LICENSEE, ITS LICENSEES
  * OR ANY OTHER THIRD PARTY, FOR ANY LOST PROFITS, LOST DATA, LOSS OF USE OR
@@ -116,73 +117,82 @@
 
 #define __PSTREE_C__
 
-#include <acpi.h>
-#include <parser.h>
+#include "acpi.h"
+#include "acparser.h"
 #include "amlcode.h"
 
-#define _COMPONENT          PARSER
-        MODULE_NAME         ("pstree");
+#define _COMPONENT          ACPI_PARSER
+        ACPI_MODULE_NAME    ("pstree")
 
+/* Local prototypes */
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+ACPI_PARSE_OBJECT *
+AcpiPsGetChild (
+    ACPI_PARSE_OBJECT       *op);
+#endif
 
 
 /*******************************************************************************
  *
- * FUNCTION:    PsGetArg
+ * FUNCTION:    AcpiPsGetArg
  *
  * PARAMETERS:  Op              - Get an argument for this op
  *              Argn            - Nth argument to get
  *
- * RETURN:      The argument (as an Op object).  NULL if argument does not exist.
+ * RETURN:      The argument (as an Op object). NULL if argument does not exist
  *
  * DESCRIPTION: Get the specified op's argument.
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
-PsGetArg (
-    ACPI_GENERIC_OP         *Op, 
+ACPI_PARSE_OBJECT *
+AcpiPsGetArg (
+    ACPI_PARSE_OBJECT       *Op,
     UINT32                  Argn)
 {
-    ACPI_GENERIC_OP         *Arg = NULL;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_PARSE_OBJECT       *Arg = NULL;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Get the info structure for this opcode */
 
-    OpInfo = PsGetOpcodeInfo (Op->Opcode);
-    if (!OpInfo)
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
-        /* Invalid opcode */
+        /* Invalid opcode or ASCII character */
 
-        return NULL;
+        return (NULL);
     }
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
+    if (!(OpInfo->Flags & AML_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
-        return NULL;
+        return (NULL);
     }
 
     /* Get the requested argument object */
 
-    Arg = Op->Value.Arg;
+    Arg = Op->Common.Value.Arg;
     while (Arg && Argn)
     {
         Argn--;
-        Arg = Arg->Next;
+        Arg = Arg->Common.Next;
     }
 
-    return Arg;
+    return (Arg);
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    PsAppendArg
+ * FUNCTION:    AcpiPsAppendArg
  *
  * PARAMETERS:  Op              - Append an argument to this Op.
  *              Arg             - Argument Op to append
@@ -194,12 +204,15 @@ PsGetArg (
  ******************************************************************************/
 
 void
-PsAppendArg (
-    ACPI_GENERIC_OP         *Op, 
-    ACPI_GENERIC_OP         *Arg)
+AcpiPsAppendArg (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *Arg)
 {
-    ACPI_GENERIC_OP         *PrevArg;
-    ACPI_OP_INFO            *OpInfo;
+    ACPI_PARSE_OBJECT       *PrevArg;
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     if (!Op)
@@ -209,121 +222,58 @@ PsAppendArg (
 
     /* Get the info structure for this opcode */
 
-    OpInfo = PsGetOpcodeInfo (Op->Opcode);
-    if (!OpInfo)
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
     {
         /* Invalid opcode */
 
+        ACPI_REPORT_ERROR (("PsAppendArg: Invalid AML Opcode: 0x%2.2X\n",
+            Op->Common.AmlOpcode));
         return;
     }
 
     /* Check if this opcode requires argument sub-objects */
 
-    if (!(OpInfo->Flags & OP_INFO_HAS_ARGS))
+    if (!(OpInfo->Flags & AML_HAS_ARGS))
     {
         /* Has no linked argument objects */
 
         return;
     }
 
-            
-
     /* Append the argument to the linked argument list */
 
-    if (Op->Value.Arg)
+    if (Op->Common.Value.Arg)
     {
         /* Append to existing argument list */
 
-        PrevArg = Op->Value.Arg;
-        while (PrevArg->Next)
+        PrevArg = Op->Common.Value.Arg;
+        while (PrevArg->Common.Next)
         {
-            PrevArg = PrevArg->Next;
+            PrevArg = PrevArg->Common.Next;
         }
-        PrevArg->Next = Arg;
+        PrevArg->Common.Next = Arg;
     }
-
     else
     {
         /* No argument list, this will be the first argument */
 
-        Op->Value.Arg = Arg;
+        Op->Common.Value.Arg = Arg;
     }
-
 
     /* Set the parent in this arg and any args linked after it */
 
     while (Arg)
     {
-        Arg->Parent = Op;
-        Arg = Arg->Next;
+        Arg->Common.Parent = Op;
+        Arg = Arg->Common.Next;
     }
 }
 
 
 /*******************************************************************************
  *
- * FUNCTION:    PsGetChild
- *
- * PARAMETERS:  Op              - Get the child of this Op
- *
- * RETURN:      Child Op, Null if none is found.
- *
- * DESCRIPTION: Get op's children or NULL if none
- *
- ******************************************************************************/
-
-ACPI_GENERIC_OP *
-PsGetChild (
-    ACPI_GENERIC_OP         *Op)
-{
-    ACPI_GENERIC_OP         *Child = NULL;
-
-
-    switch (Op->Opcode)
-    {
-    case AML_ScopeOp:
-    case AML_ElseOp:
-    case AML_DeviceOp:
-    case AML_ThermalZoneOp:
-    case AML_METHODCALL_OP:
-
-        Child = PsGetArg (Op, 0);
-        break;
-
-
-    case AML_BufferOp:
-    case AML_PackageOp:
-    case AML_MethodOp:
-    case AML_IfOp:
-    case AML_WhileOp:
-    case AML_DefFieldOp:
-
-        Child = PsGetArg (Op, 1);
-        break;
-
-
-    case AML_PowerResOp:
-    case AML_IndexFieldOp:
-
-        Child = PsGetArg (Op, 2);
-        break;
-
-
-    case AML_ProcessorOp:
-    case AML_BankFieldOp:
-
-        Child = PsGetArg (Op, 3);
-        break;
-
-    }
-
-    return Child;
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    PsGetDepthNext 
+ * FUNCTION:    AcpiPsGetDepthNext
  *
  * PARAMETERS:  Origin          - Root of subtree to search
  *              Op              - Last (previous) Op that was found
@@ -335,186 +285,141 @@ PsGetChild (
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
-PsGetDepthNext (
-    ACPI_GENERIC_OP         *Origin, 
-    ACPI_GENERIC_OP         *Op)
+ACPI_PARSE_OBJECT *
+AcpiPsGetDepthNext (
+    ACPI_PARSE_OBJECT       *Origin,
+    ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_GENERIC_OP         *Next = NULL;
-    ACPI_GENERIC_OP         *Parent;
-    ACPI_GENERIC_OP         *Arg;
+    ACPI_PARSE_OBJECT       *Next = NULL;
+    ACPI_PARSE_OBJECT       *Parent;
+    ACPI_PARSE_OBJECT       *Arg;
+
+
+    ACPI_FUNCTION_ENTRY ();
 
 
     if (!Op)
     {
-        return NULL;
+        return (NULL);
     }
 
-    /* look for an argument or child */
+    /* Look for an argument or child */
 
-    Next = PsGetArg (Op, 0);
+    Next = AcpiPsGetArg (Op, 0);
     if (Next)
     {
-        return Next;
+        return (Next);
     }
 
-    /* look for a sibling */
+    /* Look for a sibling */
 
-    Next = Op->Next;
+    Next = Op->Common.Next;
     if (Next)
     {
-        return Next;
+        return (Next);
     }
 
-    /* look for a sibling of parent */
+    /* Look for a sibling of parent */
 
-    Parent = Op->Parent;
+    Parent = Op->Common.Parent;
 
     while (Parent)
     {
-        Arg = PsGetArg (Parent, 0);
+        Arg = AcpiPsGetArg (Parent, 0);
         while (Arg && (Arg != Origin) && (Arg != Op))
         {
-            Arg = Arg->Next;
+            Arg = Arg->Common.Next;
         }
 
         if (Arg == Origin)
         {
-            /* reached parent of origin, end search */
+            /* Reached parent of origin, end search */
 
-            return NULL;
+            return (NULL);
         }
 
-        if (Parent->Next)
+        if (Parent->Common.Next)
         {
-            /* found sibling of parent */
-            return Parent->Next;
+            /* Found sibling of parent */
+
+            return (Parent->Common.Next);
         }
 
         Op = Parent;
-        Parent = Parent->Parent;
+        Parent = Parent->Common.Parent;
     }
 
-    return Next;
+    return (Next);
 }
 
 
+#ifdef ACPI_OBSOLETE_FUNCTIONS
 /*******************************************************************************
  *
- * FUNCTION:    PsFetchPrefix
+ * FUNCTION:    AcpiPsGetChild
  *
- * PARAMETERS:  Scope           - Op to fetch prefix for
- *              Path            - A namestring containing the prefix
- *              io              - Direction flag
+ * PARAMETERS:  Op              - Get the child of this Op
  *
- * RETURN:      Op referenced by the prefix
+ * RETURN:      Child Op, Null if none is found.
  *
- * DESCRIPTION: Fetch and handle path prefix ('\\' or '^')
+ * DESCRIPTION: Get op's children or NULL if none
  *
  ******************************************************************************/
 
-ACPI_GENERIC_OP *
-PsFetchPrefix (
-    ACPI_GENERIC_OP         *Scope, 
-    char                    **Path, 
-    UINT32                  io)
+ACPI_PARSE_OBJECT *
+AcpiPsGetChild (
+    ACPI_PARSE_OBJECT       *Op)
 {
-    UINT32                  prefix = io ? GET8 (*Path):**Path;
+    ACPI_PARSE_OBJECT       *Child = NULL;
 
 
-    switch (prefix)
+    ACPI_FUNCTION_ENTRY ();
+
+
+    switch (Op->Common.AmlOpcode)
     {
-    case '\\':
-    case '/':
+    case AML_SCOPE_OP:
+    case AML_ELSE_OP:
+    case AML_DEVICE_OP:
+    case AML_THERMAL_ZONE_OP:
+    case AML_INT_METHODCALL_OP:
 
-        /* go to the root */
-
-        *Path += 1;
-        while (Scope->Parent)
-        {
-            Scope = Scope->Parent;
-        }
+        Child = AcpiPsGetArg (Op, 0);
         break;
 
 
-    case '^':
+    case AML_BUFFER_OP:
+    case AML_PACKAGE_OP:
+    case AML_METHOD_OP:
+    case AML_IF_OP:
+    case AML_WHILE_OP:
+    case AML_FIELD_OP:
 
-        /* go up one level */
+        Child = AcpiPsGetArg (Op, 1);
+        break;
 
-        *Path += 1;
-        Scope = Scope->Parent;
+
+    case AML_POWER_RES_OP:
+    case AML_INDEX_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 2);
+        break;
+
+
+    case AML_PROCESSOR_OP:
+    case AML_BANK_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 3);
+        break;
+
+
+    default:
+        /* All others have no children */
         break;
     }
 
-    if (Scope && !Scope->Parent)
-    {
-        /* searching from the root, start with its children */
-
-        Scope = PsGetChild (Scope);
-    }
-
-    return Scope;
+    return (Child);
 }
-
-
-/*******************************************************************************
- *
- * FUNCTION:    PsFetchName
- *
- * PARAMETERS:  Path            - A string containing the name segment
- *              io              - Direction flag
- *
- * RETURN:      The 4-char ASCII ACPI Name as a UINT32
- *
- * DESCRIPTION: Fetch ACPI name segment (dot-delimited)
- *
- ******************************************************************************/
-
-UINT32
-PsFetchName (
-    char                    **Path, 
-    UINT32                  io)
-{
-    UINT32                  Name = 0;
-    char                    *nm;
-    UINT32                  i;
-    char                    ch;
-
-
-    if (io)
-    {
-        /* Get the name from the path pointer */
-
-        STORE32TO32 (&Name, *Path);
-        *Path += 4;
-    }
-
-    else
-    {      
-        if (**Path == '.')
-        {
-            *Path += 1;
-        }
-        
-        nm = (char*) &Name;
-        for (i = 0; i < 4; i++)
-        {
-            ch = **Path;
-            if (ch && ch != '.')
-            {
-                *nm = ch;
-                *Path += 1;
-            }
-
-            else
-            {
-                *nm = '_';
-            }
-            nm++;
-        }
-    }
-
-    return Name;
-}
+#endif
 
 

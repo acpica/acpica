@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.2 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -118,7 +118,6 @@
 #include "acpisrc.h"
 
 
-
 /******************************************************************************
  *
  * FUNCTION:    AsLowerCaseString
@@ -160,14 +159,14 @@ AsLowerCaseString (
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
-        SubString2 = strstr (SubBuffer, "/*!");
+        SubString2 = strstr (SubBuffer, AS_START_IGNORE);
 
         if ((SubString2) &&
             (SubString2 < SubString1))
         {
             /* Find end of the escape block starting at "Substring2" */
 
-            SubString2 = strstr (SubString2, "!*/");
+            SubString2 = strstr (SubString2, AS_STOP_IGNORE);
             if (!SubString2)
             {
                 /* Didn't find terminator */
@@ -196,6 +195,15 @@ AsLowerCaseString (
             }
 
             SubBuffer = SubString1 + TargetLength;
+
+            if (Gbl_WidenDeclarations)
+            {
+                if ((SubBuffer[0] == ' ') && (SubBuffer[1] == ' '))
+                {
+                    AsInsertData (SubBuffer, "        ", 8);
+                }
+            }
+
             LowerCaseCount++;
         }
     }
@@ -328,7 +336,6 @@ AsMixedCaseToUnderscores (
 
             Gbl_MadeChanges = TRUE;
             SubBuffer[1] = (char) tolower (SubBuffer[1]);
-
 
             SubString = TokenEnd;
             Length = 0;

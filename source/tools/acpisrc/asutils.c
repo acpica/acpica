@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asutils - common utilities
- *              $Revision: 1.7 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2002, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -229,4 +229,79 @@ AsReplaceData (
     return (Buffer + LengthToAdd);
 }
 
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsInsertData
+ *
+ * DESCRIPTION: This function inserts and removes data from the file buffer.
+ *              if more data is inserted than is removed, the data in the buffer
+ *              is moved to make room.  If less data is inserted than is removed,
+ *              the remaining data is moved to close the hole.
+ *
+ ******************************************************************************/
+
+char *
+AsInsertData (
+    char                    *Buffer,
+    char                    *BufferToAdd,
+    UINT32                  LengthToAdd)
+{
+    UINT32                  BufferLength;
+
+
+    if (LengthToAdd > 0)
+    {
+        /*
+         * Buffer is a string, so the length must include the terminating zero
+         */
+        BufferLength = strlen (Buffer) + 1;
+
+        /*
+         * Move some of the existing data
+         * 1) If adding more bytes than removing, make room for the new data
+         * 2) if removing more bytes than adding, delete the extra space
+         */
+        Gbl_MadeChanges = TRUE;
+        memmove ((Buffer + LengthToAdd), Buffer, BufferLength);
+
+        /*
+         * Now we can move in the new data
+         */
+        memmove (Buffer, BufferToAdd, LengthToAdd);
+    }
+
+    return (Buffer + LengthToAdd);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AsRemoveData
+ *
+ * DESCRIPTION: This function inserts and removes data from the file buffer.
+ *              if more data is inserted than is removed, the data in the buffer
+ *              is moved to make room.  If less data is inserted than is removed,
+ *              the remaining data is moved to close the hole.
+ *
+ ******************************************************************************/
+
+char *
+AsRemoveData (
+    char                    *StartPointer,
+    char                    *EndPointer)
+{
+    UINT32                  BufferLength;
+
+
+    /*
+     * Buffer is a string, so the length must include the terminating zero
+     */
+    BufferLength = strlen (EndPointer) + 1;
+
+    Gbl_MadeChanges = TRUE;
+    memmove (StartPointer, EndPointer, BufferLength);
+
+    return (StartPointer);
+}
 
