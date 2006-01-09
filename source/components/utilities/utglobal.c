@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.224 $
+ *              $Revision: 1.225 $
  *
  *****************************************************************************/
 
@@ -560,7 +560,7 @@ AcpiUtGetEventName (
         return ("InvalidEventID");
     }
 
-    return ((char *) AcpiGbl_EventTypes[EventId]);
+    return (ACPI_CAST_PTR (char, AcpiGbl_EventTypes[EventId]));
 }
 
 
@@ -633,10 +633,10 @@ AcpiUtGetTypeName (
 
     if (Type > ACPI_TYPE_INVALID)
     {
-        return ((char *) AcpiGbl_BadType);
+        return (ACPI_CAST_PTR (char, AcpiGbl_BadType));
     }
 
-    return ((char *) AcpiGbl_NsTypeNames[Type]);
+    return (ACPI_CAST_PTR (char, AcpiGbl_NsTypeNames[Type]));
 }
 
 
