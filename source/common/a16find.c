@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -429,8 +429,9 @@ AfRecognizeTable (
     {
         /* Table failed verification, map all errors to BAD_DATA */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid table header found in table named %s (Type %d)\n",
-                            AcpiGbl_TableData[TableType].Name, (UINT32) TableType));
+        ACPI_REPORT_ERROR ((
+            "Invalid table header found in table named %s (Type %d)\n",
+            AcpiGbl_TableData[TableType].Name, (UINT32) TableType));
 
         return_ACPI_STATUS (AE_BAD_DATA);
     }
@@ -440,17 +441,19 @@ AfRecognizeTable (
     *TableGlobalPtr = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
     if (!*TableGlobalPtr)
     {
-        AcpiOsPrintf ("Could not allocate buffer for Acpi table of length 0x%X\n",
-                        (UINT32) ((FACS_DESCRIPTOR *) &AcpiTblHeader)->Length);
+        AcpiOsPrintf (
+            "Could not allocate buffer for Acpi table of length 0x%X\n",
+            (UINT32) ((FACS_DESCRIPTOR *) &AcpiTblHeader)->Length);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    TableInfo->Pointer      = *TableGlobalPtr;
+    TableInfo->Pointer = *TableGlobalPtr;
 
     CopyExtendedToReal (*TableGlobalPtr, PhysAddr, AcpiTblHeader.Length);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%s=%p, (TableGlobalPtr=%p)\n", AcpiGbl_TableData[TableType].Signature,
-                    *TableGlobalPtr, TableGlobalPtr));
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%s=%p, (TableGlobalPtr=%p)\n",
+        AcpiGbl_TableData[TableType].Signature,
+        *TableGlobalPtr, TableGlobalPtr));
 
     if (AcpiGbl_DbOpt_verbose)
     {
@@ -681,7 +684,7 @@ AfGetRsdt (void)
     {
         /* Table failed verification, map all errors to BAD_DATA */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid RSDT table header\n"));
+        ACPI_REPORT_ERROR (("Invalid RSDT table header\n"));
         return (AE_BAD_DATA);
     }
 
@@ -900,8 +903,8 @@ AfFindTable (
 
 ErrorExit:
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Failure during ACPI Table initialization: %s\n",
-            AcpiFormatException (Status)));
+    ACPI_REPORT_ERROR (("Failure during ACPI Table initialization: %s\n",
+        AcpiFormatException (Status)));
     return (Status);
 }
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -229,14 +229,14 @@ AcpiTbValidateTableHeader (
     ACPI_NAME               Signature;
 
 
-    ACPI_FUNCTION_NAME ("TbValidateTableHeader");
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Verify that this is a valid address */
 
     if (!AcpiOsReadable (TableHeader, sizeof (ACPI_TABLE_HEADER)))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Cannot read table header at %p\n", TableHeader));
 
         return (AE_BAD_ADDRESS);
@@ -247,12 +247,12 @@ AcpiTbValidateTableHeader (
     ACPI_MOVE_32_TO_32 (&Signature, TableHeader->Signature);
     if (!AcpiUtValidAcpiName (Signature))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Table signature at %p [%p] has invalid characters\n",
             TableHeader, &Signature));
 
         ACPI_REPORT_WARNING (("Invalid table signature found: [%4.4s]\n",
-            (char *) &Signature));
+            ACPI_CAST_PTR (char, &Signature)));
 
         ACPI_DUMP_BUFFER (TableHeader, sizeof (ACPI_TABLE_HEADER));
         return (AE_BAD_SIGNATURE);
@@ -262,7 +262,7 @@ AcpiTbValidateTableHeader (
 
     if (TableHeader->Length < sizeof (ACPI_TABLE_HEADER))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Invalid length in table header %p name %4.4s\n",
             TableHeader, (char *) &Signature));
 
@@ -399,7 +399,7 @@ AcpiTbHandleToObject (
         }
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "TableId=%X does not exist\n", TableId));
+    ACPI_REPORT_ERROR (("TableId=%X does not exist\n", TableId));
     return (AE_BAD_PARAMETER);
 }
 #endif

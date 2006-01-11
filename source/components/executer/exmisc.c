@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.137 $
+ *              $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -183,7 +183,7 @@ AcpiExGetObjectReference (
 
         default:
 
-            ACPI_REPORT_ERROR (("Unknown Reference opcode in GetReference %X\n",
+            ACPI_REPORT_ERROR (("Unknown Reference opcode %X\n",
                 ObjDesc->Reference.Opcode));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
@@ -201,8 +201,8 @@ AcpiExGetObjectReference (
 
     default:
 
-        ACPI_REPORT_ERROR (("Invalid descriptor type in GetReference: %X\n",
-                ACPI_GET_DESCRIPTOR_TYPE (ObjDesc)));
+        ACPI_REPORT_ERROR (("Invalid descriptor type %X\n",
+            ACPI_GET_DESCRIPTOR_TYPE (ObjDesc)));
         return_ACPI_STATUS (AE_TYPE);
     }
 
@@ -366,8 +366,8 @@ AcpiExDoConcatenate (
         break;
 
     default:
-        ACPI_REPORT_ERROR (("Concatanate - invalid object type: %X\n",
-                ACPI_GET_OBJECT_TYPE (Operand0)));
+        ACPI_REPORT_ERROR (("Invalid object type: %X\n",
+            ACPI_GET_OBJECT_TYPE (Operand0)));
         Status = AE_AML_INTERNAL;
     }
 
@@ -468,8 +468,8 @@ AcpiExDoConcatenate (
 
         /* Invalid object type, should not happen here */
 
-        ACPI_REPORT_ERROR (("Concatenate - Invalid object type: %X\n",
-                ACPI_GET_OBJECT_TYPE (Operand0)));
+        ACPI_REPORT_ERROR (("Invalid object type: %X\n",
+            ACPI_GET_OBJECT_TYPE (Operand0)));
         Status =AE_AML_INTERNAL;
         goto Cleanup;
     }

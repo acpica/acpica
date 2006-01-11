@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.154 $
+ *              $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -230,7 +230,7 @@ AcpiInstallFixedEventHandler (
     Status = AcpiEnableEvent (Event, 0);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "Could not enable fixed event.\n"));
+        ACPI_REPORT_WARNING (("Could not enable fixed event %X\n", Event));
 
         /* Remove the handler */
 
@@ -298,12 +298,12 @@ AcpiRemoveFixedEventHandler (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
-            "Could not write to fixed event enable register.\n"));
+        ACPI_REPORT_WARNING ((
+            "Could not write to fixed event enable register %X\n", Event));
     }
     else
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Disabled fixed event %X.\n", Event));
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Disabled fixed event %X\n", Event));
     }
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
@@ -559,7 +559,7 @@ AcpiRemoveNotifyHandler (
     if (Device == ACPI_ROOT_OBJECT)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "Removing notify handler for ROOT object.\n"));
+            "Removing notify handler for namespace root object\n"));
 
         if (((HandlerType & ACPI_SYSTEM_NOTIFY) &&
               !AcpiGbl_SystemNotify.Handler)        ||

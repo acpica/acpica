@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.225 $
+ *              $Revision: 1.226 $
  *
  *****************************************************************************/
 
@@ -145,9 +145,12 @@ AcpiFormatException (
     const char              *Exception = NULL;
 
 
-    ACPI_FUNCTION_NAME ("FormatException");
+    ACPI_FUNCTION_ENTRY ();
 
 
+    /*
+     * Status is composed of two parts, a "type" and an actual code
+     */
     SubStatus = (Status & ~AE_CODE_MASK);
 
     switch (Status & AE_CODE_MASK)
@@ -200,13 +203,13 @@ AcpiFormatException (
     {
         /* Exception code was not recognized */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Unknown exception code: 0x%8.8X\n", Status));
 
-        return ((const char *) "UNKNOWN_STATUS_CODE");
+        Exception = "UNKNOWN_STATUS_CODE";
     }
 
-    return ((const char *) Exception);
+    return (ACPI_CAST_PTR (const char, Exception));
 }
 
 

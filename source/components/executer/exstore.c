@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.197 $
+ *              $Revision: 1.198 $
  *
  *****************************************************************************/
 
@@ -341,7 +341,7 @@ AcpiExStore (
 
     if (!SourceDesc || !DestDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null parameter\n"));
+        ACPI_REPORT_ERROR (("Null parameter\n"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
@@ -382,7 +382,7 @@ AcpiExStore (
 
         /* Destination is not a Reference object */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Target is not a Reference or Constant object - %s [%p]\n",
             AcpiUtGetObjectTypeName (DestDesc), DestDesc));
 
@@ -449,7 +449,7 @@ AcpiExStore (
 
     default:
 
-        ACPI_REPORT_ERROR (("ExStore: Unknown Reference opcode %X\n",
+        ACPI_REPORT_ERROR (("Unknown Reference opcode %X\n",
             RefDesc->Reference.Opcode));
         ACPI_DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
 
@@ -591,7 +591,7 @@ AcpiExStoreObjectToIndex (
 
             /* All other types are invalid */
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Source must be Integer/Buffer/String type, not %s\n",
                 AcpiUtGetObjectTypeName (SourceDesc)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -604,7 +604,7 @@ AcpiExStoreObjectToIndex (
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Target is not a Package or BufferField\n"));
         Status = AE_AML_OPERAND_TYPE;
         break;

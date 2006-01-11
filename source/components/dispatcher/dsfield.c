@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -403,7 +403,7 @@ AcpiDsGetFieldNames (
             {
                 ACPI_REPORT_ERROR ((
                     "Field [%4.4s] bit offset too large (> 0xFFFFFFFF)\n",
-                    (char *) &Info->FieldNode->Name));
+                    ACPI_CAST_PTR (char, &Info->FieldNode->Name)));
                 return_ACPI_STATUS (AE_SUPPORT);
             }
 
@@ -413,7 +413,7 @@ AcpiDsGetFieldNames (
 
         default:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Invalid opcode in field list: %X\n",
                 Arg->Common.AmlOpcode));
             return_ACPI_STATUS (AE_AML_BAD_OPCODE);

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -361,7 +361,7 @@ AcpiExDecodeFieldAccess (
     default:
         /* Invalid field access type */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Unknown field access type %X\n",
             Access));
         return_UINT32 (0);
@@ -524,14 +524,14 @@ AcpiExPrepFieldValue (
     {
         if (!Info->RegionNode)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null RegionNode\n"));
+            ACPI_REPORT_ERROR (("Null RegionNode\n"));
             return_ACPI_STATUS (AE_AML_NO_OPERAND);
         }
 
         Type = AcpiNsGetType (Info->RegionNode);
         if (Type != ACPI_TYPE_REGION)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Needed Region, found type %X (%s)\n",
                 Type, AcpiUtGetTypeName (Type)));
 

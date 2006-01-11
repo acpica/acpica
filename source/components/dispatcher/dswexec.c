@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -181,7 +181,7 @@ AcpiDsGetPredicateValue (
         Status = AcpiDsResultPop (&ObjDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Could not get result from predicate evaluation, %s\n",
                 AcpiFormatException (Status)));
 
@@ -207,7 +207,7 @@ AcpiDsGetPredicateValue (
 
     if (!ObjDesc)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "No predicate ObjDesc=%p State=%p\n",
             ObjDesc, WalkState));
 
@@ -226,7 +226,7 @@ AcpiDsGetPredicateValue (
 
     if (ACPI_GET_OBJECT_TYPE (LocalObjDesc) != ACPI_TYPE_INTEGER)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Bad predicate (not an integer) ObjDesc=%p State=%p Type=%X\n",
             ObjDesc, WalkState, ACPI_GET_OBJECT_TYPE (ObjDesc)));
 
@@ -471,7 +471,7 @@ AcpiDsExecEndOp (
 
     if (OpClass == AML_CLASS_UNKNOWN)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown opcode %X\n", Op->Common.AmlOpcode));
+        ACPI_REPORT_ERROR (("Unknown opcode %X\n", Op->Common.AmlOpcode));
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
     }
 
@@ -561,7 +561,7 @@ AcpiDsExecEndOp (
             }
             else
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "[%s]: Could not resolve operands, %s\n",
                     AcpiPsGetOpcodeName (WalkState->Opcode),
                     AcpiFormatException (Status)));
@@ -783,7 +783,7 @@ AcpiDsExecEndOp (
 
         case AML_TYPE_UNDEFINED:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Undefined opcode type Op=%p\n", Op));
             return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
 
@@ -798,7 +798,7 @@ AcpiDsExecEndOp (
 
         default:
 
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Unimplemented opcode, class=%X type=%X Opcode=%X Op=%p\n",
                 OpClass, OpType, Op->Common.AmlOpcode, Op));
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -297,7 +297,7 @@ AcpiDsBuildInternalBufferObj (
     {
         if (ByteList->Common.AmlOpcode != AML_INT_BYTELIST_OP)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Expecting bytelist, got AML opcode %X in op %p\n",
                 ByteList->Common.AmlOpcode, ByteList));
 
@@ -658,7 +658,7 @@ AcpiDsInitObjectFromOp (
 
             default:
 
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "Unknown constant opcode %X\n", Opcode));
                 Status = AE_AML_OPERAND_TYPE;
                 break;
@@ -676,7 +676,7 @@ AcpiDsInitObjectFromOp (
 
 
         default:
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Integer type %X\n",
+            ACPI_REPORT_ERROR (("Unknown Integer type %X\n",
                 OpInfo->Type));
             Status = AE_AML_OPERAND_TYPE;
             break;
@@ -753,7 +753,7 @@ AcpiDsInitObjectFromOp (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unimplemented data type: %X\n",
+        ACPI_REPORT_ERROR (("Unimplemented data type: %X\n",
             ACPI_GET_OBJECT_TYPE (ObjDesc)));
 
         Status = AE_AML_OPERAND_TYPE;

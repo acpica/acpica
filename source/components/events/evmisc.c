@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -616,7 +616,7 @@ AcpiEvReleaseGlobalLock (
 
     if (!AcpiGbl_GlobalLockThreadCount)
     {
-        ACPI_REPORT_WARNING((
+        ACPI_REPORT_WARNING ((
             "Cannot release HW Global Lock, it has not been acquired\n"));
         return_ACPI_STATUS (AE_NOT_ACQUIRED);
     }
@@ -689,7 +689,7 @@ AcpiEvTerminate (
             Status = AcpiDisableEvent ((UINT32) i, 0);
             if (ACPI_FAILURE (Status))
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "Could not disable fixed event %d\n", (UINT32) i));
             }
         }
@@ -703,7 +703,7 @@ AcpiEvTerminate (
         Status = AcpiEvRemoveSciHandler ();
         if (ACPI_FAILURE(Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Could not remove SCI handler\n"));
         }
     }
@@ -719,7 +719,7 @@ AcpiEvTerminate (
         Status = AcpiDisable ();
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "AcpiDisable failed\n"));
+            ACPI_REPORT_WARNING (("AcpiDisable failed\n"));
         }
     }
     return_VOID;

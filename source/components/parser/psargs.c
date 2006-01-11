@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -403,7 +403,7 @@ AcpiPsGetNextNamepath (
         if (!MethodDesc)
         {
             ACPI_REPORT_ERROR ((
-                "PsGetNextNamepath: Control Method %p has no attached object\n",
+                "Control Method %p has no attached object\n",
                 Node));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }

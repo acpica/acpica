@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -347,7 +347,7 @@ AcpiDsGetBufferArguments (
     if (!Node)
     {
         ACPI_REPORT_ERROR ((
-                "No pointer back to NS node in buffer obj %p\n", ObjDesc));
+            "No pointer back to NS node in buffer obj %p\n", ObjDesc));
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
@@ -396,7 +396,7 @@ AcpiDsGetPackageArguments (
     if (!Node)
     {
         ACPI_REPORT_ERROR ((
-                "No pointer back to NS node in package %p\n", ObjDesc));
+            "No pointer back to NS node in package %p\n", ObjDesc));
         return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
@@ -532,7 +532,7 @@ AcpiDsInitBufferField (
 
     if (ACPI_GET_OBJECT_TYPE (BufferDesc) != ACPI_TYPE_BUFFER)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Target of Create Field is not a Buffer object - %s\n",
             AcpiUtGetObjectTypeName (BufferDesc)));
 
@@ -547,10 +547,10 @@ AcpiDsInitBufferField (
      */
     if (ACPI_GET_DESCRIPTOR_TYPE (ResultDesc) != ACPI_DESC_TYPE_NAMED)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "(%s) destination not a NS Node [%s]\n",
-                AcpiPsGetOpcodeName (AmlOpcode),
-                AcpiUtGetDescriptorName (ResultDesc)));
+        ACPI_REPORT_ERROR ((
+            "(%s) destination not a NS Node [%s]\n",
+            AcpiPsGetOpcodeName (AmlOpcode),
+            AcpiUtGetDescriptorName (ResultDesc)));
 
         Status = AE_AML_OPERAND_TYPE;
         goto Cleanup;
@@ -575,7 +575,7 @@ AcpiDsInitBufferField (
 
         if (BitCount == 0)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Attempt to CreateField of length 0\n"));
             Status = AE_AML_OPERAND_VALUE;
             goto Cleanup;
@@ -629,7 +629,7 @@ AcpiDsInitBufferField (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Unknown field creation opcode %02x\n",
             AmlOpcode));
         Status = AE_AML_BAD_OPCODE;
@@ -641,12 +641,12 @@ AcpiDsInitBufferField (
     if ((BitOffset + BitCount) >
         (8 * (UINT32) BufferDesc->Buffer.Length))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Field [%4.4s] size %d exceeds Buffer [%4.4s] size %d (bits)\n",
-             AcpiUtGetNodeName (ResultDesc),
-             BitOffset + BitCount,
-             AcpiUtGetNodeName (BufferDesc->Buffer.Node),
-             8 * (UINT32) BufferDesc->Buffer.Length));
+            AcpiUtGetNodeName (ResultDesc),
+            BitOffset + BitCount,
+            AcpiUtGetNodeName (BufferDesc->Buffer.Node),
+            8 * (UINT32) BufferDesc->Buffer.Length));
         Status = AE_AML_BUFFER_LIMIT;
         goto Cleanup;
     }
@@ -763,7 +763,7 @@ AcpiDsEvalBufferFieldOperands (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "(%s) bad operand(s) (%X)\n",
+        ACPI_REPORT_ERROR (("(%s) bad operand(s) (%X)\n",
             AcpiPsGetOpcodeName (Op->Common.AmlOpcode), Status));
 
         return_ACPI_STATUS (Status);
@@ -1305,7 +1305,7 @@ AcpiDsExecEndControlOp (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown control opcode=%X Op=%p\n",
+        ACPI_REPORT_ERROR (("Unknown control opcode=%X Op=%p\n",
             Op->Common.AmlOpcode, Op));
 
         Status = AE_AML_BAD_OPCODE;

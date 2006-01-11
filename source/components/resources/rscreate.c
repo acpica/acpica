@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -300,7 +300,7 @@ AcpiRsCreatePciRoutingTable (
 
         if (ACPI_GET_OBJECT_TYPE (*TopObjectList) != ACPI_TYPE_PACKAGE)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "(PRT[%X]) Need sub-package, found %s\n",
                 Index, AcpiUtGetObjectTypeName (*TopObjectList)));
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -310,7 +310,7 @@ AcpiRsCreatePciRoutingTable (
 
         if ((*TopObjectList)->Package.Count != 4)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "(PRT[%X]) Need package of length 4, found length %d\n",
                 Index, (*TopObjectList)->Package.Count));
             return_ACPI_STATUS (AE_AML_PACKAGE_LIMIT);
@@ -332,7 +332,7 @@ AcpiRsCreatePciRoutingTable (
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "(PRT[%X].Address) Need Integer, found %s\n",
                 Index, AcpiUtGetObjectTypeName (ObjDesc)));
             return_ACPI_STATUS (AE_BAD_DATA);
@@ -347,7 +347,7 @@ AcpiRsCreatePciRoutingTable (
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "(PRT[%X].Pin) Need Integer, found %s\n",
                 Index, AcpiUtGetObjectTypeName (ObjDesc)));
             return_ACPI_STATUS (AE_BAD_DATA);
@@ -362,7 +362,7 @@ AcpiRsCreatePciRoutingTable (
 
             if (ObjDesc->Reference.Opcode != AML_INT_NAMEPATH_OP)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "(PRT[%X].Source) Need name, found reference op %X\n",
                     Index, ObjDesc->Reference.Opcode));
                 return_ACPI_STATUS (AE_BAD_DATA);
@@ -410,9 +410,9 @@ AcpiRsCreatePciRoutingTable (
 
         default:
 
-           ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+           ACPI_REPORT_ERROR ((
                "(PRT[%X].Source) Need Ref/String/Integer, found %s\n",
-                Index, AcpiUtGetObjectTypeName (ObjDesc)));
+               Index, AcpiUtGetObjectTypeName (ObjDesc)));
            return_ACPI_STATUS (AE_BAD_DATA);
         }
 
@@ -429,7 +429,7 @@ AcpiRsCreatePciRoutingTable (
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "(PRT[%X].SourceIndex) Need Integer, found %s\n",
                 Index, AcpiUtGetObjectTypeName (ObjDesc)));
             return_ACPI_STATUS (AE_BAD_DATA);

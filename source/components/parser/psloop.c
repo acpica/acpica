@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -201,12 +201,12 @@ AcpiPsParseLoop (
                 {
                     if (Status == AE_AML_NO_RETURN_VALUE)
                     {
-                        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                        ACPI_REPORT_ERROR ((
                             "Invoked method did not return a value, %s\n",
                             AcpiFormatException (Status)));
 
                     }
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    ACPI_REPORT_ERROR ((
                         "GetPredicate Failed, %s\n",
                         AcpiFormatException (Status)));
                     return_ACPI_STATUS (Status);
@@ -265,7 +265,7 @@ AcpiPsParseLoop (
 
                 /* The opcode is unrecognized.  Just skip unknown opcodes */
 
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "Found unknown opcode %X at AML address %p offset %X, ignoring\n",
                     WalkState->Opcode, ParserState->Aml, WalkState->AmlOffset));
 
@@ -345,7 +345,7 @@ AcpiPsParseLoop (
                 Status = WalkState->DescendingCallback (WalkState, &Op);
                 if (ACPI_FAILURE (Status))
                 {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    ACPI_REPORT_ERROR ((
                         "During name lookup/catalog, %s\n",
                         AcpiFormatException (Status)));
                     goto CloseThisOp;

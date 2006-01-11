@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -156,7 +156,7 @@ AcpiLoadTables (
                     &RsdpAddress);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_ERROR (("AcpiLoadTables: Could not get RSDP, %s\n",
+        ACPI_REPORT_ERROR (("Could not get RSDP, %s\n",
             AcpiFormatException (Status)));
         goto ErrorExit;
     }
@@ -168,7 +168,7 @@ AcpiLoadTables (
     Status = AcpiTbVerifyRsdp (&RsdpAddress);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_ERROR (("AcpiLoadTables: RSDP Failed validation: %s\n",
+        ACPI_REPORT_ERROR (("RSDP Failed validation: %s\n",
             AcpiFormatException (Status)));
         goto ErrorExit;
     }
@@ -178,7 +178,7 @@ AcpiLoadTables (
     Status = AcpiTbGetTableRsdt ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_ERROR (("AcpiLoadTables: Could not load RSDT: %s\n",
+        ACPI_REPORT_ERROR (("Could not load RSDT: %s\n",
             AcpiFormatException (Status)));
         goto ErrorExit;
     }
@@ -189,7 +189,7 @@ AcpiLoadTables (
     if (ACPI_FAILURE (Status))
     {
         ACPI_REPORT_ERROR ((
-            "AcpiLoadTables: Error getting required tables (DSDT/FADT/FACS): %s\n",
+            "Could not get all required tables (DSDT/FADT/FACS): %s\n",
             AcpiFormatException (Status)));
         goto ErrorExit;
     }
@@ -201,7 +201,7 @@ AcpiLoadTables (
     Status = AcpiNsLoadNamespace ();
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_ERROR (("AcpiLoadTables: Could not load namespace: %s\n",
+        ACPI_REPORT_ERROR (("Could not load namespace: %s\n",
             AcpiFormatException (Status)));
         goto ErrorExit;
     }
@@ -210,8 +210,8 @@ AcpiLoadTables (
 
 
 ErrorExit:
-    ACPI_REPORT_ERROR (("AcpiLoadTables: Could not load tables: %s\n",
-                    AcpiFormatException (Status)));
+    ACPI_REPORT_ERROR (("Could not load tables: %s\n",
+        AcpiFormatException (Status)));
 
     return_ACPI_STATUS (Status);
 }

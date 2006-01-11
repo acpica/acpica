@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.161 $
+ *              $Revision: 1.162 $
  *
  *****************************************************************************/
 
@@ -619,7 +619,7 @@ AcpiPsParseAml (
         {
             /* Either the method parse or actual execution failed */
 
-            ACPI_REPORT_METHOD_ERROR ("Method parse/execution failed",
+            ACPI_REPORT_MTERROR ("Method parse/execution failed",
                 WalkState->MethodNode, NULL, Status);
 
             /* Check for possible multi-thread reentrancy problem */

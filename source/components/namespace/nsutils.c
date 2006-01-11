@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.142 $
+ *              $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -362,7 +362,7 @@ AcpiNsGetType (
 
     if (!Node)
     {
-        ACPI_REPORT_WARNING (("NsGetType: Null Node input pointer\n"));
+        ACPI_REPORT_WARNING (("Null Node parameter\n"));
         return_UINT32 (ACPI_TYPE_ANY);
     }
 
@@ -394,7 +394,7 @@ AcpiNsLocal (
     {
         /* Type code out of range  */
 
-        ACPI_REPORT_WARNING (("NsLocal: Invalid Object Type\n"));
+        ACPI_REPORT_WARNING (("Invalid Object Type %X\n", Type));
         return_UINT32 (ACPI_NS_NORMAL);
     }
 
@@ -811,7 +811,7 @@ AcpiNsExternalizeName (
      */
     if (RequiredLength > InternalNameLength)
     {
-        ACPI_REPORT_ERROR (("NsExternalizeName: Invalid internal name\n"));
+        ACPI_REPORT_ERROR (("Invalid internal name\n"));
         return_ACPI_STATUS (AE_BAD_PATHNAME);
     }
 
@@ -1017,7 +1017,7 @@ AcpiNsOpensScope (
     {
         /* type code out of range  */
 
-        ACPI_REPORT_WARNING (("NsOpensScope: Invalid Object Type %X\n", Type));
+        ACPI_REPORT_WARNING (("Invalid Object Type %X\n", Type));
         return_UINT32 (ACPI_NS_NORMAL);
     }
 

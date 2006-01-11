@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,7 @@ AcpiEnable (
 
     if (!AcpiGbl_FADT)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "No FADT information present!\n"));
+        ACPI_REPORT_WARNING (("No FADT information present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
@@ -166,7 +166,7 @@ AcpiEnable (
         Status = AcpiHwSetMode (ACPI_SYS_MODE_ACPI);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR (("Could not transition to ACPI mode.\n"));
+            ACPI_REPORT_ERROR (("Could not transition to ACPI mode\n"));
             return_ACPI_STATUS (Status);
         }
 
@@ -202,7 +202,7 @@ AcpiDisable (
 
     if (!AcpiGbl_FADT)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "No FADT information present!\n"));
+        ACPI_REPORT_WARNING (("No FADT information present!\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
@@ -219,7 +219,7 @@ AcpiDisable (
 
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Could not exit ACPI mode to legacy mode"));
             return_ACPI_STATUS (Status);
         }
@@ -285,7 +285,7 @@ AcpiEnableEvent (
 
     if (Value != 1)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Could not enable %s event\n", AcpiUtGetEventName (Event)));
         return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
     }
@@ -516,7 +516,7 @@ AcpiDisableEvent (
 
     if (Value != 0)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Could not disable %s events\n", AcpiUtGetEventName (Event)));
         return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
     }

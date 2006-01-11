@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.151 $
+ *              $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -416,7 +416,7 @@ AcpiUtAllocate (
     if (!Size)
     {
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtAllocate: Attempt to allocate zero bytes, allocating 1 byte\n"));
+            ("UtAllocate: Attempt to allocate zero bytes, allocating 1 byte\n"));
         Size = 1;
     }
 
@@ -426,7 +426,7 @@ AcpiUtAllocate (
         /* Report allocation error */
 
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtAllocate: Could not allocate size %X\n", (UINT32) Size));
+            ("UtAllocate: Could not allocate size %X\n", (UINT32) Size));
 
         return_PTR (NULL);
     }
@@ -468,7 +468,7 @@ AcpiUtCallocate (
     if (!Size)
     {
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtCallocate: Attempt to allocate zero bytes, allocating 1 byte\n"));
+            ("UtCallocate: Attempt to allocate zero bytes, allocating 1 byte\n"));
         Size = 1;
     }
 
@@ -478,7 +478,7 @@ AcpiUtCallocate (
         /* Report allocation error */
 
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtCallocate: Could not allocate size %X\n", (UINT32) Size));
+            ("UtCallocate: Could not allocate size %X\n", (UINT32) Size));
         return_PTR (NULL);
     }
 
@@ -621,12 +621,12 @@ AcpiUtCallocateAndTrack (
         /* Report allocation error */
 
         _ACPI_REPORT_ERROR (Module, Line, Component,
-                ("UtCallocate: Could not allocate size %X\n", (UINT32) Size));
+            ("UtCallocate: Could not allocate size %X\n", (UINT32) Size));
         return (NULL);
     }
 
     Status = AcpiUtTrackAllocation (Allocation, Size,
-                        ACPI_MEM_CALLOC, Component, Module, Line);
+                ACPI_MEM_CALLOC, Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
         AcpiOsFree (Allocation);
@@ -687,7 +687,7 @@ AcpiUtFreeAndTrack (
                     Component, Module, Line);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Could not free memory, %s\n",
+        ACPI_REPORT_ERROR (("Could not free memory, %s\n",
             AcpiFormatException (Status)));
     }
 
@@ -791,7 +791,7 @@ AcpiUtTrackAllocation (
             "UtTrackAllocation: Allocation already present in list! (%p)\n",
             Allocation));
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Element %p Address %p\n",
+        ACPI_REPORT_ERROR (("Element %p Address %p\n",
             Element, Allocation));
 
         goto UnlockAndExit;
@@ -1046,12 +1046,12 @@ AcpiUtDumpAllocations (
 
     if (!NumOutstanding)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_INFO ((
             "No outstanding allocations\n"));
     }
     else
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "%d(%X) Outstanding allocations\n",
             NumOutstanding, NumOutstanding));
     }

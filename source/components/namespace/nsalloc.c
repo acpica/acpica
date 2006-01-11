@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  ******************************************************************************/
 
@@ -390,7 +390,7 @@ AcpiNsDeleteChildren (
 
         if (ChildNode->Child)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Found a grandchild! P=%p C=%p\n",
+            ACPI_REPORT_ERROR (("Found a grandchild! P=%p C=%p\n",
                 ParentNode, ChildNode));
         }
 

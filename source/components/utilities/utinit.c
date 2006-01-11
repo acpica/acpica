@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -157,8 +157,8 @@ AcpiUtFadtRegisterError (
     ACPI_SIZE               Offset)
 {
 
-    ACPI_REPORT_WARNING (
-        ("Invalid FADT value %s=%X at offset %X FADT=%p\n",
+    ACPI_REPORT_WARNING ((
+        "Invalid FADT value %s=%X at offset %X FADT=%p\n",
         RegisterName, Value, (UINT32) Offset, AcpiGbl_FADT));
 }
 
@@ -326,7 +326,7 @@ AcpiUtSubsystemShutdown (
 
     if (AcpiGbl_Shutdown)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "ACPI Subsystem is already terminated\n"));
         return_VOID;
     }
@@ -335,7 +335,7 @@ AcpiUtSubsystemShutdown (
 
     AcpiGbl_Shutdown = TRUE;
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "Shutting down ACPI Subsystem...\n"));
+        "Shutting down ACPI Subsystem\n"));
 
     /* Close the AcpiEvent Handling */
 

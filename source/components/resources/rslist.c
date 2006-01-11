@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.51 $
+ *              $Revision: 1.52 $
  *
  ******************************************************************************/
 
@@ -244,7 +244,7 @@ AcpiRsConvertResourcesToAml (
 
         if (Resource->Type > ACPI_RESOURCE_TYPE_MAX)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Invalid descriptor type (%X) in resource list\n",
                 Resource->Type));
             return_ACPI_STATUS (AE_BAD_DATA);

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.173 $
+ *       $Revision: 1.174 $
  *
  *****************************************************************************/
 
@@ -523,56 +523,66 @@
 
 
 /*
- * Reporting macros that are never compiled out
+ * Module name is include in both debug and non-debug versions primarily for
+ * error messages. The __FILE__ macro is not very useful for this, because it
+ * often includes the entire pathname to the module
  */
-#define ACPI_PARAM_LIST(pl)                 pl
+#if defined (ACPI_DEBUG_OUTPUT) || !defined (ACPI_NO_ERROR_MESSAGES)
 
-/*
- * Error reporting.  These versions add callers module and line#.
- *
- * Since _AcpiModuleName gets compiled out when ACPI_DEBUG_OUTPUT
- * isn't defined, only use it in debug mode.
- */
-#ifdef ACPI_DEBUG_OUTPUT
-
-#define ACPI_REPORT_INFO(fp)                {AcpiUtReportInfo(_AcpiModuleName,__LINE__,_COMPONENT); \
-                                                AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_ERROR(fp)               {AcpiUtReportError(_AcpiModuleName,__LINE__,_COMPONENT); \
-                                                AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_WARNING(fp)             {AcpiUtReportWarning(_AcpiModuleName,__LINE__,_COMPONENT); \
-                                                AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_NSERROR(s,e)            AcpiNsReportError(_AcpiModuleName,__LINE__,_COMPONENT, s, e);
-
-#define ACPI_REPORT_METHOD_ERROR(s,n,p,e)   AcpiNsReportMethodError(_AcpiModuleName,__LINE__,_COMPONENT, s, n, p, e);
-
+#define ACPI_MODULE_NAME(Name)          static char ACPI_UNUSED_VAR *_AcpiModuleName = Name;
 #else
-
-#define ACPI_REPORT_INFO(fp)                {AcpiUtReportInfo("ACPI",__LINE__,_COMPONENT); \
-                                                AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_ERROR(fp)               {AcpiUtReportError("ACPI",__LINE__,_COMPONENT); \
-                                                AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_WARNING(fp)             {AcpiUtReportWarning("ACPI",__LINE__,_COMPONENT); \
-                                                AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define ACPI_REPORT_NSERROR(s,e)            AcpiNsReportError("ACPI",__LINE__,_COMPONENT, s, e);
-
-#define ACPI_REPORT_METHOD_ERROR(s,n,p,e)   AcpiNsReportMethodError("ACPI",__LINE__,_COMPONENT, s, n, p, e);
-
+#define ACPI_MODULE_NAME(Name)
 #endif
 
-/* Error reporting.  These versions pass thru the module and line# */
+/*
+ * Ascii error messages can be configured out
+ */
+#ifndef ACPI_NO_ERROR_MESSAGES
 
-#define _ACPI_REPORT_INFO(a,b,c,fp)         {AcpiUtReportInfo(a,b,c); \
-                                                AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define _ACPI_REPORT_ERROR(a,b,c,fp)        {AcpiUtReportError(a,b,c); \
-                                                AcpiOsPrintf ACPI_PARAM_LIST(fp);}
-#define _ACPI_REPORT_WARNING(a,b,c,fp)      {AcpiUtReportWarning(a,b,c); \
-                                                AcpiOsPrintf ACPI_PARAM_LIST(fp);}
+#define ACPI_PARAM_LIST(pl)             pl
+#define ACPI_LOCATION_INFO              _AcpiModuleName, __LINE__, _COMPONENT
+
+/*
+ * Error reporting. Callers module and line number are inserted automatically
+ * These macros are used for both the debug and non-debug versions of the code
+ */
+#define ACPI_REPORT_INFO(fp)            {AcpiUtReportInfo (ACPI_LOCATION_INFO); \
+                                            AcpiOsPrintf ACPI_PARAM_LIST (fp);}
+#define ACPI_REPORT_ERROR(fp)           {AcpiUtReportError (ACPI_LOCATION_INFO); \
+                                            AcpiOsPrintf ACPI_PARAM_LIST (fp);}
+#define ACPI_REPORT_WARNING(fp)         {AcpiUtReportWarning (ACPI_LOCATION_INFO); \
+                                            AcpiOsPrintf ACPI_PARAM_LIST (fp);}
+#define ACPI_REPORT_NSERROR(s,e)        AcpiNsReportError (ACPI_LOCATION_INFO, \
+                                            s, e);
+#define ACPI_REPORT_MTERROR(s,n,p,e)    AcpiNsReportMethodError (ACPI_LOCATION_INFO, \
+                                            s, n, p, e);
+
+/* Error reporting. These versions pass thru the module and lineno */
+
+#define _ACPI_REPORT_INFO(a,b,c,fp)     {AcpiUtReportInfo (a,b,c); \
+                                            AcpiOsPrintf ACPI_PARAM_LIST (fp);}
+#define _ACPI_REPORT_ERROR(a,b,c,fp)    {AcpiUtReportError (a,b,c); \
+                                            AcpiOsPrintf ACPI_PARAM_LIST (fp);}
+#define _ACPI_REPORT_WARNING(a,b,c,fp)  {AcpiUtReportWarning (a,b,c); \
+                                            AcpiOsPrintf ACPI_PARAM_LIST (fp);}
+#else
+
+/* No error messages */
+
+#define ACPI_REPORT_INFO(fp)
+#define ACPI_REPORT_ERROR(fp)
+#define ACPI_REPORT_WARNING(fp)
+#define ACPI_REPORT_NSERROR(s,e)
+#define ACPI_REPORT_MTERROR(s,n,p,e)
+#define _ACPI_REPORT_INFO(a,b,c,fp)
+#define _ACPI_REPORT_ERROR(a,b,c,fp)
+#define _ACPI_REPORT_WARNING(a,b,c,fp)
+#endif
 
 /*
  * Debug macros that are conditionally compiled
  */
 #ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_MODULE_NAME(Name)          static char ACPI_UNUSED_VAR *_AcpiModuleName = Name;
 
 /*
  * Common parameters used for debug output functions:
@@ -734,9 +744,6 @@
  * This is the non-debug case -- make everything go away,
  * leaving no executable debug code!
  */
-#define ACPI_MODULE_NAME(Name)
-#define _AcpiModuleName ""
-
 #define ACPI_DEBUG_EXEC(a)
 #define ACPI_NORMAL_EXEC(a)             a;
 

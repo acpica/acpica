@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  ******************************************************************************/
 
@@ -482,7 +482,7 @@ AcpiUtUpdateRefCount (
 
     default:
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown action (%X)\n", Action));
+        ACPI_REPORT_ERROR (("Unknown action (%X)\n", Action));
         break;
     }
 
@@ -493,8 +493,8 @@ AcpiUtUpdateRefCount (
     if (Count > ACPI_MAX_REFERENCE_COUNT)
     {
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
-            "**** Warning **** Large Reference Count (%X) in object %p\n\n",
+        ACPI_REPORT_WARNING ((
+            "Large Reference Count (%X) in object %p\n\n",
             Count, Object));
     }
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  ******************************************************************************/
 
@@ -649,7 +649,7 @@ Exit:
          * polarity/trigger interrupts are allowed (ACPI spec, section
          * "IRQ Format"), so 0x00 and 0x09 are illegal.
          */
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Invalid interrupt polarity/trigger in resource list, %X\n",
             Aml->Irq.Flags));
         return_ACPI_STATUS (AE_BAD_DATA);
@@ -665,7 +665,7 @@ Exit:
 
     if (Resource->Data.Dma.Transfer == 0x03)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Invalid DMA.Transfer preference (3)\n"));
         return_ACPI_STATUS (AE_BAD_DATA);
     }

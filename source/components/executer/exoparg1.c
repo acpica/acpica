@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.173 $
+ *              $Revision: 1.174 $
  *
  *****************************************************************************/
 
@@ -196,7 +196,7 @@ AcpiExOpcode_0A_0T_1R (
 
     default:                /*  Unknown opcode  */
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_0A_0T_1R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("Unknown AML opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
@@ -288,7 +288,7 @@ AcpiExOpcode_1A_0T_0R (
 
     default:                /*  Unknown opcode  */
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_1A_0T_0R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("Unknown AML opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
@@ -334,7 +334,7 @@ AcpiExOpcode_1A_1T_0R (
 
     default:                        /* Unknown opcode */
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_1A_1T_0R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("Unknown AML opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
@@ -468,7 +468,7 @@ AcpiExOpcode_1A_1T_1R (
 
                 if (Temp32 > 9)
                 {
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    ACPI_REPORT_ERROR ((
                         "BCD digit too large (not decimal): 0x%X\n",
                         Temp32));
 
@@ -515,7 +515,7 @@ AcpiExOpcode_1A_1T_1R (
 
             if (Digit > 0)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "Integer too large to convert to BCD: %8.8X%8.8X\n",
                     ACPI_FORMAT_UINT64 (Operand[0]->Integer.Value)));
                 Status = AE_AML_NUMERIC_OVERFLOW;
@@ -657,7 +657,7 @@ AcpiExOpcode_1A_1T_1R (
 
         /* These are two obsolete opcodes */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "%s is obsolete and not implemented\n",
             AcpiPsGetOpcodeName (WalkState->Opcode)));
         Status = AE_SUPPORT;
@@ -666,7 +666,7 @@ AcpiExOpcode_1A_1T_1R (
 
     default:                        /* Unknown opcode */
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_1A_1T_1R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("Unknown AML opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
@@ -786,7 +786,7 @@ AcpiExOpcode_1A_0T_1R (
         Status = AcpiExResolveOperands (AML_LNOT_OP, &TempDesc, WalkState);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s: bad operand(s) %s\n",
+            ACPI_REPORT_ERROR (("%s: bad operand(s) %s\n",
                 AcpiPsGetOpcodeName (WalkState->Opcode),
                 AcpiFormatException(Status)));
 
@@ -891,8 +891,8 @@ AcpiExOpcode_1A_0T_1R (
             break;
 
         default:
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "SizeOf - Operand is not Buf/Int/Str/Pkg - found type %s\n",
+            ACPI_REPORT_ERROR ((
+                "Operand is not Buf/Int/Str/Pkg - found type %s\n",
                 AcpiUtGetTypeName (Type)));
             Status = AE_AML_OPERAND_TYPE;
             goto Cleanup;
@@ -1088,7 +1088,7 @@ AcpiExOpcode_1A_0T_1R (
 
                 default:
 
-                    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                    ACPI_REPORT_ERROR ((
                         "Unknown Index TargetType %X in obj %p\n",
                         Operand[0]->Reference.TargetType, Operand[0]));
                     Status = AE_AML_OPERAND_TYPE;
@@ -1116,7 +1116,7 @@ AcpiExOpcode_1A_0T_1R (
 
 
             default:
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "Unknown opcode in ref(%p) - %X\n",
                     Operand[0], Operand[0]->Reference.Opcode));
 
@@ -1129,7 +1129,7 @@ AcpiExOpcode_1A_0T_1R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_1A_0T_1R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("Unknown AML opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;

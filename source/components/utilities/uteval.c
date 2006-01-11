@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -248,7 +248,7 @@ AcpiUtEvaluateObject (
         }
         else
         {
-            ACPI_REPORT_METHOD_ERROR ("Method execution failed",
+            ACPI_REPORT_MTERROR ("Method execution failed",
                 PrefixNode, Path, Status);
         }
 
@@ -261,7 +261,7 @@ AcpiUtEvaluateObject (
     {
         if (ExpectedReturnBtypes)
         {
-            ACPI_REPORT_METHOD_ERROR ("No object was returned from",
+            ACPI_REPORT_MTERROR ("No object was returned from",
                 PrefixNode, Path, AE_NOT_EXIST);
 
             return_ACPI_STATUS (AE_NOT_EXIST);
@@ -311,10 +311,10 @@ AcpiUtEvaluateObject (
 
     if (!(ExpectedReturnBtypes & ReturnBtype))
     {
-        ACPI_REPORT_METHOD_ERROR ("Return object type is incorrect",
+        ACPI_REPORT_MTERROR ("Return object type is incorrect",
             PrefixNode, Path, AE_TYPE);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Type returned from %s was incorrect: %s, expected Btypes: %X\n",
             Path, AcpiUtGetObjectTypeName (Info.ReturnObject),
             ExpectedReturnBtypes));

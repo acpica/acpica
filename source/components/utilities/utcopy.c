@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -726,7 +726,7 @@ AcpiUtCopyEobjectToIobject (
         /*
          * Packages as external input to control methods are not supported,
          */
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Packages as parameters not implemented!\n"));
 
         return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
@@ -1009,8 +1009,7 @@ AcpiUtCopyIpackageToIpackage (
                                     sizeof (void *));
     if (!DestObj->Package.Elements)
     {
-        ACPI_REPORT_ERROR (
-            ("AmlBuildCopyInternalPackageObject: Package allocation failure\n"));
+        ACPI_REPORT_ERROR (("Package allocation failure\n"));
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
@@ -1019,7 +1018,7 @@ AcpiUtCopyIpackageToIpackage (
      * This handles nested packages of arbitrary depth.
      */
     Status = AcpiUtWalkPackageTree (SourceObj, DestObj,
-                            AcpiUtCopyIelementToIelement, WalkState);
+                AcpiUtCopyIelementToIelement, WalkState);
     if (ACPI_FAILURE (Status))
     {
         /* On failure, delete the destination package object */

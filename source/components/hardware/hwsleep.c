@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -290,7 +290,7 @@ AcpiEnterSleepStatePrep (
     Status = AcpiEvaluateObject (NULL, METHOD_NAME__SST, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
-         ACPI_REPORT_ERROR (("Method _SST failed, %s\n",
+        ACPI_REPORT_ERROR (("Method _SST failed, %s\n",
             AcpiFormatException (Status)));
     }
 

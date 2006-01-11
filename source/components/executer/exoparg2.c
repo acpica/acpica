@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -198,9 +198,9 @@ AcpiExOpcode_2A_0T_0R (
 
         if (!AcpiEvIsNotifyObject (Node))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                    "Unexpected notify object type [%s]\n",
-                    AcpiUtGetTypeName (Node->Type)));
+            ACPI_REPORT_ERROR ((
+                "Unexpected notify object type [%s]\n",
+                AcpiUtGetTypeName (Node->Type)));
 
             Status = AE_AML_OPERAND_TYPE;
             break;
@@ -246,8 +246,8 @@ AcpiExOpcode_2A_0T_0R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_0T_0R: Unknown opcode %X\n",
-                WalkState->Opcode));
+        ACPI_REPORT_ERROR (("Unknown AML opcode %X\n",
+            WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
     }
 
@@ -319,8 +319,8 @@ AcpiExOpcode_2A_2T_1R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_2T_1R: Unknown opcode %X\n",
-                WalkState->Opcode));
+        ACPI_REPORT_ERROR (("Unknown AML opcode %X\n",
+            WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
@@ -509,7 +509,7 @@ AcpiExOpcode_2A_1T_1R (
 
             if (Index >= Operand[0]->Package.Count)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "Index value (%X%8.8X) beyond package end (%X)\n",
                     ACPI_FORMAT_UINT64 (Index), Operand[0]->Package.Count));
                 Status = AE_AML_PACKAGE_LIMIT;
@@ -526,7 +526,7 @@ AcpiExOpcode_2A_1T_1R (
 
             if (Index >= Operand[0]->Buffer.Length)
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "Index value (%X%8.8X) beyond end of buffer (%X)\n",
                     ACPI_FORMAT_UINT64 (Index), Operand[0]->Buffer.Length));
                 Status = AE_AML_BUFFER_LIMIT;
@@ -560,8 +560,8 @@ AcpiExOpcode_2A_1T_1R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_1T_1R: Unknown opcode %X\n",
-                WalkState->Opcode));
+        ACPI_REPORT_ERROR (("Unknown AML opcode %X\n",
+            WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         break;
     }
@@ -682,7 +682,7 @@ AcpiExOpcode_2A_0T_1R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_2A_0T_1R: Unknown opcode %X\n",
+        ACPI_REPORT_ERROR (("Unknown AML opcode %X\n",
             WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;

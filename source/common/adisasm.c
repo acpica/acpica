@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -885,7 +885,7 @@ AdParseDeferredOps (
             break;
 
         default:
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unhandled deferred opcode [%s]\n",
+            ACPI_REPORT_ERROR (("Unhandled deferred opcode [%s]\n",
                 Op->Common.AmlOpName));
             break;
         }

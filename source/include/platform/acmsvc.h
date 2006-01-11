@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmsvc.h - VC specific defines, etc.
- *       $Revision: 1.23 $
+ *       $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -182,6 +182,11 @@
 
 /* warn C4131: uses old-style declarator (iASL compiler only) */
 #pragma warning(disable:4131)
+
+/* warn C4189: local variable is initialized but not referenced */
+/*
+#pragma warning(disable:4189)
+*/
 
 /*
  * This macro is used to tag functions as "printf-like" because

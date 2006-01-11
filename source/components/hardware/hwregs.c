@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.174 $
+ *              $Revision: 1.175 $
  *
  ******************************************************************************/
 
@@ -304,7 +304,7 @@ AcpiGetSleepTypeData (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "%s While evaluating SleepState [%s], bad Sleep object %p type %s\n",
             AcpiFormatException (Status),
             SleepStateName, Info.ReturnObject,
@@ -332,12 +332,12 @@ ACPI_BIT_REGISTER_INFO *
 AcpiHwGetBitRegisterInfo (
     UINT32                  RegisterId)
 {
-    ACPI_FUNCTION_NAME ("HwGetBitRegisterInfo");
+    ACPI_FUNCTION_ENTRY ();
 
 
     if (RegisterId > ACPI_BITREG_MAX)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Invalid BitRegister ID: %X\n", RegisterId));
+        ACPI_REPORT_ERROR (("Invalid BitRegister ID: %X\n", RegisterId));
         return (NULL);
     }
 
@@ -680,7 +680,7 @@ AcpiHwRegisterRead (
         break;
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Unknown Register ID: %X\n",
+        ACPI_REPORT_ERROR (("Unknown Register ID: %X\n",
             RegisterId));
         Status = AE_BAD_PARAMETER;
         break;
@@ -894,7 +894,7 @@ AcpiHwLowLevelRead (
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Unsupported address space: %X\n", Reg->AddressSpaceId));
         return (AE_BAD_PARAMETER);
     }
@@ -976,7 +976,7 @@ AcpiHwLowLevelWrite (
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Unsupported address space: %X\n", Reg->AddressSpaceId));
         return (AE_BAD_PARAMETER);
     }

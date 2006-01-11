@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  ******************************************************************************/
 
@@ -272,7 +272,7 @@ AcpiDsIsResultUsed (
 
     if (!Op)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null Op\n"));
+        ACPI_REPORT_ERROR (("Null Op\n"));
         return_UINT8 (TRUE);
     }
 
@@ -311,8 +311,8 @@ AcpiDsIsResultUsed (
     ParentInfo = AcpiPsGetOpcodeInfo (Op->Common.Parent->Common.AmlOpcode);
     if (ParentInfo->Class == AML_CLASS_UNKNOWN)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Unknown parent opcode. Op=%p\n", Op));
+        ACPI_REPORT_ERROR ((
+            "Unknown parent opcode Op=%p\n", Op));
         return_UINT8 (FALSE);
     }
 
@@ -447,7 +447,7 @@ AcpiDsDeleteResultIfNotUsed (
 
     if (!Op)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null Op\n"));
+        ACPI_REPORT_ERROR (("Null Op\n"));
         return_VOID;
     }
 
@@ -760,7 +760,7 @@ AcpiDsCreateOperand (
                  * Only error is underflow, and this indicates
                  * a missing or null operand!
                  */
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "Missing or null operand, %s\n",
                     AcpiFormatException (Status)));
                 return_ACPI_STATUS (Status);
@@ -861,7 +861,7 @@ Cleanup:
      */
     (void) AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "While creating Arg %d - %s\n",
+    ACPI_REPORT_ERROR (("While creating Arg %d - %s\n",
         (ArgCount + 1), AcpiFormatException (Status)));
     return_ACPI_STATUS (Status);
 }

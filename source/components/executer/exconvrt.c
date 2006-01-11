@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -790,13 +790,10 @@ AcpiExConvertToTargetType (
 
 
     default:
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-            "Unknown Target type ID 0x%X Op %s DestType %s\n",
+        ACPI_REPORT_ERROR ((
+            "Unknown Target type ID 0x%X AmlOpcode %X DestType %s\n",
             GET_CURRENT_ARG_TYPE (WalkState->OpInfo->RuntimeArgs),
-            WalkState->OpInfo->Name, AcpiUtGetTypeName (DestinationType)));
-
-        ACPI_REPORT_ERROR (("Bad Target Type (ARGI): %X\n",
-            GET_CURRENT_ARG_TYPE (WalkState->OpInfo->RuntimeArgs)))
+            WalkState->Opcode, AcpiUtGetTypeName (DestinationType)));
         Status = AE_AML_INTERNAL;
     }
 

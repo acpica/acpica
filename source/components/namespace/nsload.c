@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -179,7 +179,7 @@ AcpiNsLoadTable (
 
     if (!TableDesc->AmlStart)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Null AML pointer\n"));
+        ACPI_REPORT_ERROR (("Null AML pointer\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -371,7 +371,7 @@ AcpiNsLoadNamespace (
 
     if (AcpiGbl_DSDT == NULL)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "DSDT is not in memory\n"));
+        ACPI_REPORT_ERROR (("DSDT is not in memory\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 

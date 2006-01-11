@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -518,7 +518,7 @@ AcpiPsGetOpcodeInfo (
 
     /* Unknown AML opcode */
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
         "Unknown AML opcode [%4.4X]\n", Opcode));
 
     return (&AcpiGbl_AmlOpInfo [_UNK]);

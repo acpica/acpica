@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  ******************************************************************************/
 
@@ -158,7 +158,7 @@ AcpiNsBuildExternalPath (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    ACPI_FUNCTION_NAME ("NsBuildExternalPath");
+    ACPI_FUNCTION_ENTRY ();
 
 
     /* Special case for root */
@@ -197,7 +197,7 @@ AcpiNsBuildExternalPath (
 
     if (Index != 0)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Could not construct pathname; index=%X, size=%X, Path=%s\n",
             (UINT32) Index, (UINT32) Size, &NameBuffer[Size]));
     }
@@ -241,7 +241,7 @@ AcpiNsGetExternalPathname (
     NameBuffer = ACPI_MEM_CALLOCATE (Size);
     if (!NameBuffer)
     {
-        ACPI_REPORT_ERROR (("NsGetTablePathname: allocation failure\n"));
+        ACPI_REPORT_ERROR (("Allocation failure\n"));
         return_PTR (NULL);
     }
 

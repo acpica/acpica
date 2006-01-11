@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -877,8 +877,7 @@ AcpiOsCreateSemaphore (
     Mutex = CreateSemaphore (NULL, InitialUnits, MaxUnits, NULL);
     if (!Mutex)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "CreateSemaphore: could not create!\n"));
-
+        ACPI_REPORT_ERROR (("Could not create semaphore\n"));
         return AE_NO_MEMORY;
     }
 
@@ -995,16 +994,16 @@ AcpiOsWaitSemaphore (
     if (WaitStatus == WAIT_TIMEOUT)
     {
 /* Make optional -- wait of 0 is used to detect if unit is available
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WaitSemaphore [%d]: *** Timeout on semaphore %d\n",
-                    Handle));
+        ACPI_REPORT_ERROR (("Timeout on semaphore %d\n",
+            Handle));
 */
         return AE_TIME;
     }
 
     if (AcpiGbl_Semaphores[Index].CurrentUnits == 0)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "%s - No unit received. Timeout %X, OSstatus 0x%X\n",
-                    AcpiUtGetMutexName (Index), Timeout, WaitStatus));
+        ACPI_REPORT_ERROR (("%s - No unit received. Timeout %X, OSstatus 0x%X\n",
+            AcpiUtGetMutexName (Index), Timeout, WaitStatus));
 
         return AE_OK;
     }
@@ -1063,7 +1062,7 @@ AcpiOsSignalSemaphore (
     if ((AcpiGbl_Semaphores[Index].CurrentUnits + 1) >
         AcpiGbl_Semaphores[Index].MaxUnits)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Oversignalled semaphore[%d]! Current %d Max %d\n",
+        ACPI_REPORT_ERROR (("Oversignalled semaphore[%d]! Current %d Max %d\n",
             Index, AcpiGbl_Semaphores[Index].CurrentUnits, AcpiGbl_Semaphores[Index].MaxUnits));
 
         return (AE_LIMIT);

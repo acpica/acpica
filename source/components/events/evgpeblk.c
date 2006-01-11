@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -386,7 +386,7 @@ AcpiEvSaveMethodInfo (
     default:
         /* Unknown method type, just ignore it! */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Unknown GPE method type: %s (name not of form _Lxx or _Exx)\n",
             Name));
         return_ACPI_STATUS (AE_OK);
@@ -399,7 +399,7 @@ AcpiEvSaveMethodInfo (
     {
         /* Conversion failed; invalid method, just ignore it */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Could not extract GPE number from name: %s (name is not of form _Lxx or _Exx)\n",
             Name));
         return_ACPI_STATUS (AE_OK);
@@ -650,7 +650,7 @@ AcpiEvGetGpeXruptBlock (
                     AcpiEvGpeXruptHandler, GpeXrupt);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Could not install GPE interrupt handler at level 0x%X\n",
                 InterruptNumber));
             return_PTR (NULL);
@@ -903,7 +903,7 @@ AcpiEvCreateGpeInfoBlocks (
                             sizeof (ACPI_GPE_REGISTER_INFO));
     if (!GpeRegisterInfo)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Could not allocate the GpeRegisterInfo table\n"));
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
@@ -918,7 +918,7 @@ AcpiEvCreateGpeInfoBlocks (
                         sizeof (ACPI_GPE_EVENT_INFO));
     if (!GpeEventInfo)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Could not allocate the GpeEventInfo table\n"));
         Status = AE_NO_MEMORY;
         goto ErrorExit;

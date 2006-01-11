@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  ******************************************************************************/
 
@@ -391,11 +391,9 @@ AcpiNsSearchAndEnter (
 
     if (!Node || !TargetName || !ReturnNode)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+        ACPI_REPORT_ERROR ((
             "Null param: Node %p Name %X ReturnNode %p\n",
             Node, TargetName, ReturnNode));
-
-        ACPI_REPORT_ERROR (("NsSearchAndEnter: Null parameter\n"));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
@@ -403,7 +401,7 @@ AcpiNsSearchAndEnter (
 
     if (!AcpiUtValidAcpiName (TargetName))
     {
-        ACPI_REPORT_ERROR (("NsSearchAndEnter: Bad character in ACPI Name: %X\n",
+        ACPI_REPORT_ERROR (("Bad character in ACPI Name: %X\n",
             TargetName));
         return_ACPI_STATUS (AE_BAD_CHARACTER);
     }

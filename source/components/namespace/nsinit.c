@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -182,7 +182,7 @@ AcpiNsInitializeObjects (
                                 &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %s\n",
+        ACPI_REPORT_ERROR (("WalkNamespace failed! %s\n",
             AcpiFormatException (Status)));
     }
 
@@ -253,7 +253,7 @@ AcpiNsInitializeDevices (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "WalkNamespace failed! %s\n",
+        ACPI_REPORT_ERROR (("WalkNamespace failed! %s\n",
             AcpiFormatException (Status)));
     }
 
@@ -393,11 +393,10 @@ AcpiNsInitOneObject (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_ERROR, "\n"));
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
-                "Could not execute arguments for [%4.4s] (%s), %s\n",
-                AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Type),
-                AcpiFormatException (Status)));
+        ACPI_REPORT_ERROR ((
+            "\nCould not execute arguments for [%4.4s] (%s), %s\n",
+            AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Type),
+            AcpiFormatException (Status)));
     }
 
     /*
@@ -536,8 +535,8 @@ AcpiNsInitOneDevice (
 #ifdef ACPI_DEBUG_OUTPUT
         char        *ScopeName = AcpiNsGetExternalPathname (IniNode);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN, "%s._INI failed: %s\n",
-                ScopeName, AcpiFormatException (Status)));
+        ACPI_REPORT_WARNING (("%s._INI failed: %s\n",
+            ScopeName, AcpiFormatException (Status)));
 
         ACPI_MEM_FREE (ScopeName);
 #endif

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.194 $
+ *              $Revision: 1.195 $
  *
  ******************************************************************************/
 
@@ -196,7 +196,7 @@ AcpiNsRootInitialize (
 
         if (ACPI_FAILURE (Status) || (!NewNode)) /* Must be on same line for code converter */
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Could not create predefined name %s, %s\n",
                 InitVal->Name, AcpiFormatException (Status)));
         }
@@ -211,7 +211,7 @@ AcpiNsRootInitialize (
             Status = AcpiOsPredefinedOverride (InitVal, &Val);
             if (ACPI_FAILURE (Status))
             {
-                ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+                ACPI_REPORT_ERROR ((
                     "Could not override predefined %s\n",
                     InitVal->Name));
             }
@@ -434,8 +434,8 @@ AcpiNsLookup (
         PrefixNode = ScopeInfo->Scope.Node;
         if (ACPI_GET_DESCRIPTOR_TYPE (PrefixNode) != ACPI_DESC_TYPE_NAMED)
         {
-            ACPI_REPORT_ERROR (("NsLookup: %p is not a namespace node [%s]\n",
-                    PrefixNode, AcpiUtGetDescriptorName (PrefixNode)));
+            ACPI_REPORT_ERROR (("%p is not a namespace node [%s]\n",
+                PrefixNode, AcpiUtGetDescriptorName (PrefixNode)));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
 
@@ -706,9 +706,10 @@ AcpiNsLookup (
         {
             /* Complain about a type mismatch */
 
-            ACPI_REPORT_WARNING (
-                ("NsLookup: Type mismatch on %4.4s (%s), searching for (%s)\n",
-                (char *) &SimpleName, AcpiUtGetTypeName (ThisNode->Type),
+            ACPI_REPORT_WARNING ((
+                "NsLookup: Type mismatch on %4.4s (%s), searching for (%s)\n",
+                ACPI_CAST_PTR (char, &SimpleName),
+                AcpiUtGetTypeName (ThisNode->Type),
                 AcpiUtGetTypeName (TypeToCheckFor)));
         }
 

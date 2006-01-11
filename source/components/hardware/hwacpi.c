@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -151,8 +151,7 @@ AcpiHwInitialize (
 
     if (!AcpiGbl_FADT)
     {
-        ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "No FADT is present\n"));
-
+        ACPI_REPORT_ERROR (("No FADT is present\n"));
         return_ACPI_STATUS (AE_NO_ACPI_TABLES);
     }
 
@@ -197,7 +196,7 @@ AcpiHwSetMode (
      */
     if (!AcpiGbl_FADT->SmiCmd)
     {
-        ACPI_REPORT_ERROR (("No SMI_CMD in FADT, mode transition failed.\n"));
+        ACPI_REPORT_ERROR (("No SMI_CMD in FADT, mode transition failed\n"));
         return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
     }
 

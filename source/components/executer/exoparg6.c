@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -326,7 +326,7 @@ AcpiExOpcode_6A_0T_1R (
         if ((Operand[1]->Integer.Value > MAX_MATCH_OPERATOR) ||
             (Operand[3]->Integer.Value > MAX_MATCH_OPERATOR))
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR, "Match operator out of range\n"));
+            ACPI_REPORT_ERROR (("Match operator out of range\n"));
             Status = AE_AML_OPERAND_VALUE;
             goto Cleanup;
         }
@@ -336,7 +336,7 @@ AcpiExOpcode_6A_0T_1R (
         Index = Operand[5]->Integer.Value;
         if (Index >= Operand[0]->Package.Count)
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_ERROR,
+            ACPI_REPORT_ERROR ((
                 "Index (%X%8.8X) beyond package end (%X)\n",
                 ACPI_FORMAT_UINT64 (Index), Operand[0]->Package.Count));
             Status = AE_AML_PACKAGE_LIMIT;
@@ -414,8 +414,8 @@ AcpiExOpcode_6A_0T_1R (
 
     default:
 
-        ACPI_REPORT_ERROR (("AcpiExOpcode_6A_0T_1R: Unknown opcode %X\n",
-                WalkState->Opcode));
+        ACPI_REPORT_ERROR (("Unknown AML opcode %X\n",
+            WalkState->Opcode));
         Status = AE_AML_BAD_OPCODE;
         goto Cleanup;
     }
