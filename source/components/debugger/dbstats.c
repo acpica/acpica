@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  ******************************************************************************/
 
@@ -464,7 +464,7 @@ AcpiDbDisplayStatistics (
 
     if (!AcpiGbl_DSDT)
     {
-        AcpiOsPrintf ("*** Warning:  There is no DSDT loaded\n");
+        AcpiOsPrintf ("*** Warning: There is no DSDT loaded\n");
     }
 
     if (!TypeArg)

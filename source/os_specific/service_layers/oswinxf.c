@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -956,7 +956,7 @@ AcpiOsWaitSemaphore (
     UINT32              OsTimeout = Timeout;
 
 
-    ACPI_FUNCTION_NAME ("OsWaitSemaphore");
+    ACPI_FUNCTION_ENTRY ();
 
 
     if ((Index >= NUM_SEMAPHORES) ||
@@ -1038,7 +1038,7 @@ AcpiOsSignalSemaphore (
     UINT32              Index = (UINT32) Handle;
 
 
-    ACPI_FUNCTION_NAME ("OsSignalSemaphore");
+    ACPI_FUNCTION_ENTRY ();
 
 
     if (Index >= NUM_SEMAPHORES)

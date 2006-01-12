@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -880,7 +880,7 @@ AeInstallHandlers (void)
     ACPI_HANDLE             Handle;
 
 
-    ACPI_FUNCTION_NAME ("AeInstallHandlers");
+    ACPI_FUNCTION_ENTRY ();
 
 
     Status = AcpiInstallExceptionHandler (AeExceptionHandler);

@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.143 $
+ *              $Revision: 1.144 $
  *
  *****************************************************************************/
 
@@ -166,8 +166,7 @@ AcpiNsReportError (
     char                    *Name = NULL;
 
 
-    AcpiOsPrintf ("%8s-%04d: *** Error: Looking up ",
-        ModuleName, LineNumber);
+    AcpiUtReportError (ModuleName, LineNumber, ComponentId);
 
     if (LookupStatus == AE_BAD_CHARACTER)
     {
@@ -200,7 +199,7 @@ AcpiNsReportError (
         }
     }
 
-    AcpiOsPrintf (" in namespace, %s\n",
+    AcpiOsPrintf ("Namespace lookup failure, %s\n",
         AcpiFormatException (LookupStatus));
 }
 
@@ -214,7 +213,7 @@ AcpiNsReportError (
  *              ComponentId         - Caller's component ID (for error output)
  *              Message             - Error message to use on failure
  *              PrefixNode          - Prefix relative to the path
- *              Path                - Path to the node
+ *              Path                - Path to the node (optional)
  *              MethodStatus        - Execution status
  *
  * RETURN:      None
@@ -237,18 +236,18 @@ AcpiNsReportMethodError (
     ACPI_NAMESPACE_NODE     *Node = PrefixNode;
 
 
+    AcpiUtReportError (ModuleName, LineNumber, ComponentId);
+
     if (Path)
     {
         Status = AcpiNsGetNodeByPath (Path, PrefixNode,
                     ACPI_NS_NO_UPSEARCH, &Node);
         if (ACPI_FAILURE (Status))
         {
-            AcpiOsPrintf ("ReportMethodError: Could not get node\n");
-            return;
+            AcpiOsPrintf ("[Could not get node by pathname]");
         }
     }
 
-    AcpiOsPrintf ("%8s-%04d: *** Error: ", ModuleName, LineNumber);
     AcpiNsPrintNodePathname (Node, Message);
     AcpiOsPrintf (", %s\n", AcpiFormatException (MethodStatus));
 }

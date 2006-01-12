@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.132 $
+ *              $Revision: 1.133 $
  *
  ******************************************************************************/
 
@@ -1055,7 +1055,7 @@ AcpiUtReportError (
     UINT32                  ComponentId)
 {
 
-    AcpiOsPrintf ("%8s-%04d: *** Error: ", ModuleName, LineNumber);
+    AcpiOsPrintf ("%8s-%04d: (ACPI Error) ", ModuleName, LineNumber);
 }
 
 
@@ -1080,7 +1080,7 @@ AcpiUtReportWarning (
     UINT32                  ComponentId)
 {
 
-    AcpiOsPrintf ("%8s-%04d: *** Warning: ", ModuleName, LineNumber);
+    AcpiOsPrintf ("%8s-%04d: (ACPI Warning) ", ModuleName, LineNumber);
 }
 
 
@@ -1105,7 +1105,7 @@ AcpiUtReportInfo (
     UINT32                  ComponentId)
 {
 
-    AcpiOsPrintf ("%8s-%04d: *** Info: ", ModuleName, LineNumber);
+    AcpiOsPrintf ("%8s-%04d: (ACPI Info) ", ModuleName, LineNumber);
 }
 
 
