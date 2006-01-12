@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.139 $
+ *              $Revision: 1.140 $
  *
  ******************************************************************************/
 
@@ -937,14 +937,14 @@ AcpiDbSetMethodData (
         if (Index > ACPI_METHOD_MAX_ARG)
         {
             AcpiOsPrintf ("Arg%d - Invalid argument name\n", Index);
-            return;
+            goto Cleanup;
         }
 
         Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Index, ObjDesc,
                     WalkState);
         if (ACPI_FAILURE (Status))
         {
-            return;
+            goto Cleanup;
         }
 
         ObjDesc = WalkState->Arguments[Index].Object;
@@ -960,14 +960,14 @@ AcpiDbSetMethodData (
         if (Index > ACPI_METHOD_MAX_LOCAL)
         {
             AcpiOsPrintf ("Local%d - Invalid local variable name\n", Index);
-            return;
+            goto Cleanup;
         }
 
         Status = AcpiDsStoreObjectToLocal (AML_LOCAL_OP, Index, ObjDesc,
                     WalkState);
         if (ACPI_FAILURE (Status))
         {
-            return;
+            goto Cleanup;
         }
 
         ObjDesc = WalkState->LocalVariables[Index].Object;
@@ -979,6 +979,9 @@ AcpiDbSetMethodData (
     default:
         break;
     }
+
+Cleanup:
+    AcpiUtRemoveReference (ObjDesc);
 }
 
 
