@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.174 $
+ *       $Revision: 1.175 $
  *
  *****************************************************************************/
 
@@ -540,7 +540,7 @@
 #ifndef ACPI_NO_ERROR_MESSAGES
 
 #define ACPI_PARAM_LIST(pl)             pl
-#define ACPI_LOCATION_INFO              _AcpiModuleName, __LINE__, _COMPONENT
+#define ACPI_LOCATION_INFO              _AcpiModuleName, __LINE__
 
 /*
  * Error reporting. Callers module and line number are inserted automatically
@@ -559,11 +559,11 @@
 
 /* Error reporting. These versions pass thru the module and lineno */
 
-#define _ACPI_REPORT_INFO(a,b,c,fp)     {AcpiUtReportInfo (a,b,c); \
+#define _ACPI_REPORT_INFO(a,b,fp)       {AcpiUtReportInfo (a,b); \
                                             AcpiOsPrintf ACPI_PARAM_LIST (fp);}
-#define _ACPI_REPORT_ERROR(a,b,c,fp)    {AcpiUtReportError (a,b,c); \
+#define _ACPI_REPORT_ERROR(a,b,fp)      {AcpiUtReportError (a,b); \
                                             AcpiOsPrintf ACPI_PARAM_LIST (fp);}
-#define _ACPI_REPORT_WARNING(a,b,c,fp)  {AcpiUtReportWarning (a,b,c); \
+#define _ACPI_REPORT_WARNING(a,b,fp)    {AcpiUtReportWarning (a,b); \
                                             AcpiOsPrintf ACPI_PARAM_LIST (fp);}
 #else
 

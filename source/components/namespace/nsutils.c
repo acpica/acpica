@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.144 $
+ *              $Revision: 1.145 $
  *
  *****************************************************************************/
 
@@ -144,7 +144,6 @@ AcpiNsFindParentName (
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
  *              InternalName        - Name or path of the namespace node
  *              LookupStatus        - Exception code from NS lookup
  *
@@ -158,7 +157,6 @@ void
 AcpiNsReportError (
     char                    *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
     char                    *InternalName,
     ACPI_STATUS             LookupStatus)
 {
@@ -166,7 +164,7 @@ AcpiNsReportError (
     char                    *Name = NULL;
 
 
-    AcpiUtReportError (ModuleName, LineNumber, ComponentId);
+    AcpiUtReportError (ModuleName, LineNumber);
 
     if (LookupStatus == AE_BAD_CHARACTER)
     {
@@ -210,7 +208,6 @@ AcpiNsReportError (
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
  *              Message             - Error message to use on failure
  *              PrefixNode          - Prefix relative to the path
  *              Path                - Path to the node (optional)
@@ -226,7 +223,6 @@ void
 AcpiNsReportMethodError (
     char                    *ModuleName,
     UINT32                  LineNumber,
-    UINT32                  ComponentId,
     char                    *Message,
     ACPI_NAMESPACE_NODE     *PrefixNode,
     char                    *Path,
@@ -236,7 +232,7 @@ AcpiNsReportMethodError (
     ACPI_NAMESPACE_NODE     *Node = PrefixNode;
 
 
-    AcpiUtReportError (ModuleName, LineNumber, ComponentId);
+    AcpiUtReportError (ModuleName, LineNumber);
 
     if (Path)
     {

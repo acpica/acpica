@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.185 $
+ *       $Revision: 1.186 $
  *
  *****************************************************************************/
 
@@ -468,22 +468,19 @@ AcpiUtPtrExit (
     UINT8                   *Ptr);
 
 void
-AcpiUtReportInfo (
-    char                    *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId);
-
-void
 AcpiUtReportError (
     char                    *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId);
+    UINT32                  LineNumber);
+
+void
+AcpiUtReportInfo (
+    char                    *ModuleName,
+    UINT32                  LineNumber);
 
 void
 AcpiUtReportWarning (
     char                    *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId);
+    UINT32                  LineNumber);
 
 void
 AcpiUtDumpBuffer (

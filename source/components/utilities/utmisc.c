@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.133 $
+ *              $Revision: 1.134 $
  *
  ******************************************************************************/
 
@@ -1040,7 +1040,6 @@ AcpiUtGenerateChecksum (
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
  *
  * RETURN:      None
  *
@@ -1051,11 +1050,10 @@ AcpiUtGenerateChecksum (
 void
 AcpiUtReportError (
     char                    *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId)
+    UINT32                  LineNumber)
 {
 
-    AcpiOsPrintf ("%8s-%04d: (ACPI Error) ", ModuleName, LineNumber);
+    AcpiOsPrintf ("ACPI Error (%s-%04d): ", ModuleName, LineNumber);
 }
 
 
@@ -1065,7 +1063,6 @@ AcpiUtReportError (
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
  *
  * RETURN:      None
  *
@@ -1076,11 +1073,10 @@ AcpiUtReportError (
 void
 AcpiUtReportWarning (
     char                    *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId)
+    UINT32                  LineNumber)
 {
 
-    AcpiOsPrintf ("%8s-%04d: (ACPI Warning) ", ModuleName, LineNumber);
+    AcpiOsPrintf ("ACPI Warning (%s-%04d): ", ModuleName, LineNumber);
 }
 
 
@@ -1090,7 +1086,6 @@ AcpiUtReportWarning (
  *
  * PARAMETERS:  ModuleName          - Caller's module name (for error output)
  *              LineNumber          - Caller's line number (for error output)
- *              ComponentId         - Caller's component ID (for error output)
  *
  * RETURN:      None
  *
@@ -1101,11 +1096,10 @@ AcpiUtReportWarning (
 void
 AcpiUtReportInfo (
     char                    *ModuleName,
-    UINT32                  LineNumber,
-    UINT32                  ComponentId)
+    UINT32                  LineNumber)
 {
 
-    AcpiOsPrintf ("%8s-%04d: (ACPI Info) ", ModuleName, LineNumber);
+    AcpiOsPrintf ("ACPI (%s-%04d): ", ModuleName, LineNumber);
 }
 
 

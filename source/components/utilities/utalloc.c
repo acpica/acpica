@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.152 $
+ *              $Revision: 1.153 $
  *
  *****************************************************************************/
 
@@ -415,7 +415,7 @@ AcpiUtAllocate (
 
     if (!Size)
     {
-        _ACPI_REPORT_ERROR (Module, Line, Component,
+        _ACPI_REPORT_ERROR (Module, Line,
             ("UtAllocate: Attempt to allocate zero bytes, allocating 1 byte\n"));
         Size = 1;
     }
@@ -425,7 +425,7 @@ AcpiUtAllocate (
     {
         /* Report allocation error */
 
-        _ACPI_REPORT_ERROR (Module, Line, Component,
+        _ACPI_REPORT_ERROR (Module, Line,
             ("UtAllocate: Could not allocate size %X\n", (UINT32) Size));
 
         return_PTR (NULL);
@@ -467,7 +467,7 @@ AcpiUtCallocate (
 
     if (!Size)
     {
-        _ACPI_REPORT_ERROR (Module, Line, Component,
+        _ACPI_REPORT_ERROR (Module, Line,
             ("UtCallocate: Attempt to allocate zero bytes, allocating 1 byte\n"));
         Size = 1;
     }
@@ -477,7 +477,7 @@ AcpiUtCallocate (
     {
         /* Report allocation error */
 
-        _ACPI_REPORT_ERROR (Module, Line, Component,
+        _ACPI_REPORT_ERROR (Module, Line,
             ("UtCallocate: Could not allocate size %X\n", (UINT32) Size));
         return_PTR (NULL);
     }
@@ -620,7 +620,7 @@ AcpiUtCallocateAndTrack (
     {
         /* Report allocation error */
 
-        _ACPI_REPORT_ERROR (Module, Line, Component,
+        _ACPI_REPORT_ERROR (Module, Line,
             ("UtCallocate: Could not allocate size %X\n", (UINT32) Size));
         return (NULL);
     }
@@ -671,7 +671,7 @@ AcpiUtFreeAndTrack (
 
     if (NULL == Allocation)
     {
-        _ACPI_REPORT_ERROR (Module, Line, Component,
+        _ACPI_REPORT_ERROR (Module, Line,
             ("AcpiUtFree: Attempt to delete a NULL address\n"));
 
         return_VOID;
@@ -860,7 +860,7 @@ AcpiUtRemoveAllocation (
     {
         /* No allocations! */
 
-        _ACPI_REPORT_ERROR (Module, Line, Component,
+        _ACPI_REPORT_ERROR (Module, Line,
             ("UtRemoveAllocation: Empty allocation list, nothing to free!\n"));
 
         return_ACPI_STATUS (AE_OK);

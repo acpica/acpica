@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -425,7 +425,7 @@ AcpiUtAllocateObjectDescDbg (
     Object = AcpiOsAcquireObject (AcpiGbl_OperandCache);
     if (!Object)
     {
-        _ACPI_REPORT_ERROR (ModuleName, LineNumber, ComponentId,
+        _ACPI_REPORT_ERROR (ModuleName, LineNumber,
             ("Could not allocate an object descriptor\n"));
 
         return_PTR (NULL);
