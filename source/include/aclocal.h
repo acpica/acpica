@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.219 $
+ *       $Revision: 1.220 $
  *
  *****************************************************************************/
 
@@ -764,7 +764,7 @@ typedef union acpi_parse_value
     char                        AmlOpName[16])  /* Op name (debug only) */\
                                                 /* NON-DEBUG members below: */\
     ACPI_NAMESPACE_NODE         *Node;          /* For use by interpreter */\
-    ACPI_PARSE_VALUE            Value;          /* Value or args associated with the opcode */\
+    ACPI_PARSE_VALUE            Value;          /* Value or args associated with the opcode */
 
 
 #define ACPI_DASM_BUFFER        0x00

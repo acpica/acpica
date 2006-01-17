@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.132 $
+ *       $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -589,7 +589,7 @@ typedef union acpi_operand_object
 
 typedef union acpi_descriptor
 {
-    UINT8                           DescriptorId;   /* To differentiate various internal objs */\
+    UINT8                           DescriptorId;   /* To differentiate various internal objs */
     ACPI_OPERAND_OBJECT             Object;
     ACPI_NAMESPACE_NODE             Node;
     ACPI_PARSE_OBJECT               Op;
