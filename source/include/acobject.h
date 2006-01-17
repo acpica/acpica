@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.131 $
+ *       $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -143,7 +143,7 @@
     UINT8                           Type;               /* ACPI_OBJECT_TYPE */\
     UINT16                          ReferenceCount;     /* For object deletion management */\
     union acpi_operand_object       *NextObject;        /* Objects linked to parent NS node */\
-    UINT8                           Flags; \
+    UINT8                           Flags;
 
 /* Values for flag byte above */
 
