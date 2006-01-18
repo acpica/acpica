@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.120 $
+ *       $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -222,6 +222,9 @@
 
 #elif defined(NETWARE)
 #include "acnetware.h"
+
+#elif defined(__sun)
+#include "acsolaris.h"
 
 #else
 
