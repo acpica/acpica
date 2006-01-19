@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  *****************************************************************************/
 
@@ -197,7 +197,7 @@ AcpiNsReportError (
         }
     }
 
-    AcpiOsPrintf ("Namespace lookup failure, %s\n",
+    AcpiOsPrintf (" Namespace lookup failure, %s\n",
         AcpiFormatException (LookupStatus));
 }
 
