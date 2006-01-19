@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  ******************************************************************************/
 
@@ -168,8 +168,11 @@ AcpiRsConvertAmlToResource (
 
     if (((ACPI_NATIVE_UINT) Resource) & 0x3)
     {
-        AcpiOsPrintf ("**** GET: Misaligned resource pointer: %p Type %2.2X Len %X\n",
-            Resource, Resource->Type, Resource->Length);
+        /* Each internal resource struct is expected to be 32-bit aligned */
+
+        ACPI_REPORT_WARNING ((
+            "Misaligned resource pointer (get): %p Type %2.2X Len %X\n",
+            Resource, Resource->Type, Resource->Length));
     }
 
     /* Extract the resource Length field (does not include header length) */
@@ -374,7 +377,8 @@ AcpiRsConvertAmlToResource (
                 break;
 
             default:
-                AcpiOsPrintf ("*** Invalid conversion sub-opcode\n");
+
+                ACPI_REPORT_ERROR (("Invalid conversion sub-opcode\n"));
                 return_ACPI_STATUS (AE_BAD_PARAMETER);
             }
             break;
@@ -382,7 +386,7 @@ AcpiRsConvertAmlToResource (
 
         default:
 
-            AcpiOsPrintf ("*** Invalid conversion opcode\n");
+            ACPI_REPORT_ERROR (("Invalid conversion opcode\n"));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
@@ -432,14 +436,6 @@ AcpiRsConvertResourceToAml (
 
     ACPI_FUNCTION_TRACE ("RsConvertResourceToAml");
 
-
-    /* Validate the Resource pointer, must be 32-bit aligned */
-
-    if (((ACPI_NATIVE_UINT) Resource) & 0x3)
-    {
-        AcpiOsPrintf ("**** SET: Misaligned resource pointer: %p Type %2.2X Len %X\n",
-            Resource, Resource->Type, Resource->Length);
-    }
 
     /*
      * First table entry must be ACPI_RSC_INITxxx and must contain the
@@ -607,7 +603,8 @@ AcpiRsConvertResourceToAml (
                 break;
 
             default:
-                AcpiOsPrintf ("*** Invalid conversion sub-opcode\n");
+
+                ACPI_REPORT_ERROR (("Invalid conversion sub-opcode\n"));
                 return_ACPI_STATUS (AE_BAD_PARAMETER);
             }
             break;
@@ -615,7 +612,7 @@ AcpiRsConvertResourceToAml (
 
         default:
 
-            AcpiOsPrintf ("*** Invalid conversion opcode\n");
+            ACPI_REPORT_ERROR (("Invalid conversion opcode\n"));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
