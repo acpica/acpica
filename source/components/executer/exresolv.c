@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.134 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -164,7 +164,7 @@ AcpiExResolveToValue (
 
     if (!StackPtr || !*StackPtr)
     {
-        ACPI_REPORT_ERROR (("Internal - null pointer\n"));
+        ACPI_ERROR ((AE_INFO, "Internal - null pointer"));
         return_ACPI_STATUS (AE_AML_NO_OPERAND);
     }
 
@@ -183,7 +183,7 @@ AcpiExResolveToValue (
 
         if (!*StackPtr)
         {
-            ACPI_REPORT_ERROR (("Internal - null pointer\n"));
+            ACPI_ERROR ((AE_INFO, "Internal - null pointer"));
             return_ACPI_STATUS (AE_AML_NO_OPERAND);
         }
     }
@@ -323,8 +323,8 @@ AcpiExResolveObjectToValue (
                      * A NULL object descriptor means an unitialized element of
                      * the package, can't dereference it
                      */
-                    ACPI_REPORT_ERROR ((
-                        "Attempt to deref an Index to NULL pkg element Idx=%p\n",
+                    ACPI_ERROR ((AE_INFO,
+                        "Attempt to deref an Index to NULL pkg element Idx=%p",
                         StackDesc));
                     Status = AE_AML_UNINITIALIZED_ELEMENT;
                 }
@@ -335,8 +335,8 @@ AcpiExResolveObjectToValue (
 
                 /* Invalid reference object */
 
-                ACPI_REPORT_ERROR ((
-                    "Unknown TargetType %X in Index/Reference obj %p\n",
+                ACPI_ERROR ((AE_INFO,
+                    "Unknown TargetType %X in Index/Reference obj %p",
                     StackDesc->Reference.TargetType, StackDesc));
                 Status = AE_AML_INTERNAL;
                 break;
@@ -363,8 +363,8 @@ AcpiExResolveObjectToValue (
 
         default:
 
-            ACPI_REPORT_ERROR ((
-                "Unknown Reference opcode %X (%s) in %p\n",
+            ACPI_ERROR ((AE_INFO,
+                "Unknown Reference opcode %X (%s) in %p",
                 Opcode, AcpiPsGetOpcodeName (Opcode), StackDesc));
             Status = AE_AML_INTERNAL;
             break;
@@ -490,8 +490,8 @@ AcpiExResolveMultiple (
 
             if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
             {
-                ACPI_REPORT_ERROR ((
-                    "Not a NS node %p [%s]\n",
+                ACPI_ERROR ((AE_INFO,
+                    "Not a NS node %p [%s]",
                     Node, AcpiUtGetDescriptorName (Node)));
                 return_ACPI_STATUS (AE_AML_INTERNAL);
             }
@@ -554,8 +554,8 @@ AcpiExResolveMultiple (
 
             if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
             {
-                ACPI_REPORT_ERROR ((
-                    "Not a NS node %p [%s]\n",
+                ACPI_ERROR ((AE_INFO,
+                    "Not a NS node %p [%s]",
                     Node, AcpiUtGetDescriptorName (Node)));
                return_ACPI_STATUS (AE_AML_INTERNAL);
             }
@@ -622,8 +622,8 @@ AcpiExResolveMultiple (
 
         default:
 
-            ACPI_REPORT_ERROR ((
-                "Unknown Reference subtype %X\n",
+            ACPI_ERROR ((AE_INFO,
+                "Unknown Reference subtype %X",
                 ObjDesc->Reference.Opcode));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }

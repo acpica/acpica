@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  ******************************************************************************/
 
@@ -170,8 +170,8 @@ AcpiRsConvertAmlToResource (
     {
         /* Each internal resource struct is expected to be 32-bit aligned */
 
-        ACPI_REPORT_WARNING ((
-            "Misaligned resource pointer (get): %p Type %2.2X Len %X\n",
+        ACPI_WARNING ((AE_INFO,
+            "Misaligned resource pointer (get): %p Type %2.2X Len %X",
             Resource, Resource->Type, Resource->Length));
     }
 
@@ -378,7 +378,7 @@ AcpiRsConvertAmlToResource (
 
             default:
 
-                ACPI_REPORT_ERROR (("Invalid conversion sub-opcode\n"));
+                ACPI_ERROR ((AE_INFO, "Invalid conversion sub-opcode"));
                 return_ACPI_STATUS (AE_BAD_PARAMETER);
             }
             break;
@@ -386,7 +386,7 @@ AcpiRsConvertAmlToResource (
 
         default:
 
-            ACPI_REPORT_ERROR (("Invalid conversion opcode\n"));
+            ACPI_ERROR ((AE_INFO, "Invalid conversion opcode"));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
@@ -604,7 +604,7 @@ AcpiRsConvertResourceToAml (
 
             default:
 
-                ACPI_REPORT_ERROR (("Invalid conversion sub-opcode\n"));
+                ACPI_ERROR ((AE_INFO, "Invalid conversion sub-opcode"));
                 return_ACPI_STATUS (AE_BAD_PARAMETER);
             }
             break;
@@ -612,7 +612,7 @@ AcpiRsConvertResourceToAml (
 
         default:
 
-            ACPI_REPORT_ERROR (("Invalid conversion opcode\n"));
+            ACPI_ERROR ((AE_INFO, "Invalid conversion opcode"));
             return_ACPI_STATUS (AE_BAD_PARAMETER);
         }
 
@@ -646,8 +646,8 @@ Exit:
          * polarity/trigger interrupts are allowed (ACPI spec, section
          * "IRQ Format"), so 0x00 and 0x09 are illegal.
          */
-        ACPI_REPORT_ERROR ((
-            "Invalid interrupt polarity/trigger in resource list, %X\n",
+        ACPI_ERROR ((AE_INFO,
+            "Invalid interrupt polarity/trigger in resource list, %X",
             Aml->Irq.Flags));
         return_ACPI_STATUS (AE_BAD_DATA);
     }
@@ -662,8 +662,8 @@ Exit:
 
     if (Resource->Data.Dma.Transfer == 0x03)
     {
-        ACPI_REPORT_ERROR ((
-            "Invalid DMA.Transfer preference (3)\n"));
+        ACPI_ERROR ((AE_INFO,
+            "Invalid DMA.Transfer preference (3)"));
         return_ACPI_STATUS (AE_BAD_DATA);
     }
 #endif

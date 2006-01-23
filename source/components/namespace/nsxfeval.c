@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -194,7 +194,7 @@ AcpiEvaluateObjectTyped (
     {
         /* Error because caller specifically asked for a return value */
 
-        ACPI_REPORT_ERROR (("No return value\n"));
+        ACPI_ERROR ((AE_INFO, "No return value"));
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
@@ -207,8 +207,8 @@ AcpiEvaluateObjectTyped (
 
     /* Return object type does not match requested type */
 
-    ACPI_REPORT_ERROR ((
-        "Incorrect return type [%s] requested [%s]\n",
+    ACPI_ERROR ((AE_INFO,
+        "Incorrect return type [%s] requested [%s]",
         AcpiUtGetTypeName (((ACPI_OBJECT *) ReturnBuffer->Pointer)->Type),
         AcpiUtGetTypeName (ReturnType)));
 
@@ -327,13 +327,13 @@ AcpiEvaluateObject (
          */
         if (!Pathname)
         {
-            ACPI_REPORT_ERROR ((
-                "Both Handle and Pathname are NULL\n"));
+            ACPI_ERROR ((AE_INFO,
+                "Both Handle and Pathname are NULL"));
         }
         else
         {
-            ACPI_REPORT_ERROR ((
-                "Handle is NULL and Pathname is relative\n"));
+            ACPI_ERROR ((AE_INFO,
+                "Handle is NULL and Pathname is relative"));
         }
 
         Status = AE_BAD_PARAMETER;

@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.146 $
+ *              $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -170,7 +170,7 @@ AcpiNsReportError (
     {
         /* There is a non-ascii character in the name */
 
-        AcpiOsPrintf ("[0x%4.4X] (NON-ASCII)\n",
+        AcpiOsPrintf ("[0x%4.4X] (NON-ASCII)",
             *(ACPI_CAST_PTR (UINT32, InternalName)));
     }
     else
@@ -357,7 +357,7 @@ AcpiNsGetType (
 
     if (!Node)
     {
-        ACPI_REPORT_WARNING (("Null Node parameter\n"));
+        ACPI_WARNING ((AE_INFO, "Null Node parameter"));
         return_UINT32 (ACPI_TYPE_ANY);
     }
 
@@ -389,7 +389,7 @@ AcpiNsLocal (
     {
         /* Type code out of range  */
 
-        ACPI_REPORT_WARNING (("Invalid Object Type %X\n", Type));
+        ACPI_WARNING ((AE_INFO, "Invalid Object Type %X", Type));
         return_UINT32 (ACPI_NS_NORMAL);
     }
 
@@ -806,7 +806,7 @@ AcpiNsExternalizeName (
      */
     if (RequiredLength > InternalNameLength)
     {
-        ACPI_REPORT_ERROR (("Invalid internal name\n"));
+        ACPI_ERROR ((AE_INFO, "Invalid internal name"));
         return_ACPI_STATUS (AE_BAD_PATHNAME);
     }
 
@@ -1012,7 +1012,7 @@ AcpiNsOpensScope (
     {
         /* type code out of range  */
 
-        ACPI_REPORT_WARNING (("Invalid Object Type %X\n", Type));
+        ACPI_WARNING ((AE_INFO, "Invalid Object Type %X", Type));
         return_UINT32 (ACPI_NS_NORMAL);
     }
 

@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -429,8 +429,8 @@ AfRecognizeTable (
     {
         /* Table failed verification, map all errors to BAD_DATA */
 
-        ACPI_REPORT_ERROR ((
-            "Invalid table header found in table named %s (Type %d)\n",
+        ACPI_ERROR ((AE_INFO,
+            "Invalid table header found in table named %s (Type %d)",
             AcpiGbl_TableData[TableType].Name, (UINT32) TableType));
 
         return_ACPI_STATUS (AE_BAD_DATA);
@@ -684,7 +684,7 @@ AfGetRsdt (void)
     {
         /* Table failed verification, map all errors to BAD_DATA */
 
-        ACPI_REPORT_ERROR (("Invalid RSDT table header\n"));
+        ACPI_ERROR ((AE_INFO, "Invalid RSDT table header"));
         return (AE_BAD_DATA);
     }
 
@@ -903,8 +903,7 @@ AfFindTable (
 
 ErrorExit:
 
-    ACPI_REPORT_ERROR (("Failure during ACPI Table initialization: %s\n",
-        AcpiFormatException (Status)));
+    ACPI_EXCEPTION ((AE_INFO, Status, "During ACPI Table initialization");
     return (Status);
 }
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.155 $
+ *              $Revision: 1.156 $
  *
  *****************************************************************************/
 
@@ -230,7 +230,7 @@ AcpiInstallFixedEventHandler (
     Status = AcpiEnableEvent (Event, 0);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_WARNING (("Could not enable fixed event %X\n", Event));
+        ACPI_WARNING ((AE_INFO, "Could not enable fixed event %X", Event));
 
         /* Remove the handler */
 
@@ -298,8 +298,8 @@ AcpiRemoveFixedEventHandler (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_REPORT_WARNING ((
-            "Could not write to fixed event enable register %X\n", Event));
+        ACPI_WARNING ((AE_INFO,
+            "Could not write to fixed event enable register %X", Event));
     }
     else
     {

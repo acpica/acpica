@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -220,7 +220,7 @@ AcpiExSystemDoStall (
          * (ACPI specifies 100 usec as max, but this gives some slack in
          * order to support existing BIOSs)
          */
-        ACPI_REPORT_ERROR (("Time parameter is too large (%d)\n",
+        ACPI_ERROR ((AE_INFO, "Time parameter is too large (%d)",
             HowLong));
         Status = AE_AML_OPERAND_VALUE;
     }

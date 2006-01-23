@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -942,7 +942,7 @@ AnMethodAnalysisWalkBegin (
              * Probably was an error in the method declaration,
              * no additional error here
              */
-            ACPI_REPORT_WARNING (("%p, No parent method\n", Op));
+            ACPI_WARNING ((AE_INFO, "%p, No parent method", Op));
             return (AE_ERROR);
         }
 
@@ -986,7 +986,7 @@ AnMethodAnalysisWalkBegin (
              * Probably was an error in the method declaration,
              * no additional error here
              */
-            ACPI_REPORT_WARNING (("%p, No parent method\n", Op));
+            ACPI_WARNING ((AE_INFO, "%p, No parent method", Op));
             return (AE_ERROR);
         }
 
@@ -1031,7 +1031,7 @@ AnMethodAnalysisWalkBegin (
              * Probably was an error in the method declaration,
              * no additional error here
              */
-            ACPI_REPORT_WARNING (("%p, No parent method\n", Op));
+            ACPI_WARNING ((AE_INFO, "%p, No parent method", Op));
             return (AE_ERROR);
         }
 

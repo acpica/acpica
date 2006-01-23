@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -633,8 +633,8 @@ AeRegionHandler (
     if (((ACPI_INTEGER) Address + ByteWidth) >
         ((ACPI_INTEGER)(RegionElement->Address) + RegionElement->Length))
     {
-        ACPI_REPORT_WARNING ((
-            "Request on [%4.4s] is beyond region limit Req-%X+%X, Base=%X, Len-%X\n",
+        ACPI_WARNING ((AE_INFO,
+            "Request on [%4.4s] is beyond region limit Req-%X+%X, Base=%X, Len-%X",
             (RegionObject->Region.Node)->Name.Ascii, (UINT32) Address,
             ByteWidth, (UINT32)(RegionElement->Address),
             RegionElement->Length));
@@ -948,10 +948,9 @@ AeInstallHandlers (void)
                         SpaceId[i], AeRegionHandler, AeRegionInit, NULL);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_REPORT_ERROR ((
-                "Could not install an OpRegion handler for %s space(%d), %s\n",
-                AcpiUtGetRegionName((UINT8) SpaceId[i]), SpaceId[i],
-                AcpiFormatException (Status)));
+            ACPI_EXCEPTION ((AE_INFO, Status,
+                "Could not install an OpRegion handler for %s space(%d)",
+                AcpiUtGetRegionName((UINT8) SpaceId[i]), SpaceId[i]));
             return (Status);
         }
     }
