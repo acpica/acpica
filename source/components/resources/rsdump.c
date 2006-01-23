@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsdump - Functions to display the resource structures.
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  ******************************************************************************/
 
@@ -759,7 +759,12 @@ AcpiRsOutString (
     char                    *Title,
     char                    *Value)
 {
-    AcpiOsPrintf ("%27s : %s\n", Title, Value);
+    AcpiOsPrintf ("%27s : %s", Title, Value);
+    if (!*Value)
+    {
+        AcpiOsPrintf ("[NULL NAMESTRING]");
+    }
+    AcpiOsPrintf ("\n");
 }
 
 static void
