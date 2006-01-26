@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.187 $
+ *       $Revision: 1.188 $
  *
  *****************************************************************************/
 
@@ -468,38 +468,16 @@ AcpiUtPtrExit (
     UINT8                   *Ptr);
 
 void
+AcpiUtDumpBuffer (
+    UINT8                   *Buffer,
+    UINT32                  Count,
+    UINT32                  Display,
+    UINT32                  componentId);
+
+void
 AcpiUtReportError (
     char                    *ModuleName,
     UINT32                  LineNumber);
-
-void ACPI_INTERNAL_VAR_XFACE
-AcpiUtError (
-    char                    *ModuleName,
-    UINT32                  LineNumber,
-    char                    *Format,
-    ...) ACPI_PRINTF_LIKE_FUNC;
-
-void  ACPI_INTERNAL_VAR_XFACE
-AcpiUtException (
-    char                    *ModuleName,
-    UINT32                  LineNumber,
-    ACPI_STATUS             Status,
-    char                    *Format,
-    ...) ACPI_PRINTF_LIKE_FUNC;
-
-void ACPI_INTERNAL_VAR_XFACE
-AcpiUtWarning (
-    char                    *ModuleName,
-    UINT32                  LineNumber,
-    char                    *Format,
-    ...) ACPI_PRINTF_LIKE_FUNC;
-
-void ACPI_INTERNAL_VAR_XFACE
-AcpiUtInfo (
-    char                    *ModuleName,
-    UINT32                  LineNumber,
-    char                    *Format,
-    ...) ACPI_PRINTF_LIKE_FUNC;
 
 void
 AcpiUtReportInfo (
@@ -511,12 +489,7 @@ AcpiUtReportWarning (
     char                    *ModuleName,
     UINT32                  LineNumber);
 
-void
-AcpiUtDumpBuffer (
-    UINT8                   *Buffer,
-    UINT32                  Count,
-    UINT32                  Display,
-    UINT32                  componentId);
+/* Error and message reporting interfaces */
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrint (
@@ -526,7 +499,7 @@ AcpiUtDebugPrint (
     char                    *ModuleName,
     UINT32                  ComponentId,
     char                    *Format,
-    ...) ACPI_PRINTF_LIKE_FUNC;
+    ...) ACPI_PRINTF_LIKE(6);
 
 void ACPI_INTERNAL_VAR_XFACE
 AcpiUtDebugPrintRaw (
@@ -536,7 +509,36 @@ AcpiUtDebugPrintRaw (
     char                    *ModuleName,
     UINT32                  ComponentId,
     char                    *Format,
-    ...) ACPI_PRINTF_LIKE_FUNC;
+    ...) ACPI_PRINTF_LIKE(6);
+
+void ACPI_INTERNAL_VAR_XFACE
+AcpiUtError (
+    char                    *ModuleName,
+    UINT32                  LineNumber,
+    char                    *Format,
+    ...) ACPI_PRINTF_LIKE(3);
+
+void  ACPI_INTERNAL_VAR_XFACE
+AcpiUtException (
+    char                    *ModuleName,
+    UINT32                  LineNumber,
+    ACPI_STATUS             Status,
+    char                    *Format,
+    ...) ACPI_PRINTF_LIKE(4);
+
+void ACPI_INTERNAL_VAR_XFACE
+AcpiUtWarning (
+    char                    *ModuleName,
+    UINT32                  LineNumber,
+    char                    *Format,
+    ...) ACPI_PRINTF_LIKE(3);
+
+void ACPI_INTERNAL_VAR_XFACE
+AcpiUtInfo (
+    char                    *ModuleName,
+    UINT32                  LineNumber,
+    char                    *Format,
+    ...) ACPI_PRINTF_LIKE(3);
 
 
 /*
