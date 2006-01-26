@@ -669,7 +669,7 @@ AcpiOsDeleteLock (
 }
 
 
-ACPI_NATIVE_UINT
+ACPI_CPU_FLAGS
 AcpiOsAcquireLock (
     ACPI_HANDLE             Handle)
 {
@@ -681,7 +681,7 @@ AcpiOsAcquireLock (
 void
 AcpiOsReleaseLock (
     ACPI_HANDLE             Handle,
-    ACPI_NATIVE_UINT        Flags)
+    ACPI_CPU_FLAGS          Flags)
 {
     AcpiOsSignalSemaphore (Handle, 1);
 }

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -1093,7 +1093,7 @@ AcpiOsDeleteLock (
 }
 
 
-ACPI_NATIVE_UINT
+ACPI_CPU_FLAGS
 AcpiOsAcquireLock (
     ACPI_HANDLE             Handle)
 {
@@ -1105,7 +1105,7 @@ AcpiOsAcquireLock (
 void
 AcpiOsReleaseLock (
     ACPI_HANDLE             Handle,
-    ACPI_NATIVE_UINT        Flags)
+    ACPI_CPU_FLAGS          Flags)
 {
     AcpiOsSignalSemaphore (Handle, 1);
 }
