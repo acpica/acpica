@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.176 $
+ *       $Revision: 1.177 $
  *
  *****************************************************************************/
 
@@ -549,21 +549,21 @@
  * the plist contains a set of parens to allow variable-length lists.
  * These macros are used for both the debug and non-debug versions of the code.
  */
-#define ACPI_INFO(plist)                AcpiUtInfo ##plist
-#define ACPI_WARNING(plist)             AcpiUtWarning ##plist
-#define ACPI_EXCEPTION(plist)           AcpiUtException ##plist
-#define ACPI_ERROR(plist)               AcpiUtError ##plist
+#define ACPI_INFO(plist)                AcpiUtInfo plist
+#define ACPI_WARNING(plist)             AcpiUtWarning plist
+#define ACPI_EXCEPTION(plist)           AcpiUtException plist
+#define ACPI_ERROR(plist)               AcpiUtError plist
 #define ACPI_ERROR_NAMESPACE(s,e)       AcpiNsReportError (AE_INFO, s, e);
 #define ACPI_ERROR_METHOD(s,n,p,e)      AcpiNsReportMethodError (AE_INFO, s, n, p, e);
 
 /* Legacy interfaces. Remove when migration is complete */
 
 #define ACPI_REPORT_INFO(fp)            {AcpiUtReportInfo (AE_INFO); \
-                                            AcpiOsPrintf ##fp;}
+                                            AcpiOsPrintf fp;}
 #define ACPI_REPORT_ERROR(fp)           {AcpiUtReportError (AE_INFO); \
-                                            AcpiOsPrintf ##fp;}
+                                            AcpiOsPrintf fp;}
 #define ACPI_REPORT_WARNING(fp)         {AcpiUtReportWarning (AE_INFO); \
-                                            AcpiOsPrintf ##fp;}
+                                            AcpiOsPrintf fp;}
 #else
 
 /* No error messages */
