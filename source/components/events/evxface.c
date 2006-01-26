@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.156 $
+ *              $Revision: 1.157 $
  *
  *****************************************************************************/
 
@@ -677,7 +677,7 @@ AcpiInstallGpeHandler (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
     ACPI_HANDLER_INFO       *Handler;
     ACPI_STATUS             Status;
-    ACPI_NATIVE_UINT        Flags;
+    ACPI_CPU_FLAGS          Flags;
 
 
     ACPI_FUNCTION_TRACE ("AcpiInstallGpeHandler");
@@ -777,7 +777,7 @@ AcpiRemoveGpeHandler (
     ACPI_GPE_EVENT_INFO     *GpeEventInfo;
     ACPI_HANDLER_INFO       *Handler;
     ACPI_STATUS             Status;
-    ACPI_NATIVE_UINT        Flags;
+    ACPI_CPU_FLAGS          Flags;
 
 
     ACPI_FUNCTION_TRACE ("AcpiRemoveGpeHandler");

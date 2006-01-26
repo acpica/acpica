@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -488,7 +488,7 @@ AcpiEvGpeDetect (
     UINT8                   EnabledStatusByte;
     UINT32                  StatusReg;
     UINT32                  EnableReg;
-    ACPI_NATIVE_UINT        Flags;
+    ACPI_CPU_FLAGS          Flags;
     ACPI_NATIVE_UINT        i;
     ACPI_NATIVE_UINT        j;
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.299 $
+ *       $Revision: 1.300 $
  *
  *****************************************************************************/
 
@@ -320,17 +320,23 @@ typedef char                            *ACPI_PHYSICAL_ADDRESS;
 #endif
 
 
+/* Variable-width type, used instead of clib size_t */
+
+typedef ACPI_NATIVE_UINT                ACPI_SIZE;
+
+
 /*******************************************************************************
  *
  * OS- or compiler-dependent types
  *
+ * If the defaults below are not appropriate for the host system, they can 
+ * be defined in the compiler-specific or OS-specific header, and this will
+ * take precedence.
+ *
  ******************************************************************************/
 
-/*
- * If ACPI_UINTPTR_T was not defined in the OS- or compiler-dependent header,
- * define it now (use C99 uintptr_t for pointer casting if available,
- * "void *" otherwise)
- */
+/* Use C99 uintptr_t for pointer casting if available, "void *" otherwise */
+
 #ifndef ACPI_UINTPTR_T
 #define ACPI_UINTPTR_T                  void *
 #endif
@@ -345,6 +351,14 @@ typedef char                            *ACPI_PHYSICAL_ADDRESS;
 #endif
 
 /*
+ * Allow the CPU flags word to be defined per-OS to simplify the use of the
+ * lock and unlock OSL interfaces.
+ */
+#ifndef ACPI_CPU_FLAGS
+#define ACPI_CPU_FLAGS                  ACPI_NATIVE_UINT
+#endif
+
+/*
  * ACPI_PRINTF_LIKE is used to tag functions as "printf-like" because
  * some compilers can catch printf format string problems
  */
@@ -352,7 +366,8 @@ typedef char                            *ACPI_PHYSICAL_ADDRESS;
 #define ACPI_PRINTF_LIKE(c)
 #endif
 
-/* Some compilers complain about unused variables. Sometimes we don't want to
+/*
+ * Some compilers complain about unused variables. Sometimes we don't want to
  * use all the variables (for example, _AcpiModuleName). This allows us
  * to to tell the compiler in a per-variable manner that a variable
  * is unused
@@ -360,11 +375,6 @@ typedef char                            *ACPI_PHYSICAL_ADDRESS;
 #ifndef ACPI_UNUSED_VAR
 #define ACPI_UNUSED_VAR
 #endif
-
-
-/* Variable-width type, used instead of clib size_t */
-
-typedef ACPI_NATIVE_UINT                ACPI_SIZE;
 
 
 /*******************************************************************************
