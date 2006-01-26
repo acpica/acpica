@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -814,9 +814,6 @@ AnMethodAnalysisWalkBegin (
     ACPI_PARSE_OBJECT       *NextType;
     ACPI_PARSE_OBJECT       *NextParamType;
     UINT8                   ActualArgs = 0;
-
-
-    ACPI_FUNCTION_NAME ("AnMethodAnalysisWalkBegin");
 
 
     switch (Op->Asl.ParseOpcode)
