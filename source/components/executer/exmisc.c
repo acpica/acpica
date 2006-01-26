@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.139 $
+ *              $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -262,10 +262,12 @@ AcpiExConcatTemplate (
 
     /*
      * Find the EndTag descriptor in each resource template.
-     * Note: returned pointers point TO the EndTag, not past it.
-     *
-     * Compute the length of each resource template
+     * Note1: returned pointers point TO the EndTag, not past it.
+     * Note2: zero-length buffers are allowed; treated like one EndTag
      */
+
+    /* Get the length of the first resource template */
+
     Status = AcpiUtGetResourceEndTag (Operand0, &EndTag);
     if (ACPI_FAILURE (Status))
     {
@@ -274,20 +276,20 @@ AcpiExConcatTemplate (
 
     Length0 = ACPI_PTR_DIFF (EndTag, Operand0->Buffer.Pointer);
 
+    /* Get the length of the second resource template */
+
     Status = AcpiUtGetResourceEndTag (Operand1, &EndTag);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    /* Include the EndTag in the second template length */
+    Length1 = ACPI_PTR_DIFF (EndTag, Operand1->Buffer.Pointer);
 
-    Length1 = ACPI_PTR_DIFF (EndTag, Operand1->Buffer.Pointer) +
-                sizeof (AML_RESOURCE_END_TAG);
+    /* Create a new buffer object for the result (with one EndTag) */
 
-    /* Create a new buffer object for the result */
-
-    ReturnDesc = AcpiUtCreateBufferObject (Length0 + Length1);
+    ReturnDesc = AcpiUtCreateBufferObject (
+                    Length0 + Length1 + sizeof (AML_RESOURCE_END_TAG));
     if (!ReturnDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -301,8 +303,9 @@ AcpiExConcatTemplate (
     ACPI_MEMCPY (NewBuf, Operand0->Buffer.Pointer, Length0);
     ACPI_MEMCPY (NewBuf + Length0, Operand1->Buffer.Pointer, Length1);
 
-    /* Set the EndTag checksum to zero, means "ignore checksum" */
+    /* Insert EndTag and set the checksum to zero, means "ignore checksum" */
 
+    NewBuf[ReturnDesc->Buffer.Length - 2] = ACPI_RESOURCE_NAME_END_TAG;
     NewBuf[ReturnDesc->Buffer.Length - 1] = 0;
 
     /* Return the completed resource template */
