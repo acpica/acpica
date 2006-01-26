@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acintel.h - VC specific defines, etc.
- *       $Revision: 1.15 $
+ *       $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -163,17 +163,5 @@
 /* warn C4214: bit field types other than int */
 #pragma warning(disable:4214)
 
-/* This macro is used to tag functions as "printf-like" because
- * some compilers can catch printf format string problems. MSVC
- * doesn't, so this is proprocessed away.
- */
-#define ACPI_PRINTF_LIKE_FUNC
-
-/* Some compilers complain about unused variables. Sometimes we don't want to
- * use all the variables (for example, _AcpiModuleName). This allows us
- * to to tell the compiler warning in a per-variable manner that a variable
- * is unused. However, MSVC doesn't do this.
- */
-#define ACPI_UNUSED_VAR
 
 #endif /* __ACINTEL_H__ */
