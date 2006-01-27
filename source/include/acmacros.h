@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.177 $
+ *       $Revision: 1.178 $
  *
  *****************************************************************************/
 
@@ -723,8 +723,8 @@
  *    1) Debug print for the current component is enabled
  *    2) Debug error level or trace level for the print statement is enabled
  */
-#define ACPI_DEBUG_PRINT(pl)            AcpiUtDebugPrint ##pl
-#define ACPI_DEBUG_PRINT_RAW(pl)        AcpiUtDebugPrintRaw ##pl
+#define ACPI_DEBUG_PRINT(plist)         AcpiUtDebugPrint plist
+#define ACPI_DEBUG_PRINT_RAW(plist)     AcpiUtDebugPrintRaw plist
 
 
 #else
