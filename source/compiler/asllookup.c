@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -808,8 +808,8 @@ LkNamespaceLocateBegin (
     OptOptimizeNamePath (Op, OpInfo->Flags, WalkState, Path, Node);
 
     /*
-     * Dereference an alias. (A name reference that is an alias.)
-     * Aliases are not nested;  The alias always points to the final object
+     * 1) Dereference an alias (A name reference that is an alias)
+     *    Aliases are not nested, the alias always points to the final object
      */
     if ((Op->Asl.ParseOpcode != PARSEOP_ALIAS) &&
         (Node->Type == ACPI_TYPE_LOCAL_ALIAS))
@@ -822,22 +822,19 @@ LkNamespaceLocateBegin (
 
         NextOp = NextOp->Asl.Child;
 
-        /* Who in turn points back to original target alias node */
+        /* That in turn points back to original target alias node */
 
         if (NextOp->Asl.Node)
         {
             Node = NextOp->Asl.Node;
         }
-        else
-        {
-            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op,
-                "Missing alias link");
-        }
+
+        /* Else - forward reference to alias, will be resolved later */
     }
 
-    /* 1) Check for a reference to a resource descriptor */
+    /* 2) Check for a reference to a resource descriptor */
 
-    else if ((Node->Type == ACPI_TYPE_LOCAL_RESOURCE_FIELD) ||
+    if ((Node->Type == ACPI_TYPE_LOCAL_RESOURCE_FIELD) ||
              (Node->Type == ACPI_TYPE_LOCAL_RESOURCE))
     {
         /*
@@ -910,7 +907,7 @@ LkNamespaceLocateBegin (
         OpcGenerateAmlOpcode (Op);
     }
 
-    /* 2) Check for a method invocation */
+    /* 3) Check for a method invocation */
 
     else if ((((Op->Asl.ParseOpcode == PARSEOP_NAMESTRING) || (Op->Asl.ParseOpcode == PARSEOP_NAMESEG)) &&
                 (Node->Type == ACPI_TYPE_METHOD) &&
@@ -996,7 +993,7 @@ LkNamespaceLocateBegin (
         }
     }
 
-    /* 3) Check for an ASL Field definition */
+    /* 4) Check for an ASL Field definition */
 
     else if ((Op->Asl.Parent) &&
             ((Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_FIELD)     ||
