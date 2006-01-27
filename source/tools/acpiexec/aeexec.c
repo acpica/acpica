@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -898,7 +898,7 @@ AeInstallHandlers (void)
             AcpiFormatException (Status));
     }
 
-    Status = AcpiGetHandle (NULL, "\\_SB_", &Handle);
+    Status = AcpiGetHandle (NULL, "_SB", &Handle);
     if (ACPI_SUCCESS (Status))
     {
         Status = AcpiInstallNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
@@ -928,7 +928,10 @@ AeInstallHandlers (void)
             printf ("Could not install a notify handler, %s\n",
                 AcpiFormatException (Status));
         }
-
+    }
+    else
+    {
+        printf ("No _SB_ found, %s\n", AcpiFormatException (Status));
     }
 
     for (i = 0; i < AEXEC_NUM_REGIONS; i++)
