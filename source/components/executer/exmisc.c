@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -255,6 +255,7 @@ AcpiExConcatTemplate (
     UINT8                   *EndTag;
     ACPI_SIZE               Length0;
     ACPI_SIZE               Length1;
+    ACPI_SIZE               NewLength;
 
 
     ACPI_FUNCTION_TRACE ("ExConcatTemplate");
@@ -286,10 +287,13 @@ AcpiExConcatTemplate (
 
     Length1 = ACPI_PTR_DIFF (EndTag, Operand1->Buffer.Pointer);
 
+    /* Combine both lengths, minimum size will be 2 for EndTag */
+
+    NewLength = Length0 + Length1 + sizeof (AML_RESOURCE_END_TAG);
+
     /* Create a new buffer object for the result (with one EndTag) */
 
-    ReturnDesc = AcpiUtCreateBufferObject (
-                    Length0 + Length1 + sizeof (AML_RESOURCE_END_TAG));
+    ReturnDesc = AcpiUtCreateBufferObject (NewLength);
     if (!ReturnDesc)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -305,8 +309,8 @@ AcpiExConcatTemplate (
 
     /* Insert EndTag and set the checksum to zero, means "ignore checksum" */
 
-    NewBuf[ReturnDesc->Buffer.Length - 2] = ACPI_RESOURCE_NAME_END_TAG;
-    NewBuf[ReturnDesc->Buffer.Length - 1] = 0;
+    NewBuf[NewLength - 1] = 0;
+    NewBuf[NewLength - 2] = ACPI_RESOURCE_NAME_END_TAG | 1;
 
     /* Return the completed resource template */
 
