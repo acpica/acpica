@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  ******************************************************************************/
 
@@ -333,7 +333,7 @@ AcpiEvaluateObject (
         else
         {
             ACPI_ERROR ((AE_INFO,
-                "Handle is NULL and Pathname is relative"));
+                "Null Handle with relative pathname [%s]", Pathname));
         }
 
         Status = AE_BAD_PARAMETER;
