@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  ******************************************************************************/
 
@@ -258,7 +258,7 @@ AcpiRsStreamOptionLength (
 
     /* Round up length to 32 bits for internal structure alignment */
 
-    return (ACPI_ROUND_UP_TO_32BITS (StringLength));
+    return ((UINT32) ACPI_ROUND_UP_TO_32BITS (StringLength));
 }
 
 
@@ -500,7 +500,7 @@ AcpiRsGetListLength (
              * Vendor Resource:
              * Ensure a 32-bit boundary for the structure
              */
-            ExtraStructBytes =
+            ExtraStructBytes = (UINT32)
                 ACPI_ROUND_UP_TO_32BITS (ResourceLength) - ResourceLength;
             break;
 
@@ -518,7 +518,7 @@ AcpiRsGetListLength (
              * Vendor Resource:
              * Add vendor data and ensure a 32-bit boundary for the structure
              */
-            ExtraStructBytes =
+            ExtraStructBytes = (UINT32)
                 ACPI_ROUND_UP_TO_32BITS (ResourceLength) - ResourceLength;
             break;
 
@@ -542,7 +542,7 @@ AcpiRsGetListLength (
              */
             Buffer++;
 
-            ExtraStructBytes =
+            ExtraStructBytes = (UINT32)
                 /*
                  * Add 4 bytes for each additional interrupt. Note: at
                  * least one interrupt is required and is included in
@@ -563,7 +563,7 @@ AcpiRsGetListLength (
              * Add the size of any optional data (ResourceSource)
              * Ensure a 64-bit boundary for the structure
              */
-            ExtraStructBytes =
+            ExtraStructBytes = (UINT32)
                 ACPI_ROUND_UP_TO_64BITS (AcpiRsStreamOptionLength (
                     ResourceLength, MinimumAmlResourceLength));
             break;
