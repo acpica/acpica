@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  ******************************************************************************/
 
@@ -665,7 +665,7 @@ AcpiDmDescendingOp (
 
             default:
 
-                AcpiOsPrintf ("*** Unhandled named opcode\n");
+                AcpiOsPrintf ("*** Unhandled named opcode %X\n", Op->Common.AmlOpcode);
                 break;
             }
         }
@@ -689,23 +689,30 @@ AcpiDmDescendingOp (
             {
             case AML_BANK_FIELD_OP:
 
-                /* Namestring */
+                /* Namestring - Bank Name */
 
                 NextOp = AcpiPsGetDepthNext (NULL, NextOp);
                 AcpiDmNamestring (NextOp->Common.Value.Name);
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 AcpiOsPrintf (", ");
 
-
+                /*
+                 * Bank Value. This is a TermArg in the middle of the parameter
+                 * list, must handle it here.
+                 *
+                 * Temp fix: Call Disassemble on the TermArg. Produces an extra
+                 * linefeed, but it creates correct code.
+                 */
                 NextOp = NextOp->Common.Next;
-                AcpiDmDisassembleOneOp (NULL, Info, NextOp);
+                AcpiDmDisassemble (Info->WalkState, NextOp, 0);
+
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 AcpiOsPrintf (", ");
                 break;
 
             case AML_INDEX_FIELD_OP:
 
-                /* Namestring */
+                /* Namestring - Data Name */
 
                 NextOp = AcpiPsGetDepthNext (NULL, NextOp);
                 AcpiDmNamestring (NextOp->Common.Value.Name);
