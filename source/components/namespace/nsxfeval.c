@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -303,7 +303,6 @@ AcpiEvaluateObject (
         Info.Parameters[ExternalParams->Count] = NULL;
     }
 
-
     /*
      * Three major cases:
      * 1) Fully qualified pathname
@@ -313,9 +312,8 @@ AcpiEvaluateObject (
     if ((Pathname) &&
         (AcpiNsValidRootPrefix (Pathname[0])))
     {
-        /*
-         *  The path is fully qualified, just evaluate by name
-         */
+        /* The path is fully qualified, just evaluate by name */
+
         Status = AcpiNsEvaluateByName (Pathname, &Info);
     }
     else if (!Handle)
@@ -327,12 +325,12 @@ AcpiEvaluateObject (
          */
         if (!Pathname)
         {
-            ACPI_ERROR ((AE_INFO,
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                 "Both Handle and Pathname are NULL"));
         }
         else
         {
-            ACPI_ERROR ((AE_INFO,
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                 "Null Handle with relative pathname [%s]", Pathname));
         }
 
@@ -355,9 +353,8 @@ AcpiEvaluateObject (
         }
         else
         {
-           /*
-            * Both a Handle and a relative Pathname
-            */
+            /* Both a Handle and a relative Pathname */
+
             Status = AcpiNsEvaluateRelative (Pathname, &Info);
         }
     }
@@ -407,7 +404,8 @@ AcpiEvaluateObject (
                     if (ACPI_FAILURE (Status))
                     {
                         /*
-                         * Caller's buffer is too small or a new one can't be allocated
+                         * Caller's buffer is too small or a new one can't
+                         * be allocated
                          */
                         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                             "Needed buffer size %X, %s\n",
@@ -416,9 +414,8 @@ AcpiEvaluateObject (
                     }
                     else
                     {
-                        /*
-                         *  We have enough space for the object, build it
-                         */
+                        /* We have enough space for the object, build it */
+
                         Status = AcpiUtCopyIobjectToEobject (Info.ReturnObject,
                                         ReturnBuffer);
                     }
@@ -445,9 +442,8 @@ AcpiEvaluateObject (
         }
     }
 
-    /*
-     * Free the input parameter list (if we created one),
-     */
+    /* Free the input parameter list (if we created one) */
+
     if (Info.Parameters)
     {
         /* Free the allocated parameter block */
@@ -696,9 +692,9 @@ AcpiGetDevices (
      * We're going to call their callback from OUR callback, so we need
      * to know what it is, and their context parameter.
      */
+    Info.Hid          = HID;
     Info.Context      = Context;
     Info.UserFunction = UserFunction;
-    Info.Hid          = HID;
 
     /*
      * Lock the namespace around the walk.
@@ -712,11 +708,9 @@ AcpiGetDevices (
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE,
-                                    ACPI_ROOT_OBJECT, ACPI_UINT32_MAX,
-                                    ACPI_NS_WALK_UNLOCK,
-                                    AcpiNsGetDeviceCallback, &Info,
-                                    ReturnValue);
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
+                ACPI_UINT32_MAX, ACPI_NS_WALK_UNLOCK,
+                AcpiNsGetDeviceCallback, &Info, ReturnValue);
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
