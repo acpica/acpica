@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -629,6 +629,7 @@ AsBracesOnSameLine (
     char                    *SubBuffer = Buffer;
     char                    *Beginning;
     char                    *StartOfThisLine;
+    char                    *Next;
     BOOLEAN                 BlockBegin = TRUE;
 
 
@@ -705,7 +706,6 @@ AsBracesOnSameLine (
                  * 1) There is a conditional compile on the line (starts with '#')
                  * 2) Previous line ends with an '=' (Start of initializer block)
                  * 3) Previous line ends with a comma (part of an init list)
-                 *
                  */
                 if ((StartOfThisLine[1] != '#') &&
                     (*Beginning != '/') &&
@@ -720,9 +720,40 @@ AsBracesOnSameLine (
                     Gbl_MadeChanges = TRUE;
 
 #ifdef ADD_EXTRA_WHITESPACE
-                    AsReplaceData (Beginning, SubBuffer-Beginning, " {\n", 3);
+                    AsReplaceData (Beginning, SubBuffer - Beginning, " {\n", 3);
 #else
-                    AsReplaceData (Beginning, SubBuffer-Beginning, " {", 2);
+                    /* Find non-whitespace start of next line */
+
+                    Next = SubBuffer + 1;
+                    while ((*Next == ' ')   ||
+                           (*Next == '\t'))
+                    {
+                        Next++;
+                    }
+
+                    /* Find non-whitespace start of this line */
+
+                    StartOfThisLine++;
+                    while ((*StartOfThisLine == ' ')   ||
+                           (*StartOfThisLine == '\t'))
+                    {
+                        StartOfThisLine++;
+                    }
+
+                    /*
+                     * Must be a single-line comment to need more whitespace
+                     * Even then, we don't need more if the previous statement
+                     * is an "else".
+                     */
+                    if ((Next[0] == '/') && (Next[1] == '*') && (Next[2] != '\n') &&
+                        strncmp (StartOfThisLine, "else", 4))
+                    {
+                        AsReplaceData (Beginning, SubBuffer - Beginning, " {\n", 3);
+                    }
+                    else
+                    {
+                        AsReplaceData (Beginning, SubBuffer - Beginning, " {", 2);
+                    }
 #endif
                 }
             }
