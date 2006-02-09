@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.175 $
+ *              $Revision: 1.176 $
  *
  *****************************************************************************/
 
@@ -927,7 +927,24 @@ AcpiExOpcode_1A_0T_1R (
 
         /* Check for a method local or argument, or standalone String */
 
-        if (ACPI_GET_DESCRIPTOR_TYPE (Operand[0]) != ACPI_DESC_TYPE_NAMED)
+        if (ACPI_GET_DESCRIPTOR_TYPE (Operand[0]) == ACPI_DESC_TYPE_NAMED)
+        {
+            TempDesc = AcpiNsGetAttachedObject (
+                           (ACPI_NAMESPACE_NODE *) Operand[0]);
+            if (TempDesc &&
+                 ((ACPI_GET_OBJECT_TYPE (TempDesc) == ACPI_TYPE_STRING) ||
+                  (ACPI_GET_OBJECT_TYPE (TempDesc) == ACPI_TYPE_LOCAL_REFERENCE)))
+            {
+                Operand[0] = TempDesc;
+                AcpiUtAddReference (TempDesc);
+            }
+            else
+            {
+                Status = AE_AML_OPERAND_TYPE;
+                goto Cleanup;
+            }
+        }
+        else
         {
             switch (ACPI_GET_OBJECT_TYPE (Operand[0]))
             {
@@ -977,15 +994,25 @@ AcpiExOpcode_1A_0T_1R (
                 }
                 break;
 
-
             case ACPI_TYPE_STRING:
+                break;
 
+            default:
+                Status = AE_AML_OPERAND_TYPE;
+                goto Cleanup;
+            }
+        }
+
+        if (ACPI_GET_DESCRIPTOR_TYPE (Operand[0]) != ACPI_DESC_TYPE_NAMED)
+        {
+            if (ACPI_GET_OBJECT_TYPE (Operand[0]) == ACPI_TYPE_STRING)
+            {
                 /*
-                 * This is a DerefOf (String).  The string is a reference
+                 * This is a DerefOf (String). The string is a reference
                  * to a named ACPI object.
                  *
                  * 1) Find the owning Node
-                 * 2) Dereference the node to an actual object.  Could be a
+                 * 2) Dereference the node to an actual object. Could be a
                  *    Field, so we need to resolve the node to a value.
                  */
                 Status = AcpiNsGetNodeByPath (Operand[0]->String.Pointer,
@@ -999,15 +1026,9 @@ AcpiExOpcode_1A_0T_1R (
                 }
 
                 Status = AcpiExResolveNodeToValue (
-                                ACPI_CAST_INDIRECT_PTR (
-                                    ACPI_NAMESPACE_NODE, &ReturnDesc),
-                                WalkState);
-                goto Cleanup;
-
-
-            default:
-
-                Status = AE_AML_OPERAND_TYPE;
+                            ACPI_CAST_INDIRECT_PTR (
+                                ACPI_NAMESPACE_NODE, &ReturnDesc),
+                            WalkState);
                 goto Cleanup;
             }
         }
