@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.135 $
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -481,10 +481,18 @@ AcpiExResolveMultiple (
         switch (ObjDesc->Reference.Opcode)
         {
         case AML_REF_OF_OP:
+        case AML_INT_NAMEPATH_OP:
 
             /* Dereference the reference pointer */
 
-            Node = ObjDesc->Reference.Object;
+            if (ObjDesc->Reference.Opcode == AML_REF_OF_OP)
+            {
+                Node = ObjDesc->Reference.Object;
+            }
+            else /* AML_INT_NAMEPATH_OP */
+            {
+                Node = ObjDesc->Reference.Node;
+            }
 
             /* All "References" point to a NS node */
 
@@ -540,42 +548,6 @@ AcpiExResolveMultiple (
 
                 Type = 0; /* Uninitialized */
                 goto Exit;
-            }
-            break;
-
-
-        case AML_INT_NAMEPATH_OP:
-
-            /* Dereference the reference pointer */
-
-            Node = ObjDesc->Reference.Node;
-
-            /* All "References" point to a NS node */
-
-            if (ACPI_GET_DESCRIPTOR_TYPE (Node) != ACPI_DESC_TYPE_NAMED)
-            {
-                ACPI_ERROR ((AE_INFO,
-                    "Not a NS node %p [%s]",
-                    Node, AcpiUtGetDescriptorName (Node)));
-               return_ACPI_STATUS (AE_AML_INTERNAL);
-            }
-
-            /* Get the attached object */
-
-            ObjDesc = AcpiNsGetAttachedObject (Node);
-            if (!ObjDesc)
-            {
-                /* No object, use the NS node type */
-
-                Type = AcpiNsGetType (Node);
-                goto Exit;
-            }
-
-            /* Check for circular references */
-
-            if (ObjDesc == Operand)
-            {
-                return_ACPI_STATUS (AE_AML_CIRCULAR_REFERENCE);
             }
             break;
 
