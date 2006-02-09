@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.135 $
+ *              $Revision: 1.136 $
  *
  ******************************************************************************/
 
@@ -1000,37 +1000,6 @@ AcpiUtWalkPackageTree (
     /* We should never get here */
 
     return_ACPI_STATUS (AE_AML_INTERNAL);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiUtGenerateChecksum
- *
- * PARAMETERS:  Buffer          - Buffer to be scanned
- *              Length          - number of bytes to examine
- *
- * RETURN:      The generated checksum
- *
- * DESCRIPTION: Generate a checksum on a raw buffer
- *
- ******************************************************************************/
-
-UINT8
-AcpiUtGenerateChecksum (
-    UINT8                   *Buffer,
-    UINT32                  Length)
-{
-    UINT32                  i;
-    signed char             Sum = 0;
-
-
-    for (i = 0; i < Length; i++)
-    {
-        Sum = (signed char) (Sum + Buffer[i]);
-    }
-
-    return ((UINT8) (0 - Sum));
 }
 
 
