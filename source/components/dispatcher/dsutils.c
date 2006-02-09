@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  ******************************************************************************/
 
@@ -620,7 +620,7 @@ AcpiDsCreateOperand (
          */
         if ((WalkState->DeferredNode) &&
             (WalkState->DeferredNode->Type == ACPI_TYPE_BUFFER_FIELD) &&
-            (ArgIndex != 0))
+            (ArgIndex == (UINT32) ((WalkState->Opcode == AML_CREATE_FIELD_OP) ? 3 : 2)))
         {
             ObjDesc = ACPI_CAST_PTR (
                         ACPI_OPERAND_OBJECT, WalkState->DeferredNode);
