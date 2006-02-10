@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  ******************************************************************************/
 
@@ -186,6 +186,7 @@ AcpiDmDisassemble (
         return;
     }
 
+    Info.Flags = 0;
     Info.Level = 0;
     Info.WalkState = WalkState;
     AcpiDmWalkParseTree (Op, AcpiDmDescendingOp, AcpiDmAscendingOp, &Info);
@@ -700,11 +701,15 @@ AcpiDmDescendingOp (
                  * Bank Value. This is a TermArg in the middle of the parameter
                  * list, must handle it here.
                  *
-                 * Temp fix: Call Disassemble on the TermArg. Produces an extra
-                 * linefeed, but it creates correct code.
+                 * Disassemble the TermArg parse tree. ACPI_PARSEOP_PARAMLIST 
+                 * eliminates newline in the output.
                  */
                 NextOp = NextOp->Common.Next;
-                AcpiDmDisassemble (Info->WalkState, NextOp, 0);
+
+                Info->Flags = ACPI_PARSEOP_PARAMLIST;
+                AcpiDmWalkParseTree (NextOp, AcpiDmDescendingOp, AcpiDmAscendingOp, Info);
+                Info->Flags = 0;
+                Info->Level = Level;
 
                 NextOp->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
                 AcpiOsPrintf (", ");
@@ -867,7 +872,10 @@ AcpiDmAscendingOp (
                  * This is a first-level element of a term list
                  * start a new line
                  */
-                AcpiOsPrintf ("\n");
+                if (!(Info->Flags & ACPI_PARSEOP_PARAMLIST))
+                {
+                    AcpiOsPrintf ("\n");
+                }
             }
         }
         break;
