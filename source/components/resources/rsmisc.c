@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -399,7 +399,7 @@ Exit:
     {
         /* Round the resource struct length up to the next 32-bit boundary */
 
-        Resource->Length = (UINT32) ACPI_ROUND_UP_TO_32BITS (Resource->Length);
+        Resource->Length = (UINT32) ACPI_ROUND_UP_TO_32BIT (Resource->Length);
     }
     return_ACPI_STATUS (AE_OK);
 }

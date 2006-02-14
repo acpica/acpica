@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.178 $
+ *       $Revision: 1.179 $
  *
  *****************************************************************************/
 
@@ -417,30 +417,30 @@
 /*
  * Rounding macros (Power of two boundaries only)
  */
-#define ACPI_ROUND_DOWN(value,boundary)      (((ACPI_NATIVE_UINT)(value)) & \
+#define ACPI_ROUND_DOWN(value,boundary)     (((ACPI_NATIVE_UINT)(value)) & \
                                                 (~(((ACPI_NATIVE_UINT) boundary)-1)))
 
-#define ACPI_ROUND_UP(value,boundary)        ((((ACPI_NATIVE_UINT)(value)) + \
+#define ACPI_ROUND_UP(value,boundary)       ((((ACPI_NATIVE_UINT)(value)) + \
                                                 (((ACPI_NATIVE_UINT) boundary)-1)) & \
                                                 (~(((ACPI_NATIVE_UINT) boundary)-1)))
 
-#define ACPI_ROUND_DOWN_TO_32_BITS(a)        ACPI_ROUND_DOWN(a,4)
-#define ACPI_ROUND_DOWN_TO_64_BITS(a)        ACPI_ROUND_DOWN(a,8)
-#define ACPI_ROUND_DOWN_TO_NATIVE_WORD(a)    ACPI_ROUND_DOWN(a,ALIGNED_ADDRESS_BOUNDARY)
+#define ACPI_ROUND_DOWN_TO_32BIT(a)         ACPI_ROUND_DOWN(a,4)
+#define ACPI_ROUND_DOWN_TO_64BIT(a)         ACPI_ROUND_DOWN(a,8)
+#define ACPI_ROUND_DOWN_TO_NATIVE_WORD(a)   ACPI_ROUND_DOWN(a,ALIGNED_ADDRESS_BOUNDARY)
 
-#define ACPI_ROUND_UP_TO_32BITS(a)           ACPI_ROUND_UP(a,4)
-#define ACPI_ROUND_UP_TO_64BITS(a)           ACPI_ROUND_UP(a,8)
-#define ACPI_ROUND_UP_TO_NATIVE_WORD(a)      ACPI_ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
+#define ACPI_ROUND_UP_TO_32BIT(a)           ACPI_ROUND_UP(a,4)
+#define ACPI_ROUND_UP_TO_64BIT(a)           ACPI_ROUND_UP(a,8)
+#define ACPI_ROUND_UP_TO_NATIVE_WORD(a)     ACPI_ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
 
 
-#define ACPI_ROUND_BITS_UP_TO_BYTES(a)       ACPI_DIV_8((a) + 7)
-#define ACPI_ROUND_BITS_DOWN_TO_BYTES(a)     ACPI_DIV_8((a))
+#define ACPI_ROUND_BITS_UP_TO_BYTES(a)      ACPI_DIV_8((a) + 7)
+#define ACPI_ROUND_BITS_DOWN_TO_BYTES(a)    ACPI_DIV_8((a))
 
-#define ACPI_ROUND_UP_TO_1K(a)               (((a) + 1023) >> 10)
+#define ACPI_ROUND_UP_TO_1K(a)              (((a) + 1023) >> 10)
 
 /* Generic (non-power-of-two) rounding */
 
-#define ACPI_ROUND_UP_TO(value,boundary)     (((value) + ((boundary)-1)) / (boundary))
+#define ACPI_ROUND_UP_TO(value,boundary)    (((value) + ((boundary)-1)) / (boundary))
 
 /*
  * Bitmask creation
@@ -448,10 +448,10 @@
  * MASK_BITS_ABOVE creates a mask starting AT the position and above
  * MASK_BITS_BELOW creates a mask starting one bit BELOW the position
  */
-#define ACPI_MASK_BITS_ABOVE(position)       (~((ACPI_INTEGER_MAX) << ((UINT32) (position))))
-#define ACPI_MASK_BITS_BELOW(position)       ((ACPI_INTEGER_MAX) << ((UINT32) (position)))
+#define ACPI_MASK_BITS_ABOVE(position)      (~((ACPI_INTEGER_MAX) << ((UINT32) (position))))
+#define ACPI_MASK_BITS_BELOW(position)      ((ACPI_INTEGER_MAX) << ((UINT32) (position)))
 
-#define ACPI_IS_OCTAL_DIGIT(d)               (((char)(d) >= '0') && ((char)(d) <= '7'))
+#define ACPI_IS_OCTAL_DIGIT(d)              (((char)(d) >= '0') && ((char)(d) <= '7'))
 
 
 /* Bitfields within ACPI registers */

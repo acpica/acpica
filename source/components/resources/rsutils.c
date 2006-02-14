@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  ******************************************************************************/
 
@@ -473,7 +473,7 @@ AcpiRsGetResourceSource (
          *
          * Zero the entire area of the buffer.
          */
-        TotalLength = (UINT32) ACPI_ROUND_UP_TO_32BITS (
+        TotalLength = (UINT32) ACPI_ROUND_UP_TO_32BIT (
             ACPI_STRLEN (ACPI_CAST_PTR (char, &AmlResourceSource[1])) + 1);
 
         ACPI_MEMSET (ResourceSource->StringPtr, 0, TotalLength);

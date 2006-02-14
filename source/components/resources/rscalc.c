@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  ******************************************************************************/
 
@@ -258,7 +258,7 @@ AcpiRsStreamOptionLength (
 
     /* Round up length to 32 bits for internal structure alignment */
 
-    return ((UINT32) ACPI_ROUND_UP_TO_32BITS (StringLength));
+    return ((UINT32) ACPI_ROUND_UP_TO_32BIT (StringLength));
 }
 
 
@@ -501,7 +501,7 @@ AcpiRsGetListLength (
              * Ensure a 32-bit boundary for the structure
              */
             ExtraStructBytes = (UINT32)
-                ACPI_ROUND_UP_TO_32BITS (ResourceLength) - ResourceLength;
+                ACPI_ROUND_UP_TO_32BIT (ResourceLength) - ResourceLength;
             break;
 
 
@@ -519,7 +519,7 @@ AcpiRsGetListLength (
              * Add vendor data and ensure a 32-bit boundary for the structure
              */
             ExtraStructBytes = (UINT32)
-                ACPI_ROUND_UP_TO_32BITS (ResourceLength) - ResourceLength;
+                ACPI_ROUND_UP_TO_32BIT (ResourceLength) - ResourceLength;
             break;
 
 
@@ -564,7 +564,7 @@ AcpiRsGetListLength (
              * Ensure a 64-bit boundary for the structure
              */
             ExtraStructBytes = (UINT32)
-                ACPI_ROUND_UP_TO_64BITS (AcpiRsStreamOptionLength (
+                ACPI_ROUND_UP_TO_64BIT (AcpiRsStreamOptionLength (
                     ResourceLength, MinimumAmlResourceLength));
             break;
 
@@ -712,7 +712,7 @@ AcpiRsGetPciRoutingTableLength (
 
         /* Round up the size since each element must be aligned */
 
-        TempSizeNeeded = ACPI_ROUND_UP_TO_64BITS (TempSizeNeeded);
+        TempSizeNeeded = ACPI_ROUND_UP_TO_64BIT (TempSizeNeeded);
 
         /* Point to the next ACPI_OPERAND_OBJECT */
 
