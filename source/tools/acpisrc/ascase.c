@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -289,6 +289,19 @@ AsMixedCaseToUnderscores (
         if (SubBuffer[0] == '\\')
         {
             SubBuffer += 2;
+            continue;
+        }
+
+        /* 
+         * Ignore identifiers that already contain embedded underscores
+         * These are typically C macros
+         */
+        if (*SubBuffer == '_')
+        {
+            while ((isalnum (*SubBuffer)) || (*SubBuffer == '_'))
+            {
+                SubBuffer++;
+            }
             continue;
         }
 
