@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.147 $
+ *              $Revision: 1.148 $
  *
  *****************************************************************************/
 
@@ -161,6 +161,7 @@ AcpiNsReportError (
     ACPI_STATUS             LookupStatus)
 {
     ACPI_STATUS             Status;
+    UINT32                  BadName;
     char                    *Name = NULL;
 
 
@@ -170,8 +171,8 @@ AcpiNsReportError (
     {
         /* There is a non-ascii character in the name */
 
-        AcpiOsPrintf ("[0x%4.4X] (NON-ASCII)",
-            *(ACPI_CAST_PTR (UINT32, InternalName)));
+        ACPI_MOVE_32_TO_32 (&BadName, InternalName);
+        AcpiOsPrintf ("[0x%4.4X] (NON-ASCII)", BadName);
     }
     else
     {
