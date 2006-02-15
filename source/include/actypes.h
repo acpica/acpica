@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.300 $
+ *       $Revision: 1.301 $
  *
  *****************************************************************************/
 
@@ -231,7 +231,6 @@ typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 #define ACPI_MAX_PTR                    ACPI_UINT64_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT64_MAX
 
-#define ALIGNED_ADDRESS_BOUNDARY        0x00000008
 #define ACPI_USE_NATIVE_DIVIDE          /* Has native 64-bit integer support */
 
 /*
@@ -274,8 +273,6 @@ typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 #define ACPI_MAX_PTR                    ACPI_UINT32_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT32_MAX
 
-#define ALIGNED_ADDRESS_BOUNDARY        0x00000004
-
 
 /*******************************************************************************
  *
@@ -304,7 +301,6 @@ typedef char                            *ACPI_PHYSICAL_ADDRESS;
 #define ACPI_MAX_PTR                    ACPI_UINT16_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT16_MAX
 
-#define ALIGNED_ADDRESS_BOUNDARY        0x00000002
 #define ACPI_USE_NATIVE_DIVIDE          /* No 64-bit integers, ok to use native divide */
 
 /* 64-bit integers cannot be supported */
@@ -1536,12 +1532,6 @@ typedef struct acpi_resource
 #define ACPI_RS_SIZE(Type)                  (UINT32) (ACPI_RS_SIZE_NO_DATA + sizeof (Type))
 
 #define ACPI_NEXT_RESOURCE(Res)             (ACPI_RESOURCE *)((UINT8 *) Res + Res->Length)
-
-#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
-#define ACPI_ALIGN_RESOURCE_SIZE(Length)    (Length)
-#else
-#define ACPI_ALIGN_RESOURCE_SIZE(Length)    ACPI_ROUND_UP_TO_NATIVE_WORD(Length)
-#endif
 
 /*
  * END: of definitions for Resource Attributes

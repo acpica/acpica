@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.179 $
+ *       $Revision: 1.180 $
  *
  *****************************************************************************/
 
@@ -424,14 +424,15 @@
                                                 (((ACPI_NATIVE_UINT) boundary)-1)) & \
                                                 (~(((ACPI_NATIVE_UINT) boundary)-1)))
 
+/* Note: sizeof(ACPI_NATIVE_UINT) evaluates to either 2, 4, or 8 */
+
 #define ACPI_ROUND_DOWN_TO_32BIT(a)         ACPI_ROUND_DOWN(a,4)
 #define ACPI_ROUND_DOWN_TO_64BIT(a)         ACPI_ROUND_DOWN(a,8)
-#define ACPI_ROUND_DOWN_TO_NATIVE_WORD(a)   ACPI_ROUND_DOWN(a,ALIGNED_ADDRESS_BOUNDARY)
+#define ACPI_ROUND_DOWN_TO_NATIVE_WORD(a)   ACPI_ROUND_DOWN(a,sizeof(ACPI_NATIVE_UINT))
 
 #define ACPI_ROUND_UP_TO_32BIT(a)           ACPI_ROUND_UP(a,4)
 #define ACPI_ROUND_UP_TO_64BIT(a)           ACPI_ROUND_UP(a,8)
-#define ACPI_ROUND_UP_TO_NATIVE_WORD(a)     ACPI_ROUND_UP(a,ALIGNED_ADDRESS_BOUNDARY)
-
+#define ACPI_ROUND_UP_TO_NATIVE_WORD(a)     ACPI_ROUND_UP(a,sizeof(ACPI_NATIVE_UINT))
 
 #define ACPI_ROUND_BITS_UP_TO_BYTES(a)      ACPI_DIV_8((a) + 7)
 #define ACPI_ROUND_BITS_DOWN_TO_BYTES(a)    ACPI_DIV_8((a))
@@ -441,6 +442,8 @@
 /* Generic (non-power-of-two) rounding */
 
 #define ACPI_ROUND_UP_TO(value,boundary)    (((value) + ((boundary)-1)) / (boundary))
+
+#define ACPI_IS_MISALIGNED(value)           (((ACPI_NATIVE_UINT)value) & (sizeof(ACPI_NATIVE_UINT)-1))
 
 /*
  * Bitmask creation
