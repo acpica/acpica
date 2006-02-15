@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -2715,6 +2715,10 @@ RsDoVendorLargeDescriptor (
 
     for (i = 0; InitializerOp; i++)
     {
+        if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+        {
+            break;
+        }
         InitializerOp = InitializerOp->Asl.Next;
     }
 
@@ -2734,8 +2738,12 @@ RsDoVendorLargeDescriptor (
 
     for (i = 0; InitializerOp; i++)
     {
-        VendorData[i] = (UINT8) InitializerOp->Asl.Value.Integer;
+        if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+        {
+            break;
+        }
 
+        VendorData[i] = (UINT8) InitializerOp->Asl.Value.Integer;
         InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     }
 

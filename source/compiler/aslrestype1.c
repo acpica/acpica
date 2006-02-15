@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype1 - Short (type1) resource templates and descriptors
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -1149,6 +1149,11 @@ RsDoVendorSmallDescriptor (
     InitializerOp = RsCompleteNodeAndGetNext (InitializerOp);
     for (i = 0; InitializerOp; i++)
     {
+        if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+        {
+            break;
+        }
+
         /* Maximum 7 vendor data bytes allowed (0-6) */
 
         if (i >= 7)
