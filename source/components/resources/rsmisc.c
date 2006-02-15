@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsmisc - Miscellaneous resource descriptors
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -163,7 +163,7 @@ AcpiRsConvertAmlToResource (
     UINT16                  Temp16 = 0;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetResource");
+    ACPI_FUNCTION_TRACE ("RsConvertAmlToResource");
 
 
     if (((ACPI_NATIVE_UINT) Resource) & 0x3)
@@ -397,9 +397,9 @@ AcpiRsConvertAmlToResource (
 Exit:
     if (!FlagsMode)
     {
-        /* Round the resource struct length up to the next 32-bit boundary */
+        /* Round the resource struct length up to the next boundary (32 or 64) */
 
-        Resource->Length = (UINT32) ACPI_ROUND_UP_TO_32BIT (Resource->Length);
+        Resource->Length = (UINT32) ACPI_ROUND_UP_TO_NATIVE_WORD (Resource->Length);
     }
     return_ACPI_STATUS (AE_OK);
 }

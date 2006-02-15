@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  ******************************************************************************/
 
@@ -160,6 +160,16 @@ AcpiRsConvertAmlToResources (
 
     while (Aml < EndAml)
     {
+        /*
+         * Check that the input buffer and all subsequent pointers into it
+         * are aligned on a native word boundary. Most important on IA64
+         */
+        if (ACPI_IS_MISALIGNED (Resource))
+        {
+            ACPI_WARNING ((AE_INFO,
+                "Misaligned resource pointer %p", Resource));
+        }
+
         /* Validate the Resource Type and Resource Length */
 
         Status = AcpiUtValidateResource (Aml, &ResourceIndex);
@@ -179,6 +189,11 @@ AcpiRsConvertAmlToResources (
                 "Could not convert AML resource (Type %X)", *Aml));
             return_ACPI_STATUS (Status);
         }
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_RESOURCES,
+            "Type %.2X, Aml %.2X internal %.2X\n", 
+            AcpiUtGetResourceType (Aml), AcpiUtGetDescriptorLength (Aml),
+            Resource->Length));
 
         /* Normal exit on completion of an EndTag resource descriptor */
 

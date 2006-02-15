@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  ******************************************************************************/
 
@@ -417,7 +417,8 @@ AcpiRsStrcpy (
  *              StringPtr           - (optional) where to store the actual
  *                                    ResourceSource string
  *
- * RETURN:      Length of the string plus NULL terminator, rounded up to 32 bit
+ * RETURN:      Length of the string plus NULL terminator, rounded up to native
+ *              word boundary
  *
  * DESCRIPTION: Copy the optional ResourceSource data from a raw AML descriptor
  *              to an internal resource descriptor
@@ -467,15 +468,15 @@ AcpiRsGetResourceSource (
         }
 
         /*
-         * In order for the StructSize to fall on a 32-bit boundary, calculate
-         * the length of the string (+1 for the NULL terminator) and expand the
-         * StructSize to the next 32-bit boundary.
+         * In order for the Resource length to be a multiple of the native
+         * word, calculate the length of the string (+1 for NULL terminator)
+         * and expand to the next word multiple.
          *
          * Zero the entire area of the buffer.
          */
-        TotalLength = (UINT32) ACPI_ROUND_UP_TO_32BIT (
-            ACPI_STRLEN (ACPI_CAST_PTR (char, &AmlResourceSource[1])) + 1);
-
+        TotalLength = ACPI_STRLEN (ACPI_CAST_PTR (char, &AmlResourceSource[1])) + 1;
+        TotalLength = (UINT32) ACPI_ROUND_UP_TO_NATIVE_WORD (TotalLength);
+            
         ACPI_MEMSET (ResourceSource->StringPtr, 0, TotalLength);
 
         /* Copy the ResourceSource string to the destination */
