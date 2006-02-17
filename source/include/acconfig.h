@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acconfig.h - Global configuration constants
- *       $Revision: 1.206 $
+ *       $Revision: 1.207 $
  *
  *****************************************************************************/
 
@@ -137,7 +137,7 @@
 
 /* Current ACPICA subsystem version in YYYYMMDD format */
 
-#define ACPI_CA_VERSION                 0x20060215
+#define ACPI_CA_VERSION                 0x20060217
 
 /*
  * OS name, used for the _OS object.  The _OS object is essentially obsolete,
