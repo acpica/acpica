@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmap - parser to AML opcode mapping table
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -445,6 +445,8 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_UPP",     0,      ASL_RSVD_RETURN_VALUE},    /* Acpi 3.0 */
     {"_VPO",     0,      ASL_RSVD_RETURN_VALUE},
     {"_WAK",     1,      ASL_RSVD_RETURN_VALUE},
+    {"_WDG",     0,      ASL_RSVD_RETURN_VALUE},    /* MS Extension */
+    {"_WED",     1,      ASL_RSVD_RETURN_VALUE},    /* MS Extension */
     {NULL,       0,      0},
 };
 
