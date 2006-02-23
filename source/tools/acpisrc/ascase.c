@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -234,10 +234,16 @@ AsMixedCaseToUnderscores (
     char                    *TokenEnd;
     char                    *TokenStart = NULL;
     char                    *SubString;
+    BOOLEAN                 HasLowerCase = FALSE;
 
 
     while (*SubBuffer)
     {
+        if (islower (*SubBuffer))
+        {
+            HasLowerCase = TRUE;
+        }
+
         /*
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
@@ -294,9 +300,11 @@ AsMixedCaseToUnderscores (
 
         /* 
          * Ignore identifiers that already contain embedded underscores
-         * These are typically C macros
+         * These are typically C macros or defines (all upper case)
+         * Note: there are some cases where identifiers have underscores
+         * AcpiGbl_* for example. HasLowerCase flag handles these.
          */
-        if (*SubBuffer == '_')
+        if ((*SubBuffer == '_') && (!HasLowerCase))
         {
             while ((isalnum (*SubBuffer)) || (*SubBuffer == '_'))
             {
