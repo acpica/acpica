@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -158,6 +158,8 @@ AcpiSetFirmwareWakingVector (
     return_ACPI_STATUS (AE_OK);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiSetFirmwareWakingVector)
+
 
 /*******************************************************************************
  *
@@ -201,6 +203,8 @@ AcpiGetFirmwareWakingVector (
 
     return_ACPI_STATUS (AE_OK);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetFirmwareWakingVector)
 
 
 /*******************************************************************************
@@ -295,6 +299,8 @@ AcpiEnterSleepStatePrep (
 
     return_ACPI_STATUS (AE_OK);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiEnterSleepStatePrep)
 
 
 /*******************************************************************************
@@ -489,6 +495,8 @@ AcpiEnterSleepState (
     return_ACPI_STATUS (AE_OK);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiEnterSleepState)
+
 
 /*******************************************************************************
  *
@@ -560,6 +568,8 @@ AcpiEnterSleepStateS4bios (
 
     return_ACPI_STATUS (AE_OK);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiEnterSleepStateS4bios)
 
 
 /*******************************************************************************
@@ -707,3 +717,6 @@ AcpiLeaveSleepState (
 
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiLeaveSleepState)
+

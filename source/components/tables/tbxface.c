@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -209,6 +209,8 @@ ErrorExit:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiLoadTables)
+
 
 /*******************************************************************************
  *
@@ -311,6 +313,8 @@ AcpiLoadTable (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiLoadTable)
+
 
 /*******************************************************************************
  *
@@ -362,6 +366,8 @@ AcpiUnloadTable (
     AcpiTbDeleteTablesByType (TableType);
     return_ACPI_STATUS (AE_OK);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiUnloadTable)
 
 
 /*******************************************************************************
@@ -436,6 +442,8 @@ AcpiGetTableHeader (
 
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetTableHeader)
 
 
 /*******************************************************************************
@@ -540,5 +548,7 @@ AcpiGetTable (
     ACPI_MEMCPY ((void *) RetBuffer->Pointer, (void *) TblPtr, TableLength);
     return_ACPI_STATUS (AE_OK);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetTable)
 
 

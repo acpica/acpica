@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  ******************************************************************************/
 
@@ -204,6 +204,8 @@ AcpiGetIrqRoutingTable  (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiGetIrqRoutingTable)
+
 
 /*******************************************************************************
  *
@@ -261,6 +263,8 @@ AcpiGetCurrentResources (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiGetCurrentResources)
+
 
 /*******************************************************************************
  *
@@ -314,6 +318,8 @@ AcpiGetPossibleResources (
     Status = AcpiRsGetPrsMethodData (DeviceHandle, RetBuffer);
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetPossibleResources)
 
 
 /*******************************************************************************
@@ -416,6 +422,8 @@ AcpiWalkResources (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiWalkResources)
+
 
 /*******************************************************************************
  *
@@ -459,6 +467,8 @@ AcpiSetCurrentResources (
     Status = AcpiRsSetSrsMethodData (DeviceHandle, InBuffer);
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiSetCurrentResources)
 
 
 /******************************************************************************
@@ -523,6 +533,8 @@ AcpiResourceToAddress64 (
     return (AE_OK);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiResourceToAddress64)
+
 
 /*******************************************************************************
  *
@@ -576,6 +588,8 @@ AcpiGetVendorResource (
 
     return (Info.Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetVendorResource)
 
 
 /*******************************************************************************

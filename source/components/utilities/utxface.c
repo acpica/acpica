@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -190,6 +190,8 @@ AcpiInitializeSubsystem (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiInitializeSubsystem)
+
 
 /*******************************************************************************
  *
@@ -326,6 +328,8 @@ AcpiEnableSubsystem (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiEnableSubsystem)
+
 
 /*******************************************************************************
  *
@@ -413,6 +417,8 @@ AcpiInitializeObjects (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiInitializeObjects)
+
 
 /*******************************************************************************
  *
@@ -463,6 +469,8 @@ AcpiTerminate (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiTerminate)
+
 
 /*******************************************************************************
  *
@@ -492,6 +500,8 @@ AcpiSubsystemStatus (
         return (AE_ERROR);
     }
 }
+
+ACPI_EXPORT_SYMBOL (AcpiSubsystemStatus)
 
 
 /*******************************************************************************
@@ -587,6 +597,8 @@ AcpiGetSystemInfo (
     return_ACPI_STATUS (AE_OK);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiGetSystemInfo)
+
 
 /*****************************************************************************
  *
@@ -623,6 +635,8 @@ AcpiInstallInitializationHandler (
     return AE_OK;
 }
 
+ACPI_EXPORT_SYMBOL (AcpiInstallInitializationHandler)
+
 
 /*****************************************************************************
  *
@@ -648,3 +662,5 @@ AcpiPurgeCachedObjects (
     (void) AcpiOsPurgeCache (AcpiGbl_PsNodeExtCache);
     return_ACPI_STATUS (AE_OK);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiPurgeCachedObjects)

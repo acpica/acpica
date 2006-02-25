@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -157,6 +157,8 @@ AcpiGetTimerResolution (
     return_ACPI_STATUS (AE_OK);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiGetTimerResolution)
+
 
 /******************************************************************************
  *
@@ -189,6 +191,8 @@ AcpiGetTimer (
 
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetTimer)
 
 
 /******************************************************************************
@@ -280,4 +284,5 @@ AcpiGetTimerDuration (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiGetTimerDuration)
 

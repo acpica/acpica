@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.301 $
+ *       $Revision: 1.302 $
  *
  *****************************************************************************/
 
@@ -372,6 +372,13 @@ typedef ACPI_NATIVE_UINT                ACPI_SIZE;
 #define ACPI_UNUSED_VAR
 #endif
 
+/*
+ * All ACPICA functions that are available to the rest of the kernel are
+ * tagged with this macro which can be defined as appropriate for the host.
+ */
+#ifndef ACPI_EXPORT_SYMBOL
+#define ACPI_EXPORT_SYMBOL(Symbol)
+#endif
 
 /*******************************************************************************
  *

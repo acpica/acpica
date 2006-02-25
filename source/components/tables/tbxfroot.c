@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -489,6 +489,8 @@ Cleanup:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiGetFirmwareTable)
+
 
 /* TBD: Move to a new file */
 
@@ -534,6 +536,8 @@ AcpiFindRootPointer (
     RsdpAddress->Pointer.Physical = TableInfo.PhysicalAddress;
     return_ACPI_STATUS (AE_OK);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiFindRootPointer)
 
 
 /*******************************************************************************

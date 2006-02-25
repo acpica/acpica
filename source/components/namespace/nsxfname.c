@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -211,6 +211,8 @@ AcpiGetHandle (
     return (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiGetHandle)
+
 
 /******************************************************************************
  *
@@ -297,6 +299,8 @@ UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetName)
 
 
 /******************************************************************************
@@ -464,4 +468,6 @@ Cleanup:
     }
     return (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetObjectInfo)
 

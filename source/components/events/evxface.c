@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.157 $
+ *              $Revision: 1.158 $
  *
  *****************************************************************************/
 
@@ -172,6 +172,8 @@ Cleanup:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiInstallExceptionHandler)
+
 
 /*******************************************************************************
  *
@@ -249,6 +251,8 @@ Cleanup:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiInstallFixedEventHandler)
+
 
 /*******************************************************************************
  *
@@ -309,6 +313,8 @@ AcpiRemoveFixedEventHandler (
     (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiRemoveFixedEventHandler)
 
 
 /*******************************************************************************
@@ -497,6 +503,8 @@ UnlockAndExit:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiInstallNotifyHandler)
+
 
 /*******************************************************************************
  *
@@ -647,6 +655,8 @@ UnlockAndExit:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiRemoveNotifyHandler)
+
 
 /*******************************************************************************
  *
@@ -752,6 +762,8 @@ UnlockAndExit:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiInstallGpeHandler)
+
 
 /*******************************************************************************
  *
@@ -854,6 +866,8 @@ UnlockAndExit:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiRemoveGpeHandler)
+
 
 /*******************************************************************************
  *
@@ -900,6 +914,8 @@ AcpiAcquireGlobalLock (
     return (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiAcquireGlobalLock)
+
 
 /*******************************************************************************
  *
@@ -929,4 +945,5 @@ AcpiReleaseGlobalLock (
     return (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiReleaseGlobalLock)
 

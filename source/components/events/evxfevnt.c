@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@ AcpiEnable (
     ACPI_FUNCTION_TRACE ("AcpiEnable");
 
 
-    /* Make sure we have the FADT*/
+    /* Make sure we have the FADT */
 
     if (!AcpiGbl_FADT)
     {
@@ -176,6 +176,8 @@ AcpiEnable (
 
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiEnable)
 
 
 /*******************************************************************************
@@ -229,6 +231,8 @@ AcpiDisable (
 
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiDisable)
 
 
 /*******************************************************************************
@@ -293,6 +297,8 @@ AcpiEnableEvent (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiEnableEvent)
+
 
 /*******************************************************************************
  *
@@ -342,6 +348,8 @@ AcpiSetGpeType (
 UnlockAndExit:
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiSetGpeType)
 
 
 /*******************************************************************************
@@ -404,6 +412,8 @@ UnlockAndExit:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiEnableGpe)
+
 
 /*******************************************************************************
  *
@@ -462,6 +472,8 @@ UnlockAndExit:
     }
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiDisableGpe)
 
 
 /*******************************************************************************
@@ -524,6 +536,8 @@ AcpiDisableEvent (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiDisableEvent)
+
 
 /*******************************************************************************
  *
@@ -563,6 +577,8 @@ AcpiClearEvent (
 
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiClearEvent)
 
 
 /*******************************************************************************
@@ -622,6 +638,8 @@ UnlockAndExit:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiClearGpe)
+
 
 /*******************************************************************************
  *
@@ -667,6 +685,8 @@ AcpiGetEventStatus (
 
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetEventStatus)
 
 
 /*******************************************************************************
@@ -730,6 +750,8 @@ UnlockAndExit:
     }
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetGpeStatus)
 
 
 /*******************************************************************************
@@ -838,6 +860,8 @@ UnlockAndExit:
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiInstallGpeBlock)
+
 
 /*******************************************************************************
  *
@@ -902,4 +926,6 @@ UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiRemoveGpeBlock)
 

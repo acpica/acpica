@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -307,6 +307,8 @@ AcpiUtDebugPrint (
     AcpiOsVprintf (Format, args);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiUtDebugPrint)
+
 
 /*******************************************************************************
  *
@@ -350,6 +352,8 @@ AcpiUtDebugPrintRaw (
     AcpiOsVprintf (Format, args);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiUtDebugPrintRaw)
+
 
 /*******************************************************************************
  *
@@ -382,6 +386,8 @@ AcpiUtTrace (
         LineNumber, FunctionName, ModuleName, ComponentId,
         "%s\n", AcpiGbl_FnEntryStr);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiUtTrace)
 
 
 /*******************************************************************************
@@ -519,6 +525,8 @@ AcpiUtExit (
     AcpiGbl_NestingLevel--;
 }
 
+ACPI_EXPORT_SYMBOL (AcpiUtExit)
+
 
 /*******************************************************************************
  *
@@ -564,6 +572,8 @@ AcpiUtStatusExit (
     AcpiGbl_NestingLevel--;
 }
 
+ACPI_EXPORT_SYMBOL (AcpiUtStatusExit)
+
 
 /*******************************************************************************
  *
@@ -598,6 +608,8 @@ AcpiUtValueExit (
 
     AcpiGbl_NestingLevel--;
 }
+
+ACPI_EXPORT_SYMBOL (AcpiUtValueExit)
 
 
 /*******************************************************************************

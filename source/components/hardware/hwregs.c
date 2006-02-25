@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.176 $
+ *              $Revision: 1.177 $
  *
  ******************************************************************************/
 
@@ -314,6 +314,8 @@ AcpiGetSleepTypeData (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiGetSleepTypeData)
+
 
 /*******************************************************************************
  *
@@ -415,6 +417,8 @@ AcpiGetRegister (
 
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetRegister)
 
 
 /*******************************************************************************
@@ -577,6 +581,8 @@ UnlockAndExit:
             Value, RegisterValue, BitRegInfo->ParentRegister));
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiSetRegister)
 
 
 /******************************************************************************

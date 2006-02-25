@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.227 $
+ *              $Revision: 1.228 $
  *
  *****************************************************************************/
 
@@ -236,7 +236,6 @@ UINT32                      AcpiDbgLevel = ACPI_NORMAL_DEFAULT;
 
 UINT32                      AcpiDbgLayer = ACPI_COMPONENT_DEFAULT;
 UINT32                      AcpiGbl_NestingLevel = 0;
-
 
 /* Debugger globals */
 
@@ -953,5 +952,11 @@ AcpiUtInitGlobals (
 
     return_VOID;
 }
+
+/* Public globals */
+
+ACPI_EXPORT_SYMBOL (AcpiDbgLevel)
+ACPI_EXPORT_SYMBOL (AcpiDbgLayer)
+
 
 

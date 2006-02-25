@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  ******************************************************************************/
 
@@ -223,6 +223,8 @@ AcpiEvaluateObjectTyped (
     ReturnBuffer->Length = 0;
     return_ACPI_STATUS (AE_TYPE);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiEvaluateObjectTyped)
 
 
 /*******************************************************************************
@@ -454,6 +456,8 @@ AcpiEvaluateObject (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiEvaluateObject)
+
 
 /*******************************************************************************
  *
@@ -528,6 +532,8 @@ AcpiWalkNamespace (
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return_ACPI_STATUS (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiWalkNamespace)
 
 
 /*******************************************************************************
@@ -716,6 +722,8 @@ AcpiGetDevices (
     return_ACPI_STATUS (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiGetDevices)
+
 
 /*******************************************************************************
  *
@@ -772,6 +780,8 @@ UnlockAndExit:
     return (Status);
 }
 
+ACPI_EXPORT_SYMBOL (AcpiAttachData)
+
 
 /*******************************************************************************
  *
@@ -824,6 +834,8 @@ UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiDetachData)
 
 
 /*******************************************************************************
@@ -880,5 +892,7 @@ UnlockAndExit:
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     return (Status);
 }
+
+ACPI_EXPORT_SYMBOL (AcpiGetData)
 
 
