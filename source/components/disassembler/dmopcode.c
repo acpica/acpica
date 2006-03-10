@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  ******************************************************************************/
 
@@ -358,11 +358,8 @@ AcpiDmCheckResource (
     ACPI_PARSE_OBJECT       *BufferNameOp;
 
 
-
     BufferNameOp = Op->Common.Value.Arg;
 
-
-    
 
 }
 

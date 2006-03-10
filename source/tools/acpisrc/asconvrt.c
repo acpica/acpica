@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -745,12 +745,12 @@ AsBracesOnSameLine (
                      * Even then, we don't need more if the previous statement
                      * is an "else".
                      */
-                    if ((Next[0] == '/')  && 
-                        (Next[1] == '*')  && 
+                    if ((Next[0] == '/')  &&
+                        (Next[1] == '*')  &&
                         (Next[2] != '\n') &&
 
-                        (!strncmp (StartOfThisLine, "else if", 7)     || 
-                         !strncmp (StartOfThisLine, "else while", 10) || 
+                        (!strncmp (StartOfThisLine, "else if", 7)     ||
+                         !strncmp (StartOfThisLine, "else while", 10) ||
                           strncmp (StartOfThisLine, "else", 4)))
                     {
                         AsReplaceData (Beginning, SubBuffer - Beginning, " {\n", 3);

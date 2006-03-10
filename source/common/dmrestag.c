@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmrestag - Add tags to resource descriptors (Application-level)
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -541,7 +541,7 @@ AcpiDmGetResourceNode (
          * Value contains the resource offset, Object contains the resource
          * length (both in bytes)
          */
-        if ((ByteIndex >= Node->Value) && 
+        if ((ByteIndex >= Node->Value) &&
             (ByteIndex < (Node->Value + (UINT32) Node->Object)))
         {
             return (Node);
@@ -895,7 +895,7 @@ AcpiDmFindResources (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Add an entire resource template to the namespace. Each 
+ * DESCRIPTION: Add an entire resource template to the namespace. Each
  *              resource descriptor is added as a namespace node.
  *
  * TBD: Need a generic routine to walk (external) AML resource lists
@@ -960,7 +960,7 @@ AcpiDmAddResourcesToNamespace (
         AcpiDmAddResourceToNamespace (BufferNode, Offset, Length);
 
         Aml += Length;
-        Offset += Length; 
+        Offset += Length;
     }
 }
 
@@ -977,7 +977,7 @@ AcpiDmAddResourcesToNamespace (
  *
  * DESCRIPTION: Add one resource descriptor to the namespace as a child of the
  *              parent buffer. The same name is used for each descriptor. This
- *              is changed later to a unique name if the resource is actually 
+ *              is changed later to a unique name if the resource is actually
  *              referenced by an AML operator.
  *
  ******************************************************************************/
@@ -997,8 +997,8 @@ AcpiDmAddResourceToNamespace (
 
     ScopeInfo.Scope.Node = BufferNode;
     Status = AcpiNsLookup (&ScopeInfo, "_TMP", ACPI_TYPE_LOCAL_RESOURCE,
-                ACPI_IMODE_LOAD_PASS2, 
-                ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE | ACPI_NS_PREFIX_IS_SCOPE, 
+                ACPI_IMODE_LOAD_PASS2,
+                ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE | ACPI_NS_PREFIX_IS_SCOPE,
                 NULL, &Node);
     if (ACPI_FAILURE (Status))
     {

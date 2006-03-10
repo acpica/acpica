@@ -3,7 +3,7 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -217,7 +217,7 @@ AcpiExResolveObject (
     case ACPI_TYPE_LOCAL_METHOD_ALIAS:
 
         /*
-         * All aliases should have been resolved earlier, during the 
+         * All aliases should have been resolved earlier, during the
          * operand resolution phase.
          */
         ACPI_ERROR ((AE_INFO, "Store into an unresolved Alias object"));

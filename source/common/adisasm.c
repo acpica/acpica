@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -580,7 +580,7 @@ AdXrefAscendingOp (
  * RETURN:      None
  *
  * DESCRIPTION: Cross reference the namespace to create externals and to
- *              convert fixed-offset references to resource descriptors to 
+ *              convert fixed-offset references to resource descriptors to
  *              symbolic references.
  *
  * TBD:         Currently only generates resource symbolic references.
@@ -731,7 +731,7 @@ AdAmlDisassemble (
 
     /*
      * Cross reference the namespace here, in order to
-     * generate External() statements and to convert fixed-offset 
+     * generate External() statements and to convert fixed-offset
      * references to resource descriptors to symbolic references.
      */
     AdCrossReferenceNamespace ();

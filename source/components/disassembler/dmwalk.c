@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  ******************************************************************************/
 
@@ -694,7 +694,7 @@ AcpiDmDescendingOp (
                  * Bank Value. This is a TermArg in the middle of the parameter
                  * list, must handle it here.
                  *
-                 * Disassemble the TermArg parse tree. ACPI_PARSEOP_PARAMLIST 
+                 * Disassemble the TermArg parse tree. ACPI_PARSEOP_PARAMLIST
                  * eliminates newline in the output.
                  */
                 NextOp = NextOp->Common.Next;

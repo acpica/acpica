@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -1647,7 +1647,7 @@ AnOperandTypecheckWalkEnd (
         if (ArgOp->Asl.ParseOpcode == PARSEOP_METHODCALL)
         {
             /*
-             * Special-case the _OSI method here. This is currently the 
+             * Special-case the _OSI method here. This is currently the
              * only such predefined method.
              */
             if ((!ACPI_STRCMP (ArgOp->Asl.ExternalName, "\\_OSI")) ||

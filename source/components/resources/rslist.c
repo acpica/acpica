@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  ******************************************************************************/
 
@@ -191,7 +191,7 @@ AcpiRsConvertAmlToResources (
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_RESOURCES,
-            "Type %.2X, Aml %.2X internal %.2X\n", 
+            "Type %.2X, Aml %.2X internal %.2X\n",
             AcpiUtGetResourceType (Aml), AcpiUtGetDescriptorLength (Aml),
             Resource->Length));
 

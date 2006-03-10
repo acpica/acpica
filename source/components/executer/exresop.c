@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -286,7 +286,7 @@ AcpiExResolveOperands (
             ObjectType = ((ACPI_NAMESPACE_NODE *) ObjDesc)->Type;
 
             /*
-             * Resolve an alias object. The construction of these objects 
+             * Resolve an alias object. The construction of these objects
              * guarantees that there is only one level of alias indirection;
              * thus, the attached object is always the aliased namespace node
              */

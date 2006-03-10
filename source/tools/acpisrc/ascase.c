@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -298,7 +298,7 @@ AsMixedCaseToUnderscores (
             continue;
         }
 
-        /* 
+        /*
          * Ignore identifiers that already contain embedded underscores
          * These are typically C macros or defines (all upper case)
          * Note: there are some cases where identifiers have underscores

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.228 $
+ *              $Revision: 1.229 $
  *
  *****************************************************************************/
 
@@ -957,6 +957,5 @@ AcpiUtInitGlobals (
 
 ACPI_EXPORT_SYMBOL (AcpiDbgLevel)
 ACPI_EXPORT_SYMBOL (AcpiDbgLayer)
-
 
 
