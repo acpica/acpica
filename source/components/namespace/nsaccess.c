@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.196 $
+ *              $Revision: 1.197 $
  *
  ******************************************************************************/
 
@@ -439,15 +439,18 @@ AcpiNsLookup (
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
 
-        /*
-         * This node might not be a actual "scope" node (such as a
-         * Device/Method, etc.)  It could be a Package or other object node.
-         * Backup up the tree to find the containing scope node.
-         */
-        while (!AcpiNsOpensScope (PrefixNode->Type) &&
-                PrefixNode->Type != ACPI_TYPE_ANY)
+        if (!(Flags & ACPI_NS_PREFIX_IS_SCOPE))
         {
-            PrefixNode = AcpiNsGetParentNode (PrefixNode);
+            /*
+             * This node might not be a actual "scope" node (such as a
+             * Device/Method, etc.)  It could be a Package or other object node.
+             * Backup up the tree to find the containing scope node.
+             */
+            while (!AcpiNsOpensScope (PrefixNode->Type) &&
+                    PrefixNode->Type != ACPI_TYPE_ANY)
+            {
+                PrefixNode = AcpiNsGetParentNode (PrefixNode);
+            }
         }
     }
 
