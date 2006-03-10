@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -191,7 +191,7 @@ AslLocalAllocate (unsigned int Size);
  * These shift/reduce conflicts are expected. There should be zer0
  * reduce/reduce conflicts.
  */
-%expect 63
+%expect 64
 
 
 /*
@@ -2835,7 +2835,8 @@ RegisterTerm
         ',' ByteConstExpr
         ',' QWordConstExpr
         OptionalAccessSize
-        ')'                         {$$ = TrLinkChildren ($<n>3,5,$4,$6,$8,$10,$11);}
+        OptionalNameString_Last
+        ')'                         {$$ = TrLinkChildren ($<n>3,6,$4,$6,$8,$10,$11,$12);}
     | PARSEOP_REGISTER '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
