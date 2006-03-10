@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.176 $
+ *              $Revision: 1.177 $
  *
  *****************************************************************************/
 
@@ -682,16 +682,18 @@ AcpiExOpcode_1A_1T_1R (
 
 Cleanup:
 
-    if (!WalkState->ResultObj)
-    {
-        WalkState->ResultObj = ReturnDesc;
-    }
-
     /* Delete return object on error */
 
     if (ACPI_FAILURE (Status))
     {
         AcpiUtRemoveReference (ReturnDesc);
+    }
+
+    /* Save return object on success */
+
+    else if (!WalkState->ResultObj)
+    {
+        WalkState->ResultObj = ReturnDesc;
     }
 
     return_ACPI_STATUS (Status);
@@ -1166,7 +1168,13 @@ Cleanup:
         AcpiUtRemoveReference (ReturnDesc);
     }
 
-    WalkState->ResultObj = ReturnDesc;
+    /* Save return object on success */
+
+    else
+    {
+        WalkState->ResultObj = ReturnDesc;
+    }
+
     return_ACPI_STATUS (Status);
 }
 
