@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.144 $
+ *       $Revision: 1.145 $
  *
  *****************************************************************************/
 
@@ -137,6 +137,7 @@
 #define ACPI_NS_DONT_OPEN_SCOPE     0x02
 #define ACPI_NS_NO_PEER_SEARCH      0x04
 #define ACPI_NS_ERROR_IF_FOUND      0x08
+#define ACPI_NS_PREFIX_IS_SCOPE     0x10
 
 #define ACPI_NS_WALK_UNLOCK         TRUE
 #define ACPI_NS_WALK_NO_UNLOCK      FALSE
@@ -317,6 +318,12 @@ AcpiNsEvaluateRelative (
 UINT32
 AcpiNsOpensScope (
     ACPI_OBJECT_TYPE        Type);
+
+void
+AcpiNsBuildExternalPath (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_SIZE               Size,
+    char                    *NameBuffer);
 
 char *
 AcpiNsGetExternalPathname (

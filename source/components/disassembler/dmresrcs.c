@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcs.c - "Small" Resource Descriptor disassembly
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  ******************************************************************************/
 
@@ -154,11 +154,15 @@ AcpiDmIrqDescriptor (
 
     if (Length & 1)
     {
-        AcpiOsPrintf ("%s, %s, %s",
+        AcpiOsPrintf ("%s, %s, %s, ",
             AcpiGbl_HEDecode [Resource->Irq.Flags & 1],
             AcpiGbl_LLDecode [(Resource->Irq.Flags >> 3) & 1],
             AcpiGbl_SHRDecode [(Resource->Irq.Flags >> 4) & 1]);
     }
+
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
     AcpiOsPrintf (")\n");
 
     AcpiDmIndent (Level + 1);
@@ -188,10 +192,15 @@ AcpiDmDmaDescriptor (
 {
 
     AcpiDmIndent (Level);
-    AcpiOsPrintf ("DMA (%s, %s, %s)\n",
+    AcpiOsPrintf ("DMA (%s, %s, %s, ",
             AcpiGbl_TYPDecode [(Resource->Dma.Flags >> 5) & 3],
             AcpiGbl_BMDecode  [(Resource->Dma.Flags >> 2) & 1],
             AcpiGbl_SIZDecode [(Resource->Dma.Flags >> 0) & 3]);
+
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
+    AcpiOsPrintf (")\n");
 
     AcpiDmIndent (Level + 1);
     AcpiDmBitList (Resource->Dma.DmaChannelMask);
@@ -235,7 +244,10 @@ AcpiDmIoDescriptor (
     AcpiDmIndent (Level + 1);
     AcpiDmDumpInteger8 (Resource->Io.AddressLength, "Address Length");
 
+    /* Insert a descriptor name */
+
     AcpiDmIndent (Level + 1);
+    AcpiDmDescriptorName ();
     AcpiOsPrintf (")\n");
 }
 
@@ -270,7 +282,10 @@ AcpiDmFixedIoDescriptor (
     AcpiDmIndent (Level + 1);
     AcpiDmDumpInteger8 (Resource->FixedIo.AddressLength, "Address Length");
 
+    /* Insert a descriptor name */
+
     AcpiDmIndent (Level + 1);
+    AcpiDmDescriptorName ();
     AcpiOsPrintf (")\n");
 }
 
@@ -363,7 +378,7 @@ AcpiDmVendorSmallDescriptor (
     UINT32                  Level)
 {
 
-    AcpiDmVendorCommon ("Short ()",
+    AcpiDmVendorCommon ("Short",
         ACPI_ADD_PTR (UINT8, Resource, sizeof (AML_RESOURCE_SMALL_HEADER)),
         Length, Level);
 }

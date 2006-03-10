@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.220 $
+ *       $Revision: 1.221 $
  *
  *****************************************************************************/
 
@@ -269,13 +269,13 @@ typedef struct acpi_namespace_node
     ACPI_NAME_UNION             Name;           /* ACPI Name, always 4 chars per ACPI spec */
     union acpi_operand_object   *Object;        /* Pointer to attached ACPI object (optional) */
     struct acpi_namespace_node  *Child;         /* First child */
-    struct acpi_namespace_node  *Peer;          /* Next peer*/
+    struct acpi_namespace_node  *Peer;          /* Next peer */
     UINT8                       OwnerId;        /* Who created this node */
     UINT8                       Flags;
 
-    /* Fields used by the ASL compiler only */
+    /* Fields used by the ASL compiler and disassembler only */
 
-#ifdef ACPI_ASL_COMPILER
+#ifdef ACPI_LARGE_NAMESPACE_NODE
     UINT32                      Value;
     union acpi_parse_object     *Op;
 #endif

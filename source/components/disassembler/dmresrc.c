@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.29 $
+ *              $Revision: 1.30 $
  *
  ******************************************************************************/
 
@@ -171,6 +171,25 @@ static ACPI_RESOURCE_HANDLER    AcpiGbl_DumpResourceDispatch [] =
 };
 
 
+/* Only used for single-threaded applications */
+/* TBD: remove when name is passed as parameter to the dump functions */
+
+UINT32                      ResourceName;
+
+void
+AcpiDmDescriptorName (
+    void)
+{
+
+    if (ResourceName == ACPI_DEFAULT_RESNAME)
+    {
+        return;
+    }
+
+    AcpiOsPrintf ("%4.4s", (char *) &ResourceName);
+}
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmDumpInteger*
@@ -286,6 +305,7 @@ AcpiDmBitList (
 void
 AcpiDmResourceTemplate (
     ACPI_OP_WALK_INFO       *Info,
+    ACPI_PARSE_OBJECT       *Op,
     UINT8                   *ByteData,
     UINT32                  ByteCount)
 {
@@ -297,9 +317,16 @@ AcpiDmResourceTemplate (
     UINT32                  Level;
     BOOLEAN                 DependentFns = FALSE;
     UINT8                   ResourceIndex;
+    ACPI_NAMESPACE_NODE     *Node;
 
 
     Level = Info->Level;
+    ResourceName = ACPI_DEFAULT_RESNAME;
+    Node = Op->Common.Node;
+    if (Node)
+    {
+        Node = Node->Child;
+    }
 
     for (CurrentByteOffset = 0; CurrentByteOffset < ByteCount; )
     {
@@ -374,6 +401,12 @@ AcpiDmResourceTemplate (
         }
 
         /* Disassemble the resource structure */
+
+        if (Node)
+        {
+            ResourceName = Node->Name.Integer;
+            Node = Node->Peer;
+        }
 
         AcpiGbl_DumpResourceDispatch [ResourceIndex] (
             Aml, ResourceLength, Level);

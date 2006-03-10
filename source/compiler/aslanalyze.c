@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -480,7 +480,8 @@ AnGetBtype (
         ThisNodeBtype = AnMapEtypeToBtype (Node->Type);
         if (!ThisNodeBtype)
         {
-            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op, NULL);
+            AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op,
+                "could not map type");
         }
 
         /*
@@ -494,8 +495,9 @@ AnGetBtype (
             ReferencedNode = Node->Op;
             if (!ReferencedNode)
             {
-               printf ("No back ptr to Op: type %X\n", Node->Type);
-               return ACPI_UINT32_MAX;
+                AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op,
+                    "null Op pointer");
+                return ACPI_UINT32_MAX;
             }
 
             if (ReferencedNode->Asl.CompileFlags & NODE_METHOD_TYPED)
@@ -1644,7 +1646,12 @@ AnOperandTypecheckWalkEnd (
 
         if (ArgOp->Asl.ParseOpcode == PARSEOP_METHODCALL)
         {
-            if (!ACPI_STRCMP (ArgOp->Asl.ExternalName, "\\_OSI"))
+            /*
+             * Special-case the _OSI method here. This is currently the 
+             * only such predefined method.
+             */
+            if ((!ACPI_STRCMP (ArgOp->Asl.ExternalName, "\\_OSI")) ||
+                (!ACPI_STRCMP (ArgOp->Asl.ExternalName, "_OSI")))
             {
                 return (AE_OK);
             }

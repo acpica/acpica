@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  ******************************************************************************/
 
@@ -351,6 +351,21 @@ AcpiDmMatchKeyword (
     }
 }
 
+void
+AcpiDmCheckResource (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *BufferNameOp;
+
+
+
+    BufferNameOp = Op->Common.Value.Arg;
+
+
+    
+
+}
+
 
 /*******************************************************************************
  *
@@ -398,6 +413,7 @@ AcpiDmDisassembleOneOp (
 
     switch (Op->Common.AmlOpcode)
     {
+#if 0
     case AML_ZERO_OP:
 
         AcpiOsPrintf ("Zero");
@@ -421,6 +437,7 @@ AcpiDmDisassembleOneOp (
         AcpiOsPrintf ("Revision");
         break;
 
+#endif
 
     case AML_BYTE_OP:
 

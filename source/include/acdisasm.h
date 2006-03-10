@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.28 $
+ *       $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,7 @@
 #define BLOCK_PAREN             1
 #define BLOCK_BRACE             2
 #define BLOCK_COMMA_LIST        4
+#define ACPI_DEFAULT_RESNAME    *(UINT32 *) "__RD"
 
 typedef struct acpi_external_list
 {
@@ -159,6 +160,13 @@ ACPI_STATUS (*ASL_WALK_CALLBACK) (
     UINT32                      Level,
     void                        *Context);
 
+typedef struct acpi_resource_tag
+{
+    UINT32                  BitIndex;
+    char                    *Tag;
+
+} ACPI_RESOURCE_TAG;
+
 
 /*
  * dmwalk
@@ -168,6 +176,13 @@ AcpiDmDisassemble (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Origin,
     UINT32                  NumOpcodes);
+
+void
+AcpiDmWalkParseTree (
+    ACPI_PARSE_OBJECT       *Op,
+    ASL_WALK_CALLBACK       DescendingCallback,
+    ASL_WALK_CALLBACK       AscendingCallback,
+    void                    *Context);
 
 
 /*
@@ -313,6 +328,7 @@ AcpiDmDumpInteger64 (
 void
 AcpiDmResourceTemplate (
     ACPI_OP_WALK_INFO       *Info,
+    ACPI_PARSE_OBJECT       *Op,
     UINT8                   *ByteData,
     UINT32                  ByteCount);
 
@@ -331,6 +347,10 @@ AcpiDmBitList (
 void
 AcpiDmDecodeAttribute (
     UINT8                   Attribute);
+
+void
+AcpiDmDescriptorName (
+    void);
 
 
 /*
@@ -456,5 +476,21 @@ AcpiDmVendorSmallDescriptor (
 void
 AcpiDmAddToExternalList (
     char                    *Path);
+
+/*
+ * dmrestag
+ */
+#ifdef ACPI_CREATE_RESOURCE_SYMBOLICS
+
+void
+AcpiDmFindResources (
+    ACPI_PARSE_OBJECT       *Root);
+
+void
+AcpiDmCheckResourceReference (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_WALK_STATE         *WalkState);
+#endif
+
 
 #endif  /* __ACDISASM_H__ */

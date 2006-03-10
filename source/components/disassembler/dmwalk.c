@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.27 $
+ *              $Revision: 1.28 $
  *
  ******************************************************************************/
 
@@ -144,13 +144,6 @@ AcpiDmAscendingOp (
     UINT32                  Level,
     void                    *Context);
 
-static void
-AcpiDmWalkParseTree (
-    ACPI_PARSE_OBJECT       *Op,
-    ASL_WALK_CALLBACK       DescendingCallback,
-    ASL_WALK_CALLBACK       AscendingCallback,
-    void                    *Context);
-
 static UINT32
 AcpiDmBlockType (
     ACPI_PARSE_OBJECT       *Op);
@@ -209,7 +202,7 @@ AcpiDmDisassemble (
  *
  ******************************************************************************/
 
-static void
+void
 AcpiDmWalkParseTree (
     ACPI_PARSE_OBJECT       *Op,
     ASL_WALK_CALLBACK       DescendingCallback,

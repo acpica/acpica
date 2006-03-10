@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -600,7 +600,7 @@ AcpiDmResourceSource (
     {
         /* The two optional fields are not used */
 
-        AcpiOsPrintf (",,");
+        AcpiOsPrintf (",, ");
         return;
     }
 
@@ -628,7 +628,7 @@ AcpiDmResourceSource (
         AcpiUtPrintString ((char *) &AmlResourceSource[1], ACPI_UINT8_MAX);
     }
 
-    AcpiOsPrintf (",");
+    AcpiOsPrintf (", ");
 }
 
 
@@ -665,6 +665,10 @@ AcpiDmWordDescriptor (
 
     AcpiDmIndent (Level + 1);
     AcpiDmResourceSource (Resource, sizeof (AML_RESOURCE_ADDRESS16), Length);
+
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
 
     /* Type-specific flags */
 
@@ -707,6 +711,10 @@ AcpiDmDwordDescriptor (
     AcpiDmIndent (Level + 1);
     AcpiDmResourceSource (Resource, sizeof (AML_RESOURCE_ADDRESS32), Length);
 
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
+
     /* Type-specific flags */
 
     AcpiDmAddressFlags (Resource);
@@ -747,6 +755,10 @@ AcpiDmQwordDescriptor (
 
     AcpiDmIndent (Level + 1);
     AcpiDmResourceSource (Resource, sizeof (AML_RESOURCE_ADDRESS64), Length);
+
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
 
     /* Type-specific flags */
 
@@ -790,9 +802,13 @@ AcpiDmExtendedDescriptor (
     AcpiDmDumpInteger64 (Resource->ExtAddress64.TypeSpecific,
         "Type-Specific Attributes");
 
-    /* Type-specific flags */
+    /* Insert a descriptor name */
 
     AcpiDmIndent (Level + 1);
+    AcpiDmDescriptorName ();
+
+    /* Type-specific flags */
+
     AcpiDmAddressFlags (Resource);
     AcpiOsPrintf (")\n");
 }
@@ -829,7 +845,10 @@ AcpiDmMemory24Descriptor (
 
     AcpiDmMemoryFields (&Resource->Memory24.Minimum, 16, Level);
 
+    /* Insert a descriptor name */
+
     AcpiDmIndent (Level + 1);
+    AcpiDmDescriptorName ();
     AcpiOsPrintf (")\n");
 }
 
@@ -865,7 +884,10 @@ AcpiDmMemory32Descriptor (
 
     AcpiDmMemoryFields (&Resource->Memory32.Minimum, 32, Level);
 
+    /* Insert a descriptor name */
+
     AcpiDmIndent (Level + 1);
+    AcpiDmDescriptorName ();
     AcpiOsPrintf (")\n");
 }
 
@@ -903,7 +925,10 @@ AcpiDmFixedMemory32Descriptor (
     AcpiDmIndent (Level + 1);
     AcpiDmDumpInteger32 (Resource->FixedMemory32.AddressLength, "Address Length");
 
+    /* Insert a descriptor name */
+
     AcpiDmIndent (Level + 1);
+    AcpiDmDescriptorName ();
     AcpiOsPrintf (")\n");
 }
 
@@ -997,9 +1022,13 @@ AcpiDmInterruptDescriptor (
             (Resource->ExtendedIrq.InterruptCount - 1) * sizeof (UINT32),
         Resource->ExtendedIrq.ResourceLength);
 
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
+    AcpiOsPrintf (")\n");
+
     /* Dump the interrupt list */
 
-    AcpiOsPrintf (")\n");
     AcpiDmIndent (Level);
     AcpiOsPrintf ("{\n");
     for (i = 0; i < Resource->ExtendedIrq.InterruptCount; i++)
@@ -1037,10 +1066,15 @@ AcpiDmVendorCommon (
     UINT32                  Level)
 {
 
-    /* Dump descriptor name */
+    /* Dump macro name */
 
     AcpiDmIndent (Level);
-    AcpiOsPrintf ("Vendor%s          // Length = 0x%.2X\n", Name, Length);
+    AcpiOsPrintf ("Vendor%s (", Name);
+
+    /* Insert a descriptor name */
+
+    AcpiDmDescriptorName ();
+    AcpiOsPrintf (")      // Length = 0x%.2X\n", Length);
 
     /* Dump the vendor bytes */
 
@@ -1075,7 +1109,7 @@ AcpiDmVendorLargeDescriptor (
     UINT32                  Level)
 {
 
-    AcpiDmVendorCommon ("Long () ",
+    AcpiDmVendorCommon ("Long ",
         ACPI_ADD_PTR (UINT8, Resource, sizeof (AML_RESOURCE_LARGE_HEADER)),
         Length, Level);
 }

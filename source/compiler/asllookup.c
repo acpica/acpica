@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -358,7 +358,7 @@ LsDoOneNamespaceObject (
             }
             Op = Op->Asl.Child;
 
-            if (Op->Asl.ParseOpcode == PARSEOP_INTEGER)
+            if (Op && (Op->Asl.ParseOpcode == PARSEOP_INTEGER))
             {
                 FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT,
                     "        [Initial Length  0x%.2X bytes]",
@@ -375,6 +375,29 @@ LsDoOneNamespaceObject (
             break;
 
 
+        case ACPI_TYPE_LOCAL_RESOURCE:
+
+            FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT,
+                "  [Desc Offset     0x%.4X Bytes]", Node->Value);
+            break;
+
+
+        case ACPI_TYPE_LOCAL_RESOURCE_FIELD:
+
+            if (Node->Flags & 0x80)
+            {
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT,
+                    "   [Field Offset    0x%.4X Bits 0x%.4X Bytes]",
+                    Node->Value, Node->Value / 8);
+            }
+            else
+            {
+                FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT,
+                    "   [Field Offset    0x%.4X Bytes]", Node->Value);
+            }
+            break;
+
+
         default:
             /* Nothing to do for other types */
             break;
@@ -383,6 +406,15 @@ LsDoOneNamespaceObject (
 
     FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "\n");
     return (AE_OK);
+}
+
+
+void
+LsSetupNsList (void * Handle)
+{
+
+    Gbl_NsOutputFlag = TRUE;
+    Gbl_Files[ASL_FILE_NAMESPACE_OUTPUT].Handle = Handle;
 }
 
 

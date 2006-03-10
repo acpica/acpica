@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslresource - Resource templates and descriptors
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -376,7 +376,7 @@ RsDoOneResourceDescriptor (
     ASL_RESOURCE_NODE       *Rnode = NULL;
 
 
-    /* Determine type of resource */
+    /* Construct the resource */
 
     switch (DescriptorTypeOp->Asl.ParseOpcode)
     {
@@ -585,6 +585,7 @@ RsDoOneResourceDescriptor (
      */
     DescriptorTypeOp->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
     DescriptorTypeOp->Asl.CompileFlags = NODE_IS_RESOURCE_DESC;
+    DescriptorTypeOp->Asl.Value.Integer = CurrentByteOffset;
 
     if (Rnode)
     {

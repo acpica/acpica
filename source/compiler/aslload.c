@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -340,6 +340,9 @@ LdLoadResourceElements (
         }
         return (Status);
     }
+
+    Node->Value = (UINT32) Op->Asl.Value.Integer;
+    Node->Op = Op;
 
     /*
      * Now enter the predefined fields, for easy lookup when referenced
