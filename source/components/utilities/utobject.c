@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -267,7 +267,7 @@ AcpiUtCreateBufferObject (
     {
         /* Allocate the actual buffer */
 
-        Buffer = ACPI_MEM_CALLOCATE (BufferSize);
+        Buffer = ACPI_ALLOCATE_ZEROED (BufferSize);
         if (!Buffer)
         {
             ACPI_ERROR ((AE_INFO, "Could not allocate size %X",
@@ -326,7 +326,7 @@ AcpiUtCreateStringObject (
      * Allocate the actual string buffer -- (Size + 1) for NULL terminator.
      * NOTE: Zero-length strings are NULL terminated
      */
-    String = ACPI_MEM_CALLOCATE (StringSize + 1);
+    String = ACPI_ALLOCATE_ZEROED (StringSize + 1);
     if (!String)
     {
         ACPI_ERROR ((AE_INFO, "Could not allocate size %X",

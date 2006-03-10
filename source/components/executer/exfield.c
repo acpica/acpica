@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -426,7 +426,7 @@ AcpiExWriteDataToField (
     {
         /* We need to create a new buffer */
 
-        NewBuffer = ACPI_MEM_CALLOCATE (RequiredLength);
+        NewBuffer = ACPI_ALLOCATE_ZEROED (RequiredLength);
         if (!NewBuffer)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -468,7 +468,7 @@ AcpiExWriteDataToField (
 
     if (NewBuffer)
     {
-        ACPI_MEM_FREE (NewBuffer);
+        ACPI_FREE (NewBuffer);
     }
 
     return_ACPI_STATUS (Status);

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.154 $
+ *              $Revision: 1.155 $
  *
  *****************************************************************************/
 
@@ -354,7 +354,7 @@ AcpiUtInitializeBuffer (
 
         /* Allocate a new buffer with local interface to allow tracking */
 
-        Buffer->Pointer = ACPI_MEM_CALLOCATE (RequiredLength);
+        Buffer->Pointer = ACPI_ALLOCATE_ZEROED (RequiredLength);
         if (!Buffer->Pointer)
         {
             return (AE_NO_MEMORY);

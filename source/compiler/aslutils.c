@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -202,7 +202,7 @@ UtLocalCalloc (
     void                    *Allocated;
 
 
-    Allocated = ACPI_MEM_CALLOCATE (Size);
+    Allocated = ACPI_ALLOCATE_ZEROED (Size);
     if (!Allocated)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,

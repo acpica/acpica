@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmrestag - Add tags to resource descriptors (Application-level)
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -634,7 +634,7 @@ AcpiGetTagPathname (
     /* Get the full pathname to the parent buffer */
 
     RequiredSize = AcpiNsGetPathnameLength (BufferNode);
-    Pathname = ACPI_MEM_CALLOCATE (RequiredSize + ACPI_PATH_SEGMENT_LENGTH);
+    Pathname = ACPI_ALLOCATE_ZEROED (RequiredSize + ACPI_PATH_SEGMENT_LENGTH);
     if (!Pathname)
     {
         return (NULL);
@@ -660,7 +660,7 @@ AcpiGetTagPathname (
     /* Internalize the namepath to AML format */
 
     AcpiNsInternalizeName (Pathname, &InternalPath);
-    ACPI_MEM_FREE (Pathname);
+    ACPI_FREE (Pathname);
     return (InternalPath);
 }
 

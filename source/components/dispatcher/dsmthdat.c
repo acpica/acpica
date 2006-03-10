@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  ******************************************************************************/
 
@@ -164,7 +164,7 @@ AcpiDsMethodDataGetType (
  *              special data types.
  *
  * NOTES:       WalkState fields are initialized to zero by the
- *              ACPI_MEM_CALLOCATE().
+ *              ACPI_ALLOCATE_ZEROED().
  *
  *              A pseudo-Namespace Node is assigned to each argument and local
  *              so that RefOf() can return a pointer to the Node.

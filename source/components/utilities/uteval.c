@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -584,7 +584,7 @@ AcpiUtExecute_CID (
     Size = (((Count - 1) * sizeof (ACPI_COMPATIBLE_ID)) +
                            sizeof (ACPI_COMPATIBLE_ID_LIST));
 
-    CidList = ACPI_MEM_CALLOCATE ((ACPI_SIZE) Size);
+    CidList = ACPI_ALLOCATE_ZEROED ((ACPI_SIZE) Size);
     if (!CidList)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -629,7 +629,7 @@ AcpiUtExecute_CID (
 
     if (ACPI_FAILURE (Status))
     {
-        ACPI_MEM_FREE (CidList);
+        ACPI_FREE (CidList);
     }
     else
     {

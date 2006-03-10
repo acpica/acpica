@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -374,7 +374,7 @@ AcpiGetFirmwareTable (
 
     /* Get and validate the RSDT */
 
-    RsdtInfo = ACPI_MEM_CALLOCATE (sizeof (ACPI_TABLE_DESC));
+    RsdtInfo = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_TABLE_DESC));
     if (!RsdtInfo)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -394,14 +394,14 @@ AcpiGetFirmwareTable (
 
     /* Allocate a scratch table header and table descriptor */
 
-    Header = ACPI_MEM_ALLOCATE (sizeof (ACPI_TABLE_HEADER));
+    Header = ACPI_ALLOCATE (sizeof (ACPI_TABLE_HEADER));
     if (!Header)
     {
         Status = AE_NO_MEMORY;
         goto Cleanup;
     }
 
-    TableInfo = ACPI_MEM_ALLOCATE (sizeof (ACPI_TABLE_DESC));
+    TableInfo = ACPI_ALLOCATE (sizeof (ACPI_TABLE_DESC));
     if (!TableInfo)
     {
         Status = AE_NO_MEMORY;
@@ -476,15 +476,15 @@ Cleanup:
         AcpiOsUnmapMemory (RsdtInfo->Pointer,
             (ACPI_SIZE) RsdtInfo->Pointer->Length);
     }
-    ACPI_MEM_FREE (RsdtInfo);
+    ACPI_FREE (RsdtInfo);
 
     if (Header)
     {
-        ACPI_MEM_FREE (Header);
+        ACPI_FREE (Header);
     }
     if (TableInfo)
     {
-        ACPI_MEM_FREE (TableInfo);
+        ACPI_FREE (TableInfo);
     }
     return_ACPI_STATUS (Status);
 }

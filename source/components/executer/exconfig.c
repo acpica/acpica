@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -449,7 +449,7 @@ AcpiExLoadOp (
 
         /* Allocate a buffer for the entire table */
 
-        TablePtr = ACPI_MEM_ALLOCATE (TableHeader.Length);
+        TablePtr = ACPI_ALLOCATE (TableHeader.Length);
         if (!TablePtr)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -551,7 +551,7 @@ AcpiExLoadOp (
 Cleanup:
     if (ACPI_FAILURE (Status))
     {
-        ACPI_MEM_FREE (TablePtr);
+        ACPI_FREE (TablePtr);
     }
     return_ACPI_STATUS (Status);
 }

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -3155,7 +3155,7 @@ AslLocalAllocate (unsigned int Size)
 
     DbgPrint (ASL_PARSE_OUTPUT, "\nAslLocalAllocate: Expanding Stack to %d\n\n", Size);
 
-    Mem = ACPI_MEM_CALLOCATE (Size);
+    Mem = ACPI_ALLOCATE_ZEROED (Size);
     if (!Mem)
     {
         AslCommonError (ASL_ERROR, ASL_MSG_MEMORY_ALLOCATION,

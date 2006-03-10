@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -158,7 +158,7 @@ AcpiEvSystemMemoryRegionSetup (
     {
         if (*RegionContext)
         {
-            ACPI_MEM_FREE (*RegionContext);
+            ACPI_FREE (*RegionContext);
             *RegionContext = NULL;
         }
         return_ACPI_STATUS (AE_OK);
@@ -166,7 +166,7 @@ AcpiEvSystemMemoryRegionSetup (
 
     /* Create a new context */
 
-    LocalRegionContext = ACPI_MEM_CALLOCATE (sizeof (ACPI_MEM_SPACE_CONTEXT));
+    LocalRegionContext = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_MEM_SPACE_CONTEXT));
     if (!(LocalRegionContext))
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -274,7 +274,7 @@ AcpiEvPciConfigRegionSetup (
     {
         if (PciId)
         {
-            ACPI_MEM_FREE (PciId);
+            ACPI_FREE (PciId);
         }
         return_ACPI_STATUS (Status);
     }
@@ -361,7 +361,7 @@ AcpiEvPciConfigRegionSetup (
 
     /* Region is still not initialized. Create a new context */
 
-    PciId = ACPI_MEM_CALLOCATE (sizeof (ACPI_PCI_ID));
+    PciId = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_PCI_ID));
     if (!PciId)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);

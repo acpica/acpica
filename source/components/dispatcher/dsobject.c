@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.129 $
+ *              $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -329,7 +329,7 @@ AcpiDsBuildInternalBufferObj (
     }
     else
     {
-        ObjDesc->Buffer.Pointer = ACPI_MEM_CALLOCATE (
+        ObjDesc->Buffer.Pointer = ACPI_ALLOCATE_ZEROED (
                                         ObjDesc->Buffer.Length);
         if (!ObjDesc->Buffer.Pointer)
         {
@@ -437,7 +437,7 @@ AcpiDsBuildInternalPackageObj (
      * individual objects). Add an extra pointer slot so
      * that the list is always null terminated.
      */
-    ObjDesc->Package.Elements = ACPI_MEM_CALLOCATE (
+    ObjDesc->Package.Elements = ACPI_ALLOCATE_ZEROED (
         ((ACPI_SIZE) ObjDesc->Package.Count + 1) * sizeof (void *));
 
     if (!ObjDesc->Package.Elements)

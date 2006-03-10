@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -241,7 +241,7 @@ OptSearchToRoot (
 
     /* We must allocate a new string for the name (TargetPath gets deleted) */
 
-    *NewPath = ACPI_MEM_CALLOCATE (ACPI_NAME_SIZE + 1);
+    *NewPath = ACPI_ALLOCATE_ZEROED (ACPI_NAME_SIZE + 1);
     ACPI_STRCPY (*NewPath, Path);
 
     if (ACPI_STRNCMP (*NewPath, "_T_", 3))
@@ -372,7 +372,8 @@ OptBuildShortestPath (
     /*
      * Construct a new target string
      */
-    NewPathExternal = ACPI_MEM_CALLOCATE (TargetPath->Length + NumCarats + 1);
+    NewPathExternal = ACPI_ALLOCATE_ZEROED (
+        TargetPath->Length + NumCarats + 1);
 
     /* Insert the Carats into the Target string */
 
@@ -428,7 +429,7 @@ OptBuildShortestPath (
     {
         AslCoreSubsystemError (Op, Status, "Internalizing new NamePath",
             ASL_NO_ABORT);
-        ACPI_MEM_FREE (NewPathExternal);
+        ACPI_FREE (NewPathExternal);
         return (Status);
     }
 
@@ -437,7 +438,7 @@ OptBuildShortestPath (
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS,
             " NOT SHORTER (New %u old %u)",
             ACPI_STRLEN (NewPath), AmlNameStringLength));
-        ACPI_MEM_FREE (NewPathExternal);
+        ACPI_FREE (NewPathExternal);
         return (AE_NOT_FOUND);
     }
 
@@ -480,7 +481,7 @@ OptBuildShortestPath (
             "Not using optimized name - did not find node");
     }
 
-    ACPI_MEM_FREE (NewPathExternal);
+    ACPI_FREE (NewPathExternal);
     return (Status);
 }
 
@@ -585,7 +586,7 @@ OptOptimizeNameDeclaration (
                 "Not using optimized name - did not find node");
         }
 
-        ACPI_MEM_FREE (NewPathExternal);
+        ACPI_FREE (NewPathExternal);
         return (Status);
     }
 
@@ -755,7 +756,7 @@ OptOptimizeNamePath (
         (char *) CurrentPath.Pointer, CurrentPath.Length,
         (char *) TargetPath.Pointer, TargetPath.Length, ExternalNameString));
 
-    ACPI_MEM_FREE (ExternalNameString);
+    ACPI_FREE (ExternalNameString);
 
     /*
      * Attempt an optmization depending on the type of namepath
@@ -859,8 +860,8 @@ OptOptimizeNamePath (
 
     /* Cleanup path buffers */
 
-    ACPI_MEM_FREE (TargetPath.Pointer);
-    ACPI_MEM_FREE (CurrentPath.Pointer);
+    ACPI_FREE (TargetPath.Pointer);
+    ACPI_FREE (CurrentPath.Pointer);
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_OPTIMIZATIONS, "\n"));
     return_VOID;

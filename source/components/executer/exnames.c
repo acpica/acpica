@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -185,7 +185,7 @@ AcpiExAllocateNameString (
      * Allocate a buffer for the name.
      * This buffer must be deleted by the caller!
      */
-    NameString = ACPI_MEM_ALLOCATE (SizeNeeded);
+    NameString = ACPI_ALLOCATE (SizeNeeded);
     if (!NameString)
     {
         ACPI_ERROR ((AE_INFO,
@@ -546,7 +546,7 @@ AcpiExGetNameString (
     {
         if (NameString)
         {
-            ACPI_MEM_FREE (NameString);
+            ACPI_FREE (NameString);
         }
         return_ACPI_STATUS (Status);
     }

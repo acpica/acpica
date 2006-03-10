@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  ******************************************************************************/
 
@@ -230,7 +230,7 @@ AcpiNsGetExternalPathname (
 
     /* Allocate a buffer to be returned to caller */
 
-    NameBuffer = ACPI_MEM_CALLOCATE (Size);
+    NameBuffer = ACPI_ALLOCATE_ZEROED (Size);
     if (!NameBuffer)
     {
         ACPI_ERROR ((AE_INFO, "Allocation failure"));

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.180 $
+ *       $Revision: 1.181 $
  *
  *****************************************************************************/
 
@@ -811,18 +811,18 @@
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocate((ACPI_SIZE)(a),_COMPONENT,_AcpiModuleName,__LINE__)
-#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocate((ACPI_SIZE)(a), _COMPONENT,_AcpiModuleName,__LINE__)
-#define ACPI_MEM_FREE(a)                AcpiOsFree(a)
+#define ACPI_ALLOCATE(a)            AcpiUtAllocate((ACPI_SIZE)(a),_COMPONENT,_AcpiModuleName,__LINE__)
+#define ACPI_ALLOCATE_ZEROED(a)           AcpiUtCallocate((ACPI_SIZE)(a), _COMPONENT,_AcpiModuleName,__LINE__)
+#define ACPI_FREE(a)                AcpiOsFree(a)
 #define ACPI_MEM_TRACKING(a)
 
 #else
 
 /* Memory allocation */
 
-#define ACPI_MEM_ALLOCATE(a)            AcpiUtAllocateAndTrack((ACPI_SIZE)(a),_COMPONENT,_AcpiModuleName,__LINE__)
-#define ACPI_MEM_CALLOCATE(a)           AcpiUtCallocateAndTrack((ACPI_SIZE)(a), _COMPONENT,_AcpiModuleName,__LINE__)
-#define ACPI_MEM_FREE(a)                AcpiUtFreeAndTrack(a,_COMPONENT,_AcpiModuleName,__LINE__)
+#define ACPI_ALLOCATE(a)            AcpiUtAllocateAndTrack((ACPI_SIZE)(a),_COMPONENT,_AcpiModuleName,__LINE__)
+#define ACPI_ALLOCATE_ZEROED(a)           AcpiUtCallocateAndTrack((ACPI_SIZE)(a), _COMPONENT,_AcpiModuleName,__LINE__)
+#define ACPI_FREE(a)                AcpiUtFreeAndTrack(a,_COMPONENT,_AcpiModuleName,__LINE__)
 #define ACPI_MEM_TRACKING(a)            a
 
 #endif /* ACPI_DBG_TRACK_ALLOCATIONS */

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.53 $
+ *              $Revision: 1.54 $
  *
  *****************************************************************************/
 
@@ -306,7 +306,7 @@ AcpiEvDeleteGpeHandlers (
             if ((GpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
                     ACPI_GPE_DISPATCH_HANDLER)
             {
-                ACPI_MEM_FREE (GpeEventInfo->Dispatch.Handler);
+                ACPI_FREE (GpeEventInfo->Dispatch.Handler);
                 GpeEventInfo->Dispatch.Handler = NULL;
                 GpeEventInfo->Flags &= ~ACPI_GPE_DISPATCH_MASK;
             }
@@ -614,7 +614,7 @@ AcpiEvGetGpeXruptBlock (
 
     /* Not found, must allocate a new xrupt descriptor */
 
-    GpeXrupt = ACPI_MEM_CALLOCATE (sizeof (ACPI_GPE_XRUPT_INFO));
+    GpeXrupt = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_GPE_XRUPT_INFO));
     if (!GpeXrupt)
     {
         return_PTR (NULL);
@@ -718,7 +718,7 @@ AcpiEvDeleteGpeXrupt (
 
     /* Free the block */
 
-    ACPI_MEM_FREE (GpeXrupt);
+    ACPI_FREE (GpeXrupt);
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -858,9 +858,9 @@ AcpiEvDeleteGpeBlock (
 
     /* Free the GpeBlock */
 
-    ACPI_MEM_FREE (GpeBlock->RegisterInfo);
-    ACPI_MEM_FREE (GpeBlock->EventInfo);
-    ACPI_MEM_FREE (GpeBlock);
+    ACPI_FREE (GpeBlock->RegisterInfo);
+    ACPI_FREE (GpeBlock->EventInfo);
+    ACPI_FREE (GpeBlock);
 
 UnlockAndExit:
     Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
@@ -898,7 +898,7 @@ AcpiEvCreateGpeInfoBlocks (
 
     /* Allocate the GPE register information block */
 
-    GpeRegisterInfo = ACPI_MEM_CALLOCATE (
+    GpeRegisterInfo = ACPI_ALLOCATE_ZEROED (
                             (ACPI_SIZE) GpeBlock->RegisterCount *
                             sizeof (ACPI_GPE_REGISTER_INFO));
     if (!GpeRegisterInfo)
@@ -912,7 +912,7 @@ AcpiEvCreateGpeInfoBlocks (
      * Allocate the GPE EventInfo block. There are eight distinct GPEs
      * per register. Initialization to zeros is sufficient.
      */
-    GpeEventInfo = ACPI_MEM_CALLOCATE (
+    GpeEventInfo = ACPI_ALLOCATE_ZEROED (
                         ((ACPI_SIZE) GpeBlock->RegisterCount *
                         ACPI_GPE_REGISTER_WIDTH) *
                         sizeof (ACPI_GPE_EVENT_INFO));
@@ -997,11 +997,11 @@ AcpiEvCreateGpeInfoBlocks (
 ErrorExit:
     if (GpeRegisterInfo)
     {
-        ACPI_MEM_FREE (GpeRegisterInfo);
+        ACPI_FREE (GpeRegisterInfo);
     }
     if (GpeEventInfo)
     {
-        ACPI_MEM_FREE (GpeEventInfo);
+        ACPI_FREE (GpeEventInfo);
     }
 
     return_ACPI_STATUS (Status);
@@ -1050,7 +1050,7 @@ AcpiEvCreateGpeBlock (
 
     /* Allocate a new GPE block */
 
-    GpeBlock = ACPI_MEM_CALLOCATE (sizeof (ACPI_GPE_BLOCK_INFO));
+    GpeBlock = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_GPE_BLOCK_INFO));
     if (!GpeBlock)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -1072,7 +1072,7 @@ AcpiEvCreateGpeBlock (
     Status = AcpiEvCreateGpeInfoBlocks (GpeBlock);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_MEM_FREE (GpeBlock);
+        ACPI_FREE (GpeBlock);
         return_ACPI_STATUS (Status);
     }
 
@@ -1081,7 +1081,7 @@ AcpiEvCreateGpeBlock (
     Status = AcpiEvInstallGpeBlock (GpeBlock, InterruptNumber);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_MEM_FREE (GpeBlock);
+        ACPI_FREE (GpeBlock);
         return_ACPI_STATUS (Status);
     }
 

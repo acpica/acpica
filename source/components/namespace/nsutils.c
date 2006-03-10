@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.148 $
+ *              $Revision: 1.149 $
  *
  *****************************************************************************/
 
@@ -194,7 +194,7 @@ AcpiNsReportError (
 
         if (Name)
         {
-            ACPI_MEM_FREE (Name);
+            ACPI_FREE (Name);
         }
     }
 
@@ -290,7 +290,7 @@ AcpiNsPrintNodePathname (
         }
 
         AcpiOsPrintf ("[%s] (Node %p)", (char *) Buffer.Pointer, Node);
-        ACPI_MEM_FREE (Buffer.Pointer);
+        ACPI_FREE (Buffer.Pointer);
     }
 }
 
@@ -654,7 +654,7 @@ AcpiNsInternalizeName (
 
     /* We need a segment to store the internal  name */
 
-    InternalName = ACPI_MEM_CALLOCATE (Info.Length);
+    InternalName = ACPI_ALLOCATE_ZEROED (Info.Length);
     if (!InternalName)
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -666,7 +666,7 @@ AcpiNsInternalizeName (
     Status = AcpiNsBuildInternalName (&Info);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_MEM_FREE (InternalName);
+        ACPI_FREE (InternalName);
         return_ACPI_STATUS (Status);
     }
 
@@ -814,7 +814,7 @@ AcpiNsExternalizeName (
     /*
      * Build ConvertedName
      */
-    *ConvertedName = ACPI_MEM_CALLOCATE (RequiredLength);
+    *ConvertedName = ACPI_ALLOCATE_ZEROED (RequiredLength);
     if (!(*ConvertedName))
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
@@ -1098,7 +1098,7 @@ AcpiNsGetNodeByPath (
 Cleanup:
     if (InternalPath)
     {
-        ACPI_MEM_FREE (InternalPath);
+        ACPI_FREE (InternalPath);
     }
     return_ACPI_STATUS (Status);
 }

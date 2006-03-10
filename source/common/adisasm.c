@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -381,7 +381,8 @@ FlGenerateFilename (
      * Copy the original filename to a new buffer. Leave room for the worst case
      * where we append the suffix, an added dot and the null terminator.
      */
-    NewFilename = ACPI_MEM_CALLOCATE (strlen (InputFilename) + strlen (Suffix) + 2);
+    NewFilename = ACPI_ALLOCATE_ZEROED (
+        strlen (InputFilename) + strlen (Suffix) + 2);
     strcpy (NewFilename, InputFilename);
 
     /* Try to find the last dot in the filename */
@@ -621,7 +622,7 @@ AdCrossReferenceNamespace (
     Info.Level = 0;
     Info.WalkState = WalkState;
     AcpiDmWalkParseTree (Op, AdXrefDescendingOp, AdXrefAscendingOp, &Info);
-    ACPI_MEM_FREE (WalkState);
+    ACPI_FREE (WalkState);
     return;
 }
 

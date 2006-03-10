@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmutils - AML disassembler utilities
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  ******************************************************************************/
 
@@ -236,7 +236,7 @@ AcpiDmAddToExternalList (
     {
         /* Allocate and init a new External() descriptor */
 
-        NewExternal = ACPI_MEM_CALLOCATE (sizeof (ACPI_EXTERNAL_LIST));
+        NewExternal = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_EXTERNAL_LIST));
         NewExternal->Path = ExternalPath;
 
         /* Link the new descriptor into the global list */

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -658,7 +658,9 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    {"ACPI_EXCEPTION",    "ACPI_EXCEPTION",          REPLACE_WHOLE_WORD},
+    {"ACPI_ALLOCATE_ZEROED",    "ACPI_ALLOCATE_ZEROED",   REPLACE_WHOLE_WORD},
+    {"ACPI_ALLOCATE",           "ACPI_ALLOCATE",          REPLACE_WHOLE_WORD},
+    {"ACPI_FREE",               "ACPI_FREE",              REPLACE_WHOLE_WORD},
 
 #if 0
     {"(c) 1999 - 2006",      "(c) 1999 - 2006",         REPLACE_WHOLE_WORD},

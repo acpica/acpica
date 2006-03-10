@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  ******************************************************************************/
 
@@ -693,7 +693,7 @@ AcpiDsCreateOperand (
 
         /* Free the namestring created above */
 
-        ACPI_MEM_FREE (NameString);
+        ACPI_FREE (NameString);
 
         /* Check status from the lookup */
 

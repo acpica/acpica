@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmnames - AML disassembler, names, namestrings, pathnames
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  ******************************************************************************/
 
@@ -245,7 +245,7 @@ AcpiPsDisplayObjectPathname (
     }
 
     AcpiOsPrintf ("  (Path %s)", (char *) Buffer.Pointer);
-    ACPI_MEM_FREE (Buffer.Pointer);
+    ACPI_FREE (Buffer.Pointer);
 
 
 Exit:

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  ******************************************************************************/
 
@@ -186,7 +186,7 @@ AcpiNsSearchNode (
                 ScopeName, Node, ACPI_CAST_PTR (char, &TargetName),
                 AcpiUtGetTypeName (Type)));
 
-            ACPI_MEM_FREE (ScopeName);
+            ACPI_FREE (ScopeName);
         }
     }
 #endif

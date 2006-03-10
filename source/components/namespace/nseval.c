@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.137 $
+ *              $Revision: 1.138 $
  *
  ******************************************************************************/
 
@@ -243,7 +243,7 @@ Cleanup:
     AcpiUtDeleteGenericState (ScopeInfo);
 
 Cleanup1:
-    ACPI_MEM_FREE (InternalPath);
+    ACPI_FREE (InternalPath);
     return_ACPI_STATUS (Status);
 }
 
@@ -329,7 +329,7 @@ Cleanup:
 
     if (InternalPath)
     {
-        ACPI_MEM_FREE (InternalPath);
+        ACPI_FREE (InternalPath);
     }
 
     return_ACPI_STATUS (Status);

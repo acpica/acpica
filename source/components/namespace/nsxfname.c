@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -344,7 +344,7 @@ AcpiGetObjectInfo (
         return (Status);
     }
 
-    Info = ACPI_MEM_CALLOCATE (sizeof (ACPI_DEVICE_INFO));
+    Info = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_DEVICE_INFO));
     if (!Info)
     {
         return (AE_NO_MEMORY);
@@ -461,10 +461,10 @@ AcpiGetObjectInfo (
 
 
 Cleanup:
-    ACPI_MEM_FREE (Info);
+    ACPI_FREE (Info);
     if (CidList)
     {
-        ACPI_MEM_FREE (CidList);
+        ACPI_FREE (CidList);
     }
     return (Status);
 }

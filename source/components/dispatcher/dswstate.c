@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -778,7 +778,7 @@ AcpiDsCreateWalkState (
     ACPI_FUNCTION_TRACE ("DsCreateWalkState");
 
 
-    WalkState = ACPI_MEM_CALLOCATE (sizeof (ACPI_WALK_STATE));
+    WalkState = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_WALK_STATE));
     if (!WalkState)
     {
         return_PTR (NULL);
@@ -803,7 +803,7 @@ AcpiDsCreateWalkState (
     Status = AcpiDsResultStackPush (WalkState);
     if (ACPI_FAILURE (Status))
     {
-        ACPI_MEM_FREE (WalkState);
+        ACPI_FREE (WalkState);
         return_PTR (NULL);
     }
 
@@ -1019,7 +1019,7 @@ AcpiDsDeleteWalkState (
         AcpiUtDeleteGenericState (State);
     }
 
-    ACPI_MEM_FREE (WalkState);
+    ACPI_FREE (WalkState);
     return_VOID;
 }
 

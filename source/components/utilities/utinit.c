@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -287,14 +287,14 @@ AcpiUtTerminate (
         while (GpeBlock)
         {
             NextGpeBlock = GpeBlock->Next;
-            ACPI_MEM_FREE (GpeBlock->EventInfo);
-            ACPI_MEM_FREE (GpeBlock->RegisterInfo);
-            ACPI_MEM_FREE (GpeBlock);
+            ACPI_FREE (GpeBlock->EventInfo);
+            ACPI_FREE (GpeBlock->RegisterInfo);
+            ACPI_FREE (GpeBlock);
 
             GpeBlock = NextGpeBlock;
         }
         NextGpeXruptInfo = GpeXruptInfo->Next;
-        ACPI_MEM_FREE (GpeXruptInfo);
+        ACPI_FREE (GpeXruptInfo);
         GpeXruptInfo = NextGpeXruptInfo;
     }
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  ******************************************************************************/
 
@@ -418,7 +418,7 @@ AcpiWalkResources (
         Resource = ACPI_ADD_PTR (ACPI_RESOURCE, Resource, Resource->Length);
     }
 
-    ACPI_MEM_FREE (Buffer.Pointer);
+    ACPI_FREE (Buffer.Pointer);
     return_ACPI_STATUS (Status);
 }
 

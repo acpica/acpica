@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.158 $
+ *              $Revision: 1.159 $
  *
  *****************************************************************************/
 
@@ -725,7 +725,7 @@ AcpiInstallGpeHandler (
 
     /* Allocate and init handler object */
 
-    Handler = ACPI_MEM_CALLOCATE (sizeof (ACPI_HANDLER_INFO));
+    Handler = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_HANDLER_INFO));
     if (!Handler)
     {
         Status = AE_NO_MEMORY;
@@ -858,7 +858,7 @@ AcpiRemoveGpeHandler (
 
     /* Now we can free the handler object */
 
-    ACPI_MEM_FREE (Handler);
+    ACPI_FREE (Handler);
 
 
 UnlockAndExit:

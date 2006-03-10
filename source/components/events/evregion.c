@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.159 $
+ *              $Revision: 1.160 $
  *
  *****************************************************************************/
 
@@ -473,7 +473,7 @@ AcpiEvAddressSpaceDispatch (
             {
                 /* The handler for this region was already installed */
 
-                ACPI_MEM_FREE (RegionContext);
+                ACPI_FREE (RegionContext);
             }
             else
             {

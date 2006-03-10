@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  ******************************************************************************/
 
@@ -720,7 +720,7 @@ AcpiDbDisplayObjectType (
             }
         }
 
-        ACPI_MEM_FREE (Info);
+        ACPI_FREE (Info);
     }
     else
     {

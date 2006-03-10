@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asllisting - Listing file generation
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -546,7 +546,7 @@ LsPopNode (
     }
 
     Gbl_ListingNode = Lnode->Next;
-    ACPI_MEM_FREE (Lnode);
+    ACPI_FREE (Lnode);
 
     /* New "Current" node is the new head */
 
@@ -1272,7 +1272,7 @@ LsWriteNodeToListing (
                                 Gbl_TableSignature, Gbl_TableId, &Pathname[1]);
                         }
                     }
-                    ACPI_MEM_FREE (Pathname);
+                    ACPI_FREE (Pathname);
                 }
                 break;
 

@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.25 $
+ *              $Revision: 1.26 $
  *
  ******************************************************************************/
 
@@ -280,7 +280,7 @@ AcpiEvaluateObject (
          * Allocate a new parameter block for the internal objects
          * Add 1 to count to allow for null terminated internal list
          */
-        Info.Parameters = ACPI_MEM_CALLOCATE (
+        Info.Parameters = ACPI_ALLOCATE_ZEROED (
                                 ((ACPI_SIZE) ExternalParams->Count + 1) *
                                 sizeof (void *));
         if (!Info.Parameters)
@@ -634,11 +634,11 @@ AcpiNsGetDeviceCallback (
                 if (ACPI_STRNCMP (Cid->Id[i].Value, Info->Hid,
                                         sizeof (ACPI_COMPATIBLE_ID)) != 0)
                 {
-                    ACPI_MEM_FREE (Cid);
+                    ACPI_FREE (Cid);
                     return (AE_OK);
                 }
             }
-            ACPI_MEM_FREE (Cid);
+            ACPI_FREE (Cid);
         }
     }
 

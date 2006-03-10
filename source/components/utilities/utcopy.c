@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -577,7 +577,7 @@ AcpiUtCopyEsimpleToIsimple (
     case ACPI_TYPE_STRING:
 
         InternalObject->String.Pointer =
-            ACPI_MEM_CALLOCATE ((ACPI_SIZE) ExternalObject->String.Length + 1);
+            ACPI_ALLOCATE_ZEROED ((ACPI_SIZE) ExternalObject->String.Length + 1);
         if (!InternalObject->String.Pointer)
         {
             goto ErrorExit;
@@ -594,7 +594,7 @@ AcpiUtCopyEsimpleToIsimple (
     case ACPI_TYPE_BUFFER:
 
         InternalObject->Buffer.Pointer =
-            ACPI_MEM_CALLOCATE (ExternalObject->Buffer.Length);
+            ACPI_ALLOCATE_ZEROED (ExternalObject->Buffer.Length);
         if (!InternalObject->Buffer.Pointer)
         {
             goto ErrorExit;
@@ -800,7 +800,7 @@ AcpiUtCopySimpleObject (
             (SourceDesc->Buffer.Length))
         {
             DestDesc->Buffer.Pointer =
-                ACPI_MEM_ALLOCATE (SourceDesc->Buffer.Length);
+                ACPI_ALLOCATE (SourceDesc->Buffer.Length);
             if (!DestDesc->Buffer.Pointer)
             {
                 return (AE_NO_MEMORY);
@@ -823,7 +823,7 @@ AcpiUtCopySimpleObject (
         if (SourceDesc->String.Pointer)
         {
             DestDesc->String.Pointer =
-                ACPI_MEM_ALLOCATE ((ACPI_SIZE) SourceDesc->String.Length + 1);
+                ACPI_ALLOCATE ((ACPI_SIZE) SourceDesc->String.Length + 1);
             if (!DestDesc->String.Pointer)
             {
                 return (AE_NO_MEMORY);
@@ -938,9 +938,8 @@ AcpiUtCopyIelementToIelement (
         /*
          * Create the object array
          */
-        TargetObject->Package.Elements =
-            ACPI_MEM_CALLOCATE (((ACPI_SIZE) SourceObject->Package.Count + 1) *
-                                    sizeof (void *));
+        TargetObject->Package.Elements = ACPI_ALLOCATE_ZEROED (
+            ((ACPI_SIZE) SourceObject->Package.Count + 1) * sizeof (void *));
         if (!TargetObject->Package.Elements)
         {
             Status = AE_NO_MEMORY;
@@ -1004,7 +1003,7 @@ AcpiUtCopyIpackageToIpackage (
     /*
      * Create the object array and walk the source package tree
      */
-    DestObj->Package.Elements = ACPI_MEM_CALLOCATE (
+    DestObj->Package.Elements = ACPI_ALLOCATE_ZEROED (
                                     ((ACPI_SIZE) SourceObj->Package.Count + 1) *
                                     sizeof (void *));
     if (!DestObj->Package.Elements)

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -535,7 +535,7 @@ AcpiNsInitOneDevice (
         ACPI_WARNING ((AE_INFO, "%s._INI failed: %s",
             ScopeName, AcpiFormatException (Status)));
 
-        ACPI_MEM_FREE (ScopeName);
+        ACPI_FREE (ScopeName);
 #endif
     }
     else

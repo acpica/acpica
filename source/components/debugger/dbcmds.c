@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  ******************************************************************************/
 
@@ -1022,7 +1022,7 @@ AcpiDbWalkForSpecificObjects (
     }
 
     AcpiOsPrintf ("%32s", (char *) Buffer.Pointer);
-    ACPI_MEM_FREE (Buffer.Pointer);
+    ACPI_FREE (Buffer.Pointer);
 
     /* Dump short info about the object */
 
@@ -1146,7 +1146,7 @@ AcpiDbWalkAndMatchName (
 
         AcpiOsPrintf ("%32s", (char *) Buffer.Pointer);
         (void) AcpiNsDumpOneObject (ObjHandle, NestingLevel, &Info, NULL);
-        ACPI_MEM_FREE (Buffer.Pointer);
+        ACPI_FREE (Buffer.Pointer);
     }
 
     return (AE_OK);
@@ -1418,11 +1418,11 @@ AcpiDmTestResourceConversion (
 
     /* Cleanup and exit */
 
-    ACPI_MEM_FREE (NewAml.Pointer);
+    ACPI_FREE (NewAml.Pointer);
 Exit2:
-    ACPI_MEM_FREE (ResourceObj.Pointer);
+    ACPI_FREE (ResourceObj.Pointer);
 Exit1:
-    ACPI_MEM_FREE (ReturnObj.Pointer);
+    ACPI_FREE (ReturnObj.Pointer);
     return (Status);
 }
 
@@ -1762,7 +1762,7 @@ AcpiDbBusWalk (
     /* Display the full path */
 
     AcpiOsPrintf ("%-32s", (char *) Buffer.Pointer);
-    ACPI_MEM_FREE (Buffer.Pointer);
+    ACPI_FREE (Buffer.Pointer);
 
     /* _PRT info */
 
@@ -1806,7 +1806,7 @@ AcpiDbBusWalk (
     if (ACPI_SUCCESS (Status))
     {
         AcpiOsPrintf (" _CID=%s", Cid->Id[0].Value);
-        ACPI_MEM_FREE (Cid);
+        ACPI_FREE (Cid);
     }
 
     AcpiOsPrintf ("\n");

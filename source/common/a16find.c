@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -438,7 +438,7 @@ AfRecognizeTable (
 
     /* Now get the rest of the table */
 
-    *TableGlobalPtr = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
+    *TableGlobalPtr = ACPI_ALLOCATE (AcpiTblHeader.Length);
     if (!*TableGlobalPtr)
     {
         AcpiOsPrintf (
@@ -551,7 +551,7 @@ AfGetAllTables (
      */
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XFirmwareCtrl),
                         sizeof (ACPI_TABLE_HEADER));
-    AcpiGbl_FACS = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
+    AcpiGbl_FACS = ACPI_ALLOCATE (AcpiTblHeader.Length);
     if (!AcpiGbl_FACS)
     {
         AcpiOsPrintf ("Could not allocate buffer for FADT length 0x%X\n",
@@ -584,7 +584,7 @@ AfGetAllTables (
      * Get the DSDT
      */
     CopyExtendedToReal (&AcpiTblHeader, ACPI_GET_ADDRESS (AcpiGbl_FADT->XDsdt), sizeof (ACPI_TABLE_HEADER));
-    AcpiGbl_DSDT = ACPI_MEM_ALLOCATE (AcpiTblHeader.Length);
+    AcpiGbl_DSDT = ACPI_ALLOCATE (AcpiTblHeader.Length);
     if (!AcpiGbl_DSDT)
     {
         AcpiOsPrintf ("Could not allocate buffer for DSDT length 0x%X\n", (UINT32) AcpiTblHeader.Length);

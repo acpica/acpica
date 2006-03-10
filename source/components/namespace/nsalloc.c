@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  ******************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiNsCreateNode (
     ACPI_FUNCTION_TRACE ("NsCreateNode");
 
 
-    Node = ACPI_MEM_CALLOCATE (sizeof (ACPI_NAMESPACE_NODE));
+    Node = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_NAMESPACE_NODE));
     if (!Node)
     {
         return_PTR (NULL);
@@ -239,7 +239,7 @@ AcpiNsDeleteNode (
      * Detach an object if there is one then delete the node
      */
     AcpiNsDetachObject (Node);
-    ACPI_MEM_FREE (Node);
+    ACPI_FREE (Node);
     return_VOID;
 }
 
@@ -427,7 +427,7 @@ AcpiNsDeleteChildren (
 
         /* Now we can delete the node */
 
-        ACPI_MEM_FREE (ChildNode);
+        ACPI_FREE (ChildNode);
 
         /* And move on to the next child in the list */
 
