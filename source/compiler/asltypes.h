@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -313,6 +313,7 @@ typedef struct asl_event_info
 
 typedef enum
 {
+    ASL_MSG_RESERVED = 0,
     ASL_MSG_ALPHANUMERIC_STRING,
     ASL_MSG_AML_NOT_IMPLEMENTED,
     ASL_MSG_ARG_COUNT_HI,
@@ -421,6 +422,7 @@ typedef enum
 #ifdef ASL_EXCEPTIONS
 
 char                        *AslMessages [] = {
+/*    The zeroth message is resesrved */    "",
 /*    ASL_MSG_ALPHANUMERIC_STRING */        "String must be entirely alphanumeric",
 /*    ASL_MSG_AML_NOT_IMPLEMENTED */        "Opcode is not implemented in compiler AML code generator",
 /*    ASL_MSG_ARG_COUNT_HI */               "Too many arguments",
