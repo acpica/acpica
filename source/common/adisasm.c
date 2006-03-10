@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -132,9 +132,28 @@
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("adisasm")
 
+/* Local prototypes */
+
+static ACPI_STATUS
+AdXrefDescendingOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static ACPI_STATUS
+AdXrefAscendingOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context);
+
+static void
+AdCrossReferenceNamespace (
+    void);
 
 ACPI_PARSE_OBJECT       *AcpiGbl_ParsedNamespaceRoot;
 
+
+/* Stubs for ASL compiler */
 
 #ifndef ACPI_ASL_COMPILER
 BOOLEAN
@@ -466,6 +485,147 @@ FlSplitInputPathname (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AdXrefDescendingOp
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Descending handler for namespace cross reference
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AdXrefDescendingOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context)
+{
+    ACPI_OP_WALK_INFO       *Info = Context;
+    const ACPI_OPCODE_INFO  *OpInfo;
+    ACPI_WALK_STATE         *WalkState;
+    ACPI_OBJECT_TYPE        ObjectType;
+    ACPI_STATUS             Status;
+
+
+    WalkState = Info->WalkState;
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
+
+    ObjectType = OpInfo->ObjectType;
+    if (AcpiNsOpensScope (ObjectType))
+    {
+        if (Op->Common.Node)
+        {
+
+            Status = AcpiDsScopeStackPush (Op->Common.Node, ObjectType, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+        }
+    }
+
+    /*
+     * Check if this operator contains a reference to a resource descriptor.
+     * If so, convert the reference into a symbolic reference.
+     */
+    AcpiDmCheckResourceReference (Op, WalkState);
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AdXrefAscendingOp
+ *
+ * PARAMETERS:  ASL_WALK_CALLBACK
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Ascending handler for namespace cross reference
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AdXrefAscendingOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Level,
+    void                    *Context)
+{
+    ACPI_OP_WALK_INFO       *Info = Context;
+    const ACPI_OPCODE_INFO  *OpInfo;
+    ACPI_OBJECT_TYPE        ObjectType;
+
+
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
+    ObjectType = OpInfo->ObjectType;
+
+    if (AcpiNsOpensScope (ObjectType))
+    {
+        (void) AcpiDsScopeStackPop (Info->WalkState);
+    }
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AdCrossReferenceNamespace
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Cross reference the namespace to create externals and to
+ *              convert fixed-offset references to resource descriptors to 
+ *              symbolic references.
+ *
+ * TBD:         Currently only generates resource symbolic references.
+ *
+ ******************************************************************************/
+
+static void
+AdCrossReferenceNamespace (
+    void)
+{
+    ACPI_STATUS             Status;
+    ACPI_PARSE_OBJECT       *Op = AcpiGbl_ParsedNamespaceRoot;
+    ACPI_OP_WALK_INFO       Info;
+    ACPI_WALK_STATE         *WalkState;
+
+
+    if (!Op)
+    {
+        return;
+    }
+
+    /* Create and initialize a new walk state */
+
+    WalkState = AcpiDsCreateWalkState (0, AcpiGbl_ParsedNamespaceRoot, NULL, NULL);
+    if (!WalkState)
+    {
+        return;
+    }
+
+    Status = AcpiDsScopeStackPush (AcpiGbl_RootNode,
+                    AcpiGbl_RootNode->Type, WalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    Info.Flags = 0;
+    Info.Level = 0;
+    Info.WalkState = WalkState;
+    AcpiDmWalkParseTree (Op, AdXrefDescendingOp, AdXrefAscendingOp, &Info);
+    ACPI_MEM_FREE (WalkState);
+    return;
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AdAmlDisassemble
@@ -570,16 +730,11 @@ AdAmlDisassemble (
     }
 
     /*
-     * TBD: We want to cross reference the namespace here, in order to
-     * generate External() statements.  The problem is that the parse
-     * tree is in run-time (interpreter) format, not compiler format,
-     * so we cannot directly use the function below:
-     *
-     *    Status = LkCrossReferenceNamespace ();
-     *
-     * We need to either convert the parse tree or create a new
-     * cross ref function that can handle interpreter parse trees
+     * Cross reference the namespace here, in order to
+     * generate External() statements and to convert fixed-offset 
+     * references to resource descriptors to symbolic references.
      */
+    AdCrossReferenceNamespace ();
 
     /* Optional displays */
 
@@ -592,6 +747,12 @@ AdAmlDisassemble (
 Cleanup:
     if (OutToFile)
     {
+
+#ifdef ASL_DISASM_DEBUG
+        LsSetupNsList (File);
+        LsDisplayNamespace ();
+#endif
+
         fclose (File);
         AcpiOsRedirectOutput (stdout);
     }
@@ -1102,6 +1263,10 @@ AdParseTable (
     /* Pass 3: Parse control methods and link their parse trees into the main parse tree */
 
     Status = AdParseDeferredOps (AcpiGbl_ParsedNamespaceRoot);
+
+    /* Process Resource Templates */
+
+    AcpiDmFindResources (AcpiGbl_ParsedNamespaceRoot);
 
     fprintf (stderr, "Parsing completed\n");
     return AE_OK;
