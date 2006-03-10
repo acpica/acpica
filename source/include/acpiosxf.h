@@ -297,7 +297,7 @@ AcpiOsRemoveInterruptHandler (
 /*
  * Threads and Scheduling
  */
-UINT32
+ACPI_THREAD_ID
 AcpiOsGetThreadId (
     void);
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.302 $
+ *       $Revision: 1.303 $
  *
  *****************************************************************************/
 
@@ -378,6 +378,13 @@ typedef ACPI_NATIVE_UINT                ACPI_SIZE;
  */
 #ifndef ACPI_EXPORT_SYMBOL
 #define ACPI_EXPORT_SYMBOL(Symbol)
+#endif
+
+/* 
+ * ThreadId is returned by AcpiOsGetThreadId.
+ */
+#ifndef ACPI_THREAD_ID
+#define ACPI_THREAD_ID                  ACPI_NATIVE_UINT
 #endif
 
 /*******************************************************************************

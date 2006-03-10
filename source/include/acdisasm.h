@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.29 $
+ *       $Revision: 1.30 $
  *
  *****************************************************************************/
 
@@ -480,8 +480,6 @@ AcpiDmAddToExternalList (
 /*
  * dmrestag
  */
-#ifdef ACPI_CREATE_RESOURCE_SYMBOLICS
-
 void
 AcpiDmFindResources (
     ACPI_PARSE_OBJECT       *Root);
@@ -490,7 +488,5 @@ void
 AcpiDmCheckResourceReference (
     ACPI_PARSE_OBJECT       *Op,
     ACPI_WALK_STATE         *WalkState);
-#endif
-
 
 #endif  /* __ACDISASM_H__ */

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.128 $
+ *              $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -259,7 +259,7 @@ AcpiUtDebugPrint (
     char                    *Format,
     ...)
 {
-    UINT32                  ThreadId;
+    ACPI_THREAD_ID          ThreadId;
     va_list                 args;
 
 
@@ -276,7 +276,6 @@ AcpiUtDebugPrint (
      * Thread tracking and context switch notification
      */
     ThreadId = AcpiOsGetThreadId ();
-
     if (ThreadId != AcpiGbl_PrevThreadId)
     {
         if (ACPI_LV_THREADS & AcpiDbgLevel)

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmutex - local mutex support
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  ******************************************************************************/
 
@@ -300,7 +300,7 @@ AcpiUtAcquireMutex (
     ACPI_MUTEX_HANDLE       MutexId)
 {
     ACPI_STATUS             Status;
-    UINT32                  ThisThreadId;
+    ACPI_THREAD_ID          ThisThreadId;
 
 
     ACPI_FUNCTION_NAME ("UtAcquireMutex");
@@ -389,7 +389,7 @@ AcpiUtReleaseMutex (
     ACPI_MUTEX_HANDLE       MutexId)
 {
     ACPI_STATUS             Status;
-    UINT32                  ThisThreadId;
+    ACPI_THREAD_ID          ThisThreadId;
 
 
     ACPI_FUNCTION_NAME ("UtReleaseMutex");
