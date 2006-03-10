@@ -368,6 +368,14 @@ SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswstate.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\common\adisasm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmrestag.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\common\getopt.c
 # End Source File
 # Begin Source File
@@ -500,10 +508,6 @@ SOURCE=..\..\source\components\interpreter\executer\exutils.c
 # Begin Group "Disassembler"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\source\common\adisasm.c
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c

@@ -66,6 +66,7 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	../interpreter/executer/exsystem.c \
 	../interpreter/executer/exutils.c \
 	../common/adisasm.c \
+	../common/dmrestag.c \
 	../debugger/dbfileio.c \
 	../disassembler/dmbuffer.c \
 	../disassembler/dmnames.c \
