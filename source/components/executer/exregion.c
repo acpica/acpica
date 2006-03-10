@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -162,6 +162,7 @@ AcpiExSystemMemorySpaceHandler (
     UINT32                  Remainder;
 #endif
 
+
     ACPI_FUNCTION_TRACE ("ExSystemMemorySpaceHandler");
 
 
@@ -222,7 +223,7 @@ AcpiExSystemMemorySpaceHandler (
             /* Valid mapping, delete it */
 
             AcpiOsUnmapMemory (MemInfo->MappedLogicalAddress,
-                                MemInfo->MappedLength);
+                MemInfo->MappedLength);
         }
 
         /*
@@ -240,7 +241,7 @@ AcpiExSystemMemorySpaceHandler (
         /* Create a new mapping starting at the address given */
 
         Status = AcpiOsMapMemory (Address, WindowSize,
-                                    (void **) &MemInfo->MappedLogicalAddress);
+                    (void **) &MemInfo->MappedLogicalAddress);
         if (ACPI_FAILURE (Status))
         {
             ACPI_ERROR ((AE_INFO,
@@ -261,22 +262,20 @@ AcpiExSystemMemorySpaceHandler (
      * access
      */
     LogicalAddrPtr = MemInfo->MappedLogicalAddress +
-                     ((ACPI_INTEGER) Address -
-                      (ACPI_INTEGER) MemInfo->MappedPhysicalAddress);
+        ((ACPI_INTEGER) Address - (ACPI_INTEGER) MemInfo->MappedPhysicalAddress);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "SystemMemory %d (%d width) Address=%8.8X%8.8X\n",
-            Function, BitWidth,
-            ACPI_FORMAT_UINT64 (Address)));
+        "System-Memory (width %d) R/W %d Address=%8.8X%8.8X\n",
+        BitWidth, Function, ACPI_FORMAT_UINT64 (Address)));
 
-   /*
-    * Perform the memory read or write
-    *
-    * Note: For machines that do not support non-aligned transfers, the target
-    * address was checked for alignment above.  We do not attempt to break the
-    * transfer up into smaller (byte-size) chunks because the AML specifically
-    * asked for a transfer width that the hardware may require.
-    */
+    /*
+     * Perform the memory read or write
+     *
+     * Note: For machines that do not support non-aligned transfers, the target
+     * address was checked for alignment above.  We do not attempt to break the
+     * transfer up into smaller (byte-size) chunks because the AML specifically
+     * asked for a transfer width that the hardware may require.
+     */
     switch (Function)
     {
     case ACPI_READ:
@@ -379,8 +378,8 @@ AcpiExSystemIoSpaceHandler (
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "SystemIO %d (%d width) Address=%8.8X%8.8X\n", Function, BitWidth,
-            ACPI_FORMAT_UINT64 (Address)));
+        "System-IO (width %d) R/W %d Address=%8.8X%8.8X\n",
+        BitWidth, Function, ACPI_FORMAT_UINT64 (Address)));
 
     /* Decode the function parameter */
 
@@ -459,7 +458,7 @@ AcpiExPciConfigSpaceHandler (
     PciRegister = (UINT16) (UINT32) Address;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-        "PciConfig %d (%d) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n",
+        "Pci-Config %d (%d) Seg(%04x) Bus(%04x) Dev(%04x) Func(%04x) Reg(%04x)\n",
         Function, BitWidth, PciId->Segment, PciId->Bus, PciId->Device,
         PciId->Function, PciRegister));
 
