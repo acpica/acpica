@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.229 $
+ *              $Revision: 1.230 $
  *
  *****************************************************************************/
 
@@ -282,12 +282,14 @@ const char                  *AcpiGbl_ValidOsiStrings[ACPI_NUM_OSI_STRINGS] =
     "Linux",
     "Windows 2000",
     "Windows 2001",
-    "Windows 2001.1",
     "Windows 2001 SP0",
     "Windows 2001 SP1",
     "Windows 2001 SP2",
     "Windows 2001 SP3",
     "Windows 2001 SP4",
+    "Windows 2001.1",
+    "Windows 2001.1 SP1",   /* Added 03/2006 */
+    "Windows 2006",         /* Added 03/2006 */
 
     /* Feature Group Strings */
 
