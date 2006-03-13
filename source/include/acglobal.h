@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.175 $
+ *       $Revision: 1.176 $
  *
  *****************************************************************************/
 
@@ -282,6 +282,7 @@ ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_NsNodeList;
 
 /* Object caches */
 
+ACPI_EXTERN ACPI_CACHE_T               *AcpiGbl_NamespaceCache;
 ACPI_EXTERN ACPI_CACHE_T               *AcpiGbl_StateCache;
 ACPI_EXTERN ACPI_CACHE_T               *AcpiGbl_PsNodeCache;
 ACPI_EXTERN ACPI_CACHE_T               *AcpiGbl_PsNodeExtCache;

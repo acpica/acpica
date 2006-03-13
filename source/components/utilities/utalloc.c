@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.155 $
+ *              $Revision: 1.156 $
  *
  *****************************************************************************/
 
@@ -193,6 +193,13 @@ AcpiUtCreateCaches (
 
     /* Object Caches, for frequently used objects */
 
+    Status = AcpiOsCreateCache ("Acpi-Namespace", sizeof (ACPI_NAMESPACE_NODE),
+                ACPI_MAX_NAMESPACE_CACHE_DEPTH, &AcpiGbl_NamespaceCache);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
     Status = AcpiOsCreateCache ("Acpi-State", sizeof (ACPI_GENERIC_STATE),
                 ACPI_MAX_STATE_CACHE_DEPTH, &AcpiGbl_StateCache);
     if (ACPI_FAILURE (Status))
@@ -241,6 +248,9 @@ ACPI_STATUS
 AcpiUtDeleteCaches (
     void)
 {
+
+    (void) AcpiOsDeleteCache (AcpiGbl_NamespaceCache);
+    AcpiGbl_NamespaceCache = NULL;
 
     (void) AcpiOsDeleteCache (AcpiGbl_StateCache);
     AcpiGbl_StateCache = NULL;
