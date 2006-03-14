@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.159 $
+ *              $Revision: 1.160 $
  *
  *****************************************************************************/
 
@@ -373,7 +373,7 @@ AcpiUtInitializeBuffer (
  *
  * RETURN:      Address of the allocated memory on success, NULL on failure.
  *
- * DESCRIPTION: The subsystem's equivalent of malloc.
+ * DESCRIPTION: Subsystem equivalent of malloc.
  *
  ******************************************************************************/
 
@@ -394,8 +394,8 @@ AcpiUtAllocate (
 
     if (!Size)
     {
-        ACPI_ERROR ((Module, Line,
-            "UtAllocate: Attempt to allocate zero bytes, allocating 1 byte"));
+        ACPI_WARNING ((Module, Line,
+            "Attempt to allocate zero bytes, allocating 1 byte"));
         Size = 1;
     }
 
@@ -404,8 +404,8 @@ AcpiUtAllocate (
     {
         /* Report allocation error */
 
-        ACPI_ERROR ((Module, Line,
-            "UtAllocate: Could not allocate size %X", (UINT32) Size));
+        ACPI_WARNING ((Module, Line,
+            "Could not allocate size %X", (UINT32) Size));
 
         return_PTR (NULL);
     }
@@ -425,7 +425,7 @@ AcpiUtAllocate (
  *
  * RETURN:      Address of the allocated memory on success, NULL on failure.
  *
- * DESCRIPTION: Subsystem equivalent of calloc.
+ * DESCRIPTION: Subsystem equivalent of calloc. Allocate and zero memory.
  *
  ******************************************************************************/
 
@@ -439,31 +439,17 @@ AcpiUtAllocateZeroed (
     void                    *Allocation;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("UtAllocateZeroed", Size);
+    ACPI_FUNCTION_ENTRY ();
 
 
-    /* Check for an inadvertent size of zero bytes */
-
-    if (!Size)
+    Allocation = AcpiUtAllocate (Size, Component, Module, Line);
+    if (Allocation)
     {
-        ACPI_ERROR ((Module, Line,
-            "Attempt to allocate zero bytes, allocating 1 byte"));
-        Size = 1;
+        /* Clear the memory block */
+
+        ACPI_MEMSET (Allocation, 0, Size);
     }
 
-    Allocation = AcpiOsAllocate (Size);
-    if (!Allocation)
-    {
-        /* Report allocation error */
-
-        ACPI_ERROR ((Module, Line,
-            "Could not allocate size %X", (UINT32) Size));
-        return_PTR (NULL);
-    }
-
-    /* Clear the memory block */
-
-    ACPI_MEMSET (Allocation, 0, Size);
-    return_PTR (Allocation);
+    return (Allocation);
 }
 
