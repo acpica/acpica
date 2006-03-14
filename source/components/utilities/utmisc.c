@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.137 $
+ *              $Revision: 1.138 $
  *
  ******************************************************************************/
 
@@ -1086,48 +1086,4 @@ AcpiUtInfo (
     AcpiOsVprintf (Format, args);
     AcpiOsPrintf (" [%X]\n", ACPI_CA_VERSION);
 }
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiUtReportError, Warning, Info
- *
- * PARAMETERS:  ModuleName          - Caller's module name (for error output)
- *              LineNumber          - Caller's line number (for error output)
- *
- * RETURN:      None
- *
- * DESCRIPTION: Print error message
- *
- * Note: Legacy only, should be removed when no longer used by drivers.
- *
- ******************************************************************************/
-
-void
-AcpiUtReportError (
-    char                    *ModuleName,
-    UINT32                  LineNumber)
-{
-
-    AcpiOsPrintf ("ACPI Error (%s-%04d): ", ModuleName, LineNumber);
-}
-
-void
-AcpiUtReportWarning (
-    char                    *ModuleName,
-    UINT32                  LineNumber)
-{
-
-    AcpiOsPrintf ("ACPI Warning (%s-%04d): ", ModuleName, LineNumber);
-}
-
-void
-AcpiUtReportInfo (
-    char                    *ModuleName,
-    UINT32                  LineNumber)
-{
-
-    AcpiOsPrintf ("ACPI (%s-%04d): ", ModuleName, LineNumber);
-}
-
 

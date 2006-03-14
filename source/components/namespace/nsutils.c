@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.149 $
+ *              $Revision: 1.150 $
  *
  *****************************************************************************/
 
@@ -165,7 +165,7 @@ AcpiNsReportError (
     char                    *Name = NULL;
 
 
-    AcpiUtReportError (ModuleName, LineNumber);
+    AcpiOsPrintf ("ACPI Error (%s-%04d): ", ModuleName, LineNumber);
 
     if (LookupStatus == AE_BAD_CHARACTER)
     {
@@ -233,7 +233,7 @@ AcpiNsReportMethodError (
     ACPI_NAMESPACE_NODE     *Node = PrefixNode;
 
 
-    AcpiUtReportError (ModuleName, LineNumber);
+    AcpiOsPrintf ("ACPI Error (%s-%04d): ", ModuleName, LineNumber);
 
     if (Path)
     {

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.182 $
+ *       $Revision: 1.183 $
  *
  *****************************************************************************/
 
@@ -559,14 +559,6 @@
 #define ACPI_ERROR_NAMESPACE(s,e)       AcpiNsReportError (AE_INFO, s, e);
 #define ACPI_ERROR_METHOD(s,n,p,e)      AcpiNsReportMethodError (AE_INFO, s, n, p, e);
 
-/* Legacy interfaces. Remove when migration is complete */
-
-#define ACPI_REPORT_INFO(fp)            {AcpiUtReportInfo (AE_INFO); \
-                                            AcpiOsPrintf fp;}
-#define ACPI_REPORT_ERROR(fp)           {AcpiUtReportError (AE_INFO); \
-                                            AcpiOsPrintf fp;}
-#define ACPI_REPORT_WARNING(fp)         {AcpiUtReportWarning (AE_INFO); \
-                                            AcpiOsPrintf fp;}
 #else
 
 /* No error messages */
@@ -577,10 +569,6 @@
 #define ACPI_ERROR(plist)
 #define ACPI_ERROR_NAMESPACE(s,e)
 #define ACPI_ERROR_METHOD(s,n,p,e)
-
-#define ACPI_REPORT_INFO(fp)
-#define ACPI_REPORT_ERROR(fp)
-#define ACPI_REPORT_WARNING(fp)
 #endif
 
 /*
