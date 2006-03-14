@@ -173,6 +173,10 @@ SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\uttrack.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utxface.c
 # End Source File
 # End Group
@@ -194,15 +198,6 @@ SOURCE=..\..\source\components\interpreter\executer\excreate.c
 # Begin Source File
 
 SOURCE=..\..\source\components\interpreter\executer\exdump.c
-
-!IF  "$(CFG)" == "AcpiExec - Win32 Release"
-
-# SUBTRACT CPP /FA<none>
-
-!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
