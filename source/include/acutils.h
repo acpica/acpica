@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.189 $
+ *       $Revision: 1.190 $
  *
  *****************************************************************************/
 
@@ -896,6 +896,14 @@ void
 AcpiUtDumpAllocations (
     UINT32                  Component,
     char                    *Module);
+
+ACPI_STATUS
+AcpiUtCreateList (
+    char                    *ListName,
+    UINT16                  ObjectSize,
+    ACPI_MEMORY_LIST        **ReturnCache);
+
+
 #endif
 
 #endif /* _ACUTILS_H */

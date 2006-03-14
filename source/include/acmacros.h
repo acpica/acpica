@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.183 $
+ *       $Revision: 1.184 $
  *
  *****************************************************************************/
 
@@ -800,7 +800,7 @@
 /* Memory allocation */
 
 #define ACPI_ALLOCATE(a)            AcpiUtAllocate((ACPI_SIZE)(a),_COMPONENT,_AcpiModuleName,__LINE__)
-#define ACPI_ALLOCATE_ZEROED(a)           AcpiUtCallocate((ACPI_SIZE)(a), _COMPONENT,_AcpiModuleName,__LINE__)
+#define ACPI_ALLOCATE_ZEROED(a)     AcpiUtCallocate((ACPI_SIZE)(a), _COMPONENT,_AcpiModuleName,__LINE__)
 #define ACPI_FREE(a)                AcpiOsFree(a)
 #define ACPI_MEM_TRACKING(a)
 
@@ -809,9 +809,9 @@
 /* Memory allocation */
 
 #define ACPI_ALLOCATE(a)            AcpiUtAllocateAndTrack((ACPI_SIZE)(a),_COMPONENT,_AcpiModuleName,__LINE__)
-#define ACPI_ALLOCATE_ZEROED(a)           AcpiUtCallocateAndTrack((ACPI_SIZE)(a), _COMPONENT,_AcpiModuleName,__LINE__)
+#define ACPI_ALLOCATE_ZEROED(a)     AcpiUtCallocateAndTrack((ACPI_SIZE)(a), _COMPONENT,_AcpiModuleName,__LINE__)
 #define ACPI_FREE(a)                AcpiUtFreeAndTrack(a,_COMPONENT,_AcpiModuleName,__LINE__)
-#define ACPI_MEM_TRACKING(a)            a
+#define ACPI_MEM_TRACKING(a)        a
 
 #endif /* ACPI_DBG_TRACK_ALLOCATIONS */
 
