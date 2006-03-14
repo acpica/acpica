@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uttrack - Memory allocation tracking routines (debug only)
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,7 @@
  *
  * Each memory allocation is tracked via a doubly linked list.  Each
  * element contains the caller's component, module name, function name, and
- * line number.  AcpiUtAllocate and AcpiUtCallocate call
+ * line number.  AcpiUtAllocate and AcpiUtAllocateZeroed call
  * AcpiUtTrackAllocation to add an element to the list; deletion
  * occurs in the body of AcpiUtFree.
  */
@@ -246,7 +246,7 @@ AcpiUtAllocateAndTrack (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtCallocateAndTrack
+ * FUNCTION:    AcpiUtAllocateZeroedAndTrack
  *
  * PARAMETERS:  Size                - Size of the allocation
  *              Component           - Component type of caller
@@ -260,7 +260,7 @@ AcpiUtAllocateAndTrack (
  ******************************************************************************/
 
 void *
-AcpiUtCallocateAndTrack (
+AcpiUtAllocateZeroedAndTrack (
     ACPI_SIZE               Size,
     UINT32                  Component,
     char                    *Module,
@@ -270,7 +270,7 @@ AcpiUtCallocateAndTrack (
     ACPI_STATUS             Status;
 
 
-    Allocation = AcpiUtCallocate (Size + sizeof (ACPI_DEBUG_MEM_HEADER),
+    Allocation = AcpiUtAllocateZeroed (Size + sizeof (ACPI_DEBUG_MEM_HEADER),
                     Component, Module, Line);
     if (!Allocation)
     {

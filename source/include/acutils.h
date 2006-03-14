@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.190 $
+ *       $Revision: 1.191 $
  *
  *****************************************************************************/
 
@@ -860,7 +860,7 @@ AcpiUtAllocate (
     UINT32                  Line);
 
 void *
-AcpiUtCallocate (
+AcpiUtAllocateZeroed (
     ACPI_SIZE               Size,
     UINT32                  Component,
     char                    *Module,
@@ -875,7 +875,7 @@ AcpiUtAllocateAndTrack (
     UINT32                  Line);
 
 void *
-AcpiUtCallocateAndTrack (
+AcpiUtAllocateZeroedAndTrack (
     ACPI_SIZE               Size,
     UINT32                  Component,
     char                    *Module,

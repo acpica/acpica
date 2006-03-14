@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.158 $
+ *              $Revision: 1.159 $
  *
  *****************************************************************************/
 
@@ -416,7 +416,7 @@ AcpiUtAllocate (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtCallocate
+ * FUNCTION:    AcpiUtAllocateZeroed
  *
  * PARAMETERS:  Size                - Size of the allocation
  *              Component           - Component type of caller
@@ -430,7 +430,7 @@ AcpiUtAllocate (
  ******************************************************************************/
 
 void *
-AcpiUtCallocate (
+AcpiUtAllocateZeroed (
     ACPI_SIZE               Size,
     UINT32                  Component,
     char                    *Module,
@@ -439,7 +439,7 @@ AcpiUtCallocate (
     void                    *Allocation;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("UtCallocate", Size);
+    ACPI_FUNCTION_TRACE_U32 ("UtAllocateZeroed", Size);
 
 
     /* Check for an inadvertent size of zero bytes */
