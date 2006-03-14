@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -443,7 +443,7 @@ AcpiDsResultStackPush (
         return (AE_NO_MEMORY);
     }
 
-    State->Common.DataType  = ACPI_DESC_TYPE_STATE_RESULT;
+    State->Common.DescriptorType = ACPI_DESC_TYPE_STATE_RESULT;
     AcpiUtPushGenericState (&WalkState->Results, State);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Results=%p State=%p\n",
@@ -754,7 +754,7 @@ AcpiDsPopWalkState (
  *
  * PARAMETERS:  OwnerId         - ID for object creation
  *              Origin          - Starting point for this walk
- *              MthDesc         - Method object
+ *              MethodDesc      - Method object
  *              Thread          - Current thread state
  *
  * RETURN:      Pointer to the new walk state.
@@ -768,7 +768,7 @@ ACPI_WALK_STATE *
 AcpiDsCreateWalkState (
     ACPI_OWNER_ID           OwnerId,
     ACPI_PARSE_OBJECT       *Origin,
-    ACPI_OPERAND_OBJECT     *MthDesc,
+    ACPI_OPERAND_OBJECT     *MethodDesc,
     ACPI_THREAD_STATE       *Thread)
 {
     ACPI_WALK_STATE         *WalkState;
@@ -784,11 +784,11 @@ AcpiDsCreateWalkState (
         return_PTR (NULL);
     }
 
-    WalkState->DataType         = ACPI_DESC_TYPE_WALK;
-    WalkState->OwnerId          = OwnerId;
-    WalkState->Origin           = Origin;
-    WalkState->MethodDesc       = MthDesc;
-    WalkState->Thread           = Thread;
+    WalkState->DescriptorType = ACPI_DESC_TYPE_WALK;
+    WalkState->MethodDesc = MethodDesc;
+    WalkState->OwnerId = OwnerId;
+    WalkState->Origin = Origin;
+    WalkState->Thread = Thread;
 
     WalkState->ParserState.StartOp = Origin;
 
@@ -854,10 +854,10 @@ AcpiDsInitAmlWalk (
     ACPI_FUNCTION_TRACE ("DsInitAmlWalk");
 
 
-    WalkState->ParserState.Aml      =
+    WalkState->ParserState.Aml =
     WalkState->ParserState.AmlStart = AmlStart;
-    WalkState->ParserState.AmlEnd   =
-    WalkState->ParserState.PkgEnd   = AmlStart + AmlLength;
+    WalkState->ParserState.AmlEnd =
+    WalkState->ParserState.PkgEnd = AmlStart + AmlLength;
 
     /* The NextOp of the NextWalk will be the beginning of the method */
 
@@ -868,12 +868,12 @@ AcpiDsInitAmlWalk (
     {
         if (Info->ParameterType == ACPI_PARAM_GPE)
         {
-            WalkState->GpeEventInfo = ACPI_CAST_PTR (ACPI_GPE_EVENT_INFO,
-                                            Info->Parameters);
+            WalkState->GpeEventInfo =
+                ACPI_CAST_PTR (ACPI_GPE_EVENT_INFO, Info->Parameters);
         }
         else
         {
-            WalkState->Params           = Info->Parameters;
+            WalkState->Params = Info->Parameters;
             WalkState->CallerReturnDesc = &Info->ReturnObject;
         }
     }
@@ -887,9 +887,9 @@ AcpiDsInitAmlWalk (
     if (MethodNode)
     {
         WalkState->ParserState.StartNode = MethodNode;
-        WalkState->WalkType              = ACPI_WALK_METHOD;
-        WalkState->MethodNode            = MethodNode;
-        WalkState->MethodDesc            = AcpiNsGetAttachedObject (MethodNode);
+        WalkState->WalkType = ACPI_WALK_METHOD;
+        WalkState->MethodNode = MethodNode;
+        WalkState->MethodDesc = AcpiNsGetAttachedObject (MethodNode);
 
         /* Push start scope on scope stack and make it current  */
 
@@ -976,7 +976,7 @@ AcpiDsDeleteWalkState (
         return;
     }
 
-    if (WalkState->DataType != ACPI_DESC_TYPE_WALK)
+    if (WalkState->DescriptorType != ACPI_DESC_TYPE_WALK)
     {
         ACPI_ERROR ((AE_INFO, "%p is not a valid walk state",
             WalkState));

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -215,9 +215,9 @@ AcpiDsScopeStackPush (
 
     /* Init new scope object */
 
-    ScopeInfo->Common.DataType  = ACPI_DESC_TYPE_STATE_WSCOPE;
-    ScopeInfo->Scope.Node       = Node;
-    ScopeInfo->Common.Value     = (UINT16) Type;
+    ScopeInfo->Common.DescriptorType = ACPI_DESC_TYPE_STATE_WSCOPE;
+    ScopeInfo->Scope.Node = Node;
+    ScopeInfo->Common.Value = (UINT16) Type;
 
     WalkState->ScopeDepth++;
 

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  ******************************************************************************/
 
@@ -185,27 +185,25 @@ AcpiDsMethodDataInit (
 
     for (i = 0; i < ACPI_METHOD_NUM_ARGS; i++)
     {
-        ACPI_MOVE_32_TO_32 (&WalkState->Arguments[i].Name,
-                            NAMEOF_ARG_NTE);
+        ACPI_MOVE_32_TO_32 (&WalkState->Arguments[i].Name, NAMEOF_ARG_NTE);
         WalkState->Arguments[i].Name.Integer |= (i << 24);
-        WalkState->Arguments[i].Descriptor    = ACPI_DESC_TYPE_NAMED;
-        WalkState->Arguments[i].Type          = ACPI_TYPE_ANY;
-        WalkState->Arguments[i].Flags         = ANOBJ_END_OF_PEER_LIST |
-                                                ANOBJ_METHOD_ARG;
+        WalkState->Arguments[i].DescriptorType = ACPI_DESC_TYPE_NAMED;
+        WalkState->Arguments[i].Type = ACPI_TYPE_ANY;
+        WalkState->Arguments[i].Flags =
+            ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_ARG;
     }
 
     /* Init the method locals */
 
     for (i = 0; i < ACPI_METHOD_NUM_LOCALS; i++)
     {
-        ACPI_MOVE_32_TO_32 (&WalkState->LocalVariables[i].Name,
-                            NAMEOF_LOCAL_NTE);
+        ACPI_MOVE_32_TO_32 (&WalkState->LocalVariables[i].Name, NAMEOF_LOCAL_NTE);
 
         WalkState->LocalVariables[i].Name.Integer |= (i << 24);
-        WalkState->LocalVariables[i].Descriptor    = ACPI_DESC_TYPE_NAMED;
-        WalkState->LocalVariables[i].Type          = ACPI_TYPE_ANY;
-        WalkState->LocalVariables[i].Flags         = ANOBJ_END_OF_PEER_LIST |
-                                                     ANOBJ_METHOD_LOCAL;
+        WalkState->LocalVariables[i].DescriptorType = ACPI_DESC_TYPE_NAMED;
+        WalkState->LocalVariables[i].Type = ACPI_TYPE_ANY;
+        WalkState->LocalVariables[i].Flags =
+            ANOBJ_END_OF_PEER_LIST | ANOBJ_METHOD_LOCAL;
     }
 
     return_VOID;

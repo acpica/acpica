@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -333,8 +333,7 @@ AcpiExCreateMutex (
     ObjDesc->Mutex.SyncLevel = (UINT8) WalkState->Operands[1]->Integer.Value;
     ObjDesc->Mutex.Node = (ACPI_NAMESPACE_NODE *) WalkState->Operands[0];
 
-    Status = AcpiNsAttachObject (ObjDesc->Mutex.Node,
-                ObjDesc, ACPI_TYPE_MUTEX);
+    Status = AcpiNsAttachObject (ObjDesc->Mutex.Node, ObjDesc, ACPI_TYPE_MUTEX);
 
 
 Cleanup:
@@ -418,16 +417,16 @@ AcpiExCreateRegion (
      * Remember location in AML stream of address & length
      * operands since they need to be evaluated at run time.
      */
-    RegionObj2                  = ObjDesc->Common.NextObject;
-    RegionObj2->Extra.AmlStart  = AmlStart;
+    RegionObj2 = ObjDesc->Common.NextObject;
+    RegionObj2->Extra.AmlStart = AmlStart;
     RegionObj2->Extra.AmlLength = AmlLength;
 
     /* Init the region from the operands */
 
     ObjDesc->Region.SpaceId = RegionSpace;
     ObjDesc->Region.Address = 0;
-    ObjDesc->Region.Length  = 0;
-    ObjDesc->Region.Node    = Node;
+    ObjDesc->Region.Length = 0;
+    ObjDesc->Region.Node = Node;
 
     /* Install the new region object in the parent Node */
 
@@ -486,8 +485,7 @@ AcpiExCreateTableRegion (
     /* Find the ACPI table */
 
     Status = AcpiTbFindTable (Operand[1]->String.Pointer,
-                              Operand[2]->String.Pointer,
-                              Operand[3]->String.Pointer, &Table);
+                Operand[2]->String.Pointer, Operand[3]->String.Pointer, &Table);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -501,16 +499,16 @@ AcpiExCreateTableRegion (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    RegionObj2                      = ObjDesc->Common.NextObject;
+    RegionObj2 = ObjDesc->Common.NextObject;
     RegionObj2->Extra.RegionContext = NULL;
 
     /* Init the region from the operands */
 
     ObjDesc->Region.SpaceId = REGION_DATA_TABLE;
     ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) ACPI_TO_INTEGER (Table);
-    ObjDesc->Region.Length  = Table->Length;
-    ObjDesc->Region.Node    = Node;
-    ObjDesc->Region.Flags   = AOPOBJ_DATA_VALID;
+    ObjDesc->Region.Length = Table->Length;
+    ObjDesc->Region.Node = Node;
+    ObjDesc->Region.Flags = AOPOBJ_DATA_VALID;
 
     /* Install the new region object in the parent Node */
 
@@ -581,9 +579,9 @@ AcpiExCreateProcessor (
 
     /* Initialize the processor object from the operands */
 
-    ObjDesc->Processor.ProcId  = (UINT8)           Operand[1]->Integer.Value;
+    ObjDesc->Processor.ProcId = (UINT8) Operand[1]->Integer.Value;
+    ObjDesc->Processor.Length = (UINT8) Operand[3]->Integer.Value;
     ObjDesc->Processor.Address = (ACPI_IO_ADDRESS) Operand[2]->Integer.Value;
-    ObjDesc->Processor.Length  = (UINT8)           Operand[3]->Integer.Value;
 
     /* Install the processor object in the parent Node */
 
@@ -633,7 +631,7 @@ AcpiExCreatePowerResource (
 
     /* Initialize the power object from the operands */
 
-    ObjDesc->PowerResource.SystemLevel   = (UINT8)  Operand[1]->Integer.Value;
+    ObjDesc->PowerResource.SystemLevel = (UINT8) Operand[1]->Integer.Value;
     ObjDesc->PowerResource.ResourceOrder = (UINT16) Operand[2]->Integer.Value;
 
     /* Install the  power resource object in the parent Node */
@@ -688,7 +686,7 @@ AcpiExCreateMethod (
 
     /* Save the method's AML pointer and length  */
 
-    ObjDesc->Method.AmlStart  = AmlStart;
+    ObjDesc->Method.AmlStart = AmlStart;
     ObjDesc->Method.AmlLength = AmlLength;
 
     /*
@@ -698,7 +696,7 @@ AcpiExCreateMethod (
     MethodFlags = (UINT8) Operand[1]->Integer.Value;
 
     ObjDesc->Method.MethodFlags = (UINT8) (MethodFlags & ~AML_METHOD_ARG_COUNT);
-    ObjDesc->Method.ParamCount  = (UINT8) (MethodFlags & AML_METHOD_ARG_COUNT);
+    ObjDesc->Method.ParamCount = (UINT8) (MethodFlags & AML_METHOD_ARG_COUNT);
 
     /*
      * Get the concurrency count.  If required, a semaphore will be
@@ -716,7 +714,7 @@ AcpiExCreateMethod (
          * ACPI 2.0: Concurrency = (SyncLevel (in method declaration) + 1)
          */
         ObjDesc->Method.Concurrency = (UINT8)
-                        (((MethodFlags & AML_METHOD_SYNCH_LEVEL) >> 4) + 1);
+            (((MethodFlags & AML_METHOD_SYNCH_LEVEL) >> 4) + 1);
     }
     else
     {

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -196,9 +196,9 @@ LsDoOneNamespaceObject (
     Gbl_NumNamespaceObjects++;
 
     FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "%5d  [%d]  %*s %4.4s - %s",
-                        Gbl_NumNamespaceObjects, Level, (Level * 3), " ",
-                        &Node->Name,
-                        AcpiUtGetTypeName (Node->Type));
+        Gbl_NumNamespaceObjects, Level, (Level * 3), " ",
+        &Node->Name,
+        AcpiUtGetTypeName (Node->Type));
 
     Op = Node->Op;
     ObjDesc = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, Node->Object);
@@ -211,7 +211,7 @@ LsDoOneNamespaceObject (
 
 
     if ((ObjDesc) &&
-        (ObjDesc->Common.Descriptor == ACPI_DESC_TYPE_OPERAND))
+        (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_OPERAND))
     {
         switch (Node->Type)
         {

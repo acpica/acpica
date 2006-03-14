@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -279,13 +279,13 @@ AcpiEvQueueNotifyRequest (
             return (AE_NO_MEMORY);
         }
 
-        NotifyInfo->Common.DataType   = ACPI_DESC_TYPE_STATE_NOTIFY;
-        NotifyInfo->Notify.Node       = Node;
-        NotifyInfo->Notify.Value      = (UINT16) NotifyValue;
+        NotifyInfo->Common.DescriptorType = ACPI_DESC_TYPE_STATE_NOTIFY;
+        NotifyInfo->Notify.Node = Node;
+        NotifyInfo->Notify.Value = (UINT16) NotifyValue;
         NotifyInfo->Notify.HandlerObj = HandlerObj;
 
         Status = AcpiOsQueueForExecution (OSD_PRIORITY_HIGH,
-                        AcpiEvNotifyDispatch, NotifyInfo);
+                    AcpiEvNotifyDispatch, NotifyInfo);
         if (ACPI_FAILURE (Status))
         {
             AcpiUtDeleteGenericState (NotifyInfo);

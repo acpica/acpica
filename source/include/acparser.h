@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: acparser.h - AML Parser subcomponent prototypes and defines
- *       $Revision: 1.78 $
+ *       $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 
 /* variable # arguments */
 
-#define ACPI_VAR_ARGS                   ACPI_UINT32_MAX
+#define ACPI_VAR_ARGS                   ACPI_UINT8_MAX
 
 
 #define ACPI_PARSE_DELETE_TREE          0x0001
@@ -268,14 +268,14 @@ AcpiPsPopScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_PARSE_OBJECT       **Op,
     UINT32                  *ArgList,
-    UINT32                  *ArgCount);
+    UINT8                   *ArgCount);
 
 ACPI_STATUS
 AcpiPsPushScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  RemainingArgs,
-    UINT32                  ArgCount);
+    UINT8                   ArgCount);
 
 void
 AcpiPsCleanupScope (

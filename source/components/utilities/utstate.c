@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utstate - state object support procedures
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  ******************************************************************************/
 
@@ -254,7 +254,7 @@ AcpiUtCreateGenericState (
     if (State)
     {
         /* Initialize */
-        State->Common.DataType = ACPI_DESC_TYPE_STATE;
+        State->Common.DescriptorType = ACPI_DESC_TYPE_STATE;
     }
 
     return (State);
@@ -294,7 +294,7 @@ AcpiUtCreateThreadState (
 
     /* Init fields specific to the update struct */
 
-    State->Common.DataType = ACPI_DESC_TYPE_STATE_THREAD;
+    State->Common.DescriptorType = ACPI_DESC_TYPE_STATE_THREAD;
     State->Thread.ThreadId = AcpiOsGetThreadId ();
 
     return_PTR ((ACPI_THREAD_STATE *) State);
@@ -337,9 +337,9 @@ AcpiUtCreateUpdateState (
 
     /* Init fields specific to the update struct */
 
-    State->Common.DataType = ACPI_DESC_TYPE_STATE_UPDATE;
+    State->Common.DescriptorType = ACPI_DESC_TYPE_STATE_UPDATE;
     State->Update.Object = Object;
-    State->Update.Value  = Action;
+    State->Update.Value = Action;
 
     return_PTR (State);
 }
@@ -380,11 +380,11 @@ AcpiUtCreatePkgState (
 
     /* Init fields specific to the update struct */
 
-    State->Common.DataType  = ACPI_DESC_TYPE_STATE_PACKAGE;
+    State->Common.DescriptorType = ACPI_DESC_TYPE_STATE_PACKAGE;
     State->Pkg.SourceObject = (ACPI_OPERAND_OBJECT *) InternalObject;
-    State->Pkg.DestObject   = ExternalObject;
-    State->Pkg.Index        = Index;
-    State->Pkg.NumPackages  = 1;
+    State->Pkg.DestObject = ExternalObject;
+    State->Pkg.Index= Index;
+    State->Pkg.NumPackages = 1;
 
     return_PTR (State);
 }
@@ -423,8 +423,8 @@ AcpiUtCreateControlState (
 
     /* Init fields specific to the control struct */
 
-    State->Common.DataType  = ACPI_DESC_TYPE_STATE_CONTROL;
-    State->Common.State     = ACPI_CONTROL_CONDITIONAL_EXECUTING;
+    State->Common.DescriptorType = ACPI_DESC_TYPE_STATE_CONTROL;
+    State->Common.State = ACPI_CONTROL_CONDITIONAL_EXECUTING;
 
     return_PTR (State);
 }

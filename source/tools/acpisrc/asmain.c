@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -280,6 +280,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_CACHE_T",                        SRC_TYPE_SIMPLE},
     {"ACPI_COMMON_FACS",                    SRC_TYPE_STRUCT},
     {"ACPI_COMMON_STATE",                   SRC_TYPE_STRUCT},
+    {"ACPI_COMMON_DESCRIPTOR",              SRC_TYPE_STRUCT},
     {"ACPI_COMPATIBLE_ID",                  SRC_TYPE_STRUCT},
     {"ACPI_COMPATIBLE_ID_LIST",             SRC_TYPE_STRUCT},
     {"ACPI_CONTROL_STATE",                  SRC_TYPE_STRUCT},

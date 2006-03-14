@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.160 $
+ *              $Revision: 1.161 $
  *
  *****************************************************************************/
 
@@ -127,11 +127,13 @@
 
 #define ACPI_NUM_DEFAULT_SPACES     4
 
-static UINT8        AcpiGbl_DefaultAddressSpaces[ACPI_NUM_DEFAULT_SPACES] = {
-                            ACPI_ADR_SPACE_SYSTEM_MEMORY,
-                            ACPI_ADR_SPACE_SYSTEM_IO,
-                            ACPI_ADR_SPACE_PCI_CONFIG,
-                            ACPI_ADR_SPACE_DATA_TABLE};
+static UINT8        AcpiGbl_DefaultAddressSpaces[ACPI_NUM_DEFAULT_SPACES] = 
+{
+    ACPI_ADR_SPACE_SYSTEM_MEMORY,
+    ACPI_ADR_SPACE_SYSTEM_IO,
+    ACPI_ADR_SPACE_PCI_CONFIG,
+    ACPI_ADR_SPACE_DATA_TABLE
+};
 
 /* Local prototypes */
 
@@ -200,8 +202,8 @@ AcpiEvInstallRegionHandlers (
     for (i = 0; i < ACPI_NUM_DEFAULT_SPACES; i++)
     {
         Status = AcpiEvInstallSpaceHandler (AcpiGbl_RootNode,
-                        AcpiGbl_DefaultAddressSpaces[i],
-                        ACPI_DEFAULT_HANDLER, NULL, NULL);
+                    AcpiGbl_DefaultAddressSpaces[i],
+                    ACPI_DEFAULT_HANDLER, NULL, NULL);
         switch (Status)
         {
         case AE_OK:
@@ -264,7 +266,7 @@ AcpiEvInitializeOpRegions (
          * _REG will have already been run.
          */
         Status = AcpiEvExecuteRegMethods (AcpiGbl_RootNode,
-                        AcpiGbl_DefaultAddressSpaces[i]);
+                    AcpiGbl_DefaultAddressSpaces[i]);
     }
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
@@ -353,7 +355,6 @@ AcpiEvExecuteRegMethod (
 
 Cleanup:
     AcpiUtRemoveReference (Params[0]);
-
     return_ACPI_STATUS (Status);
 }
 
@@ -442,7 +443,7 @@ AcpiEvAddressSpaceDispatch (
         AcpiExExitInterpreter ();
 
         Status = RegionSetup (RegionObj, ACPI_REGION_ACTIVATE,
-                        HandlerDesc->AddressSpace.Context, &RegionContext);
+                    HandlerDesc->AddressSpace.Context, &RegionContext);
 
         /* Re-enter the interpreter */
 
@@ -496,7 +497,8 @@ AcpiEvAddressSpaceDispatch (
         ACPI_FORMAT_UINT64 (Address),
         AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
-    if (!(HandlerDesc->AddressSpace.Hflags & ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
+    if (!(HandlerDesc->AddressSpace.HandlerFlags & 
+            ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
     {
         /*
          * For handlers other than the default (supplied) handlers, we must
@@ -509,8 +511,7 @@ AcpiEvAddressSpaceDispatch (
     /* Call the handler */
 
     Status = Handler (Function, Address, BitWidth, Value,
-                      HandlerDesc->AddressSpace.Context,
-                      RegionObj2->Extra.RegionContext);
+        HandlerDesc->AddressSpace.Context, RegionObj2->Extra.RegionContext);
 
     if (ACPI_FAILURE (Status))
     {
@@ -518,7 +519,8 @@ AcpiEvAddressSpaceDispatch (
             AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
     }
 
-    if (!(HandlerDesc->AddressSpace.Hflags & ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
+    if (!(HandlerDesc->AddressSpace.HandlerFlags &
+            ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
     {
         /*
          * We just returned from a non-default handler, we must re-enter the
@@ -634,7 +636,7 @@ AcpiEvDetachRegion(
 
             RegionSetup = HandlerObj->AddressSpace.Setup;
             Status = RegionSetup (RegionObj, ACPI_REGION_DEACTIVATE,
-                            HandlerObj->AddressSpace.Context, RegionContext);
+                HandlerObj->AddressSpace.Context, RegionContext);
 
             /* Init routine may fail, Just ignore errors */
 
@@ -896,7 +898,7 @@ AcpiEvInstallSpaceHandler (
     ACPI_OPERAND_OBJECT     *HandlerObj;
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        Type;
-    UINT16                  Flags = 0;
+    UINT8                  Flags = 0;
 
 
     ACPI_FUNCTION_TRACE ("EvInstallSpaceHandler");
@@ -1070,17 +1072,17 @@ AcpiEvInstallSpaceHandler (
 
     /* Init handler obj */
 
-    HandlerObj->AddressSpace.SpaceId     = (UINT8) SpaceId;
-    HandlerObj->AddressSpace.Hflags      = Flags;
-    HandlerObj->AddressSpace.RegionList  = NULL;
-    HandlerObj->AddressSpace.Node        = Node;
-    HandlerObj->AddressSpace.Handler     = Handler;
-    HandlerObj->AddressSpace.Context     = Context;
-    HandlerObj->AddressSpace.Setup       = Setup;
+    HandlerObj->AddressSpace.SpaceId = (UINT8) SpaceId;
+    HandlerObj->AddressSpace.HandlerFlags = Flags;
+    HandlerObj->AddressSpace.RegionList = NULL;
+    HandlerObj->AddressSpace.Node = Node;
+    HandlerObj->AddressSpace.Handler = Handler;
+    HandlerObj->AddressSpace.Context = Context;
+    HandlerObj->AddressSpace.Setup  = Setup;
 
     /* Install at head of Device.AddressSpace list */
 
-    HandlerObj->AddressSpace.Next        = ObjDesc->Device.Handler;
+    HandlerObj->AddressSpace.Next = ObjDesc->Device.Handler;
 
     /*
      * The Device object is the first reference on the HandlerObj.
@@ -1101,8 +1103,8 @@ AcpiEvInstallSpaceHandler (
      * of the branch
      */
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Node, ACPI_UINT32_MAX,
-                    ACPI_NS_WALK_UNLOCK, AcpiEvInstallHandler,
-                    HandlerObj, NULL);
+                ACPI_NS_WALK_UNLOCK, AcpiEvInstallHandler,
+                HandlerObj, NULL);
 
 UnlockAndExit:
     return_ACPI_STATUS (Status);
@@ -1142,8 +1144,8 @@ AcpiEvExecuteRegMethods (
      * can run any _REG methods)
      */
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, Node, ACPI_UINT32_MAX,
-                    ACPI_NS_WALK_UNLOCK, AcpiEvRegRun,
-                    &SpaceId, NULL);
+                ACPI_NS_WALK_UNLOCK, AcpiEvRegRun,
+                &SpaceId, NULL);
 
     return_ACPI_STATUS (Status);
 }

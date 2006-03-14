@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.39 $
+ *       $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -140,54 +140,55 @@
 
 typedef struct acpi_walk_state
 {
-    UINT8                       DataType;                           /* To differentiate various internal objs MUST BE FIRST!*/
+    struct acpi_walk_state      *Next;                              /* Next WalkState in list */
+    UINT8                       DescriptorType;                     /* To differentiate various internal objs */
     UINT8                       WalkType;
+    UINT16                      Opcode;                             /* Current AML opcode */
+    UINT8                       NextOpInfo;                         /* Info about NextOp */
+    UINT8                       NumOperands;                        /* Stack pointer for Operands[] array */
     ACPI_OWNER_ID               OwnerId;                            /* Owner of objects created during the walk */
     BOOLEAN                     LastPredicate;                      /* Result of last predicate */
     UINT8                       CurrentResult;                      /* */
-    UINT8                       NextOpInfo;                         /* Info about NextOp */
-    UINT8                       NumOperands;                        /* Stack pointer for Operands[] array */
     UINT8                       ReturnUsed;
-    UINT16                      Opcode;                             /* Current AML opcode */
     UINT8                       ScopeDepth;
     UINT8                       PassNumber;                         /* Parse pass during table load */
-    UINT32                      ArgCount;                           /* push for fixed or var args */
     UINT32                      AmlOffset;
     UINT32                      ArgTypes;
     UINT32                      MethodBreakpoint;                   /* For single stepping */
     UINT32                      UserBreakpoint;                     /* User AML breakpoint */
     UINT32                      ParseFlags;
+
+    ACPI_PARSE_STATE            ParserState;                        /* Current state of parser */
     UINT32                      PrevArgTypes;
+    UINT8                       ArgCount;                           /* push for fixed or var args */
+
+    struct acpi_namespace_node  Arguments[ACPI_METHOD_NUM_ARGS];        /* Control method arguments */
+    struct acpi_namespace_node  LocalVariables[ACPI_METHOD_NUM_LOCALS]; /* Control method locals */
+    union acpi_operand_object   *Operands[ACPI_OBJ_NUM_OPERANDS + 1];   /* Operands passed to the interpreter (+1 for NULL terminator) */
+    union acpi_operand_object   **Params;
 
     UINT8                       *AmlLastWhile;
-    struct acpi_namespace_node  Arguments[ACPI_METHOD_NUM_ARGS];    /* Control method arguments */
     union acpi_operand_object   **CallerReturnDesc;
     ACPI_GENERIC_STATE          *ControlState;                      /* List of control states (nested IFs) */
     struct acpi_namespace_node  *DeferredNode;                      /* Used when executing deferred opcodes */
     struct acpi_gpe_event_info  *GpeEventInfo;                      /* Info for GPE (_Lxx/_Exx methods only */
     union acpi_operand_object   *ImplicitReturnObj;
-    struct acpi_namespace_node  LocalVariables[ACPI_METHOD_NUM_LOCALS];     /* Control method locals */
     struct acpi_namespace_node  *MethodCallNode;                    /* Called method Node*/
     ACPI_PARSE_OBJECT           *MethodCallOp;                      /* MethodCall Op if running a method */
     union acpi_operand_object   *MethodDesc;                        /* Method descriptor if running a method */
     struct acpi_namespace_node  *MethodNode;                        /* Method node if running a method. */
     ACPI_PARSE_OBJECT           *Op;                                /* Current parser op */
-    union acpi_operand_object   *Operands[ACPI_OBJ_NUM_OPERANDS+1]; /* Operands passed to the interpreter (+1 for NULL terminator) */
     const ACPI_OPCODE_INFO      *OpInfo;                            /* Info on current opcode */
     ACPI_PARSE_OBJECT           *Origin;                            /* Start of walk [Obsolete] */
-    union acpi_operand_object   **Params;
-    ACPI_PARSE_STATE            ParserState;                        /* Current state of parser */
     union acpi_operand_object   *ResultObj;
     ACPI_GENERIC_STATE          *Results;                           /* Stack of accumulated results */
     union acpi_operand_object   *ReturnDesc;                        /* Return object, if any */
     ACPI_GENERIC_STATE          *ScopeInfo;                         /* Stack of nested scopes */
-
     ACPI_PARSE_OBJECT           *PrevOp;                            /* Last op that was processed */
     ACPI_PARSE_OBJECT           *NextOp;                            /* next op to be processed */
+    ACPI_THREAD_STATE           *Thread;
     ACPI_PARSE_DOWNWARDS        DescendingCallback;
     ACPI_PARSE_UPWARDS          AscendingCallback;
-    ACPI_THREAD_STATE           *Thread;
-    struct acpi_walk_state      *Next;                              /* Next WalkState in list */
 
 } ACPI_WALK_STATE;
 

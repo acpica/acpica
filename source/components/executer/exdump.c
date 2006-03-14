@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.195 $
+ *              $Revision: 1.196 $
  *
  *****************************************************************************/
 
@@ -361,7 +361,6 @@ static ACPI_EXDUMP_INFO     AcpiExDumpNode[6] =
     {ACPI_EXD_INIT,     ACPI_EXD_TABLE_SIZE (AcpiExDumpNode),           NULL},
     {ACPI_EXD_UINT8,    ACPI_EXD_NSOFFSET (Flags),                      "Flags"},
     {ACPI_EXD_UINT8,    ACPI_EXD_NSOFFSET (OwnerId),                    "Owner Id"},
-    {ACPI_EXD_UINT16,   ACPI_EXD_NSOFFSET (ReferenceCount),             "Reference Count"},
     {ACPI_EXD_POINTER,  ACPI_EXD_NSOFFSET (Child),                      "Child List"},
     {ACPI_EXD_POINTER,  ACPI_EXD_NSOFFSET (Peer),                       "Next Peer"}
 };

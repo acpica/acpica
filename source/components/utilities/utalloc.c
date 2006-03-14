@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.156 $
+ *              $Revision: 1.157 $
  *
  *****************************************************************************/
 
@@ -1010,7 +1010,7 @@ AcpiUtDumpAllocations (
             /* Ignore allocated objects that are in a cache */
 
             Descriptor = ACPI_CAST_PTR (ACPI_DESCRIPTOR, &Element->UserSpace);
-            if (Descriptor->DescriptorId != ACPI_DESC_TYPE_CACHED)
+            if (ACPI_GET_DESCRIPTOR_TYPE (Descriptor) != ACPI_DESC_TYPE_CACHED)
             {
                 AcpiOsPrintf ("%p Len %04X %9.9s-%d [%s] ",
                     Descriptor, Element->Size, Element->Module,
