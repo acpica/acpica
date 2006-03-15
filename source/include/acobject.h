@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.134 $
+ *       $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -118,11 +118,7 @@
 #ifndef _ACOBJECT_H
 #define _ACOBJECT_H
 
-#define ACPI_INFINITE_CONCURRENCY   0xFF
-
-typedef
-ACPI_STATUS (*ACPI_INTERNAL_METHOD) (
-    struct acpi_walk_state  *WalkState);
+/* acpisrc:StructDefs -- for acpisrc conversion */
 
 
 /*
@@ -375,8 +371,8 @@ typedef struct acpi_object_field_common                 /* COMMON FIELD (for BUF
 {
     ACPI_OBJECT_COMMON_HEADER
     ACPI_COMMON_FIELD_INFO
-    union acpi_operand_object       *RegionObj;         /* Containing Operation Region object */
-                                                        /* (REGION/BANK fields only) */
+    union acpi_operand_object       *RegionObj;         /* Parent Operation Region object (REGION/BANK fields only) */
+
 } ACPI_OBJECT_FIELD_COMMON;
 
 
@@ -530,31 +526,31 @@ typedef struct acpi_object_cache_list
 
 typedef union acpi_operand_object
 {
-    ACPI_OBJECT_COMMON              Common;
-    ACPI_OBJECT_INTEGER             Integer;
-    ACPI_OBJECT_STRING              String;
-    ACPI_OBJECT_BUFFER              Buffer;
-    ACPI_OBJECT_PACKAGE             Package;
-    ACPI_OBJECT_EVENT               Event;
-    ACPI_OBJECT_METHOD              Method;
-    ACPI_OBJECT_MUTEX               Mutex;
-    ACPI_OBJECT_REGION              Region;
-    ACPI_OBJECT_NOTIFY_COMMON       CommonNotify;
-    ACPI_OBJECT_DEVICE              Device;
-    ACPI_OBJECT_POWER_RESOURCE      PowerResource;
-    ACPI_OBJECT_PROCESSOR           Processor;
-    ACPI_OBJECT_THERMAL_ZONE        ThermalZone;
-    ACPI_OBJECT_FIELD_COMMON        CommonField;
-    ACPI_OBJECT_REGION_FIELD        Field;
-    ACPI_OBJECT_BUFFER_FIELD        BufferField;
-    ACPI_OBJECT_BANK_FIELD          BankField;
-    ACPI_OBJECT_INDEX_FIELD         IndexField;
-    ACPI_OBJECT_NOTIFY_HANDLER      Notify;
-    ACPI_OBJECT_ADDR_HANDLER        AddressSpace;
-    ACPI_OBJECT_REFERENCE           Reference;
-    ACPI_OBJECT_EXTRA               Extra;
-    ACPI_OBJECT_DATA                Data;
-    ACPI_OBJECT_CACHE_LIST          Cache;
+    ACPI_OBJECT_COMMON                  Common;
+    ACPI_OBJECT_INTEGER                 Integer;
+    ACPI_OBJECT_STRING                  String;
+    ACPI_OBJECT_BUFFER                  Buffer;
+    ACPI_OBJECT_PACKAGE                 Package;
+    ACPI_OBJECT_EVENT                   Event;
+    ACPI_OBJECT_METHOD                  Method;
+    ACPI_OBJECT_MUTEX                   Mutex;
+    ACPI_OBJECT_REGION                  Region;
+    ACPI_OBJECT_NOTIFY_COMMON           CommonNotify;
+    ACPI_OBJECT_DEVICE                  Device;
+    ACPI_OBJECT_POWER_RESOURCE          PowerResource;
+    ACPI_OBJECT_PROCESSOR               Processor;
+    ACPI_OBJECT_THERMAL_ZONE            ThermalZone;
+    ACPI_OBJECT_FIELD_COMMON            CommonField;
+    ACPI_OBJECT_REGION_FIELD            Field;
+    ACPI_OBJECT_BUFFER_FIELD            BufferField;
+    ACPI_OBJECT_BANK_FIELD              BankField;
+    ACPI_OBJECT_INDEX_FIELD             IndexField;
+    ACPI_OBJECT_NOTIFY_HANDLER          Notify;
+    ACPI_OBJECT_ADDR_HANDLER            AddressSpace;
+    ACPI_OBJECT_REFERENCE               Reference;
+    ACPI_OBJECT_EXTRA                   Extra;
+    ACPI_OBJECT_DATA                    Data;
+    ACPI_OBJECT_CACHE_LIST              Cache;
 
 } ACPI_OPERAND_OBJECT;
 
