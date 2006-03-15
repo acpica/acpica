@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  ******************************************************************************/
 
@@ -170,6 +170,8 @@ static ARGUMENT_INFO        AcpiDbStatTypes [] =
 #define CMD_STAT_STACK           6
 
 
+#if defined ACPI_DBG_TRACK_ALLOCATIONS || defined ACPI_USE_LOCAL_CACHE
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDbListInfo
@@ -236,6 +238,7 @@ AcpiDbListInfo (
         Outstanding, Temp);
 #endif
 }
+#endif
 
 
 /*******************************************************************************

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcache - local cache allocation routines
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -377,8 +377,8 @@ AcpiOsAcquireObject (
         Cache->CurrentDepth--;
 
         ACPI_MEM_TRACKING (Cache->Hits++);
-        ACPI_MEM_TRACKING (ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "Object %p from %s cache\n", Object, Cache->ListName)));
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+            "Object %p from %s cache\n", Object, Cache->ListName));
 
         Status = AcpiUtReleaseMutex (ACPI_MTX_CACHES);
         if (ACPI_FAILURE (Status))
