@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -489,7 +489,6 @@ AsReplaceString (
          * Check for translation escape string -- means to ignore
          * blocks of code while replacing
          */
-
         SubString2 = strstr (SubBuffer, AS_START_IGNORE);
 
         if ((SubString2) &&
@@ -524,13 +523,12 @@ AsReplaceString (
             }
 
             SubBuffer = AsReplaceData (SubString1, TargetLength, Replacement, ReplacementLength);
-/*
-            if (((Type & INDENT_MASK) == EXTRA_INDENT_C) &&
-                (Gbl_FileType == FILE_TYPE_SOURCE))
+
+            if ((Type & EXTRA_INDENT_C) &&
+                (!Gbl_StructDefs))
             {
-                SubBuffer = AsReplaceData (SubBuffer, 0, "    ", 4);
+                SubBuffer = AsInsertData (SubBuffer, "        ", 8);
             }
-*/
 
             ReplaceCount++;
         }
@@ -1330,7 +1328,8 @@ AsInsertPrefix (
                 {
                     /* Already present, add spaces after to align structure members */
 
-                    AsInsertData (SubBuffer + KeywordLength, "        ", 8);
+// ONLY FOR C FILES
+//                    AsInsertData (SubBuffer + KeywordLength, "        ", 8);
                 }
                 goto Next;
             }

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -366,6 +366,8 @@ AsConvertFile (
         return;
     }
 
+
+    Gbl_StructDefs = strstr (FileBuffer, "/* acpisrc:StructDefs");
     Gbl_Files++;
     VERBOSE_PRINT (("Processing %u bytes\n", strlen (FileBuffer)));
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -196,7 +196,7 @@ AsLowerCaseString (
 
             SubBuffer = SubString1 + TargetLength;
 
-            if (Gbl_WidenDeclarations)
+            if ((Gbl_WidenDeclarations) && (!Gbl_StructDefs))
             {
                 if ((SubBuffer[0] == ' ') && (SubBuffer[1] == ' '))
                 {

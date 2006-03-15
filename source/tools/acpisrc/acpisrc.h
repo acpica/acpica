@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -208,6 +208,7 @@ extern BOOLEAN                  Gbl_MadeChanges;
 extern BOOLEAN                  Gbl_Overwrite;
 extern BOOLEAN                  Gbl_WidenDeclarations;
 extern BOOLEAN                  Gbl_IgnoreLoneLineFeeds;
+extern void                     *Gbl_StructDefs;
 
 #define PARAM_LIST(pl)          pl
 #define TERSE_PRINT(a)          if (!Gbl_VerboseMode) printf PARAM_LIST(a)
@@ -219,7 +220,6 @@ extern BOOLEAN                  Gbl_IgnoreLoneLineFeeds;
 #define REPLACE_MASK            0x01
 
 #define EXTRA_INDENT_C          0x02
-#define INDENT_MASK             0x02
 
 
 /* Conversion table structs */

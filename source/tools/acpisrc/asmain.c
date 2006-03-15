@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -131,6 +131,7 @@ UINT32                  Gbl_CommentLines = 0;
 UINT32                  Gbl_SourceLines = 0;
 UINT32                  Gbl_LongLines = 0;
 UINT32                  Gbl_TotalLines = 0;
+void                    *Gbl_StructDefs = NULL;
 
 struct stat             Gbl_StatBuf;
 char                    *Gbl_FileBuffer;
@@ -234,19 +235,19 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
 
     /* Declarations first */
 
-    {"INT64       ",             "s64                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"UINT64      ",             "u64                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"UINT32      ",             "u32                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"INT32       ",             "s32                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"UINT16      ",             "u16                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"INT16       ",             "s16                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"UINT8       ",             "u8                  ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"BOOLEAN     ",             "u8                  ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"char        ",             "char                ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"void        ",             "void                ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"char *      ",             "char *              ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"void *      ",             "void *              ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
-    {"int         ",             "int                 ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"INT64       ",             "s64         ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"UINT64      ",             "u64         ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"UINT32      ",             "u32         ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"INT32       ",             "s32         ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"UINT16      ",             "u16         ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"INT16       ",             "s16         ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"UINT8       ",             "u8          ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"BOOLEAN     ",             "u8          ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"char        ",             "char        ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"void        ",             "void        ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"char *      ",             "char *      ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"void *      ",             "void *      ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"int         ",             "int         ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
 
     /* Now do embedded typecasts */
 
@@ -309,12 +310,13 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_GENERIC_STATE",                  SRC_TYPE_UNION},
     {"ACPI_GET_DEVICES_INFO",               SRC_TYPE_STRUCT},
     {"ACPI_GPE_BLOCK_INFO",                 SRC_TYPE_STRUCT},
-    {"ACPI_GPE_XRUPT_INFO",                 SRC_TYPE_STRUCT},
+    {"ACPI_GPE_CALLBACK",                   SRC_TYPE_SIMPLE},
     {"ACPI_GPE_EVENT_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_GPE_HANDLER",                    SRC_TYPE_SIMPLE},
     {"ACPI_GPE_INDEX_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_GPE_REGISTER_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_GPE_WALK_INFO",                  SRC_TYPE_STRUCT},
+    {"ACPI_GPE_XRUPT_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_HANDLE",                         SRC_TYPE_SIMPLE},
     {"ACPI_HANDLER_INFO",                   SRC_TYPE_STRUCT},
     {"ACPI_INIT_HANDLER",                   SRC_TYPE_SIMPLE},
@@ -447,7 +449,9 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_UUID",                           SRC_TYPE_STRUCT},
     {"ACPI_VENDOR_UUID",                    SRC_TYPE_STRUCT},
     {"ACPI_VENDOR_WALK_INFO",               SRC_TYPE_STRUCT},
+    {"ACPI_WALK_AML_CALLBACK",              SRC_TYPE_SIMPLE},
     {"ACPI_WALK_CALLBACK",                  SRC_TYPE_SIMPLE},
+    {"ACPI_WALK_RESOURCE_CALLBACK",         SRC_TYPE_SIMPLE},
     {"ACPI_WALK_INFO",                      SRC_TYPE_STRUCT},
     {"ACPI_WALK_STATE",                     SRC_TYPE_STRUCT},
 
