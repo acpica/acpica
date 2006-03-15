@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  ******************************************************************************/
 
@@ -562,7 +562,7 @@ AcpiRsGetListLength (
         *SizeNeeded += BufferSize;
 
         ACPI_DEBUG_PRINT ((ACPI_DB_RESOURCES,
-            "Type %.2X, Aml %.2X internal %.2X\n",
+            "Type %.2X, AmlLength %.2X InternalLength %.2X\n",
             AcpiUtGetResourceType (AmlBuffer),
             AcpiUtGetDescriptorLength (AmlBuffer), BufferSize));
 

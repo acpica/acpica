@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.191 $
+ *       $Revision: 1.192 $
  *
  *****************************************************************************/
 
@@ -150,6 +150,14 @@ extern const char                       *AcpiGbl_TYPDecode[4];
 #define ACPI_FIXED_LENGTH               1
 #define ACPI_VARIABLE_LENGTH            2
 #define ACPI_SMALL_VARIABLE_LENGTH      3
+
+typedef
+ACPI_STATUS (*ACPI_WALK_AML_CALLBACK) (
+    UINT8                   *Aml,
+    UINT32                  Length,
+    UINT32                  Offset,
+    UINT8                   ResourceIndex,
+    void                    *Context);
 
 typedef
 ACPI_STATUS (*ACPI_PKG_CALLBACK) (
@@ -768,6 +776,33 @@ AcpiUtStrtoul64 (
 
 #define ACPI_ANY_BASE        0
 
+UINT32
+AcpiUtDwordByteSwap (
+    UINT32                  Value);
+
+void
+AcpiUtSetIntegerWidth (
+    UINT8                   Revision);
+
+#ifdef ACPI_DEBUG_OUTPUT
+void
+AcpiUtDisplayInitPathname (
+    UINT8                   Type,
+    ACPI_NAMESPACE_NODE     *ObjHandle,
+    char                    *Path);
+#endif
+
+
+/*
+ * utresrc
+ */
+ACPI_STATUS
+AcpiUtWalkAmlResources (
+    UINT8                   *Aml,
+    ACPI_SIZE               AmlLength,
+    ACPI_WALK_AML_CALLBACK  UserFunction,
+    void                    *Context);
+
 ACPI_STATUS
 AcpiUtValidateResource (
     void                    *Aml,
@@ -793,23 +828,6 @@ ACPI_STATUS
 AcpiUtGetResourceEndTag (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT8                   **EndTag);
-
-UINT32
-AcpiUtDwordByteSwap (
-    UINT32                  Value);
-
-void
-AcpiUtSetIntegerWidth (
-    UINT8                   Revision);
-
-#ifdef ACPI_DEBUG_OUTPUT
-void
-AcpiUtDisplayInitPathname (
-    UINT8                   Type,
-    ACPI_NAMESPACE_NODE     *ObjHandle,
-    char                    *Path);
-
-#endif
 
 
 /*

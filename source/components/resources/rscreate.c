@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  ******************************************************************************/
 
@@ -154,6 +154,7 @@ AcpiRsCreateResourceList (
     UINT8                   *AmlStart;
     ACPI_SIZE               ListSizeNeeded = 0;
     UINT32                  AmlBufferLength;
+    void                    *Resource;
 
 
     ACPI_FUNCTION_TRACE ("RsCreateResourceList");
@@ -191,8 +192,9 @@ AcpiRsCreateResourceList (
 
     /* Do the conversion */
 
-    Status = AcpiRsConvertAmlToResources (AmlStart, AmlBufferLength,
-                    OutputBuffer->Pointer);
+    Resource = OutputBuffer->Pointer;
+    Status = AcpiUtWalkAmlResources (AmlStart, AmlBufferLength,
+                AcpiRsConvertAmlToResources, &Resource);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);

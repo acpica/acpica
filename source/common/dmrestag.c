@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmrestag - Add tags to resource descriptors (Application-level)
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -154,11 +154,13 @@ AcpiDmGetResourceNode (
     ACPI_NAMESPACE_NODE     *BufferNode,
     UINT32                  BitIndex);
 
-static void
+static ACPI_STATUS
 AcpiDmAddResourceToNamespace (
-    ACPI_NAMESPACE_NODE     *BufferNode,
+    UINT8                   *Aml,
+    UINT32                  Length,
     UINT32                  Offset,
-    UINT32                  Length);
+    UINT8                   ResourceIndex,
+    void                    *Context);
 
 static void
 AcpiDmAddResourcesToNamespace (
@@ -886,6 +888,7 @@ AcpiDmFindResources (
 }
 
 
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiDmAddResourcesToNamespace
@@ -898,8 +901,6 @@ AcpiDmFindResources (
  * DESCRIPTION: Add an entire resource template to the namespace. Each
  *              resource descriptor is added as a namespace node.
  *
- * TBD: Need a generic routine to walk (external) AML resource lists
- *
  ******************************************************************************/
 
 static void
@@ -908,10 +909,6 @@ AcpiDmAddResourcesToNamespace (
     ACPI_PARSE_OBJECT       *Op)
 {
     ACPI_PARSE_OBJECT       *NextOp;
-    UINT8                   *Aml;
-    UINT8                   *EndAml;
-    ACPI_SIZE               Length;
-    UINT32                  Offset = 0;
 
 
     /* Get to the ByteData list */
@@ -923,45 +920,18 @@ AcpiDmAddResourcesToNamespace (
         return;
     }
 
-    /* Extract the data length and data pointer */
-
-    Aml = NextOp->Named.Data;
-    Length = (ACPI_SIZE) NextOp->Common.Value.Integer;
+    /* Set Node and Op to point to each other */
 
     BufferNode->Op = Op;
     Op->Common.Node = BufferNode;
 
-    /* Point to where the EndTag descriptor should be */
-
-    EndAml = Aml + Length - sizeof (AML_RESOURCE_END_TAG);
-
-    /* Walk the byte list, abort on any invalid descriptor type or length */
-
-    while (Aml <= EndAml)
-    {
-        /* Validate the Resource Type and Resource Length */
-
-        if (ACPI_FAILURE (AcpiUtValidateResource (Aml, NULL)))
-        {
-            return;
-        }
-
-        /* An EndTag descriptor terminates this resource template */
-
-        if (AcpiUtGetResourceType (Aml) == ACPI_RESOURCE_NAME_END_TAG)
-        {
-            return;
-        }
-
-        Length = AcpiUtGetDescriptorLength (Aml);
-
-        /* Install the resource descriptor into the namespace */
-
-        AcpiDmAddResourceToNamespace (BufferNode, Offset, Length);
-
-        Aml += Length;
-        Offset += Length;
-    }
+    /*
+     * Insert each resource into the namespace
+     * NextOp contains the Aml pointer and the Aml length
+     */
+    AcpiUtWalkAmlResources ((UINT8 *) NextOp->Named.Data,
+        (ACPI_SIZE) NextOp->Common.Value.Integer,
+        AcpiDmAddResourceToNamespace, BufferNode);
 }
 
 
@@ -969,11 +939,10 @@ AcpiDmAddResourcesToNamespace (
  *
  * FUNCTION:    AcpiDmAddResourceToNamespace
  *
- * PARAMETERS:  BufferNode          - Node for the parent buffer
- *              Offset              - Buffer offset (bytes) for the resource
- *              Length              - Length (bytes) of the resource descriptor
+ * PARAMETERS:  ACPI_WALK_AML_CALLBACK
+ *              BufferNode              - Node for the parent buffer
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Add one resource descriptor to the namespace as a child of the
  *              parent buffer. The same name is used for each descriptor. This
@@ -982,16 +951,20 @@ AcpiDmAddResourcesToNamespace (
  *
  ******************************************************************************/
 
-static void
+static ACPI_STATUS
 AcpiDmAddResourceToNamespace (
-    ACPI_NAMESPACE_NODE     *BufferNode,
+    UINT8                   *Aml,
+    UINT32                  Length,
     UINT32                  Offset,
-    UINT32                  Length)
+    UINT8                   ResourceIndex,
+    ACPI_NAMESPACE_NODE     *BufferNode)
 {
     ACPI_STATUS             Status;
     ACPI_GENERIC_STATE      ScopeInfo;
     ACPI_NAMESPACE_NODE     *Node;
 
+
+    /* TBD: Don't need to add descriptors that have no tags defined? */
 
     /* Add the resource to the namespace, as child of the buffer */
 
@@ -1002,7 +975,7 @@ AcpiDmAddResourceToNamespace (
                 NULL, &Node);
     if (ACPI_FAILURE (Status))
     {
-        return;
+        return (AE_OK);
     }
 
     /* Set the name to the default, changed later if resource is referenced */
@@ -1013,5 +986,6 @@ AcpiDmAddResourceToNamespace (
 
     Node->Value = Offset;
     Node->Object = (void *) Length;
+    return (AE_OK);
 }
 

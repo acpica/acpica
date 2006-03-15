@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.56 $
+ *       $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -299,9 +299,11 @@ AcpiRsGetPciRoutingTableLength (
 
 ACPI_STATUS
 AcpiRsConvertAmlToResources (
-    UINT8                   *AmlBuffer,
-    UINT32                  AmlBufferLength,
-    UINT8                   *OutputBuffer);
+    UINT8                   *Aml,
+    UINT32                  Length,
+    UINT32                  Offset,
+    UINT8                   ResourceIndex,
+    void                    *Context);
 
 ACPI_STATUS
 AcpiRsConvertResourcesToAml (

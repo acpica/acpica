@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utresrc - Resource managment utilities
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  ******************************************************************************/
 
@@ -342,6 +342,113 @@ static const UINT8          AcpiGbl_ResourceTypes[] =
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiUtWalkAmlResources
+ *
+ * PARAMETERS:  Aml             - Pointer to the raw AML resource template
+ *              AmlLength       - Length of the entire template
+ *              UserFunction    - Called once for each descriptor found. If
+ *                                NULL, a pointer to the EndTag is returned
+ *              Context         - Passed to UserFunction
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walk a raw AML resource list(buffer). User function called
+ *              once for each resource found.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUtWalkAmlResources (
+    UINT8                   *Aml,
+    ACPI_SIZE               AmlLength,
+    ACPI_WALK_AML_CALLBACK  UserFunction,
+    void                    *Context)
+{
+    ACPI_STATUS             Status;
+    UINT8                   *EndAml;
+    UINT8                   ResourceIndex;
+    UINT32                  Length;
+    UINT32                  Offset = 0;
+
+
+    ACPI_FUNCTION_TRACE ("UtWalkAmlResources");
+
+
+    /* The absolute minimum resource template is one EndTag descriptor */
+
+    if (AmlLength < sizeof (AML_RESOURCE_END_TAG))
+    {
+        return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
+    }
+
+    /* Point to the end of the resource template buffer */
+
+    EndAml = Aml + AmlLength;
+
+    /* Walk the byte list, abort on any invalid descriptor type or length */
+
+    while (Aml < EndAml)
+    {
+        /* Validate the Resource Type and Resource Length */
+
+        Status = AcpiUtValidateResource (Aml, &ResourceIndex);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        /* Get the length of this descriptor */
+
+        Length = AcpiUtGetDescriptorLength (Aml);
+
+        /* Invoke the user function */
+
+        if (UserFunction)
+        {
+            Status = UserFunction (Aml, Length, Offset, ResourceIndex, Context);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+        }
+
+        /* An EndTag descriptor terminates this resource template */
+
+        if (AcpiUtGetResourceType (Aml) == ACPI_RESOURCE_NAME_END_TAG)
+        {
+            /*
+             * There must be at least one more byte in the buffer for
+             * the 2nd byte of the EndTag
+             */
+            if ((Aml + 1) >= EndAml)
+            {
+                return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
+            }
+
+            /* Return the pointer to the EndTag if requested */
+
+            if (!UserFunction)
+            {
+                *(void **) Context = Aml;
+            }
+
+            /* Normal exit */
+
+            return_ACPI_STATUS (AE_OK);
+        }
+
+        Aml += Length;
+        Offset += Length;
+    }
+
+    /* Did not find an EndTag descriptor */
+
+    return (AE_AML_NO_RESOURCE_END_TAG);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiUtValidateResource
  *
  * PARAMETERS:  Aml             - Pointer to the raw AML resource descriptor
@@ -641,68 +748,25 @@ AcpiUtGetResourceEndTag (
     UINT8                   **EndTag)
 {
     ACPI_STATUS             Status;
-    UINT8                   *Aml;
-    UINT8                   *EndAml;
 
 
     ACPI_FUNCTION_TRACE ("UtGetResourceEndTag");
 
 
-    /* Get start and end pointers */
-
-    Aml    = ObjDesc->Buffer.Pointer;
-    EndAml = Aml + ObjDesc->Buffer.Length;
-
     /* Allow a buffer length of zero */
 
     if (!ObjDesc->Buffer.Length)
     {
-        *EndTag = Aml;
+        *EndTag = ObjDesc->Buffer.Pointer;
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Walk the resource template, one descriptor per iteration */
+    /* Validate the template and get a pointer to the EndTag */
 
-    while (Aml < EndAml)
-    {
-        /* Validate the Resource Type and Resource Length */
+    Status = AcpiUtWalkAmlResources (ObjDesc->Buffer.Pointer,
+                ObjDesc->Buffer.Length, NULL, EndTag);
 
-        Status = AcpiUtValidateResource (Aml, NULL);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-
-        /* EndTag resource indicates the end of the resource template */
-
-        if (AcpiUtGetResourceType (Aml) == ACPI_RESOURCE_NAME_END_TAG)
-        {
-            /*
-             * There must be at least one more byte in the buffer for
-             * the 2nd byte of the EndTag
-             */
-            if ((Aml + 1) >= EndAml)
-            {
-                return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
-            }
-
-            /* Return the pointer to the EndTag */
-
-            *EndTag = Aml;
-            return_ACPI_STATUS (AE_OK);
-        }
-
-        /*
-         * Point to the next resource descriptor in the AML buffer. The
-         * descriptor length is guaranteed to be non-zero by resource
-         * validation above.
-         */
-        Aml += AcpiUtGetDescriptorLength (Aml);
-    }
-
-    /* Did not find an EndTag resource descriptor */
-
-    return_ACPI_STATUS (AE_AML_NO_RESOURCE_END_TAG);
+    return_ACPI_STATUS (Status);
 }
 
 
