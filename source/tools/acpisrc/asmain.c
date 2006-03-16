@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -233,7 +233,7 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
  * etc. when the existing struct typedefs are eliminated.
  */
 
-    /* Declarations first */
+    /* Declarations first - ACPI types and standard C types */
 
     {"INT64       ",             "s64         ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"UINT64      ",             "u64         ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
@@ -248,6 +248,8 @@ ACPI_STRING_TABLE           LinuxDataTypes[] = {
     {"char *      ",             "char *      ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"void *      ",             "void *      ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
     {"int         ",             "int         ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"FILE        ",             "FILE        ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
+    {"size_t      ",             "size_t      ",     REPLACE_WHOLE_WORD | EXTRA_INDENT_C},
 
     /* Now do embedded typecasts */
 
