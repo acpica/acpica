@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -158,7 +158,16 @@ AcpiEvSystemMemoryRegionSetup (
     {
         if (*RegionContext)
         {
-            ACPI_FREE (*RegionContext);
+            LocalRegionContext = (ACPI_MEM_SPACE_CONTEXT *) *RegionContext;
+
+            /* Delete a cached mapping if present */
+
+            if (LocalRegionContext->MappedLength)
+            {
+                AcpiOsUnmapMemory (LocalRegionContext->MappedLogicalAddress,
+                    LocalRegionContext->MappedLength);
+            }
+            ACPI_FREE (LocalRegionContext);
             *RegionContext = NULL;
         }
         return_ACPI_STATUS (AE_OK);
