@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -1142,7 +1142,7 @@ AdGetLocalTables (
 
 #if ACPI_MACHINE_WIDTH != 64
 
-        if (!ACPI_STRNCMP (NewTable->Signature, ACPI_SIG_RSDT, 4))
+        if (ACPI_COMPARE_NAME (NewTable->Signature, ACPI_SIG_RSDT))
         {
             PointerSize = sizeof (UINT32);
         }

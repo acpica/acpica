@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.186 $
+ *       $Revision: 1.187 $
  *
  *****************************************************************************/
 
@@ -216,9 +216,9 @@
 #endif
 
 #ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
-#define ACPI_COMPARE_NAME(a,b)          (*(UINT32 *) (a) == *(UINT32 *) (b))
+#define ACPI_COMPARE_NAME(a,b)          (*ACPI_CAST_PTR (UINT32,(a)) == *ACPI_CAST_PTR (UINT32,(b)))
 #else
-#define ACPI_COMPARE_NAME(a,b)          (!ACPI_STRNCMP ((char *) (a), (char *) (b), 4))
+#define ACPI_COMPARE_NAME(a,b)          (!ACPI_STRNCMP (ACPI_CAST_PTR (char,(a)), ACPI_CAST_PTR (char,(b)), 4))
 #endif
 
 /*
