@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmrestag - Add tags to resource descriptors (Application-level)
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -160,7 +160,7 @@ AcpiDmAddResourceToNamespace (
     UINT32                  Length,
     UINT32                  Offset,
     UINT8                   ResourceIndex,
-    ACPI_NAMESPACE_NODE     *BufferNode);
+    void                    *Context);
 
 static void
 AcpiDmAddResourcesToNamespace (
@@ -956,8 +956,9 @@ AcpiDmAddResourceToNamespace (
     UINT32                  Length,
     UINT32                  Offset,
     UINT8                   ResourceIndex,
-    ACPI_NAMESPACE_NODE     *BufferNode)
+    void                    *Context)
 {
+    ACPI_NAMESPACE_NODE     *BufferNode = Context;
     ACPI_STATUS             Status;
     ACPI_GENERIC_STATE      ScopeInfo;
     ACPI_NAMESPACE_NODE     *Node;

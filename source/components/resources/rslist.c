@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  ******************************************************************************/
 
@@ -144,9 +144,10 @@ AcpiRsConvertAmlToResources (
     UINT32                  Length,
     UINT32                  Offset,
     UINT8                   ResourceIndex,
-    void                    **ResourcePtr)
+    void                    *Context)
 {
-    ACPI_RESOURCE           *Resource = *ResourcePtr;
+    void                    **ResourcePtr = *(void **) Context;
+    ACPI_RESOURCE           *Resource = *(void **) Context;
     ACPI_STATUS             Status;
 
 
