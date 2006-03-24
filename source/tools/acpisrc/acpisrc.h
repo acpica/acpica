@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -273,6 +273,14 @@ typedef struct acpi_conversion_table
     UINT32                      HeaderFunctions;
 
 } ACPI_CONVERSION_TABLE;
+
+
+/* Conversion tables */
+
+extern ACPI_CONVERSION_TABLE       LinuxConversionTable;
+extern ACPI_CONVERSION_TABLE       CleanupConversionTable;
+extern ACPI_CONVERSION_TABLE       StatsConversionTable;
+extern ACPI_CONVERSION_TABLE       CustomConversionTable;
 
 
 /* Prototypes */
