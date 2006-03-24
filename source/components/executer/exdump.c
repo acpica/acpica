@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.196 $
+ *              $Revision: 1.197 $
  *
  *****************************************************************************/
 
@@ -146,6 +146,11 @@ static void
 AcpiExOutAddress (
     char                    *Title,
     ACPI_PHYSICAL_ADDRESS   Value);
+
+static void
+AcpiExDumpObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_EXDUMP_INFO        *Info);
 
 static void
 AcpiExDumpReferenceObj (
@@ -356,7 +361,7 @@ static ACPI_EXDUMP_INFO     AcpiExDumpFieldCommon[7] =
     {ACPI_EXD_POINTER,  ACPI_EXD_OFFSET (CommonField.Node),             "Parent Node"}
 };
 
-static ACPI_EXDUMP_INFO     AcpiExDumpNode[6] =
+static ACPI_EXDUMP_INFO     AcpiExDumpNode[5] =
 {
     {ACPI_EXD_INIT,     ACPI_EXD_TABLE_SIZE (AcpiExDumpNode),           NULL},
     {ACPI_EXD_UINT8,    ACPI_EXD_NSOFFSET (Flags),                      "Flags"},
