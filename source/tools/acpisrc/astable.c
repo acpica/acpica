@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -509,15 +509,12 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"SYSTEM_LOCALITY_INFO",                SRC_TYPE_STRUCT},
     {"FACS_DESCRIPTOR",                     SRC_TYPE_STRUCT},
     {"FADT_DESCRIPTOR_REV1",                SRC_TYPE_STRUCT},
-    {"FADT_DESCRIPTOR_REV2",                SRC_TYPE_STRUCT},
+    {"FADT_DESCRIPTOR",                     SRC_TYPE_STRUCT},
     {"FADT_DESCRIPTOR_REV2_MINUS",          SRC_TYPE_STRUCT},
     {"RSDP_DESCRIPTOR",                     SRC_TYPE_STRUCT},
     {"RSDT_DESCRIPTOR",                     SRC_TYPE_STRUCT},
     {"XSDT_DESCRIPTOR",                     SRC_TYPE_STRUCT},
-
     {NULL}
-/* Obsolete */
-/*    {"FADT_DESCRIPTOR",                  SRC_TYPE_SIMPLE}, */
 };
 
 ACPI_IDENTIFIER_TABLE       LinuxAddStruct[] = {
@@ -665,11 +662,35 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
+#if 0
+    {"ACPI_SIG_BOOT", "ACPI_SIG_BOOT",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_DBGP", "ACPI_SIG_DBGP",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_DSDT", "ACPI_SIG_DSDT",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_ECDT", "ACPI_SIG_ECDT",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_FACS", "ACPI_SIG_FACS",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_FADT", "ACPI_SIG_FADT",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_HPET", "ACPI_SIG_HPET",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_MADT", "ACPI_SIG_MADT",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_MCFG", "ACPI_SIG_MCFG",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_PSDT", "ACPI_SIG_PSDT",   REPLACE_WHOLE_WORD},
+    {"ACPI_NAME_RSDP", "ACPI_NAME_RSDP",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_RSDP", "ACPI_SIG_RSDP",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_RSDT", "ACPI_SIG_RSDT",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_SBST", "ACPI_SIG_SBST",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_SLIT", "ACPI_SIG_SLIT",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_SPCR", "ACPI_SIG_SPCR",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_SPIC", "ACPI_SIG_SPIC",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_SPMI", "ACPI_SIG_SPMI",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_SRAT", "ACPI_SIG_SRAT",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_SSDT", "ACPI_SIG_SSDT",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_TCPA", "ACPI_SIG_TCPA",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_WDRT", "ACPI_SIG_WDRT",   REPLACE_WHOLE_WORD},
+    {"ACPI_SIG_XSDT", "ACPI_SIG_XSDT",   REPLACE_WHOLE_WORD},
+
     {"ACPI_ALLOCATE_ZEROED",    "ACPI_ALLOCATE_ZEROED",   REPLACE_WHOLE_WORD},
     {"ACPI_ALLOCATE",           "ACPI_ALLOCATE",          REPLACE_WHOLE_WORD},
     {"ACPI_FREE",               "ACPI_FREE",              REPLACE_WHOLE_WORD},
 
-#if 0
     {"(c) 1999 - 2006",      "(c) 1999 - 2006",         REPLACE_WHOLE_WORD},
 
     "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",         REPLACE_WHOLE_WORD,

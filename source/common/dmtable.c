@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -146,24 +146,24 @@ AcpiDmCheckAscii (
 
 ACPI_DMTABLE_DATA           AcpiDmTableData[] =
 {
-    {"APIC",    NULL,                       AcpiDmDumpMadt},
-    {"BOOT",    AcpiDmTableInfoBoot,        NULL},
-    {"DBGP",    AcpiDmTableInfoDbgp,        NULL},
-    {"ECDT",    AcpiDmTableInfoEcdt,        NULL},
-    {"FACP",    NULL,                       AcpiDmDumpFadt},
-    {"HPET",    AcpiDmTableInfoHpet,        NULL},
-    {"MCFG",    NULL,                       AcpiDmDumpMcfg},
-    {"RSD ",    NULL,                       AcpiDmDumpRsdp},
-    {"RSDT",    NULL,                       AcpiDmDumpRsdt},
-    {"SBST",    AcpiDmTableInfoSbst,        NULL},
-    {"SLIT",    NULL,                       AcpiDmDumpSlit},
-    {"SPCR",    AcpiDmTableInfoSpcr,        NULL},
-    {"SPMI",    AcpiDmTableInfoSpmi,        NULL},
-    {"SRAT",    NULL,                       AcpiDmDumpSrat},
-    {"TCPA",    AcpiDmTableInfoTcpa,        NULL},
-    {"WDRT",    AcpiDmTableInfoWdrt,        NULL},
-    {"XSDT",    NULL,                       AcpiDmDumpXsdt},
-    {NULL,      NULL,                       NULL}
+    {ACPI_SIG_MADT,     NULL,                       AcpiDmDumpMadt},
+    {ACPI_SIG_BOOT,     AcpiDmTableInfoBoot,        NULL},
+    {ACPI_SIG_DBGP,     AcpiDmTableInfoDbgp,        NULL},
+    {ACPI_SIG_ECDT,     AcpiDmTableInfoEcdt,        NULL},
+    {ACPI_SIG_FADT,     NULL,                       AcpiDmDumpFadt},
+    {ACPI_SIG_HPET,     AcpiDmTableInfoHpet,        NULL},
+    {ACPI_SIG_MCFG,     NULL,                       AcpiDmDumpMcfg},
+    {ACPI_SIG_RSDP,     NULL,                       AcpiDmDumpRsdp},
+    {ACPI_SIG_RSDT,     NULL,                       AcpiDmDumpRsdt},
+    {ACPI_SIG_SBST,     AcpiDmTableInfoSbst,        NULL},
+    {ACPI_SIG_SLIT,     NULL,                       AcpiDmDumpSlit},
+    {ACPI_SIG_SPCR,     AcpiDmTableInfoSpcr,        NULL},
+    {ACPI_SIG_SPMI,     AcpiDmTableInfoSpmi,        NULL},
+    {ACPI_SIG_SRAT,     NULL,                       AcpiDmDumpSrat},
+    {ACPI_SIG_TCPA,     AcpiDmTableInfoTcpa,        NULL},
+    {ACPI_SIG_WDRT,     AcpiDmTableInfoWdrt,        NULL},
+    {ACPI_SIG_XSDT,     NULL,                       AcpiDmDumpXsdt},
+    {NULL,              NULL,                       NULL}
 };
 
 
@@ -225,7 +225,7 @@ AcpiDmDumpDataTable (
         return;
     }
 
-    /* 
+    /*
      * Handle tables that don't use the common ACPI table header structure.
      * Currently, these are the FACS and RSDP.
      */
@@ -279,7 +279,7 @@ AcpiDmDumpDataTable (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Utility routines for formatting output lines. Displays the 
+ * DESCRIPTION: Utility routines for formatting output lines. Displays the
  *              current table offset in hex and decimal, and the table field
  *              name.
  *
@@ -467,7 +467,7 @@ AcpiDmDumpTable (
             AcpiOsPrintf ("%2.2X ", *Target);
             switch (*Target)
             {
-            case ACPI_ADR_SPACE_SYSTEM_MEMORY: 
+            case ACPI_ADR_SPACE_SYSTEM_MEMORY:
                 AcpiOsPrintf ("(System Memory)\n");
                 break;
             case ACPI_ADR_SPACE_SYSTEM_IO:

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -787,7 +787,7 @@ Cleanup:
 
 /******************************************************************************
  *
- * FUNCTION:    AdDisassemblerHeader 
+ * FUNCTION:    AdDisassemblerHeader
  *
  * PARAMETERS:  Filename            - Input file for the table
  *
@@ -1132,7 +1132,7 @@ AdGetLocalTables (
 
     if (GetAllTables)
     {
-        ACPI_STRNCPY (TableHeader.Signature, RSDT_SIG, 4);
+        ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_RSDT, 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (!NewTable)
         {
@@ -1142,7 +1142,7 @@ AdGetLocalTables (
 
 #if ACPI_MACHINE_WIDTH != 64
 
-        if (!ACPI_STRNCMP (NewTable->Signature, RSDT_SIG, 4))
+        if (!ACPI_STRNCMP (NewTable->Signature, ACPI_SIG_RSDT, 4))
         {
             PointerSize = sizeof (UINT32);
         }
@@ -1164,13 +1164,13 @@ AdGetLocalTables (
 
         /* Get the FADT */
 
-        ACPI_STRNCPY (TableHeader.Signature, FADT_SIG, 4);
+        ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_FADT, 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (NewTable)
         {
             AcpiGbl_FADT = (void *) NewTable;
             AdWriteTable (NewTable, NewTable->Length,
-                FADT_SIG, NewTable->OemTableId);
+                ACPI_SIG_FADT, NewTable->OemTableId);
 
             /* Use the FADT tableID for the FACS, since FACS has no ID */
 
@@ -1180,20 +1180,20 @@ AdGetLocalTables (
 
         /* Get the FACS */
 
-        ACPI_STRNCPY (TableHeader.Signature, FACS_SIG, 4);
+        ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_FACS, 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (NewTable)
         {
             AcpiGbl_FACS = (void *) NewTable;
             AdWriteTable (NewTable, AcpiGbl_FACS->Length,
-                FACS_SIG, FacsSuffix);
+                ACPI_SIG_FACS, FacsSuffix);
         }
         AcpiOsPrintf ("\n");
     }
 
     /* Always get the DSDT */
 
-    ACPI_STRNCPY (TableHeader.Signature, DSDT_SIG, 4);
+    ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_DSDT, 4);
     AcpiOsTableOverride (&TableHeader, &NewTable);
     if (NewTable)
     {
@@ -1212,7 +1212,7 @@ AdGetLocalTables (
 
     /* Get all SSDTs */
 
-    ACPI_STRNCPY (TableHeader.Signature, SSDT_SIG, 4);
+    ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_SSDT, 4);
     Status = AcpiOsTableOverride (&TableHeader, &NewTable);
     if (NewTable)
     {

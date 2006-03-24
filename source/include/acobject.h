@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.135 $
+ *       $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -159,7 +159,6 @@
 #define AOPOBJ_OBJECT_INITIALIZED   0x08
 #define AOPOBJ_SETUP_COMPLETE       0x10
 #define AOPOBJ_SINGLE_DATUM         0x20
-
 
 
 /******************************************************************************

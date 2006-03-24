@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -208,7 +208,7 @@ void
 AcpiDmDumpXsdt (
     ACPI_TABLE_HEADER       *Table)
 {
-    UINT64                  *Array; 
+    UINT64                  *Array;
     UINT32                  TableCount;
     UINT32                  Offset;
     UINT32                  i;
@@ -338,7 +338,7 @@ AcpiDmDumpSlit (
 
     Localities = ((SYSTEM_LOCALITY_INFO *) Table)->LocalityCount;
     Row = (UINT8 *) ((SYSTEM_LOCALITY_INFO *) Table)->Entry;
-    
+
     /* Display the Locality NxN Matrix */
 
     for (i = 0; i < Localities; i++)

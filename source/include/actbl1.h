@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - ACPI 1.0 tables
- *       $Revision: 1.35 $
+ *       $Revision: 1.36 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,11 @@
  */
 #pragma pack(1)
 
+/*
+ * Note about bitfields: The UINT8 type is used for bitfields in ACPI tables.
+ * This is the only type that is even remotely portable. Anything else is not
+ * portable, so do not use any other bitfield types.
+ */
 
 /*
  * ACPI 1.0 Fixed ACPI Description Table (FADT)
@@ -130,56 +135,56 @@
 typedef struct fadt_descriptor_rev1
 {
     ACPI_TABLE_HEADER_DEF
-    UINT32                  FirmwareCtrl;           /* Physical address of FACS */
-    UINT32                  Dsdt;                   /* Physical address of DSDT */
-    UINT8                   Model;                  /* System Interrupt Model */
-    UINT8                   Reserved1;              /* Reserved, must be zero */
-    UINT16                  SciInt;                 /* System vector of SCI interrupt */
-    UINT32                  SmiCmd;                 /* Port address of SMI command port */
-    UINT8                   AcpiEnable;             /* Value to write to smi_cmd to enable ACPI */
-    UINT8                   AcpiDisable;            /* Value to write to smi_cmd to disable ACPI */
-    UINT8                   S4BiosReq;              /* Value to write to SMI CMD to enter S4BIOS state */
-    UINT8                   Reserved2;              /* Reserved, must be zero */
-    UINT32                  Pm1aEvtBlk;             /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
-    UINT32                  Pm1bEvtBlk;             /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
-    UINT32                  Pm1aCntBlk;             /* Port address of Power Mgt 1a Control Reg Blk */
-    UINT32                  Pm1bCntBlk;             /* Port address of Power Mgt 1b Control Reg Blk */
-    UINT32                  Pm2CntBlk;              /* Port address of Power Mgt 2 Control Reg Blk */
-    UINT32                  PmTmrBlk;               /* Port address of Power Mgt Timer Ctrl Reg Blk */
-    UINT32                  Gpe0Blk;                /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
-    UINT32                  Gpe1Blk;                /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
-    UINT8                   Pm1EvtLen;              /* Byte Length of ports at pm1X_evt_blk */
-    UINT8                   Pm1CntLen;              /* Byte Length of ports at pm1X_cnt_blk */
-    UINT8                   Pm2CntLen;              /* Byte Length of ports at pm2_cnt_blk */
-    UINT8                   PmTmLen;                /* Byte Length of ports at pm_tm_blk */
-    UINT8                   Gpe0BlkLen;             /* Byte Length of ports at gpe0_blk */
-    UINT8                   Gpe1BlkLen;             /* Byte Length of ports at gpe1_blk */
-    UINT8                   Gpe1Base;               /* Offset in gpe model where gpe1 events start */
-    UINT8                   Reserved3;              /* Reserved, must be zero */
-    UINT16                  Plvl2Lat;               /* Worst case HW latency to enter/exit C2 state */
-    UINT16                  Plvl3Lat;               /* Worst case HW latency to enter/exit C3 state */
-    UINT16                  FlushSize;              /* Size of area read to flush caches */
-    UINT16                  FlushStride;            /* Stride used in flushing caches */
-    UINT8                   DutyOffset;             /* Bit location of duty cycle field in p_cnt reg */
-    UINT8                   DutyWidth;              /* Bit width of duty cycle field in p_cnt reg */
-    UINT8                   DayAlrm;                /* Index to day-of-month alarm in RTC CMOS RAM */
-    UINT8                   MonAlrm;                /* Index to month-of-year alarm in RTC CMOS RAM */
-    UINT8                   Century;                /* Index to century in RTC CMOS RAM */
-    UINT8                   Reserved4[3];           /* Reserved, must be zero */
+    UINT32                  FirmwareCtrl;       /* Physical address of FACS */
+    UINT32                  Dsdt;               /* Physical address of DSDT */
+    UINT8                   Model;              /* System Interrupt Model */
+    UINT8                   Reserved1;          /* Reserved, must be zero */
+    UINT16                  SciInt;             /* System vector of SCI interrupt */
+    UINT32                  SmiCmd;             /* Port address of SMI command port */
+    UINT8                   AcpiEnable;         /* Value to write to smi_cmd to enable ACPI */
+    UINT8                   AcpiDisable;        /* Value to write to smi_cmd to disable ACPI */
+    UINT8                   S4BiosReq;          /* Value to write to SMI CMD to enter S4BIOS state */
+    UINT8                   Reserved2;          /* Reserved, must be zero */
+    UINT32                  Pm1aEvtBlk;         /* Port address of Power Mgt 1a AcpiEvent Reg Blk */
+    UINT32                  Pm1bEvtBlk;         /* Port address of Power Mgt 1b AcpiEvent Reg Blk */
+    UINT32                  Pm1aCntBlk;         /* Port address of Power Mgt 1a Control Reg Blk */
+    UINT32                  Pm1bCntBlk;         /* Port address of Power Mgt 1b Control Reg Blk */
+    UINT32                  Pm2CntBlk;          /* Port address of Power Mgt 2 Control Reg Blk */
+    UINT32                  PmTmrBlk;           /* Port address of Power Mgt Timer Ctrl Reg Blk */
+    UINT32                  Gpe0Blk;            /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
+    UINT32                  Gpe1Blk;            /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
+    UINT8                   Pm1EvtLen;          /* Byte Length of ports at pm1X_evt_blk */
+    UINT8                   Pm1CntLen;          /* Byte Length of ports at pm1X_cnt_blk */
+    UINT8                   Pm2CntLen;          /* Byte Length of ports at pm2_cnt_blk */
+    UINT8                   PmTmLen;            /* Byte Length of ports at pm_tm_blk */
+    UINT8                   Gpe0BlkLen;         /* Byte Length of ports at gpe0_blk */
+    UINT8                   Gpe1BlkLen;         /* Byte Length of ports at gpe1_blk */
+    UINT8                   Gpe1Base;           /* Offset in gpe model where gpe1 events start */
+    UINT8                   Reserved3;          /* Reserved, must be zero */
+    UINT16                  Plvl2Lat;           /* Worst case HW latency to enter/exit C2 state */
+    UINT16                  Plvl3Lat;           /* Worst case HW latency to enter/exit C3 state */
+    UINT16                  FlushSize;          /* Size of area read to flush caches */
+    UINT16                  FlushStride;        /* Stride used in flushing caches */
+    UINT8                   DutyOffset;         /* Bit location of duty cycle field in p_cnt reg */
+    UINT8                   DutyWidth;          /* Bit width of duty cycle field in p_cnt reg */
+    UINT8                   DayAlrm;            /* Index to day-of-month alarm in RTC CMOS RAM */
+    UINT8                   MonAlrm;            /* Index to month-of-year alarm in RTC CMOS RAM */
+    UINT8                   Century;            /* Index to century in RTC CMOS RAM */
+    UINT8                   Reserved4[3];       /* Reserved, must be zero */
 
     struct /* Flags (32 bits) */
     {
-        UINT8                   WbInvd          : 1;    /* 00:    The wbinvd instruction works properly */
-        UINT8                   WbInvdFlush     : 1;    /* 01:    The wbinvd flushes but does not invalidate */
-        UINT8                   ProcC1          : 1;    /* 02:    All processors support C1 state */
-        UINT8                   Plvl2Up         : 1;    /* 03:    C2 state works on MP system */
-        UINT8                   PwrButton       : 1;    /* 04:    Power button is a generic feature */
-        UINT8                   SleepButton     : 1;    /* 05:    Sleep button is a generic feature, or not present */
-        UINT8                   FixedRTC        : 1;    /* 06:    RTC wakeup stat not in fixed register space */
-        UINT8                   Rtcs4           : 1;    /* 07:    RTC wakeup stat not possible from S4 */
-        UINT8                   TmrValExt       : 1;    /* 08:    tmr_val width is 32 bits (0 = 24 bits) */
-        UINT8                                   : 7;    /* 09-15: Reserved, must be zero */
-        UINT8                   Reserved5[2];           /* 16-31: Reserved, must be zero */
+        UINT8                   WbInvd          : 1; /* 00:    The wbinvd instruction works properly */
+        UINT8                   WbInvdFlush     : 1; /* 01:    The wbinvd flushes but does not invalidate */
+        UINT8                   ProcC1          : 1; /* 02:    All processors support C1 state */
+        UINT8                   Plvl2Up         : 1; /* 03:    C2 state works on MP system */
+        UINT8                   PwrButton       : 1; /* 04:    Power button is handled as a generic feature */
+        UINT8                   SleepButton     : 1; /* 05:    Sleep button is handled as a generic feature, or not present */
+        UINT8                   FixedRTC        : 1; /* 06:    RTC wakeup stat not in fixed register space */
+        UINT8                   Rtcs4           : 1; /* 07:    RTC wakeup stat not possible from S4 */
+        UINT8                   TmrValExt       : 1; /* 08:    tmr_val is 32 bits 0=24-bits */
+        UINT8                                   : 7; /* 09-15: Reserved, must be zero */
+        UINT8                   Reserved5[2];        /* 16-31: Reserved, must be zero */
     } Flags;
 
 } FADT_DESCRIPTOR_REV1;

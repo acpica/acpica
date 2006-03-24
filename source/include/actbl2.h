@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl2.h - ACPI Specification Revision 2.0 Tables
- *       $Revision: 1.48 $
+ *       $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -144,9 +144,14 @@
  */
 #pragma pack(1)
 
+/*
+ * Note about bitfields: The UINT8 type is used for bitfields in ACPI tables.
+ * This is the only type that is even remotely portable. Anything else is not
+ * portable, so do not use any other bitfield types.
+ */
 
 /*
- * FADT - This part is common to all versions 
+ * FADT - This part is common to all ACPI 2.0 versions
  */
 #define FADT_REV2_COMMON \
     UINT32                  V1_FirmwareCtrl;    /* 32-bit physical address of FACS */ \
@@ -190,7 +195,7 @@
 /*
  * ACPI 2.0+ Fixed ACPI Description Table (FADT)
  */
-typedef struct fadt_descriptor_rev2
+typedef struct fadt_descriptor
 {
     ACPI_TABLE_HEADER_DEF
     FADT_REV2_COMMON
@@ -198,31 +203,28 @@ typedef struct fadt_descriptor_rev2
 
     struct /* Flags (32 bits) */
     {
-        UINT8                   WbInvd      : 1;    /* 00:    The wbinvd instruction works properly */
-        UINT8                   WbInvdFlush : 1;    /* 01:    The wbinvd flushes but does not invalidate */
-        UINT8                   ProcC1      : 1;    /* 02:    All processors support C1 state */
-        UINT8                   Plvl2Up     : 1;    /* 03:    C2 state works on MP system */
-        UINT8                   PwrButton   : 1;    /* 04:    Power button is handled as a generic feature */
-        UINT8                   SleepButton : 1;    /* 05:    Sleep button is handled as a generic feature, or not present */
-        UINT8                   FixedRTC    : 1;    /* 06:    RTC wakeup stat not in fixed register space */
-        UINT8                   Rtcs4       : 1;    /* 07:    RTC wakeup stat not possible from S4 */
-
-        UINT8                   TmrValExt   : 1;    /* 08:    tmr_val is 32 bits 0=24-bits */
-        UINT8                   DockCap     : 1;    /* 09:    Docking supported */
-        UINT8                   ResetRegSup : 1;    /* 10:    System reset via the FADT RESET_REG supported */
-        UINT8                   SealedCase  : 1;    /* 11:    No internal expansion capabilities and case is sealed */
-        UINT8                   Headless    : 1;    /* 12:    No local video capabilities or local input devices */
-        UINT8                   CpuSwSleep  : 1;    /* 13:    Must execute native instruction after writing SLP_TYPx register */
-
-        UINT8                   PciExpWak                           : 1; /* 14:    System supports PCIEXP_WAKE (STS/EN) bits (ACPI 3.0) */
-        UINT8                   UsePlatformClock                    : 1; /* 15:    OSPM should use platform-provided timer (ACPI 3.0) */
-
-        UINT8                   S4RtcStsValid                       : 1; /* 16:    Contents of RTC_STS valid after S4 wake (ACPI 3.0) */
-        UINT8                   RemotePowerOnCapable                : 1; /* 17:    System is compatible with remote power on (ACPI 3.0) */
-        UINT8                   ForceApicClusterModel               : 1; /* 18:    All local APICs must use cluster model (ACPI 3.0) */
-        UINT8                   ForceApicPhysicalDestinationMode    : 1; /* 19:    All local xAPICs must use physical dest mode (ACPI 3.0) */
-        UINT8                                                       : 4; /* 20-23: Reserved, must be zero */
-        UINT8                   Reserved3;                               /* 24-31: Reserved, must be zero */
+        UINT8                   WbInvd          : 1; /* 00:    The wbinvd instruction works properly */
+        UINT8                   WbInvdFlush     : 1; /* 01:    The wbinvd flushes but does not invalidate */
+        UINT8                   ProcC1          : 1; /* 02:    All processors support C1 state */
+        UINT8                   Plvl2Up         : 1; /* 03:    C2 state works on MP system */
+        UINT8                   PwrButton       : 1; /* 04:    Power button is handled as a generic feature */
+        UINT8                   SleepButton     : 1; /* 05:    Sleep button is handled as a generic feature, or not present */
+        UINT8                   FixedRTC        : 1; /* 06:    RTC wakeup stat not in fixed register space */
+        UINT8                   Rtcs4           : 1; /* 07:    RTC wakeup stat not possible from S4 */
+        UINT8                   TmrValExt       : 1; /* 08:    tmr_val is 32 bits 0=24-bits */
+        UINT8                   DockCap         : 1; /* 09:    Docking supported */
+        UINT8                   ResetRegSup     : 1; /* 10:    System reset via the FADT RESET_REG supported */
+        UINT8                   SealedCase      : 1; /* 11:    No internal expansion capabilities and case is sealed */
+        UINT8                   Headless        : 1; /* 12:    No local video capabilities or local input devices */
+        UINT8                   CpuSwSleep      : 1; /* 13:    Must execute native instruction after writing SLP_TYPx register */
+        UINT8                   PciExpWak       : 1; /* 14:    System supports PCIEXP_WAKE (STS/EN) bits (ACPI 3.0) */
+        UINT8                   PlatformClock   : 1; /* 15:    OSPM should use platform-provided timer (ACPI 3.0) */
+        UINT8                   S4RtcStsValid   : 1; /* 16:    Contents of RTC_STS valid after S4 wake (ACPI 3.0) */
+        UINT8                   RemotePowerOn   : 1; /* 17:    System is compatible with remote power on (ACPI 3.0) */
+        UINT8                   ApicCluster     : 1; /* 18:    All local APICs must use cluster model (ACPI 3.0) */
+        UINT8                   ApicPhysical    : 1; /* 19:    All local xAPICs must use physical dest mode (ACPI 3.0) */
+        UINT8                                   : 4; /* 20-23: Reserved, must be zero */
+        UINT8                   Reserved3;           /* 24-31: Reserved, must be zero */
     } Flags;
 
     ACPI_GENERIC_ADDRESS    ResetRegister;      /* Reset register address in GAS format */
@@ -239,11 +241,12 @@ typedef struct fadt_descriptor_rev2
     ACPI_GENERIC_ADDRESS    XGpe0Blk;           /* Extended General Purpose AcpiEvent 0 Reg Blk address */
     ACPI_GENERIC_ADDRESS    XGpe1Blk;           /* Extended General Purpose AcpiEvent 1 Reg Blk address */
 
-} FADT_DESCRIPTOR_REV2;
+} FADT_DESCRIPTOR;
 
 
 /*
  * "Down-revved" ACPI 2.0 FADT descriptor
+ * Defined here to allow compiler to generate the length of the struct
  */
 typedef struct fadt_descriptor_rev2_minus
 {

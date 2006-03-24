@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -158,7 +158,7 @@ AcpiTbValidateRsdp (
     /*
      *  The signature and checksum must both be correct
      */
-    if (ACPI_STRNCMP ((char *) Rsdp, RSDP_SIG, sizeof (RSDP_SIG)-1) != 0)
+    if (ACPI_STRNCMP ((char *) Rsdp, ACPI_SIG_RSDP, sizeof (ACPI_SIG_RSDP)-1) != 0)
     {
         /* Nope, BAD Signature */
 
@@ -223,7 +223,7 @@ AcpiTbFindTable (
         return_ACPI_STATUS (AE_AML_STRING_LIMIT);
     }
 
-    if (!ACPI_STRNCMP (Signature, DSDT_SIG, ACPI_NAME_SIZE))
+    if (!ACPI_STRNCMP (Signature, ACPI_SIG_DSDT, ACPI_NAME_SIZE))
     {
         /*
          * The DSDT pointer is contained in the FADT, not the RSDT.

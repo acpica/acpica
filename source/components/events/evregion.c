@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.161 $
+ *              $Revision: 1.162 $
  *
  *****************************************************************************/
 
@@ -127,7 +127,7 @@
 
 #define ACPI_NUM_DEFAULT_SPACES     4
 
-static UINT8        AcpiGbl_DefaultAddressSpaces[ACPI_NUM_DEFAULT_SPACES] = 
+static UINT8        AcpiGbl_DefaultAddressSpaces[ACPI_NUM_DEFAULT_SPACES] =
 {
     ACPI_ADR_SPACE_SYSTEM_MEMORY,
     ACPI_ADR_SPACE_SYSTEM_IO,
@@ -497,7 +497,7 @@ AcpiEvAddressSpaceDispatch (
         ACPI_FORMAT_UINT64 (Address),
         AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
 
-    if (!(HandlerDesc->AddressSpace.HandlerFlags & 
+    if (!(HandlerDesc->AddressSpace.HandlerFlags &
             ACPI_ADDR_HANDLER_DEFAULT_INSTALLED))
     {
         /*

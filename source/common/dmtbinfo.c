@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbinfo - Table info for non-AML tables
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -132,7 +132,7 @@
 
 /*******************************************************************************
  *
- * Common ACPI table header 
+ * Common ACPI table header
  *
  ******************************************************************************/
 
@@ -223,53 +223,57 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFacs[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt1[] =
 {
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (V1_FirmwareCtrl),        "FACS Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (V1_Dsdt),                "DSDT Address"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (Prefer_PM_Profile),      "PM Profile"},
-    {ACPI_DMT_UINT16,   ACPI_FADT2_OFFSET (SciInt),                 "SCI Interrupt"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (SmiCmd),                 "SMI Command Port"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (AcpiEnable),             "ACPI Enable Value"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (AcpiDisable),            "ACPI Disable Value"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (S4BiosReq),              "S4BIOS Command"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (PstateCnt),              "P-State Control"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (V1_Pm1aEvtBlk),          "PM1A Event Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (V1_Pm1bEvtBlk),          "PM1B Event Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (V1_Pm1aCntBlk),          "PM1A Control Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (V1_Pm1bCntBlk),          "PM1B Control Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (V1_Pm2CntBlk),           "PM2 Control Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (V1_PmTmrBlk),            "PM Timer Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (V1_Gpe0Blk),             "GPE0 Event Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (V1_Gpe1Blk),             "GPE1 Event Address"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (Pm1EvtLen),              "PM1 Event Length"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (Pm1CntLen),              "PM1 Control Length"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (Pm2CntLen),              "PM2 Control Length"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (PmTmLen),                "PM Timer Length"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (Gpe0BlkLen),             "GPE0 Block Length"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (Gpe1BlkLen),             "GPE1 Block Length"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (Gpe1Base),               "GPE1 Base"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (CstCnt),                 "_CST Support"},
-    {ACPI_DMT_UINT16,   ACPI_FADT2_OFFSET (Plvl2Lat),               "C2 Latency"},
-    {ACPI_DMT_UINT16,   ACPI_FADT2_OFFSET (Plvl3Lat),               "C3 Latency"},
-    {ACPI_DMT_UINT16,   ACPI_FADT2_OFFSET (FlushSize),              "CPU Cache Size"},
-    {ACPI_DMT_UINT16,   ACPI_FADT2_OFFSET (FlushStride),            "Cache Flush Stride"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (DutyOffset),             "Duty Cycle Offset"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (DutyWidth),              "Duty Cycle Width"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (DayAlrm),                "RTC Day Alarm Index"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (MonAlrm),                "RTC Month Alarm Index"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (Century),                "RTC Century Index"},
-    {ACPI_DMT_UINT16,   ACPI_FADT2_OFFSET (IapcBootArch),           "Boot Architecture Flags"},
-    {ACPI_DMT_UINT32,   ACPI_FADT2_OFFSET (Flags),                  "Flags (decoded below)"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (V1_FirmwareCtrl),         "FACS Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (V1_Dsdt),                 "DSDT Address"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Prefer_PM_Profile),       "PM Profile"},
+    {ACPI_DMT_UINT16,   ACPI_FADT_OFFSET (SciInt),                  "SCI Interrupt"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (SmiCmd),                  "SMI Command Port"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (AcpiEnable),              "ACPI Enable Value"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (AcpiDisable),             "ACPI Disable Value"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (S4BiosReq),               "S4BIOS Command"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (PstateCnt),               "P-State Control"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (V1_Pm1aEvtBlk),           "PM1A Event Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (V1_Pm1bEvtBlk),           "PM1B Event Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (V1_Pm1aCntBlk),           "PM1A Control Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (V1_Pm1bCntBlk),           "PM1B Control Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (V1_Pm2CntBlk),            "PM2 Control Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (V1_PmTmrBlk),             "PM Timer Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (V1_Gpe0Blk),              "GPE0 Event Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (V1_Gpe1Blk),              "GPE1 Event Address"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Pm1EvtLen),               "PM1 Event Length"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Pm1CntLen),               "PM1 Control Length"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Pm2CntLen),               "PM2 Control Length"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (PmTmLen),                 "PM Timer Length"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Gpe0BlkLen),              "GPE0 Block Length"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Gpe1BlkLen),              "GPE1 Block Length"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Gpe1Base),                "GPE1 Base"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (CstCnt),                  "_CST Support"},
+    {ACPI_DMT_UINT16,   ACPI_FADT_OFFSET (Plvl2Lat),                "C2 Latency"},
+    {ACPI_DMT_UINT16,   ACPI_FADT_OFFSET (Plvl3Lat),                "C3 Latency"},
+    {ACPI_DMT_UINT16,   ACPI_FADT_OFFSET (FlushSize),               "CPU Cache Size"},
+    {ACPI_DMT_UINT16,   ACPI_FADT_OFFSET (FlushStride),             "Cache Flush Stride"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (DutyOffset),              "Duty Cycle Offset"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (DutyWidth),               "Duty Cycle Width"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (DayAlrm),                 "RTC Day Alarm Index"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (MonAlrm),                 "RTC Month Alarm Index"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Century),                 "RTC Century Index"},
+    {ACPI_DMT_UINT16,   ACPI_FADT_OFFSET (IapcBootArch),            "Boot Architecture Flags"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Flags),                   "Flags (decoded below)"},
 
-    {ACPI_DMT_FLAG0,    ACPI_FADT2_FLAG_OFFSET (Flags,0),           "WBINVD is operational"},
-    {ACPI_DMT_FLAG1,    ACPI_FADT2_FLAG_OFFSET (Flags,0),           "WBINVD does not invalidate"},
-    {ACPI_DMT_FLAG2,    ACPI_FADT2_FLAG_OFFSET (Flags,0),           "All CPUs support C1"},
-    {ACPI_DMT_FLAG3,    ACPI_FADT2_FLAG_OFFSET (Flags,0),           "C2 works on MP system"},
-    {ACPI_DMT_FLAG4,    ACPI_FADT2_FLAG_OFFSET (Flags,0),           "Power button is generic"},
-    {ACPI_DMT_FLAG5,    ACPI_FADT2_FLAG_OFFSET (Flags,0),           "Sleep button is generic"},
-    {ACPI_DMT_FLAG6,    ACPI_FADT2_FLAG_OFFSET (Flags,0),           "RTC wakeup not fixed"},
-    {ACPI_DMT_FLAG7,    ACPI_FADT2_FLAG_OFFSET (Flags,0),           "RTC wakeup/S4 not possible"},
+    /* Flags byte 0 */
 
-    {ACPI_DMT_FLAG0,    ACPI_FADT2_FLAG_OFFSET (Flags,1),           "32-bit PM Timer"},
+    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "WBINVD is operational"},
+    {ACPI_DMT_FLAG1,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "WBINVD does not invalidate"},
+    {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "All CPUs support C1"},
+    {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "C2 works on MP system"},
+    {ACPI_DMT_FLAG4,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "Power button is generic"},
+    {ACPI_DMT_FLAG5,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "Sleep button is generic"},
+    {ACPI_DMT_FLAG6,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "RTC wakeup not fixed"},
+    {ACPI_DMT_FLAG7,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "RTC wakeup/S4 not possible"},
+
+    /* Flags byte 1 */
+
+    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "32-bit PM Timer"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -277,27 +281,34 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt1[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt2[] =
 {
-    {ACPI_DMT_FLAG1,    ACPI_FADT2_FLAG_OFFSET (Flags,1),           "Docking Supported"},
-    {ACPI_DMT_FLAG2,    ACPI_FADT2_FLAG_OFFSET (Flags,1),           "Reset Register Supported"},
-    {ACPI_DMT_FLAG3,    ACPI_FADT2_FLAG_OFFSET (Flags,1),           "Sealed Case"},
-    {ACPI_DMT_FLAG4,    ACPI_FADT2_FLAG_OFFSET (Flags,1),           "Headless - No Video"},
-    {ACPI_DMT_FLAG5,    ACPI_FADT2_FLAG_OFFSET (Flags,1),           "Native Instr after SLP_TYP"},
-    {ACPI_DMT_FLAG6,    ACPI_FADT2_FLAG_OFFSET (Flags,1),           "PCIEXP_WAK Supported"},
-    {ACPI_DMT_FLAG7,    ACPI_FADT2_FLAG_OFFSET (Flags,1),           "Use platform Timer"},
+    {ACPI_DMT_FLAG1,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Docking Supported"},
+    {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Reset Register Supported"},
+    {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Sealed Case"},
+    {ACPI_DMT_FLAG4,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Headless - No Video"},
+    {ACPI_DMT_FLAG5,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Native Instr after SLP_TYP"},
+    {ACPI_DMT_FLAG6,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "PCIEXP_WAK Supported"},
+    {ACPI_DMT_FLAG7,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Use platform Timer"},
 
-    {ACPI_DMT_GAS,      ACPI_FADT2_OFFSET (ResetRegister),          "Reset Register"},
-    {ACPI_DMT_UINT8,    ACPI_FADT2_OFFSET (ResetValue),             "Value to cause reset"},
-    {ACPI_DMT_UINT64,   ACPI_FADT2_OFFSET (XFirmwareCtrl),          "FACS Address"},
+    /* Flags byte 2 */
 
-    {ACPI_DMT_UINT64,   ACPI_FADT2_OFFSET (XDsdt),                  "DSDT Address"},
-    {ACPI_DMT_GAS,      ACPI_FADT2_OFFSET (XPm1aEvtBlk),            "PM1A Event Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT2_OFFSET (XPm1bEvtBlk),            "PM1B Event Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT2_OFFSET (XPm1aCntBlk),            "PM1A Control Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT2_OFFSET (XPm1bCntBlk),            "PM1B Control Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT2_OFFSET (XPm2CntBlk),             "PM2 Control Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT2_OFFSET (XPmTmrBlk),              "PM Timer Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT2_OFFSET (XGpe0Blk),               "GPE0 Block Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT2_OFFSET (XGpe1Blk),               "GPE1 Block Register"},
+    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "RTC_STS valid after S4"},
+    {ACPI_DMT_FLAG1,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "Remote Power-on capable"},
+    {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "APIC Cluster Model"},
+    {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "APIC Physical Dest Mode"},
+
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (ResetRegister),           "Reset Register"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (ResetValue),              "Value to cause reset"},
+    {ACPI_DMT_UINT64,   ACPI_FADT_OFFSET (XFirmwareCtrl),           "FACS Address"},
+
+    {ACPI_DMT_UINT64,   ACPI_FADT_OFFSET (XDsdt),                   "DSDT Address"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1aEvtBlk),             "PM1A Event Register"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1bEvtBlk),             "PM1B Event Register"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1aCntBlk),             "PM1A Control Register"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1bCntBlk),             "PM1B Control Register"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm2CntBlk),              "PM2 Control Register"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPmTmrBlk),               "PM Timer Register"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XGpe0Blk),                "GPE0 Block Register"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XGpe1Blk),                "GPE1 Block Register"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 

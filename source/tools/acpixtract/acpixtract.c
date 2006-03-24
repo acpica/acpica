@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpixtract - convert ascii ACPI tables to binary
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -415,7 +415,7 @@ CountTableInstances (
  *
  * FUNCTION:    GetNextInstance
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
