@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -295,6 +295,7 @@ AcpiTbVerifyTableChecksum (
     ACPI_TABLE_HEADER       *TableHeader)
 {
     UINT8                   Checksum;
+    UINT8                   CorrectChecksum;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -309,10 +310,17 @@ AcpiTbVerifyTableChecksum (
 
     if (Checksum)
     {
+        Checksum = TableHeader->Checksum;
+        TableHeader->Checksum = 0;
+
+        CorrectChecksum = (UINT8) (0 -
+            AcpiTbGenerateChecksum (TableHeader, TableHeader->Length));
+        TableHeader->Checksum = Checksum;
+
         ACPI_WARNING ((AE_INFO,
-            "Invalid checksum in table [%4.4s] (%02X, sum %02X is not zero)",
-            TableHeader->Signature, (UINT32) TableHeader->Checksum,
-            (UINT32) Checksum));
+            "Incorrect checksum in table [%4.4s] - is %2.2X, should be %2.2X",
+            TableHeader->Signature, TableHeader->Checksum,
+            CorrectChecksum));
 
         Status = AE_BAD_CHECKSUM;
     }
