@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -149,6 +149,15 @@ AdXrefAscendingOp (
 static void
 AdCrossReferenceNamespace (
     void);
+
+void
+AdCreateTableHeader (
+    char                    *Filename,
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AdDisassemblerHeader (
+    char                    *Filename);
 
 ACPI_PARSE_OBJECT       *AcpiGbl_ParsedNamespaceRoot;
 
@@ -720,29 +729,42 @@ AdAmlDisassemble (
 
     *OutFilename = DisasmFilename;
 
-    /* Always parse the tables, only option is what to display */
-
-    Status = AdParseTable (Table);
-    if (ACPI_FAILURE (Status))
+    if (!AcpiUtIsAmlTable (Table))
     {
-        AcpiOsPrintf ("Could not parse ACPI tables, %s\n",
-            AcpiFormatException (Status));
-        goto Cleanup;
+        AdDisassemblerHeader (Filename);
+        AcpiOsPrintf (" * ACPI Data Table [%4.4s] decoded\n */\n\n",
+            Table->Signature);
+
+        AcpiDmDumpDataTable (Table);
+        fprintf (stderr, "Acpi Data Table [%4.4s] decoded, written to \"%s\"\n",
+            Table->Signature, DisasmFilename);
     }
-
-    /*
-     * Cross reference the namespace here, in order to
-     * generate External() statements and to convert fixed-offset
-     * references to resource descriptors to symbolic references.
-     */
-    AdCrossReferenceNamespace ();
-
-    /* Optional displays */
-
-    if (AcpiGbl_DbOpt_disasm)
+    else
     {
-        AdDisplayTables (Filename, Table);
-        fprintf (stderr, "Disassembly completed, written to \"%s\"\n", DisasmFilename);
+        /* Always parse the tables, only option is what to display */
+
+        Status = AdParseTable (Table);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("Could not parse ACPI tables, %s\n",
+                AcpiFormatException (Status));
+            goto Cleanup;
+        }
+
+        /*
+         * Cross reference the namespace here, in order to
+         * generate External() statements and to convert fixed-offset
+         * references to resource descriptors to symbolic references.
+         */
+        AdCrossReferenceNamespace ();
+
+        /* Optional displays */
+
+        if (AcpiGbl_DbOpt_disasm)
+        {
+            AdDisplayTables (Filename, Table);
+            fprintf (stderr, "Disassembly completed, written to \"%s\"\n", DisasmFilename);
+        }
     }
 
 Cleanup:
@@ -765,6 +787,37 @@ Cleanup:
 
 /******************************************************************************
  *
+ * FUNCTION:    AdDisassemblerHeader 
+ *
+ * PARAMETERS:  Filename            - Input file for the table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Create the disassembler header, including ACPI CA signon with
+ *              current time and date.
+ *
+ *****************************************************************************/
+
+void
+AdDisassemblerHeader (
+    char                    *Filename)
+{
+    time_t                  Timer;
+
+    time (&Timer);
+
+    /* Header and input table info */
+
+    AcpiOsPrintf ("/*\n * Intel ACPI Component Architecture\n");
+    AcpiOsPrintf (" * AML Disassembler version %8.8X\n", ACPI_CA_VERSION);
+
+    AcpiOsPrintf (" *\n * Disassembly of %s, %s", Filename, ctime (&Timer));
+    AcpiOsPrintf (" *\n");
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AdCreateTableHeader
  *
  * PARAMETERS:  Filename            - Input file for the table
@@ -782,17 +835,8 @@ AdCreateTableHeader (
     char                    *Filename,
     ACPI_TABLE_HEADER       *Table)
 {
-    time_t                  Timer;
 
-
-    time (&Timer);
-
-    /* Header and input table info */
-
-    AcpiOsPrintf ("/*\n * Intel ACPI Component Architecture\n");
-    AcpiOsPrintf (" * AML Disassembler version %8.8X\n", ACPI_CA_VERSION);
-
-    AcpiOsPrintf (" *\n * Disassembly of %s, %s", Filename, ctime (&Timer));
+    AdDisassemblerHeader (Filename);
 
     AcpiOsPrintf (" *\n * Original Table Header:\n");
     AcpiOsPrintf (" *     Signature        \"%4.4s\"\n",    Table->Signature);

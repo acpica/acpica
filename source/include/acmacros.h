@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.185 $
+ *       $Revision: 1.186 $
  *
  *****************************************************************************/
 
@@ -205,7 +205,6 @@
 #define ACPI_TO_POINTER(i)              ACPI_ADD_PTR (void,(void *) NULL,(ACPI_NATIVE_UINT) i)
 #define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p,(void *) NULL)
 #define ACPI_OFFSET(d,f)                (ACPI_SIZE) ACPI_PTR_DIFF (&(((d *)0)->f),(void *) NULL)
-#define ACPI_FADT_OFFSET(f)             ACPI_OFFSET (FADT_DESCRIPTOR, f)
 
 #if ACPI_MACHINE_WIDTH == 16
 #define ACPI_STORE_POINTER(d,s)         ACPI_MOVE_32_TO_32(d,s)
@@ -214,6 +213,12 @@
 #else
 #define ACPI_PHYSADDR_TO_PTR(i)         ACPI_TO_POINTER(i)
 #define ACPI_PTR_TO_PHYSADDR(i)         ACPI_TO_INTEGER(i)
+#endif
+
+#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
+#define ACPI_COMPARE_NAME(a,b)          (*(UINT32 *) (a) == *(UINT32 *) (b))
+#else
+#define ACPI_COMPARE_NAME(a,b)          (!ACPI_STRNCMP ((char *) (a), (char *) (b), 4))
 #endif
 
 /*

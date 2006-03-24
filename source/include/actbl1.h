@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - ACPI 1.0 tables
- *       $Revision: 1.34 $
+ *       $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -117,39 +117,11 @@
 #ifndef __ACTBL1_H__
 #define __ACTBL1_H__
 
+/*
+ * All tables must be byte-packed to match the ACPI specification, since
+ * the tables are provided by the system BIOS.
+ */
 #pragma pack(1)
-
-/*
- * ACPI 1.0 Root System Description Table (RSDT)
- */
-typedef struct rsdt_descriptor_rev1
-{
-    ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
-    UINT32                  TableOffsetEntry[1];    /* Array of pointers to ACPI tables */
-
-} RSDT_DESCRIPTOR_REV1;
-
-
-/*
- * ACPI 1.0 Firmware ACPI Control Structure (FACS)
- */
-typedef struct facs_descriptor_rev1
-{
-    char                    Signature[4];           /* ASCII table signature */
-    UINT32                  Length;                 /* Length of structure in bytes */
-    UINT32                  HardwareSignature;      /* Hardware configuration signature */
-    UINT32                  FirmwareWakingVector;   /* ACPI OS waking vector */
-    UINT32                  GlobalLock;             /* Global Lock */
-
-    /* Flags (32 bits) */
-
-    UINT8                   S4Bios_f        : 1;    /* 00:    S4BIOS support is present */
-    UINT8                                   : 7;    /* 01-07: Reserved, must be zero */
-    UINT8                   Reserved1[3];           /* 08-31: Reserved, must be zero */
-
-    UINT8                   Reserved2[40];          /* Reserved, must be zero */
-
-} FACS_DESCRIPTOR_REV1;
 
 
 /*
@@ -157,7 +129,7 @@ typedef struct facs_descriptor_rev1
  */
 typedef struct fadt_descriptor_rev1
 {
-    ACPI_TABLE_HEADER_DEF                           /* ACPI common table header */
+    ACPI_TABLE_HEADER_DEF
     UINT32                  FirmwareCtrl;           /* Physical address of FACS */
     UINT32                  Dsdt;                   /* Physical address of DSDT */
     UINT8                   Model;                  /* System Interrupt Model */
@@ -195,21 +167,24 @@ typedef struct fadt_descriptor_rev1
     UINT8                   Century;                /* Index to century in RTC CMOS RAM */
     UINT8                   Reserved4[3];           /* Reserved, must be zero */
 
-    /* Flags (32 bits) */
-
-    UINT8                   WbInvd          : 1;    /* 00:    The wbinvd instruction works properly */
-    UINT8                   WbInvdFlush     : 1;    /* 01:    The wbinvd flushes but does not invalidate */
-    UINT8                   ProcC1          : 1;    /* 02:    All processors support C1 state */
-    UINT8                   Plvl2Up         : 1;    /* 03:    C2 state works on MP system */
-    UINT8                   PwrButton       : 1;    /* 04:    Power button is handled as a generic feature */
-    UINT8                   SleepButton     : 1;    /* 05:    Sleep button is handled as a generic feature, or not present */
-    UINT8                   FixedRTC        : 1;    /* 06:    RTC wakeup stat not in fixed register space */
-    UINT8                   Rtcs4           : 1;    /* 07:    RTC wakeup stat not possible from S4 */
-    UINT8                   TmrValExt       : 1;    /* 08:    tmr_val width is 32 bits (0 = 24 bits) */
-    UINT8                                   : 7;    /* 09-15: Reserved, must be zero */
-    UINT8                   Reserved5[2];           /* 16-31: Reserved, must be zero */
+    struct /* Flags (32 bits) */
+    {
+        UINT8                   WbInvd          : 1;    /* 00:    The wbinvd instruction works properly */
+        UINT8                   WbInvdFlush     : 1;    /* 01:    The wbinvd flushes but does not invalidate */
+        UINT8                   ProcC1          : 1;    /* 02:    All processors support C1 state */
+        UINT8                   Plvl2Up         : 1;    /* 03:    C2 state works on MP system */
+        UINT8                   PwrButton       : 1;    /* 04:    Power button is a generic feature */
+        UINT8                   SleepButton     : 1;    /* 05:    Sleep button is a generic feature, or not present */
+        UINT8                   FixedRTC        : 1;    /* 06:    RTC wakeup stat not in fixed register space */
+        UINT8                   Rtcs4           : 1;    /* 07:    RTC wakeup stat not possible from S4 */
+        UINT8                   TmrValExt       : 1;    /* 08:    tmr_val width is 32 bits (0 = 24 bits) */
+        UINT8                                   : 7;    /* 09-15: Reserved, must be zero */
+        UINT8                   Reserved5[2];           /* 16-31: Reserved, must be zero */
+    } Flags;
 
 } FADT_DESCRIPTOR_REV1;
+
+/* Reset to default packing */
 
 #pragma pack()
 

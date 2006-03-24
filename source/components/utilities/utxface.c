@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -555,11 +555,11 @@ AcpiGetSystemInfo (
      */
     InfoPtr = (ACPI_SYSTEM_INFO *) OutBuffer->Pointer;
 
-    InfoPtr->AcpiCaVersion      = ACPI_CA_VERSION;
+    InfoPtr->AcpiCaVersion = ACPI_CA_VERSION;
 
     /* System flags (ACPI capabilities) */
 
-    InfoPtr->Flags              = ACPI_SYS_MODE_ACPI;
+    InfoPtr->Flags = ACPI_SYS_MODE_ACPI;
 
     /* Timer resolution - 24 or 32 bits  */
 
@@ -567,7 +567,7 @@ AcpiGetSystemInfo (
     {
         InfoPtr->TimerResolution = 0;
     }
-    else if (AcpiGbl_FADT->TmrValExt == 0)
+    else if (AcpiGbl_FADT->Flags.TmrValExt == 0)
     {
         InfoPtr->TimerResolution = 24;
     }
@@ -578,13 +578,13 @@ AcpiGetSystemInfo (
 
     /* Clear the reserved fields */
 
-    InfoPtr->Reserved1          = 0;
-    InfoPtr->Reserved2          = 0;
+    InfoPtr->Reserved1 = 0;
+    InfoPtr->Reserved2 = 0;
 
     /* Current debug levels */
 
-    InfoPtr->DebugLayer         = AcpiDbgLayer;
-    InfoPtr->DebugLevel         = AcpiDbgLevel;
+    InfoPtr->DebugLayer = AcpiDbgLayer;
+    InfoPtr->DebugLevel = AcpiDbgLevel;
 
     /* Current status of the ACPI tables, per table type */
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -130,7 +130,7 @@ static void
 AcpiUtFadtRegisterError (
     char                    *RegisterName,
     UINT32                  Value,
-    ACPI_SIZE               Offset);
+    UINT8                   Offset);
 
 static void AcpiUtTerminate (
     void);
@@ -154,12 +154,12 @@ static void
 AcpiUtFadtRegisterError (
     char                    *RegisterName,
     UINT32                  Value,
-    ACPI_SIZE               Offset)
+    UINT8                   Offset)
 {
 
     ACPI_WARNING ((AE_INFO,
         "Invalid FADT value %s=%X at offset %X FADT=%p",
-        RegisterName, Value, (UINT32) Offset, AcpiGbl_FADT));
+        RegisterName, Value, Offset, AcpiGbl_FADT));
 }
 
 

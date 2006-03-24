@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.192 $
+ *       $Revision: 1.193 $
  *
  *****************************************************************************/
 
@@ -734,6 +734,10 @@ AcpiUtShortDivide (
 /*
  * utmisc
  */
+BOOLEAN
+AcpiUtIsAmlTable (
+    ACPI_TABLE_HEADER       *Table);
+
 ACPI_STATUS
 AcpiUtAllocateOwnerId (
     ACPI_OWNER_ID           *OwnerId);

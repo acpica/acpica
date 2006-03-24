@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -162,7 +162,6 @@ unsigned char Oem1Code[] =
     0x18,0x09,0x03,0x20,0x08,0x5F,0x58,0x54,  /* 00000020    "... ._XT" */
     0x32,0x0A,0x04,0x14,0x0C,0x5F,0x58,0x54,  /* 00000028    "2...._XT" */
     0x31,0x00,0x70,0x01,0x5F,0x58,0x54,0x32,  /* 00000030    "1.p._XT2" */
-
 };
 
 /*
@@ -172,15 +171,15 @@ unsigned char Oem1Code[] =
  */
 RSDP_DESCRIPTOR             LocalRSDP;
 FADT_DESCRIPTOR_REV1        LocalFADT;
-FACS_DESCRIPTOR_REV1        LocalFACS;
+FACS_DESCRIPTOR             LocalFACS;
 ACPI_TABLE_HEADER           LocalDSDT;
 ACPI_TABLE_HEADER           LocalTEST;
 ACPI_TABLE_HEADER           LocalBADTABLE;
 
-RSDT_DESCRIPTOR_REV1        *LocalRSDT;
+RSDT_DESCRIPTOR             *LocalRSDT;
 
 #define RSDT_TABLES         7
-#define RSDT_SIZE           (sizeof (RSDT_DESCRIPTOR_REV1) + ((RSDT_TABLES -1) * sizeof (UINT32)))
+#define RSDT_SIZE           (sizeof (ACPI_TABLE_HEADER) + (RSDT_TABLES * sizeof (UINT32)))
 
 
 /******************************************************************************
@@ -332,9 +331,9 @@ AeBuildLocalTables (
 
     /* Build a FACS */
 
-    ACPI_MEMSET (&LocalFACS, 0, sizeof (FACS_DESCRIPTOR_REV1));
+    ACPI_MEMSET (&LocalFACS, 0, sizeof (FACS_DESCRIPTOR));
     ACPI_STRNCPY (LocalFACS.Signature, FACS_SIG, 4);
-    LocalFACS.Length = sizeof (FACS_DESCRIPTOR_REV1);
+    LocalFACS.Length = sizeof (FACS_DESCRIPTOR);
     LocalFACS.GlobalLock = 0x11AA0011;
 
     /* Build a fake table so that we make sure that the CA core ignores it */

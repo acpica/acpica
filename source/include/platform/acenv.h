@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.124 $
+ *       $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -134,6 +134,7 @@
 #define ACPI_DISASSEMBLER
 #define ACPI_NO_METHOD_EXECUTION
 #define ACPI_LARGE_NAMESPACE_NODE
+#define ACPI_DATA_TABLE_DISASSEMBLY
 #endif
 
 #ifdef ACPI_EXEC_APP
@@ -153,6 +154,7 @@
 #define ACPI_DISASSEMBLER
 #define ACPI_CONSTANT_EVAL_ONLY
 #define ACPI_LARGE_NAMESPACE_NODE
+#define ACPI_DATA_TABLE_DISASSEMBLY
 #endif
 
 #ifdef ACPI_APPLICATION

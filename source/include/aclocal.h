@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.224 $
+ *       $Revision: 1.225 $
  *
  *****************************************************************************/
 
@@ -282,6 +282,7 @@ typedef struct acpi_namespace_node
 #ifdef ACPI_LARGE_NAMESPACE_NODE
     union acpi_parse_object         *Op;
     UINT32                          Value;
+    UINT32                          Length;
 #endif
 
 } ACPI_NAMESPACE_NODE;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.138 $
+ *              $Revision: 1.139 $
  *
  ******************************************************************************/
 
@@ -123,6 +123,38 @@
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utmisc")
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtIsAmlTable
+ *
+ * PARAMETERS:  Table               - An ACPI table
+ *
+ * RETURN:      TRUE if table contains executable AML; FALSE otherwise
+ *
+ * DESCRIPTION: Check ACPI Signature for a table that contains AML code.
+ *              Currently, these are DSDT,SSDT,PSDT. All other table types are
+ *              data tables that do not contain AML code.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiUtIsAmlTable (
+    ACPI_TABLE_HEADER       *Table)
+{
+
+    /* Ignore tables that contain AML */
+
+    if (ACPI_COMPARE_NAME (Table->Signature, DSDT_SIG) ||
+        ACPI_COMPARE_NAME (Table->Signature, PSDT_SIG) ||
+        ACPI_COMPARE_NAME (Table->Signature, SSDT_SIG))
+    {
+        return (TRUE);
+    }
+
+    return (FALSE);
+}
 
 
 /*******************************************************************************

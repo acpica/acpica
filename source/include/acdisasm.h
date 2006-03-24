@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.30 $
+ *       $Revision: 1.31 $
  *
  *****************************************************************************/
 
@@ -135,14 +135,55 @@ typedef struct acpi_external_list
 
 extern ACPI_EXTERNAL_LIST       *AcpiGbl_ExternalList;
 
-/* Strings used for decoding flags to ASL keywords */
+typedef const struct acpi_dmtable_info
+{
+    UINT8                       Opcode;
+    UINT8                       Offset;
+    char                        *Name;
 
-extern const char               *AcpiGbl_WordDecode[4];
-extern const char               *AcpiGbl_IrqDecode[2];
-extern const char               *AcpiGbl_LockRule[ACPI_NUM_LOCK_RULES];
-extern const char               *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES];
-extern const char               *AcpiGbl_UpdateRules[ACPI_NUM_UPDATE_RULES];
-extern const char               *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS];
+} ACPI_DMTABLE_INFO;
+
+/*
+ * Values for Opcode above.
+ * Note: 0-7 must not change, used as a flag shift value
+ */
+#define ACPI_DMT_FLAG0                  0
+#define ACPI_DMT_FLAG1                  1
+#define ACPI_DMT_FLAG2                  2
+#define ACPI_DMT_FLAG3                  3
+#define ACPI_DMT_FLAG4                  4
+#define ACPI_DMT_FLAG5                  5
+#define ACPI_DMT_FLAG6                  6
+#define ACPI_DMT_FLAG7                  7
+#define ACPI_DMT_FLAGS0                 8
+#define ACPI_DMT_FLAGS2                 9
+#define ACPI_DMT_UINT8                  10
+#define ACPI_DMT_UINT16                 11
+#define ACPI_DMT_UINT24                 12
+#define ACPI_DMT_UINT32                 13
+#define ACPI_DMT_UINT64                 14
+#define ACPI_DMT_STRING                 15
+#define ACPI_DMT_NAME4                  16
+#define ACPI_DMT_NAME6                  17
+#define ACPI_DMT_NAME8                  18
+#define ACPI_DMT_CHKSUM                 19
+#define ACPI_DMT_SPACEID                20
+#define ACPI_DMT_GAS                    21
+#define ACPI_DMT_APIC                   22
+#define ACPI_DMT_SRAT                   23
+#define ACPI_DMT_EXIT                   24
+
+typedef
+void (*ACPI_TABLE_HANDLER) (
+    ACPI_TABLE_HEADER       *Table);
+
+typedef struct acpi_dmtable_data
+{
+    char                    *Signature;
+    ACPI_DMTABLE_INFO        *TableInfo;
+    ACPI_TABLE_HANDLER      TableHandler;
+
+} ACPI_DMTABLE_DATA;
 
 
 typedef struct acpi_op_walk_info
@@ -166,6 +207,109 @@ typedef struct acpi_resource_tag
     char                    *Tag;
 
 } ACPI_RESOURCE_TAG;
+
+/* Strings used for decoding flags to ASL keywords */
+
+extern const char               *AcpiGbl_WordDecode[4];
+extern const char               *AcpiGbl_IrqDecode[2];
+extern const char               *AcpiGbl_LockRule[ACPI_NUM_LOCK_RULES];
+extern const char               *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES];
+extern const char               *AcpiGbl_UpdateRules[ACPI_NUM_UPDATE_RULES];
+extern const char               *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS];
+
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBoot[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbgp[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEcdt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFacs[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGas[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHeader[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHpet[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt3[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt4[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt5[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt6[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt7[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt8[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadtHdr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMcfg[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSbst[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSlit[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSpcr[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSpmi[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpa[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoWdrt[];
+
+
+/*
+ * dmtable
+ */
+void
+AcpiDmDumpDataTable (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpTable (
+    UINT32                  TableLength,
+    UINT32                  TableOffset,
+    void                    *Table,
+    ACPI_DMTABLE_INFO        *Info);
+
+void
+AcpiDmLineHeader (
+    UINT32                  Offset,
+    char                    *Name);
+
+void
+AcpiDmLineHeader2 (
+    UINT32                  Offset,
+    char                    *Name,
+    UINT32                  Value);
+
+
+/*
+ * dmtbdump
+ */
+void
+AcpiDmDumpFadt (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpSrat (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpMcfg (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpMadt (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpRsdp (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpRsdt (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpSlit (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpXsdt (
+    ACPI_TABLE_HEADER       *Table);
 
 
 /*
