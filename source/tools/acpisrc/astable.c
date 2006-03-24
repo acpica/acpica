@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -491,7 +491,6 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_TCPA",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_WDRT",                     SRC_TYPE_STRUCT},
     {"EC_BOOT_RESOURCES",                   SRC_TYPE_STRUCT},
-    {"FADT_DESCRIPTOR",                     SRC_TYPE_STRUCT},
     {"HPET_TABLE",                          SRC_TYPE_STRUCT},
     {"MADT_ADDRESS_OVERRIDE",               SRC_TYPE_STRUCT},
     {"MADT_INTERRUPT_OVERRIDE",             SRC_TYPE_STRUCT},
