@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpixtract - convert ascii ACPI tables to binary
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -116,16 +116,34 @@
  *****************************************************************************/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+
+#define VERSION             0x20060324
 
 #define FIND_HEADER         0
 #define EXTRACT_DATA        1
 #define BUFFER_SIZE         256
 
-char                        Buffer[BUFFER_SIZE];
 char                        Filename[16];
 unsigned char               Data[16];
-unsigned char               Header[48];
+
+/* Local prototypes */
+
+void
+CheckAscii (
+    unsigned char           *Name,
+    int                     Count);
+
+void
+NormalizeSignature (
+    char                    *Signature);
+
+unsigned int
+GetNextInstance (
+    char                    *InputPathname,
+    char                    *Signature);
 
 int
 ExtractTables (
@@ -133,14 +151,14 @@ ExtractTables (
     char                    *Signature,
     unsigned int            MinimumInstances);
 
-int
+size_t
 GetTableHeader (
     FILE                    *InputFile,
     unsigned char           *OutputData);
 
 unsigned int
 CountTableInstances (
-    FILE                    *InputFile,
+    char                    *InputPathname,
     char                    *Signature);
 
 int
@@ -157,6 +175,17 @@ DisplayUsage (
     void);
 
 
+typedef struct TableInfo
+{
+    unsigned int            Signature;
+    unsigned int            Instances;
+    unsigned int            NextInstance;
+    struct TableInfo        *Next;
+};
+
+struct TableInfo            *ListHead = NULL;
+
+
 /******************************************************************************
  *
  * FUNCTION:    DisplayUsage
@@ -171,10 +200,70 @@ DisplayUsage (
 {
 
     printf ("Usage: acpixtract [option] <InputFile>\n");
+    printf ("\nExtract binary ACPI tables from text acpidump output\n");
+    printf ("Default invocation extracts all DSDTs and SSDTs\n");
+    printf ("Version %8.8X\n\n", VERSION);
     printf ("Options:\n");
-    printf (" -l                    Display info for all tables found\n");
+    printf (" -a                    Extract all tables, not just DSDT/SSDT\n");
+    printf (" -l                    List table summaries, do not extract\n");
     printf (" -s<Signature>         Extract all tables named <Signature>\n");
     printf ("\n");
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    CheckAscii
+ *
+ * PARAMETERS:  Name                - Ascii string, at least as long as Count
+ *              Count               - Number of characters to check
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Ensure that the requested number of characters are printable
+ *              Ascii characters. Sets non-printable and null chars to <space>.
+ *
+ ******************************************************************************/
+
+void
+CheckAscii (
+    unsigned char           *Name,
+    int                     Count)
+{
+    int                     i;
+
+
+    for (i = 0; i < Count; i++)
+    {
+        if (!Name[i] || !isprint (Name[i]))
+        {
+            Name[i] = ' ';
+        }
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    NormalizeSignature
+ *
+ * PARAMETERS:  Name                - Ascii string
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Change "RSD PTR" to "RSDP"
+ *
+ ******************************************************************************/
+
+void
+NormalizeSignature (
+    char                    *Signature)
+{
+
+    if (!strncmp (Signature, "RSD ", 4))
+    {
+        Signature[3] = 'P';
+    }
 }
 
 
@@ -239,47 +328,37 @@ ConvertLine (
  *
  ******************************************************************************/
 
-int
+size_t
 GetTableHeader (
     FILE                    *InputFile,
     unsigned char           *OutputData)
 {
     size_t                  BytesConverted;
+    size_t                  TotalConverted = 0;
+    char                    Buffer[BUFFER_SIZE];
+    int                     i;
 
 
-    /* Get the full 36 byte header */
+    /* Get the full 36 byte header, requires 3 lines */
 
-    if (!fgets (Buffer, BUFFER_SIZE, InputFile))
+    for (i = 0; i < 3; i++)
     {
-        return -1;
-    }
-    BytesConverted = ConvertLine (Buffer, OutputData);
-    if (BytesConverted != 16)
-    {
-        return -1;
-    }
+        if (!fgets (Buffer, BUFFER_SIZE, InputFile))
+        {
+            return TotalConverted;
+        }
 
-    if (!fgets (Buffer, BUFFER_SIZE, InputFile))
-    {
-        return -1;
-    }
-    BytesConverted = ConvertLine (Buffer, &OutputData[16]);
-    if (BytesConverted != 16)
-    {
-        return -1;
+        BytesConverted = ConvertLine (Buffer, OutputData);
+        TotalConverted += BytesConverted;
+        OutputData += 16;
+
+        if (BytesConverted != 16)
+        {
+            return TotalConverted;
+        }
     }
 
-    if (!fgets (Buffer, BUFFER_SIZE, InputFile))
-    {
-        return -1;
-    }
-    BytesConverted = ConvertLine (Buffer, &OutputData[32]);
-    if (BytesConverted < 4)
-    {
-        return -1;
-    }
-
-    return 0;
+    return TotalConverted;
 }
 
 
@@ -293,17 +372,22 @@ GetTableHeader (
 
 unsigned int
 CountTableInstances (
-    FILE                    *InputFile,
+    char                    *InputPathname,
     char                    *Signature)
 {
+    char                    Buffer[BUFFER_SIZE];
+    FILE                    *InputFile;
     unsigned int            Instances = 0;
-    long                    CurrentPosition;
 
+
+    InputFile = fopen (InputPathname, "rt");
+    if (!InputFile)
+    {
+        printf ("Could not open %s\n", InputPathname);
+        return 0;
+    }
 
     /* Count the number of instances of this signature */
-
-    CurrentPosition = ftell (InputFile);
-    fseek (InputFile, 0, SEEK_SET);
 
     while (fgets (Buffer, BUFFER_SIZE, InputFile))
     {
@@ -315,14 +399,63 @@ CountTableInstances (
             continue;
         }
 
+        NormalizeSignature (Buffer);
         if (!strncmp (Buffer, Signature, 4))
         {
             Instances++;
         }
     }
 
-    fseek (InputFile, CurrentPosition, SEEK_SET);
+    fclose (InputFile);
     return Instances;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    GetNextInstance
+ *
+ * DESCRIPTION: 
+ *
+ ******************************************************************************/
+
+unsigned int
+GetNextInstance (
+    char                    *InputPathname,
+    char                    *Signature)
+{
+    struct TableInfo        *Info;
+
+
+    Info = ListHead;
+    while (Info)
+    {
+        if (*(unsigned int *) Signature == Info->Signature)
+        {
+            break;
+        }
+
+        Info = Info->Next;
+    }
+
+    if (!Info)
+    {
+        Info = malloc (sizeof (struct TableInfo));
+
+        Info->Signature = *(unsigned int *) Signature;
+        Info->Instances = CountTableInstances (InputPathname, Signature);
+        Info->NextInstance = 1;
+
+        Info->Next = ListHead;
+        ListHead = Info;
+    }
+
+    if (Info->Instances > 1)
+    {
+        return (Info->NextInstance++);
+    }
+
+    return (0);
 }
 
 
@@ -340,15 +473,17 @@ ExtractTables (
     char                    *Signature,
     unsigned int            MinimumInstances)
 {
+    char                    Buffer[BUFFER_SIZE];
     FILE                    *InputFile;
     FILE                    *OutputFile = NULL;
     size_t                  BytesWritten;
     size_t                  TotalBytesWritten = 0;
     size_t                  BytesConverted;
-    unsigned int            TableCount = 1;
     unsigned int            State = FIND_HEADER;
     unsigned int            FoundTable = 0;
     unsigned int            Instances = 0;
+    unsigned int            ThisInstance;
+    char                    ThisSignature[4];
 
 
     /* Open input in text mode, output is in binary mode */
@@ -360,18 +495,23 @@ ExtractTables (
         return -1;
     }
 
-    /* Are there enough instances of the table to continue? */
-
-    Instances = CountTableInstances (InputFile, Signature);
-    if (Instances < MinimumInstances)
+    if (Signature)
     {
-        printf ("Table %s was not found in %s\n", Signature, InputPathname);
-        return -1;
-    }
+        /* Are there enough instances of the table to continue? */
 
-    if (Instances == 0)
-    {
-        return 0;
+        NormalizeSignature (Signature);
+
+        Instances = CountTableInstances (InputPathname, Signature);
+        if (Instances < MinimumInstances)
+        {
+            printf ("Table %s was not found in %s\n", Signature, InputPathname);
+            return -1;
+        }
+
+        if (Instances == 0)
+        {
+            return 0;
+        }
     }
 
     /* Convert all instances of the table to binary */
@@ -390,23 +530,32 @@ ExtractTables (
                 continue;
             }
 
-            /* Ignore signatures that don't match */
+            NormalizeSignature (Buffer);
+            strncpy (ThisSignature, Buffer, 4);
 
-            if (strncmp (Buffer, Signature, 4))
+            if (Signature)
             {
-                continue;
+                /* Ignore signatures that don't match */
+
+                if (strncmp (ThisSignature, Signature, 4))
+                {
+                    continue;
+                }
             }
+
+            /* Get the instance # for this signature */
+
+            ThisInstance = GetNextInstance (InputPathname, ThisSignature);
 
             /* Build an output filename and create/open the output file */
 
-            if (Instances > 1)
+            if (ThisInstance > 0)
             {
-                sprintf (Filename, "%4.4s%u.dat", Buffer, TableCount);
-                TableCount++;
+                sprintf (Filename, "%4.4s%u.dat", ThisSignature, ThisInstance);
             }
             else
             {
-                sprintf (Filename, "%4.4s.dat", Buffer);
+                sprintf (Filename, "%4.4s.dat", ThisSignature);
             }
 
             OutputFile = fopen (Filename, "w+b");
@@ -423,16 +572,17 @@ ExtractTables (
 
         case EXTRACT_DATA:
 
-            /* Empty line terminates the data */
+            /* Empty line or non-data line terminates the data */
 
-            if (Buffer[0] == '\n')
+            if ((Buffer[0] == '\n') ||
+                (Buffer[0] != ' '))
             {
                 fclose (OutputFile);
                 OutputFile = NULL;
                 State = FIND_HEADER;
 
-                printf ("% 6d (0x%.4X) bytes written to %s\n",
-                    TotalBytesWritten, TotalBytesWritten, Filename);
+                printf ("Acpi table [%4.4s] - % 6d bytes written to %s\n",
+                    ThisSignature, TotalBytesWritten, Filename);
                 continue;
             }
 
@@ -486,6 +636,10 @@ ListTables (
     char                    *InputPathname)
 {
     FILE                    *InputFile;
+    char                    Buffer[BUFFER_SIZE];
+    size_t                  HeaderSize;
+    unsigned char           Header[48];
+    int                     TableCount = 0;
 
 
     /* Open input in text mode, output is in binary mode */
@@ -509,22 +663,34 @@ ListTables (
             continue;
         }
 
-        /* Ignore the RSDP, not a standard table */
-
-        if (!strncmp (Buffer, "RSD PTR", 7))
-        {
-            continue;
-        }
-
         /* Get the 36 byte header and display the fields */
 
-        if (GetTableHeader (InputFile, Header))
+        HeaderSize = GetTableHeader (InputFile, Header);
+        if (HeaderSize < 16)
         {
             continue;
         }
 
-        /* Signature and table length */
+        /* RSDP has an oddball signature and header */
 
+        if (!strncmp ((char *) Header, "RSD PTR ", 8))
+        {
+            CheckAscii (&Header[9], 6);
+            printf ("%8.4s          \"%6.6s\"\n", "RSDP", &Header[9]);
+            TableCount++;
+            continue;
+        }
+
+        /* Minimum size */
+
+        if (HeaderSize < 36)
+        {
+            continue;
+        }
+
+        /* Signature and Table length */
+
+        TableCount++;
         printf ("%8.4s % 7d", Header, *(int *) &Header[4]);
 
         /* FACS has only signature and length */
@@ -537,11 +703,16 @@ ListTables (
 
         /* OEM IDs and Compiler IDs */
 
-        printf ("  \"%6.6s\"  \"%8.8s\"    %8.8X    \"%4.4s\"    %8.8X\n",
+        CheckAscii (&Header[10], 6);
+        CheckAscii (&Header[16], 8);
+        CheckAscii (&Header[28], 4);
+
+        printf ("  \"%6.6s\"  \"%8.8s\"    %8.8X    \"%4.4s\"     %8.8X\n",
             &Header[10], &Header[16], *(int *) &Header[24],
             &Header[28], *(int *) &Header[32]);
     }
 
+    printf ("\nFound %d ACPI tables [%8.8X]\n", TableCount, VERSION);
     fclose (InputFile);
     return 0;
 }
@@ -579,6 +750,9 @@ main (
 
         switch (argv[1][1])
         {
+        case 'a':
+            return (ExtractTables (argv[2], NULL, 0));
+
         case 'l':
             return (ListTables (argv[2]));
 
