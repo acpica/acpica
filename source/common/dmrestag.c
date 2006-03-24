@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmrestag - Add tags to resource descriptors (Application-level)
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -123,7 +123,7 @@
 
 /* This module used for application-level code only */
 
-#define _COMPONENT          ACPI_CA_DEBUGGER
+#define _COMPONENT          ACPI_CA_DISASSEMBLER
         ACPI_MODULE_NAME    ("dmrestag")
 
 /* Local prototypes */
@@ -160,7 +160,7 @@ AcpiDmAddResourceToNamespace (
     UINT32                  Length,
     UINT32                  Offset,
     UINT8                   ResourceIndex,
-    void                    *Context);
+    ACPI_NAMESPACE_NODE     *BufferNode);
 
 static void
 AcpiDmAddResourcesToNamespace (
@@ -544,7 +544,7 @@ AcpiDmGetResourceNode (
          * length (both in bytes)
          */
         if ((ByteIndex >= Node->Value) &&
-            (ByteIndex < (Node->Value + (UINT32) Node->Object)))
+            (ByteIndex < (Node->Value + Node->Length)))
         {
             return (Node);
         }
@@ -985,7 +985,7 @@ AcpiDmAddResourceToNamespace (
     /* Save the offset of the descriptor (within the original buffer) */
 
     Node->Value = Offset;
-    Node->Object = (void *) Length;
+    Node->Length = Length;
     return (AE_OK);
 }
 
