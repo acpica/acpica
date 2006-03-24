@@ -126,6 +126,10 @@ SOURCE=..\..\source\TOOLS\acpisrc\asremove.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\tools\acpisrc\astable.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\tools\AcpiSrc\asutils.c
 # End Source File
 # End Group

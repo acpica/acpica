@@ -362,6 +362,22 @@ SOURCE=..\..\source_linux\COMPONENTS\INTERPRETER\DISPATCHER\dswstate.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\common\dmrestag.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmtable.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmtbdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmtbinfo.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\common\getopt.c
 # End Source File
 # End Group

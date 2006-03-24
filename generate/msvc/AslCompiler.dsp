@@ -108,10 +108,6 @@ PostBuild_Cmds=copy Debug\iasldebug.exe ..\..\Libraries
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsobject.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\source\components\utilities\utalloc.c
 # End Source File
 # Begin Source File
@@ -340,6 +336,10 @@ SOURCE=..\..\source\components\interpreter\dispatcher\dsfield.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsobject.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\interpreter\dispatcher\dsopcode.c
 # End Source File
 # Begin Source File
@@ -373,6 +373,18 @@ SOURCE=..\..\source\common\adisasm.c
 # Begin Source File
 
 SOURCE=..\..\source\common\dmrestag.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmtable.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmtbdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmtbinfo.c
 # End Source File
 # Begin Source File
 
