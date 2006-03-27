@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -894,14 +894,14 @@ CmCleanupAndExit (
      */
     if (!Gbl_SourceOutputFlag)
     {
-        unlink (Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename);
+        remove (Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename);
     }
 
     /* Delete AML file if there are errors */
 
     if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
     {
-        unlink (Gbl_Files[ASL_FILE_AML_OUTPUT].Filename);
+        remove (Gbl_Files[ASL_FILE_AML_OUTPUT].Filename);
     }
 
     if (Gbl_ExceptionCount[ASL_ERROR] > ASL_MAX_ERROR_COUNT)
