@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  ******************************************************************************/
 
@@ -146,7 +146,8 @@ AcpiRsConvertAmlToResources (
     UINT8                   ResourceIndex,
     void                    *Context)
 {
-    ACPI_RESOURCE           *Resource = *(void **) Context;
+    ACPI_RESOURCE           **ResourcePtr = (ACPI_RESOURCE **) (void **) Context;
+    ACPI_RESOURCE           *Resource;
     ACPI_STATUS             Status;
 
 
@@ -157,6 +158,7 @@ AcpiRsConvertAmlToResources (
      * Check that the input buffer and all subsequent pointers into it
      * are aligned on a native word boundary. Most important on IA64
      */
+    Resource = *ResourcePtr;
     if (ACPI_IS_MISALIGNED (Resource))
     {
         ACPI_WARNING ((AE_INFO,
