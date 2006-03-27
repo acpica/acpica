@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Basic ACPI Table Definitions
- *       $Revision: 1.77 $
+ *       $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -139,10 +139,8 @@
 #pragma pack(1)
 
 
-/*******************************************************************************
- *
- * ACPI tables - these tables are the ones that are directly consumed by the
- * subsystem.
+/*
+ * These are the ACPI tables that are directly consumed by the subsystem.
  *
  * The RSDP and FACS do not use the common ACPI table header. All other ACPI
  * tables use the header.
@@ -150,16 +148,16 @@
  * Note about bitfields: The UINT8 type is used for bitfields in ACPI tables.
  * This is the only type that is even remotely portable. Anything else is not
  * portable, so do not use any other bitfield types.
+ */
+
+/*******************************************************************************
+ * 
+ * ACPI Table Header. This common header is used by all tables except the 
+ * RSDP and FACS. The define is used for direct inclusion of header into
+ * other ACPI tables
  *
  ******************************************************************************/
 
-
-/*
- * ACPI Table Header. This common header is used by all tables
- * except the RSDP and FACS
- *
- * The define is used for direct inclusion of header into other ACPI tables
- */
 #define ACPI_TABLE_HEADER_DEF \
     char                    Signature[4];           /* ASCII table signature */\
     UINT32                  Length;                 /* Length of table in bytes, including this header */\
@@ -192,9 +190,12 @@ typedef struct acpi_generic_address
 } ACPI_GENERIC_ADDRESS;
 
 
-/*
+/*******************************************************************************
+ * 
  * RSDP - Root System Description Pointer (Signature is "RSD PTR ")
- */
+ *
+ ******************************************************************************/
+
 typedef struct rsdp_descriptor
 {
     char                    Signature[8];           /* ACPI signature, contains "RSD PTR " */
@@ -212,9 +213,12 @@ typedef struct rsdp_descriptor
 #define ACPI_RSDP_REV0_SIZE     20                  /* Size of original ACPI 1.0 RSDP */
 
 
-/*
- * RSDT - Root System Description Table
- */
+/*******************************************************************************
+ * 
+ * RSDT/XSDT - Root System Description Tables
+ *
+ ******************************************************************************/
+
 typedef struct rsdt_descriptor
 {
     ACPI_TABLE_HEADER_DEF
@@ -222,10 +226,6 @@ typedef struct rsdt_descriptor
 
 } RSDT_DESCRIPTOR;
 
-
-/*
- * XSDT - Extended System Description Table (ACPI 2.0+)
- */
 typedef struct xsdt_descriptor
 {
     ACPI_TABLE_HEADER_DEF
@@ -234,9 +234,12 @@ typedef struct xsdt_descriptor
 } XSDT_DESCRIPTOR;
 
 
-/*
+/*******************************************************************************
+ *
  * FACS - Firmware ACPI Control Structure (FACS)
- */
+ *
+ ******************************************************************************/
+
 typedef struct facs_descriptor
 {
     char                    Signature[4];           /* ASCII table signature */
@@ -262,7 +265,7 @@ typedef struct facs_descriptor
 
 
 /*
- * Common FACS - This is an FACS structure used for internal use only
+ * Common FACS - This is a version-independent FACS structure used for internal use only
  */
 typedef struct acpi_common_facs
 {
@@ -273,9 +276,11 @@ typedef struct acpi_common_facs
 } ACPI_COMMON_FACS;
 
 
-/*
+/*******************************************************************************
+ *
  * FADT - Fixed ACPI Description Table (Signature "FACP")
- */
+ *
+ ******************************************************************************/
 
 /* Fields common to all versions of the FADT */
 
@@ -321,7 +326,7 @@ typedef struct acpi_common_facs
 
 
 /*
- * ACPI 2.0+ Fixed ACPI Description Table (FADT)
+ * ACPI 2.0+ FADT
  */
 typedef struct fadt_descriptor
 {
@@ -397,9 +402,8 @@ typedef struct fadt_descriptor_rev1
 } FADT_DESCRIPTOR_REV1;
 
 
-/*
- * FADT: Prefered Power Management Profiles
- */
+/* FADT: Prefered Power Management Profiles */
+
 #define PM_UNSPECIFIED                  0
 #define PM_DESKTOP                      1
 #define PM_MOBILE                       2
@@ -408,15 +412,13 @@ typedef struct fadt_descriptor_rev1
 #define PM_SOHO_SERVER                  5
 #define PM_APPLIANCE_PC                 6
 
-/*
- * FADT: Boot Arch Flags
- */
+/* FADT: Boot Arch Flags */
+
 #define BAF_LEGACY_DEVICES              0x0001
 #define BAF_8042_KEYBOARD_CONTROLLER    0x0002
 
 #define FADT2_REVISION_ID               3
 #define FADT2_MINUS_REVISION_ID         2
-
 
 
 /* Reset to default packing */
