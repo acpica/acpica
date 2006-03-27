@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpixtract - convert ascii ACPI tables to binary
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -175,7 +175,7 @@ DisplayUsage (
     void);
 
 
-typedef struct TableInfo
+struct TableInfo
 {
     unsigned int            Signature;
     unsigned int            Instances;
