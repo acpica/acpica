@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -257,7 +257,7 @@ AcpiDmDumpDataTable (
     if (ACPI_COMPARE_NAME (Table->Signature, "FACS"))
     {
         Length = Table->Length;
-        AcpiDmDumpTable (Length, 0, Table, AcpiDmTableInfoFacs);
+        AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoFacs);
     }
     else if (ACPI_COMPARE_NAME (Table->Signature, "RSD "))
     {
@@ -269,7 +269,7 @@ AcpiDmDumpDataTable (
          * All other tables must use the common ACPI table header, dump it now
          */
         Length = Table->Length;
-        AcpiDmDumpTable (Length, 0, Table, AcpiDmTableInfoHeader);
+        AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoHeader);
         AcpiOsPrintf ("\n");
 
         /* Match signature and dispatch appropriately */
@@ -289,7 +289,7 @@ AcpiDmDumpDataTable (
         {
             /* Simple table, just walk the info table */
 
-            AcpiDmDumpTable (Length, 0, Table, TableData->TableInfo);
+            AcpiDmDumpTable (Length, 0, Table, 0, TableData->TableInfo);
         }
     }
 
@@ -377,6 +377,7 @@ AcpiDmDumpTable (
     UINT32                  TableLength,
     UINT32                  TableOffset,
     void                    *Table,
+    UINT32                  SubtableLength,
     ACPI_DMTABLE_INFO       *Info)
 {
     UINT8                   *Target;
@@ -402,9 +403,10 @@ AcpiDmDumpTable (
         Target = ACPI_ADD_PTR (UINT8, Table, Info->Offset);
         CurrentOffset = TableOffset + Info->Offset;
 
-        /* Check for beyond EOT */
+        /* Check for beyond EOT or beyond subtable end */
 
-        if (CurrentOffset >= TableLength)
+        if ((CurrentOffset >= TableLength) ||
+            (SubtableLength && (Info->Offset >= SubtableLength)))
         {
             return;
         }
@@ -569,7 +571,7 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf ("<Generic Address Structure>\n");
             AcpiDmDumpTable (((ACPI_TABLE_HEADER *) Table)->Length,
-                CurrentOffset, Target, AcpiDmTableInfoGas);
+                CurrentOffset, Target, 0, AcpiDmTableInfoGas);
             break;
 
         case ACPI_DMT_MADT:

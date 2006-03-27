@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - Additional ACPI table definitions
- *       $Revision: 1.37 $
+ *       $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -543,16 +543,16 @@ typedef struct apic_header
 
 /* Flag definitions for MADT sub-tables */
 
-#define ACPI_MADT_IFLAGS /* INTI flags */ \
+#define ACPI_MADT_IFLAGS /* INTI flags (16 bits) */ \
     UINT8                   Polarity        : 2;    /* 00-01: Polarity of APIC I/O input signals */\
     UINT8                   TriggerMode     : 2;    /* 02-03: Trigger mode of APIC input signals */\
     UINT8                                   : 4;    /* 04-07: Reserved, must be zero */\
     UINT8                   Reserved1;              /* 08-15: Reserved, must be zero */
 
-#define ACPI_MADT_LFLAGS /* Lapic flags */ \
+#define ACPI_MADT_LFLAGS /* Local Sapic flags (32 bits) */ \
     UINT8                   ProcessorEnabled: 1;    /* 00:    Processor is usable if set */\
     UINT8                                   : 7;    /* 01-07: Reserved, must be zero */\
-    UINT8                   Reserved2;              /* 08-15: Reserved, must be zero */
+    UINT8                   Reserved2[3];           /* 08-31: Reserved, must be zero */
 
 
 /* Values for MPS INTI flags */
@@ -660,8 +660,8 @@ typedef struct madt_local_sapic
     UINT8                   LocalSapicEid;      /* SAPIC EID */
     UINT8                   Reserved[3];        /* Reserved, must be zero */
     ACPI_MADT_LFLAGS
-    UINT32                  Uid;                /* Numeric UID - ACPI 3.0 */
-    char                    UidString[1];       /* String UID  - ACPI 3.0 */
+    UINT32                  ProcessorUID;           /* Numeric UID - ACPI 3.0 */
+    char                    ProcessorUIDString[1];  /* String UID  - ACPI 3.0 */
 
 } MADT_LOCAL_SAPIC;
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.32 $
+ *       $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -273,6 +273,7 @@ AcpiDmDumpTable (
     UINT32                  TableLength,
     UINT32                  TableOffset,
     void                    *Table,
+    UINT32                  SubTableLength,
     ACPI_DMTABLE_INFO        *Info);
 
 void

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbinfo - Table info for non-AML tables
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -430,7 +430,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoCpep0[] =
     {ACPI_DMT_UINT8,    ACPI_CPEP0_OFFSET (Length),                 "Length"},
     {ACPI_DMT_UINT8,    ACPI_CPEP0_OFFSET (ProcessorId),            "Processor ID"},
     {ACPI_DMT_UINT8,    ACPI_CPEP0_OFFSET (ProcessorEid),           "Processor EID"},
-    {ACPI_DMT_UINT8,    ACPI_CPEP0_OFFSET (PollingInterval),        "Polling Interval"},
+    {ACPI_DMT_UINT32,   ACPI_CPEP0_OFFSET (PollingInterval),        "Polling Interval"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -600,8 +600,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt7[] =
     {ACPI_DMT_UINT24,   ACPI_MADT7_OFFSET (Reserved),               "Reserved"},
     {ACPI_DMT_UINT32,   ACPI_MADT7_FLAG_OFFSET (Reserved,0),        "Flags (decoded below)"},
     {ACPI_DMT_FLAG0,    ACPI_MADT7_FLAG_OFFSET (Reserved,0),        "Processor Enabled"},
-    {ACPI_DMT_UINT32,   ACPI_MADT7_OFFSET (Uid),                    "Processor UID"},
-    {ACPI_DMT_STRING,   ACPI_MADT7_OFFSET (UidString),              "Processor UID"},
+    {ACPI_DMT_UINT32,   ACPI_MADT7_OFFSET (ProcessorUID),           "Processor UID"},
+    {ACPI_DMT_STRING,   ACPI_MADT7_OFFSET (ProcessorUIDString),     "Processor UID String"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 

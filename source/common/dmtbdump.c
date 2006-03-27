@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -145,14 +145,14 @@ AcpiDmDumpRsdp (
 
     /* Dump the common ACPI 1.0 portion */
 
-    AcpiDmDumpTable (Length, 0, Table, AcpiDmTableInfoRsdp1);
+    AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoRsdp1);
 
     /* ACPI 2.0+ contains more data and has a Length field */
 
     if (((RSDP_DESCRIPTOR *) Table)->Revision > 0)
     {
         Length = ((RSDP_DESCRIPTOR *) Table)->Length;
-        AcpiDmDumpTable (Length, 0, Table, AcpiDmTableInfoRsdp2);
+        AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoRsdp2);
     }
 
     return (Length);
@@ -258,13 +258,13 @@ AcpiDmDumpFadt (
 
     /* Common ACPI 1.0 portion of FADT */
 
-    AcpiDmDumpTable (Table->Length, 0, Table, AcpiDmTableInfoFadt1);
+    AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt1);
 
     /* Check for ACPI 2.0+ extended data (cannot depend on Revision field) */
 
     if (Table->Length > sizeof (FADT_DESCRIPTOR_REV1))
     {
-        AcpiDmDumpTable (Table->Length, 0, Table, AcpiDmTableInfoFadt2);
+        AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt2);
     }
 }
 
@@ -297,7 +297,7 @@ AcpiDmDumpAsf (
     {
         /* Common sub-table header */
 
-        AcpiDmDumpTable (Table->Length, Offset, SubTable, AcpiDmTableInfoAsfHdr);
+        AcpiDmDumpTable (Table->Length, Offset, SubTable, 0, AcpiDmTableInfoAsfHdr);
 
         switch (SubTable->Type & 0x7F) /* Mask off top bit */
         {
@@ -321,7 +321,7 @@ AcpiDmDumpAsf (
             return;
         }
 
-        AcpiDmDumpTable (Table->Length, Offset, SubTable, InfoTable);
+        AcpiDmDumpTable (Table->Length, Offset, SubTable, SubTable->Length, InfoTable);
         AcpiOsPrintf ("\n");
 
         /* Point to next sub-table */
@@ -356,7 +356,7 @@ AcpiDmDumpCpep (
 
     /* Main table */
 
-    AcpiDmDumpTable (Length, 0, Table, AcpiDmTableInfoCpep);
+    AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoCpep);
 
     /* Sub-tables */
 
@@ -364,7 +364,7 @@ AcpiDmDumpCpep (
     while (Offset < Table->Length)
     {
         AcpiOsPrintf ("\n");
-        AcpiDmDumpTable (Length, Offset, SubTable, AcpiDmTableInfoCpep0);
+        AcpiDmDumpTable (Length, Offset, SubTable, SubTable->Length, AcpiDmTableInfoCpep0);
 
         /* Point to next sub-table */
 
@@ -399,7 +399,7 @@ AcpiDmDumpMadt (
 
     /* Main table */
 
-    AcpiDmDumpTable (Length, 0, Table, AcpiDmTableInfoMadt);
+    AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoMadt);
 
     /* Sub-tables */
 
@@ -409,7 +409,7 @@ AcpiDmDumpMadt (
         /* Common sub-table header */
 
         AcpiOsPrintf ("\n");
-        AcpiDmDumpTable (Length, Offset, SubTable, AcpiDmTableInfoMadtHdr);
+        AcpiDmDumpTable (Length, Offset, SubTable, 0, AcpiDmTableInfoMadtHdr);
 
         switch (SubTable->Type)
         {
@@ -445,7 +445,7 @@ AcpiDmDumpMadt (
             return;
         }
 
-        AcpiDmDumpTable (Length, Offset, SubTable, InfoTable);
+        AcpiDmDumpTable (Length, Offset, SubTable, SubTable->Length, InfoTable);
 
         /* Point to next sub-table */
 
@@ -477,7 +477,7 @@ AcpiDmDumpMcfg (
 
     /* Main table */
 
-    AcpiDmDumpTable (Table->Length, 0, Table, AcpiDmTableInfoMcfg);
+    AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoMcfg);
 
     /* Sub-tables */
 
@@ -492,7 +492,7 @@ AcpiDmDumpMcfg (
         }
 
         AcpiOsPrintf ("\n");
-        AcpiDmDumpTable (Table->Length, Offset, SubTable, AcpiDmTableInfoMcfg0);
+        AcpiDmDumpTable (Table->Length, Offset, SubTable, 0, AcpiDmTableInfoMcfg0);
 
         /* Point to next sub-table (each subtable is of fixed length) */
 
@@ -519,7 +519,7 @@ void
 AcpiDmDumpSlit (
     ACPI_TABLE_HEADER       *Table)
 {
-    UINT32                  Offset = sizeof (SYSTEM_LOCALITY_INFO);
+    UINT32                  Offset;
     UINT8                   *Row;
     UINT32                  Localities;
     UINT32                  i;
@@ -528,11 +528,12 @@ AcpiDmDumpSlit (
 
     /* Main table */
 
-    AcpiDmDumpTable (Table->Length, 0, Table, AcpiDmTableInfoSlit);
+    AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoSlit);
 
     /* Display the Locality NxN Matrix */
 
     Localities = (UINT32) ((SYSTEM_LOCALITY_INFO *) Table)->LocalityCount;
+    Offset = ACPI_OFFSET (SYSTEM_LOCALITY_INFO, Entry);
     Row = (UINT8 *) ((SYSTEM_LOCALITY_INFO *) Table)->Entry;
 
     for (i = 0; i < Localities; i++)
@@ -593,7 +594,7 @@ AcpiDmDumpSrat (
 
     /* Main table */
 
-    AcpiDmDumpTable (Table->Length, 0, Table, AcpiDmTableInfoSrat);
+    AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoSrat);
 
     /* Sub-tables */
 
@@ -614,7 +615,7 @@ AcpiDmDumpSrat (
         }
 
         AcpiOsPrintf ("\n");
-        AcpiDmDumpTable (Table->Length, Offset, SubTable, InfoTable);
+        AcpiDmDumpTable (Table->Length, Offset, SubTable, SubTable->Length, InfoTable);
 
         /* Point to next sub-table */
 
