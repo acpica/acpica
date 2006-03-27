@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -479,23 +479,28 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"UINT64_OVERLAY",                      SRC_TYPE_UNION},
     {"UINT64_STRUCT",                       SRC_TYPE_STRUCT},
 
-
     /*
      * Acpi table definition names.
      * TBD: Not consistent, should be changed
      */
-
-    {"ACPI_MADT_IFLAGS",                    SRC_TYPE_STRUCT},
-    {"ACPI_MADT_LFLAGS",                    SRC_TYPE_STRUCT},
-    {"ACPI_MCFG_ALLOCATION",                SRC_TYPE_STRUCT},
-
+    {"ACPI_TABLE_ASF",                      SRC_TYPE_STRUCT},
     {"ACPI_TABLE_BOOT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_CPEP",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_DBGP",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_MCFG",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_SPCR",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_SPMI",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TCPA",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_WDRT",                     SRC_TYPE_STRUCT},
+
+    {"ACPI_ASF_ADDRESS",                    SRC_TYPE_STRUCT},
+    {"ACPI_ASF_ALERT",                      SRC_TYPE_STRUCT},
+    {"ACPI_ASF_HEADER",                     SRC_TYPE_STRUCT},
+    {"ACPI_ASF_INFO",                       SRC_TYPE_STRUCT},
+    {"ACPI_ASF_REMOTE",                     SRC_TYPE_STRUCT},
+    {"ACPI_ASF_RMCP",                       SRC_TYPE_STRUCT},
+    {"ACPI_CPEP_POLLING",                   SRC_TYPE_STRUCT},
+    {"ACPI_MCFG_ALLOCATION",                SRC_TYPE_STRUCT},
 
     /* Legacy names, should be changed to ACPI_TABLE_*  */
 
