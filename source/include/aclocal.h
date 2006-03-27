@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.225 $
+ *       $Revision: 1.226 $
  *
  *****************************************************************************/
 
@@ -265,20 +265,25 @@ typedef union acpi_name_union
  *
  * The node is optimized for both 32-bit and 64-bit platforms:
  * 20 bytes for the 32-bit case, 32 bytes for the 64-bit case.
+ *
+ * Note: The DescriptorType and Type fields must appear in the identical
+ * position in both the ACPI_NAMESPACE_NODE and ACPI_OPERAND_OBJECT
+ * structures.
  */
 typedef struct acpi_namespace_node
 {
     union acpi_operand_object       *Object;        /* Interpreter object */
     UINT8                           DescriptorType; /* Differentiate object descriptor types */
+    UINT8                           Type;           /* ACPI Type associated with this name */
     UINT8                           Flags;          /* Miscellaneous flags */
     ACPI_OWNER_ID                   OwnerId;        /* Node creator */
-    UINT8                           Type;           /* ACPI Type associated with this name */
     ACPI_NAME_UNION                 Name;           /* ACPI Name, always 4 chars per ACPI spec */
     struct acpi_namespace_node      *Child;         /* First child */
     struct acpi_namespace_node      *Peer;          /* Peer. Parent if ANOBJ_END_OF_PEER_LIST set */
 
-    /* Fields used by the ASL compiler and disassembler only: */
-
+    /*
+     * The following fields are used by the ASL compiler and disassembler only
+     */
 #ifdef ACPI_LARGE_NAMESPACE_NODE
     union acpi_parse_object         *Op;
     UINT32                          Value;

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.136 $
+ *       $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -139,6 +139,10 @@
  *
  * DescriptorType is used to differentiate between internal descriptors, and
  * must be in the same place across all descriptors
+ *
+ * Note: The DescriptorType and Type fields must appear in the identical
+ * position in both the ACPI_NAMESPACE_NODE and ACPI_OPERAND_OBJECT
+ * structures.
  */
 #define ACPI_OBJECT_COMMON_HEADER \
     union acpi_operand_object       *NextObject;        /* Objects linked to parent NS node */\
