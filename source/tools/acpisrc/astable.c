@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -480,9 +480,15 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"UINT64_STRUCT",                       SRC_TYPE_STRUCT},
 
 
-    /* Acpi table definition names. Not consistent */
+    /*
+     * Acpi table definition names.
+     * TBD: Not consistent, should be changed
+     */
 
+    {"ACPI_MADT_IFLAGS",                    SRC_TYPE_STRUCT},
+    {"ACPI_MADT_LFLAGS",                    SRC_TYPE_STRUCT},
     {"ACPI_MCFG_ALLOCATION",                SRC_TYPE_STRUCT},
+
     {"ACPI_TABLE_BOOT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_DBGP",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_MCFG",                     SRC_TYPE_STRUCT},
@@ -490,6 +496,9 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_TABLE_SPMI",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TCPA",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_WDRT",                     SRC_TYPE_STRUCT},
+
+    /* Legacy names, should be changed to ACPI_TABLE_*  */
+
     {"EC_BOOT_RESOURCES",                   SRC_TYPE_STRUCT},
     {"HPET_TABLE",                          SRC_TYPE_STRUCT},
     {"MADT_ADDRESS_OVERRIDE",               SRC_TYPE_STRUCT},
@@ -516,6 +525,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"XSDT_DESCRIPTOR",                     SRC_TYPE_STRUCT},
     {NULL}
 };
+
 
 ACPI_IDENTIFIER_TABLE       LinuxAddStruct[] = {
     {"acpi_namespace_node"},
@@ -662,6 +672,7 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
+    {"AcpiTbSumTable", "AcpiTbSumTable",  REPLACE_WHOLE_WORD},
 #if 0
     {"ACPI_SIG_BOOT", "ACPI_SIG_BOOT",   REPLACE_WHOLE_WORD},
     {"ACPI_SIG_DBGP", "ACPI_SIG_DBGP",   REPLACE_WHOLE_WORD},

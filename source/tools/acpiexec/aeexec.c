@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -242,7 +242,7 @@ AeBuildLocalTables (
     }
 
     ACPI_MEMSET (LocalRSDT, 0, RSDT_SIZE);
-    ACPI_STRNCPY (LocalRSDT->Signature, ACPI_SIG_RSDT, 4);
+    ACPI_STRNCPY (LocalRSDT->Signature, RSDT_SIG, 4);
     LocalRSDT->Length = RSDT_SIZE;
 
     LocalRSDT->TableOffsetEntry[0] = ACPI_PTR_TO_PHYSADDR (&LocalTEST);
@@ -262,7 +262,7 @@ AeBuildLocalTables (
     /* Build an RSDP */
 
     ACPI_MEMSET (&LocalRSDP, 0, sizeof (RSDP_DESCRIPTOR));
-    ACPI_STRNCPY (LocalRSDP.Signature, ACPI_SIG_RSDP, 8);
+    ACPI_STRNCPY (LocalRSDP.Signature, RSDP_SIG, 8);
     LocalRSDP.Revision            = 1;
     LocalRSDP.RsdtPhysicalAddress = ACPI_PTR_TO_PHYSADDR (LocalRSDT);
 
@@ -272,7 +272,7 @@ AeBuildLocalTables (
      * Examine the incoming user table.  At this point, it has been verified
      * to be either a DSDT, SSDT, or a PSDT, but they must be handled differently
      */
-    if (!ACPI_STRNCMP ((char *) UserTable->Signature, ACPI_SIG_DSDT, 4))
+    if (!ACPI_STRNCMP ((char *) UserTable->Signature, DSDT_SIG, 4))
     {
         /* User DSDT is installed directly into the FADT */
 
@@ -283,10 +283,10 @@ AeBuildLocalTables (
         /* Build a local DSDT because incoming table is an SSDT or PSDT */
 
         ACPI_MEMSET (&LocalDSDT, 0, sizeof (ACPI_TABLE_HEADER));
-        ACPI_STRNCPY (LocalDSDT.Signature, ACPI_SIG_DSDT, 4);
+        ACPI_STRNCPY (LocalDSDT.Signature, DSDT_SIG, 4);
         LocalDSDT.Revision   = 1;
         LocalDSDT.Length     = sizeof (ACPI_TABLE_HEADER);
-        LocalDSDT.Checksum   = (UINT8) (0 - AcpiTbGenerateChecksum (&LocalDSDT, LocalDSDT.Length));
+        AcpiTbSetChecksum (&LocalDSDT);
 
         AcpiGbl_DSDT = &LocalDSDT;
 
@@ -297,16 +297,16 @@ AeBuildLocalTables (
 
     /* Set checksums for both RSDT and RSDP */
 
-    LocalRSDT->Checksum = (UINT8) (0 - AcpiTbGenerateChecksum (LocalRSDT, LocalRSDT->Length));
-    LocalRSDP.Checksum  = (UINT8) (0 - AcpiTbGenerateChecksum (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
+    AcpiTbSetChecksum ((ACPI_TABLE_HEADER *) LocalRSDT);
+    LocalRSDP.Checksum  = (UINT8) (0 - AcpiTbSumTable (&LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH));
 
     /* Build a FADT so we can test the hardware/event init */
 
     ACPI_MEMSET (&LocalFADT, 0, sizeof (FADT_DESCRIPTOR_REV1));
-    ACPI_STRNCPY (LocalFADT.Signature, ACPI_SIG_FADT, 4);
+    ACPI_STRNCPY (LocalFADT.Signature, FADT_SIG, 4);
 
-    LocalFADT.FirmwareCtrl      = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
-    LocalFADT.Dsdt              = ACPI_PTR_TO_PHYSADDR (AcpiGbl_DSDT);
+    LocalFADT.V1_FirmwareCtrl   = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
+    LocalFADT.V1_Dsdt           = ACPI_PTR_TO_PHYSADDR (AcpiGbl_DSDT);
     LocalFADT.Revision          = 1;
     LocalFADT.Length            = sizeof (FADT_DESCRIPTOR_REV1);
     LocalFADT.Gpe0BlkLen        = 16;
@@ -317,22 +317,22 @@ AeBuildLocalTables (
     LocalFADT.Pm1CntLen         = 4;
     LocalFADT.PmTmLen           = 8;
 
-    LocalFADT.Gpe0Blk           = 0x12340000;
-    LocalFADT.Gpe1Blk           = 0x56780000;
+    LocalFADT.V1_Gpe0Blk        = 0x12340000;
+    LocalFADT.V1_Gpe1Blk        = 0x56780000;
 
-    LocalFADT.Pm1aEvtBlk        = 0x1aaa0000;
-    LocalFADT.Pm1bEvtBlk        = 0;
-    LocalFADT.PmTmrBlk          = 0xA0;
-    LocalFADT.Pm1aCntBlk        = 0xB0;
+    LocalFADT.V1_Pm1aEvtBlk     = 0x1aaa0000;
+    LocalFADT.V1_Pm1bEvtBlk     = 0;
+    LocalFADT.V1_PmTmrBlk       = 0xA0;
+    LocalFADT.V1_Pm1aCntBlk     = 0xB0;
 
     /* Complete the FADT with the checksum */
 
-    LocalFADT.Checksum = (UINT8) (0 - AcpiTbGenerateChecksum (&LocalFADT, LocalFADT.Length));
+    AcpiTbSetChecksum ((ACPI_TABLE_HEADER *) &LocalFADT);
 
     /* Build a FACS */
 
     ACPI_MEMSET (&LocalFACS, 0, sizeof (FACS_DESCRIPTOR));
-    ACPI_STRNCPY (LocalFACS.Signature, ACPI_SIG_FACS, 4);
+    ACPI_STRNCPY (LocalFACS.Signature, FACS_SIG, 4);
     LocalFACS.Length = sizeof (FACS_DESCRIPTOR);
     LocalFACS.GlobalLock = 0x11AA0011;
 

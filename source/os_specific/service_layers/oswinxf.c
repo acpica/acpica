@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -457,7 +457,7 @@ AcpiOsTableOverride (
 
     /* This code exercises the table override mechanism in the core */
 
-    if (!ACPI_STRNCMP (ExistingTable->Signature, ACPI_SIG_DSDT, ACPI_NAME_SIZE))
+    if (!ACPI_STRNCMP (ExistingTable->Signature, DSDT_SIG, ACPI_NAME_SIZE))
     {
         /* override DSDT with itself */
 

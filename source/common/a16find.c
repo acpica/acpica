@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.36 $
+ *              $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -318,7 +318,7 @@ AfFindRsdp (RSDP_DESCRIPTOR **RSDP)
 
             /* TBD: Checksum check is invalid for X descriptor */
 
-/*            if (AcpiTbGenerateChecksum (Rove.ptr, sizeof(RSDP_DESCRIPTOR)) != 0)
+/*            if (AcpiTbSumTable (Rove.ptr, sizeof(RSDP_DESCRIPTOR)) != 0)
             {
  */
             AcpiOsPrintf ("RSDP found at %p (Lo block)\n", Rove.ptr);

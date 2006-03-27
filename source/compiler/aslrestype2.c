@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslrestype2 - Long (type2) resource templates and descriptors
- *              $Revision: 1.48 $
+ *              $Revision: 1.49 $
  *
  *****************************************************************************/
 
@@ -814,7 +814,6 @@ RsDoExtendedIoDescriptor (
     ACPI_PARSE_OBJECT       *InitializerOp;
     ASL_RESOURCE_NODE       *Rnode;
     UINT16                  StringLength = 0;
-//    UINT32                  OptionIndex = 0;
     UINT32                  i;
 
 

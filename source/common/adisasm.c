@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -419,6 +419,32 @@ FlGenerateFilename (
 
 /*******************************************************************************
  *
+ * FUNCTION:    FlStrdup
+ *
+ * DESCRIPTION: Local strdup function
+ *
+ ******************************************************************************/
+
+static char *
+FlStrdup (
+    char                *String)
+{
+    char                *NewString;
+
+
+    NewString = ACPI_ALLOCATE (strlen (String));
+    if (!NewString)
+    {
+        return (NULL);
+    }
+
+    strcpy (NewString, String);
+    return (NewString);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    FlSplitInputPathname
  *
  * PARAMETERS:  InputFilename       - The user-specified ASL source file to be
@@ -456,7 +482,7 @@ FlSplitInputPathname (
 
     /* Get the path to the input filename's directory */
 
-    DirectoryPath = strdup (InputPath);
+    DirectoryPath = FlStrdup (InputPath);
     if (!DirectoryPath)
     {
         return (AE_NO_MEMORY);
@@ -475,11 +501,11 @@ FlSplitInputPathname (
     if (!Substring)
     {
         DirectoryPath[0] = 0;
-        Filename = strdup (InputPath);
+        Filename = FlStrdup (InputPath);
     }
     else
     {
-        Filename = strdup (Substring + 1);
+        Filename = FlStrdup (Substring + 1);
         *(Substring+1) = 0;
     }
 
@@ -732,8 +758,9 @@ AdAmlDisassemble (
     if (!AcpiUtIsAmlTable (Table))
     {
         AdDisassemblerHeader (Filename);
-        AcpiOsPrintf (" * ACPI Data Table [%4.4s] decoded\n */\n\n",
+        AcpiOsPrintf (" * ACPI Data Table [%4.4s]\n *\n",
             Table->Signature);
+        AcpiOsPrintf (" * Format: [HexOffset DecimalOffset ByteLength]  FieldName : FieldValue\n */\n\n");
 
         AcpiDmDumpDataTable (Table);
         fprintf (stderr, "Acpi Data Table [%4.4s] decoded, written to \"%s\"\n",
@@ -1132,7 +1159,7 @@ AdGetLocalTables (
 
     if (GetAllTables)
     {
-        ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_RSDT, 4);
+        ACPI_STRNCPY (TableHeader.Signature, RSDT_SIG, 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (!NewTable)
         {
@@ -1142,7 +1169,7 @@ AdGetLocalTables (
 
 #if ACPI_MACHINE_WIDTH != 64
 
-        if (ACPI_COMPARE_NAME (NewTable->Signature, ACPI_SIG_RSDT))
+        if (ACPI_COMPARE_NAME (NewTable->Signature, RSDT_SIG))
         {
             PointerSize = sizeof (UINT32);
         }
@@ -1164,13 +1191,13 @@ AdGetLocalTables (
 
         /* Get the FADT */
 
-        ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_FADT, 4);
+        ACPI_STRNCPY (TableHeader.Signature, FADT_SIG, 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (NewTable)
         {
             AcpiGbl_FADT = (void *) NewTable;
             AdWriteTable (NewTable, NewTable->Length,
-                ACPI_SIG_FADT, NewTable->OemTableId);
+                FADT_SIG, NewTable->OemTableId);
 
             /* Use the FADT tableID for the FACS, since FACS has no ID */
 
@@ -1180,20 +1207,20 @@ AdGetLocalTables (
 
         /* Get the FACS */
 
-        ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_FACS, 4);
+        ACPI_STRNCPY (TableHeader.Signature, FACS_SIG, 4);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (NewTable)
         {
             AcpiGbl_FACS = (void *) NewTable;
             AdWriteTable (NewTable, AcpiGbl_FACS->Length,
-                ACPI_SIG_FACS, FacsSuffix);
+                FACS_SIG, FacsSuffix);
         }
         AcpiOsPrintf ("\n");
     }
 
     /* Always get the DSDT */
 
-    ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_DSDT, 4);
+    ACPI_STRNCPY (TableHeader.Signature, DSDT_SIG, 4);
     AcpiOsTableOverride (&TableHeader, &NewTable);
     if (NewTable)
     {
@@ -1212,7 +1239,7 @@ AdGetLocalTables (
 
     /* Get all SSDTs */
 
-    ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_SSDT, 4);
+    ACPI_STRNCPY (TableHeader.Signature, SSDT_SIG, 4);
     Status = AcpiOsTableOverride (&TableHeader, &NewTable);
     if (NewTable)
     {

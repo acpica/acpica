@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.129 $
+ *              $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -663,25 +663,16 @@ AcpiUtPtrExit (
  ******************************************************************************/
 
 void
-AcpiUtDumpBuffer (
+AcpiUtDumpBuffer2 (
     UINT8                   *Buffer,
     UINT32                  Count,
-    UINT32                  Display,
-    UINT32                  ComponentId)
+    UINT32                  Display)
 {
     ACPI_NATIVE_UINT        i = 0;
     ACPI_NATIVE_UINT        j;
     UINT32                  Temp32;
     UINT8                   BufChar;
 
-
-    /* Only dump the buffer if tracing is enabled */
-
-    if (!((ACPI_LV_TABLES & AcpiDbgLevel) &&
-        (ComponentId & AcpiDbgLayer)))
-    {
-        return;
-    }
 
     if ((Count < 4) || (Count & 0x01))
     {
@@ -711,6 +702,7 @@ AcpiUtDumpBuffer (
 
             switch (Display)
             {
+            case DB_BYTE_DISPLAY:
             default:    /* Default is BYTE display */
 
                 AcpiOsPrintf ("%02X ", Buffer[i + j]);
@@ -776,4 +768,40 @@ AcpiUtDumpBuffer (
 
     return;
 }
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtDumpBuffer
+ *
+ * PARAMETERS:  Buffer              - Buffer to dump
+ *              Count               - Amount to dump, in bytes
+ *              Display             - BYTE, WORD, DWORD, or QWORD display
+ *              ComponentID         - Caller's component ID
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Generic dump buffer in both hex and ascii.
+ *
+ ******************************************************************************/
+
+void
+AcpiUtDumpBuffer (
+    UINT8                   *Buffer,
+    UINT32                  Count,
+    UINT32                  Display,
+    UINT32                  ComponentId)
+{
+
+    /* Only dump the buffer if tracing is enabled */
+
+    if (!((ACPI_LV_TABLES & AcpiDbgLevel) &&
+        (ComponentId & AcpiDbgLayer)))
+    {
+        return;
+    }
+
+    AcpiUtDumpBuffer2 (Buffer, Count, Display);
+}
+
 

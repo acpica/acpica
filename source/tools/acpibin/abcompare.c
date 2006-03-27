@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: abcompare - compare AML files
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@ AbValidateHeader (
     ACPI_TABLE_HEADER       *Header);
 
 static UINT8
-AcpiTbGenerateChecksum (
+AcpiTbSumTable (
     void                    *Buffer,
     UINT32                  Length);
 
@@ -239,7 +239,7 @@ AbValidateHeader (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbGenerateChecksum
+ * FUNCTION:    AcpiTbSumTable
  *
  * PARAMETERS:  Buffer              - Buffer to checksum
  *              Length              - Size of the buffer
@@ -251,7 +251,7 @@ AbValidateHeader (
  ******************************************************************************/
 
 static UINT8
-AcpiTbGenerateChecksum (
+AcpiTbSumTable (
     void                    *Buffer,
     UINT32                  Length)
 {
@@ -399,7 +399,7 @@ AbComputeChecksum (
 
     Table->Checksum = 0;
 
-    Checksum = (UINT8) (0 - AcpiTbGenerateChecksum (Table, Table->Length));
+    Checksum = (UINT8) (0 - AcpiTbSumTable (Table, Table->Length));
     printf ("Computed checksum: 0x%X\n\n", Checksum);
 
     if (Header1.Checksum == Checksum)

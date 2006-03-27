@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.193 $
+ *       $Revision: 1.194 $
  *
  *****************************************************************************/
 
@@ -481,6 +481,12 @@ AcpiUtDumpBuffer (
     UINT32                  Count,
     UINT32                  Display,
     UINT32                  componentId);
+
+void
+AcpiUtDumpBuffer2 (
+    UINT8                   *Buffer,
+    UINT32                  Count,
+    UINT32                  Display);
 
 void
 AcpiUtReportError (

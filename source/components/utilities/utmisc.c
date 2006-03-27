@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  ******************************************************************************/
 
@@ -146,9 +146,9 @@ AcpiUtIsAmlTable (
 
     /* Ignore tables that contain AML */
 
-    if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_DSDT) ||
-        ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_PSDT) ||
-        ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_SSDT))
+    if (ACPI_COMPARE_NAME (Table->Signature, DSDT_SIG) ||
+        ACPI_COMPARE_NAME (Table->Signature, PSDT_SIG) ||
+        ACPI_COMPARE_NAME (Table->Signature, SSDT_SIG))
     {
         return (TRUE);
     }
@@ -671,6 +671,10 @@ AcpiUtValidAcpiName (
               (Character >= 'A' && Character <= 'Z') ||
               (Character >= '0' && Character <= '9')))
         {
+            if (Character == '!' && i == 3)
+            {
+                continue;
+            }
             return (FALSE);
         }
     }

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.31 $
+ *       $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -161,17 +161,18 @@ typedef const struct acpi_dmtable_info
 #define ACPI_DMT_UINT16                 11
 #define ACPI_DMT_UINT24                 12
 #define ACPI_DMT_UINT32                 13
-#define ACPI_DMT_UINT64                 14
-#define ACPI_DMT_STRING                 15
-#define ACPI_DMT_NAME4                  16
-#define ACPI_DMT_NAME6                  17
-#define ACPI_DMT_NAME8                  18
-#define ACPI_DMT_CHKSUM                 19
-#define ACPI_DMT_SPACEID                20
-#define ACPI_DMT_GAS                    21
-#define ACPI_DMT_APIC                   22
-#define ACPI_DMT_SRAT                   23
-#define ACPI_DMT_EXIT                   24
+#define ACPI_DMT_UINT56                 14
+#define ACPI_DMT_UINT64                 15
+#define ACPI_DMT_STRING                 16
+#define ACPI_DMT_NAME4                  17
+#define ACPI_DMT_NAME6                  18
+#define ACPI_DMT_NAME8                  19
+#define ACPI_DMT_CHKSUM                 20
+#define ACPI_DMT_SPACEID                21
+#define ACPI_DMT_GAS                    22
+#define ACPI_DMT_MADT                   23
+#define ACPI_DMT_SRAT                   24
+#define ACPI_DMT_EXIT                   25
 
 typedef
 void (*ACPI_TABLE_HANDLER) (
@@ -217,7 +218,15 @@ extern const char               *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES];
 extern const char               *AcpiGbl_UpdateRules[ACPI_NUM_UPDATE_RULES];
 extern const char               *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS];
 
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf3[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf4[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsfHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBoot[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCpep[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCpep0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbgp[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEcdt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFacs[];
@@ -238,12 +247,14 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt7[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt8[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadtHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMcfg[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMcfg0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSbst[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSlit[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSpcr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSpmi[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSrat1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoTcpa[];
@@ -267,11 +278,13 @@ AcpiDmDumpTable (
 void
 AcpiDmLineHeader (
     UINT32                  Offset,
+    UINT32                  ByteLength,
     char                    *Name);
 
 void
 AcpiDmLineHeader2 (
     UINT32                  Offset,
+    UINT32                  ByteLength,
     char                    *Name,
     UINT32                  Value);
 
@@ -279,6 +292,14 @@ AcpiDmLineHeader2 (
 /*
  * dmtbdump
  */
+void
+AcpiDmDumpAsf (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpCpep (
+    ACPI_TABLE_HEADER       *Table);
+
 void
 AcpiDmDumpFadt (
     ACPI_TABLE_HEADER       *Table);
@@ -295,7 +316,7 @@ void
 AcpiDmDumpMadt (
     ACPI_TABLE_HEADER       *Table);
 
-void
+UINT32
 AcpiDmDumpRsdp (
     ACPI_TABLE_HEADER       *Table);
 

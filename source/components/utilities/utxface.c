@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -567,7 +567,7 @@ AcpiGetSystemInfo (
     {
         InfoPtr->TimerResolution = 0;
     }
-    else if (AcpiGbl_FADT->Flags.TmrValExt == 0)
+    else if (AcpiGbl_FADT->TmrValExt == 0)
     {
         InfoPtr->TimerResolution = 24;
     }
