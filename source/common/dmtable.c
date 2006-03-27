@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -135,6 +135,28 @@ AcpiDmCheckAscii (
     UINT32                  Count);
 
 
+static const char           *AcpiDmMadtSubnames[] =
+{
+    "Processor Local APIC",         /* APIC_PROCESSOR */
+    "I/O APIC",                     /* APIC_IO */
+    "Interrupt Source Override",    /* APIC_XRUPT_OVERRIDE */
+    "NMI Source",                   /* APIC_NMI */
+    "Local APIC NMI",               /* APIC_LOCAL_NMI */
+    "Local APIC Address Override",  /* APIC_ADDRESS_OVERRIDE */
+    "I/O SAPIC",                    /* APIC_IO_SAPIC */
+    "Local SAPIC",                  /* APIC_LOCAL_SAPIC */
+    "Platform Interrupt Sources",   /* APIC_XRUPT_SOURCE */
+    "Unknown SubTable Type"         /* Reserved */
+};
+
+static const char           *AcpiDmSratSubnames[] =
+{
+    "Processor Local APIC/SAPIC Affinity",
+    "Memory Affinity",
+    "Unknown SubTable Type"         /* Reserved */
+};
+
+
 /*******************************************************************************
  *
  * ACPI Table Data, indexed by signature.
@@ -144,17 +166,20 @@ AcpiDmCheckAscii (
  *
  ******************************************************************************/
 
-ACPI_DMTABLE_DATA           AcpiDmTableData[] =
+static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
 {
+    {FADT_SIG,          NULL,                       AcpiDmDumpFadt},
+    {RSDP_SIG,          NULL,                       AcpiDmDumpRsdp},
+    {RSDT_SIG,          NULL,                       AcpiDmDumpRsdt},
+    {XSDT_SIG,          NULL,                       AcpiDmDumpXsdt},
+    {ACPI_SIG_ASF,      NULL,                       AcpiDmDumpAsf},
     {ACPI_SIG_MADT,     NULL,                       AcpiDmDumpMadt},
     {ACPI_SIG_BOOT,     AcpiDmTableInfoBoot,        NULL},
+    {ACPI_SIG_CPEP,     NULL,                       AcpiDmDumpCpep},
     {ACPI_SIG_DBGP,     AcpiDmTableInfoDbgp,        NULL},
     {ACPI_SIG_ECDT,     AcpiDmTableInfoEcdt,        NULL},
-    {ACPI_SIG_FADT,     NULL,                       AcpiDmDumpFadt},
     {ACPI_SIG_HPET,     AcpiDmTableInfoHpet,        NULL},
     {ACPI_SIG_MCFG,     NULL,                       AcpiDmDumpMcfg},
-    {ACPI_SIG_RSDP,     NULL,                       AcpiDmDumpRsdp},
-    {ACPI_SIG_RSDT,     NULL,                       AcpiDmDumpRsdt},
     {ACPI_SIG_SBST,     AcpiDmTableInfoSbst,        NULL},
     {ACPI_SIG_SLIT,     NULL,                       AcpiDmDumpSlit},
     {ACPI_SIG_SPCR,     AcpiDmTableInfoSpcr,        NULL},
@@ -162,7 +187,6 @@ ACPI_DMTABLE_DATA           AcpiDmTableData[] =
     {ACPI_SIG_SRAT,     NULL,                       AcpiDmDumpSrat},
     {ACPI_SIG_TCPA,     AcpiDmTableInfoTcpa,        NULL},
     {ACPI_SIG_WDRT,     AcpiDmTableInfoWdrt,        NULL},
-    {ACPI_SIG_XSDT,     NULL,                       AcpiDmDumpXsdt},
     {NULL,              NULL,                       NULL}
 };
 
@@ -216,6 +240,7 @@ AcpiDmDumpDataTable (
     ACPI_TABLE_HEADER       *Table)
 {
     ACPI_DMTABLE_DATA       *TableData;
+    UINT32                  Length;
 
 
     /* Ignore tables that contain AML */
@@ -231,42 +256,47 @@ AcpiDmDumpDataTable (
      */
     if (ACPI_COMPARE_NAME (Table->Signature, "FACS"))
     {
-        AcpiDmDumpTable (Table->Length, 0, Table, AcpiDmTableInfoFacs);
-        return;
+        Length = Table->Length;
+        AcpiDmDumpTable (Length, 0, Table, AcpiDmTableInfoFacs);
     }
     else if (ACPI_COMPARE_NAME (Table->Signature, "RSD "))
     {
-        AcpiDmDumpRsdp (Table);
-        return;
+        Length = AcpiDmDumpRsdp (Table);
     }
-
-    /*
-     * Any other tables must use the common ACPI table header, dump it now
-     */
-    AcpiDmDumpTable (Table->Length, 0, Table, AcpiDmTableInfoHeader);
-    AcpiOsPrintf ("\n");
-
-    /* Match signature and dispatch appropriately */
-
-    TableData = AcpiDmMatchSignature (Table->Signature);
-    if (!TableData)
+    else
     {
-        AcpiOsPrintf ("\n**** Unsupported ACPI table type [%4.4s]\n\n", Table->Signature);
+        /*
+         * All other tables must use the common ACPI table header, dump it now
+         */
+        Length = Table->Length;
+        AcpiDmDumpTable (Length, 0, Table, AcpiDmTableInfoHeader);
+        AcpiOsPrintf ("\n");
 
-        /* TBD: We might want to dump the contents of the unknown table here */
-    }
-    else if (TableData->TableHandler)
-    {
-        /* Complex table, has a handler */
+        /* Match signature and dispatch appropriately */
 
-        TableData->TableHandler (Table);
-    }
-    else if (TableData->TableInfo)
-    {
-        /* Simple table, just walk the info table */
+        TableData = AcpiDmMatchSignature (Table->Signature);
+        if (!TableData)
+        {
+            AcpiOsPrintf ("\n**** Unsupported ACPI table type [%4.4s]\n\n", Table->Signature);
+        }
+        else if (TableData->TableHandler)
+        {
+            /* Complex table, has a handler */
 
-        AcpiDmDumpTable (Table->Length, 0, Table, TableData->TableInfo);
+            TableData->TableHandler (Table);
+        }
+        else if (TableData->TableInfo)
+        {
+            /* Simple table, just walk the info table */
+
+            AcpiDmDumpTable (Length, 0, Table, TableData->TableInfo);
+        }
     }
+
+    /* Always dump the raw table data */
+
+    AcpiOsPrintf ("\nRaw Table Data\n\n");
+    AcpiUtDumpBuffer2 ((UINT8 *) Table, Length, DB_BYTE_DISPLAY);
 }
 
 
@@ -275,31 +305,54 @@ AcpiDmDumpDataTable (
  * FUNCTION:    AcpiDmLineHeader
  *
  * PARAMETERS:  Offset              - Current byte offset, from table start
+ *              ByteLength          - Length of the field in bytes, 0 for flags
  *              Name                - Name of this field
  *
  * RETURN:      None
  *
  * DESCRIPTION: Utility routines for formatting output lines. Displays the
- *              current table offset in hex and decimal, and the table field
- *              name.
+ *              current table offset in hex and decimal, the field length,
+ *              and the field name.
  *
  ******************************************************************************/
 
 void
 AcpiDmLineHeader (
     UINT32                  Offset,
+    UINT32                  ByteLength,
     char                    *Name)
 {
-    AcpiOsPrintf ("[%3.3Xh %3.3d] %28s : ", Offset, Offset, Name);
+
+    if (ByteLength)
+    {
+        AcpiOsPrintf ("[%3.3Xh %3.3d% 3d] %28s : ",
+            Offset, Offset, ByteLength, Name);
+    }
+    else
+    {
+        AcpiOsPrintf ("%42s : ",
+            Name);
+    }
 }
 
 void
 AcpiDmLineHeader2 (
     UINT32                  Offset,
+    UINT32                  ByteLength,
     char                    *Name,
     UINT32                  Value)
 {
-    AcpiOsPrintf ("[%3.3Xh %3.3d] %23s % 4d : ", Offset, Offset, Name, Value);
+
+    if (ByteLength)
+    {
+        AcpiOsPrintf ("[%3.3Xh %3.3d% 3d] %24s % 3d : ",
+            Offset, Offset, ByteLength, Name, Value);
+    }
+    else
+    {
+        AcpiOsPrintf ("[%3.3Xh %3.3d   ] %24s % 3d : ",
+            Offset, Offset, Name, Value);
+    }
 }
 
 
@@ -309,7 +362,7 @@ AcpiDmLineHeader2 (
  *
  * PARAMETERS:  TableLength         - Length of the entire ACPI table
  *              TableOffset         - Starting offset within the table for this
- *                                    sub-descriptor
+ *                                    sub-descriptor (0 if main table)
  *              Table               - The ACPI table
  *              Info                - Info table for this ACPI table
  *
@@ -327,8 +380,8 @@ AcpiDmDumpTable (
     ACPI_DMTABLE_INFO       *Info)
 {
     UINT8                   *Target;
-    char                    *Subname;
     UINT32                  CurrentOffset;
+    UINT32                  ByteLength;
     UINT8                   Temp8;
 
 
@@ -342,6 +395,10 @@ AcpiDmDumpTable (
 
     for (; Info->Name; Info++)
     {
+        /*
+         * Target points to the field within the ACPI Table. CurrentOffset is
+         * the offset of the field from the start of the main table.
+         */
         Target = ACPI_ADD_PTR (UINT8, Table, Info->Offset);
         CurrentOffset = TableOffset + Info->Offset;
 
@@ -352,13 +409,52 @@ AcpiDmDumpTable (
             return;
         }
 
-        /* Start a new line and decode the opcode */
-
-        AcpiDmLineHeader (CurrentOffset, Info->Name);
+        /* Generate the byte length for this field */
 
         switch (Info->Opcode)
         {
-        /* Single-bit Flag fields. Note: Opcode is bit position */
+        case ACPI_DMT_UINT8:
+        case ACPI_DMT_CHKSUM:
+        case ACPI_DMT_SPACEID:
+        case ACPI_DMT_MADT:
+        case ACPI_DMT_SRAT:
+            ByteLength = 1;
+            break;
+        case ACPI_DMT_UINT16:
+            ByteLength = 2;
+            break;
+        case ACPI_DMT_UINT24:
+            ByteLength = 3;
+            break;
+        case ACPI_DMT_UINT32:
+        case ACPI_DMT_NAME4:
+            ByteLength = 4;
+            break;
+        case ACPI_DMT_NAME6:
+            ByteLength = 6;
+            break;
+        case ACPI_DMT_UINT56:
+            ByteLength = 7;
+            break;
+        case ACPI_DMT_UINT64:
+        case ACPI_DMT_NAME8:
+            ByteLength = 8;
+            break;
+        case ACPI_DMT_STRING:
+            ByteLength = ACPI_STRLEN ((char *) Target) + 1;
+            break;
+        default:
+            ByteLength = 0;
+            break;
+        }
+
+        /* Start a new line and decode the opcode */
+
+        AcpiDmLineHeader (CurrentOffset, ByteLength, Info->Name);
+
+        switch (Info->Opcode)
+        {
+        /* Single-bit Flag fields. Note: Opcode is the bit position */
 
         case ACPI_DMT_FLAG0:
         case ACPI_DMT_FLAG1:
@@ -407,6 +503,12 @@ AcpiDmDumpTable (
             AcpiOsPrintf ("%8.8X\n", ACPI_GET32 (Target));
             break;
 
+        case ACPI_DMT_UINT56:
+
+            AcpiOsPrintf ("%6.6X%8.8X\n",
+                ACPI_HIDWORD(ACPI_GET64 (Target)) & 0x00FFFFFF,ACPI_LODWORD(ACPI_GET64 (Target)));
+            break;
+
         case ACPI_DMT_UINT64:
 
             AcpiOsPrintf ("%8.8X%8.8X\n",
@@ -415,7 +517,7 @@ AcpiDmDumpTable (
 
         case ACPI_DMT_STRING:
 
-            AcpiOsPrintf ("%s\n", (char *) Target);
+            AcpiOsPrintf ("%s\n", ACPI_CAST_PTR (char, Target));
             break;
 
         /* Fixed length ASCII name fields */
@@ -423,38 +525,33 @@ AcpiDmDumpTable (
         case ACPI_DMT_NAME4:
 
             AcpiDmCheckAscii (Target, 4);
-            AcpiOsPrintf ("%4.4s\n", Target);
+            AcpiOsPrintf ("\"%4.4s\"\n", Target);
             break;
 
         case ACPI_DMT_NAME6:
 
             AcpiDmCheckAscii (Target, 6);
-            AcpiOsPrintf ("%6.6s\n", Target);
+            AcpiOsPrintf ("\"%6.6s\"\n", Target);
             break;
 
         case ACPI_DMT_NAME8:
 
             AcpiDmCheckAscii (Target, 8);
-            AcpiOsPrintf ("%8.8s\n", Target);
+            AcpiOsPrintf ("\"%8.8s\"\n", Target);
             break;
 
         /* Special Data Types */
 
         case ACPI_DMT_CHKSUM:
 
-            /* Checksum, validate and compute new one if necessary */
+            /* Checksum, display and validate */
 
             AcpiOsPrintf ("%2.2X", *Target);
-            Temp8 = AcpiTbGenerateChecksum (Table,
-                        ((ACPI_TABLE_HEADER *)Table)->Length);
-            if (Temp8)
+            Temp8 = AcpiTbGenerateChecksum (Table);
+            if (Temp8 != ((ACPI_TABLE_HEADER *) Table)->Checksum)
             {
-                ((ACPI_TABLE_HEADER *)Table)->Checksum = 0;
-                Temp8 = (UINT8) (0 - AcpiTbGenerateChecksum (Table,
-                            ((ACPI_TABLE_HEADER *)Table)->Length));
-
-                AcpiOsPrintf ("       /* Incorrect checksum, should be %2.2X */",
-                    Temp8);
+                AcpiOsPrintf (
+                    "     /* Incorrect checksum, should be %2.2X */", Temp8);
             }
             AcpiOsPrintf ("\n");
             break;
@@ -462,21 +559,8 @@ AcpiDmDumpTable (
         case ACPI_DMT_SPACEID:
 
             /* Address Space ID */
-            /* TBD: probably can use the global lookup table on these */
 
-            AcpiOsPrintf ("%2.2X ", *Target);
-            switch (*Target)
-            {
-            case ACPI_ADR_SPACE_SYSTEM_MEMORY:
-                AcpiOsPrintf ("(System Memory)\n");
-                break;
-            case ACPI_ADR_SPACE_SYSTEM_IO:
-                AcpiOsPrintf ("(System I/O)\n");
-                break;
-            default:
-                AcpiOsPrintf ("\n");
-                break;
-            }
+            AcpiOsPrintf ("%2.2X (%s)\n", *Target, AcpiUtGetRegionName (*Target));
             break;
 
         case ACPI_DMT_GAS:
@@ -484,67 +568,34 @@ AcpiDmDumpTable (
             /* Generic Address Structure */
 
             AcpiOsPrintf ("<Generic Address Structure>\n");
-            AcpiDmDumpTable (((ACPI_TABLE_HEADER *)Table)->Length,
+            AcpiDmDumpTable (((ACPI_TABLE_HEADER *) Table)->Length,
                 CurrentOffset, Target, AcpiDmTableInfoGas);
             break;
 
-        case ACPI_DMT_APIC:
+        case ACPI_DMT_MADT:
 
             /* MADT subtable types */
 
-            switch (*Target)
+            Temp8 = *Target;
+            if (Temp8 > APIC_RESERVED)
             {
-            case APIC_PROCESSOR:
-                Subname = "Processor Local APIC";
-                break;
-            case APIC_IO:
-                Subname = "I/O APIC";
-                break;
-            case APIC_XRUPT_OVERRIDE:
-                Subname = "Interrupt Source Override";
-                break;
-            case APIC_NMI:
-                Subname = "NMI Source";
-                break;
-            case APIC_LOCAL_NMI:
-                Subname = "Local APIC NMI";
-                break;
-            case APIC_ADDRESS_OVERRIDE:
-                Subname = "Local APIC Address Override";
-                break;
-            case APIC_IO_SAPIC:
-                Subname = "I/O SAPIC";
-                break;
-            case APIC_LOCAL_SAPIC:
-                Subname = "Local SAPIC";
-                break;
-            case APIC_XRUPT_SOURCE:
-                Subname = "Platform Interrupt Sources";
-                break;
-            default:
-                Subname = "Unknown SubTable Type";
-                break;
+                Temp8 = APIC_RESERVED;
             }
-            AcpiOsPrintf ("%2.2X <%s>\n", *Target, Subname);
+
+            AcpiOsPrintf ("%2.2X <%s>\n", *Target, AcpiDmMadtSubnames[Temp8]);
             break;
 
         case ACPI_DMT_SRAT:
 
             /* SRAT subtable types */
 
-            switch (*Target)
+            Temp8 = *Target;
+            if (Temp8 > SRAT_RESERVED)
             {
-            case SRAT_CPU_AFFINITY:
-                Subname = "Processor Local APIC/SAPIC Affinity";
-                break;
-            case SRAT_MEMORY_AFFINITY:
-                Subname = "Memory Affinity";
-                break;
-            default:
-                Subname = "Unknown SubTable Type";
-                break;
+                Temp8 = SRAT_RESERVED;
             }
-            AcpiOsPrintf ("%2.2X <%s>\n", *Target, Subname);
+
+            AcpiOsPrintf ("%2.2X <%s>\n", *Target, AcpiDmSratSubnames[Temp8]);
             break;
 
         case ACPI_DMT_EXIT:
