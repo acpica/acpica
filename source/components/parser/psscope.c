@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psscope - Parser scope stack management routines
- *              $Revision: 1.44 $
+ *              $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -231,7 +231,7 @@ AcpiPsPushScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  RemainingArgs,
-    UINT8                   ArgCount)
+    UINT32                  ArgCount)
 {
     ACPI_GENERIC_STATE      *Scope;
 
@@ -293,7 +293,7 @@ AcpiPsPopScope (
     ACPI_PARSE_STATE        *ParserState,
     ACPI_PARSE_OBJECT       **Op,
     UINT32                  *ArgList,
-    UINT8                   *ArgCount)
+    UINT32                  *ArgCount)
 {
     ACPI_GENERIC_STATE      *Scope = ParserState->Scope;
 

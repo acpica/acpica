@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.226 $
+ *       $Revision: 1.227 $
  *
  *****************************************************************************/
 
@@ -639,7 +639,7 @@ typedef struct acpi_scope_state
 typedef struct acpi_pscope_state
 {
     ACPI_STATE_COMMON
-    UINT8                           ArgCount;               /* Number of fixed arguments */
+    UINT32                          ArgCount;               /* Number of fixed arguments */
     union acpi_parse_object         *Op;                    /* Current op being parsed */
     UINT8                           *ArgEnd;                /* Current argument end */
     UINT8                           *PkgEnd;                /* Current package end */
