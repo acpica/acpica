@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utstate - state object support procedures
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  ******************************************************************************/
 
@@ -438,8 +438,8 @@ AcpiUtCreateControlState (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Put a state object back into the global state cache.  The object
- *              is not actually freed at this time.
+ * DESCRIPTION: Release a state object to the state cache. NULL state objects
+ *              are ignored.
  *
  ******************************************************************************/
 
@@ -450,7 +450,12 @@ AcpiUtDeleteGenericState (
     ACPI_FUNCTION_TRACE ("UtDeleteGenericState");
 
 
-    (void) AcpiOsReleaseObject (AcpiGbl_StateCache, State);
+    /* Ignore null state */
+
+    if (State)
+    {
+        (void) AcpiOsReleaseObject (AcpiGbl_StateCache, State);
+    }
     return_VOID;
 }
 
