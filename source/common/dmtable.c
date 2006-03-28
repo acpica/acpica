@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -135,6 +135,8 @@ AcpiDmCheckAscii (
     UINT32                  Count);
 
 
+/* These tables map a subtable type to a description string */
+
 static const char           *AcpiDmMadtSubnames[] =
 {
     "Processor Local APIC",         /* APIC_PROCESSOR */
@@ -162,7 +164,7 @@ static const char           *AcpiDmSratSubnames[] =
  * ACPI Table Data, indexed by signature.
  *
  * Simple tables have only a TableInfo structure, complex tables have a handler.
- * Table must be NULL terminated
+ * This table must be NULL terminated.
  *
  ******************************************************************************/
 
@@ -443,7 +445,7 @@ AcpiDmDumpTable (
             ByteLength = 8;
             break;
         case ACPI_DMT_STRING:
-            ByteLength = ACPI_STRLEN ((char *) Target) + 1;
+            ByteLength = ACPI_STRLEN (ACPI_CAST_PTR (char, Target)) + 1;
             break;
         default:
             ByteLength = 0;
@@ -467,19 +469,19 @@ AcpiDmDumpTable (
         case ACPI_DMT_FLAG6:
         case ACPI_DMT_FLAG7:
 
-            AcpiOsPrintf ("%1.1X\n", ((*Target) >> Info->Opcode) & 0x01);
+            AcpiOsPrintf ("%1.1X\n", (*Target >> Info->Opcode) & 0x01);
             break;
 
         /* 2-bit Flag fields */
 
         case ACPI_DMT_FLAGS0:
 
-            AcpiOsPrintf ("%1.1X\n", (*Target) & 0x03);
+            AcpiOsPrintf ("%1.1X\n", *Target & 0x03);
             break;
 
         case ACPI_DMT_FLAGS2:
 
-            AcpiOsPrintf ("%1.1X\n", ((*Target) >> 2) & 0x03);
+            AcpiOsPrintf ("%1.1X\n", (*Target >> 2) & 0x03);
             break;
 
         /* Standard Data Types */
@@ -508,7 +510,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_UINT56:
 
             AcpiOsPrintf ("%6.6X%8.8X\n",
-                ACPI_HIDWORD(ACPI_GET64 (Target)) & 0x00FFFFFF,ACPI_LODWORD(ACPI_GET64 (Target)));
+                ACPI_HIDWORD(ACPI_GET64 (Target)) & 0x00FFFFFF, ACPI_LODWORD (ACPI_GET64 (Target)));
             break;
 
         case ACPI_DMT_UINT64:
@@ -550,7 +552,7 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf ("%2.2X", *Target);
             Temp8 = AcpiTbGenerateChecksum (Table);
-            if (Temp8 != ((ACPI_TABLE_HEADER *) Table)->Checksum)
+            if (Temp8 != ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Checksum)
             {
                 AcpiOsPrintf (
                     "     /* Incorrect checksum, should be %2.2X */", Temp8);
@@ -570,7 +572,7 @@ AcpiDmDumpTable (
             /* Generic Address Structure */
 
             AcpiOsPrintf ("<Generic Address Structure>\n");
-            AcpiDmDumpTable (((ACPI_TABLE_HEADER *) Table)->Length,
+            AcpiDmDumpTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
                 CurrentOffset, Target, 0, AcpiDmTableInfoGas);
             break;
 

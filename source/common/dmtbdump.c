@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -149,9 +149,9 @@ AcpiDmDumpRsdp (
 
     /* ACPI 2.0+ contains more data and has a Length field */
 
-    if (((RSDP_DESCRIPTOR *) Table)->Revision > 0)
+    if (ACPI_CAST_PTR (RSDP_DESCRIPTOR, Table)->Revision > 0)
     {
-        Length = ((RSDP_DESCRIPTOR *) Table)->Length;
+        Length = ACPI_CAST_PTR (RSDP_DESCRIPTOR, Table)->Length;
         AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoRsdp2);
     }
 
@@ -183,7 +183,7 @@ AcpiDmDumpRsdt (
 
     /* Point to start of table pointer array */
 
-    Array = ((RSDT_DESCRIPTOR *) Table)->TableOffsetEntry;
+    Array = ACPI_CAST_PTR (RSDT_DESCRIPTOR, Table)->TableOffsetEntry;
     Offset = sizeof (ACPI_TABLE_HEADER);
 
     /* RSDT uses 32-bit pointers */
@@ -223,7 +223,7 @@ AcpiDmDumpXsdt (
 
     /* Point to start of table pointer array */
 
-    Array = ((XSDT_DESCRIPTOR *) Table)->TableOffsetEntry;
+    Array = ACPI_CAST_PTR (XSDT_DESCRIPTOR, Table)->TableOffsetEntry;
     Offset = sizeof (ACPI_TABLE_HEADER);
 
     /* XSDT uses 64-bit pointers */
@@ -532,15 +532,15 @@ AcpiDmDumpSlit (
 
     /* Display the Locality NxN Matrix */
 
-    Localities = (UINT32) ((SYSTEM_LOCALITY_INFO *) Table)->LocalityCount;
+    Localities = (UINT32) ACPI_CAST_PTR (SYSTEM_LOCALITY_INFO, Table)->LocalityCount;
     Offset = ACPI_OFFSET (SYSTEM_LOCALITY_INFO, Entry);
-    Row = (UINT8 *) ((SYSTEM_LOCALITY_INFO *) Table)->Entry;
+    Row = (UINT8 *) ACPI_CAST_PTR (SYSTEM_LOCALITY_INFO, Table)->Entry;
 
     for (i = 0; i < Localities; i++)
     {
         /* Display one row of the matrix */
 
-        AcpiDmLineHeader2 (Offset, (UINT32) Localities, "Locality", i);
+        AcpiDmLineHeader2 (Offset, Localities, "Locality", i);
         for  (j = 0; j < Localities; j++)
         {
             /* Check for beyond EOT */
