@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - Additional ACPI table definitions
- *       $Revision: 1.39 $
+ *       $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -793,7 +793,6 @@ typedef struct acpi_table_wdrt
     UINT8                                   :6; /* 01-06: Reserved */
     UINT8                   SleepStop       :1; /* 07:    Timer stopped in sleep state */
 #endif
-
 
 
 /* Macros used to generate offsets to specific table fields */

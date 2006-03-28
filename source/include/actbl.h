@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Basic ACPI Table Definitions
- *       $Revision: 1.78 $
+ *       $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -151,8 +151,8 @@
  */
 
 /*******************************************************************************
- * 
- * ACPI Table Header. This common header is used by all tables except the 
+ *
+ * ACPI Table Header. This common header is used by all tables except the
  * RSDP and FACS. The define is used for direct inclusion of header into
  * other ACPI tables
  *
@@ -191,7 +191,7 @@ typedef struct acpi_generic_address
 
 
 /*******************************************************************************
- * 
+ *
  * RSDP - Root System Description Pointer (Signature is "RSD PTR ")
  *
  ******************************************************************************/
@@ -214,7 +214,7 @@ typedef struct rsdp_descriptor
 
 
 /*******************************************************************************
- * 
+ *
  * RSDT/XSDT - Root System Description Tables
  *
  ******************************************************************************/
