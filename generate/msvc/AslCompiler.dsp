@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /nologo /Gz /W3 /GX /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FR /FD /c
+# ADD CPP /nologo /Gz /Za /W4 /GX /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FR /FD /c
 # SUBTRACT CPP /X /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -75,7 +75,7 @@ PostBuild_Cmds=copy Release\iasl.exe ..\..\Libraries
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /Gz /W4 /Gm /Gi /GX /ZI /Od /I "$(OutDir)..\\" /I "..\..\source\Include" /I "$(OutDir)\..\\" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FR /FD /GZ /c
+# ADD CPP /nologo /Gz /Za /W4 /Gm /Gi /GX /ZI /Od /I "$(OutDir)..\\" /I "..\..\source\Include" /I "$(OutDir)\..\\" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FR /FD /GZ /c
 # SUBTRACT CPP /X /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -393,6 +393,7 @@ SOURCE=..\..\source\common\getopt.c
 # Begin Source File
 
 SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
+# ADD CPP /Ze
 # End Source File
 # End Group
 # Begin Group "Intermediate"
@@ -401,32 +402,12 @@ SOURCE=..\..\source\os_specific\service_layers\oswinxf.c
 # Begin Source File
 
 SOURCE=.\AslCompiler\AslCompiler.l.c
-
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
-
-# ADD CPP /I "..\..\source\compiler"
-
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
-
 # ADD CPP /W3 /I "..\..\source\compiler"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\AslCompiler\AslCompiler.y.c
-
-!IF  "$(CFG)" == "AslCompiler - Win32 Release"
-
-# ADD CPP /I "..\..\source\compiler"
-
-!ELSEIF  "$(CFG)" == "AslCompiler - Win32 Debug"
-
 # ADD CPP /W3 /I "..\..\source\compiler"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
