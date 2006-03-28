@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmrestag - Add tags to resource descriptors (Application-level)
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -958,7 +958,6 @@ AcpiDmAddResourceToNamespace (
     UINT8                   ResourceIndex,
     void                    *Context)
 {
-    ACPI_NAMESPACE_NODE     *BufferNode = Context;
     ACPI_STATUS             Status;
     ACPI_GENERIC_STATE      ScopeInfo;
     ACPI_NAMESPACE_NODE     *Node;
@@ -968,7 +967,7 @@ AcpiDmAddResourceToNamespace (
 
     /* Add the resource to the namespace, as child of the buffer */
 
-    ScopeInfo.Scope.Node = BufferNode;
+    ScopeInfo.Scope.Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Context);
     Status = AcpiNsLookup (&ScopeInfo, "_TMP", ACPI_TYPE_LOCAL_RESOURCE,
                 ACPI_IMODE_LOAD_PASS2,
                 ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE | ACPI_NS_PREFIX_IS_SCOPE,
