@@ -126,6 +126,7 @@ SRCS=	aeexec.c aemain.c \
 	../../utilities/utobject.c \
 	../../utilities/utresrc.c \
 	../../utilities/utstate.c \
+	../../utilities/uttrack.c \
 	../../utilities/utxface.c \
 	../../osunixxf.c
 
