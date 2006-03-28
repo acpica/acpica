@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.125 $
+ *       $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -216,7 +216,7 @@
 #elif defined(MSDOS)        /* Must appear after WIN32 and WIN64 check */
 #include "acdos16.h"
 
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 #include "acfreebsd.h"
 
 #elif defined(__NetBSD__)
