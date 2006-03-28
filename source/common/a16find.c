@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -862,27 +862,27 @@ AfFindTable (
     }
 
 
-    if (!ACPI_STRNCMP (TableName, ACPI_SIG_DSDT, ACPI_NAME_SIZE))
+    if (!ACPI_STRNCMP (TableName, DSDT_SIG, ACPI_NAME_SIZE))
     {
         *TablePtr = (UINT8 *) AcpiGbl_DSDT;
         *TableLength = AcpiGbl_DSDT->Length;
     }
-    else if (!ACPI_STRNCMP (TableName, ACPI_SIG_FADT, ACPI_NAME_SIZE))
+    else if (!ACPI_STRNCMP (TableName, FADT_SIG, ACPI_NAME_SIZE))
     {
         *TablePtr = (UINT8 *) AcpiGbl_FADT;
         *TableLength = AcpiGbl_FADT->Length;
     }
-    else if (!ACPI_STRNCMP (TableName, ACPI_SIG_FACS, ACPI_NAME_SIZE))
+    else if (!ACPI_STRNCMP (TableName, FACS_SIG, ACPI_NAME_SIZE))
     {
         *TablePtr = (UINT8 *) AcpiGbl_FACS;
         *TableLength = AcpiGbl_FACS->Length;
     }
-    else if (!ACPI_STRNCMP (TableName, ACPI_SIG_RSDT, ACPI_NAME_SIZE))
+    else if (!ACPI_STRNCMP (TableName, RSDT_SIG, ACPI_NAME_SIZE))
     {
         *TablePtr = (UINT8 *) AcpiGbl_XSDT;
         *TableLength = AcpiGbl_XSDT->Length;
     }
-    else if (!ACPI_STRNCMP (TableName, ACPI_SIG_SSDT, ACPI_NAME_SIZE))
+    else if (!ACPI_STRNCMP (TableName, SSDT_SIG, ACPI_NAME_SIZE))
     {
         AcpiOsPrintf ("Unsupported table signature: [%4.4s]\n", TableName);
         *TablePtr = NULL;
