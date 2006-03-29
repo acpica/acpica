@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -617,7 +617,7 @@ AcpiDsTerminateControlMethod (
      * Delete any namespace entries created immediately underneath
      * the method
      */
-    if (MethodNode->Child)
+    if (MethodNode && MethodNode->Child)
     {
         AcpiNsDeleteNamespaceSubtree (MethodNode);
     }
