@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,6 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acdebug.h"
-#include "acdisasm.h"
 
 
 #define _COMPONENT          ACPI_DISPATCHER
@@ -133,19 +132,21 @@
 /*
  * Dispatch table for opcode classes
  */
-static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] = {
-                                AcpiExOpcode_0A_0T_1R,
-                                AcpiExOpcode_1A_0T_0R,
-                                AcpiExOpcode_1A_0T_1R,
-                                AcpiExOpcode_1A_1T_0R,
-                                AcpiExOpcode_1A_1T_1R,
-                                AcpiExOpcode_2A_0T_0R,
-                                AcpiExOpcode_2A_0T_1R,
-                                AcpiExOpcode_2A_1T_1R,
-                                AcpiExOpcode_2A_2T_1R,
-                                AcpiExOpcode_3A_0T_0R,
-                                AcpiExOpcode_3A_1T_1R,
-                                AcpiExOpcode_6A_0T_1R};
+static ACPI_EXECUTE_OP      AcpiGbl_OpTypeDispatch [] =
+{
+    AcpiExOpcode_0A_0T_1R,
+    AcpiExOpcode_1A_0T_0R,
+    AcpiExOpcode_1A_0T_1R,
+    AcpiExOpcode_1A_1T_0R,
+    AcpiExOpcode_1A_1T_1R,
+    AcpiExOpcode_2A_0T_0R,
+    AcpiExOpcode_2A_0T_1R,
+    AcpiExOpcode_2A_1T_1R,
+    AcpiExOpcode_2A_2T_1R,
+    AcpiExOpcode_3A_0T_0R,
+    AcpiExOpcode_3A_1T_1R,
+    AcpiExOpcode_6A_0T_1R
+};
 
 
 /*****************************************************************************

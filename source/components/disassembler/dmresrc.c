@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -174,7 +174,23 @@ static ACPI_RESOURCE_HANDLER    AcpiGbl_DumpResourceDispatch [] =
 /* Only used for single-threaded applications */
 /* TBD: remove when name is passed as parameter to the dump functions */
 
-UINT32                      ResourceName;
+static UINT32               ResourceName;
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDescriptorName
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Emit a name for the descriptor if one is present (indicated
+ *              by the name being changed from the default name.) A name is only
+ *              emitted if a reference to the descriptor has been made somewhere
+ *              in the original ASL code.
+ *
+ ******************************************************************************/
 
 void
 AcpiDmDescriptorName (

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -116,7 +116,6 @@
 
 #include "acpi.h"
 #include "acdisasm.h"
-#include "actables.h"
 
 /* This module used for application-level code only */
 
@@ -533,7 +532,7 @@ AcpiDmDumpSlit (
     /* Display the Locality NxN Matrix */
 
     Localities = (UINT32) ACPI_CAST_PTR (SYSTEM_LOCALITY_INFO, Table)->LocalityCount;
-    Offset = ACPI_OFFSET (SYSTEM_LOCALITY_INFO, Entry);
+    Offset = ACPI_OFFSET (SYSTEM_LOCALITY_INFO, Entry[0][0]);
     Row = (UINT8 *) ACPI_CAST_PTR (SYSTEM_LOCALITY_INFO, Table)->Entry;
 
     for (i = 0; i < Localities; i++)

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -282,19 +282,19 @@ AdWriteBuffer (
     UINT32              Length)
 {
     FILE                *fp;
-    ACPI_NATIVE_INT     Actual;
+    ACPI_SIZE           Actual;
 
 
     fp = fopen (Filename, "wb");
     if (!fp)
     {
         printf ("Couldn't open %s\n", Filename);
-        return -1;
+        return (-1);
     }
 
     Actual = fwrite (Buffer, (size_t) Length, 1, fp);
     fclose (fp);
-    return Actual;
+    return ((ACPI_NATIVE_INT) Actual);
 }
 
 

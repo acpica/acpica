@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbinfo - Table info for non-AML tables
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -137,14 +137,14 @@
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoHeader[] =
 {
-    {ACPI_DMT_NAME4,    ACPI_HDR_OFFSET (Signature),                "Signature"},
+    {ACPI_DMT_NAME4,    ACPI_HDR_OFFSET (Signature[0]),             "Signature"},
     {ACPI_DMT_UINT32,   ACPI_HDR_OFFSET (Length),                   "Table Length"},
     {ACPI_DMT_UINT8,    ACPI_HDR_OFFSET (Revision),                 "Revision"},
     {ACPI_DMT_CHKSUM,   ACPI_HDR_OFFSET (Checksum),                 "Checksum"},
-    {ACPI_DMT_NAME6,    ACPI_HDR_OFFSET (OemId),                    "Oem ID"},
-    {ACPI_DMT_NAME8,    ACPI_HDR_OFFSET (OemTableId),               "Oem Table ID"},
+    {ACPI_DMT_NAME6,    ACPI_HDR_OFFSET (OemId[0]),                 "Oem ID"},
+    {ACPI_DMT_NAME8,    ACPI_HDR_OFFSET (OemTableId[0]),            "Oem Table ID"},
     {ACPI_DMT_UINT32,   ACPI_HDR_OFFSET (OemRevision),              "Oem Revision"},
-    {ACPI_DMT_NAME4,    ACPI_HDR_OFFSET (AslCompilerId),            "Asl Compiler ID"},
+    {ACPI_DMT_NAME4,    ACPI_HDR_OFFSET (AslCompilerId[0]),         "Asl Compiler ID"},
     {ACPI_DMT_UINT32,   ACPI_HDR_OFFSET (AslCompilerRevision),      "Asl Compiler Revision"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
@@ -175,9 +175,9 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoGas[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoRsdp1[] =
 {
-    {ACPI_DMT_NAME8,    ACPI_RSDP_OFFSET (Signature),               "Signature"},
+    {ACPI_DMT_NAME8,    ACPI_RSDP_OFFSET (Signature[0]),            "Signature"},
     {ACPI_DMT_UINT8,    ACPI_RSDP_OFFSET (Checksum),                "Checksum"},
-    {ACPI_DMT_NAME6,    ACPI_RSDP_OFFSET (OemId),                   "Oem ID"},
+    {ACPI_DMT_NAME6,    ACPI_RSDP_OFFSET (OemId[0]),                "Oem ID"},
     {ACPI_DMT_UINT8,    ACPI_RSDP_OFFSET (Revision),                "Revision"},
     {ACPI_DMT_UINT32,   ACPI_RSDP_OFFSET (RsdtPhysicalAddress),     "RSDT Address"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
@@ -190,7 +190,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoRsdp2[] =
     {ACPI_DMT_UINT32,   ACPI_RSDP_OFFSET (Length),                  "Length"},
     {ACPI_DMT_UINT64,   ACPI_RSDP_OFFSET (XsdtPhysicalAddress),     "XSDT Address"},
     {ACPI_DMT_UINT8,    ACPI_RSDP_OFFSET (ExtendedChecksum),        "Extended Checksum"},
-    {ACPI_DMT_UINT24,   ACPI_RSDP_OFFSET (Reserved),                "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_RSDP_OFFSET (Reserved[0]),             "Reserved"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -203,7 +203,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoRsdp2[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoFacs[] =
 {
-    {ACPI_DMT_NAME4,    ACPI_FACS_OFFSET (Signature),               "Signature"},
+    {ACPI_DMT_NAME4,    ACPI_FACS_OFFSET (Signature[0]),            "Signature"},
     {ACPI_DMT_UINT32,   ACPI_FACS_OFFSET (Length),                  "Length"},
     {ACPI_DMT_UINT32,   ACPI_FACS_OFFSET (HardwareSignature),       "Hardware Signature"},
     {ACPI_DMT_UINT32,   ACPI_FACS_OFFSET (FirmwareWakingVector),    "Firmware Waking Vector(32)"},
@@ -302,7 +302,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt2[] =
 
     {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (ResetRegister),           "Reset Register"},
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (ResetValue),              "Value to cause reset"},
-    {ACPI_DMT_UINT24,   ACPI_FADT_OFFSET (Reserved4),               "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_FADT_OFFSET (Reserved4[0]),            "Reserved"},
     {ACPI_DMT_UINT64,   ACPI_FADT_OFFSET (XFirmwareCtrl),           "FACS Address"},
 
     {ACPI_DMT_UINT64,   ACPI_FADT_OFFSET (XDsdt),                   "DSDT Address"},
@@ -346,7 +346,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf0[] =
     {ACPI_DMT_UINT16,   ACPI_ASF0_OFFSET (SystemId),                "System ID"},
     {ACPI_DMT_UINT32,   ACPI_ASF0_OFFSET (SystemId),                "Manufacturer ID"},
     {ACPI_DMT_UINT8,    ACPI_ASF0_OFFSET (Flags),                   "Flags"},
-    {ACPI_DMT_UINT24,   ACPI_ASF0_OFFSET (Reserved2),               "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_ASF0_OFFSET (Reserved2[0]),            "Reserved"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -377,7 +377,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf2[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf3[] =
 {
-    {ACPI_DMT_UINT56,   ACPI_ASF3_OFFSET (Capabilities),            "Capabilites"},
+    {ACPI_DMT_UINT56,   ACPI_ASF3_OFFSET (Capabilities[0]),         "Capabilites"},
     {ACPI_DMT_UINT8,    ACPI_ASF3_OFFSET (CompletionCode),          "Completion Code"},
     {ACPI_DMT_UINT32,   ACPI_ASF3_OFFSET (EnterpriseId),            "Enterprise ID"},
     {ACPI_DMT_UINT8,    ACPI_ASF3_OFFSET (Command),                 "Command"},
@@ -407,7 +407,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf4[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoBoot[] =
 {
     {ACPI_DMT_UINT8,    ACPI_BOOT_OFFSET (CmosIndex),               "Boot Register Index"},
-    {ACPI_DMT_UINT24,   ACPI_BOOT_OFFSET (Reserved),                "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_BOOT_OFFSET (Reserved[0]),             "Reserved"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -444,7 +444,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoCpep0[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoDbgp[] =
 {
     {ACPI_DMT_UINT8,    ACPI_DBGP_OFFSET (InterfaceType),           "Interface Type"},
-    {ACPI_DMT_UINT24,   ACPI_DBGP_OFFSET (Reserved),                "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_DBGP_OFFSET (Reserved[0]),             "Reserved"},
     {ACPI_DMT_GAS,      ACPI_DBGP_OFFSET (DebugPort),               "Debug Port Register"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
@@ -462,7 +462,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoEcdt[] =
     {ACPI_DMT_GAS,      ACPI_ECDT_OFFSET (EcData),                  "Data Register"},
     {ACPI_DMT_UINT32,   ACPI_ECDT_OFFSET (Uid),                     "UID"},
     {ACPI_DMT_UINT8,    ACPI_ECDT_OFFSET (GpeBit),                  "GPE Number"},
-    {ACPI_DMT_STRING,   ACPI_ECDT_OFFSET (EcId),                    "Namepath"},
+    {ACPI_DMT_STRING,   ACPI_ECDT_OFFSET (EcId[0]),                 "Namepath"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -597,11 +597,11 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt7[] =
     {ACPI_DMT_UINT8,    ACPI_MADT7_OFFSET (ProcessorId),            "Processor ID"},
     {ACPI_DMT_UINT8,    ACPI_MADT7_OFFSET (LocalSapicId),           "Local Sapic ID"},
     {ACPI_DMT_UINT8,    ACPI_MADT7_OFFSET (LocalSapicEid),          "Local Sapic EID"},
-    {ACPI_DMT_UINT24,   ACPI_MADT7_OFFSET (Reserved),               "Reserved"},
-    {ACPI_DMT_UINT32,   ACPI_MADT7_FLAG_OFFSET (Reserved,0),        "Flags (decoded below)"},
-    {ACPI_DMT_FLAG0,    ACPI_MADT7_FLAG_OFFSET (Reserved,0),        "Processor Enabled"},
+    {ACPI_DMT_UINT24,   ACPI_MADT7_OFFSET (Reserved[0]),            "Reserved"},
+    {ACPI_DMT_UINT32,   ACPI_MADT7_FLAG_OFFSET (Reserved[0],0),     "Flags (decoded below)"},
+    {ACPI_DMT_FLAG0,    ACPI_MADT7_FLAG_OFFSET (Reserved[0],0),     "Processor Enabled"},
     {ACPI_DMT_UINT32,   ACPI_MADT7_OFFSET (ProcessorUID),           "Processor UID"},
-    {ACPI_DMT_STRING,   ACPI_MADT7_OFFSET (ProcessorUIDString),     "Processor UID String"},
+    {ACPI_DMT_STRING,   ACPI_MADT7_OFFSET (ProcessorUIDString[0]),  "Processor UID String"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -631,7 +631,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt8[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMcfg[] =
 {
-    {ACPI_DMT_UINT64,   ACPI_MCFG_OFFSET (Reserved),                "Reserved"},
+    {ACPI_DMT_UINT64,   ACPI_MCFG_OFFSET (Reserved[0]),             "Reserved"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -683,7 +683,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSlit[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoSpcr[] =
 {
     {ACPI_DMT_UINT8,    ACPI_SPCR_OFFSET (InterfaceType),           "Interface Type"},
-    {ACPI_DMT_UINT24,   ACPI_SPCR_OFFSET (Reserved),                "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_SPCR_OFFSET (Reserved[0]),             "Reserved"},
     {ACPI_DMT_GAS,      ACPI_SPCR_OFFSET (SerialPort),              "Serial Port Register"},
     {ACPI_DMT_UINT8,    ACPI_SPCR_OFFSET (InterruptType),           "Interrupt Type"},
     {ACPI_DMT_UINT8,    ACPI_SPCR_OFFSET (PcInterrupt),             "PCAT-compatible IRQ"},
@@ -753,7 +753,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSrat0[] =
     {ACPI_DMT_UINT32,   ACPI_SRAT0_FLAG_OFFSET (ApicId,0),          "Flags (decoded below)"},
     {ACPI_DMT_FLAG0,    ACPI_SRAT0_FLAG_OFFSET (ApicId,0),          "Enabled"},
     {ACPI_DMT_UINT8,    ACPI_SRAT0_OFFSET (LocalSapicEid),          "Local Sapic EID"},
-    {ACPI_DMT_UINT24,   ACPI_SRAT0_OFFSET (ProximityDomainHi),      "Proximity Domain High(24)"},
+    {ACPI_DMT_UINT24,   ACPI_SRAT0_OFFSET (ProximityDomainHi[0]),   "Proximity Domain High(24)"},
     {ACPI_DMT_UINT32,   ACPI_SRAT0_OFFSET (Reserved4),              "Reserved"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
@@ -810,7 +810,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoWdrt[] =
     {ACPI_DMT_UINT8,    ACPI_WDRT_OFFSET (Flags),                   "Flags (decoded below)"},
     {ACPI_DMT_FLAG0,    ACPI_WDRT_OFFSET (Flags),                   "Enabled"},
     {ACPI_DMT_FLAG7,    ACPI_WDRT_OFFSET (Flags),                   "Stopped When Asleep"},
-    {ACPI_DMT_UINT24,   ACPI_WDRT_OFFSET (Reserved),                "Reserved"},
+    {ACPI_DMT_UINT24,   ACPI_WDRT_OFFSET (Reserved[0]),             "Reserved"},
     {ACPI_DMT_UINT32,   ACPI_WDRT_OFFSET (Entries),                 "Watchdog Entries"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };

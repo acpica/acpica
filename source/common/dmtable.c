@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -164,14 +164,14 @@ static const char           *AcpiDmSratSubnames[] =
  * ACPI Table Data, indexed by signature.
  *
  * Simple tables have only a TableInfo structure, complex tables have a handler.
- * This table must be NULL terminated.
+ * This table must be NULL terminated. RSDP and FACS are special-cased
+ * elsewhere.
  *
  ******************************************************************************/
 
 static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
 {
     {FADT_SIG,          NULL,                       AcpiDmDumpFadt},
-    {RSDP_SIG,          NULL,                       AcpiDmDumpRsdp},
     {RSDT_SIG,          NULL,                       AcpiDmDumpRsdt},
     {XSDT_SIG,          NULL,                       AcpiDmDumpXsdt},
     {ACPI_SIG_ASF,      NULL,                       AcpiDmDumpAsf},
