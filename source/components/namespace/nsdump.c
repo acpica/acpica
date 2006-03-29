@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.176 $
+ *              $Revision: 1.177 $
  *
  *****************************************************************************/
 
@@ -313,6 +313,8 @@ AcpiNsDumpOneObject (
 
         if (!AcpiUtValidAcpiName (ThisNode->Name.Integer))
         {
+            ThisNode->Name.Integer = AcpiUtRepairName (ThisNode->Name.Integer);
+
             ACPI_WARNING ((AE_INFO, "Invalid ACPI Name %08X",
                 ThisNode->Name.Integer));
         }

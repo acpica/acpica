@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.141 $
+ *              $Revision: 1.142 $
  *
  ******************************************************************************/
 
@@ -637,6 +637,47 @@ AcpiUtDisplayInitPathname (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiUtValidAcpiChar
+ *
+ * PARAMETERS:  Char            - The character to be examined
+ *
+ * RETURN:      TRUE if the character is valid, FALSE otherwise
+ *
+ * DESCRIPTION: Check for a valid ACPI character. Must be one of:
+ *              1) Upper case alpha
+ *              2) numeric
+ *              3) underscore
+ *
+ *              We allow a '!' as the last character because of the ASF! table
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiUtValidAcpiChar (
+    char                    Character,
+    ACPI_NATIVE_UINT        Position)
+{
+
+    if (!((Character >= 'A' && Character <= 'Z') ||
+          (Character >= '0' && Character <= '9') ||
+          (Character == '_')))
+    {
+        /* Allow a '!' in the last position */
+
+        if (Character == '!' && Position == 3)
+        {
+            return (TRUE);
+        }
+
+        return (FALSE);
+    }
+
+    return (TRUE);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiUtValidAcpiName
  *
  * PARAMETERS:  Name            - The name to be examined
@@ -654,8 +695,6 @@ BOOLEAN
 AcpiUtValidAcpiName (
     UINT32                  Name)
 {
-    char                    *NamePtr = (char *) &Name;
-    char                    Character;
     ACPI_NATIVE_UINT        i;
 
 
@@ -664,17 +703,8 @@ AcpiUtValidAcpiName (
 
     for (i = 0; i < ACPI_NAME_SIZE; i++)
     {
-        Character = *NamePtr;
-        NamePtr++;
-
-        if (!((Character == '_') ||
-              (Character >= 'A' && Character <= 'Z') ||
-              (Character >= '0' && Character <= '9')))
+        if (!AcpiUtValidAcpiChar ((ACPI_CAST_PTR (char, &Name))[i], i))
         {
-            if (Character == '!' && i == 3)
-            {
-                continue;
-            }
             return (FALSE);
         }
     }
@@ -685,26 +715,42 @@ AcpiUtValidAcpiName (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiUtValidAcpiCharacter
+ * FUNCTION:    AcpiUtRepairName
  *
- * PARAMETERS:  Character           - The character to be examined
+ * PARAMETERS:  Name            - The ACPI name to be repaired
  *
- * RETURN:      1 if Character may appear in a name, else 0
+ * RETURN:      Repaired version of the name
  *
- * DESCRIPTION: Check for a printable character
+ * DESCRIPTION: Repair an ACPI name: Change invalid characters to '*' and
+ *              return the new name.
  *
  ******************************************************************************/
 
-BOOLEAN
-AcpiUtValidAcpiCharacter (
-    char                    Character)
+ACPI_NAME
+AcpiUtRepairName (
+    ACPI_NAME               Name)
 {
+    char                    *NamePtr = ACPI_CAST_PTR (char, &Name);
+    char                    NewName[ACPI_NAME_SIZE];
+    ACPI_NATIVE_UINT        i;
 
-    ACPI_FUNCTION_ENTRY ();
 
-    return ((BOOLEAN)   ((Character == '_') ||
-                        (Character >= 'A' && Character <= 'Z') ||
-                        (Character >= '0' && Character <= '9')));
+    for (i = 0; i < ACPI_NAME_SIZE; i++)
+    {
+        NewName[i] = NamePtr[i];
+
+        /*
+         * Replace a bad character with something printable, yet technically
+         * still invalid. This prevents any collisions with existing "good"
+         * names in the namespace.
+         */
+        if (!AcpiUtValidAcpiChar (NamePtr[i], i))
+        {
+            NewName[i] = '*';
+        }
+    }
+
+    return (*ACPI_CAST_PTR (UINT32, NewName));
 }
 
 

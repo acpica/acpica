@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmnames - AML disassembler, names, namestrings, pathnames
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  ******************************************************************************/
 
@@ -154,21 +154,25 @@ AcpiDmDumpName (
 {
     UINT32                  i;
     UINT32                  Length;
-    char                    *End = Name + ACPI_NAME_SIZE;
+    char                    NewName[4];
 
 
-    for (i = 0; i < ACPI_NAME_SIZE; i++)
+    /* Ensure that the name is printable, even if we have to fix it */
+
+    *(UINT32 *) NewName = AcpiUtRepairName (*(UINT32 *) Name);
+
+    Length = ACPI_NAME_SIZE;
+    for (i = (ACPI_NAME_SIZE - 1); i != 0; i--)
     {
-        if (Name[i] != '_')
+        if (NewName[i] == '_')
         {
-            End = &Name[i];
+            Length--;
         }
     }
 
-    Length = (UINT32)(End - Name) + 1;
     for (i = 0; i < Length; i++)
     {
-        AcpiOsPrintf ("%c", Name[i]);
+        AcpiOsPrintf ("%c", NewName[i]);
     }
 
     return (Length);
