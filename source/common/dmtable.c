@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -256,12 +256,12 @@ AcpiDmDumpDataTable (
      * Handle tables that don't use the common ACPI table header structure.
      * Currently, these are the FACS and RSDP.
      */
-    if (ACPI_COMPARE_NAME (Table->Signature, "FACS"))
+    if (ACPI_COMPARE_NAME (Table->Signature, FACS_SIG))
     {
         Length = Table->Length;
         AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoFacs);
     }
-    else if (ACPI_COMPARE_NAME (Table->Signature, "RSD "))
+    else if (ACPI_COMPARE_NAME (Table->Signature, RSDP_SIG))
     {
         Length = AcpiDmDumpRsdp (Table);
     }
@@ -279,7 +279,16 @@ AcpiDmDumpDataTable (
         TableData = AcpiDmMatchSignature (Table->Signature);
         if (!TableData)
         {
-            AcpiOsPrintf ("\n**** Unsupported ACPI table type [%4.4s]\n\n", Table->Signature);
+            if (!ACPI_STRNCMP (Table->Signature, "OEM", 3))
+            {
+                AcpiOsPrintf ("\n**** OEM-defined ACPI table [%4.4s], unknown contents\n\n",
+                    Table->Signature);
+            }
+            else
+            {
+                AcpiOsPrintf ("\n**** Unknown ACPI table type [%4.4s]\n\n",
+                    Table->Signature);
+            }
         }
         else if (TableData->TableHandler)
         {
@@ -298,7 +307,7 @@ AcpiDmDumpDataTable (
     /* Always dump the raw table data */
 
     AcpiOsPrintf ("\nRaw Table Data\n\n");
-    AcpiUtDumpBuffer2 ((UINT8 *) Table, Length, DB_BYTE_DISPLAY);
+    AcpiUtDumpBuffer2 (ACPI_CAST_PTR (UINT8, Table), Length, DB_BYTE_DISPLAY);
 }
 
 
@@ -309,6 +318,7 @@ AcpiDmDumpDataTable (
  * PARAMETERS:  Offset              - Current byte offset, from table start
  *              ByteLength          - Length of the field in bytes, 0 for flags
  *              Name                - Name of this field
+ *              Value               - Optional value, displayed on left of ':'
  *
  * RETURN:      None
  *
@@ -510,7 +520,8 @@ AcpiDmDumpTable (
         case ACPI_DMT_UINT56:
 
             AcpiOsPrintf ("%6.6X%8.8X\n",
-                ACPI_HIDWORD(ACPI_GET64 (Target)) & 0x00FFFFFF, ACPI_LODWORD (ACPI_GET64 (Target)));
+                ACPI_HIDWORD (ACPI_GET64 (Target)) & 0x00FFFFFF,
+                ACPI_LODWORD (ACPI_GET64 (Target)));
             break;
 
         case ACPI_DMT_UINT64:
@@ -606,7 +617,8 @@ AcpiDmDumpTable (
             return;
 
         default:
-            AcpiOsPrintf ("**** Invalid table opcode [%X] ****\n", Info->Opcode);
+            ACPI_ERROR ((AE_INFO,
+                "**** Invalid table opcode [%X] ****\n", Info->Opcode));
             return;
         }
     }
