@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  ******************************************************************************/
 
@@ -209,9 +209,8 @@ AcpiNsSearchNode (
                 NextNode = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, NextNode->Object);
             }
 
-            /*
-             * Found matching entry.
-             */
+            /* Found matching entry */
+
             ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
                 "Name [%4.4s] (%s) %p found in scope [%4.4s] %p\n",
                 ACPI_CAST_PTR (char, &TargetName),
@@ -332,10 +331,8 @@ AcpiNsSearchParentTree (
             return_ACPI_STATUS (Status);
         }
 
-        /*
-         * Not found here, go up another level
-         * (until we reach the root)
-         */
+        /* Not found here, go up another level (until we reach the root) */
+
         ParentNode = AcpiNsGetParentNode (ParentNode);
     }
 
@@ -408,7 +405,7 @@ AcpiNsSearchAndEnter (
 
         ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
             "Found bad character(s) in name, repaired: [%4.4s]\n",
-            (char *) &TargetName));
+            ACPI_CAST_PTR (char, &TargetName)));
     }
 
     /* Try to find the name in the namespace level specified by the caller */
@@ -427,10 +424,8 @@ AcpiNsSearchAndEnter (
             Status = AE_ALREADY_EXISTS;
         }
 
-        /*
-         * Either found it or there was an error
-         * -- finished either way
-         */
+        /* Either found it or there was an error: finished either way */
+
         return_ACPI_STATUS (Status);
     }
 
@@ -456,9 +451,8 @@ AcpiNsSearchAndEnter (
         }
     }
 
-    /*
-     * In execute mode, just search, never add names.  Exit now.
-     */
+    /* In execute mode, just search, never add names. Exit now */
+
     if (InterpreterMode == ACPI_IMODE_EXECUTE)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
@@ -480,7 +474,6 @@ AcpiNsSearchAndEnter (
 
     AcpiNsInstallNode (WalkState, Node, NewNode, Type);
     *ReturnNode = NewNode;
-
     return_ACPI_STATUS (AE_OK);
 }
 
