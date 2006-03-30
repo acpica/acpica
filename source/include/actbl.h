@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Basic ACPI Table Definitions
- *       $Revision: 1.79 $
+ *       $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -121,15 +121,15 @@
  * Values for description table header signatures. Useful because they make
  * it more difficult to inadvertently type in the wrong signature.
  */
-#define RSDP_NAME               "RSDP"
-#define RSDP_SIG                "RSD PTR "  /* RSDT Pointer signature */
 #define DSDT_SIG                "DSDT"      /* Differentiated System Description Table */
 #define FADT_SIG                "FACP"      /* Fixed ACPI Description Table */
 #define FACS_SIG                "FACS"      /* Firmware ACPI Control Structure */
 #define PSDT_SIG                "PSDT"      /* Persistent System Description Table */
+#define RSDP_SIG                "RSD PTR "  /* Root System Description Pointer */
 #define RSDT_SIG                "RSDT"      /* Root System Description Table */
 #define XSDT_SIG                "XSDT"      /* Extended  System Description Table */
 #define SSDT_SIG                "SSDT"      /* Secondary System Description Table */
+#define RSDP_NAME               "RSDP"
 
 
 /*

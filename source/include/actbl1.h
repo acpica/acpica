@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - Additional ACPI table definitions
- *       $Revision: 1.40 $
+ *       $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -132,26 +132,26 @@
  * Values for description table header signatures. Useful because they make
  * it more difficult to inadvertently type in the wrong signature.
  */
-#define ACPI_SIG_ASF            "ASF!"
-#define ACPI_SIG_BOOT           "BOOT"      /* Boot table */
-#define ACPI_SIG_CPEP           "CPEP"
-#define ACPI_SIG_DBGP           "DBGP"
-#define ACPI_SIG_ECDT           "ECDT"
-#define ACPI_SIG_HPET           "HPET"
+#define ACPI_SIG_ASF            "ASF!"      /* Alert Standard Format table */
+#define ACPI_SIG_BOOT           "BOOT"      /* Simple Boot Flag Table */
+#define ACPI_SIG_CPEP           "CPEP"      /* Corrected Platform Error Polling table */
+#define ACPI_SIG_DBGP           "DBGP"      /* Debug Port table */
+#define ACPI_SIG_ECDT           "ECDT"      /* Embedded Controller Boot Resources Table */
+#define ACPI_SIG_HPET           "HPET"      /* High Precision Event Timer table */
 #define ACPI_SIG_MADT           "APIC"      /* Multiple APIC Description Table */
-#define ACPI_SIG_MCFG           "MCFG"
+#define ACPI_SIG_MCFG           "MCFG"      /* PCI Memory Mapped Configuration table */
 #define ACPI_SIG_SBST           "SBST"      /* Smart Battery Specification Table */
-#define ACPI_SIG_SLIT           "SLIT"
-#define ACPI_SIG_SPCR           "SPCR"
-#define ACPI_SIG_SPMI           "SPMI"
-#define ACPI_SIG_SRAT           "SRAT"
-#define ACPI_SIG_TCPA           "TCPA"
-#define ACPI_SIG_WDRT           "WDRT"
+#define ACPI_SIG_SLIT           "SLIT"      /* System Locality Distance Information Table */
+#define ACPI_SIG_SPCR           "SPCR"      /* Serial Port Console Redirection table */
+#define ACPI_SIG_SPMI           "SPMI"      /* Server Platform Management Interface table */
+#define ACPI_SIG_SRAT           "SRAT"      /* System Resource Affinity Table */
+#define ACPI_SIG_TCPA           "TCPA"      /* Trusted Computing Platform Alliance table */
+#define ACPI_SIG_WDRT           "WDRT"      /* Watchdog Resource Table */
 
 /* Legacy names */
 
 #define APIC_SIG                "APIC"      /* Multiple APIC Description Table */
-#define BOOT_SIG                "BOOT"      /* Boot table */
+#define BOOT_SIG                "BOOT"      /* Simple Boot Flag Table */
 #define SBST_SIG                "SBST"      /* Smart Battery Specification Table */
 
 
@@ -314,7 +314,7 @@ typedef struct acpi_cpep_polling
 
 /*******************************************************************************
  *
- * DBGP - Debug Port
+ * DBGP - Debug Port table
  *
  ******************************************************************************/
 
