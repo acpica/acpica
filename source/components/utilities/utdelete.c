@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  ******************************************************************************/
 
@@ -301,7 +301,7 @@ AcpiUtDeleteInternalObj (
 
 		    if (HandlerDesc->AddressSpace.Setup)
 		    {
-			HandlerDesc->AddressSpace.Setup (Object,
+			(void) HandlerDesc->AddressSpace.Setup (Object,
                             ACPI_REGION_DEACTIVATE,
 			    HandlerDesc->AddressSpace.Context,
 			    &SecondDesc->Extra.RegionContext);
