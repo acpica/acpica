@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  ******************************************************************************/
 
@@ -398,16 +398,17 @@ AcpiNsSearchAndEnter (
     }
 
     /*
-     * Name must consist of printable characters. We will repair the name
-     * if necessary because we don't want to abort because of this. However, a
-     * warning message is appropriate.
+     * Name must consist of valid ACPI characters. We will repair the name if
+     * necessary because we don't want to abort because of this, but we want
+     * all namespace names to be printable. A warning message is appropriate.
      */
     if (!AcpiUtValidAcpiName (TargetName))
     {
         TargetName = AcpiUtRepairName (TargetName);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
-            "Found bad character(s) in name, repaired: [%4.4s]\n", (char *) &TargetName));
+            "Found bad character(s) in name, repaired: [%4.4s]\n",
+            (char *) &TargetName));
     }
 
     /* Try to find the name in the namespace level specified by the caller */
