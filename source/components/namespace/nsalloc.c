@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  ******************************************************************************/
 
@@ -315,6 +315,8 @@ AcpiNsInstallNode (
         AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Node->Type), Node, OwnerId,
         AcpiUtGetNodeName (ParentNode), AcpiUtGetTypeName (ParentNode->Type),
         ParentNode));
+
+    return_VOID;
 }
 
 
