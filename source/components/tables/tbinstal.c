@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -170,7 +170,7 @@ AcpiTbMatchSignature (
         }
 
         if (!ACPI_STRNCMP (Signature, AcpiGbl_TableData[i].Signature,
-                      AcpiGbl_TableData[i].SigLength))
+                AcpiGbl_TableData[i].SigLength))
         {
             /* Found a signature match, return index if requested */
 
@@ -320,7 +320,6 @@ AcpiTbRecognizeTable (
     /* Return the table type and length via the info struct */
 
     TableInfo->Length = (ACPI_SIZE) TableHeader->Length;
-
     return_ACPI_STATUS (Status);
 }
 
@@ -429,14 +428,14 @@ AcpiTbInitTableDescriptor (
 
     /* Finish initialization of the table descriptor */
 
-    TableDesc->Type                 = (UINT8) TableType;
-    TableDesc->Pointer              = TableInfo->Pointer;
-    TableDesc->Length               = TableInfo->Length;
-    TableDesc->Allocation           = TableInfo->Allocation;
-    TableDesc->AmlStart             = (UINT8 *) (TableDesc->Pointer + 1),
-    TableDesc->AmlLength            = (UINT32) (TableDesc->Length -
-                                        (UINT32) sizeof (ACPI_TABLE_HEADER));
-    TableDesc->LoadedIntoNamespace  = FALSE;
+    TableDesc->LoadedIntoNamespace = FALSE;
+    TableDesc->Type = (UINT8) TableType;
+    TableDesc->Pointer = TableInfo->Pointer;
+    TableDesc->Length = TableInfo->Length;
+    TableDesc->Allocation = TableInfo->Allocation;
+    TableDesc->AmlStart = (UINT8 *) (TableDesc->Pointer + 1),
+    TableDesc->AmlLength = (UINT32)
+        (TableDesc->Length - (UINT32) sizeof (ACPI_TABLE_HEADER));
 
     /*
      * Set the appropriate global pointer (if there is one) to point to the
@@ -449,9 +448,8 @@ AcpiTbInitTableDescriptor (
 
     /* Return Data */
 
-    TableInfo->OwnerId          = TableDesc->OwnerId;
-    TableInfo->InstalledDesc    = TableDesc;
-
+    TableInfo->OwnerId = TableDesc->OwnerId;
+    TableInfo->InstalledDesc = TableDesc;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -556,7 +554,7 @@ AcpiTbDeleteTablesByType (
      * 1) Get the head of the list
      */
     TableDesc = AcpiGbl_TableLists[Type].Next;
-    Count     = AcpiGbl_TableLists[Type].Count;
+    Count = AcpiGbl_TableLists[Type].Count;
 
     /*
      * 2) Walk the entire list, deleting both the allocated tables
@@ -681,5 +679,4 @@ AcpiTbUninstallTable (
 
     return_PTR (NextDesc);
 }
-
 
