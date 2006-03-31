@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  ******************************************************************************/
 
@@ -398,14 +398,29 @@ AcpiNsSearchAndEnter (
      * Name must consist of valid ACPI characters. We will repair the name if
      * necessary because we don't want to abort because of this, but we want
      * all namespace names to be printable. A warning message is appropriate.
+     *
+     * This issue came up because there are in fact machines that exhibit
+     * this problem, and we want to be able to enable ACPI support for them,
+     * even though there are a few bad names.
      */
     if (!AcpiUtValidAcpiName (TargetName))
     {
         TargetName = AcpiUtRepairName (TargetName);
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
-            "Found bad character(s) in name, repaired: [%4.4s]\n",
-            ACPI_CAST_PTR (char, &TargetName)));
+        /* Report warning only if in strict mode or debug mode */
+
+        if (!AcpiGbl_EnableInterpreterSlack)
+        {
+            ACPI_WARNING ((AE_INFO,
+                "Found bad character(s) in name, repaired: [%4.4s]\n",
+                ACPI_CAST_PTR (char, &TargetName)));
+        }
+        else
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
+                "Found bad character(s) in name, repaired: [%4.4s]\n",
+                ACPI_CAST_PTR (char, &TargetName)));
+        }
     }
 
     /* Try to find the name in the namespace level specified by the caller */
