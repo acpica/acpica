@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmnames - AML disassembler, names, namestrings, pathnames
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  ******************************************************************************/
 
@@ -161,6 +161,8 @@ AcpiDmDumpName (
 
     *(UINT32 *) NewName = AcpiUtRepairName (*(UINT32 *) Name);
 
+    /* Remove all trailing underscores from the name */
+
     Length = ACPI_NAME_SIZE;
     for (i = (ACPI_NAME_SIZE - 1); i != 0; i--)
     {
@@ -168,7 +170,13 @@ AcpiDmDumpName (
         {
             Length--;
         }
+        else
+        {
+            break;
+        }
     }
+
+    /* Dump the name, up to the start of the trailing underscores */
 
     for (i = 0; i < Length; i++)
     {
