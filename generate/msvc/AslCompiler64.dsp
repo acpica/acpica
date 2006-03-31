@@ -109,11 +109,11 @@ PostBuild_Cmds=copy Debug\iasldebug64.exe ..\..\Libraries
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsobject.c
+SOURCE=..\..\source\COMPONENTS\utilities\utalloc.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\source\COMPONENTS\utilities\utalloc.c
+SOURCE=..\..\source\components\utilities\utcache.c
 # End Source File
 # Begin Source File
 
@@ -141,7 +141,19 @@ SOURCE=..\..\source\COMPONENTS\utilities\utmisc.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utmutex.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\utilities\utobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utresrc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utstate.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -289,6 +301,10 @@ SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psargs.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\interpreter\parser\psloop.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psopcode.c
 # End Source File
 # Begin Source File
@@ -321,6 +337,10 @@ SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsfield.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsobject.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsopcode.c
 # End Source File
 # Begin Source File
@@ -347,6 +367,26 @@ SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswstate.c
 # Begin Group "Common"
 
 # PROP Default_Filter ".c"
+# Begin Source File
+
+SOURCE=..\..\source\common\adisasm.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmrestag.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmtable.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmtbdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\common\dmtbinfo.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\common\getopt.c
@@ -461,10 +501,6 @@ SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exutils.c
 # Begin Group "Disassembler"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\source\common\adisasm.c
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c
