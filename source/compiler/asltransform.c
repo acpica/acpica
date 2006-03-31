@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -429,7 +429,7 @@ TrDoDefinitionBlock (
              * to be at the root of the namespace;  Therefore, namepath
              * optimization can only be performed on the DSDT.
              */
-            if (ACPI_STRNCMP (Next->Asl.Value.String, "DSDT", 4))
+            if (!ACPI_COMPARE_NAME (Next->Asl.Value.String, DSDT_SIG))
             {
                 Gbl_ReferenceOptimizationFlag = FALSE;
             }

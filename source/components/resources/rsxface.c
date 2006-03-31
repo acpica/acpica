@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  ******************************************************************************/
 
@@ -360,8 +360,8 @@ AcpiWalkResources (
     /* Parameter validation */
 
     if (!DeviceHandle || !UserFunction || !Name ||
-        (ACPI_STRNCMP (Name, METHOD_NAME__CRS, sizeof (METHOD_NAME__CRS)) &&
-         ACPI_STRNCMP (Name, METHOD_NAME__PRS, sizeof (METHOD_NAME__PRS))))
+        (!ACPI_COMPARE_NAME (Name, METHOD_NAME__CRS) &&
+         !ACPI_COMPARE_NAME (Name, METHOD_NAME__PRS)))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }

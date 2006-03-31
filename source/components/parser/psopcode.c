@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -554,7 +554,7 @@ AcpiPsGetOpcodeName (
     return (Op->Name);
 
 #else
-    return ("AE_NOT_CONFIGURED");
+    return ("OpcodeName unavailable");
 
 #endif
 }

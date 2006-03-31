@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -272,7 +272,7 @@ AeBuildLocalTables (
      * Examine the incoming user table.  At this point, it has been verified
      * to be either a DSDT, SSDT, or a PSDT, but they must be handled differently
      */
-    if (!ACPI_STRNCMP ((char *) UserTable->Signature, DSDT_SIG, 4))
+    if (ACPI_COMPARE_NAME (UserTable->Signature, DSDT_SIG))
     {
         /* User DSDT is installed directly into the FADT */
 

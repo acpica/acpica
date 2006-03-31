@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -223,7 +223,7 @@ AcpiTbFindTable (
         return_ACPI_STATUS (AE_AML_STRING_LIMIT);
     }
 
-    if (!ACPI_STRNCMP (Signature, DSDT_SIG, ACPI_NAME_SIZE))
+    if (ACPI_COMPARE_NAME (Signature, DSDT_SIG))
     {
         /*
          * The DSDT pointer is contained in the FADT, not the RSDT.
@@ -252,13 +252,15 @@ AcpiTbFindTable (
 
     /* Check OemId and OemTableId */
 
-    if ((OemId[0] && ACPI_STRNCMP (
-                        OemId, Table->OemId,
-                        sizeof (Table->OemId))) ||
+    if ((OemId[0] &&
+        ACPI_STRNCMP (
+            OemId, Table->OemId,
+            sizeof (Table->OemId))) ||
 
-        (OemTableId[0] && ACPI_STRNCMP (
-                            OemTableId, Table->OemTableId,
-                            sizeof (Table->OemTableId))))
+        (OemTableId[0] &&
+        ACPI_STRNCMP (
+            OemTableId, Table->OemTableId,
+            sizeof (Table->OemTableId))))
     {
         return_ACPI_STATUS (AE_AML_NAME_NOT_FOUND);
     }
@@ -444,7 +446,7 @@ AcpiGetFirmwareTable (
 
         /* Compare table signatures and table instance */
 
-        if (!ACPI_STRNCMP (Header->Signature, Signature, ACPI_NAME_SIZE))
+        if (ACPI_COMPARE_NAME (Header->Signature, Signature))
         {
             /* An instance of the table was found */
 

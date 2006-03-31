@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -557,7 +557,7 @@ AnCheckForReservedName (
 
     for (i = 0; ReservedMethods[i].Name; i++)
     {
-        if (!ACPI_STRNCMP (Name, ReservedMethods[i].Name, ACPI_NAME_SIZE))
+        if (ACPI_COMPARE_NAME (Name, ReservedMethods[i].Name))
         {
             if (ReservedMethods[i].Flags & ASL_RSVD_SCOPE)
             {

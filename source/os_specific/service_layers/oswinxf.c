@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -238,7 +238,7 @@ OsGetTable (
              *
              * This code allows for both.
              */
-            if (!ACPI_STRNCMP (Signature, "FACP", 4))
+            if (ACPI_COMPARE_NAME (Signature, "FACP"))
             {
                 Signature = "FADT";
             }
@@ -457,7 +457,7 @@ AcpiOsTableOverride (
 
     /* This code exercises the table override mechanism in the core */
 
-    if (!ACPI_STRNCMP (ExistingTable->Signature, DSDT_SIG, ACPI_NAME_SIZE))
+    if (ACPI_COMPARE_NAME (ExistingTable->Signature, DSDT_SIG))
     {
         /* override DSDT with itself */
 

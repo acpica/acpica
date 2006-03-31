@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -512,12 +512,8 @@ AcpiExLoadOp (
 
     /* The table must be either an SSDT or a PSDT */
 
-    if ((!ACPI_STRNCMP (TablePtr->Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_PSDT].Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_PSDT].SigLength)) &&
-        (!ACPI_STRNCMP (TablePtr->Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_SSDT].Signature,
-                    AcpiGbl_TableData[ACPI_TABLE_SSDT].SigLength)))
+    if ((!ACPI_COMPARE_NAME (TablePtr->Signature, PSDT_SIG)) &&
+        (!ACPI_COMPARE_NAME (TablePtr->Signature, SSDT_SIG)))
     {
         ACPI_ERROR ((AE_INFO,
             "Table has invalid signature [%4.4s], must be SSDT or PSDT",
