@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -432,7 +432,7 @@ FlStrdup (
     char                *NewString;
 
 
-    NewString = ACPI_ALLOCATE (strlen (String));
+    NewString = ACPI_ALLOCATE (strlen (String) + 1);
     if (!NewString)
     {
         return (NULL);
