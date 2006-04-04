@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.227 $
+ *       $Revision: 1.228 $
  *
  *****************************************************************************/
 
@@ -302,6 +302,7 @@ typedef struct acpi_namespace_node
 #define ANOBJ_METHOD_NO_RETVAL          0x10    /* iASL only: Method has no return value */
 #define ANOBJ_METHOD_SOME_NO_RETVAL     0x20    /* iASL only: Method has at least one return value */
 #define ANOBJ_IS_BIT_OFFSET             0x40    /* iASL only: Reference is a bit offset */
+#define ANOBJ_IS_REFERENCED             0x80    /* iASL only: Object was referenced */
 
 /*
  * ACPI Table Descriptor.  One per ACPI table

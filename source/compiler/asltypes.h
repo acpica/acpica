@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -304,11 +304,13 @@ typedef struct asl_event_info
 } ASL_EVENT_INFO;
 
 
-#define ASL_ERROR               0
-#define ASL_WARNING             1
-#define ASL_REMARK              2
-#define ASL_OPTIMIZATION        3
-#define ASL_NUM_REPORT_LEVELS   4
+#define ASL_WARNING             0
+#define ASL_WARNING2            1
+#define ASL_WARNING3            2
+#define ASL_ERROR               3
+#define ASL_REMARK              4
+#define ASL_OPTIMIZATION        5
+#define ASL_NUM_REPORT_LEVELS   6
 
 
 typedef enum
@@ -415,7 +417,10 @@ typedef enum
     ASL_MSG_UNSUPPORTED,
     ASL_MSG_VENDOR_LIST,
     ASL_MSG_WRITE,
-    ASL_MSG_MULTIPLE_DEFAULT
+    ASL_MSG_MULTIPLE_DEFAULT,
+    ASL_MSG_TIMEOUT,
+    ASL_MSG_RESULT_NOT_USED,
+    ASL_MSG_NOT_REFERENCED
 
 } ASL_MESSAGE_IDS;
 
@@ -480,7 +485,7 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_NAME_EXISTS */                "Name already exists in scope",
 /*    ASL_MSG_NAME_OPTIMIZATION */          "NamePath optimized",
 /*    ASL_MSG_NESTED_COMMENT */             "Nested comment found",
-/*    ASL_MSG_NO_CASES */                   "No Case() statements under Switch()",
+/*    ASL_MSG_NO_CASES */                   "No Case statements under Switch",
 /*    ASL_MSG_NO_RETVAL */                  "Called method returns no value",
 /*    ASL_MSG_NO_WHILE */                   "No enclosing While statement",
 /*    ASL_MSG_NON_ASCII */                  "Invalid characters found in file",
@@ -488,7 +493,7 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_NOT_FOUND */                  "Object not found or not accessible from scope",
 /*    ASL_MSG_NOT_METHOD */                 "Not a control method, cannot invoke",
 /*    ASL_MSG_NOT_PARAMETER */              "Not a parameter, used as local only",
-/*    ASL_MSG_NOT_REACHABLE */              "Object not accessible from this scope",
+/*    ASL_MSG_NOT_REACHABLE */              "Object is not accessible from this scope",
 /*    ASL_MSG_OPEN */                       "Could not open file",
 /*    ASL_MSG_OUTPUT_FILE_OPEN */           "Could not open output AML file",
 /*    ASL_MSG_OUTPUT_FILENAME */            "Could not create output filename",
@@ -509,7 +514,7 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_RESOURCE_LIST */              "Too many resource items (internal error)",
 /*    ASL_MSG_RESOURCE_SOURCE */            "Missing ResourceSource string (required)",
 /*    ASL_MSG_RETURN_TYPES */               "Not all control paths return a value",
-/*    ASL_MSG_SCOPE_FWD_REF */              "Forward references from Scope() not allowed",
+/*    ASL_MSG_SCOPE_FWD_REF */              "Forward references from Scope operator not allowed",
 /*    ASL_MSG_SCOPE_TYPE */                 "Existing object has invalid type for Scope operator",
 /*    ASL_MSG_SEEK */                       "Could not seek file",
 /*    ASL_MSG_SINGLE_NAME_OPTIMIZATION */   "NamePath optimized to NameSeg (uses run-time search path)",
@@ -524,14 +529,19 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_UNSUPPORTED */                "Unsupported feature",
 /*    ASL_MSG_VENDOR_LIST */                "Too many vendor data bytes (7 max)",
 /*    ASL_MSG_WRITE */                      "Could not write file",
-/*    ASL_MSG_MULTIPLE_DEFAULT */           "More than one Default statement within Switch construct"
+/*    ASL_MSG_MULTIPLE_DEFAULT */           "More than one Default statement within Switch construct",
+/*    ASL_MSG_TIMEOUT */                    "Possible operator timeout is ignored",
+/*    ASL_MSG_RESULT_NOT_USED */            "Result is not used, operator has no effect",
+/*    ASL_MSG_NOT_REFERENCED */             "Namespace object is not referenced"
 
 };
 
 
 char                    *AslErrorLevel [ASL_NUM_REPORT_LEVELS] = {
-    "Error   ",
     "Warning ",
+    "Warning ",
+    "Warning ",
+    "Error   ",
     "Remark  ",
     "Optimize"
 };
@@ -540,7 +550,7 @@ char                    *AslErrorLevel [ASL_NUM_REPORT_LEVELS] = {
 
 /* Exception counters */
 
-UINT32                  Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0,0};
+UINT32                  Gbl_ExceptionCount[ASL_NUM_REPORT_LEVELS] = {0,0,0,0,0,0};
 
 #endif
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -467,8 +467,8 @@ TrCreateLeafNode (
     Op = TrAllocateNode (ParseOpcode);
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nCreateLeafNode  Line %d NewNode %p  Op %s\n\n",
-        Op->Asl.LineNumber, Op, UtGetOpName(ParseOpcode));
+        "\nCreateLeafNode  Ln/Col %d/%d NewNode %p  Op %s\n\n",
+        Op->Asl.LineNumber, Op->Asl.Column, Op, UtGetOpName(ParseOpcode));
 
     return Op;
 }
@@ -499,8 +499,8 @@ TrCreateValuedLeafNode (
     Op = TrAllocateNode (ParseOpcode);
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nCreateValuedLeafNode  Line %d NewNode %p  Op %s  Value %8.8X%8.8X  ",
-        Op->Asl.LineNumber, Op, UtGetOpName(ParseOpcode),
+        "\nCreateValuedLeafNode  Ln/Col %d/%d NewNode %p  Op %s  Value %8.8X%8.8X  ",
+        Op->Asl.LineNumber, Op->Asl.Column, Op, UtGetOpName(ParseOpcode),
         ACPI_FORMAT_UINT64 (Value));
     Op->Asl.Value.Integer = Value;
 
@@ -576,8 +576,8 @@ TrCreateNode (
     Op = TrAllocateNode (ParseOpcode);
 
     DbgPrint (ASL_PARSE_OUTPUT,
-        "\nCreateNode  Line %d NewParent %p Child %d Op %s  ",
-        Op->Asl.LineNumber, Op, NumChildren, UtGetOpName(ParseOpcode));
+        "\nCreateNode  Ln/Col %d/%d NewParent %p Child %d Op %s  ",
+        Op->Asl.LineNumber, Op->Asl.Column, Op, NumChildren, UtGetOpName(ParseOpcode));
 
     /* Some extra debug output based on the parse opcode */
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslutils -- compiler utilities
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -166,7 +166,7 @@ void
 UtDisplayConstantOpcodes (
     void)
 {
-    UINT32              i;
+    UINT32                  i;
 
 
     printf ("Constant expression opcode information\n\n");
@@ -214,7 +214,7 @@ UtLocalCalloc (
 
     TotalAllocations++;
     TotalAllocated += Size;
-    return Allocated;
+    return (Allocated);
 }
 
 
@@ -359,7 +359,6 @@ UtConvertByteToAsmHex (
 {
 
     Buffer[0] = '0';
-
     Buffer[1] = (UINT8) hex[(RawByte >> 4) & 0xF];
     Buffer[2] = (UINT8) hex[RawByte & 0xF];
     Buffer[3] = 'h';
@@ -541,7 +540,9 @@ UtDisplaySummary (
     FlPrintFile (FileId,
         "Compilation complete. %d Errors, %d Warnings, %d Remarks, %d Optimizations\n",
         Gbl_ExceptionCount[ASL_ERROR],
-        Gbl_ExceptionCount[ASL_WARNING],
+        Gbl_ExceptionCount[ASL_WARNING] +
+            Gbl_ExceptionCount[ASL_WARNING2] +
+            Gbl_ExceptionCount[ASL_WARNING3],
         Gbl_ExceptionCount[ASL_REMARK],
         Gbl_ExceptionCount[ASL_OPTIMIZATION]);
 }
@@ -551,7 +552,7 @@ UtDisplaySummary (
  *
  * FUNCTION:    UtDisplaySummary
  *
- * PARAMETERS:  Op            - Integer parse node
+ * PARAMETERS:  Op              - Integer parse node
  *              LowValue        - Smallest allowed value
  *              HighValue       - Largest allowed value
  *

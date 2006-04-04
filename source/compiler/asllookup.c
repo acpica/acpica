@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -166,6 +166,13 @@ LkNamespaceLocateEnd (
     ACPI_PARSE_OBJECT       *Op,
     UINT32                  Level,
     void                    *Context);
+
+static ACPI_STATUS
+LkIsObjectUsed (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
 
 
 /*******************************************************************************
@@ -530,6 +537,150 @@ LkObjectExists (
 
 /*******************************************************************************
  *
+ * FUNCTION:    LkGetNameOp
+ *
+ * PARAMETERS:  Op              - Current Op
+ *
+ * RETURN:      NameOp associated with the input op
+ *
+ * DESCRIPTION: Find the name declaration op associated with the operator
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+LkGetNameOp (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    const ACPI_OPCODE_INFO  *OpInfo;
+    ACPI_PARSE_OBJECT       *NameOp = Op;
+
+
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Asl.AmlOpcode);
+
+
+    /* Get the NamePath from the appropriate place */
+
+    if (OpInfo->Flags & AML_NAMED)
+    {
+        /* For nearly all NAMED operators, the name reference is the first child */
+
+        NameOp = Op->Asl.Child;
+        if (Op->Asl.AmlOpcode == AML_ALIAS_OP)
+        {
+            /*
+             * ALIAS is the only oddball opcode, the name declaration
+             * (alias name) is the second operand
+             */
+            NameOp = Op->Asl.Child->Asl.Next;
+        }
+    }
+    else if (OpInfo->Flags & AML_CREATE)
+    {
+        /* Name must appear as the last parameter */
+
+        NameOp = Op->Asl.Child;
+        while (!(NameOp->Asl.CompileFlags & NODE_IS_NAME_DECLARATION))
+        {
+            NameOp = NameOp->Asl.Next;
+        }
+    }
+
+    return (NameOp);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    LkIsObjectUsed
+ *
+ * PARAMETERS:  ACPI_WALK_CALLBACK
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Check for an unreferenced namespace object and emit a warning.
+ *              We have to be careful, because some types and names are
+ *              typically or always unreferenced, we don't want to issue
+ *              excessive warnings.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+LkIsObjectUsed (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_NAMESPACE_NODE     *Node = ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, ObjHandle);
+
+
+    /* Referenced flag is set during the namespace xref */
+
+    if (Node->Flags & ANOBJ_IS_REFERENCED)
+    {
+        return (AE_OK);
+    }
+
+    /*
+     * Ignore names that start with an underscore,
+     * these are the reserved ACPI names and are typically not referenced,
+     * they are called by the host OS.
+     */
+    if (Node->Name.Ascii[0] == '_')
+    {
+        return (AE_OK);
+    }
+
+    /* There are some types that are typically not referenced, ignore them */
+
+    switch (Node->Type)
+    {
+    case ACPI_TYPE_DEVICE:
+    case ACPI_TYPE_PROCESSOR:
+    case ACPI_TYPE_POWER:
+    case ACPI_TYPE_LOCAL_RESOURCE:
+        return (AE_OK);
+
+    default:
+        break;
+    }
+
+    /* All others are valid unreferenced namespace objects */
+
+    AslError (ASL_WARNING2, ASL_MSG_NOT_REFERENCED, LkGetNameOp (Node->Op), NULL);
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    LkFindUnreferencedObjects
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Namespace walk to find objects that are not referenced in any
+ *              way. Must be called after the namespace has been cross
+ *              referenced.
+ *
+ ******************************************************************************/
+
+void
+LkFindUnreferencedObjects (
+    void)
+{
+
+    /* Walk entire namespace from the supplied root */
+
+    (void) AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
+                ACPI_UINT32_MAX, FALSE, LkIsObjectUsed,
+                NULL, NULL);
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    LkCrossReferenceNamespace
  *
  * PARAMETERS:  None
@@ -720,7 +871,7 @@ LkNamespaceLocateBegin (
 
     if (OpInfo->Flags & AML_NAMED)
     {
-        /* For all NAMED operators, the name reference is the first child */
+        /* For nearly all NAMED operators, the name reference is the first child */
 
         Path = Op->Asl.Child->Asl.Value.String;
         if (Op->Asl.AmlOpcode == AML_ALIAS_OP)
@@ -833,6 +984,16 @@ LkNamespaceLocateBegin (
             Status = AE_OK;
         }
         return (Status);
+    }
+
+    /* Check for a reference vs. name declaration */
+
+    if (!(OpInfo->Flags & AML_NAMED) &&
+        !(OpInfo->Flags & AML_CREATE))
+    {
+        /* This node has been referenced, mark it for reference check */
+
+        Node->Flags |= ANOBJ_IS_REFERENCED;
     }
 
     /* Attempt to optimize the NamePath */

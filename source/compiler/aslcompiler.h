@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file for iASL
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  *****************************************************************************/
 
@@ -608,6 +608,10 @@ LdLoadNamespace (
  */
 ACPI_STATUS
 LkCrossReferenceNamespace (
+    void);
+
+void
+LkFindUnreferencedObjects (
     void);
 
 ACPI_STATUS

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -190,6 +190,7 @@ Options (
     printf ("  -vo            Enable optimization comments\n");
     printf ("  -vr            Disable remarks\n");
     printf ("  -vs            Disable signon\n");
+    printf ("  -w<1|2|3>      Set warning reporting level\n");
 
     printf ("\nAML Output Files:\n");
     printf ("  -s<a|c>        Create AML in assembler or C source file (*.asm or *.c)\n");
@@ -209,7 +210,7 @@ Options (
     printf ("  -ls            Create combined source file (expanded includes) (*.src)\n");
 
     printf ("\nAML Disassembler:\n");
-    printf ("  -d  [file]     Disassemble AML to ASL source code file (*.dsl)\n");
+    printf ("  -d  [file]     Disassemble or decode binary ACPI table to file (*.dsl)\n");
     printf ("  -dc [file]     Disassemble AML and immediately compile it\n");
     printf ("                 (Obtain DSDT from current system if no input file)\n");
     printf ("  -2             Emit ACPI 2.0 compatible ASL code\n");
@@ -354,7 +355,7 @@ AslCommandLine (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "2b:cd^efgh^i^l^o:p:r:s:t:v:x:")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "2b:cd^efgh^i^l^o:p:r:s:t:v:w:x:")) != EOF) switch (j)
     {
     case '2':
         Gbl_Acpi2 = TRUE;
@@ -658,6 +659,30 @@ AslCommandLine (
 
         default:
             printf ("Unknown option: -v%s\n", AcpiGbl_Optarg);
+            BadCommandLine = TRUE;
+            break;
+        }
+        break;
+
+
+    case 'w': /* Set warning levels */
+
+        switch (AcpiGbl_Optarg[0])
+        {
+        case '1':
+            Gbl_WarningLevel = ASL_WARNING;
+            break;
+
+        case '2':
+            Gbl_WarningLevel = ASL_WARNING2;
+            break;
+
+        case '3':
+            Gbl_WarningLevel = ASL_WARNING3;
+            break;
+
+        default:
+            printf ("Unknown option: -w%s\n", AcpiGbl_Optarg);
             BadCommandLine = TRUE;
             break;
         }

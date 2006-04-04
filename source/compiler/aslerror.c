@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -538,6 +538,21 @@ AslError (
     ACPI_PARSE_OBJECT       *Op,
     char                    *ExtraMessage)
 {
+
+    switch (Level)
+    {
+    case ASL_WARNING2:
+    case ASL_WARNING3:
+        if (Gbl_WarningLevel < Level)
+        {
+            return;
+        }
+        break;
+
+    default:
+        break;
+    }
+
 
     if (Op)
     {

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -1861,16 +1861,81 @@ AnOperandTypecheckWalkEnd (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AnIsResultUsed
+ *
+ * PARAMETERS:  Op              - Parent op for the operator
+ *
+ * RETURN:      TRUE if result from this operation is actually consumed
+ *
+ * DESCRIPTION: Determine if the function result value from an operator is
+ *              used.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AnIsResultUsed (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *Parent;
+
+
+    switch (Op->Asl.ParseOpcode)
+    {
+    case PARSEOP_INCREMENT:
+    case PARSEOP_DECREMENT:
+
+        /* These are standalone operators, no return value */
+
+        return (TRUE);
+
+    default:
+        break;
+    }
+
+    /* Examine parent to determine if the return value is used */
+
+    Parent = Op->Asl.Parent;
+    switch (Parent->Asl.ParseOpcode)
+    {
+    /* If/While - check if the operator is the predicate */
+
+    case PARSEOP_IF:
+    case PARSEOP_WHILE:
+
+        /* First child is the predicate */
+
+        if (Parent->Asl.Child == Op)
+        {
+            return (TRUE);
+        }
+        return (FALSE);
+
+    /* Not used if one of these is the parent */
+
+    case PARSEOP_METHOD:
+    case PARSEOP_DEFINITIONBLOCK:
+    case PARSEOP_ELSE:
+
+        return (FALSE);
+
+    default:
+        /* Any other type of parent means that the result is used */
+
+        return (TRUE);
+    }
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AnOtherSemanticAnalysisWalkBegin
  *
  * PARAMETERS:  ASL_WALK_CALLBACK
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Descending callback for the analysis walk. Check methods for:
- *              1) Initialized local variables
- *              2) Valid arguments
- *              3) Return types
+ * DESCRIPTION: Descending callback for the analysis walk. Checks for
+ *              miscellaneous issues in the code.
  *
  ******************************************************************************/
 
@@ -1880,6 +1945,100 @@ AnOtherSemanticAnalysisWalkBegin (
     UINT32                  Level,
     void                    *Context)
 {
+    ACPI_PARSE_OBJECT       *ArgNode;
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Asl.AmlOpcode);
+
+    /*
+     * Determine if an execution class operator actually does something by
+     * checking if it has a target and/or the function return value is used.
+     * (Target is optional, so a standalone statement can actually do nothing.)
+     */
+    if ((OpInfo->Class == AML_CLASS_EXECUTE) &&
+        (OpInfo->Flags & AML_HAS_RETVAL) &&
+        (!AnIsResultUsed (Op)))
+    {
+        if (OpInfo->Flags & AML_HAS_TARGET)
+        {
+            /*
+             * Find the target node, it is always the last child. If the traget
+             * is not specified in the ASL, a default node of type Zero was
+             * created by the parser.
+             */
+            ArgNode = Op->Asl.Child;
+            while (ArgNode->Asl.Next)
+            {
+                ArgNode = ArgNode->Asl.Next;
+            }
+
+            if (ArgNode->Asl.ParseOpcode == PARSEOP_ZERO)
+            {
+                AslError (ASL_WARNING, ASL_MSG_RESULT_NOT_USED, Op, Op->Asl.ExternalName);
+            }
+        }
+        else
+        {
+            /* 
+             * Has no target and the result is not used. Only a couple opcodes
+             * can have this combination.
+             */
+            switch (Op->Asl.ParseOpcode)
+            {
+            case PARSEOP_ACQUIRE:
+            case PARSEOP_WAIT:
+                break;
+
+            default:
+                AslError (ASL_WARNING, ASL_MSG_RESULT_NOT_USED, Op, Op->Asl.ExternalName);
+                break;
+            }
+        }
+    }
+
+
+    /*
+     * Semantic checks for individual ASL operators
+     */
+    switch (Op->Asl.ParseOpcode)
+    {
+    case PARSEOP_ACQUIRE:
+    case PARSEOP_WAIT:
+        /*
+         * Emit a warning if the timeout parameter for these operators is not 
+         * ACPI_WAIT_FOREVER, and the result value from the operator is not
+         * checked, meaning that a timeout could happen, but the code
+         * would not know about it.
+         */
+
+        /* First child is the namepath, 2nd child is timeout */
+
+        ArgNode = Op->Asl.Child;
+        ArgNode = ArgNode->Asl.Next;
+
+        /* Check for the WAIT_FOREVER case */
+
+        if (((ArgNode->Asl.ParseOpcode == PARSEOP_WORDCONST) ||
+             (ArgNode->Asl.ParseOpcode == PARSEOP_INTEGER))  &&
+             (ArgNode->Asl.Value.Integer >= (ACPI_INTEGER) ACPI_WAIT_FOREVER))
+        {
+            break;
+        }
+
+        /*
+         * The operation could timeout. If the return value is not used
+         * (indicates timeout occurred), issue a warning
+         */
+        if (!AnIsResultUsed (Op))
+        {
+            AslError (ASL_WARNING, ASL_MSG_TIMEOUT, ArgNode, Op->Asl.ExternalName);
+        }
+        break;
+
+    default:
+        break;
+    }
 
     return AE_OK;
 }

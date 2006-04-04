@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompile - top level compile module
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -669,15 +669,19 @@ CmDoCompile (
         return -1;
     }
 
-    /* Namespace lookup */
+    /* Namespace cross-reference */
 
     AslGbl_NamespaceEvent = UtBeginEvent ("Cross reference parse tree and Namespace");
     Status = LkCrossReferenceNamespace ();
-    UtEndEvent (AslGbl_NamespaceEvent);
     if (ACPI_FAILURE (Status))
     {
         return -1;
     }
+
+    /* Namespace - Check for non-referenced objects */
+
+    LkFindUnreferencedObjects ();
+    UtEndEvent (AslGbl_NamespaceEvent);
 
     /*
      * Semantic analysis.  This can happen only after the
@@ -911,7 +915,11 @@ CmCleanupAndExit (
 
     UtDisplaySummary (ASL_FILE_STDOUT);
 
-    if (Gbl_ExceptionCount[ASL_ERROR] > 0)
+    /*
+     * Return non-zero exit code if there have been errors, unless the
+     * global ignore error flag has been set
+     */
+    if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
     {
         exit (1);
     }
