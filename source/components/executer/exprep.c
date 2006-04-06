@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.139 $
+ *              $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -622,19 +622,25 @@ AcpiExPrepFieldValue (
         AcpiUtAddReference (ObjDesc->IndexField.IndexObj);
 
         /*
-         * February 2006: Changed to match MS behavior
+         * April 2006: Changed to match MS behavior
          *
          * The value written to the Index register is the byte offset of the
-         * target field.
+         * target field in units of the granularity of the IndexField
          *
          * Previously, the value was calculated as an index in terms of the
          * width of the Data register, as below:
          *
-         *   ObjDesc->IndexField.Value = (UINT32)
-         *       (Info->FieldBitPosition / ACPI_MUL_8 (
-         *           ObjDesc->Field.AccessByteWidth));
+         *      ObjDesc->IndexField.Value = (UINT32)
+         *          (Info->FieldBitPosition / ACPI_MUL_8 (
+         *              ObjDesc->Field.AccessByteWidth));
+         *
+         * February 2006: Tried value as a byte offset:
+         *      ObjDesc->IndexField.Value = (UINT32)
+         *          ACPI_DIV_8 (Info->FieldBitPosition);
          */
-        ObjDesc->IndexField.Value = (UINT32) ACPI_DIV_8 (Info->FieldBitPosition);
+        ObjDesc->IndexField.Value = (UINT32) ACPI_ROUND_DOWN (
+            ACPI_DIV_8 (Info->FieldBitPosition),
+            ObjDesc->IndexField.AccessByteWidth);
 
         ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
             "IndexField: BitOff %X, Off %X, Value %X, Gran %X, Index %p, Data %p\n",
