@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -501,6 +501,38 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_ASF_RMCP",                       SRC_TYPE_STRUCT},
     {"ACPI_CPEP_POLLING",                   SRC_TYPE_STRUCT},
     {"ACPI_MCFG_ALLOCATION",                SRC_TYPE_STRUCT},
+
+
+/* New names */
+
+
+    {"ACPI_TABLE_SBST",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_SLIT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_ECDT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_HPET",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_FADT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_FACS",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_RSDP",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_RSDT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_XSDT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_MADT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_SRAT",                     SRC_TYPE_STRUCT},
+
+    {"ACPI_ASF_HEADER",                     SRC_TYPE_STRUCT},
+    {"ACPI_MADT_HEADER",                    SRC_TYPE_STRUCT},
+    {"ACPI_MADT_ADDRESS_OVERRIDE",          SRC_TYPE_STRUCT},
+    {"ACPI_MADT_XRUPT_OVERRIDE",            SRC_TYPE_STRUCT},
+    {"ACPI_MADT_XRUPT_SOURCE",              SRC_TYPE_STRUCT},
+    {"ACPI_MADT_IO_APIC",                   SRC_TYPE_STRUCT},
+    {"ACPI_MADT_IO_SAPIC",                  SRC_TYPE_STRUCT},
+    {"ACPI_MADT_LOCAL_APIC_NMI",            SRC_TYPE_STRUCT},
+    {"ACPI_MADT_LOCAL_SAPIC",               SRC_TYPE_STRUCT},
+    {"ACPI_MADT_NMI_SOURCE",                SRC_TYPE_STRUCT},
+    {"ACPI_MADT_PROCESSOR_APIC",            SRC_TYPE_STRUCT},
+    {"ACPI_SRAT_HEADER",                    SRC_TYPE_STRUCT},
+    {"ACPI_SRAT_CPU_AFFINITY",              SRC_TYPE_STRUCT},
+    {"ACPI_SRAT_MEM_AFFINITY",              SRC_TYPE_STRUCT},
+
 
     /* Legacy names, should be changed to ACPI_TABLE_*  */
 
