@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.305 $
+ *       $Revision: 1.306 $
  *
  *****************************************************************************/
 
@@ -1083,7 +1083,8 @@ typedef struct acpi_compatible_id_list
 #define ACPI_STA_DEVICE_PRESENT         0x01
 #define ACPI_STA_DEVICE_ENABLED         0x02
 #define ACPI_STA_DEVICE_UI              0x04
-#define ACPI_STA_DEVICE_OK              0x08
+#define ACPI_STA_DEVICE_FUNCTIONING     0x08
+#define ACPI_STA_DEVICE_OK              0x08 /* Synonym */
 #define ACPI_STA_BATTERY_PRESENT        0x10
 
 
