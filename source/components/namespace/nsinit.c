@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -237,19 +237,10 @@ AcpiNsInitializeDevices (
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
         "Executing all Device _STA and_INI methods:"));
 
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Walk namespace for all objects */
 
     Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
-                    ACPI_UINT32_MAX, TRUE, AcpiNsInitOneDevice, &Info, NULL);
-
-    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-
+                    ACPI_UINT32_MAX, FALSE, AcpiNsInitOneDevice, &Info, NULL);
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status, "During WalkNamespace"));
