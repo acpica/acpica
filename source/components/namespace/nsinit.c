@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -439,7 +439,6 @@ AcpiNsInitOneDevice (
     ACPI_PARAMETER_INFO     Pinfo;
     UINT32                  Flags;
     ACPI_STATUS             Status;
-    ACPI_NAMESPACE_NODE     *IniNode;
     ACPI_NAMESPACE_NODE     *DeviceNode;
 
 
@@ -462,41 +461,29 @@ AcpiNsInitOneDevice (
         return_ACPI_STATUS (AE_OK);
     }
 
+    Info->DeviceCount++;
     if ((AcpiDbgLevel <= ACPI_LV_ALL_EXCEPTIONS) &&
         (!(AcpiDbgLevel & ACPI_LV_INFO)))
     {
         ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
     }
 
-    Info->DeviceCount++;
-
     /*
-     * Check if the _INI method exists for this device -
-     * if _INI does not exist, there is no need to run _STA
-     * No _INI means device requires no initialization
-     */
-    Status = AcpiNsSearchNode (*ACPI_CAST_PTR (UINT32, METHOD_NAME__INI),
-                DeviceNode, ACPI_TYPE_METHOD, &IniNode);
-    if (ACPI_FAILURE (Status))
-    {
-        /* No _INI method found - move on to next device */
-
-        return_ACPI_STATUS (AE_OK);
-    }
-
-    /*
-     * Run _STA to determine if we can run _INI on the device -
-     * the device must be present before _INI can be run.
-     * However, _STA is not required - assume device present if no _STA
+     * Run _STA to determine if this device is present. We must know if the
+     * device is present for two important reasons (from ACPI spec):
+     *
+     * 1) We can only run _INI if the device is present
+     * 2) We must abort the device tree walk on this subtree if the device is
+     *    not present and is not functional (we will not examine the children)
+     *
+     * The _STA method is not required to be present under the device, we
+     * assume the device is present if _STA does not exist (as per the 
+     * ACPI specification)
      */
     ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD,
                         DeviceNode, METHOD_NAME__STA));
 
-    Pinfo.Node = DeviceNode;
-    Pinfo.Parameters = NULL;
-    Pinfo.ParameterType = ACPI_PARAM_ARGS;
-
-    Status = AcpiUtExecute_STA (Pinfo.Node, &Flags);
+    Status = AcpiUtExecute_STA (DeviceNode, &Flags);
     if (ACPI_FAILURE (Status))
     {
         /* Ignore error and move on to next device */
@@ -511,34 +498,41 @@ AcpiNsInitOneDevice (
 
     if (!(Flags & ACPI_STA_DEVICE_PRESENT))
     {
-        /* Don't look at children of a not present device */
+        /* Device is not present, we must examine the functional/ok flag */
 
-        return_ACPI_STATUS (AE_CTRL_DEPTH);
+        if (Flags & ACPI_STA_DEVICE_OK)
+        {
+            /*
+             * Device is not present but is functional. In this case,
+             * we do not run _INI, but we continue to examine the children
+             * of this device. (see ACPI spec, description of _STA)
+             */
+            return_ACPI_STATUS (AE_OK);
+        }
+        else
+        {
+            /*
+             * Device is not present and is not functional. We must not
+             * continue the walk below this device -- don't look at the
+             * children of a not present device (see ACPI spec,
+             * description of _INI)
+             */
+            return_ACPI_STATUS (AE_CTRL_DEPTH);
+        }
     }
 
     /*
-     * The device is present and _INI exists. Run the _INI method.
-     * (We already have the _INI node from above)
+     * The device is present. Run the _INI if it exists (not required)
      */
     ACPI_DEBUG_EXEC (AcpiUtDisplayInitPathname (ACPI_TYPE_METHOD,
-                        Pinfo.Node, METHOD_NAME__INI));
+                        DeviceNode, METHOD_NAME__INI));
 
-    Pinfo.Node = IniNode;
-    Status = AcpiNsEvaluateByHandle (&Pinfo);
-    if (ACPI_FAILURE (Status))
-    {
-        /* Ignore error and move on to next device */
+    Pinfo.Node = DeviceNode;
+    Pinfo.Parameters = NULL;
+    Pinfo.ParameterType = ACPI_PARAM_ARGS;
 
-#ifdef ACPI_DEBUG_OUTPUT
-        char        *ScopeName = AcpiNsGetExternalPathname (IniNode);
-
-        ACPI_WARNING ((AE_INFO, "%s._INI failed: %s",
-            ScopeName, AcpiFormatException (Status)));
-
-        ACPI_FREE (ScopeName);
-#endif
-    }
-    else
+    Status = AcpiNsEvaluateRelative (METHOD_NAME__INI, &Pinfo);
+    if (ACPI_SUCCESS (Status))
     {
         /* Delete any return object (especially if ImplicitReturn is enabled) */
 
@@ -546,11 +540,21 @@ AcpiNsInitOneDevice (
         {
             AcpiUtRemoveReference (Pinfo.ReturnObject);
         }
-
-        /* Count of successful INIs */
-
         Info->Num_INI++;
     }
+
+#ifdef ACPI_DEBUG_OUTPUT
+    else if (Status != AE_NOT_FOUND)
+    {
+        /* Ignore error and move on to next device */
+
+        char *ScopeName = AcpiNsGetExternalPathname (Pinfo.Node);
+
+        ACPI_EXCEPTION ((AE_INFO, Status, "during %s._INI execution",
+            ScopeName));
+        ACPI_FREE (ScopeName);
+    }
+#endif
 
     if (AcpiGbl_InitHandler)
     {
