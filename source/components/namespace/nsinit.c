@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -242,7 +242,7 @@ AcpiNsInitializeDevices (
     Info.Num_INI = 0;
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "Executing _INI methods under present/functioning devices:"));
+        "Initializing Device/Processor/Thermal objects by executing _INI methods:"));
 
     /* Tree analysis: find all subtrees that contain _INI methods */
 
@@ -263,8 +263,8 @@ AcpiNsInitializeDevices (
     }
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
-        "\n%hd devices found - executed %hd _INI methods requiring %hd _STA executions\n",
-        Info.DeviceCount, Info.Num_INI, Info.Num_STA));
+        "\nExecuted %hd _INI methods requiring %hd _STA executions (examined %hd objects)\n",
+        Info.Num_INI, Info.Num_STA, Info.DeviceCount));
 
     return_ACPI_STATUS (Status);
 }
@@ -548,13 +548,6 @@ AcpiNsInitOneDevice (
         return_ACPI_STATUS (AE_CTRL_DEPTH);
     }
 
-    if ((AcpiDbgLevel <= ACPI_LV_ALL_EXCEPTIONS) &&
-        (!(AcpiDbgLevel & ACPI_LV_INFO)))
-    {
-        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
-    }
-
-
     /*
      * Run _STA to determine if this device is present and functioning. We
      * must know this information for two important reasons (from ACPI spec):
@@ -661,7 +654,13 @@ AcpiNsInitOneDevice (
         {
             AcpiUtRemoveReference (Pinfo.ReturnObject);
         }
+
         Info->Num_INI++;
+        if ((AcpiDbgLevel <= ACPI_LV_ALL_EXCEPTIONS) &&
+            (!(AcpiDbgLevel & ACPI_LV_INFO)))
+        {
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "."));
+        }
     }
 
 #ifdef ACPI_DEBUG_OUTPUT
