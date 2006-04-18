@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.163 $
+ *              $Revision: 1.164 $
  *
  *****************************************************************************/
 
@@ -657,22 +657,7 @@ AcpiPsParseAml (
         if (((WalkState->ParseFlags & ACPI_PARSE_MODE_MASK) == ACPI_PARSE_EXECUTE) ||
             (ACPI_FAILURE (Status)))
         {
-            if (WalkState->MethodDesc)
-            {
-                /* Decrement the thread count on the method parse tree */
-
-                if (WalkState->MethodDesc->Method.ThreadCount)
-                {
-                    WalkState->MethodDesc->Method.ThreadCount--;
-                }
-                else
-                {
-                    ACPI_ERROR ((AE_INFO,
-                        "Invalid zero thread count in method"));
-                }
-            }
-
-            AcpiDsTerminateControlMethod (WalkState);
+            AcpiDsTerminateControlMethod (WalkState->MethodDesc, WalkState);
         }
 
         /* Delete this walk state and all linked control states */

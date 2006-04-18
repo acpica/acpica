@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -259,10 +259,14 @@ AcpiDsBeginMethodExecution (
 
         /*
          * Get a unit from the method semaphore. This releases the
-         * interpreter if we block
+         * interpreter if we block (then reacquires it)
          */
         Status = AcpiExSystemWaitSemaphore (ObjDesc->Method.Semaphore,
                     ACPI_WAIT_FOREVER);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
     }
 
     /*
@@ -275,7 +279,7 @@ AcpiDsBeginMethodExecution (
         Status = AcpiUtAllocateOwnerId (&ObjDesc->Method.OwnerId);
         if (ACPI_FAILURE (Status))
         {
-            return_ACPI_STATUS (Status);
+            goto Cleanup;
         }
     }
 
@@ -284,6 +288,16 @@ AcpiDsBeginMethodExecution (
      * reentered one more time (even if it is the same thread)
      */
     ObjDesc->Method.ThreadCount++;
+    return_ACPI_STATUS (Status);
+
+
+Cleanup:
+    /* On error, must signal the method semaphore if present */
+
+    if (ObjDesc->Method.Semaphore)
+    {
+        (void) AcpiOsSignalSemaphore (ObjDesc->Method.Semaphore, 1);
+    }
     return_ACPI_STATUS (Status);
 }
 
@@ -336,27 +350,32 @@ AcpiDsCallControlMethod (
         return_ACPI_STATUS (AE_NULL_OBJECT);
     }
 
-    /* Init for new method, wait on concurrency semaphore */
+    /* Init for new method, possibly wait on concurrency semaphore */
 
     Status = AcpiDsBeginMethodExecution (MethodNode, ObjDesc,
                 ThisWalkState->MethodNode);
     if (ACPI_FAILURE (Status))
     {
-        goto Cleanup;
+        return_ACPI_STATUS (Status);
     }
 
+    /*
+     * 1) Parse the method. All "normal" methods are parsed for each execution.
+     * Internal methods (_OSI, etc.) do not require parsing.
+     */
     if (!(ObjDesc->Method.MethodFlags & AML_METHOD_INTERNAL_ONLY))
     {
-        /* 1) Parse: Create a new walk state for the preempting walk */
+        /* Create a new walk state for the parse */
 
         NextWalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwnerId,
                             Op, ObjDesc, NULL);
         if (!NextWalkState)
         {
-            return_ACPI_STATUS (AE_NO_MEMORY);
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
         }
 
-        /* Create and init a Root Node */
+        /* Create and init a parse tree root */
 
         Op = AcpiPsCreateScopeOp ();
         if (!Op)
@@ -370,17 +389,21 @@ AcpiDsCallControlMethod (
                     NULL, 1);
         if (ACPI_FAILURE (Status))
         {
-            AcpiDsDeleteWalkState (NextWalkState);
+            AcpiPsDeleteParseTree (Op);
             goto Cleanup;
         }
 
-        /* Begin AML parse */
+        /* Begin AML parse (deletes NextWalkState) */
 
         Status = AcpiPsParseAml (NextWalkState);
         AcpiPsDeleteParseTree (Op);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Cleanup;
+        }
     }
 
-    /* 2) Execute: Create a new state for the preempting walk */
+    /* 2) Begin method execution. Create a new walk state */
 
     NextWalkState = AcpiDsCreateWalkState (ObjDesc->Method.OwnerId,
                         NULL, ObjDesc, Thread);
@@ -389,6 +412,7 @@ AcpiDsCallControlMethod (
         Status = AE_NO_MEMORY;
         goto Cleanup;
     }
+
     /*
      * The resolved arguments were put on the previous walk state's operand
      * stack. Operands on the previous walk state stack always
@@ -424,6 +448,8 @@ AcpiDsCallControlMethod (
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
         "Starting nested execution, newstate=%p\n", NextWalkState));
 
+    /* Invoke an internal method if necessary */
+
     if (ObjDesc->Method.MethodFlags & AML_METHOD_INTERNAL_ONLY)
     {
         Status = ObjDesc->Method.Implementation (NextWalkState);
@@ -433,17 +459,15 @@ AcpiDsCallControlMethod (
 
 
 Cleanup:
-    /* Decrement the thread count on the method parse tree */
 
-    if (NextWalkState && (NextWalkState->MethodDesc))
+    /* On error, we must terminate the method properly */
+
+    AcpiDsTerminateControlMethod (ObjDesc, NextWalkState);
+    if (NextWalkState)
     {
-        NextWalkState->MethodDesc->Method.ThreadCount--;
+        AcpiDsDeleteWalkState (NextWalkState);
     }
 
-    /* On error, we must delete the new walk state */
-
-    AcpiDsTerminateControlMethod (NextWalkState);
-    AcpiDsDeleteWalkState (NextWalkState);
     return_ACPI_STATUS (Status);
 }
 
@@ -533,7 +557,8 @@ AcpiDsRestartControlMethod (
  *
  * FUNCTION:    AcpiDsTerminateControlMethod
  *
- * PARAMETERS:  WalkState           - State of the method
+ * PARAMETERS:  MethodDesc          - Method object
+ *              WalkState           - State associated with the method
  *
  * RETURN:      None
  *
@@ -545,9 +570,9 @@ AcpiDsRestartControlMethod (
 
 void
 AcpiDsTerminateControlMethod (
+    ACPI_OPERAND_OBJECT     *MethodDesc,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *MethodNode;
     ACPI_STATUS             Status;
 
@@ -555,22 +580,19 @@ AcpiDsTerminateControlMethod (
     ACPI_FUNCTION_TRACE_PTR ("DsTerminateControlMethod", WalkState);
 
 
-    if (!WalkState)
+    /* MethodDesc is required, WalkState is optional */
+
+    if (!MethodDesc)
     {
         return_VOID;
     }
 
-    /* The current method object was saved in the walk state */
-
-    ObjDesc = WalkState->MethodDesc;
-    if (!ObjDesc)
+    if (WalkState)
     {
-        return_VOID;
+        /* Delete all arguments and locals */
+
+        AcpiDsMethodDataDeleteAll (WalkState);
     }
-
-    /* Delete all arguments and locals */
-
-    AcpiDsMethodDataDeleteAll (WalkState);
 
     /*
      * Lock the parser while we terminate this method.
@@ -585,53 +607,65 @@ AcpiDsTerminateControlMethod (
 
     /* Signal completion of the execution of this method if necessary */
 
-    if (WalkState->MethodDesc->Method.Semaphore)
+    if (MethodDesc->Method.Semaphore)
     {
-        Status = AcpiOsSignalSemaphore (
-                    WalkState->MethodDesc->Method.Semaphore, 1);
+        Status = AcpiOsSignalSemaphore (MethodDesc->Method.Semaphore, 1);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_ERROR ((AE_INFO, "Could not signal method semaphore"));
+            /* Ignore error and continue */
 
-            /* Ignore error and continue cleanup */
+            ACPI_EXCEPTION ((AE_INFO, Status, "Could not signal method semaphore"));
         }
     }
 
-    /*
-     * There are no more threads executing this method.  Perform
-     * additional cleanup.
-     *
-     * The method Node is stored in the walk state
-     */
-    MethodNode = WalkState->MethodNode;
-
-    /* Lock namespace for possible update */
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
+    if (WalkState)
     {
-        goto Exit;
+        /*
+         * Delete any objects created by this method during execution.
+         * The method Node is stored in the walk state
+         */
+        MethodNode = WalkState->MethodNode;
+
+        /* Lock namespace for possible update */
+
+        Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Exit;
+        }
+
+        /*
+         * Delete any namespace entries created immediately underneath
+         * the method
+         */
+        if (MethodNode && MethodNode->Child)
+        {
+            AcpiNsDeleteNamespaceSubtree (MethodNode);
+        }
+
+        /*
+         * Delete any namespace entries created anywhere else within
+         * the namespace by the execution of this method
+         */
+        AcpiNsDeleteNamespaceByOwner (MethodDesc->Method.OwnerId);
+        Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     }
 
-    /*
-     * Delete any namespace entries created immediately underneath
-     * the method
-     */
-    if (MethodNode && MethodNode->Child)
-    {
-        AcpiNsDeleteNamespaceSubtree (MethodNode);
-    }
+    /* Decrement the thread count on the method */
 
-    /*
-     * Delete any namespace entries created anywhere else within
-     * the namespace by the execution of this method
-     */
-    AcpiNsDeleteNamespaceByOwner (WalkState->MethodDesc->Method.OwnerId);
-    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    if (MethodDesc->Method.ThreadCount)
+    {
+        MethodDesc->Method.ThreadCount--;
+    }
+    else
+    {
+        ACPI_ERROR ((AE_INFO,
+            "Invalid zero thread count in method"));
+    }
 
     /* Are there any other threads currently executing this method? */
 
-    if (WalkState->MethodDesc->Method.ThreadCount)
+    if (MethodDesc->Method.ThreadCount)
     {
         /*
          * Additional threads. Do not release the OwnerId in this case,
@@ -639,7 +673,7 @@ AcpiDsTerminateControlMethod (
          */
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
             "*** Completed execution of one thread, %d threads remaining\n",
-            WalkState->MethodDesc->Method.ThreadCount));
+            MethodDesc->Method.ThreadCount));
     }
     else
     {
@@ -655,16 +689,16 @@ AcpiDsTerminateControlMethod (
          * This code is here because we must wait until the last thread exits
          * before creating the synchronization semaphore.
          */
-        if ((WalkState->MethodDesc->Method.Concurrency == 1) &&
-            (!WalkState->MethodDesc->Method.Semaphore))
+        if ((MethodDesc->Method.Concurrency == 1) &&
+            (!MethodDesc->Method.Semaphore))
         {
             Status = AcpiOsCreateSemaphore (1, 1,
-                        &WalkState->MethodDesc->Method.Semaphore);
+                        &MethodDesc->Method.Semaphore);
         }
 
         /* No more threads, we can free the OwnerId */
 
-        AcpiUtReleaseOwnerId (&WalkState->MethodDesc->Method.OwnerId);
+        AcpiUtReleaseOwnerId (&MethodDesc->Method.OwnerId);
     }
 
 Exit:
