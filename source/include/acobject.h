@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.137 $
+ *       $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -163,6 +163,7 @@
 #define AOPOBJ_OBJECT_INITIALIZED   0x08
 #define AOPOBJ_SETUP_COMPLETE       0x10
 #define AOPOBJ_SINGLE_DATUM         0x20
+#define AOPOBJ_INVALID              0x40 /* Used if host OS won't allow an OpRegion address */
 
 
 /******************************************************************************

@@ -779,8 +779,6 @@ AcpiOsBreakpoint (
     char                    *Msg)
 {
 
-    /* Print the message and do an INT 3 */
-
     if (Msg)
     {
         AcpiOsPrintf ("AcpiOsBreakpoint: %s ****\n", Msg);
@@ -789,7 +787,6 @@ AcpiOsBreakpoint (
     {
         AcpiOsPrintf ("At AcpiOsBreakpoint ****\n");
     }
-
 
     return AE_OK;
 }
@@ -869,6 +866,33 @@ AcpiOsGetTimer (void)
     /* Seconds * 10^7 = 100ns(10^-7), Microseconds(10^-6) * 10^1 = 100ns */
 
     return (((UINT64) time.tv_sec * 10000000) + ((UINT64) time.tv_usec * 10));
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsValidateAddress
+ *
+ * PARAMETERS:  SpaceId             - ACPI space ID
+ *              Address             - Physical address
+ *              Length              - Address length
+ *
+ * RETURN:      AE_OK if Address/Length is valid for the SpaceId. Otherwise,
+ *              should return AE_AML_ILLEGAL_ADDRESS.
+ *
+ * DESCRIPTION: Validate a system address via the host OS. Used to validate
+ *              the addresses accessed by AML operation regions.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsValidateAddress (
+    UINT8                   SpaceId,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    ACPI_SIZE               Length)
+{
+
+    return (AE_OK);
 }
 
 

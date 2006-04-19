@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -1252,6 +1252,33 @@ AcpiOsSleep (
 
     Sleep (((unsigned long) milliseconds) + 10);
     return;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsValidateAddress
+ *
+ * PARAMETERS:  SpaceId             - ACPI space ID
+ *              Address             - Physical address
+ *              Length              - Address length
+ *
+ * RETURN:      AE_OK if Address/Length is valid for the SpaceId. Otherwise,
+ *              should return AE_AML_ILLEGAL_ADDRESS.
+ *
+ * DESCRIPTION: Validate a system address via the host OS. Used to validate
+ *              the addresses accessed by AML operation regions.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsValidateAddress (
+    UINT8                   SpaceId,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    ACPI_SIZE               Length)
+{
+
+    return (AE_OK);
 }
 
 

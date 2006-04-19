@@ -383,6 +383,12 @@ AcpiOsDerivePciId(
 /*
  * Miscellaneous
  */
+ACPI_STATUS
+AcpiOsValidateAddress (
+    UINT8                   SpaceId,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    ACPI_SIZE               Length);
+
 BOOLEAN
 AcpiOsReadable (
     void                    *Pointer,

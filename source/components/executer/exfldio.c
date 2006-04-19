@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -201,6 +201,17 @@ AcpiExSetupRegion (
         }
     }
 
+    /* Exit if Address/Length have been disallowed by the host OS */
+
+    if (RgnDesc->Common.Flags & AOPOBJ_INVALID)
+    {
+        return_ACPI_STATUS (AE_AML_ILLEGAL_ADDRESS);
+    }
+
+    /*
+     * Exit now for SMBus address space, it has a non-linear address space
+     * and the request cannot be directly validated 
+     */
     if (RgnDesc->Region.SpaceId == ACPI_ADR_SPACE_SMBUS)
     {
         /* SMBus has a non-linear address space */
