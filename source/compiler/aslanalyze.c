@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -1946,6 +1946,7 @@ AnOtherSemanticAnalysisWalkBegin (
     void                    *Context)
 {
     ACPI_PARSE_OBJECT       *ArgNode;
+    ACPI_PARSE_OBJECT       *PrevArgNode = NULL;
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
@@ -1970,10 +1971,21 @@ AnOtherSemanticAnalysisWalkBegin (
             ArgNode = Op->Asl.Child;
             while (ArgNode->Asl.Next)
             {
+                PrevArgNode = ArgNode;
                 ArgNode = ArgNode->Asl.Next;
             }
 
-            if (ArgNode->Asl.ParseOpcode == PARSEOP_ZERO)
+            /* Divide() is the only weird case, it has two targets */
+
+            if (Op->Asl.AmlOpcode == AML_DIVIDE_OP)
+            {
+                if ((ArgNode->Asl.ParseOpcode == PARSEOP_ZERO) &&
+                    (PrevArgNode->Asl.ParseOpcode == PARSEOP_ZERO))
+                {
+                    AslError (ASL_WARNING, ASL_MSG_RESULT_NOT_USED, Op, Op->Asl.ExternalName);
+                }
+            }
+            else if (ArgNode->Asl.ParseOpcode == PARSEOP_ZERO)
             {
                 AslError (ASL_WARNING, ASL_MSG_RESULT_NOT_USED, Op, Op->Asl.ExternalName);
             }
