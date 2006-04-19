@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@ AcpiLoadTables (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiLoadTables");
+    ACPI_FUNCTION_TRACE (AcpiLoadTables);
 
 
     /* Get the RSDP */
@@ -237,7 +237,7 @@ AcpiLoadTable (
     ACPI_POINTER            Address;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiLoadTable");
+    ACPI_FUNCTION_TRACE (AcpiLoadTable);
 
 
     if (!TablePtr)
@@ -335,7 +335,7 @@ AcpiUnloadTable (
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiUnloadTable");
+    ACPI_FUNCTION_TRACE (AcpiUnloadTable);
 
 
     /* Parameter validation */
@@ -401,7 +401,7 @@ AcpiGetTableHeader (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetTableHeader");
+    ACPI_FUNCTION_TRACE (AcpiGetTableHeader);
 
 
     if ((Instance == 0)                   ||
@@ -480,7 +480,7 @@ AcpiGetTable (
     ACPI_SIZE               TableLength;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetTable");
+    ACPI_FUNCTION_TRACE (AcpiGetTable);
 
 
     /* Parameter validation */

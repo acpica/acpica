@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psscope - Parser scope stack management routines
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -189,7 +189,7 @@ AcpiPsInitScope (
     ACPI_GENERIC_STATE      *Scope;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("PsInitScope", RootOp);
+    ACPI_FUNCTION_TRACE_PTR (PsInitScope, RootOp);
 
 
     Scope = AcpiUtCreateGenericState ();
@@ -236,7 +236,7 @@ AcpiPsPushScope (
     ACPI_GENERIC_STATE      *Scope;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("PsPushScope", Op);
+    ACPI_FUNCTION_TRACE_PTR (PsPushScope, Op);
 
 
     Scope = AcpiUtCreateGenericState ();
@@ -298,7 +298,7 @@ AcpiPsPopScope (
     ACPI_GENERIC_STATE      *Scope = ParserState->Scope;
 
 
-    ACPI_FUNCTION_TRACE ("PsPopScope");
+    ACPI_FUNCTION_TRACE (PsPopScope);
 
 
     /* Only pop the scope if there is in fact a next scope */
@@ -353,7 +353,7 @@ AcpiPsCleanupScope (
     ACPI_GENERIC_STATE      *Scope;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("PsCleanupScope", ParserState);
+    ACPI_FUNCTION_TRACE_PTR (PsCleanupScope, ParserState);
 
 
     if (!ParserState)

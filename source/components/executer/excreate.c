@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,7 @@ AcpiExCreateAlias (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExCreateAlias");
+    ACPI_FUNCTION_TRACE (ExCreateAlias);
 
 
     /* Get the source/alias operands (both namespace nodes) */
@@ -247,7 +247,7 @@ AcpiExCreateEvent (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ACPI_FUNCTION_TRACE ("ExCreateEvent");
+    ACPI_FUNCTION_TRACE (ExCreateEvent);
 
 
     ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_EVENT);
@@ -305,7 +305,7 @@ AcpiExCreateMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExCreateMutex", ACPI_WALK_OPERANDS);
+    ACPI_FUNCTION_TRACE_PTR (ExCreateMutex, ACPI_WALK_OPERANDS);
 
 
     /* Create the new mutex object */
@@ -374,7 +374,7 @@ AcpiExCreateRegion (
     ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    ACPI_FUNCTION_TRACE ("ExCreateRegion");
+    ACPI_FUNCTION_TRACE (ExCreateRegion);
 
 
     /* Get the Namespace Node */
@@ -466,7 +466,7 @@ AcpiExCreateTableRegion (
     ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    ACPI_FUNCTION_TRACE ("ExCreateTableRegion");
+    ACPI_FUNCTION_TRACE (ExCreateTableRegion);
 
 
     /* Get the Node from the object stack  */
@@ -566,7 +566,7 @@ AcpiExCreateProcessor (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExCreateProcessor", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (ExCreateProcessor, WalkState);
 
 
     /* Create the processor object */
@@ -618,7 +618,7 @@ AcpiExCreatePowerResource (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExCreatePowerResource", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (ExCreatePowerResource, WalkState);
 
 
     /* Create the power resource object */
@@ -673,7 +673,7 @@ AcpiExCreateMethod (
     UINT8                   MethodFlags;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExCreateMethod", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (ExCreateMethod, WalkState);
 
 
     /* Create a new method object */

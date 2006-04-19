@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.162 $
+ *              $Revision: 1.163 $
  *
  *****************************************************************************/
 
@@ -172,7 +172,7 @@ AcpiEvInstallRegionHandlers (
     ACPI_NATIVE_UINT        i;
 
 
-    ACPI_FUNCTION_TRACE ("EvInstallRegionHandlers");
+    ACPI_FUNCTION_TRACE (EvInstallRegionHandlers);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -248,7 +248,7 @@ AcpiEvInitializeOpRegions (
     ACPI_NATIVE_UINT        i;
 
 
-    ACPI_FUNCTION_TRACE ("EvInitializeOpRegions");
+    ACPI_FUNCTION_TRACE (EvInitializeOpRegions);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -298,7 +298,7 @@ AcpiEvExecuteRegMethod (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvExecuteRegMethod");
+    ACPI_FUNCTION_TRACE (EvExecuteRegMethod);
 
 
     RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
@@ -393,7 +393,7 @@ AcpiEvAddressSpaceDispatch (
     void                    *RegionContext = NULL;
 
 
-    ACPI_FUNCTION_TRACE ("EvAddressSpaceDispatch");
+    ACPI_FUNCTION_TRACE (EvAddressSpaceDispatch);
 
 
     RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
@@ -565,7 +565,7 @@ AcpiEvDetachRegion(
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvDetachRegion");
+    ACPI_FUNCTION_TRACE (EvDetachRegion);
 
 
     RegionObj2 = AcpiNsGetSecondaryObject (RegionObj);
@@ -702,7 +702,7 @@ AcpiEvAttachRegion (
     BOOLEAN                 AcpiNsIsLocked)
 {
 
-    ACPI_FUNCTION_TRACE ("EvAttachRegion");
+    ACPI_FUNCTION_TRACE (EvAttachRegion);
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION,
@@ -761,7 +761,7 @@ AcpiEvInstallHandler (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_NAME ("EvInstallHandler");
+    ACPI_FUNCTION_NAME (EvInstallHandler);
 
 
     HandlerObj = (ACPI_OPERAND_OBJECT  *) Context;
@@ -901,7 +901,7 @@ AcpiEvInstallSpaceHandler (
     UINT8                  Flags = 0;
 
 
-    ACPI_FUNCTION_TRACE ("EvInstallSpaceHandler");
+    ACPI_FUNCTION_TRACE (EvInstallSpaceHandler);
 
 
     /*
@@ -1133,7 +1133,7 @@ AcpiEvExecuteRegMethods (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvExecuteRegMethods");
+    ACPI_FUNCTION_TRACE (EvExecuteRegMethods);
 
 
     /*

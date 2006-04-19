@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.197 $
+ *              $Revision: 1.198 $
  *
  *****************************************************************************/
 
@@ -551,7 +551,7 @@ AcpiExDumpOperand (
     UINT32                  Index;
 
 
-    ACPI_FUNCTION_NAME ("ExDumpOperand")
+    ACPI_FUNCTION_NAME (ExDumpOperand)
 
 
     if (!((ACPI_LV_EXEC & AcpiDbgLevel) && (_COMPONENT & AcpiDbgLayer)))
@@ -909,7 +909,7 @@ AcpiExDumpOperands (
     ACPI_NATIVE_UINT        i;
 
 
-    ACPI_FUNCTION_NAME ("ExDumpOperands");
+    ACPI_FUNCTION_NAME (ExDumpOperands);
 
 
     if (!Ident)
@@ -1192,7 +1192,7 @@ AcpiExDumpObjectDescriptor (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     UINT32                  Flags)
 {
-    ACPI_FUNCTION_TRACE ("ExDumpObjectDescriptor");
+    ACPI_FUNCTION_TRACE (ExDumpObjectDescriptor);
 
 
     if (!ObjDesc)

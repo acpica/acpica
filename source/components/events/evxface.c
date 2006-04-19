@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.159 $
+ *              $Revision: 1.160 $
  *
  *****************************************************************************/
 
@@ -146,7 +146,7 @@ AcpiInstallExceptionHandler (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiInstallExceptionHandler");
+    ACPI_FUNCTION_TRACE (AcpiInstallExceptionHandler);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
@@ -200,7 +200,7 @@ AcpiInstallFixedEventHandler (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiInstallFixedEventHandler");
+    ACPI_FUNCTION_TRACE (AcpiInstallFixedEventHandler);
 
 
     /* Parameter validation */
@@ -275,7 +275,7 @@ AcpiRemoveFixedEventHandler (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiRemoveFixedEventHandler");
+    ACPI_FUNCTION_TRACE (AcpiRemoveFixedEventHandler);
 
 
     /* Parameter validation */
@@ -348,7 +348,7 @@ AcpiInstallNotifyHandler (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiInstallNotifyHandler");
+    ACPI_FUNCTION_TRACE (AcpiInstallNotifyHandler);
 
 
     /* Parameter validation */
@@ -535,7 +535,7 @@ AcpiRemoveNotifyHandler (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiRemoveNotifyHandler");
+    ACPI_FUNCTION_TRACE (AcpiRemoveNotifyHandler);
 
 
     /* Parameter validation */
@@ -690,7 +690,7 @@ AcpiInstallGpeHandler (
     ACPI_CPU_FLAGS          Flags;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiInstallGpeHandler");
+    ACPI_FUNCTION_TRACE (AcpiInstallGpeHandler);
 
 
     /* Parameter validation */
@@ -792,7 +792,7 @@ AcpiRemoveGpeHandler (
     ACPI_CPU_FLAGS          Flags;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiRemoveGpeHandler");
+    ACPI_FUNCTION_TRACE (AcpiRemoveGpeHandler);
 
 
     /* Parameter validation */

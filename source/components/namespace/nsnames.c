@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  ******************************************************************************/
 
@@ -221,7 +221,7 @@ AcpiNsGetExternalPathname (
     ACPI_SIZE               Size;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("NsGetExternalPathname", Node);
+    ACPI_FUNCTION_TRACE_PTR (NsGetExternalPathname, Node);
 
 
     /* Calculate required buffer size based on depth below root */
@@ -314,7 +314,7 @@ AcpiNsHandleToPathname (
     ACPI_SIZE               RequiredSize;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("NsHandleToPathname", TargetHandle);
+    ACPI_FUNCTION_TRACE_PTR (NsHandleToPathname, TargetHandle);
 
 
     Node = AcpiNsMapHandleToNode (TargetHandle);

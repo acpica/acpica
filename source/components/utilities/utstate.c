@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utstate - state object support procedures
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  ******************************************************************************/
 
@@ -179,7 +179,7 @@ AcpiUtPushGenericState (
     ACPI_GENERIC_STATE      **ListHead,
     ACPI_GENERIC_STATE      *State)
 {
-    ACPI_FUNCTION_TRACE ("UtPushGenericState");
+    ACPI_FUNCTION_TRACE (UtPushGenericState);
 
 
     /* Push the state object onto the front of the list (stack) */
@@ -210,7 +210,7 @@ AcpiUtPopGenericState (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_TRACE ("UtPopGenericState");
+    ACPI_FUNCTION_TRACE (UtPopGenericState);
 
 
     /* Remove the state object at the head of the list (stack) */
@@ -281,7 +281,7 @@ AcpiUtCreateThreadState (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_TRACE ("UtCreateThreadState");
+    ACPI_FUNCTION_TRACE (UtCreateThreadState);
 
 
     /* Create the generic state object */
@@ -324,7 +324,7 @@ AcpiUtCreateUpdateState (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("UtCreateUpdateState", Object);
+    ACPI_FUNCTION_TRACE_PTR (UtCreateUpdateState, Object);
 
 
     /* Create the generic state object */
@@ -367,7 +367,7 @@ AcpiUtCreatePkgState (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("UtCreatePkgState", InternalObject);
+    ACPI_FUNCTION_TRACE_PTR (UtCreatePkgState, InternalObject);
 
 
     /* Create the generic state object */
@@ -410,7 +410,7 @@ AcpiUtCreateControlState (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_TRACE ("UtCreateControlState");
+    ACPI_FUNCTION_TRACE (UtCreateControlState);
 
 
     /* Create the generic state object */
@@ -447,7 +447,7 @@ void
 AcpiUtDeleteGenericState (
     ACPI_GENERIC_STATE      *State)
 {
-    ACPI_FUNCTION_TRACE ("UtDeleteGenericState");
+    ACPI_FUNCTION_TRACE (UtDeleteGenericState);
 
 
     /* Ignore null state */

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.237 $
+ *              $Revision: 1.238 $
  *
  *****************************************************************************/
 
@@ -827,7 +827,7 @@ AcpiUtInitGlobals (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE ("UtInitGlobals");
+    ACPI_FUNCTION_TRACE (UtInitGlobals);
 
 
     /* Create all memory caches */

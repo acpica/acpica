@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  *****************************************************************************/
 
@@ -837,7 +837,7 @@ AcpiOsCreateSemaphore (
     void                *Mutex;
     UINT32              i;
 
-    ACPI_FUNCTION_NAME ("OsCreateSemaphore");
+    ACPI_FUNCTION_NAME (OsCreateSemaphore);
 #endif
 
 

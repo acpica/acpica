@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -210,7 +210,7 @@ AcpiDsLoad1BeginOp (
     UINT32                  Flags;
 
 
-    ACPI_FUNCTION_TRACE ("DsLoad1BeginOp");
+    ACPI_FUNCTION_TRACE (DsLoad1BeginOp);
 
 
     Op = WalkState->Op;
@@ -454,7 +454,7 @@ AcpiDsLoad1EndOp (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("DsLoad1EndOp");
+    ACPI_FUNCTION_TRACE (DsLoad1EndOp);
 
 
     Op = WalkState->Op;
@@ -610,7 +610,7 @@ AcpiDsLoad2BeginOp (
     char                    *BufferPtr;
 
 
-    ACPI_FUNCTION_TRACE ("DsLoad2BeginOp");
+    ACPI_FUNCTION_TRACE (DsLoad2BeginOp);
 
 
     Op = WalkState->Op;
@@ -893,7 +893,7 @@ AcpiDsLoad2EndOp (
 #endif
 
 
-    ACPI_FUNCTION_TRACE ("DsLoad2EndOp");
+    ACPI_FUNCTION_TRACE (DsLoad2EndOp);
 
     Op = WalkState->Op;
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Opcode [%s] Op %p State %p\n",

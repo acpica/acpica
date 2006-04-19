@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.140 $
+ *              $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -182,7 +182,7 @@ AcpiExGenerateAccess (
     UINT32                  Accesses;
 
 
-    ACPI_FUNCTION_TRACE ("ExGenerateAccess");
+    ACPI_FUNCTION_TRACE (ExGenerateAccess);
 
 
     /* Round Field start offset and length to "minimal" byte boundaries */
@@ -316,7 +316,7 @@ AcpiExDecodeFieldAccess (
     UINT32                  BitLength;
 
 
-    ACPI_FUNCTION_TRACE ("ExDecodeFieldAccess");
+    ACPI_FUNCTION_TRACE (ExDecodeFieldAccess);
 
 
     Access = (FieldFlags & AML_FIELD_ACCESS_TYPE_MASK);
@@ -416,7 +416,7 @@ AcpiExPrepCommonFieldObject (
     UINT32                  NearestByteAddress;
 
 
-    ACPI_FUNCTION_TRACE ("ExPrepCommonFieldObject");
+    ACPI_FUNCTION_TRACE (ExPrepCommonFieldObject);
 
 
     /*
@@ -515,7 +515,7 @@ AcpiExPrepFieldValue (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("ExPrepFieldValue");
+    ACPI_FUNCTION_TRACE (ExPrepFieldValue);
 
 
     /* Parameter validation */

@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.177 $
+ *              $Revision: 1.178 $
  *
  ******************************************************************************/
 
@@ -146,7 +146,7 @@ AcpiHwClearAcpiStatus (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("HwClearAcpiStatus");
+    ACPI_FUNCTION_TRACE (HwClearAcpiStatus);
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_IO, "About to write %04X to %04X\n",
@@ -221,7 +221,7 @@ AcpiGetSleepTypeData (
     char                    *SleepStateName;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetSleepTypeData");
+    ACPI_FUNCTION_TRACE (AcpiGetSleepTypeData);
 
 
     /* Validate parameters */
@@ -372,7 +372,7 @@ AcpiGetRegister (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetRegister");
+    ACPI_FUNCTION_TRACE (AcpiGetRegister);
 
 
     /* Get the info structure corresponding to the requested ACPI Register */
@@ -447,7 +447,7 @@ AcpiSetRegister (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("AcpiSetRegister", RegisterId);
+    ACPI_FUNCTION_TRACE_U32 (AcpiSetRegister, RegisterId);
 
 
     /* Get the info structure corresponding to the requested ACPI Register */
@@ -611,7 +611,7 @@ AcpiHwRegisterRead (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("HwRegisterRead");
+    ACPI_FUNCTION_TRACE (HwRegisterRead);
 
 
     if (ACPI_MTX_LOCK == UseLock)
@@ -730,7 +730,7 @@ AcpiHwRegisterWrite (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("HwRegisterWrite");
+    ACPI_FUNCTION_TRACE (HwRegisterWrite);
 
 
     if (ACPI_MTX_LOCK == UseLock)
@@ -855,7 +855,7 @@ AcpiHwLowLevelRead (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_NAME ("HwLowLevelRead");
+    ACPI_FUNCTION_NAME (HwLowLevelRead);
 
 
     /*
@@ -938,7 +938,7 @@ AcpiHwLowLevelWrite (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_NAME ("HwLowLevelWrite");
+    ACPI_FUNCTION_NAME (HwLowLevelWrite);
 
 
     /*

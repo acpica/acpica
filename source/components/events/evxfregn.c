@@ -2,7 +2,7 @@
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiInstallAddressSpaceHandler (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiInstallAddressSpaceHandler");
+    ACPI_FUNCTION_TRACE (AcpiInstallAddressSpaceHandler);
 
 
     /* Parameter validation */
@@ -226,7 +226,7 @@ AcpiRemoveAddressSpaceHandler (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiRemoveAddressSpaceHandler");
+    ACPI_FUNCTION_TRACE (AcpiRemoveAddressSpaceHandler);
 
 
     /* Parameter validation */

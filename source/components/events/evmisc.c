@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -212,7 +212,7 @@ AcpiEvQueueNotifyRequest (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_NAME ("EvQueueNotifyRequest");
+    ACPI_FUNCTION_NAME (EvQueueNotifyRequest);
 
 
     /*
@@ -490,7 +490,7 @@ AcpiEvInitGlobalLockHandler (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvInitGlobalLockHandler");
+    ACPI_FUNCTION_TRACE (EvInitGlobalLockHandler);
 
 
     AcpiGbl_GlobalLockPresent = TRUE;
@@ -537,7 +537,7 @@ AcpiEvAcquireGlobalLock (
     BOOLEAN                 Acquired = FALSE;
 
 
-    ACPI_FUNCTION_TRACE ("EvAcquireGlobalLock");
+    ACPI_FUNCTION_TRACE (EvAcquireGlobalLock);
 
 
 #ifndef ACPI_APPLICATION
@@ -611,7 +611,7 @@ AcpiEvReleaseGlobalLock (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("EvReleaseGlobalLock");
+    ACPI_FUNCTION_TRACE (EvReleaseGlobalLock);
 
 
     if (!AcpiGbl_GlobalLockThreadCount)
@@ -672,7 +672,7 @@ AcpiEvTerminate (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvTerminate");
+    ACPI_FUNCTION_TRACE (EvTerminate);
 
 
     if (AcpiGbl_EventsInitialized)

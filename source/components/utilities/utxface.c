@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.120 $
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -146,7 +146,7 @@ AcpiInitializeSubsystem (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiInitializeSubsystem");
+    ACPI_FUNCTION_TRACE (AcpiInitializeSubsystem);
 
 
     ACPI_DEBUG_EXEC (AcpiUtInitStackPtrTrace ());
@@ -213,7 +213,7 @@ AcpiEnableSubsystem (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiEnableSubsystem");
+    ACPI_FUNCTION_TRACE (AcpiEnableSubsystem);
 
 
     /*
@@ -351,7 +351,7 @@ AcpiInitializeObjects (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiInitializeObjects");
+    ACPI_FUNCTION_TRACE (AcpiInitializeObjects);
 
 
     /*
@@ -439,7 +439,7 @@ AcpiTerminate (
     ACPI_STATUS         Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiTerminate");
+    ACPI_FUNCTION_TRACE (AcpiTerminate);
 
 
     /* Terminate the AML Debugger if present */
@@ -531,7 +531,7 @@ AcpiGetSystemInfo (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetSystemInfo");
+    ACPI_FUNCTION_TRACE (AcpiGetSystemInfo);
 
 
     /* Parameter validation */
@@ -654,7 +654,7 @@ ACPI_STATUS
 AcpiPurgeCachedObjects (
     void)
 {
-    ACPI_FUNCTION_TRACE ("AcpiPurgeCachedObjects");
+    ACPI_FUNCTION_TRACE (AcpiPurgeCachedObjects);
 
     (void) AcpiOsPurgeCache (AcpiGbl_StateCache);
     (void) AcpiOsPurgeCache (AcpiGbl_OperandCache);

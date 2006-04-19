@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.160 $
+ *              $Revision: 1.161 $
  *
  *****************************************************************************/
 
@@ -387,7 +387,7 @@ AcpiUtAllocate (
     void                    *Allocation;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("UtAllocate", Size);
+    ACPI_FUNCTION_TRACE_U32 (UtAllocate, Size);
 
 
     /* Check for an inadvertent size of zero bytes */

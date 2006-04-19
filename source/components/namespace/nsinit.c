@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  *****************************************************************************/
 
@@ -170,7 +170,7 @@ AcpiNsInitializeObjects (
     ACPI_INIT_WALK_INFO     Info;
 
 
-    ACPI_FUNCTION_TRACE ("NsInitializeObjects");
+    ACPI_FUNCTION_TRACE (NsInitializeObjects);
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
@@ -232,7 +232,7 @@ AcpiNsInitializeDevices (
     ACPI_DEVICE_WALK_INFO   Info;
 
 
-    ACPI_FUNCTION_TRACE ("NsInitializeDevices");
+    ACPI_FUNCTION_TRACE (NsInitializeDevices);
 
 
     /* Init counters */
@@ -304,7 +304,7 @@ AcpiNsInitOneObject (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ACPI_FUNCTION_NAME ("NsInitOneObject");
+    ACPI_FUNCTION_NAME (NsInitOneObject);
 
 
     Info->ObjectCount++;
@@ -523,7 +523,7 @@ AcpiNsInitOneDevice (
     ACPI_NAMESPACE_NODE     *DeviceNode;
 
 
-    ACPI_FUNCTION_TRACE ("NsInitOneDevice");
+    ACPI_FUNCTION_TRACE (NsInitOneDevice);
 
 
     /* We are interested in Devices, Processors and ThermalZones only */

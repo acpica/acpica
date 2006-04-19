@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -159,7 +159,7 @@ AcpiExResolveToValue (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExResolveToValue", StackPtr);
+    ACPI_FUNCTION_TRACE_PTR (ExResolveToValue, StackPtr);
 
 
     if (!StackPtr || !*StackPtr)
@@ -234,7 +234,7 @@ AcpiExResolveObjectToValue (
     UINT16                  Opcode;
 
 
-    ACPI_FUNCTION_TRACE ("ExResolveObjectToValue");
+    ACPI_FUNCTION_TRACE (ExResolveObjectToValue);
 
 
     StackDesc = *StackPtr;
@@ -435,7 +435,7 @@ AcpiExResolveMultiple (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiExResolveMultiple");
+    ACPI_FUNCTION_TRACE (AcpiExResolveMultiple);
 
 
     /* Operand can be either a namespace node or an operand descriptor */

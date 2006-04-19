@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.120 $
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -172,7 +172,7 @@ AcpiExSetupRegion (
     ACPI_OPERAND_OBJECT     *RgnDesc;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("ExSetupRegion", FieldDatumByteOffset);
+    ACPI_FUNCTION_TRACE_U32 (ExSetupRegion, FieldDatumByteOffset);
 
 
     RgnDesc = ObjDesc->CommonField.RegionObj;
@@ -323,7 +323,7 @@ AcpiExAccessRegion (
     ACPI_PHYSICAL_ADDRESS   Address;
 
 
-    ACPI_FUNCTION_TRACE ("ExAccessRegion");
+    ACPI_FUNCTION_TRACE (ExAccessRegion);
 
 
     /*
@@ -470,7 +470,7 @@ AcpiExFieldDatumIo (
     ACPI_INTEGER            LocalValue;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("ExFieldDatumIo", FieldDatumByteOffset);
+    ACPI_FUNCTION_TRACE_U32 (ExFieldDatumIo, FieldDatumByteOffset);
 
 
     if (ReadWrite == ACPI_READ)
@@ -691,7 +691,7 @@ AcpiExWriteWithUpdateRule (
     ACPI_INTEGER            CurrentValue;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("ExWriteWithUpdateRule", Mask);
+    ACPI_FUNCTION_TRACE_U32 (ExWriteWithUpdateRule, Mask);
 
 
     /* Start with the new bits  */
@@ -800,7 +800,7 @@ AcpiExExtractFromField (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE ("ExExtractFromField");
+    ACPI_FUNCTION_TRACE (ExExtractFromField);
 
 
     /* Validate target buffer and clear it */
@@ -921,7 +921,7 @@ AcpiExInsertIntoField (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE ("ExInsertIntoField");
+    ACPI_FUNCTION_TRACE (ExInsertIntoField);
 
 
     /* Validate input buffer */

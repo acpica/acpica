@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -195,7 +195,7 @@ AcpiUtOsiImplementation (
     ACPI_NATIVE_UINT        i;
 
 
-    ACPI_FUNCTION_TRACE ("UtOsiImplementation");
+    ACPI_FUNCTION_TRACE (UtOsiImplementation);
 
 
     /* Validate the string input argument */
@@ -277,7 +277,7 @@ AcpiUtEvaluateObject (
     UINT32                  ReturnBtype;
 
 
-    ACPI_FUNCTION_TRACE ("UtEvaluateObject");
+    ACPI_FUNCTION_TRACE (UtEvaluateObject);
 
 
     Info.Node = PrefixNode;
@@ -407,7 +407,7 @@ AcpiUtEvaluateNumericObject (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtEvaluateNumericObject");
+    ACPI_FUNCTION_TRACE (UtEvaluateNumericObject);
 
 
     Status = AcpiUtEvaluateObject (DeviceNode, ObjectName,
@@ -493,7 +493,7 @@ AcpiUtExecute_HID (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtExecute_HID");
+    ACPI_FUNCTION_TRACE (UtExecute_HID);
 
 
     Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__HID,
@@ -606,7 +606,7 @@ AcpiUtExecute_CID (
     ACPI_NATIVE_UINT        i;
 
 
-    ACPI_FUNCTION_TRACE ("UtExecute_CID");
+    ACPI_FUNCTION_TRACE (UtExecute_CID);
 
 
     /* Evaluate the _CID method for this device */
@@ -716,7 +716,7 @@ AcpiUtExecute_UID (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtExecute_UID");
+    ACPI_FUNCTION_TRACE (UtExecute_UID);
 
 
     Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__UID,
@@ -772,7 +772,7 @@ AcpiUtExecute_STA (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtExecute_STA");
+    ACPI_FUNCTION_TRACE (UtExecute_STA);
 
 
     Status = AcpiUtEvaluateObject (DeviceNode, METHOD_NAME__STA,
@@ -829,7 +829,7 @@ AcpiUtExecute_Sxds (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE ("UtExecute_Sxds");
+    ACPI_FUNCTION_TRACE (UtExecute_Sxds);
 
 
     for (i = 0; i < 4; i++)

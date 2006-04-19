@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -232,7 +232,7 @@ AcpiExResolveOperands (
     UINT16                  TargetOp = 0;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("ExResolveOperands", Opcode);
+    ACPI_FUNCTION_TRACE_U32 (ExResolveOperands, Opcode);
 
 
     OpInfo = AcpiPsGetOpcodeInfo (Opcode);

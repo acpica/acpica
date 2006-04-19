@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -163,7 +163,7 @@ AcpiNsLoadTable (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("NsLoadTable");
+    ACPI_FUNCTION_TRACE (NsLoadTable);
 
 
     /* Check if table contains valid AML (must be DSDT, PSDT, SSDT, etc.) */
@@ -262,7 +262,7 @@ AcpiNsLoadTableByType (
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    ACPI_FUNCTION_TRACE ("NsLoadTableByType");
+    ACPI_FUNCTION_TRACE (NsLoadTableByType);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_TABLES);
@@ -364,7 +364,7 @@ AcpiNsLoadNamespace (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiLoadNameSpace");
+    ACPI_FUNCTION_TRACE (AcpiLoadNameSpace);
 
 
     /* There must be at least a DSDT installed */
@@ -427,7 +427,7 @@ AcpiNsDeleteSubtree (
     UINT32                  Level;
 
 
-    ACPI_FUNCTION_TRACE ("NsDeleteSubtree");
+    ACPI_FUNCTION_TRACE (NsDeleteSubtree);
 
 
     ParentHandle = StartHandle;
@@ -515,7 +515,7 @@ AcpiNsUnloadNamespace (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("NsUnloadNameSpace");
+    ACPI_FUNCTION_TRACE (NsUnloadNameSpace);
 
 
     /* Parameter validation */

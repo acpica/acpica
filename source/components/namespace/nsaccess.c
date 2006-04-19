@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.197 $
+ *              $Revision: 1.198 $
  *
  ******************************************************************************/
 
@@ -151,7 +151,7 @@ AcpiNsRootInitialize (
     ACPI_STRING                 Val = NULL;
 
 
-    ACPI_FUNCTION_TRACE ("NsRootInitialize");
+    ACPI_FUNCTION_TRACE (NsRootInitialize);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -400,7 +400,7 @@ AcpiNsLookup (
                                                    ACPI_NS_SEARCH_PARENT);
 
 
-    ACPI_FUNCTION_TRACE ("NsLookup");
+    ACPI_FUNCTION_TRACE (NsLookup);
 
 
     if (!ReturnNode)

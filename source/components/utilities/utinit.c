@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.128 $
+ *              $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -274,7 +274,7 @@ AcpiUtTerminate (
     ACPI_GPE_XRUPT_INFO     *NextGpeXruptInfo;
 
 
-    ACPI_FUNCTION_TRACE ("UtTerminate");
+    ACPI_FUNCTION_TRACE (UtTerminate);
 
 
     /* Free global tables, etc. */
@@ -320,7 +320,7 @@ AcpiUtSubsystemShutdown (
     void)
 {
 
-    ACPI_FUNCTION_TRACE ("UtSubsystemShutdown");
+    ACPI_FUNCTION_TRACE (UtSubsystemShutdown);
 
     /* Just exit if subsystem is already shutdown */
 

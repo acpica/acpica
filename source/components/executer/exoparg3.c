@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  *****************************************************************************/
 
@@ -172,7 +172,7 @@ AcpiExOpcode_3A_0T_0R (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_0T_0R",
+    ACPI_FUNCTION_TRACE_STR (ExOpcode_3A_0T_0R,
         AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
@@ -243,7 +243,7 @@ AcpiExOpcode_3A_1T_1R (
     ACPI_SIZE               Length;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_3A_1T_1R",
+    ACPI_FUNCTION_TRACE_STR (ExOpcode_3A_1T_1R,
         AcpiPsGetOpcodeName (WalkState->Opcode));
 
 

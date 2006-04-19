@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils - Table manipulation utilities
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -154,7 +154,7 @@ AcpiTbIsTableInstalled (
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    ACPI_FUNCTION_TRACE ("TbIsTableInstalled");
+    ACPI_FUNCTION_TRACE (TbIsTableInstalled);
 
 
     /* Get the list descriptor and first table descriptor */
@@ -390,7 +390,7 @@ AcpiTbVerifyTableChecksum (
     UINT8                   Checksum;
 
 
-    ACPI_FUNCTION_TRACE ("TbVerifyTableChecksum");
+    ACPI_FUNCTION_TRACE (TbVerifyTableChecksum);
 
 
     /* Compute the checksum on the table */
@@ -436,7 +436,7 @@ AcpiTbHandleToObject (
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    ACPI_FUNCTION_NAME ("TbHandleToObject");
+    ACPI_FUNCTION_NAME (TbHandleToObject);
 
 
     for (i = 0; i < ACPI_TABLE_MAX; i++)

@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.150 $
+ *              $Revision: 1.151 $
  *
  *****************************************************************************/
 
@@ -353,7 +353,7 @@ ACPI_OBJECT_TYPE
 AcpiNsGetType (
     ACPI_NAMESPACE_NODE     *Node)
 {
-    ACPI_FUNCTION_TRACE ("NsGetType");
+    ACPI_FUNCTION_TRACE (NsGetType);
 
 
     if (!Node)
@@ -383,7 +383,7 @@ UINT32
 AcpiNsLocal (
     ACPI_OBJECT_TYPE        Type)
 {
-    ACPI_FUNCTION_TRACE ("NsLocal");
+    ACPI_FUNCTION_TRACE (NsLocal);
 
 
     if (!AcpiUtValidObjectType (Type))
@@ -500,7 +500,7 @@ AcpiNsBuildInternalName (
     ACPI_NATIVE_UINT        i;
 
 
-    ACPI_FUNCTION_TRACE ("NsBuildInternalName");
+    ACPI_FUNCTION_TRACE (NsBuildInternalName);
 
 
     /* Setup the correct prefixes, counts, and pointers */
@@ -637,7 +637,7 @@ AcpiNsInternalizeName (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("NsInternalizeName");
+    ACPI_FUNCTION_TRACE (NsInternalizeName);
 
 
     if ((!ExternalName)      ||
@@ -707,7 +707,7 @@ AcpiNsExternalizeName (
     ACPI_NATIVE_UINT        j = 0;
 
 
-    ACPI_FUNCTION_TRACE ("NsExternalizeName");
+    ACPI_FUNCTION_TRACE (NsExternalizeName);
 
 
     if (!InternalNameLength     ||
@@ -961,7 +961,7 @@ AcpiNsTerminate (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ACPI_FUNCTION_TRACE ("NsTerminate");
+    ACPI_FUNCTION_TRACE (NsTerminate);
 
 
     /*
@@ -1006,7 +1006,7 @@ UINT32
 AcpiNsOpensScope (
     ACPI_OBJECT_TYPE        Type)
 {
-    ACPI_FUNCTION_TRACE_STR ("NsOpensScope", AcpiUtGetTypeName (Type));
+    ACPI_FUNCTION_TRACE_STR (NsOpensScope, AcpiUtGetTypeName (Type));
 
 
     if (!AcpiUtValidObjectType (Type))
@@ -1055,7 +1055,7 @@ AcpiNsGetNodeByPath (
     char                    *InternalPath = NULL;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("NsGetNodeByPath", Pathname);
+    ACPI_FUNCTION_TRACE_PTR (NsGetNodeByPath, Pathname);
 
 
     if (Pathname)
@@ -1196,7 +1196,7 @@ AcpiNsFindParentName (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    ACPI_FUNCTION_TRACE ("NsFindParentName");
+    ACPI_FUNCTION_TRACE (NsFindParentName);
 
 
     if (ChildNode)

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -585,7 +585,7 @@ AcpiRsGetPrtMethodData (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetPrtMethodData");
+    ACPI_FUNCTION_TRACE (RsGetPrtMethodData);
 
 
     /* Parameters guaranteed valid by caller */
@@ -639,7 +639,7 @@ AcpiRsGetCrsMethodData (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetCrsMethodData");
+    ACPI_FUNCTION_TRACE (RsGetCrsMethodData);
 
 
     /* Parameters guaranteed valid by caller */
@@ -694,7 +694,7 @@ AcpiRsGetPrsMethodData (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetPrsMethodData");
+    ACPI_FUNCTION_TRACE (RsGetPrsMethodData);
 
 
     /* Parameters guaranteed valid by caller */
@@ -751,7 +751,7 @@ AcpiRsGetMethodData (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetMethodData");
+    ACPI_FUNCTION_TRACE (RsGetMethodData);
 
 
     /* Parameters guaranteed valid by caller */
@@ -806,7 +806,7 @@ AcpiRsSetSrsMethodData (
     ACPI_BUFFER             Buffer;
 
 
-    ACPI_FUNCTION_TRACE ("RsSetSrsMethodData");
+    ACPI_FUNCTION_TRACE (RsSetSrsMethodData);
 
 
     /* Parameters guaranteed valid by caller */

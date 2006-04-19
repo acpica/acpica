@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -824,7 +824,7 @@ LkNamespaceLocateBegin (
     UINT32                  Flags;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("LkNamespaceLocateBegin", Op);
+    ACPI_FUNCTION_TRACE_PTR (LkNamespaceLocateBegin, Op);
 
     /*
      * If this node is the actual declaration of a name
@@ -1327,7 +1327,7 @@ LkNamespaceLocateEnd (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
-    ACPI_FUNCTION_TRACE ("LkNamespaceLocateEnd");
+    ACPI_FUNCTION_TRACE (LkNamespaceLocateEnd);
 
 
     /* We are only interested in opcodes that have an associated name */

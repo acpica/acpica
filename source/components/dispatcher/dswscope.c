@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -143,7 +143,7 @@ AcpiDsScopeStackClear (
 {
     ACPI_GENERIC_STATE      *ScopeInfo;
 
-    ACPI_FUNCTION_NAME ("DsScopeStackClear");
+    ACPI_FUNCTION_NAME (DsScopeStackClear);
 
 
     while (WalkState->ScopeInfo)
@@ -186,7 +186,7 @@ AcpiDsScopeStackPush (
     ACPI_GENERIC_STATE      *OldScopeInfo;
 
 
-    ACPI_FUNCTION_TRACE ("DsScopeStackPush");
+    ACPI_FUNCTION_TRACE (DsScopeStackPush);
 
 
     if (!Node)
@@ -270,7 +270,7 @@ AcpiDsScopeStackPop (
     ACPI_GENERIC_STATE      *NewScopeInfo;
 
 
-    ACPI_FUNCTION_TRACE ("DsScopeStackPop");
+    ACPI_FUNCTION_TRACE (DsScopeStackPop);
 
 
     /*

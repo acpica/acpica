@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@ AcpiExSystemWaitSemaphore (
     ACPI_STATUS             Status2;
 
 
-    ACPI_FUNCTION_TRACE ("ExSystemWaitSemaphore");
+    ACPI_FUNCTION_TRACE (ExSystemWaitSemaphore);
 
 
     Status = AcpiOsWaitSemaphore (Semaphore, 1, 0);
@@ -292,7 +292,7 @@ AcpiExSystemAcquireMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExSystemAcquireMutex", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExSystemAcquireMutex, ObjDesc);
 
 
     if (!ObjDesc)
@@ -336,7 +336,7 @@ AcpiExSystemReleaseMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExSystemReleaseMutex");
+    ACPI_FUNCTION_TRACE (ExSystemReleaseMutex);
 
 
     if (!ObjDesc)
@@ -377,7 +377,7 @@ AcpiExSystemSignalEvent (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExSystemSignalEvent");
+    ACPI_FUNCTION_TRACE (ExSystemSignalEvent);
 
 
     if (ObjDesc)
@@ -412,7 +412,7 @@ AcpiExSystemWaitEvent (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExSystemWaitEvent");
+    ACPI_FUNCTION_TRACE (ExSystemWaitEvent);
 
 
     if (ObjDesc)

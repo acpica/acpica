@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  ******************************************************************************/
 
@@ -152,7 +152,7 @@ AcpiRsConvertAmlToResources (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("RsConvertAmlToResources");
+    ACPI_FUNCTION_TRACE (RsConvertAmlToResources);
 
 
     /*
@@ -220,7 +220,7 @@ AcpiRsConvertResourcesToAml (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("RsConvertResourcesToAml");
+    ACPI_FUNCTION_TRACE (RsConvertResourcesToAml);
 
 
     /* Walk the resource descriptor list, convert each descriptor */

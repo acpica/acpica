@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
- *              $Revision: 1.141 $
+ *              $Revision: 1.142 $
  *
  *****************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiExGetObjectReference (
     ACPI_OPERAND_OBJECT     *ReferencedObj;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExGetObjectReference", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExGetObjectReference, ObjDesc);
 
 
     *ReturnDesc = NULL;
@@ -258,7 +258,7 @@ AcpiExConcatTemplate (
     ACPI_SIZE               NewLength;
 
 
-    ACPI_FUNCTION_TRACE ("ExConcatTemplate");
+    ACPI_FUNCTION_TRACE (ExConcatTemplate);
 
 
     /*
@@ -347,7 +347,7 @@ AcpiExDoConcatenate (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("ExDoConcatenate");
+    ACPI_FUNCTION_TRACE (ExDoConcatenate);
 
 
     /*
@@ -607,7 +607,7 @@ AcpiExDoLogicalNumericOp (
     BOOLEAN                 LocalResult = FALSE;
 
 
-    ACPI_FUNCTION_TRACE ("ExDoLogicalNumericOp");
+    ACPI_FUNCTION_TRACE (ExDoLogicalNumericOp);
 
 
     switch (Opcode)
@@ -683,7 +683,7 @@ AcpiExDoLogicalOp (
     int                     Compare;
 
 
-    ACPI_FUNCTION_TRACE ("ExDoLogicalOp");
+    ACPI_FUNCTION_TRACE (ExDoLogicalOp);
 
 
     /*

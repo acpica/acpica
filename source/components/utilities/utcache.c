@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcache - local cache allocation routines
- *              $Revision: 1.5 $
+ *              $Revision: 1.6 $
  *
  *****************************************************************************/
 
@@ -348,7 +348,7 @@ AcpiOsAcquireObject (
     void                    *Object;
 
 
-    ACPI_FUNCTION_NAME ("OsAcquireObject");
+    ACPI_FUNCTION_NAME (OsAcquireObject);
 
 
     if (!Cache)

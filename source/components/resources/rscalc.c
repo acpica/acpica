@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  ******************************************************************************/
 
@@ -288,7 +288,7 @@ AcpiRsGetAmlLength (
     ACPI_RS_LENGTH          TotalSize;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetAmlLength");
+    ACPI_FUNCTION_TRACE (RsGetAmlLength);
 
 
     /* Traverse entire list of internal resource descriptors */
@@ -447,7 +447,7 @@ AcpiRsGetListLength (
     UINT8                   MinimumAmlResourceLength;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetListLength");
+    ACPI_FUNCTION_TRACE (RsGetListLength);
 
 
     *SizeNeeded = 0;
@@ -611,7 +611,7 @@ AcpiRsGetPciRoutingTableLength (
     UINT32                  TableIndex;
 
 
-    ACPI_FUNCTION_TRACE ("RsGetPciRoutingTableLength");
+    ACPI_FUNCTION_TRACE (RsGetPciRoutingTableLength);
 
 
     NumberOfElements = PackageObject->Package.Count;

@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -172,7 +172,7 @@ AcpiDsGetPredicateValue (
     ACPI_OPERAND_OBJECT     *LocalObjDesc = NULL;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsGetPredicateValue", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (DsGetPredicateValue, WalkState);
 
 
     WalkState->ControlState->Common.State = 0;
@@ -306,7 +306,7 @@ AcpiDsExecBeginOp (
     UINT32                  OpcodeClass;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsExecBeginOp", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (DsExecBeginOp, WalkState);
 
 
     Op = WalkState->Op;
@@ -462,7 +462,7 @@ AcpiDsExecEndOp (
     ACPI_PARSE_OBJECT       *FirstArg;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsExecEndOp", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (DsExecEndOp, WalkState);
 
 
     Op      = WalkState->Op;

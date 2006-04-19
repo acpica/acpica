@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -270,7 +270,7 @@ void
 AcpiPsFreeOp (
     ACPI_PARSE_OBJECT       *Op)
 {
-    ACPI_FUNCTION_NAME ("PsFreeOp");
+    ACPI_FUNCTION_NAME (PsFreeOp);
 
 
     if (Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)

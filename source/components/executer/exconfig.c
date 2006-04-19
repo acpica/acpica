@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -164,7 +164,7 @@ AcpiExAddTable (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ACPI_FUNCTION_TRACE ("ExAddTable");
+    ACPI_FUNCTION_TRACE (ExAddTable);
 
 
     /* Create an object to be the table handle */
@@ -251,7 +251,7 @@ AcpiExLoadTableOp (
     ACPI_OPERAND_OBJECT     *DdbHandle;
 
 
-    ACPI_FUNCTION_TRACE ("ExLoadTableOp");
+    ACPI_FUNCTION_TRACE (ExLoadTableOp);
 
 
 #if 0
@@ -397,7 +397,7 @@ AcpiExLoadOp (
     ACPI_TABLE_HEADER       TableHeader;
     UINT32                  i;
 
-    ACPI_FUNCTION_TRACE ("ExLoadOp");
+    ACPI_FUNCTION_TRACE (ExLoadOp);
 
 
     /* Object can be either an OpRegion or a Field */
@@ -574,7 +574,7 @@ AcpiExUnloadTable (
     ACPI_TABLE_DESC         *TableInfo;
 
 
-    ACPI_FUNCTION_TRACE ("ExUnloadTable");
+    ACPI_FUNCTION_TRACE (ExUnloadTable);
 
 
     /*

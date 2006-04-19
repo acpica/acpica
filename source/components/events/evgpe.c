@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,7 @@ AcpiEvSetGpeType (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvSetGpeType");
+    ACPI_FUNCTION_TRACE (EvSetGpeType);
 
 
     /* Validate type and update register enable masks */
@@ -200,7 +200,7 @@ AcpiEvUpdateGpeEnableMasks (
     UINT8                   RegisterBit;
 
 
-    ACPI_FUNCTION_TRACE ("EvUpdateGpeEnableMasks");
+    ACPI_FUNCTION_TRACE (EvUpdateGpeEnableMasks);
 
 
     GpeRegisterInfo = GpeEventInfo->RegisterInfo;
@@ -268,7 +268,7 @@ AcpiEvEnableGpe (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvEnableGpe");
+    ACPI_FUNCTION_TRACE (EvEnableGpe);
 
 
     /* Make sure HW enable masks are updated */
@@ -341,7 +341,7 @@ AcpiEvDisableGpe (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvDisableGpe");
+    ACPI_FUNCTION_TRACE (EvDisableGpe);
 
 
     if (!(GpeEventInfo->Flags & ACPI_GPE_ENABLE_MASK))
@@ -493,7 +493,7 @@ AcpiEvGpeDetect (
     ACPI_NATIVE_UINT        j;
 
 
-    ACPI_FUNCTION_NAME ("EvGpeDetect");
+    ACPI_FUNCTION_NAME (EvGpeDetect);
 
     /* Check for the case where there are no GPEs */
 
@@ -607,7 +607,7 @@ AcpiEvAsynchExecuteGpeMethod (
     ACPI_PARAMETER_INFO     Info;
 
 
-    ACPI_FUNCTION_TRACE ("EvAsynchExecuteGpeMethod");
+    ACPI_FUNCTION_TRACE (EvAsynchExecuteGpeMethod);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
@@ -711,7 +711,7 @@ AcpiEvGpeDispatch (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvGpeDispatch");
+    ACPI_FUNCTION_TRACE (EvGpeDispatch);
 
 
     /*
@@ -852,7 +852,7 @@ AcpiEvCheckForWakeOnlyGpe (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvCheckForWakeOnlyGpe");
+    ACPI_FUNCTION_TRACE (EvCheckForWakeOnlyGpe);
 
 
     if ((GpeEventInfo)   &&  /* Only >0 for _Lxx/_Exx */

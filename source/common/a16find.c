@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -376,7 +376,7 @@ AfRecognizeTable (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE ("AfRecognizeTable");
+    ACPI_FUNCTION_TRACE (AfRecognizeTable);
 
 
     /* Ensure that we have a valid table pointer */
@@ -498,7 +498,7 @@ AfGetAllTables (
     ACPI_TABLE_DESC         TableInfo;
 
 
-    ACPI_FUNCTION_TRACE ("AfGetAllTables");
+    ACPI_FUNCTION_TRACE (AfGetAllTables);
 
 
     if (AcpiGbl_DbOpt_verbose)
@@ -624,7 +624,7 @@ AfGetRsdt (void)
     ACPI_TABLE_DESC         TableInfo;
 
 
-    ACPI_FUNCTION_TRACE ("AfGetRsdt");
+    ACPI_FUNCTION_TRACE (AfGetRsdt);
 
     if (AcpiGbl_XSDT)
     {
@@ -837,7 +837,7 @@ AfFindTable (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AfFindTable");
+    ACPI_FUNCTION_TRACE (AfFindTable);
 
 
     if (!AcpiGbl_DSDT)

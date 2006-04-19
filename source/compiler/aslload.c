@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.73 $
+ *              $Revision: 1.74 $
  *
  *****************************************************************************/
 
@@ -417,7 +417,7 @@ LdNamespace1Begin (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_NAME ("LdNamespace1Begin");
+    ACPI_FUNCTION_NAME (LdNamespace1Begin);
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Op %p [%s]\n",
         Op, Op->Asl.ParseOpName));
 
@@ -711,7 +711,7 @@ LdNamespace1End (
     ACPI_OBJECT_TYPE        ObjectType;
 
 
-    ACPI_FUNCTION_NAME ("LdNamespace1End");
+    ACPI_FUNCTION_NAME (LdNamespace1End);
 
 
     /* We are only interested in opcodes that have an associated name */

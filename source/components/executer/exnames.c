@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -162,7 +162,7 @@ AcpiExAllocateNameString (
     char                    *NameString;
     UINT32                   SizeNeeded;
 
-    ACPI_FUNCTION_TRACE ("ExAllocateNameString");
+    ACPI_FUNCTION_TRACE (ExAllocateNameString);
 
 
     /*
@@ -260,7 +260,7 @@ AcpiExNameSegment (
     char                    CharBuf[5];
 
 
-    ACPI_FUNCTION_TRACE ("ExNameSegment");
+    ACPI_FUNCTION_TRACE (ExNameSegment);
 
 
     /*
@@ -366,7 +366,7 @@ AcpiExGetNameString (
     BOOLEAN                 HasPrefix = FALSE;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExGetNameString", AmlAddress);
+    ACPI_FUNCTION_TRACE_PTR (ExGetNameString, AmlAddress);
 
 
     if (ACPI_TYPE_LOCAL_REGION_FIELD == DataType   ||

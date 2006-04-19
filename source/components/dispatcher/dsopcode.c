@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -174,7 +174,7 @@ AcpiDsExecuteArguments (
     ACPI_WALK_STATE         *WalkState;
 
 
-    ACPI_FUNCTION_TRACE ("DsExecuteArguments");
+    ACPI_FUNCTION_TRACE (DsExecuteArguments);
 
 
     /*
@@ -287,7 +287,7 @@ AcpiDsGetBufferFieldArguments (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsGetBufferFieldArguments", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (DsGetBufferFieldArguments, ObjDesc);
 
 
     if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
@@ -333,7 +333,7 @@ AcpiDsGetBufferArguments (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsGetBufferArguments", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (DsGetBufferArguments, ObjDesc);
 
 
     if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
@@ -382,7 +382,7 @@ AcpiDsGetPackageArguments (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsGetPackageArguments", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (DsGetPackageArguments, ObjDesc);
 
 
     if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
@@ -432,7 +432,7 @@ AcpiDsGetRegionArguments (
     ACPI_OPERAND_OBJECT     *ExtraDesc;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsGetRegionArguments", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (DsGetRegionArguments, ObjDesc);
 
 
     if (ObjDesc->Region.Flags & AOPOBJ_DATA_VALID)
@@ -547,7 +547,7 @@ AcpiDsInitBufferField (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsInitBufferField", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (DsInitBufferField, ObjDesc);
 
 
     /* Host object must be a Buffer */
@@ -747,7 +747,7 @@ AcpiDsEvalBufferFieldOperands (
     ACPI_PARSE_OBJECT       *NextOp;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsEvalBufferFieldOperands", Op);
+    ACPI_FUNCTION_TRACE_PTR (DsEvalBufferFieldOperands, Op);
 
 
     /*
@@ -840,7 +840,7 @@ AcpiDsEvalRegionOperands (
     ACPI_PARSE_OBJECT       *NextOp;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsEvalRegionOperands", Op);
+    ACPI_FUNCTION_TRACE_PTR (DsEvalRegionOperands, Op);
 
 
     /*
@@ -942,7 +942,7 @@ AcpiDsEvalDataObjectOperands (
     UINT32                  Length;
 
 
-    ACPI_FUNCTION_TRACE ("DsEvalDataObjectOperands");
+    ACPI_FUNCTION_TRACE (DsEvalDataObjectOperands);
 
 
     /* The first operand (for all of these data objects) is the length */
@@ -1039,7 +1039,7 @@ AcpiDsExecBeginControlOp (
     ACPI_GENERIC_STATE      *ControlState;
 
 
-    ACPI_FUNCTION_NAME ("DsExecBeginControlOp");
+    ACPI_FUNCTION_NAME (DsExecBeginControlOp);
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Op=%p Opcode=%2.2X State=%p\n", Op,
@@ -1122,7 +1122,7 @@ AcpiDsExecEndControlOp (
     ACPI_GENERIC_STATE      *ControlState;
 
 
-    ACPI_FUNCTION_NAME ("DsExecEndControlOp");
+    ACPI_FUNCTION_NAME (DsExecEndControlOp);
 
 
     switch (Op->Common.AmlOpcode)

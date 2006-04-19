@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  *****************************************************************************/
 
@@ -237,7 +237,7 @@ AcpiExAcquireMutex (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExAcquireMutex", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExAcquireMutex, ObjDesc);
 
 
     if (!ObjDesc)
@@ -333,7 +333,7 @@ AcpiExReleaseMutex (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("ExReleaseMutex");
+    ACPI_FUNCTION_TRACE (ExReleaseMutex);
 
 
     if (!ObjDesc)

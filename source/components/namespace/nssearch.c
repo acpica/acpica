@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  ******************************************************************************/
 
@@ -170,7 +170,7 @@ AcpiNsSearchNode (
     ACPI_NAMESPACE_NODE     *NextNode;
 
 
-    ACPI_FUNCTION_TRACE ("NsSearchNode");
+    ACPI_FUNCTION_TRACE (NsSearchNode);
 
 
 #ifdef ACPI_DEBUG_OUTPUT
@@ -284,7 +284,7 @@ AcpiNsSearchParentTree (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    ACPI_FUNCTION_TRACE ("NsSearchParentTree");
+    ACPI_FUNCTION_TRACE (NsSearchParentTree);
 
 
     ParentNode = AcpiNsGetParentNode (Node);
@@ -381,7 +381,7 @@ AcpiNsSearchAndEnter (
     ACPI_NAMESPACE_NODE     *NewNode;
 
 
-    ACPI_FUNCTION_TRACE ("NsSearchAndEnter");
+    ACPI_FUNCTION_TRACE (NsSearchAndEnter);
 
 
     /* Parameter validation */

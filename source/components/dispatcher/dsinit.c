@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  *****************************************************************************/
 
@@ -290,7 +290,7 @@ AcpiDsInitializeObjects (
     ACPI_INIT_WALK_INFO     Info;
 
 
-    ACPI_FUNCTION_TRACE ("DsInitializeObjects");
+    ACPI_FUNCTION_TRACE (DsInitializeObjects);
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,

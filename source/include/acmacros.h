@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.189 $
+ *       $Revision: 1.190 $
  *
  *****************************************************************************/
 
@@ -610,7 +610,7 @@
  * Note: (const char) is used to be compatible with the debug interfaces
  * and macros such as __FUNCTION__.
  */
-#define ACPI_FUNCTION_NAME(Name)        const char *_AcpiFunctionName = Name;
+#define ACPI_FUNCTION_NAME(Name)        const char *_AcpiFunctionName = #Name;
 
 #else
 /* Compiler supports __FUNCTION__ (or equivalent) -- Ignore this macro */

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.87 $
+ *              $Revision: 1.88 $
  *
  *****************************************************************************/
 
@@ -332,7 +332,7 @@ AcpiPsExecuteMethod (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("PsExecuteMethod");
+    ACPI_FUNCTION_TRACE (PsExecuteMethod);
 
 
     /* Validate the Info and method Node */
@@ -478,7 +478,7 @@ AcpiPsExecutePass (
     ACPI_WALK_STATE         *WalkState;
 
 
-    ACPI_FUNCTION_TRACE ("PsExecutePass");
+    ACPI_FUNCTION_TRACE (PsExecutePass);
 
 
     /* Create and init a Root Node */

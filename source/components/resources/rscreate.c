@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscreate - Create resource lists/tables
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  ******************************************************************************/
 
@@ -157,7 +157,7 @@ AcpiRsCreateResourceList (
     void                    *Resource;
 
 
-    ACPI_FUNCTION_TRACE ("RsCreateResourceList");
+    ACPI_FUNCTION_TRACE (RsCreateResourceList);
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "AmlBuffer = %p\n",
@@ -245,7 +245,7 @@ AcpiRsCreatePciRoutingTable (
     ACPI_BUFFER             PathBuffer;
 
 
-    ACPI_FUNCTION_TRACE ("RsCreatePciRoutingTable");
+    ACPI_FUNCTION_TRACE (RsCreatePciRoutingTable);
 
 
     /* Params already validated, so we don't re-validate here */
@@ -480,7 +480,7 @@ AcpiRsCreateAmlResources (
     ACPI_SIZE               AmlSizeNeeded = 0;
 
 
-    ACPI_FUNCTION_TRACE ("RsCreateAmlResources");
+    ACPI_FUNCTION_TRACE (RsCreateAmlResources);
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "LinkedListBuffer = %p\n",

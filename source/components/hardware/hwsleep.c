@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -139,7 +139,7 @@ AcpiSetFirmwareWakingVector (
     ACPI_PHYSICAL_ADDRESS PhysicalAddress)
 {
 
-    ACPI_FUNCTION_TRACE ("AcpiSetFirmwareWakingVector");
+    ACPI_FUNCTION_TRACE (AcpiSetFirmwareWakingVector);
 
 
     /* Set the vector */
@@ -180,7 +180,7 @@ AcpiGetFirmwareWakingVector (
     ACPI_PHYSICAL_ADDRESS *PhysicalAddress)
 {
 
-    ACPI_FUNCTION_TRACE ("AcpiGetFirmwareWakingVector");
+    ACPI_FUNCTION_TRACE (AcpiGetFirmwareWakingVector);
 
 
     if (!PhysicalAddress)
@@ -231,7 +231,7 @@ AcpiEnterSleepStatePrep (
     ACPI_OBJECT         Arg;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiEnterSleepStatePrep");
+    ACPI_FUNCTION_TRACE (AcpiEnterSleepStatePrep);
 
 
     /*
@@ -328,7 +328,7 @@ AcpiEnterSleepState (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiEnterSleepState");
+    ACPI_FUNCTION_TRACE (AcpiEnterSleepState);
 
 
     if ((AcpiGbl_SleepTypeA > ACPI_SLEEP_TYPE_MAX) ||
@@ -519,7 +519,7 @@ AcpiEnterSleepStateS4bios (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiEnterSleepStateS4bios");
+    ACPI_FUNCTION_TRACE (AcpiEnterSleepStateS4bios);
 
 
     Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_DO_NOT_LOCK);
@@ -598,7 +598,7 @@ AcpiLeaveSleepState (
     UINT32                  PM1BControl;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiLeaveSleepState");
+    ACPI_FUNCTION_TRACE (AcpiLeaveSleepState);
 
 
     /*

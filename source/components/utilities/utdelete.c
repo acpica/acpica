@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  ******************************************************************************/
 
@@ -160,7 +160,7 @@ AcpiUtDeleteInternalObj (
     ACPI_OPERAND_OBJECT     *NextDesc;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("UtDeleteInternalObj", Object);
+    ACPI_FUNCTION_TRACE_PTR (UtDeleteInternalObj, Object);
 
 
     if (!Object)
@@ -299,13 +299,13 @@ AcpiUtDeleteInternalObj (
                 {
                     /* Deactivate region and free region context */
 
-		    if (HandlerDesc->AddressSpace.Setup)
-		    {
-			(void) HandlerDesc->AddressSpace.Setup (Object,
+            if (HandlerDesc->AddressSpace.Setup)
+            {
+            (void) HandlerDesc->AddressSpace.Setup (Object,
                             ACPI_REGION_DEACTIVATE,
-			    HandlerDesc->AddressSpace.Context,
-			    &SecondDesc->Extra.RegionContext);
-		    }
+                HandlerDesc->AddressSpace.Context,
+                &SecondDesc->Extra.RegionContext);
+            }
                 }
 
                 AcpiUtRemoveReference (HandlerDesc);
@@ -374,7 +374,7 @@ AcpiUtDeleteInternalObjectList (
     ACPI_OPERAND_OBJECT     **InternalObj;
 
 
-    ACPI_FUNCTION_TRACE ("UtDeleteInternalObjectList");
+    ACPI_FUNCTION_TRACE (UtDeleteInternalObjectList);
 
 
     /* Walk the null-terminated internal list */
@@ -413,7 +413,7 @@ AcpiUtUpdateRefCount (
     UINT16                  NewCount;
 
 
-    ACPI_FUNCTION_NAME ("UtUpdateRefCount");
+    ACPI_FUNCTION_NAME (UtUpdateRefCount);
 
 
     if (!Object)
@@ -545,7 +545,7 @@ AcpiUtUpdateObjectReference (
     ACPI_NATIVE_UINT        i;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("UtUpdateObjectReference", Object);
+    ACPI_FUNCTION_TRACE_PTR (UtUpdateObjectReference, Object);
 
 
     while (Object)
@@ -692,7 +692,7 @@ AcpiUtAddReference (
     ACPI_OPERAND_OBJECT     *Object)
 {
 
-    ACPI_FUNCTION_TRACE_PTR ("UtAddReference", Object);
+    ACPI_FUNCTION_TRACE_PTR (UtAddReference, Object);
 
 
     /* Ensure that we have a valid object */
@@ -730,7 +730,7 @@ AcpiUtRemoveReference (
     ACPI_OPERAND_OBJECT     *Object)
 {
 
-    ACPI_FUNCTION_TRACE_PTR ("UtRemoveReference", Object);
+    ACPI_FUNCTION_TRACE_PTR (UtRemoveReference, Object);
 
 
     /*

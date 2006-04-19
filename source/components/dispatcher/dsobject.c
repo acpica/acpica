@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -161,7 +161,7 @@ AcpiDsBuildInternalObject (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("DsBuildInternalObject");
+    ACPI_FUNCTION_TRACE (DsBuildInternalObject);
 
 
     *ObjDescPtr = NULL;
@@ -264,7 +264,7 @@ AcpiDsBuildInternalBufferObj (
     UINT32                  ByteListLength = 0;
 
 
-    ACPI_FUNCTION_TRACE ("DsBuildInternalBufferObj");
+    ACPI_FUNCTION_TRACE (DsBuildInternalBufferObj);
 
 
     /*
@@ -383,7 +383,7 @@ AcpiDsBuildInternalPackageObj (
     ACPI_NATIVE_UINT        i;
 
 
-    ACPI_FUNCTION_TRACE ("DsBuildInternalPackageObj");
+    ACPI_FUNCTION_TRACE (DsBuildInternalPackageObj);
 
 
     /* Find the parent of a possibly nested package */
@@ -498,7 +498,7 @@ AcpiDsCreateNode (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsCreateNode", Op);
+    ACPI_FUNCTION_TRACE_PTR (DsCreateNode, Op);
 
 
     /*
@@ -573,7 +573,7 @@ AcpiDsInitObjectFromOp (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("DsInitObjectFromOp");
+    ACPI_FUNCTION_TRACE (DsInitObjectFromOp);
 
 
     ObjDesc = *RetObjDesc;

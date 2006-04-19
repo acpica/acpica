@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.138 $
+ *              $Revision: 1.139 $
  *
  ******************************************************************************/
 
@@ -170,7 +170,7 @@ AcpiNsEvaluateRelative (
     char                    *InternalPath = NULL;
 
 
-    ACPI_FUNCTION_TRACE ("NsEvaluateRelative");
+    ACPI_FUNCTION_TRACE (NsEvaluateRelative);
 
 
     /*
@@ -278,7 +278,7 @@ AcpiNsEvaluateByName (
     char                    *InternalPath = NULL;
 
 
-    ACPI_FUNCTION_TRACE ("NsEvaluateByName");
+    ACPI_FUNCTION_TRACE (NsEvaluateByName);
 
 
     /* Build an internal name string for the method */
@@ -367,7 +367,7 @@ AcpiNsEvaluateByHandle (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("NsEvaluateByHandle");
+    ACPI_FUNCTION_TRACE (NsEvaluateByHandle);
 
 
     /* Check if namespace has been initialized */
@@ -483,7 +483,7 @@ AcpiNsExecuteControlMethod (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("NsExecuteControlMethod");
+    ACPI_FUNCTION_TRACE (NsExecuteControlMethod);
 
 
     /* Verify that there is a method associated with this object */
@@ -558,7 +558,7 @@ AcpiNsGetObjectValue (
     ACPI_NAMESPACE_NODE     *ResolvedNode = Info->Node;
 
 
-    ACPI_FUNCTION_TRACE ("NsGetObjectValue");
+    ACPI_FUNCTION_TRACE (NsGetObjectValue);
 
 
     /*

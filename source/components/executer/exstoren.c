@@ -3,7 +3,7 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.69 $
+ *              $Revision: 1.70 $
  *
  *****************************************************************************/
 
@@ -152,7 +152,7 @@ AcpiExResolveObject (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExResolveObject");
+    ACPI_FUNCTION_TRACE (ExResolveObject);
 
 
     /* Ensure we have a Target that can be stored to */
@@ -285,7 +285,7 @@ AcpiExStoreObjectToObject (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExStoreObjectToObject", SourceDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExStoreObjectToObject, SourceDesc);
 
 
     ActualSrcDesc = SourceDesc;

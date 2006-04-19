@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  ******************************************************************************/
 
@@ -178,7 +178,7 @@ AcpiDsMethodDataInit (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE ("DsMethodDataInit");
+    ACPI_FUNCTION_TRACE (DsMethodDataInit);
 
 
     /* Init the method arguments */
@@ -230,7 +230,7 @@ AcpiDsMethodDataDeleteAll (
     UINT32                  Index;
 
 
-    ACPI_FUNCTION_TRACE ("DsMethodDataDeleteAll");
+    ACPI_FUNCTION_TRACE (DsMethodDataDeleteAll);
 
 
     /* Detach the locals */
@@ -293,7 +293,7 @@ AcpiDsMethodDataInitArgs (
     UINT32                  Index = 0;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsMethodDataInitArgs", Params);
+    ACPI_FUNCTION_TRACE_PTR (DsMethodDataInitArgs, Params);
 
 
     if (!Params)
@@ -350,7 +350,7 @@ AcpiDsMethodDataGetNode (
     ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     **Node)
 {
-    ACPI_FUNCTION_TRACE ("DsMethodDataGetNode");
+    ACPI_FUNCTION_TRACE (DsMethodDataGetNode);
 
 
     /*
@@ -424,7 +424,7 @@ AcpiDsMethodDataSetValue (
     ACPI_NAMESPACE_NODE     *Node;
 
 
-    ACPI_FUNCTION_TRACE ("DsMethodDataSetValue");
+    ACPI_FUNCTION_TRACE (DsMethodDataSetValue);
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
@@ -483,7 +483,7 @@ AcpiDsMethodDataGetValue (
     ACPI_OPERAND_OBJECT     *Object;
 
 
-    ACPI_FUNCTION_TRACE ("DsMethodDataGetValue");
+    ACPI_FUNCTION_TRACE (DsMethodDataGetValue);
 
 
     /* Validate the object descriptor */
@@ -595,7 +595,7 @@ AcpiDsMethodDataDeleteValue (
     ACPI_OPERAND_OBJECT     *Object;
 
 
-    ACPI_FUNCTION_TRACE ("DsMethodDataDeleteValue");
+    ACPI_FUNCTION_TRACE (DsMethodDataDeleteValue);
 
 
     /* Get the namespace node for the arg/local */
@@ -662,7 +662,7 @@ AcpiDsStoreObjectToLocal (
     ACPI_OPERAND_OBJECT     *NewObjDesc;
 
 
-    ACPI_FUNCTION_TRACE ("DsStoreObjectToLocal");
+    ACPI_FUNCTION_TRACE (DsStoreObjectToLocal);
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Opcode=%X Index=%d Obj=%p\n",
         Opcode, Index, ObjDesc));
 
@@ -814,7 +814,7 @@ AcpiDsMethodDataGetType (
     ACPI_OPERAND_OBJECT     *Object;
 
 
-    ACPI_FUNCTION_TRACE ("DsMethodDataGetType");
+    ACPI_FUNCTION_TRACE (DsMethodDataGetType);
 
 
     /* Get the namespace node for the arg/local */

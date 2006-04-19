@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -157,7 +157,7 @@ AcpiTbMatchSignature (
     ACPI_NATIVE_UINT        i;
 
 
-    ACPI_FUNCTION_TRACE ("TbMatchSignature");
+    ACPI_FUNCTION_TRACE (TbMatchSignature);
 
 
     /* Search for a signature match among the known table types */
@@ -214,7 +214,7 @@ AcpiTbInstallTable (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("TbInstallTable");
+    ACPI_FUNCTION_TRACE (TbInstallTable);
 
 
     /* Lock tables while installing */
@@ -285,7 +285,7 @@ AcpiTbRecognizeTable (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("TbRecognizeTable");
+    ACPI_FUNCTION_TRACE (TbRecognizeTable);
 
 
     /* Ensure that we have a valid table pointer */
@@ -347,7 +347,7 @@ AcpiTbInitTableDescriptor (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("TbInitTableDescriptor", TableType);
+    ACPI_FUNCTION_TRACE_U32 (TbInitTableDescriptor, TableType);
 
 
     /* Allocate a descriptor for this table */
@@ -506,7 +506,7 @@ AcpiTbDeleteTablesByType (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("TbDeleteTablesByType", Type);
+    ACPI_FUNCTION_TRACE_U32 (TbDeleteTablesByType, Type);
 
 
     if (Type > ACPI_TABLE_ID_MAX)
@@ -640,7 +640,7 @@ AcpiTbUninstallTable (
     ACPI_TABLE_DESC         *NextDesc;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("TbUninstallTable", TableDesc);
+    ACPI_FUNCTION_TRACE_PTR (TbUninstallTable, TableDesc);
 
 
     if (!TableDesc)

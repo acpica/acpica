@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -199,7 +199,7 @@ AcpiUtCopyIsimpleToEsimple (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("UtCopyIsimpleToEsimple");
+    ACPI_FUNCTION_TRACE (UtCopyIsimpleToEsimple);
 
 
     *BufferSpaceUsed = 0;
@@ -425,7 +425,7 @@ AcpiUtCopyIpackageToEpackage (
     ACPI_PKG_INFO           Info;
 
 
-    ACPI_FUNCTION_TRACE ("UtCopyIpackageToEpackage");
+    ACPI_FUNCTION_TRACE (UtCopyIpackageToEpackage);
 
 
     /*
@@ -486,7 +486,7 @@ AcpiUtCopyIobjectToEobject (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtCopyIobjectToEobject");
+    ACPI_FUNCTION_TRACE (UtCopyIobjectToEobject);
 
 
     if (ACPI_GET_OBJECT_TYPE (InternalObject) == ACPI_TYPE_PACKAGE)
@@ -543,7 +543,7 @@ AcpiUtCopyEsimpleToIsimple (
     ACPI_OPERAND_OBJECT     *InternalObject;
 
 
-    ACPI_FUNCTION_TRACE ("UtCopyEsimpleToIsimple");
+    ACPI_FUNCTION_TRACE (UtCopyEsimpleToIsimple);
 
 
     /*
@@ -665,7 +665,7 @@ AcpiUtCopyEpackageToIpackage (
     ACPI_OBJECT             *ThisExternalObj;
 
 
-    ACPI_FUNCTION_TRACE ("UtCopyEpackageToIpackage");
+    ACPI_FUNCTION_TRACE (UtCopyEpackageToIpackage);
 
 
     /*
@@ -718,7 +718,7 @@ AcpiUtCopyEobjectToIobject (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtCopyEobjectToIobject");
+    ACPI_FUNCTION_TRACE (UtCopyEobjectToIobject);
 
 
     if (ExternalObject->Type == ACPI_TYPE_PACKAGE)
@@ -993,7 +993,7 @@ AcpiUtCopyIpackageToIpackage (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("UtCopyIpackageToIpackage");
+    ACPI_FUNCTION_TRACE (UtCopyIpackageToIpackage);
 
 
     DestObj->Common.Type    = ACPI_GET_OBJECT_TYPE (SourceObj);
@@ -1052,7 +1052,7 @@ AcpiUtCopyIobjectToIobject (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("UtCopyIobjectToIobject");
+    ACPI_FUNCTION_TRACE (UtCopyIobjectToIobject);
 
 
     /* Create the top level object */

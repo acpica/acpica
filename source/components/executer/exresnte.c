@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.72 $
+ *              $Revision: 1.73 $
  *
  *****************************************************************************/
 
@@ -168,7 +168,7 @@ AcpiExResolveNodeToValue (
     ACPI_OBJECT_TYPE        EntryType;
 
 
-    ACPI_FUNCTION_TRACE ("ExResolveNodeToValue");
+    ACPI_FUNCTION_TRACE (ExResolveNodeToValue);
 
 
     /*

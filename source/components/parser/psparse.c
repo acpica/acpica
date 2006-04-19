@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.164 $
+ *              $Revision: 1.165 $
  *
  *****************************************************************************/
 
@@ -224,7 +224,7 @@ AcpiPsCompleteThisOp (
     ACPI_PARSE_OBJECT       *ReplacementOp = NULL;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("PsCompleteThisOp", Op);
+    ACPI_FUNCTION_TRACE_PTR (PsCompleteThisOp, Op);
 
 
     /* Check for null Op, can happen if AML code is corrupt */
@@ -415,7 +415,7 @@ AcpiPsNextParseState (
     ACPI_STATUS             Status = AE_CTRL_PENDING;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("PsNextParseState", Op);
+    ACPI_FUNCTION_TRACE_PTR (PsNextParseState, Op);
 
 
     switch (CallbackStatus)
@@ -549,7 +549,7 @@ AcpiPsParseAml (
     ACPI_WALK_STATE         *PreviousWalkState;
 
 
-    ACPI_FUNCTION_TRACE ("PsParseAml");
+    ACPI_FUNCTION_TRACE (PsParseAml);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE,
         "Entered with WalkState=%p Aml=%p size=%X\n",

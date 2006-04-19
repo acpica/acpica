@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.142 $
+ *              $Revision: 1.143 $
  *
  ******************************************************************************/
 
@@ -181,7 +181,7 @@ AcpiUtAllocateOwnerId (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtAllocateOwnerId");
+    ACPI_FUNCTION_TRACE (UtAllocateOwnerId);
 
 
     /* Guard against multiple allocations of ID to the same location */
@@ -296,7 +296,7 @@ AcpiUtReleaseOwnerId (
     UINT32                  Bit;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("UtReleaseOwnerId", OwnerId);
+    ACPI_FUNCTION_TRACE_U32 (UtReleaseOwnerId, OwnerId);
 
 
     /* Always clear the input OwnerId (zero is an invalid ID) */
@@ -780,7 +780,7 @@ AcpiUtStrtoul64 (
     ACPI_INTEGER            Quotient;
 
 
-    ACPI_FUNCTION_TRACE ("UtStroul64");
+    ACPI_FUNCTION_TRACE (UtStroul64);
 
 
     if ((!String) || !(*String))
@@ -986,7 +986,7 @@ AcpiUtWalkPackageTree (
     ACPI_OPERAND_OBJECT     *ThisSourceObj;
 
 
-    ACPI_FUNCTION_TRACE ("UtWalkPackageTree");
+    ACPI_FUNCTION_TRACE (UtWalkPackageTree);
 
 
     State = AcpiUtCreatePkgState (SourceObject, TargetObject, 0);

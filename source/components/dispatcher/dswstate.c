@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -174,7 +174,7 @@ AcpiDsResultRemove (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_NAME ("DsResultRemove");
+    ACPI_FUNCTION_NAME (DsResultRemove);
 
 
     State = WalkState->Results;
@@ -241,7 +241,7 @@ AcpiDsResultPop (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_NAME ("DsResultPop");
+    ACPI_FUNCTION_NAME (DsResultPop);
 
 
     State = WalkState->Results;
@@ -309,7 +309,7 @@ AcpiDsResultPopFromBottom (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_NAME ("DsResultPopFromBottom");
+    ACPI_FUNCTION_NAME (DsResultPopFromBottom);
 
 
     State = WalkState->Results;
@@ -379,7 +379,7 @@ AcpiDsResultPush (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_NAME ("DsResultPush");
+    ACPI_FUNCTION_NAME (DsResultPush);
 
 
     State = WalkState->Results;
@@ -434,7 +434,7 @@ AcpiDsResultStackPush (
 {
     ACPI_GENERIC_STATE      *State;
 
-    ACPI_FUNCTION_NAME ("DsResultStackPush");
+    ACPI_FUNCTION_NAME (DsResultStackPush);
 
 
     State = AcpiUtCreateGenericState ();
@@ -471,7 +471,7 @@ AcpiDsResultStackPop (
 {
     ACPI_GENERIC_STATE      *State;
 
-    ACPI_FUNCTION_NAME ("DsResultStackPop");
+    ACPI_FUNCTION_NAME (DsResultStackPop);
 
 
     /* Check for stack underflow */
@@ -513,7 +513,7 @@ AcpiDsObjStackPush (
     void                    *Object,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_FUNCTION_NAME ("DsObjStackPush");
+    ACPI_FUNCTION_NAME (DsObjStackPush);
 
 
     /* Check for stack overflow */
@@ -560,7 +560,7 @@ AcpiDsObjStackPop (
 {
     UINT32                  i;
 
-    ACPI_FUNCTION_NAME ("DsObjStackPop");
+    ACPI_FUNCTION_NAME (DsObjStackPop);
 
 
     for (i = 0; i < PopCount; i++)
@@ -611,7 +611,7 @@ AcpiDsObjStackPopAndDelete (
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-    ACPI_FUNCTION_NAME ("DsObjStackPopAndDelete");
+    ACPI_FUNCTION_NAME (DsObjStackPopAndDelete);
 
 
     for (i = 0; i < PopCount; i++)
@@ -662,7 +662,7 @@ AcpiDsGetCurrentWalkState (
     ACPI_THREAD_STATE       *Thread)
 
 {
-    ACPI_FUNCTION_NAME ("DsGetCurrentWalkState");
+    ACPI_FUNCTION_NAME (DsGetCurrentWalkState);
 
 
     if (!Thread)
@@ -695,7 +695,7 @@ AcpiDsPushWalkState (
     ACPI_WALK_STATE         *WalkState,
     ACPI_THREAD_STATE       *Thread)
 {
-    ACPI_FUNCTION_TRACE ("DsPushWalkState");
+    ACPI_FUNCTION_TRACE (DsPushWalkState);
 
 
     WalkState->Next       = Thread->WalkStateList;
@@ -726,7 +726,7 @@ AcpiDsPopWalkState (
     ACPI_WALK_STATE         *WalkState;
 
 
-    ACPI_FUNCTION_TRACE ("DsPopWalkState");
+    ACPI_FUNCTION_TRACE (DsPopWalkState);
 
 
     WalkState = Thread->WalkStateList;
@@ -775,7 +775,7 @@ AcpiDsCreateWalkState (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("DsCreateWalkState");
+    ACPI_FUNCTION_TRACE (DsCreateWalkState);
 
 
     WalkState = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_WALK_STATE));
@@ -851,7 +851,7 @@ AcpiDsInitAmlWalk (
     ACPI_PARSE_OBJECT       *ExtraOp;
 
 
-    ACPI_FUNCTION_TRACE ("DsInitAmlWalk");
+    ACPI_FUNCTION_TRACE (DsInitAmlWalk);
 
 
     WalkState->ParserState.Aml =
@@ -968,7 +968,7 @@ AcpiDsDeleteWalkState (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsDeleteWalkState", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (DsDeleteWalkState, WalkState);
 
 
     if (!WalkState)
@@ -1048,7 +1048,7 @@ AcpiDsResultInsert (
     ACPI_GENERIC_STATE      *State;
 
 
-    ACPI_FUNCTION_NAME ("DsResultInsert");
+    ACPI_FUNCTION_NAME (DsResultInsert);
 
 
     State = WalkState->Results;
@@ -1107,7 +1107,7 @@ AcpiDsObjStackDeleteAll (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsObjStackDeleteAll", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (DsObjStackDeleteAll, WalkState);
 
 
     /* The stack size is configurable, but fixed */
@@ -1144,7 +1144,7 @@ AcpiDsObjStackPopObject (
     ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_FUNCTION_NAME ("DsObjStackPopObject");
+    ACPI_FUNCTION_NAME (DsObjStackPopObject);
 
 
     /* Check for stack underflow */
@@ -1207,7 +1207,7 @@ AcpiDsObjStackGetValue (
     ACPI_WALK_STATE         *WalkState)
 {
 
-    ACPI_FUNCTION_TRACE_PTR ("DsObjStackGetValue", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (DsObjStackGetValue, WalkState);
 
 
     /* Can't do it if the stack is empty */

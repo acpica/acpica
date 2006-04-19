@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aslopt- Compiler optimizations
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -196,7 +196,7 @@ OptSearchToRoot (
     char                    *Path;
 
 
-    ACPI_FUNCTION_NAME ("OptSearchToRoot");
+    ACPI_FUNCTION_NAME (OptSearchToRoot);
 
 
     /*
@@ -299,7 +299,7 @@ OptBuildShortestPath (
     BOOLEAN                 SubPath = FALSE;
 
 
-    ACPI_FUNCTION_NAME ("OptBuildShortestPath");
+    ACPI_FUNCTION_NAME (OptBuildShortestPath);
 
 
     ScopeInfo.Scope.Node = CurrentNode;
@@ -518,7 +518,7 @@ OptOptimizeNameDeclaration (
     ACPI_NAMESPACE_NODE     *Node;
 
 
-    ACPI_FUNCTION_TRACE ("OptOptimizeNameDeclaration");
+    ACPI_FUNCTION_TRACE (OptOptimizeNameDeclaration);
 
 
     if (((CurrentNode == AcpiGbl_RootNode) ||
@@ -633,7 +633,7 @@ OptOptimizeNamePath (
     ACPI_PARSE_OBJECT       *NextOp;
 
 
-    ACPI_FUNCTION_TRACE ("OptOptimizeNamePath");
+    ACPI_FUNCTION_TRACE (OptOptimizeNamePath);
 
 
     /* This is an optional optimization */

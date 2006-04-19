@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exregion - ACPI default OpRegion (address space) handlers
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -163,7 +163,7 @@ AcpiExSystemMemorySpaceHandler (
 #endif
 
 
-    ACPI_FUNCTION_TRACE ("ExSystemMemorySpaceHandler");
+    ACPI_FUNCTION_TRACE (ExSystemMemorySpaceHandler);
 
 
     /* Validate and translate the bit width */
@@ -374,7 +374,7 @@ AcpiExSystemIoSpaceHandler (
     UINT32                  Value32;
 
 
-    ACPI_FUNCTION_TRACE ("ExSystemIoSpaceHandler");
+    ACPI_FUNCTION_TRACE (ExSystemIoSpaceHandler);
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
@@ -439,7 +439,7 @@ AcpiExPciConfigSpaceHandler (
     UINT16                  PciRegister;
 
 
-    ACPI_FUNCTION_TRACE ("ExPciConfigSpaceHandler");
+    ACPI_FUNCTION_TRACE (ExPciConfigSpaceHandler);
 
 
     /*
@@ -517,7 +517,7 @@ AcpiExCmosSpaceHandler (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExCmosSpaceHandler");
+    ACPI_FUNCTION_TRACE (ExCmosSpaceHandler);
 
 
     return_ACPI_STATUS (Status);
@@ -554,7 +554,7 @@ AcpiExPciBarSpaceHandler (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExPciBarSpaceHandler");
+    ACPI_FUNCTION_TRACE (ExPciBarSpaceHandler);
 
 
     return_ACPI_STATUS (Status);
@@ -594,7 +594,7 @@ AcpiExDataTableSpaceHandler (
     char                    *LogicalAddrPtr;
 
 
-    ACPI_FUNCTION_TRACE ("ExDataTableSpaceHandler");
+    ACPI_FUNCTION_TRACE (ExDataTableSpaceHandler);
 
 
     LogicalAddrPtr = ACPI_PHYSADDR_TO_PTR (Address);

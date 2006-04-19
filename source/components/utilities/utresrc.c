@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utresrc - Resource managment utilities
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  ******************************************************************************/
 
@@ -371,7 +371,7 @@ AcpiUtWalkAmlResources (
     UINT32                  Offset = 0;
 
 
-    ACPI_FUNCTION_TRACE ("UtWalkAmlResources");
+    ACPI_FUNCTION_TRACE (UtWalkAmlResources);
 
 
     /* The absolute minimum resource template is one EndTag descriptor */
@@ -750,7 +750,7 @@ AcpiUtGetResourceEndTag (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtGetResourceEndTag");
+    ACPI_FUNCTION_TRACE (UtGetResourceEndTag);
 
 
     /* Allow a buffer length of zero */

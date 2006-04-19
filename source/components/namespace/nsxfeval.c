@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  ******************************************************************************/
 
@@ -160,7 +160,7 @@ AcpiEvaluateObjectTyped (
     BOOLEAN                 MustFree = FALSE;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiEvaluateObjectTyped");
+    ACPI_FUNCTION_TRACE (AcpiEvaluateObjectTyped);
 
 
     /* Return buffer must be valid */
@@ -261,7 +261,7 @@ AcpiEvaluateObject (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiEvaluateObject");
+    ACPI_FUNCTION_TRACE (AcpiEvaluateObject);
 
 
     Info.Node = Handle;
@@ -501,7 +501,7 @@ AcpiWalkNamespace (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiWalkNamespace");
+    ACPI_FUNCTION_TRACE (AcpiWalkNamespace);
 
 
     /* Parameter validation */
@@ -684,7 +684,7 @@ AcpiGetDevices (
     ACPI_GET_DEVICES_INFO   Info;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetDevices");
+    ACPI_FUNCTION_TRACE (AcpiGetDevices);
 
 
     /* Parameter validation */

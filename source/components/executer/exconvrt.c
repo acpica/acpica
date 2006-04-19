@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -164,7 +164,7 @@ AcpiExConvertToInteger (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExConvertToInteger", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExConvertToInteger, ObjDesc);
 
 
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
@@ -297,7 +297,7 @@ AcpiExConvertToBuffer (
     UINT8                   *NewBuf;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExConvertToBuffer", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExConvertToBuffer, ObjDesc);
 
 
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
@@ -518,7 +518,7 @@ AcpiExConvertToString (
     UINT8                   Separator = ',';
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExConvertToString", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExConvertToString, ObjDesc);
 
 
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
@@ -697,7 +697,7 @@ AcpiExConvertToTargetType (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE ("ExConvertToTargetType");
+    ACPI_FUNCTION_TRACE (ExConvertToTargetType);
 
 
     /* Default behavior */

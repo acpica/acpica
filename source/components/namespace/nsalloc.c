@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  ******************************************************************************/
 
@@ -144,7 +144,7 @@ AcpiNsCreateNode (
     ACPI_NAMESPACE_NODE     *Node;
 
 
-    ACPI_FUNCTION_TRACE ("NsCreateNode");
+    ACPI_FUNCTION_TRACE (NsCreateNode);
 
 
     Node = AcpiOsAcquireObject (AcpiGbl_NamespaceCache);
@@ -182,7 +182,7 @@ AcpiNsDeleteNode (
     ACPI_NAMESPACE_NODE     *NextNode;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("NsDeleteNode", Node);
+    ACPI_FUNCTION_TRACE_PTR (NsDeleteNode, Node);
 
 
     ParentNode = AcpiNsGetParentNode (Node);
@@ -267,7 +267,7 @@ AcpiNsInstallNode (
     ACPI_NAMESPACE_NODE     *ChildNode;
 
 
-    ACPI_FUNCTION_TRACE ("NsInstallNode");
+    ACPI_FUNCTION_TRACE (NsInstallNode);
 
 
     /*
@@ -342,7 +342,7 @@ AcpiNsDeleteChildren (
     UINT8                   Flags;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("NsDeleteChildren", ParentNode);
+    ACPI_FUNCTION_TRACE_PTR (NsDeleteChildren, ParentNode);
 
 
     if (!ParentNode)
@@ -428,7 +428,7 @@ AcpiNsDeleteNamespaceSubtree (
     UINT32                  Level = 1;
 
 
-    ACPI_FUNCTION_TRACE ("NsDeleteNamespaceSubtree");
+    ACPI_FUNCTION_TRACE (NsDeleteNamespaceSubtree);
 
 
     if (!ParentNode)
@@ -516,7 +516,7 @@ AcpiNsDeleteNamespaceByOwner (
     ACPI_NAMESPACE_NODE     *ParentNode;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("NsDeleteNamespaceByOwner", OwnerId);
+    ACPI_FUNCTION_TRACE_U32 (NsDeleteNamespaceByOwner, OwnerId);
 
 
     if (OwnerId == 0)

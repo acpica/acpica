@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI AddressSpace (OpRegion) init
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,7 @@ AcpiEvSystemMemoryRegionSetup (
     ACPI_MEM_SPACE_CONTEXT  *LocalRegionContext;
 
 
-    ACPI_FUNCTION_TRACE ("EvSystemMemoryRegionSetup");
+    ACPI_FUNCTION_TRACE (EvSystemMemoryRegionSetup);
 
 
     if (Function == ACPI_REGION_DEACTIVATE)
@@ -213,7 +213,7 @@ AcpiEvIoSpaceRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    ACPI_FUNCTION_TRACE ("EvIoSpaceRegionSetup");
+    ACPI_FUNCTION_TRACE (EvIoSpaceRegionSetup);
 
 
     if (Function == ACPI_REGION_DEACTIVATE)
@@ -263,7 +263,7 @@ AcpiEvPciConfigRegionSetup (
     ACPI_DEVICE_ID          ObjectHID;
 
 
-    ACPI_FUNCTION_TRACE ("EvPciConfigRegionSetup");
+    ACPI_FUNCTION_TRACE (EvPciConfigRegionSetup);
 
 
     HandlerObj = RegionObj->Region.Handler;
@@ -446,7 +446,7 @@ AcpiEvPciBarRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    ACPI_FUNCTION_TRACE ("EvPciBarRegionSetup");
+    ACPI_FUNCTION_TRACE (EvPciBarRegionSetup);
 
 
     return_ACPI_STATUS (AE_OK);
@@ -477,7 +477,7 @@ AcpiEvCmosRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    ACPI_FUNCTION_TRACE ("EvCmosRegionSetup");
+    ACPI_FUNCTION_TRACE (EvCmosRegionSetup);
 
 
     return_ACPI_STATUS (AE_OK);
@@ -506,7 +506,7 @@ AcpiEvDefaultRegionSetup (
     void                    *HandlerContext,
     void                    **RegionContext)
 {
-    ACPI_FUNCTION_TRACE ("EvDefaultRegionSetup");
+    ACPI_FUNCTION_TRACE (EvDefaultRegionSetup);
 
 
     if (Function == ACPI_REGION_DEACTIVATE)
@@ -559,7 +559,7 @@ AcpiEvInitializeRegion (
     ACPI_OPERAND_OBJECT     *RegionObj2;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("EvInitializeRegion", AcpiNsLocked);
+    ACPI_FUNCTION_TRACE_U32 (EvInitializeRegion, AcpiNsLocked);
 
 
     if (!RegionObj)

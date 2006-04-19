@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -459,7 +459,7 @@ AeRegionHandler (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_NAME ("AeRegionHandler");
+    ACPI_FUNCTION_NAME (AeRegionHandler);
 
     /*
      * If the object is not a region, simply return

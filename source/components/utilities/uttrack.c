@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uttrack - Memory allocation tracking routines (debug only)
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -322,7 +322,7 @@ AcpiUtFreeAndTrack (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("UtFree", Allocation);
+    ACPI_FUNCTION_TRACE_PTR (UtFree, Allocation);
 
 
     if (NULL == Allocation)
@@ -423,7 +423,7 @@ AcpiUtTrackAllocation (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("UtTrackAllocation", Allocation);
+    ACPI_FUNCTION_TRACE_PTR (UtTrackAllocation, Allocation);
 
 
     MemList = AcpiGbl_GlobalList;
@@ -505,7 +505,7 @@ AcpiUtRemoveAllocation (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtRemoveAllocation");
+    ACPI_FUNCTION_TRACE (UtRemoveAllocation);
 
 
     MemList = AcpiGbl_GlobalList;
@@ -573,7 +573,7 @@ AcpiUtDumpAllocationInfo (
     ACPI_MEMORY_LIST        *MemList;
 */
 
-    ACPI_FUNCTION_TRACE ("UtDumpAllocationInfo");
+    ACPI_FUNCTION_TRACE (UtDumpAllocationInfo);
 
 /*
     ACPI_DEBUG_PRINT (TRACE_ALLOCATIONS | TRACE_TABLES,
@@ -636,7 +636,7 @@ AcpiUtDumpAllocations (
     UINT32                  NumOutstanding = 0;
 
 
-    ACPI_FUNCTION_TRACE ("UtDumpAllocations");
+    ACPI_FUNCTION_TRACE (UtDumpAllocations);
 
 
     /*

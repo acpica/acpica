@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -231,7 +231,7 @@ AcpiEvWalkGpeList (
     ACPI_CPU_FLAGS          Flags;
 
 
-    ACPI_FUNCTION_TRACE ("EvWalkGpeList");
+    ACPI_FUNCTION_TRACE (EvWalkGpeList);
 
 
     Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
@@ -290,7 +290,7 @@ AcpiEvDeleteGpeHandlers (
     ACPI_NATIVE_UINT        j;
 
 
-    ACPI_FUNCTION_TRACE ("EvDeleteGpeHandlers");
+    ACPI_FUNCTION_TRACE (EvDeleteGpeHandlers);
 
 
     /* Examine each GPE Register within the block */
@@ -354,7 +354,7 @@ AcpiEvSaveMethodInfo (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvSaveMethodInfo");
+    ACPI_FUNCTION_TRACE (EvSaveMethodInfo);
 
 
     /*
@@ -474,7 +474,7 @@ AcpiEvMatchPrwAndGpe (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvMatchPrwAndGpe");
+    ACPI_FUNCTION_TRACE (EvMatchPrwAndGpe);
 
 
     /* Check for a _PRW method under this device */
@@ -596,7 +596,7 @@ AcpiEvGetGpeXruptBlock (
     ACPI_CPU_FLAGS          Flags;
 
 
-    ACPI_FUNCTION_TRACE ("EvGetGpeXruptBlock");
+    ACPI_FUNCTION_TRACE (EvGetGpeXruptBlock);
 
 
     /* No need for lock since we are not changing any list elements here */
@@ -682,7 +682,7 @@ AcpiEvDeleteGpeXrupt (
     ACPI_CPU_FLAGS          Flags;
 
 
-    ACPI_FUNCTION_TRACE ("EvDeleteGpeXrupt");
+    ACPI_FUNCTION_TRACE (EvDeleteGpeXrupt);
 
 
     /* We never want to remove the SCI interrupt handler */
@@ -747,7 +747,7 @@ AcpiEvInstallGpeBlock (
     ACPI_CPU_FLAGS          Flags;
 
 
-    ACPI_FUNCTION_TRACE ("EvInstallGpeBlock");
+    ACPI_FUNCTION_TRACE (EvInstallGpeBlock);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
@@ -812,7 +812,7 @@ AcpiEvDeleteGpeBlock (
     ACPI_CPU_FLAGS          Flags;
 
 
-    ACPI_FUNCTION_TRACE ("EvInstallGpeBlock");
+    ACPI_FUNCTION_TRACE (EvInstallGpeBlock);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
@@ -893,7 +893,7 @@ AcpiEvCreateGpeInfoBlocks (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvCreateGpeInfoBlocks");
+    ACPI_FUNCTION_TRACE (EvCreateGpeInfoBlocks);
 
 
     /* Allocate the GPE register information block */
@@ -1040,7 +1040,7 @@ AcpiEvCreateGpeBlock (
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
 
 
-    ACPI_FUNCTION_TRACE ("EvCreateGpeBlock");
+    ACPI_FUNCTION_TRACE (EvCreateGpeBlock);
 
 
     if (!RegisterCount)
@@ -1141,7 +1141,7 @@ AcpiEvInitializeGpeBlock (
     ACPI_NATIVE_UINT        j;
 
 
-    ACPI_FUNCTION_TRACE ("EvInitializeGpeBlock");
+    ACPI_FUNCTION_TRACE (EvInitializeGpeBlock);
 
 
     /* Ignore a null GPE block (e.g., if no GPE block 1 exists) */
@@ -1242,7 +1242,7 @@ AcpiEvGpeInitialize (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("EvGpeInitialize");
+    ACPI_FUNCTION_TRACE (EvGpeInitialize);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);

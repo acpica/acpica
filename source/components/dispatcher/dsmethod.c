@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -218,7 +218,7 @@ AcpiDsBeginMethodExecution (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsBeginMethodExecution", MethodNode);
+    ACPI_FUNCTION_TRACE_PTR (DsBeginMethodExecution, MethodNode);
 
 
     if (!MethodNode)
@@ -330,7 +330,7 @@ AcpiDsCallControlMethod (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsCallControlMethod", ThisWalkState);
+    ACPI_FUNCTION_TRACE_PTR (DsCallControlMethod, ThisWalkState);
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Execute method %p, currentstate=%p\n",
         ThisWalkState->PrevOp, ThisWalkState));
@@ -494,7 +494,7 @@ AcpiDsRestartControlMethod (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsRestartControlMethod", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (DsRestartControlMethod, WalkState);
 
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
@@ -577,7 +577,7 @@ AcpiDsTerminateControlMethod (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsTerminateControlMethod", WalkState);
+    ACPI_FUNCTION_TRACE_PTR (DsTerminateControlMethod, WalkState);
 
 
     /* MethodDesc is required, WalkState is optional */
@@ -739,7 +739,7 @@ AcpiDsParseMethod (
     ACPI_WALK_STATE         *WalkState;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsParseMethod", Node);
+    ACPI_FUNCTION_TRACE_PTR (DsParseMethod, Node);
 
 
     /* Parameter Validation */

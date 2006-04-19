@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstorob - AML Interpreter object store support, store to object
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@ AcpiExStoreBufferToBuffer (
     UINT8                   *Buffer;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExStoreBufferToBuffer", SourceDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExStoreBufferToBuffer, SourceDesc);
 
 
     /* We know that SourceDesc is a buffer by now */
@@ -245,7 +245,7 @@ AcpiExStoreStringToString (
     UINT8                   *Buffer;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExStoreStringToString", SourceDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExStoreStringToString, SourceDesc);
 
 
     /* We know that SourceDesc is a string by now */

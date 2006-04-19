@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -962,7 +962,7 @@ AdDeferredParse (
     ACPI_PARSE_OBJECT       *ExtraOp;
 
 
-    ACPI_FUNCTION_TRACE ("AdDeferredParse");
+    ACPI_FUNCTION_TRACE (AdDeferredParse);
 
 
     fprintf (stderr, ".");
@@ -1080,7 +1080,7 @@ AdParseDeferredOps (
     const ACPI_OPCODE_INFO  *OpInfo;
 
 
-    ACPI_FUNCTION_NAME ("AdParseDeferredOps");
+    ACPI_FUNCTION_NAME (AdParseDeferredOps);
     fprintf (stderr, "Parsing Deferred Opcodes (Methods/Buffers/Packages/Regions)\n");
 
     while (Op)

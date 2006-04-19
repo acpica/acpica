@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  ******************************************************************************/
 
@@ -473,7 +473,7 @@ AeLocalLoadTable (
     ACPI_TABLE_DESC         TableInfo;
 
 
-    ACPI_FUNCTION_TRACE ("AeLocalLoadTable");
+    ACPI_FUNCTION_TRACE (AeLocalLoadTable);
 
 
     if (!Table)

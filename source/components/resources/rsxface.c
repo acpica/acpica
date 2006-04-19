@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  ******************************************************************************/
 
@@ -180,7 +180,7 @@ AcpiGetIrqRoutingTable  (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetIrqRoutingTable ");
+    ACPI_FUNCTION_TRACE (AcpiGetIrqRoutingTable);
 
 
     /*
@@ -239,7 +239,7 @@ AcpiGetCurrentResources (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetCurrentResources");
+    ACPI_FUNCTION_TRACE (AcpiGetCurrentResources);
 
 
     /*
@@ -295,7 +295,7 @@ AcpiGetPossibleResources (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetPossibleResources");
+    ACPI_FUNCTION_TRACE (AcpiGetPossibleResources);
 
 
     /*
@@ -354,7 +354,7 @@ AcpiWalkResources (
     ACPI_RESOURCE               *ResourceEnd;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiWalkResources");
+    ACPI_FUNCTION_TRACE (AcpiWalkResources);
 
 
     /* Parameter validation */
@@ -451,7 +451,7 @@ AcpiSetCurrentResources (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiSetCurrentResources");
+    ACPI_FUNCTION_TRACE (AcpiSetCurrentResources);
 
 
     /* Must have a valid handle and buffer */

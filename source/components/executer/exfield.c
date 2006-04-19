@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -154,7 +154,7 @@ AcpiExReadDataFromField (
     BOOLEAN                 Locked;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExReadDataFromField", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExReadDataFromField, ObjDesc);
 
 
     /* Parameter validation */
@@ -310,7 +310,7 @@ AcpiExWriteDataToField (
     ACPI_OPERAND_OBJECT     *BufferDesc;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("ExWriteDataToField", ObjDesc);
+    ACPI_FUNCTION_TRACE_PTR (ExWriteDataToField, ObjDesc);
 
 
     /* Parameter validation */

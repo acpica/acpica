@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -211,7 +211,7 @@ AcpiTbFindTable (
     ACPI_TABLE_HEADER       *Table;
 
 
-    ACPI_FUNCTION_TRACE ("TbFindTable");
+    ACPI_FUNCTION_TRACE (TbFindTable);
 
 
     /* Validate string lengths */
@@ -309,7 +309,7 @@ AcpiGetFirmwareTable (
     UINT32                  j;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiGetFirmwareTable");
+    ACPI_FUNCTION_TRACE (AcpiGetFirmwareTable);
 
 
     /*
@@ -520,7 +520,7 @@ AcpiFindRootPointer (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("AcpiFindRootPointer");
+    ACPI_FUNCTION_TRACE (AcpiFindRootPointer);
 
 
     /* Get the RSDP */
@@ -565,7 +565,7 @@ AcpiTbScanMemoryForRsdp (
     UINT8                   *EndAddress;
 
 
-    ACPI_FUNCTION_TRACE ("TbScanMemoryForRsdp");
+    ACPI_FUNCTION_TRACE (TbScanMemoryForRsdp);
 
 
     EndAddress = StartAddress + Length;
@@ -632,7 +632,7 @@ AcpiTbFindRsdp (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("TbFindRsdp");
+    ACPI_FUNCTION_TRACE (TbFindRsdp);
 
 
     /*

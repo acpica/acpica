@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -495,7 +495,7 @@ const ACPI_OPCODE_INFO *
 AcpiPsGetOpcodeInfo (
     UINT16                  Opcode)
 {
-    ACPI_FUNCTION_NAME ("PsGetOpcodeInfo");
+    ACPI_FUNCTION_NAME (PsGetOpcodeInfo);
 
 
     /*

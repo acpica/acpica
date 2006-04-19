@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -168,7 +168,7 @@ AcpiDsCreateBufferField (
     UINT32                  Flags;
 
 
-    ACPI_FUNCTION_TRACE ("DsCreateBufferField");
+    ACPI_FUNCTION_TRACE (DsCreateBufferField);
 
 
     /* Get the NameString argument */
@@ -308,7 +308,7 @@ AcpiDsGetFieldNames (
     ACPI_INTEGER            Position;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsGetFieldNames", Info);
+    ACPI_FUNCTION_TRACE_PTR (DsGetFieldNames, Info);
 
 
     /* First field starts at bit zero */
@@ -451,7 +451,7 @@ AcpiDsCreateField (
     ACPI_CREATE_FIELD_INFO  Info;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsCreateField", Op);
+    ACPI_FUNCTION_TRACE_PTR (DsCreateField, Op);
 
 
     /* First arg is the name of the parent OpRegion (must already exist) */
@@ -512,7 +512,7 @@ AcpiDsInitFieldObjects (
     UINT8                   Type = 0;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsInitFieldObjects", Op);
+    ACPI_FUNCTION_TRACE_PTR (DsInitFieldObjects, Op);
 
 
     switch (WalkState->Opcode)
@@ -601,7 +601,7 @@ AcpiDsCreateBankField (
     ACPI_CREATE_FIELD_INFO  Info;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsCreateBankField", Op);
+    ACPI_FUNCTION_TRACE_PTR (DsCreateBankField, Op);
 
 
     /* First arg is the name of the parent OpRegion (must already exist) */
@@ -677,7 +677,7 @@ AcpiDsCreateIndexField (
     ACPI_CREATE_FIELD_INFO  Info;
 
 
-    ACPI_FUNCTION_TRACE_PTR ("DsCreateIndexField", Op);
+    ACPI_FUNCTION_TRACE_PTR (DsCreateIndexField, Op);
 
 
     /* First arg is the name of the Index register (must already exist) */

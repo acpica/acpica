@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.177 $
+ *              $Revision: 1.178 $
  *
  *****************************************************************************/
 
@@ -171,7 +171,7 @@ AcpiExOpcode_0A_0T_1R (
     ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_0A_0T_1R",
+    ACPI_FUNCTION_TRACE_STR (ExOpcode_0A_0T_1R,
         AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
@@ -242,7 +242,7 @@ AcpiExOpcode_1A_0T_0R (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_1A_0T_0R",
+    ACPI_FUNCTION_TRACE_STR (ExOpcode_1A_0T_0R,
         AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
@@ -319,7 +319,7 @@ AcpiExOpcode_1A_1T_0R (
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_1A_1T_0R",
+    ACPI_FUNCTION_TRACE_STR (ExOpcode_1A_1T_0R,
         AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
@@ -374,7 +374,7 @@ AcpiExOpcode_1A_1T_1R (
     ACPI_INTEGER            Digit;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_1A_1T_1R",
+    ACPI_FUNCTION_TRACE_STR (ExOpcode_1A_1T_1R,
         AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
@@ -724,7 +724,7 @@ AcpiExOpcode_1A_0T_1R (
     ACPI_INTEGER            Value;
 
 
-    ACPI_FUNCTION_TRACE_STR ("ExOpcode_1A_0T_1R",
+    ACPI_FUNCTION_TRACE_STR (ExOpcode_1A_0T_1R,
         AcpiPsGetOpcodeName (WalkState->Opcode));
 
 

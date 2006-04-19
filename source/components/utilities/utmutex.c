@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmutex - local mutex support
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  ******************************************************************************/
 
@@ -153,7 +153,7 @@ AcpiUtMutexInitialize (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE ("UtMutexInitialize");
+    ACPI_FUNCTION_TRACE (UtMutexInitialize);
 
 
     /*
@@ -192,7 +192,7 @@ AcpiUtMutexTerminate (
     UINT32                  i;
 
 
-    ACPI_FUNCTION_TRACE ("UtMutexTerminate");
+    ACPI_FUNCTION_TRACE (UtMutexTerminate);
 
 
     /*
@@ -227,7 +227,7 @@ AcpiUtCreateMutex (
     ACPI_STATUS             Status = AE_OK;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("UtCreateMutex", MutexId);
+    ACPI_FUNCTION_TRACE_U32 (UtCreateMutex, MutexId);
 
 
     if (MutexId > MAX_MUTEX)
@@ -266,7 +266,7 @@ AcpiUtDeleteMutex (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_TRACE_U32 ("UtDeleteMutex", MutexId);
+    ACPI_FUNCTION_TRACE_U32 (UtDeleteMutex, MutexId);
 
 
     if (MutexId > MAX_MUTEX)
@@ -303,7 +303,7 @@ AcpiUtAcquireMutex (
     ACPI_THREAD_ID          ThisThreadId;
 
 
-    ACPI_FUNCTION_NAME ("UtAcquireMutex");
+    ACPI_FUNCTION_NAME (UtAcquireMutex);
 
 
     if (MutexId > MAX_MUTEX)
@@ -392,7 +392,7 @@ AcpiUtReleaseMutex (
     ACPI_THREAD_ID          ThisThreadId;
 
 
-    ACPI_FUNCTION_NAME ("UtReleaseMutex");
+    ACPI_FUNCTION_NAME (UtReleaseMutex);
 
 
     ThisThreadId = AcpiOsGetThreadId ();
