@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.126 $
+ *       $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,10 @@
 
 #ifdef ACPI_LIBRARY
 #define ACPI_USE_LOCAL_CACHE
+#define ACPI_DISASSEMBLER
+#define ACPI_DEBUGGER
+#define ACPI_DEBUG_OUTPUT
+#define ACPI_DBG_TRACK_ALLOCATIONS
 #endif
 
 #ifdef ACPI_DUMP_APP
