@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -386,8 +386,8 @@ AcpiEvSaveMethodInfo (
     default:
         /* Unknown method type, just ignore it! */
 
-        ACPI_ERROR ((AE_INFO,
-            "Unknown GPE method type: %s (name not of form _Lxx or _Exx)",
+        ACPI_DEBUG_PRINT ((ACPI_DB_LOAD,
+            "Ignoring unknown GPE method type: %s (name not of form _Lxx or _Exx)",
             Name));
         return_ACPI_STATUS (AE_OK);
     }
@@ -399,7 +399,7 @@ AcpiEvSaveMethodInfo (
     {
         /* Conversion failed; invalid method, just ignore it */
 
-        ACPI_ERROR ((AE_INFO,
+        ACPI_DEBUG_PRINT ((ACPI_DB_LOAD,
             "Could not extract GPE number from name: %s (name is not of form _Lxx or _Exx)",
             Name));
         return_ACPI_STATUS (AE_OK);
