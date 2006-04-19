@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -184,7 +184,7 @@ AcpiExAddTable (
 
     ACPI_MEMSET (&TableInfo, 0, sizeof (ACPI_TABLE_DESC));
 
-    TableInfo.Type       = ACPI_TABLE_SSDT;
+    TableInfo.Type       = ACPI_TABLE_ID_SSDT;
     TableInfo.Pointer    = Table;
     TableInfo.Length     = (ACPI_SIZE) Table->Length;
     TableInfo.Allocation = ACPI_MEM_ALLOCATED;

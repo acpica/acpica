@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmutils - AML disassembler utilities
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  ******************************************************************************/
 
@@ -134,7 +134,7 @@ ACPI_EXTERNAL_LIST              *AcpiGbl_ExternalList = NULL;
 
 /* Data used in keeping track of fields */
 #if 0
-const char                      *AcpiGbl_FENames[ACPI_NUM_FIELD_NAMES] =
+const char                      *AcpiGbl_FENames[] =
 {
     "skip",
     "?access?"
@@ -143,7 +143,7 @@ const char                      *AcpiGbl_FENames[ACPI_NUM_FIELD_NAMES] =
 
 /* Operators for Match() */
 
-const char                      *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS] =
+const char                      *AcpiGbl_MatchOps[] =
 {
     "MTR",
     "MEQ",
@@ -155,7 +155,7 @@ const char                      *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS] =
 
 /* Access type decoding */
 
-const char                      *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES] =
+const char                      *AcpiGbl_AccessTypes[] =
 {
     "AnyAcc",
     "ByteAcc",
@@ -163,11 +163,13 @@ const char                      *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES] =
     "DWordAcc",
     "QWordAcc",
     "BufferAcc",
+    "InvalidAccType",
+    "InvalidAccType"
 };
 
 /* Lock rule decoding */
 
-const char                      *AcpiGbl_LockRule[ACPI_NUM_LOCK_RULES] =
+const char                      *AcpiGbl_LockRule[] =
 {
     "NoLock",
     "Lock"
@@ -175,24 +177,25 @@ const char                      *AcpiGbl_LockRule[ACPI_NUM_LOCK_RULES] =
 
 /* Update rule decoding */
 
-const char                      *AcpiGbl_UpdateRules[ACPI_NUM_UPDATE_RULES] =
+const char                      *AcpiGbl_UpdateRules[] =
 {
     "Preserve",
     "WriteAsOnes",
-    "WriteAsZeros"
+    "WriteAsZeros",
+    "InvalidUpdateRule"
 };
 
 /* Strings used to decode resource descriptors */
 
-const char                      *AcpiGbl_WordDecode[4] =
+const char                      *AcpiGbl_WordDecode[] =
 {
     "Memory",
     "IO",
     "BusNumber",
-    "Unknown-resource-type"
+    "UnknownResourceType"
 };
 
-const char                      *AcpiGbl_IrqDecode[2] =
+const char                      *AcpiGbl_IrqDecode[] =
 {
     "IRQNoFlags",
     "IRQ"

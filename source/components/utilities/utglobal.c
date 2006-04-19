@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.236 $
+ *              $Revision: 1.237 $
  *
  *****************************************************************************/
 
@@ -393,9 +393,9 @@ AcpiUtHexToAsciiChar (
  *
  ******************************************************************************/
 
-ACPI_TABLE_LIST             AcpiGbl_TableLists[NUM_ACPI_TABLE_TYPES];
+ACPI_TABLE_LIST             AcpiGbl_TableLists[ACPI_TABLE_ID_MAX+1];
 
-ACPI_TABLE_SUPPORT          AcpiGbl_TableData[NUM_ACPI_TABLE_TYPES] =
+ACPI_TABLE_SUPPORT          AcpiGbl_TableData[ACPI_TABLE_ID_MAX+1] =
 {
     /***********    Name,   Signature, Global typed pointer     Signature size,      Type                  How many allowed?,    Contains valid AML? */
 
@@ -840,7 +840,7 @@ AcpiUtInitGlobals (
 
     /* ACPI table structure */
 
-    for (i = 0; i < NUM_ACPI_TABLE_TYPES; i++)
+    for (i = 0; i < (ACPI_TABLE_ID_MAX+1); i++)
     {
         AcpiGbl_TableLists[i].Next          = NULL;
         AcpiGbl_TableLists[i].Count         = 0;

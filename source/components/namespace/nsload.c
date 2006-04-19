@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -277,11 +277,11 @@ AcpiNsLoadTableByType (
      */
     switch (TableType)
     {
-    case ACPI_TABLE_DSDT:
+    case ACPI_TABLE_ID_DSDT:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Namespace load: DSDT\n"));
 
-        TableDesc = AcpiGbl_TableLists[ACPI_TABLE_DSDT].Next;
+        TableDesc = AcpiGbl_TableLists[ACPI_TABLE_ID_DSDT].Next;
 
         /* If table already loaded into namespace, just return */
 
@@ -300,8 +300,8 @@ AcpiNsLoadTableByType (
         break;
 
 
-    case ACPI_TABLE_SSDT:
-    case ACPI_TABLE_PSDT:
+    case ACPI_TABLE_ID_SSDT:
+    case ACPI_TABLE_ID_PSDT:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Namespace load: %d SSDT or PSDTs\n",
             AcpiGbl_TableLists[TableType].Count));
@@ -379,7 +379,7 @@ AcpiNsLoadNamespace (
      * Load the namespace.  The DSDT is required,
      * but the SSDT and PSDT tables are optional.
      */
-    Status = AcpiNsLoadTableByType (ACPI_TABLE_DSDT);
+    Status = AcpiNsLoadTableByType (ACPI_TABLE_ID_DSDT);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -387,8 +387,8 @@ AcpiNsLoadNamespace (
 
     /* Ignore exceptions from these */
 
-    (void) AcpiNsLoadTableByType (ACPI_TABLE_SSDT);
-    (void) AcpiNsLoadTableByType (ACPI_TABLE_PSDT);
+    (void) AcpiNsLoadTableByType (ACPI_TABLE_ID_SSDT);
+    (void) AcpiNsLoadTableByType (ACPI_TABLE_ID_PSDT);
 
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
         "ACPI Namespace successfully loaded at root %p\n",

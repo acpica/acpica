@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -588,8 +588,8 @@ AcpiGetSystemInfo (
 
     /* Current status of the ACPI tables, per table type */
 
-    InfoPtr->NumTableTypes = NUM_ACPI_TABLE_TYPES;
-    for (i = 0; i < NUM_ACPI_TABLE_TYPES; i++)
+    InfoPtr->NumTableTypes = ACPI_TABLE_ID_MAX+1;
+    for (i = 0; i < (ACPI_TABLE_ID_MAX+1); i++)
     {
         InfoPtr->TableInfo[i].Count = AcpiGbl_TableLists[i].Count;
     }

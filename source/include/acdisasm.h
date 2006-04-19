@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.33 $
+ *       $Revision: 1.34 $
  *
  *****************************************************************************/
 
@@ -211,12 +211,12 @@ typedef struct acpi_resource_tag
 
 /* Strings used for decoding flags to ASL keywords */
 
-extern const char               *AcpiGbl_WordDecode[4];
-extern const char               *AcpiGbl_IrqDecode[2];
-extern const char               *AcpiGbl_LockRule[ACPI_NUM_LOCK_RULES];
-extern const char               *AcpiGbl_AccessTypes[ACPI_NUM_ACCESS_TYPES];
-extern const char               *AcpiGbl_UpdateRules[ACPI_NUM_UPDATE_RULES];
-extern const char               *AcpiGbl_MatchOps[ACPI_NUM_MATCH_OPS];
+extern const char               *AcpiGbl_WordDecode[];
+extern const char               *AcpiGbl_IrqDecode[];
+extern const char               *AcpiGbl_LockRule[];
+extern const char               *AcpiGbl_AccessTypes[];
+extern const char               *AcpiGbl_UpdateRules[];
+extern const char               *AcpiGbl_MatchOps[];
 
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf1[];

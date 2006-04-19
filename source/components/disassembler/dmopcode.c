@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  ******************************************************************************/
 
@@ -211,7 +211,7 @@ AcpiDmFieldFlags (
 
     Op->Common.DisasmFlags |= ACPI_PARSEOP_IGNORE;
 
-    AcpiOsPrintf ("%s, ", AcpiGbl_AccessTypes [Flags & 0x0F]);
+    AcpiOsPrintf ("%s, ", AcpiGbl_AccessTypes [Flags & 0x07]);
     AcpiOsPrintf ("%s, ", AcpiGbl_LockRule [(Flags & 0x10) >> 4]);
     AcpiOsPrintf ("%s)",  AcpiGbl_UpdateRules [(Flags & 0x60) >> 5]);
 }
@@ -340,7 +340,7 @@ AcpiDmMatchKeyword (
 {
 
 
-    if (((UINT32) Op->Common.Value.Integer) >= ACPI_NUM_MATCH_OPS)
+    if (((UINT32) Op->Common.Value.Integer) > ACPI_MAX_MATCH_OPCODE)
     {
         AcpiOsPrintf ("/* Unknown Match Keyword encoding */");
     }
@@ -559,7 +559,7 @@ AcpiDmDisassembleOneOp (
     case AML_INT_ACCESSFIELD_OP:
 
         AcpiOsPrintf ("AccessAs (%s, ",
-            AcpiGbl_AccessTypes [(UINT32) Op->Common.Value.Integer >> 8]);
+            AcpiGbl_AccessTypes [(UINT32) (Op->Common.Value.Integer >> 8) & 0x7]);
 
         AcpiDmDecodeAttribute ((UINT8) Op->Common.Value.Integer);
         AcpiOsPrintf (")");

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.178 $
+ *       $Revision: 1.179 $
  *
  *****************************************************************************/
 
@@ -256,8 +256,8 @@ ACPI_EXTERN UINT8                       AcpiGbl_IntegerNybbleWidth;
 /*
  * ACPI Table info arrays
  */
-extern      ACPI_TABLE_LIST             AcpiGbl_TableLists[NUM_ACPI_TABLE_TYPES];
-extern      ACPI_TABLE_SUPPORT          AcpiGbl_TableData[NUM_ACPI_TABLE_TYPES];
+extern      ACPI_TABLE_LIST             AcpiGbl_TableLists[ACPI_TABLE_ID_MAX+1];
+extern      ACPI_TABLE_SUPPORT          AcpiGbl_TableData[ACPI_TABLE_ID_MAX+1];
 
 /*
  * Predefined mutex objects.  This array contains the

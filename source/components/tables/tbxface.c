@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.74 $
+ *              $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -286,12 +286,12 @@ AcpiLoadTable (
 
     switch (TableInfo.Type)
     {
-    case ACPI_TABLE_FADT:
+    case ACPI_TABLE_ID_FADT:
 
         Status = AcpiTbConvertTableFadt ();
         break;
 
-    case ACPI_TABLE_FACS:
+    case ACPI_TABLE_ID_FACS:
 
         Status = AcpiTbBuildCommonFacs (&TableInfo);
         break;
@@ -340,7 +340,7 @@ AcpiUnloadTable (
 
     /* Parameter validation */
 
-    if (TableType > ACPI_TABLE_MAX)
+    if (TableType > ACPI_TABLE_ID_MAX)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -404,8 +404,8 @@ AcpiGetTableHeader (
     ACPI_FUNCTION_TRACE ("AcpiGetTableHeader");
 
 
-    if ((Instance == 0)                 ||
-        (TableType == ACPI_TABLE_RSDP)  ||
+    if ((Instance == 0)                   ||
+        (TableType == ACPI_TABLE_ID_RSDP) ||
         (!OutTableHeader))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -413,7 +413,7 @@ AcpiGetTableHeader (
 
     /* Check the table type and instance */
 
-    if ((TableType > ACPI_TABLE_MAX)    ||
+    if ((TableType > ACPI_TABLE_ID_MAX) ||
         (ACPI_IS_SINGLE_TABLE (AcpiGbl_TableData[TableType].Flags) &&
          Instance > 1))
     {
@@ -498,7 +498,7 @@ AcpiGetTable (
 
     /* Check the table type and instance */
 
-    if ((TableType > ACPI_TABLE_MAX)    ||
+    if ((TableType > ACPI_TABLE_ID_MAX) ||
         (ACPI_IS_SINGLE_TABLE (AcpiGbl_TableData[TableType].Flags) &&
          Instance > 1))
     {
@@ -524,7 +524,7 @@ AcpiGetTable (
 
     /* Get the table length */
 
-    if (TableType == ACPI_TABLE_RSDP)
+    if (TableType == ACPI_TABLE_ID_RSDP)
     {
         /* RSD PTR is the only "table" without a header */
 

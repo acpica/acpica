@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.306 $
+ *       $Revision: 1.307 $
  *
  *****************************************************************************/
 
@@ -589,15 +589,15 @@ typedef UINT64                          ACPI_INTEGER;
  */
 typedef UINT32                          ACPI_TABLE_TYPE;
 
-#define ACPI_TABLE_RSDP                 (ACPI_TABLE_TYPE) 0
-#define ACPI_TABLE_DSDT                 (ACPI_TABLE_TYPE) 1
-#define ACPI_TABLE_FADT                 (ACPI_TABLE_TYPE) 2
-#define ACPI_TABLE_FACS                 (ACPI_TABLE_TYPE) 3
-#define ACPI_TABLE_PSDT                 (ACPI_TABLE_TYPE) 4
-#define ACPI_TABLE_SSDT                 (ACPI_TABLE_TYPE) 5
-#define ACPI_TABLE_XSDT                 (ACPI_TABLE_TYPE) 6
-#define ACPI_TABLE_MAX                  6
-#define NUM_ACPI_TABLE_TYPES            (ACPI_TABLE_MAX+1)
+#define ACPI_TABLE_ID_RSDP              (ACPI_TABLE_TYPE) 0
+#define ACPI_TABLE_ID_DSDT              (ACPI_TABLE_TYPE) 1
+#define ACPI_TABLE_ID_FADT              (ACPI_TABLE_TYPE) 2
+#define ACPI_TABLE_ID_FACS              (ACPI_TABLE_TYPE) 3
+#define ACPI_TABLE_ID_PSDT              (ACPI_TABLE_TYPE) 4
+#define ACPI_TABLE_ID_SSDT              (ACPI_TABLE_TYPE) 5
+#define ACPI_TABLE_ID_XSDT              (ACPI_TABLE_TYPE) 6
+#define ACPI_TABLE_ID_MAX               6
+#define ACPI_NUM_TABLE_TYPES            (ACPI_TABLE_ID_MAX+1)
 
 /*
  * Types associated with ACPI names and objects.  The first group of
@@ -955,7 +955,7 @@ typedef struct acpi_system_info
     UINT32                          DebugLevel;
     UINT32                          DebugLayer;
     UINT32                          NumTableTypes;
-    ACPI_TABLE_INFO                 TableInfo [NUM_ACPI_TABLE_TYPES];
+    ACPI_TABLE_INFO                 TableInfo [ACPI_TABLE_ID_MAX+1];
 
 } ACPI_SYSTEM_INFO;
 

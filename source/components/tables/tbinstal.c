@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -162,7 +162,7 @@ AcpiTbMatchSignature (
 
     /* Search for a signature match among the known table types */
 
-    for (i = 0; i < NUM_ACPI_TABLE_TYPES; i++)
+    for (i = 0; i < (ACPI_TABLE_ID_MAX+1); i++)
     {
         if (!(AcpiGbl_TableData[i].Flags & SearchType))
         {
@@ -477,7 +477,7 @@ AcpiTbDeleteAllTables (
      * Free memory allocated for ACPI tables
      * Memory can either be mapped or allocated
      */
-    for (Type = 0; Type < NUM_ACPI_TABLE_TYPES; Type++)
+    for (Type = 0; Type < (ACPI_TABLE_ID_MAX+1); Type++)
     {
         AcpiTbDeleteTablesByType (Type);
     }
@@ -509,7 +509,7 @@ AcpiTbDeleteTablesByType (
     ACPI_FUNCTION_TRACE_U32 ("TbDeleteTablesByType", Type);
 
 
-    if (Type > ACPI_TABLE_MAX)
+    if (Type > ACPI_TABLE_ID_MAX)
     {
         return_VOID;
     }
@@ -523,28 +523,28 @@ AcpiTbDeleteTablesByType (
 
     switch (Type)
     {
-    case ACPI_TABLE_RSDP:
+    case ACPI_TABLE_ID_RSDP:
         AcpiGbl_RSDP = NULL;
         break;
 
-    case ACPI_TABLE_DSDT:
+    case ACPI_TABLE_ID_DSDT:
         AcpiGbl_DSDT = NULL;
         break;
 
-    case ACPI_TABLE_FADT:
+    case ACPI_TABLE_ID_FADT:
         AcpiGbl_FADT = NULL;
         break;
 
-    case ACPI_TABLE_FACS:
+    case ACPI_TABLE_ID_FACS:
         AcpiGbl_FACS = NULL;
         break;
 
-    case ACPI_TABLE_XSDT:
+    case ACPI_TABLE_ID_XSDT:
         AcpiGbl_XSDT = NULL;
         break;
 
-    case ACPI_TABLE_SSDT:
-    case ACPI_TABLE_PSDT:
+    case ACPI_TABLE_ID_SSDT:
+    case ACPI_TABLE_ID_PSDT:
     default:
         break;
     }

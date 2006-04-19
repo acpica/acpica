@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -390,7 +390,7 @@ AcpiDmAddressCommon (
 
     /* This is either a Memory, IO, or BusNumber descriptor (0,1,2) */
 
-    AcpiOsPrintf ("%s (", AcpiGbl_WordDecode [ResourceType]);
+    AcpiOsPrintf ("%s (", AcpiGbl_WordDecode [ResourceType & 0x3]);
 
     /* Decode the general and type-specific flags */
 
