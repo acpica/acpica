@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -239,6 +239,23 @@ AsMixedCaseToUnderscores (
 
     while (*SubBuffer)
     {
+        /* Check for quoted string -- ignore */ 
+
+        if (*SubBuffer == '"')
+        {
+            SubBuffer++;
+            while (*SubBuffer && (*SubBuffer != '"'))
+            {
+                if (*SubBuffer == '\\')
+                {
+                    SubBuffer++;
+                }
+                SubBuffer++;
+            }
+            SubBuffer++;
+            continue;
+        }
+
         if (islower (*SubBuffer))
         {
             HasLowerCase = TRUE;
