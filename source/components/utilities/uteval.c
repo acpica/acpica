@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  *****************************************************************************/
 
@@ -138,6 +138,41 @@ AcpiUtTranslateOneCid (
     ACPI_COMPATIBLE_ID      *OneCid);
 
 
+/*
+ * Strings supported by the _OSI predefined (internal) method.
+ */
+static const char               *AcpiInterfaceSupport[] =
+{
+/*! [Begin] no source code translation (keep these strings as-is) */
+
+    /* Operating System Vendor Strings */
+
+    "Linux",
+    "Windows 2000",
+    "Windows 2001",
+    "Windows 2001 SP0",
+    "Windows 2001 SP1",
+    "Windows 2001 SP2",
+    "Windows 2001 SP3",
+    "Windows 2001 SP4",
+    "Windows 2001.1",
+    "Windows 2001.1 SP1",   /* Added 03/2006 */
+    "Windows 2006",         /* Added 03/2006 */
+
+    /* Feature Group Strings */
+
+    "Extended Address Space Descriptor"
+
+    /*
+     * All "optional" feature group strings (features that are implemented
+     * by the host) should be implemented in the host version of
+     * AcpiOsInterfaceSupport and should not be added here.
+     */
+
+/*! [End] no source code translation !*/
+};
+
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtOsiImplementation
@@ -146,8 +181,7 @@ AcpiUtTranslateOneCid (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Implementation of _OSI predefined control method
- *              Supported = _OSI (String)
+ * DESCRIPTION: Implementation of the _OSI predefined control method
  *
  ******************************************************************************/
 
@@ -155,6 +189,7 @@ ACPI_STATUS
 AcpiUtOsiImplementation (
     ACPI_WALK_STATE         *WalkState)
 {
+    ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *StringDesc;
     ACPI_OPERAND_OBJECT     *ReturnDesc;
     ACPI_NATIVE_UINT        i;
@@ -179,21 +214,34 @@ AcpiUtOsiImplementation (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    WalkState->ReturnDesc = ReturnDesc;
+
     /* Compare input string to table of supported strings */
 
-    for (i = 0; i < ACPI_NUM_OSI_STRINGS; i++)
+    for (i = 0; i < ACPI_ARRAY_LENGTH (AcpiInterfaceSupport); i++)
     {
-        if (!ACPI_STRCMP (StringDesc->String.Pointer,
-                ACPI_CAST_PTR (char, AcpiGbl_ValidOsiStrings[i])))
+        if (!ACPI_STRCMP (StringDesc->String.Pointer, AcpiInterfaceSupport[i]))
         {
             /* This string is supported */
 
-            ReturnDesc->Integer.Value = 0xFFFFFFFF;
-            break;
+            ReturnDesc->Integer.Value = ACPI_UINT32_MAX;
+            return_ACPI_STATUS (AE_CTRL_TERMINATE);
         }
     }
 
-    WalkState->ReturnDesc = ReturnDesc;
+    /*
+     * Did not match the string in the static table, call the host OSL to
+     * check for a match with one of the optional strings (such as 
+     * "Module Device", "3.0 Thermal Model", etc.)
+     */
+    Status = AcpiOsInterfaceSupport (StringDesc->String.Pointer);
+    if (ACPI_SUCCESS (Status))
+    {
+        /* This string is supported */
+
+        ReturnDesc->Integer.Value = ACPI_UINT32_MAX;
+    }
+
     return_ACPI_STATUS (AE_CTRL_TERMINATE);
 }
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -1252,6 +1252,28 @@ AcpiOsSleep (
 
     Sleep (((unsigned long) milliseconds) + 10);
     return;
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiOsInterfaceSupport
+ *
+ * PARAMETERS:  Interface           - Requested interface to be validated
+ *
+ * RETURN:      AE_OK if interface is supported, AE_NOT_FOUND otherwise
+ *
+ * DESCRIPTION: Match an interface string to the interfaces supported by the
+ *              host. Strings originate from an AML call to the _OSI method.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsInterfaceSupport (
+    char                    *Interface)
+{
+
+    return (AE_NOT_FOUND);
 }
 
 

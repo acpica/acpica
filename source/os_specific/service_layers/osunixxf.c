@@ -871,6 +871,28 @@ AcpiOsGetTimer (void)
 
 /******************************************************************************
  *
+ * FUNCTION:    AcpiOsInterfaceSupport
+ *
+ * PARAMETERS:  Interface           - Requested interface to be validated
+ *
+ * RETURN:      AE_OK if interface is supported, AE_NOT_FOUND otherwise
+ *
+ * DESCRIPTION: Match an interface string to the interfaces supported by the
+ *              host. Strings originate from an AML call to the _OSI method.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AcpiOsInterfaceSupport (
+    char                    *Interface)
+{
+
+    return (AE_NOT_FOUND);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AcpiOsValidateAddress
  *
  * PARAMETERS:  SpaceId             - ACPI space ID

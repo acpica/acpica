@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.235 $
+ *              $Revision: 1.236 $
  *
  *****************************************************************************/
 
@@ -271,32 +271,6 @@ const char                  *AcpiGbl_HighestDstateNames[4] =
     "_S4D"
 };
 
-/*
- * Strings supported by the _OSI predefined (internal) method.
- * When adding strings, be sure to update ACPI_NUM_OSI_STRINGS.
- */
-const char                  *AcpiGbl_ValidOsiStrings[ACPI_NUM_OSI_STRINGS] =
-{
-    /* Operating System Vendor Strings */
-
-    "Windows 2001 SP1",
-    "Linux",
-    "Windows 2000",
-    "Windows 2001",
-    "Windows 2001 SP0",
-    "Windows 2001 SP2",
-    "Windows 2001 SP3",
-    "Windows 2001 SP4",
-    "Windows 2001.1",
-    "Windows 2001.1 SP1",   /* Added 03/2006 */
-    "Windows 2006",         /* Added 03/2006 */
-
-    /* Feature Group Strings */
-
-    "Extended Address Space Descriptor"
-};
-
-#define ACPI_ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
 /*******************************************************************************
  *
@@ -952,11 +926,6 @@ AcpiUtInitGlobals (
 #ifdef ACPI_DEBUG_OUTPUT
     AcpiGbl_LowestStackPointer          = ACPI_SIZE_MAX;
 #endif
-    ACPI_ERROR ((AE_INFO, "Num strings: %d %d %d", 
-        (UINT32) ACPI_ARRAY_SIZE (AcpiGbl_ValidOsiStrings), 
-        (UINT32) sizeof (AcpiGbl_ValidOsiStrings), 
-        (UINT32) sizeof((AcpiGbl_ValidOsiStrings)[0])));
-
 
     return_VOID;
 }

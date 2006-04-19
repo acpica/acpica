@@ -383,6 +383,11 @@ AcpiOsDerivePciId(
 /*
  * Miscellaneous
  */
+
+ACPI_STATUS
+AcpiOsInterfaceSupport (
+    char                    *Interface);
+
 ACPI_STATUS
 AcpiOsValidateAddress (
     UINT8                   SpaceId,
