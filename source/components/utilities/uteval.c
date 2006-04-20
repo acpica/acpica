@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  *****************************************************************************/
 
@@ -141,10 +141,8 @@ AcpiUtTranslateOneCid (
 /*
  * Strings supported by the _OSI predefined (internal) method.
  */
-static const char               *AcpiInterfaceSupport[] =
+static const char               *AcpiInterfacesSupported[] =
 {
-/*! [Begin] no source code translation (keep these strings as-is) */
-
     /* Operating System Vendor Strings */
 
     "Linux",
@@ -166,10 +164,8 @@ static const char               *AcpiInterfaceSupport[] =
     /*
      * All "optional" feature group strings (features that are implemented
      * by the host) should be implemented in the host version of
-     * AcpiOsInterfaceSupport and should not be added here.
+     * AcpiOsValidateInterface and should not be added here.
      */
-
-/*! [End] no source code translation !*/
 };
 
 
@@ -206,7 +202,7 @@ AcpiUtOsiImplementation (
         return_ACPI_STATUS (AE_TYPE);
     }
 
-    /* Create a return object (Default value = 0) */
+    /* Create a return object */
 
     ReturnDesc = AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
     if (!ReturnDesc)
@@ -214,17 +210,19 @@ AcpiUtOsiImplementation (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
+    /* Default return value is SUPPORTED */
+
+    ReturnDesc->Integer.Value = ACPI_UINT32_MAX;
     WalkState->ReturnDesc = ReturnDesc;
 
-    /* Compare input string to table of supported strings */
+    /* Compare input string to static table of supported interfaces */
 
-    for (i = 0; i < ACPI_ARRAY_LENGTH (AcpiInterfaceSupport); i++)
+    for (i = 0; i < ACPI_ARRAY_LENGTH (AcpiInterfacesSupported); i++)
     {
-        if (!ACPI_STRCMP (StringDesc->String.Pointer, AcpiInterfaceSupport[i]))
+        if (!ACPI_STRCMP (StringDesc->String.Pointer, AcpiInterfacesSupported[i]))
         {
-            /* This string is supported */
+            /* The interface is supported */
 
-            ReturnDesc->Integer.Value = ACPI_UINT32_MAX;
             return_ACPI_STATUS (AE_CTRL_TERMINATE);
         }
     }
@@ -234,14 +232,17 @@ AcpiUtOsiImplementation (
      * check for a match with one of the optional strings (such as 
      * "Module Device", "3.0 Thermal Model", etc.)
      */
-    Status = AcpiOsInterfaceSupport (StringDesc->String.Pointer);
+    Status = AcpiOsValidateInterface (StringDesc->String.Pointer);
     if (ACPI_SUCCESS (Status))
     {
-        /* This string is supported */
+        /* The interface is supported */
 
-        ReturnDesc->Integer.Value = ACPI_UINT32_MAX;
+        return_ACPI_STATUS (AE_CTRL_TERMINATE);
     }
 
+    /* The interface is not supported */
+
+    ReturnDesc->Integer.Value = 0;
     return_ACPI_STATUS (AE_CTRL_TERMINATE);
 }
 

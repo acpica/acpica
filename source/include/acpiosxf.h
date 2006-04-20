@@ -385,7 +385,7 @@ AcpiOsDerivePciId(
  */
 
 ACPI_STATUS
-AcpiOsInterfaceSupport (
+AcpiOsValidateInterface (
     char                    *Interface);
 
 ACPI_STATUS
