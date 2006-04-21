@@ -1,4 +1,500 @@
 ----------------------------------------
+21 April 2006. Summary of changes for version 20060421:
+
+1) ACPI CA Core Subsystem:
+
+Removed a device initialization optimization introduced in 20051216 where the _STA method was not run unless an _INI was also present for the same device. This optimization could cause problems because it could allow _INI methods to be run within a not-present device subtree. (If a not-present device had no _INI, _STA would not be run, the not-present status would not be discovered, and the children of the device would be incorrectly traversed.)
+
+Implemented a new _STA optimization where namespace subtrees that do not contain _INI are identified and ignored during device initialization. Selectively running _STA can significantly improve boot time on large machines (with assistance from Len Brown.)
+
+Implemented support for the device initialization case where the returned _STA flags indicate a device not-present but functioning. In this case, _INI is not run, but the device children are examined for presence, as per the ACPI specification.
+
+Implemented an additional change to the IndexField support in order to conform to MS behavior. The value written to the Index Register is not simply a byte offset, it is a byte offset in units of the access width of the parent Index Field. (Fiodor Suietov)
+
+Defined and deployed a new OSL interface, AcpiOsValidateAddress. This interface is called during the creation of all AML operation regions, and allows the host OS to exert control over what addresses it will allow the AML code to access. Operation Regions whose addresses are disallowed will cause a runtime exception when they are actually accessed (will not affect or abort table loading.) See oswinxf or osunixxf for an example implementation.
+
+Defined and deployed a new OSL interface, AcpiOsValidateInterface. This interface allows the host OS to match the various "optional" interface/behavior strings for the _OSI predefined control method as appropriate (with assistance from Bjorn Helgaas.) See oswinxf or osunixxf for an example implementation.
+
+Restructured and corrected various problems in the exception handling code paths within DsCallControlMethod and DsTerminateControlMethod in dsmethod (with assistance from Takayoshi Kochi.)
+
+Modified the Linux source converter to ignore quoted string literals while converting identifiers from mixed to lower case. This will correct problems with the disassembler and other areas where such strings must not be modified.
+
+The ACPI_FUNCTION_* macros no longer require quotes around the function name. This allows the Linux source converter to convert the names, now that the converter ignores quoted strings.
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  81.1K Code, 17.7K Data,  98.8K Total
+    Debug Version:     158.9K Code, 64.9K Data, 223.8K Total
+  Current Release:
+    Non-Debug Version:  79.7K Code, 17.7K Data,  97.4K Total
+    Debug Version:     160.1K Code, 65.2K Data, 225.3K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+Implemented 3 new warnings for iASL, and implemented multiple warning levels (w2 flag).
+
+1) Ignored timeouts: If the TimeoutValue parameter to Wait or Acquire is not WAIT_FOREVER (0xFFFF) and the code does not examine the return value to check for the possible timeout, a warning is issued.
+
+2) Useless operators: If an ASL operator does not specify an optional target operand and it also does not use the function return value from the operator, a warning is issued since the operator effectively does nothing.
+
+3) Unreferenced objects: If a namespace object is created, but never referenced, a warning is issued. This is a warning level 2 since there are cases where this is ok, such as when a secondary table is loaded that uses the unreferenced objects. Even so, care is taken to only flag objects that don't look like they will ever be used. For example, the reserved methods (starting with an underscore) are usually not referenced because it is expected that the OS will invoke them.
+
+----------------------------------------
+31 March 2006. Summary of changes for version 20060331:
+
+1) ACPI CA Core Subsystem:
+
+Implemented header file support for the following additional ACPI tables: ASF!, BOOT, CPEP, DBGP, MCFG, SPCR, SPMI, TCPA, and WDRT. With this support, all current and known ACPI tables are now defined in the ACPICA headers and are available for use by device drivers and other software.
+
+Implemented support to allow tables that contain ACPI names with invalid characters to be loaded. Previously, this would cause the table load to fail, but since there are several known cases of such tables on existing machines, this change was made to enable ACPI support for them. Also, this matches the behavior of the Microsoft ACPI implementation.
+
+Fixed a couple regressions introduced during the memory optimization in the 20060317 release. The namespace node definition required additional reorganization and an internal datatype that had been changed to 8-bit was restored to 32-bit. (Valery Podrezov)
+
+Fixed a problem where a null pointer passed to AcpiUtDeleteGenericState could be passed through to AcpiOsReleaseObject which is unexpected. Such null pointers are now trapped and ignored, matching the behavior of the previous implementation before the deployment of AcpiOsReleaseObject.
+(Valery Podrezov, Fiodor Suietov)
+
+Fixed a memory mapping leak during the deletion of a SystemMemory operation region where a cached memory mapping was not deleted. This became a noticeable problem for operation regions that are defined within frequently used control methods. (Dana Meyers)
+
+Reorganized the ACPI table header files into two main files: one for the ACPI tables consumed by the ACPICA core, and another for the miscellaneous ACPI tables that are consumed by the drivers and other software. The various FADT definitions were merged into one common section and three different tables (ACPI 1.0, 1.0+, and 2.0)
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  80.9K Code, 17.7K Data,  98.6K Total
+    Debug Version:     158.7K Code, 64.8K Data, 223.5K Total
+  Current Release:
+    Non-Debug Version:  81.1K Code, 17.7K Data,  98.8K Total
+    Debug Version:     158.9K Code, 64.9K Data, 223.8K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+Disassembler: Implemented support to decode and format all non-AML ACPI tables (tables other than DSDTs and SSDTs.) This includes the new tables added to the ACPICA headers, therefore all current and known ACPI tables are supported.
+
+Disassembler: The change to allow ACPI names with invalid characters also enables the disassembly of such tables. Invalid characters within names are changed to '*' to make the name printable; the iASL compiler will still generate an error for such names, however, since this is an invalid ACPI character.
+
+Implemented an option for AcpiXtract (-a) to extract all tables found in the input file. The default invocation extracts only the DSDTs and SSDTs.
+
+Fixed a couple of gcc generation issues for iASL and AcpiExec and added a makefile for the AcpiXtract utility.
+
+----------------------------------------
+17 March 2006. Summary of changes for version 20060317:
+
+1) ACPI CA Core Subsystem:
+
+Implemented the use of a cache object for all internal namespace nodes. Since there are about 1000 static nodes in a typical system, this will decrease memory use for cache implementations that minimize per-allocation overhead (such as a slab allocator.)
+
+Removed the reference count mechanism for internal namespace nodes, since it was deemed unnecessary. This reduces the size of each namespace node by about 5%-10% on all platforms. Nodes are now 20 bytes for the 32-bit case, and 32 bytes for the 64-bit case.
+
+Optimized several internal data structures to reduce object size on 64-bit platforms by packing data within the 64-bit alignment. This includes the frequently used ACPI_OPERAND_OBJECT, of which there can be ~1000 static instances corresponding to the namespace objects.
+
+Added two new strings for the predefined _OSI method: "Windows 2001.1 SP1" and "Windows 2006".
+
+Split the allocation tracking mechanism out to a separate file, from utalloc.c to uttrack.c. This mechanism appears to be only useful for application-level code. Kernels may wish to not include uttrack.c in distributions.
+
+Removed all remnants of the obsolete ACPI_REPORT_* macros and the associated code. (These macros have been replaced by the ACPI_ERROR and ACPI_WARNING macros.)
+
+Code and Data Size: These are the sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  81.1K Code, 17.8K Data,  98.9K Total
+    Debug Version:     161.6K Code, 65.7K Data, 227.3K Total
+  Current Release:
+    Non-Debug Version:  80.9K Code, 17.7K Data,  98.6K Total
+    Debug Version:     158.7K Code, 64.8K Data, 223.5K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+Implemented an ANSI C version of the acpixtract utility. This version will automatically extract the DSDT and all SSDTs from the input acpidump text file and dump the binary output to separate files. It can also display a summary of the input file including the headers for each table found and will extract any single ACPI table, with any signature. (See source/tools/acpixtract)
+
+----------------------------------------
+10 March 2006. Summary of changes for version 20060310:
+
+1) ACPI CA Core Subsystem:
+
+Tagged all external interfaces to the subsystem with the new ACPI_EXPORT_SYMBOL macro. This macro can be defined as necessary to assist kernel integration. For Linux, the macro resolves to the EXPORT_SYMBOL macro. The default definition is NULL.
+
+Added the ACPI_THREAD_ID type for the return value from AcpiOsGetThreadId. This allows the host to define this as necessary to simplify kernel integration. The default definition is ACPI_NATIVE_UINT.
+
+Fixed two interpreter problems related to error processing, the deletion of objects, and placing invalid pointers onto the internal operator result stack. BZ 6028, 6151 (Valery Podrezov)
+
+Increased the reference count threshold where a warning is emitted for large reference counts in order to eliminate unnecessary warnings on systems with large namespaces (especially 64-bit.) Increased the value from 0x400 to 0x800.
+
+Due to universal disagreement as to the meaning of the 'c' in the calloc() function, the ACPI_MEM_CALLOCATE macro has been renamed to ACPI_ALLOCATE_ZEROED so that the purpose of the interface is 'clear'. ACPI_MEM_ALLOCATE and ACPI_MEM_FREE are renamed to ACPI_ALLOCATE and ACPI_FREE.
+
+Code and Data Size: These are the sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  81.0K Code, 17.8K Data,  98.8K Total
+    Debug Version:     161.4K Code, 65.7K Data, 227.1K Total
+  Current Release:
+    Non-Debug Version:  81.1K Code, 17.8K Data,  98.9K Total
+    Debug Version:     161.6K Code, 65.7K Data, 227.3K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Disassembler: implemented support for symbolic resource descriptor references. If a CreateXxxxField operator references a fixed offset within a resource descriptor, a name is assigned to the descriptor and the offset is translated to the appropriate resource tag and pathname. The addition of this support brings the disassembled code very close to the original ASL source code and helps eliminate run-time errors when the disassembled code is modified (and recompiled) in such a way as to invalidate the original fixed offsets.
+
+Implemented support for a Descriptor Name as the last parameter to the ASL Register() macro. This parameter was inadvertently left out of the ACPI specification, and will be added for ACPI 3.0b.
+
+Fixed a problem where the use of the "_OSI" string (versus the full path "\_OSI") caused an internal compiler error. ("No back ptr to op")
+
+Fixed a problem with the error message that occurs when an invalid string is used for a _HID object (such as one with an embedded asterisk: "*PNP010A".) The correct message is now displayed.
+
+----------------------------------------
+17 February 2006. Summary of changes for version 20060217:
+
+1) ACPI CA Core Subsystem:
+
+Implemented a change to the IndexField support to match the behavior of the Microsoft AML interpreter. The value written to the Index register is now a byte offset, no longer an index based upon the width of the Data register. This should fix IndexField problems seen on some machines where the Data register is not exactly one byte wide. The ACPI specification will be clarified on this point.
+
+Fixed a problem where several resource descriptor types could overrun the internal descriptor buffer due to size miscalculation: VendorShort, VendorLong, and Interrupt. This was noticed on IA64 machines, but could affect all platforms.
+
+Fixed a problem where individual resource descriptors were misaligned within the internal buffer, causing alignment faults on IA64 platforms.
+
+Code and Data Size: These are the sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  81.1K Code, 17.8K Data,  98.9K Total
+    Debug Version:     161.3K Code, 65.6K Data, 226.9K Total
+  Current Release:
+    Non-Debug Version:  81.0K Code, 17.8K Data,  98.8K Total
+    Debug Version:     161.4K Code, 65.7K Data, 227.1K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Implemented support for new reserved names: _WDG and _WED are Microsoft extensions for Windows Instrumentation Management, _TDL is a new ACPI-defined method (Throttling Depth Limit.)
+
+Fixed a problem where a zero-length VendorShort or VendorLong resource descriptor was incorrectly emitted as a descriptor of length one.
+
+----------------------------------------
+10 February 2006. Summary of changes for version 20060210:
+
+1) ACPI CA Core Subsystem:
+
+Removed a couple of extraneous ACPI_ERROR messages that appeared during normal execution. These became apparent after the conversion from ACPI_DEBUG_PRINT.
+
+Fixed a problem where the CreateField operator could hang if the BitIndex or NumBits parameter referred to a named object. (Valery Podrezov, BZ 5359)
+
+Fixed a problem where a DeRefOf operation on a buffer object incorrectly failed with an exception. This also fixes a couple of related RefOf and DeRefOf issues. (Valery Podrezov, BZ 5360/5392/5387)
+
+Fixed a problem where the AE_BUFFER_LIMIT exception was returned instead of AE_STRING_LIMIT on an out-of-bounds Index() operation. (Valery Podrezov, BZ 5480)
+
+Implemented a memory cleanup at the end of the execution of each iteration of an AML While() loop, preventing the accumulation of outstanding objects. (Valery Podrezov, BZ 5427)
+
+Eliminated a chunk of duplicate code in the object resolution code. (Valery Podrezov, BZ 5336)
+
+Fixed several warnings during the 64-bit code generation.
+
+The AcpiSrc source code conversion tool now inserts one line of whitespace after an if() statement that is followed immediately by a comment, improving readability of the Linux code.
+
+Code and Data Size: The current and previous library sizes for the core subsystem are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  81.0K Code, 17.9K Data,  98.9K Total
+    Debug Version:     161.3K Code, 65.7K Data, 227.0K Total
+  Current Release:
+    Non-Debug Version:  81.1K Code, 17.8K Data,  98.9K Total
+    Debug Version:     161.3K Code, 65.6K Data, 226.9K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a problem with the disassembly of a BankField operator with a complex expression for the BankValue parameter.
+
+----------------------------------------
+27 January 2006. Summary of changes for version 20060127:
+
+1) ACPI CA Core Subsystem:
+
+Implemented support in the Resource Manager to allow unresolved namestring references within resource package objects for the _PRT method. This support is in addition to the previously implemented unresolved reference support within the AML parser. If the interpreter slack mode is enabled, these unresolved references will be passed through to the caller as a NULL package entry.
+
+Implemented and deployed new macros and functions for error and warning messages across the subsystem. These macros are simpler and generate less code than their predecessors. The new macros ACPI_ERROR, ACPI_EXCEPTION, ACPI_WARNING, and ACPI_INFO replace the ACPI_REPORT_* macros. The older macros remain defined to allow ACPI drivers time to migrate to the new macros.
+
+Implemented the ACPI_CPU_FLAGS type to simplify host OS integration of the Acquire/Release Lock OSL interfaces.
+
+Fixed a problem where Alias ASL operators are sometimes not correctly resolved, in both the interpreter and the iASL compiler.
+
+Fixed several problems with the implementation of the ConcatenateResTemplate ASL operator. As per the ACPI specification, zero length buffers are now treated as a single EndTag. One-length buffers always cause a fatal exception. Non-zero length buffers that do not end with a full 2-byte EndTag cause a fatal exception.
+
+Fixed a possible structure overwrite in the AcpiGetObjectInfo external interface. (With assistance from Thomas Renninger)
+
+Code and Data Size: The current and previous library sizes for the core subsystem are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  83.1K Code, 18.4K Data, 101.5K Total
+    Debug Version:     163.2K Code, 66.2K Data, 229.4K Total
+  Current Release:
+    Non-Debug Version:  81.0K Code, 17.9K Data,  98.9K Total
+    Debug Version:     161.3K Code, 65.7K Data, 227.0K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed an internal error that was generated for any forward references to ASL Alias objects.
+
+----------------------------------------
+13 January 2006. Summary of changes for version 20060113:
+
+1) ACPI CA Core Subsystem:
+
+Added 2006 copyright to all module headers and signons. This affects virtually every file in the ACPICA core subsystem, iASL compiler, and the utilities.
+ 
+Enhanced the ACPICA error reporting in order to simplify user migration to the non-debug version of ACPICA. Replaced all instances of the ACPI_DEBUG_PRINT macro invoked at the ACPI_DB_ERROR and ACPI_DB_WARN debug levels with the ACPI_REPORT_ERROR and ACPI_REPORT_WARNING macros, respectively. This preserves all error and warning messages in the non-debug version of the ACPICA code (this has been referred to as the "debug lite" option.) Over 200 cases were converted to create a total of over 380 error/warning messages across the ACPICA code. This increases the code and data size of the default non-debug version of the code somewhat (about 13K), but all error/warning reporting may be disabled if desired (and code eliminated) by specifying the ACPI_NO_ERROR_MESSAGES compile-time configuration option. The size of the debug version of ACPICA remains about the same.
+
+Fixed a memory leak within the AML Debugger "Set" command. One object was not properly deleted for every successful invocation of the command.
+
+Code and Data Size: The current and previous library sizes for the core subsystem are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  76.6K Code, 12.3K Data,  88.9K Total
+    Debug Version:     163.7K Code, 67.5K Data, 231.2K Total
+  Current Release:
+    Non-Debug Version:  83.1K Code, 18.4K Data, 101.5K Total
+    Debug Version:     163.2K Code, 66.2K Data, 229.4K Total
+
+
+2) iASL Compiler/Disassembler:
+
+The compiler now officially supports the ACPI 3.0a specification that was released on December 30, 2005. (Specification is available at www.acpi.info)
+
+----------------------------------------
+16 December 2005. Summary of changes for version 20051216:
+
+1) ACPI CA Core Subsystem:
+
+Implemented optional support to allow unresolved names within ASL Package objects. A null object is inserted in the package when a named reference cannot be located in the current namespace. Enabled via the interpreter slack flag, this should eliminate AE_NOT_FOUND exceptions seen on machines that contain such code.
+
+Implemented an optimization to the initialization sequence that can improve boot time. During ACPI device initialization, the _STA method is now run if and only if the _INI method exists. The _STA method is used to determine if the device is present; An _INI can only be run if _STA returns present, but it is a waste of time to run the _STA method if the _INI does not exist. (Prototype and assistance from Dong Wei)
+
+Implemented use of the C99 uintptr_t for the pointer casting macros if it is available in the current compiler. Otherwise, the default (void *) cast is used as before.
+
+Fixed some possible memory leaks found within the execution path of the Break, Continue, If, and CreateField operators. (Valery Podrezov)
+
+Fixed a problem introduced in the 20051202 release where an exception is generated during method execution if a control method attempts to declare another method.
+
+Moved resource descriptor string constants that are used by both the AML disassembler and AML debugger to the common utilities directory so that these components are independent.
+
+Implemented support in the AcpiExec utility (-e switch) to globally ignore exceptions during control method execution (method is not aborted.)
+
+Added the rsinfo.c source file to the AcpiExec makefile for Linux/Unix generation.
+
+Code and Data Size: The current and previous library sizes for the core subsystem are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  76.3K Code, 12.3K Data,  88.6K Total
+    Debug Version:     163.2K Code, 67.4K Data, 230.6K Total
+  Current Release:
+    Non-Debug Version:  76.6K Code, 12.3K Data,  88.9K Total
+    Debug Version:     163.7K Code, 67.5K Data, 231.2K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a problem where a CPU stack overflow fault could occur if a recursive method call was made from within a Return statement.
+
+----------------------------------------
+02 December 2005. Summary of changes for version 20051202:
+
+1) ACPI CA Core Subsystem:
+
+Modified the parsing of control methods to no longer create namespace objects during the first pass of the parse. Objects are now created only during the execute phase, at the moment the namespace creation operator is encountered in the AML (Name, OperationRegion, CreateByteField, etc.) This should eliminate ALREADY_EXISTS exceptions seen on some machines where reentrant control methods are protected by an AML mutex. The mutex will now correctly block multiple threads from attempting to create the same object more than once.
+
+Increased the number of available Owner Ids for namespace object tracking from 32 to 255. This should eliminate the OWNER_ID_LIMIT exceptions seen on some machines with a large number of ACPI tables (either static or dynamic).
+
+Fixed a problem with the AcpiExec utility where a fault could occur when the -b switch (batch mode) is used.
+
+Enhanced the namespace dump routine to output the owner ID for each namespace object.
+
+Code and Data Size: The current and previous library sizes for the core subsystem are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  76.3K Code, 12.3K Data,  88.6K Total
+    Debug Version:     163.0K Code, 67.4K Data, 230.4K Total
+  Current Release:
+    Non-Debug Version:  76.3K Code, 12.3K Data,  88.6K Total
+    Debug Version:     163.2K Code, 67.4K Data, 230.6K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a parse error during compilation of certain Switch/Case constructs. To simplify the parse, the grammar now allows for multiple Default statements and this error is now detected and flagged during the analysis phase.
+
+Disassembler: The disassembly now includes the contents of the original table header within a comment at the start of the file. This includes the name and version of the original ASL compiler.
+
+----------------------------------------
+17 November 2005. Summary of changes for version 20051117:
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem in the AML parser where the method thread count could be decremented below zero if any errors occurred during the method parse phase. This should eliminate AE_AML_METHOD_LIMIT exceptions seen on some machines. This also fixed a related regression with the mechanism that detects and corrects methods that cannot properly handle reentrancy (related to the deployment of the new OwnerId mechanism.)
+
+Eliminated the pre-parsing of control methods (to detect errors) during table load. Related to the problem above, this was causing unwind issues if any errors occurred during the parse, and it seemed to be overkill. A table load should not be aborted if there are problems with any single control method, thus rendering this feature rather pointless.
+
+Fixed a problem with the new table-driven resource manager where an internal buffer overflow could occur for small resource templates.
+
+Implemented a new external interface, AcpiGetVendorResource. This interface will find and return a vendor-defined resource descriptor within a _CRS or _PRS method via an ACPI 3.0 UUID match. With assistance from Bjorn Helgaas.
+
+Removed the length limit (200) on string objects as per the upcoming ACPI 3.0A specification. This affects the following areas of the interpreter: 1) any implicit conversion of a Buffer to a String, 2) a String object result of the ASL Concatentate operator, 3) the String object result of the ASL ToString operator.
+
+Fixed a problem in the Windows OS interface layer (OSL) where a WAIT_FOREVER on a semaphore object would incorrectly timeout. This allows the multithreading features of the AcpiExec utility to work properly under Windows.
+
+Updated the Linux makefiles for the iASL compiler and AcpiExec to include the recently added file named "utresrc.c".
+
+Code and Data Size: The current and previous library sizes for the core subsystem are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  76.2K Code, 12.3K Data,  88.5K Total
+    Debug Version:     163.0K Code, 67.4K Data, 230.4K Total
+  Current Release:
+    Non-Debug Version:  76.3K Code, 12.3K Data,  88.6K Total
+    Debug Version:     163.0K Code, 67.4K Data, 230.4K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Removed the limit (200) on string objects as per the upcoming ACPI 3.0A specification. For the iASL compiler, this means that string literals within the source ASL can be of any length. 
+
+Enhanced the listing output to dump the AML code for resource descriptors immediately after the ASL code for each descriptor, instead of in a block at the end of the entire resource template.
+
+Enhanced the compiler debug output to dump the entire original parse tree constructed during the parse phase, before any transforms are applied to the tree. The transformed tree is dumped also.
+
+----------------------------------------
+02 November 2005. Summary of changes for version 20051102:
+
+1) ACPI CA Core Subsystem:
+
+Modified the subsystem initialization sequence to improve GPE support. The GPE initialization has been split into two parts in order to defer execution of the _PRW methods (Power Resources for Wake) until after the hardware is fully initialized and the SCI handler is installed. This allows the _PRW methods to access fields protected by the Global Lock. This will fix systems where a NO_GLOBAL_LOCK exception has been seen during initialization.
+
+Converted the ACPI internal object disassemble and display code within the AML debugger to fully table-driven operation, reducing code size and increasing maintainability.
+
+Fixed a regression with the ConcatenateResTemplate() ASL operator introduced in the 20051021 release.
+
+Implemented support for "local" internal ACPI object types within the debugger "Object" command and the AcpiWalkNamespace external interfaces. These local types include RegionFields, BankFields, IndexFields, Alias, and reference objects.
+
+Moved common AML resource handling code into a new file, "utresrc.c". This code is shared by both the Resource Manager and the AML Debugger.
+
+Code and Data Size: The current and previous library sizes for the core subsystem are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  76.1K Code, 12.2K Data,  88.3K Total
+    Debug Version:     163.5K Code, 67.0K Data, 230.5K Total
+  Current Release:
+    Non-Debug Version:  76.2K Code, 12.3K Data,  88.5K Total
+    Debug Version:     163.0K Code, 67.4K Data, 230.4K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a problem with very large initializer lists (more than 4000 elements) for both Buffer and Package objects where the parse stack could overflow.
+
+Enhanced the pre-compile source code scan for non-ASCII characters to ignore characters within comment fields. The scan is now always performed and is no longer optional, detecting invalid characters within a source file immediately rather than during the parse phase or later.
+
+Enhanced the ASL grammar definition to force early reductions on all list-style grammar elements so that the overall parse stack usage is greatly reduced. This should improve performance and reduce the possibility of parse stack overflow.
+
+Eliminated all reduce/reduce conflicts in the iASL parser generation. Also, with the addition of a %expected statement, the compiler generates from source with no warnings.
+
+Fixed a possible segment fault in the disassembler if the input filename does not contain a "dot" extension (Thomas Renninger).
+
+----------------------------------------
+21 October 2005. Summary of changes for version 20051021:
+
+1) ACPI CA Core Subsystem:
+
+Implemented support for the EM64T and other x86-64 processors. This essentially entails recognizing that these processors support non-aligned memory transfers. Previously, all 64-bit processors were assumed to lack hardware support for non-aligned transfers.
+
+Completed conversion of the Resource Manager to nearly full table-driven operation. Specifically, the resource conversion code (convert AML to internal format and the reverse) and the debug code to dump internal resource descriptors are fully table-driven, reducing code and data size and improving maintainability.
+
+The OSL interfaces for Acquire and Release Lock now use a 64-bit flag word on 64-bit processors instead of a fixed 32-bit word. (With assistance from Alexey Starikovskiy)
+
+Implemented support within the resource conversion code for the Type-Specific byte within the various ACPI 3.0 *WordSpace macros.
+
+Fixed some issues within the resource conversion code for the type-specific flags for both Memory and I/O address resource descriptors. For Memory, implemented support for the MTP and TTP flags. For I/O, split the TRS and TTP flags into two separate fields.
+
+Code and Data Size: The current and previous library sizes for the core subsystem are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  77.1K Code, 12.1K Data,  89.2K Total
+    Debug Version:     168.0K Code, 68.3K Data, 236.3K Total
+  Current Release:
+    Non-Debug Version:  76.1K Code, 12.2K Data,  88.3K Total
+    Debug Version:     163.5K Code, 67.0K Data, 230.5K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Relaxed a compiler restriction that disallowed a ResourceIndex byte if the corresponding ResourceSource string was not also present in a resource descriptor declaration. This restriction caused problems with existing AML/ASL code that includes the Index byte without the string. When such AML was disassembled, it could not be compiled without modification. Further, the modified code created a resource template with a different size than the original, breaking code that used fixed offsets into the resource template buffer.
+
+Removed a recent feature of the disassembler to ignore a lone ResourceIndex byte. This byte is now emitted if present so that the exact AML can be reproduced when the disassembled code is recompiled.
+
+Improved comments and text alignment for the resource descriptor code emitted by the disassembler.
+
+Implemented disassembler support for the ACPI 3.0 AccessSize field within a Register() resource descriptor.
+
+----------------------------------------
+30 September 2005. Summary of changes for version 20050930:
+
+1) ACPI CA Core Subsystem:
+
+Completed a major overhaul of the Resource Manager code - specifically, optimizations in the area of the AML/internal resource conversion code. The code has been optimized to simplify and eliminate duplicated code, CPU stack use has been decreased by optimizing function parameters and local variables, and naming conventions across the manager have been standardized for clarity and ease of maintenance (this includes function, parameter, variable, and struct/typedef names.) The update may force changes in some driver code, depending on how resources are handled by the host OS.
+
+All Resource Manager dispatch and information tables have been moved to a single location for clarity and ease of maintenance. One new file was created, named "rsinfo.c".
+
+The ACPI return macros (return_ACPI_STATUS, etc.) have been modified to guarantee that the argument is not evaluated twice, making them less prone to macro side-effects. However, since there exists the possibility of additional stack use if a particular compiler cannot optimize them (such as in the debug generation case), the original macros are optionally available.  Note that some invocations of the return_VALUE macro may now cause size mismatch warnings; the return_UINT8 and return_UINT32 macros are provided to eliminate these. (From Randy Dunlap)
+
+Implemented a new mechanism to enable debug tracing for individual control methods. A new external interface, AcpiDebugTrace, is provided to enable this mechanism. The intent is to allow the host OS to easily enable and disable tracing for problematic control methods. This interface can be easily exposed to a user or debugger interface if desired. See the file psxface.c for details.
+
+AcpiUtCallocate will now return a valid pointer if a length of zero is specified - a length of one is used and a warning is issued. This matches the behavior of AcpiUtAllocate.
+
+Code and Data Size: The current and previous library sizes for the core subsystem are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  77.5K Code, 12.0K Data,  89.5K Total
+    Debug Version:     168.1K Code, 68.4K Data, 236.5K Total
+  Current Release:
+    Non-Debug Version:  77.1K Code, 12.1K Data,  89.2K Total
+    Debug Version:     168.0K Code, 68.3K Data, 236.3K Total
+
+
+2) iASL Compiler/Disassembler:
+
+A remark is issued if the effective compile-time length of a package or buffer is zero. Previously, this was a warning.
+
+----------------------------------------
+16 September 2005. Summary of changes for version 20050916:
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem within the Resource Manager where support for the Generic Register descriptor was not fully implemented. This descriptor is now fully recognized, parsed, disassembled, and displayed.
+
+Completely restructured the Resource Manager code to utilize table-driven dispatch and lookup, eliminating many of the large switch() statements. This reduces overall subsystem code size and code complexity. Affects the resource parsing and construction, disassembly, and debug dump output.
+
+Cleaned up and restructured the debug dump output for all resource descriptors. Improved readability of the output and reduced code size.
+
+Fixed a problem where changes to internal data structures caused the optional ACPI_MUTEX_DEBUG code to fail compilation if specified.
+
+Code and Data Size: The current and previous library sizes for the core subsystem are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. These values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
+
+  Previous Release:
+    Non-Debug Version:  78.4K Code, 11.8K Data,  90.2K Total
+    Debug Version:     169.6K Code, 69.9K Data, 239.5K Total
+  Current Release:
+    Non-Debug Version:  77.5K Code, 12.0K Data,  89.5K Total
+    Debug Version:     168.1K Code, 68.4K Data, 236.5K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Updated the disassembler to automatically insert an EndDependentFn() macro into the ASL stream if this macro is missing in the original AML code, simplifying compilation of the resulting ASL module.
+
+Fixed a problem in the disassembler where a disassembled ResourceSource string (within a large resource descriptor) was not surrounded by quotes and not followed by a comma, causing errors when the resulting ASL module was compiled. Also, escape sequences within a ResourceSource string are now handled correctly (especially "\\")
+
+----------------------------------------
 02 September 2005. Summary of changes for version 20050902:
 
 1) ACPI CA Core Subsystem:
@@ -62,6 +558,7 @@ Fixed a problem where incorrect AML code could be generated for Package objects 
  
 Fixed a problem with where incorrect AML code is generated for variable-length packages when the package length is not specified and the number of initializer values is greater than 255.
  
+
 ----------------------------------------
 29 July 2005.  Summary of changes for version 20050729:
 
@@ -413,7 +910,7 @@ Updated header support for the MADT processor local Apic struct and MADT platfor
 
 Implemented header support for the SRAT and SLIT ACPI tables.
 
-Implemented the -s switch in AcpiExec to enable the "InterpeterSlack" flag at runtime.
+Implemented the -s switch in AcpiExec to enable the "InterpreterSlack" flag at runtime.
 
 Code and Data Size: Current and previous core subsystem library sizes are shown below. These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size. Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
 
@@ -709,6 +1206,7 @@ Code and Data Size: Current and previous core subsystem library sizes are shown 
     Debug Version:     164.8K Code,  68.6K Data,  233.4K Total
 
 
+
 2) iASL Compiler/Disassembler:
 
 Allow the use of the ObjectType operator on uninitialized Locals and Args (returns 0 as per the ACPI specification).
@@ -832,7 +1330,7 @@ ToDecimalString – explicit byte-wise conversion of buffer to string of decimal v
 
 1) ACPI CA Core Subsystem:
 
-Designed and implemented support within the AML interpreter for the so-called “implicit return”.  This support returns the result of the last ASL operation within a control method, in the absence of an explicit Return() operator.  A few machines depend on this behavior, even though it is not explicitly supported by the ASL language.  It is optional support that can be enabled at runtime via the AcpiGbl_EnableInterpeterSlack flag.
+Designed and implemented support within the AML interpreter for the so-called “implicit return”.  This support returns the result of the last ASL operation within a control method, in the absence of an explicit Return() operator.  A few machines depend on this behavior, even though it is not explicitly supported by the ASL language.  It is optional support that can be enabled at runtime via the AcpiGbl_EnableInterpreterSlack flag.
 
 Removed support for the PCI_Config address space from the internal low level hardware interfaces (AcpiHwLowLevelRead and AcpiHwLowLevelWrite).  This support was not used internally, and would not work correctly anyway because the PCI bus number and segment number were not supported.  There are separate interfaces for PCI configuration space access because of the unique interface.
 
@@ -907,6 +1405,7 @@ Code and Data Size: Current and previous core subsystem library sizes are shown 
   Previous Release:
     Non-Debug Version:  77.7K Code,  11.5K Data,   89.2K Total
     Debug Version:     163.3K Code,  67.2K Data,  230.5K Total
+
   Current Release:
     Non-Debug Version:  77.8K Code,  11.5K Data,   89.3K Total
     Debug Version:     163.8K Code,  68.2K Data,  232.0K Total
@@ -936,6 +1435,7 @@ Integrated a fix for a possible fault during evaluation of BufferField arguments
 Found and fixed a problem in the Field Support Code where data could be corrupted on a bit field read that starts on an aligned boundary but does not end on an aligned boundary.  Merged the read/write "datum length" calculation code into a common procedure.
 
 Rolled in a couple of changes to the FreeBSD-specific header.
+
 
 Code and Data Size: Current and previous core subsystem library sizes are shown below.  These are the code and data sizes for the acpica.lib produced by the Microsoft Visual C++ 6.0 compiler, and these values do not include any ACPI driver or OSPM code.  The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.  Note that these values will vary depending on the efficiency of the compiler and the compiler options used during generation.
 
@@ -1041,6 +1541,7 @@ Code and Data Size: Current and previous core subsystem library sizes are shown 
     Non-Debug Version:  77.0K Code,  11.4K Data,   88.4K Total
     Debug Version:     161.0K Code,  66.3K Data,  227.3K Total
   Current Release:
+
     Non-Debug Version:  77.6K Code,  11.5K Data,   89.1K Total
     Debug Version:     162.9K Code,  67.0K Data,  229.9K Total
 
@@ -1141,6 +1642,7 @@ Fixed an array size problem for FreeBSD that would cause the compiler to fault.
 
 ----------------------------------------
 20 February 2004.  Summary of changes for version 20040220:
+
 
 1) ACPI CA Core Subsystem:
 
@@ -1437,6 +1939,7 @@ these values will vary depending on the efficiency of the compiler
 and the compiler options used during generation.
 
   Previous Release:
+
     Non-Debug Version:  73.7K Code,   9.7K Data,   83.4K Total
     Debug Version:     156.9K Code,  64.2K Data,  221.1K Total
   Current Release:
@@ -1694,6 +2197,7 @@ Compaq's Dan Zink.
 (2.5) Return whether we handled the interrupt in our IRQ handler.
 (Linux ISRs no longer return void, so we can propagate the handler
 return value from the ACPI CA core back to the OS.)
+
 
 
 3) Documentation:
@@ -2804,6 +3308,7 @@ was expected.  The 64-bit value is now truncated to the correct
 size with the correct value.
 
 
+
 ----------------------------------------
 02 July 2002.  Summary of changes for this release.
 
@@ -3175,6 +3680,7 @@ Implemented enhanced status/error checking across the entire
 Hardware manager subsystem.  Any hardware errors (reported from
 the OSL) are now bubbled up and will abort a running control
 method.
+
 
 Fixed a problem where the per-ACPI-table integer width (32 or 64)
 was stored only with control method nodes, causing a fault when
@@ -3689,6 +4195,7 @@ compiling with 64-bit compilers.  The code now compiles cleanly
 with the Intel 64-bit C/C++ compiler.  Most notably, the pointer
 add and subtract (diff) macros have changed considerably.
 
+
 Created and deployed a new ACPI_SIZE type that is 64-bits wide on
 64-bit platforms, 32-bits on all others.  This type is used
 wherever memory allocation and/or the C sizeof() operator is used,
@@ -3891,6 +4398,7 @@ to fill the target field.
 
 Fixed a problem where a Field starting bit offset (within the
 parent operation region) was calculated incorrectly if the
+
 alignment of the field differed from the access width.  This
 affected CreateWordField, CreateDwordField, CreateQwordField, and
 possibly other fields that use the "AccessAny" keyword.
@@ -4504,6 +5012,7 @@ the range of the parent operation region.
 
  ASL Compiler, version X2018:
 
+
 Added error detection for ASL Fields that extend beyond the length
 of the parent operation region (only if the length of the region
 is known at compile time.)  This includes fields that have a
@@ -4529,6 +5038,7 @@ executing ACPI code.
 Some additional external data types have been prefixed with the
 string "ACPI_" for consistency.  This may effect existing code.
 The data types affected are the external callback typedefs - e.g.,
+
 WALK_CALLBACK becomes ACPI_WALK_CALLBACK.
 
  Linux:
@@ -5086,6 +5596,7 @@ Fixed a problem with the way addresses were calculated in
 AcpiAmlReadFieldData()  and AcpiAmlWriteFieldData(). This problem
 manifested itself when a Field was  created with WordAccess or
 DwordAccess, but the field unit defined within the  Field was less
+
 than a Word or Dword.
 
 Fixed a problem in AmlDumpOperands() module's loop to pull
@@ -5203,10 +5714,12 @@ AcpiOsUnmapMemory.  (UnMap  became Unmap).
 
 A "MaxUnits" parameter has been added to AcpiOsCreateSemaphore.
 When set to  one, this indicates that the caller wants to use the
+
 semaphore as a mutex, not a  counting semaphore.  ACPI CA uses
 both types.  However, implementers of this  call may want to use
 different OS primitives depending on the type of semaphore
 requested.  For example, some operating systems provide separate
+
 "mutex" and  "semaphore" interfaces - where the mutex interface is
 much faster because it  doesn't have all the overhead of a full
 semaphore implementation.

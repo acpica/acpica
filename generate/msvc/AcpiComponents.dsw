@@ -27,18 +27,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "AcpiDump"=.\AcpiDump.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "AcpiExec"=.\AcpiExec.dsp - Package Owner=<4>
 
 Package=<5>
