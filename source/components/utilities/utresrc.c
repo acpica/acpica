@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utresrc - Resource managment utilities
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  ******************************************************************************/
 
@@ -131,13 +131,13 @@
  * Strings used to decode resource descriptors.
  * Used by both the disasssembler and the debugger resource dump routines
  */
-const char                      *AcpiGbl_BMDecode[2] =
+const char                      *AcpiGbl_BmDecode[] =
 {
     "NotBusMaster",
     "BusMaster"
 };
 
-const char                      *AcpiGbl_ConfigDecode[4] =
+const char                      *AcpiGbl_ConfigDecode[] =
 {
     "0 - Good Configuration",
     "1 - Acceptable Configuration",
@@ -145,43 +145,43 @@ const char                      *AcpiGbl_ConfigDecode[4] =
     "3 - ***Invalid Configuration***",
 };
 
-const char                      *AcpiGbl_ConsumeDecode[2] =
+const char                      *AcpiGbl_ConsumeDecode[] =
 {
     "ResourceProducer",
     "ResourceConsumer"
 };
 
-const char                      *AcpiGbl_DECDecode[2] =
+const char                      *AcpiGbl_DecDecode[] =
 {
     "PosDecode",
     "SubDecode"
 };
 
-const char                      *AcpiGbl_HEDecode[2] =
+const char                      *AcpiGbl_HeDecode[] =
 {
     "Level",
     "Edge"
 };
 
-const char                      *AcpiGbl_IoDecode[2] =
+const char                      *AcpiGbl_IoDecode[] =
 {
     "Decode10",
     "Decode16"
 };
 
-const char                      *AcpiGbl_LLDecode[2] =
+const char                      *AcpiGbl_LlDecode[] =
 {
     "ActiveHigh",
     "ActiveLow"
 };
 
-const char                      *AcpiGbl_MaxDecode[2] =
+const char                      *AcpiGbl_MaxDecode[] =
 {
     "MaxNotFixed",
     "MaxFixed"
 };
 
-const char                      *AcpiGbl_MEMDecode[4] =
+const char                      *AcpiGbl_MemDecode[] =
 {
     "NonCacheable",
     "Cacheable",
@@ -189,13 +189,13 @@ const char                      *AcpiGbl_MEMDecode[4] =
     "Prefetchable"
 };
 
-const char                      *AcpiGbl_MinDecode[2] =
+const char                      *AcpiGbl_MinDecode[] =
 {
     "MinNotFixed",
     "MinFixed"
 };
 
-const char                      *AcpiGbl_MTPDecode[4] =
+const char                      *AcpiGbl_MtpDecode[] =
 {
     "AddressRangeMemory",
     "AddressRangeReserved",
@@ -203,7 +203,7 @@ const char                      *AcpiGbl_MTPDecode[4] =
     "AddressRangeNVS"
 };
 
-const char                      *AcpiGbl_RNGDecode[4] =
+const char                      *AcpiGbl_RngDecode[] =
 {
     "InvalidRanges",
     "NonISAOnlyRanges",
@@ -211,19 +211,19 @@ const char                      *AcpiGbl_RNGDecode[4] =
     "EntireRange"
 };
 
-const char                      *AcpiGbl_RWDecode[2] =
+const char                      *AcpiGbl_RwDecode[] =
 {
     "ReadOnly",
     "ReadWrite"
 };
 
-const char                      *AcpiGbl_SHRDecode[2] =
+const char                      *AcpiGbl_ShrDecode[] =
 {
     "Exclusive",
     "Shared"
 };
 
-const char                      *AcpiGbl_SIZDecode[4] =
+const char                      *AcpiGbl_SizDecode[] =
 {
     "Transfer8",
     "Transfer8_16",
@@ -231,19 +231,19 @@ const char                      *AcpiGbl_SIZDecode[4] =
     "InvalidSize"
 };
 
-const char                      *AcpiGbl_TRSDecode[2] =
+const char                      *AcpiGbl_TrsDecode[] =
 {
     "DenseTranslation",
     "SparseTranslation"
 };
 
-const char                      *AcpiGbl_TTPDecode[2] =
+const char                      *AcpiGbl_TtpDecode[] =
 {
     "TypeStatic",
     "TypeTranslation"
 };
 
-const char                      *AcpiGbl_TYPDecode[4] =
+const char                      *AcpiGbl_TypDecode[] =
 {
     "Compatibility",
     "TypeA",

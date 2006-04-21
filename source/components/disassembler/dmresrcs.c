@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcs.c - "Small" Resource Descriptor disassembly
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  ******************************************************************************/
 
@@ -155,9 +155,9 @@ AcpiDmIrqDescriptor (
     if (Length & 1)
     {
         AcpiOsPrintf ("%s, %s, %s, ",
-            AcpiGbl_HEDecode [Resource->Irq.Flags & 1],
-            AcpiGbl_LLDecode [(Resource->Irq.Flags >> 3) & 1],
-            AcpiGbl_SHRDecode [(Resource->Irq.Flags >> 4) & 1]);
+            AcpiGbl_HeDecode [Resource->Irq.Flags & 1],
+            AcpiGbl_LlDecode [(Resource->Irq.Flags >> 3) & 1],
+            AcpiGbl_ShrDecode [(Resource->Irq.Flags >> 4) & 1]);
     }
 
     /* Insert a descriptor name */
@@ -193,9 +193,9 @@ AcpiDmDmaDescriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("DMA (%s, %s, %s, ",
-            AcpiGbl_TYPDecode [(Resource->Dma.Flags >> 5) & 3],
-            AcpiGbl_BMDecode  [(Resource->Dma.Flags >> 2) & 1],
-            AcpiGbl_SIZDecode [(Resource->Dma.Flags >> 0) & 3]);
+            AcpiGbl_TypDecode [(Resource->Dma.Flags >> 5) & 3],
+            AcpiGbl_BmDecode  [(Resource->Dma.Flags >> 2) & 1],
+            AcpiGbl_SizDecode [(Resource->Dma.Flags >> 0) & 3]);
 
     /* Insert a descriptor name */
 

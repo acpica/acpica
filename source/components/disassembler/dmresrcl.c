@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  ******************************************************************************/
 
@@ -403,7 +403,7 @@ AcpiDmAddressCommon (
         AcpiDmIoFlags (Flags);
         if (ResourceType == ACPI_IO_RANGE)
         {
-            AcpiOsPrintf (" %s,", AcpiGbl_RNGDecode [SpecificFlags & 0x3]);
+            AcpiOsPrintf (" %s,", AcpiGbl_RngDecode [SpecificFlags & 0x3]);
         }
     }
 }
@@ -456,7 +456,7 @@ AcpiDmSpaceFlags (
 
     AcpiOsPrintf ("%s, %s, %s, %s,",
         AcpiGbl_ConsumeDecode [(Flags & 1)],
-        AcpiGbl_DECDecode [(Flags & 0x2) >> 1],
+        AcpiGbl_DecDecode [(Flags & 0x2) >> 1],
         AcpiGbl_MinDecode [(Flags & 0x4) >> 2],
         AcpiGbl_MaxDecode [(Flags & 0x8) >> 3]);
 }
@@ -482,7 +482,7 @@ AcpiDmIoFlags (
         AcpiGbl_ConsumeDecode [(Flags & 1)],
         AcpiGbl_MinDecode [(Flags & 0x4) >> 2],
         AcpiGbl_MaxDecode [(Flags & 0x8) >> 3],
-        AcpiGbl_DECDecode [(Flags & 0x2) >> 1]);
+        AcpiGbl_DecDecode [(Flags & 0x2) >> 1]);
 }
 
 
@@ -504,14 +504,14 @@ AcpiDmIoFlags2 (
 {
 
     AcpiOsPrintf (", %s",
-        AcpiGbl_TTPDecode [(SpecificFlags & 0x10) >> 4]);
+        AcpiGbl_TtpDecode [(SpecificFlags & 0x10) >> 4]);
 
     /* TRS is only used if TTP is TypeTranslation */
 
     if (SpecificFlags & 0x10)
     {
         AcpiOsPrintf (", %s",
-            AcpiGbl_TRSDecode [(SpecificFlags & 0x20) >> 5]);
+            AcpiGbl_TrsDecode [(SpecificFlags & 0x20) >> 5]);
     }
 }
 
@@ -537,11 +537,11 @@ AcpiDmMemoryFlags (
 
     AcpiOsPrintf ("%s, %s, %s, %s, %s, %s,",
         AcpiGbl_ConsumeDecode [(Flags & 1)],
-        AcpiGbl_DECDecode [(Flags & 0x2) >> 1],
+        AcpiGbl_DecDecode [(Flags & 0x2) >> 1],
         AcpiGbl_MinDecode [(Flags & 0x4) >> 2],
         AcpiGbl_MaxDecode [(Flags & 0x8) >> 3],
-        AcpiGbl_MEMDecode [(SpecificFlags & 0x6) >> 1],
-        AcpiGbl_RWDecode [(SpecificFlags & 0x1)]);
+        AcpiGbl_MemDecode [(SpecificFlags & 0x6) >> 1],
+        AcpiGbl_RwDecode [(SpecificFlags & 0x1)]);
 }
 
 
@@ -563,8 +563,8 @@ AcpiDmMemoryFlags2 (
 {
 
     AcpiOsPrintf (", %s, %s",
-        AcpiGbl_MTPDecode [(SpecificFlags & 0x18) >> 3],
-        AcpiGbl_TTPDecode [(SpecificFlags & 0x20) >> 5]);
+        AcpiGbl_MtpDecode [(SpecificFlags & 0x18) >> 3],
+        AcpiGbl_TtpDecode [(SpecificFlags & 0x20) >> 5]);
 }
 
 
@@ -839,7 +839,7 @@ AcpiDmMemory24Descriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Memory24 (%s,\n",
-        AcpiGbl_RWDecode [Resource->Memory24.Flags & 1]);
+        AcpiGbl_RwDecode [Resource->Memory24.Flags & 1]);
 
     /* Dump the 4 contiguous WORD values */
 
@@ -878,7 +878,7 @@ AcpiDmMemory32Descriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Memory32 (%s,\n",
-        AcpiGbl_RWDecode [Resource->Memory32.Flags & 1]);
+        AcpiGbl_RwDecode [Resource->Memory32.Flags & 1]);
 
     /* Dump the 4 contiguous DWORD values */
 
@@ -917,7 +917,7 @@ AcpiDmFixedMemory32Descriptor (
 
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Memory32Fixed (%s,\n",
-        AcpiGbl_RWDecode [Resource->FixedMemory32.Flags & 1]);
+        AcpiGbl_RwDecode [Resource->FixedMemory32.Flags & 1]);
 
     AcpiDmIndent (Level + 1);
     AcpiDmDumpInteger32 (Resource->FixedMemory32.Address, "Address Base");
@@ -1008,9 +1008,9 @@ AcpiDmInterruptDescriptor (
     AcpiDmIndent (Level);
     AcpiOsPrintf ("Interrupt (%s, %s, %s, %s, ",
         AcpiGbl_ConsumeDecode [(Resource->ExtendedIrq.Flags & 1)],
-        AcpiGbl_HEDecode [(Resource->ExtendedIrq.Flags >> 1) & 1],
-        AcpiGbl_LLDecode [(Resource->ExtendedIrq.Flags >> 2) & 1],
-        AcpiGbl_SHRDecode [(Resource->ExtendedIrq.Flags >> 3) & 1]);
+        AcpiGbl_HeDecode [(Resource->ExtendedIrq.Flags >> 1) & 1],
+        AcpiGbl_LlDecode [(Resource->ExtendedIrq.Flags >> 2) & 1],
+        AcpiGbl_ShrDecode [(Resource->ExtendedIrq.Flags >> 3) & 1]);
 
     /*
      * The ResourceSource fields are optional and appear after the interrupt

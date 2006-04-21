@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.195 $
+ *       $Revision: 1.196 $
  *
  *****************************************************************************/
 
@@ -124,24 +124,24 @@ extern const UINT8                      AcpiGbl_ResourceAmlSizes[];
 
 #if defined(ACPI_DISASSEMBLER) || defined (ACPI_DEBUGGER)
 
-extern const char                       *AcpiGbl_BMDecode[2];
-extern const char                       *AcpiGbl_ConfigDecode[4];
-extern const char                       *AcpiGbl_ConsumeDecode[2];
-extern const char                       *AcpiGbl_DECDecode[2];
-extern const char                       *AcpiGbl_HEDecode[2];
-extern const char                       *AcpiGbl_IoDecode[2];
-extern const char                       *AcpiGbl_LLDecode[2];
-extern const char                       *AcpiGbl_MaxDecode[2];
-extern const char                       *AcpiGbl_MEMDecode[4];
-extern const char                       *AcpiGbl_MinDecode[2];
-extern const char                       *AcpiGbl_MTPDecode[4];
-extern const char                       *AcpiGbl_RNGDecode[4];
-extern const char                       *AcpiGbl_RWDecode[2];
-extern const char                       *AcpiGbl_SHRDecode[2];
-extern const char                       *AcpiGbl_SIZDecode[4];
-extern const char                       *AcpiGbl_TRSDecode[2];
-extern const char                       *AcpiGbl_TTPDecode[2];
-extern const char                       *AcpiGbl_TYPDecode[4];
+extern const char                       *AcpiGbl_BmDecode[];
+extern const char                       *AcpiGbl_ConfigDecode[];
+extern const char                       *AcpiGbl_ConsumeDecode[];
+extern const char                       *AcpiGbl_DecDecode[];
+extern const char                       *AcpiGbl_HeDecode[];
+extern const char                       *AcpiGbl_IoDecode[];
+extern const char                       *AcpiGbl_LlDecode[];
+extern const char                       *AcpiGbl_MaxDecode[];
+extern const char                       *AcpiGbl_MemDecode[];
+extern const char                       *AcpiGbl_MinDecode[];
+extern const char                       *AcpiGbl_MtpDecode[];
+extern const char                       *AcpiGbl_RngDecode[];
+extern const char                       *AcpiGbl_RwDecode[];
+extern const char                       *AcpiGbl_ShrDecode[];
+extern const char                       *AcpiGbl_SizDecode[];
+extern const char                       *AcpiGbl_TrsDecode[];
+extern const char                       *AcpiGbl_TtpDecode[];
+extern const char                       *AcpiGbl_TypDecode[];
 #endif
 
 /* Types for Resource descriptor entries */
