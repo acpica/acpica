@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -250,7 +250,7 @@ AsMixedCaseToUnderscores (
             continue;
         }
 
-        /* Check for quoted string -- ignore */ 
+        /* Check for quoted string -- ignore */
 
         if (*SubBuffer == '"')
         {

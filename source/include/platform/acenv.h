@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.128 $
+ *       $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,7 @@
 
 #ifdef ACPI_LIBRARY
 /*
- * Note: The non-debug version of the AcpiLibrary does not contain any 
+ * Note: The non-debug version of the AcpiLibrary does not contain any
  * debug support, for minimimal size. The debug version uses ACPI_FULL_DEBUG
  */
 #define ACPI_USE_LOCAL_CACHE

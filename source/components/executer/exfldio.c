@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -210,7 +210,7 @@ AcpiExSetupRegion (
 
     /*
      * Exit now for SMBus address space, it has a non-linear address space
-     * and the request cannot be directly validated 
+     * and the request cannot be directly validated
      */
     if (RgnDesc->Region.SpaceId == ACPI_ADR_SPACE_SMBUS)
     {

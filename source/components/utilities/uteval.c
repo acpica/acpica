@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uteval - Object evaluation
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -229,7 +229,7 @@ AcpiUtOsiImplementation (
 
     /*
      * Did not match the string in the static table, call the host OSL to
-     * check for a match with one of the optional strings (such as 
+     * check for a match with one of the optional strings (such as
      * "Module Device", "3.0 Thermal Model", etc.)
      */
     Status = AcpiOsValidateInterface (StringDesc->String.Pointer);

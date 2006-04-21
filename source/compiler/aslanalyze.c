@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -1992,7 +1992,7 @@ AnOtherSemanticAnalysisWalkBegin (
         }
         else
         {
-            /* 
+            /*
              * Has no target and the result is not used. Only a couple opcodes
              * can have this combination.
              */
@@ -2018,7 +2018,7 @@ AnOtherSemanticAnalysisWalkBegin (
     case PARSEOP_ACQUIRE:
     case PARSEOP_WAIT:
         /*
-         * Emit a warning if the timeout parameter for these operators is not 
+         * Emit a warning if the timeout parameter for these operators is not
          * ACPI_WAIT_FOREVER, and the result value from the operator is not
          * checked, meaning that a timeout could happen, but the code
          * would not know about it.
