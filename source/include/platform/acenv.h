@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acenv.h - Generation environment specific items
- *       $Revision: 1.129 $
+ *       $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -128,7 +128,6 @@
  * debug support, for minimimal size. The debug version uses ACPI_FULL_DEBUG
  */
 #define ACPI_USE_LOCAL_CACHE
-#define ACPI_DISASSEMBLER
 #endif
 
 #ifdef ACPI_ASL_COMPILER
@@ -147,6 +146,7 @@
 #define ACPI_APPLICATION
 #define ACPI_DEBUGGER
 #define ACPI_MUTEX_DEBUG
+#define ACPI_DBG_TRACK_ALLOCATIONS
 #endif
 
 #ifdef ACPI_DASM_APP
@@ -168,7 +168,7 @@
 #ifdef ACPI_FULL_DEBUG
 #define ACPI_DEBUGGER
 #define ACPI_DEBUG_OUTPUT
-#define ACPI_DBG_TRACK_ALLOCATIONS
+#define ACPI_DISASSEMBLER
 #endif
 
 
