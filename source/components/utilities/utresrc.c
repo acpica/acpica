@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utresrc - Resource managment utilities
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  ******************************************************************************/
 
@@ -122,7 +122,7 @@
 
 
 #define _COMPONENT          ACPI_UTILITIES
-        ACPI_MODULE_NAME    ("utmisc")
+        ACPI_MODULE_NAME    ("utresrc")
 
 
 #if defined(ACPI_DISASSEMBLER) || defined (ACPI_DEBUGGER)
