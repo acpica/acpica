@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: amlresrc.h - AML resource descriptors
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -479,9 +479,9 @@ typedef union aml_resource
     /* Utility overlays */
 
     AML_RESOURCE_ADDRESS                    Address;
-    UINT32                                  U32Item;
-    UINT16                                  U16Item;
-    UINT8                                   U8Item;
+    UINT32                                  DwordItem;
+    UINT16                                  WordItem;
+    UINT8                                   ByteItem;
 
 } AML_RESOURCE;
 
