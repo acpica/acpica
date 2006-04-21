@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -239,13 +239,31 @@ AsMixedCaseToUnderscores (
 
     while (*SubBuffer)
     {
+        /* Ignore whitespace */
+
+        if (*SubBuffer == ' ')
+        {
+            while (*SubBuffer == ' ')
+            {
+                SubBuffer++;
+            }
+            continue;
+        }
+
         /* Check for quoted string -- ignore */ 
 
         if (*SubBuffer == '"')
         {
             SubBuffer++;
-            while (*SubBuffer && (*SubBuffer != '"'))
+            while (*SubBuffer != '"')
             {
+                if (!*SubBuffer)
+                {
+                    return;
+                }
+
+                /* Handle embedded escape sequences */
+
                 if (*SubBuffer == '\\')
                 {
                     SubBuffer++;
@@ -274,6 +292,7 @@ AsMixedCaseToUnderscores (
             {
                 return;
             }
+            continue;
         }
 
         /* Ignore hex constants */
@@ -400,7 +419,7 @@ AsMixedCaseToUnderscores (
                 Length = strlen (&SubBuffer[1]);
             }
 
-            memmove (&SubBuffer[2], &SubBuffer[1], (Length+1));
+            memmove (&SubBuffer[2], &SubBuffer[1], Length + 1);
             SubBuffer[1] = '_';
             SubBuffer +=2;
 
