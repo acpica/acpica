@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -214,7 +214,6 @@ Options (
     printf ("  -dc [file]     Disassemble AML and immediately compile it\n");
     printf ("                 (Obtain DSDT from current system if no input file)\n");
     printf ("  -2             Emit ACPI 2.0 compatible ASL code\n");
-    printf ("  -e             Generate External() statements for unresolved symbols\n");
     printf ("  -g             Get ACPI tables and write to files (*.dat)\n");
 
     printf ("\nHelp:\n");
@@ -252,7 +251,7 @@ HelpMessage (
 
     Options ();
 
-    printf ("\nCompiler Debug Options:\n");
+    printf ("\nCompiler/Disassembler Debug Options:\n");
     printf ("  -b<p|t|b>      Create compiler debug/trace file (*.txt)\n");
     printf ("                   Types: Parse/Tree/Both\n");
     printf ("  -f             Ignore errors, force creation of AML output file(s)\n");
@@ -414,14 +413,6 @@ AslCommandLine (
         }
 
         Gbl_DisasmFlag = TRUE;
-        break;
-
-
-    case 'e':
-
-        /* Generate external statements for unresolved symbols */
-
-        Gbl_GenerateExternals = TRUE;
         break;
 
 

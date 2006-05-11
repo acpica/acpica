@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -451,6 +451,8 @@ LsDisplayNamespace (
         return (AE_OK);
     }
 
+    Gbl_NumNamespaceObjects = 0;
+
     /* File header */
 
     FlPrintFile (ASL_FILE_NAMESPACE_OUTPUT, "Contents of ACPI Namespace\n\n");
@@ -647,7 +649,10 @@ LkIsObjectUsed (
 
     /* All others are valid unreferenced namespace objects */
 
-    AslError (ASL_WARNING2, ASL_MSG_NOT_REFERENCED, LkGetNameOp (Node->Op), NULL);
+    if (Node->Op)
+    {
+        AslError (ASL_WARNING2, ASL_MSG_NOT_REFERENCED, LkGetNameOp (Node->Op), NULL);
+    }
     return (AE_OK);
 }
 
@@ -912,7 +917,7 @@ LkNamespaceLocateBegin (
      */
     Gbl_NsLookupCount++;
 
-    Status = AcpiNsLookup (WalkState->ScopeInfo,  Path, ObjectType,
+    Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ObjectType,
                 ACPI_IMODE_EXECUTE, Flags, WalkState, &(Node));
     if (ACPI_FAILURE (Status))
     {

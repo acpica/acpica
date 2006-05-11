@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -247,6 +247,20 @@ AsMixedCaseToUnderscores (
             {
                 SubBuffer++;
             }
+            TokenStart = NULL;
+            HasLowerCase = FALSE;
+            continue;
+        }
+
+        /* Ignore commas */
+
+        if ((*SubBuffer == ',') ||
+            (*SubBuffer == '>') ||
+            (*SubBuffer == ')'))
+        {
+            SubBuffer++;
+            TokenStart = NULL;
+            HasLowerCase = FALSE;
             continue;
         }
 
@@ -311,20 +325,22 @@ AsMixedCaseToUnderscores (
             }
         }
 
+// OBSOLETE CODE, all quoted strings now completely ignored.
+#if 0
         /* Ignore format specification fields */
 
         if (SubBuffer[0] == '%')
         {
             SubBuffer++;
 
-            while ((isalnum (*SubBuffer)) ||
-                   (*SubBuffer == '.'))
+            while ((isalnum (*SubBuffer)) || (*SubBuffer == '.'))
             {
                 SubBuffer++;
             }
 
             continue;
         }
+#endif
 
         /* Ignore standard escape sequences (\n, \r, etc.)  Not Hex or Octal escapes */
 
@@ -340,16 +356,30 @@ AsMixedCaseToUnderscores (
          * Note: there are some cases where identifiers have underscores
          * AcpiGbl_* for example. HasLowerCase flag handles these.
          */
-        if ((*SubBuffer == '_') && (!HasLowerCase))
+        if ((*SubBuffer == '_') && (!HasLowerCase) && (TokenStart))
         {
-            while ((isalnum (*SubBuffer)) || (*SubBuffer == '_'))
+            /* Check the rest of the identifier for any lower case letters */
+
+            SubString = SubBuffer;
+            while ((isalnum (*SubString)) || (*SubString == '_'))
             {
-                SubBuffer++;
+                if (islower (*SubString))
+                {
+                    HasLowerCase = TRUE;
+                }
+                SubString++;
             }
-            continue;
+            
+            /* If no lower case letters, we can safely ignore the entire token */
+
+            if (!HasLowerCase)
+            {
+                SubBuffer = SubString;
+                continue;
+            }
         }
 
-        /* A capital letter may indicate the start of a token;  save it */
+        /* A capital letter may indicate the start of a token; save it */
 
         if (isupper (SubBuffer[0]))
         {

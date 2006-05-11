@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -120,7 +120,6 @@
         ACPI_MODULE_NAME    ("aeexec")
 
 
-ACPI_PARSE_OBJECT           *AcpiGbl_ParsedNamespaceRoot;
 ACPI_PARSE_OBJECT           *root;
 UINT8                       *AmlStart;
 UINT32                      AmlLength;

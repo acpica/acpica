@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -263,10 +263,10 @@ AcpiDsLoad1BeginOp (
              * Target of Scope() not found.  Generate an External for it, and
              * insert the name into the namespace.
              */
-            AcpiDmAddToExternalList (Path);
+            AcpiDmAddToExternalList (Path, ACPI_TYPE_DEVICE, 0);
             Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ObjectType,
                        ACPI_IMODE_LOAD_PASS1, ACPI_NS_SEARCH_PARENT,
-                       WalkState, &(Node));
+                       WalkState, &Node);
         }
 #endif
         if (ACPI_FAILURE (Status))
@@ -387,15 +387,45 @@ AcpiDsLoad1BeginOp (
          * parse tree later.
          */
         Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ObjectType,
-                        ACPI_IMODE_LOAD_PASS1, Flags, WalkState, &(Node));
+                        ACPI_IMODE_LOAD_PASS1, Flags, WalkState, &Node);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_ERROR_NAMESPACE (Path, Status);
-            return_ACPI_STATUS (Status);
+            if (Status == AE_ALREADY_EXISTS)
+            {
+                /* The name already exists in this scope */
+
+                if (Node->Flags & ANOBJ_IS_EXTERNAL)
+                {
+                    /*
+                     * Allow one create on an object or segment that was
+                     * previously declared External
+                     */
+                    Node->Flags &= ~ANOBJ_IS_EXTERNAL;
+                    Node->Type = (UINT8) ObjectType;
+
+                    /* Just retyped a node, probably will need to open a scope */
+
+                    if (AcpiNsOpensScope (ObjectType))
+                    {
+                        Status = AcpiDsScopeStackPush (Node, ObjectType, WalkState);
+                        if (ACPI_FAILURE (Status))
+                        {
+                            return_ACPI_STATUS (Status);
+                        }
+                    }
+                    Status = AE_OK;
+                }
+            }
+
+            if (ACPI_FAILURE (Status))
+            {
+
+                ACPI_ERROR_NAMESPACE (Path, Status);
+                return_ACPI_STATUS (Status);
+            }
         }
         break;
     }
-
 
     /* Common exit */
 

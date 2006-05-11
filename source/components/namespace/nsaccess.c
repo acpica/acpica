@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.198 $
+ *              $Revision: 1.199 $
  *
  ******************************************************************************/
 
@@ -396,8 +396,7 @@ AcpiNsLookup (
     ACPI_OBJECT_TYPE        TypeToCheckFor;
     ACPI_OBJECT_TYPE        ThisSearchType;
     UINT32                  SearchParentFlag = ACPI_NS_SEARCH_PARENT;
-    UINT32                  LocalFlags = Flags & ~(ACPI_NS_ERROR_IF_FOUND |
-                                                   ACPI_NS_SEARCH_PARENT);
+    UINT32                  LocalFlags;
 
 
     ACPI_FUNCTION_TRACE (NsLookup);
@@ -408,8 +407,9 @@ AcpiNsLookup (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    AcpiGbl_NsLookupCount++;
+    LocalFlags = Flags & ~(ACPI_NS_ERROR_IF_FOUND | ACPI_NS_SEARCH_PARENT);
     *ReturnNode = ACPI_ENTRY_NOT_FOUND;
+    AcpiGbl_NsLookupCount++;
 
     if (!AcpiGbl_RootNode)
     {

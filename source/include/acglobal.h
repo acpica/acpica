@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.179 $
+ *       $Revision: 1.180 $
  *
  *****************************************************************************/
 
@@ -370,15 +370,6 @@ ACPI_EXTERN ACPI_THREAD_STATE          *AcpiGbl_CurrentWalkList;
 /* Control method single step flag */
 
 ACPI_EXTERN UINT8                       AcpiGbl_CmSingleStep;
-
-
-/*****************************************************************************
- *
- * Parser globals
- *
- ****************************************************************************/
-
-ACPI_EXTERN ACPI_PARSE_OBJECT          *AcpiGbl_ParsedNamespaceRoot;
 
 
 /*****************************************************************************

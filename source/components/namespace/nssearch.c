@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  ******************************************************************************/
 
@@ -389,7 +389,7 @@ AcpiNsSearchAndEnter (
     if (!Node || !TargetName || !ReturnNode)
     {
         ACPI_ERROR ((AE_INFO,
-            "Null param: Node %p Name %X ReturnNode %p",
+            "Null parameter: Node %p Name %X ReturnNode %p",
             Node, TargetName, ReturnNode));
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -484,6 +484,13 @@ AcpiNsSearchAndEnter (
     {
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
+
+#ifdef ACPI_ASL_COMPILER
+    if (Flags & ACPI_NS_EXTERNAL)
+    {
+        NewNode->Flags |= ANOBJ_IS_EXTERNAL;
+    }
+#endif
 
     /* Install the new object into the parent's list of children */
 

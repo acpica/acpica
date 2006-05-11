@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  ******************************************************************************/
 
@@ -129,19 +129,19 @@
 
 static char                 *AcpiDmAddressNames[] =
 {
-    "Address Space Granularity",
-    "Address Range Minimum",
-    "Address Range Maximum",
-    "Address Translation Offset",
-    "Address Length"
+    "Granularity",
+    "Range Minimum",
+    "Range Maximum",
+    "Translation Offset",
+    "Length"
 };
 
 static char                 *AcpiDmMemoryNames[] =
 {
-    "Address Range Minimum",
-    "Address Range Maximum",
-    "Address Alignment",
-    "Address Length"
+    "Range Minimum",
+    "Range Maximum",
+    "Alignment",
+    "Length"
 };
 
 

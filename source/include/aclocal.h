@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.229 $
+ *       $Revision: 1.230 $
  *
  *****************************************************************************/
 
@@ -301,6 +301,7 @@ typedef struct acpi_namespace_node
 #define ANOBJ_METHOD_LOCAL              0x08    /* Node is a method local */
 #define ANOBJ_SUBTREE_HAS_INI           0x10    /* Used to optimize device initialization */
 
+#define ANOBJ_IS_EXTERNAL               0x08    /* iASL only: This object created via External() */
 #define ANOBJ_METHOD_NO_RETVAL          0x10    /* iASL only: Method has no return value */
 #define ANOBJ_METHOD_SOME_NO_RETVAL     0x20    /* iASL only: Method has at least one return value */
 #define ANOBJ_IS_BIT_OFFSET             0x40    /* iASL only: Reference is a bit offset */
@@ -787,6 +788,9 @@ typedef union acpi_parse_value
 #define ACPI_DASM_UNICODE               0x03
 #define ACPI_DASM_EISAID                0x04
 #define ACPI_DASM_MATCHOP               0x05
+#define ACPI_DASM_LNOT_PREFIX           0x06
+#define ACPI_DASM_LNOT_SUFFIX           0x07
+#define ACPI_DASM_IGNORE                0x08
 
 /*
  * Generic operation (for example:  If, While, Store)
