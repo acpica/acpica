@@ -125,12 +125,18 @@
 #include "actypes.h"
 
 
-/* Priorities for AcpiOsQueueForExecution */
+/* Types for AcpiOsExecute */
 
-#define OSD_PRIORITY_GPE            1
-#define OSD_PRIORITY_HIGH           2
-#define OSD_PRIORITY_MED            3
-#define OSD_PRIORITY_LO             4
+typedef enum
+{
+	OSL_GLOBAL_LOCK_HANDLER,
+	OSL_NOTIFY_HANDLER,
+	OSL_GPE_HANDLER,
+	OSL_DEBUGGER_THREAD,
+	OSL_EC_POLL_HANDLER,
+	OSL_EC_BURST_HANDLER,
+
+} ACPI_EXECUTE_TYPE;
 
 #define ACPI_NO_UNIT_LIMIT          ((UINT32) -1)
 #define ACPI_MUTEX_SEM              1
@@ -302,8 +308,8 @@ AcpiOsGetThreadId (
     void);
 
 ACPI_STATUS
-AcpiOsQueueForExecution (
-    UINT32                  Priority,
+AcpiOsExecute (
+    ACPI_EXECUTE_TYPE       Type,
     ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context);
 

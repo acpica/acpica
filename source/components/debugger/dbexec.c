@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  ******************************************************************************/
 
@@ -617,7 +617,7 @@ AcpiDbCreateExecutionThreads (
 
     for (i = 0; i < (NumThreads); i++)
     {
-        Status = AcpiOsQueueForExecution (OSD_PRIORITY_MED, AcpiDbMethodThread,
+        Status = AcpiOsExecute (OSL_DEBUGGER_THREAD, AcpiDbMethodThread,
             &AcpiGbl_DbMethodInfo);
         if (ACPI_FAILURE (Status))
         {

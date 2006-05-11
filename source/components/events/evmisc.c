@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -284,7 +284,7 @@ AcpiEvQueueNotifyRequest (
         NotifyInfo->Notify.Value = (UINT16) NotifyValue;
         NotifyInfo->Notify.HandlerObj = HandlerObj;
 
-        Status = AcpiOsQueueForExecution (OSD_PRIORITY_HIGH,
+        Status = AcpiOsExecute (OSL_NOTIFY_HANDLER,
                     AcpiEvNotifyDispatch, NotifyInfo);
         if (ACPI_FAILURE (Status))
         {
@@ -456,7 +456,7 @@ AcpiEvGlobalLockHandler (
 
         /* Run the Global Lock thread which will signal all waiting threads */
 
-        Status = AcpiOsQueueForExecution (OSD_PRIORITY_HIGH,
+        Status = AcpiOsExecute (OSL_GLOBAL_LOCK_HANDLER,
                         AcpiEvGlobalLockThread, Context);
         if (ACPI_FAILURE (Status))
         {

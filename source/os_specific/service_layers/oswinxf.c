@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -1184,7 +1184,7 @@ AcpiOsGetThreadId (
  *
  * FUNCTION:    AcpiOsExecute
  *
- * PARAMETERS:  Priority        - Requested execution priority
+ * PARAMETERS:  Type            - Type of execution
  *              Function        - Address of the function to execute
  *              Context         - Passed as a parameter to the function
  *

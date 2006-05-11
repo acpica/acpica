@@ -738,21 +738,21 @@ AcpiOsRemoveInterruptHandler (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsQueueForExecution
+ * FUNCTION:    AcpiOsExecute
  *
- * PARAMETERS:  Priority        - Requested execution priority
+ * PARAMETERS:  Type            - Type of execution
  *              Function        - Address of the function to execute
  *              Context         - Passed as a parameter to the function
  *
  * RETURN:      Status.
  *
- * DESCRIPTION: Sleep at microsecond granularity
+ * DESCRIPTION: Execute a new thread
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AcpiOsQueueForExecution (
-    UINT32                  Priority,
+AcpiOsExecute (
+    ACPI_EXECUTE_TYPE       Type,
     ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {

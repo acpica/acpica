@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -589,7 +589,7 @@ UnlockAndExit:
  * RETURN:      None
  *
  * DESCRIPTION: Perform the actual execution of a GPE control method.  This
- *              function is called from an invocation of AcpiOsQueueForExecution
+ *              function is called from an invocation of AcpiOsExece
  *              (and therefore does NOT execute at interrupt level) so that
  *              the control method itself is not executed in the context of
  *              an interrupt handler.
@@ -792,7 +792,7 @@ AcpiEvGpeDispatch (
          * Execute the method associated with the GPE
          * NOTE: Level-triggered GPEs are cleared after the method completes.
          */
-        Status = AcpiOsQueueForExecution (OSD_PRIORITY_GPE,
+        Status = AcpiOsExecute (OSL_GPE_HANDLER,
                     AcpiEvAsynchExecuteGpeMethod, GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
