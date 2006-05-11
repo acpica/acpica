@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /GB /Gr /MT /Za /W4 /Gm /GX /Zi /O1 /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
+# ADD CPP /Gd /MT /Za /W4 /Gm /GX /Zi /O1 /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
 # SUBTRACT CPP /nologo /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -73,7 +73,7 @@ PostBuild_Cmds=copy bin\acpica64.lib ..\..\libraries\acpica64.lib	dir ..\..\libr
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /GB /Gr /MTd /Za /W4 /Gm /GX /Zi /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
+# ADD CPP /Gd /MTd /Za /W4 /Gm /GX /Zi /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /D "_IA64" /FR /FD /c
 # SUBTRACT CPP /nologo
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
