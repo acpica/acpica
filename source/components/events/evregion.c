@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.163 $
+ *              $Revision: 1.164 $
  *
  *****************************************************************************/
 
@@ -367,7 +367,8 @@ Cleanup:
  *              Function            - Read or Write operation
  *              Address             - Where in the space to read or write
  *              BitWidth            - Field width in bits (8, 16, 32, or 64)
- *              Value               - Pointer to in or out value
+ *              Value               - Pointer to in or out value, must be
+ *                                    full 64-bit ACPI_INTEGER
  *
  * RETURN:      Status
  *
@@ -382,7 +383,7 @@ AcpiEvAddressSpaceDispatch (
     UINT32                  Function,
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT32                  BitWidth,
-    void                    *Value)
+    ACPI_INTEGER            *Value)
 {
     ACPI_STATUS             Status;
     ACPI_STATUS             Status2;
