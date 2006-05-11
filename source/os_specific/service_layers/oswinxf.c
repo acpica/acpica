@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -1182,21 +1182,21 @@ AcpiOsGetThreadId (
 
 /******************************************************************************
  *
- * FUNCTION:    AcpiOsQueueForExecution
+ * FUNCTION:    AcpiOsExecute
  *
  * PARAMETERS:  Priority        - Requested execution priority
  *              Function        - Address of the function to execute
  *              Context         - Passed as a parameter to the function
  *
- * RETURN:      Status.
+ * RETURN:      Status
  *
- * DESCRIPTION: Sleep at microsecond granularity
+ * DESCRIPTION: Execute a new thread
  *
  *****************************************************************************/
 
 ACPI_STATUS
-AcpiOsQueueForExecution (
-    UINT32                  Priority,
+AcpiOsExecute (
+    ACPI_EXECUTE_TYPE       Type,
     ACPI_OSD_EXEC_CALLBACK  Function,
     void                    *Context)
 {
