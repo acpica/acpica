@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcl.c - "Large" Resource Descriptor disassembly
- *              $Revision: 1.35 $
+ *              $Revision: 1.36 $
  *
  ******************************************************************************/
 
@@ -960,24 +960,31 @@ AcpiDmGenericRegisterDescriptor (
     AcpiOsPrintf ("\n");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger8 (Resource->GenericReg.BitWidth, "Register Bit Width");
+    AcpiDmDumpInteger8 (Resource->GenericReg.BitWidth, "Bit Width");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger8 (Resource->GenericReg.BitOffset, "Register Bit Offset");
+    AcpiDmDumpInteger8 (Resource->GenericReg.BitOffset, "Bit Offset");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger64 (Resource->GenericReg.Address, "Register Address");
+    AcpiDmDumpInteger64 (Resource->GenericReg.Address, "Address");
 
     /* Optional field for ACPI 3.0 */
 
+    AcpiDmIndent (Level + 1);
     if (Resource->GenericReg.AccessSize)
     {
-        AcpiDmIndent (Level + 1);
-        AcpiOsPrintf ("0x%2.2X                // %s\n",
+        AcpiOsPrintf ("0x%2.2X,               // %s\n",
             Resource->GenericReg.AccessSize, "Access Size");
+        AcpiDmIndent (Level + 1);
+    }
+    else
+    {
+        AcpiOsPrintf (",");
     }
 
-    AcpiDmIndent (Level + 1);
+    /* DescriptorName was added for ACPI 3.0+ */
+
+    AcpiDmDescriptorName ();
     AcpiOsPrintf (")\n");
 }
 

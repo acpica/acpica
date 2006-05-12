@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrcs.c - "Small" Resource Descriptor disassembly
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  ******************************************************************************/
 
@@ -233,16 +233,16 @@ AcpiDmIoDescriptor (
         AcpiGbl_IoDecode [(Resource->Io.Flags & 1)]);
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger16 (Resource->Io.Minimum, "Address Range Minimum");
+    AcpiDmDumpInteger16 (Resource->Io.Minimum, "Range Minimum");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger16 (Resource->Io.Maximum, "Address Range Maximum");
+    AcpiDmDumpInteger16 (Resource->Io.Maximum, "Range Maximum");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger8 (Resource->Io.Alignment, "Address Alignment");
+    AcpiDmDumpInteger8 (Resource->Io.Alignment, "Alignment");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger8 (Resource->Io.AddressLength, "Address Length");
+    AcpiDmDumpInteger8 (Resource->Io.AddressLength, "Length");
 
     /* Insert a descriptor name */
 
@@ -277,10 +277,10 @@ AcpiDmFixedIoDescriptor (
     AcpiOsPrintf ("FixedIO (\n");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger16 (Resource->FixedIo.Address, "Address Base");
+    AcpiDmDumpInteger16 (Resource->FixedIo.Address, "Address");
 
     AcpiDmIndent (Level + 1);
-    AcpiDmDumpInteger8 (Resource->FixedIo.AddressLength, "Address Length");
+    AcpiDmDumpInteger8 (Resource->FixedIo.AddressLength, "Length");
 
     /* Insert a descriptor name */
 
