@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -447,18 +447,8 @@ AdAmlDisassemble (
          */
         AcpiDmFinishNamespaceLoad (AcpiGbl_ParseOpRoot, AcpiGbl_RootNode);
 
-        if (AslCompilerdebug)
-        {
-            AcpiOsPrintf ("/**** After second load \n");
-            LsSetupNsList (File);
-            LsDisplayNamespace ();
-            AcpiOsPrintf ("*****/\n");
-        }
-
         /*
-         * Cross reference the namespace here, in order to
-         * generate External() statements and to convert fixed-offset
-         * references to resource descriptors to symbolic references.
+         * Cross reference the namespace here, in order to generate External() statements
          */
         AcpiDmCrossReferenceNamespace (AcpiGbl_ParseOpRoot, AcpiGbl_RootNode);
 
@@ -470,6 +460,18 @@ AdAmlDisassemble (
         /* Find possible calls to external control methods */
 
         AcpiDmFindOrphanMethods (AcpiGbl_ParseOpRoot);
+
+        /* Convert fixed-offset references to resource descriptors to symbolic references */
+
+        AcpiDmConvertResourceIndexes (AcpiGbl_ParseOpRoot, AcpiGbl_RootNode);
+
+        if (AslCompilerdebug)
+        {
+            AcpiOsPrintf ("/**** After second load and resource conversion \n");
+            LsSetupNsList (File);
+            LsDisplayNamespace ();
+            AcpiOsPrintf ("*****/\n");
+        }
 
         /*
          * If we found any external control methods, we must reparse the entire

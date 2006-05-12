@@ -199,6 +199,11 @@ AcpiDmFinishNamespaceLoad (
     ACPI_PARSE_OBJECT       *ParseTreeRoot,
     ACPI_NAMESPACE_NODE     *NamespaceRoot);
 
+void
+AcpiDmConvertResourceIndexes (
+    ACPI_PARSE_OBJECT       *ParseTreeRoot,
+    ACPI_NAMESPACE_NODE     *NamespaceRoot);
+
 /*
  * adfile
  */
