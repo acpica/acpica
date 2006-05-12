@@ -1,4 +1,33 @@
 ----------------------------------------
+12 May 2006. Summary of changes for version 20060512:
+
+1) ACPI CA Core Subsystem:
+
+Replaced the AcpiOsQueueForExecution interface with a new interface named AcpiOsExecute. The major difference is that the new interface does not have a Priority parameter, this appeared to be useless and has been replaced by a Type parameter. The Type tells the host what type of execution is being requested, such as global lock handler, notify handler, GPE handler, etc. This allows the host to queue and execute the request as appropriate for the request type, possibly using different work queues and different priorities for the various request types. This enables fixes for multithreading deadlock problems such as BZ #5534, and will require changes to all existing OS interface layers. (Alexey Starikovskiy and Bob Moore)
+
+Fixed a possible memory leak associated with the support for the so-called "implicit return" ACPI extension. Reported by FreeBSD, BZ #6514. (Fiodor Suietov)
+
+Fixed a problem with the Load() operator where a table load from an operation region could overwrite an internal table buffer by up to 7 bytes and cause alignment faults on IPF systems. (With assistance from Luming Yu)
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  79.7K Code, 17.7K Data,  97.4K Total
+    Debug Version:     160.1K Code, 65.2K Data, 225.3K Total
+  Current Release:
+    Non-Debug Version:  79.8K Code, 17.7K Data,  97.5K Total
+    Debug Version:     160.5K Code, 65.1K Data, 225.6K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+Disassembler: Implemented support to cross reference the internal namespace and automatically generate ASL External() statements for symbols not defined within the current table being disassembled. This will simplify the disassembly and recompilation of interdependent tables such as SSDTs since these statements will no longer have to be added manually.
+
+Disassembler: Implemented experimental support to automatically detect invocations of external control methods and generate appropriate External() statements. This is problematic because the AML cannot be correctly parsed until the number of arguments for each control method is known. Currently, standalone method invocations and invocations as the source operand of a Store() statement are supported.
+
+Disassembler: Implemented support for the ASL pseudo-operators LNotEqual, LLessEqual, and LGreaterEqual. Previously disassembled as LNot(LEqual()), LNot(LGreater()), and LNot(LLess()), this makes the disassembled ASL code more readable and likely closer to the original ASL source.
+
+----------------------------------------
 21 April 2006. Summary of changes for version 20060421:
 
 1) ACPI CA Core Subsystem:
