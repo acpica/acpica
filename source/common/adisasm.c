@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -247,11 +247,11 @@ AdInitialize (
  *
  * FUNCTION:    AdAddExternalsToNamespace
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 
@@ -287,11 +287,11 @@ AdAddExternalsToNamespace (
  *
  * FUNCTION:    AdMethodExternalCount
  *
- * PARAMETERS:  
+ * PARAMETERS:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: 
+ * DESCRIPTION:
  *
  ******************************************************************************/
 

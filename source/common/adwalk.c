@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adwalk - Application-level disassembler parse tree walk routines
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -1003,7 +1003,5 @@ AcpiDmInspectPossibleArgs (
 
     return (Last);
 }
-
-
 
 

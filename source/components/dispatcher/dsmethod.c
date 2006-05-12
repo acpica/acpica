@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -541,7 +541,7 @@ AcpiDsRestartControlMethod (
          * "implicit return". Some AML code assumes that the last value of the
          * method is "implicitly" returned to the caller, in the absence of an
          * explicit return value.
-         * 
+         *
          * Just save the last result of the method as the return value.
          *
          * NOTE: this is optional because the ASL language does not actually

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adfile - Application-level disassembler file support routines
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -124,7 +124,6 @@
 
 #define _COMPONENT          ACPI_TOOLS
         ACPI_MODULE_NAME    ("adfile")
-
 
 
 char                        FilenameBuf[20];
@@ -395,6 +394,5 @@ FlSplitInputPathname (
 
     return (AE_OK);
 }
-
 
 

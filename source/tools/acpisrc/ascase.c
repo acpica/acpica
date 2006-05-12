@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: ascase - Source conversion - lower/upper case utilities
- *              $Revision: 1.19 $
+ *              $Revision: 1.20 $
  *
  *****************************************************************************/
 
@@ -369,7 +369,7 @@ AsMixedCaseToUnderscores (
                 }
                 SubString++;
             }
-            
+
             /* If no lower case letters, we can safely ignore the entire token */
 
             if (!HasLowerCase)
