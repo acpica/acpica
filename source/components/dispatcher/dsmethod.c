@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.120 $
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -492,6 +492,7 @@ AcpiDsRestartControlMethod (
     ACPI_OPERAND_OBJECT     *ReturnDesc)
 {
     ACPI_STATUS             Status;
+    int                     SameAsImplicitReturn;
 
 
     ACPI_FUNCTION_TRACE_PTR (DsRestartControlMethod, WalkState);
@@ -511,6 +512,10 @@ AcpiDsRestartControlMethod (
 
     if (ReturnDesc)
     {
+        /* Is the implicit return object the same as the return desc? */
+
+        SameAsImplicitReturn = (WalkState->ImplicitReturnObj == ReturnDesc);
+
         /* Are we actually going to use the return value? */
 
         if (WalkState->ReturnUsed)
@@ -532,18 +537,23 @@ AcpiDsRestartControlMethod (
         }
 
         /*
-         * The following code is the
-         * optional support for a so-called "implicit return". Some AML code
-         * assumes that the last value of the method is "implicitly" returned
-         * to the caller. Just save the last result as the return value.
+         * The following code is the optional support for the so-called
+         * "implicit return". Some AML code assumes that the last value of the
+         * method is "implicitly" returned to the caller, in the absence of an
+         * explicit return value.
+         * 
+         * Just save the last result of the method as the return value.
+         *
          * NOTE: this is optional because the ASL language does not actually
          * support this behavior.
          */
-        else if (!AcpiDsDoImplicitReturn (ReturnDesc, WalkState, FALSE))
+        else if (!AcpiDsDoImplicitReturn (ReturnDesc, WalkState, FALSE) ||
+                 SameAsImplicitReturn)
         {
             /*
              * Delete the return value if it will not be used by the
-             * calling method
+             * calling method or remove one reference if the explicit return
+             * is the same as the implicit return value.
              */
             AcpiUtRemoveReference (ReturnDesc);
         }
