@@ -2,7 +2,7 @@
  *
  * Module Name: nseval - Object evaluation interfaces -- includes control
  *                       method lookup and execution.
- *              $Revision: 1.139 $
+ *              $Revision: 1.140 $
  *
  ******************************************************************************/
 
@@ -192,6 +192,7 @@ AcpiNsEvaluateRelative (
     ScopeInfo = AcpiUtCreateGenericState ();
     if (!ScopeInfo)
     {
+        Status = AE_NO_MEMORY;
         goto Cleanup1;
     }
 
