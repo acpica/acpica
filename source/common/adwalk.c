@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adwalk - Application-level disassembler parse tree walk routines
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -669,17 +669,9 @@ AcpiDmLoadDescendingOp (
 
     if (OpInfo->Flags & AML_NAMED)
     {
-        /* For nearly all NAMED operators, get the new name */
+        /* For all named operators, get the new name */
 
         Path = (char *) Op->Named.Path;
-        if (Op->Common.AmlOpcode == AML_ALIAS_OP)
-        {
-            /*
-             * ALIAS is the only oddball opcode, the name declaration
-             * (alias name) is the second operand
-             */
-            Path = (char *) Op->Common.Next->Named.Path;
-        }
     }
     else if (OpInfo->Flags & AML_CREATE)
     {
