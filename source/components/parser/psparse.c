@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.165 $
+ *              $Revision: 1.166 $
  *
  *****************************************************************************/
 
@@ -562,6 +562,7 @@ AcpiPsParseAml (
     Thread = AcpiUtCreateThreadState ();
     if (!Thread)
     {
+        AcpiDsDeleteWalkState (WalkState);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 

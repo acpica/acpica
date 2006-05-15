@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  ******************************************************************************/
 
@@ -563,7 +563,7 @@ AcpiRsSetResourceSource (
  *
  * FUNCTION:    AcpiRsGetPrtMethodData
  *
- * PARAMETERS:  Handle          - Handle to the containing object
+ * PARAMETERS:  Node            - Device node
  *              RetBuffer       - Pointer to a buffer structure for the
  *                                results
  *
@@ -579,7 +579,7 @@ AcpiRsSetResourceSource (
 
 ACPI_STATUS
 AcpiRsGetPrtMethodData (
-    ACPI_HANDLE             Handle,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_BUFFER             *RetBuffer)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -593,7 +593,7 @@ AcpiRsGetPrtMethodData (
 
     /* Execute the method, no parameters */
 
-    Status = AcpiUtEvaluateObject (Handle, METHOD_NAME__PRT,
+    Status = AcpiUtEvaluateObject (Node, METHOD_NAME__PRT,
                 ACPI_BTYPE_PACKAGE, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
@@ -617,7 +617,7 @@ AcpiRsGetPrtMethodData (
  *
  * FUNCTION:    AcpiRsGetCrsMethodData
  *
- * PARAMETERS:  Handle          - Handle to the containing object
+ * PARAMETERS:  Node            - Device node
  *              RetBuffer       - Pointer to a buffer structure for the
  *                                results
  *
@@ -633,7 +633,7 @@ AcpiRsGetPrtMethodData (
 
 ACPI_STATUS
 AcpiRsGetCrsMethodData (
-    ACPI_HANDLE             Handle,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_BUFFER             *RetBuffer)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -647,7 +647,7 @@ AcpiRsGetCrsMethodData (
 
     /* Execute the method, no parameters */
 
-    Status = AcpiUtEvaluateObject (Handle, METHOD_NAME__CRS,
+    Status = AcpiUtEvaluateObject (Node, METHOD_NAME__CRS,
                 ACPI_BTYPE_BUFFER, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
@@ -672,7 +672,7 @@ AcpiRsGetCrsMethodData (
  *
  * FUNCTION:    AcpiRsGetPrsMethodData
  *
- * PARAMETERS:  Handle          - Handle to the containing object
+ * PARAMETERS:  Node            - Device node
  *              RetBuffer       - Pointer to a buffer structure for the
  *                                results
  *
@@ -688,7 +688,7 @@ AcpiRsGetCrsMethodData (
 
 ACPI_STATUS
 AcpiRsGetPrsMethodData (
-    ACPI_HANDLE             Handle,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_BUFFER             *RetBuffer)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
@@ -702,7 +702,7 @@ AcpiRsGetPrsMethodData (
 
     /* Execute the method, no parameters */
 
-    Status = AcpiUtEvaluateObject (Handle, METHOD_NAME__PRS,
+    Status = AcpiUtEvaluateObject (Node, METHOD_NAME__PRS,
                 ACPI_BTYPE_BUFFER, &ObjDesc);
     if (ACPI_FAILURE (Status))
     {
@@ -760,7 +760,8 @@ AcpiRsGetMethodData (
     /* Execute the method, no parameters */
 
     Status = AcpiUtEvaluateObject (Handle, Path, ACPI_BTYPE_BUFFER, &ObjDesc);
-    if (ACPI_FAILURE (Status)) {
+    if (ACPI_FAILURE (Status))
+    {
         return_ACPI_STATUS (Status);
     }
 
@@ -782,7 +783,7 @@ AcpiRsGetMethodData (
  *
  * FUNCTION:    AcpiRsSetSrsMethodData
  *
- * PARAMETERS:  Handle          - Handle to the containing object
+ * PARAMETERS:  Node            - Device node
  *              InBuffer        - Pointer to a buffer structure of the
  *                                parameter
  *
@@ -798,7 +799,7 @@ AcpiRsGetMethodData (
 
 ACPI_STATUS
 AcpiRsSetSrsMethodData (
-    ACPI_HANDLE             Handle,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_BUFFER             *InBuffer)
 {
     ACPI_PARAMETER_INFO     Info;
@@ -842,7 +843,7 @@ AcpiRsSetSrsMethodData (
     Params[0]->Common.Flags   = AOPOBJ_DATA_VALID;
     Params[1] = NULL;
 
-    Info.Node = Handle;
+    Info.Node = Node;
     Info.Parameters = Params;
     Info.ParameterType = ACPI_PARAM_ARGS;
 

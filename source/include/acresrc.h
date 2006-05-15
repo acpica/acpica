@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.57 $
+ *       $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -253,17 +253,17 @@ AcpiRsCreatePciRoutingTable (
  */
 ACPI_STATUS
 AcpiRsGetPrtMethodData (
-    ACPI_HANDLE             Handle,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiRsGetCrsMethodData (
-    ACPI_HANDLE             Handle,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
 AcpiRsGetPrsMethodData (
-    ACPI_HANDLE             Handle,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_BUFFER             *RetBuffer);
 
 ACPI_STATUS
@@ -274,7 +274,7 @@ AcpiRsGetMethodData (
 
 ACPI_STATUS
 AcpiRsSetSrsMethodData (
-    ACPI_HANDLE             Handle,
+    ACPI_NAMESPACE_NODE     *Node,
     ACPI_BUFFER             *RetBuffer);
 
 
