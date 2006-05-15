@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  ******************************************************************************/
 
@@ -831,7 +831,7 @@ AcpiRsSetSrsMethodData (
     Params[0] = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
     if (!Params[0])
     {
-        AcpiOsFree (Buffer.Pointer);
+        ACPI_FREE (Buffer.Pointer);
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
