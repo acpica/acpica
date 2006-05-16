@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  ******************************************************************************/
 
@@ -295,17 +295,17 @@ AcpiUtDeleteInternalObj (
             if (HandlerDesc)
             {
                 if (HandlerDesc->AddressSpace.HandlerFlags &
-                        ACPI_ADDR_HANDLER_DEFAULT_INSTALLED)
+                    ACPI_ADDR_HANDLER_DEFAULT_INSTALLED)
                 {
                     /* Deactivate region and free region context */
 
-            if (HandlerDesc->AddressSpace.Setup)
-            {
-            (void) HandlerDesc->AddressSpace.Setup (Object,
+                    if (HandlerDesc->AddressSpace.Setup)
+                    {
+                        (void) HandlerDesc->AddressSpace.Setup (Object,
                             ACPI_REGION_DEACTIVATE,
-                HandlerDesc->AddressSpace.Context,
-                &SecondDesc->Extra.RegionContext);
-            }
+                            HandlerDesc->AddressSpace.Context,
+                            &SecondDesc->Extra.RegionContext);
+                    }
                 }
 
                 AcpiUtRemoveReference (HandlerDesc);
@@ -340,14 +340,14 @@ AcpiUtDeleteInternalObj (
     if (ObjPointer)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "Deleting Object Subptr %p\n",
-                ObjPointer));
+            ObjPointer));
         ACPI_FREE (ObjPointer);
     }
 
     /* Now the object can be safely deleted */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS, "Deleting Object %p [%s]\n",
-            Object, AcpiUtGetObjectTypeName (Object)));
+        Object, AcpiUtGetObjectTypeName (Object)));
 
     AcpiUtDeleteObjectDesc (Object);
     return_VOID;
@@ -425,12 +425,10 @@ AcpiUtUpdateRefCount (
     NewCount = Count;
 
     /*
-     * Perform the reference count action
-     * (increment, decrement, or force delete)
+     * Perform the reference count action (increment, decrement, force delete)
      */
     switch (Action)
     {
-
     case REF_INCREMENT:
 
         NewCount++;
@@ -440,7 +438,6 @@ AcpiUtUpdateRefCount (
             "Obj %p Refs=%X, [Incremented]\n",
             Object, NewCount));
         break;
-
 
     case REF_DECREMENT:
 
@@ -464,8 +461,7 @@ AcpiUtUpdateRefCount (
         if (ACPI_GET_OBJECT_TYPE (Object) == ACPI_TYPE_METHOD)
         {
             ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
-                "Method Obj %p Refs=%X, [Decremented]\n",
-                Object, NewCount));
+                "Method Obj %p Refs=%X, [Decremented]\n", Object, NewCount));
         }
 
         Object->Common.ReferenceCount = NewCount;
@@ -473,21 +469,17 @@ AcpiUtUpdateRefCount (
         {
             AcpiUtDeleteInternalObj (Object);
         }
-
         break;
-
 
     case REF_FORCE_DELETE:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
-            "Obj %p Refs=%X, Force delete! (Set to 0)\n",
-            Object, Count));
+            "Obj %p Refs=%X, Force delete! (Set to 0)\n", Object, Count));
 
         NewCount = 0;
         Object->Common.ReferenceCount = NewCount;
         AcpiUtDeleteInternalObj (Object);
         break;
-
 
     default:
 
@@ -501,13 +493,9 @@ AcpiUtUpdateRefCount (
      */
     if (Count > ACPI_MAX_REFERENCE_COUNT)
     {
-
         ACPI_WARNING ((AE_INFO,
-            "Large Reference Count (%X) in object %p",
-            Count, Object));
+            "Large Reference Count (%X) in object %p", Count, Object));
     }
-
-    return;
 }
 
 
@@ -637,11 +625,11 @@ AcpiUtUpdateObjectReference (
 
         case ACPI_TYPE_REGION:
         default:
-            break;/* No subobjects */
+            break; /* No subobjects for all other types */
         }
 
         /*
-         * Now we can update the count in the main object.  This can only
+         * Now we can update the count in the main object. This can only
          * happen after we update the sub-objects in case this causes the
          * main object to be deleted.
          */
@@ -708,7 +696,7 @@ AcpiUtAddReference (
 
     /* Increment the reference count */
 
-    (void) AcpiUtUpdateObjectReference  (Object, REF_INCREMENT);
+    (void) AcpiUtUpdateObjectReference (Object, REF_INCREMENT);
     return_VOID;
 }
 
@@ -734,8 +722,8 @@ AcpiUtRemoveReference (
 
 
     /*
-     * Allow a NULL pointer to be passed in, just ignore it.  This saves
-     * each caller from having to check.  Also, ignore NS nodes.
+     * Allow a NULL pointer to be passed in, just ignore it. This saves
+     * each caller from having to check. Also, ignore NS nodes.
      *
      */
     if (!Object ||
@@ -758,10 +746,10 @@ AcpiUtRemoveReference (
 
     /*
      * Decrement the reference count, and only actually delete the object
-     * if the reference count becomes 0.  (Must also decrement the ref count
+     * if the reference count becomes 0. (Must also decrement the ref count
      * of all subobjects!)
      */
-    (void) AcpiUtUpdateObjectReference  (Object, REF_DECREMENT);
+    (void) AcpiUtUpdateObjectReference (Object, REF_DECREMENT);
     return_VOID;
 }
 
