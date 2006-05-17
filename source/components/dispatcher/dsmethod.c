@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -326,7 +326,7 @@ AcpiDsCallControlMethod (
     ACPI_NAMESPACE_NODE     *MethodNode;
     ACPI_WALK_STATE         *NextWalkState = NULL;
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_PARAMETER_INFO     Info;
+    ACPI_EVALUATE_INFO      *Info;
     UINT32                  i;
 
 
@@ -420,12 +420,25 @@ AcpiDsCallControlMethod (
      */
     ThisWalkState->Operands [ThisWalkState->NumOperands] = NULL;
 
-    Info.Parameters = &ThisWalkState->Operands[0];
-    Info.ParameterType = ACPI_PARAM_ARGS;
+    /* 
+     * Allocate and initialize the evaluation information block
+     * TBD: this is somewhat inefficient, should change interface to 
+     * DsInitAmlWalk. For now, keeps this struct off the CPU stack
+     */
+    Info = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_EVALUATE_INFO));
+    if (!Info)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    Info->Parameters = &ThisWalkState->Operands[0];
+    Info->ParameterType = ACPI_PARAM_ARGS;
 
     Status = AcpiDsInitAmlWalk (NextWalkState, NULL, MethodNode,
                 ObjDesc->Method.AmlStart, ObjDesc->Method.AmlLength,
-                &Info, 3);
+                Info, 3);
+
+    ACPI_FREE (Info);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;

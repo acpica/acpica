@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  ******************************************************************************/
 
@@ -795,6 +795,8 @@ AcpiRsGetMethodData (
  *              If the function fails an appropriate status will be returned
  *              and the contents of the callers buffer is undefined.
  *
+ * Note: Parameters guaranteed valid by caller
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -802,8 +804,8 @@ AcpiRsSetSrsMethodData (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_BUFFER             *InBuffer)
 {
-    ACPI_PARAMETER_INFO     Info;
-    ACPI_OPERAND_OBJECT     *Params[2];
+    ACPI_EVALUATE_INFO      *Info;
+    ACPI_OPERAND_OBJECT     *Args[2];
     ACPI_STATUS             Status;
     ACPI_BUFFER             Buffer;
 
@@ -811,11 +813,23 @@ AcpiRsSetSrsMethodData (
     ACPI_FUNCTION_TRACE (RsSetSrsMethodData);
 
 
-    /* Parameters guaranteed valid by caller */
+    /* Allocate and initialize the evaluation information block */
+
+    Info = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_EVALUATE_INFO));
+    if (!Info)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    Info->PrefixNode = Node;
+    Info->Pathname = METHOD_NAME__SRS;
+    Info->Parameters = Args;
+    Info->ParameterType = ACPI_PARAM_ARGS;
+    Info->Flags = ACPI_IGNORE_RETURN_VALUE;
 
     /*
      * The InBuffer parameter will point to a linked list of
-     * resource parameters.  It needs to be formatted into a
+     * resource parameters. It needs to be formatted into a
      * byte stream to be sent in as an input parameter to _SRS
      *
      * Convert the linked list into a byte stream
@@ -824,45 +838,36 @@ AcpiRsSetSrsMethodData (
     Status = AcpiRsCreateAmlResources (InBuffer->Pointer, &Buffer);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto Cleanup1;
     }
 
-    /* Init the param object */
+    /* Create and initialize the method parameter object */
 
-    Params[0] = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
-    if (!Params[0])
+    Args[0] = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
+    if (!Args[0])
     {
-        ACPI_FREE (Buffer.Pointer);
-        return_ACPI_STATUS (AE_NO_MEMORY);
+        Status = AE_NO_MEMORY;
+        goto Cleanup2;
     }
 
-    /* Set up the parameter object */
+    Args[0]->Buffer.Length  = (UINT32) Buffer.Length;
+    Args[0]->Buffer.Pointer = Buffer.Pointer;
+    Args[0]->Common.Flags   = AOPOBJ_DATA_VALID;
+    Args[1] = NULL;
 
-    Params[0]->Buffer.Length  = (UINT32) Buffer.Length;
-    Params[0]->Buffer.Pointer = Buffer.Pointer;
-    Params[0]->Common.Flags   = AOPOBJ_DATA_VALID;
-    Params[1] = NULL;
+    /* Execute the method, no return value is expected */
 
-    Info.Node = Node;
-    Info.Parameters = Params;
-    Info.ParameterType = ACPI_PARAM_ARGS;
+    Status = AcpiNsEvaluate (Info);
 
-    /* Execute the method, no return value */
+    /* Clean up and return the status from AcpiNsEvaluate */
 
-    Status = AcpiNsEvaluateRelative (METHOD_NAME__SRS, &Info);
-    if (ACPI_SUCCESS (Status))
-    {
-        /* Delete any return object (especially if ImplicitReturn is enabled) */
+    AcpiUtRemoveReference (Args[0]);
 
-        if (Info.ReturnObject)
-        {
-            AcpiUtRemoveReference (Info.ReturnObject);
-        }
-    }
+Cleanup2:
+    ACPI_FREE (Buffer.Pointer);
 
-    /* Clean up and return the status from AcpiNsEvaluateRelative */
-
-    AcpiUtRemoveReference (Params[0]);
+Cleanup1:
+    ACPI_FREE (Info);
     return_ACPI_STATUS (Status);
 }
 

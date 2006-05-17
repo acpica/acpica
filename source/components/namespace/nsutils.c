@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.151 $
+ *              $Revision: 1.152 $
  *
  *****************************************************************************/
 
@@ -237,8 +237,8 @@ AcpiNsReportMethodError (
 
     if (Path)
     {
-        Status = AcpiNsGetNodeByPath (Path, PrefixNode,
-                    ACPI_NS_NO_UPSEARCH, &Node);
+        Status = AcpiNsGetNode (Path, PrefixNode, ACPI_NS_NO_UPSEARCH,
+                    &Node);
         if (ACPI_FAILURE (Status))
         {
             AcpiOsPrintf ("[Could not get node by pathname]");
@@ -877,14 +877,9 @@ AcpiNsMapHandleToNode (
 
 
     /*
-     * Simple implementation.
+     * Simple implementation
      */
-    if (!Handle)
-    {
-        return (NULL);
-    }
-
-    if (Handle == ACPI_ROOT_OBJECT)
+    if ((!Handle) || (Handle == ACPI_ROOT_OBJECT))
     {
         return (AcpiGbl_RootNode);
     }
@@ -896,7 +891,7 @@ AcpiNsMapHandleToNode (
         return (NULL);
     }
 
-    return ((ACPI_NAMESPACE_NODE *) Handle);
+    return (ACPI_CAST_PTR (ACPI_NAMESPACE_NODE, Handle));
 }
 
 
@@ -1023,7 +1018,7 @@ AcpiNsOpensScope (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiNsGetNodeByPath
+ * FUNCTION:    AcpiNsGetNode
  *
  * PARAMETERS:  *Pathname   - Name to be found, in external (ASL) format. The
  *                            \ (backslash) and ^ (carat) prefixes, and the
@@ -1044,7 +1039,7 @@ AcpiNsOpensScope (
  ******************************************************************************/
 
 ACPI_STATUS
-AcpiNsGetNodeByPath (
+AcpiNsGetNode (
     char                    *Pathname,
     ACPI_NAMESPACE_NODE     *StartNode,
     UINT32                  Flags,
@@ -1052,21 +1047,28 @@ AcpiNsGetNodeByPath (
 {
     ACPI_GENERIC_STATE      ScopeInfo;
     ACPI_STATUS             Status;
-    char                    *InternalPath = NULL;
+    char                    *InternalPath;
 
 
-    ACPI_FUNCTION_TRACE_PTR (NsGetNodeByPath, Pathname);
+    ACPI_FUNCTION_TRACE_PTR (NsGetNode, Pathname);
 
 
-    if (Pathname)
+    if (!Pathname)
     {
-        /* Convert path to internal representation */
-
-        Status = AcpiNsInternalizeName (Pathname, &InternalPath);
-        if (ACPI_FAILURE (Status))
+        *ReturnNode = StartNode;
+        if (!StartNode)
         {
-            return_ACPI_STATUS (Status);
+            *ReturnNode = AcpiGbl_RootNode;
         }
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Convert path to internal representation */
+
+    Status = AcpiNsInternalizeName (Pathname, &InternalPath);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
     }
 
     /* Must lock namespace during lookup */
@@ -1083,23 +1085,19 @@ AcpiNsGetNodeByPath (
 
     /* Lookup the name in the namespace */
 
-    Status = AcpiNsLookup (&ScopeInfo, InternalPath,
-                            ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
-                            (Flags | ACPI_NS_DONT_OPEN_SCOPE),
-                            NULL, ReturnNode);
+    Status = AcpiNsLookup (&ScopeInfo, InternalPath, ACPI_TYPE_ANY,
+                ACPI_IMODE_EXECUTE, (Flags | ACPI_NS_DONT_OPEN_SCOPE),
+                NULL, ReturnNode);
     if (ACPI_FAILURE (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "%s, %s\n",
-                InternalPath, AcpiFormatException (Status)));
+                Pathname, AcpiFormatException (Status)));
     }
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
 
 Cleanup:
-    if (InternalPath)
-    {
-        ACPI_FREE (InternalPath);
-    }
+    ACPI_FREE (InternalPath);
     return_ACPI_STATUS (Status);
 }
 

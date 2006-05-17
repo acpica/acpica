@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.146 $
+ *       $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -299,18 +299,8 @@ AcpiNsDumpObjects (
  * nseval - Namespace evaluation functions
  */
 ACPI_STATUS
-AcpiNsEvaluateByHandle (
-    ACPI_PARAMETER_INFO     *Info);
-
-ACPI_STATUS
-AcpiNsEvaluateByName (
-    char                    *Pathname,
-    ACPI_PARAMETER_INFO     *Info);
-
-ACPI_STATUS
-AcpiNsEvaluateRelative (
-    char                    *Pathname,
-    ACPI_PARAMETER_INFO     *Info);
+AcpiNsEvaluate (
+    ACPI_EVALUATE_INFO      *Info);
 
 
 /*
@@ -345,7 +335,7 @@ AcpiNsPatternMatch (
     char                    *SearchFor);
 
 ACPI_STATUS
-AcpiNsGetNodeByPath (
+AcpiNsGetNode (
     char                    *ExternalPathname,
     ACPI_NAMESPACE_NODE     *InPrefixNode,
     UINT32                  Flags,

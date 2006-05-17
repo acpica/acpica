@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.178 $
+ *              $Revision: 1.179 $
  *
  ******************************************************************************/
 
@@ -217,8 +217,7 @@ AcpiGetSleepTypeData (
     UINT8                   *SleepTypeB)
 {
     ACPI_STATUS             Status = AE_OK;
-    ACPI_PARAMETER_INFO     Info;
-    char                    *SleepStateName;
+    ACPI_EVALUATE_INFO      *Info;
 
 
     ACPI_FUNCTION_TRACE (AcpiGetSleepTypeData);
@@ -232,34 +231,40 @@ AcpiGetSleepTypeData (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
+    /* Allocate the evaluation information block */
+
+    Info = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_EVALUATE_INFO));
+    if (!Info)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    Info->Pathname = ACPI_CAST_PTR (char, AcpiGbl_SleepStateNames[SleepState]);
+
     /* Evaluate the namespace object containing the values for this state */
 
-    Info.Parameters = NULL;
-    Info.ReturnObject = NULL;
-    SleepStateName = ACPI_CAST_PTR (char, AcpiGbl_SleepStateNames[SleepState]);
-
-    Status = AcpiNsEvaluateByName (SleepStateName, &Info);
+    Status = AcpiNsEvaluate (Info);
     if (ACPI_FAILURE (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
             "%s while evaluating SleepState [%s]\n",
-            AcpiFormatException (Status), SleepStateName));
+            AcpiFormatException (Status), Info->Pathname));
 
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     /* Must have a return object */
 
-    if (!Info.ReturnObject)
+    if (!Info->ReturnObject)
     {
         ACPI_ERROR ((AE_INFO, "No Sleep State object returned from [%s]",
-            SleepStateName));
+            Info->Pathname));
         Status = AE_NOT_EXIST;
     }
 
     /* It must be of type Package */
 
-    else if (ACPI_GET_OBJECT_TYPE (Info.ReturnObject) != ACPI_TYPE_PACKAGE)
+    else if (ACPI_GET_OBJECT_TYPE (Info->ReturnObject) != ACPI_TYPE_PACKAGE)
     {
         ACPI_ERROR ((AE_INFO, "Sleep State return object is not a Package"));
         Status = AE_AML_OPERAND_TYPE;
@@ -272,7 +277,7 @@ AcpiGetSleepTypeData (
      * by BIOS vendors seems to be to have 2 or more elements, at least
      * one per sleep type (A/B).
      */
-    else if (Info.ReturnObject->Package.Count < 2)
+    else if (Info->ReturnObject->Package.Count < 2)
     {
         ACPI_ERROR ((AE_INFO,
             "Sleep State return package does not have at least two elements"));
@@ -281,15 +286,15 @@ AcpiGetSleepTypeData (
 
     /* The first two elements must both be of type Integer */
 
-    else if ((ACPI_GET_OBJECT_TYPE (Info.ReturnObject->Package.Elements[0])
+    else if ((ACPI_GET_OBJECT_TYPE (Info->ReturnObject->Package.Elements[0])
                 != ACPI_TYPE_INTEGER) ||
-             (ACPI_GET_OBJECT_TYPE (Info.ReturnObject->Package.Elements[1])
+             (ACPI_GET_OBJECT_TYPE (Info->ReturnObject->Package.Elements[1])
                 != ACPI_TYPE_INTEGER))
     {
         ACPI_ERROR ((AE_INFO,
             "Sleep State return package elements are not both Integers (%s, %s)",
-            AcpiUtGetObjectTypeName (Info.ReturnObject->Package.Elements[0]),
-            AcpiUtGetObjectTypeName (Info.ReturnObject->Package.Elements[1])));
+            AcpiUtGetObjectTypeName (Info->ReturnObject->Package.Elements[0]),
+            AcpiUtGetObjectTypeName (Info->ReturnObject->Package.Elements[1])));
         Status = AE_AML_OPERAND_TYPE;
     }
     else
@@ -297,20 +302,23 @@ AcpiGetSleepTypeData (
         /* Valid _Sx_ package size, type, and value */
 
         *SleepTypeA = (UINT8)
-            (Info.ReturnObject->Package.Elements[0])->Integer.Value;
+            (Info->ReturnObject->Package.Elements[0])->Integer.Value;
         *SleepTypeB = (UINT8)
-            (Info.ReturnObject->Package.Elements[1])->Integer.Value;
+            (Info->ReturnObject->Package.Elements[1])->Integer.Value;
     }
 
     if (ACPI_FAILURE (Status))
     {
         ACPI_EXCEPTION ((AE_INFO, Status,
             "While evaluating SleepState [%s], bad Sleep object %p type %s",
-            SleepStateName, Info.ReturnObject,
-            AcpiUtGetObjectTypeName (Info.ReturnObject)));
+            Info->Pathname, Info->ReturnObject,
+            AcpiUtGetObjectTypeName (Info->ReturnObject)));
     }
 
-    AcpiUtRemoveReference (Info.ReturnObject);
+    AcpiUtRemoveReference (Info->ReturnObject);
+
+Cleanup:
+    ACPI_FREE (Info);
     return_ACPI_STATUS (Status);
 }
 

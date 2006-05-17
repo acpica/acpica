@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -274,6 +274,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_DEVICE_WALK_INFO",               SRC_TYPE_STRUCT},
     {"ACPI_DMTABLE_DATA",                   SRC_TYPE_STRUCT},
     {"ACPI_DMTABLE_INFO",                   SRC_TYPE_STRUCT},
+    {"ACPI_EVALUATE_INFO",                  SRC_TYPE_STRUCT},
     {"ACPI_EVENT_HANDLER",                  SRC_TYPE_SIMPLE},
     {"ACPI_EVENT_STATUS",                   SRC_TYPE_SIMPLE},
     {"ACPI_EVENT_TYPE",                     SRC_TYPE_SIMPLE},
@@ -358,7 +359,6 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_OSD_HANDLER",                    SRC_TYPE_SIMPLE},
     {"ACPI_OSD_EXEC_CALLBACK",              SRC_TYPE_SIMPLE},
     {"ACPI_OWNER_ID",                       SRC_TYPE_SIMPLE},
-    {"ACPI_PARAMETER_INFO",                 SRC_TYPE_STRUCT},
     {"ACPI_PARSE_DOWNWARDS",                SRC_TYPE_SIMPLE},
     {"ACPI_PARSE_OBJ_ASL",                  SRC_TYPE_STRUCT},
     {"ACPI_PARSE_OBJ_COMMON",               SRC_TYPE_STRUCT},
