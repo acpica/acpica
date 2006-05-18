@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  ******************************************************************************/
 
@@ -152,8 +152,8 @@ AcpiRsMatchVendorResource (
 static ACPI_STATUS
 AcpiRsValidateParameters (
     ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer,
-    ACPI_NAMESPACE_NODE     **RetNode);
+    ACPI_BUFFER             *Buffer,
+    ACPI_NAMESPACE_NODE     **ReturnNode);
 
 
 /*******************************************************************************
@@ -161,8 +161,8 @@ AcpiRsValidateParameters (
  * FUNCTION:    AcpiRsValidateParameters
  *
  * PARAMETERS:  DeviceHandle    - Handle to a device 
- *              RetBuffer       - Pointer to a data buffer
- *              RetNode         - Pointer to where the device node is returned
+ *              Buffer          - Pointer to a data buffer
+ *              ReturnNode      - Pointer to where the device node is returned
  *
  * RETURN:      Status
  *
@@ -173,8 +173,8 @@ AcpiRsValidateParameters (
 static ACPI_STATUS
 AcpiRsValidateParameters (
     ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer,
-    ACPI_NAMESPACE_NODE     **RetNode)
+    ACPI_BUFFER             *Buffer,
+    ACPI_NAMESPACE_NODE     **ReturnNode)
 {
     ACPI_STATUS             Status;
     ACPI_NAMESPACE_NODE     *Node;
@@ -202,23 +202,20 @@ AcpiRsValidateParameters (
         return_ACPI_STATUS (AE_TYPE);
     }
 
-    /* Check return buffer if requested */
-
-    if (RetBuffer)
+    /*
+     * Validate the user buffer object
+     *
+     * if there is a non-zero buffer length we also need a valid pointer in
+     * the buffer. If it's a zero buffer length, we'll be returning the
+     * needed buffer size (later), so keep going.
+     */
+    Status = AcpiUtValidateBuffer (Buffer);
+    if (ACPI_FAILURE (Status))
     {
-        /*
-         * if there is a non-zero buffer length we also need a valid pointer in
-         * the buffer. If it's a zero buffer length, we'll be returning the
-         * needed buffer size (later), so keep going.
-         */
-        Status = AcpiUtValidateBuffer (RetBuffer);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        return_ACPI_STATUS (Status);
     }
 
-    *RetNode = Node;
+    *ReturnNode = Node;
     return_ACPI_STATUS (AE_OK);
 }
 
@@ -227,8 +224,8 @@ AcpiRsValidateParameters (
  *
  * FUNCTION:    AcpiGetIrqRoutingTable
  *
- * PARAMETERS:  DeviceHandle    - a handle to the Bus device we are querying
- *              RetBuffer       - a pointer to a buffer to receive the
+ * PARAMETERS:  DeviceHandle    - Handle to the Bus device we are querying
+ *              RetBuffer       - Pointer to a buffer to receive the
  *                                current resources for the device
  *
  * RETURN:      Status
@@ -277,9 +274,9 @@ ACPI_EXPORT_SYMBOL (AcpiGetIrqRoutingTable)
  *
  * FUNCTION:    AcpiGetCurrentResources
  *
- * PARAMETERS:  DeviceHandle    - a handle to the device object for the
+ * PARAMETERS:  DeviceHandle    - Handle to the device object for the
  *                                device we are querying
- *              RetBuffer       - a pointer to a buffer to receive the
+ *              RetBuffer       - Pointer to a buffer to receive the
  *                                current resources for the device
  *
  * RETURN:      Status
@@ -328,9 +325,9 @@ ACPI_EXPORT_SYMBOL (AcpiGetCurrentResources)
  *
  * FUNCTION:    AcpiGetPossibleResources
  *
- * PARAMETERS:  DeviceHandle    - a handle to the device object for the
+ * PARAMETERS:  DeviceHandle    - Handle to the device object for the
  *                                device we are querying
- *              RetBuffer       - a pointer to a buffer to receive the
+ *              RetBuffer       - Pointer to a buffer to receive the
  *                                resources for the device
  *
  * RETURN:      Status
@@ -376,9 +373,9 @@ ACPI_EXPORT_SYMBOL (AcpiGetPossibleResources)
  *
  * FUNCTION:    AcpiSetCurrentResources
  *
- * PARAMETERS:  DeviceHandle    - a handle to the device object for the
+ * PARAMETERS:  DeviceHandle    - Handle to the device object for the
  *                                device we are setting resources
- *              InBuffer        - a pointer to a buffer containing the
+ *              InBuffer        - Pointer to a buffer containing the
  *                                resources to be set for the device
  *
  * RETURN:      Status
@@ -402,10 +399,10 @@ AcpiSetCurrentResources (
     ACPI_FUNCTION_TRACE (AcpiSetCurrentResources);
 
 
-    /* Validate the buffer */
+    /* Validate the buffer, don't allow zero length */
 
-    if ((!InBuffer)           ||
-        (!InBuffer->Pointer)  ||
+    if ((!InBuffer) ||
+        (!InBuffer->Pointer) ||
         (!InBuffer->Length))
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
@@ -413,7 +410,7 @@ AcpiSetCurrentResources (
 
     /* Validate parameters then dispatch to internal routine */
 
-    Status = AcpiRsValidateParameters (DeviceHandle, NULL, &Node);
+    Status = AcpiRsValidateParameters (DeviceHandle, InBuffer, &Node);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -430,10 +427,9 @@ ACPI_EXPORT_SYMBOL (AcpiSetCurrentResources)
  *
  * FUNCTION:    AcpiResourceToAddress64
  *
- * PARAMETERS:  Resource                - Pointer to a resource
- *              Out                     - Pointer to the users's return
- *                                        buffer (a struct
- *                                        acpi_resource_address64)
+ * PARAMETERS:  Resource        - Pointer to a resource
+ *              Out             - Pointer to the users's return buffer
+ *                                (a struct acpi_resource_address64)
  *
  * RETURN:      Status
  *
@@ -495,12 +491,12 @@ ACPI_EXPORT_SYMBOL (AcpiResourceToAddress64)
  *
  * FUNCTION:    AcpiGetVendorResource
  *
- * PARAMETERS:  DeviceHandle        - Handle for the parent device object
- *              Name                - Method name for the parent resource
- *                                    (METHOD_NAME__CRS or METHOD_NAME__PRS)
- *              Uuid                - Pointer to the UUID to be matched.
- *                                    includes both subtype and 16-byte UUID
- *              RetBuffer           - Where the vendor resource is returned
+ * PARAMETERS:  DeviceHandle    - Handle for the parent device object
+ *              Name            - Method name for the parent resource
+ *                                (METHOD_NAME__CRS or METHOD_NAME__PRS)
+ *              Uuid            - Pointer to the UUID to be matched.
+ *                                includes both subtype and 16-byte UUID
+ *              RetBuffer       - Where the vendor resource is returned
  *
  * RETURN:      Status
  *
