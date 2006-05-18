@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.65 $
+ *              $Revision: 1.66 $
  *
  ******************************************************************************/
 
@@ -838,7 +838,7 @@ AcpiRsSetSrsMethodData (
     Status = AcpiRsCreateAmlResources (InBuffer->Pointer, &Buffer);
     if (ACPI_FAILURE (Status))
     {
-        goto Cleanup1;
+        goto Cleanup;
     }
 
     /* Create and initialize the method parameter object */
@@ -846,8 +846,13 @@ AcpiRsSetSrsMethodData (
     Args[0] = AcpiUtCreateInternalObject (ACPI_TYPE_BUFFER);
     if (!Args[0])
     {
+        /*
+         * Must free the buffer allocated above (otherwise it is freed
+         * later)
+         */
+        ACPI_FREE (Buffer.Pointer);
         Status = AE_NO_MEMORY;
-        goto Cleanup2;
+        goto Cleanup;
     }
 
     Args[0]->Buffer.Length  = (UINT32) Buffer.Length;
@@ -863,10 +868,7 @@ AcpiRsSetSrsMethodData (
 
     AcpiUtRemoveReference (Args[0]);
 
-Cleanup2:
-    ACPI_FREE (Buffer.Pointer);
-
-Cleanup1:
+Cleanup:
     ACPI_FREE (Info);
     return_ACPI_STATUS (Status);
 }
