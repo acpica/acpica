@@ -2,7 +2,7 @@
  *
  * Module Name: nsutils - Utilities for accessing ACPI namespace, accessing
  *                        parents and siblings and Scope manipulation
- *              $Revision: 1.152 $
+ *              $Revision: 1.153 $
  *
  *****************************************************************************/
 
@@ -237,7 +237,7 @@ AcpiNsReportMethodError (
 
     if (Path)
     {
-        Status = AcpiNsGetNode (Path, PrefixNode, ACPI_NS_NO_UPSEARCH,
+        Status = AcpiNsGetNode (PrefixNode, Path, ACPI_NS_NO_UPSEARCH,
                     &Node);
         if (ACPI_FAILURE (Status))
         {
@@ -1023,7 +1023,7 @@ AcpiNsOpensScope (
  * PARAMETERS:  *Pathname   - Name to be found, in external (ASL) format. The
  *                            \ (backslash) and ^ (carat) prefixes, and the
  *                            . (period) to separate segments are supported.
- *              StartNode   - Root of subtree to be searched, or NS_ALL for the
+ *              PrefixNode   - Root of subtree to be searched, or NS_ALL for the
  *                            root of the name space.  If Name is fully
  *                            qualified (first INT8 is '\'), the passed value
  *                            of Scope will not be accessed.
@@ -1040,8 +1040,8 @@ AcpiNsOpensScope (
 
 ACPI_STATUS
 AcpiNsGetNode (
+    ACPI_NAMESPACE_NODE     *PrefixNode,
     char                    *Pathname,
-    ACPI_NAMESPACE_NODE     *StartNode,
     UINT32                  Flags,
     ACPI_NAMESPACE_NODE     **ReturnNode)
 {
@@ -1055,8 +1055,8 @@ AcpiNsGetNode (
 
     if (!Pathname)
     {
-        *ReturnNode = StartNode;
-        if (!StartNode)
+        *ReturnNode = PrefixNode;
+        if (!PrefixNode)
         {
             *ReturnNode = AcpiGbl_RootNode;
         }
@@ -1081,7 +1081,7 @@ AcpiNsGetNode (
 
     /* Setup lookup scope (search starting point) */
 
-    ScopeInfo.Scope.Node = StartNode;
+    ScopeInfo.Scope.Node = PrefixNode;
 
     /* Lookup the name in the namespace */
 

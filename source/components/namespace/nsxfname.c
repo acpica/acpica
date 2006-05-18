@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -199,7 +199,7 @@ AcpiGetHandle (
     /*
      *  Find the Node and convert to a handle
      */
-    Status = AcpiNsGetNode (Pathname, PrefixNode, ACPI_NS_NO_UPSEARCH,
+    Status = AcpiNsGetNode (PrefixNode, Pathname, ACPI_NS_NO_UPSEARCH,
                 &Node);
 
     *RetHandle = NULL;

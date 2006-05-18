@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.143 $
+ *              $Revision: 1.144 $
  *
  ******************************************************************************/
 
@@ -1221,7 +1221,7 @@ AcpiDbSetScope (
     {
         /* Validate new scope from the root */
 
-        Status = AcpiNsGetNode (Name, AcpiGbl_RootNode, ACPI_NS_NO_UPSEARCH,
+        Status = AcpiNsGetNode (AcpiGbl_RootNode, Name, ACPI_NS_NO_UPSEARCH,
                     &Node);
         if (ACPI_FAILURE (Status))
         {
@@ -1235,7 +1235,7 @@ AcpiDbSetScope (
     {
         /* Validate new scope relative to old scope */
 
-        Status = AcpiNsGetNode (Name, AcpiGbl_DbScopeNode, ACPI_NS_NO_UPSEARCH,
+        Status = AcpiNsGetNode (AcpiGbl_DbScopeNode, Name, ACPI_NS_NO_UPSEARCH,
                     &Node);
         if (ACPI_FAILURE (Status))
         {

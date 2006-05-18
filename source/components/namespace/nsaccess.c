@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.200 $
+ *              $Revision: 1.201 $
  *
  ******************************************************************************/
 
@@ -344,7 +344,7 @@ UnlockAndExit:
 
     if (ACPI_SUCCESS (Status))
     {
-        Status = AcpiNsGetNode ("\\_GPE", NULL, ACPI_NS_NO_UPSEARCH,
+        Status = AcpiNsGetNode (NULL, "\\_GPE", ACPI_NS_NO_UPSEARCH,
                     &AcpiGbl_FadtGpeDevice);
     }
 

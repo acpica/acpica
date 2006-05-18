@@ -1,8 +1,7 @@
 /*******************************************************************************
  *
- * Module Name: nseval - Object evaluation interfaces -- includes control
- *                       method lookup and execution.
- *              $Revision: 1.141 $
+ * Module Name: nseval - Object evaluation, includes control method execution
+ *              $Revision: 1.142 $
  *
  ******************************************************************************/
 
@@ -127,22 +126,12 @@
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nseval")
 
-/* Local prototypes */
-
-static ACPI_STATUS
-AcpiNsExecuteControlMethod (
-    ACPI_EVALUATE_INFO      *Info);
-
-static ACPI_STATUS
-AcpiNsGetObjectValue (
-    ACPI_EVALUATE_INFO      *Info);
-
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiNsEvaluate
  *
- * PARAMETERS:  Info            - Method info block, contains:
+ * PARAMETERS:  Info            - Evaluation info block, contains:
  *                  PrefixNode      - Prefix or Method/Object Node to execute
  *                  Pathname        - Name of method to execute, If NULL, the
  *                                    Node is the object to execute
@@ -158,10 +147,10 @@ AcpiNsGetObjectValue (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Evaluate object or execute the requested method passing the
- *              given parameters
+ * DESCRIPTION: Execute a control method or return the current value of an
+ *              ACPI namespace object.
  *
- * MUTEX:       Locks Namespace
+ * MUTEX:       Locks interpreter
  *
  ******************************************************************************/
 
@@ -180,26 +169,19 @@ AcpiNsEvaluate (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /*
-     * Get the actual namespace node. Handles these cases:
-     * 1) Null node, Pathname (absolute path)
-     * 2) Node, Pathname (path relative to Node)
-     * 3) Node, Null Pathname
-     */
-    Status = AcpiNsGetNode (Info->Pathname, Info->PrefixNode,
-                ACPI_NS_NO_UPSEARCH, &Info->ResolvedNode);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
     /* Initialize the return value to an invalid object */
 
     Info->ReturnObject = NULL;
 
-    /* Must lock namespace before evaluation */
-
-    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    /*
+     * Get the actual namespace node for the target object. Handles these cases:
+     *
+     * 1) Null node, Pathname (absolute path)
+     * 2) Node, Pathname (path relative to Node)
+     * 3) Node, Null Pathname
+     */
+    Status = AcpiNsGetNode (Info->PrefixNode, Info->Pathname,
+                ACPI_NS_NO_UPSEARCH, &Info->ResolvedNode);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -220,28 +202,101 @@ AcpiNsEvaluate (
 
     /*
      * Two major cases here:
-     * 1) The object is an actual control method -- execute it.
-     * 2) The object is not a method -- just return it's current value
      *
-     * In both cases, the namespace is unlocked by the AcpiNs* procedure
+     * 1) The object is a control method -- execute it
+     * 2) The object is not a method -- just return it's current value
      */
     if (AcpiNsGetType (Info->ResolvedNode) == ACPI_TYPE_METHOD)
     {
         /*
-         * Case 1) We have an actual control method to execute
+         * 1) Object is a control method - execute it
          */
-        Status = AcpiNsExecuteControlMethod (Info);
+
+        /* Verify that there is a method object associated with this node */
+
+        Info->ObjDesc = AcpiNsGetAttachedObject (Info->ResolvedNode);
+        if (!Info->ObjDesc)
+        {
+            ACPI_ERROR ((AE_INFO, "Control method has no attached sub-object"));
+            return_ACPI_STATUS (AE_NULL_OBJECT);
+        }
+
+        ACPI_DUMP_PATHNAME (Info->ResolvedNode, "Execute Method:",
+            ACPI_LV_INFO, _COMPONENT);
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+            "Method at AML address %p Length %X\n",
+            Info->ObjDesc->Method.AmlStart + 1,
+            Info->ObjDesc->Method.AmlLength - 1));
+
+        /*
+         * Any namespace deletion must acquire both the namespace and
+         * interpreter locks to ensure that no thread is using the portion of
+         * the namespace that is being deleted.
+         *
+         * Execute the method via the interpreter. The interpreter is locked
+         * here before calling into the AML parser
+         */
+        Status = AcpiExEnterInterpreter ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        Status = AcpiPsExecuteMethod (Info);
+        AcpiExExitInterpreter ();
     }
     else
     {
         /*
-         * Case 2) Object is NOT a method, just return its current value
+         * 2) Object is not a method, return its current value
          */
-        Status = AcpiNsGetObjectValue (Info);
+
+        /*
+         * Objects require additional resolution steps (e.g., the Node may be
+         * a field that must be read, etc.) -- we can't just grab the object
+         * out of the node.
+         *
+         * Use ResolveNodeToValue() to get the associated value.
+         *
+         * NOTE: we can get away with passing in NULL for a walk state because
+         * ResolvedNode is guaranteed to not be a reference to either a method
+         * local or a method argument (because this interface is never called
+         * from a running method.)
+         *
+         * Even though we do not directly invoke the interpreter for object
+         * resolution, we must lock it because we could access an opregion.
+         * The opregion access code assumes that the interpreter is locked.
+         */
+        Status = AcpiExEnterInterpreter ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
+        /* Function has a strange interface */
+
+        Status = AcpiExResolveNodeToValue (&Info->ResolvedNode, NULL);
+        AcpiExExitInterpreter ();
+
+        /*
+         * If AcpiExResolveNodeToValue() succeeded, the return value was placed
+         * in ResolvedNode.
+         */
+        if (ACPI_SUCCESS (Status))
+        {
+            Status = AE_CTRL_RETURN_VALUE;
+            Info->ReturnObject =
+                ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, Info->ResolvedNode);
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Returning object %p [%s]\n",
+                Info->ReturnObject,
+                AcpiUtGetObjectTypeName (Info->ReturnObject)));
+        }
     }
 
     /*
-     * Check if there is a return value on the stack that must be dealt with
+     * Check if there is a return value that must be dealt with
      */
     if (Status == AE_CTRL_RETURN_VALUE)
     {
@@ -258,177 +313,13 @@ AcpiNsEvaluate (
         Status = AE_OK;
     }
 
-    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "*** Completed eval of object %s ***\n",
-        Info->Pathname));
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+        "*** Completed evaluation of object %s ***\n", Info->Pathname));
 
     /*
      * Namespace was unlocked by the handling AcpiNs* function, so we
      * just return
      */
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsExecuteControlMethod
- *
- * PARAMETERS:  Info            - Method info block, contains:
- *                  Node            - Method Node to execute
- *                  ObjDesc         - Method object
- *                  Parameters      - List of parameters to pass to the method,
- *                                    terminated by NULL. Params itself may be
- *                                    NULL if no parameters are being passed.
- *                  ReturnObject    - Where to put method's return value (if
- *                                    any). If NULL, no value is returned.
- *                  ParameterType   - Type of Parameter list
- *                  ReturnObject    - Where to put method's return value (if
- *                                    any). If NULL, no value is returned.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute the requested method passing the given parameters
- *
- * MUTEX:       Assumes namespace is locked
- *
- ******************************************************************************/
-
-static ACPI_STATUS
-AcpiNsExecuteControlMethod (
-    ACPI_EVALUATE_INFO      *Info)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE (NsExecuteControlMethod);
-
-
-    /* Verify that there is a method associated with this object */
-
-    Info->ObjDesc = AcpiNsGetAttachedObject (Info->ResolvedNode);
-    if (!Info->ObjDesc)
-    {
-        ACPI_ERROR ((AE_INFO, "No attached method object"));
-
-        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-        return_ACPI_STATUS (AE_NULL_OBJECT);
-    }
-
-    ACPI_DUMP_PATHNAME (Info->ResolvedNode, "Execute Method:",
-        ACPI_LV_INFO, _COMPONENT);
-
-    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Method at AML address %p Length %X\n",
-        Info->ObjDesc->Method.AmlStart + 1, Info->ObjDesc->Method.AmlLength - 1));
-
-    /*
-     * Unlock the namespace before execution.  This allows namespace access
-     * via the external Acpi* interfaces while a method is being executed.
-     * However, any namespace deletion must acquire both the namespace and
-     * interpreter locks to ensure that no thread is using the portion of the
-     * namespace that is being deleted.
-     */
-    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /*
-     * Execute the method via the interpreter.  The interpreter is locked
-     * here before calling into the AML parser
-     */
-    Status = AcpiExEnterInterpreter ();
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    Status = AcpiPsExecuteMethod (Info);
-    AcpiExExitInterpreter ();
-
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiNsGetObjectValue
- *
- * PARAMETERS:  Info            - Method info block, contains:
- *                  Node            - Object's NS node
- *                  ReturnObject    - Where to put object value (if
- *                                    any). If NULL, no value is returned.
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Return the current value of the object
- *
- * MUTEX:       Assumes namespace is locked, leaves namespace unlocked
- *
- ******************************************************************************/
-
-static ACPI_STATUS
-AcpiNsGetObjectValue (
-    ACPI_EVALUATE_INFO      *Info)
-{
-    ACPI_STATUS             Status = AE_OK;
-    ACPI_NAMESPACE_NODE     *Node = Info->ResolvedNode;
-
-
-    ACPI_FUNCTION_TRACE (NsGetObjectValue);
-
-
-    /*
-     * Objects require additional resolution steps (e.g., the Node may be a
-     * field that must be read, etc.) -- we can't just grab the object out of
-     * the node.
-     */
-
-    /*
-     * Use ResolveNodeToValue() to get the associated value.  This call always
-     * deletes ObjDesc (allocated above).
-     *
-     * NOTE: we can get away with passing in NULL for a walk state because
-     * ObjDesc is guaranteed to not be a reference to either a method local or
-     * a method argument (because this interface can only be called from the
-     * AcpiEvaluate external interface, never called from a running method.)
-     *
-     * Even though we do not directly invoke the interpreter for this, we must
-     * enter it because we could access an opregion. The opregion access code
-     * assumes that the interpreter is locked.
-     *
-     * We must release the namespace lock before entering the intepreter.
-     */
-    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    Status = AcpiExEnterInterpreter ();
-    if (ACPI_SUCCESS (Status))
-    {
-        Status = AcpiExResolveNodeToValue (&Node, NULL);
-
-        /*
-         * If AcpiExResolveNodeToValue() succeeded, the return value was placed
-         * in ResolvedNode.
-         */
-        AcpiExExitInterpreter ();
-
-        if (ACPI_SUCCESS (Status))
-        {
-            Status = AE_CTRL_RETURN_VALUE;
-            Info->ReturnObject = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, Node);
-
-            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "Returning object %p [%s]\n",
-                Info->ReturnObject,
-                AcpiUtGetObjectTypeName (Info->ReturnObject)));
-        }
-    }
-
-    /* Namespace is unlocked */
-
     return_ACPI_STATUS (Status);
 }
 

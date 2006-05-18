@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg1 - AML execution - opcodes with 1 argument
- *              $Revision: 1.179 $
+ *              $Revision: 1.180 $
  *
  *****************************************************************************/
 
@@ -1017,8 +1017,8 @@ AcpiExOpcode_1A_0T_1R (
                  * 2) Dereference the node to an actual object. Could be a
                  *    Field, so we need to resolve the node to a value.
                  */
-                Status = AcpiNsGetNode (Operand[0]->String.Pointer,
-                            WalkState->ScopeInfo->Scope.Node,
+                Status = AcpiNsGetNode (WalkState->ScopeInfo->Scope.Node,
+                            Operand[0]->String.Pointer,
                             ACPI_NS_SEARCH_PARENT,
                             ACPI_CAST_INDIRECT_PTR (
                                 ACPI_NAMESPACE_NODE, &ReturnDesc));
