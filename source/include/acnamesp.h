@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.148 $
+ *       $Revision: 1.149 $
  *
  *****************************************************************************/
 
@@ -395,7 +395,7 @@ AcpiNsSearchAndEnter (
     ACPI_NAMESPACE_NODE     **RetNode);
 
 ACPI_STATUS
-AcpiNsSearchNode (
+AcpiNsSearchOneScope (
     UINT32                  EntryName,
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_OBJECT_TYPE        Type,
