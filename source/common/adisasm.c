@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -400,7 +400,7 @@ AdAmlDisassemble (
         File = fopen (DisasmFilename, "w+");
         if (!File)
         {
-            fprintf (stderr, "Could not open output file\n");
+            fprintf (stderr, "Could not open output file %s\n", DisasmFilename);
             Status = AE_ERROR;
             goto Cleanup;
         }
@@ -435,7 +435,7 @@ AdAmlDisassemble (
 
         if (AslCompilerdebug)
         {
-            AcpiOsPrintf ("/**** Before second load \n");
+            AcpiOsPrintf ("/**** Before second load\n");
 
             LsSetupNsList (File);
             LsDisplayNamespace ();
@@ -467,7 +467,7 @@ AdAmlDisassemble (
 
         if (AslCompilerdebug)
         {
-            AcpiOsPrintf ("/**** After second load and resource conversion \n");
+            AcpiOsPrintf ("/**** After second load and resource conversion\n");
             LsSetupNsList (File);
             LsDisplayNamespace ();
             AcpiOsPrintf ("*****/\n");
@@ -480,7 +480,9 @@ AdAmlDisassemble (
          */
         if (AdMethodExternalCount ())
         {
-            fprintf (stderr, "\nFound %d external control methods, reparsing with new information\n", AdMethodExternalCount());
+            fprintf (stderr,
+                "\nFound %d external control methods, reparsing with new information\n",
+                AdMethodExternalCount());
 
             /*
              * Reparse, rebuild namespace. no need to xref namespace
@@ -519,19 +521,20 @@ AdAmlDisassemble (
         if (AcpiGbl_DbOpt_disasm)
         {
             AdDisplayTables (Filename, Table);
-            fprintf (stderr, "Disassembly completed, written to \"%s\"\n", DisasmFilename);
+            fprintf (stderr,
+                "Disassembly completed, written to \"%s\"\n",
+                DisasmFilename);
         }
     }
 
 Cleanup:
-    if (OutToFile)
+    if (OutToFile && File)
     {
 
 #ifdef ASL_DISASM_DEBUG
         LsSetupNsList (File);
         LsDisplayNamespace ();
 #endif
-
         fclose (File);
         AcpiOsRedirectOutput (stdout);
     }
