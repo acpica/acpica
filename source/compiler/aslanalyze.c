@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -2029,8 +2029,10 @@ AnOtherSemanticAnalysisWalkBegin (
         ArgNode = Op->Asl.Child;
         ArgNode = ArgNode->Asl.Next;
 
-        /* Check for the WAIT_FOREVER case */
-
+        /*
+         * Check for the WAIT_FOREVER case - defined by the ACPI spec to be
+         * 0xFFFF or greater
+         */
         if (((ArgNode->Asl.ParseOpcode == PARSEOP_WORDCONST) ||
              (ArgNode->Asl.ParseOpcode == PARSEOP_INTEGER))  &&
              (ArgNode->Asl.Value.Integer >= (ACPI_INTEGER) ACPI_WAIT_FOREVER))
