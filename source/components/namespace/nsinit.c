@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -667,6 +667,7 @@ AcpiNsInitOneDevice (
     if (ACPI_SUCCESS (Status))
     {
         WalkInfo->Num_INI++;
+
         if ((AcpiDbgLevel <= ACPI_LV_ALL_EXCEPTIONS) &&
             (!(AcpiDbgLevel & ACPI_LV_INFO)))
         {
@@ -684,15 +685,18 @@ AcpiNsInitOneDevice (
         ACPI_EXCEPTION ((AE_INFO, Status, "during %s._INI execution",
             ScopeName));
         ACPI_FREE (ScopeName);
+        Status = AE_OK;
     }
 #endif
 
-    /* If an external initialization handler is present, call it */
-
+    /*
+     * The _INI method has been run if present; call the Global Initialization
+     * Handler for this device. 
+     */
     if (AcpiGbl_InitHandler)
     {
-        Status = AcpiGbl_InitHandler (Info->ResolvedNode, ACPI_INIT_DEVICE_INI);
+        Status = AcpiGbl_InitHandler (DeviceNode, ACPI_INIT_DEVICE_INI);
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
