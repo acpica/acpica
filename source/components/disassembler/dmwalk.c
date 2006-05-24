@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmwalk - AML disassembly tree walk
- *              $Revision: 1.31 $
+ *              $Revision: 1.32 $
  *
  ******************************************************************************/
 
@@ -689,6 +689,7 @@ AcpiDmDescendingOp (
 
 
             case AML_MUTEX_OP:
+            case AML_DATA_REGION_OP:
 
                 AcpiOsPrintf (", ");
                 return (AE_OK);
