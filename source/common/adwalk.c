@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adwalk - Application-level disassembler parse tree walk routines
- *              $Revision: 1.4 $
+ *              $Revision: 1.5 $
  *
  *****************************************************************************/
 
@@ -691,8 +691,10 @@ AcpiDmLoadDescendingOp (
         goto Exit;
     }
 
+    /* Insert the name into the namespace */
+
     Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ObjectType,
-                ACPI_IMODE_LOAD_PASS2, ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE,
+                ACPI_IMODE_LOAD_PASS2, ACPI_NS_DONT_OPEN_SCOPE,
                 WalkState, &Node);
 
     Op->Common.Node = Node;
