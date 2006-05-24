@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.43 $
+ *       $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -127,17 +127,26 @@
 
 
 /*
- * Walk state - current state of a parse tree walk.  Used for both a leisurely stroll through
- * the tree (for whatever reason), and for control method execution.
+ * Walk state - current state of a parse tree walk.  Used for both a leisurely
+ * stroll through the tree (for whatever reason), and for control method
+ * execution.
  */
 #define ACPI_NEXT_OP_DOWNWARD       1
 #define ACPI_NEXT_OP_UPWARD         2
 
+/*
+ * Groups of definitions for WalkType used for different implementations of
+ * walkers (never simultaneously) - flags for interpreter:
+ */
 #define ACPI_WALK_NON_METHOD        0
-#define ACPI_WALK_METHOD            1
-#define ACPI_WALK_METHOD_RESTART    2
-#define ACPI_WALK_CONST_REQUIRED    3
-#define ACPI_WALK_CONST_OPTIONAL    4
+#define ACPI_WALK_METHOD            0x01
+#define ACPI_WALK_METHOD_RESTART    0x02
+
+/* Flags for iASL compiler only */
+
+#define ACPI_WALK_CONST_REQUIRED    0x10
+#define ACPI_WALK_CONST_OPTIONAL    0x20
+
 
 typedef struct acpi_walk_state
 {

@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -395,7 +395,7 @@ AcpiDsExecBeginOp (
 
     case AML_CLASS_NAMED_OBJECT:
 
-        if (WalkState->WalkType == ACPI_WALK_METHOD)
+        if (WalkState->WalkType & ACPI_WALK_METHOD)
         {
             /*
              * Found a named object declaration during method execution;
