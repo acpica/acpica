@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsxface - Public interfaces to the resource manager
- *              $Revision: 1.46 $
+ *              $Revision: 1.47 $
  *
  ******************************************************************************/
 
@@ -160,7 +160,7 @@ AcpiRsValidateParameters (
  *
  * FUNCTION:    AcpiRsValidateParameters
  *
- * PARAMETERS:  DeviceHandle    - Handle to a device 
+ * PARAMETERS:  DeviceHandle    - Handle to a device
  *              Buffer          - Pointer to a data buffer
  *              ReturnNode      - Pointer to where the device node is returned
  *
@@ -196,7 +196,7 @@ AcpiRsValidateParameters (
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
- 
+
     if (Node->Type != ACPI_TYPE_DEVICE)
     {
         return_ACPI_STATUS (AE_TYPE);

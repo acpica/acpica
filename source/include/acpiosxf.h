@@ -129,12 +129,12 @@
 
 typedef enum
 {
-	OSL_GLOBAL_LOCK_HANDLER,
-	OSL_NOTIFY_HANDLER,
-	OSL_GPE_HANDLER,
-	OSL_DEBUGGER_THREAD,
-	OSL_EC_POLL_HANDLER,
-	OSL_EC_BURST_HANDLER
+    OSL_GLOBAL_LOCK_HANDLER,
+    OSL_NOTIFY_HANDLER,
+    OSL_GPE_HANDLER,
+    OSL_DEBUGGER_THREAD,
+    OSL_EC_POLL_HANDLER,
+    OSL_EC_BURST_HANDLER
 
 } ACPI_EXECUTE_TYPE;
 
@@ -377,6 +377,7 @@ AcpiOsWritePciConfiguration (
     ACPI_INTEGER            Value,
     UINT32                  Width);
 
+
 /*
  * Interim function needed for PCI IRQ routing
  */
@@ -386,10 +387,10 @@ AcpiOsDerivePciId(
     ACPI_HANDLE             Chandle,
     ACPI_PCI_ID             **PciId);
 
+
 /*
  * Miscellaneous
  */
-
 ACPI_STATUS
 AcpiOsValidateInterface (
     char                    *Interface);
@@ -418,6 +419,7 @@ ACPI_STATUS
 AcpiOsSignal (
     UINT32                  Function,
     void                    *Info);
+
 
 /*
  * Debug print routines
@@ -468,14 +470,5 @@ void
 AcpiOsCloseDirectory (
     void                    *DirHandle);
 
-/*
- * Debug
- */
-void
-AcpiOsDbgAssert(
-    void                    *FailedAssertion,
-    void                    *FileName,
-    UINT32                  LineNumber,
-    char                    *Message);
 
 #endif /* __ACPIOSXF_H__ */

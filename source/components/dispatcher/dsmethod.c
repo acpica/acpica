@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -420,9 +420,9 @@ AcpiDsCallControlMethod (
      */
     ThisWalkState->Operands [ThisWalkState->NumOperands] = NULL;
 
-    /* 
+    /*
      * Allocate and initialize the evaluation information block
-     * TBD: this is somewhat inefficient, should change interface to 
+     * TBD: this is somewhat inefficient, should change interface to
      * DsInitAmlWalk. For now, keeps this struct off the CPU stack
      */
     Info = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_EVALUATE_INFO));

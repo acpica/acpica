@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -691,7 +691,7 @@ AcpiNsInitOneDevice (
 
     /*
      * The _INI method has been run if present; call the Global Initialization
-     * Handler for this device. 
+     * Handler for this device.
      */
     if (AcpiGbl_InitHandler)
     {

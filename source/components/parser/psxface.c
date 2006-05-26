@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -423,7 +423,7 @@ Cleanup:
  *
  * FUNCTION:    AcpiPsUpdateParameterList
  *
- * PARAMETERS:  Info            - See ACPI_EVALUATE_INFO 
+ * PARAMETERS:  Info            - See ACPI_EVALUATE_INFO
  *                                (Used: ParameterType and Parameters)
  *              Action          - Add or Remove reference
  *
@@ -460,7 +460,7 @@ AcpiPsUpdateParameterList (
  *
  * FUNCTION:    AcpiPsExecutePass
  *
- * PARAMETERS:  Info            - See ACPI_EVALUATE_INFO 
+ * PARAMETERS:  Info            - See ACPI_EVALUATE_INFO
  *                                (Used: PassNumber, Node, and ObjDesc)
  *
  * RETURN:      Status
