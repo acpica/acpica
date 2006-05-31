@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -2047,6 +2047,22 @@ AnOtherSemanticAnalysisWalkBegin (
         if (!AnIsResultUsed (Op))
         {
             AslError (ASL_WARNING, ASL_MSG_TIMEOUT, ArgNode, Op->Asl.ExternalName);
+        }
+        break;
+
+    case PARSEOP_CREATEFIELD:
+        /*
+         * Check for a zero Length (NumBits) operand. NumBits is the 3rd operand
+         */
+        ArgNode = Op->Asl.Child;
+        ArgNode = ArgNode->Asl.Next;
+        ArgNode = ArgNode->Asl.Next;
+
+        if ((ArgNode->Asl.ParseOpcode == PARSEOP_ZERO) ||
+           ((ArgNode->Asl.ParseOpcode == PARSEOP_INTEGER) &&
+            (ArgNode->Asl.Value.Integer == 0)))
+        {
+            AslError (ASL_ERROR, ASL_MSG_NON_ZERO, ArgNode, NULL);
         }
         break;
 

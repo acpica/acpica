@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltypes.h - compiler data types and struct definitions
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -420,7 +420,8 @@ typedef enum
     ASL_MSG_MULTIPLE_DEFAULT,
     ASL_MSG_TIMEOUT,
     ASL_MSG_RESULT_NOT_USED,
-    ASL_MSG_NOT_REFERENCED
+    ASL_MSG_NOT_REFERENCED,
+    ASL_MSG_NON_ZERO
 
 } ASL_MESSAGE_IDS;
 
@@ -532,7 +533,8 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_MULTIPLE_DEFAULT */           "More than one Default statement within Switch construct",
 /*    ASL_MSG_TIMEOUT */                    "Possible operator timeout is ignored",
 /*    ASL_MSG_RESULT_NOT_USED */            "Result is not used, operator has no effect",
-/*    ASL_MSG_NOT_REFERENCED */             "Namespace object is not referenced"
+/*    ASL_MSG_NOT_REFERENCED */             "Namespace object is not referenced",
+/*    ASL_MSG_NON_ZERO */                   "Operand evaluates to zero"
 
 };
 
