@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  ******************************************************************************/
 
@@ -554,7 +554,7 @@ AcpiDbDisplayStatistics (
         AcpiOsPrintf ("\n");
 
         AcpiOsPrintf ("Mutex usage:\n\n");
-        for (i = 0; i < NUM_MUTEX; i++)
+        for (i = 0; i < ACPI_NUM_MUTEX; i++)
         {
             AcpiOsPrintf ("%-28s:       % 7ld\n",
                 AcpiUtGetMutexName (i), AcpiGbl_MutexInfo[i].UseCount);

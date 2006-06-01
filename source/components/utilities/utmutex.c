@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmutex - local mutex support
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  ******************************************************************************/
 
@@ -159,7 +159,7 @@ AcpiUtMutexInitialize (
     /*
      * Create each of the predefined mutex objects
      */
-    for (i = 0; i < NUM_MUTEX; i++)
+    for (i = 0; i < ACPI_NUM_MUTEX; i++)
     {
         Status = AcpiUtCreateMutex (i);
         if (ACPI_FAILURE (Status))
@@ -198,7 +198,7 @@ AcpiUtMutexTerminate (
     /*
      * Delete each predefined mutex object
      */
-    for (i = 0; i < NUM_MUTEX; i++)
+    for (i = 0; i < ACPI_NUM_MUTEX; i++)
     {
         (void) AcpiUtDeleteMutex (i);
     }
@@ -230,7 +230,7 @@ AcpiUtCreateMutex (
     ACPI_FUNCTION_TRACE_U32 (UtCreateMutex, MutexId);
 
 
-    if (MutexId > MAX_MUTEX)
+    if (MutexId > ACPI_MAX_MUTEX)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -269,7 +269,7 @@ AcpiUtDeleteMutex (
     ACPI_FUNCTION_TRACE_U32 (UtDeleteMutex, MutexId);
 
 
-    if (MutexId > MAX_MUTEX)
+    if (MutexId > ACPI_MAX_MUTEX)
     {
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
@@ -306,7 +306,7 @@ AcpiUtAcquireMutex (
     ACPI_FUNCTION_NAME (UtAcquireMutex);
 
 
-    if (MutexId > MAX_MUTEX)
+    if (MutexId > ACPI_MAX_MUTEX)
     {
         return (AE_BAD_PARAMETER);
     }
@@ -324,7 +324,7 @@ AcpiUtAcquireMutex (
          * the mutex ordering rule.  This indicates a coding error somewhere in
          * the ACPI subsystem code.
          */
-        for (i = MutexId; i < MAX_MUTEX; i++)
+        for (i = MutexId; i < ACPI_MAX_MUTEX; i++)
         {
             if (AcpiGbl_MutexInfo[i].ThreadId == ThisThreadId)
             {
@@ -400,7 +400,7 @@ AcpiUtReleaseMutex (
         "Thread %X releasing Mutex [%s]\n", ThisThreadId,
         AcpiUtGetMutexName (MutexId)));
 
-    if (MutexId > MAX_MUTEX)
+    if (MutexId > ACPI_MAX_MUTEX)
     {
         return (AE_BAD_PARAMETER);
     }
@@ -427,7 +427,7 @@ AcpiUtReleaseMutex (
          * ordering rule.  This indicates a coding error somewhere in
          * the ACPI subsystem code.
          */
-        for (i = MutexId; i < MAX_MUTEX; i++)
+        for (i = MutexId; i < ACPI_MAX_MUTEX; i++)
         {
             if (AcpiGbl_MutexInfo[i].ThreadId == ThisThreadId)
             {

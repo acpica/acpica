@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.144 $
+ *              $Revision: 1.145 $
  *
  ******************************************************************************/
 
@@ -411,11 +411,11 @@ AcpiDbDisplayLocks (
     UINT32                  i;
 
 
-    for (i = 0; i < MAX_MUTEX; i++)
+    for (i = 0; i < ACPI_MAX_MUTEX; i++)
     {
         AcpiOsPrintf ("%26s : %s\n", AcpiUtGetMutexName (i),
-                    AcpiGbl_MutexInfo[i].ThreadId == ACPI_MUTEX_NOT_ACQUIRED
-                        ? "Locked" : "Unlocked");
+            AcpiGbl_MutexInfo[i].ThreadId == ACPI_MUTEX_NOT_ACQUIRED
+                ? "Locked" : "Unlocked");
     }
 }
 

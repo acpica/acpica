@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -622,7 +622,7 @@ AcpiDsTerminateControlMethod (
      * If this is the last thread executing the method,
      * we have additional cleanup to perform
      */
-    Status = AcpiUtAcquireMutex (ACPI_MTX_PARSER);
+    Status = AcpiUtAcquireMutex (ACPI_MTX_CONTROL_METHOD);
     if (ACPI_FAILURE (Status))
     {
         return_VOID;
@@ -725,7 +725,7 @@ AcpiDsTerminateControlMethod (
     }
 
 Exit:
-    (void) AcpiUtReleaseMutex (ACPI_MTX_PARSER);
+    (void) AcpiUtReleaseMutex (ACPI_MTX_CONTROL_METHOD);
     return_VOID;
 }
 

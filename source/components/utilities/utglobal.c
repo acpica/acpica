@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.239 $
+ *              $Revision: 1.240 $
  *
  *****************************************************************************/
 
@@ -760,7 +760,7 @@ AcpiUtGetMutexName (
     UINT32                  MutexId)
 {
 
-    if (MutexId > MAX_MUTEX)
+    if (MutexId > ACPI_MAX_MUTEX)
     {
         return ("Invalid Mutex ID");
     }
@@ -840,7 +840,7 @@ AcpiUtInitGlobals (
 
     /* Mutex locked flags */
 
-    for (i = 0; i < NUM_MUTEX; i++)
+    for (i = 0; i < ACPI_NUM_MUTEX; i++)
     {
         AcpiGbl_MutexInfo[i].Mutex          = NULL;
         AcpiGbl_MutexInfo[i].ThreadId       = ACPI_MUTEX_NOT_ACQUIRED;

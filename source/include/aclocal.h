@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.230 $
+ *       $Revision: 1.231 $
  *
  *****************************************************************************/
 
@@ -149,27 +149,25 @@ union acpi_parse_object;
  * Predefined handles for the mutex objects used within the subsystem
  * All mutex objects are automatically created by AcpiUtMutexInitialize.
  *
- * The acquire/release ordering protocol is implied via this list.  Mutexes
+ * The acquire/release ordering protocol is implied via this list. Mutexes
  * with a lower value must be acquired before mutexes with a higher value.
  *
- * NOTE: any changes here must be reflected in the AcpiGbl_MutexNames table also!
+ * NOTE: any changes here must be reflected in the AcpiGbl_MutexNames
+ * table below also!
  */
-#define ACPI_MTX_EXECUTE                0
-#define ACPI_MTX_INTERPRETER            1
-#define ACPI_MTX_PARSER                 2
-#define ACPI_MTX_DISPATCHER             3
-#define ACPI_MTX_TABLES                 4
-#define ACPI_MTX_OP_REGIONS             5
-#define ACPI_MTX_NAMESPACE              6
-#define ACPI_MTX_EVENTS                 7
-#define ACPI_MTX_HARDWARE               8
-#define ACPI_MTX_CACHES                 9
-#define ACPI_MTX_MEMORY                 10
-#define ACPI_MTX_DEBUG_CMD_COMPLETE     11
-#define ACPI_MTX_DEBUG_CMD_READY        12
+#define ACPI_MTX_INTERPRETER            0   /* AML Interpreter, main lock */
+#define ACPI_MTX_CONTROL_METHOD         1   /* Control method termination */
+#define ACPI_MTX_TABLES                 2   /* Data for ACPI tables */
+#define ACPI_MTX_NAMESPACE              3   /* ACPI Namespace */
+#define ACPI_MTX_EVENTS                 4   /* Data for ACPI events */
+#define ACPI_MTX_HARDWARE               5   /* ACPI registers */
+#define ACPI_MTX_CACHES                 6   /* Internal caches, general purposes */
+#define ACPI_MTX_MEMORY                 7   /* Debug memory tracking lists */
+#define ACPI_MTX_DEBUG_CMD_COMPLETE     8   /* AML debugger */
+#define ACPI_MTX_DEBUG_CMD_READY        9   /* AML debugger */
 
-#define MAX_MUTEX                       12
-#define NUM_MUTEX                       MAX_MUTEX+1
+#define ACPI_MAX_MUTEX                  9
+#define ACPI_NUM_MUTEX                  ACPI_MAX_MUTEX+1
 
 
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
@@ -177,21 +175,18 @@ union acpi_parse_object;
 
 /* Names for the mutexes used in the subsystem */
 
-static char                 *AcpiGbl_MutexNames[] =
+static char                 *AcpiGbl_MutexNames[ACPI_NUM_MUTEX] =
 {
-    "ACPI_MTX_Execute",
     "ACPI_MTX_Interpreter",
-    "ACPI_MTX_Parser",
-    "ACPI_MTX_Dispatcher",
+    "ACPI_MTX_Method",
     "ACPI_MTX_Tables",
-    "ACPI_MTX_OpRegions",
     "ACPI_MTX_Namespace",
     "ACPI_MTX_Events",
     "ACPI_MTX_Hardware",
     "ACPI_MTX_Caches",
     "ACPI_MTX_Memory",
     "ACPI_MTX_DebugCmdComplete",
-    "ACPI_MTX_DebugCmdReady",
+    "ACPI_MTX_DebugCmdReady"
 };
 
 #endif
