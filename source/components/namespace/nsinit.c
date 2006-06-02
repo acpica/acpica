@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -685,9 +685,12 @@ AcpiNsInitOneDevice (
         ACPI_EXCEPTION ((AE_INFO, Status, "during %s._INI execution",
             ScopeName));
         ACPI_FREE (ScopeName);
-        Status = AE_OK;
     }
 #endif
+
+    /* Ignore errors from above */
+
+    Status = AE_OK;
 
     /*
      * The _INI method has been run if present; call the Global Initialization
