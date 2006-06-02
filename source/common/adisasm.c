@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -612,7 +612,16 @@ AdCreateTableHeader (
 
     /* Create AML output filename based on input filename */
 
-    NewFilename = FlGenerateFilename (Filename, "aml");
+    if (Filename)
+    {
+        NewFilename = FlGenerateFilename (Filename, "aml");
+    }
+    else
+    {
+        NewFilename = ACPI_ALLOCATE_ZEROED (9);
+        strncat (NewFilename, Table->Signature, 4);
+        strcat (NewFilename, ".aml");
+    }
 
     /* Open the ASL definition block */
 
