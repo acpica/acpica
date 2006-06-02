@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.180 $
+ *              $Revision: 1.181 $
  *
  ******************************************************************************/
 
@@ -137,6 +137,8 @@
  * DESCRIPTION: Clears all fixed and general purpose status bits
  *              THIS FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED
  *
+ * NOTE: TBD: Flags parameter is obsolete, to be removed
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -154,10 +156,7 @@ AcpiHwClearAcpiStatus (
         ACPI_BITMASK_ALL_FIXED_STATUS,
         (UINT16) ACPI_GET_ADDRESS (AcpiGbl_FADT->XPm1aEvtBlk.Address)));
 
-    if (Flags & ACPI_MTX_LOCK)
-    {
-        LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
-    }
+    LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
 
     Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
                 ACPI_REGISTER_PM1_STATUS,
@@ -184,10 +183,7 @@ AcpiHwClearAcpiStatus (
     Status = AcpiEvWalkGpeList (AcpiHwClearGpeBlock);
 
 UnlockAndExit:
-    if (Flags & ACPI_MTX_LOCK)
-    {
-        AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
-    }
+    AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
     return_ACPI_STATUS (Status);
 }
 
@@ -364,6 +360,8 @@ AcpiHwGetBitRegisterInfo (
  *
  * DESCRIPTION: ACPI BitRegister read function.
  *
+ * NOTE: TBD: Flags parameter is obsolete, to be removed
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -375,7 +373,6 @@ AcpiGetRegister (
     UINT32                  RegisterValue = 0;
     ACPI_BIT_REGISTER_INFO  *BitRegInfo;
     ACPI_STATUS             Status;
-    ACPI_CPU_FLAGS          LockFlags = 0;
 
 
     ACPI_FUNCTION_TRACE (AcpiGetRegister);
@@ -389,20 +386,10 @@ AcpiGetRegister (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    if (Flags & ACPI_MTX_LOCK)
-    {
-        LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
-    }
-
     /* Read from the register */
 
-    Status = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
+    Status = AcpiHwRegisterRead (ACPI_MTX_LOCK,
                     BitRegInfo->ParentRegister, &RegisterValue);
-
-    if (Flags & ACPI_MTX_LOCK)
-    {
-        AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
-    }
 
     if (ACPI_SUCCESS (Status))
     {
@@ -436,6 +423,8 @@ ACPI_EXPORT_SYMBOL (AcpiGetRegister)
  *
  * DESCRIPTION: ACPI Bit Register write function.
  *
+ * NOTE: TBD: Flags parameter is obsolete, to be removed
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -447,7 +436,7 @@ AcpiSetRegister (
     UINT32                  RegisterValue = 0;
     ACPI_BIT_REGISTER_INFO  *BitRegInfo;
     ACPI_STATUS             Status;
-    ACPI_CPU_FLAGS          LockFlags = 0;
+    ACPI_CPU_FLAGS          LockFlags;
 
 
     ACPI_FUNCTION_TRACE_U32 (AcpiSetRegister, RegisterId);
@@ -462,10 +451,7 @@ AcpiSetRegister (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    if (Flags & ACPI_MTX_LOCK)
-    {
-        LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
-    }
+    LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
 
     /* Always do a register read first so we can insert the new bits  */
 
@@ -565,10 +551,7 @@ AcpiSetRegister (
 
 UnlockAndExit:
 
-    if (Flags & ACPI_MTX_LOCK)
-    {
-        AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
-    }
+    AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
 
     /* Normalize the value that was read */
 
