@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -489,6 +489,7 @@ AcpiEvGpeDetect (
     UINT32                  StatusReg;
     UINT32                  EnableReg;
     ACPI_CPU_FLAGS          Flags;
+    ACPI_CPU_FLAGS          HwFlags;
     ACPI_NATIVE_UINT        i;
     ACPI_NATIVE_UINT        j;
 
@@ -502,9 +503,12 @@ AcpiEvGpeDetect (
         return (IntStatus);
     }
 
-    /* Examine all GPE blocks attached to this interrupt level */
+    /* We need to hold the GPE lock now, hardware lock in the loop */
 
     Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+
+    /* Examine all GPE blocks attached to this interrupt level */
+
     GpeBlock = GpeXruptList->GpeBlockListHead;
     while (GpeBlock)
     {
@@ -519,12 +523,15 @@ AcpiEvGpeDetect (
 
             GpeRegisterInfo = &GpeBlock->RegisterInfo[i];
 
+            HwFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
+
             /* Read the Status Register */
 
             Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &StatusReg,
                         &GpeRegisterInfo->StatusAddress);
             if (ACPI_FAILURE (Status))
             {
+                AcpiOsReleaseLock (AcpiGbl_HardwareLock, HwFlags);
                 goto UnlockAndExit;
             }
 
@@ -532,6 +539,8 @@ AcpiEvGpeDetect (
 
             Status = AcpiHwLowLevelRead (ACPI_GPE_REGISTER_WIDTH, &EnableReg,
                         &GpeRegisterInfo->EnableAddress);
+            AcpiOsReleaseLock (AcpiGbl_HardwareLock, HwFlags);
+
             if (ACPI_FAILURE (Status))
             {
                 goto UnlockAndExit;
