@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.181 $
+ *       $Revision: 1.182 $
  *
  *****************************************************************************/
 
@@ -393,7 +393,11 @@ extern      ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EV
 ACPI_EXTERN ACPI_FIXED_EVENT_HANDLER    AcpiGbl_FixedEventHandlers[ACPI_NUM_FIXED_EVENTS];
 ACPI_EXTERN ACPI_GPE_XRUPT_INFO        *AcpiGbl_GpeXruptListHead;
 ACPI_EXTERN ACPI_GPE_BLOCK_INFO        *AcpiGbl_GpeFadtBlocks[ACPI_MAX_GPE_BLOCKS];
+
+/* Spinlocks */
+
 ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_GpeLock;
+ACPI_EXTERN ACPI_HANDLE                 AcpiGbl_HardwareLock;
 
 
 /*****************************************************************************

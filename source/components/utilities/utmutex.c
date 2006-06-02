@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmutex - local mutex support
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  ******************************************************************************/
 
@@ -168,7 +168,15 @@ AcpiUtMutexInitialize (
         }
     }
 
+    /* Create the spinlocks for use at interrupt level */
+
     Status = AcpiOsCreateLock (&AcpiGbl_GpeLock);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiOsCreateLock (&AcpiGbl_HardwareLock);
     return_ACPI_STATUS (Status);
 }
 
@@ -203,7 +211,10 @@ AcpiUtMutexTerminate (
         (void) AcpiUtDeleteMutex (i);
     }
 
+    /* Delete the spinlocks */
+
     AcpiOsDeleteLock (AcpiGbl_GpeLock);
+    AcpiOsDeleteLock (AcpiGbl_HardwareLock);
     return_VOID;
 }
 

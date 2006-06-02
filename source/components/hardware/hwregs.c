@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.179 $
+ *              $Revision: 1.180 $
  *
  ******************************************************************************/
 
@@ -144,6 +144,7 @@ AcpiHwClearAcpiStatus (
     UINT32                  Flags)
 {
     ACPI_STATUS             Status;
+    ACPI_CPU_FLAGS          LockFlags = 0;
 
 
     ACPI_FUNCTION_TRACE (HwClearAcpiStatus);
@@ -155,11 +156,7 @@ AcpiHwClearAcpiStatus (
 
     if (Flags & ACPI_MTX_LOCK)
     {
-        Status = AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
     }
 
     Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
@@ -189,7 +186,7 @@ AcpiHwClearAcpiStatus (
 UnlockAndExit:
     if (Flags & ACPI_MTX_LOCK)
     {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+        AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
     }
     return_ACPI_STATUS (Status);
 }
@@ -378,6 +375,7 @@ AcpiGetRegister (
     UINT32                  RegisterValue = 0;
     ACPI_BIT_REGISTER_INFO  *BitRegInfo;
     ACPI_STATUS             Status;
+    ACPI_CPU_FLAGS          LockFlags = 0;
 
 
     ACPI_FUNCTION_TRACE (AcpiGetRegister);
@@ -393,11 +391,7 @@ AcpiGetRegister (
 
     if (Flags & ACPI_MTX_LOCK)
     {
-        Status = AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
     }
 
     /* Read from the register */
@@ -407,7 +401,7 @@ AcpiGetRegister (
 
     if (Flags & ACPI_MTX_LOCK)
     {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+        AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
     }
 
     if (ACPI_SUCCESS (Status))
@@ -453,6 +447,7 @@ AcpiSetRegister (
     UINT32                  RegisterValue = 0;
     ACPI_BIT_REGISTER_INFO  *BitRegInfo;
     ACPI_STATUS             Status;
+    ACPI_CPU_FLAGS          LockFlags = 0;
 
 
     ACPI_FUNCTION_TRACE_U32 (AcpiSetRegister, RegisterId);
@@ -469,11 +464,7 @@ AcpiSetRegister (
 
     if (Flags & ACPI_MTX_LOCK)
     {
-        Status = AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
     }
 
     /* Always do a register read first so we can insert the new bits  */
@@ -576,7 +567,7 @@ UnlockAndExit:
 
     if (Flags & ACPI_MTX_LOCK)
     {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+        AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
     }
 
     /* Normalize the value that was read */
@@ -617,6 +608,7 @@ AcpiHwRegisterRead (
     UINT32                  Value1 = 0;
     UINT32                  Value2 = 0;
     ACPI_STATUS             Status;
+    ACPI_CPU_FLAGS          LockFlags = 0;
 
 
     ACPI_FUNCTION_TRACE (HwRegisterRead);
@@ -624,11 +616,7 @@ AcpiHwRegisterRead (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        Status = AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
     }
 
     switch (RegisterId)
@@ -702,7 +690,7 @@ AcpiHwRegisterRead (
 UnlockAndExit:
     if (ACPI_MTX_LOCK == UseLock)
     {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+        AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
     }
 
     if (ACPI_SUCCESS (Status))
@@ -736,6 +724,7 @@ AcpiHwRegisterWrite (
     UINT32                  Value)
 {
     ACPI_STATUS             Status;
+    ACPI_CPU_FLAGS          LockFlags = 0;
 
 
     ACPI_FUNCTION_TRACE (HwRegisterWrite);
@@ -743,11 +732,7 @@ AcpiHwRegisterWrite (
 
     if (ACPI_MTX_LOCK == UseLock)
     {
-        Status = AcpiUtAcquireMutex (ACPI_MTX_HARDWARE);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        LockFlags = AcpiOsAcquireLock (AcpiGbl_HardwareLock);
     }
 
     switch (RegisterId)
@@ -832,7 +817,7 @@ AcpiHwRegisterWrite (
 UnlockAndExit:
     if (ACPI_MTX_LOCK == UseLock)
     {
-        (void) AcpiUtReleaseMutex (ACPI_MTX_HARDWARE);
+        AcpiOsReleaseLock (AcpiGbl_HardwareLock, LockFlags);
     }
 
     return_ACPI_STATUS (Status);

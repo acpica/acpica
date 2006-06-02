@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.231 $
+ *       $Revision: 1.232 $
  *
  *****************************************************************************/
 
@@ -156,24 +156,22 @@ union acpi_parse_object;
  * table below also!
  */
 #define ACPI_MTX_INTERPRETER            0   /* AML Interpreter, main lock */
-#define ACPI_MTX_CONTROL_METHOD         1   /* Control method termination */
+#define ACPI_MTX_CONTROL_METHOD         1   /* Control method termination [TBD: may no longer be necessary] */
 #define ACPI_MTX_TABLES                 2   /* Data for ACPI tables */
 #define ACPI_MTX_NAMESPACE              3   /* ACPI Namespace */
 #define ACPI_MTX_EVENTS                 4   /* Data for ACPI events */
-#define ACPI_MTX_HARDWARE               5   /* ACPI registers */
-#define ACPI_MTX_CACHES                 6   /* Internal caches, general purposes */
-#define ACPI_MTX_MEMORY                 7   /* Debug memory tracking lists */
-#define ACPI_MTX_DEBUG_CMD_COMPLETE     8   /* AML debugger */
-#define ACPI_MTX_DEBUG_CMD_READY        9   /* AML debugger */
+#define ACPI_MTX_CACHES                 5   /* Internal caches, general purposes */
+#define ACPI_MTX_MEMORY                 6   /* Debug memory tracking lists */
+#define ACPI_MTX_DEBUG_CMD_COMPLETE     7   /* AML debugger */
+#define ACPI_MTX_DEBUG_CMD_READY        8   /* AML debugger */
 
-#define ACPI_MAX_MUTEX                  9
+#define ACPI_MAX_MUTEX                  8
 #define ACPI_NUM_MUTEX                  ACPI_MAX_MUTEX+1
-
 
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 #ifdef DEFINE_ACPI_GLOBALS
 
-/* Names for the mutexes used in the subsystem */
+/* Debug names for the mutexes above */
 
 static char                 *AcpiGbl_MutexNames[ACPI_NUM_MUTEX] =
 {
@@ -182,7 +180,6 @@ static char                 *AcpiGbl_MutexNames[ACPI_NUM_MUTEX] =
     "ACPI_MTX_Tables",
     "ACPI_MTX_Namespace",
     "ACPI_MTX_Events",
-    "ACPI_MTX_Hardware",
     "ACPI_MTX_Caches",
     "ACPI_MTX_Memory",
     "ACPI_MTX_DebugCmdComplete",
@@ -191,6 +188,17 @@ static char                 *AcpiGbl_MutexNames[ACPI_NUM_MUTEX] =
 
 #endif
 #endif
+
+
+/*
+ * Predefined handles for spinlocks used within the subsystem.
+ * These spinlocks are created by AcpiUtMutexInitialize
+ */
+#define ACPI_LOCK_GPES                  0
+#define ACPI_LOCK_HARDWARE              1
+
+#define ACPI_MAX_LOCK                   1
+#define ACPI_NUM_LOCK                   ACPI_MAX_LOCK+1
 
 
 /* Owner IDs are used to track namespace nodes for selective deletion */
