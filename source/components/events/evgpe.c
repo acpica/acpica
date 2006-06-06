@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.61 $
+ *              $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -610,7 +610,6 @@ AcpiEvAsynchExecuteGpeMethod (
     void                    *Context)
 {
     ACPI_GPE_EVENT_INFO     *GpeEventInfo = (void *) Context;
-    UINT32                  GpeNumber = 0;
     ACPI_STATUS             Status;
     ACPI_GPE_EVENT_INFO     LocalGpeEventInfo;
     ACPI_EVALUATE_INFO      *Info;
@@ -682,9 +681,8 @@ AcpiEvAsynchExecuteGpeMethod (
         if (ACPI_FAILURE (Status))
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
-                "While evaluating method [%4.4s] for GPE[%2X]",
-                AcpiUtGetNodeName (LocalGpeEventInfo.Dispatch.MethodNode),
-                GpeNumber));
+                "While evaluating GPE method [%4.4s]",
+                AcpiUtGetNodeName (LocalGpeEventInfo.Dispatch.MethodNode)));
         }
     }
 
