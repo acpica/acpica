@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcodegen - AML code generation
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -396,7 +396,7 @@ CgWriteAmlOpcode (
 
             CgLocalWriteAmlData (Op, &PkgLen.LenBytes[0], 1);
         }
-        else
+        else if (Op->Asl.AmlPkgLenBytes != 0)
         {
             /*
              * Encode the "bytes to follow" in the first byte, top two bits.
