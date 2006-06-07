@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.58 $
+ *              $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -995,10 +995,9 @@ OpnDoDefinitionBlock (
 
     Child = Child->Asl.Next;
     Child->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
-
-    /* Use the revision to set the integer width */
-
-    AcpiUtSetIntegerWidth ((UINT8) Child->Asl.Value.Integer);
+    /*
+     * We used the revision to set the integer width earlier
+     */
 
     /* OEMID */
 
