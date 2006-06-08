@@ -1,4 +1,42 @@
 ----------------------------------------
+08 June 2006. Summary of changes for version 20060608:
+
+1) ACPI CA Core Subsystem:
+
+Converted the locking mutex used for the ACPI hardware to a spinlock. This change should eliminate all problems caused by attempting to acquire a semaphore at interrupt level, and it means that all ACPICA external interfaces that directly access the ACPI hardware can be safely called from interrupt level. OSL code that implements the semaphore interfaces should be able to eliminate any workarounds for being called at interrupt level.
+
+Fixed a regression introduced in 20060526 where the ACPI device initialization could be prematurely aborted with an AE_NOT_FOUND if a device did not have an optional _INI method.
+
+Fixed an IndexField issue where a write to the Data Register should be limited in size to the AccessSize (width) of the IndexField itself. (BZ 433, Fiodor Suietov)
+
+Fixed problem reports (Valery Podrezov) integrated:
+- Allow store of ThermalZone objects to Debug object (BZ 5369/5370)
+
+Fixed problem reports (Fiodor Suietov) integrated:
+- AcpiGetTableHeader doesn't handle multiple instances correctly (BZ 364)
+
+Removed four global mutexes that were obsolete and were no longer being used.
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  80.0K Code, 17.7K Data,  97.7K Total
+    Debug Version:     160.3K Code, 64.9K Data, 225.2K Total
+  Current Release:
+    Non-Debug Version:  80.0K Code, 17.6K Data,  97.6K Total
+    Debug Version:     160.2K Code, 64.7K Data, 224.9K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+Fixed a fault when using -g option (get tables from registry) on Windows machines.
+
+Fixed problem reports integrated:
+- Generate error if CreateField NumBits parameter is zero. (BZ 405)
+- Fault if Offset/Length in Field unit is very large (BZ 432, Fiodor Suietov)
+- Global table revision override (-r) is ignored (BZ 413)
+
+----------------------------------------
 26 May 2006. Summary of changes for version 20060526:
 
 1) ACPI CA Core Subsystem:
