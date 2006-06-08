@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -911,6 +911,7 @@ AcpiExInsertIntoField (
 {
     ACPI_STATUS             Status;
     ACPI_INTEGER            Mask;
+    ACPI_INTEGER            WidthMask;
     ACPI_INTEGER            MergedDatum;
     ACPI_INTEGER            RawDatum = 0;
     UINT32                  FieldOffset = 0;
@@ -938,7 +939,9 @@ AcpiExInsertIntoField (
 
     /* Compute the number of datums (access width data items) */
 
-    Mask = ACPI_MASK_BITS_BELOW (ObjDesc->CommonField.StartFieldBitOffset);
+    WidthMask = ACPI_MASK_BITS_ABOVE (ObjDesc->CommonField.AccessBitWidth);
+    Mask = WidthMask &
+        ACPI_MASK_BITS_BELOW (ObjDesc->CommonField.StartFieldBitOffset);
 
     DatumCount = ACPI_ROUND_UP_TO (ObjDesc->CommonField.BitLength,
                     ObjDesc->CommonField.AccessBitWidth);
@@ -975,7 +978,7 @@ AcpiExInsertIntoField (
         MergedDatum = RawDatum >>
             (ObjDesc->CommonField.AccessBitWidth -
                 ObjDesc->CommonField.StartFieldBitOffset);
-        Mask = ACPI_INTEGER_MAX;
+        Mask = WidthMask;
 
         if (i == DatumCount)
         {
