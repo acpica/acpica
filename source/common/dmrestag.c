@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmrestag - Add tags to resource descriptors (Application-level)
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -388,7 +388,7 @@ static ACPI_RESOURCE_TAG        *AcpiGbl_ResourceTags [] =
 static UINT32                   AcpiGbl_NextResourceId = 0;
 static UINT8                    AcpiGbl_NextPrefix = 0;
 static UINT8                    AcpiGbl_Prefix[ACPI_NUM_RES_PREFIX] =
-                                    {'X','Y','Z','J','K'};
+                                    {'Y','Z','J','K','X'};
 
 
 /*******************************************************************************
