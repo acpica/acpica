@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -831,7 +831,7 @@ ACPI_STATUS
 AcpiOsCreateSemaphore (
     UINT32              MaxUnits,
     UINT32              InitialUnits,
-    ACPI_HANDLE         *OutHandle)
+    ACPI_SEMAPHORE      *OutHandle)
 {
 #ifdef _MULTI_THREADED
     void                *Mutex;
@@ -908,7 +908,7 @@ AcpiOsCreateSemaphore (
 
 ACPI_STATUS
 AcpiOsDeleteSemaphore (
-    ACPI_HANDLE         Handle)
+    ACPI_SEMAPHORE      Handle)
 {
     UINT32              Index = (UINT32) Handle;
 
@@ -946,7 +946,7 @@ AcpiOsDeleteSemaphore (
 
 ACPI_STATUS
 AcpiOsWaitSemaphore (
-    ACPI_HANDLE         Handle,
+    ACPI_SEMAPHORE      Handle,
     UINT32              Units,
     UINT16              Timeout)
 {
@@ -1030,7 +1030,7 @@ AcpiOsWaitSemaphore (
 
 ACPI_STATUS
 AcpiOsSignalSemaphore (
-    ACPI_HANDLE         Handle,
+    ACPI_SEMAPHORE      Handle,
     UINT32              Units)
 {
 #ifdef _MULTI_THREADED
@@ -1077,38 +1077,73 @@ AcpiOsSignalSemaphore (
 }
 
 
+/* Spinlock interfaces, just implement with a semaphore */
+
 ACPI_STATUS
 AcpiOsCreateLock (
-    ACPI_HANDLE             *OutHandle)
+    ACPI_SPINLOCK           *OutHandle)
 {
-
     return (AcpiOsCreateSemaphore (1, 1, OutHandle));
 }
 
 void
 AcpiOsDeleteLock (
-    ACPI_HANDLE             Handle)
+    ACPI_SPINLOCK           Handle)
 {
     AcpiOsDeleteSemaphore (Handle);
 }
 
-
 ACPI_CPU_FLAGS
 AcpiOsAcquireLock (
-    ACPI_HANDLE             Handle)
+    ACPI_SPINLOCK           Handle)
 {
     AcpiOsWaitSemaphore (Handle, 1, 0xFFFF);
     return (0);
 }
 
-
 void
 AcpiOsReleaseLock (
-    ACPI_HANDLE             Handle,
+    ACPI_SPINLOCK           Handle,
     ACPI_CPU_FLAGS          Flags)
 {
     AcpiOsSignalSemaphore (Handle, 1);
 }
+
+
+#if ACPI_FUTURE_IMPLEMENTATION
+
+/* Mutex interfaces, just implement with a semaphore */
+
+ACPI_STATUS
+AcpiOsCreateMutex (
+    ACPI_MUTEX              *OutHandle)
+{
+    return (AcpiOsCreateSemaphore (1, 1, OutHandle));
+}
+
+void
+AcpiOsDeleteMutex (
+    ACPI_MUTEX              Handle)
+{
+    AcpiOsDeleteSemaphore (Handle);
+}
+
+ACPI_STATUS
+AcpiOsAcquireMutex (
+    ACPI_MUTEX              Handle,
+    UINT16                  Timeout)
+{
+    AcpiOsWaitSemaphore (Handle, 1, Timeout);
+    return (0);
+}
+
+void
+AcpiOsReleaseMutex (
+    ACPI_MUTEX              Handle)
+{
+    AcpiOsSignalSemaphore (Handle, 1);
+}
+#endif
 
 
 /******************************************************************************

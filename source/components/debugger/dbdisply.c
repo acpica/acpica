@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  ******************************************************************************/
 
@@ -435,8 +435,6 @@ AcpiDbDisplayMethodInfo (
     UINT32                  NumRemainingOps = 0;
     UINT32                  NumRemainingOperands = 0;
     UINT32                  NumRemainingOperators = 0;
-    UINT32                  NumArgs;
-    UINT32                  Concurrency;
     BOOLEAN                 CountRemaining = FALSE;
 
 
@@ -450,13 +448,11 @@ AcpiDbDisplayMethodInfo (
     ObjDesc = WalkState->MethodDesc;
     Node    = WalkState->MethodNode;
 
-    NumArgs     = ObjDesc->Method.ParamCount;
-    Concurrency = ObjDesc->Method.Concurrency;
-
     AcpiOsPrintf ("Currently executing control method is [%4.4s]\n",
             AcpiUtGetNodeName (Node));
-    AcpiOsPrintf ("%X arguments, max concurrency = %X\n",
-            NumArgs, Concurrency);
+    AcpiOsPrintf ("%X Arguments, SyncLevel = %X\n",
+            (UINT32) ObjDesc->Method.ParamCount,
+            (UINT32) ObjDesc->Method.SyncLevel);
 
 
     RootOp = StartOp;

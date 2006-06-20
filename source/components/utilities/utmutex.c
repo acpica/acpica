@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmutex - local mutex support
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  ******************************************************************************/
 
@@ -248,8 +248,7 @@ AcpiUtCreateMutex (
 
     if (!AcpiGbl_MutexInfo[MutexId].Mutex)
     {
-        Status = AcpiOsCreateSemaphore (1, 1,
-                        &AcpiGbl_MutexInfo[MutexId].Mutex);
+        Status = AcpiOsCreateMutex (&AcpiGbl_MutexInfo[MutexId].Mutex);
         AcpiGbl_MutexInfo[MutexId].ThreadId = ACPI_MUTEX_NOT_ACQUIRED;
         AcpiGbl_MutexInfo[MutexId].UseCount = 0;
     }
@@ -274,8 +273,6 @@ static ACPI_STATUS
 AcpiUtDeleteMutex (
     ACPI_MUTEX_HANDLE       MutexId)
 {
-    ACPI_STATUS             Status;
-
 
     ACPI_FUNCTION_TRACE_U32 (UtDeleteMutex, MutexId);
 
@@ -285,12 +282,12 @@ AcpiUtDeleteMutex (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    Status = AcpiOsDeleteSemaphore (AcpiGbl_MutexInfo[MutexId].Mutex);
+    AcpiOsDeleteMutex (AcpiGbl_MutexInfo[MutexId].Mutex);
 
     AcpiGbl_MutexInfo[MutexId].Mutex = NULL;
     AcpiGbl_MutexInfo[MutexId].ThreadId = ACPI_MUTEX_NOT_ACQUIRED;
 
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 
@@ -363,8 +360,8 @@ AcpiUtAcquireMutex (
         "Thread %X attempting to acquire Mutex [%s]\n",
         ThisThreadId, AcpiUtGetMutexName (MutexId)));
 
-    Status = AcpiOsWaitSemaphore (AcpiGbl_MutexInfo[MutexId].Mutex,
-                                    1, ACPI_WAIT_FOREVER);
+    Status = AcpiOsAcquireMutex (AcpiGbl_MutexInfo[MutexId].Mutex,
+                ACPI_WAIT_FOREVER);
     if (ACPI_SUCCESS (Status))
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X acquired Mutex [%s]\n",
@@ -399,7 +396,6 @@ ACPI_STATUS
 AcpiUtReleaseMutex (
     ACPI_MUTEX_HANDLE       MutexId)
 {
-    ACPI_STATUS             Status;
     ACPI_THREAD_ID          ThisThreadId;
 
 
@@ -461,20 +457,8 @@ AcpiUtReleaseMutex (
 
     AcpiGbl_MutexInfo[MutexId].ThreadId = ACPI_MUTEX_NOT_ACQUIRED;
 
-    Status = AcpiOsSignalSemaphore (AcpiGbl_MutexInfo[MutexId].Mutex, 1);
-
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_EXCEPTION ((AE_INFO, Status,
-            "Thread %X could not release Mutex [%X]", ThisThreadId, MutexId));
-    }
-    else
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_MUTEX, "Thread %X released Mutex [%s]\n",
-            ThisThreadId, AcpiUtGetMutexName (MutexId)));
-    }
-
-    return (Status);
+    AcpiOsReleaseMutex (AcpiGbl_MutexInfo[MutexId].Mutex);
+    return (AE_OK);
 }
 
 

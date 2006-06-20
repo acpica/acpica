@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.201 $
+ *              $Revision: 1.202 $
  *
  ******************************************************************************/
 
@@ -283,30 +283,25 @@ AcpiNsRootInitialize (
 
                 if (ACPI_STRCMP (InitVal->Name, "_GL_") == 0)
                 {
-                    /*
-                     * Create a counting semaphore for the
-                     * global lock
-                     */
-                    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT,
-                                            1, &ObjDesc->Mutex.Semaphore);
+                    /* Create a counting semaphore for the global lock */
+
+                    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 1,
+                                &AcpiGbl_GlobalLockSemaphore);
                     if (ACPI_FAILURE (Status))
                     {
                         AcpiUtRemoveReference (ObjDesc);
                         goto UnlockAndExit;
                     }
 
-                    /*
-                     * We just created the mutex for the
-                     * global lock, save it
-                     */
-                    AcpiGbl_GlobalLockSemaphore = ObjDesc->Mutex.Semaphore;
+                    /* Mark this mutex as very special */
+
+                    ObjDesc->Mutex.OsMutex = ACPI_GLOBAL_LOCK;
                 }
                 else
                 {
                     /* Create a mutex */
 
-                    Status = AcpiOsCreateSemaphore (1, 1,
-                                        &ObjDesc->Mutex.Semaphore);
+                    Status = AcpiOsCreateMutex (&ObjDesc->Mutex.OsMutex);
                     if (ACPI_FAILURE (Status))
                     {
                         AcpiUtRemoveReference (ObjDesc);

@@ -188,45 +188,77 @@ AcpiOsTableOverride (
 
 
 /*
- * Synchronization primitives
+ * Spinlock primitives
+ */
+ACPI_STATUS
+AcpiOsCreateLock (
+    ACPI_SPINLOCK           *OutHandle);
+
+void
+AcpiOsDeleteLock (
+    ACPI_SPINLOCK           Handle);
+
+ACPI_CPU_FLAGS
+AcpiOsAcquireLock (
+    ACPI_SPINLOCK           Handle);
+
+void
+AcpiOsReleaseLock (
+    ACPI_SPINLOCK           Handle,
+    ACPI_CPU_FLAGS          Flags);
+
+
+/*
+ * Semaphore primitives
  */
 ACPI_STATUS
 AcpiOsCreateSemaphore (
     UINT32                  MaxUnits,
     UINT32                  InitialUnits,
-    ACPI_HANDLE             *OutHandle);
+    ACPI_SEMAPHORE          *OutHandle);
 
 ACPI_STATUS
 AcpiOsDeleteSemaphore (
-    ACPI_HANDLE             Handle);
+    ACPI_SEMAPHORE          Handle);
 
 ACPI_STATUS
 AcpiOsWaitSemaphore (
-    ACPI_HANDLE             Handle,
+    ACPI_SEMAPHORE          Handle,
     UINT32                  Units,
     UINT16                  Timeout);
 
 ACPI_STATUS
 AcpiOsSignalSemaphore (
-    ACPI_HANDLE             Handle,
+    ACPI_SEMAPHORE          Handle,
     UINT32                  Units);
 
+
+/*
+ * Mutex primitives
+ */
 ACPI_STATUS
-AcpiOsCreateLock (
-    ACPI_HANDLE             *OutHandle);
+AcpiOsCreateMutex (
+    ACPI_MUTEX              *OutHandle);
 
 void
-AcpiOsDeleteLock (
-    ACPI_HANDLE             Handle);
+AcpiOsDeleteMutex (
+    ACPI_MUTEX              Handle);
 
-ACPI_CPU_FLAGS
-AcpiOsAcquireLock (
-    ACPI_HANDLE             Handle);
+ACPI_STATUS
+AcpiOsAcquireMutex (
+    ACPI_MUTEX              Handle,
+    UINT16                  Timeout);
 
 void
-AcpiOsReleaseLock (
-    ACPI_HANDLE             Handle,
-    ACPI_CPU_FLAGS          Flags);
+AcpiOsReleaseMutex (
+    ACPI_MUTEX              Handle);
+
+/* Temporary macros for Mutex* interfaces, map to existing semaphore xfaces */
+
+#define AcpiOsCreateMutex(OutHandle)        AcpiOsCreateSemaphore (1, 1, OutHandle)
+#define AcpiOsDeleteMutex(Handle)           (void) AcpiOsDeleteSemaphore (Handle)
+#define AcpiOsAcquireMutex(Handle,Time)     AcpiOsWaitSemaphore (Handle, 1, Time)
+#define AcpiOsReleaseMutex(Handle)          (void) AcpiOsSignalSemaphore (Handle, 1)
 
 
 /*

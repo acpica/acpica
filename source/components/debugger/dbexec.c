@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  ******************************************************************************/
 
@@ -575,7 +575,7 @@ AcpiDbCreateExecutionThreads (
     UINT32                  NumThreads;
     UINT32                  NumLoops;
     UINT32                  i;
-    ACPI_HANDLE             ThreadGate;
+    ACPI_MUTEX              ThreadGate;
 
 
     /* Get the arguments */

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  ******************************************************************************/
 
@@ -244,22 +244,22 @@ AcpiUtDeleteInternalObj (
     case ACPI_TYPE_MUTEX:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
-            "***** Mutex %p, Semaphore %p\n",
-            Object, Object->Mutex.Semaphore));
+            "***** Mutex %p, OS Mutex %p\n",
+            Object, Object->Mutex.OsMutex));
 
         AcpiExUnlinkMutex (Object);
-        (void) AcpiOsDeleteSemaphore (Object->Mutex.Semaphore);
+        AcpiOsDeleteMutex (Object->Mutex.OsMutex);
         break;
 
 
     case ACPI_TYPE_EVENT:
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
-            "***** Event %p, Semaphore %p\n",
-            Object, Object->Event.Semaphore));
+            "***** Event %p, OS Semaphore %p\n",
+            Object, Object->Event.OsSemaphore));
 
-        (void) AcpiOsDeleteSemaphore (Object->Event.Semaphore);
-        Object->Event.Semaphore = NULL;
+        (void) AcpiOsDeleteSemaphore (Object->Event.OsSemaphore);
+        Object->Event.OsSemaphore = NULL;
         break;
 
 
@@ -268,12 +268,13 @@ AcpiUtDeleteInternalObj (
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
             "***** Method %p\n", Object));
 
-        /* Delete the method semaphore if it exists */
+        /* Delete the method mutex if it exists */
 
-        if (Object->Method.Semaphore)
+        if (Object->Method.Mutex)
         {
-            (void) AcpiOsDeleteSemaphore (Object->Method.Semaphore);
-            Object->Method.Semaphore = NULL;
+            AcpiOsDeleteMutex (Object->Method.Mutex->Mutex.OsMutex);
+            AcpiUtDeleteObjectDesc (Object->Method.Mutex);
+            Object->Method.Mutex = NULL;
         }
         break;
 

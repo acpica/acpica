@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.166 $
+ *              $Revision: 1.167 $
  *
  *****************************************************************************/
 
@@ -567,6 +567,16 @@ AcpiPsParseAml (
     }
 
     WalkState->Thread = Thread;
+
+    /*
+     * If executing a method, the starting SyncLevel is this method's
+     * SyncLevel
+     */
+    if (WalkState->MethodDesc)
+    {
+        WalkState->Thread->CurrentSyncLevel = WalkState->MethodDesc->Method.SyncLevel;
+    }
+
     AcpiDsPushWalkState (WalkState, Thread);
 
     /*
@@ -626,7 +636,7 @@ AcpiPsParseAml (
             /* Check for possible multi-thread reentrancy problem */
 
             if ((Status == AE_ALREADY_EXISTS) &&
-                (!WalkState->MethodDesc->Method.Semaphore))
+                (!WalkState->MethodDesc->Method.Mutex))
             {
                 /*
                  * Method tried to create an object twice. The probable cause is
@@ -638,7 +648,7 @@ AcpiPsParseAml (
                  * as Serialized.
                  */
                 WalkState->MethodDesc->Method.MethodFlags |= AML_METHOD_SERIALIZED;
-                WalkState->MethodDesc->Method.Concurrency = 1;
+                WalkState->MethodDesc->Method.SyncLevel = 0;
             }
         }
 

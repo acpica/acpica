@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.164 $
+ *       $Revision: 1.165 $
  *
  *****************************************************************************/
 
@@ -446,9 +446,13 @@ AcpiExSystemResetEvent(
 
 ACPI_STATUS
 AcpiExSystemWaitSemaphore (
-    ACPI_HANDLE             Semaphore,
+    ACPI_SEMAPHORE          Semaphore,
     UINT16                  Timeout);
 
+ACPI_STATUS
+AcpiExSystemWaitMutex (
+    ACPI_MUTEX              Mutex,
+    UINT16                  Timeout);
 
 /*
  * exoparg1 - ACPI AML execution, 1 operand

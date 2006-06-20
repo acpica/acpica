@@ -655,7 +655,7 @@ AcpiOsSignalSemaphore (
 
 ACPI_STATUS
 AcpiOsCreateLock (
-    ACPI_HANDLE             *OutHandle)
+    ACPI_SPINLOCK           *OutHandle)
 {
 
     return (AcpiOsCreateSemaphore (1, 1, OutHandle));
@@ -663,7 +663,7 @@ AcpiOsCreateLock (
 
 void
 AcpiOsDeleteLock (
-    ACPI_HANDLE             Handle)
+    ACPI_SPINLOCK           Handle)
 {
     AcpiOsDeleteSemaphore (Handle);
 }
@@ -680,7 +680,7 @@ AcpiOsAcquireLock (
 
 void
 AcpiOsReleaseLock (
-    ACPI_HANDLE             Handle,
+    ACPI_SPINLOCK           Handle,
     ACPI_CPU_FLAGS          Flags)
 {
     AcpiOsSignalSemaphore (Handle, 1);
