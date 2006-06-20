@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.233 $
+ *       $Revision: 1.234 $
  *
  *****************************************************************************/
 
@@ -912,6 +912,14 @@ typedef struct acpi_bit_register_info
     UINT16                          AccessBitMask;
 
 } ACPI_BIT_REGISTER_INFO;
+
+
+/*
+ * Some ACPI registers have bits that must be ignored -- meaning that they
+ * must be preserved.
+ */
+#define ACPI_PM1_STATUS_PRESERVED_BITS          0x0800  /* Bit 11 */
+#define ACPI_PM1_CONTROL_PRESERVED_BITS         0x0201  /* Bit 9, Bit 0 (SCI_EN) */
 
 
 /*

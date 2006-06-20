@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.182 $
+ *              $Revision: 1.183 $
  *
  ******************************************************************************/
 
@@ -572,14 +572,13 @@ ACPI_EXPORT_SYMBOL (AcpiSetRegister)
  *
  * FUNCTION:    AcpiHwRegisterRead
  *
- * PARAMETERS:  UseLock             - Mutex hw access
- *              RegisterId          - RegisterID + Offset
+ * PARAMETERS:  UseLock             - Lock hardware? True/False
+ *              RegisterId          - ACPI Register ID
  *              ReturnValue         - Where the register value is returned
  *
  * RETURN:      Status and the value read.
  *
- * DESCRIPTION: Acpi register read function. Registers are read at the
- *              given offset.
+ * DESCRIPTION: Read from the specified ACPI register
  *
  ******************************************************************************/
 
@@ -690,14 +689,26 @@ UnlockAndExit:
  *
  * FUNCTION:    AcpiHwRegisterWrite
  *
- * PARAMETERS:  UseLock             - Mutex hw access
- *              RegisterId          - RegisterID + Offset
+ * PARAMETERS:  UseLock             - Lock hardware? True/False
+ *              RegisterId          - ACPI Register ID
  *              Value               - The value to write
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Acpi register Write function. Registers are written at the
- *              given offset.
+ * DESCRIPTION: Write to the specified ACPI register
+ *
+ * NOTE: In accordance with the ACPI specification, this function automatically
+ * preserves the value of the following bits, meaning that these bits cannot be
+ * changed via this interface:
+ *
+ * PM1_CONTROL[0] = SCI_EN
+ * PM1_CONTROL[9]
+ * PM1_STATUS[11]
+ *
+ * ACPI References:
+ * 1) Hardware Ignored Bits: When software writes to a register with ignored
+ *      bit fields, it preserves the ignored bit fields
+ * 2) SCI_EN: OSPM always preserves this bit position
  *
  ******************************************************************************/
 
@@ -709,6 +720,7 @@ AcpiHwRegisterWrite (
 {
     ACPI_STATUS             Status;
     ACPI_CPU_FLAGS          LockFlags = 0;
+    UINT32                  ReadValue;
 
 
     ACPI_FUNCTION_TRACE (HwRegisterWrite);
@@ -722,6 +734,21 @@ AcpiHwRegisterWrite (
     switch (RegisterId)
     {
     case ACPI_REGISTER_PM1_STATUS:           /* 16-bit access */
+
+        /* Perform a read first to preserve certain bits (per ACPI spec) */
+
+        Status = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
+                    ACPI_REGISTER_PM1_STATUS, &ReadValue);
+        if (ACPI_FAILURE (Status))
+        {
+            goto UnlockAndExit;
+        }
+
+        /* Insert the bits to be preserved */
+
+        ACPI_INSERT_BITS (Value, ACPI_PM1_STATUS_PRESERVED_BITS, ReadValue);
+
+        /* Now we can write the data */
 
         Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1aEvtBlk);
         if (ACPI_FAILURE (Status))
@@ -750,6 +777,24 @@ AcpiHwRegisterWrite (
 
 
     case ACPI_REGISTER_PM1_CONTROL:          /* 16-bit access */
+
+        /*
+         * Perform a read first to preserve certain bits (per ACPI spec)
+         *
+         * Note: This includes SCI_EN, we never want to change this bit
+         */
+        Status = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
+                    ACPI_REGISTER_PM1_CONTROL, &ReadValue);
+        if (ACPI_FAILURE (Status))
+        {
+            goto UnlockAndExit;
+        }
+
+        /* Insert the bits to be preserved */
+
+        ACPI_INSERT_BITS (Value, ACPI_PM1_CONTROL_PRESERVED_BITS, ReadValue);
+
+        /* Now we can write the data */
 
         Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_FADT->XPm1aCntBlk);
         if (ACPI_FAILURE (Status))
