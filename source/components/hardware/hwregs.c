@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.181 $
+ *              $Revision: 1.182 $
  *
  ******************************************************************************/
 
@@ -264,9 +264,9 @@ AcpiGetSleepTypeData (
     }
 
     /*
-     * The package must have at least two elements.  NOTE (March 2005): This
+     * The package must have at least two elements. NOTE (March 2005): This
      * goes against the current ACPI spec which defines this object as a
-     * package with one encoded DWORD element.  However, existing practice
+     * package with one encoded DWORD element. However, existing practice
      * by BIOS vendors seems to be to have 2 or more elements, at least
      * one per sleep type (A/B).
      */
@@ -355,7 +355,7 @@ AcpiHwGetBitRegisterInfo (
  *              ReturnValue     - Value that was read from the register
  *              Flags           - Lock the hardware or not
  *
- * RETURN:      Status and the value read from specified Register.  Value
+ * RETURN:      Status and the value read from specified Register. Value
  *              returned is normalized to bit0 (is shifted all the way right)
  *
  * DESCRIPTION: ACPI BitRegister read function.
@@ -389,7 +389,7 @@ AcpiGetRegister (
     /* Read from the register */
 
     Status = AcpiHwRegisterRead (ACPI_MTX_LOCK,
-                    BitRegInfo->ParentRegister, &RegisterValue);
+                BitRegInfo->ParentRegister, &RegisterValue);
 
     if (ACPI_SUCCESS (Status))
     {
@@ -401,7 +401,7 @@ AcpiGetRegister (
         *ReturnValue = RegisterValue;
 
         ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Read value %8.8X register %X\n",
-                RegisterValue, BitRegInfo->ParentRegister));
+            RegisterValue, BitRegInfo->ParentRegister));
     }
 
     return_ACPI_STATUS (Status);
@@ -474,8 +474,8 @@ AcpiSetRegister (
     case ACPI_REGISTER_PM1_STATUS:
 
         /*
-         * Status Registers are different from the rest.  Clear by
-         * writing 1, and writing 0 has no effect.  So, the only relevant
+         * Status Registers are different from the rest. Clear by
+         * writing 1, and writing 0 has no effect. So, the only relevant
          * information is the single bit we're interested in, all others should
          * be written as 0 so they will be left unchanged.
          */
@@ -493,7 +493,7 @@ AcpiSetRegister (
     case ACPI_REGISTER_PM1_ENABLE:
 
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition,
-                BitRegInfo->AccessBitMask, Value);
+            BitRegInfo->AccessBitMask, Value);
 
         Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
                     ACPI_REGISTER_PM1_ENABLE, (UINT16) RegisterValue);
@@ -507,10 +507,11 @@ AcpiSetRegister (
          * Note that at this level, the fact that there are actually TWO
          * registers (A and B - and B may not exist) is abstracted.
          */
-        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM1 control: Read %X\n", RegisterValue));
+        ACPI_DEBUG_PRINT ((ACPI_DB_IO, "PM1 control: Read %X\n",
+            RegisterValue));
 
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition,
-                BitRegInfo->AccessBitMask, Value);
+            BitRegInfo->AccessBitMask, Value);
 
         Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
                     ACPI_REGISTER_PM1_CONTROL, (UINT16) RegisterValue);
@@ -560,7 +561,7 @@ UnlockAndExit:
             BitRegInfo->BitPosition));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_IO, "Set bits: %8.8X actual %8.8X register %X\n",
-            Value, RegisterValue, BitRegInfo->ParentRegister));
+        Value, RegisterValue, BitRegInfo->ParentRegister));
     return_ACPI_STATUS (Status);
 }
 
@@ -577,7 +578,7 @@ ACPI_EXPORT_SYMBOL (AcpiSetRegister)
  *
  * RETURN:      Status and the value read.
  *
- * DESCRIPTION: Acpi register read function.  Registers are read at the
+ * DESCRIPTION: Acpi register read function. Registers are read at the
  *              given offset.
  *
  ******************************************************************************/
@@ -695,7 +696,7 @@ UnlockAndExit:
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Acpi register Write function.  Registers are written at the
+ * DESCRIPTION: Acpi register Write function. Registers are written at the
  *              given offset.
  *
  ******************************************************************************/
@@ -734,7 +735,7 @@ AcpiHwRegisterWrite (
         break;
 
 
-    case ACPI_REGISTER_PM1_ENABLE:           /* 16-bit access*/
+    case ACPI_REGISTER_PM1_ENABLE:           /* 16-bit access */
 
         Status = AcpiHwLowLevelWrite (16, Value, &AcpiGbl_XPm1aEnable);
         if (ACPI_FAILURE (Status))
@@ -844,7 +845,7 @@ AcpiHwLowLevelRead (
         return (AE_OK);
     }
 
-    /* Get a local copy of the address.  Handles possible alignment issues */
+    /* Get a local copy of the address. Handles possible alignment issues */
 
     ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
     if (!ACPI_VALID_ADDRESS (Address))
@@ -927,7 +928,7 @@ AcpiHwLowLevelWrite (
         return (AE_OK);
     }
 
-    /* Get a local copy of the address.  Handles possible alignment issues */
+    /* Get a local copy of the address. Handles possible alignment issues */
 
     ACPI_MOVE_64_TO_64 (&Address, &Reg->Address);
     if (!ACPI_VALID_ADDRESS (Address))
