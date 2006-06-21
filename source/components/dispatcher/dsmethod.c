@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -318,12 +318,19 @@ AcpiDsBeginMethodExecution (
         {
             ACPI_ERROR ((AE_INFO,
                 "Cannot acquire Mutex for method [%4.4s], current SyncLevel is too large (%d)",
-                AcpiUtGetNodeName (MethodNode), WalkState->Thread->CurrentSyncLevel));
+                AcpiUtGetNodeName (MethodNode),
+                WalkState->Thread->CurrentSyncLevel));
+
             return_ACPI_STATUS (AE_AML_MUTEX_ORDER);
         }
 
+        /*
+         * Obtain the method mutex if necessary. Do not acquire mutex for a
+         * recursive call.
+         */
         if (!WalkState ||
-            (WalkState->Thread == ObjDesc->Method.Mutex->Mutex.OwnerThread))
+            !ObjDesc->Method.Mutex->Mutex.OwnerThread ||
+            (WalkState->Thread != ObjDesc->Method.Mutex->Mutex.OwnerThread))
         {
             /*
              * Acquire the method mutex. This releases the interpreter if we
@@ -335,22 +342,27 @@ AcpiDsBeginMethodExecution (
             {
                 return_ACPI_STATUS (Status);
             }
+
+            /* Update the mutex and walk info and save the original SyncLevel */
+
+            if (WalkState)
+            {
+                ObjDesc->Method.Mutex->Mutex.OriginalSyncLevel =
+                    WalkState->Thread->CurrentSyncLevel;
+
+                ObjDesc->Method.Mutex->Mutex.OwnerThread = WalkState->Thread;
+                WalkState->Thread->CurrentSyncLevel = ObjDesc->Method.SyncLevel;
+            }
+            else
+            {
+                ObjDesc->Method.Mutex->Mutex.OriginalSyncLevel =
+                    ObjDesc->Method.Mutex->Mutex.SyncLevel;
+            }
         }
 
-        /* Have the mutex: update mutex and walk info and save the SyncLevel */
+        /* Always increase acquisition depth */
 
         ObjDesc->Method.Mutex->Mutex.AcquisitionDepth++;
-
-        if (WalkState)
-        {
-            ObjDesc->Method.Mutex->Mutex.OriginalSyncLevel = WalkState->Thread->CurrentSyncLevel;
-            ObjDesc->Method.Mutex->Mutex.OwnerThread = WalkState->Thread;
-            WalkState->Thread->CurrentSyncLevel = ObjDesc->Method.SyncLevel;
-        }
-        else
-        {
-            ObjDesc->Method.Mutex->Mutex.OriginalSyncLevel = ObjDesc->Method.Mutex->Mutex.SyncLevel;
-        }
     }
 
     /*
@@ -709,10 +721,14 @@ AcpiDsTerminateControlMethod (
      */
     if (MethodDesc->Method.Mutex)
     {
+        /* Acquisition Depth handles recursive calls */
+
         MethodDesc->Method.Mutex->Mutex.AcquisitionDepth--;
         if (!MethodDesc->Method.Mutex->Mutex.AcquisitionDepth)
         {
-            WalkState->Thread->CurrentSyncLevel = MethodDesc->Method.Mutex->Mutex.OriginalSyncLevel;
+            WalkState->Thread->CurrentSyncLevel =
+                MethodDesc->Method.Mutex->Mutex.OriginalSyncLevel;
+
             AcpiOsReleaseMutex (MethodDesc->Method.Mutex->Mutex.OsMutex);
         }
     }
