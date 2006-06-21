@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -1062,8 +1062,10 @@ AcpiOsSignalSemaphore (
     if ((AcpiGbl_Semaphores[Index].CurrentUnits + 1) >
         AcpiGbl_Semaphores[Index].MaxUnits)
     {
-        ACPI_ERROR ((AE_INFO, "Oversignalled semaphore[%d]! Current %d Max %d",
-            Index, AcpiGbl_Semaphores[Index].CurrentUnits, AcpiGbl_Semaphores[Index].MaxUnits));
+        ACPI_ERROR ((AE_INFO,
+            "Oversignalled semaphore[%d]! Current %d Max %d",
+            Index, AcpiGbl_Semaphores[Index].CurrentUnits,
+            AcpiGbl_Semaphores[Index].MaxUnits));
 
         return (AE_LIMIT);
     }
