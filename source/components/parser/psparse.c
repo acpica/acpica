@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.167 $
+ *              $Revision: 1.168 $
  *
  *****************************************************************************/
 
@@ -614,6 +614,10 @@ AcpiPsParseAml (
              * Transfer control to the called control method
              */
             Status = AcpiDsCallControlMethod (Thread, WalkState, NULL);
+            if (ACPI_FAILURE (Status))
+            {
+                Status = AcpiDsMethodError (Status, WalkState);
+            }
 
             /*
              * If the transfer to the new method method call worked, a new walk
