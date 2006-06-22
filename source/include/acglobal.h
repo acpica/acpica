@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.183 $
+ *       $Revision: 1.184 $
  *
  *****************************************************************************/
 
@@ -282,8 +282,8 @@ ACPI_EXTERN ACPI_SEMAPHORE              AcpiGbl_GlobalLockSemaphore;
  * Spinlocks are used for interfaces that can be possibly called at
  * interrupt level
  */
-ACPI_EXTERN ACPI_SPINLOCK               AcpiGbl_GpeLock;
-ACPI_EXTERN ACPI_SPINLOCK               AcpiGbl_HardwareLock;
+ACPI_EXTERN ACPI_SPINLOCK               AcpiGbl_GpeLock;      /* For GPE data structs and registers */
+ACPI_EXTERN ACPI_SPINLOCK               AcpiGbl_HardwareLock; /* For ACPI H/W except GPE registers */
 
 
 /*****************************************************************************
