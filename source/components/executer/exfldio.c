@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -937,11 +937,24 @@ AcpiExInsertIntoField (
         return_ACPI_STATUS (AE_BUFFER_OVERFLOW);
     }
 
-    /* Compute the number of datums (access width data items) */
+    /*
+     * Create the bitmasks used for bit insertion.
+     * Note: This if/else is used to bypass compiler differences with the
+     * shift operator
+     */
+    if (ObjDesc->CommonField.AccessBitWidth == ACPI_INTEGER_BIT_SIZE)
+    {
+        WidthMask = ACPI_INTEGER_MAX;
+    }
+    else
+    {
+        WidthMask = ACPI_MASK_BITS_ABOVE (ObjDesc->CommonField.AccessBitWidth);
+    }
 
-    WidthMask = ACPI_MASK_BITS_ABOVE (ObjDesc->CommonField.AccessBitWidth);
     Mask = WidthMask &
-        ACPI_MASK_BITS_BELOW (ObjDesc->CommonField.StartFieldBitOffset);
+            ACPI_MASK_BITS_BELOW (ObjDesc->CommonField.StartFieldBitOffset);
+
+    /* Compute the number of datums (access width data items) */
 
     DatumCount = ACPI_ROUND_UP_TO (ObjDesc->CommonField.BitLength,
                     ObjDesc->CommonField.AccessBitWidth);
