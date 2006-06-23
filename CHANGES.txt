@@ -1,4 +1,35 @@
 ----------------------------------------
+23 June 2006. Summary of changes for version 20060623:
+
+1) ACPI CA Core Subsystem:
+
+Implemented a new ACPI_SPINLOCK type for the OSL lock interfaces. This allows the type to be customized to the host OS for improved efficiency (since a spinlock is usually a very small object.)
+
+Implemented support for "ignored" bits in the ACPI registers. According to the ACPI specification, these bits should be preserved when writing the registers via a read/modify/write cycle. There are 3 bits preserved in this manner: PM1_CONTROL[0] (SCI_EN), PM1_CONTROL[9], and PM1_STATUS[11].
+
+Implemented the initial deployment of new OSL mutex interfaces. Since some host operating systems have separate mutex and semaphore objects, this feature was requested. The base code now uses mutexes (and the new mutex interfaces) wherever a binary semaphore was used previously. However, for the current release, the mutex interfaces are defined as macros to map them to the existing semaphore interfaces. Therefore, no OSL changes are required at this time. (See acpiosxf.h)
+
+Fixed several problems with the support for the control method SyncLevel parameter. The SyncLevel now works according to the ACPI specification and in concert with the Mutex SyncLevel parameter, since the current SyncLevel is a property of the executing thread. Mutual exclusion for control methods is now implemented with a mutex instead of a semaphore.
+
+Fixed three instances of the use of the C shift operator in the bitfield support code (exfldio.c) to avoid the use of a shift value larger than the target data width. The behavior of C compilers is undefined in this case and can cause unpredictable results, and therefore the case must be detected and avoided. (Fiodor Suietov)
+
+Added an info message whenever an SSDT or OEM table is loaded dynamically via the Load() or LoadTable() ASL operators. This should improve debugging capability since it will show exactly what tables have been loaded (beyond the tables present in the RSDT/XSDT.)
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  80.0K Code, 17.6K Data,  97.6K Total
+    Debug Version:     160.2K Code, 64.7K Data, 224.9K Total
+  Current Release:
+    Non-Debug Version:  80.5K Code, 17.8K Data,  98.3K Total
+    Debug Version:     160.8K Code, 64.8K Data, 225.6K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+No changes for this release.
+
+----------------------------------------
 08 June 2006. Summary of changes for version 20060608:
 
 1) ACPI CA Core Subsystem:
