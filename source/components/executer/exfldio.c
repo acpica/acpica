@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfldio - Aml Field I/O
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -849,11 +849,21 @@ AcpiExExtractFromField (
             return_ACPI_STATUS (Status);
         }
 
-        /* Merge with previous datum if necessary */
-
-        MergedDatum |= RawDatum <<
-            (ObjDesc->CommonField.AccessBitWidth -
-                ObjDesc->CommonField.StartFieldBitOffset);
+        /*
+         * Merge with previous datum if necessary.
+         *
+         * Note: Before the shift, check if the shift value will be larger than
+         * the integer size. If so, there is no need to perform the operation.
+         * This avoids the differences in behavior between different compilers
+         * concerning shift values larger than the target data width.
+         */
+        if ((ObjDesc->CommonField.AccessBitWidth -
+            ObjDesc->CommonField.StartFieldBitOffset) < ACPI_INTEGER_BIT_SIZE)
+        {
+            MergedDatum |= RawDatum <<
+                (ObjDesc->CommonField.AccessBitWidth -
+                    ObjDesc->CommonField.StartFieldBitOffset);
+        }
 
         if (i == DatumCount)
         {
@@ -985,12 +995,29 @@ AcpiExInsertIntoField (
             return_ACPI_STATUS (Status);
         }
 
-        /* Start new output datum by merging with previous input datum */
-
         FieldOffset += ObjDesc->CommonField.AccessByteWidth;
-        MergedDatum = RawDatum >>
-            (ObjDesc->CommonField.AccessBitWidth -
-                ObjDesc->CommonField.StartFieldBitOffset);
+
+        /*
+         * Start new output datum by merging with previous input datum
+         * if necessary.
+         *
+         * Note: Before the shift, check if the shift value will be larger than
+         * the integer size. If so, there is no need to perform the operation.
+         * This avoids the differences in behavior between different compilers
+         * concerning shift values larger than the target data width.
+         */
+        if ((ObjDesc->CommonField.AccessBitWidth -
+            ObjDesc->CommonField.StartFieldBitOffset) < ACPI_INTEGER_BIT_SIZE)
+        {
+            MergedDatum = RawDatum >>
+                (ObjDesc->CommonField.AccessBitWidth -
+                    ObjDesc->CommonField.StartFieldBitOffset);
+        }
+        else
+        {
+            MergedDatum = 0;
+        }
+
         Mask = WidthMask;
 
         if (i == DatumCount)
