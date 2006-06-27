@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acresrc.h - Resource Manager function prototypes
- *       $Revision: 1.58 $
+ *       $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -125,9 +125,13 @@
 
 /*
  * If possible, pack the following structures to byte alignment, since we
- * don't care about performance for debug output
+ * don't care about performance for debug output. Two cases where we cannot
+ * pack the structures:
+ *
+ * 1) Hardware does not support misaligned memory transfers
+ * 2) Compiler does not support pointers within packed structures
  */
-#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
+#if (!defined(ACPI_MISALIGNMENT_NOT_SUPPORTED) && !defined(ACPI_PACKED_POINTERS_NOT_SUPPORTED))
 #pragma pack(1)
 #endif
 
