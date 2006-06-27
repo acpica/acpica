@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -136,7 +136,7 @@
  *
  * DESCRIPTION: Implements a semaphore wait with a check to see if the
  *              semaphore is available immediately.  If it is not, the
- *              interpreter is released.
+ *              interpreter is released before waiting.
  *
  ******************************************************************************/
 
@@ -194,9 +194,9 @@ AcpiExSystemWaitSemaphore (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Implements a semaphore wait with a check to see if the
- *              semaphore is available immediately.  If it is not, the
- *              interpreter is released.
+ * DESCRIPTION: Implements a mutex wait with a check to see if the
+ *              mutex is available immediately.  If it is not, the
+ *              interpreter is released before waiting.
  *
  ******************************************************************************/
 
