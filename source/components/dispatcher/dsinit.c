@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.24 $
+ *              $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -201,17 +201,6 @@ AcpiDsInitOneObject (
 
 
     case ACPI_TYPE_METHOD:
-
-        /*
-         * Set the execution data width (32 or 64) based upon the
-         * revision number of the parent ACPI table.
-         * TBD: This is really for possible future support of integer width
-         * on a per-table basis. Currently, we just use a global for the width.
-         */
-        if (Info->TableDesc->Pointer->Revision == 1)
-        {
-            Node->Flags |= ANOBJ_DATA_WIDTH_32;
-        }
 
         Info->MethodCount++;
         break;
