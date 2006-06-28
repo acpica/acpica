@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.144 $
+ *              $Revision: 1.145 $
  *
  ******************************************************************************/
 
@@ -144,7 +144,7 @@ AcpiUtIsAmlTable (
     ACPI_TABLE_HEADER       *Table)
 {
 
-    /* Ignore tables that contain AML */
+    /* These are the only tables that contain executable AML */
 
     if (ACPI_COMPARE_NAME (Table->Signature, DSDT_SIG) ||
         ACPI_COMPARE_NAME (Table->Signature, PSDT_SIG) ||
@@ -421,7 +421,7 @@ AcpiUtPrintString (
         switch (String[i])
         {
         case 0x07:
-            AcpiOsPrintf ("\\a");        /* BELL */
+            AcpiOsPrintf ("\\a");       /* BELL */
             break;
 
         case 0x08:
@@ -546,12 +546,16 @@ AcpiUtSetIntegerWidth (
 
     if (Revision <= 1)
     {
+        /* 32-bit case */
+
         AcpiGbl_IntegerBitWidth    = 32;
         AcpiGbl_IntegerNybbleWidth = 8;
         AcpiGbl_IntegerByteWidth   = 4;
     }
     else
     {
+        /* 64-bit case (ACPI 2.0+) */
+
         AcpiGbl_IntegerBitWidth    = 64;
         AcpiGbl_IntegerNybbleWidth = 16;
         AcpiGbl_IntegerByteWidth   = 8;
@@ -640,6 +644,7 @@ AcpiUtDisplayInitPathname (
  * FUNCTION:    AcpiUtValidAcpiChar
  *
  * PARAMETERS:  Char            - The character to be examined
+ *              Position        - Byte position (0-3)
  *
  * RETURN:      TRUE if the character is valid, FALSE otherwise
  *
