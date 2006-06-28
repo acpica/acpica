@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -348,6 +348,11 @@ AcpiUnloadTable (
     /* Find all tables of the requested type */
 
     TableDesc = AcpiGbl_TableLists[TableType].Next;
+    if (!TableDesc)
+    {
+        return_ACPI_STATUS (AE_NOT_EXIST);
+    }
+
     while (TableDesc)
     {
         /*
