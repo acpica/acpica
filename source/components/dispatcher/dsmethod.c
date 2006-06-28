@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -741,29 +741,11 @@ AcpiDsTerminateControlMethod (
          */
         MethodNode = WalkState->MethodNode;
 
-        /* Lock namespace for possible update */
-
-        Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
-        if (ACPI_FAILURE (Status))
-        {
-            return_VOID;
-        }
-
         /*
-         * Delete any namespace entries created immediately underneath
-         * the method
-         */
-        if (MethodNode && MethodNode->Child)
-        {
-            AcpiNsDeleteNamespaceSubtree (MethodNode);
-        }
-
-        /*
-         * Delete any namespace entries created anywhere else within
+         * Delete any namespace objects created anywhere within
          * the namespace by the execution of this method
          */
         AcpiNsDeleteNamespaceByOwner (MethodDesc->Method.OwnerId);
-        Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     }
 
     /* Decrement the thread count on the method */
