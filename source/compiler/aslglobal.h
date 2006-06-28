@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -147,7 +147,7 @@ extern char                         *AslCompilertext;
 extern char                         hex[];
 
 #define ASL_LINE_BUFFER_SIZE        512
-#define ASL_MSG_BUFFER_SIZE         (ASL_LINE_BUFFER_SIZE * 2)
+#define ASL_MSG_BUFFER_SIZE         4096
 #define HEX_TABLE_LINE_SIZE         8
 #define HEX_LISTING_LINE_SIZE       16
 
@@ -206,6 +206,7 @@ ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_HexOutputFlag, HEX_OUTP
 ASL_EXTERN ASL_FILE_INFO            Gbl_Files [ASL_NUM_FILES];
 
 ASL_EXTERN char                     *Gbl_DirectoryPath;
+ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_ExternalFilename, NULL);
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_IncludeFilename, NULL);
 ASL_EXTERN char                     ASL_INIT_GLOBAL (*Gbl_OutputFilenamePrefix, NULL);
 ASL_EXTERN char                     *Gbl_CurrentInputFilename;

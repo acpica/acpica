@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.l - Flex input file
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -926,7 +926,8 @@ comment2 (void)
 char
 literal (void)
 {
-    char                *s = MsgBuffer;
+    char                *StringBuffer = MsgBuffer;
+    char                *EndBuffer = MsgBuffer + ASL_MSG_BUFFER_SIZE;
     char                *CleanString;
     char                StringChar;
     UINT32              State = ASL_NORMAL_CHAR;
@@ -1061,8 +1062,12 @@ DoCharacter:
                 }
                 else
                 {
-                    *s = (char) Digit;
-                    s++;
+                    *StringBuffer = (char) Digit;
+                    StringBuffer++;
+                    if (StringBuffer >= EndBuffer)
+                    {
+                        goto BufferOverflow;
+                    }
                 }
 
                 State = ASL_NORMAL_CHAR;
@@ -1102,8 +1107,12 @@ DoCharacter:
                 }
                 else
                 {
-                    *s = (char) Digit;
-                    s++;
+                    *StringBuffer = (char) Digit;
+                    StringBuffer++;
+                    if (StringBuffer >= EndBuffer)
+                    {
+                        goto BufferOverflow;
+                    }
                 }
 
                 State = ASL_NORMAL_CHAR;
@@ -1120,8 +1129,12 @@ DoCharacter:
 
         /* Save the finished character */
 
-        *s = StringChar;
-        s++;
+        *StringBuffer = StringChar;
+        StringBuffer++;
+        if (StringBuffer >= EndBuffer)
+        {
+            goto BufferOverflow;
+        }
     }
 
     /*
@@ -1138,7 +1151,7 @@ CompletedString:
     /*
      * Null terminate the input string and copy string to a new buffer
      */
-    *s = 0;
+    *StringBuffer = 0;
 
     CleanString = UtGetStringBuffer (strlen (MsgBuffer) + 1);
     if (!CleanString)
@@ -1153,6 +1166,17 @@ CompletedString:
     ACPI_STRCPY (CleanString, MsgBuffer);
     AslCompilerlval.s = CleanString;
     return (TRUE);
+
+
+BufferOverflow:
+
+    /* Literal was too long */
+
+    AslCommonError (ASL_ERROR, ASL_MSG_STRING_LENGTH,
+                    Gbl_CurrentLineNumber, Gbl_LogicalLineNumber,
+                    Gbl_CurrentLineOffset, Gbl_CurrentColumn,
+                    Gbl_Files[ASL_FILE_INPUT].Filename, "Max length 4096");
+    return (FALSE);
 }
 
 
