@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  ******************************************************************************/
 
@@ -770,7 +770,9 @@ AcpiUtRepairName (
  *
  * RETURN:      Status and Converted value
  *
- * DESCRIPTION: Convert a string into an unsigned value.
+ * DESCRIPTION: Convert a string into an unsigned value. Performs either a
+ *              32-bit or 64-bit conversion, depending on the current mode
+ *              of the interpreter.
  *              NOTE: Does not support Octal strings, not needed.
  *
  ******************************************************************************/
@@ -792,7 +794,7 @@ AcpiUtStrtoul64 (
     UINT8                   Term = 0;
 
 
-    ACPI_FUNCTION_TRACE (UtStroul64);
+    ACPI_FUNCTION_TRACE_STR (UtStroul64, String);
 
 
     switch (Base)
@@ -852,11 +854,13 @@ AcpiUtStrtoul64 (
         }
     }
 
+    /*
+     * Perform a 32-bit or 64-bit conversion, depending upon the current
+     * execution mode of the interpreter
+     */
     Dividend = (Mode32) ? ACPI_UINT32_MAX : ACPI_UINT64_MAX;
 
-    /* At least one character in the string here */
-
-    /* Main loop: convert the string to a 64-bit integer */
+    /* Main loop: convert the string to a 32- or 64-bit integer */
 
     while (*String)
     {
@@ -942,6 +946,9 @@ AcpiUtStrtoul64 (
     /* All done, normal exit */
 
 AllDone:
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Converted value: %8.8X%8.8X\n",
+        ACPI_FORMAT_UINT64 (ReturnValue)));
 
     *RetInteger = ReturnValue;
     return_ACPI_STATUS (AE_OK);
