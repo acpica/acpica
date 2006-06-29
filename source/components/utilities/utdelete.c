@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  ******************************************************************************/
 
@@ -565,9 +565,14 @@ AcpiUtUpdateObjectReference (
         switch (ACPI_GET_OBJECT_TYPE (Object))
         {
         case ACPI_TYPE_DEVICE:
+        case ACPI_TYPE_PROCESSOR:
+        case ACPI_TYPE_POWER:
+        case ACPI_TYPE_THERMAL:
 
-            AcpiUtUpdateRefCount (Object->Device.SystemNotify, Action);
-            AcpiUtUpdateRefCount (Object->Device.DeviceNotify, Action);
+            /* Update the notify objects for these types (if present) */
+
+            AcpiUtUpdateRefCount (Object->CommonNotify.SystemNotify, Action);
+            AcpiUtUpdateRefCount (Object->CommonNotify.DeviceNotify, Action);
             break;
 
         case ACPI_TYPE_PACKAGE:
