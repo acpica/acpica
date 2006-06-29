@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.165 $
+ *              $Revision: 1.166 $
  *
  *****************************************************************************/
 
@@ -647,31 +647,36 @@ AcpiEvDetachRegion(
                 }
             }
 
-            /* Call the setup handler with the deactivate notification */
-
-            RegionSetup = HandlerObj->AddressSpace.Setup;
-            Status = RegionSetup (RegionObj, ACPI_REGION_DEACTIVATE,
-                HandlerObj->AddressSpace.Context, RegionContext);
-
-            /* Init routine may fail, Just ignore errors */
-
-            if (ACPI_FAILURE (Status))
+            /*
+             * If the region has been activated, call the setup handler
+             * with the deactivate notification
+             */
+            if (RegionObj->Region.Flags & AOPOBJ_SETUP_COMPLETE)
             {
-                ACPI_EXCEPTION ((AE_INFO, Status, "from region init, [%s]",
-                    AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
-            }
+                RegionSetup = HandlerObj->AddressSpace.Setup;
+                Status = RegionSetup (RegionObj, ACPI_REGION_DEACTIVATE,
+                    HandlerObj->AddressSpace.Context, RegionContext);
 
-            RegionObj->Region.Flags &= ~(AOPOBJ_SETUP_COMPLETE);
+                /* Init routine may fail, Just ignore errors */
+
+                if (ACPI_FAILURE (Status))
+                {
+                    ACPI_EXCEPTION ((AE_INFO, Status,
+                        "from region handler - deactivate, [%s]",
+                        AcpiUtGetRegionName (RegionObj->Region.SpaceId)));
+                }
+
+                RegionObj->Region.Flags &= ~(AOPOBJ_SETUP_COMPLETE);
+            }
 
             /*
              * Remove handler reference in the region
              *
-             * NOTE: this doesn't mean that the region goes away
-             * The region is just inaccessible as indicated to
-             * the _REG method
+             * NOTE: this doesn't mean that the region goes away, the region
+             * is just inaccessible as indicated to the _REG method
              *
-             * If the region is on the handler's list
-             * this better be the region's handler
+             * If the region is on the handler's list, this must be the
+             * region's handler
              */
             RegionObj->Region.Handler = NULL;
             AcpiUtRemoveReference (HandlerObj);
