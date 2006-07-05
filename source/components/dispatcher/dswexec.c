@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.129 $
+ *              $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -416,10 +416,10 @@ AcpiDsExecBeginOp (
     case AML_CLASS_EXECUTE:
     case AML_CLASS_CREATE:
         /*
-         * Most operators with arguments.
+         * Most operators with arguments (except CreateXxxField operators)
          * Start a new result/operand state
          */
-        if (WalkState->Opcode != AML_CREATE_FIELD_OP)
+        if (WalkState->OpInfo->ObjectType != ACPI_TYPE_BUFFER_FIELD)
         {
             Status = AcpiDsResultStackPush (WalkState);
         }
