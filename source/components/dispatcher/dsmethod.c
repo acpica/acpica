@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.128 $
+ *              $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -219,7 +219,7 @@ AcpiDsCreateMethodMutex (
     ACPI_STATUS             Status;
 
 
-    ACPI_FUNCTION_NAME (DsCreateMethodMutex);
+    ACPI_FUNCTION_TRACE (DsCreateMethodMutex);
 
 
     /* Create the new mutex object */
@@ -609,8 +609,9 @@ AcpiDsRestartControlMethod (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
         "****Restart [%4.4s] Op %p ReturnValueFromCallee %p\n",
-        (char *) &WalkState->MethodNode->Name, WalkState->MethodCallOp,
-        ReturnDesc));
+        WalkState->MethodNode ?
+            (char *) &WalkState->MethodNode->Name : "[NO NAME]",
+        WalkState->MethodCallOp, ReturnDesc));
 
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
         "    ReturnFromThisMethodUsed?=%X ResStack %p Walk %p\n",
@@ -730,6 +731,7 @@ AcpiDsTerminateControlMethod (
                 MethodDesc->Method.Mutex->Mutex.OriginalSyncLevel;
 
             AcpiOsReleaseMutex (MethodDesc->Method.Mutex->Mutex.OsMutex);
+            MethodDesc->Method.Mutex->Mutex.OwnerThread = NULL;
         }
     }
 
