@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -333,6 +333,8 @@ AdMethodExternalCount (
  *
  *****************************************************************************/
 
+extern char *Gbl_ExternalFilename;
+
 ACPI_STATUS
 AdAmlDisassemble (
     BOOLEAN                 OutToFile,
@@ -345,6 +347,7 @@ AdAmlDisassemble (
     char                    *DisasmFilename = NULL;
     FILE                    *File = NULL;
     ACPI_TABLE_HEADER       *Table;
+    ACPI_TABLE_HEADER       *ExternalTable;
 
 
     /*
@@ -357,6 +360,15 @@ AdAmlDisassemble (
         if (ACPI_FAILURE (Status))
         {
             return Status;
+        }
+
+        if (Gbl_ExternalFilename)
+        {
+            Status = AcpiDbGetTableFromFile (Gbl_ExternalFilename, &ExternalTable);
+            if (ACPI_FAILURE (Status))
+            {
+                return Status;
+            }
         }
     }
     else
@@ -374,7 +386,7 @@ AdAmlDisassemble (
             return AE_OK;
         }
 
-        /* Obtained the local tables, just disassmeble the DSDT */
+        /* Obtained the local tables, just disassemble the DSDT */
 
         Table = AcpiGbl_DSDT;
         AcpiOsPrintf ("\nDisassembly of DSDT\n");

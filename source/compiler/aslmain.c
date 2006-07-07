@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -213,6 +213,7 @@ Options (
     printf ("  -d  [file]     Disassemble or decode binary ACPI table to file (*.dsl)\n");
     printf ("  -dc [file]     Disassemble AML and immediately compile it\n");
     printf ("                 (Obtain DSDT from current system if no input file)\n");
+    printf ("  -e  [file]     Include ACPI table for external symbol resolution\n");
     printf ("  -2             Emit ACPI 2.0 compatible ASL code\n");
     printf ("  -g             Get ACPI tables and write to files (*.dat)\n");
 
@@ -354,7 +355,7 @@ AslCommandLine (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "2b:cd^efgh^i^l^o:p:r:s:t:v:w:x:")) != EOF) switch (j)
+    while ((j = AcpiGetopt (argc, argv, "2b:cd^e:fgh^i^l^o:p:r:s:t:v:w:x:")) != EOF) switch (j)
     {
     case '2':
         Gbl_Acpi2 = TRUE;
@@ -413,6 +414,11 @@ AslCommandLine (
         }
 
         Gbl_DisasmFlag = TRUE;
+        break;
+
+
+    case 'e':
+        Gbl_ExternalFilename = AcpiGbl_Optarg;
         break;
 
 
