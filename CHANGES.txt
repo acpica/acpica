@@ -1,4 +1,49 @@
 ----------------------------------------
+07 July 2006. Summary of changes for version 20060707:
+
+1) ACPI CA Core Subsystem:
+
+Added the ACPI_PACKED_POINTERS_NOT_SUPPORTED macro to support C compilers that do not allow the initialization of address pointers within packed structures - even though the hardware itself may support misaligned transfers. Some of the debug data structures are packed by default to minimize size.
+
+Added an error message for the case where AcpiOsGetThreadId() returns zero. A non-zero value is required by the core ACPICA code to ensure the proper operation of AML mutexes and recursive control methods.
+
+The DSDT is now the only ACPI table that determines whether the AML interpreter is in 32-bit or 64-bit mode. Not really a functional change, but the hooks for per-table 32/64 switching have been removed from the code. A clarification to the ACPI specification is forthcoming in ACPI 3.0B.
+
+Fixed a possible leak of an OwnerID in the error path of AcpiTbInitTableDescriptor (tbinstal.c), and migrated all table OwnerID deletion to a single place in AcpiTbUninstallTable to correct possible leaks when using the AcpiTbDeleteTablesByType interface (with assistance from Lance Ortiz.)
+
+Fixed a problem with Serialized control methods where the semaphore associated with the method could be over-signaled after multiple method invocations.
+
+Fixed two issues with the locking of the internal namespace data structure. Both the Unload() operator and AcpiUnloadTable interface now lock the namespace during the namespace deletion associated with the table unload (with assistance from Linn Crosetto.)
+
+Fixed problem reports (Valery Podrezov) integrated:
+- Eliminate unnecessary memory allocation for CreateXxxxField (BZ 5426)
+
+Fixed problem reports (Fiodor Suietov) integrated:
+- Incomplete cleanup branches in AcpiTbGetTableRsdt (BZ 369)
+- On Address Space handler deletion, needless deactivation call (BZ 374)
+- AcpiRemoveAddressSpaceHandler: validate Device handle parameter (BZ 375)
+- Possible memory leak, Notify sub-objects of Processor, Power, ThermalZone (BZ 376)
+- AcpiRemoveAddressSpaceHandler: validate Handler parameter (BZ 378)
+- Minimum Length of RSDT should be validated (BZ 379)
+- AcpiRemoveNotifyHandler: return AE_NOT_EXIST if Processor Obj has no Handler (BZ (380)
+- AcpiUnloadTable: return AE_NOT_EXIST if no table of specified type loaded (BZ 381)
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  80.5K Code, 17.8K Data,  98.3K Total
+    Debug Version:     160.8K Code, 64.8K Data, 225.6K Total
+  Current Release:
+    Non-Debug Version:  80.7K Code, 17.9K Data,  98.6K Total
+    Debug Version:     161.0K Code, 65.1K Data, 226.1K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+Fixed problem reports:
+Compiler segfault when ASL contains a long (>1024) String declaration (BZ 436)
+
+----------------------------------------
 23 June 2006. Summary of changes for version 20060623:
 
 1) ACPI CA Core Subsystem:
