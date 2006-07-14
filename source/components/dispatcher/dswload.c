@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -1144,7 +1144,6 @@ AcpiDsLoad2EndOp (
                     return (Status);
                 }
             }
-
             /*
              * The OpRegion is not fully parsed at this time. Only valid
              * argument is the SpaceId. (We must save the address of the
@@ -1152,11 +1151,17 @@ AcpiDsLoad2EndOp (
              */
 
             /*
-             * If we have a valid region, initialize it
-             * Namespace is NOT locked at this point.
+             * Complete the initialization of the region. This will run the
+             * _REG method if it exists - therefore, we must unlock the 
+             * interpreter for the duration of this call.
              */
-            Status = AcpiEvInitializeRegion (AcpiNsGetAttachedObject (Node),
-                        FALSE);
+            AcpiExExitInterpreter ();
+
+            Status = AcpiEvInitializeRegion (
+                        AcpiNsGetAttachedObject (Node), FALSE);
+
+            (void) AcpiExEnterInterpreter ();
+
             if (ACPI_FAILURE (Status))
             {
                 /*
