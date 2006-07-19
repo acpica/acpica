@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.131 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -412,9 +412,7 @@ AcpiDsBuildInternalPackageObj (
         ObjDesc->Package.Node = Parent->Common.Node;
     }
 
-    ObjDesc->Package.Count = PackageLength;
-
-    /* Count the number of items in the package list */
+    /* Count the *actual* number of items in the package list */
 
     Arg = Op->Common.Value.Arg;
     Arg = Arg->Common.Next;
@@ -424,12 +422,26 @@ AcpiDsBuildInternalPackageObj (
     }
 
     /*
-     * The package length (number of elements) will be the greater
-     * of the specified length and the length of the initializer list
+     * The number of elements in the package will be the lesser of the
+     * specified element count and the length of the initializer list.
+     *
+     * Even though the ASL compilers do not allow this to happen (for the
+     * fixed length package opcode), some BIOS code modifies the AML on the
+     * fly to adjust the package length, and this code compensates for that.
+     * This also provides compatibility with other AML interpreters.
      */
-    if (PackageListLength > PackageLength)
+    ObjDesc->Package.Count = PackageLength;
+
+    if (PackageListLength != PackageLength)
     {
-        ObjDesc->Package.Count = PackageListLength;
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Package length mismatch, using lesser of %X(Length Arg) and %X(AML Length)\n",
+            PackageLength, PackageListLength));
+
+        if (PackageListLength < PackageLength)
+        {
+            ObjDesc->Package.Count = PackageListLength;
+        }
     }
 
     /*
@@ -451,7 +463,7 @@ AcpiDsBuildInternalPackageObj (
      */
     Arg = Op->Common.Value.Arg;
     Arg = Arg->Common.Next;
-    for (i = 0; Arg; i++)
+    for (i = 0; i < ObjDesc->Package.Count; i++)
     {
         if (Arg->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
         {
