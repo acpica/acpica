@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.184 $
+ *       $Revision: 1.185 $
  *
  *****************************************************************************/
 
@@ -276,6 +276,7 @@ ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_MutexInfo[ACPI_NUM_MUTEX];
 /*
  * Global lock semaphore works in conjunction with the actual HW global lock
  */
+ACPI_EXTERN ACPI_MUTEX                  AcpiGbl_GlobalLockMutex;
 ACPI_EXTERN ACPI_SEMAPHORE              AcpiGbl_GlobalLockSemaphore;
 
 /*
@@ -318,7 +319,6 @@ ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
 
 /* Misc */
 
-ACPI_EXTERN UINT32                      AcpiGbl_GlobalLockThreadCount;
 ACPI_EXTERN UINT32                      AcpiGbl_OriginalMode;
 ACPI_EXTERN UINT32                      AcpiGbl_RsdpOriginalLocation;
 ACPI_EXTERN UINT32                      AcpiGbl_NsLookupCount;
