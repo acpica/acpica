@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -1119,6 +1119,8 @@ AeMiscellaneousTests (
     {
         AcpiOsPrintf ("Could not get GlobalLock, %X\n", Status);
     }
+
+    Status = AcpiAcquireGlobalLock (0x5, &LockHandle); /* Should fail */
 
     Status = AcpiReleaseGlobalLock (LockHandle);
     if (ACPI_FAILURE (Status))
