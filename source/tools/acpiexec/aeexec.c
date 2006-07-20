@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -1058,6 +1058,7 @@ AeMiscellaneousTests (
     char                    Buffer[32];
     ACPI_VENDOR_UUID        Uuid = {0, {ACPI_INIT_UUID (0,0,0,0,0,0,0,0,0,0,0)}};
     ACPI_STATUS             Status;
+    UINT32                  LockHandle;
 
 
     ReturnBuf.Length = 32;
@@ -1100,17 +1101,30 @@ AeMiscellaneousTests (
 
 
     Status = AcpiGetHandle (NULL, "RSRC", &Handle);
-    if (ACPI_FAILURE (Status))
-    {
-        return;
-    }
-
-    ReturnBuf.Length = ACPI_ALLOCATE_BUFFER;
-
-    Status = AcpiGetVendorResource (Handle, "_CRS", &Uuid, &ReturnBuf);
     if (ACPI_SUCCESS (Status))
     {
-        AcpiOsFree (ReturnBuf.Pointer);
+        ReturnBuf.Length = ACPI_ALLOCATE_BUFFER;
+
+        Status = AcpiGetVendorResource (Handle, "_CRS", &Uuid, &ReturnBuf);
+        if (ACPI_SUCCESS (Status))
+        {
+            AcpiOsFree (ReturnBuf.Pointer);
+        }
     }
+
+    /* Test global lock */
+
+    Status = AcpiAcquireGlobalLock (0xFFFF, &LockHandle);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Could not get GlobalLock, %X\n", Status);
+    }
+
+    Status = AcpiReleaseGlobalLock (LockHandle);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Could not release GlobalLock, %X\n", Status);
+    }
+
 }
 
