@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -143,10 +143,6 @@ static const char        *AcpiNotifyValueNames[] =
 
 static void ACPI_SYSTEM_XFACE
 AcpiEvNotifyDispatch (
-    void                    *Context);
-
-static void ACPI_SYSTEM_XFACE
-AcpiEvGlobalLockThread (
     void                    *Context);
 
 static UINT32
@@ -387,48 +383,19 @@ AcpiEvNotifyDispatch (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiEvGlobalLockThread
- *
- * PARAMETERS:  Context         - From thread interface, not used
- *
- * RETURN:      None
- *
- * DESCRIPTION: Invoked by SCI interrupt handler upon acquisition of the
- *              Global Lock.  Simply signal all threads that are waiting
- *              for the lock.
- *
- ******************************************************************************/
-
-static void ACPI_SYSTEM_XFACE
-AcpiEvGlobalLockThread (
-    void                    *Context)
-{
-    ACPI_STATUS             Status;
-
-
-    /* Signal the thread that is waiting for the lock */
-
-    /* Send a unit to the semaphore */
-
-    Status = AcpiOsSignalSemaphore (AcpiGbl_GlobalLockSemaphore, 1);
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_ERROR ((AE_INFO, "Could not signal Global Lock semaphore"));
-    }
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiEvGlobalLockHandler
  *
  * PARAMETERS:  Context         - From thread interface, not used
  *
- * RETURN:      ACPI_INTERRUPT_HANDLED or ACPI_INTERRUPT_NOT_HANDLED
+ * RETURN:      ACPI_INTERRUPT_HANDLED
  *
  * DESCRIPTION: Invoked directly from the SCI handler when a global lock
- *              release interrupt occurs.  Grab the global lock and queue
- *              the global lock thread for execution
+ *              release interrupt occurs. Attempt to acquire the global lock,
+ *              if successful, signal the thread waiting for the lock.
+ *
+ * NOTE: Assumes that the semaphore can be signaled from interrupt level. If
+ * this is not possible for some reason, a separate thread will have to be
+ * scheduled to do this.
  *
  ******************************************************************************/
 
@@ -453,16 +420,12 @@ AcpiEvGlobalLockHandler (
 
         AcpiGbl_GlobalLockAcquired = TRUE;
 
-        /* Run the Global Lock thread which will signal the waiting thread */
+        /* Send a unit to the semaphore */
 
-        Status = AcpiOsExecute (
-                    OSL_GLOBAL_LOCK_HANDLER, AcpiEvGlobalLockThread, Context);
+        Status = AcpiOsSignalSemaphore (AcpiGbl_GlobalLockSemaphore, 1);
         if (ACPI_FAILURE (Status))
         {
-            ACPI_EXCEPTION ((AE_INFO, Status,
-                "Could not queue Global Lock thread"));
-
-            return (ACPI_INTERRUPT_NOT_HANDLED);
+            ACPI_ERROR ((AE_INFO, "Could not signal Global Lock semaphore"));
         }
     }
 
@@ -621,7 +584,7 @@ AcpiEvReleaseGlobalLock (
     ACPI_FUNCTION_TRACE (EvReleaseGlobalLock);
 
 
-    /* Lock must be acquired */
+    /* Lock must be already acquired */
 
     if (!AcpiGbl_GlobalLockAcquired)
     {
