@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -1152,7 +1152,7 @@ AcpiDsLoad2EndOp (
 
             /*
              * Complete the initialization of the region. This will run the
-             * _REG method if it exists - therefore, we must unlock the 
+             * _REG method if it exists - therefore, we must unlock the
              * interpreter for the duration of this call.
              */
             AcpiExExitInterpreter ();

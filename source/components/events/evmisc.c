@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.95 $
+ *              $Revision: 1.96 $
  *
  *****************************************************************************/
 
@@ -492,7 +492,7 @@ AcpiEvInitGlobalLockHandler (
  * MUTEX:       Interpreter must be locked
  *
  * Note: The original implementation allowed multiple threads to "acquire" the
- * Global Lock, and the OS would hold the lock until the last thread had 
+ * Global Lock, and the OS would hold the lock until the last thread had
  * released it. However, this could potentially starve the BIOS out of the
  * lock, especially in the case where there is a tight handshake between the
  * Embedded Controller driver and the BIOS. Therefore, this implementation

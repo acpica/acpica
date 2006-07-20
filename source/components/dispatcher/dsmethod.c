@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -290,7 +290,7 @@ AcpiDsBeginMethodExecution (
     /*
      * If this method is serialized, we need to acquire the method mutex.
      */
-    if (ObjDesc->Method.MethodFlags & AML_METHOD_SERIALIZED) 
+    if (ObjDesc->Method.MethodFlags & AML_METHOD_SERIALIZED)
     {
         /*
          * Create a mutex for the method if it is defined to be Serialized
@@ -307,11 +307,11 @@ AcpiDsBeginMethodExecution (
         }
 
         /*
-         * The CurrentSyncLevel (per-thread) must be less than or equal to 
+         * The CurrentSyncLevel (per-thread) must be less than or equal to
          * the sync level of the method. This mechanism provides some
          * deadlock prevention
          *
-         * Top-level method invocation has no walk state at this point 
+         * Top-level method invocation has no walk state at this point
          */
         if (WalkState &&
             (WalkState->Thread->CurrentSyncLevel > ObjDesc->Method.Mutex->Mutex.SyncLevel))
@@ -800,6 +800,5 @@ AcpiDsTerminateControlMethod (
 
     return_VOID;
 }
-
 
 
