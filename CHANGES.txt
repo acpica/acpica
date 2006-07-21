@@ -1,4 +1,36 @@
 ----------------------------------------
+21 July 2006. Summary of changes for version 20060721:
+
+1) ACPI CA Core Subsystem:
+
+The full source code for the ASL test suite used to validate the iASL compiler and the ACPICA core subsystem is being released with the ACPICA source for the first time. The source is contained in a separate package and consists of over 1100 files that exercise all ASL/AML operators. The package should appear on the Intel/ACPI web site shortly. (Valery Podrezov, Fiodor Suietov)
+
+Completed a new design and implementation for support of the ACPI Global Lock. On the OS side, the global lock is now treated as a standard AML mutex. Previously, multiple OS threads could "acquire" the global lock simultaneously. However, this could cause the BIOS to be starved out of the lock - especially in cases such as the Embedded Controller driver where there is a tight coupling between the OS and the BIOS.
+
+Implemented an optimization for the ACPI Global Lock interrupt mechanism. The Global Lock interrupt handler no longer queues the execution of a separate thread to signal the global lock semaphore. Instead, the semaphore is signaled directly from the interrupt handler.
+
+Implemented support within the AML interpreter for package objects that contain a larger AML length (package list length) than the package element count. In this case, the length of the package is truncated to match the package element count. Some BIOS code apparently modifies the package length on the fly, and this change supports this behavior. Provides compatibility with the MS AML interpreter. (With assistance from Fiodor Suietov)
+
+Implemented a temporary fix for the BankValue parameter of a Bank Field to support all constant values, now including the Zero and One opcodes. Evaluation of this parameter must eventually be converted to a full TermArg evaluation. A not-implemented error is now returned (temporarily) for non-constant values for this parameter.
+
+Fixed problem reports (Fiodor Suietov) integrated:
+- Fix for premature object deletion after CopyObject on Operation Region (BZ 350)
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  80.7K Code, 18.0K Data,  98.7K Total
+    Debug Version:     160.9K Code, 65.1K Data, 226.0K Total
+  Current Release:
+    Non-Debug Version:  80.7K Code, 17.9K Data,  98.6K Total
+    Debug Version:     161.0K Code, 65.1K Data, 226.1K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+No changes for this release.
+
+----------------------------------------
 07 July 2006. Summary of changes for version 20060707:
 
 1) ACPI CA Core Subsystem:
