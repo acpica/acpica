@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.131 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -124,9 +124,9 @@
 
 #ifdef ACPI_DEBUG_OUTPUT
 
-static ACPI_THREAD_ID   AcpiGbl_PrevThreadId = 0;
-static char             *AcpiGbl_FnEntryStr = "----Entry";
-static char             *AcpiGbl_FnExitStr  = "----Exit-";
+static UINT32   AcpiGbl_PrevThreadId = 0xFFFFFFFF;
+static char     *AcpiGbl_FnEntryStr = "----Entry";
+static char     *AcpiGbl_FnExitStr  = "----Exit-";
 
 /* Local prototypes */
 
@@ -282,7 +282,7 @@ AcpiUtDebugPrint (
         {
             AcpiOsPrintf (
                 "\n**** Context Switch from TID %X to TID %X ****\n\n",
-                (UINT32) AcpiGbl_PrevThreadId, (UINT32) ThreadId);
+                AcpiGbl_PrevThreadId, ThreadId);
         }
 
         AcpiGbl_PrevThreadId = ThreadId;
@@ -296,7 +296,7 @@ AcpiUtDebugPrint (
 
     if (ACPI_LV_THREADS & AcpiDbgLevel)
     {
-        AcpiOsPrintf ("[%04lX] ", (UINT32) ThreadId);
+        AcpiOsPrintf ("[%04lX] ", ThreadId);
     }
 
     AcpiOsPrintf ("[%02ld] %-22.22s: ",
