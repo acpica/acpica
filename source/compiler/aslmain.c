@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -788,15 +788,7 @@ main (
     {
         /* ACPI CA subsystem initialization */
 
-        Status = AcpiOsInitialize ();
-        AcpiUtInitGlobals ();
-        Status = AcpiUtMutexInitialize ();
-        if (ACPI_FAILURE (Status))
-        {
-            return -1;
-        }
-
-        Status = AcpiNsRootInitialize ();
+        Status = AdInitialize ();
         if (ACPI_FAILURE (Status))
         {
             return -1;

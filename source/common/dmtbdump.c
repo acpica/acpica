@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -148,9 +148,9 @@ AcpiDmDumpRsdp (
 
     /* ACPI 2.0+ contains more data and has a Length field */
 
-    if (ACPI_CAST_PTR (RSDP_DESCRIPTOR, Table)->Revision > 0)
+    if (ACPI_CAST_PTR (ACPI_TABLE_RSDP, Table)->Revision > 0)
     {
-        Length = ACPI_CAST_PTR (RSDP_DESCRIPTOR, Table)->Length;
+        Length = ACPI_CAST_PTR (ACPI_TABLE_RSDP, Table)->Length;
         AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoRsdp2);
     }
 
@@ -182,7 +182,7 @@ AcpiDmDumpRsdt (
 
     /* Point to start of table pointer array */
 
-    Array = ACPI_CAST_PTR (RSDT_DESCRIPTOR, Table)->TableOffsetEntry;
+    Array = ACPI_CAST_PTR (ACPI_TABLE_RSDT, Table)->TableOffsetEntry;
     Offset = sizeof (ACPI_TABLE_HEADER);
 
     /* RSDT uses 32-bit pointers */
@@ -222,7 +222,7 @@ AcpiDmDumpXsdt (
 
     /* Point to start of table pointer array */
 
-    Array = ACPI_CAST_PTR (XSDT_DESCRIPTOR, Table)->TableOffsetEntry;
+    Array = ACPI_CAST_PTR (ACPI_TABLE_XSDT, Table)->TableOffsetEntry;
     Offset = sizeof (ACPI_TABLE_HEADER);
 
     /* XSDT uses 64-bit pointers */
@@ -261,7 +261,7 @@ AcpiDmDumpFadt (
 
     /* Check for ACPI 2.0+ extended data (cannot depend on Revision field) */
 
-    if (Table->Length > sizeof (FADT_DESCRIPTOR_REV1))
+    if (Table->Length > sizeof (ACPI_TABLE_FADT))
     {
         AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt2);
     }
@@ -298,35 +298,35 @@ AcpiDmDumpAsf (
 
         AcpiDmDumpTable (Table->Length, Offset, SubTable, 0, AcpiDmTableInfoAsfHdr);
 
-        switch (SubTable->Type & 0x7F) /* Mask off top bit */
+        switch (SubTable->Header.Type & 0x7F) /* Mask off top bit */
         {
-        case ASF_INFO:
+        case ACPI_ASF_TYPE_INFO:
             InfoTable = AcpiDmTableInfoAsf0;
             break;
-        case ASF_ALERT:
+        case ACPI_ASF_TYPE_ALERT:
             InfoTable = AcpiDmTableInfoAsf1;
             break;
-        case ASF_CONTROL:
+        case ACPI_ASF_TYPE_CONTROL:
             InfoTable = AcpiDmTableInfoAsf2;
             break;
-        case ASF_BOOT:
+        case ACPI_ASF_TYPE_BOOT:
             InfoTable = AcpiDmTableInfoAsf3;
             break;
-        case ASF_ADDRESS:
+        case ACPI_ASF_TYPE_ADDRESS:
             InfoTable = AcpiDmTableInfoAsf4;
             break;
         default:
-            AcpiOsPrintf ("\n**** Unknown ASF sub-table type %X\n", SubTable->Type);
+            AcpiOsPrintf ("\n**** Unknown ASF sub-table type %X\n", SubTable->Header.Type);
             return;
         }
 
-        AcpiDmDumpTable (Table->Length, Offset, SubTable, SubTable->Length, InfoTable);
+        AcpiDmDumpTable (Table->Length, Offset, SubTable, SubTable->Header.Length, InfoTable);
         AcpiOsPrintf ("\n");
 
         /* Point to next sub-table */
 
-        Offset += SubTable->Length;
-        SubTable = ACPI_ADD_PTR (ACPI_ASF_INFO, SubTable, SubTable->Length);
+        Offset += SubTable->Header.Length;
+        SubTable = ACPI_ADD_PTR (ACPI_ASF_INFO, SubTable, SubTable->Header.Length);
     }
 }
 
@@ -390,9 +390,9 @@ void
 AcpiDmDumpMadt (
     ACPI_TABLE_HEADER       *Table)
 {
-    APIC_HEADER             *SubTable;
+    ACPI_SUBTABLE_HEADER    *SubTable;
     UINT32                  Length = Table->Length;
-    UINT32                  Offset = sizeof (MULTIPLE_APIC_TABLE);
+    UINT32                  Offset = sizeof (ACPI_TABLE_MADT);
     ACPI_DMTABLE_INFO       *InfoTable;
 
 
@@ -402,7 +402,7 @@ AcpiDmDumpMadt (
 
     /* Sub-tables */
 
-    SubTable = ACPI_ADD_PTR (APIC_HEADER, Table, Offset);
+    SubTable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Table, Offset);
     while (Offset < Table->Length)
     {
         /* Common sub-table header */
@@ -412,31 +412,31 @@ AcpiDmDumpMadt (
 
         switch (SubTable->Type)
         {
-        case APIC_PROCESSOR:
+        case ACPI_MADT_TYPE_LOCAL_APIC:
             InfoTable = AcpiDmTableInfoMadt0;
             break;
-        case APIC_IO:
+        case ACPI_MADT_TYPE_IO_APIC:
             InfoTable = AcpiDmTableInfoMadt1;
             break;
-        case APIC_XRUPT_OVERRIDE:
+        case ACPI_MADT_TYPE_INTERRUPT_OVERRIDE:
             InfoTable = AcpiDmTableInfoMadt2;
             break;
-        case APIC_NMI:
+        case ACPI_MADT_TYPE_NMI_SOURCE:
             InfoTable = AcpiDmTableInfoMadt3;
             break;
-        case APIC_LOCAL_NMI:
+        case ACPI_MADT_TYPE_LOCAL_APIC_NMI:
             InfoTable = AcpiDmTableInfoMadt4;
             break;
-        case APIC_ADDRESS_OVERRIDE:
+        case ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE:
             InfoTable = AcpiDmTableInfoMadt5;
             break;
-        case APIC_IO_SAPIC:
+        case ACPI_MADT_TYPE_IO_SAPIC:
             InfoTable = AcpiDmTableInfoMadt6;
             break;
-        case APIC_LOCAL_SAPIC:
+        case ACPI_MADT_TYPE_LOCAL_SAPIC:
             InfoTable = AcpiDmTableInfoMadt7;
             break;
-        case APIC_XRUPT_SOURCE:
+        case ACPI_MADT_TYPE_INTERRUPT_SOURCE:
             InfoTable = AcpiDmTableInfoMadt8;
             break;
         default:
@@ -449,7 +449,7 @@ AcpiDmDumpMadt (
         /* Point to next sub-table */
 
         Offset += SubTable->Length;
-        SubTable = ACPI_ADD_PTR (APIC_HEADER, SubTable, SubTable->Length);
+        SubTable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, SubTable, SubTable->Length);
     }
 }
 
@@ -531,9 +531,9 @@ AcpiDmDumpSlit (
 
     /* Display the Locality NxN Matrix */
 
-    Localities = (UINT32) ACPI_CAST_PTR (SYSTEM_LOCALITY_INFO, Table)->LocalityCount;
-    Offset = ACPI_OFFSET (SYSTEM_LOCALITY_INFO, Entry[0][0]);
-    Row = (UINT8 *) ACPI_CAST_PTR (SYSTEM_LOCALITY_INFO, Table)->Entry;
+    Localities = (UINT32) ACPI_CAST_PTR (ACPI_TABLE_SLIT, Table)->LocalityCount;
+    Offset = ACPI_OFFSET (ACPI_TABLE_SLIT, Entry[0]);
+    Row = (UINT8 *) ACPI_CAST_PTR (ACPI_TABLE_SLIT, Table)->Entry;
 
     for (i = 0; i < Localities; i++)
     {
@@ -586,8 +586,8 @@ void
 AcpiDmDumpSrat (
     ACPI_TABLE_HEADER       *Table)
 {
-    UINT32                  Offset = sizeof (SYSTEM_RESOURCE_AFFINITY);
-    STATIC_RESOURCE_ALLOC   *SubTable;
+    UINT32                  Offset = sizeof (ACPI_TABLE_SRAT);
+    ACPI_SUBTABLE_HEADER    *SubTable;
     ACPI_DMTABLE_INFO       *InfoTable;
 
 
@@ -597,15 +597,15 @@ AcpiDmDumpSrat (
 
     /* Sub-tables */
 
-    SubTable = ACPI_ADD_PTR (STATIC_RESOURCE_ALLOC, Table, Offset);
+    SubTable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Table, Offset);
     while (Offset < Table->Length)
     {
         switch (SubTable->Type)
         {
-        case SRAT_CPU_AFFINITY:
+        case ACPI_SRAT_TYPE_CPU_AFFINITY:
             InfoTable = AcpiDmTableInfoSrat0;
             break;
-        case SRAT_MEMORY_AFFINITY:
+        case ACPI_SRAT_TYPE_MEMORY_AFFINITY:
             InfoTable = AcpiDmTableInfoSrat1;
             break;
         default:
@@ -619,7 +619,7 @@ AcpiDmDumpSrat (
         /* Point to next sub-table */
 
         Offset += SubTable->Length;
-        SubTable = ACPI_ADD_PTR (STATIC_RESOURCE_ALLOC, SubTable, SubTable->Length);
+        SubTable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, SubTable, SubTable->Length);
     }
 }
 

@@ -2,7 +2,7 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -862,27 +862,27 @@ AfFindTable (
     }
 
 
-    if (ACPI_COMPARE_NAME (TableName, DSDT_SIG))
+    if (ACPI_COMPARE_NAME (TableName, ACPI_SIG_DSDT))
     {
         *TablePtr = (UINT8 *) AcpiGbl_DSDT;
         *TableLength = AcpiGbl_DSDT->Length;
     }
-    else if (ACPI_COMPARE_NAME (TableName, FADT_SIG))
+    else if (ACPI_COMPARE_NAME (TableName, ACPI_SIG_FADT))
     {
         *TablePtr = (UINT8 *) AcpiGbl_FADT;
         *TableLength = AcpiGbl_FADT->Length;
     }
-    else if (ACPI_COMPARE_NAME (TableName, FACS_SIG))
+    else if (ACPI_COMPARE_NAME (TableName, ACPI_SIG_FACS))
     {
         *TablePtr = (UINT8 *) AcpiGbl_FACS;
         *TableLength = AcpiGbl_FACS->Length;
     }
-    else if (ACPI_COMPARE_NAME (TableName, RSDT_SIG))
+    else if (ACPI_COMPARE_NAME (TableName, ACPI_SIG_RSDT))
     {
         *TablePtr = (UINT8 *) AcpiGbl_XSDT;
         *TableLength = AcpiGbl_XSDT->Length;
     }
-    else if (ACPI_COMPARE_NAME (TableName, SSDT_SIG))
+    else if (ACPI_COMPARE_NAME (TableName, ACPI_SIG_SSDT))
     {
         AcpiOsPrintf ("Unsupported table signature: [%4.4s]\n", TableName);
         *TablePtr = NULL;

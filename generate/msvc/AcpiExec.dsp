@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /GB /Gr /MT /Za /W4 /GX /O1 /Ob0 /I "..\..\source\include" /D "ACPI_EXEC_APP" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_MULTI_THREADED" /FR /FD /c
+# ADD CPP /nologo /Gr /MT /Za /W4 /GX /O1 /Ob0 /I "..\..\source\include" /D "ACPI_EXEC_APP" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_MULTI_THREADED" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -74,7 +74,7 @@ PostBuild_Cmds=copy bin\acpiexec.exe ..\..\libraries\acpiexec.exe	dir ..\..\libr
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /GB /Gr /MTd /Za /W4 /Gm /ZI /Oa /Os /Oy /I "..\..\source\include" /D "ACPI_EXEC_APP" /D "_DEBUG" /D "WIN32_LEAN_AND_MEAN" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_MULTI_THREADED" /FR /FD /GZ /c
+# ADD CPP /nologo /Gr /MTd /Za /W4 /Gm /ZI /Oa /Os /Oy /I "..\..\source\include" /D "ACPI_EXEC_APP" /D "_DEBUG" /D "WIN32_LEAN_AND_MEAN" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "_MULTI_THREADED" /FR /FD /GZ /c
 # SUBTRACT CPP /Og /Oi /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -584,23 +584,11 @@ SOURCE=..\..\source\components\interpreter\dispatcher\dswstate.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
-SOURCE=..\..\source\components\tables\tbconvrt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\tables\tbget.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\tables\tbgetall.c
+SOURCE=..\..\source\components\tables\tbfind.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbinstal.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\tables\tbrsdt.c
 # End Source File
 # Begin Source File
 

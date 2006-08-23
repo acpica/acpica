@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -147,14 +147,6 @@ AcpiEnable (
     ACPI_FUNCTION_TRACE (AcpiEnable);
 
 
-    /* Make sure we have the FADT */
-
-    if (!AcpiGbl_FADT)
-    {
-        ACPI_WARNING ((AE_INFO, "No FADT information present!"));
-        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
-    }
-
     if (AcpiHwGetMode() == ACPI_SYS_MODE_ACPI)
     {
         ACPI_DEBUG_PRINT ((ACPI_DB_INIT, "System is already in ACPI mode\n"));
@@ -201,12 +193,6 @@ AcpiDisable (
 
     ACPI_FUNCTION_TRACE (AcpiDisable);
 
-
-    if (!AcpiGbl_FADT)
-    {
-        ACPI_WARNING ((AE_INFO, "No FADT information present!"));
-        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
-    }
 
     if (AcpiHwGetMode() == ACPI_SYS_MODE_LEGACY)
     {

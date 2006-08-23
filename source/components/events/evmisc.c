@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.96 $
+ *              $Revision: 1.97 $
  *
  *****************************************************************************/
 
@@ -138,6 +138,10 @@ static const char        *AcpiNotifyValueNames[] =
     "Power Fault"
 };
 #endif
+
+/* Pointer to FACS needed for the Global Lock */
+
+static ACPI_TABLE_FACS      *Facs = NULL;
 
 /* Local prototypes */
 
@@ -413,7 +417,7 @@ AcpiEvGlobalLockHandler (
      * If we don't get it now, it will be marked pending and we will
      * take another interrupt when it becomes free.
      */
-    ACPI_ACQUIRE_GLOBAL_LOCK (AcpiGbl_CommonFACS.GlobalLock, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (Facs, Acquired);
     if (Acquired)
     {
         /* Got the lock, now wake the thread waiting for it */
@@ -454,6 +458,12 @@ AcpiEvInitGlobalLockHandler (
 
     ACPI_FUNCTION_TRACE (EvInitGlobalLockHandler);
 
+
+    Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &Facs);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     AcpiGbl_GlobalLockPresent = TRUE;
     Status = AcpiInstallFixedEventHandler (ACPI_EVENT_GLOBAL,
@@ -534,7 +544,7 @@ AcpiEvAcquireGlobalLock (
 
     /* Attempt to acquire the actual hardware lock */
 
-    ACPI_ACQUIRE_GLOBAL_LOCK (AcpiGbl_CommonFACS.GlobalLock, Acquired);
+    ACPI_ACQUIRE_GLOBAL_LOCK (Facs, Acquired);
     if (Acquired)
     {
        /* We got the lock */
@@ -557,6 +567,7 @@ AcpiEvAcquireGlobalLock (
      */
     Status = AcpiExSystemWaitSemaphore (AcpiGbl_GlobalLockSemaphore,
                 ACPI_WAIT_FOREVER);
+
     return_ACPI_STATUS (Status);
 }
 
@@ -597,7 +608,7 @@ AcpiEvReleaseGlobalLock (
     {
         /* Allow any thread to release the lock */
 
-        ACPI_RELEASE_GLOBAL_LOCK (AcpiGbl_CommonFACS.GlobalLock, Pending);
+        ACPI_RELEASE_GLOBAL_LOCK (Facs, Pending);
 
         /*
          * If the pending bit was set, we must write GBL_RLS to the control

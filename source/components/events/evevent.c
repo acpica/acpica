@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -152,14 +152,6 @@ AcpiEvInitializeEvents (
 
     ACPI_FUNCTION_TRACE (EvInitializeEvents);
 
-
-    /* Make sure we have ACPI tables */
-
-    if (!AcpiGbl_DSDT)
-    {
-        ACPI_WARNING ((AE_INFO, "No ACPI tables present!"));
-        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
-    }
 
     /*
      * Initialize the Fixed and General Purpose Events. This is done prior to

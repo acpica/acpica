@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -133,7 +133,7 @@
 
 static ACPI_STATUS
 AcpiExAddTable (
-    ACPI_TABLE_HEADER       *Table,
+    ACPI_NATIVE_UINT        TableIndex,
     ACPI_NAMESPACE_NODE     *ParentNode,
     ACPI_OPERAND_OBJECT     **DdbHandle);
 
@@ -155,12 +155,11 @@ AcpiExAddTable (
 
 static ACPI_STATUS
 AcpiExAddTable (
-    ACPI_TABLE_HEADER       *Table,
+    ACPI_NATIVE_UINT        TableIndex,
     ACPI_NAMESPACE_NODE     *ParentNode,
     ACPI_OPERAND_OBJECT     **DdbHandle)
 {
     ACPI_STATUS             Status;
-    ACPI_TABLE_DESC         TableInfo;
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
@@ -182,44 +181,17 @@ AcpiExAddTable (
 
     /* Install the new table into the local data structures */
 
-    ACPI_MEMSET (&TableInfo, 0, sizeof (ACPI_TABLE_DESC));
-
-    TableInfo.Type       = ACPI_TABLE_ID_SSDT;
-    TableInfo.Pointer    = Table;
-    TableInfo.Length     = (ACPI_SIZE) Table->Length;
-    TableInfo.Allocation = ACPI_MEM_ALLOCATED;
-
-    Status = AcpiTbInstallTable (&TableInfo);
-    ObjDesc->Reference.Object = TableInfo.InstalledDesc;
-
-    if (ACPI_FAILURE (Status))
-    {
-        if (Status == AE_ALREADY_EXISTS)
-        {
-            /* Table already exists, just return the handle */
-
-            return_ACPI_STATUS (AE_OK);
-        }
-        goto Cleanup;
-    }
+    ObjDesc->Reference.Object = ACPI_CAST_PTR (void, TableIndex);
 
     /* Add the table to the namespace */
 
-    Status = AcpiNsLoadTable (TableInfo.InstalledDesc, ParentNode);
+    Status = AcpiNsLoadTable (TableIndex, ParentNode);
     if (ACPI_FAILURE (Status))
     {
-        /* Uninstall table on error */
-
-        (void) AcpiTbUninstallTable (TableInfo.InstalledDesc);
-        goto Cleanup;
+        AcpiUtRemoveReference (ObjDesc);
+        *DdbHandle = NULL;
     }
 
-    return_ACPI_STATUS (AE_OK);
-
-
-Cleanup:
-    AcpiUtRemoveReference (ObjDesc);
-    *DdbHandle = NULL;
     return_ACPI_STATUS (Status);
 }
 
@@ -244,11 +216,12 @@ AcpiExLoadTableOp (
 {
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_TABLE_HEADER       *Table;
+    ACPI_NATIVE_UINT        TableIndex;
     ACPI_NAMESPACE_NODE     *ParentNode;
     ACPI_NAMESPACE_NODE     *StartNode;
     ACPI_NAMESPACE_NODE     *ParameterNode = NULL;
     ACPI_OPERAND_OBJECT     *DdbHandle;
+    ACPI_TABLE_HEADER       *Table;
 
 
     ACPI_FUNCTION_TRACE (ExLoadTableOp);
@@ -272,7 +245,7 @@ AcpiExLoadTableOp (
 
     Status = AcpiTbFindTable (Operand[0]->String.Pointer,
                               Operand[1]->String.Pointer,
-                              Operand[2]->String.Pointer, &Table);
+                              Operand[2]->String.Pointer, &TableIndex);
     if (ACPI_FAILURE (Status))
     {
         if (Status != AE_NOT_FOUND)
@@ -341,7 +314,7 @@ AcpiExLoadTableOp (
 
     /* Load the table into the namespace */
 
-    Status = AcpiExAddTable (Table, ParentNode, &DdbHandle);
+    Status = AcpiExAddTable (TableIndex, ParentNode, &DdbHandle);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -363,9 +336,13 @@ AcpiExLoadTableOp (
         }
     }
 
-    ACPI_INFO ((AE_INFO,
-        "Dynamic OEM Table Load - [%4.4s] OemId [%6.6s] OemTableId [%8.8s]",
-        Table->Signature, Table->OemId, Table->OemTableId));
+    Status = AcpiGetTableByIndex (TableIndex, &Table);
+    if (ACPI_SUCCESS (Status))
+    {
+        ACPI_INFO ((AE_INFO,
+            "Dynamic OEM Table Load - [%4.4s] OemId [%6.6s] OemTableId [%8.8s]",
+            Table->Signature, Table->OemId, Table->OemTableId));
+    }
 
     *ReturnDesc = DdbHandle;
     return_ACPI_STATUS  (Status);
@@ -397,10 +374,12 @@ AcpiExLoadOp (
     ACPI_OPERAND_OBJECT     *DdbHandle;
     ACPI_OPERAND_OBJECT     *BufferDesc = NULL;
     ACPI_TABLE_HEADER       *TablePtr = NULL;
+    ACPI_NATIVE_UINT        TableIndex;
     ACPI_PHYSICAL_ADDRESS   Address;
     ACPI_TABLE_HEADER       TableHeader;
     ACPI_INTEGER            Temp;
     UINT32                  i;
+
 
     ACPI_FUNCTION_TRACE (ExLoadOp);
 
@@ -523,8 +502,8 @@ AcpiExLoadOp (
 
     /* The table must be either an SSDT or a PSDT */
 
-    if ((!ACPI_COMPARE_NAME (TablePtr->Signature, PSDT_SIG)) &&
-        (!ACPI_COMPARE_NAME (TablePtr->Signature, SSDT_SIG)))
+    if ((!ACPI_COMPARE_NAME (TablePtr->Signature, ACPI_SIG_PSDT)) &&
+        (!ACPI_COMPARE_NAME (TablePtr->Signature, ACPI_SIG_SSDT)))
     {
         ACPI_ERROR ((AE_INFO,
             "Table has invalid signature [%4.4s], must be SSDT or PSDT",
@@ -533,9 +512,16 @@ AcpiExLoadOp (
         goto Cleanup;
     }
 
-    /* Install the new table into the local data structures */
+    /*
+     * Install the new table into the local data structures
+     */
+    Status = AcpiTbAddTable (TablePtr, &TableIndex);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
-    Status = AcpiExAddTable (TablePtr, AcpiGbl_RootNode, &DdbHandle);
+    Status = AcpiExAddTable (TableIndex, AcpiGbl_RootNode, &DdbHandle);
     if (ACPI_FAILURE (Status))
     {
         /* On error, TablePtr was deallocated above */
@@ -586,7 +572,7 @@ AcpiExUnloadTable (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *TableDesc = DdbHandle;
-    ACPI_TABLE_DESC         *TableInfo;
+    ACPI_NATIVE_UINT        TableIndex;
 
 
     ACPI_FUNCTION_TRACE (ExUnloadTable);
@@ -605,19 +591,18 @@ AcpiExUnloadTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Get the actual table descriptor from the DdbHandle */
+    /* Get the table index from the DdbHandle */
 
-    TableInfo = (ACPI_TABLE_DESC *) TableDesc->Reference.Object;
+    TableIndex = (ACPI_NATIVE_UINT) TableDesc->Reference.Object;
 
     /*
      * Delete the entire namespace under this table Node
      * (Offset contains the TableId)
      */
-    AcpiNsDeleteNamespaceByOwner (TableInfo->OwnerId);
+    AcpiTbDeleteNamespaceByOwner (TableIndex);
+    AcpiTbReleaseOwnerId (TableIndex);
 
-    /* Delete the table itself */
-
-    (void) AcpiTbUninstallTable (TableInfo->InstalledDesc);
+    AcpiTbSetTableLoadedFlag (TableIndex, FALSE);
 
     /* Delete the table descriptor (DdbHandle) */
 

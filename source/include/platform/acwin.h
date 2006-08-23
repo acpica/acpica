@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.25 $
+ *       $Revision: 1.26 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,7 @@
 #define ACPI_MACHINE_WIDTH      32
 
 #define isascii                 __isascii
+#define inline                  __inline
 
 #define ACPI_USE_STANDARD_HEADERS
 
@@ -173,16 +174,19 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
 #endif
 
 /*
- * For Acpi applications, we don't want to try to access the global lock
+ * Global Lock acquire/release code
+ *
+ * Note: Handles case where the FACS pointer is null
  */
-#ifdef ACPI_APPLICATION
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       if (AcpiGbl_CommonFACS.GlobalLock) Acq = TRUE;
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       Pnd = 0;
-#else
-#define ACPI_ACQUIRE_GLOBAL_LOCK(GLptr, Acq)       __asm {     \
-        __asm mov           ecx, GLptr              \
+#define ACPI_ACQUIRE_GLOBAL_LOCK(FacsPtr, Acq)  __asm \
+{                                                   \
+        __asm mov           eax, 0xFF               \
+        __asm mov           ecx, FacsPtr            \
+        __asm cmp           ecx, 0                  \
+        __asm jz            exit_acq                \
+                                                    \
         __asm acq10:                                \
-        __asm mov           eax, [ecx]              \
+        __asm mov           eax, [ecx].GlobalLock   \
         __asm mov           edx, eax                \
         __asm and           edx, 0xFFFFFFFE         \
         __asm bts           edx, 1                  \
@@ -192,13 +196,20 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
                                                     \
         __asm cmp           dl, 3                   \
         __asm sbb           eax, eax                \
+                                                    \
+        __asm exit_acq:                             \
         __asm mov           Acq, al                 \
 }
 
-#define ACPI_RELEASE_GLOBAL_LOCK(GLptr, Pnd)       __asm {     \
-        __asm mov           ecx, GLptr              \
+#define ACPI_RELEASE_GLOBAL_LOCK(FacsPtr, Pnd) __asm \
+{                                                   \
+        __asm xor           eax, eax                \
+        __asm mov           ecx, FacsPtr            \
+        __asm cmp           ecx, 0                  \
+        __asm jz            exit_rel                \
+                                                    \
         __asm Rel10:                                \
-        __asm mov           eax, [ecx]              \
+        __asm mov           eax, [ecx].GlobalLock   \
         __asm mov           edx, eax                \
         __asm and           edx, 0xFFFFFFFC         \
         __asm lock cmpxchg  dword ptr [ecx], edx    \
@@ -206,10 +217,9 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
                                                     \
         __asm cmp           dl, 3                   \
         __asm and           eax, 1                  \
+                                                    \
+        __asm exit_rel:                             \
         __asm mov           Pnd, al                 \
 }
-
-#endif
-
 
 #endif /* __ACWIN_H__ */

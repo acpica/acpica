@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file for iASL
- *              $Revision: 1.146 $
+ *              $Revision: 1.147 $
  *
  *****************************************************************************/
 
@@ -307,10 +307,9 @@ void
 AePrintErrorLog (
     UINT32                  FileId);
 
-ACPI_STATUS
+ACPI_PHYSICAL_ADDRESS
 AeLocalGetRootPointer (
-    UINT32                  Flags,
-    ACPI_POINTER            *Address);
+    void);
 
 
 /*

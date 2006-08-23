@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.185 $
+ *       $Revision: 1.186 $
  *
  *****************************************************************************/
 
@@ -164,6 +164,7 @@ ACPI_EXTERN UINT32                      AcpiGbl_TraceDbgLevel;
 ACPI_EXTERN UINT32                      AcpiGbl_TraceDbgLayer;
 ACPI_EXTERN UINT32                      AcpiGbl_TraceFlags;
 
+
 /*****************************************************************************
  *
  * Runtime configuration (static defaults that can be overriden at runtime)
@@ -216,48 +217,22 @@ ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_LeaveWakeGpesDisabled, TRUE);
  ****************************************************************************/
 
 /*
- * Table pointers.
- * Although these pointers are somewhat redundant with the global AcpiTable,
- * they are convenient because they are typed pointers.
+ * AcpiGbl_RootTableList is the master list of ACPI tables found in the
+ * RSDT/XSDT.
  *
- * These tables are single-table only; meaning that there can be at most one
- * of each in the system.  Each global points to the actual table.
+ * AcpiGbl_FADT is a local copy of the FADT, converted to a common format.
  */
-ACPI_EXTERN UINT32                      AcpiGbl_TableFlags;
-ACPI_EXTERN UINT32                      AcpiGbl_RsdtTableCount;
-ACPI_EXTERN RSDP_DESCRIPTOR            *AcpiGbl_RSDP;
-ACPI_EXTERN XSDT_DESCRIPTOR            *AcpiGbl_XSDT;
-ACPI_EXTERN FADT_DESCRIPTOR            *AcpiGbl_FADT;
-ACPI_EXTERN ACPI_TABLE_HEADER          *AcpiGbl_DSDT;
-ACPI_EXTERN FACS_DESCRIPTOR            *AcpiGbl_FACS;
-ACPI_EXTERN ACPI_COMMON_FACS            AcpiGbl_CommonFACS;
-/*
- * Since there may be multiple SSDTs and PSDTs, a single pointer is not
- * sufficient; Therefore, there isn't one!
- */
-
-
-/* The root table can be either an RSDT or an XSDT */
-
-ACPI_EXTERN UINT8                       AcpiGbl_RootTableType;
-#define     ACPI_TABLE_TYPE_RSDT        'R'
-#define     ACPI_TABLE_TYPE_XSDT        'X'
-
+ACPI_EXTERN ACPI_INTERNAL_RSDT          AcpiGbl_RootTableList;
+ACPI_EXTERN ACPI_TABLE_FADT             AcpiGbl_FADT;
 
 /*
- * Handle both ACPI 1.0 and ACPI 2.0 Integer widths:
- * If we are executing a method that exists in a 32-bit ACPI table,
- * use only the lower 32 bits of the (internal) 64-bit Integer.
+ * Handle both ACPI 1.0 and ACPI 2.0 Integer widths. The integer width is
+ * determined by the revision of the DSDT: If the DSDT revision is less than
+ * 2, use only the lower 32 bits of the internal 64-bit Integer.
  */
 ACPI_EXTERN UINT8                       AcpiGbl_IntegerBitWidth;
 ACPI_EXTERN UINT8                       AcpiGbl_IntegerByteWidth;
 ACPI_EXTERN UINT8                       AcpiGbl_IntegerNybbleWidth;
-
-/*
- * ACPI Table info arrays
- */
-extern      ACPI_TABLE_LIST             AcpiGbl_TableLists[ACPI_TABLE_ID_MAX+1];
-extern      ACPI_TABLE_SUPPORT          AcpiGbl_TableData[ACPI_TABLE_ID_MAX+1];
 
 
 /*****************************************************************************
@@ -267,7 +242,7 @@ extern      ACPI_TABLE_SUPPORT          AcpiGbl_TableData[ACPI_TABLE_ID_MAX+1];
  ****************************************************************************/
 
 /*
- * Predefined mutex objects.  This array contains the
+ * Predefined mutex objects. This array contains the
  * actual OS mutex handles, indexed by the local ACPI_MUTEX_HANDLEs.
  * (The table maps local handles to the real OS handles)
  */

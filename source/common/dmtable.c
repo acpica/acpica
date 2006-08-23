@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -171,9 +171,9 @@ static const char           *AcpiDmSratSubnames[] =
 
 static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
 {
-    {FADT_SIG,          NULL,                       AcpiDmDumpFadt},
-    {RSDT_SIG,          NULL,                       AcpiDmDumpRsdt},
-    {XSDT_SIG,          NULL,                       AcpiDmDumpXsdt},
+    {ACPI_SIG_FADT,     NULL,                       AcpiDmDumpFadt},
+    {ACPI_SIG_RSDT,     NULL,                       AcpiDmDumpRsdt},
+    {ACPI_SIG_XSDT,     NULL,                       AcpiDmDumpXsdt},
     {ACPI_SIG_ASF,      NULL,                       AcpiDmDumpAsf},
     {ACPI_SIG_MADT,     NULL,                       AcpiDmDumpMadt},
     {ACPI_SIG_BOOT,     AcpiDmTableInfoBoot,        NULL},
@@ -191,6 +191,41 @@ static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_WDRT,     AcpiDmTableInfoWdrt,        NULL},
     {NULL,              NULL,                       NULL}
 };
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbGenerateChecksum
+ *
+ * PARAMETERS:  Table               - Pointer to a valid ACPI table (with a
+ *                                    standard ACPI header)
+ *
+ * RETURN:      8 bit checksum of buffer
+ *
+ * DESCRIPTION: Computes an 8 bit checksum of the table.
+ *
+ ******************************************************************************/
+
+UINT8
+AcpiTbGenerateChecksum (
+    ACPI_TABLE_HEADER       *Table)
+{
+    UINT8                   Checksum;
+
+
+    /* Sum the entire table as-is */
+
+    Checksum = AcpiTbChecksum ((UINT8 *) Table, Table->Length);
+
+    /* Subtract off the existing checksum value in the table */
+
+    Checksum = (UINT8) (Checksum - Table->Checksum);
+
+    /* Compute the final checksum */
+
+    Checksum = (UINT8) (0 - Checksum);
+    return (Checksum);
+}
 
 
 /*******************************************************************************
@@ -256,12 +291,12 @@ AcpiDmDumpDataTable (
      * Handle tables that don't use the common ACPI table header structure.
      * Currently, these are the FACS and RSDP.
      */
-    if (ACPI_COMPARE_NAME (Table->Signature, FACS_SIG))
+    if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_FACS))
     {
         Length = Table->Length;
         AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoFacs);
     }
-    else if (ACPI_COMPARE_NAME (Table->Signature, RSDP_SIG))
+    else if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_RSDP))
     {
         Length = AcpiDmDumpRsdp (Table);
     }
@@ -592,9 +627,9 @@ AcpiDmDumpTable (
             /* MADT subtable types */
 
             Temp8 = *Target;
-            if (Temp8 > APIC_RESERVED)
+            if (Temp8 > ACPI_MADT_TYPE_RESERVED)
             {
-                Temp8 = APIC_RESERVED;
+                Temp8 = ACPI_MADT_TYPE_RESERVED;
             }
 
             AcpiOsPrintf ("%2.2X <%s>\n", *Target, AcpiDmMadtSubnames[Temp8]);
@@ -605,9 +640,9 @@ AcpiDmDumpTable (
             /* SRAT subtable types */
 
             Temp8 = *Target;
-            if (Temp8 > SRAT_RESERVED)
+            if (Temp8 > ACPI_SRAT_TYPE_RESERVED)
             {
-                Temp8 = SRAT_RESERVED;
+                Temp8 = ACPI_SRAT_TYPE_RESERVED;
             }
 
             AcpiOsPrintf ("%2.2X <%s>\n", *Target, AcpiDmSratSubnames[Temp8]);

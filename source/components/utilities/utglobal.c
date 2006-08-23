@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.242 $
+ *              $Revision: 1.243 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,8 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
+
+ACPI_EXPORT_SYMBOL (AcpiGbl_FADT)
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utglobal")
@@ -378,35 +380,6 @@ AcpiUtHexToAsciiChar (
 
     return (AcpiGbl_HexToAscii[(Integer >> Position) & 0xF]);
 }
-
-
-/*******************************************************************************
- *
- * Table name globals
- *
- * NOTE: This table includes ONLY the ACPI tables that the subsystem consumes.
- * it is NOT an exhaustive list of all possible ACPI tables.  All ACPI tables
- * that are not used by the subsystem are simply ignored.
- *
- * Do NOT add any table to this list that is not consumed directly by this
- * subsystem (No MADT, ECDT, SBST, etc.)
- *
- ******************************************************************************/
-
-ACPI_TABLE_LIST             AcpiGbl_TableLists[ACPI_TABLE_ID_MAX+1];
-
-ACPI_TABLE_SUPPORT          AcpiGbl_TableData[ACPI_TABLE_ID_MAX+1] =
-{
-    /***********    Name,   Signature, Global typed pointer     Signature size,      Type                  How many allowed?,    Contains valid AML? */
-
-    /* RSDP 0 */ {RSDP_NAME, RSDP_SIG, NULL,                    sizeof (RSDP_SIG)-1, ACPI_TABLE_ROOT     | ACPI_TABLE_SINGLE},
-    /* DSDT 1 */ {DSDT_SIG,  DSDT_SIG, (void *) &AcpiGbl_DSDT,  sizeof (DSDT_SIG)-1, ACPI_TABLE_SECONDARY| ACPI_TABLE_SINGLE   | ACPI_TABLE_EXECUTABLE},
-    /* FADT 2 */ {FADT_SIG,  FADT_SIG, (void *) &AcpiGbl_FADT,  sizeof (FADT_SIG)-1, ACPI_TABLE_PRIMARY  | ACPI_TABLE_SINGLE},
-    /* FACS 3 */ {FACS_SIG,  FACS_SIG, (void *) &AcpiGbl_FACS,  sizeof (FACS_SIG)-1, ACPI_TABLE_SECONDARY| ACPI_TABLE_SINGLE},
-    /* PSDT 4 */ {PSDT_SIG,  PSDT_SIG, NULL,                    sizeof (PSDT_SIG)-1, ACPI_TABLE_PRIMARY  | ACPI_TABLE_MULTIPLE | ACPI_TABLE_EXECUTABLE},
-    /* SSDT 5 */ {SSDT_SIG,  SSDT_SIG, NULL,                    sizeof (SSDT_SIG)-1, ACPI_TABLE_PRIMARY  | ACPI_TABLE_MULTIPLE | ACPI_TABLE_EXECUTABLE},
-    /* XSDT 6 */ {XSDT_SIG,  XSDT_SIG, NULL,                    sizeof (RSDT_SIG)-1, ACPI_TABLE_ROOT     | ACPI_TABLE_SINGLE},
-};
 
 
 /******************************************************************************
@@ -830,14 +803,6 @@ AcpiUtInitGlobals (
         return;
     }
 
-    /* ACPI table structure */
-
-    for (i = 0; i < (ACPI_TABLE_ID_MAX+1); i++)
-    {
-        AcpiGbl_TableLists[i].Next          = NULL;
-        AcpiGbl_TableLists[i].Count         = 0;
-    }
-
     /* Mutex locked flags */
 
     for (i = 0; i < ACPI_NUM_MUTEX; i++)
@@ -866,14 +831,6 @@ AcpiUtInitGlobals (
     AcpiGbl_ExceptionHandler            = NULL;
     AcpiGbl_InitHandler                 = NULL;
 
-    /* Global "typed" ACPI table pointers */
-
-    AcpiGbl_RSDP                        = NULL;
-    AcpiGbl_XSDT                        = NULL;
-    AcpiGbl_FACS                        = NULL;
-    AcpiGbl_FADT                        = NULL;
-    AcpiGbl_DSDT                        = NULL;
-
     /* Global Lock support */
 
     AcpiGbl_GlobalLockSemaphore         = NULL;
@@ -883,8 +840,6 @@ AcpiUtInitGlobals (
 
     /* Miscellaneous variables */
 
-    AcpiGbl_TableFlags                  = ACPI_PHYSICAL_POINTER;
-    AcpiGbl_RsdpOriginalLocation        = 0;
     AcpiGbl_CmSingleStep                = FALSE;
     AcpiGbl_DbTerminateThreads          = FALSE;
     AcpiGbl_Shutdown                    = FALSE;

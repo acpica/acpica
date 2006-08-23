@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -459,8 +459,9 @@ AcpiExCreateTableRegion (
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_TABLE_HEADER       *Table;
     ACPI_OPERAND_OBJECT     *RegionObj2;
+    ACPI_NATIVE_UINT        TableIndex;
+    ACPI_TABLE_HEADER       *Table;
 
 
     ACPI_FUNCTION_TRACE (ExCreateTableRegion);
@@ -482,7 +483,8 @@ AcpiExCreateTableRegion (
     /* Find the ACPI table */
 
     Status = AcpiTbFindTable (Operand[1]->String.Pointer,
-                Operand[2]->String.Pointer, Operand[3]->String.Pointer, &Table);
+                Operand[2]->String.Pointer, Operand[3]->String.Pointer,
+                &TableIndex);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -498,6 +500,12 @@ AcpiExCreateTableRegion (
 
     RegionObj2 = ObjDesc->Common.NextObject;
     RegionObj2->Extra.RegionContext = NULL;
+
+    Status = AcpiGetTableByIndex (TableIndex, &Table);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
     /* Init the region from the operands */
 
@@ -678,7 +686,8 @@ AcpiExCreateMethod (
     ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_METHOD);
     if (!ObjDesc)
     {
-       return_ACPI_STATUS (AE_NO_MEMORY);
+       Status = AE_NO_MEMORY;
+       goto Exit;
     }
 
     /* Save the method's AML pointer and length  */
@@ -723,6 +732,7 @@ AcpiExCreateMethod (
 
     AcpiUtRemoveReference (ObjDesc);
 
+Exit:
     /* Remove a reference to the operand */
 
     AcpiUtRemoveReference (Operand[1]);

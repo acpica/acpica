@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -528,7 +528,6 @@ AcpiGetSystemInfo (
 {
     ACPI_SYSTEM_INFO        *InfoPtr;
     ACPI_STATUS             Status;
-    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE (AcpiGetSystemInfo);
@@ -563,11 +562,7 @@ AcpiGetSystemInfo (
 
     /* Timer resolution - 24 or 32 bits  */
 
-    if (!AcpiGbl_FADT)
-    {
-        InfoPtr->TimerResolution = 0;
-    }
-    else if (AcpiGbl_FADT->TmrValExt == 0)
+    if (AcpiGbl_FADT.Flags & ACPI_FADT_32BIT_TIMER)
     {
         InfoPtr->TimerResolution = 24;
     }
@@ -585,14 +580,6 @@ AcpiGetSystemInfo (
 
     InfoPtr->DebugLayer = AcpiDbgLayer;
     InfoPtr->DebugLevel = AcpiDbgLevel;
-
-    /* Current status of the ACPI tables, per table type */
-
-    InfoPtr->NumTableTypes = ACPI_TABLE_ID_MAX+1;
-    for (i = 0; i < (ACPI_TABLE_ID_MAX+1); i++)
-    {
-        InfoPtr->TableInfo[i].Count = AcpiGbl_TableLists[i].Count;
-    }
 
     return_ACPI_STATUS (AE_OK);
 }

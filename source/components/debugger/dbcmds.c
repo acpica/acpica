@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  ******************************************************************************/
 
@@ -437,30 +437,28 @@ void
 AcpiDbDisplayTableInfo (
     char                    *TableArg)
 {
-    UINT32                  i;
+    ACPI_NATIVE_UINT        i;
     ACPI_TABLE_DESC         *TableDesc;
 
 
-    for (i = 0; i < (ACPI_TABLE_ID_MAX+1); i++)
+    /*
+     * Walk the root table list
+     */
+    for (i = 0; i < AcpiGbl_RootTableList.Count; i++) 
     {
-        TableDesc = AcpiGbl_TableLists[i].Next;
-        while (TableDesc)
+        TableDesc = &AcpiGbl_RootTableList.Tables[i];
+        AcpiOsPrintf ( "%4.4s at %p length %.5X",
+                TableDesc->Signature.Ascii, TableDesc->Pointer,
+                (UINT32) TableDesc->Length);
+
+        if (TableDesc->Pointer && (i != ACPI_TABLE_INDEX_FACS))
         {
-            AcpiOsPrintf ( "%s at %p length %.5X",
-                    AcpiGbl_TableData[i].Name, TableDesc->Pointer,
-                    (UINT32) TableDesc->Length);
-
-            if (i != ACPI_TABLE_ID_FACS)
-            {
-                AcpiOsPrintf (" OemID=%6s TableId=%8s OemRevision=%8.8X",
-                        TableDesc->Pointer->OemId,
-                        TableDesc->Pointer->OemTableId,
-                        TableDesc->Pointer->OemRevision);
-            }
-            AcpiOsPrintf ("\n");
-
-            TableDesc = TableDesc->Next;
+            AcpiOsPrintf (" OemId=\"%6s\" OemTableId=\"%8s\" OemRevision=%8.8X",
+                    TableDesc->Pointer->OemId,
+                    TableDesc->Pointer->OemTableId,
+                    TableDesc->Pointer->OemRevision);
         }
+        AcpiOsPrintf ("\n");
     }
 }
 
@@ -485,6 +483,9 @@ AcpiDbUnloadAcpiTable (
     char                    *TableArg,
     char                    *InstanceArg)
 {
+/* TBD: Need to reimplement for new data structures */
+
+#if 0
     UINT32                  i;
     ACPI_STATUS             Status;
 
@@ -514,6 +515,7 @@ AcpiDbUnloadAcpiTable (
     }
 
     AcpiOsPrintf ("Unknown table type [%s]\n", TableArg);
+#endif
 }
 
 

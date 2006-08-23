@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  ******************************************************************************/
 
@@ -364,6 +364,7 @@ AcpiDbReadTable (
             return (AE_BAD_HEADER);
         }
 
+#if 0
         /* Validate the table header/length */
 
         Status = AcpiTbValidateTableHeader (&TableHeader);
@@ -372,6 +373,7 @@ AcpiDbReadTable (
             AcpiOsPrintf ("Table header is invalid!\n");
             return (Status);
         }
+#endif
 
         /* File size must be at least as long as the Header-specified length */
 
@@ -421,7 +423,8 @@ AcpiDbReadTable (
         {
             /* Now validate the checksum */
 
-            Status = AcpiTbVerifyTableChecksum (*Table);
+            Status = AcpiTbChecksum ((void *) *Table,
+                        ACPI_CAST_PTR (ACPI_TABLE_HEADER, *Table)->Length);
 
             if (Status == AE_BAD_CHECKSUM)
             {
@@ -469,11 +472,12 @@ static ACPI_STATUS
 AeLocalLoadTable (
     ACPI_TABLE_HEADER       *Table)
 {
-    ACPI_STATUS             Status;
-    ACPI_TABLE_DESC         TableInfo;
+    ACPI_STATUS             Status = AE_OK;
+/*    ACPI_TABLE_DESC         TableInfo; */
 
 
     ACPI_FUNCTION_TRACE (AeLocalLoadTable);
+#if 0
 
 
     if (!Table)
@@ -516,6 +520,7 @@ AeLocalLoadTable (
         AcpiTbDeleteTablesByType (ACPI_TABLE_ID_DSDT);
         return_ACPI_STATUS (Status);
     }
+#endif
 #endif
 
     return_ACPI_STATUS (Status);

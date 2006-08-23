@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem\NoDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /GB /Gr /MT /Za /W4 /GX /O1 /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
+# ADD CPP /nologo /Gr /MT /Za /W4 /GX /O1 /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -72,7 +72,7 @@ PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\librarie
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem\Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /GB /Gr /MTd /Za /W4 /GX /Z7 /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
+# ADD CPP /nologo /Gr /MTd /Za /W4 /GX /Z7 /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -185,6 +185,15 @@ SOURCE=..\..\source\COMPONENTS\EVENTS\evgpeblk.c
 # Begin Source File
 
 SOURCE=..\..\source\components\events\evmisc.c
+
+!IF  "$(CFG)" == "AcpiSubsystem - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem - Win32 Debug"
+
+# ADD CPP /FAcs
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -457,23 +466,11 @@ SOURCE=..\..\source\components\resources\rsxface.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\source\components\tables\tbconvrt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\tables\tbget.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\tables\tbgetall.c
+SOURCE=..\..\source\components\tables\tbfind.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbinstal.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\tables\tbrsdt.c
 # End Source File
 # Begin Source File
 

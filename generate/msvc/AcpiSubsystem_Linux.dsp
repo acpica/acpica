@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem_Linux"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /GB /Gr /MT /Za /W4 /GX /O2 /I "..\..\source_linux\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "DRIVER" /D "_NDEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /YX /FD /c
+# ADD CPP /nologo /Gr /MT /Za /W4 /GX /O2 /I "..\..\source_linux\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "DRIVER" /D "_NDEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem_Linux"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /GB /Gr /MTd /Za /W4 /Gm /GX /ZI /Od /I "..\..\source_linux\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /Gr /MTd /Za /W4 /Gm /GX /ZI /Od /I "..\..\source_linux\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /D "_WIN_VER" /D "ACPI_DEFINE_ALTERNATE_TYPES" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -442,23 +442,11 @@ SOURCE=..\..\source_linux\COMPONENTS\resources\rsxface.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\source_linux\COMPONENTS\tables\tbconvrt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\COMPONENTS\tables\tbget.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\COMPONENTS\tables\tbgetall.c
+SOURCE=..\..\source_linux\components\tables\tbfind.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\source_linux\COMPONENTS\tables\tbinstal.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source_linux\COMPONENTS\tables\tbrsdt.c
 # End Source File
 # Begin Source File
 

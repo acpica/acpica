@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -158,10 +158,9 @@ typedef struct semaphore_entry
 SEMAPHORE_ENTRY             AcpiGbl_Semaphores[NUM_SEMAPHORES];
 extern FILE                 *AcpiGbl_DebugFile;
 
-ACPI_STATUS
+ACPI_PHYSICAL_ADDRESS
 AeLocalGetRootPointer (
-    UINT32                  Flags,
-    ACPI_POINTER            *Address);
+    void);
 
 FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency;
@@ -372,22 +371,20 @@ AcpiOsInitialize (void)
  *
  * FUNCTION:    AcpiOsGetRootPointer
  *
- * PARAMETERS:  Flags   - Logical or physical addressing mode
- *              Address - Where the address is returned
+ * PARAMETERS:  None
  *
- * RETURN:      Status
+ * RETURN:      RSDP physical address
  *
  * DESCRIPTION: Gets the root pointer (RSDP)
  *
  *****************************************************************************/
 
-ACPI_STATUS
+ACPI_PHYSICAL_ADDRESS
 AcpiOsGetRootPointer (
-    UINT32                  Flags,
-    ACPI_POINTER           *Address)
+    void)
 {
 
-    return (AeLocalGetRootPointer (Flags, Address));
+    return (AeLocalGetRootPointer ());
 }
 
 
@@ -457,7 +454,7 @@ AcpiOsTableOverride (
 
     /* This code exercises the table override mechanism in the core */
 
-    if (ACPI_COMPARE_NAME (ExistingTable->Signature, DSDT_SIG))
+    if (ACPI_COMPARE_NAME (ExistingTable->Signature, ACPI_SIG_DSDT))
     {
         /* override DSDT with itself */
 
@@ -722,7 +719,6 @@ AcpiOsGetLine (
  *
  * PARAMETERS:  where               Physical address of memory to be mapped
  *              length              How much memory to map
- *              there               Logical address of mapped memory
  *
  * RETURN:      Pointer to mapped memory.  Null on error.
  *
@@ -730,16 +726,13 @@ AcpiOsGetLine (
  *
  *****************************************************************************/
 
-ACPI_STATUS
+void *
 AcpiOsMapMemory (
-    UINT64                  where,
-    ACPI_SIZE               length,
-    void                    **there)
+    ACPI_PHYSICAL_ADDRESS   where,
+    ACPI_SIZE               length)
 {
 
-    *there = ACPI_TO_POINTER ((ACPI_NATIVE_UINT) where);
-
-    return AE_OK;
+    return (ACPI_TO_POINTER ((ACPI_NATIVE_UINT) where));
 }
 
 

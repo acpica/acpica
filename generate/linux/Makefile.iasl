@@ -84,6 +84,7 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	../disassembler/dmwalk.c \
 	../tables/tbinstal.c \
 	../tables/tbutils.c \
+	../tables/tbxface.c \
 	../osunixxf.c
 
 NOMAN=	YES

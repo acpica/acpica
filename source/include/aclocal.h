@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.237 $
+ *       $Revision: 1.238 $
  *
  *****************************************************************************/
 
@@ -124,6 +124,7 @@
 #define ACPI_SERIALIZED                 0xFF
 
 typedef UINT32                          ACPI_MUTEX_HANDLE;
+#define ACPI_GLOBAL_LOCK                (ACPI_SEMAPHORE) (-1)
 
 /* Total number of aml opcodes defined */
 
@@ -155,8 +156,8 @@ union acpi_parse_object;
  * table below also!
  */
 #define ACPI_MTX_INTERPRETER            0   /* AML Interpreter, main lock */
-#define ACPI_MTX_TABLES                 1   /* Data for ACPI tables */
-#define ACPI_MTX_NAMESPACE              2   /* ACPI Namespace */
+#define ACPI_MTX_NAMESPACE              1   /* ACPI Namespace */
+#define ACPI_MTX_TABLES                 2   /* Data for ACPI tables */
 #define ACPI_MTX_EVENTS                 3   /* Data for ACPI events */
 #define ACPI_MTX_CACHES                 4   /* Internal caches, general purposes */
 #define ACPI_MTX_MEMORY                 5   /* Debug memory tracking lists */
@@ -312,27 +313,38 @@ typedef struct acpi_namespace_node
  */
 typedef struct acpi_table_desc
 {
-    struct acpi_table_desc          *Prev;
-    struct acpi_table_desc          *Next;
-    struct acpi_table_desc          *InstalledDesc;
+    ACPI_PHYSICAL_ADDRESS           Address;
     ACPI_TABLE_HEADER               *Pointer;
-    UINT8                           *AmlStart;
-    UINT64                          PhysicalAddress;
-    ACPI_SIZE                       Length;
-    UINT32                          AmlLength;
+    UINT32                          Length;     /* Length fixed at 32 bits */
+    ACPI_NAME_UNION                 Signature;
     ACPI_OWNER_ID                   OwnerId;
-    UINT8                           Type;
-    UINT8                           Allocation;
-    BOOLEAN                         LoadedIntoNamespace;
+    UINT8                           Flags;
 
 } ACPI_TABLE_DESC;
 
-typedef struct acpi_table_list
+typedef struct acpi_internal_rsdt
 {
-    struct acpi_table_desc          *Next;
+    ACPI_TABLE_DESC                 *Tables;
     UINT32                          Count;
+    UINT32                          Size;
+    UINT8                           Flags;
 
-} ACPI_TABLE_LIST;
+} ACPI_INTERNAL_RSDT;
+
+/* Flags for both structs above */
+
+#define ACPI_TABLE_ORIGIN_UNKNOWN       (0)
+#define ACPI_TABLE_ORIGIN_MAPPED        (1)
+#define ACPI_TABLE_ORIGIN_ALLOCATED     (2)
+#define ACPI_TABLE_ORIGIN_MASK          (3)
+#define ACPI_TABLE_FLAGS_LOADED         (4)
+#define ACPI_TABLE_FLAGS_ALLOW_RESIZE   (8)
+
+
+/* Predefined (fixed) table indexes */
+
+#define ACPI_TABLE_INDEX_DSDT           (0)
+#define ACPI_TABLE_INDEX_FACS           (1)
 
 
 typedef struct acpi_find_context

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  ******************************************************************************/
 
@@ -465,11 +465,6 @@ AcpiDbDisplayStatistics (
     UINT32                  Temp;
 
 
-    if (!AcpiGbl_DSDT)
-    {
-        AcpiOsPrintf ("*** Warning: There is no DSDT loaded\n");
-    }
-
     if (!TypeArg)
     {
         AcpiOsPrintf ("The following subcommands are available:\n    ALLOCATIONS, OBJECTS, MEMORY, MISC, SIZES, TABLES\n");
@@ -496,12 +491,7 @@ AcpiDbDisplayStatistics (
 
     case CMD_STAT_TABLES:
 
-        AcpiOsPrintf ("ACPI Table Information:\n\n");
-        if (AcpiGbl_DSDT)
-        {
-            AcpiOsPrintf ("DSDT Length:................% 7ld (%X)\n",
-                AcpiGbl_DSDT->Length, AcpiGbl_DSDT->Length);
-        }
+        AcpiOsPrintf ("ACPI Table Information (not implemented):\n\n");
         break;
 
     case CMD_STAT_OBJECTS:

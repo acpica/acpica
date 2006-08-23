@@ -104,11 +104,8 @@ SRCS=	aeexec.c aemain.c \
 	../../resources/rsmisc.c \
 	../../resources/rsutils.c \
 	../../resources/rsxface.c \
-	../../tables/tbconvrt.c \
-	../../tables/tbgetall.c \
-	../../tables/tbget.c \
+	../../tables/tbfind.c \
 	../../tables/tbinstal.c \
-	../../tables/tbrsdt.c \
 	../../tables/tbutils.c \
 	../../tables/tbxface.c \
 	../../tables/tbxfroot.c \

@@ -561,6 +561,10 @@ SOURCE=..\..\source\COMPONENTS\tables\tbinstal.c
 
 SOURCE=..\..\source\COMPONENTS\tables\tbutils.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\tables\tbxface.c
+# End Source File
 # End Group
 # End Group
 # Begin Group "Header Files"

@@ -1,8 +1,7 @@
-
 /******************************************************************************
  *
- * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
- *              $Revision: 1.75 $
+ * Module Name: tbfind   - find table
+ *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -115,198 +114,92 @@
  *
  *****************************************************************************/
 
-#define __HWACPI_C__
+#define __TBXFACE_C__
 
 #include "acpi.h"
+#include "actables.h"
 
-
-#define _COMPONENT          ACPI_HARDWARE
-        ACPI_MODULE_NAME    ("hwacpi")
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwInitialize
- *
- * PARAMETERS:  None
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Initialize and validate the various ACPI registers defined in
- *              the FADT.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiHwInitialize (
-    void)
-{
-    ACPI_STATUS             Status;
-
-
-    ACPI_FUNCTION_TRACE (HwInitialize);
-
-
-    /* Sanity check the FADT for valid values */
-
-    Status = AcpiUtValidateFadt ();
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    return_ACPI_STATUS (AE_OK);
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiHwSetMode
- *
- * PARAMETERS:  Mode            - SYS_MODE_ACPI or SYS_MODE_LEGACY
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Transitions the system into the requested mode.
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiHwSetMode (
-    UINT32                  Mode)
-{
-
-    ACPI_STATUS             Status;
-    UINT32                  Retry;
-
-
-    ACPI_FUNCTION_TRACE (HwSetMode);
-
-    /*
-     * ACPI 2.0 clarified that if SMI_CMD in FADT is zero,
-     * system does not support mode transition.
-     */
-    if (!AcpiGbl_FADT.SmiCommand)
-    {
-        ACPI_ERROR ((AE_INFO, "No SMI_CMD in FADT, mode transition failed"));
-        return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
-    }
-
-    /*
-     * ACPI 2.0 clarified the meaning of ACPI_ENABLE and ACPI_DISABLE
-     * in FADT: If it is zero, enabling or disabling is not supported.
-     * As old systems may have used zero for mode transition,
-     * we make sure both the numbers are zero to determine these
-     * transitions are not supported.
-     */
-    if (!AcpiGbl_FADT.AcpiEnable && !AcpiGbl_FADT.AcpiDisable)
-    {
-        ACPI_ERROR ((AE_INFO,
-            "No ACPI mode transition supported in this system (enable/disable both zero)"));
-        return_ACPI_STATUS (AE_OK);
-    }
-
-    switch (Mode)
-    {
-    case ACPI_SYS_MODE_ACPI:
-
-        /* BIOS should have disabled ALL fixed and GP events */
-
-        Status = AcpiOsWritePort (AcpiGbl_FADT.SmiCommand,
-                        (UINT32) AcpiGbl_FADT.AcpiEnable, 8);
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Attempting to enable ACPI mode\n"));
-        break;
-
-    case ACPI_SYS_MODE_LEGACY:
-
-        /*
-         * BIOS should clear all fixed status bits and restore fixed event
-         * enable bits to default
-         */
-        Status = AcpiOsWritePort (AcpiGbl_FADT.SmiCommand,
-                    (UINT32) AcpiGbl_FADT.AcpiDisable, 8);
-        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-                    "Attempting to enable Legacy (non-ACPI) mode\n"));
-        break;
-
-    default:
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
-    }
-
-    if (ACPI_FAILURE (Status))
-    {
-        ACPI_EXCEPTION ((AE_INFO, Status,
-            "Could not write ACPI mode change"));
-        return_ACPI_STATUS (Status);
-    }
-
-    /*
-     * Some hardware takes a LONG time to switch modes. Give them 3 sec to
-     * do so, but allow faster systems to proceed more quickly.
-     */
-    Retry = 3000;
-    while (Retry)
-    {
-        if (AcpiHwGetMode() == Mode)
-        {
-            ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Mode %X successfully enabled\n",
-                Mode));
-            return_ACPI_STATUS (AE_OK);
-        }
-        AcpiOsStall(1000);
-        Retry--;
-    }
-
-    ACPI_ERROR ((AE_INFO, "Hardware did not change modes"));
-    return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
-}
+#define _COMPONENT          ACPI_TABLES
+        ACPI_MODULE_NAME    ("tbfind")
 
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiHwGetMode
+ * FUNCTION:    AcpiTbFindTable
  *
- * PARAMETERS:  none
+ * PARAMETERS:  Signature           - String with ACPI table signature
+ *              OemId               - String with the table OEM ID
+ *              OemTableId          - String with the OEM Table ID
+ *              TableIndex          - Where the table index is returned
  *
- * RETURN:      SYS_MODE_ACPI or SYS_MODE_LEGACY
+ * RETURN:      Status and table index
  *
- * DESCRIPTION: Return current operating state of system.  Determined by
- *              querying the SCI_EN bit.
+ * DESCRIPTION: Find an ACPI table (in the RSDT/XSDT) that matches the
+ *              Signature, OEM ID and OEM Table ID. Returns an index that can
+ *              be used to get the table header or entire table.
  *
  ******************************************************************************/
 
-UINT32
-AcpiHwGetMode (
-    void)
+ACPI_STATUS
+AcpiTbFindTable (
+    char                    *Signature,
+    char                    *OemId,
+    char                    *OemTableId,
+    ACPI_NATIVE_UINT        *TableIndex)
 {
+    ACPI_NATIVE_UINT        i;
     ACPI_STATUS             Status;
-    UINT32                  Value;
 
 
-    ACPI_FUNCTION_TRACE (HwGetMode);
+    ACPI_FUNCTION_TRACE (TbFindTable);
 
 
-    /*
-     * ACPI 2.0 clarified that if SMI_CMD in FADT is zero,
-     * system does not support mode transition.
-     */
-    if (!AcpiGbl_FADT.SmiCommand)
+    for (i = 0; i < AcpiGbl_RootTableList.Count; ++i)
     {
-        return_UINT32 (ACPI_SYS_MODE_ACPI);
+        if (ACPI_MEMCMP (&(AcpiGbl_RootTableList.Tables[i].Signature),
+            Signature, ACPI_NAME_SIZE))
+        {
+            /* Not the requested table */
+
+            continue;
+        }
+
+        /* Table with matching signature has been found */
+
+        if (!AcpiGbl_RootTableList.Tables[i].Pointer)
+        {
+            /* Table is not currently mapped, map it */
+
+            Status = AcpiTbVerifyTable (&AcpiGbl_RootTableList.Tables[i]);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+
+            if (!AcpiGbl_RootTableList.Tables[i].Pointer)
+            {
+                continue;
+            }
+        }
+
+        /* Check for table match on all IDs */
+
+        if (!ACPI_MEMCMP (AcpiGbl_RootTableList.Tables[i].Pointer->Signature,
+                Signature, ACPI_NAME_SIZE) &&
+            (!OemId[0] ||
+             !ACPI_MEMCMP (AcpiGbl_RootTableList.Tables[i].Pointer->OemId,
+                             OemId, ACPI_OEM_ID_SIZE)) &&
+            (!OemTableId[0] ||
+             !ACPI_MEMCMP (AcpiGbl_RootTableList.Tables[i].Pointer->OemTableId,
+                             OemTableId, ACPI_OEM_TABLE_ID_SIZE)))
+        {
+            *TableIndex = i;
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_TABLES, "Found table [%4.4s]\n",
+                Signature));
+            return_ACPI_STATUS (AE_OK);
+        }
     }
 
-    Status = AcpiGetRegister (ACPI_BITREG_SCI_ENABLE, &Value, ACPI_MTX_LOCK);
-    if (ACPI_FAILURE (Status))
-    {
-        return_UINT32 (ACPI_SYS_MODE_LEGACY);
-    }
-
-    if (Value)
-    {
-        return_UINT32 (ACPI_SYS_MODE_ACPI);
-    }
-    else
-    {
-        return_UINT32 (ACPI_SYS_MODE_LEGACY);
-    }
+    return_ACPI_STATUS (AE_NOT_FOUND);
 }

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.131 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,7 @@
 #include "acpi.h"
 #include "acnamesp.h"
 #include "acevents.h"
+#include "actables.h"
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utinit")
@@ -158,8 +159,8 @@ AcpiUtFadtRegisterError (
 {
 
     ACPI_WARNING ((AE_INFO,
-        "Invalid FADT value %s=%X at offset %X FADT=%p",
-        RegisterName, Value, Offset, AcpiGbl_FADT));
+        "Invalid FADT value %s=%X at offset %X in FADT=%p",
+        RegisterName, Value, Offset, &AcpiGbl_FADT));
 }
 
 
@@ -184,68 +185,68 @@ AcpiUtValidateFadt (
      * Verify Fixed ACPI Description Table fields,
      * but don't abort on any problems, just display error
      */
-    if (AcpiGbl_FADT->Pm1EvtLen < 4)
+    if (AcpiGbl_FADT.Pm1EventLength < 4)
     {
         AcpiUtFadtRegisterError ("PM1_EVT_LEN",
-                        (UINT32) AcpiGbl_FADT->Pm1EvtLen,
-                        ACPI_FADT_OFFSET (Pm1EvtLen));
+                        (UINT32) AcpiGbl_FADT.Pm1EventLength,
+                        ACPI_FADT_OFFSET (Pm1EventLength));
     }
 
-    if (!AcpiGbl_FADT->Pm1CntLen)
+    if (!AcpiGbl_FADT.Pm1ControlLength)
     {
         AcpiUtFadtRegisterError ("PM1_CNT_LEN", 0,
-                        ACPI_FADT_OFFSET (Pm1CntLen));
+                        ACPI_FADT_OFFSET (Pm1ControlLength));
     }
 
-    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1aEvtBlk.Address))
+    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT.XPm1aEventBlock.Address))
     {
         AcpiUtFadtRegisterError ("X_PM1a_EVT_BLK", 0,
-                        ACPI_FADT_OFFSET (XPm1aEvtBlk.Address));
+                        ACPI_FADT_OFFSET (XPm1aEventBlock.Address));
     }
 
-    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm1aCntBlk.Address))
+    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT.XPm1aControlBlock.Address))
     {
         AcpiUtFadtRegisterError ("X_PM1a_CNT_BLK", 0,
-                        ACPI_FADT_OFFSET (XPm1aCntBlk.Address));
+                        ACPI_FADT_OFFSET (XPm1aControlBlock.Address));
     }
 
-    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPmTmrBlk.Address))
+    if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT.XPmTimerBlock.Address))
     {
         AcpiUtFadtRegisterError ("X_PM_TMR_BLK", 0,
-                        ACPI_FADT_OFFSET (XPmTmrBlk.Address));
+                        ACPI_FADT_OFFSET (XPmTimerBlock.Address));
     }
 
-    if ((ACPI_VALID_ADDRESS (AcpiGbl_FADT->XPm2CntBlk.Address) &&
-        !AcpiGbl_FADT->Pm2CntLen))
+    if ((ACPI_VALID_ADDRESS (AcpiGbl_FADT.XPm2ControlBlock.Address) &&
+        !AcpiGbl_FADT.Pm2ControlLength))
     {
         AcpiUtFadtRegisterError ("PM2_CNT_LEN",
-                        (UINT32) AcpiGbl_FADT->Pm2CntLen,
-                        ACPI_FADT_OFFSET (Pm2CntLen));
+                        (UINT32) AcpiGbl_FADT.Pm2ControlLength,
+                        ACPI_FADT_OFFSET (Pm2ControlLength));
     }
 
-    if (AcpiGbl_FADT->PmTmLen < 4)
+    if (AcpiGbl_FADT.PmTimerLength < 4)
     {
         AcpiUtFadtRegisterError ("PM_TM_LEN",
-                        (UINT32) AcpiGbl_FADT->PmTmLen,
-                        ACPI_FADT_OFFSET (PmTmLen));
+                        (UINT32) AcpiGbl_FADT.PmTimerLength,
+                        ACPI_FADT_OFFSET (PmTimerLength));
     }
 
     /* Length of GPE blocks must be a multiple of 2 */
 
-    if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe0Blk.Address) &&
-        (AcpiGbl_FADT->Gpe0BlkLen & 1))
+    if (ACPI_VALID_ADDRESS (AcpiGbl_FADT.XGpe0Block.Address) &&
+        (AcpiGbl_FADT.Gpe0BlockLength & 1))
     {
         AcpiUtFadtRegisterError ("(x)GPE0_BLK_LEN",
-                        (UINT32) AcpiGbl_FADT->Gpe0BlkLen,
-                        ACPI_FADT_OFFSET (Gpe0BlkLen));
+                        (UINT32) AcpiGbl_FADT.Gpe0BlockLength,
+                        ACPI_FADT_OFFSET (Gpe0BlockLength));
     }
 
-    if (ACPI_VALID_ADDRESS (AcpiGbl_FADT->XGpe1Blk.Address) &&
-        (AcpiGbl_FADT->Gpe1BlkLen & 1))
+    if (ACPI_VALID_ADDRESS (AcpiGbl_FADT.XGpe1Block.Address) &&
+        (AcpiGbl_FADT.Gpe1BlockLength & 1))
     {
         AcpiUtFadtRegisterError ("(x)GPE1_BLK_LEN",
-                        (UINT32) AcpiGbl_FADT->Gpe1BlkLen,
-                        ACPI_FADT_OFFSET (Gpe1BlkLen));
+                        (UINT32) AcpiGbl_FADT.Gpe1BlockLength,
+                        ACPI_FADT_OFFSET (Gpe1BlockLength));
     }
 
     return (AE_OK);
@@ -277,7 +278,6 @@ AcpiUtTerminate (
     ACPI_FUNCTION_TRACE (UtTerminate);
 
 
-    /* Free global tables, etc. */
     /* Free global GPE blocks and related info structures */
 
     GpeXruptInfo = AcpiGbl_GpeXruptListHead;
@@ -345,6 +345,10 @@ AcpiUtSubsystemShutdown (
     /* Close the Namespace */
 
     AcpiNsTerminate ();
+
+    /* Delete the ACPI tables */
+
+    AcpiTbTerminate ();
 
     /* Close the globals */
 

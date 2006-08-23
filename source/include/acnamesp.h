@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acnamesp.h - Namespace subcomponent prototypes and defines
- *       $Revision: 1.149 $
+ *       $Revision: 1.150 $
  *
  *****************************************************************************/
 
@@ -165,7 +165,7 @@ AcpiNsLoadNamespace (
 
 ACPI_STATUS
 AcpiNsLoadTable (
-    ACPI_TABLE_DESC         *TableDesc,
+    ACPI_NATIVE_UINT        TableIndex,
     ACPI_NAMESPACE_NODE     *Node);
 
 
@@ -194,13 +194,13 @@ AcpiNsGetNextNode (
  */
 ACPI_STATUS
 AcpiNsParseTable (
-    ACPI_TABLE_DESC         *TableDesc,
-    ACPI_NAMESPACE_NODE     *Scope);
+    ACPI_NATIVE_UINT        TableIndex,
+    ACPI_NAMESPACE_NODE     *StartNode);
 
 ACPI_STATUS
 AcpiNsOneCompleteParse (
-    UINT8                   PassNumber,
-    ACPI_TABLE_DESC         *TableDesc);
+    ACPI_NATIVE_UINT        PassNumber,
+    ACPI_NATIVE_UINT        TableIndex);
 
 
 /*
