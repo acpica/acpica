@@ -1,4 +1,59 @@
 ----------------------------------------
+23 August 2006. Summary of changes for version 20060823:
+
+1) ACPI CA Core Subsystem:
+
+The Table Manager component has been completely redesigned and reimplemented. The new design is much simpler, and reduces the overall code and data size of the kernel-resident ACPICA by approximately 5%. Also, it is now possible to obtain the ACPI tables very early during kernel initialization, even before dynamic memory management is initialized.
+
+Obsolete ACPICA interfaces:
+
+- AcpiGetFirmwareTable: Use AcpiGetTable instead (works at early kernel init time).
+- AcpiLoadTable: Not needed.
+- AcpiUnloadTable: Not needed.
+
+New ACPICA interfaces:
+
+- AcpiInitializeTables: Must be called before the table manager can be used.
+- AcpiReallocateRootTable: Used to transfer the root table to dynamically allocated memory after it becomes available.
+- AcpiGetTableByIndex: Allows the host to easily enumerate all ACPI tables in the RSDT/XSDT.
+
+Other ACPICA changes:
+
+- AcpiGetTableHeader returns the actual mapped table header, not a copy. Use AcpiOsUnmapMemory to free this mapping.
+- AcpiGetTable returns the actual mapped table. The mapping is managed internally and must not be deleted by the caller. Use of this interface causes no additional dynamic memory allocation.
+- AcpiFindRootPointer: Support for physical addressing has been eliminated, it appeared to be unused.
+- The interface to AcpiOsMapMemory has changed to be consistent with the other allocation interfaces.
+- The interface to AcpiOsGetRootPointer has changed to eliminate unnecessary parameters.
+- ACPI_PHYSICAL_ADDRESS is now 32 bits on 32-bit platforms, 64 bits on 64-bit platforms. Was previously 64 bits on all platforms.
+- The interface to the ACPI Global Lock acquire/release macros have changed slightly since ACPICA no longer keeps a local copy of the FACS with a constructed pointer to the actual global lock.
+
+Porting to the new table manager:
+
+- AcpiInitializeTables: Must be called once, and can be called anytime during the OS initialization process. It allows the host to specify an area of memory to be used to store the internal version of the RSDT/XSDT (root table). This allows the host to access ACPI tables before memory management is initialized and running.
+- AcpiReallocateRootTable: Can be called after memory management is running to copy the root table to a dynamically allocated array, freeing up the scratch memory specified in the call to AcpiInitializeTables.
+- AcpiGlobalInitialize: This existing interface is independent of the Table Manager, and does not have to be called before the Table Manager can be used, it only must be called before the rest of ACPICA can be used.
+- ACPI Tables: Some changes have been made to the names and structure of the actbl.h and actbl1.h header files and may require changes to existing code. For example, bitfields have been completely removed because of their lack of portability across C compilers.
+- Update interfaces to the Global Lock acquire/release macros if local versions are used. (see acwin.h)
+
+Obsolete files: tbconvrt.c, tbget.c, tbgetall.c, tbrsdt.c
+
+New files: tbfind.c
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  80.7K Code, 17.9K Data,  98.6K Total
+    Debug Version:     161.0K Code, 65.1K Data, 226.1K Total
+  Current Release:
+    Non-Debug Version:  77.8K Code, 16.5K Data,  94.3K Total
+    Debug Version:     154.6K Code, 62.3K Data, 216.9K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+No changes for this release.
+
+----------------------------------------
 21 July 2006. Summary of changes for version 20060721:
 
 1) ACPI CA Core Subsystem:
