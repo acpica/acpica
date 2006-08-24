@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.243 $
+ *              $Revision: 1.244 $
  *
  *****************************************************************************/
 
@@ -820,6 +820,7 @@ AcpiUtInitGlobals (
 
     /* GPE support */
 
+    AcpiGpeCount                        = 0;
     AcpiGbl_GpeXruptListHead            = NULL;
     AcpiGbl_GpeFadtBlocks[0]            = NULL;
     AcpiGbl_GpeFadtBlocks[1]            = NULL;
@@ -882,5 +883,6 @@ AcpiUtInitGlobals (
 
 ACPI_EXPORT_SYMBOL (AcpiDbgLevel)
 ACPI_EXPORT_SYMBOL (AcpiDbgLayer)
+ACPI_EXPORT_SYMBOL (AcpiGpeCount)
 
 

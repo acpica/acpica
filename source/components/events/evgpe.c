@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -730,6 +730,8 @@ AcpiEvGpeDispatch (
 
     ACPI_FUNCTION_TRACE (EvGpeDispatch);
 
+
+    AcpiGpeCount++;
 
     /*
      * If edge-triggered, clear the GPE status bit now.  Note that

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.186 $
+ *       $Revision: 1.187 $
  *
  *****************************************************************************/
 
@@ -154,6 +154,10 @@ extern      UINT32                      AcpiDbgLayer;
 /* Procedure nesting level for debug output */
 
 extern      UINT32                      AcpiGbl_NestingLevel;
+
+/* Event counters */
+
+ACPI_EXTERN UINT32                      AcpiGpeCount;
 
 /* Support for dynamic control method tracing mechanism */
 
