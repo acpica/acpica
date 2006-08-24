@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbinfo - Table info for non-AML tables
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -171,11 +171,9 @@
 #define ACPI_SRAT1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_SRAT_MEM_AFFINITY,f)
 
 /*
- * This macro is temporary until the table bitfield flag definitions
- * are removed and replaced by a Flags field.
+ * Simplify access to flag fields by breaking them up into bytes
  */
-#define ACPI_FLAG_OFFSET(d,f,o) \
-    (UINT8) (ACPI_OFFSET (d,f) + sizeof(((d *)0)->f) + o)
+#define ACPI_FLAG_OFFSET(d,f,o)         (UINT8) (ACPI_OFFSET (d,f) + o)
 
 /* Flags */
 
@@ -278,8 +276,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFacs[] =
     {ACPI_DMT_UINT32,   ACPI_FACS_OFFSET (HardwareSignature),       "Hardware Signature"},
     {ACPI_DMT_UINT32,   ACPI_FACS_OFFSET (FirmwareWakingVector),    "Firmware Waking Vector(32)"},
     {ACPI_DMT_UINT32,   ACPI_FACS_OFFSET (GlobalLock),              "Global Lock"},
-    {ACPI_DMT_UINT32,   ACPI_FACS_FLAG_OFFSET (GlobalLock,0),       "Flags (decoded below)"},
-    {ACPI_DMT_FLAG0,    ACPI_FACS_FLAG_OFFSET (GlobalLock,0),       "S4BIOS Support Present"},
+    {ACPI_DMT_UINT32,   ACPI_FACS_OFFSET (Flags),                   "Flags (decoded below)"},
+    {ACPI_DMT_FLAG0,    ACPI_FACS_FLAG_OFFSET (Flags,0),            "S4BIOS Support Present"},
     {ACPI_DMT_UINT64,   ACPI_FACS_OFFSET (XFirmwareWakingVector),   "Firmware Waking Vector(64)"},
     {ACPI_DMT_UINT8,    ACPI_FACS_OFFSET (Version),                 "Version"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
@@ -331,23 +329,23 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt1[] =
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Century),                 "RTC Century Index"},
     {ACPI_DMT_UINT16,   ACPI_FADT_OFFSET (BootFlags),               "Boot Architecture Flags"},
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Reserved),                "Reserved"},
-    {ACPI_DMT_UINT32,   ACPI_FADT_FLAG_OFFSET (Reserved,0),         "Flags (decoded below)"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Flags),                   "Flags (decoded below)"},
 
     /* Flags byte 0 */
 
-    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Reserved,0),         "WBINVD is operational"},
-    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Reserved,0),         "WBINVD is operational"},
-    {ACPI_DMT_FLAG1,    ACPI_FADT_FLAG_OFFSET (Reserved,0),         "WBINVD does not invalidate"},
-    {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Reserved,0),         "All CPUs support C1"},
-    {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Reserved,0),         "C2 works on MP system"},
-    {ACPI_DMT_FLAG4,    ACPI_FADT_FLAG_OFFSET (Reserved,0),         "Power button is generic"},
-    {ACPI_DMT_FLAG5,    ACPI_FADT_FLAG_OFFSET (Reserved,0),         "Sleep button is generic"},
-    {ACPI_DMT_FLAG6,    ACPI_FADT_FLAG_OFFSET (Reserved,0),         "RTC wakeup not fixed"},
-    {ACPI_DMT_FLAG7,    ACPI_FADT_FLAG_OFFSET (Reserved,0),         "RTC wakeup/S4 not possible"},
+    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "WBINVD is operational"},
+    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "WBINVD is operational"},
+    {ACPI_DMT_FLAG1,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "WBINVD does not invalidate"},
+    {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "All CPUs support C1"},
+    {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "C2 works on MP system"},
+    {ACPI_DMT_FLAG4,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "Power button is generic"},
+    {ACPI_DMT_FLAG5,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "Sleep button is generic"},
+    {ACPI_DMT_FLAG6,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "RTC wakeup not fixed"},
+    {ACPI_DMT_FLAG7,    ACPI_FADT_FLAG_OFFSET (Flags,0),            "RTC wakeup/S4 not possible"},
 
     /* Flags byte 1 */
 
-    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Reserved,1),         "32-bit PM Timer"},
+    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "32-bit PM Timer"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -355,20 +353,20 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt1[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt2[] =
 {
-    {ACPI_DMT_FLAG1,    ACPI_FADT_FLAG_OFFSET (Reserved,1),         "Docking Supported"},
-    {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Reserved,1),         "Reset Register Supported"},
-    {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Reserved,1),         "Sealed Case"},
-    {ACPI_DMT_FLAG4,    ACPI_FADT_FLAG_OFFSET (Reserved,1),         "Headless - No Video"},
-    {ACPI_DMT_FLAG5,    ACPI_FADT_FLAG_OFFSET (Reserved,1),         "Native instr after SLP_TYP"},
-    {ACPI_DMT_FLAG6,    ACPI_FADT_FLAG_OFFSET (Reserved,1),         "PCIEXP_WAK Supported"},
-    {ACPI_DMT_FLAG7,    ACPI_FADT_FLAG_OFFSET (Reserved,1),         "Use Platform Timer"},
+    {ACPI_DMT_FLAG1,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Docking Supported"},
+    {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Reset Register Supported"},
+    {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Sealed Case"},
+    {ACPI_DMT_FLAG4,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Headless - No Video"},
+    {ACPI_DMT_FLAG5,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Native instr after SLP_TYP"},
+    {ACPI_DMT_FLAG6,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "PCIEXP_WAK Supported"},
+    {ACPI_DMT_FLAG7,    ACPI_FADT_FLAG_OFFSET (Flags,1),            "Use Platform Timer"},
 
     /* Flags byte 2 */
 
-    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Reserved,2),         "RTC_STS valid after S4"},
-    {ACPI_DMT_FLAG1,    ACPI_FADT_FLAG_OFFSET (Reserved,2),         "Remote Power-on capable"},
-    {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Reserved,2),         "APIC Cluster Model"},
-    {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Reserved,2),         "APIC Physical Dest Mode"},
+    {ACPI_DMT_FLAG0,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "RTC_STS valid after S4"},
+    {ACPI_DMT_FLAG1,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "Remote Power-on capable"},
+    {ACPI_DMT_FLAG2,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "APIC Cluster Model"},
+    {ACPI_DMT_FLAG3,    ACPI_FADT_FLAG_OFFSET (Flags,2),            "APIC Physical Dest Mode"},
 
     {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (ResetRegister),           "Reset Register"},
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (ResetValue),              "Value to cause reset"},
@@ -603,10 +601,10 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHpet[] =
     {ACPI_DMT_GAS,      ACPI_HPET_OFFSET (Address),                 "Timer Block Register"},
     {ACPI_DMT_UINT8,    ACPI_HPET_OFFSET (Sequence),                "Sequence Number"},
     {ACPI_DMT_UINT16,   ACPI_HPET_OFFSET (MinimumTick),             "Minimum Clock Ticks"},
-    {ACPI_DMT_UINT8,    ACPI_HPET_FLAG_OFFSET (MinimumTick,0),      "Flags (decoded below)"},
-    {ACPI_DMT_FLAG0,    ACPI_HPET_FLAG_OFFSET (MinimumTick,0),      "Page Protect"},
-    {ACPI_DMT_FLAG1,    ACPI_HPET_FLAG_OFFSET (MinimumTick,0),      "4K Page Protect"},
-    {ACPI_DMT_FLAG2,    ACPI_HPET_FLAG_OFFSET (MinimumTick,0),      "64K Page Protect"},
+    {ACPI_DMT_UINT8,    ACPI_HPET_OFFSET (Flags),                   "Flags (decoded below)"},
+    {ACPI_DMT_FLAG0,    ACPI_HPET_FLAG_OFFSET (Flags,0),            "Page Protect"},
+    {ACPI_DMT_FLAG1,    ACPI_HPET_FLAG_OFFSET (Flags,0),            "4K Page Protect"},
+    {ACPI_DMT_FLAG2,    ACPI_HPET_FLAG_OFFSET (Flags,0),            "64K Page Protect"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -620,8 +618,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoHpet[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt[] =
 {
     {ACPI_DMT_UINT32,   ACPI_MADT_OFFSET (Address),                 "Local Apic Address"},
-    {ACPI_DMT_UINT32,   ACPI_MADT_FLAG_OFFSET (Address,0),          "Flags (decoded below)"},
-    {ACPI_DMT_FLAG0,    ACPI_MADT_FLAG_OFFSET (Address,0),          "PC-AT Compatibility"},
+    {ACPI_DMT_UINT32,   ACPI_MADT_OFFSET (Flags),                   "Flags (decoded below)"},
+    {ACPI_DMT_FLAG0,    ACPI_MADT_FLAG_OFFSET (Flags,0),            "PC-AT Compatibility"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -642,8 +640,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt0[] =
 {
     {ACPI_DMT_UINT8,    ACPI_MADT0_OFFSET (ProcessorId),            "Processor ID"},
     {ACPI_DMT_UINT8,    ACPI_MADT0_OFFSET (Id),                     "Local Apic ID"},
-    {ACPI_DMT_UINT32,   ACPI_MADT0_FLAG_OFFSET (Id,0),              "Flags (decoded below)"},
-    {ACPI_DMT_FLAG0,    ACPI_MADT0_FLAG_OFFSET (Id,0),              "Processor Enabled"},
+    {ACPI_DMT_UINT32,   ACPI_MADT0_OFFSET (LapicFlags),             "Flags (decoded below)"},
+    {ACPI_DMT_FLAG0,    ACPI_MADT0_FLAG_OFFSET (LapicFlags,0),      "Processor Enabled"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -665,9 +663,9 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt2[] =
     {ACPI_DMT_UINT8,    ACPI_MADT2_OFFSET (Bus),                    "Bus"},
     {ACPI_DMT_UINT8,    ACPI_MADT2_OFFSET (SourceIrq),              "Source"},
     {ACPI_DMT_UINT32,   ACPI_MADT2_OFFSET (GlobalIrq),              "Interrupt"},
-    {ACPI_DMT_UINT16,   ACPI_MADT2_FLAG_OFFSET (GlobalIrq,0),       "Flags (decoded below)"},
-    {ACPI_DMT_FLAGS0,   ACPI_MADT2_FLAG_OFFSET (GlobalIrq,0),       "Polarity"},
-    {ACPI_DMT_FLAGS2,   ACPI_MADT2_FLAG_OFFSET (GlobalIrq,0),       "Trigger Mode"},
+    {ACPI_DMT_UINT16,   ACPI_MADT2_OFFSET (IntiFlags),              "Flags (decoded below)"},
+    {ACPI_DMT_FLAGS0,   ACPI_MADT2_FLAG_OFFSET (IntiFlags,0),       "Polarity"},
+    {ACPI_DMT_FLAGS2,   ACPI_MADT2_FLAG_OFFSET (IntiFlags,0),       "Trigger Mode"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -675,9 +673,9 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt2[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt3[] =
 {
-    {ACPI_DMT_UINT16,   ACPI_MADT3_FLAG_OFFSET (Header.Length,0),   "Flags (decoded below)"},
-    {ACPI_DMT_FLAGS0,   ACPI_MADT3_FLAG_OFFSET (Header.Length,0),   "Polarity"},
-    {ACPI_DMT_FLAGS2,   ACPI_MADT3_FLAG_OFFSET (Header.Length,0),   "Trigger Mode"},
+    {ACPI_DMT_UINT16,   ACPI_MADT3_OFFSET (IntiFlags),              "Flags (decoded below)"},
+    {ACPI_DMT_FLAGS0,   ACPI_MADT3_FLAG_OFFSET (IntiFlags,0),       "Polarity"},
+    {ACPI_DMT_FLAGS2,   ACPI_MADT3_FLAG_OFFSET (IntiFlags,0),       "Trigger Mode"},
     {ACPI_DMT_UINT32,   ACPI_MADT3_OFFSET (GlobalIrq),              "Interrupt"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
@@ -687,9 +685,9 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt3[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt4[] =
 {
     {ACPI_DMT_UINT8,    ACPI_MADT4_OFFSET (ProcessorId),            "Processor ID"},
-    {ACPI_DMT_UINT16,   ACPI_MADT4_FLAG_OFFSET (ProcessorId,0),     "Flags (decoded below)"},
-    {ACPI_DMT_FLAGS0,   ACPI_MADT4_FLAG_OFFSET (ProcessorId,0),     "Polarity"},
-    {ACPI_DMT_FLAGS2,   ACPI_MADT4_FLAG_OFFSET (ProcessorId,0),     "Trigger Mode"},
+    {ACPI_DMT_UINT16,   ACPI_MADT4_OFFSET (IntiFlags),              "Flags (decoded below)"},
+    {ACPI_DMT_FLAGS0,   ACPI_MADT4_FLAG_OFFSET (IntiFlags,0),       "Polarity"},
+    {ACPI_DMT_FLAGS2,   ACPI_MADT4_FLAG_OFFSET (IntiFlags,0),       "Trigger Mode"},
     {ACPI_DMT_UINT8,    ACPI_MADT4_OFFSET (Lint),                   "Interrupt Input LINT"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
@@ -722,8 +720,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt7[] =
     {ACPI_DMT_UINT8,    ACPI_MADT7_OFFSET (Id),                     "Local Sapic ID"},
     {ACPI_DMT_UINT8,    ACPI_MADT7_OFFSET (Eid),                    "Local Sapic EID"},
     {ACPI_DMT_UINT24,   ACPI_MADT7_OFFSET (Reserved[0]),            "Reserved"},
-    {ACPI_DMT_UINT32,   ACPI_MADT7_FLAG_OFFSET (Reserved[0],0),     "Flags (decoded below)"},
-    {ACPI_DMT_FLAG0,    ACPI_MADT7_FLAG_OFFSET (Reserved[0],0),     "Processor Enabled"},
+    {ACPI_DMT_UINT32,   ACPI_MADT7_OFFSET (LapicFlags),             "Flags (decoded below)"},
+    {ACPI_DMT_FLAG0,    ACPI_MADT7_FLAG_OFFSET (LapicFlags,0),      "Processor Enabled"},
     {ACPI_DMT_UINT32,   ACPI_MADT7_OFFSET (Uid),                    "Processor UID"},
     {ACPI_DMT_STRING,   ACPI_MADT7_OFFSET (UidString[0]),           "Processor UID String"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
@@ -733,9 +731,9 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt7[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoMadt8[] =
 {
-    {ACPI_DMT_UINT16,   ACPI_MADT8_FLAG_OFFSET (Header.Length,0),   "Flags (decoded below)"},
-    {ACPI_DMT_FLAGS0,   ACPI_MADT8_FLAG_OFFSET (Header.Length,0),   "Polarity"},
-    {ACPI_DMT_FLAGS2,   ACPI_MADT8_FLAG_OFFSET (Header.Length,0),   "Trigger Mode"},
+    {ACPI_DMT_UINT16,   ACPI_MADT8_OFFSET (IntiFlags),              "Flags (decoded below)"},
+    {ACPI_DMT_FLAGS0,   ACPI_MADT8_FLAG_OFFSET (IntiFlags,0),       "Polarity"},
+    {ACPI_DMT_FLAGS2,   ACPI_MADT8_FLAG_OFFSET (IntiFlags,0),       "Trigger Mode"},
     {ACPI_DMT_UINT8,    ACPI_MADT8_OFFSET (Type),                   "InterruptType"},
     {ACPI_DMT_UINT8,    ACPI_MADT8_OFFSET (Id),                     "Processor ID"},
     {ACPI_DMT_UINT8,    ACPI_MADT8_OFFSET (Eid),                    "Processor EID"},
@@ -874,8 +872,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSrat0[] =
     {ACPI_DMT_UINT8,    ACPI_SRAT0_OFFSET (Header.Length),          "Length"},
     {ACPI_DMT_UINT8,    ACPI_SRAT0_OFFSET (ProximityDomainLo),      "Proximity Domain Low(8)"},
     {ACPI_DMT_UINT8,    ACPI_SRAT0_OFFSET (ApicId),                 "Apic ID"},
-    {ACPI_DMT_UINT32,   ACPI_SRAT0_FLAG_OFFSET (ApicId,0),          "Flags (decoded below)"},
-    {ACPI_DMT_FLAG0,    ACPI_SRAT0_FLAG_OFFSET (ApicId,0),          "Enabled"},
+    {ACPI_DMT_UINT32,   ACPI_SRAT0_OFFSET (Flags),                  "Flags (decoded below)"},
+    {ACPI_DMT_FLAG0,    ACPI_SRAT0_FLAG_OFFSET (Flags,0),           "Enabled"},
     {ACPI_DMT_UINT8,    ACPI_SRAT0_OFFSET (LocalSapicEid),          "Local Sapic EID"},
     {ACPI_DMT_UINT24,   ACPI_SRAT0_OFFSET (ProximityDomainHi[0]),   "Proximity Domain High(24)"},
     {ACPI_DMT_UINT32,   ACPI_SRAT0_OFFSET (Reserved),               "Reserved"},
@@ -891,10 +889,10 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSrat1[] =
     {ACPI_DMT_UINT64,   ACPI_SRAT1_OFFSET (BaseAddress),            "Base Address"},
     {ACPI_DMT_UINT64,   ACPI_SRAT1_OFFSET (Length),                 "Address Length"},
     {ACPI_DMT_UINT32,   ACPI_SRAT1_OFFSET (MemoryType),             "Memory Type"},
-    {ACPI_DMT_UINT32,   ACPI_SRAT1_FLAG_OFFSET (MemoryType,0),      "Flags (decoded below)"},
-    {ACPI_DMT_FLAG0,    ACPI_SRAT1_FLAG_OFFSET (MemoryType,0),      "Enabled"},
-    {ACPI_DMT_FLAG1,    ACPI_SRAT1_FLAG_OFFSET (MemoryType,0),      "Hot Pluggable"},
-    {ACPI_DMT_FLAG2,    ACPI_SRAT1_FLAG_OFFSET (MemoryType,0),      "Non-Volatile"},
+    {ACPI_DMT_UINT32,   ACPI_SRAT1_OFFSET (Flags),                  "Flags (decoded below)"},
+    {ACPI_DMT_FLAG0,    ACPI_SRAT1_FLAG_OFFSET (Flags,0),           "Enabled"},
+    {ACPI_DMT_FLAG1,    ACPI_SRAT1_FLAG_OFFSET (Flags,0),           "Hot Pluggable"},
+    {ACPI_DMT_FLAG2,    ACPI_SRAT1_FLAG_OFFSET (Flags,0),           "Non-Volatile"},
     {ACPI_DMT_UINT64,   ACPI_SRAT1_OFFSET (Reserved1),              "Reserved"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
