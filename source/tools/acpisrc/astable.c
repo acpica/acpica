@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -486,17 +486,28 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
 
     /*
      * Acpi table definition names.
-     * TBD: Not consistent, should be changed
      */
     {"ACPI_TABLE_ASF",                      SRC_TYPE_STRUCT},
     {"ACPI_TABLE_BOOT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_CPEP",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_DBGP",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_DMAR",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_ECDT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_FACS",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_FADT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_HPET",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_MADT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_MCFG",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_RSDP",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_RSDT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_SBST",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_SLIT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_SPCR",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_SPMI",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_SRAT",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_TCPA",                     SRC_TYPE_STRUCT},
     {"ACPI_TABLE_WDRT",                     SRC_TYPE_STRUCT},
+    {"ACPI_TABLE_XSDT",                     SRC_TYPE_STRUCT},
 
     {"ACPI_ASF_ADDRESS",                    SRC_TYPE_STRUCT},
     {"ACPI_ASF_ALERT",                      SRC_TYPE_STRUCT},
@@ -505,41 +516,27 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_ASF_REMOTE",                     SRC_TYPE_STRUCT},
     {"ACPI_ASF_RMCP",                       SRC_TYPE_STRUCT},
     {"ACPI_CPEP_POLLING",                   SRC_TYPE_STRUCT},
-    {"ACPI_MCFG_ALLOCATION",                SRC_TYPE_STRUCT},
-
-
-/* New names */
-
-
-    {"ACPI_TABLE_SBST",                     SRC_TYPE_STRUCT},
-    {"ACPI_TABLE_SLIT",                     SRC_TYPE_STRUCT},
-    {"ACPI_TABLE_ECDT",                     SRC_TYPE_STRUCT},
-    {"ACPI_TABLE_HPET",                     SRC_TYPE_STRUCT},
-    {"ACPI_TABLE_FADT",                     SRC_TYPE_STRUCT},
-    {"ACPI_TABLE_FACS",                     SRC_TYPE_STRUCT},
-    {"ACPI_TABLE_RSDP",                     SRC_TYPE_STRUCT},
-    {"ACPI_TABLE_RSDT",                     SRC_TYPE_STRUCT},
-    {"ACPI_TABLE_XSDT",                     SRC_TYPE_STRUCT},
-    {"ACPI_TABLE_MADT",                     SRC_TYPE_STRUCT},
-    {"ACPI_TABLE_SRAT",                     SRC_TYPE_STRUCT},
-
-    {"ACPI_ASF_HEADER",                     SRC_TYPE_STRUCT},
-    {"ACPI_MADT_HEADER",                    SRC_TYPE_STRUCT},
+    {"ACPI_DMAR_HEADER",                    SRC_TYPE_STRUCT},
+    {"ACPI_DMAR_DEVICE_SCOPE",              SRC_TYPE_STRUCT},
+    {"ACPI_DMAR_HARDWARE_UNIT",             SRC_TYPE_STRUCT},
+    {"ACPI_DMAR_RESERVED_MEMORY",           SRC_TYPE_STRUCT},
     {"ACPI_MADT_ADDRESS_OVERRIDE",          SRC_TYPE_STRUCT},
-    {"ACPI_MADT_XRUPT_OVERRIDE",            SRC_TYPE_STRUCT},
-    {"ACPI_MADT_XRUPT_SOURCE",              SRC_TYPE_STRUCT},
+    {"ACPI_MADT_HEADER",                    SRC_TYPE_STRUCT},
     {"ACPI_MADT_IO_APIC",                   SRC_TYPE_STRUCT},
     {"ACPI_MADT_IO_SAPIC",                  SRC_TYPE_STRUCT},
     {"ACPI_MADT_LOCAL_APIC_NMI",            SRC_TYPE_STRUCT},
     {"ACPI_MADT_LOCAL_SAPIC",               SRC_TYPE_STRUCT},
     {"ACPI_MADT_NMI_SOURCE",                SRC_TYPE_STRUCT},
     {"ACPI_MADT_PROCESSOR_APIC",            SRC_TYPE_STRUCT},
-    {"ACPI_SRAT_HEADER",                    SRC_TYPE_STRUCT},
+    {"ACPI_MADT_XRUPT_OVERRIDE",            SRC_TYPE_STRUCT},
+    {"ACPI_MADT_XRUPT_SOURCE",              SRC_TYPE_STRUCT},
+    {"ACPI_MCFG_ALLOCATION",                SRC_TYPE_STRUCT},
     {"ACPI_SRAT_CPU_AFFINITY",              SRC_TYPE_STRUCT},
+    {"ACPI_SRAT_HEADER",                    SRC_TYPE_STRUCT},
     {"ACPI_SRAT_MEM_AFFINITY",              SRC_TYPE_STRUCT},
 
 
-    /* Legacy names, should be changed to ACPI_TABLE_*  */
+    /* Legacy names, should be removed  */
 
     {"EC_BOOT_RESOURCES",                   SRC_TYPE_STRUCT},
     {"HPET_TABLE",                          SRC_TYPE_STRUCT},

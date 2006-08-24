@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - Additional ACPI table definitions
- *       $Revision: 1.42 $
+ *       $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -136,6 +136,7 @@
 #define ACPI_SIG_BOOT           "BOOT"      /* Simple Boot Flag Table */
 #define ACPI_SIG_CPEP           "CPEP"      /* Corrected Platform Error Polling table */
 #define ACPI_SIG_DBGP           "DBGP"      /* Debug Port table */
+#define ACPI_SIG_DMAR           "DMAR"      /* DMA Remapping table */
 #define ACPI_SIG_ECDT           "ECDT"      /* Embedded Controller Boot Resources Table */
 #define ACPI_SIG_HPET           "HPET"      /* High Precision Event Timer table */
 #define ACPI_SIG_MADT           "APIC"      /* Multiple APIC Description Table */
@@ -338,6 +339,92 @@ typedef struct acpi_table_dbgp
 
 /*******************************************************************************
  *
+ * DMAR - DMA Remapping table
+ *
+ ******************************************************************************/
+
+typedef struct acpi_table_dmar
+{
+    ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
+    UINT8                   Width;              /* Host Address Width */
+    UINT8                   Reserved[11];
+
+} ACPI_TABLE_DMAR;
+
+/* DMAR subtable header */
+
+typedef struct acpi_dmar_header
+{
+    UINT16                  Type;
+    UINT16                  Length;
+    UINT8                   Flags;
+    UINT8                   Reserved[3];
+
+} ACPI_DMAR_HEADER;
+
+/* Values for subtable type in ACPI_DMAR_HEADER */
+
+enum AcpiDmarType
+{
+    ACPI_DMAR_TYPE_HARDWARE_UNIT        = 0,
+    ACPI_DMAR_TYPE_RESERVED_MEMORY      = 1,
+    ACPI_DMAR_TYPE_RESERVED             = 2     /* 2 and greater are reserved */
+};
+
+typedef struct acpi_dmar_device_scope
+{
+    UINT8                   EntryType;
+    UINT8                   Length;
+    UINT8                   Segment;
+    UINT8                   Bus;
+
+} ACPI_DMAR_DEVICE_SCOPE;
+
+/* Values for EntryType in ACPI_DMAR_DEVICE_SCOPE */
+
+enum AcpiDmarScopeType
+{
+    ACPI_DMAR_SCOPE_TYPE_NOT_USED       = 0,
+    ACPI_DMAR_SCOPE_TYPE_ENDPOINT       = 1,
+    ACPI_DMAR_SCOPE_TYPE_BRIDGE         = 2,
+    ACPI_DMAR_SCOPE_TYPE_RESERVED       = 3     /* 3 and greater are reserved */
+};
+
+
+/*
+ * DMAR Sub-tables, correspond to Type in ACPI_DMAR_HEADER
+ */
+
+/* 0: Hardware Unit Definition */
+
+typedef struct acpi_dmar_hardware_unit
+{
+    ACPI_DMAR_HEADER        Header;
+    UINT64                  Address;            /* Register Base Address */
+
+} ACPI_DMAR_HARDWARE_UNIT;
+
+/* Flags */
+
+#define ACPI_DMAR_INCLUDE_ALL       (1)
+
+/* 1: Reserved Memory Defininition */
+
+typedef struct acpi_dmar_reserved_memory
+{
+    ACPI_DMAR_HEADER        Header;
+    UINT64                  Address;            /* 4K aligned base address */
+    UINT64                  EndAddress;         /* 4K aligned limit address */
+
+} ACPI_DMAR_RESERVED_MEMORY;
+
+/* Flags */
+
+#define ACPI_DMAR_ALLOW_ALL         (1)
+
+
+/*******************************************************************************
+ *
  * ECDT - Embedded Controller Boot Resources Table
  *
  ******************************************************************************/
@@ -418,7 +505,7 @@ enum AcpiMadtType
     ACPI_MADT_TYPE_IO_SAPIC             = 6,
     ACPI_MADT_TYPE_LOCAL_SAPIC          = 7,
     ACPI_MADT_TYPE_INTERRUPT_SOURCE     = 8,
-    ACPI_MADT_TYPE_RESERVED             = 9         /* 9 and greater are reserved */
+    ACPI_MADT_TYPE_RESERVED             = 9     /* 9 and greater are reserved */
 };
 
 

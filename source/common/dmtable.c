@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -137,17 +137,24 @@ AcpiDmCheckAscii (
 
 /* These tables map a subtable type to a description string */
 
+static const char           *AcpiDmDmarSubnames[] =
+{
+    "Hardware Unit Definition",
+    "Reserved Memory Region",
+    "Unknown SubTable Type"         /* Reserved */
+};
+
 static const char           *AcpiDmMadtSubnames[] =
 {
-    "Processor Local APIC",         /* APIC_PROCESSOR */
-    "I/O APIC",                     /* APIC_IO */
-    "Interrupt Source Override",    /* APIC_XRUPT_OVERRIDE */
-    "NMI Source",                   /* APIC_NMI */
-    "Local APIC NMI",               /* APIC_LOCAL_NMI */
-    "Local APIC Address Override",  /* APIC_ADDRESS_OVERRIDE */
-    "I/O SAPIC",                    /* APIC_IO_SAPIC */
-    "Local SAPIC",                  /* APIC_LOCAL_SAPIC */
-    "Platform Interrupt Sources",   /* APIC_XRUPT_SOURCE */
+    "Processor Local APIC",         /* ACPI_MADT_TYPE_LOCAL_APIC */
+    "I/O APIC",                     /* ACPI_MADT_TYPE_IO_APIC */
+    "Interrupt Source Override",    /* ACPI_MADT_TYPE_INTERRUPT_OVERRIDE */
+    "NMI Source",                   /* ACPI_MADT_TYPE_NMI_SOURCE */
+    "Local APIC NMI",               /* ACPI_MADT_TYPE_LOCAL_APIC_NMI */
+    "Local APIC Address Override",  /* ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE */
+    "I/O SAPIC",                    /* ACPI_MADT_TYPE_IO_SAPIC */
+    "Local SAPIC",                  /* ACPI_MADT_TYPE_LOCAL_SAPIC */
+    "Platform Interrupt Sources",   /* ACPI_MADT_TYPE_INTERRUPT_SOURCE */
     "Unknown SubTable Type"         /* Reserved */
 };
 
@@ -176,6 +183,7 @@ static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_XSDT,     NULL,                       AcpiDmDumpXsdt},
     {ACPI_SIG_ASF,      NULL,                       AcpiDmDumpAsf},
     {ACPI_SIG_MADT,     NULL,                       AcpiDmDumpMadt},
+    {ACPI_SIG_DMAR,     NULL,                       AcpiDmDumpDmar},
     {ACPI_SIG_BOOT,     AcpiDmTableInfoBoot,        NULL},
     {ACPI_SIG_CPEP,     NULL,                       AcpiDmDumpCpep},
     {ACPI_SIG_DBGP,     AcpiDmTableInfoDbgp,        NULL},
@@ -431,6 +439,7 @@ AcpiDmDumpTable (
     UINT32                  CurrentOffset;
     UINT32                  ByteLength;
     UINT8                   Temp8;
+    UINT16                  Temp16;
 
 
     if (!Info)
@@ -470,6 +479,7 @@ AcpiDmDumpTable (
             ByteLength = 1;
             break;
         case ACPI_DMT_UINT16:
+        case ACPI_DMT_DMAR:
             ByteLength = 2;
             break;
         case ACPI_DMT_UINT24:
@@ -620,6 +630,19 @@ AcpiDmDumpTable (
             AcpiOsPrintf ("<Generic Address Structure>\n");
             AcpiDmDumpTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
                 CurrentOffset, Target, 0, AcpiDmTableInfoGas);
+            break;
+
+        case ACPI_DMT_DMAR:
+
+            /* DMAR subtable types */
+
+            Temp16 = *Target;
+            if (Temp16 > ACPI_DMAR_TYPE_RESERVED)
+            {
+                Temp16 = ACPI_DMAR_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf ("%4.4X <%s>\n", *Target, AcpiDmDmarSubnames[Temp16]);
             break;
 
         case ACPI_DMT_MADT:

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbinfo - Table info for non-AML tables
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -132,6 +132,7 @@
 #define ACPI_BOOT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_BOOT,f)
 #define ACPI_CPEP_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_CPEP,f)
 #define ACPI_DBGP_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_DBGP,f)
+#define ACPI_DMAR_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_DMAR,f)
 #define ACPI_ECDT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_ECDT,f)
 #define ACPI_HPET_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_HPET,f)
 #define ACPI_MADT_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_TABLE_MADT,f)
@@ -152,6 +153,9 @@
 #define ACPI_ASF3_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_ASF_RMCP,f)
 #define ACPI_ASF4_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_ASF_ADDRESS,f)
 #define ACPI_CPEP0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_CPEP_POLLING,f)
+#define ACPI_DMARS_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_DMAR_DEVICE_SCOPE,f)
+#define ACPI_DMAR0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_DMAR_HARDWARE_UNIT,f)
+#define ACPI_DMAR1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_DMAR_RESERVED_MEMORY,f)
 #define ACPI_MADT0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MADT_LOCAL_APIC,f)
 #define ACPI_MADT1_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MADT_IO_APIC,f)
 #define ACPI_MADT2_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_MADT_INTERRUPT_OVERRIDE,f)
@@ -512,6 +516,60 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoDbgp[] =
     {ACPI_DMT_UINT8,    ACPI_DBGP_OFFSET (Type),                    "Interface Type"},
     {ACPI_DMT_UINT24,   ACPI_DBGP_OFFSET (Reserved[0]),             "Reserved"},
     {ACPI_DMT_GAS,      ACPI_DBGP_OFFSET (DebugPort),               "Debug Port Register"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+
+/*******************************************************************************
+ *
+ * DMAR - DMA Remapping table
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDmar[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_DMAR_OFFSET (Width),                   "Host Address Width"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* Common sub-table header (one per sub-table) */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDmarHdr[] =
+{
+    {ACPI_DMT_DMAR,     ACPI_DMAR0_OFFSET (Header.Type),            "Sub-Table Type"},
+    {ACPI_DMT_UINT16,   ACPI_DMAR0_OFFSET (Header.Length),          "Length"},
+    {ACPI_DMT_UINT8,    ACPI_DMAR0_OFFSET (Header.Flags),           "Flags"},
+    {ACPI_DMT_UINT24,   ACPI_DMAR0_OFFSET (Header.Reserved[0]),     "Reserved"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* Common device scope entry */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDmarScope[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_DMARS_OFFSET (EntryType),              "Device Scope Entry Type"},
+    {ACPI_DMT_UINT8,    ACPI_DMARS_OFFSET (Length),                 "Entry Length"},
+    {ACPI_DMT_UINT8,    ACPI_DMARS_OFFSET (Segment),                "PCI Segment Number"},
+    {ACPI_DMT_UINT8,    ACPI_DMARS_OFFSET (Bus),                    "PCI Bus Number"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* DMAR sub-tables */
+
+/* 0: Hardware Unit Definition */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDmar0[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_DMAR0_OFFSET (Address),                "Register Base Address"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 1: Reserved Memory Defininition */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoDmar1[] =
+{
+    {ACPI_DMT_UINT64,   ACPI_DMAR1_OFFSET (Address),                "Base Address"},
+    {ACPI_DMT_UINT64,   ACPI_DMAR1_OFFSET (EndAddress),             "End Address (limit)"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 

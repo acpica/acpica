@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.7 $
+ *              $Revision: 1.8 $
  *
  *****************************************************************************/
 
@@ -127,11 +127,11 @@
  *
  * FUNCTION:    AcpiDmDumpRsdp
  *
- * PARAMETERS:  Table               - An RSDP
+ * PARAMETERS:  Table               - A RSDP
  *
  * RETURN:      Length of the table (there is no length field, use revision)
  *
- * DESCRIPTION: Format the contents of an RSDP
+ * DESCRIPTION: Format the contents of a RSDP
  *
  ******************************************************************************/
 
@@ -162,11 +162,11 @@ AcpiDmDumpRsdp (
  *
  * FUNCTION:    AcpiDmDumpRsdt
  *
- * PARAMETERS:  Table               - An RSDT
+ * PARAMETERS:  Table               - A RSDT
  *
  * RETURN:      None
  *
- * DESCRIPTION: Format the contents of an RSDT
+ * DESCRIPTION: Format the contents of a RSDT
  *
  ******************************************************************************/
 
@@ -202,11 +202,11 @@ AcpiDmDumpRsdt (
  *
  * FUNCTION:    AcpiDmDumpXsdt
  *
- * PARAMETERS:  Table               - An XSDT
+ * PARAMETERS:  Table               - A XSDT
  *
  * RETURN:      None
  *
- * DESCRIPTION: Format the contents of an XSDT
+ * DESCRIPTION: Format the contents of a XSDT
  *
  ******************************************************************************/
 
@@ -242,11 +242,11 @@ AcpiDmDumpXsdt (
  *
  * FUNCTION:    AcpiDmDumpFadt
  *
- * PARAMETERS:  Table               - An FADT
+ * PARAMETERS:  Table               - A FADT
  *
  * RETURN:      None
  *
- * DESCRIPTION: Format the contents of an FADT
+ * DESCRIPTION: Format the contents of a FADT
  *
  ******************************************************************************/
 
@@ -272,11 +272,11 @@ AcpiDmDumpFadt (
  *
  * FUNCTION:    AcpiDmDumpAsf
  *
- * PARAMETERS:  Table               - An ASF table
+ * PARAMETERS:  Table               - A ASF table
  *
  * RETURN:      None
  *
- * DESCRIPTION: Format the contents of an ASF table
+ * DESCRIPTION: Format the contents of a ASF table
  *
  ******************************************************************************/
 
@@ -339,7 +339,7 @@ AcpiDmDumpAsf (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Format the contents of an CPEP. This table type consists
+ * DESCRIPTION: Format the contents of a CPEP. This table type consists
  *              of an open-ended number of subtables.
  *
  ******************************************************************************/
@@ -375,13 +375,120 @@ AcpiDmDumpCpep (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmDumpMadt
+ * FUNCTION:    AcpiDmDumpDmar
  *
- * PARAMETERS:  Table               - An MADT
+ * PARAMETERS:  Table               - A DMAR table
  *
  * RETURN:      None
  *
- * DESCRIPTION: Format the contents of an MADT. This table type consists
+ * DESCRIPTION: Format the contents of a DMAR. This table type consists
+ *              of an open-ended number of subtables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpDmar (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_DMAR_HEADER        *SubTable;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_DMAR);
+    ACPI_DMTABLE_INFO       *InfoTable;
+    ACPI_DMAR_DEVICE_SCOPE  *ScopeTable;
+    UINT32                  ScopeOffset;
+    UINT8                   *PciPath;
+    UINT32                  PathOffset;
+
+
+    /* Main table */
+
+    AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoDmar);
+
+    /* Sub-tables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_DMAR_HEADER, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        /* Common sub-table header */
+
+        AcpiOsPrintf ("\n");
+        AcpiDmDumpTable (Length, Offset, SubTable, 0, AcpiDmTableInfoDmarHdr);
+
+        switch (SubTable->Type)
+        {
+        case ACPI_DMAR_TYPE_HARDWARE_UNIT:
+            InfoTable = AcpiDmTableInfoDmar0;
+            ScopeOffset = sizeof (ACPI_DMAR_HARDWARE_UNIT);
+            break;
+        case ACPI_DMAR_TYPE_RESERVED_MEMORY:
+            InfoTable = AcpiDmTableInfoDmar1;
+            ScopeOffset = sizeof (ACPI_DMAR_RESERVED_MEMORY);
+            break;
+        default:
+            AcpiOsPrintf ("\n**** Unknown DMAR sub-table type %X\n\n", SubTable->Type);
+            return;
+        }
+
+        AcpiDmDumpTable (Length, Offset, SubTable, SubTable->Length, InfoTable);
+
+        /*
+         * Currently, a common flag indicates whether there are any
+         * device scope entries present at the end of the subtable.
+         */
+        if ((SubTable->Flags & ACPI_DMAR_INCLUDE_ALL) == 0)
+        {
+            /* Dump the device scope entries */
+            
+            ScopeTable = ACPI_ADD_PTR (ACPI_DMAR_DEVICE_SCOPE, SubTable, ScopeOffset);
+            while (ScopeOffset < SubTable->Length)
+            {
+                AcpiOsPrintf ("\n");
+                AcpiDmDumpTable (Length, Offset + ScopeOffset, ScopeTable,
+                    ScopeTable->Length, AcpiDmTableInfoDmarScope);
+
+                /* Dump the PCI Path entries for this device scope */
+
+                PathOffset = sizeof (ACPI_DMAR_DEVICE_SCOPE); /* Path entries start at this offset */
+
+                PciPath = ACPI_ADD_PTR (UINT8, ScopeTable,
+                    sizeof (ACPI_DMAR_DEVICE_SCOPE));
+
+                while (PathOffset < ScopeTable->Length)
+                {
+                    AcpiDmLineHeader ((PathOffset + ScopeOffset + Offset), 2, "PCI Path");
+                    AcpiOsPrintf ("[%2.2X, %2.2X]\n", PciPath[0], PciPath[1]);
+
+                    /* Point to next PCI Path entry */
+
+                    PathOffset += 2;
+                    PciPath += 2;
+                }
+
+                /* Point to next device scope entry */
+
+                ScopeOffset += ScopeTable->Length;
+                ScopeTable = ACPI_ADD_PTR (ACPI_DMAR_DEVICE_SCOPE,
+                    ScopeTable, ScopeTable->Length);
+            }
+        }
+
+        /* Point to next sub-table */
+
+        Offset += SubTable->Length;
+        SubTable = ACPI_ADD_PTR (ACPI_DMAR_HEADER, SubTable, SubTable->Length);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpMadt
+ *
+ * PARAMETERS:  Table               - A MADT table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a MADT. This table type consists
  *              of an open-ended number of subtables.
  *
  ******************************************************************************/
@@ -458,11 +565,11 @@ AcpiDmDumpMadt (
  *
  * FUNCTION:    AcpiDmDumpMcfg
  *
- * PARAMETERS:  Table               - An MCFG Table
+ * PARAMETERS:  Table               - A MCFG Table
  *
  * RETURN:      None
  *
- * DESCRIPTION: Format the contents of an MCFG table
+ * DESCRIPTION: Format the contents of a MCFG table
  *
  ******************************************************************************/
 
@@ -510,7 +617,7 @@ AcpiDmDumpMcfg (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Format the contents of an SLIT
+ * DESCRIPTION: Format the contents of a SLIT
  *
  ******************************************************************************/
 
@@ -574,11 +681,11 @@ AcpiDmDumpSlit (
  *
  * FUNCTION:    AcpiDmDumpSrat
  *
- * PARAMETERS:  Table               - An SRAT
+ * PARAMETERS:  Table               - A SRAT table
  *
  * RETURN:      None
  *
- * DESCRIPTION: Format the contents of an SRAT
+ * DESCRIPTION: Format the contents of a SRAT
  *
  ******************************************************************************/
 
