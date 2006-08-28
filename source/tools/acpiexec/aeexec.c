@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -263,9 +263,11 @@ AeBuildLocalTables (
     /* Build an RSDP */
 
     ACPI_MEMSET (&LocalRSDP, 0, sizeof (ACPI_TABLE_RSDP));
-    ACPI_STRNCPY (LocalRSDP.Signature, ACPI_SIG_RSDP, 8);
+    ACPI_MEMCPY (LocalRSDP.Signature, ACPI_SIG_RSDP, 8);
     LocalRSDP.Revision = 1;
     LocalRSDP.RsdtPhysicalAddress = ACPI_PTR_TO_PHYSADDR (LocalRSDT);
+    LocalRSDP.Length = sizeof (ACPI_TABLE_RSDT);
+    ACPI_MEMCPY (LocalRSDP.OemId, "I_TEST", 6);
 
     /*
      * Examine the incoming user table.  At this point, it has been verified
@@ -288,8 +290,8 @@ AeBuildLocalTables (
 
     /* Set checksums for both RSDT and RSDP */
 
-    LocalRSDT->Header.Checksum = (UINT8) -AcpiTbChecksum((void *) LocalRSDT, LocalRSDT->Header.Length);
-    LocalRSDP.Checksum = (UINT8) -AcpiTbChecksum((void *) &LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH);
+    LocalRSDT->Header.Checksum = (UINT8) -AcpiTbChecksum ((void *) LocalRSDT, LocalRSDT->Header.Length);
+    LocalRSDP.Checksum = (UINT8) -AcpiTbChecksum ((void *) &LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH);
 
     /* Build a FADT so we can test the hardware/event init */
 
@@ -306,8 +308,10 @@ AeBuildLocalTables (
         LocalFADT.Dsdt = ACPI_PTR_TO_PHYSADDR (UserTable);
     }
 
+    /* Short (V1) FADT */
+
     LocalFADT.Header.Revision = 1;
-    LocalFADT.Header.Length = ACPI_FADT_OFFSET (ResetRegister); //sizeof (FADT_DESCRIPTOR);
+    LocalFADT.Header.Length = ACPI_FADT_OFFSET (Flags);
     LocalFADT.Gpe0BlockLength = 16;
     LocalFADT.Gpe1BlockLength = 6;
     LocalFADT.Gpe1Base = 96;
@@ -326,7 +330,8 @@ AeBuildLocalTables (
 
     /* Complete the FADT with the checksum */
 
-    LocalFADT.Header.Checksum = (UINT8) -AcpiTbChecksum ((void *)&LocalFADT, LocalFADT.Header.Length);
+    LocalFADT.Header.Checksum = 0;
+    LocalFADT.Header.Checksum = (UINT8) -AcpiTbChecksum ((void *) &LocalFADT, LocalFADT.Header.Length);
 
     /* Build a FACS */
 
@@ -335,21 +340,23 @@ AeBuildLocalTables (
     LocalFACS.Length = sizeof (ACPI_TABLE_FACS);
     LocalFACS.GlobalLock = 0x11AA0011;
 
-    /* Build a fake table so that we make sure that the CA core ignores it */
+    /* Build a fake table [TEST] so that we make sure that the CA core ignores it */
 
     ACPI_MEMSET (&LocalTEST, 0, sizeof (ACPI_TABLE_HEADER));
     ACPI_STRNCPY (LocalTEST.Signature, "TEST", 4);
 
     LocalTEST.Revision = 1;
     LocalTEST.Length = sizeof (ACPI_TABLE_HEADER);
+    LocalTEST.Checksum = (UINT8) -AcpiTbChecksum ((void *) &LocalTEST, LocalTEST.Length);
 
-    /* Build a fake table with a bad signature so that we make sure that the CA core ignores it */
+    /* Build a fake table with a bad signature [BAD!] so that we make sure that the CA core ignores it */
 
     ACPI_MEMSET (&LocalBADTABLE, 0, sizeof (ACPI_TABLE_HEADER));
     ACPI_STRNCPY (LocalBADTABLE.Signature, "BAD!", 4);
 
     LocalBADTABLE.Revision = 1;
     LocalBADTABLE.Length = sizeof (ACPI_TABLE_HEADER);
+    LocalBADTABLE.Checksum = (UINT8) -AcpiTbChecksum ((void *) &LocalBADTABLE, LocalBADTABLE.Length);
 
     return (AE_OK);
 }

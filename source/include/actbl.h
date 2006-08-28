@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Basic ACPI Table Definitions
- *       $Revision: 1.81 $
+ *       $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -292,8 +292,8 @@ typedef struct acpi_table_fadt
     UINT32                  Pm1bControlBlock;   /* Port address of Power Mgt 1b Control Reg Blk */
     UINT32                  Pm2ControlBlock;    /* Port address of Power Mgt 2 Control Reg Blk */
     UINT32                  PmTimerBlock;       /* Port address of Power Mgt Timer Ctrl Reg Blk */
-    UINT32                  Gpe0Block;          /* Port addr of General Purpose AcpiEvent 0 Reg Blk */
-    UINT32                  Gpe1Block;          /* Port addr of General Purpose AcpiEvent 1 Reg Blk */
+    UINT32                  Gpe0Block;          /* Port addr of General Purpose Event 0 Reg Blk */
+    UINT32                  Gpe1Block;          /* Port addr of General Purpose Event 1 Reg Blk */
     UINT8                   Pm1EventLength;     /* Byte Length of ports at pm1X_evt_blk */
     UINT8                   Pm1ControlLength;   /* Byte Length of ports at pm1X_cnt_blk */
     UINT8                   Pm2ControlLength;   /* Byte Length of ports at pm2_cnt_blk */
@@ -319,14 +319,14 @@ typedef struct acpi_table_fadt
     UINT8                   Reserved4[3];       /* These three bytes must be zero */
     UINT64                  XFacs;              /* 64-bit physical address of FACS */
     UINT64                  XDsdt;              /* 64-bit physical address of DSDT */
-    ACPI_GENERIC_ADDRESS    XPm1aEventBlock;    /* Extended Power Mgt 1a AcpiEvent Reg Blk address */
-    ACPI_GENERIC_ADDRESS    XPm1bEventBlock;    /* Extended Power Mgt 1b AcpiEvent Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XPm1aEventBlock;    /* Extended Power Mgt 1a Event Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XPm1bEventBlock;    /* Extended Power Mgt 1b Event Reg Blk address */
     ACPI_GENERIC_ADDRESS    XPm1aControlBlock;  /* Extended Power Mgt 1a Control Reg Blk address */
     ACPI_GENERIC_ADDRESS    XPm1bControlBlock;  /* Extended Power Mgt 1b Control Reg Blk address */
     ACPI_GENERIC_ADDRESS    XPm2ControlBlock;   /* Extended Power Mgt 2 Control Reg Blk address */
     ACPI_GENERIC_ADDRESS    XPmTimerBlock;      /* Extended Power Mgt Timer Ctrl Reg Blk address */
-    ACPI_GENERIC_ADDRESS    XGpe0Block;         /* Extended General Purpose AcpiEvent 0 Reg Blk address */
-    ACPI_GENERIC_ADDRESS    XGpe1Block;         /* Extended General Purpose AcpiEvent 1 Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XGpe0Block;         /* Extended General Purpose Event 0 Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XGpe1Block;         /* Extended General Purpose Event 1 Reg Blk address */
 
 } ACPI_TABLE_FADT;
 

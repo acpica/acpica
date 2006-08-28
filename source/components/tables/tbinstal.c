@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@ ACPI_STATUS
 AcpiTbVerifyTable (
     ACPI_TABLE_DESC         *TableDesc)
 {
-    UINT8                   Checksum;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE (TbVerifyTable);
@@ -169,18 +169,8 @@ AcpiTbVerifyTable (
 
     /* Always calculate checksum, ignore bad checksum if requested */
 
-    Checksum = AcpiTbChecksum (ACPI_CAST_PTR (void, TableDesc->Pointer),
-                TableDesc->Length);
-
-#if (ACPI_CHECKSUM_ABORT)
-
-    if (Checksum)
-    {
-        return_ACPI_STATUS (AE_BAD_CHECKSUM);
-    }
-#endif
-
-    return_ACPI_STATUS (AE_OK);
+    Status = AcpiTbVerifyChecksum (TableDesc->Pointer, TableDesc->Length);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -281,7 +271,7 @@ AcpiTbResizeRootTableList (
 
     /* AllowResize flag is a parameter to AcpiInitializeTables */
 
-    if (!(AcpiGbl_RootTableList.Flags & ACPI_TABLE_FLAGS_ALLOW_RESIZE))
+    if (!(AcpiGbl_RootTableList.Flags & ACPI_ROOT_ALLOW_RESIZE))
     {
         ACPI_ERROR ((AE_INFO, "Resize of Root Table Array is not allowed"));
         return_ACPI_STATUS (AE_SUPPORT);
@@ -305,8 +295,7 @@ AcpiTbResizeRootTableList (
         ACPI_MEMCPY (Tables, AcpiGbl_RootTableList.Tables,
             AcpiGbl_RootTableList.Size * sizeof (ACPI_TABLE_DESC));
 
-        if (AcpiGbl_RootTableList.Flags & ACPI_TABLE_ORIGIN_MASK ==
-            ACPI_TABLE_ORIGIN_ALLOCATED)
+        if (AcpiGbl_RootTableList.Flags & ACPI_ROOT_ORIGIN_ALLOCATED)
         {
             ACPI_FREE (AcpiGbl_RootTableList.Tables);
         }
@@ -314,8 +303,7 @@ AcpiTbResizeRootTableList (
 
     AcpiGbl_RootTableList.Tables = Tables;
     AcpiGbl_RootTableList.Size += ACPI_ROOT_TABLE_SIZE_INCREMENT;
-    AcpiGbl_RootTableList.Flags = (UINT8) (ACPI_TABLE_ORIGIN_ALLOCATED |
-        (AcpiGbl_RootTableList.Flags & ~ACPI_TABLE_ORIGIN_MASK));
+    AcpiGbl_RootTableList.Flags |= (UINT8) ACPI_ROOT_ORIGIN_ALLOCATED;
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -455,8 +443,7 @@ AcpiTbTerminate (
      * Delete the root table array if allocated locally. Array cannot be
      * mapped, so we don't need to check for that flag.
      */
-    if ((AcpiGbl_RootTableList.Flags & ACPI_TABLE_ORIGIN_MASK) ==
-        ACPI_TABLE_ORIGIN_ALLOCATED)
+    if (AcpiGbl_RootTableList.Flags & ACPI_ROOT_ORIGIN_ALLOCATED)
     {
         ACPI_FREE (AcpiGbl_RootTableList.Tables);
     }
@@ -630,7 +617,7 @@ AcpiTbIsTableLoaded (
     if (TableIndex < AcpiGbl_RootTableList.Count)
     {
         IsLoaded = (BOOLEAN)
-            (AcpiGbl_RootTableList.Tables[TableIndex].Flags & ACPI_TABLE_FLAGS_LOADED);
+            (AcpiGbl_RootTableList.Tables[TableIndex].Flags & ACPI_TABLE_IS_LOADED);
     }
 
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
@@ -662,11 +649,11 @@ AcpiTbSetTableLoadedFlag (
     {
         if (IsLoaded)
         {
-            AcpiGbl_RootTableList.Tables[TableIndex].Flags |= ACPI_TABLE_FLAGS_LOADED;
+            AcpiGbl_RootTableList.Tables[TableIndex].Flags |= ACPI_TABLE_IS_LOADED;
         }
         else
         {
-            AcpiGbl_RootTableList.Tables[TableIndex].Flags &= ~ACPI_TABLE_FLAGS_LOADED;
+            AcpiGbl_RootTableList.Tables[TableIndex].Flags &= ~ACPI_TABLE_IS_LOADED;
         }
     }
 

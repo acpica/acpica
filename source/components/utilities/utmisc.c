@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.147 $
+ *              $Revision: 1.148 $
  *
  ******************************************************************************/
 
@@ -1217,10 +1217,14 @@ AcpiUtInfo (
     va_list                 args;
 
 
-    AcpiOsPrintf ("ACPI (%s-%04d): ", ModuleName, LineNumber);
+    /*
+     * Removed ModuleName, LineNumber, and acpica version, not needed
+     * for info output
+     */
+    AcpiOsPrintf ("ACPI: ");
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
-    AcpiOsPrintf (" [%X]\n", ACPI_CA_VERSION);
+    AcpiOsPrintf ("\n");
 }
 

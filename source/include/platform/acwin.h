@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.26 $
+ *       $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -182,11 +182,12 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
 {                                                   \
         __asm mov           eax, 0xFF               \
         __asm mov           ecx, FacsPtr            \
-        __asm cmp           ecx, 0                  \
+        __asm or            ecx, ecx                \
         __asm jz            exit_acq                \
+        __asm lea           ecx, [ecx].GlobalLock   \
                                                     \
         __asm acq10:                                \
-        __asm mov           eax, [ecx].GlobalLock   \
+        __asm mov           eax, [ecx]              \
         __asm mov           edx, eax                \
         __asm and           edx, 0xFFFFFFFE         \
         __asm bts           edx, 1                  \
@@ -205,11 +206,12 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
 {                                                   \
         __asm xor           eax, eax                \
         __asm mov           ecx, FacsPtr            \
-        __asm cmp           ecx, 0                  \
+        __asm or            ecx, ecx                \
         __asm jz            exit_rel                \
+        __asm lea           ecx, [ecx].GlobalLock   \
                                                     \
         __asm Rel10:                                \
-        __asm mov           eax, [ecx].GlobalLock   \
+        __asm mov           eax, [ecx]              \
         __asm mov           edx, eax                \
         __asm and           edx, 0xFFFFFFFC         \
         __asm lock cmpxchg  dword ptr [ecx], edx    \

@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -163,9 +163,8 @@ AcpiInitializeTables (
     UINT32                  InitialTableCount,
     BOOLEAN                 AllowResize)
 {
-    ACPI_PHYSICAL_ADDRESS   Address;
+    ACPI_PHYSICAL_ADDRESS   RsdpAddress;
     ACPI_STATUS             Status;
-    ACPI_TABLE_RSDP         *Rsdp;
 
 
     ACPI_FUNCTION_TRACE (AcpiInitializeTables);
@@ -178,7 +177,7 @@ AcpiInitializeTables (
     if (!InitialTableArray)
     {
         AcpiGbl_RootTableList.Size = InitialTableCount;
-        AcpiGbl_RootTableList.Flags = ACPI_TABLE_FLAGS_ALLOW_RESIZE;
+        AcpiGbl_RootTableList.Flags = ACPI_ROOT_ALLOW_RESIZE;
 
         Status = AcpiTbResizeRootTableList ();
         if (ACPI_FAILURE (Status))
@@ -190,39 +189,32 @@ AcpiInitializeTables (
     {
         /* Root Table Array has been statically allocated by the host */
 
+        ACPI_MEMSET (InitialTableArray, 
+            InitialTableCount * sizeof (ACPI_TABLE_DESC), 0);
+
         AcpiGbl_RootTableList.Tables = InitialTableArray;
         AcpiGbl_RootTableList.Size = InitialTableCount;
-        AcpiGbl_RootTableList.Flags = ACPI_TABLE_ORIGIN_UNKNOWN;
+        AcpiGbl_RootTableList.Flags = ACPI_ROOT_ORIGIN_UNKNOWN;
         if (AllowResize)
         {
-            AcpiGbl_RootTableList.Flags = ACPI_TABLE_FLAGS_ALLOW_RESIZE;
+            AcpiGbl_RootTableList.Flags |= ACPI_ROOT_ALLOW_RESIZE;
         }
     }
 
-    /* Get the RSDP and map it */
+    /* Get the address of the RSDP */
 
-    Address = AcpiOsGetRootPointer ();
-    if (!Address)
+    RsdpAddress = AcpiOsGetRootPointer ();
+    if (!RsdpAddress)
     {
         return_ACPI_STATUS (AE_NOT_FOUND);
     }
-
-    Rsdp = AcpiOsMapMemory (Address, sizeof (ACPI_TABLE_RSDP));
-    if (!Rsdp)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    ACPI_INFO ((AE_INFO, "%.8s @ 0x%p",
-        Rsdp->Signature, ACPI_CAST_PTR (void, Address)));
 
     /*
      * Get the root table (RSDT or XSDT) and extract all entries to the local
      * Root Table Array. This array contains the information of the RSDT/XSDT
      * in a common, more useable format.
      */
-    Status = AcpiTbParseRootTable (Rsdp, ACPI_TABLE_ORIGIN_MAPPED);
-    AcpiOsUnmapMemory (Rsdp, sizeof (ACPI_TABLE_RSDP));
+    Status = AcpiTbParseRootTable (RsdpAddress, ACPI_TABLE_ORIGIN_MAPPED);
     return_ACPI_STATUS (Status);
 }
 
@@ -259,8 +251,7 @@ AcpiReallocateRootTable (
      * Only reallocate the root table if the host provided a static buffer
      * for the table array in the call to AcpiInitializeTables.
      */
-    if ((AcpiGbl_RootTableList.Flags & ACPI_TABLE_ORIGIN_MASK) !=
-        ACPI_TABLE_ORIGIN_UNKNOWN)
+    if (AcpiGbl_RootTableList.Flags & ACPI_ROOT_ORIGIN_ALLOCATED)
     {
         return_ACPI_STATUS (AE_SUPPORT);
     }
@@ -281,7 +272,7 @@ AcpiReallocateRootTable (
     AcpiGbl_RootTableList.Size = AcpiGbl_RootTableList.Count;
     AcpiGbl_RootTableList.Tables = Tables;
     AcpiGbl_RootTableList.Flags =
-        ACPI_TABLE_ORIGIN_ALLOCATED | ACPI_TABLE_FLAGS_ALLOW_RESIZE;
+        ACPI_ROOT_ORIGIN_ALLOCATED | ACPI_ROOT_ALLOW_RESIZE;
 
     return_ACPI_STATUS (AE_OK);
 }
@@ -317,6 +308,13 @@ AcpiGetTableHeader (
     ACPI_NATIVE_UINT        j;
 
 
+    /* Parameter validation */
+
+    if (!Signature || !OutTableHeader)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
     /*
      * Walk the root table list
      */
@@ -337,7 +335,7 @@ AcpiGetTableHeader (
             (UINT32) sizeof (ACPI_TABLE_HEADER),
             AcpiGbl_RootTableList.Tables[i].Flags & ACPI_TABLE_ORIGIN_MASK);
 
-        if (!OutTableHeader)
+        if (!(*OutTableHeader))
         {
             return (AE_NO_MEMORY);
         }
@@ -375,6 +373,13 @@ AcpiGetTable (
     ACPI_NATIVE_UINT        j;
     ACPI_STATUS             Status;
 
+
+    /* Parameter validation */
+
+    if (!Signature || !OutTable)
+    {
+        return (AE_BAD_PARAMETER);
+    }
 
     /*
      * Walk the root table list
@@ -430,6 +435,13 @@ AcpiGetTableByIndex (
 
     ACPI_FUNCTION_TRACE (AcpiGetTableByIndex);
 
+
+    /* Parameter validation */
+
+    if (!Table)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
