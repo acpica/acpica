@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.309 $
+ *       $Revision: 1.310 $
  *
  *****************************************************************************/
 
@@ -690,7 +690,7 @@ typedef UINT32                          ACPI_EVENT_STATUS;
  *  | | |  +--- Type of dispatch -- to method, handler, or none
  *  | | +--- Enabled for runtime?
  *  | +--- Enabled for wake?
- *  +--- System state when GPE ocurred (running/waking)
+ *  +--- Unused
  */
 #define ACPI_GPE_XRUPT_TYPE_MASK        (UINT8) 0x01
 #define ACPI_GPE_LEVEL_TRIGGERED        (UINT8) 0x01
@@ -715,10 +715,6 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 #define ACPI_GPE_WAKE_DISABLED          (UINT8) 0x00    /* Default */
 
 #define ACPI_GPE_ENABLE_MASK            (UINT8) 0x60    /* Both run/wake */
-
-#define ACPI_GPE_SYSTEM_MASK            (UINT8) 0x80
-#define ACPI_GPE_SYSTEM_RUNNING         (UINT8) 0x80
-#define ACPI_GPE_SYSTEM_WAKING          (UINT8) 0x00
 
 /*
  * Flags for GPE and Lock interfaces
