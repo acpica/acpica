@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.239 $
+ *       $Revision: 1.240 $
  *
  *****************************************************************************/
 
@@ -490,7 +490,7 @@ typedef struct acpi_gpe_event_info
     union acpi_gpe_dispatch_info    Dispatch;       /* Either Method or Handler */
     struct acpi_gpe_register_info   *RegisterInfo;  /* Backpointer to register info */
     UINT8                           Flags;          /* Misc info about this GPE */
-    UINT8                           RegisterBit;    /* This GPE bit within the register */
+    UINT8                           GpeNumber;      /* This GPE */
 
 } ACPI_GPE_EVENT_INFO;
 

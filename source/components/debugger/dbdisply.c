@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  ******************************************************************************/
 
@@ -886,9 +886,9 @@ AcpiDbDisplayGpes (
                     }
 
                     AcpiOsPrintf (
-                        "        GPE %.3X: %p  Bit %2.2X  Flags %2.2X: ",
+                        "        GPE %.3X: %p Flags %2.2X: ",
                         GpeBlock->BlockBaseNumber + GpeIndex,
-                        GpeEventInfo, GpeEventInfo->RegisterBit,
+                        GpeEventInfo,
                         GpeEventInfo->Flags);
 
                     if (GpeEventInfo->Flags & ACPI_GPE_LEVEL_TRIGGERED)

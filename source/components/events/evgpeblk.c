@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.57 $
+ *              $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -965,7 +965,7 @@ AcpiEvCreateGpeInfoBlocks (
 
         for (j = 0; j < ACPI_GPE_REGISTER_WIDTH; j++)
         {
-            ThisEvent->RegisterBit  = AcpiGbl_DecodeTo8bit[j];
+            ThisEvent->GpeNumber = (UINT8) (ThisRegister->BaseGpeNumber + j);
             ThisEvent->RegisterInfo = ThisRegister;
             ThisEvent++;
         }

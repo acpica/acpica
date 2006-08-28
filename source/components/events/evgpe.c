@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.66 $
+ *              $Revision: 1.67 $
  *
  *****************************************************************************/
 
@@ -208,7 +208,8 @@ AcpiEvUpdateGpeEnableMasks (
     {
         return_ACPI_STATUS (AE_NOT_EXIST);
     }
-    RegisterBit = GpeEventInfo->RegisterBit;
+    RegisterBit = (UINT8)
+        (1 << (GpeEventInfo->GpeNumber - GpeRegisterInfo->BaseGpeNumber));
 
     /* 1) Disable case.  Simply clear all enable bits */
 
@@ -563,7 +564,7 @@ AcpiEvGpeDetect (
             {
                 /* Examine one GPE bit */
 
-                if (EnabledStatusByte & AcpiGbl_DecodeTo8bit[j])
+                if (EnabledStatusByte & (1 << j))
                 {
                     /*
                      * Found an active GPE. Dispatch the event to a handler

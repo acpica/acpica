@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.245 $
+ *              $Revision: 1.246 $
  *
  *****************************************************************************/
 
@@ -252,8 +252,6 @@ UINT32                      AcpiGbl_StartupFlags = 0;
 /* System starts uninitialized */
 
 BOOLEAN                     AcpiGbl_Shutdown = TRUE;
-
-const UINT8                 AcpiGbl_DecodeTo8bit [8] = {1,2,4,8,16,32,64,128};
 
 const char                  *AcpiGbl_SleepStateNames[ACPI_S_STATE_COUNT] =
 {
