@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.148 $
+ *              $Revision: 1.149 $
  *
  ******************************************************************************/
 
@@ -733,29 +733,28 @@ AcpiUtValidAcpiName (
 
 ACPI_NAME
 AcpiUtRepairName (
-    ACPI_NAME               Name)
+    char                    *Name)
 {
-    char                    *NamePtr = ACPI_CAST_PTR (char, &Name);
-    char                    NewName[ACPI_NAME_SIZE];
     ACPI_NATIVE_UINT        i;
+    char                    NewName[ACPI_NAME_SIZE];
 
 
     for (i = 0; i < ACPI_NAME_SIZE; i++)
     {
-        NewName[i] = NamePtr[i];
+        NewName[i] = Name[i];
 
         /*
          * Replace a bad character with something printable, yet technically
          * still invalid. This prevents any collisions with existing "good"
          * names in the namespace.
          */
-        if (!AcpiUtValidAcpiChar (NamePtr[i], i))
+        if (!AcpiUtValidAcpiChar (Name[i], i))
         {
             NewName[i] = '*';
         }
     }
 
-    return (*ACPI_CAST_PTR (UINT32, NewName));
+    return (*(UINT32 *) NewName);
 }
 
 

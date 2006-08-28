@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  ******************************************************************************/
 
@@ -410,7 +410,7 @@ AcpiNsSearchAndEnter (
      */
     if (!AcpiUtValidAcpiName (TargetName))
     {
-        TargetName = AcpiUtRepairName (TargetName);
+        TargetName = AcpiUtRepairName (ACPI_CAST_PTR (char, &TargetName));
 
         /* Report warning only if in strict mode or debug mode */
 

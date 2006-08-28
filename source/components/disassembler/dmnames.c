@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmnames - AML disassembler, names, namestrings, pathnames
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  ******************************************************************************/
 
@@ -159,7 +159,7 @@ AcpiDmDumpName (
 
     /* Ensure that the name is printable, even if we have to fix it */
 
-    *(UINT32 *) NewName = AcpiUtRepairName (*(UINT32 *) Name);
+    *(UINT32 *) NewName = AcpiUtRepairName (Name);
 
     /* Remove all trailing underscores from the name */
 

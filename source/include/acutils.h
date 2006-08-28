@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.196 $
+ *       $Revision: 1.197 $
  *
  *****************************************************************************/
 
@@ -774,7 +774,7 @@ AcpiUtValidAcpiName (
 
 ACPI_NAME
 AcpiUtRepairName (
-    ACPI_NAME               Name);
+    char                    *Name);
 
 BOOLEAN
 AcpiUtValidAcpiChar (
