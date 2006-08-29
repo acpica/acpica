@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils   - table utilities
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -211,6 +211,8 @@ AcpiTbPrintTableHeader (
     }
     else
     {
+        /* Standard ACPI table with full common header */
+
         ACPI_INFO ((AE_INFO,
             "%4.4s @ 0x%p/0x%04X (v%3.3d %6.6s %8.8s 0x%08X %4.4s 0x%08X)",
             Header->Signature, ACPI_CAST_PTR (void, Address),
@@ -242,7 +244,7 @@ AcpiTbInitGenericAddress (
     UINT64                  Address)
 {
 
-    ACPI_STORE_ADDRESS (NewGasStruct->Address, Address);
+    ACPI_MOVE_64_TO_64 (&NewGasStruct->Address, &Address);
     NewGasStruct->SpaceId = ACPI_ADR_SPACE_SYSTEM_IO;
     NewGasStruct->BitWidth = BitWidth;
     NewGasStruct->BitOffset = 0;
@@ -383,11 +385,13 @@ AcpiTbConvertFadt (
         Target = ACPI_ADD_PTR (
             ACPI_GENERIC_ADDRESS, &AcpiGbl_FADT, FadtConversionTable[i].Target);
 
+        /* Expand only if the X target is null */
+
         if (!Target->Address)
         {
             AcpiTbInitGenericAddress (Target,
                 *ACPI_ADD_PTR (UINT8, &AcpiGbl_FADT, FadtConversionTable[i].Length),
-                *ACPI_ADD_PTR (UINT64, &AcpiGbl_FADT, FadtConversionTable[i].Source));
+                *ACPI_ADD_PTR (UINT32, &AcpiGbl_FADT, FadtConversionTable[i].Source));
         }
     }
 
@@ -395,22 +399,24 @@ AcpiTbConvertFadt (
      * Calculate separate GAS structs for the PM1 Enable registers.
      * These addresses do not appear (directly) in the FADT, so it is 
      * useful to calculate them once, here.
+     *
+     * The PM event blocks are split into two register blocks, first is the
+     * PM Status Register block, followed immediately by the PM Enable Register
+     * block. Each is of length (Pm1EventLength/2)
      */
     Pm1RegisterLength = (UINT8) ACPI_DIV_2 (AcpiGbl_FADT.Pm1EventLength);
 
     /* PM1A is required */
 
     AcpiTbInitGenericAddress (&AcpiGbl_XPm1aEnable, Pm1RegisterLength,
-        (UINT64) (ACPI_GET_ADDRESS (AcpiGbl_FADT.XPm1aEventBlock.Address) +
-            Pm1RegisterLength));
+        (AcpiGbl_FADT.XPm1aEventBlock.Address + Pm1RegisterLength));
 
     /* PM1B is optional; leave null if not present */
 
     if (AcpiGbl_FADT.XPm1bEventBlock.Address)
     {
         AcpiTbInitGenericAddress (&AcpiGbl_XPm1bEnable, Pm1RegisterLength,
-            (UINT64) (ACPI_GET_ADDRESS (AcpiGbl_FADT.XPm1bEventBlock.Address) +
-                Pm1RegisterLength));
+            (AcpiGbl_FADT.XPm1bEventBlock.Address + Pm1RegisterLength));
     }
 
     /* Global FADT is the new common V2.0 FADT  */
