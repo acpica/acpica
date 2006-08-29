@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl.h - Basic ACPI Table Definitions
- *       $Revision: 1.82 $
+ *       $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -129,7 +129,7 @@
 #define ACPI_SIG_RSDT           "RSDT"      /* Root System Description Table */
 #define ACPI_SIG_XSDT           "XSDT"      /* Extended  System Description Table */
 #define ACPI_SIG_SSDT           "SSDT"      /* Secondary System Description Table */
-#define ACPI_RSDP_NAME          "RSDP"
+#define ACPI_RSDP_NAME          "RSDP"      /* Short name for RSDP, not signature */
 
 
 /*
@@ -278,55 +278,55 @@ typedef struct acpi_table_fadt
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
     UINT32                  Facs;               /* 32-bit physical address of FACS */
     UINT32                  Dsdt;               /* 32-bit physical address of DSDT */
-    UINT8                   Model;              /* System Interrupt Model (ACPI 1.0) not used in ACPI 2.0+ */
+    UINT8                   Model;              /* System Interrupt Model (ACPI 1.0) - not used in ACPI 2.0+ */
     UINT8                   PreferredProfile;   /* Conveys preferred power management profile to OSPM. */
     UINT16                  SciInterrupt;       /* System vector of SCI interrupt */
-    UINT32                  SmiCommand;         /* Port address of SMI command port */
+    UINT32                  SmiCommand;         /* 32-bit Port address of SMI command port */
     UINT8                   AcpiEnable;         /* Value to write to smi_cmd to enable ACPI */
     UINT8                   AcpiDisable;        /* Value to write to smi_cmd to disable ACPI */
     UINT8                   S4BiosRequest;      /* Value to write to SMI CMD to enter S4BIOS state */
     UINT8                   PstateControl;      /* Processor performance state control*/
-    UINT32                  Pm1aEventBlock;     /* Port address of Power Mgt 1a Event Reg Blk */
-    UINT32                  Pm1bEventBlock;     /* Port address of Power Mgt 1b Event Reg Blk */
-    UINT32                  Pm1aControlBlock;   /* Port address of Power Mgt 1a Control Reg Blk */
-    UINT32                  Pm1bControlBlock;   /* Port address of Power Mgt 1b Control Reg Blk */
-    UINT32                  Pm2ControlBlock;    /* Port address of Power Mgt 2 Control Reg Blk */
-    UINT32                  PmTimerBlock;       /* Port address of Power Mgt Timer Ctrl Reg Blk */
-    UINT32                  Gpe0Block;          /* Port addr of General Purpose Event 0 Reg Blk */
-    UINT32                  Gpe1Block;          /* Port addr of General Purpose Event 1 Reg Blk */
-    UINT8                   Pm1EventLength;     /* Byte Length of ports at pm1X_evt_blk */
-    UINT8                   Pm1ControlLength;   /* Byte Length of ports at pm1X_cnt_blk */
-    UINT8                   Pm2ControlLength;   /* Byte Length of ports at pm2_cnt_blk */
-    UINT8                   PmTimerLength;      /* Byte Length of ports at pm_tmr_blk */
-    UINT8                   Gpe0BlockLength;    /* Byte Length of ports at gpe0_blk */
-    UINT8                   Gpe1BlockLength;    /* Byte Length of ports at gpe1_blk */
-    UINT8                   Gpe1Base;           /* Offset in gpe model where gpe1 events start */
-    UINT8                   CstControl;         /* Support for the _CST object and C States change notification.*/
+    UINT32                  Pm1aEventBlock;     /* 32-bit Port address of Power Mgt 1a Event Reg Blk */
+    UINT32                  Pm1bEventBlock;     /* 32-bit Port address of Power Mgt 1b Event Reg Blk */
+    UINT32                  Pm1aControlBlock;   /* 32-bit Port address of Power Mgt 1a Control Reg Blk */
+    UINT32                  Pm1bControlBlock;   /* 32-bit Port address of Power Mgt 1b Control Reg Blk */
+    UINT32                  Pm2ControlBlock;    /* 32-bit Port address of Power Mgt 2 Control Reg Blk */
+    UINT32                  PmTimerBlock;       /* 32-bit Port address of Power Mgt Timer Ctrl Reg Blk */
+    UINT32                  Gpe0Block;          /* 32-bit Port address of General Purpose Event 0 Reg Blk */
+    UINT32                  Gpe1Block;          /* 32-bit Port address of General Purpose Event 1 Reg Blk */
+    UINT8                   Pm1EventLength;     /* Byte Length of ports at Pm1xEventBlock */
+    UINT8                   Pm1ControlLength;   /* Byte Length of ports at Pm1xControlBlock */
+    UINT8                   Pm2ControlLength;   /* Byte Length of ports at Pm2ControlBlock */
+    UINT8                   PmTimerLength;      /* Byte Length of ports at PmTimerBlock */
+    UINT8                   Gpe0BlockLength;    /* Byte Length of ports at Gpe0Block */
+    UINT8                   Gpe1BlockLength;    /* Byte Length of ports at Gpe1Block */
+    UINT8                   Gpe1Base;           /* Offset in GPE number space where GPE1 events start */
+    UINT8                   CstControl;         /* Support for the _CST object and C States change notification */
     UINT16                  C2Latency;          /* Worst case HW latency to enter/exit C2 state */
     UINT16                  C3Latency;          /* Worst case HW latency to enter/exit C3 state */
     UINT16                  FlushSize;          /* Processor's memory cache line width, in bytes */
     UINT16                  FlushStride;        /* Number of flush strides that need to be read */
-    UINT8                   DutyOffset;         /* Processor's duty cycle index in processor's P_CNT reg*/
-    UINT8                   DutyWidth;          /* Processor's duty cycle value bit width in P_CNT register.*/
+    UINT8                   DutyOffset;         /* Processor duty cycle index in processor's P_CNT reg*/
+    UINT8                   DutyWidth;          /* Processor duty cycle value bit width in P_CNT register.*/
     UINT8                   DayAlarm;           /* Index to day-of-month alarm in RTC CMOS RAM */
     UINT8                   MonthAlarm;         /* Index to month-of-year alarm in RTC CMOS RAM */
     UINT8                   Century;            /* Index to century in RTC CMOS RAM */
     UINT16                  BootFlags;          /* IA-PC Boot Architecture Flags. See Table 5-10 for description */
     UINT8                   Reserved;           /* Reserved, must be zero */
-    UINT32                  Flags;              /* Miscellaneous flag bits */
-    ACPI_GENERIC_ADDRESS    ResetRegister;      /* Reset register address in GAS format */
+    UINT32                  Flags;              /* Miscellaneous flag bits (see below for individual flags) */
+    ACPI_GENERIC_ADDRESS    ResetRegister;      /* 64-bit address of the Reset register */
     UINT8                   ResetValue;         /* Value to write to the ResetRegister port to reset the system */
-    UINT8                   Reserved4[3];       /* These three bytes must be zero */
+    UINT8                   Reserved4[3];       /* Reserved, must be zero */
     UINT64                  XFacs;              /* 64-bit physical address of FACS */
     UINT64                  XDsdt;              /* 64-bit physical address of DSDT */
-    ACPI_GENERIC_ADDRESS    XPm1aEventBlock;    /* Extended Power Mgt 1a Event Reg Blk address */
-    ACPI_GENERIC_ADDRESS    XPm1bEventBlock;    /* Extended Power Mgt 1b Event Reg Blk address */
-    ACPI_GENERIC_ADDRESS    XPm1aControlBlock;  /* Extended Power Mgt 1a Control Reg Blk address */
-    ACPI_GENERIC_ADDRESS    XPm1bControlBlock;  /* Extended Power Mgt 1b Control Reg Blk address */
-    ACPI_GENERIC_ADDRESS    XPm2ControlBlock;   /* Extended Power Mgt 2 Control Reg Blk address */
-    ACPI_GENERIC_ADDRESS    XPmTimerBlock;      /* Extended Power Mgt Timer Ctrl Reg Blk address */
-    ACPI_GENERIC_ADDRESS    XGpe0Block;         /* Extended General Purpose Event 0 Reg Blk address */
-    ACPI_GENERIC_ADDRESS    XGpe1Block;         /* Extended General Purpose Event 1 Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XPm1aEventBlock;    /* 64-bit Extended Power Mgt 1a Event Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XPm1bEventBlock;    /* 64-bit Extended Power Mgt 1b Event Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XPm1aControlBlock;  /* 64-bit Extended Power Mgt 1a Control Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XPm1bControlBlock;  /* 64-bit Extended Power Mgt 1b Control Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XPm2ControlBlock;   /* 64-bit Extended Power Mgt 2 Control Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XPmTimerBlock;      /* 64-bit Extended Power Mgt Timer Ctrl Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XGpe0Block;         /* 64-bit Extended General Purpose Event 0 Reg Blk address */
+    ACPI_GENERIC_ADDRESS    XGpe1Block;         /* 64-bit Extended General Purpose Event 1 Reg Blk address */
 
 } ACPI_TABLE_FADT;
 
