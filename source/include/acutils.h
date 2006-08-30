@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.197 $
+ *       $Revision: 1.198 $
  *
  *****************************************************************************/
 
@@ -740,6 +740,10 @@ AcpiUtShortDivide (
 /*
  * utmisc
  */
+const char *
+AcpiUtValidateException (
+    ACPI_STATUS             Status);
+
 BOOLEAN
 AcpiUtIsAmlTable (
     ACPI_TABLE_HEADER       *Table);

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.189 $
+ *       $Revision: 1.190 $
  *
  *****************************************************************************/
 
@@ -319,6 +319,14 @@ extern const char                      *AcpiGbl_SleepStateNames[ACPI_S_STATE_COU
 extern const char                      *AcpiGbl_HighestDstateNames[4];
 extern const ACPI_OPCODE_INFO           AcpiGbl_AmlOpInfo[AML_NUM_OPCODES];
 extern const char                      *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS];
+
+/* Exception codes */
+
+extern      char const                 *AcpiGbl_ExceptionNames_Env[];
+extern      char const                 *AcpiGbl_ExceptionNames_Pgm[];
+extern      char const                 *AcpiGbl_ExceptionNames_Tbl[];
+extern      char const                 *AcpiGbl_ExceptionNames_Aml[];
+extern      char const                 *AcpiGbl_ExceptionNames_Ctrl[];
 
 
 /*****************************************************************************

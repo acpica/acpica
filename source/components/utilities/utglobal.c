@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.246 $
+ *              $Revision: 1.247 $
  *
  *****************************************************************************/
 
@@ -128,95 +128,6 @@ ACPI_EXPORT_SYMBOL (AcpiGbl_FADT)
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiFormatException
- *
- * PARAMETERS:  Status       - The ACPI_STATUS code to be formatted
- *
- * RETURN:      A string containing the exception text. A valid pointer is
- *              always returned.
- *
- * DESCRIPTION: This function translates an ACPI exception into an ASCII string.
- *
- ******************************************************************************/
-
-const char *
-AcpiFormatException (
-    ACPI_STATUS             Status)
-{
-    ACPI_STATUS             SubStatus;
-    const char              *Exception = NULL;
-
-
-    ACPI_FUNCTION_ENTRY ();
-
-
-    /*
-     * Status is composed of two parts, a "type" and an actual code
-     */
-    SubStatus = (Status & ~AE_CODE_MASK);
-
-    switch (Status & AE_CODE_MASK)
-    {
-    case AE_CODE_ENVIRONMENTAL:
-
-        if (SubStatus <= AE_CODE_ENV_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Env [SubStatus];
-        }
-        break;
-
-    case AE_CODE_PROGRAMMER:
-
-        if (SubStatus <= AE_CODE_PGM_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Pgm [SubStatus -1];
-        }
-        break;
-
-    case AE_CODE_ACPI_TABLES:
-
-        if (SubStatus <= AE_CODE_TBL_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Tbl [SubStatus -1];
-        }
-        break;
-
-    case AE_CODE_AML:
-
-        if (SubStatus <= AE_CODE_AML_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Aml [SubStatus -1];
-        }
-        break;
-
-    case AE_CODE_CONTROL:
-
-        if (SubStatus <= AE_CODE_CTRL_MAX)
-        {
-            Exception = AcpiGbl_ExceptionNames_Ctrl [SubStatus -1];
-        }
-        break;
-
-    default:
-        break;
-    }
-
-    if (!Exception)
-    {
-        /* Exception code was not recognized */
-
-        ACPI_ERROR ((AE_INFO,
-            "Unknown exception code: 0x%8.8X", Status));
-
-        Exception = "UNKNOWN_STATUS_CODE";
-    }
-
-    return (ACPI_CAST_PTR (const char, Exception));
-}
-
-
-/*******************************************************************************
- *
  * Static global variable initialization.
  *
  ******************************************************************************/
@@ -270,6 +181,47 @@ const char                  *AcpiGbl_HighestDstateNames[4] =
     "_S3D",
     "_S4D"
 };
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiFormatException
+ *
+ * PARAMETERS:  Status       - The ACPI_STATUS code to be formatted
+ *
+ * RETURN:      A string containing the exception text. A valid pointer is
+ *              always returned.
+ *
+ * DESCRIPTION: This function translates an ACPI exception into an ASCII string
+ *              It is here instead of utxface.c so it is always present.
+ *
+ ******************************************************************************/
+
+const char *
+AcpiFormatException (
+    ACPI_STATUS             Status)
+{
+    const char              *Exception = NULL;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    Exception = AcpiUtValidateException (Status);
+    if (!Exception)
+    {
+        /* Exception code was not recognized */
+
+        ACPI_ERROR ((AE_INFO,
+            "Unknown exception code: 0x%8.8X", Status));
+
+        Exception = "UNKNOWN_STATUS_CODE";
+    }
+
+    return (ACPI_CAST_PTR (const char, Exception));
+}
+
+ACPI_EXPORT_SYMBOL (AcpiFormatException)
 
 
 /*******************************************************************************
