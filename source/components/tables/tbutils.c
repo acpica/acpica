@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils   - table utilities
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -146,6 +146,11 @@ AcpiTbInitGenericAddress (
     UINT8                   BitWidth,
     UINT64                  Address);
 
+static ACPI_PHYSICAL_ADDRESS
+AcpiTbGetRootTableEntry (
+    UINT8                   *TableEntry,
+    ACPI_NATIVE_UINT        TableEntrySize);
+
 
 /* Table used for conversion of FADT to common format */
 
@@ -204,10 +209,10 @@ AcpiTbPrintTableHeader (
 
         ACPI_INFO ((AE_INFO, "RSDP @ 0x%p/0x%04X (v%3.3d %6.6s)",
             ACPI_CAST_PTR (void, Address),
-            (((ACPI_TABLE_RSDP *) Header)->Revision > 0) ?
-                    ((ACPI_TABLE_RSDP *) Header)->Length : 20,
-            ((ACPI_TABLE_RSDP *) Header)->Revision,
-            ((ACPI_TABLE_RSDP *) Header)->OemId));
+            (ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Revision > 0) ?
+                ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Length : 20,
+            ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->Revision,
+            ACPI_CAST_PTR (ACPI_TABLE_RSDP, Header)->OemId));
     }
     else
     {
@@ -350,7 +355,7 @@ AcpiTbChecksum (
  * For ACPI 1.0 FADTs, all address fields are expanded to the corresponding
  * "X" fields.
  *
- * For ACPI 2.0 FADTs, any "X" fields that are NULL are filled in by 
+ * For ACPI 2.0 FADTs, any "X" fields that are NULL are filled in by
  * expanding the corresponding ACPI 1.0 field.
  *
  ******************************************************************************/
@@ -377,8 +382,8 @@ AcpiTbConvertFadt (
     }
 
     /*
-     * Expand the V1.0 addresses to the "X" generic address structs,
-     * as necessary.
+     * Expand the 32-bit V1.0 addresses to the 64-bit "X" generic address
+     * structures as necessary.
      */
     for (i = 0; i < ACPI_FADT_CONVERSION_ENTRIES; i++)
     {
@@ -391,13 +396,13 @@ AcpiTbConvertFadt (
         {
             AcpiTbInitGenericAddress (Target,
                 *ACPI_ADD_PTR (UINT8, &AcpiGbl_FADT, FadtConversionTable[i].Length),
-                *ACPI_ADD_PTR (UINT32, &AcpiGbl_FADT, FadtConversionTable[i].Source));
+                (UINT64) *ACPI_ADD_PTR (UINT32, &AcpiGbl_FADT, FadtConversionTable[i].Source));
         }
     }
 
     /*
      * Calculate separate GAS structs for the PM1 Enable registers.
-     * These addresses do not appear (directly) in the FADT, so it is 
+     * These addresses do not appear (directly) in the FADT, so it is
      * useful to calculate them once, here.
      *
      * The PM event blocks are split into two register blocks, first is the
@@ -545,7 +550,7 @@ AcpiTbParseFadt (
 
     /* Copy the entire FADT locally */
 
-    ACPI_MEMSET (&AcpiGbl_FADT, sizeof (ACPI_TABLE_FADT), 0);
+    ACPI_MEMSET (&AcpiGbl_FADT, 0, sizeof (ACPI_TABLE_FADT));
 
     ACPI_MEMCPY (&AcpiGbl_FADT, Table,
         ACPI_MIN (Length, sizeof (ACPI_TABLE_FADT)));
@@ -562,6 +567,66 @@ AcpiTbParseFadt (
 
     AcpiTbInstallTable ((ACPI_PHYSICAL_ADDRESS) AcpiGbl_FADT.XFacs,
         Flags, ACPI_SIG_FACS, ACPI_TABLE_INDEX_FACS);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbGetRootTableEntry
+ *
+ * PARAMETERS:  TableEntry          - Pointer to the RSDT/XSDT table entry
+ *              TableEntrySize      - sizeof 32 or 64 (RSDT or XSDT)
+ *
+ * RETURN:      Physical address extracted from the root table
+ *
+ * DESCRIPTION: Get one root table entry. Handles 32-bit and 64-bit cases on
+ *              both 32-bit and 64-bit platforms
+ *
+ * NOTE:        ACPI_PHYSICAL_ADDRESS is 32-bit on 32-bit platforms, 64-bit on
+ *              64-bit platforms.
+ *
+ ******************************************************************************/
+
+static ACPI_PHYSICAL_ADDRESS
+AcpiTbGetRootTableEntry (
+    UINT8                   *TableEntry,
+    ACPI_NATIVE_UINT        TableEntrySize)
+{
+    UINT64                  Address64;
+
+
+    /*
+     * Get the table physical address (32-bit for RSDT, 64-bit for XSDT):
+     * Note: Addresses are 32-bit aligned (not 64) in both RSDT and XSDT
+     */
+    if (TableEntrySize == sizeof (UINT32))
+    {
+        /*
+         * 32-bit platform, RSDT: Return 32-bit table entry
+         * 64-bit platform, RSDT: Expand 32-bit to 64-bit and return
+         */
+        return ((ACPI_PHYSICAL_ADDRESS) (*ACPI_CAST_PTR (UINT32, TableEntry)));
+    }
+    else
+    {
+        /*
+         * 32-bit platform, XSDT: Truncate 64-bit to 32-bit and return
+         * 64-bit platform, XSDT: Move (unaligned) 64-bit to local, return 64-bit
+         */
+        ACPI_MOVE_64_TO_64 (&Address64, TableEntry);
+
+#if ACPI_MACHINE_WIDTH == 32
+        if (Address64 > ACPI_UINT32_MAX)
+        {
+            /* Will truncate 64-bit address to 32 bits */
+
+            ACPI_WARNING ((AE_INFO,
+                "64-bit Physical Address in XSDT is too large (%8.8X%8.8X), truncating",
+                ACPI_FORMAT_UINT64 (Address64)));
+        }
+#endif
+        return ((ACPI_PHYSICAL_ADDRESS) (Address64));
+    }
 }
 
 
@@ -678,7 +743,7 @@ AcpiTbParseRootTable (
 
     /* Calculate the number of tables described in the root table */
 
-    TableCount = (Table->Length - sizeof (ACPI_TABLE_HEADER)) / TableEntrySize;
+    TableCount = (UINT32) ((Table->Length - sizeof (ACPI_TABLE_HEADER)) / TableEntrySize);
 
     /*
      * First two entries in the table array are reserved for the DSDT and FACS,
@@ -705,33 +770,10 @@ AcpiTbParseRootTable (
             }
         }
 
-        /*
-         * Get the table physical address (32-bit for RSDT, 64-bit for XSDT)
-         */
-        if ((TableEntrySize == sizeof (UINT32)) ||
-            (sizeof (ACPI_PHYSICAL_ADDRESS) == sizeof (UINT32)))
-        {
-            /*
-             * 32-bit platform, RSDT: Move 32-bit to 32-bit
-             * 32-bit platform, XSDT: Truncate 64-bit to 32-bit
-             * 64-bit platform, RSDT: Expand 32-bit to 64-bit
-             *
-             * Note: Addresses are 32-bit aligned in both RSDT and XSDT
-             */
-            AcpiGbl_RootTableList.Tables[AcpiGbl_RootTableList.Count].Address =
-                (ACPI_PHYSICAL_ADDRESS) (*ACPI_CAST_PTR (UINT32, TableEntry));
-        }
-        else
-        {
-            /*
-             * 64-bit platform, XSDT: Move 64-bit to 64-bit
-             *
-             * Note: 64-bit addresses are only 32-bit aligned in the XSDT
-             */
-            ACPI_MOVE_64_TO_64 (
-                &AcpiGbl_RootTableList.Tables[AcpiGbl_RootTableList.Count].Address,
-                TableEntry);
-        }
+        /* Get the table physical address (32-bit for RSDT, 64-bit for XSDT) */
+
+        AcpiGbl_RootTableList.Tables[AcpiGbl_RootTableList.Count].Address =
+            AcpiTbGetRootTableEntry (TableEntry, TableEntrySize);
 
         TableEntry += TableEntrySize;
         AcpiGbl_RootTableList.Count++;
@@ -752,7 +794,7 @@ AcpiTbParseRootTable (
         AcpiTbInstallTable (AcpiGbl_RootTableList.Tables[i].Address,
             Flags, NULL, i);
 
-       /* Special case for FADT - get the DSDT and FACS */
+        /* Special case for FADT - get the DSDT and FACS */
 
         if (ACPI_COMPARE_NAME (
                 &AcpiGbl_RootTableList.Tables[i].Signature, ACPI_SIG_FADT))

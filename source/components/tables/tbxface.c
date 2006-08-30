@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -189,8 +189,8 @@ AcpiInitializeTables (
     {
         /* Root Table Array has been statically allocated by the host */
 
-        ACPI_MEMSET (InitialTableArray, 
-            InitialTableCount * sizeof (ACPI_TABLE_DESC), 0);
+        ACPI_MEMSET (InitialTableArray, 0,
+            InitialTableCount * sizeof (ACPI_TABLE_DESC));
 
         AcpiGbl_RootTableList.Tables = InitialTableArray;
         AcpiGbl_RootTableList.Size = InitialTableCount;
