@@ -1,9 +1,41 @@
 ----------------------------------------
+31 August 2006. Summary of changes for version 20060831:
+
+1) ACPI CA Core Subsystem:
+
+Miscellaneous fixes for the Table Manager:
+- Correctly initialize internal common FADT for all 64-bit "X" fields
+- Fixed a couple table mapping issues during table load
+- Fixed a couple alignment issues for IA64
+- Initialize input array to zero in AcpiInitializeTables
+- Additional parameter validation for AcpiGetTable, AcpiGetTableHeader, AcpiGetTableByIndex
+
+Change for GPE support: when a "wake" GPE is received, all wake GPEs are now immediately disabled to prevent the waking GPE from firing again and to prevent other wake GPEs from interrupting the wake process.
+
+Added the AcpiGpeCount global that tracks the number of processed GPEs, to be used for debugging systems with a large number of ACPI interrupts.
+
+Implemented support for the "DMAR" ACPI table (DMA Redirection Table) in both the ACPICA headers and the disassembler.
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  77.8K Code, 16.5K Data,  94.3K Total
+    Debug Version:     154.6K Code, 62.3K Data, 216.9K Total
+  Current Release:
+    Non-Debug Version:  77.9K Code, 16.7K Data,  94.6K Total
+    Debug Version:     154.9K Code, 62.6K Data, 217.5K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+Disassembler support for the DMAR ACPI table.
+
+----------------------------------------
 23 August 2006. Summary of changes for version 20060823:
 
 1) ACPI CA Core Subsystem:
 
-The Table Manager component has been completely redesigned and reimplemented. The new design is much simpler, and reduces the overall code and data size of the kernel-resident ACPICA by approximately 5%. Also, it is now possible to obtain the ACPI tables very early during kernel initialization, even before dynamic memory management is initialized.
+The Table Manager component has been completely redesigned and reimplemented. The new design is much simpler, and reduces the overall code and data size of the kernel-resident ACPICA by approximately 5%. Also, it is now possible to obtain the ACPI tables very early during kernel initialization, even before dynamic memory management is initialized. (Alexey Starikovskiy, Fiodor Suietov, Bob Moore)
 
 Obsolete ACPICA interfaces:
 
@@ -31,7 +63,7 @@ Porting to the new table manager:
 
 - AcpiInitializeTables: Must be called once, and can be called anytime during the OS initialization process. It allows the host to specify an area of memory to be used to store the internal version of the RSDT/XSDT (root table). This allows the host to access ACPI tables before memory management is initialized and running.
 - AcpiReallocateRootTable: Can be called after memory management is running to copy the root table to a dynamically allocated array, freeing up the scratch memory specified in the call to AcpiInitializeTables.
-- AcpiGlobalInitialize: This existing interface is independent of the Table Manager, and does not have to be called before the Table Manager can be used, it only must be called before the rest of ACPICA can be used.
+- AcpiSubsystemInitialize: This existing interface is independent of the Table Manager, and does not have to be called before the Table Manager can be used, it only must be called before the rest of ACPICA can be used.
 - ACPI Tables: Some changes have been made to the names and structure of the actbl.h and actbl1.h header files and may require changes to existing code. For example, bitfields have been completely removed because of their lack of portability across C compilers.
 - Update interfaces to the Global Lock acquire/release macros if local versions are used. (see acwin.h)
 
