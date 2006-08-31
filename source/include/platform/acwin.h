@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acwin.h - OS specific defines, etc.
- *       $Revision: 1.27 $
+ *       $Revision: 1.28 $
  *
  *****************************************************************************/
 
@@ -172,6 +172,8 @@ typedef COMPILER_DEPENDENT_UINT64       u64;
 #ifdef _DEBUG
 #define ACPI_SIMPLE_RETURN_MACROS
 #endif
+
+/*! [End] no source code translation !*/
 
 /*
  * Global Lock acquire/release code
