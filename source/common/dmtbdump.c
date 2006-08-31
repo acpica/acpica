@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.8 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -438,7 +438,7 @@ AcpiDmDumpDmar (
         if ((SubTable->Flags & ACPI_DMAR_INCLUDE_ALL) == 0)
         {
             /* Dump the device scope entries */
-            
+
             ScopeTable = ACPI_ADD_PTR (ACPI_DMAR_DEVICE_SCOPE, SubTable, ScopeOffset);
             while (ScopeOffset < SubTable->Length)
             {

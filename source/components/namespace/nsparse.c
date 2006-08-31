@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsparse - namespace interface to AML parser
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -162,7 +162,7 @@ AcpiNsOneCompleteParse (
     {
         return_ACPI_STATUS (Status);
     }
-    
+
     /* Create and init a Root Node */
 
     ParseRoot = AcpiPsCreateScopeOp ();
@@ -187,7 +187,7 @@ AcpiNsOneCompleteParse (
         AcpiPsFreeOp (ParseRoot);
         return_ACPI_STATUS (Status);
     }
-    
+
     /* Table must consist of at least a complete header */
 
     if (Table->Length < sizeof (ACPI_TABLE_HEADER))

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.146 $
+ *              $Revision: 1.147 $
  *
  ******************************************************************************/
 
@@ -444,7 +444,7 @@ AcpiDbDisplayTableInfo (
     /*
      * Walk the root table list
      */
-    for (i = 0; i < AcpiGbl_RootTableList.Count; i++) 
+    for (i = 0; i < AcpiGbl_RootTableList.Count; i++)
     {
         TableDesc = &AcpiGbl_RootTableList.Tables[i];
         AcpiOsPrintf ( "%4.4s at %p length %.5X",

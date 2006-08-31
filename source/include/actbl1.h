@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - Additional ACPI table definitions
- *       $Revision: 1.43 $
+ *       $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -201,12 +201,12 @@ typedef struct acpi_asf_header
 
 enum AcpiAsfType
 {
-    ACPI_ASF_TYPE_INFO		    = 0,
-    ACPI_ASF_TYPE_ALERT		    = 1,
-    ACPI_ASF_TYPE_CONTROL	    = 2,
-    ACPI_ASF_TYPE_BOOT		    = 3,
-    ACPI_ASF_TYPE_ADDRESS	    = 4,
-    ACPI_ASF_TYPE_RESERVED	    = 5
+    ACPI_ASF_TYPE_INFO          = 0,
+    ACPI_ASF_TYPE_ALERT         = 1,
+    ACPI_ASF_TYPE_CONTROL       = 2,
+    ACPI_ASF_TYPE_BOOT          = 3,
+    ACPI_ASF_TYPE_ADDRESS       = 4,
+    ACPI_ASF_TYPE_RESERVED      = 5
 };
 
 /*
@@ -465,7 +465,6 @@ typedef struct acpi_table_hpet
 #define ACPI_HPET_PAGE_PROTECT_64   (1<<2)      /* 02: 64KB page protected */
 
 /*! [End] no source code translation !*/
-
 
 
 /*******************************************************************************
@@ -787,9 +786,9 @@ typedef struct acpi_table_srat
 
 enum AcpiSratType
 {
-    ACPI_SRAT_TYPE_CPU_AFFINITY		= 0,
-    ACPI_SRAT_TYPE_MEMORY_AFFINITY	= 1,
-    ACPI_SRAT_TYPE_RESERVED			= 2
+    ACPI_SRAT_TYPE_CPU_AFFINITY     = 0,
+    ACPI_SRAT_TYPE_MEMORY_AFFINITY  = 1,
+    ACPI_SRAT_TYPE_RESERVED         = 2
 };
 
 /* SRAT sub-tables */

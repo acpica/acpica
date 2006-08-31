@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
- *              $Revision: 1.26 $
+ *              $Revision: 1.27 $
  *
  *****************************************************************************/
 
@@ -258,7 +258,7 @@ AcpiDsInitializeObjects (
     {
         return_ACPI_STATUS (Status);
     }
-    
+
     ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
         "**** Starting initialization of namespace objects ****\n"));
     ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT, "Parsing all Control Methods:"));

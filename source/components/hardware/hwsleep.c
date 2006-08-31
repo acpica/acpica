@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -152,21 +152,21 @@ AcpiSetFirmwareWakingVector (
     {
         return_ACPI_STATUS (Status);
     }
-    
+
     /* Set the vector */
 
     if ((Facs->Length < 32) ||
         (!(ACPI_GET_ADDRESS (Facs->XFirmwareWakingVector))))
     {
         /*
-         * ACPI 1.0 FACS or short table or optional X_ field is zero 
+         * ACPI 1.0 FACS or short table or optional X_ field is zero
          */
         Facs->FirmwareWakingVector = (UINT32) PhysicalAddress;
     }
     else
     {
         /*
-         * ACPI 2.0 FACS with valid X_ field 
+         * ACPI 2.0 FACS with valid X_ field
          */
         Facs->XFirmwareWakingVector = PhysicalAddress;
     }
@@ -214,14 +214,14 @@ AcpiGetFirmwareWakingVector (
     {
         return_ACPI_STATUS (Status);
     }
-    
+
     /* Get the vector */
 
     if ((Facs->Length < 32) ||
         (!(ACPI_GET_ADDRESS (Facs->XFirmwareWakingVector))))
     {
         /*
-         * ACPI 1.0 FACS or short table or optional X_ field is zero 
+         * ACPI 1.0 FACS or short table or optional X_ field is zero
          */
         *PhysicalAddress =
             (ACPI_PHYSICAL_ADDRESS) Facs->FirmwareWakingVector;
@@ -229,7 +229,7 @@ AcpiGetFirmwareWakingVector (
     else
     {
         /*
-         * ACPI 2.0 FACS with valid X_ field 
+         * ACPI 2.0 FACS with valid X_ field
          */
         *PhysicalAddress = (ACPI_PHYSICAL_ADDRESS) Facs->XFirmwareWakingVector;
     }
