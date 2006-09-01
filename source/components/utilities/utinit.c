@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utinit - Common ACPI subsystem initialization
- *              $Revision: 1.132 $
+ *              $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -130,8 +130,7 @@
 static void
 AcpiUtFadtRegisterError (
     char                    *RegisterName,
-    UINT32                  Value,
-    UINT8                   Offset);
+    UINT32                  Value);
 
 static void AcpiUtTerminate (
     void);
@@ -143,9 +142,8 @@ static void AcpiUtTerminate (
  *
  * PARAMETERS:  RegisterName            - Pointer to string identifying register
  *              Value                   - Actual register contents value
- *              Offset                  - Byte offset in the FADT
  *
- * RETURN:      AE_BAD_VALUE
+ * RETURN:      None
  *
  * DESCRIPTION: Display failure message
  *
@@ -154,13 +152,11 @@ static void AcpiUtTerminate (
 static void
 AcpiUtFadtRegisterError (
     char                    *RegisterName,
-    UINT32                  Value,
-    UINT8                   Offset)
+    UINT32                  Value)
 {
 
-    ACPI_WARNING ((AE_INFO,
-        "Invalid FADT value %s=%X at offset %X in FADT=%p",
-        RegisterName, Value, Offset, &AcpiGbl_FADT));
+    ACPI_WARNING ((AE_INFO, "Invalid FADT value %s = %X",
+        RegisterName, Value));
 }
 
 
@@ -187,48 +183,41 @@ AcpiUtValidateFadt (
      */
     if (AcpiGbl_FADT.Pm1EventLength < 4)
     {
-        AcpiUtFadtRegisterError ("PM1_EVT_LEN",
-                        (UINT32) AcpiGbl_FADT.Pm1EventLength,
-                        ACPI_FADT_OFFSET (Pm1EventLength));
+        AcpiUtFadtRegisterError ("Pm1EventLength",
+            (UINT32) AcpiGbl_FADT.Pm1EventLength);
+    }
+
+    if (AcpiGbl_FADT.PmTimerLength < 4)
+    {
+        AcpiUtFadtRegisterError ("PmTimerLength",
+            (UINT32) AcpiGbl_FADT.PmTimerLength);
     }
 
     if (!AcpiGbl_FADT.Pm1ControlLength)
     {
-        AcpiUtFadtRegisterError ("PM1_CNT_LEN", 0,
-                        ACPI_FADT_OFFSET (Pm1ControlLength));
+        AcpiUtFadtRegisterError ("Pm1ControlLength", 0);
     }
 
     if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT.XPm1aEventBlock.Address))
     {
-        AcpiUtFadtRegisterError ("X_PM1a_EVT_BLK", 0,
-                        ACPI_FADT_OFFSET (XPm1aEventBlock.Address));
+        AcpiUtFadtRegisterError ("XPm1aEventBlock.Address", 0);
     }
 
     if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT.XPm1aControlBlock.Address))
     {
-        AcpiUtFadtRegisterError ("X_PM1a_CNT_BLK", 0,
-                        ACPI_FADT_OFFSET (XPm1aControlBlock.Address));
+        AcpiUtFadtRegisterError ("XPm1aControlBlock.Address", 0);
     }
 
     if (!ACPI_VALID_ADDRESS (AcpiGbl_FADT.XPmTimerBlock.Address))
     {
-        AcpiUtFadtRegisterError ("X_PM_TMR_BLK", 0,
-                        ACPI_FADT_OFFSET (XPmTimerBlock.Address));
+        AcpiUtFadtRegisterError ("XPmTimerBlock.Address", 0);
     }
 
     if ((ACPI_VALID_ADDRESS (AcpiGbl_FADT.XPm2ControlBlock.Address) &&
         !AcpiGbl_FADT.Pm2ControlLength))
     {
-        AcpiUtFadtRegisterError ("PM2_CNT_LEN",
-                        (UINT32) AcpiGbl_FADT.Pm2ControlLength,
-                        ACPI_FADT_OFFSET (Pm2ControlLength));
-    }
-
-    if (AcpiGbl_FADT.PmTimerLength < 4)
-    {
-        AcpiUtFadtRegisterError ("PM_TM_LEN",
-                        (UINT32) AcpiGbl_FADT.PmTimerLength,
-                        ACPI_FADT_OFFSET (PmTimerLength));
+        AcpiUtFadtRegisterError ("Pm2ControlLength",
+            (UINT32) AcpiGbl_FADT.Pm2ControlLength);
     }
 
     /* Length of GPE blocks must be a multiple of 2 */
@@ -236,17 +225,15 @@ AcpiUtValidateFadt (
     if (ACPI_VALID_ADDRESS (AcpiGbl_FADT.XGpe0Block.Address) &&
         (AcpiGbl_FADT.Gpe0BlockLength & 1))
     {
-        AcpiUtFadtRegisterError ("(x)GPE0_BLK_LEN",
-                        (UINT32) AcpiGbl_FADT.Gpe0BlockLength,
-                        ACPI_FADT_OFFSET (Gpe0BlockLength));
+        AcpiUtFadtRegisterError ("Gpe0BlockLength",
+            (UINT32) AcpiGbl_FADT.Gpe0BlockLength);
     }
 
     if (ACPI_VALID_ADDRESS (AcpiGbl_FADT.XGpe1Block.Address) &&
         (AcpiGbl_FADT.Gpe1BlockLength & 1))
     {
-        AcpiUtFadtRegisterError ("(x)GPE1_BLK_LEN",
-                        (UINT32) AcpiGbl_FADT.Gpe1BlockLength,
-                        ACPI_FADT_OFFSET (Gpe1BlockLength));
+        AcpiUtFadtRegisterError ("Gpe1BlockLength",
+            (UINT32) AcpiGbl_FADT.Gpe1BlockLength);
     }
 
     return (AE_OK);
