@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -215,22 +215,6 @@ AcpiEnableSubsystem (
 
     ACPI_FUNCTION_TRACE (AcpiEnableSubsystem);
 
-
-    /*
-     * We must initialize the hardware before we can enable ACPI.
-     * The values from the FADT are validated here.
-     */
-    if (!(Flags & ACPI_NO_HARDWARE_INIT))
-    {
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-            "[Init] Initializing ACPI hardware\n"));
-
-        Status = AcpiHwInitialize ();
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
-    }
 
     /* Enable ACPI mode */
 

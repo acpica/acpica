@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.57 $
+ *       $Revision: 1.58 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,14 @@
 #define __ACTABLES_H__
 
 
+/* 
+ * tbfadt - FADT parse/convert/validate
+ */
+void
+AcpiTbParseFadt (
+    ACPI_NATIVE_UINT        TableIndex,
+    UINT8                   Flags);
+
 /*
  * tbfind - find ACPI table
  */
@@ -205,6 +213,13 @@ ACPI_STATUS
 AcpiTbVerifyChecksum (
     ACPI_TABLE_HEADER       *Table,
     UINT32                  Length);
+
+void
+AcpiTbInstallTable (
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT8                   Flags,
+    char                    *Signature,
+    ACPI_NATIVE_UINT        TableIndex);
 
 ACPI_STATUS
 AcpiTbParseRootTable (

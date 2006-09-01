@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils   - table utilities
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -114,7 +114,7 @@
  *
  *****************************************************************************/
 
-#define __TBXFACE_C__
+#define __TBUTILS_C__
 
 #include "acpi.h"
 #include "actables.h"
@@ -124,57 +124,10 @@
 
 /* Local prototypes */
 
-static void
-AcpiTbParseFadt (
-    ACPI_NATIVE_UINT        TableIndex,
-    UINT8                   Flags);
-
-static void
-AcpiTbConvertFadt (
-    void);
-
-static void
-AcpiTbInstallTable (
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT8                   Flags,
-    char                    *Signature,
-    ACPI_NATIVE_UINT        TableIndex);
-
-static void inline
-AcpiTbInitGenericAddress (
-    ACPI_GENERIC_ADDRESS    *NewGasStruct,
-    UINT8                   BitWidth,
-    UINT64                  Address);
-
 static ACPI_PHYSICAL_ADDRESS
 AcpiTbGetRootTableEntry (
     UINT8                   *TableEntry,
     ACPI_NATIVE_UINT        TableEntrySize);
-
-
-/* Table used for conversion of FADT to common format */
-
-typedef struct acpi_fadt_conversion
-{
-    UINT8                   Target;
-    UINT8                   Source;
-    UINT8                   Length;
-
-} ACPI_FADT_CONVERSION;
-
-static ACPI_FADT_CONVERSION     FadtConversionTable[] =
-{
-    {ACPI_FADT_OFFSET (XPm1aEventBlock),    ACPI_FADT_OFFSET (Pm1aEventBlock),      ACPI_FADT_OFFSET (Pm1EventLength)},
-    {ACPI_FADT_OFFSET (XPm1bEventBlock),    ACPI_FADT_OFFSET (Pm1bEventBlock),      ACPI_FADT_OFFSET (Pm1EventLength)},
-    {ACPI_FADT_OFFSET (XPm1aControlBlock),  ACPI_FADT_OFFSET (Pm1aControlBlock),    ACPI_FADT_OFFSET (Pm1ControlLength)},
-    {ACPI_FADT_OFFSET (XPm1bControlBlock),  ACPI_FADT_OFFSET (Pm1bControlBlock),    ACPI_FADT_OFFSET (Pm1ControlLength)},
-    {ACPI_FADT_OFFSET (XPm2ControlBlock),   ACPI_FADT_OFFSET (Pm2ControlBlock),     ACPI_FADT_OFFSET (Pm2ControlLength)},
-    {ACPI_FADT_OFFSET (XPmTimerBlock),      ACPI_FADT_OFFSET (PmTimerBlock),        ACPI_FADT_OFFSET (PmTimerLength)},
-    {ACPI_FADT_OFFSET (XGpe0Block),         ACPI_FADT_OFFSET (Gpe0Block),           ACPI_FADT_OFFSET (Gpe0BlockLength)},
-    {ACPI_FADT_OFFSET (XGpe1Block),         ACPI_FADT_OFFSET (Gpe1Block),           ACPI_FADT_OFFSET (Gpe1BlockLength)}
-};
-
-#define ACPI_FADT_CONVERSION_ENTRIES        (sizeof (FadtConversionTable) / sizeof (ACPI_FADT_CONVERSION))
 
 
 /*******************************************************************************
@@ -225,35 +178,6 @@ AcpiTbPrintTableHeader (
             Header->OemTableId, Header->OemRevision, Header->AslCompilerId,
             Header->AslCompilerRevision));
     }
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiTbInitGenericAddress
- *
- * PARAMETERS:  NewGasStruct        - GAS struct to be initialized
- *              BitWidth            - Width of this register
- *              Address             - Address of the register
- *
- * RETURN:      None
- *
- * DESCRIPTION: Initialize a GAS structure.
- *
- ******************************************************************************/
-
-static void inline
-AcpiTbInitGenericAddress (
-    ACPI_GENERIC_ADDRESS    *NewGasStruct,
-    UINT8                   BitWidth,
-    UINT64                  Address)
-{
-
-    ACPI_MOVE_64_TO_64 (&NewGasStruct->Address, &Address);
-    NewGasStruct->SpaceId = ACPI_ADR_SPACE_SYSTEM_IO;
-    NewGasStruct->BitWidth = BitWidth;
-    NewGasStruct->BitOffset = 0;
-    NewGasStruct->AccessWidth = 0;
 }
 
 
@@ -334,104 +258,6 @@ AcpiTbChecksum (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiTbConvertFadt
- *
- * PARAMETERS:  None, uses AcpiGbl_FADT
- *
- * RETURN:      None
- *
- * DESCRIPTION: Converts all versions of the FADT to a common internal format.
- *
- * NOTE:        AcpiGbl_FADT must be of size (ACPI_TABLE_FADT), and must contain
- *              a copy of the actual FADT.
- *
- * ACPICA will use the "X" fields of the FADT for all addresses.
- *
- * "X" fields are optional extensions to the original V1.0 fields. Even if
- * they are present in the structure, they can be optionally not used by
- * setting them to zero. Therefore, we must selectively expand V1.0 fields
- * if the corresponding X field is zero.
- *
- * For ACPI 1.0 FADTs, all address fields are expanded to the corresponding
- * "X" fields.
- *
- * For ACPI 2.0 FADTs, any "X" fields that are NULL are filled in by
- * expanding the corresponding ACPI 1.0 field.
- *
- ******************************************************************************/
-
-static void
-AcpiTbConvertFadt (
-    void)
-{
-    UINT8                       Pm1RegisterLength;
-    ACPI_GENERIC_ADDRESS        *Target;
-    ACPI_NATIVE_UINT            i;
-
-
-    /* Expand the FACS and DSDT addresses as necessary */
-
-    if (!AcpiGbl_FADT.XFacs)
-    {
-        AcpiGbl_FADT.XFacs = (UINT64) AcpiGbl_FADT.Facs;
-    }
-
-    if (!AcpiGbl_FADT.XDsdt)
-    {
-        AcpiGbl_FADT.XDsdt = (UINT64) AcpiGbl_FADT.Dsdt;
-    }
-
-    /*
-     * Expand the 32-bit V1.0 addresses to the 64-bit "X" generic address
-     * structures as necessary.
-     */
-    for (i = 0; i < ACPI_FADT_CONVERSION_ENTRIES; i++)
-    {
-        Target = ACPI_ADD_PTR (
-            ACPI_GENERIC_ADDRESS, &AcpiGbl_FADT, FadtConversionTable[i].Target);
-
-        /* Expand only if the X target is null */
-
-        if (!Target->Address)
-        {
-            AcpiTbInitGenericAddress (Target,
-                *ACPI_ADD_PTR (UINT8, &AcpiGbl_FADT, FadtConversionTable[i].Length),
-                (UINT64) *ACPI_ADD_PTR (UINT32, &AcpiGbl_FADT, FadtConversionTable[i].Source));
-        }
-    }
-
-    /*
-     * Calculate separate GAS structs for the PM1 Enable registers.
-     * These addresses do not appear (directly) in the FADT, so it is
-     * useful to calculate them once, here.
-     *
-     * The PM event blocks are split into two register blocks, first is the
-     * PM Status Register block, followed immediately by the PM Enable Register
-     * block. Each is of length (Pm1EventLength/2)
-     */
-    Pm1RegisterLength = (UINT8) ACPI_DIV_2 (AcpiGbl_FADT.Pm1EventLength);
-
-    /* PM1A is required */
-
-    AcpiTbInitGenericAddress (&AcpiGbl_XPm1aEnable, Pm1RegisterLength,
-        (AcpiGbl_FADT.XPm1aEventBlock.Address + Pm1RegisterLength));
-
-    /* PM1B is optional; leave null if not present */
-
-    if (AcpiGbl_FADT.XPm1bEventBlock.Address)
-    {
-        AcpiTbInitGenericAddress (&AcpiGbl_XPm1bEnable, Pm1RegisterLength,
-            (AcpiGbl_FADT.XPm1bEventBlock.Address + Pm1RegisterLength));
-    }
-
-    /* Global FADT is the new common V2.0 FADT  */
-
-    AcpiGbl_FADT.Header.Length = sizeof (ACPI_TABLE_FADT);
-}
-
-
-/*******************************************************************************
- *
  * FUNCTION:    AcpiTbInstallTable
  *
  * PARAMETERS:  Address                 - Physical address of DSDT or FACS
@@ -446,7 +272,7 @@ AcpiTbConvertFadt (
  *
  ******************************************************************************/
 
-static void
+void
 AcpiTbInstallTable (
     ACPI_PHYSICAL_ADDRESS   Address,
     UINT8                   Flags,
@@ -501,72 +327,6 @@ AcpiTbInstallTable (
 
 UnmapAndExit:
     AcpiOsUnmapMemory (Table, sizeof (ACPI_TABLE_HEADER));
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiTbParseFadt
- *
- * PARAMETERS:  TableIndex          - Index for the FADT
- *              Flags               - Flags
- *
- * RETURN:      None
- *
- * DESCRIPTION: Initialize the FADT, DSDT and FACS tables
- *              (FADT contains the addresses of the DSDT and FACS)
- *
- ******************************************************************************/
-
-static void
-AcpiTbParseFadt (
-    ACPI_NATIVE_UINT        TableIndex,
-    UINT8                   Flags)
-{
-    UINT32                  Length;
-    ACPI_TABLE_HEADER       *Table;
-
-
-    /*
-     * Special case for the FADT because of multiple versions and the fact
-     * that it contains pointers to both the DSDT and FACS tables.
-     *
-     * Get a local copy of the FADT and convert it to a common format
-     * Map entire FADT, assumed to be smaller than one page.
-     */
-    Length = AcpiGbl_RootTableList.Tables[TableIndex].Length;
-
-    Table = AcpiOsMapMemory (AcpiGbl_RootTableList.Tables[TableIndex].Address, Length);
-    if (!Table)
-    {
-        return;
-    }
-
-    /*
-     * Validate the FADT checksum before we copy the table. Ignore
-     * checksum error as we want to try to get the DSDT and FACS.
-     */
-    (void) AcpiTbVerifyChecksum (Table, Length);
-
-    /* Copy the entire FADT locally */
-
-    ACPI_MEMSET (&AcpiGbl_FADT, 0, sizeof (ACPI_TABLE_FADT));
-
-    ACPI_MEMCPY (&AcpiGbl_FADT, Table,
-        ACPI_MIN (Length, sizeof (ACPI_TABLE_FADT)));
-    AcpiOsUnmapMemory (Table, Length);
-
-    /* Convert local FADT to the common internal format */
-
-    AcpiTbConvertFadt ();
-
-    /* Extract the DSDT and FACS tables from the FADT */
-
-    AcpiTbInstallTable ((ACPI_PHYSICAL_ADDRESS) AcpiGbl_FADT.XDsdt,
-        Flags, ACPI_SIG_DSDT, ACPI_TABLE_INDEX_DSDT);
-
-    AcpiTbInstallTable ((ACPI_PHYSICAL_ADDRESS) AcpiGbl_FADT.XFacs,
-        Flags, ACPI_SIG_FACS, ACPI_TABLE_INDEX_FACS);
 }
 
 
