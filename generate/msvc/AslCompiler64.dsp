@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /GB /Gr /Za /W3 /Gm /GX /Zi /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "_IA64" /FR /FD /c
+# ADD CPP /Gr /Za /W3 /Gm /GX /Zi /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "_IA64" /FR /FD /c
 # SUBTRACT CPP /nologo /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -76,7 +76,7 @@ PostBuild_Cmds=copy Release\iasl64.exe ..\..\Libraries
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /GB /Gr /Za /W4 /Gm /GX /Zi /Od /I "$(OutDir)" /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "_DEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "_IA64" /D "_M_IX86" /FR /FD /GZ /c
+# ADD CPP /Gr /Za /W4 /Gm /GX /Zi /Od /I "$(OutDir)" /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "_DEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "_IA64" /D "_M_IX86" /FR /FD /GZ /c
 # SUBTRACT CPP /nologo /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -545,6 +545,10 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmwalk.c
 # Begin Group "Tables"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\tables\tbfadt.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\tables\tbinstal.c

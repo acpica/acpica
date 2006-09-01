@@ -82,6 +82,7 @@ SRCS=	aslcompilerparse.c aslcompilerlex.c aslanalyze.c aslcodegen.c \
 	../disassembler/dmresrcs.c \
 	../disassembler/dmutils.c \
 	../disassembler/dmwalk.c \
+	../tables/tbfadt.c \
 	../tables/tbinstal.c \
 	../tables/tbutils.c \
 	../tables/tbxface.c \

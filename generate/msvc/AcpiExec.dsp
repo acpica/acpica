@@ -584,6 +584,10 @@ SOURCE=..\..\source\components\interpreter\dispatcher\dswstate.c
 # PROP Default_Filter ".c"
 # Begin Source File
 
+SOURCE=..\..\source\components\tables\tbfadt.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\tables\tbfind.c
 # End Source File
 # Begin Source File
@@ -593,15 +597,6 @@ SOURCE=..\..\source\components\tables\tbinstal.c
 # Begin Source File
 
 SOURCE=..\..\source\components\tables\tbutils.c
-
-!IF  "$(CFG)" == "AcpiExec - Win32 Release"
-
-# SUBTRACT CPP /FA<none>
-
-!ELSEIF  "$(CFG)" == "AcpiExec - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 

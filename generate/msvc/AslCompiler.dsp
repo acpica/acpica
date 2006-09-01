@@ -555,6 +555,10 @@ SOURCE=..\..\source\COMPONENTS\disassembler\dmwalk.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\source\components\tables\tbfadt.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\COMPONENTS\tables\tbinstal.c
 # End Source File
 # Begin Source File

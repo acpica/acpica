@@ -442,6 +442,10 @@ SOURCE=..\..\source_linux\COMPONENTS\resources\rsxface.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\source_linux\components\tables\tbfadt.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source_linux\components\tables\tbfind.c
 # End Source File
 # Begin Source File
