@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exsystem - Interface to OS services
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -146,7 +146,6 @@ AcpiExSystemWaitSemaphore (
     UINT16                  Timeout)
 {
     ACPI_STATUS             Status;
-    ACPI_STATUS             Status2;
 
 
     ACPI_FUNCTION_TRACE (ExSystemWaitSemaphore);
@@ -162,7 +161,7 @@ AcpiExSystemWaitSemaphore (
     {
         /* We must wait, so unlock the interpreter */
 
-        AcpiExExitInterpreter ();
+        AcpiExRelinquishInterpreter ();
 
         Status = AcpiOsWaitSemaphore (Semaphore, 1, Timeout);
 
@@ -172,13 +171,7 @@ AcpiExSystemWaitSemaphore (
 
         /* Reacquire the interpreter */
 
-        Status2 = AcpiExEnterInterpreter ();
-        if (ACPI_FAILURE (Status2))
-        {
-            /* Report fatal error, could not acquire interpreter */
-
-            return_ACPI_STATUS (Status2);
-        }
+       AcpiExReacquireInterpreter ();
     }
 
     return_ACPI_STATUS (Status);
@@ -206,7 +199,6 @@ AcpiExSystemWaitMutex (
     UINT16                  Timeout)
 {
     ACPI_STATUS             Status;
-    ACPI_STATUS             Status2;
 
 
     ACPI_FUNCTION_TRACE (ExSystemWaitMutex);
@@ -222,7 +214,7 @@ AcpiExSystemWaitMutex (
     {
         /* We must wait, so unlock the interpreter */
 
-        AcpiExExitInterpreter ();
+        AcpiExRelinquishInterpreter ();
 
         Status = AcpiOsAcquireMutex (Mutex, Timeout);
 
@@ -232,13 +224,7 @@ AcpiExSystemWaitMutex (
 
         /* Reacquire the interpreter */
 
-        Status2 = AcpiExEnterInterpreter ();
-        if (ACPI_FAILURE (Status2))
-        {
-            /* Report fatal error, could not acquire interpreter */
-
-            return_ACPI_STATUS (Status2);
-        }
+        AcpiExReacquireInterpreter ();
     }
 
     return_ACPI_STATUS (Status);
@@ -310,22 +296,19 @@ ACPI_STATUS
 AcpiExSystemDoSuspend (
     ACPI_INTEGER            HowLong)
 {
-    ACPI_STATUS             Status;
-
-
     ACPI_FUNCTION_ENTRY ();
 
 
     /* Since this thread will sleep, we must release the interpreter */
 
-    AcpiExExitInterpreter ();
+    AcpiExRelinquishInterpreter ();
 
     AcpiOsSleep (HowLong);
 
     /* And now we must get the interpreter again */
 
-    Status = AcpiExEnterInterpreter ();
-    return (Status);
+    AcpiExReacquireInterpreter ();
+    return (AE_OK);
 }
 
 

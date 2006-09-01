@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -708,12 +708,7 @@ AcpiExCreateMethod (
      * Get the SyncLevel. If method is serialized, a mutex will be
      * created for this method when it is parsed.
      */
-    if (AcpiGbl_AllMethodsSerialized)
-    {
-        ObjDesc->Method.SyncLevel = 0;
-        ObjDesc->Method.MethodFlags |= AML_METHOD_SERIALIZED;
-    }
-    else if (MethodFlags & AML_METHOD_SERIALIZED)
+    if (MethodFlags & AML_METHOD_SERIALIZED)
     {
         /*
          * ACPI 1.0: SyncLevel = 0

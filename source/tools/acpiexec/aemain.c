@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -168,6 +168,7 @@ usage (void)
     printf ("        -e                  Do not abort methods on error\n");
     printf ("        -i                  Do not run STA/INI methods\n");
     printf ("        -s                  Enable Interpreter Slack Mode\n");
+    printf ("        -t                  Enable Interpreter Serialized Mode\n");
     printf ("        -x DebugLevel       Specify debug output level\n");
     printf ("        -v                  Verbose init output\n");
 }
@@ -226,7 +227,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?b^degio:svx:")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?b^degio:stvx:")) != EOF) switch(j)
     {
     case 'b':
         AcpiGbl_BatchMode = TRUE;
@@ -272,6 +273,11 @@ main (
     case 's':
         AcpiGbl_EnableInterpreterSlack = TRUE;
         printf ("Enabling AML Interpreter slack mode\n");
+        break;
+
+    case 't':
+        AcpiGbl_AllMethodsSerialized = TRUE;
+        printf ("Enabling AML Interpreter serialized mode\n");
         break;
 
     case 'v':

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.167 $
+ *       $Revision: 1.168 $
  *
  *****************************************************************************/
 
@@ -665,12 +665,20 @@ AcpiExCopyIntegerToBufferField (
 /*
  * exutils - interpreter/scanner utilities
  */
-ACPI_STATUS
+void
 AcpiExEnterInterpreter (
     void);
 
 void
 AcpiExExitInterpreter (
+    void);
+
+void
+AcpiExReacquireInterpreter (
+    void);
+
+void
+AcpiExRelinquishInterpreter (
     void);
 
 void
