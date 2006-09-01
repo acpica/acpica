@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbfadt   - FADT table utilities
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -278,8 +278,8 @@ AcpiTbParseFadt (
  *
  * DESCRIPTION: Converts all versions of the FADT to a common internal format.
  *
- * NOTE:        AcpiGbl_FADT must be of size (ACPI_TABLE_FADT), and must contain
- *              a copy of the actual FADT.
+ * NOTE:        AcpiGbl_FADT must be of size (ACPI_TABLE_FADT),
+ *              and must contain a copy of the actual FADT.
  *
  * ACPICA will use the "X" fields of the FADT for all addresses.
  *
@@ -372,9 +372,10 @@ AcpiTbConvertFadt (
  *
  * PARAMETERS:  None
  *
- * RETURN:      Status
+ * RETURN:      None
  *
- * DESCRIPTION: Validate various ACPI registers in the FADT
+ * DESCRIPTION: Validate various ACPI registers in the FADT. For problems, 
+ *              issue a message, but no status is returned.
  *
  ******************************************************************************/
 
@@ -465,7 +466,7 @@ AcpiTbFadtRegisterError (
     UINT32                  Value)
 {
 
-    ACPI_WARNING ((AE_INFO, "Invalid FADT value \"%s\" = %X",
+    ACPI_WARNING ((AE_INFO, "Invalid FADT value in field \"%s\" = %X",
         RegisterName, Value));
 }
 
