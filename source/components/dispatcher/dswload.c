@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -281,6 +281,7 @@ AcpiDsLoad1BeginOp (
          */
         switch (Node->Type)
         {
+        case ACPI_TYPE_ANY:
         case ACPI_TYPE_LOCAL_SCOPE:         /* Scope  */
         case ACPI_TYPE_DEVICE:
         case ACPI_TYPE_POWER:
@@ -766,6 +767,7 @@ AcpiDsLoad2BeginOp (
          */
         switch (Node->Type)
         {
+        case ACPI_TYPE_ANY:
         case ACPI_TYPE_LOCAL_SCOPE:         /* Scope */
         case ACPI_TYPE_DEVICE:
         case ACPI_TYPE_POWER:
