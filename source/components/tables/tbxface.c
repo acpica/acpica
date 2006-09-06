@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.82 $
+ *              $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -133,6 +133,32 @@ AcpiTbLoadNamespace (
 
 /*******************************************************************************
  *
+ * FUNCTION:    AcpiAllocateRootTable
+ *
+ * PARAMETERS:  InitialTableCount   - Size of InitialTableArray, in number of
+ *                                    ACPI_TABLE_DESC structures
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Allocate a root table array. Used by iASL compiler and
+ *              AcpiInitializeTables.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiAllocateRootTable (
+    UINT32                  InitialTableCount)
+{
+
+    AcpiGbl_RootTableList.Size = InitialTableCount;
+    AcpiGbl_RootTableList.Flags = ACPI_ROOT_ALLOW_RESIZE;
+
+    return (AcpiTbResizeRootTableList ());
+}
+
+
+/*******************************************************************************
+ *
  * FUNCTION:    AcpiInitializeTables
  *
  * PARAMETERS:  InitialTableArray   - Pointer to an array of pre-allocated
@@ -176,10 +202,7 @@ AcpiInitializeTables (
      */
     if (!InitialTableArray)
     {
-        AcpiGbl_RootTableList.Size = InitialTableCount;
-        AcpiGbl_RootTableList.Flags = ACPI_ROOT_ALLOW_RESIZE;
-
-        Status = AcpiTbResizeRootTableList ();
+        Status = AcpiAllocateRootTable (InitialTableCount);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);

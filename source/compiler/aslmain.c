@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -120,6 +120,7 @@
 
 #include "aslcompiler.h"
 #include "acnamesp.h"
+#include "actables.h"
 #include "acapps.h"
 
 #ifdef _DEBUG
@@ -791,6 +792,14 @@ main (
         Status = AdInitialize ();
         if (ACPI_FAILURE (Status))
         {
+            return -1;
+        }
+
+        Status = AcpiAllocateRootTable (4);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiOsPrintf ("Could not initialize ACPI Table Manager, %s\n",
+                AcpiFormatException (Status));
             return -1;
         }
 

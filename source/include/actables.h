@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.58 $
+ *       $Revision: 1.59 $
  *
  *****************************************************************************/
 
@@ -117,6 +117,10 @@
 #ifndef __ACTABLES_H__
 #define __ACTABLES_H__
 
+
+ACPI_STATUS
+AcpiAllocateRootTable (
+    UINT32                  InitialTableCount);
 
 /* 
  * tbfadt - FADT parse/convert/validate
