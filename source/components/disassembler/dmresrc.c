@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -444,15 +444,14 @@ AcpiDmResourceTemplate (
  *
  * PARAMETERS:  Op          - Buffer Op to be examined
  *
- * RETURN:      TRUE if this Buffer Op contains a valid resource
- *              descriptor.
+ * RETURN:      Status. AE_OK if valid template
  *
  * DESCRIPTION: Walk a byte list to determine if it consists of a valid set
  *              of resource descriptors.  Nothing is output.
  *
  ******************************************************************************/
 
-BOOLEAN
+ACPI_STATUS
 AcpiDmIsResourceTemplate (
     ACPI_PARSE_OBJECT       *Op)
 {
@@ -467,7 +466,7 @@ AcpiDmIsResourceTemplate (
 
     if (Op->Common.AmlOpcode != AML_BUFFER_OP)
     {
-        return FALSE;
+        return (AE_TYPE);
     }
 
     /* Get the ByteData list and length */
@@ -476,7 +475,7 @@ AcpiDmIsResourceTemplate (
     NextOp = NextOp->Common.Next;
     if (!NextOp)
     {
-        return (FALSE);
+        return (AE_TYPE);
     }
 
     Aml = NextOp->Named.Data;
@@ -487,7 +486,7 @@ AcpiDmIsResourceTemplate (
     Status = AcpiUtWalkAmlResources (Aml, Length, NULL, &EndAml);
     if (ACPI_FAILURE (Status))
     {
-        return (FALSE);
+        return (AE_TYPE);
     }
 
     /*
@@ -498,14 +497,14 @@ AcpiDmIsResourceTemplate (
      */
     if ((Aml + Length - sizeof (AML_RESOURCE_END_TAG)) != EndAml)
     {
-        return (FALSE);
+        return (AE_AML_NO_RESOURCE_END_TAG);
     }
 
     /*
      * All resource descriptors are valid, therefore this list appears
      * to be a valid resource template
      */
-    return (TRUE);
+    return (AE_OK);
 }
 
 #endif

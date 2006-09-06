@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  ******************************************************************************/
 
@@ -376,6 +376,7 @@ AcpiDmDisassembleOneOp (
     UINT32                  Offset;
     UINT32                  Length;
     ACPI_PARSE_OBJECT       *Child;
+    ACPI_STATUS             Status;
 
 
     if (!Op)
@@ -496,12 +497,19 @@ AcpiDmDisassembleOneOp (
          * types of buffers, we have to closely look at the data in the
          * buffer to determine the type.
          */
-        if (AcpiDmIsResourceTemplate (Op))
+        Status = AcpiDmIsResourceTemplate (Op);
+        if (ACPI_SUCCESS (Status))
         {
             Op->Common.DisasmOpcode = ACPI_DASM_RESOURCE;
             AcpiOsPrintf ("ResourceTemplate");
+            break;
         }
-        else if (AcpiDmIsUnicodeBuffer (Op))
+        else if (Status == AE_AML_NO_RESOURCE_END_TAG)
+        {
+            AcpiOsPrintf ("/**** Is ResourceTemplate, but EndTag not at buffer end ****/ ");
+        }
+
+        if (AcpiDmIsUnicodeBuffer (Op))
         {
             Op->Common.DisasmOpcode = ACPI_DASM_UNICODE;
             AcpiOsPrintf ("Unicode (");
