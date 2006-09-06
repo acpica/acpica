@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  ******************************************************************************/
 
@@ -143,7 +143,8 @@ AcpiDmUnicode (
  *
  * RETURN:      None
  *
- * DESCRIPTION: Dump an AML "ByteList" in Hex format
+ * DESCRIPTION: Dump an AML "ByteList" in Hex format. 8 bytes per line, prefixed
+ *              with the hex buffer offset.
  *
  ******************************************************************************/
 
@@ -161,12 +162,23 @@ AcpiDmDisasmByteList (
         return;
     }
 
-    AcpiDmIndent (Level);
-
     /* Dump the byte list */
 
     for (i = 0; i < ByteCount; i++)
     {
+        /* New line every 8 bytes */
+
+        if (((i % 8) == 0) && (i < ByteCount))
+        {
+            if (i > 0)
+            {
+                AcpiOsPrintf ("\n");
+            }
+
+            AcpiDmIndent (Level);
+            AcpiOsPrintf ("/* %04X */    ", i);
+        }
+
         AcpiOsPrintf ("0x%2.2X", (UINT32) ByteData[i]);
 
         /* Add comma if there are more bytes to display */
@@ -174,14 +186,6 @@ AcpiDmDisasmByteList (
         if (i < (ByteCount -1))
         {
             AcpiOsPrintf (", ");
-        }
-
-        /* New line every 8 bytes */
-
-        if ((((i+1) % 8) == 0) && ((i+1) < ByteCount))
-        {
-            AcpiOsPrintf ("\n");
-            AcpiDmIndent (Level);
         }
     }
 
