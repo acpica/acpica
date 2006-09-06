@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - Additional ACPI table definitions
- *       $Revision: 1.44 $
+ *       $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -176,6 +176,8 @@ typedef struct acpi_subtable_header
 /*******************************************************************************
  *
  * ASF - Alert Standard Format table (Signature "ASF!")
+ *
+ * Conforms to the Alert Standard Format Specification V2.0, 23 April 2003
  *
  ******************************************************************************/
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -261,9 +261,15 @@ AcpiDmDumpFadt (
 
     /* Check for ACPI 2.0+ extended data (cannot depend on Revision field) */
 
-    if (Table->Length > sizeof (ACPI_TABLE_FADT))
+    if (Table->Length >= sizeof (ACPI_TABLE_FADT))
     {
         AcpiDmDumpTable (Table->Length, 0, Table, 0, AcpiDmTableInfoFadt2);
+    }
+
+    if (Table->Length > sizeof (ACPI_TABLE_FADT))
+    {
+        AcpiOsPrintf ("**** Table is longer (%X) than ACPI 2.0 FADT (%X) ****\n",
+            Table->Length, sizeof (ACPI_TABLE_FADT));
     }
 }
 

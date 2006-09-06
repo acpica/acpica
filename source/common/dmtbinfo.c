@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbinfo - Table info for non-AML tables
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -302,21 +302,21 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt1[] =
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (AcpiDisable),             "ACPI Disable Value"},
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (S4BiosRequest),           "S4BIOS Command"},
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (PstateControl),           "P-State Control"},
-    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Pm1aEventBlock),          "PM1A Event Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Pm1bEventBlock),          "PM1B Event Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Pm1aControlBlock),        "PM1A Control Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Pm1bControlBlock),        "PM1B Control Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Pm2ControlBlock),         "PM2 Control Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (PmTimerBlock),            "PM Timer Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Gpe0Block),               "GPE0 Event Address"},
-    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Gpe1Block),               "GPE1 Event Address"},
-    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Pm1EventLength),          "PM1 Event Length"},
-    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Pm1ControlLength),        "PM1 Control Length"},
-    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Pm2ControlLength),        "PM2 Control Length"},
-    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (PmTimerLength),           "PM Timer Length"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Pm1aEventBlock),          "PM1A Event Block Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Pm1bEventBlock),          "PM1B Event Block Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Pm1aControlBlock),        "PM1A Control Block Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Pm1bControlBlock),        "PM1B Control Block Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Pm2ControlBlock),         "PM2 Control Block Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (PmTimerBlock),            "PM Timer Block Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Gpe0Block),               "GPE0 Block Address"},
+    {ACPI_DMT_UINT32,   ACPI_FADT_OFFSET (Gpe1Block),               "GPE1 Block Address"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Pm1EventLength),          "PM1 Event Block Length"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Pm1ControlLength),        "PM1 Control Block Length"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Pm2ControlLength),        "PM2 Control Block Length"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (PmTimerLength),           "PM Timer Block Length"},
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Gpe0BlockLength),         "GPE0 Block Length"},
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Gpe1BlockLength),         "GPE1 Block Length"},
-    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Gpe1Base),                "GPE1 Base"},
+    {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (Gpe1Base),                "GPE1 Base Offset"},
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (CstControl),              "_CST Support"},
     {ACPI_DMT_UINT16,   ACPI_FADT_OFFSET (C2Latency),               "C2 Latency"},
     {ACPI_DMT_UINT16,   ACPI_FADT_OFFSET (C3Latency),               "C3 Latency"},
@@ -371,16 +371,15 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt2[] =
     {ACPI_DMT_UINT8,    ACPI_FADT_OFFSET (ResetValue),              "Value to cause reset"},
     {ACPI_DMT_UINT24,   ACPI_FADT_OFFSET (Reserved4[0]),            "Reserved"},
     {ACPI_DMT_UINT64,   ACPI_FADT_OFFSET (XFacs),                   "FACS Address"},
-
     {ACPI_DMT_UINT64,   ACPI_FADT_OFFSET (XDsdt),                   "DSDT Address"},
-    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1aEventBlock),         "PM1A Event Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1bEventBlock),         "PM1B Event Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1aControlBlock),       "PM1A Control Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1bControlBlock),       "PM1B Control Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm2ControlBlock),        "PM2 Control Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPmTimerBlock),           "PM Timer Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XGpe0Block),              "GPE0 Block Register"},
-    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XGpe1Block),              "GPE1 Block Register"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1aEventBlock),         "PM1A Event Block"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1bEventBlock),         "PM1B Event Block"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1aControlBlock),       "PM1A Control Block"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm1bControlBlock),       "PM1B Control Block"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPm2ControlBlock),        "PM2 Control Block"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XPmTimerBlock),           "PM Timer Block"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XGpe0Block),              "GPE0 Block"},
+    {ACPI_DMT_GAS,      ACPI_FADT_OFFSET (XGpe1Block),              "GPE1 Block"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -400,7 +399,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt2[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoAsfHdr[] =
 {
     {ACPI_DMT_UINT8,    ACPI_ASF0_OFFSET (Header.Type),             "Sub-Table Type"},
-    {ACPI_DMT_UINT8,    ACPI_ASF0_OFFSET (Header.Length),           "Length"},
+    {ACPI_DMT_UINT8,    ACPI_ASF0_OFFSET (Header.Reserved),         "Reserved"},
+    {ACPI_DMT_UINT16,   ACPI_ASF0_OFFSET (Header.Length),           "Length"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -423,8 +423,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf1[] =
 {
     {ACPI_DMT_UINT8,    ACPI_ASF1_OFFSET (AssertMask),              "AssertMask"},
     {ACPI_DMT_UINT8,    ACPI_ASF1_OFFSET (DeassertMask),            "DeassertMask"},
-    {ACPI_DMT_UINT8,    ACPI_ASF1_OFFSET (Alerts),                  "Alerts"},
-    {ACPI_DMT_UINT8,    ACPI_ASF1_OFFSET (DataLength),              "Data Length"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1_OFFSET (Alerts),                  "Alert Count"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1_OFFSET (DataLength),              "Alert Data Length"},
     /* TBD: Alert array */
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
@@ -433,8 +433,8 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf1[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf2[] =
 {
-    {ACPI_DMT_UINT8,    ACPI_ASF2_OFFSET (Controls),                "Controls"},
-    {ACPI_DMT_UINT8,    ACPI_ASF2_OFFSET (DataLength),              "Data Length"},
+    {ACPI_DMT_UINT8,    ACPI_ASF2_OFFSET (Controls),                "Control Count"},
+    {ACPI_DMT_UINT8,    ACPI_ASF2_OFFSET (DataLength),              "Control Data Length"},
     {ACPI_DMT_UINT16,   ACPI_ASF2_OFFSET (Reserved2),               "Reserved"},
     /* TBD: Control array */
     {ACPI_DMT_EXIT,     0,                                          NULL}
@@ -459,7 +459,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf3[] =
 ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf4[] =
 {
     {ACPI_DMT_UINT8,    ACPI_ASF4_OFFSET (EpromAddress),            "Eprom Address"},
-    {ACPI_DMT_UINT8,    ACPI_ASF4_OFFSET (Devices),                 "Devices"},
+    {ACPI_DMT_UINT8,    ACPI_ASF4_OFFSET (Devices),                 "Device Count"},
     /* TBD: Address array */
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
