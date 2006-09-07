@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.59 $
+ *       $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -122,13 +122,22 @@ ACPI_STATUS
 AcpiAllocateRootTable (
     UINT32                  InitialTableCount);
 
-/* 
+/*
  * tbfadt - FADT parse/convert/validate
  */
 void
 AcpiTbParseFadt (
     ACPI_NATIVE_UINT        TableIndex,
     UINT8                   Flags);
+
+void
+AcpiTbConvertFadt (
+    void);
+
+void
+AcpiTbValidateFadt (
+    ACPI_TABLE_FADT         *Table);
+
 
 /*
  * tbfind - find ACPI table

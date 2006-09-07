@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -116,6 +116,7 @@
 
 #include "acpi.h"
 #include "acdisasm.h"
+#include "actables.h"
 
 /* This module used for application-level code only */
 
@@ -271,6 +272,19 @@ AcpiDmDumpFadt (
         AcpiOsPrintf ("**** Table is longer (%X) than ACPI 2.0 FADT (%X) ****\n",
             Table->Length, sizeof (ACPI_TABLE_FADT));
     }
+
+    /* Validate the FADT */
+
+    ACPI_MEMSET (&AcpiGbl_FADT, 0, sizeof (ACPI_TABLE_FADT));
+    ACPI_MEMCPY (&AcpiGbl_FADT, Table,
+        ACPI_MIN (Table->Length, sizeof (ACPI_TABLE_FADT)));
+
+    /*
+     * 1) Convert the local copy of the FADT to the common internal format
+     * 2) Validate some of the important values within the FADT
+     */
+    AcpiTbConvertFadt ();
+    AcpiTbValidateFadt (&AcpiGbl_FADT);
 }
 
 

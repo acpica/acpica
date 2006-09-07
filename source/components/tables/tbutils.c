@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils   - table utilities
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -299,7 +299,8 @@ AcpiTbInstallTable (
 
     /* If a particular signature is expected, signature must match */
 
-    if (Signature && !ACPI_COMPARE_NAME (Table->Signature, Signature))
+    if (Signature &&
+        !ACPI_COMPARE_NAME (Table->Signature, Signature))
     {
         ACPI_ERROR ((AE_INFO, "Invalid signature 0x%X for ACPI table [%s]",
             *ACPI_CAST_PTR (UINT32, Table->Signature), Signature));
@@ -378,7 +379,7 @@ AcpiTbGetRootTableEntry (
 #if ACPI_MACHINE_WIDTH == 32
         if (Address64 > ACPI_UINT32_MAX)
         {
-            /* Will truncate 64-bit address to 32 bits */
+            /* Will truncate 64-bit address to 32 bits, issue warning */
 
             ACPI_WARNING ((AE_INFO,
                 "64-bit Physical Address in XSDT is too large (%8.8X%8.8X), truncating",
