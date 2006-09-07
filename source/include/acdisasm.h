@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.36 $
+ *       $Revision: 1.37 $
  *
  *****************************************************************************/
 
@@ -227,7 +227,9 @@ extern const char               *AcpiGbl_MatchOps[];
 
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf1a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf2[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf2a[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf4[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsfHdr[];
@@ -514,7 +516,7 @@ AcpiDmResourceTemplate (
     UINT8                   *ByteData,
     UINT32                  ByteCount);
 
-BOOLEAN
+ACPI_STATUS
 AcpiDmIsResourceTemplate (
     ACPI_PARSE_OBJECT       *Op);
 
