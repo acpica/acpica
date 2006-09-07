@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -512,6 +512,8 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
 
     {"ACPI_ASF_ADDRESS",                    SRC_TYPE_STRUCT},
     {"ACPI_ASF_ALERT",                      SRC_TYPE_STRUCT},
+    {"ACPI_ASF_ALERT_DATA",                 SRC_TYPE_STRUCT},
+    {"ACPI_ASF_CONTROL_DATA",               SRC_TYPE_STRUCT},
     {"ACPI_ASF_HEADER",                     SRC_TYPE_STRUCT},
     {"ACPI_ASF_INFO",                       SRC_TYPE_STRUCT},
     {"ACPI_ASF_REMOTE",                     SRC_TYPE_STRUCT},

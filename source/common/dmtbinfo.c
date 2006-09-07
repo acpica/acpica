@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbinfo - Table info for non-AML tables
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -149,7 +149,9 @@
 
 #define ACPI_ASF0_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_ASF_INFO,f)
 #define ACPI_ASF1_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_ASF_ALERT,f)
+#define ACPI_ASF1a_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_ASF_ALERT_DATA,f)
 #define ACPI_ASF2_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_ASF_REMOTE,f)
+#define ACPI_ASF2a_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_ASF_CONTROL_DATA,f)
 #define ACPI_ASF3_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_ASF_RMCP,f)
 #define ACPI_ASF4_OFFSET(f)             (UINT8) ACPI_OFFSET (ACPI_ASF_ADDRESS,f)
 #define ACPI_CPEP0_OFFSET(f)            (UINT8) ACPI_OFFSET (ACPI_CPEP_POLLING,f)
@@ -425,7 +427,25 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf1[] =
     {ACPI_DMT_UINT8,    ACPI_ASF1_OFFSET (DeassertMask),            "DeassertMask"},
     {ACPI_DMT_UINT8,    ACPI_ASF1_OFFSET (Alerts),                  "Alert Count"},
     {ACPI_DMT_UINT8,    ACPI_ASF1_OFFSET (DataLength),              "Alert Data Length"},
-    /* TBD: Alert array */
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 1a: ASF Alert data */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf1a[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (Address),                "Address"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (Command),                "Command"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (Mask),                   "Mask"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (Value),                  "Value"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (SensorType),             "SensorType"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (Type),                   "Type"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (Offset),                 "Offset"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (SourceType),             "SourceType"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (Severity),               "Severity"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (SensorNumber),           "SensorNumber"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (Entity),                 "Entity"},
+    {ACPI_DMT_UINT8,    ACPI_ASF1a_OFFSET (Instance),               "Instance"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -436,7 +456,17 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf2[] =
     {ACPI_DMT_UINT8,    ACPI_ASF2_OFFSET (Controls),                "Control Count"},
     {ACPI_DMT_UINT8,    ACPI_ASF2_OFFSET (DataLength),              "Control Data Length"},
     {ACPI_DMT_UINT16,   ACPI_ASF2_OFFSET (Reserved2),               "Reserved"},
-    /* TBD: Control array */
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+/* 2a: ASF Control data */
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf2a[] =
+{
+    {ACPI_DMT_UINT8,    ACPI_ASF2a_OFFSET (Function),               "Function"},
+    {ACPI_DMT_UINT8,    ACPI_ASF2a_OFFSET (Address),                "Address"},
+    {ACPI_DMT_UINT8,    ACPI_ASF2a_OFFSET (Command),                "Command"},
+    {ACPI_DMT_UINT8,    ACPI_ASF2a_OFFSET (Value),                  "Value"},
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 
@@ -460,7 +490,6 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoAsf4[] =
 {
     {ACPI_DMT_UINT8,    ACPI_ASF4_OFFSET (EpromAddress),            "Eprom Address"},
     {ACPI_DMT_UINT8,    ACPI_ASF4_OFFSET (Devices),                 "Device Count"},
-    /* TBD: Address array */
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 

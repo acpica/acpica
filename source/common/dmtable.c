@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -419,6 +419,7 @@ AcpiDmLineHeader2 (
  *              TableOffset         - Starting offset within the table for this
  *                                    sub-descriptor (0 if main table)
  *              Table               - The ACPI table
+ *              SubtableLength      - Lenghth of this sub-descriptor
  *              Info                - Info table for this ACPI table
  *
  * RETURN:      None

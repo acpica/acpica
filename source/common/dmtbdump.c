@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -293,6 +293,13 @@ AcpiDmDumpAsf (
     UINT32                  Offset = sizeof (ACPI_TABLE_HEADER);
     ACPI_ASF_INFO           *SubTable;
     ACPI_DMTABLE_INFO       *InfoTable;
+    ACPI_DMTABLE_INFO       *DataInfoTable = NULL;
+    UINT8                   *DataTable = NULL;
+    ACPI_NATIVE_UINT        DataCount = 0;
+    ACPI_NATIVE_UINT        DataLength = 0;
+    ACPI_NATIVE_UINT        DataOffset = 0;
+    ACPI_NATIVE_UINT        i;
+    
 
 
     /* No main table, only sub-tables */
@@ -309,24 +316,79 @@ AcpiDmDumpAsf (
         case ACPI_ASF_TYPE_INFO:
             InfoTable = AcpiDmTableInfoAsf0;
             break;
+
         case ACPI_ASF_TYPE_ALERT:
             InfoTable = AcpiDmTableInfoAsf1;
+            DataInfoTable = AcpiDmTableInfoAsf1a;
+            DataTable = ACPI_ADD_PTR (UINT8, SubTable, sizeof (ACPI_ASF_ALERT));
+            DataCount = ((ACPI_ASF_ALERT *) SubTable)->Alerts;
+            DataLength = ((ACPI_ASF_ALERT *) SubTable)->DataLength;
+            DataOffset = Offset + sizeof (ACPI_ASF_ALERT);
             break;
+
         case ACPI_ASF_TYPE_CONTROL:
             InfoTable = AcpiDmTableInfoAsf2;
+            DataInfoTable = AcpiDmTableInfoAsf2a;
+            DataTable = ACPI_ADD_PTR (UINT8, SubTable, sizeof (ACPI_ASF_REMOTE));
+            DataCount = ((ACPI_ASF_REMOTE *) SubTable)->Controls;
+            DataLength = ((ACPI_ASF_REMOTE *) SubTable)->DataLength;
+            DataOffset = Offset + sizeof (ACPI_ASF_REMOTE);
             break;
+
         case ACPI_ASF_TYPE_BOOT:
             InfoTable = AcpiDmTableInfoAsf3;
             break;
+
         case ACPI_ASF_TYPE_ADDRESS:
             InfoTable = AcpiDmTableInfoAsf4;
+            DataTable = ACPI_ADD_PTR (UINT8, SubTable, sizeof (ACPI_ASF_ADDRESS));
+            DataLength = ((ACPI_ASF_ADDRESS *) SubTable)->Devices;
+            DataOffset = Offset + sizeof (ACPI_ASF_ADDRESS);
             break;
+
         default:
             AcpiOsPrintf ("\n**** Unknown ASF sub-table type %X\n", SubTable->Header.Type);
             return;
         }
 
         AcpiDmDumpTable (Table->Length, Offset, SubTable, SubTable->Header.Length, InfoTable);
+
+
+        /* Dump variable-length extra data */
+
+        switch (SubTable->Header.Type & 0x7F) /* Mask off top bit */
+        {
+        case ACPI_ASF_TYPE_ALERT:
+        case ACPI_ASF_TYPE_CONTROL:
+
+            for (i = 0; i < DataCount; i++)
+            {
+                AcpiOsPrintf ("\n");
+                AcpiDmDumpTable (Table->Length, DataOffset, DataTable, DataLength, DataInfoTable);
+
+                DataTable = ACPI_ADD_PTR (UINT8, DataTable, DataLength);
+                DataOffset += DataLength;
+            }
+            break;
+
+        case ACPI_ASF_TYPE_ADDRESS:
+
+            for (i = 0; i < DataLength; i++)
+            {
+                if (!(i % 16))
+                {
+                    AcpiDmLineHeader (DataOffset, 1, "Addresses");
+                }
+
+                AcpiOsPrintf ("%2.2X ", *DataTable);
+                DataTable++;
+                DataOffset++;
+            }
+
+            AcpiOsPrintf ("\n");
+            break;
+        }
+
         AcpiOsPrintf ("\n");
 
         /* Point to next sub-table */

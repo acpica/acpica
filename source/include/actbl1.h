@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - Additional ACPI table definitions
- *       $Revision: 1.45 $
+ *       $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -238,9 +238,25 @@ typedef struct acpi_asf_alert
     UINT8                   DeassertMask;
     UINT8                   Alerts;
     UINT8                   DataLength;
-    UINT8                   Array[1];
 
 } ACPI_ASF_ALERT;
+
+typedef struct acpi_asf_alert_data
+{
+    UINT8                   Address;
+    UINT8                   Command;
+    UINT8                   Mask;
+    UINT8                   Value;
+    UINT8                   SensorType;
+    UINT8                   Type;
+    UINT8                   Offset;
+    UINT8                   SourceType;
+    UINT8                   Severity;
+    UINT8                   SensorNumber;
+    UINT8                   Entity;
+    UINT8                   Instance;
+
+} ACPI_ASF_ALERT_DATA;
 
 /* 2: ASF Remote Control */
 
@@ -250,9 +266,17 @@ typedef struct acpi_asf_remote
     UINT8                   Controls;
     UINT8                   DataLength;
     UINT16                  Reserved2;
-    UINT8                   Array[1];
 
 } ACPI_ASF_REMOTE;
+
+typedef struct acpi_asf_control_data
+{
+    UINT8                   Function;
+    UINT8                   Address;
+    UINT8                   Command;
+    UINT8                   Value;
+
+} ACPI_ASF_CONTROL_DATA;
 
 /* 3: ASF RMCP Boot Options */
 
@@ -276,7 +300,6 @@ typedef struct acpi_asf_address
     ACPI_ASF_HEADER         Header;
     UINT8                   EpromAddress;
     UINT8                   Devices;
-    UINT8                   SmbusAddresses[1];
 
 } ACPI_ASF_ADDRESS;
 
