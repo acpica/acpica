@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -709,28 +709,54 @@ TrDoSwitch (
         AslError (ASL_ERROR, ASL_MSG_NO_CASES, StartNode, NULL);
     }
 
-    /*
-     * Add a NAME node for the temp integer:
-     * Change the SWITCH node to a Name (_T_x, Type)
-     */
-    Predicate = StartNode->Asl.Child;
-    TrAmlInitNode (StartNode, PARSEOP_NAME);
 
-    NewOp = StartNode;
+    /*
+     * Create a Name(_T_x, ...) statement. This statement must appear at the
+     * method level, in case a loop surrounds the switch statement and could
+     * cause the name to be created twice (error).
+     */
+
+    /* Create the Name node */
+
+    Predicate = StartNode->Asl.Child;
+    NewOp = TrCreateLeafNode (PARSEOP_NAME);
+
+    /* Find the parent method */
+
+    Next = StartNode;
+    while (Next->Asl.ParseOpcode != PARSEOP_METHOD)
+    {
+        Next = Next->Asl.Parent;
+    }
 
     NewOp->Asl.CompileFlags |= NODE_COMPILER_EMITTED;
+    NewOp->Asl.Parent = Next;
+
+    /* Insert name after the method name and arguments */
+
+    Next = Next->Asl.Child;
+    Next = Next->Asl.Next;
+    Next = Next->Asl.Next;
+    Next = Next->Asl.Next;
+    Next = Next->Asl.Next;
+    Next = Next->Asl.Next;
+
+    TrAmlInsertPeer (Next, NewOp);
+    TrAmlInitLineNumbers (NewOp, Next);
+
+    /* Create the NameSeg child for the Name node */
 
     NewOp2 = TrCreateValuedLeafNode (PARSEOP_NAMESEG,
                 (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValueName));
     NewOp2->Asl.CompileFlags |= NODE_IS_NAME_DECLARATION;
     NewOp->Asl.Child  = NewOp2;
 
-    /* Btype was already validated above */
+    /* Create the initial value for the Name. Btype was already validated above */
 
     switch (Btype)
     {
     case ACPI_BTYPE_INTEGER:
-        NewOp2->Asl.Next  = TrCreateValuedLeafNode (PARSEOP_ZERO,
+        NewOp2->Asl.Next = TrCreateValuedLeafNode (PARSEOP_ZERO,
                                 (ACPI_INTEGER) 0);
         break;
 
@@ -758,26 +784,21 @@ TrDoSwitch (
     TrAmlSetSubtreeParent (NewOp2, NewOp);
 
     /*
-     * Create and insert a new Store() node which will be used to save the
+     * Transform the Switch() into a Store() node which will be used to save the
      * Switch() value.  The store is of the form: Store (Value, _T_x)
      * where _T_x is the temp variable.
      */
-    Next = TrCreateLeafNode (PARSEOP_STORE);
-    TrAmlInsertPeer (StartNode, Next);
-    TrAmlSetSubtreeParent (Next, StartNode->Asl.Parent);
-
-    TrAmlInitLineNumbers (Next, StartNode);
-    TrAmlInitLineNumbers (NewOp2, StartNode);
-    TrAmlInitLineNumbers (NewOp2->Asl.Next, StartNode);
+    TrAmlInitNode (StartNode, PARSEOP_STORE);
+    StartNode->Asl.Child = NULL;
 
     /* Complete the Store subtree */
 
-    Next->Asl.Child       = Predicate;
-    Predicate->Asl.Parent = Next;
+    StartNode->Asl.Child = Predicate;
+    Predicate->Asl.Parent = StartNode;
 
     NewOp = TrCreateValuedLeafNode (PARSEOP_NAMESEG,
                 (ACPI_INTEGER) ACPI_TO_INTEGER (PredicateValueName));
-    NewOp->Asl.Parent    = Next;
+    NewOp->Asl.Parent    = StartNode;
     Predicate->Asl.Next  = NewOp;
 }
 
