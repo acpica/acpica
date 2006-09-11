@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -183,6 +183,7 @@ ACPI_TABLE_RSDT             *LocalRSDT;
 #define ACPI_MAX_INIT_TABLES (16)
 static ACPI_TABLE_DESC      Tables[ACPI_MAX_INIT_TABLES];
 
+UINT32                      SigintCount = 0;
 
 /******************************************************************************
  *
@@ -202,18 +203,22 @@ AeCtrlCHandler (
 {
 
     signal (SIGINT, SIG_IGN);
+    SigintCount++;
 
-    AcpiOsPrintf ("Caught a ctrl-c\n\n");
+    AcpiOsPrintf ("Caught a ctrl-c (#%d)\n\n", SigintCount);
 
     if (AcpiGbl_MethodExecuting)
     {
         AcpiGbl_AbortMethod = TRUE;
         signal (SIGINT, AeCtrlCHandler);
+
+        if (SigintCount < 10)
+        {
+            return;
+        }
     }
-    else
-    {
-        exit (0);
-    }
+
+    exit (0);
 }
 
 
