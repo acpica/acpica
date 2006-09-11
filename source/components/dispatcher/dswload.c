@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -636,6 +636,7 @@ AcpiDsLoad2BeginOp (
     ACPI_STATUS             Status;
     ACPI_OBJECT_TYPE        ObjectType;
     char                    *BufferPtr;
+    UINT32                  Flags;
 
 
     ACPI_FUNCTION_TRACE (DsLoad2BeginOp);
@@ -847,11 +848,18 @@ AcpiDsLoad2BeginOp (
             break;
         }
 
-        /* Add new entry into namespace */
+        Flags = ACPI_NS_NO_UPSEARCH;
+        if (WalkState->PassNumber == 3)
+        {
+            /* Execution mode, node cannot already exist */
+
+            Flags |= ACPI_NS_ERROR_IF_FOUND;
+        }
+
+        /* Add new entry or lookup existing entry */
 
         Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
-                        ACPI_IMODE_LOAD_PASS2, ACPI_NS_NO_UPSEARCH,
-                        WalkState, &(Node));
+                    ACPI_IMODE_LOAD_PASS2, Flags, WalkState, &Node);
         break;
     }
 
