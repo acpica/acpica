@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -518,7 +518,7 @@ AcpiExLoadOp (
     Status = AcpiTbAddTable (TablePtr, &TableIndex);
     if (ACPI_FAILURE (Status))
     {
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     Status = AcpiExAddTable (TableIndex, AcpiGbl_RootNode, &DdbHandle);
