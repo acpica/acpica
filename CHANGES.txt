@@ -1,4 +1,45 @@
 ----------------------------------------
+12 September 2006. Summary of changes for version 20060912:
+
+1) ACPI CA Core Subsystem:
+
+Enhanced the implementation of the "serialized mode" of the interpreter (enabled via the AcpiGbl_AllMethodsSerialized flag.) When this mode is specified, instead of creating a serialization semaphore per control method, the interpreter lock is simply no longer released before a blocking operation during control method execution. This effectively makes the AML Interpreter single-threaded. The overhead of a semaphore per-method is eliminated.
+
+Fixed a regression where an error was no longer emitted if a control method attempts to create 2 objects of the same name. This once again returns AE_ALREADY_EXISTS. When this exception occurs, it invokes the mechanism that will dynamically serialize the control method to possible prevent future errors. (BZ 440)
+
+Integrated a fix for a problem with PCI Express HID detection in the PCI Config Space setup procedure. (BZ 7145)
+
+Moved all FADT-related functions to a new file, tbfadt.c. Eliminated the AcpiHwInitialize function - the FADT registers are now validated when the table is loaded.
+
+Added two new warnings during FADT verification - 1) if the FADT is larger than the largest known FADT version, and 2) if there is a mismatch between a 32-bit block address and the 64-bit X counterpart (when both are non-zero.)
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  77.9K Code, 16.7K Data,  94.6K Total
+    Debug Version:     154.9K Code, 62.6K Data, 217.5K Total
+  Current Release:
+    Non-Debug Version:  77.9K Code, 17.1K Data,  95.0K Total
+    Debug Version:     154.7K Code, 63.0K Data, 217.7K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+Fixed a problem with the implementation of the Switch() operator where the temporary variable was declared too close to the actual Switch, instead of at method level. This could cause a problem if the Switch() operator is within a while loop, causing an error on the second iteration. (BZ 460)
+
+Disassembler - fix for error emitted for unknown type for target of scope operator. Now, ignore it and continue.
+
+Disassembly of an FADT now verifies the input FADT and reports any errors found. Fix for proper disassembly of full-sized (ACPI 2.0) FADTs.
+
+Disassembly of raw data buffers with byte initialization data now prefixes each output line with the current buffer offset.
+
+Disassembly of ASF! table now includes all variable-length data fields at the end of some of the subtables.
+
+The disassembler now emits a comment if a buffer appears to be a ResourceTemplate, but cannot be disassembled as such because the EndTag does not appear at the very end of the buffer.
+
+AcpiExec - Added the "-t" command line option to enable the serialized mode of the AML interpreter.
+
+----------------------------------------
 31 August 2006. Summary of changes for version 20060831:
 
 1) ACPI CA Core Subsystem:
