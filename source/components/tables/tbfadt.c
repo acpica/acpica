@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbfadt   - FADT table utilities
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -129,6 +129,14 @@ AcpiTbInitGenericAddress (
     ACPI_GENERIC_ADDRESS    *GenericAddress,
     UINT8                   BitWidth,
     UINT64                  Address);
+
+static void
+AcpiTbConvertFadt (
+    void);
+
+static void
+AcpiTbValidateFadt (
+    void);
 
 
 /* Table for conversion of FADT to common internal format and FADT validation */
@@ -267,33 +275,13 @@ AcpiTbParseFadt (
      */
     (void) AcpiTbVerifyChecksum (Table, Length);
 
-    /*
-     * If the FADT is larger than what we know about, we have a problem.
-     * Truncate the table, but make some noise.
-     */
-    if (Length > sizeof (ACPI_TABLE_FADT))
-    {
-        ACPI_WARNING ((AE_INFO,
-            "FADT (revision %u) is too large, truncating length 0x%X to 0x%X",
-            Table->Revision, Length, sizeof (ACPI_TABLE_FADT)));
-    }
+    /* Obtain a local copy of the FADT in common ACPI 2.0+ format */
 
-    /* Copy the entire FADT locally. Zero first for TbConvertFadt */
-
-    ACPI_MEMSET (&AcpiGbl_FADT, 0, sizeof (ACPI_TABLE_FADT));
-    ACPI_MEMCPY (&AcpiGbl_FADT, Table,
-        ACPI_MIN (Length, sizeof (ACPI_TABLE_FADT)));
+    AcpiTbCreateLocalFadt (Table, Length);
 
     /* All done with the real FADT, unmap it */
 
     AcpiOsUnmapMemory (Table, Length);
-
-    /*
-     * 1) Convert the local copy of the FADT to the common internal format
-     * 2) Validate some of the important values within the FADT
-     */
-    AcpiTbConvertFadt ();
-    AcpiTbValidateFadt (&AcpiGbl_FADT);
 
     /* Obtain the DSDT and FACS tables via their addresses within the FADT */
 
@@ -302,6 +290,53 @@ AcpiTbParseFadt (
 
     AcpiTbInstallTable ((ACPI_PHYSICAL_ADDRESS) AcpiGbl_FADT.XFacs,
         Flags, ACPI_SIG_FACS, ACPI_TABLE_INDEX_FACS);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbCreateLocalFadt
+ *
+ * PARAMETERS:  Table               - Pointer to BIOS FADT
+ *              Length              - Length of the table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Get a local copy of the FADT and convert it to a common format.
+ *              Performs validation on some important FADT fields.
+ *
+ ******************************************************************************/
+
+void
+AcpiTbCreateLocalFadt (
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  Length)
+{
+
+    /*
+     * Check if the FADT is larger than what we know about (ACPI 2.0 version).
+     * Truncate the table, but make some noise.
+     */
+    if (Length > sizeof (ACPI_TABLE_FADT))
+    {
+        ACPI_WARNING ((AE_INFO,
+            "FADT (revision %u) is longer than ACPI 2.0 version, truncating length 0x%X to 0x%X",
+            Table->Revision, Length, sizeof (ACPI_TABLE_FADT)));
+    }
+
+    /* Copy the entire FADT locally. Zero first for TbConvertFadt */
+
+    ACPI_MEMSET (&AcpiGbl_FADT, 0, sizeof (ACPI_TABLE_FADT));
+
+    ACPI_MEMCPY (&AcpiGbl_FADT, Table,
+        ACPI_MIN (Length, sizeof (ACPI_TABLE_FADT)));
+
+    /*
+     * 1) Convert the local copy of the FADT to the common internal format
+     * 2) Validate some of the important values within the FADT
+     */
+    AcpiTbConvertFadt ();
+    AcpiTbValidateFadt ();
 }
 
 
@@ -334,7 +369,7 @@ AcpiTbParseFadt (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiTbConvertFadt (
     void)
 {
@@ -424,9 +459,9 @@ AcpiTbConvertFadt (
  *
  ******************************************************************************/
 
-void
+static void
 AcpiTbValidateFadt (
-    ACPI_TABLE_FADT         *Table)
+    void)
 {
     UINT32                  *Address32;
     ACPI_GENERIC_ADDRESS    *Address64;
@@ -440,9 +475,9 @@ AcpiTbValidateFadt (
     {
         /* Generate pointers to the 32-bit and 64-bit addresses and get the length */
 
-        Address64 = ACPI_ADD_PTR (ACPI_GENERIC_ADDRESS, Table, FadtInfoTable[i].Target);
-        Address32 = ACPI_ADD_PTR (UINT32, Table, FadtInfoTable[i].Source);
-        Length = *ACPI_ADD_PTR (UINT8, Table, FadtInfoTable[i].Length);
+        Address64 = ACPI_ADD_PTR (ACPI_GENERIC_ADDRESS, &AcpiGbl_FADT, FadtInfoTable[i].Target);
+        Address32 = ACPI_ADD_PTR (UINT32, &AcpiGbl_FADT, FadtInfoTable[i].Source);
+        Length = *ACPI_ADD_PTR (UINT8, &AcpiGbl_FADT, FadtInfoTable[i].Length);
 
         if (FadtInfoTable[i].Type & ACPI_FADT_REQUIRED)
         {

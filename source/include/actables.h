@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.60 $
+ *       $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -131,12 +131,9 @@ AcpiTbParseFadt (
     UINT8                   Flags);
 
 void
-AcpiTbConvertFadt (
-    void);
-
-void
-AcpiTbValidateFadt (
-    ACPI_TABLE_FADT         *Table);
+AcpiTbCreateLocalFadt (
+    ACPI_TABLE_HEADER       *Table,
+    UINT32                  Length);
 
 
 /*
