@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -170,7 +170,8 @@ AcpiExEnterInterpreter (
 {
     ACPI_STATUS             Status;
 
-    ACPI_FUNCTION_TRACE (ExReacquireInterpreter);
+
+    ACPI_FUNCTION_TRACE (ExEnterInterpreter);
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_INTERPRETER);
@@ -202,7 +203,6 @@ void
 AcpiExReacquireInterpreter (
     void)
 {
-
     ACPI_FUNCTION_TRACE (ExReacquireInterpreter);
 
 
@@ -281,7 +281,6 @@ void
 AcpiExRelinquishInterpreter (
     void)
 {
-
     ACPI_FUNCTION_TRACE (ExRelinquishInterpreter);
 
 
@@ -296,6 +295,7 @@ AcpiExRelinquishInterpreter (
 
     return_VOID;
 }
+
 
 /*******************************************************************************
  *
