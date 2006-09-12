@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.59 $
+ *              $Revision: 1.60 $
  *
  *****************************************************************************/
 
@@ -959,10 +959,12 @@ OpnDoDefinitionBlock (
      * as AML opcodes!
      */
 
-    /* AML filename */
+    /* Get AML filename. Use it if non-null */
 
     Child = Op->Asl.Child;
-    if ((Child->Asl.Value.Buffer) && (Gbl_UseDefaultAmlFilename))
+    if (Child->Asl.Value.Buffer  &&
+        *Child->Asl.Value.Buffer &&
+        (Gbl_UseDefaultAmlFilename))
     {
         Gbl_OutputFilenamePrefix = (char *) Child->Asl.Value.Buffer;
     }
