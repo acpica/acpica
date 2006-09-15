@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.10 $
+ *              $Revision: 1.11 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,7 @@
 /* Local Prototypes */
 
 static ACPI_DMTABLE_DATA *
-AcpiDmMatchSignature (
+AcpiDmGetTableData (
     char                    *Signature);
 
 static void
@@ -178,26 +178,26 @@ static const char           *AcpiDmSratSubnames[] =
 
 static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
 {
-    {ACPI_SIG_FADT,     NULL,                       AcpiDmDumpFadt},
-    {ACPI_SIG_RSDT,     NULL,                       AcpiDmDumpRsdt},
-    {ACPI_SIG_XSDT,     NULL,                       AcpiDmDumpXsdt},
-    {ACPI_SIG_ASF,      NULL,                       AcpiDmDumpAsf},
-    {ACPI_SIG_MADT,     NULL,                       AcpiDmDumpMadt},
-    {ACPI_SIG_DMAR,     NULL,                       AcpiDmDumpDmar},
-    {ACPI_SIG_BOOT,     AcpiDmTableInfoBoot,        NULL},
-    {ACPI_SIG_CPEP,     NULL,                       AcpiDmDumpCpep},
-    {ACPI_SIG_DBGP,     AcpiDmTableInfoDbgp,        NULL},
-    {ACPI_SIG_ECDT,     AcpiDmTableInfoEcdt,        NULL},
-    {ACPI_SIG_HPET,     AcpiDmTableInfoHpet,        NULL},
-    {ACPI_SIG_MCFG,     NULL,                       AcpiDmDumpMcfg},
-    {ACPI_SIG_SBST,     AcpiDmTableInfoSbst,        NULL},
-    {ACPI_SIG_SLIT,     NULL,                       AcpiDmDumpSlit},
-    {ACPI_SIG_SPCR,     AcpiDmTableInfoSpcr,        NULL},
-    {ACPI_SIG_SPMI,     AcpiDmTableInfoSpmi,        NULL},
-    {ACPI_SIG_SRAT,     NULL,                       AcpiDmDumpSrat},
-    {ACPI_SIG_TCPA,     AcpiDmTableInfoTcpa,        NULL},
-    {ACPI_SIG_WDRT,     AcpiDmTableInfoWdrt,        NULL},
-    {NULL,              NULL,                       NULL}
+    {ACPI_SIG_ASF,  NULL,                   AcpiDmDumpAsf,  "Alert Standard Format table"},
+    {ACPI_SIG_BOOT, AcpiDmTableInfoBoot,    NULL,           "Simple Boot Flag Table"},
+    {ACPI_SIG_CPEP, NULL,                   AcpiDmDumpCpep, "Corrected Platform Error Polling table"},
+    {ACPI_SIG_DBGP, AcpiDmTableInfoDbgp,    NULL,           "Debug Port table"},
+    {ACPI_SIG_DMAR, NULL,                   AcpiDmDumpDmar, "DMA Remapping table"},
+    {ACPI_SIG_ECDT, AcpiDmTableInfoEcdt,    NULL,           "Embedded Controller Boot Resources Table"},
+    {ACPI_SIG_FADT, NULL,                   AcpiDmDumpFadt, "Fixed ACPI Description Table"},
+    {ACPI_SIG_HPET, AcpiDmTableInfoHpet,    NULL,           "High Precision Event Timer table"},
+    {ACPI_SIG_MADT, NULL,                   AcpiDmDumpMadt, "Multiple APIC Description Table"},
+    {ACPI_SIG_MCFG, NULL,                   AcpiDmDumpMcfg, "Memory Mapped Configuration table"},
+    {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, "Root System Description Table"},
+    {ACPI_SIG_SBST, AcpiDmTableInfoSbst,    NULL,           "Smart Battery Specification Table"},
+    {ACPI_SIG_SLIT, NULL,                   AcpiDmDumpSlit, "System Locality Information Table"},
+    {ACPI_SIG_SPCR, AcpiDmTableInfoSpcr,    NULL,           "Serial Port Console Redirection table"},
+    {ACPI_SIG_SPMI, AcpiDmTableInfoSpmi,    NULL,           "Server Platform Management Interface table"},
+    {ACPI_SIG_SRAT, NULL,                   AcpiDmDumpSrat, "System Resource Affinity Table"},
+    {ACPI_SIG_TCPA, AcpiDmTableInfoTcpa,    NULL,           "Trusted Computing Platform Alliance table"},
+    {ACPI_SIG_WDRT, AcpiDmTableInfoWdrt,    NULL,           "Watchdog Resource Table"},
+    {ACPI_SIG_XSDT, NULL,                   AcpiDmDumpXsdt, "Extended System Description Table"},
+    {NULL,          NULL,                   NULL,           NULL}
 };
 
 
@@ -238,7 +238,7 @@ AcpiTbGenerateChecksum (
 
 /*******************************************************************************
  *
- * FUNCTION:    AcpiDmMatchSignature
+ * FUNCTION:    AcpiDmGetTableData
  *
  * PARAMETERS:  Signature           - ACPI signature (4 chars) to match
  *
@@ -249,7 +249,7 @@ AcpiTbGenerateChecksum (
  ******************************************************************************/
 
 static ACPI_DMTABLE_DATA *
-AcpiDmMatchSignature (
+AcpiDmGetTableData (
     char                    *Signature)
 {
     ACPI_DMTABLE_DATA       *TableData;
@@ -319,7 +319,7 @@ AcpiDmDumpDataTable (
 
         /* Match signature and dispatch appropriately */
 
-        TableData = AcpiDmMatchSignature (Table->Signature);
+        TableData = AcpiDmGetTableData (Table->Signature);
         if (!TableData)
         {
             if (!ACPI_STRNCMP (Table->Signature, "OEM", 3))
@@ -441,6 +441,7 @@ AcpiDmDumpTable (
     UINT32                  ByteLength;
     UINT8                   Temp8;
     UINT16                  Temp16;
+    ACPI_DMTABLE_DATA       *TableData;
 
 
     if (!Info)
@@ -488,6 +489,7 @@ AcpiDmDumpTable (
             break;
         case ACPI_DMT_UINT32:
         case ACPI_DMT_NAME4:
+        case ACPI_DMT_SIG:
             ByteLength = 4;
             break;
         case ACPI_DMT_NAME6:
@@ -502,6 +504,10 @@ AcpiDmDumpTable (
             break;
         case ACPI_DMT_STRING:
             ByteLength = ACPI_STRLEN (ACPI_CAST_PTR (char, Target)) + 1;
+            break;
+        case ACPI_DMT_GAS:
+            AcpiOsPrintf ("\n");
+            ByteLength = sizeof (ACPI_GENERIC_ADDRESS);
             break;
         default:
             ByteLength = 0;
@@ -582,6 +588,18 @@ AcpiDmDumpTable (
             break;
 
         /* Fixed length ASCII name fields */
+
+        case ACPI_DMT_SIG:
+
+            AcpiDmCheckAscii (Target, 4);
+            AcpiOsPrintf ("\"%4.4s\"    ", Target);
+            TableData = AcpiDmGetTableData (ACPI_CAST_PTR (char, Target));
+            if (TableData)
+            {
+                AcpiOsPrintf ("/* %s */", TableData->Name);
+            }
+            AcpiOsPrintf ("\n");
+            break;
 
         case ACPI_DMT_NAME4:
 

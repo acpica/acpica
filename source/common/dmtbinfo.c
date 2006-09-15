@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbinfo - Table info for non-AML tables
- *              $Revision: 1.11 $
+ *              $Revision: 1.12 $
  *
  *****************************************************************************/
 
@@ -207,7 +207,7 @@
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoHeader[] =
 {
-    {ACPI_DMT_NAME4,    ACPI_HDR_OFFSET (Signature[0]),             "Signature"},
+    {ACPI_DMT_SIG,      ACPI_HDR_OFFSET (Signature[0]),             "Signature"},
     {ACPI_DMT_UINT32,   ACPI_HDR_OFFSET (Length),                   "Table Length"},
     {ACPI_DMT_UINT8,    ACPI_HDR_OFFSET (Revision),                 "Revision"},
     {ACPI_DMT_CHKSUM,   ACPI_HDR_OFFSET (Checksum),                 "Checksum"},
