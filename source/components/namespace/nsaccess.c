@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.203 $
+ *              $Revision: 1.204 $
  *
  ******************************************************************************/
 
@@ -299,7 +299,7 @@ AcpiNsRootInitialize (
                     /* Create additional counting semaphore for global lock */
 
                     Status = AcpiOsCreateSemaphore (
-                                1, 1, &AcpiGbl_GlobalLockSemaphore);
+                                1, 0, &AcpiGbl_GlobalLockSemaphore);
                     if (ACPI_FAILURE (Status))
                     {
                         AcpiUtRemoveReference (ObjDesc);
