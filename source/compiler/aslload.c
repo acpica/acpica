@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -415,6 +415,7 @@ LdNamespace1Begin (
     UINT32                  Flags = ACPI_NS_NO_UPSEARCH;
     ACPI_PARSE_OBJECT       *Arg;
     UINT32                  i;
+    BOOLEAN                 ForceNewScope = FALSE;
 
 
     ACPI_FUNCTION_NAME (LdNamespace1Begin);
@@ -463,6 +464,16 @@ LdNamespace1Begin (
         Arg = Op->Asl.Child;  /* Get the NameSeg/NameString node */
         Arg = Arg->Asl.Next;  /* First peer is the object to be associated with the name */
 
+        /*
+         * If this name refers to a ResourceTemplate, we will need to open
+         * a new scope so that the resource subfield names can be entered into
+         * the namespace underneath this name
+         */
+        if (Op->Asl.CompileFlags & NODE_IS_RESOURCE_DESC)
+        {
+            ForceNewScope = TRUE;
+        }
+
         /* Get the data type associated with the named object, not the name itself */
 
         /* Log2 loop to convert from Btype (binary) to Etype (encoded) */
@@ -509,7 +520,7 @@ LdNamespace1Begin (
 
     case PARSEOP_DEFAULT_ARG:
 
-        if(Op->Asl.CompileFlags == NODE_IS_RESOURCE_DESC)
+        if (Op->Asl.CompileFlags == NODE_IS_RESOURCE_DESC)
         {
             Status = LdLoadResourceElements (Op, WalkState);
             goto Exit;
@@ -647,7 +658,7 @@ LdNamespace1Begin (
      * parse tree later.
      */
     Status = AcpiNsLookup (WalkState->ScopeInfo, Path, ObjectType,
-                    ACPI_IMODE_LOAD_PASS1, Flags, WalkState, &(Node));
+                    ACPI_IMODE_LOAD_PASS1, Flags, WalkState, &Node);
     if (ACPI_FAILURE (Status))
     {
         if (Status == AE_ALREADY_EXISTS)
@@ -700,6 +711,14 @@ LdNamespace1Begin (
         }
     }
 
+    if (ForceNewScope)
+    {
+        Status = AcpiDsScopeStackPush (Node, ObjectType, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
 
 FinishNode:
     /*
@@ -752,6 +771,7 @@ LdNamespace1End (
 {
     ACPI_WALK_STATE         *WalkState = (ACPI_WALK_STATE *) Context;
     ACPI_OBJECT_TYPE        ObjectType;
+    BOOLEAN                 ForceNewScope = FALSE;
 
 
     ACPI_FUNCTION_NAME (LdNamespace1End);
@@ -778,9 +798,19 @@ LdNamespace1End (
         ObjectType = AslMapNamedOpcodeToDataType (Op->Asl.AmlOpcode);
     }
 
+    /* Pop scope that was pushed for Resource Templates */
+
+    if (Op->Asl.ParseOpcode == PARSEOP_NAME)
+    {
+        if (Op->Asl.CompileFlags & NODE_IS_RESOURCE_DESC)
+        {
+            ForceNewScope = TRUE;
+        }
+    }
+
     /* Pop the scope stack */
 
-    if (AcpiNsOpensScope (ObjectType))
+    if (ForceNewScope || AcpiNsOpensScope (ObjectType))
     {
 
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
