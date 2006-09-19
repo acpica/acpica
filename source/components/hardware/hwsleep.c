@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -377,7 +377,7 @@ AcpiEnterSleepState (
 
     /* Clear wake status */
 
-    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_DO_NOT_LOCK);
+    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -385,7 +385,7 @@ AcpiEnterSleepState (
 
     /* Clear all fixed and general purpose status bits */
 
-    Status = AcpiHwClearAcpiStatus (ACPI_MTX_DO_NOT_LOCK);
+    Status = AcpiHwClearAcpiStatus ();
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -395,8 +395,7 @@ AcpiEnterSleepState (
     {
         /* Disable BM arbitration */
 
-        Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE,
-                    1, ACPI_MTX_DO_NOT_LOCK);
+        Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 1);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -514,8 +513,7 @@ AcpiEnterSleepState (
 
     do
     {
-        Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue,
-            ACPI_MTX_DO_NOT_LOCK);
+        Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -555,13 +553,13 @@ AcpiEnterSleepStateS4bios (
     ACPI_FUNCTION_TRACE (AcpiEnterSleepStateS4bios);
 
 
-    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1, ACPI_MTX_DO_NOT_LOCK);
+    Status = AcpiSetRegister (ACPI_BITREG_WAKE_STATUS, 1);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiHwClearAcpiStatus (ACPI_MTX_DO_NOT_LOCK);
+    Status = AcpiHwClearAcpiStatus ();
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -591,8 +589,7 @@ AcpiEnterSleepStateS4bios (
 
     do {
         AcpiOsStall(1000);
-        Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue,
-            ACPI_MTX_DO_NOT_LOCK);
+        Status = AcpiGetRegister (ACPI_BITREG_WAKE_STATUS, &InValue);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -726,16 +723,14 @@ AcpiLeaveSleepState (
     /* Enable power button */
 
     (void) AcpiSetRegister(
-            AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId,
-            1, ACPI_MTX_DO_NOT_LOCK);
+            AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].EnableRegisterId, 1);
 
     (void) AcpiSetRegister(
-            AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId,
-            1, ACPI_MTX_DO_NOT_LOCK);
+            AcpiGbl_FixedEventInfo[ACPI_EVENT_POWER_BUTTON].StatusRegisterId, 1);
 
     /* Enable BM arbitration */
 
-    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 0, ACPI_MTX_LOCK);
+    Status = AcpiSetRegister (ACPI_BITREG_ARB_DISABLE, 0);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);

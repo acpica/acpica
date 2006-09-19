@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -617,7 +617,7 @@ AcpiEvReleaseGlobalLock (
         if (Pending)
         {
             Status = AcpiSetRegister (
-                        ACPI_BITREG_GLOBAL_LOCK_RELEASE, 1, ACPI_MTX_LOCK);
+                        ACPI_BITREG_GLOBAL_LOCK_RELEASE, 1);
         }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Released hardware Global Lock\n"));

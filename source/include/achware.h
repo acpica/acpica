@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
- *       $Revision: 1.81 $
+ *       $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -179,7 +179,7 @@ AcpiHwLowLevelWrite (
 
 ACPI_STATUS
 AcpiHwClearAcpiStatus (
-    UINT32                  Flags);
+    void);
 
 
 /*

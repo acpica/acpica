@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -307,8 +307,7 @@ AcpiEvFixedEventInitialize (
         if (AcpiGbl_FixedEventInfo[i].EnableRegisterId != 0xFF)
         {
             Status = AcpiSetRegister (
-                        AcpiGbl_FixedEventInfo[i].EnableRegisterId,
-                        0, ACPI_MTX_LOCK);
+                        AcpiGbl_FixedEventInfo[i].EnableRegisterId, 0);
             if (ACPI_FAILURE (Status))
             {
                 return (Status);
@@ -402,8 +401,7 @@ AcpiEvFixedEventDispatch (
 
     /* Clear the status bit */
 
-    (void) AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
-                1, ACPI_MTX_DO_NOT_LOCK);
+    (void) AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].StatusRegisterId, 1);
 
     /*
      * Make sure we've got a handler.  If not, report an error.
@@ -411,8 +409,7 @@ AcpiEvFixedEventDispatch (
      */
     if (NULL == AcpiGbl_FixedEventHandlers[Event].Handler)
     {
-        (void) AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
-                0, ACPI_MTX_DO_NOT_LOCK);
+        (void) AcpiSetRegister (AcpiGbl_FixedEventInfo[Event].EnableRegisterId, 0);
 
         ACPI_ERROR ((AE_INFO,
             "No installed handler for fixed event [%08X]",

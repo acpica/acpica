@@ -509,14 +509,12 @@ AcpiResourceToAddress64 (
 ACPI_STATUS
 AcpiGetRegister (
     UINT32                  RegisterId,
-    UINT32                  *ReturnValue,
-    UINT32                  Flags);
+    UINT32                  *ReturnValue);
 
 ACPI_STATUS
 AcpiSetRegister (
     UINT32                  RegisterId,
-    UINT32                  Value,
-    UINT32                  Flags);
+    UINT32                  Value);
 
 ACPI_STATUS
 AcpiSetFirmwareWakingVector (

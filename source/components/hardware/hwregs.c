@@ -3,7 +3,7 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.184 $
+ *              $Revision: 1.185 $
  *
  ******************************************************************************/
 
@@ -130,20 +130,18 @@
  *
  * FUNCTION:    AcpiHwClearAcpiStatus
  *
- * PARAMETERS:  Flags           - Lock the hardware or not
+ * PARAMETERS:  None
  *
- * RETURN:      none
+ * RETURN:      None
  *
  * DESCRIPTION: Clears all fixed and general purpose status bits
  *              THIS FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED
- *
- * NOTE: TBD: Flags parameter is obsolete, to be removed
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiHwClearAcpiStatus (
-    UINT32                  Flags)
+    void)
 {
     ACPI_STATUS             Status;
     ACPI_CPU_FLAGS          LockFlags = 0;
@@ -353,22 +351,18 @@ AcpiHwGetBitRegisterInfo (
  *
  * PARAMETERS:  RegisterId      - ID of ACPI BitRegister to access
  *              ReturnValue     - Value that was read from the register
- *              Flags           - Lock the hardware or not
  *
  * RETURN:      Status and the value read from specified Register. Value
  *              returned is normalized to bit0 (is shifted all the way right)
  *
  * DESCRIPTION: ACPI BitRegister read function.
  *
- * NOTE: TBD: Flags parameter is obsolete, to be removed
- *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiGetRegister (
     UINT32                  RegisterId,
-    UINT32                  *ReturnValue,
-    UINT32                  Flags)
+    UINT32                  *ReturnValue)
 {
     UINT32                  RegisterValue = 0;
     ACPI_BIT_REGISTER_INFO  *BitRegInfo;
@@ -417,21 +411,17 @@ ACPI_EXPORT_SYMBOL (AcpiGetRegister)
  * PARAMETERS:  RegisterId      - ID of ACPI BitRegister to access
  *              Value           - (only used on write) value to write to the
  *                                Register, NOT pre-normalized to the bit pos
- *              Flags           - Lock the hardware or not
  *
  * RETURN:      Status
  *
  * DESCRIPTION: ACPI Bit Register write function.
- *
- * NOTE: TBD: Flags parameter is obsolete, to be removed
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiSetRegister (
     UINT32                  RegisterId,
-    UINT32                  Value,
-    UINT32                  Flags)
+    UINT32                  Value)
 {
     UINT32                  RegisterValue = 0;
     ACPI_BIT_REGISTER_INFO  *BitRegInfo;
