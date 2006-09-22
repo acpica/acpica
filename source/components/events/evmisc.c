@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -459,7 +459,7 @@ AcpiEvInitGlobalLockHandler (
     ACPI_FUNCTION_TRACE (EvInitGlobalLockHandler);
 
 
-    Status = AcpiGetTable (ACPI_SIG_FACS, 0, (ACPI_TABLE_HEADER **) &Facs);
+    Status = AcpiGetTableByIndex (ACPI_TABLE_INDEX_FACS, (ACPI_TABLE_HEADER **) &Facs);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
