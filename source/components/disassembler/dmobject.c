@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  ******************************************************************************/
 
@@ -210,13 +210,16 @@ AcpiDmDumpMethodInfo (
 
         if (NextWalkState == WalkState)
         {
-            /* Display currently executing ASL statement */
+            if (Op)
+            {
+                /* Display currently executing ASL statement */
 
-            Next = Op->Common.Next;
-            Op->Common.Next = NULL;
+                Next = Op->Common.Next;
+                Op->Common.Next = NULL;
 
-            AcpiDmDisassemble (NextWalkState, Op, ACPI_UINT32_MAX);
-            Op->Common.Next = Next;
+                AcpiDmDisassemble (NextWalkState, Op, ACPI_UINT32_MAX);
+                Op->Common.Next = Next;
+            }
         }
         else
         {
