@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: oswinxf - Windows OSL
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -1205,8 +1205,12 @@ ACPI_THREAD_ID
 AcpiOsGetThreadId (
     void)
 {
+    DWORD                   ThreadId;
 
-    return (GetCurrentThreadId ());
+    /* Ensure ID is never 0 */
+
+    ThreadId = GetCurrentThreadId ();
+    return (ThreadId + 1);
 }
 
 
