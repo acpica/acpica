@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -436,6 +436,12 @@ AcpiExReleaseMutex (
  *
  * DESCRIPTION: Release all mutexes held by this thread
  *
+ * NOTE: This function is called as the thread is exiting the interpreter.
+ * Mutexes are not released when an individual control method is exited, but
+ * only when the parent thread actually exits the interpreter. This allows one
+ * method to acquire a mutex, and a different method to release it, as long as
+ * this is performed underneath a single parent control method.
+ *
  ******************************************************************************/
 
 void
@@ -458,7 +464,7 @@ AcpiExReleaseAllMutexes (
 
         ObjDesc->Mutex.Prev = NULL;
         ObjDesc->Mutex.Next = NULL;
-        ObjDesc->Mutex.AcquisitionDepth = 1;
+        ObjDesc->Mutex.AcquisitionDepth = 0;
 
         /* Release the mutex, special case for Global Lock */
 
