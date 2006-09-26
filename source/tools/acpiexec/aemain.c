@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -125,10 +125,10 @@
 #define _COMPONENT          PARSER
         ACPI_MODULE_NAME    ("aemain")
 
-
-BOOLEAN         AcpiGbl_BatchMode = FALSE;
+UINT8           AcpiGbl_BatchMode = 0;
 BOOLEAN         AcpiGbl_IgnoreErrors = FALSE;
-char            *AcpiGbl_BatchMethodName;
+char            BatchBuffer[128];
+
 
 #if ACPI_MACHINE_WIDTH == 16
 
@@ -154,23 +154,58 @@ AcpiGetIrqRoutingTable  (
  *
  *****************************************************************************/
 
-void
+static void
 usage (void)
 {
-    printf ("Usage: acpiexec [-?dgis] [-x DebugLevel] [-o OutputFile] [-b [Method]] [AcpiTableFile]\n");
+    printf ("Usage: acpiexec [Options] [InputFile]\n\n");
+        
     printf ("Where:\n");
-    printf ("    Input Options\n");
-    printf ("        AcpiTableFile       Get ACPI tables from this file\n");
-    printf ("    Output Options\n");
-    printf ("    Miscellaneous Options\n");
-    printf ("        -?                  Display this message\n");
-    printf ("        -b [Method]         Batch mode method execution\n");
-    printf ("        -e                  Do not abort methods on error\n");
-    printf ("        -i                  Do not run STA/INI methods\n");
-    printf ("        -s                  Enable Interpreter Slack Mode\n");
-    printf ("        -t                  Enable Interpreter Serialized Mode\n");
-    printf ("        -x DebugLevel       Specify debug output level\n");
-    printf ("        -v                  Verbose init output\n");
+    printf ("   -?                  Display this message\n");
+    printf ("   -a                  Do not abort methods on error\n");
+    printf ("   -b <CommandLine>    Batch mode command execution\n");
+    printf ("   -e [Method]         Batch mode method execution\n");
+    printf ("   -i                  Do not run STA/INI methods during init\n");
+    printf ("   -o <OutputFile>     Send output to this file\n");
+    printf ("   -s                  Enable Interpreter Slack Mode\n");
+    printf ("   -t                  Enable Interpreter Serialized Mode\n");
+    printf ("   -x <DebugLevel>     Specify debug output level\n");
+    printf ("   -v                  Verbose init output\n");
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiDbRunBatchMode
+ *
+ * PARAMETERS:  BatchCommandLine    - Comma separated command and arguments
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Prepare command buffer and pass it to AcpiDbCommandDispatch
+ *
+ *****************************************************************************/
+
+static void
+AcpiDbRunBatchMode (
+    void)
+{
+    char                    *Ptr = BatchBuffer;
+
+    /* Convert commas to spaces */
+
+    while (*Ptr)
+    {
+        if (*Ptr == ',')
+        {
+            *Ptr = ' ';
+        }
+        Ptr++;
+    }
+
+    AcpiGbl_MethodExecuting = FALSE;
+    AcpiGbl_StepToNextCall = FALSE;
+
+    (void) AcpiDbCommandDispatch (BatchBuffer, NULL, NULL);
 }
 
 
@@ -204,6 +239,22 @@ main (
 #endif
 #endif
 
+
+    printf ("\nIntel ACPI Component Architecture\nAML Execution/Debug Utility");
+
+#if ACPI_MACHINE_WIDTH == 16
+    printf (" (16-bit)");
+#endif
+
+    printf (" version %8.8X", ((UINT32) ACPI_CA_VERSION));
+    printf (" [%s]\n\n",  __DATE__);
+
+    if (argc < 2)
+    {
+        usage ();
+        return 0;
+    }
+
     signal (SIGINT, AeCtrlCHandler);
 
     /* Init globals */
@@ -216,30 +267,23 @@ main (
     AcpiInitializeSubsystem ();
     AcpiGbl_GlobalLockPresent = TRUE;
 
-    printf ("\nIntel ACPI Component Architecture\nAML Execution/Debug Utility");
-
-#if ACPI_MACHINE_WIDTH == 16
-    printf (" (16-bit)");
-#endif
-
-    printf (" version %8.8X", ((UINT32) ACPI_CA_VERSION));
-    printf (" [%s]\n\n",  __DATE__);
-
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?b^degio:stvx:")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?ab:de^gio:stvx:")) != EOF) switch(j)
     {
+    case 'a':
+        AcpiGbl_IgnoreErrors = TRUE;
+        break;
+
     case 'b':
-        AcpiGbl_BatchMode = TRUE;
-        switch (AcpiGbl_Optarg[0])
+        if (strlen (AcpiGbl_Optarg) > 127)
         {
-        case '^':
-            AcpiGbl_BatchMethodName = "MAIN";
-            break;
-        default:
-            AcpiGbl_BatchMethodName = AcpiGbl_Optarg;
-            break;
+            printf ("**** The length of command line (%u) exceeded maximum (127)\n",
+                strlen (AcpiGbl_Optarg));
+            return -1;
         }
+        AcpiGbl_BatchMode = 1;
+        strcpy (BatchBuffer, AcpiGbl_Optarg);
         break;
 
     case 'd':
@@ -248,7 +292,16 @@ main (
         break;
 
     case 'e':
-        AcpiGbl_IgnoreErrors = TRUE;
+        AcpiGbl_BatchMode = 2;
+        switch (AcpiGbl_Optarg[0])
+        {
+        case '^':
+            strcpy (BatchBuffer, "MAIN");
+            break;
+        default:
+            strcpy (BatchBuffer, AcpiGbl_Optarg);
+            break;
+        }
         break;
 
     case 'g':
@@ -378,7 +431,9 @@ main (
         {
             goto enterloop;
         }
-        /* TBD:
+
+        /*
+         * TBD:
          * Need a way to call this after the "LOAD" command
          */
         Status = AcpiEnableSubsystem (InitFlags);
@@ -400,9 +455,13 @@ main (
 
 enterloop:
 
-    if (AcpiGbl_BatchMode)
+    if (AcpiGbl_BatchMode == 1)
     {
-        AcpiDbExecute (AcpiGbl_BatchMethodName, NULL, EX_NO_SINGLE_STEP);
+        AcpiDbRunBatchMode ();
+    }
+    else if (AcpiGbl_BatchMode == 2)
+    {
+        AcpiDbExecute (BatchBuffer, NULL, EX_NO_SINGLE_STEP);
     }
     else
     {
