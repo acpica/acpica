@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmbuffer - AML disassembler, buffer and string support
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -176,7 +176,10 @@ AcpiDmDisasmByteList (
             }
 
             AcpiDmIndent (Level);
-            AcpiOsPrintf ("/* %04X */    ", i);
+            if (ByteCount > 7)
+            {
+                AcpiOsPrintf ("/* %04X */    ", i);
+            }
         }
 
         AcpiOsPrintf ("0x%2.2X", (UINT32) ByteData[i]);
