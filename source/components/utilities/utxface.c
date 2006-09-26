@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -149,6 +149,7 @@ AcpiInitializeSubsystem (
     ACPI_FUNCTION_TRACE (AcpiInitializeSubsystem);
 
 
+    AcpiGbl_StartupFlags = ACPI_SUBSYSTEM_INITIALIZE;
     ACPI_DEBUG_EXEC (AcpiUtInitStackPtrTrace ());
 
     /* Initialize the OS-Dependent layer */
