@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltransform - Parse tree transforms
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -724,7 +724,8 @@ TrDoSwitch (
     /* Find the parent method */
 
     Next = StartNode;
-    while (Next->Asl.ParseOpcode != PARSEOP_METHOD)
+    while ((Next->Asl.ParseOpcode != PARSEOP_METHOD) &&
+           (Next->Asl.ParseOpcode != PARSEOP_DEFINITIONBLOCK))
     {
         Next = Next->Asl.Parent;
     }
