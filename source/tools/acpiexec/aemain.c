@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -158,7 +158,7 @@ static void
 usage (void)
 {
     printf ("Usage: acpiexec [Options] [InputFile]\n\n");
-        
+
     printf ("Where:\n");
     printf ("   -?                  Display this message\n");
     printf ("   -a                  Do not abort methods on error\n");

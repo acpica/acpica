@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -298,7 +298,6 @@ AcpiDmDumpAsf (
     ACPI_NATIVE_UINT        DataLength = 0;
     ACPI_NATIVE_UINT        DataOffset = 0;
     ACPI_NATIVE_UINT        i;
-    
 
 
     /* No main table, only sub-tables */

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -1475,7 +1475,7 @@ ElseTerm
     | PARSEOP_ELSE '{'
         error '}'                   {$$ = AslDoError(); yyclearin;}
 
-    | PARSEOP_ELSE 
+    | PARSEOP_ELSE
         error                       {$$ = AslDoError(); yyclearin;}
 
     | PARSEOP_ELSEIF '('			{$$ = TrCreateLeafNode (PARSEOP_ELSE);}
@@ -1488,7 +1488,7 @@ ElseTerm
     | PARSEOP_ELSEIF '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
 
-    | PARSEOP_ELSEIF 
+    | PARSEOP_ELSEIF
         error                       {$$ = AslDoError(); yyclearin;}
     ;
 
