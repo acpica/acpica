@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -1461,8 +1461,8 @@ IfTerm
     : PARSEOP_IF '('				{$$ = TrCreateLeafNode (PARSEOP_IF);}
         TermArg
         ')' '{'
-            TermList '}'
-                                    {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
+            TermList '}'            {$$ = TrLinkChildren ($<n>3,2,$4,$7);}
+
     | PARSEOP_IF '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
     ;
@@ -1470,19 +1470,26 @@ IfTerm
 ElseTerm
     :                               {$$ = NULL;}
     | PARSEOP_ELSE '{'				{$$ = TrCreateLeafNode (PARSEOP_ELSE);}
-        TermList '}'
-                                    {$$ = TrLinkChildren ($<n>3,1,$4);}
+        TermList '}'                {$$ = TrLinkChildren ($<n>3,1,$4);}
+
     | PARSEOP_ELSE '{'
         error '}'                   {$$ = AslDoError(); yyclearin;}
+
+    | PARSEOP_ELSE 
+        error                       {$$ = AslDoError(); yyclearin;}
 
     | PARSEOP_ELSEIF '('			{$$ = TrCreateLeafNode (PARSEOP_ELSE);}
         TermArg						{$$ = TrCreateLeafNode (PARSEOP_IF);}
         ')' '{'
-        TermList '}'			    {$$ = TrLinkChildren ($<n>5,2,$4,$8);}
+            TermList '}'		    {$$ = TrLinkChildren ($<n>5,2,$4,$8);}
         ElseTerm                    {$$ = TrLinkPeerNode ($<n>5,$11);}
                                     {$$ = TrLinkChildren ($<n>3,1,$<n>5);}
+
     | PARSEOP_ELSEIF '('
         error ')'                   {$$ = AslDoError(); yyclearin;}
+
+    | PARSEOP_ELSEIF 
+        error                       {$$ = AslDoError(); yyclearin;}
     ;
 
 LoadTerm
