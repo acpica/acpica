@@ -1,4 +1,35 @@
 ----------------------------------------
+27 September 2006. Summary of changes for version 20060927:
+
+1) ACPI CA Core Subsystem:
+
+Removed the "Flags" parameter from AcpiGetRegister and AcpiSetRegister. These functions now use a spinlock for mutual exclusion and the interrupt level indication flag is not needed.
+
+Fixed a problem with the Global Lock where the lock could appear to be obtained before it is actually obtained. The global lock semaphore was inadvertently created with one unit instead of zero units. (BZ 464) Fiodor Suietov.
+
+Fixed a possible memory leak and fault in AcpiExResolveObjectToValue during a read from a buffer or region field. (BZ 458) Fiodor Suietov.
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  77.9K Code, 17.1K Data,  95.0K Total
+    Debug Version:     154.7K Code, 63.0K Data, 217.7K Total
+  Current Release:
+    Non-Debug Version:  77.9K Code, 17.1K Data,  95.0K Total
+    Debug Version:     154.6K Code, 63.0K Data, 217.6K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+Fixed a compilation problem with the pre-defined Resource Descriptor field names where an "object does not exist" error could be incorrectly generated if the parent ResourceTemplate pathname places the template within a different namespace scope than the current scope. (BZ 7212)
+
+Fixed a problem where the compiler could hang after syntax errors detected in an ElseIf construct. (BZ 453)
+
+Fixed a problem with the AmlFilename parameter to the DefinitionBlock() operator. An incorrect output filename was produced when this parameter was a null string (""). Now, the original input filename is used as the AML output filename, with an ".aml" extension.
+
+Implemented a generic batch command mode for the AcpiExec utility (execute any AML debugger command) (Valery Podrezov).
+
+----------------------------------------
 12 September 2006. Summary of changes for version 20060912:
 
 1) ACPI CA Core Subsystem:
