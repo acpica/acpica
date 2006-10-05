@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -886,7 +886,7 @@ AeInstallHandlers (void)
             AcpiFormatException (Status));
     }
 
-    Status = AcpiGetHandle (NULL, "_SB", &Handle);
+    Status = AcpiGetHandle (NULL, "\\_SB", &Handle);
     if (ACPI_SUCCESS (Status))
     {
         Status = AcpiInstallNotifyHandler (Handle, ACPI_SYSTEM_NOTIFY,
