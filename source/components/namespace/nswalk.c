@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nswalk - Functions for walking the ACPI namespace
- *              $Revision: 1.42 $
+ *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -282,22 +282,28 @@ AcpiNsWalkNamespace (
         ChildNode = AcpiNsGetNextNode (ACPI_TYPE_ANY, ParentNode, ChildNode);
         if (ChildNode)
         {
-            /*
-             * Found node, Get the type if we are not
-             * searching for ANY
-             */
+            /* Found node, Get the type if we are not searching for ANY */
+
             if (Type != ACPI_TYPE_ANY)
             {
                 ChildType = ChildNode->Type;
             }
 
+            /*
+             * 1) Type must match
+             * 2) Permanent namespace nodes are OK
+             * 3) Ignore temporary nodes unless told otherwise. Typically,
+             *    the temporary nodes can cause a race condition where they can
+             *    be deleted during the execution of the user function. Only the
+             *    debugger namespace dump will examine the temporary nodes.
+             */
             if ((ChildType == Type) &&
                (!(ChildNode->Flags & ANOBJ_TEMPORARY) ||
                     (ChildNode->Flags & ANOBJ_TEMPORARY) && (Flags & ACPI_NS_WALK_TEMP_NODES)))
             {
                 /*
-                 * Found a matching node, invoke the user
-                 * callback function
+                 * Found a matching node, invoke the user callback function.
+                 * Unlock the namespace if flag is set.
                  */
                 if (Flags & ACPI_NS_WALK_UNLOCK)
                 {
@@ -308,8 +314,7 @@ AcpiNsWalkNamespace (
                     }
                 }
 
-                Status = UserFunction (ChildNode, Level,
-                                        Context, ReturnValue);
+                Status = UserFunction (ChildNode, Level, Context, ReturnValue);
 
                 if (Flags & ACPI_NS_WALK_UNLOCK)
                 {
@@ -343,33 +348,28 @@ AcpiNsWalkNamespace (
             }
 
             /*
-             * Depth first search:
-             * Attempt to go down another level in the namespace
-             * if we are allowed to.  Don't go any further if we
-             * have reached the caller specified maximum depth
-             * or if the user function has specified that the
-             * maximum depth has been reached.
+             * Depth first search: Attempt to go down another level in the
+             * namespace if we are allowed to.  Don't go any further if we have
+             * reached the caller specified maximum depth or if the user
+             * function has specified that the maximum depth has been reached.
              */
             if ((Level < MaxDepth) && (Status != AE_CTRL_DEPTH))
             {
                 if (AcpiNsGetNextNode (ACPI_TYPE_ANY, ChildNode, NULL))
                 {
-                    /*
-                     * There is at least one child of this
-                     * node, visit the onde
-                     */
+                    /* There is at least one child of this node, visit it */
+
                     Level++;
                     ParentNode = ChildNode;
-                    ChildNode  = NULL;
+                    ChildNode = NULL;
                 }
             }
         }
         else
         {
             /*
-             * No more children of this node (AcpiNsGetNextNode
-             * failed), go back upwards in the namespace tree to
-             * the node's parent.
+             * No more children of this node (AcpiNsGetNextNode failed), go
+             * back upwards in the namespace tree to the node's parent.
              */
             Level--;
             ChildNode = ParentNode;
