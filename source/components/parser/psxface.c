@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
- *              $Revision: 1.91 $
+ *              $Revision: 1.92 $
  *
  *****************************************************************************/
 
@@ -375,7 +375,7 @@ AcpiPsExecuteMethod (
 
     /* Create and initialize a new walk state */
 
-    Info->PassNumber = 3;
+    Info->PassNumber = ACPI_IMODE_EXECUTE;
     WalkState = AcpiDsCreateWalkState (
                     Info->ObjDesc->Method.OwnerId, NULL, NULL, NULL);
     if (!WalkState)

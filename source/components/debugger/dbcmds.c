@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.147 $
+ *              $Revision: 1.148 $
  *
  ******************************************************************************/
 
@@ -679,7 +679,7 @@ AcpiDbDisassembleMethod (
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL,
                     ObjDesc->Method.AmlStart,
-                    ObjDesc->Method.AmlLength, NULL, 1);
+                    ObjDesc->Method.AmlLength, NULL, ACPI_IMODE_LOAD_PASS1);
     if (ACPI_FAILURE (Status))
     {
         return (Status);

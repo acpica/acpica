@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -849,7 +849,7 @@ AcpiDsLoad2BeginOp (
         }
 
         Flags = ACPI_NS_NO_UPSEARCH;
-        if (WalkState->PassNumber == 3)
+        if (WalkState->PassNumber == ACPI_IMODE_EXECUTE)
         {
             /* Execution mode, node cannot already exist, node is temporary */
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsparse - namespace interface to AML parser
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -251,10 +251,10 @@ AcpiNsParseTable (
      * each Parser Op subtree is deleted when it is finished.  This saves
      * a great deal of memory, and allows a small cache of parse objects
      * to service the entire parse.  The second pass of the parse then
-     * performs another complete parse of the AML..
+     * performs another complete parse of the AML.
      */
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** Start pass 1\n"));
-    Status = AcpiNsOneCompleteParse (1, TableIndex);
+    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS1, TableIndex);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -270,7 +270,7 @@ AcpiNsParseTable (
      * parse objects are all cached.
      */
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** Start pass 2\n"));
-    Status = AcpiNsOneCompleteParse (2, TableIndex);
+    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS2, TableIndex);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);

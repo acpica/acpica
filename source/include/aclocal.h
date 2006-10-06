@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.241 $
+ *       $Revision: 1.242 $
  *
  *****************************************************************************/
 
@@ -248,7 +248,7 @@ typedef enum
 {
     ACPI_IMODE_LOAD_PASS1           = 0x01,
     ACPI_IMODE_LOAD_PASS2           = 0x02,
-    ACPI_IMODE_EXECUTE              = 0x0E
+    ACPI_IMODE_EXECUTE              = 0x03
 
 } ACPI_INTERPRETER_MODE;
 
