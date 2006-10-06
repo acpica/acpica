@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  ******************************************************************************/
 
@@ -499,6 +499,11 @@ AcpiNsSearchAndEnter (
         NewNode->Flags |= ANOBJ_IS_EXTERNAL;
     }
 #endif
+
+    if (Flags & ACPI_NS_TEMPORARY)
+    {
+        NewNode->Flags |= ANOBJ_TEMPORARY;
+    }
 
     /* Install the new object into the parent's list of children */
 

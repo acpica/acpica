@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.240 $
+ *       $Revision: 1.241 $
  *
  *****************************************************************************/
 
@@ -297,7 +297,7 @@ typedef struct acpi_namespace_node
 /* Namespace Node flags */
 
 #define ANOBJ_END_OF_PEER_LIST          0x01    /* End-of-list, Peer field points to parent */
-#define ANOBJ_RESERVED                  0x02    /* Available for future use */
+#define ANOBJ_TEMPORARY                 0x02    /* Node is create by a method and is temporary */
 #define ANOBJ_METHOD_ARG                0x04    /* Node is a method argument */
 #define ANOBJ_METHOD_LOCAL              0x08    /* Node is a method local */
 #define ANOBJ_SUBTREE_HAS_INI           0x10    /* Used to optimize device initialization */

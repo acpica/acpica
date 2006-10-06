@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nswalk - Functions for walking the ACPI namespace
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -211,7 +211,7 @@ AcpiNsGetNextNode (
  * PARAMETERS:  Type                - ACPI_OBJECT_TYPE to search for
  *              StartNode           - Handle in namespace where search begins
  *              MaxDepth            - Depth to which search is to reach
- *              UnlockBeforeCallback- Whether to unlock the NS before invoking
+ *              Flags               - Whether to unlock the NS before invoking
  *                                    the callback routine
  *              UserFunction        - Called when an object of "Type" is found
  *              Context             - Passed to user function
@@ -239,7 +239,7 @@ AcpiNsWalkNamespace (
     ACPI_OBJECT_TYPE        Type,
     ACPI_HANDLE             StartNode,
     UINT32                  MaxDepth,
-    BOOLEAN                 UnlockBeforeCallback,
+    UINT32                  Flags,
     ACPI_WALK_CALLBACK      UserFunction,
     void                    *Context,
     void                    **ReturnValue)
@@ -291,13 +291,15 @@ AcpiNsWalkNamespace (
                 ChildType = ChildNode->Type;
             }
 
-            if (ChildType == Type)
+            if ((ChildType == Type) &&
+               (!(ChildNode->Flags & ANOBJ_TEMPORARY) ||
+                    (ChildNode->Flags & ANOBJ_TEMPORARY) && (Flags & ACPI_NS_WALK_TEMP_NODES)))
             {
                 /*
                  * Found a matching node, invoke the user
                  * callback function
                  */
-                if (UnlockBeforeCallback)
+                if (Flags & ACPI_NS_WALK_UNLOCK)
                 {
                     MutexStatus = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
                     if (ACPI_FAILURE (MutexStatus))
@@ -309,7 +311,7 @@ AcpiNsWalkNamespace (
                 Status = UserFunction (ChildNode, Level,
                                         Context, ReturnValue);
 
-                if (UnlockBeforeCallback)
+                if (Flags & ACPI_NS_WALK_UNLOCK)
                 {
                     MutexStatus = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
                     if (ACPI_FAILURE (MutexStatus))
