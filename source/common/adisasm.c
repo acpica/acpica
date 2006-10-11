@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -773,7 +773,7 @@ AdDeferredParse (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, Op, NULL, Aml,
-                    AmlLength, NULL, 1);
+                    AmlLength, NULL, ACPI_IMODE_LOAD_PASS1);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -941,17 +941,17 @@ AdGetLocalTables (
     char                    *Filename,
     BOOLEAN                 GetAllTables)
 {
-#if 0
     ACPI_STATUS             Status;
     ACPI_TABLE_HEADER       TableHeader;
     ACPI_TABLE_HEADER       *NewTable;
     UINT32                  NumTables;
     UINT32                  PointerSize;
-    char                    *FacsSuffix = "";
+    ACPI_NATIVE_UINT        TableIndex;
+
 
     if (GetAllTables)
     {
-        ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_RSDT, 4);
+        ACPI_MOVE_32_TO_32 (TableHeader.Signature, ACPI_SIG_RSDT);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (!NewTable)
         {
@@ -959,14 +959,11 @@ AdGetLocalTables (
             return AE_NO_ACPI_TABLES;
         }
 
-#if ACPI_MACHINE_WIDTH != 64
-
         if (ACPI_COMPARE_NAME (NewTable->Signature, ACPI_SIG_RSDT))
         {
             PointerSize = sizeof (UINT32);
         }
         else
-#endif
         {
             PointerSize = sizeof (UINT64);
         }
@@ -983,43 +980,31 @@ AdGetLocalTables (
 
         /* Get the FADT */
 
-        ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_FADT, 4);
+        ACPI_MOVE_32_TO_32 (TableHeader.Signature, ACPI_SIG_FADT);
         AcpiOsTableOverride (&TableHeader, &NewTable);
         if (NewTable)
         {
-            AcpiGbl_FADT = (void *) NewTable;
             AdWriteTable (NewTable, NewTable->Length,
                 ACPI_SIG_FADT, NewTable->OemTableId);
-
-            /* Use the FADT tableID for the FACS, since FACS has no ID */
-
-            FacsSuffix = AcpiGbl_FADT.Header.OemTableId;
         }
         AcpiOsPrintf ("\n");
 
-        /* Get the FACS */
-
-        ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_FACS, 4);
-        AcpiOsTableOverride (&TableHeader, &NewTable);
-        if (NewTable)
-        {
-            AcpiGbl_FACS = (void *) NewTable;
-            AdWriteTable (NewTable, AcpiGbl_FACS->Length,
-                ACPI_SIG_FACS, FacsSuffix);
-        }
-        AcpiOsPrintf ("\n");
+        /* Don't bother with FACS, it is usually all zeros */
     }
 
     /* Always get the DSDT */
 
-    ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_DSDT, 4);
+    ACPI_MOVE_32_TO_32 (TableHeader.Signature, ACPI_SIG_DSDT);
     AcpiOsTableOverride (&TableHeader, &NewTable);
     if (NewTable)
     {
-        Status = AE_OK;
-        AcpiGbl_DSDT = NewTable;
-        AdWriteTable (AcpiGbl_DSDT, AcpiGbl_DSDT->Length,
-            ACPI_SIG_DSDT, AcpiGbl_DSDT->OemTableId);
+        AdWriteTable (NewTable, NewTable->Length,
+            ACPI_SIG_DSDT, NewTable->OemTableId);
+
+        /* Store DSDT in the Table Manager */
+
+        Status = AcpiTbStoreTable (0, NewTable, NewTable->Length,
+                    0, &TableIndex);
     }
     else
     {
@@ -1027,25 +1012,23 @@ AdGetLocalTables (
         return AE_NO_ACPI_TABLES;
     }
 
+#if 0
+    /* TBD: Future implementation */
+
     AcpiOsPrintf ("\n");
 
     /* Get all SSDTs */
 
-    ACPI_STRNCPY (TableHeader.Signature, ACPI_SIG_SSDT, 4);
-    Status = AcpiOsTableOverride (&TableHeader, &NewTable);
-    if (NewTable)
+    ACPI_MOVE_32_TO_32 (TableHeader.Signature, ACPI_SIG_SSDT);
+    do
     {
-        while (NewTable)
-        {
-            Status = AcpiOsTableOverride (&TableHeader, &NewTable);
-        }
-    }
+        NewTable = NULL;
+        Status = AcpiOsTableOverride (&TableHeader, &NewTable);
 
-    return AE_OK;
-
+    } while (NewTable);
 #endif
 
-    return AE_NOT_IMPLEMENTED;
+    return AE_OK;
 }
 
 
@@ -1102,7 +1085,7 @@ AdParseTable (
     }
 
     Status = AcpiDsInitAmlWalk (WalkState, AcpiGbl_ParseOpRoot,
-                NULL, AmlStart, AmlLength, NULL, 1);
+                NULL, AmlStart, AmlLength, NULL, ACPI_IMODE_LOAD_PASS1);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
@@ -1128,7 +1111,7 @@ AdParseTable (
 
     fprintf (stderr, "Pass 2 parse of [%4.4s]\n", (char *) Table->Signature);
 
-    Status = AcpiNsOneCompleteParse (2, 0);
+    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS2, 0);
     if (ACPI_FAILURE (Status))
     {
         return (Status);
