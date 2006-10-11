@@ -1,4 +1,34 @@
 ----------------------------------------
+11 October 2006. Summary of changes for version 20061011:
+
+1) ACPI CA Core Subsystem:
+
+Completed an AML interpreter performance enhancement for control method execution. Previously a 2-pass parse/execution, control methods are now completely parsed and executed in a single pass. This improves overall interpreter performance by ~25%, reduces code size, and reduces CPU stack use. (Valery Podrezov + interpreter changes in version 20051202 that eliminated namespace loading during the pass one parse.)
+
+Implemented _CID support for PCI Root Bridge detection. If the _HID does not match the predefined PCI Root Bridge IDs, the _CID list (if present) is now obtained and also checked for an ID match.
+
+Implemented additional support for the PCI _ADR execution: upsearch until a device scope is found before executing _ADR. This allows PCI_Config operation regions to be declared locally within control methods underneath PCI device objects.
+
+Fixed a problem with a possible race condition between threads executing AcpiWalkNamespace and the AML interpreter. This condition was removed by modifying AcpiWalkNamespace to (by default) ignore all temporary namespace entries created during any concurrent control method execution. An additional namespace race condition is known to exist between AcpiWalkNamespace and the Load/Unload ASL operators and is still under investigation.
+
+Restructured the AML ParseLoop function, breaking it into several subfunctions in order to reduce CPU stack use and improve maintainability. (Mikhail Kouzmich)
+
+AcpiGetHandle: Fix for parameter validation to detect invalid combinations of prefix handle and pathname. BZ 478
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  77.9K Code, 17.1K Data,  95.0K Total
+    Debug Version:     154.6K Code, 63.0K Data, 217.6K Total
+  Current Release:
+    Non-Debug Version:  78.1K Code, 17.1K Data,  95.2K Total
+    Debug Version:     155.4K Code, 63.1K Data, 218.5K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Ported the -g option (get local ACPI tables) to the new ACPICA Table Manager to restore original behavior.
+
+----------------------------------------
 27 September 2006. Summary of changes for version 20060927:
 
 1) ACPI CA Core Subsystem:
