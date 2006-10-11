@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -319,7 +319,7 @@ AcpiPsBuildNamedOp (
         return_ACPI_STATUS (Status);
     }
 
-    if (!Op)
+    if (!*Op)
     {
         return_ACPI_STATUS (AE_CTRL_PARSE_CONTINUE);
     }
