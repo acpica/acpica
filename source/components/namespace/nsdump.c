@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
- *              $Revision: 1.180 $
+ *              $Revision: 1.181 $
  *
  *****************************************************************************/
 
@@ -735,8 +735,8 @@ AcpiNsDumpObjects (
     Info.DisplayType = DisplayType;
 
     (void) AcpiNsWalkNamespace (Type, StartHandle, MaxDepth,
-                ACPI_NS_WALK_NO_UNLOCK | ACPI_NS_WALK_TEMP_NODES, AcpiNsDumpOneObject,
-                (void *) &Info, NULL);
+                ACPI_NS_WALK_NO_UNLOCK | ACPI_NS_WALK_TEMP_NODES,
+                AcpiNsDumpOneObject, (void *) &Info, NULL);
 }
 
 
