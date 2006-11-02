@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -170,6 +170,68 @@ AnCheckMethodReturnValue (
     ACPI_PARSE_OBJECT       *ArgOp,
     UINT32                  RequiredBtypes,
     UINT32                  ThisNodeBtype);
+
+static BOOLEAN
+AnIsInternalMethod (
+    ACPI_PARSE_OBJECT       *Op);
+
+static UINT32
+AnGetInternalMethodReturnType (
+    ACPI_PARSE_OBJECT       *Op);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnIsInternalMethod
+ *
+ * PARAMETERS:  Op              - Current op
+ *
+ * RETURN:      Boolean
+ *
+ * DESCRIPTION: Check for an internal control method.
+ *
+ ******************************************************************************/
+
+static BOOLEAN
+AnIsInternalMethod (
+    ACPI_PARSE_OBJECT       *Op)
+{
+
+    if ((!ACPI_STRCMP (Op->Asl.ExternalName, "\\_OSI")) ||
+        (!ACPI_STRCMP (Op->Asl.ExternalName, "_OSI")))
+    {
+        return (TRUE);
+    }
+
+    return (FALSE);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AnGetInternalMethodReturnType
+ *
+ * PARAMETERS:  Op              - Current op
+ *
+ * RETURN:      Btype
+ *
+ * DESCRIPTION: Get the return type of an internal method
+ *
+ ******************************************************************************/
+
+static UINT32
+AnGetInternalMethodReturnType (
+    ACPI_PARSE_OBJECT       *Op)
+{
+
+    if ((!ACPI_STRCMP (Op->Asl.ExternalName, "\\_OSI")) ||
+        (!ACPI_STRCMP (Op->Asl.ExternalName, "_OSI")))
+    {
+        return (ACPI_BTYPE_STRING);
+    }
+
+    return (0);
+}
 
 
 /*******************************************************************************
@@ -495,6 +557,13 @@ AnGetBtype (
             ReferencedNode = Node->Op;
             if (!ReferencedNode)
             {
+                /* Check for an internal method */
+
+                if (AnIsInternalMethod (Op))
+                {
+                    return (AnGetInternalMethodReturnType (Op));
+                }
+
                 AslError (ASL_ERROR, ASL_MSG_COMPILER_INTERNAL, Op,
                     "null Op pointer");
                 return ACPI_UINT32_MAX;
@@ -1646,12 +1715,9 @@ AnOperandTypecheckWalkEnd (
 
         if (ArgOp->Asl.ParseOpcode == PARSEOP_METHODCALL)
         {
-            /*
-             * Special-case the _OSI method here. This is currently the
-             * only such predefined method.
-             */
-            if ((!ACPI_STRCMP (ArgOp->Asl.ExternalName, "\\_OSI")) ||
-                (!ACPI_STRCMP (ArgOp->Asl.ExternalName, "_OSI")))
+            /* Check for an internal method */
+
+            if (AnIsInternalMethod (ArgOp))
             {
                 return (AE_OK);
             }
@@ -1822,6 +1888,11 @@ AnOperandTypecheckWalkEnd (
 
             if (ArgOp->Asl.ParseOpcode == PARSEOP_METHODCALL)
             {
+                if (AnIsInternalMethod (ArgOp))
+                {
+                    return (AE_OK);
+                }
+
                 /* Check a method call for a valid return value */
 
                 AnCheckMethodReturnValue (Op, OpInfo, ArgOp,
