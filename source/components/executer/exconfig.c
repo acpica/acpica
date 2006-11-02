@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -205,7 +205,7 @@ AcpiExAddTable (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Load an ACPI table
+ * DESCRIPTION: Load an ACPI table from the RSDT/XSDT
  *
  ******************************************************************************/
 
@@ -227,21 +227,7 @@ AcpiExLoadTableOp (
     ACPI_FUNCTION_TRACE (ExLoadTableOp);
 
 
-#if 0
-    /*
-     * Make sure that the signature does not match one of the tables that
-     * is already loaded.
-     */
-    Status = AcpiTbMatchSignature (Operand[0]->String.Pointer, NULL);
-    if (Status == AE_OK)
-    {
-        /* Signature matched -- don't allow override */
-
-        return_ACPI_STATUS (AE_ALREADY_EXISTS);
-    }
-#endif
-
-    /* Find the ACPI table */
+    /* Find the ACPI table in the RSDT/XSDT */
 
     Status = AcpiTbFindTable (Operand[0]->String.Pointer,
                               Operand[1]->String.Pointer,
@@ -353,7 +339,7 @@ AcpiExLoadTableOp (
  *
  * FUNCTION:    AcpiExLoadOp
  *
- * PARAMETERS:  ObjDesc         - Region or Field where the table will be
+ * PARAMETERS:  ObjDesc         - Region or Buffer/Field where the table will be
  *                                obtained
  *              Target          - Where a handle to the table will be stored
  *              WalkState       - Current state
@@ -361,6 +347,12 @@ AcpiExLoadTableOp (
  * RETURN:      Status
  *
  * DESCRIPTION: Load an ACPI table from a field or operation region
+ *
+ * NOTE: Region Fields (Field, BankField, IndexFields) are resolved to buffer
+ *       objects before this code is reached.
+ *
+ *       If source is an operation region, it must refer to SystemMemory, as
+ *       per the ACPI specification.
  *
  ******************************************************************************/
 
@@ -370,25 +362,30 @@ AcpiExLoadOp (
     ACPI_OPERAND_OBJECT     *Target,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *DdbHandle;
-    ACPI_OPERAND_OBJECT     *BufferDesc = NULL;
-    ACPI_TABLE_HEADER       *TablePtr = NULL;
+    ACPI_TABLE_DESC         TableDesc;
     ACPI_NATIVE_UINT        TableIndex;
-    ACPI_PHYSICAL_ADDRESS   Address;
-    ACPI_TABLE_HEADER       TableHeader;
-    ACPI_INTEGER            Temp;
-    UINT32                  i;
+    ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE (ExLoadOp);
 
 
-    /* Object can be either an OpRegion or a Field */
+    ACPI_MEMSET (&TableDesc, 0, sizeof (ACPI_TABLE_DESC));
+    TableDesc.Flags = ACPI_TABLE_ORIGIN_ALLOCATED;
+
+    /* Source Object can be either an OpRegion or a Buffer/Field */
 
     switch (ACPI_GET_OBJECT_TYPE (ObjDesc))
     {
     case ACPI_TYPE_REGION:
+
+        /* Region must be SystemMemory (from ACPI spec) */
+
+        if (ObjDesc->Region.SpaceId != ACPI_ADR_SPACE_SYSTEM_MEMORY)
+        {
+            return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+        }
 
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Region %p %s\n",
             ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
@@ -406,116 +403,34 @@ AcpiExLoadOp (
             }
         }
 
-        /* Get the base physical address of the region */
-
-        Address = ObjDesc->Region.Address;
-
-        /* Get part of the table header to get the table length */
-
-        TableHeader.Length = 0;
-        for (i = 0; i < 8; i++)
-        {
-            Status = AcpiEvAddressSpaceDispatch (ObjDesc, ACPI_READ,
-                        (ACPI_PHYSICAL_ADDRESS) (i + Address), 8, &Temp);
-            if (ACPI_FAILURE (Status))
-            {
-                return_ACPI_STATUS (Status);
-            }
-
-            /* Get the one valid byte of the returned 64-bit value */
-
-            ACPI_CAST_PTR (UINT8, &TableHeader)[i] = (UINT8) Temp;
-        }
-
-        /* Sanity check the table length */
-
-        if (TableHeader.Length < sizeof (ACPI_TABLE_HEADER))
-        {
-            return_ACPI_STATUS (AE_BAD_HEADER);
-        }
-
-        /* Allocate a buffer for the entire table */
-
-        TablePtr = ACPI_ALLOCATE (TableHeader.Length);
-        if (!TablePtr)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        /* Get the entire table from the op region */
-
-        for (i = 0; i < TableHeader.Length; i++)
-        {
-            Status = AcpiEvAddressSpaceDispatch (ObjDesc, ACPI_READ,
-                        (ACPI_PHYSICAL_ADDRESS) (i + Address), 8, &Temp);
-            if (ACPI_FAILURE (Status))
-            {
-                goto Cleanup;
-            }
-
-            /* Get the one valid byte of the returned 64-bit value */
-
-            ACPI_CAST_PTR (UINT8, TablePtr)[i] = (UINT8) Temp;
-        }
+        TableDesc.Address = ObjDesc->Region.Address;
+        TableDesc.Length = ObjDesc->Region.Length;
+        TableDesc.Flags = ACPI_TABLE_ORIGIN_MAPPED;
         break;
 
+    case ACPI_TYPE_BUFFER: /* Buffer or resolved RegionField */
 
-    case ACPI_TYPE_LOCAL_REGION_FIELD:
-    case ACPI_TYPE_LOCAL_BANK_FIELD:
-    case ACPI_TYPE_LOCAL_INDEX_FIELD:
+        /* Simply extract the buffer from the buffer object */
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Field %p %s\n",
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Buffer or Field %p %s\n",
             ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
 
-        /*
-         * The length of the field must be at least as large as the table.
-         * Read the entire field and thus the entire table.  Buffer is
-         * allocated during the read.
-         */
-        Status = AcpiExReadDataFromField (WalkState, ObjDesc, &BufferDesc);
-        if (ACPI_FAILURE (Status))
-        {
-            return_ACPI_STATUS (Status);
-        }
+        TableDesc.Pointer = ACPI_CAST_PTR (ACPI_TABLE_HEADER,
+            ObjDesc->Buffer.Pointer);
+        TableDesc.Length = TableDesc.Pointer->Length;
+        TableDesc.Flags = ACPI_TABLE_ORIGIN_ALLOCATED;
 
-        TablePtr = ACPI_CAST_PTR (ACPI_TABLE_HEADER,
-                        BufferDesc->Buffer.Pointer);
-
-        /* All done with the BufferDesc, delete it */
-
-        BufferDesc->Buffer.Pointer = NULL;
-        AcpiUtRemoveReference (BufferDesc);
-
-        /* Sanity check the table length */
-
-        if (TablePtr->Length < sizeof (ACPI_TABLE_HEADER))
-        {
-            Status = AE_BAD_HEADER;
-            goto Cleanup;
-        }
+        ObjDesc->Buffer.Pointer = NULL;
         break;
-
 
     default:
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
-    /* The table must be either an SSDT or a PSDT */
-
-    if ((!ACPI_COMPARE_NAME (TablePtr->Signature, ACPI_SIG_PSDT)) &&
-        (!ACPI_COMPARE_NAME (TablePtr->Signature, ACPI_SIG_SSDT)))
-    {
-        ACPI_ERROR ((AE_INFO,
-            "Table has invalid signature [%4.4s], must be SSDT or PSDT",
-            TablePtr->Signature));
-        Status = AE_BAD_SIGNATURE;
-        goto Cleanup;
-    }
-
     /*
      * Install the new table into the local data structures
      */
-    Status = AcpiTbAddTable (TablePtr, &TableIndex);
+    Status = AcpiTbAddTable (&TableDesc, &TableIndex);
     if (ACPI_FAILURE (Status))
     {
         goto Cleanup;
@@ -541,14 +456,10 @@ AcpiExLoadOp (
         return_ACPI_STATUS (Status);
     }
 
-    ACPI_INFO ((AE_INFO,
-        "Dynamic SSDT Load - OemId [%6.6s] OemTableId [%8.8s]",
-        TablePtr->OemId, TablePtr->OemTableId));
-
 Cleanup:
     if (ACPI_FAILURE (Status))
     {
-        ACPI_FREE (TablePtr);
+        AcpiTbDeleteTable (&TableDesc);
     }
     return_ACPI_STATUS (Status);
 }

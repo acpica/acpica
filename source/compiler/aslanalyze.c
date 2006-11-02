@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -325,8 +325,11 @@ AnMapArgTypeToBtype (
     case ARGI_REF_OR_STRING:
         return (ACPI_BTYPE_STRING | ACPI_BTYPE_REFERENCE);
 
-    case ARGI_REGION_OR_FIELD:
-        return (ACPI_BTYPE_REGION | ACPI_BTYPE_FIELD_UNIT);
+    case ARGI_REGION_OR_BUFFER:
+
+        /* Used by Load() only. Allow buffers in addition to regions/fields */
+
+        return (ACPI_BTYPE_REGION | ACPI_BTYPE_BUFFER | ACPI_BTYPE_FIELD_UNIT);
 
     case ARGI_DATAREFOBJ:
         return (ACPI_BTYPE_INTEGER |ACPI_BTYPE_STRING | ACPI_BTYPE_BUFFER |
