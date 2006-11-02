@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.61 $
+ *       $Revision: 1.62 $
  *
  *****************************************************************************/
 
@@ -160,7 +160,7 @@ AcpiTbVerifyTable (
 
 ACPI_STATUS
 AcpiTbAddTable (
-    ACPI_TABLE_HEADER       *Table,
+    ACPI_TABLE_DESC         *TableDesc,
     ACPI_NATIVE_UINT        *TableIndex);
 
 ACPI_STATUS
@@ -173,7 +173,7 @@ AcpiTbStoreTable (
 
 void
 AcpiTbDeleteTable (
-    ACPI_NATIVE_UINT        TableIndex);
+    ACPI_TABLE_DESC        *TableDesc);
 
 void
 AcpiTbTerminate (
@@ -235,17 +235,5 @@ ACPI_STATUS
 AcpiTbParseRootTable (
     ACPI_PHYSICAL_ADDRESS   RsdpAddress,
     UINT8                   Flags);
-
-void *
-AcpiTbMap (
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Length,
-    UINT32                  Flags);
-
-void
-AcpiTbUnmap (
-    void                    *Pointer,
-    UINT32                  Length,
-    UINT32                  Flags);
 
 #endif /* __ACTABLES_H__ */

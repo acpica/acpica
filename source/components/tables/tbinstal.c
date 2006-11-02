@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -142,7 +142,7 @@ ACPI_STATUS
 AcpiTbVerifyTable (
     ACPI_TABLE_DESC         *TableDesc)
 {
-    ACPI_STATUS             Status;
+    ACPI_STATUS             Status = AE_OK;
 
 
     ACPI_FUNCTION_TRACE (TbVerifyTable);
@@ -152,8 +152,12 @@ AcpiTbVerifyTable (
 
     if (!TableDesc->Pointer)
     {
-        TableDesc->Pointer = AcpiTbMap (TableDesc->Address, TableDesc->Length,
-                                TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK);
+        if ((TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK) ==
+            ACPI_TABLE_ORIGIN_MAPPED)
+        {
+            TableDesc->Pointer = AcpiOsMapMemory (TableDesc->Address, TableDesc->Length);
+        }
+
         if (!TableDesc->Pointer)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -162,14 +166,13 @@ AcpiTbVerifyTable (
 
     /* FACS is the odd table, has no standard ACPI header and no checksum */
 
-    if (ACPI_COMPARE_NAME (&(TableDesc->Signature), ACPI_SIG_FACS))
+    if (!ACPI_COMPARE_NAME (&TableDesc->Signature, ACPI_SIG_FACS))
     {
-        return_ACPI_STATUS (AE_OK);
+        /* Always calculate checksum, ignore bad checksum if requested */
+
+        Status = AcpiTbVerifyChecksum (TableDesc->Pointer, TableDesc->Length);
     }
 
-    /* Always calculate checksum, ignore bad checksum if requested */
-
-    Status = AcpiTbVerifyChecksum (TableDesc->Pointer, TableDesc->Length);
     return_ACPI_STATUS (Status);
 }
 
@@ -178,7 +181,7 @@ AcpiTbVerifyTable (
  *
  * FUNCTION:    AcpiTbAddTable
  *
- * PARAMETERS:  Table               - Pointer to the table header
+ * PARAMETERS:  TableDesc           - Table descriptor
  *              TableIndex          - Where the table index is returned
  *
  * RETURN:      Status
@@ -189,7 +192,7 @@ AcpiTbVerifyTable (
 
 ACPI_STATUS
 AcpiTbAddTable (
-    ACPI_TABLE_HEADER       *Table,
+    ACPI_TABLE_DESC         *TableDesc,
     ACPI_NATIVE_UINT        *TableIndex)
 {
     ACPI_NATIVE_UINT        i;
@@ -199,6 +202,26 @@ AcpiTbAddTable (
 
     ACPI_FUNCTION_TRACE (TbAddTable);
 
+
+    if (!TableDesc->Pointer)
+    {
+        Status = AcpiTbVerifyTable (TableDesc);
+        if (ACPI_FAILURE (Status) || !TableDesc->Pointer)
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /* The table must be either an SSDT or a PSDT */
+
+    if ((!ACPI_COMPARE_NAME (TableDesc->Pointer->Signature, ACPI_SIG_PSDT)) &&
+        (!ACPI_COMPARE_NAME (TableDesc->Pointer->Signature, ACPI_SIG_SSDT)))
+    {
+        ACPI_ERROR ((AE_INFO,
+            "Table has invalid signature [%4.4s], must be SSDT or PSDT",
+            TableDesc->Pointer->Signature));
+        return_ACPI_STATUS (AE_BAD_SIGNATURE);
+    }
 
     (void) AcpiUtAcquireMutex (ACPI_MTX_TABLES);
 
@@ -215,16 +238,17 @@ AcpiTbAddTable (
             }
         }
 
-        Length = ACPI_MIN (Table->Length,
-                        AcpiGbl_RootTableList.Tables[i].Pointer->Length);
-        if (ACPI_MEMCMP (Table, AcpiGbl_RootTableList.Tables[i].Pointer, Length))
+        Length = ACPI_MIN (TableDesc->Length,
+                    AcpiGbl_RootTableList.Tables[i].Length);
+        if (ACPI_MEMCMP (TableDesc->Pointer,
+                AcpiGbl_RootTableList.Tables[i].Pointer, Length))
         {
             continue;
         }
 
         /* Table is already registered */
 
-        ACPI_FREE (Table);
+        AcpiTbDeleteTable (TableDesc);
         *TableIndex = i;
         goto Release;
     }
@@ -232,14 +256,14 @@ AcpiTbAddTable (
     /*
      * Add the table to the global table list
      */
-    Status = AcpiTbStoreTable (ACPI_TO_INTEGER (Table),
-                 Table, Table->Length, ACPI_TABLE_ORIGIN_ALLOCATED, TableIndex);
+    Status = AcpiTbStoreTable (TableDesc->Address, TableDesc->Pointer,
+                TableDesc->Length, TableDesc->Flags, TableIndex);
     if (ACPI_FAILURE (Status))
     {
         goto Release;
     }
 
-    AcpiTbPrintTableHeader (0, Table);
+    AcpiTbPrintTableHeader (TableDesc->Address, TableDesc->Pointer);
 
 Release:
     (void) AcpiUtReleaseMutex (ACPI_MTX_TABLES);
@@ -340,7 +364,7 @@ AcpiTbStoreTable (
     if (AcpiGbl_RootTableList.Count >= AcpiGbl_RootTableList.Size)
     {
         Status = AcpiTbResizeRootTableList();
-        if (ACPI_FAILURE(Status))
+        if (ACPI_FAILURE (Status))
         {
             return (Status);
         }
@@ -378,14 +402,8 @@ AcpiTbStoreTable (
 
 void
 AcpiTbDeleteTable (
-    ACPI_NATIVE_UINT        TableIndex)
+    ACPI_TABLE_DESC         *TableDesc)
 {
-    ACPI_TABLE_DESC         *TableDesc;
-
-
-    /* TableIndex assumed valid */
-
-    TableDesc = &AcpiGbl_RootTableList.Tables[TableIndex];
 
     /* Table must be mapped or allocated */
 
@@ -394,14 +412,18 @@ AcpiTbDeleteTable (
         return;
     }
 
-    if (TableDesc->Flags & ACPI_TABLE_ORIGIN_MAPPED)
+    switch (TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK)
     {
-        AcpiTbUnmap (TableDesc->Pointer, TableDesc->Length,
-            TableDesc->Flags & ACPI_TABLE_ORIGIN_MASK);
-    }
-    else if (TableDesc->Flags & ACPI_TABLE_ORIGIN_ALLOCATED)
-    {
+    case ACPI_TABLE_ORIGIN_MAPPED:
+        AcpiOsUnmapMemory (TableDesc->Pointer, TableDesc->Length);
+        break;
+
+    case ACPI_TABLE_ORIGIN_ALLOCATED:
         ACPI_FREE (TableDesc->Pointer);
+        break;
+
+    default:
+        break;
     }
 
     TableDesc->Pointer = NULL;
@@ -434,9 +456,9 @@ AcpiTbTerminate (
 
     /* Delete the individual tables */
 
-    for (i = 0; i < AcpiGbl_RootTableList.Count; ++i)
+    for (i = 0; i < AcpiGbl_RootTableList.Count; i++)
     {
-        AcpiTbDeleteTable (i);
+        AcpiTbDeleteTable (&AcpiGbl_RootTableList.Tables[i]);
     }
 
     /*

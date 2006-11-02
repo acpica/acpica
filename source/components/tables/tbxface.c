@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  *****************************************************************************/
 
@@ -309,8 +309,7 @@ ACPI_EXPORT_SYMBOL (AcpiReallocateRootTable)
  *
  * PARAMETERS:  Signature           - ACPI signature of needed table
  *              Instance            - Which instance (for SSDTs)
- *              OutTableHeader      - Where the pointer to the table header
- *                                    is returned
+ *              OutTableHeader      - The pointer to the table header to fill
  *
  * RETURN:      Status and pointer to mapped table header
  *
@@ -325,10 +324,11 @@ ACPI_STATUS
 AcpiGetTableHeader (
     char                    *Signature,
     ACPI_NATIVE_UINT        Instance,
-    ACPI_TABLE_HEADER       **OutTableHeader)
+    ACPI_TABLE_HEADER       *OutTableHeader)
 {
     ACPI_NATIVE_UINT        i;
     ACPI_NATIVE_UINT        j;
+    ACPI_TABLE_HEADER       *Header;
 
 
     /* Parameter validation */
@@ -354,13 +354,32 @@ AcpiGetTableHeader (
             continue;
         }
 
-        *OutTableHeader = AcpiTbMap (AcpiGbl_RootTableList.Tables[i].Address,
-            (UINT32) sizeof (ACPI_TABLE_HEADER),
-            AcpiGbl_RootTableList.Tables[i].Flags & ACPI_TABLE_ORIGIN_MASK);
-
-        if (!(*OutTableHeader))
+        if (!AcpiGbl_RootTableList.Tables[i].Pointer)
         {
-            return (AE_NO_MEMORY);
+            if ((AcpiGbl_RootTableList.Tables[i].Flags & ACPI_TABLE_ORIGIN_MASK) ==
+                ACPI_TABLE_ORIGIN_MAPPED)
+            {
+                Header = AcpiOsMapMemory (AcpiGbl_RootTableList.Tables[i].Address,
+                            sizeof (ACPI_TABLE_HEADER));
+                if (!Header)
+                {
+                    return AE_NO_MEMORY;
+                }
+
+                ACPI_MEMCPY (OutTableHeader, Header, sizeof(ACPI_TABLE_HEADER));
+                AcpiOsUnmapMemory (Header, sizeof(ACPI_TABLE_HEADER));
+            }
+
+            else
+            {
+                return AE_NOT_FOUND;
+            }
+        }
+
+        else
+        {
+            ACPI_MEMCPY (OutTableHeader, AcpiGbl_RootTableList.Tables[i].Pointer,
+                sizeof(ACPI_TABLE_HEADER));
         }
 
         return (AE_OK);

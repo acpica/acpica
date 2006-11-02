@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils   - table utilities
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -216,7 +216,6 @@ AcpiTbVerifyChecksum (
             Table->Signature, Table->Checksum, (UINT8) (Table->Checksum - Checksum)));
 
 #if (ACPI_CHECKSUM_ABORT)
-
         return (AE_BAD_CHECKSUM);
 #endif
     }
@@ -566,65 +565,3 @@ AcpiTbParseRootTable (
 
     return_ACPI_STATUS (AE_OK);
 }
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiTbMap
- *
- * PARAMETERS:  Address             - Address to be mapped
- *              Length              - Length to be mapped
- *              Flags               - Logical or physical addressing mode
- *
- * RETURN:      Pointer to mapped region
- *
- * DESCRIPTION: Maps memory according to flag
- *
- *****************************************************************************/
-
-void *
-AcpiTbMap (
-    ACPI_PHYSICAL_ADDRESS   Address,
-    UINT32                  Length,
-    UINT32                  Flags)
-{
-
-    if (Flags == ACPI_TABLE_ORIGIN_MAPPED)
-    {
-        return (AcpiOsMapMemory (Address, Length));
-    }
-    else
-    {
-        return (ACPI_CAST_PTR (void, Address));
-    }
-}
-
-
-/******************************************************************************
- *
- * FUNCTION:    AcpiTbUnmap
- *
- * PARAMETERS:  Pointer             - To mapped region
- *              Length              - Length to be unmapped
- *              Flags               - Logical or physical addressing mode
- *
- * RETURN:      None
- *
- * DESCRIPTION: Unmaps memory according to flag
- *
- *****************************************************************************/
-
-void
-AcpiTbUnmap (
-    void                    *Pointer,
-    UINT32                  Length,
-    UINT32                  Flags)
-{
-
-    if (Flags == ACPI_TABLE_ORIGIN_MAPPED)
-    {
-        AcpiOsUnmapMemory (Pointer, Length);
-    }
-}
-
-

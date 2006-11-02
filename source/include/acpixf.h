@@ -211,7 +211,7 @@ ACPI_STATUS
 AcpiGetTableHeader (
     ACPI_STRING             Signature,
     ACPI_NATIVE_UINT        Instance,
-    ACPI_TABLE_HEADER       **OutTableHeader);
+    ACPI_TABLE_HEADER       *OutTableHeader);
 
 ACPI_STATUS
 AcpiGetTable (
