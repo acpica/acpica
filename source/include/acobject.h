@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.139 $
+ *       $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -126,7 +126,12 @@
  * to the interpreter, and to keep track of the various handlers such as
  * address space handlers and notify handlers. The object is a constant
  * size in order to allow it to be cached and reused.
+ *
+ * Note: The object is optimized to be aligned and will not work if it is
+ * byte-packed.
  */
+#pragma pack(ACPI_NATIVE_BOUNDARY)
+
 
 /*******************************************************************************
  *
@@ -182,6 +187,7 @@ typedef struct acpi_object_common
 typedef struct acpi_object_integer
 {
     ACPI_OBJECT_COMMON_HEADER
+    UINT8                           Fill[3];            /* Prevent warning on some compilers */
     ACPI_INTEGER                    Value;
 
 } ACPI_OBJECT_INTEGER;
@@ -332,6 +338,9 @@ typedef struct acpi_object_power_resource
 typedef struct acpi_object_processor
 {
     ACPI_OBJECT_COMMON_HEADER
+
+    /* The next two fields take advantage of the 3-byte space before NOTIFY_INFO */
+
     UINT8                           ProcId;
     UINT8                           Length;
     ACPI_COMMON_NOTIFY_INFO
@@ -601,5 +610,6 @@ typedef union acpi_descriptor
 
 } ACPI_DESCRIPTOR;
 
+#pragma pack()
 
 #endif /* _ACOBJECT_H */

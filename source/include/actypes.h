@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.311 $
+ *       $Revision: 1.312 $
  *
  *****************************************************************************/
 
@@ -232,6 +232,7 @@ typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 #define ACPI_MAX_PTR                    ACPI_UINT64_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT64_MAX
 
+#define ACPI_NATIVE_BOUNDARY            8
 #define ACPI_USE_NATIVE_DIVIDE          /* Has native 64-bit integer support */
 
 /*
@@ -274,6 +275,8 @@ typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 #define ACPI_MAX_PTR                    ACPI_UINT32_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT32_MAX
 
+#define ACPI_NATIVE_BOUNDARY            4
+
 
 /*******************************************************************************
  *
@@ -302,6 +305,7 @@ typedef char                            *ACPI_PHYSICAL_ADDRESS;
 #define ACPI_MAX_PTR                    ACPI_UINT16_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT16_MAX
 
+#define ACPI_NATIVE_BOUNDARY            2
 #define ACPI_USE_NATIVE_DIVIDE          /* No 64-bit integers, ok to use native divide */
 
 /* 64-bit integers cannot be supported */
