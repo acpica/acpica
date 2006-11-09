@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils   - table utilities
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -128,6 +128,33 @@ static ACPI_PHYSICAL_ADDRESS
 AcpiTbGetRootTableEntry (
     UINT8                   *TableEntry,
     ACPI_NATIVE_UINT        TableEntrySize);
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiTbTablesLoaded
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      TRUE if required ACPI tables are loaded
+ *
+ * DESCRIPTION: Determine if the minimum required ACPI tables are present
+ *              (FADT, FACS, DSDT)
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiTbTablesLoaded (
+    void)
+{
+
+    if (AcpiGbl_RootTableList.Count >= 3)
+    {
+        return (TRUE);
+    }
+
+    return (FALSE);
+}
 
 
 /*******************************************************************************

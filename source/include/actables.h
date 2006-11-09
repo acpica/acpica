@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actables.h - ACPI table management
- *       $Revision: 1.62 $
+ *       $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -209,6 +209,10 @@ AcpiTbSetTableLoadedFlag (
 /*
  * tbutils - table manager utilities
  */
+BOOLEAN
+AcpiTbTablesLoaded (
+    void);
+
 void
 AcpiTbPrintTableHeader(
     ACPI_PHYSICAL_ADDRESS   Address,

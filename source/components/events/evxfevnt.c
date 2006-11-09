@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxfevnt - External Interfaces, ACPI event disable/enable
- *              $Revision: 1.90 $
+ *              $Revision: 1.91 $
  *
  *****************************************************************************/
 
@@ -146,6 +146,15 @@ AcpiEnable (
 
     ACPI_FUNCTION_TRACE (AcpiEnable);
 
+
+    /* ACPI tables must be present */
+
+    if (!AcpiTbTablesLoaded ())
+    {
+        return_ACPI_STATUS (AE_NO_ACPI_TABLES);
+    }
+
+    /* Check current mode */
 
     if (AcpiHwGetMode() == ACPI_SYS_MODE_ACPI)
     {
