@@ -1,4 +1,37 @@
 ----------------------------------------
+09 November 2006. Summary of changes for version 20061109:
+
+1) ACPI CA Core Subsystem:
+
+Optimized the Load ASL operator in the case where the source operand is an operation region. Simply map the operation region memory, instead of performing a bytewise read. (Region must be of type SystemMemory, see below.)
+
+Fixed the Load ASL operator for the case where the source operand is a region field. A buffer object is also allowed as the source operand. BZ 480
+
+Fixed a problem where the Load ASL operator allowed the source operand to be an operation region of any type. It is now restricted to regions of type SystemMemory, as per the ACPI specification. BZ 481
+
+Additional cleanup and optimizations for the new Table Manager code.
+
+AcpiEnable will now fail if all of the required ACPI tables are not loaded (FADT, FACS, DSDT). BZ 477
+
+Added #pragma pack(8/4) to acobject.h to ensure that the structures in this header are always compiled as aligned. The ACPI_OPERAND_OBJECT has been manually optimized to be aligned and will not work if it is byte-packed. 
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  78.1K Code, 17.1K Data,  95.2K Total
+    Debug Version:     155.4K Code, 63.1K Data, 218.5K Total
+  Current Release:
+    Non-Debug Version:  77.9K Code, 17.0K Data,  94.9K Total
+    Debug Version:     155.2K Code, 63.1K Data, 218.3K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+Fixed a problem where the presence of the _OSI predefined control method within complex expressions could cause an internal compiler error.
+
+AcpiExec: Implemented full region support for multiple address spaces. SpaceId is now part of the REGION object. BZ 429
+
+----------------------------------------
 11 October 2006. Summary of changes for version 20061011:
 
 1) ACPI CA Core Subsystem:
