@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -446,6 +446,7 @@ AeRegionHandler (
     void                    *BufferValue;
     UINT32                  ByteWidth;
     UINT32                  i;
+    UINT8                   SpaceId;
 
 
     ACPI_FUNCTION_NAME (AeRegionHandler);
@@ -464,12 +465,13 @@ AeRegionHandler (
      */
     BaseAddress = RegionObject->Region.Address;
     Length = (ACPI_SIZE) RegionObject->Region.Length;
+    SpaceId = RegionObject->Region.SpaceId;
 
     ACPI_DEBUG_PRINT ((ACPI_DB_OPREGION, "Operation Region request on %s at 0x%X\n",
             AcpiUtGetRegionName (RegionObject->Region.SpaceId),
             (UINT32) Address));
 
-    if (RegionObject->Region.SpaceId == ACPI_ADR_SPACE_SMBUS)
+    if (SpaceId == ACPI_ADR_SPACE_SMBUS)
     {
         Length = 0;
 
@@ -549,7 +551,8 @@ AeRegionHandler (
         while (!BufferExists && RegionElement)
         {
             if (RegionElement->Address == BaseAddress &&
-                RegionElement->Length == Length)
+                RegionElement->Length == Length &&
+                RegionElement->SpaceId == SpaceId)
             {
                 BufferExists = TRUE;
             }
@@ -584,6 +587,7 @@ AeRegionHandler (
         ACPI_MEMSET (RegionElement->Buffer, 0, Length);
         RegionElement->Address      = BaseAddress;
         RegionElement->Length       = Length;
+        RegionElement->SpaceId      = SpaceId;
         RegionElement->NextRegion   = NULL;
 
         /*

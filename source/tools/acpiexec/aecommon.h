@@ -146,6 +146,7 @@ typedef struct Region
     UINT32                  Length;
     void                    *Buffer;
     void                    *NextRegion;
+    UINT8                   SpaceId;
 
 } REGION;
 
