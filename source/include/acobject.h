@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: acobject.h - Definition of ACPI_OPERAND_OBJECT  (Internal object only)
- *       $Revision: 1.140 $
+ *       $Revision: 1.141 $
  *
  *****************************************************************************/
 
@@ -130,8 +130,11 @@
  * Note: The object is optimized to be aligned and will not work if it is
  * byte-packed.
  */
-#pragma pack(ACPI_NATIVE_BOUNDARY)
-
+#if ACPI_MACHINE_WIDTH == 64
+#pragma pack(8)
+#else
+#pragma pack(4)
+#endif
 
 /*******************************************************************************
  *
