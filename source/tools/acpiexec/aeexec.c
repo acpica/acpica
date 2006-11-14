@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -597,9 +597,9 @@ AeRegionHandler (
          */
         AeRegions.NumberOfRegions += 1;
 
-        if (NULL != AeRegions.RegionList)
+        if (AeRegions.RegionList)
         {
-            RegionElement->NextRegion = AeRegions.RegionList->NextRegion;
+            RegionElement->NextRegion = AeRegions.RegionList;
         }
 
         AeRegions.RegionList = RegionElement;
