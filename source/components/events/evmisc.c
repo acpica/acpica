@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -152,6 +152,10 @@ AcpiEvNotifyDispatch (
 static UINT32
 AcpiEvGlobalLockHandler (
     void                    *Context);
+
+static ACPI_STATUS
+AcpiEvRemoveGlobalLockHandler (
+    void);
 
 
 /*******************************************************************************
@@ -489,6 +493,35 @@ AcpiEvInitGlobalLockHandler (
 }
 
 
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvRemoveGlobalLockHandler
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Remove the handler for the Global Lock
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiEvRemoveGlobalLockHandler (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (EvRemoveGlobalLockHandler);
+
+    AcpiGbl_GlobalLockPresent = FALSE;
+    Status = AcpiRemoveFixedEventHandler (ACPI_EVENT_GLOBAL,
+                AcpiEvGlobalLockHandler);
+
+    return_ACPI_STATUS (Status);
+}
+
+
 /******************************************************************************
  *
  * FUNCTION:    AcpiEvAcquireGlobalLock
@@ -685,6 +718,13 @@ AcpiEvTerminate (
         {
             ACPI_ERROR ((AE_INFO,
                 "Could not remove SCI handler"));
+        }
+
+        Status = AcpiEvRemoveGlobalLockHandler ();
+        if (ACPI_FAILURE(Status))
+        {
+            ACPI_ERROR ((AE_INFO,
+                "Could not remove Global Lock handler"));
         }
     }
 
