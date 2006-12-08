@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -163,9 +163,7 @@ AslCommandLine (
     char                    **argv);
 
 #ifdef _DEBUG
-#if ACPI_MACHINE_WIDTH != 16
 #include <crtdbg.h>
-#endif
 #endif
 
 /*******************************************************************************
@@ -756,10 +754,8 @@ main (
 
 
 #ifdef _DEBUG
-#if ACPI_MACHINE_WIDTH != 16
     _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF |
                     _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
-#endif
 #endif
 
     /* Init and command line */

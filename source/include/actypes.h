@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.312 $
+ *       $Revision: 1.313 $
  *
  *****************************************************************************/
 
@@ -225,14 +225,12 @@ typedef int                             INT32;
 typedef UINT64                          ACPI_NATIVE_UINT;
 typedef INT64                           ACPI_NATIVE_INT;
 
-typedef UINT64                          ACPI_TABLE_PTR;
 typedef UINT64                          ACPI_IO_ADDRESS;
 typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 
 #define ACPI_MAX_PTR                    ACPI_UINT64_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT64_MAX
 
-#define ACPI_NATIVE_BOUNDARY            8
 #define ACPI_USE_NATIVE_DIVIDE          /* Has native 64-bit integer support */
 
 /*
@@ -268,54 +266,15 @@ typedef int                             INT32;
 typedef UINT32                          ACPI_NATIVE_UINT;
 typedef INT32                           ACPI_NATIVE_INT;
 
-typedef UINT64                          ACPI_TABLE_PTR;
 typedef UINT32                          ACPI_IO_ADDRESS;
 typedef UINT32                          ACPI_PHYSICAL_ADDRESS;
 
 #define ACPI_MAX_PTR                    ACPI_UINT32_MAX
 #define ACPI_SIZE_MAX                   ACPI_UINT32_MAX
 
-#define ACPI_NATIVE_BOUNDARY            4
-
-
-/*******************************************************************************
- *
- * Types specific to 16-bit targets
- *
- ******************************************************************************/
-
-#elif ACPI_MACHINE_WIDTH == 16
-
-/*! [Begin] no source code translation (keep the typedefs as-is) */
-
-typedef unsigned long                   UINT32;
-typedef short                           INT16;
-typedef long                            INT32;
-
-/*! [End] no source code translation !*/
-
-
-typedef UINT16                          ACPI_NATIVE_UINT;
-typedef INT16                           ACPI_NATIVE_INT;
-
-typedef UINT32                          ACPI_TABLE_PTR;
-typedef UINT32                          ACPI_IO_ADDRESS;
-typedef char                            *ACPI_PHYSICAL_ADDRESS;
-
-#define ACPI_MAX_PTR                    ACPI_UINT16_MAX
-#define ACPI_SIZE_MAX                   ACPI_UINT16_MAX
-
-#define ACPI_NATIVE_BOUNDARY            2
-#define ACPI_USE_NATIVE_DIVIDE          /* No 64-bit integers, ok to use native divide */
-
-/* 64-bit integers cannot be supported */
-
-#define ACPI_NO_INTEGER64_SUPPORT
-
-
 #else
 
-/* ACPI_MACHINE_WIDTH must be either 64, 32, or 16 */
+/* ACPI_MACHINE_WIDTH must be either 64 or 32 */
 
 #error unknown ACPI_MACHINE_WIDTH
 #endif

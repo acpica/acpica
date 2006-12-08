@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  ******************************************************************************/
 
@@ -160,24 +160,7 @@ AcpiDbGetPointer (
     void                    *ObjPtr;
 
 
-#if ACPI_MACHINE_WIDTH == 16
-#include <stdio.h>
-
-    /* Have to handle 16-bit pointers of the form segment:offset */
-
-    if (!sscanf (Target, "%p", &ObjPtr))
-    {
-        AcpiOsPrintf ("Invalid pointer: %s\n", Target);
-        return (NULL);
-    }
-
-#else
-
-    /* Simple flat pointer */
-
     ObjPtr = ACPI_TO_POINTER (ACPI_STRTOUL (Target, NULL, 16));
-#endif
-
     return (ObjPtr);
 }
 
@@ -853,8 +836,8 @@ AcpiDbDisplayGpes (
             AcpiOsPrintf (
                 "    RegisterInfo: %p  Status %8.8X%8.8X Enable %8.8X%8.8X\n",
                 GpeBlock->RegisterInfo,
-                ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeBlock->RegisterInfo->StatusAddress.Address)),
-                ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeBlock->RegisterInfo->EnableAddress.Address)));
+                ACPI_FORMAT_UINT64 (GpeBlock->RegisterInfo->StatusAddress.Address),
+                ACPI_FORMAT_UINT64 (GpeBlock->RegisterInfo->EnableAddress.Address));
 
             AcpiOsPrintf ("    EventInfo:    %p\n", GpeBlock->EventInfo);
 
@@ -868,8 +851,8 @@ AcpiDbDisplayGpes (
                     "    Reg %u:  WakeEnable %2.2X, RunEnable %2.2X  Status %8.8X%8.8X Enable %8.8X%8.8X\n",
                     i, GpeRegisterInfo->EnableForWake,
                     GpeRegisterInfo->EnableForRun,
-                    ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeRegisterInfo->StatusAddress.Address)),
-                    ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (GpeRegisterInfo->EnableAddress.Address)));
+                    ACPI_FORMAT_UINT64 (GpeRegisterInfo->StatusAddress.Address),
+                    ACPI_FORMAT_UINT64 (GpeRegisterInfo->EnableAddress.Address));
 
                 /* Now look at the individual GPEs in this byte register */
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbxfroot - Find the root ACPI table (RSDT)
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -186,8 +186,6 @@ AcpiTbValidateRsdp (
 }
 
 
-#if ACPI_MACHINE_WIDTH != 16
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiTbFindRsdp
@@ -369,6 +367,4 @@ AcpiTbScanMemoryForRsdp (
         StartAddress));
     return_PTR (NULL);
 }
-
-#endif
 

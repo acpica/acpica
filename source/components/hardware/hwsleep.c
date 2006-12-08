@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -156,7 +156,7 @@ AcpiSetFirmwareWakingVector (
     /* Set the vector */
 
     if ((Facs->Length < 32) ||
-        (!(ACPI_GET_ADDRESS (Facs->XFirmwareWakingVector))))
+        (!(Facs->XFirmwareWakingVector)))
     {
         /*
          * ACPI 1.0 FACS or short table or optional X_ field is zero
@@ -218,7 +218,7 @@ AcpiGetFirmwareWakingVector (
     /* Get the vector */
 
     if ((Facs->Length < 32) ||
-        (!(ACPI_GET_ADDRESS (Facs->XFirmwareWakingVector))))
+        (!(Facs->XFirmwareWakingVector)))
     {
         /*
          * ACPI 1.0 FACS or short table or optional X_ field is zero

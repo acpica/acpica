@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmresrc.c - Resource Descriptor disassembly
- *              $Revision: 1.33 $
+ *              $Revision: 1.34 $
  *
  ******************************************************************************/
 
@@ -248,8 +248,7 @@ AcpiDmDumpInteger64 (
     UINT64                  Value,
     char                    *Name)
 {
-    AcpiOsPrintf ("0x%8.8X%8.8X, // %s\n",
-        ACPI_FORMAT_UINT64 (ACPI_GET_ADDRESS (Value)), Name);
+    AcpiOsPrintf ("0x%8.8X%8.8X, // %s\n", ACPI_FORMAT_UINT64 (Value), Name);
 }
 
 

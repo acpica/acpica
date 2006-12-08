@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.148 $
+ *              $Revision: 1.149 $
  *
  ******************************************************************************/
 
@@ -285,9 +285,6 @@ ACPI_STATUS
 AcpiDbSleep (
     char                    *ObjectArg)
 {
-#if ACPI_MACHINE_WIDTH == 16
-    return (AE_OK);
-#else
     ACPI_STATUS             Status;
     UINT8                   SleepState;
 
@@ -312,7 +309,6 @@ AcpiDbSleep (
     Status = AcpiLeaveSleepState (SleepState);
 
     return (Status);
-#endif
 }
 
 
@@ -1445,8 +1441,6 @@ void
 AcpiDbDisplayResources (
     char                    *ObjectArg)
 {
-#if ACPI_MACHINE_WIDTH != 16
-
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_STATUS             Status;
     ACPI_BUFFER             ReturnObj;
@@ -1584,7 +1578,6 @@ Cleanup:
 
     AcpiDbSetOutputDestination (ACPI_DB_CONSOLE_OUTPUT);
     return;
-#endif
 }
 
 

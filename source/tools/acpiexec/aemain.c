@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -117,9 +117,7 @@
 #include "aecommon.h"
 
 #ifdef _DEBUG
-#if ACPI_MACHINE_WIDTH != 16
 #include <crtdbg.h>
-#endif
 #endif
 
 #define _COMPONENT          PARSER
@@ -128,18 +126,6 @@
 UINT8           AcpiGbl_BatchMode = 0;
 BOOLEAN         AcpiGbl_IgnoreErrors = FALSE;
 char            BatchBuffer[128];
-
-
-#if ACPI_MACHINE_WIDTH == 16
-
-ACPI_STATUS
-AcpiGetIrqRoutingTable  (
-    ACPI_HANDLE             DeviceHandle,
-    ACPI_BUFFER             *RetBuffer)
-{
-    return AE_NOT_IMPLEMENTED;
-}
-#endif
 
 
 /******************************************************************************
@@ -233,19 +219,11 @@ main (
 
 
 #ifdef _DEBUG
-#if ACPI_MACHINE_WIDTH != 16
     _CrtSetDbgFlag (_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF |
                     _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
 #endif
-#endif
-
 
     printf ("\nIntel ACPI Component Architecture\nAML Execution/Debug Utility");
-
-#if ACPI_MACHINE_WIDTH == 16
-    printf (" (16-bit)");
-#endif
-
     printf (" version %8.8X", ((UINT32) ACPI_CA_VERSION));
     printf (" [%s]\n\n",  __DATE__);
 
@@ -398,60 +376,6 @@ main (
 
         AeMiscellaneousTests ();
     }
-
-#if ACPI_MACHINE_WIDTH == 16
-    else
-    {
-#include "16bit.h"
-
-        Status = AfFindTable (ACPI_SIG_DSDT, NULL, NULL);
-        if (ACPI_FAILURE (Status))
-        {
-            goto enterloop;
-        }
-
-
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not load ACPI tables, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-
-        Status = AcpiNsLoadNamespace ();
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not load ACPI namespace, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-
-        Status = AeInstallHandlers ();
-        if (ACPI_FAILURE (Status))
-        {
-            goto enterloop;
-        }
-
-        /*
-         * TBD:
-         * Need a way to call this after the "LOAD" command
-         */
-        Status = AcpiEnableSubsystem (InitFlags);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not EnableSubsystem, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-        Status = AcpiInitializeObjects (InitFlags);
-        if (ACPI_FAILURE (Status))
-        {
-            printf ("**** Could not InitializeObjects, %s\n", AcpiFormatException (Status));
-            goto enterloop;
-        }
-
-     }
-#endif
 
 enterloop:
 
