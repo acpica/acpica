@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.81 $
+ *       $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -422,5 +422,10 @@ AcpiDbPrepNamestring (
 ACPI_NAMESPACE_NODE *
 AcpiDbLocalNsLookup (
     char                    *Name);
+
+void
+AcpiDbUInt32ToHexString (
+    UINT32                  Value,
+    char                    *Buffer);
 
 #endif  /* __ACDEBUG_H__ */

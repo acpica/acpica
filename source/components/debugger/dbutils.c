@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbutils - AML debugger utilities
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  ******************************************************************************/
 
@@ -137,6 +137,8 @@ void
 AcpiDbDumpBuffer (
     UINT32                  Address);
 #endif
+
+static char                 *Converter = "0123456789ABCDEF";
 
 
 /*******************************************************************************
@@ -425,6 +427,47 @@ AcpiDbLocalNsLookup (
 
     ACPI_FREE (InternalPath);
     return (Node);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDbUInt32ToHexString
+ *
+ * PARAMETERS:  Value           - The value to be converted to string
+ *              Buffer          - Buffer for result (not less than 11 bytes)
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Convert the unsigned 32-bit value to the hexadecimal image
+ *
+ * NOTE: It is the caller's responsibility to ensure that the length of buffer
+ *       is sufficient.
+ *
+ ******************************************************************************/
+
+void
+AcpiDbUInt32ToHexString (
+    UINT32                  Value,
+    char                    *Buffer)
+{
+    UINT8                   i;
+
+
+    if (Value == 0)
+    {
+        ACPI_STRCPY (Buffer, "0");
+        return;
+    }
+
+    ACPI_STRCPY (Buffer, "0x");
+    Buffer[10] = '\0';
+
+    for (i = 9; i > 1; i--)
+    {
+        Buffer[i] = Converter [Value & 0x0F];
+        Value = Value >> 4;
+    }
 }
 
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.108 $
+ *              $Revision: 1.109 $
  *
  *****************************************************************************/
 
@@ -163,35 +163,54 @@ usage (void)
  *
  * FUNCTION:    AcpiDbRunBatchMode
  *
- * PARAMETERS:  BatchCommandLine    - Comma separated command and arguments
+ * PARAMETERS:  BatchCommandLine    - A semicolon separated list of commands
+ *                                    to be executed.
+ *                                    Use only commas to separate elements of
+ *                                    particular command.
+ * RETURN:      Status
  *
- * RETURN:      None
- *
- * DESCRIPTION: Prepare command buffer and pass it to AcpiDbCommandDispatch
+ * DESCRIPTION: For each command of list separated by ';' prepare the command
+ *              buffer and pass it to AcpiDbCommandDispatch.
  *
  *****************************************************************************/
 
-static void
+static ACPI_STATUS
 AcpiDbRunBatchMode (
     void)
 {
+    ACPI_STATUS             Status;
     char                    *Ptr = BatchBuffer;
+    char                    *Cmd = Ptr;
+    UINT8                   Run = 0;
 
-    /* Convert commas to spaces */
+    AcpiGbl_MethodExecuting = FALSE;
+    AcpiGbl_StepToNextCall = FALSE;
 
     while (*Ptr)
     {
         if (*Ptr == ',')
         {
+            /* Convert commas to spaces */
             *Ptr = ' ';
         }
+        else if (*Ptr == ';')
+        {
+            *Ptr = '\0';
+            Run = 1;
+        }
+
         Ptr++;
+
+        if (Run || (*Ptr == '\0'))
+        {
+            (void) AcpiDbCommandDispatch (Cmd, NULL, NULL);
+            Run = 0;
+            Cmd = Ptr;
+        }
     }
 
-    AcpiGbl_MethodExecuting = FALSE;
-    AcpiGbl_StepToNextCall = FALSE;
-
-    (void) AcpiDbCommandDispatch (BatchBuffer, NULL, NULL);
+    Status = AcpiTerminate ();
+    return (Status);
 }
 
 

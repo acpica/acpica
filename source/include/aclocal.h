@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.242 $
+ *       $Revision: 1.243 $
  *
  *****************************************************************************/
 
@@ -1092,12 +1092,30 @@ typedef struct acpi_bit_register_info
 
 typedef struct acpi_db_method_info
 {
-    ACPI_HANDLE                     ThreadGate;
+    ACPI_HANDLE                     MainThreadGate;
+    ACPI_HANDLE                     ThreadCompleteGate;
+    UINT32                          *Threads;
+    UINT32                          NumThreads;
+    UINT32                          NumCreated;
+    UINT32                          NumCompleted;
+
     char                            *Name;
-    char                            **Args;
     UINT32                          Flags;
     UINT32                          NumLoops;
     char                            Pathname[128];
+    char                            **Args;
+
+    /*
+     * Arguments to be passed to method for the command
+     * Threads -
+     *   the Number of threads, ID of current thread and
+     *   Index of current thread inside all them created.
+     */
+    char                            InitArgs;
+    char                            *Arguments[4];
+    char                            NumThreadsStr[11];
+    char                            IdOfThreadStr[11];
+    char                            IndexOfThreadStr[11];
 
 } ACPI_DB_METHOD_INFO;
 
