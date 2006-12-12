@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.313 $
+ *       $Revision: 1.314 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,8 @@
 
 /*
  * ACPI_MACHINE_WIDTH must be specified in an OS- or compiler-dependent header
- * and must be either 16, 32, or 64
+ * and must be either 32 or 64. 16-bit ACPICA is no longer supported, as of
+ * 12/2006.
  */
 #ifndef ACPI_MACHINE_WIDTH
 #error ACPI_MACHINE_WIDTH not defined
