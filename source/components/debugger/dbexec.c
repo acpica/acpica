@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.78 $
+ *              $Revision: 1.79 $
  *
  ******************************************************************************/
 
@@ -560,7 +560,7 @@ AcpiDbMethodThread (
     AcpiOsWaitSemaphore (Info->ThreadCompleteGate, 1, ACPI_WAIT_FOREVER);
     Info->NumCompleted++;
 
-    if (Info->NumCompleted == Info->NumCreated)
+    if (Info->NumCompleted == Info->NumThreads)
     {
         /* Do signal for main thread once only */
         Allow = 1;
