@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -783,7 +783,7 @@ AeExceptionHandler (
     ACPI_STATUS             Status;
     ACPI_BUFFER             ReturnObj;
     ACPI_OBJECT_LIST        ArgList;
-    ACPI_OBJECT             Arg[2];
+    ACPI_OBJECT             Arg[3];
     const char              *Exception;
 
 
@@ -804,7 +804,7 @@ AeExceptionHandler (
      *
      * Setup parameter object
      */
-    ArgList.Count = 2;
+    ArgList.Count = 3;
     ArgList.Pointer = Arg;
 
     Arg[0].Type = ACPI_TYPE_INTEGER;
@@ -813,6 +813,9 @@ AeExceptionHandler (
     Arg[1].Type = ACPI_TYPE_STRING;
     Arg[1].String.Pointer = (char *) Exception;
     Arg[1].String.Length = ACPI_STRLEN (Exception);
+
+    Arg[2].Type = ACPI_TYPE_INTEGER;
+    Arg[2].Integer.Value = AcpiOsGetThreadId();
 
     /* Setup return buffer */
 
