@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.190 $
+ *       $Revision: 1.191 $
  *
  *****************************************************************************/
 
@@ -276,6 +276,7 @@ ACPI_EXTERN ACPI_SPINLOCK               AcpiGbl_HardwareLock; /* For ACPI H/W ex
 
 ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_GlobalList;
 ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_NsNodeList;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_DisplayFinalMemStats;
 #endif
 
 /* Object caches */

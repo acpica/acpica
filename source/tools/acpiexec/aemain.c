@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aemain - Main routine for the AcpiExec utility
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -151,11 +151,12 @@ usage (void)
     printf ("   -b <CommandLine>    Batch mode command execution\n");
     printf ("   -e [Method]         Batch mode method execution\n");
     printf ("   -i                  Do not run STA/INI methods during init\n");
+    printf ("   -m                  Display final memory use statistics\n");
     printf ("   -o <OutputFile>     Send output to this file\n");
     printf ("   -s                  Enable Interpreter Slack Mode\n");
     printf ("   -t                  Enable Interpreter Serialized Mode\n");
-    printf ("   -x <DebugLevel>     Specify debug output level\n");
     printf ("   -v                  Verbose init output\n");
+    printf ("   -x <DebugLevel>     Specify debug output level\n");
 }
 
 
@@ -266,7 +267,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?ab:de^gio:stvx:")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?ab:de^gimo:stvx:")) != EOF) switch(j)
     {
     case 'a':
         AcpiGbl_IgnoreErrors = TRUE;
@@ -310,10 +311,10 @@ main (
         AcpiGbl_DbOpt_ini_methods = FALSE;
         break;
 
-    case 'x':
-        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
-        AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
-        printf ("Debug Level: 0x%8.8X\n", AcpiDbgLevel);
+    case 'm':
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+        AcpiGbl_DisplayFinalMemStats = TRUE;
+#endif
         break;
 
     case 'o':
@@ -332,6 +333,12 @@ main (
 
     case 'v':
         AcpiDbgLevel |= ACPI_LV_INIT_NAMES;
+        break;
+
+    case 'x':
+        AcpiDbgLevel = strtoul (AcpiGbl_Optarg, NULL, 0);
+        AcpiGbl_DbConsoleDebugLevel = AcpiDbgLevel;
+        printf ("Debug Level: 0x%8.8X\n", AcpiDbgLevel);
         break;
 
     case '?':
