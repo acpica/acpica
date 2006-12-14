@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcache - local cache allocation routines
- *              $Revision: 1.6 $
+ *              $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -395,6 +395,13 @@ AcpiOsAcquireObject (
         /* The cache is empty, create a new object */
 
         ACPI_MEM_TRACKING (Cache->TotalAllocated++);
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+        if ((Cache->TotalAllocated - Cache->TotalFreed) > Cache->MaxOccupied)
+        {
+            Cache->MaxOccupied = Cache->TotalAllocated - Cache->TotalFreed;
+        }
+#endif
 
         /* Avoid deadlock with ACPI_ALLOCATE_ZEROED */
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdebug.h - ACPI/AML debugger
- *       $Revision: 1.82 $
+ *       $Revision: 1.83 $
  *
  *****************************************************************************/
 
@@ -322,6 +322,12 @@ AcpiDbCreateExecutionThreads (
     char                    *NumThreadsArg,
     char                    *NumLoopsArg,
     char                    *MethodNameArg);
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+UINT32
+AcpiDbGetCacheInfo (
+    ACPI_MEMORY_LIST        *Cache);
+#endif
 
 
 /*

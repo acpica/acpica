@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  ******************************************************************************/
 
@@ -190,7 +190,6 @@ AcpiDbListInfo (
 {
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
     UINT32                  Outstanding;
-    UINT32                  Temp;
 #endif
 
     AcpiOsPrintf ("\n%s\n", List->ListName);
@@ -200,7 +199,7 @@ AcpiDbListInfo (
     if (List->MaxDepth > 0)
     {
         AcpiOsPrintf (
-            "    Cache: [Depth Max Avail Size]         % 7d % 7d % 7d % 7d B\n",
+            "    Cache: [Depth    MaxD Avail  Size]                %8.2X %8.2X %8.2X    %8.2X B\n",
             List->CurrentDepth,
             List->MaxDepth,
             List->MaxDepth - List->CurrentDepth,
@@ -211,31 +210,36 @@ AcpiDbListInfo (
     if (List->MaxDepth > 0)
     {
         AcpiOsPrintf (
-            "    Cache: [Requests Hits Misses ObjSize] % 7d % 7d % 7d % 7d B\n",
+            "    Cache: [Requests Hits Misses ObjSize]             %8.2X %8.2X %8.2X    %8.2X B\n",
             List->Requests,
             List->Hits,
             List->Requests - List->Hits,
             List->ObjectSize);
     }
 
-    Outstanding = List->TotalAllocated -
-                    List->TotalFreed -
-                    List->CurrentDepth;
+    Outstanding = AcpiDbGetCacheInfo (List);
 
     if (List->ObjectSize)
     {
-        Temp = ACPI_ROUND_UP_TO_1K (Outstanding * List->ObjectSize);
+        AcpiOsPrintf (
+            "    Mem:   [Alloc    Free Max    CurSize Outstanding] %8.2X %8.2X %8.2X    %8.2X Kb %8.2X\n",
+            List->TotalAllocated,
+            List->TotalFreed,
+            List->MaxOccupied,
+            ACPI_ROUND_UP_TO_1K (Outstanding * List->ObjectSize),
+            Outstanding);
     }
     else
     {
-        Temp = ACPI_ROUND_UP_TO_1K (List->CurrentTotalSize);
+        AcpiOsPrintf (
+            "    Mem:   [Alloc Free Max CurSize Outstanding Total] %8.2X %8.2X %8.2X Kb %8.2X Kb %8.2X %8.2X Kb\n",
+            List->TotalAllocated,
+            List->TotalFreed,
+            ACPI_ROUND_UP_TO_1K (List->MaxOccupied),
+            ACPI_ROUND_UP_TO_1K (List->CurrentTotalSize),
+            Outstanding,
+            ACPI_ROUND_UP_TO_1K (List->TotalSize));
     }
-
-    AcpiOsPrintf (
-        "    Mem:   [Alloc Free Outstanding Size]  % 7d % 7d % 7d % 7d Kb\n",
-        List->TotalAllocated,
-        List->TotalFreed,
-        Outstanding, Temp);
 #endif
 }
 #endif
@@ -518,7 +522,7 @@ AcpiDbDisplayStatistics (
     case CMD_STAT_MEMORY:
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
-        AcpiOsPrintf ("\n----Object and Cache Statistics---------------------------------------------\n");
+        AcpiOsPrintf ("\n----Object and Cache Statistics (all in hex)---------\n");
 
         AcpiDbListInfo (AcpiGbl_GlobalList);
         AcpiDbListInfo (AcpiGbl_NsNodeList);

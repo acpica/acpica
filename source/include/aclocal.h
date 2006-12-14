@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.243 $
+ *       $Revision: 1.244 $
  *
  *****************************************************************************/
 
@@ -1188,6 +1188,8 @@ typedef struct acpi_memory_list
 
     UINT32                          TotalAllocated;
     UINT32                          TotalFreed;
+    UINT32                          MaxOccupied;
+    UINT32                          TotalSize;
     UINT32                          CurrentTotalSize;
     UINT32                          Requests;
     UINT32                          Hits;

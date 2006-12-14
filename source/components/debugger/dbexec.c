@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.79 $
+ *              $Revision: 1.80 $
  *
  ******************************************************************************/
 
@@ -153,12 +153,6 @@ AcpiDbExecutionWalk (
     void                    *Context,
     void                    **ReturnValue);
 
-#ifdef ACPI_DBG_TRACK_ALLOCATIONS
-static UINT32
-AcpiDbGetCacheInfo (
-    ACPI_MEMORY_LIST        *Cache);
-#endif
-
 
 /*******************************************************************************
  *
@@ -283,7 +277,7 @@ AcpiDbExecuteSetup (
 
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
-static UINT32
+UINT32
 AcpiDbGetCacheInfo (
     ACPI_MEMORY_LIST        *Cache)
 {

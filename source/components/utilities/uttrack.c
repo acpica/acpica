@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: uttrack - Memory allocation tracking routines (debug only)
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -238,7 +238,12 @@ AcpiUtAllocateAndTrack (
     }
 
     AcpiGbl_GlobalList->TotalAllocated++;
+    AcpiGbl_GlobalList->TotalSize += (UINT32) Size;
     AcpiGbl_GlobalList->CurrentTotalSize += (UINT32) Size;
+    if (AcpiGbl_GlobalList->CurrentTotalSize > AcpiGbl_GlobalList->MaxOccupied)
+    {
+        AcpiGbl_GlobalList->MaxOccupied = AcpiGbl_GlobalList->CurrentTotalSize;
+    }
 
     return ((void *) &Allocation->UserSpace);
 }
@@ -290,7 +295,12 @@ AcpiUtAllocateZeroedAndTrack (
     }
 
     AcpiGbl_GlobalList->TotalAllocated++;
+    AcpiGbl_GlobalList->TotalSize += (UINT32) Size;
     AcpiGbl_GlobalList->CurrentTotalSize += (UINT32) Size;
+    if (AcpiGbl_GlobalList->CurrentTotalSize > AcpiGbl_GlobalList->MaxOccupied)
+    {
+        AcpiGbl_GlobalList->MaxOccupied = AcpiGbl_GlobalList->CurrentTotalSize;
+    }
 
     return ((void *) &Allocation->UserSpace);
 }
