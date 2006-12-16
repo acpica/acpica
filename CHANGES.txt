@@ -1,4 +1,31 @@
 ----------------------------------------
+15 December 2006. Summary of changes for version 20061215:
+
+1) ACPI CA Core Subsystem:
+
+Support for 16-bit ACPICA has been completely removed since it is no longer necessary and it clutters the code. All 16-bit macros, types, and conditional compiles have been removed, cleaning up and simplifying the code across the entire subsystem. DOS support is no longer needed since the bootable Linux firmware kit is now available.
+
+The handler for the Global Lock is now removed during AcpiTerminate to enable a clean subsystem restart, via the implementation of the AcpiEvRemoveGlobalLockHandler function. (With assistance from Joel Bretz, HP)
+
+Implemented enhancements to the multithreading support within the debugger to enable improved multithreading debugging and evaluation of the subsystem. (Valery Podrezov)
+
+Debugger: Enhanced the Statistics/Memory command to emit the total (maximum) memory used during the execution, as well as the maximum memory consumed by each of the various object types. (Valery Podrezov)
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  77.9K Code, 17.0K Data,  94.9K Total
+    Debug Version:     155.2K Code, 63.1K Data, 218.3K Total
+  Current Release:
+    Non-Debug Version:  78.0K Code, 17.1K Data,  95.1K Total
+    Debug Version:     155.8K Code, 63.3K Data, 219.1K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+AcpiExec: Implemented a new option (-m) to display full memory use statistics upon subsystem/program termination. (Valery Podrezov)
+
+----------------------------------------
 09 November 2006. Summary of changes for version 20061109:
 
 1) ACPI CA Core Subsystem:
