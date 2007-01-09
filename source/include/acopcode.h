@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acopcode.h - AML opcode information for the AML parser and interpreter
- *       $Revision: 1.6 $
+ *       $Revision: 1.7 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2007, Intel Corp.
  * All rights reserved.
  *
  * 2. License

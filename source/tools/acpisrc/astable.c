@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2006, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2007, Intel Corp.
  * All rights reserved.
  *
  * 2. License
@@ -164,7 +164,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" * Copyright (C) 2000 - 2006, R. Byron Moore\n"
+" * Copyright (C) 2000 - 2007, R. Byron Moore\n"
 " * All rights reserved.\n"
 " *\n"
 " * Redistribution and use in source and binary forms, with or without\n"
@@ -713,8 +713,9 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    {"AcpiTbSumTable", "AcpiTbSumTable",  REPLACE_WHOLE_WORD},
 #if 0
+    {"(c) 1999 - 2006",      "(c) 1999 - 2007",         REPLACE_WHOLE_WORD},
+    {"AcpiTbSumTable", "AcpiTbSumTable",  REPLACE_WHOLE_WORD},
     {"ACPI_SIG_BOOT", "ACPI_SIG_BOOT",   REPLACE_WHOLE_WORD},
     {"ACPI_SIG_DBGP", "ACPI_SIG_DBGP",   REPLACE_WHOLE_WORD},
     {"ACPI_SIG_DSDT", "ACPI_SIG_DSDT",   REPLACE_WHOLE_WORD},
@@ -742,8 +743,6 @@ ACPI_STRING_TABLE           CustomReplacements[] = {
     {"ACPI_ALLOCATE_ZEROED",    "ACPI_ALLOCATE_ZEROED",   REPLACE_WHOLE_WORD},
     {"ACPI_ALLOCATE",           "ACPI_ALLOCATE",          REPLACE_WHOLE_WORD},
     {"ACPI_FREE",               "ACPI_FREE",              REPLACE_WHOLE_WORD},
-
-    {"(c) 1999 - 2006",      "(c) 1999 - 2006",         REPLACE_WHOLE_WORD},
 
     "ACPI_NATIVE_UINT",     "ACPI_NATIVE_UINT",         REPLACE_WHOLE_WORD,
     "ACPI_NATIVE_UINT *",   "ACPI_NATIVE_UINT *",       REPLACE_WHOLE_WORD,
