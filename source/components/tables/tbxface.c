@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.85 $
+ *              $Revision: 1.86 $
  *
  *****************************************************************************/
 
@@ -565,7 +565,7 @@ AcpiTbLoadNamespace (
         /*
          * DSDT table has been found
          */
-        AcpiTbDeleteTable (ACPI_TABLE_INDEX_DSDT);
+        AcpiTbDeleteTable (&AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT]);
         AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Pointer = Table;
         AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Length = Table->Length;
         AcpiGbl_RootTableList.Tables[ACPI_TABLE_INDEX_DSDT].Flags = ACPI_TABLE_ORIGIN_UNKNOWN;
