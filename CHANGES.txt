@@ -1,4 +1,22 @@
 ----------------------------------------
+26 January 2007. Summary of changes for version 20070126:
+
+1) ACPI CA Core Subsystem:
+
+Added the 2007 copyright to all module headers and signons. This affects virtually every file in the ACPICA core subsystem, the iASL compiler, and the utilities.
+
+Implemented a fix for an incorrect parameter passed to AcpiTbDeleteTable during a table load. A bad pointer was passed in the case where the DSDT is overridden, causing a fault in this case.
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  78.0K Code, 17.1K Data,  95.1K Total
+    Debug Version:     155.8K Code, 63.3K Data, 219.1K Total
+  Current Release:
+    Non-Debug Version:  78.0K Code, 17.1K Data,  95.1K Total
+    Debug Version:     155.8K Code, 63.3K Data, 219.1K Total
+
+----------------------------------------
 15 December 2006. Summary of changes for version 20061215:
 
 1) ACPI CA Core Subsystem:
