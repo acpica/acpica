@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbstats - Generation and display of ACPI table statistics
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  ******************************************************************************/
 
@@ -199,7 +199,7 @@ AcpiDbListInfo (
     if (List->MaxDepth > 0)
     {
         AcpiOsPrintf (
-            "    Cache: [Depth    MaxD Avail  Size]                %8.2X %8.2X %8.2X    %8.2X B\n",
+            "    Cache: [Depth    MaxD Avail  Size]                %8.2X %8.2X %8.2X %8.2X\n",
             List->CurrentDepth,
             List->MaxDepth,
             List->MaxDepth - List->CurrentDepth,
@@ -210,7 +210,7 @@ AcpiDbListInfo (
     if (List->MaxDepth > 0)
     {
         AcpiOsPrintf (
-            "    Cache: [Requests Hits Misses ObjSize]             %8.2X %8.2X %8.2X    %8.2X B\n",
+            "    Cache: [Requests Hits Misses ObjSize]             %8.2X %8.2X %8.2X %8.2X\n",
             List->Requests,
             List->Hits,
             List->Requests - List->Hits,
@@ -222,23 +222,23 @@ AcpiDbListInfo (
     if (List->ObjectSize)
     {
         AcpiOsPrintf (
-            "    Mem:   [Alloc    Free Max    CurSize Outstanding] %8.2X %8.2X %8.2X    %8.2X Kb %8.2X\n",
+            "    Mem:   [Alloc    Free Max    CurSize Outstanding] %8.2X %8.2X %8.2X %8.2X %8.2X\n",
             List->TotalAllocated,
             List->TotalFreed,
             List->MaxOccupied,
-            ACPI_ROUND_UP_TO_1K (Outstanding * List->ObjectSize),
+            Outstanding * List->ObjectSize,
             Outstanding);
     }
     else
     {
         AcpiOsPrintf (
-            "    Mem:   [Alloc Free Max CurSize Outstanding Total] %8.2X %8.2X %8.2X Kb %8.2X Kb %8.2X %8.2X Kb\n",
+            "    Mem:   [Alloc Free Max CurSize Outstanding Total] %8.2X %8.2X %8.2X %8.2X %8.2X %8.2X\n",
             List->TotalAllocated,
             List->TotalFreed,
-            ACPI_ROUND_UP_TO_1K (List->MaxOccupied),
-            ACPI_ROUND_UP_TO_1K (List->CurrentTotalSize),
+            List->MaxOccupied,
+            List->CurrentTotalSize,
             Outstanding,
-            ACPI_ROUND_UP_TO_1K (List->TotalSize));
+            List->TotalSize);
     }
 #endif
 }
