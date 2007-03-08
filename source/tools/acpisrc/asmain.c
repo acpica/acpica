@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -144,6 +144,7 @@ BOOLEAN                 Gbl_MadeChanges = FALSE;
 BOOLEAN                 Gbl_Overwrite = FALSE;
 BOOLEAN                 Gbl_WidenDeclarations = FALSE;
 BOOLEAN                 Gbl_IgnoreLoneLineFeeds = FALSE;
+BOOLEAN                 Gbl_HasLoneLineFeeds = FALSE;
 
 
 /******************************************************************************

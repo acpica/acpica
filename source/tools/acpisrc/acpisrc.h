@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -208,6 +208,7 @@ extern BOOLEAN                  Gbl_MadeChanges;
 extern BOOLEAN                  Gbl_Overwrite;
 extern BOOLEAN                  Gbl_WidenDeclarations;
 extern BOOLEAN                  Gbl_IgnoreLoneLineFeeds;
+extern BOOLEAN                  Gbl_HasLoneLineFeeds;
 extern void                     *Gbl_StructDefs;
 
 #define PARAM_LIST(pl)          pl

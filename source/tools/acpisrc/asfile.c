@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -285,6 +285,7 @@ AsDetectLoneLineFeeds (
 {
     UINT32                  i = 1;
     UINT32                  LfCount = 0;
+    UINT32                  LineCount = 0;
 
 
     if (!Buffer[0])
@@ -300,15 +301,22 @@ AsDetectLoneLineFeeds (
             {
                 LfCount++;
             }
+            LineCount++;
         }
-
         i++;
     }
 
     if (LfCount)
     {
-        printf ("****UNIX CONTAMINATION DETECTED****\n");
-        printf ("%d lone linefeeds in file %s\n", LfCount, Filename);
+        if (LineCount == LfCount)
+        {
+            printf ("****File has UNIX format**** (LF only, not CR/LF) %d lines, %s\n",
+                LfCount, Filename);
+        }
+        else
+        {
+            printf ("%d lone linefeeds in file %s\n", LfCount, Filename);
+        }
         return TRUE;
     }
 
@@ -592,6 +600,16 @@ AsProcessOneFile (
     /* Process the file in the buffer */
 
     Gbl_MadeChanges = FALSE;
+    if (!Gbl_IgnoreLoneLineFeeds && Gbl_HasLoneLineFeeds)
+    {
+        /*
+         * All lone LFs will be converted to CR/LF
+         * (when file is written, Windows version only)
+         */
+        printf ("Converting lone linefeeds\n");
+        Gbl_MadeChanges = TRUE;
+    }
+
     AsConvertFile (ConversionTable, Gbl_FileBuffer, Pathname, FileType);
 
     if (!(ConversionTable->Flags & FLG_NO_FILE_OUTPUT))
@@ -747,10 +765,7 @@ AsGetFile (
 
     /* Check for unix contamination */
 
-    if (!Gbl_IgnoreLoneLineFeeds && AsDetectLoneLineFeeds (Filename, Buffer))
-    {
-        return -1;
-    }
+    Gbl_HasLoneLineFeeds = AsDetectLoneLineFeeds (Filename, Buffer);
 
     /*
      * Convert all CR/LF pairs to LF only.  We do this locally so that
