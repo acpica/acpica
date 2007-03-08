@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.201 $
+ *              $Revision: 1.202 $
  *
  *****************************************************************************/
 
@@ -404,7 +404,6 @@ AcpiExStore (
      */
     switch (RefDesc->Reference.Opcode)
     {
-    case AML_NAME_OP:
     case AML_REF_OF_OP:
 
         /* Storing an object into a Name "container" */

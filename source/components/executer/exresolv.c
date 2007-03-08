@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.141 $
+ *              $Revision: 1.142 $
  *
  *****************************************************************************/
 
@@ -229,7 +229,6 @@ AcpiExResolveObjectToValue (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *StackDesc;
-    void                    *TempNode;
     ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
     UINT16                  Opcode;
 
@@ -249,24 +248,6 @@ AcpiExResolveObjectToValue (
 
         switch (Opcode)
         {
-        case AML_NAME_OP:
-
-            /*
-             * Convert name reference to a namespace node
-             * Then, AcpiExResolveNodeToValue can be used to get the value
-             */
-            TempNode = StackDesc->Reference.Object;
-
-            /* Delete the Reference Object */
-
-            AcpiUtRemoveReference (StackDesc);
-
-            /* Return the namespace node */
-
-            (*StackPtr) = TempNode;
-            break;
-
-
         case AML_LOCAL_OP:
         case AML_ARG_OP:
 

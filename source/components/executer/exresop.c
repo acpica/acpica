@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -224,7 +224,6 @@ AcpiExResolveOperands (
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_STATUS             Status = AE_OK;
     UINT8                   ObjectType;
-    void                    *TempNode;
     UINT32                  ArgTypes;
     const ACPI_OPCODE_INFO  *OpInfo;
     UINT32                  ThisArgType;
@@ -333,7 +332,6 @@ AcpiExResolveOperands (
 
                     /*lint -fallthrough */
 
-                case AML_NAME_OP:
                 case AML_INDEX_OP:
                 case AML_REF_OF_OP:
                 case AML_ARG_OP:
@@ -419,15 +417,6 @@ AcpiExResolveOperands (
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
-            }
-
-            if (ObjDesc->Reference.Opcode == AML_NAME_OP)
-            {
-                /* Convert a named reference to the actual named object */
-
-                TempNode = ObjDesc->Reference.Object;
-                AcpiUtRemoveReference (ObjDesc);
-                (*StackPtr) = TempNode;
             }
             goto NextOperand;
 

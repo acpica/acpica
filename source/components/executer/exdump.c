@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.201 $
+ *              $Revision: 1.202 $
  *
  *****************************************************************************/
 
@@ -598,14 +598,6 @@ AcpiExDumpOperand (
         case AML_DEBUG_OP:
 
             AcpiOsPrintf ("Reference: Debug\n");
-            break;
-
-
-        case AML_NAME_OP:
-
-            ACPI_DUMP_PATHNAME (ObjDesc->Reference.Object,
-                "Reference: Name: ", ACPI_LV_INFO, _COMPONENT);
-            ACPI_DUMP_ENTRY (ObjDesc->Reference.Object, ACPI_LV_INFO);
             break;
 
 
