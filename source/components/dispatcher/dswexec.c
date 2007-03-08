@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.132 $
+ *              $Revision: 1.133 $
  *
  *****************************************************************************/
 
@@ -383,12 +383,6 @@ AcpiDsExecBeginOp (
     {
     case AML_CLASS_CONTROL:
 
-        Status = AcpiDsResultStackPush (WalkState);
-        if (ACPI_FAILURE (Status))
-        {
-            goto ErrorExit;
-        }
-
         Status = AcpiDsExecBeginControlOp (WalkState, Op);
         break;
 
@@ -406,23 +400,12 @@ AcpiDsExecBeginOp (
             Status = AcpiDsLoad2BeginOp (WalkState, NULL);
         }
 
-        if (Op->Common.AmlOpcode == AML_REGION_OP)
-        {
-            Status = AcpiDsResultStackPush (WalkState);
-        }
         break;
 
 
     case AML_CLASS_EXECUTE:
     case AML_CLASS_CREATE:
-        /*
-         * Most operators with arguments (except CreateXxxField operators)
-         * Start a new result/operand state
-         */
-        if (WalkState->OpInfo->ObjectType != ACPI_TYPE_BUFFER_FIELD)
-        {
-            Status = AcpiDsResultStackPush (WalkState);
-        }
+
         break;
 
 
@@ -485,6 +468,7 @@ AcpiDsExecEndOp (
     /* Init the walk state */
 
     WalkState->NumOperands = 0;
+    WalkState->OperandIndex = 0;
     WalkState->ReturnDesc = NULL;
     WalkState->ResultObj = NULL;
 
@@ -506,14 +490,6 @@ AcpiDsExecEndOp (
         /* Build resolved operand stack */
 
         Status = AcpiDsCreateOperands (WalkState, FirstArg);
-        if (ACPI_FAILURE (Status))
-        {
-            goto Cleanup;
-        }
-
-        /* Done with this result state (Now that operand stack is built) */
-
-        Status = AcpiDsResultStackPop (WalkState);
         if (ACPI_FAILURE (Status))
         {
             goto Cleanup;
@@ -598,20 +574,6 @@ AcpiDsExecEndOp (
 
             Status = AcpiDsExecEndControlOp (WalkState, Op);
 
-            /* Make sure to properly pop the result stack */
-
-            if (ACPI_SUCCESS (Status))
-            {
-                Status = AcpiDsResultStackPop (WalkState);
-            }
-            else if (Status == AE_CTRL_PENDING)
-            {
-                Status = AcpiDsResultStackPop (WalkState);
-                if (ACPI_SUCCESS (Status))
-                {
-                    Status = AE_CTRL_PENDING;
-                }
-            }
             break;
 
 
@@ -738,14 +700,6 @@ AcpiDsExecEndOp (
                 break;
             }
 
-            /* Done with result state (Now that operand stack is built) */
-
-            Status = AcpiDsResultStackPop (WalkState);
-            if (ACPI_FAILURE (Status))
-            {
-                goto Cleanup;
-            }
-
             /*
              * If a result object was returned from above, push it on the
              * current result stack
@@ -778,8 +732,6 @@ AcpiDsExecEndOp (
                 {
                     break;
                 }
-
-                Status = AcpiDsResultStackPop (WalkState);
             }
             break;
 

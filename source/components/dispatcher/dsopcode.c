@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -947,6 +947,12 @@ AcpiDsEvalDataObjectOperands (
 
     /* The first operand (for all of these data objects) is the length */
 
+    /*
+     * Set proper index into operand stack for AcpiDsObjStackPush
+     * invoked inside AcpiDsCreateOperand.
+     */
+    WalkState->OperandIndex = WalkState->NumOperands;
+
     Status = AcpiDsCreateOperand (WalkState, Op->Common.Value.Arg, 1);
     if (ACPI_FAILURE (Status))
     {
@@ -1217,8 +1223,7 @@ AcpiDsExecEndControlOp (
              */
             WalkState->ReturnDesc = WalkState->Operands[0];
         }
-        else if ((WalkState->Results) &&
-                 (WalkState->Results->Results.NumResults > 0))
+        else if (WalkState->ResultCount)
         {
             /* Since we have a real Return(), delete any implicit return */
 

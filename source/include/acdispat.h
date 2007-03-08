@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.74 $
+ *       $Revision: 1.75 $
  *
  *****************************************************************************/
 
@@ -471,7 +471,7 @@ AcpiDsInitAmlWalk (
     ACPI_EVALUATE_INFO      *Info,
     UINT8                   PassNumber);
 
-ACPI_STATUS
+void
 AcpiDsObjStackPopAndDelete (
     UINT32                  PopCount,
     ACPI_WALK_STATE         *WalkState);
@@ -490,26 +490,12 @@ AcpiDsPushWalkState (
     ACPI_THREAD_STATE       *Thread);
 
 ACPI_STATUS
-AcpiDsResultStackPop (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsResultStackPush (
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
 AcpiDsResultStackClear (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_WALK_STATE *
 AcpiDsGetCurrentWalkState (
     ACPI_THREAD_STATE       *Thread);
-
-ACPI_STATUS
-AcpiDsResultRemove (
-    ACPI_OPERAND_OBJECT     **Object,
-    UINT32                  Index,
-    ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
 AcpiDsResultPop (
@@ -519,11 +505,6 @@ AcpiDsResultPop (
 ACPI_STATUS
 AcpiDsResultPush (
     ACPI_OPERAND_OBJECT     *Object,
-    ACPI_WALK_STATE         *WalkState);
-
-ACPI_STATUS
-AcpiDsResultPopFromBottom (
-    ACPI_OPERAND_OBJECT     **Object,
     ACPI_WALK_STATE         *WalkState);
 
 #endif /* _ACDISPAT_H_ */

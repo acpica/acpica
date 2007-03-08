@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.170 $
+ *              $Revision: 1.171 $
  *
  *****************************************************************************/
 
@@ -434,22 +434,14 @@ AcpiPsNextParseState (
 
         ParserState->Aml = WalkState->AmlLastWhile;
         WalkState->ControlState->Common.Value = FALSE;
-        Status = AcpiDsResultStackPop (WalkState);
-        if (ACPI_SUCCESS (Status))
-        {
-            Status = AE_CTRL_BREAK;
-        }
+        Status = AE_CTRL_BREAK;
         break;
 
 
     case AE_CTRL_CONTINUE:
 
         ParserState->Aml = WalkState->AmlLastWhile;
-        Status = AcpiDsResultStackPop (WalkState);
-        if (ACPI_SUCCESS (Status))
-        {
-            Status = AE_CTRL_CONTINUE;
-        }
+        Status = AE_CTRL_CONTINUE;
         break;
 
 
@@ -472,11 +464,7 @@ AcpiPsNextParseState (
          * Just close out this package
          */
         ParserState->Aml = AcpiPsGetNextPackageEnd (ParserState);
-        Status = AcpiDsResultStackPop (WalkState);
-        if (ACPI_SUCCESS (Status))
-        {
-            Status = AE_CTRL_PENDING;
-        }
+        Status = AE_CTRL_PENDING;
         break;
 
 

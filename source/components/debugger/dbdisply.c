@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbdisply - debug display commands
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  ******************************************************************************/
 
@@ -580,8 +580,10 @@ AcpiDbDisplayResults (
     UINT32                  i;
     ACPI_WALK_STATE         *WalkState;
     ACPI_OPERAND_OBJECT     *ObjDesc;
-    UINT32                  NumResults = 0;
+    UINT32                  ResultCount = 0;
     ACPI_NAMESPACE_NODE     *Node;
+    ACPI_GENERIC_STATE      *Frame;
+    UINT32                  Index; /* Index onto current frame */
 
 
     WalkState = AcpiDsGetCurrentWalkState (AcpiGbl_CurrentWalkList);
@@ -596,17 +598,28 @@ AcpiDbDisplayResults (
 
     if (WalkState->Results)
     {
-        NumResults = WalkState->Results->Results.NumResults;
+        ResultCount = WalkState->ResultCount;
     }
 
     AcpiOsPrintf ("Method [%4.4s] has %X stacked result objects\n",
-            AcpiUtGetNodeName (Node), NumResults);
+            AcpiUtGetNodeName (Node), ResultCount);
 
-    for (i = 0; i < NumResults; i++)
+    /* From the top element of result stack */
+
+    Frame = WalkState->Results;
+    Index = (ResultCount - 1) % ACPI_RESULTS_FRAME_OBJ_NUM;
+
+    for (i = 0; i < ResultCount; i++)
     {
-        ObjDesc = WalkState->Results->Results.ObjDesc[i];
+        ObjDesc = Frame->Results.ObjDesc[Index];
         AcpiOsPrintf ("Result%d: ", i);
         AcpiDmDisplayInternalObject (ObjDesc, WalkState);
+        if (Index == 0)
+        {
+            Frame = Frame->Results.Next;
+            Index = ACPI_RESULTS_FRAME_OBJ_NUM;
+        }
+        Index--;
     }
 }
 

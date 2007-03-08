@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  ******************************************************************************/
 
@@ -615,13 +615,15 @@ AcpiDmDisassembleOneOp (
         if ((Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP) &&
             (WalkState) &&
             (WalkState->Results) &&
-            (WalkState->Results->Results.NumResults))
+            (WalkState->ResultCount))
         {
             AcpiDmDecodeInternalObject (
                 WalkState->Results->Results.ObjDesc [
-                    WalkState->Results->Results.NumResults-1]);
+                    (WalkState->ResultCount - 1) %
+                        ACPI_RESULTS_FRAME_OBJ_NUM]);
         }
 #endif
+
         break;
     }
 }

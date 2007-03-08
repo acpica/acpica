@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  ******************************************************************************/
 
@@ -753,7 +753,7 @@ AcpiDsCreateOperand (
              * Use value that was already previously returned
              * by the evaluation of this argument
              */
-            Status = AcpiDsResultPopFromBottom (&ObjDesc, WalkState);
+            Status = AcpiDsResultPop (&ObjDesc, WalkState);
             if (ACPI_FAILURE (Status))
             {
                 /*
@@ -823,30 +823,59 @@ AcpiDsCreateOperands (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_PARSE_OBJECT       *Arg;
-    UINT32                  ArgCount = 0;
+    ACPI_PARSE_OBJECT       *Arguments[ACPI_OBJ_NUM_OPERANDS];
+    UINT8                   ArgCount = 0;
+    UINT8                   Count = 0;
+    UINT8                   Index = WalkState->NumOperands;
+    UINT8                   i;
 
 
     ACPI_FUNCTION_TRACE_PTR (DsCreateOperands, FirstArg);
 
 
-    /* For all arguments in the list... */
+    /* Get all arguments in the list */
 
     Arg = FirstArg;
     while (Arg)
     {
-        Status = AcpiDsCreateOperand (WalkState, Arg, ArgCount);
-        if (ACPI_FAILURE (Status))
+        if (Index >= ACPI_OBJ_NUM_OPERANDS)
         {
-            goto Cleanup;
+            return_ACPI_STATUS (AE_BAD_DATA);
         }
 
-        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Arg #%d (%p) done, Arg1=%p\n",
-            ArgCount, Arg, FirstArg));
+        Arguments[Index] = Arg;
+        WalkState->Operands [Index] = NULL;
 
         /* Move on to next argument, if any */
 
         Arg = Arg->Common.Next;
         ArgCount++;
+        Index++;
+    }
+
+    Index--;
+
+    /* It is the appropriate order to get objects from the Result stack */
+
+    for (i = 0; i < ArgCount; i++)
+    {
+        Arg = Arguments[Index];
+
+        /* Force the filling of the operand stack in inverse order */
+
+        WalkState->OperandIndex = Index;
+
+        Status = AcpiDsCreateOperand (WalkState, Arg, Index);
+        if (ACPI_FAILURE (Status))
+        {
+            goto Cleanup;
+        }
+
+        Count++;
+        Index--;
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Arg #%d (%p) done, Arg1=%p\n",
+            Index, Arg, FirstArg));
     }
 
     return_ACPI_STATUS (Status);
@@ -858,10 +887,9 @@ Cleanup:
      * pop everything off of the operand stack and delete those
      * objects
      */
-    (void) AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
+    AcpiDsObjStackPopAndDelete (ArgCount, WalkState);
 
-    ACPI_EXCEPTION ((AE_INFO, Status, "While creating Arg %d",
-        (ArgCount + 1)));
+    ACPI_EXCEPTION ((AE_INFO, Status, "While creating Arg %d", Index));
     return_ACPI_STATUS (Status);
 }
 

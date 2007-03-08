@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -716,15 +716,6 @@ AcpiPsCompleteOp (
         {
             AcpiPsPopScope (&(WalkState->ParserState), Op,
                 &WalkState->ArgTypes, &WalkState->ArgCount);
-
-            if ((*Op)->Common.AmlOpcode != AML_WHILE_OP)
-            {
-                Status2 = AcpiDsResultStackPop (WalkState);
-                if (ACPI_FAILURE (Status2))
-                {
-                    return_ACPI_STATUS (Status2);
-                }
-            }
         }
 
         /* Close this iteration of the While loop */
@@ -754,11 +745,6 @@ AcpiPsCompleteOp (
             if (*Op)
             {
                 Status2 = AcpiPsCompleteThisOp (WalkState, *Op);
-                if (ACPI_FAILURE (Status2))
-                {
-                    return_ACPI_STATUS (Status2);
-                }
-                Status2 = AcpiDsResultStackPop (WalkState);
                 if (ACPI_FAILURE (Status2))
                 {
                     return_ACPI_STATUS (Status2);

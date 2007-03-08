@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.46 $
+ *       $Revision: 1.47 $
  *
  *****************************************************************************/
 
@@ -156,12 +156,15 @@ typedef struct acpi_walk_state
     UINT16                          Opcode;             /* Current AML opcode */
     UINT8                           NextOpInfo;         /* Info about NextOp */
     UINT8                           NumOperands;        /* Stack pointer for Operands[] array */
+    UINT8                           OperandIndex;       /* Index into operand stack, to be used by AcpiDsObjStackPush */
     ACPI_OWNER_ID                   OwnerId;            /* Owner of objects created during the walk */
     BOOLEAN                         LastPredicate;      /* Result of last predicate */
     UINT8                           CurrentResult;
     UINT8                           ReturnUsed;
     UINT8                           ScopeDepth;
     UINT8                           PassNumber;         /* Parse pass during table load */
+    UINT8                           ResultSize;         /* Total elements for the result stack */
+    UINT8                           ResultCount;        /* Current number of occupied elements of result stack */
     UINT32                          AmlOffset;
     UINT32                          ArgTypes;
     UINT32                          MethodBreakpoint;   /* For single stepping */
