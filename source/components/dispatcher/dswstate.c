@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.100 $
+ *              $Revision: 1.101 $
  *
  *****************************************************************************/
 
@@ -922,6 +922,5 @@ AcpiDsDeleteWalkState (
     ACPI_FREE (WalkState);
     return_VOID;
 }
-
 
 
