@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acfreebsd.h - OS specific defines, etc.
- *       $Revision: 1.24 $
+ *       $Revision: 1.25 $
  *
  *****************************************************************************/
 
@@ -179,22 +179,22 @@
 #ifdef _KERNEL
 /* Or strstr (used in debugging mode, also move to libkern) */
 static __inline char *
-strstr(char *s, char *find)
+strstr (char *s, char *find)
 {
     char c, sc;
     size_t len;
 
     if ((c = *find++) != 0) {
-    len = strlen(find);
-    do {
+        len = strlen (find);
         do {
-        if ((sc = *s++) == 0)
-            return (NULL);
-        } while (sc != c);
-    } while (strncmp(s, find, len) != 0);
-    s--;
+            do {
+                if ((sc = *s++) == 0)
+                    return (NULL);
+            } while (sc != c);
+        } while (strncmp (s, find, len) != 0);
+        s--;
     }
-    return ((char *)s);
+    return ((char *) s);
 }
 #endif /* _KERNEL */
 
