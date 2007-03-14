@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.205 $
+ *              $Revision: 1.206 $
  *
  ******************************************************************************/
 
@@ -294,7 +294,7 @@ AcpiNsRootInitialize (
 
                 if (ACPI_STRCMP (InitVal->Name, "_GL_") == 0)
                 {
-                    AcpiGbl_GlobalLockMutex = ObjDesc->Mutex.OsMutex;
+                    AcpiGbl_GlobalLockMutex = ObjDesc;
 
                     /* Create additional counting semaphore for global lock */
 

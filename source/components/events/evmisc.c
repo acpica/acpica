@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -559,7 +559,8 @@ AcpiEvAcquireGlobalLock (
      * Only one thread can acquire the GL at a time, the GlobalLockMutex
      * enforces this. This interface releases the interpreter if we must wait.
      */
-    Status = AcpiExSystemWaitMutex (AcpiGbl_GlobalLockMutex, Timeout);
+    Status = AcpiExSystemWaitMutex (AcpiGbl_GlobalLockMutex->Mutex.OsMutex, 
+                Timeout);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -660,7 +661,7 @@ AcpiEvReleaseGlobalLock (
 
     /* Release the local GL mutex */
 
-    AcpiOsReleaseMutex (AcpiGbl_GlobalLockMutex);
+    AcpiOsReleaseMutex (AcpiGbl_GlobalLockMutex->Mutex.OsMutex);
     return_ACPI_STATUS (Status);
 }
 

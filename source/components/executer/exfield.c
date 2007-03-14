@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.129 $
+ *              $Revision: 1.130 $
  *
  *****************************************************************************/
 
@@ -151,7 +151,6 @@ AcpiExReadDataFromField (
     ACPI_OPERAND_OBJECT     *BufferDesc;
     ACPI_SIZE               Length;
     void                    *Buffer;
-    BOOLEAN                 Locked;
 
 
     ACPI_FUNCTION_TRACE_PTR (ExReadDataFromField, ObjDesc);
@@ -198,7 +197,7 @@ AcpiExReadDataFromField (
 
         /* Lock entire transaction if requested */
 
-        Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
+        AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
 
         /*
          * Perform the read.
@@ -207,7 +206,7 @@ AcpiExReadDataFromField (
         Status = AcpiExAccessRegion (ObjDesc, 0,
                     ACPI_CAST_PTR (ACPI_INTEGER, BufferDesc->Buffer.Pointer),
                     ACPI_READ | (ObjDesc->Field.Attribute << 16));
-        AcpiExReleaseGlobalLock (Locked);
+        AcpiExReleaseGlobalLock ();
         goto Exit;
     }
 
@@ -259,12 +258,12 @@ AcpiExReadDataFromField (
 
     /* Lock entire transaction if requested */
 
-    Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
+    AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
 
     /* Read from the field */
 
     Status = AcpiExExtractFromField (ObjDesc, Buffer, (UINT32) Length);
-    AcpiExReleaseGlobalLock (Locked);
+    AcpiExReleaseGlobalLock ();
 
 
 Exit:
@@ -306,7 +305,6 @@ AcpiExWriteDataToField (
     UINT32                  RequiredLength;
     void                    *Buffer;
     void                    *NewBuffer;
-    BOOLEAN                 Locked;
     ACPI_OPERAND_OBJECT     *BufferDesc;
 
 
@@ -373,7 +371,7 @@ AcpiExWriteDataToField (
 
         /* Lock entire transaction if requested */
 
-        Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
+        AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
 
         /*
          * Perform the write (returns status and perhaps data in the
@@ -383,7 +381,7 @@ AcpiExWriteDataToField (
         Status = AcpiExAccessRegion (ObjDesc, 0,
                         (ACPI_INTEGER *) Buffer,
                         ACPI_WRITE | (ObjDesc->Field.Attribute << 16));
-        AcpiExReleaseGlobalLock (Locked);
+        AcpiExReleaseGlobalLock ();
 
         *ResultDesc = BufferDesc;
         return_ACPI_STATUS (Status);
@@ -457,12 +455,12 @@ AcpiExWriteDataToField (
 
     /* Lock entire transaction if requested */
 
-    Locked = AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
+    AcpiExAcquireGlobalLock (ObjDesc->CommonField.FieldFlags);
 
     /* Write to the field */
 
     Status = AcpiExInsertIntoField (ObjDesc, Buffer, Length);
-    AcpiExReleaseGlobalLock (Locked);
+    AcpiExReleaseGlobalLock ();
 
     /* Free temporary buffer if we used one */
 

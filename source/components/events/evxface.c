@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.163 $
+ *              $Revision: 1.164 $
  *
  *****************************************************************************/
 
@@ -891,6 +891,12 @@ ACPI_EXPORT_SYMBOL (AcpiRemoveGpeHandler)
  *
  * DESCRIPTION: Acquire the ACPI Global Lock
  *
+ * Note: Allows callers with the same thread ID to acquire the global lock
+ * multiple times. In other words, externally, the behavior of the global lock
+ * is identical to an AML mutex. On the first acquire, a new handle is
+ * returned. On any subsequent calls to acquire by the same thread, the same
+ * handle is returned.
+ *
  ******************************************************************************/
 
 ACPI_STATUS
@@ -909,15 +915,27 @@ AcpiAcquireGlobalLock (
     /* Must lock interpreter to prevent race conditions */
 
     AcpiExEnterInterpreter ();
-    Status = AcpiEvAcquireGlobalLock (Timeout);
-    AcpiExExitInterpreter ();
+
+    Status = AcpiExAcquireMutexObject (Timeout,
+                AcpiGbl_GlobalLockMutex, AcpiOsGetThreadId ());
 
     if (ACPI_SUCCESS (Status))
     {
-        AcpiGbl_GlobalLockHandle++;
+        /*
+         * If this was the first acquisition of the Global Lock by this thread,
+         * create a new handle. Otherwise, return the existing handle.
+         */
+        if (AcpiGbl_GlobalLockMutex->Mutex.AcquisitionDepth == 1)
+        {
+            AcpiGbl_GlobalLockHandle++;
+        }
+
+        /* Return the global lock handle */
+
         *Handle = AcpiGbl_GlobalLockHandle;
     }
 
+    AcpiExExitInterpreter ();
     return (Status);
 }
 
@@ -948,7 +966,7 @@ AcpiReleaseGlobalLock (
         return (AE_NOT_ACQUIRED);
     }
 
-    Status = AcpiEvReleaseGlobalLock ();
+    Status = AcpiExReleaseMutexObject (AcpiGbl_GlobalLockMutex);
     return (Status);
 }
 

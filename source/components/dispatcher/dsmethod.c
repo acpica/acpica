@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.134 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -329,8 +329,8 @@ AcpiDsBeginMethodExecution (
          * recursive call.
          */
         if (!WalkState ||
-            !ObjDesc->Method.Mutex->Mutex.OwnerThread ||
-            (WalkState->Thread != ObjDesc->Method.Mutex->Mutex.OwnerThread))
+            !ObjDesc->Method.Mutex->Mutex.ThreadId ||
+            (WalkState->Thread->ThreadId != ObjDesc->Method.Mutex->Mutex.ThreadId))
         {
             /*
              * Acquire the method mutex. This releases the interpreter if we
@@ -350,7 +350,7 @@ AcpiDsBeginMethodExecution (
                 ObjDesc->Method.Mutex->Mutex.OriginalSyncLevel =
                     WalkState->Thread->CurrentSyncLevel;
 
-                ObjDesc->Method.Mutex->Mutex.OwnerThread = WalkState->Thread;
+                ObjDesc->Method.Mutex->Mutex.ThreadId = WalkState->Thread->ThreadId;
                 WalkState->Thread->CurrentSyncLevel = ObjDesc->Method.SyncLevel;
             }
             else
@@ -687,7 +687,7 @@ AcpiDsTerminateControlMethod (
                 MethodDesc->Method.Mutex->Mutex.OriginalSyncLevel;
 
             AcpiOsReleaseMutex (MethodDesc->Method.Mutex->Mutex.OsMutex);
-            MethodDesc->Method.Mutex->Mutex.OwnerThread = NULL;
+            MethodDesc->Method.Mutex->Mutex.ThreadId = 0;
         }
     }
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.192 $
+ *       $Revision: 1.193 $
  *
  *****************************************************************************/
 
@@ -251,10 +251,14 @@ ACPI_EXTERN UINT8                       AcpiGbl_IntegerNybbleWidth;
 ACPI_EXTERN ACPI_MUTEX_INFO             AcpiGbl_MutexInfo[ACPI_NUM_MUTEX];
 
 /*
- * Global lock semaphore works in conjunction with the actual HW global lock
+ * Global lock mutex is an actual AML mutex object
+ * Global lock semaphore works in conjunction with the HW global lock
  */
-ACPI_EXTERN ACPI_MUTEX                  AcpiGbl_GlobalLockMutex;
+ACPI_EXTERN ACPI_OPERAND_OBJECT        *AcpiGbl_GlobalLockMutex;
 ACPI_EXTERN ACPI_SEMAPHORE              AcpiGbl_GlobalLockSemaphore;
+ACPI_EXTERN UINT16                      AcpiGbl_GlobalLockHandle;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockAcquired;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockPresent;
 
 /*
  * Spinlocks are used for interfaces that can be possibly called at
@@ -295,22 +299,22 @@ ACPI_EXTERN ACPI_EXCEPTION_HANDLER      AcpiGbl_ExceptionHandler;
 ACPI_EXTERN ACPI_INIT_HANDLER           AcpiGbl_InitHandler;
 ACPI_EXTERN ACPI_WALK_STATE            *AcpiGbl_BreakpointWalk;
 
+/* Owner ID support */
+
+ACPI_EXTERN UINT32                      AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS];
+ACPI_EXTERN UINT8                       AcpiGbl_LastOwnerIdIndex;
+ACPI_EXTERN UINT8                       AcpiGbl_NextOwnerIdOffset;
+
 /* Misc */
 
 ACPI_EXTERN UINT32                      AcpiGbl_OriginalMode;
 ACPI_EXTERN UINT32                      AcpiGbl_RsdpOriginalLocation;
 ACPI_EXTERN UINT32                      AcpiGbl_NsLookupCount;
 ACPI_EXTERN UINT32                      AcpiGbl_PsFindCount;
-ACPI_EXTERN UINT32                      AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS];
 ACPI_EXTERN UINT16                      AcpiGbl_Pm1EnableRegisterSave;
-ACPI_EXTERN UINT16                      AcpiGbl_GlobalLockHandle;
-ACPI_EXTERN UINT8                       AcpiGbl_LastOwnerIdIndex;
-ACPI_EXTERN UINT8                       AcpiGbl_NextOwnerIdOffset;
 ACPI_EXTERN UINT8                       AcpiGbl_DebuggerConfiguration;
-ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockAcquired;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_StepToNextCall;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_AcpiHardwarePresent;
-ACPI_EXTERN BOOLEAN                     AcpiGbl_GlobalLockPresent;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_EventsInitialized;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_SystemAwakeAndRunning;
 

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -346,44 +346,42 @@ AcpiExTruncateFor32bitTable (
  * PARAMETERS:  FieldFlags            - Flags with Lock rule:
  *                                      AlwaysLock or NeverLock
  *
- * RETURN:      TRUE/FALSE indicating whether the lock was actually acquired
+ * RETURN:      None
  *
- * DESCRIPTION: Obtain the global lock and keep track of this fact via two
- *              methods.  A global variable keeps the state of the lock, and
- *              the state is returned to the caller.
+ * DESCRIPTION: Obtain the ACPI hardware Global Lock, only if the field
+ *              flags specifiy that it is to be obtained before field access.
  *
  ******************************************************************************/
 
-BOOLEAN
+void
 AcpiExAcquireGlobalLock (
     UINT32                  FieldFlags)
 {
-    BOOLEAN                 Locked = FALSE;
     ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE (ExAcquireGlobalLock);
 
 
-    /* Only attempt lock if the AlwaysLock bit is set */
+    /* Only use the lock if the AlwaysLock bit is set */
 
-    if (FieldFlags & AML_FIELD_LOCK_RULE_MASK)
+    if (!(FieldFlags & AML_FIELD_LOCK_RULE_MASK))
     {
-        /* We should attempt to get the lock, wait forever */
-
-        Status = AcpiEvAcquireGlobalLock (ACPI_WAIT_FOREVER);
-        if (ACPI_SUCCESS (Status))
-        {
-            Locked = TRUE;
-        }
-        else
-        {
-            ACPI_EXCEPTION ((AE_INFO, Status,
-                "Could not acquire Global Lock"));
-        }
+        return_VOID;
     }
 
-    return_UINT8 (Locked);
+    /* Attempt to get the global lock, wait forever */
+
+    Status = AcpiExAcquireMutexObject (ACPI_WAIT_FOREVER,
+                AcpiGbl_GlobalLockMutex, AcpiOsGetThreadId ());
+
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Could not acquire Global Lock"));
+    }
+
+    return_VOID;
 }
 
 
@@ -391,18 +389,17 @@ AcpiExAcquireGlobalLock (
  *
  * FUNCTION:    AcpiExReleaseGlobalLock
  *
- * PARAMETERS:  LockedByMe      - Return value from corresponding call to
- *                                AcquireGlobalLock.
+ * PARAMETERS:  None
  *
  * RETURN:      None
  *
- * DESCRIPTION: Release the global lock if it is locked.
+ * DESCRIPTION: Release the ACPI hardware Global Lock
  *
  ******************************************************************************/
 
 void
 AcpiExReleaseGlobalLock (
-    BOOLEAN                 LockedByMe)
+    void)
 {
     ACPI_STATUS             Status;
 
@@ -410,20 +407,15 @@ AcpiExReleaseGlobalLock (
     ACPI_FUNCTION_TRACE (ExReleaseGlobalLock);
 
 
-    /* Only attempt unlock if the caller locked it */
+    /* Release the global lock */
 
-    if (LockedByMe)
+    Status = AcpiExReleaseMutexObject (AcpiGbl_GlobalLockMutex);
+    if (ACPI_FAILURE (Status))
     {
-        /* OK, now release the lock */
+        /* Report the error, but there isn't much else we can do */
 
-        Status = AcpiEvReleaseGlobalLock ();
-        if (ACPI_FAILURE (Status))
-        {
-            /* Report the error, but there isn't much else we can do */
-
-            ACPI_EXCEPTION ((AE_INFO, Status,
-                "Could not release ACPI Global Lock"));
-        }
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Could not release Global Lock"));
     }
 
     return_VOID;

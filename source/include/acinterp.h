@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.169 $
+ *       $Revision: 1.170 $
  *
  *****************************************************************************/
 
@@ -381,9 +381,19 @@ AcpiExAcquireMutex (
     ACPI_WALK_STATE         *WalkState);
 
 ACPI_STATUS
+AcpiExAcquireMutexObject (
+    UINT16                  Timeout,
+    ACPI_OPERAND_OBJECT     *ObjDesc,
+    ACPI_THREAD_ID          ThreadId);
+
+ACPI_STATUS
 AcpiExReleaseMutex (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
+
+ACPI_STATUS
+AcpiExReleaseMutexObject (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
 
 void
 AcpiExReleaseAllMutexes (
@@ -685,13 +695,13 @@ void
 AcpiExTruncateFor32bitTable (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
-BOOLEAN
+void
 AcpiExAcquireGlobalLock (
     UINT32                  Rule);
 
 void
 AcpiExReleaseGlobalLock (
-    BOOLEAN                 Locked);
+    void);
 
 void
 AcpiExEisaIdToString (
