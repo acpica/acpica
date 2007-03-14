@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.193 $
+ *       $Revision: 1.194 $
  *
  *****************************************************************************/
 
@@ -180,35 +180,6 @@ ACPI_EXTERN UINT8       ACPI_INIT_GLOBAL (AcpiGbl_LeaveWakeGpesDisabled, TRUE);
 
 /*****************************************************************************
  *
- * Debug support
- *
- ****************************************************************************/
-
-/* Runtime configuration of debug print levels */
-
-extern      UINT32                      AcpiDbgLevel;
-extern      UINT32                      AcpiDbgLayer;
-
-/* Procedure nesting level for debug output */
-
-extern      UINT32                      AcpiGbl_NestingLevel;
-
-/* Event counters */
-
-ACPI_EXTERN UINT32                      AcpiGpeCount;
-
-/* Support for dynamic control method tracing mechanism */
-
-ACPI_EXTERN UINT32                      AcpiGbl_OriginalDbgLevel;
-ACPI_EXTERN UINT32                      AcpiGbl_OriginalDbgLayer;
-ACPI_EXTERN ACPI_NAME                   AcpiGbl_TraceMethodName;
-ACPI_EXTERN UINT32                      AcpiGbl_TraceDbgLevel;
-ACPI_EXTERN UINT32                      AcpiGbl_TraceDbgLayer;
-ACPI_EXTERN UINT32                      AcpiGbl_TraceFlags;
-
-
-/*****************************************************************************
- *
  * ACPI Table globals
  *
  ****************************************************************************/
@@ -274,15 +245,6 @@ ACPI_EXTERN ACPI_SPINLOCK               AcpiGbl_HardwareLock; /* For ACPI H/W ex
  *
  ****************************************************************************/
 
-#ifdef ACPI_DBG_TRACK_ALLOCATIONS
-
-/* Lists for tracking memory allocations */
-
-ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_GlobalList;
-ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_NsNodeList;
-ACPI_EXTERN BOOLEAN                     AcpiGbl_DisplayFinalMemStats;
-#endif
-
 /* Object caches */
 
 ACPI_EXTERN ACPI_CACHE_T               *AcpiGbl_NamespaceCache;
@@ -318,20 +280,36 @@ ACPI_EXTERN BOOLEAN                     AcpiGbl_AcpiHardwarePresent;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_EventsInitialized;
 ACPI_EXTERN BOOLEAN                     AcpiGbl_SystemAwakeAndRunning;
 
+
+#ifndef DEFINE_ACPI_GLOBALS
+
+/* Exception codes */
+
+extern char const                       *AcpiGbl_ExceptionNames_Env[];
+extern char const                       *AcpiGbl_ExceptionNames_Pgm[];
+extern char const                       *AcpiGbl_ExceptionNames_Tbl[];
+extern char const                       *AcpiGbl_ExceptionNames_Aml[];
+extern char const                       *AcpiGbl_ExceptionNames_Ctrl[];
+
+/* Other miscellaneous */
+
 extern BOOLEAN                          AcpiGbl_Shutdown;
 extern UINT32                           AcpiGbl_StartupFlags;
 extern const char                      *AcpiGbl_SleepStateNames[ACPI_S_STATE_COUNT];
 extern const char                      *AcpiGbl_HighestDstateNames[4];
 extern const ACPI_OPCODE_INFO           AcpiGbl_AmlOpInfo[AML_NUM_OPCODES];
 extern const char                      *AcpiGbl_RegionTypes[ACPI_NUM_PREDEFINED_REGIONS];
+#endif
 
-/* Exception codes */
 
-extern      char const                 *AcpiGbl_ExceptionNames_Env[];
-extern      char const                 *AcpiGbl_ExceptionNames_Pgm[];
-extern      char const                 *AcpiGbl_ExceptionNames_Tbl[];
-extern      char const                 *AcpiGbl_ExceptionNames_Aml[];
-extern      char const                 *AcpiGbl_ExceptionNames_Ctrl[];
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+
+/* Lists for tracking memory allocations */
+
+ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_GlobalList;
+ACPI_EXTERN ACPI_MEMORY_LIST           *AcpiGbl_NsNodeList;
+ACPI_EXTERN BOOLEAN                     AcpiGbl_DisplayFinalMemStats;
+#endif
 
 
 /*****************************************************************************
@@ -400,6 +378,35 @@ extern      ACPI_FIXED_EVENT_INFO       AcpiGbl_FixedEventInfo[ACPI_NUM_FIXED_EV
 ACPI_EXTERN ACPI_FIXED_EVENT_HANDLER    AcpiGbl_FixedEventHandlers[ACPI_NUM_FIXED_EVENTS];
 ACPI_EXTERN ACPI_GPE_XRUPT_INFO        *AcpiGbl_GpeXruptListHead;
 ACPI_EXTERN ACPI_GPE_BLOCK_INFO        *AcpiGbl_GpeFadtBlocks[ACPI_MAX_GPE_BLOCKS];
+
+
+/*****************************************************************************
+ *
+ * Debug support
+ *
+ ****************************************************************************/
+
+/* Runtime configuration of debug print levels */
+
+extern      UINT32                      AcpiDbgLevel;
+extern      UINT32                      AcpiDbgLayer;
+
+/* Procedure nesting level for debug output */
+
+extern      UINT32                      AcpiGbl_NestingLevel;
+
+/* Event counters */
+
+ACPI_EXTERN UINT32                      AcpiGpeCount;
+
+/* Support for dynamic control method tracing mechanism */
+
+ACPI_EXTERN UINT32                      AcpiGbl_OriginalDbgLevel;
+ACPI_EXTERN UINT32                      AcpiGbl_OriginalDbgLayer;
+ACPI_EXTERN ACPI_NAME                   AcpiGbl_TraceMethodName;
+ACPI_EXTERN UINT32                      AcpiGbl_TraceDbgLevel;
+ACPI_EXTERN UINT32                      AcpiGbl_TraceDbgLayer;
+ACPI_EXTERN UINT32                      AcpiGbl_TraceFlags;
 
 
 /*****************************************************************************
