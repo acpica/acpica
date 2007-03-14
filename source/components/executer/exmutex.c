@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  *****************************************************************************/
 
@@ -239,7 +239,6 @@ AcpiExAcquireMutexObject (
 
 
     ACPI_FUNCTION_TRACE_PTR (ExAcquireMutexObject, ObjDesc);
-
 
 
     /* Support for multiple acquires by the owning thread */

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.246 $
+ *       $Revision: 1.247 $
  *
  *****************************************************************************/
 
@@ -793,6 +793,7 @@ typedef union acpi_parse_value
     union acpi_parse_object         *Next;          /* Next op */\
     ACPI_NAMESPACE_NODE             *Node;          /* For use by interpreter */\
     ACPI_PARSE_VALUE                Value;          /* Value or args associated with the opcode */\
+    UINT8                           ArgListLength;  /* Number of elements in the arg list */\
     ACPI_DISASM_ONLY_MEMBERS (\
     UINT8                           DisasmFlags;    /* Used during AML disassembly */\
     UINT8                           DisasmOpcode;   /* Subtype used for disassembly */\
@@ -902,6 +903,8 @@ typedef struct acpi_parse_state
 #define ACPI_PARSEOP_NAMED              0x02
 #define ACPI_PARSEOP_DEFERRED           0x04
 #define ACPI_PARSEOP_BYTELIST           0x08
+#define ACPI_PARSEOP_IN_STACK           0x10
+#define ACPI_PARSEOP_TARGET             0x20
 #define ACPI_PARSEOP_IN_CACHE           0x80
 
 /* Parse object DisasmFlags */

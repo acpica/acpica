@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.133 $
+ *              $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -481,11 +481,20 @@ AcpiDsExecEndOp (
 
     switch (OpClass)
     {
-    case AML_CLASS_ARGUMENT:    /* constants, literals, etc. - do nothing */
+    case AML_CLASS_ARGUMENT:    /* Constants, literals, etc. */
+
+        if (WalkState->Opcode == AML_INT_NAMEPATH_OP)
+        {
+            Status = AcpiDsEvaluateNamePath (WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                goto Cleanup;
+            }
+        }
         break;
 
 
-    case AML_CLASS_EXECUTE:     /* most operators with arguments */
+    case AML_CLASS_EXECUTE:     /* Most operators with arguments */
 
         /* Build resolved operand stack */
 

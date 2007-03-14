@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.127 $
+ *              $Revision: 1.128 $
  *
  *****************************************************************************/
 
@@ -320,9 +320,10 @@ AcpiExTruncateFor32bitTable (
 
     /*
      * Object must be a valid number and we must be executing
-     * a control method
+     * a control method. NS node could be there for AML_INT_NAMEPATH_OP.
      */
     if ((!ObjDesc) ||
+        (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_OPERAND) ||
         (ACPI_GET_OBJECT_TYPE (ObjDesc) != ACPI_TYPE_INTEGER))
     {
         return;

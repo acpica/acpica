@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.98 $
+ *              $Revision: 1.99 $
  *
  *****************************************************************************/
 
@@ -123,6 +123,9 @@
 
 #define _COMPONENT          ACPI_PARSER
         ACPI_MODULE_NAME    ("psopcode")
+
+
+const UINT8                 AcpiGbl_ArgumentCount[] = {0,1,1,1,1,2,2,2,2,3,3,6};
 
 
 /*******************************************************************************
@@ -559,3 +562,28 @@ AcpiPsGetOpcodeName (
 #endif
 }
 
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetArgumentCount
+ *
+ * PARAMETERS:  OpType              - Type associated with the AML opcode
+ *
+ * RETURN:      Argument count
+ *
+ * DESCRIPTION: Obtain the number of expected arguments for an AML opcode
+ *
+ ******************************************************************************/
+
+UINT8
+AcpiPsGetArgumentCount (
+    UINT32                  OpType)
+{
+
+    if (OpType <= AML_TYPE_EXEC_6A_0T_1R)
+    {
+        return (AcpiGbl_ArgumentCount[OpType]);
+    }
+
+    return (0);
+}

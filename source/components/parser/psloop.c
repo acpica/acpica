@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -274,6 +274,7 @@ AcpiPsBuildNamedOp (
 
 
     UnnamedOp->Common.Value.Arg = NULL;
+    UnnamedOp->Common.ArgListLength = 0;
     UnnamedOp->Common.AmlOpcode = WalkState->Opcode;
 
     /*
@@ -380,6 +381,9 @@ AcpiPsCreateOp (
     ACPI_STATUS             Status = AE_OK;
     ACPI_PARSE_OBJECT       *Op;
     ACPI_PARSE_OBJECT       *NamedOp = NULL;
+    ACPI_PARSE_OBJECT       *ParentScope;
+    UINT8                   ArgumentCount;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
 
     ACPI_FUNCTION_TRACE_PTR (PsCreateOp, WalkState);
@@ -425,7 +429,25 @@ AcpiPsCreateOp (
         Op->Named.Length = 0;
     }
 
-    AcpiPsAppendArg (AcpiPsGetParentScope (&(WalkState->ParserState)), Op);
+    ParentScope = AcpiPsGetParentScope (&(WalkState->ParserState));
+    AcpiPsAppendArg (ParentScope, Op);
+
+    if (ParentScope)
+    {
+        OpInfo = AcpiPsGetOpcodeInfo (ParentScope->Common.AmlOpcode);
+        if (OpInfo->Flags & AML_HAS_TARGET)
+        {
+            ArgumentCount = AcpiPsGetArgumentCount (OpInfo->Type);
+            if (ParentScope->Common.ArgListLength > ArgumentCount)
+            {
+                Op->Common.Flags |= ACPI_PARSEOP_TARGET;
+            }
+        }
+        else if (ParentScope->Common.AmlOpcode == AML_INCREMENT_OP)
+        {
+            Op->Common.Flags |= ACPI_PARSEOP_TARGET;
+        }
+    }
 
     if (WalkState->DescendingCallback != NULL)
     {

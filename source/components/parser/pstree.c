@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: pstree - Parser op tree manipulation/traversal/search
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -267,6 +267,8 @@ AcpiPsAppendArg (
     {
         Arg->Common.Parent = Op;
         Arg = Arg->Common.Next;
+
+        Op->Common.ArgListLength++;
     }
 }
 
