@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
- *              $Revision: 1.34 $
+ *              $Revision: 1.35 $
  *
  *****************************************************************************/
 
@@ -362,6 +362,7 @@ Cleanup:
     if (ACPI_FAILURE (Status) || WalkState->ResultObj)
     {
         AcpiUtRemoveReference (ReturnDesc);
+        WalkState->ResultObj = NULL;
     }
 
     /* Set the return object and exit */

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.142 $
+ *              $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -339,11 +339,6 @@ AcpiExOpcode_2A_2T_1R (
         goto Cleanup;
     }
 
-    /* Return the remainder */
-
-    WalkState->ResultObj = ReturnDesc1;
-
-
 Cleanup:
     /*
      * Since the remainder is not returned indirectly, remove a reference to
@@ -356,6 +351,13 @@ Cleanup:
         /* Delete the return object */
 
         AcpiUtRemoveReference (ReturnDesc1);
+    }
+
+    /* Save return object (the remainder) on success */
+
+    else
+    {
+        WalkState->ResultObj = ReturnDesc1;
     }
 
     return_ACPI_STATUS (Status);
@@ -612,6 +614,7 @@ Cleanup:
     if (ACPI_FAILURE (Status))
     {
         AcpiUtRemoveReference (ReturnDesc);
+        WalkState->ResultObj = NULL;
     }
 
     return_ACPI_STATUS (Status);
@@ -716,9 +719,6 @@ StoreLogicalResult:
         ReturnDesc->Integer.Value = ACPI_INTEGER_MAX;
     }
 
-    WalkState->ResultObj = ReturnDesc;
-
-
 Cleanup:
 
     /* Delete return object on error */
@@ -726,6 +726,13 @@ Cleanup:
     if (ACPI_FAILURE (Status))
     {
         AcpiUtRemoveReference (ReturnDesc);
+    }
+
+    /* Save return object on success */
+
+    else
+    {
+        WalkState->ResultObj = ReturnDesc;
     }
 
     return_ACPI_STATUS (Status);

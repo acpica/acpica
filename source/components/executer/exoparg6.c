@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg6 - AML execution - opcodes with 6 arguments
- *              $Revision: 1.28 $
+ *              $Revision: 1.29 $
  *
  *****************************************************************************/
 
@@ -420,8 +420,6 @@ AcpiExOpcode_6A_0T_1R (
         goto Cleanup;
     }
 
-    WalkState->ResultObj = ReturnDesc;
-
 
 Cleanup:
 
@@ -430,6 +428,13 @@ Cleanup:
     if (ACPI_FAILURE (Status))
     {
         AcpiUtRemoveReference (ReturnDesc);
+    }
+
+    /* Save return object on success */
+
+    else
+    {
+        WalkState->ResultObj = ReturnDesc;
     }
 
     return_ACPI_STATUS (Status);
