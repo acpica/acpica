@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.38 $
+ *              $Revision: 1.39 $
  *
  *****************************************************************************/
 
@@ -225,7 +225,16 @@ AcpiExLinkMutex (
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Acquire an AML mutex, low-level interface
+ * DESCRIPTION: Acquire an AML mutex, low-level interface. Provides a common
+ *              path that supports multiple acquires by the same thread.
+ *
+ * MUTEX:       Interpreter must be locked
+ *
+ * NOTE: This interface is called from three places:
+ * 1) From AcpiExAcquireMutex, via an AML Acquire() operator
+ * 2) From AcpiExAcquireGlobalLock when an AML Field access requires the
+ *    global lock
+ * 3) From the external interface, AcpiAcquireGlobalLock
  *
  ******************************************************************************/
 
@@ -272,7 +281,7 @@ AcpiExAcquireMutexObject (
         return_ACPI_STATUS (Status);
     }
 
-    /* Have the mutex: update mutex and save the SyncLevel */
+    /* Acquired the mutex: update mutex object */
 
     ObjDesc->Mutex.ThreadId = ThreadId;
     ObjDesc->Mutex.AcquisitionDepth = 1;
@@ -314,7 +323,7 @@ AcpiExAcquireMutex (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Sanity check: we must have a valid thread ID */
+    /* Must have a valid thread ID */
 
     if (!WalkState->Thread)
     {
@@ -324,7 +333,7 @@ AcpiExAcquireMutex (
     }
 
     /*
-     * Current Sync level must be less than or equal to the sync level of the
+     * Current sync level must be less than or equal to the sync level of the
      * mutex. This mechanism provides some deadlock prevention
      */
     if (WalkState->Thread->CurrentSyncLevel > ObjDesc->Mutex.SyncLevel)
@@ -340,6 +349,8 @@ AcpiExAcquireMutex (
                 ObjDesc, WalkState->Thread->ThreadId);
     if (ACPI_SUCCESS (Status) && ObjDesc->Mutex.AcquisitionDepth == 1)
     {
+        /* Save Thread object, original/current sync levels */
+
         ObjDesc->Mutex.OwnerThread = WalkState->Thread;
         ObjDesc->Mutex.OriginalSyncLevel = WalkState->Thread->CurrentSyncLevel;
         WalkState->Thread->CurrentSyncLevel = ObjDesc->Mutex.SyncLevel;
@@ -362,6 +373,16 @@ AcpiExAcquireMutex (
  * RETURN:      Status
  *
  * DESCRIPTION: Release a previously acquired Mutex, low level interface.
+ *              Provides a common path that supports multiple releases (after
+ *              previous multiple acquires) by the same thread.
+ *
+ * MUTEX:       Interpreter must be locked
+ *
+ * NOTE: This interface is called from three places:
+ * 1) From AcpiExReleaseMutex, via an AML Acquire() operator
+ * 2) From AcpiExReleaseGlobalLock when an AML Field access requires the
+ *    global lock
+ * 3) From the external interface, AcpiReleaseGlobalLock
  *
  ******************************************************************************/
 
@@ -403,6 +424,8 @@ AcpiExReleaseMutexObject (
     {
         AcpiOsReleaseMutex (ObjDesc->Mutex.OsMutex);
     }
+
+    /* Clear mutex info */
 
     ObjDesc->Mutex.ThreadId = 0;
     return_ACPI_STATUS (Status);
@@ -462,7 +485,7 @@ AcpiExReleaseMutex (
         return_ACPI_STATUS (AE_AML_NOT_OWNER);
     }
 
-    /* Sanity check: we must have a valid thread ID */
+    /* Must have a valid thread ID */
 
     if (!WalkState->Thread)
     {
@@ -485,7 +508,7 @@ AcpiExReleaseMutex (
 
     Status = AcpiExReleaseMutexObject (ObjDesc);
 
-   /* Restore SyncLevel */
+   /* Restore the original SyncLevel */
 
     WalkState->Thread->CurrentSyncLevel = ObjDesc->Mutex.OriginalSyncLevel;
     return_ACPI_STATUS (Status);
