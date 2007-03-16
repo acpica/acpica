@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nswalk - Functions for walking the ACPI namespace
- *              $Revision: 1.45 $
+ *              $Revision: 1.46 $
  *
  *****************************************************************************/
 
@@ -160,10 +160,7 @@ AcpiNsGetNextNode (
     {
         /* It's really the parent's _scope_ that we want */
 
-        if (ParentNode->Child)
-        {
-            NextNode = ParentNode->Child;
-        }
+        NextNode = ParentNode->Child;
     }
 
     else

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.135 $
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -651,7 +651,6 @@ AcpiDsTerminateControlMethod (
     ACPI_OPERAND_OBJECT     *MethodDesc,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_NAMESPACE_NODE     *MethodNode;
     ACPI_STATUS             Status;
 
 
@@ -693,12 +692,6 @@ AcpiDsTerminateControlMethod (
 
     if (WalkState)
     {
-        /*
-         * Delete any objects created by this method during execution.
-         * The method Node is stored in the walk state
-         */
-        MethodNode = WalkState->MethodNode;
-
         /*
          * Delete any namespace objects created anywhere within
          * the namespace by the execution of this method
