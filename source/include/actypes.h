@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.315 $
+ *       $Revision: 1.316 $
  *
  *****************************************************************************/
 
@@ -414,28 +414,11 @@ typedef struct uint32_struct
 
 
 /*
- * Acpi integer width. In ACPI version 1, integers are
- * 32 bits.  In ACPI version 2, integers are 64 bits.
- * Note that this pertains to the ACPI integer type only, not
- * other integers used in the implementation of the ACPI CA
+ * Acpi integer width. In ACPI version 1, integers are 32 bits.  In ACPI
+ * version 2, integers are 64 bits. Note that this pertains to the ACPI integer
+ * type only, not other integers used in the implementation of the ACPI CA
  * subsystem.
  */
-#ifdef ACPI_NO_INTEGER64_SUPPORT
-
-/* 32-bit integers only, no 64-bit support */
-
-typedef UINT32                          ACPI_INTEGER;
-#define ACPI_INTEGER_MAX                ACPI_UINT32_MAX
-#define ACPI_INTEGER_BIT_SIZE           32
-#define ACPI_MAX_DECIMAL_DIGITS         10  /* 2^32 = 4,294,967,296 */
-
-#define ACPI_USE_NATIVE_DIVIDE          /* Use compiler native 32-bit divide */
-
-
-#else
-
-/* 64-bit integers */
-
 typedef UINT64                          ACPI_INTEGER;
 #define ACPI_INTEGER_MAX                ACPI_UINT64_MAX
 #define ACPI_INTEGER_BIT_SIZE           64
@@ -444,7 +427,6 @@ typedef UINT64                          ACPI_INTEGER;
 
 #if ACPI_MACHINE_WIDTH == 64
 #define ACPI_USE_NATIVE_DIVIDE          /* Use compiler native 64-bit divide */
-#endif
 #endif
 
 #define ACPI_MAX64_DECIMAL_DIGITS       20

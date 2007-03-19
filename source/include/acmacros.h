@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.194 $
+ *       $Revision: 1.195 $
  *
  *****************************************************************************/
 
@@ -136,21 +136,12 @@
 #define ACPI_ARRAY_LENGTH(x)            (sizeof(x) / sizeof((x)[0]))
 
 
-#ifdef ACPI_NO_INTEGER64_SUPPORT
 /*
- * ACPI_INTEGER is 32-bits, no 64-bit support on this platform
- */
-#define ACPI_LODWORD(l)                 ((UINT32)(l))
-#define ACPI_HIDWORD(l)                 ((UINT32)(0))
-
-#else
-
-/*
- * Full 64-bit address/integer on both 32-bit and 64-bit platforms
+ * Full 64-bit integer must be available on both 32-bit and 64-bit platforms
  */
 #define ACPI_LODWORD(l)                 ((UINT32)(UINT64)(l))
 #define ACPI_HIDWORD(l)                 ((UINT32)(((*(UINT64_STRUCT *)(void *)(&l))).Hi))
-#endif
+
 
 /*
  * printf() format helpers
