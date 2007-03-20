@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
- *       $Revision: 1.170 $
+ *       $Revision: 1.171 $
  *
  *****************************************************************************/
 
@@ -701,7 +701,7 @@ AcpiExAcquireGlobalLock (
 
 void
 AcpiExReleaseGlobalLock (
-    void);
+    UINT32                  Rule);
 
 void
 AcpiExEisaIdToString (

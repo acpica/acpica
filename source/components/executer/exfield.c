@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -206,7 +206,7 @@ AcpiExReadDataFromField (
         Status = AcpiExAccessRegion (ObjDesc, 0,
                     ACPI_CAST_PTR (ACPI_INTEGER, BufferDesc->Buffer.Pointer),
                     ACPI_READ | (ObjDesc->Field.Attribute << 16));
-        AcpiExReleaseGlobalLock ();
+        AcpiExReleaseGlobalLock (ObjDesc->CommonField.FieldFlags);
         goto Exit;
     }
 
@@ -263,7 +263,7 @@ AcpiExReadDataFromField (
     /* Read from the field */
 
     Status = AcpiExExtractFromField (ObjDesc, Buffer, (UINT32) Length);
-    AcpiExReleaseGlobalLock ();
+    AcpiExReleaseGlobalLock (ObjDesc->CommonField.FieldFlags);
 
 
 Exit:
@@ -381,7 +381,7 @@ AcpiExWriteDataToField (
         Status = AcpiExAccessRegion (ObjDesc, 0,
                         (ACPI_INTEGER *) Buffer,
                         ACPI_WRITE | (ObjDesc->Field.Attribute << 16));
-        AcpiExReleaseGlobalLock ();
+        AcpiExReleaseGlobalLock (ObjDesc->CommonField.FieldFlags);
 
         *ResultDesc = BufferDesc;
         return_ACPI_STATUS (Status);
@@ -460,7 +460,7 @@ AcpiExWriteDataToField (
     /* Write to the field */
 
     Status = AcpiExInsertIntoField (ObjDesc, Buffer, Length);
-    AcpiExReleaseGlobalLock ();
+    AcpiExReleaseGlobalLock (ObjDesc->CommonField.FieldFlags);
 
     /* Free temporary buffer if we used one */
 

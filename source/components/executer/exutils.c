@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exutils - interpreter/scanner utilities
- *              $Revision: 1.128 $
+ *              $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -390,7 +390,8 @@ AcpiExAcquireGlobalLock (
  *
  * FUNCTION:    AcpiExReleaseGlobalLock
  *
- * PARAMETERS:  None
+ * PARAMETERS:  FieldFlags            - Flags with Lock rule:
+ *                                      AlwaysLock or NeverLock
  *
  * RETURN:      None
  *
@@ -400,13 +401,20 @@ AcpiExAcquireGlobalLock (
 
 void
 AcpiExReleaseGlobalLock (
-    void)
+    UINT32                  FieldFlags)
 {
     ACPI_STATUS             Status;
 
 
     ACPI_FUNCTION_TRACE (ExReleaseGlobalLock);
 
+
+    /* Only use the lock if the AlwaysLock bit is set */
+
+    if (!(FieldFlags & AML_FIELD_LOCK_RULE_MASK))
+    {
+        return_VOID;
+    }
 
     /* Release the global lock */
 

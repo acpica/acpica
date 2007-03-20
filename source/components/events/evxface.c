@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.164 $
+ *              $Revision: 1.165 $
  *
  *****************************************************************************/
 
@@ -961,7 +961,7 @@ AcpiReleaseGlobalLock (
     ACPI_STATUS             Status;
 
 
-    if (Handle != AcpiGbl_GlobalLockHandle)
+    if (!Handle || (Handle != AcpiGbl_GlobalLockHandle))
     {
         return (AE_NOT_ACQUIRED);
     }

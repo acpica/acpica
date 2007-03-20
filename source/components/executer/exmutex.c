@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exmutex - ASL Mutex Acquire/Release functions
- *              $Revision: 1.39 $
+ *              $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -250,6 +250,11 @@ AcpiExAcquireMutexObject (
     ACPI_FUNCTION_TRACE_PTR (ExAcquireMutexObject, ObjDesc);
 
 
+    if (!ObjDesc)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
     /* Support for multiple acquires by the owning thread */
 
     if (ObjDesc->Mutex.ThreadId == ThreadId)
@@ -396,6 +401,11 @@ AcpiExReleaseMutexObject (
     ACPI_FUNCTION_TRACE (ExReleaseMutexObject);
 
 
+    if (ObjDesc->Mutex.AcquisitionDepth == 0)
+    {
+        return (AE_NOT_ACQUIRED);
+    }
+
     /* Match multiple Acquires with multiple Releases */
 
     ObjDesc->Mutex.AcquisitionDepth--;
@@ -501,16 +511,20 @@ AcpiExReleaseMutex (
     if (ObjDesc->Mutex.SyncLevel > WalkState->Thread->CurrentSyncLevel)
     {
         ACPI_ERROR ((AE_INFO,
-            "Cannot release Mutex [%4.4s], incorrect SyncLevel",
-            AcpiUtGetNodeName (ObjDesc->Mutex.Node)));
+            "Cannot release Mutex [%4.4s], SyncLevel mismatch: mutex %d current %d",
+            AcpiUtGetNodeName (ObjDesc->Mutex.Node),
+            ObjDesc->Mutex.SyncLevel, WalkState->Thread->CurrentSyncLevel));
         return_ACPI_STATUS (AE_AML_MUTEX_ORDER);
     }
 
     Status = AcpiExReleaseMutexObject (ObjDesc);
 
-   /* Restore the original SyncLevel */
+    if (ObjDesc->Mutex.AcquisitionDepth == 0)
+    {
+        /* Restore the original SyncLevel */
 
-    WalkState->Thread->CurrentSyncLevel = ObjDesc->Mutex.OriginalSyncLevel;
+        WalkState->Thread->CurrentSyncLevel = ObjDesc->Mutex.OriginalSyncLevel;
+    }
     return_ACPI_STATUS (Status);
 }
 
