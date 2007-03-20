@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.134 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -393,6 +393,8 @@ AcpiDsBuildInternalPackageObj (
     ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
     ACPI_STATUS             Status = AE_OK;
     ACPI_NATIVE_UINT        i;
+    UINT16                  Index;
+    UINT16                  ReferenceCount;
 
 
     ACPI_FUNCTION_TRACE (DsBuildInternalPackageObj);
@@ -462,6 +464,23 @@ AcpiDsBuildInternalPackageObj (
             Status = AcpiDsBuildInternalObject (WalkState, Arg,
                         &ObjDesc->Package.Elements[i]);
         }
+
+        if (*ObjDescPtr)
+        {
+            /* Existing package, get existing reference count */
+
+            ReferenceCount = (*ObjDescPtr)->Common.ReferenceCount;
+            if (ReferenceCount > 1)
+            {
+                /* Make new element ref count match original ref count */
+
+                for (Index = 0; Index < (ReferenceCount - 1); Index++)
+                {
+                    AcpiUtAddReference ((ObjDesc->Package.Elements[i]));
+                }
+            }
+        }
+
         Arg = Arg->Common.Next;
     }
 
