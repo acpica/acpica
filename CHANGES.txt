@@ -1,4 +1,32 @@
 ----------------------------------------
+20 March 2007. Summary of changes for version 20070320:
+
+1) ACPI CA Core Subsystem:
+
+Implemented a change to the order of interpretation and evaluation of AML operand objects within the AML interpreter. The interpreter now evaluates operands in the order that they appear in the AML stream (and the corresponding ASL code), instead of in the reverse order (after the entire operand list has been parsed). The previous behavior caused several subtle incompatibilities with the Microsoft AML interpreter as well as being somewhat non-intuitive. BZ 7871, local BZ 263. Valery Podrezov.
+
+Implemented a change to the ACPI Global Lock support. All interfaces to the global lock now allow the same thread to acquire the lock multiple times. This affects the AcpiAcquireGlobalLock external interface to the global lock as well as the internal use of the global lock to support AML fields -- a control method that is holding the global lock can now simultaneously access AML fields that require global lock protection. Previously, in both cases, this would have resulted in an AE_ALREADY_ACQUIRED exception. The change to AcpiAcquireGlobalLock is of special interest to drivers for the Embedded Controller. There is no change to the behavior of the AML Acquire operator, as this can already be used to acquire a mutex multiple times by the same thread. BZ 8066. With assistance from Alexey Starikovskiy.
+
+Fixed a problem where invalid objects could be referenced in the AML Interpreter after error conditions. During operand evaluation, ensure that the internal "Return Object" field is cleared on error and only valid pointers are stored there. Caused occasional access to deleted objects that resulted in "large reference count" warning messages. Valery Podrezov.
+
+Fixed a problem where an AE_STACK_OVERFLOW internal exception could occur on deeply nested control method invocations. BZ 7873, local BZ 487. Valery Podrezov.
+
+Fixed an internal problem with the handling of result objects on the interpreter result stack. BZ 7872. Valery Podrezov.
+
+Removed obsolete code that handled the case where AML_NAME_OP is the target of a reference (Reference.Opcode). This code was no longer necessary. BZ 7874. Valery Podrezov.
+
+Removed obsolete ACPI_NO_INTEGER64_SUPPORT from two header files. This was a remnant from the previously discontinued 16-bit support.
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  78.0K Code, 17.1K Data,  95.1K Total
+    Debug Version:     155.8K Code, 63.3K Data, 219.1K Total
+  Current Release:
+    Non-Debug Version:  78.0K Code, 17.1K Data,  95.1K Total
+    Debug Version:     155.9K Code, 63.1K Data, 219.0K Total
+
+----------------------------------------
 26 January 2007. Summary of changes for version 20070126:
 
 1) ACPI CA Core Subsystem:
