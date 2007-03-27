@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.40 $
+ *              $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -310,8 +310,11 @@ AsDetectLoneLineFeeds (
     {
         if (LineCount == LfCount)
         {
-            printf ("****File has UNIX format**** (LF only, not CR/LF) %d lines, %s\n",
-                LfCount, Filename);
+            if (!Gbl_IgnoreLoneLineFeeds)
+            {
+                printf ("****File has UNIX format**** (LF only, not CR/LF) %d lines, %s\n",
+                    LfCount, Filename);
+            }
         }
         else
         {
