@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -141,7 +141,9 @@ max (int a, int b)
     return (a > b ? a : b);
 }
 
+#ifndef O_BINARY
 #define O_BINARY    0x0
+#endif
 
 #define mkdir(x) mkdir(x, 0770)
 #define stricmp strcasecmp

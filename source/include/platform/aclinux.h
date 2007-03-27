@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclinux.h - OS specific defines, etc.
- *       $Revision: 1.42 $
+ *       $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -158,7 +158,10 @@
 #define ACPI_USE_NATIVE_DIVIDE
 #endif
 
+#ifndef __cdecl
 #define __cdecl
+#endif
+
 #define ACPI_FLUSH_CPU_CACHE()
 #endif /* __KERNEL__ */
 
