@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.63 $
+ *              $Revision: 1.64 $
  *
  *****************************************************************************/
 
@@ -170,6 +170,10 @@ AsPrint (
     char                    *Filename)
 {
 
+    if (Gbl_QuietMode)
+    {
+        return;
+    }
 
     printf ("-- %4u %28.28s : %s\n", Count, Message, Filename);
 }
@@ -281,7 +285,11 @@ AsCheckForBraces (
                (NextIf && (NextBrace > NextIf)))
             {
                 Gbl_MissingBraces++;
-                printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
+
+                if (!Gbl_QuietMode)
+                {
+                    printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
+                }
             }
         }
         else if (!(strncmp (" else if", SubBuffer, 8)))
@@ -296,7 +304,11 @@ AsCheckForBraces (
                (NextIf && (NextBrace > NextIf)))
             {
                 Gbl_MissingBraces++;
-                printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
+
+                if (!Gbl_QuietMode)
+                {
+                    printf ("Missing braces for <if>, line %d: %s\n", TotalLines, Filename);
+                }
             }
         }
         else if (!(strncmp (" else", SubBuffer, 5)))
@@ -311,7 +323,11 @@ AsCheckForBraces (
                (NextIf && (NextBrace > NextIf)))
             {
                 Gbl_MissingBraces++;
-                printf ("Missing braces for <else>, line %d: %s\n", TotalLines, Filename);
+
+                if (!Gbl_QuietMode)
+                {
+                    printf ("Missing braces for <else>, line %d: %s\n", TotalLines, Filename);
+                }
             }
         }
 

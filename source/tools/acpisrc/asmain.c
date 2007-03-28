@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -138,6 +138,7 @@ char                    *Gbl_FileBuffer;
 UINT32                  Gbl_FileSize;
 UINT32                  Gbl_FileType;
 BOOLEAN                 Gbl_VerboseMode = FALSE;
+BOOLEAN                 Gbl_QuietMode = FALSE;
 BOOLEAN                 Gbl_BatchMode = FALSE;
 BOOLEAN                 Gbl_DebugStatementsMode = FALSE;
 BOOLEAN                 Gbl_MadeChanges = FALSE;
@@ -237,6 +238,11 @@ void
 AsDisplayStats (void)
 {
 
+    if (Gbl_QuietMode)
+    {
+        return;
+    }
+
     printf ("\nAcpiSrc statistics:\n\n");
     printf ("%6d Files processed\n", Gbl_Files);
     printf ("%6d Tabs found\n", Gbl_Tabs);
@@ -312,7 +318,7 @@ main (
 
     /* Command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "lcsuvyd")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "cdlqsuvy")) != EOF) switch(j)
     {
     case 'l':
         /* Linux code generation */
@@ -358,6 +364,12 @@ main (
         /* Leave debug statements in */
 
         Gbl_DebugStatementsMode = TRUE;
+        break;
+
+    case 'q':
+        /* Quiet mode */
+
+        Gbl_QuietMode = TRUE;
         break;
 
     default:
