@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.118 $
+ *              $Revision: 1.119 $
  *
  *****************************************************************************/
 
@@ -1042,6 +1042,63 @@ AfInstallGpeBlock (
 }
 
 
+ACPI_OBJECT                 PkgArg;
+ACPI_OBJECT                 PkgElements[5];
+ACPI_OBJECT                 Pkg2Elements[5];
+ACPI_OBJECT_LIST            Params;
+
+
+/*
+ * Test using a Package object as an method argument
+ */
+void
+AeTestPackageArgument (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    /* Main package */
+
+    PkgArg.Type = ACPI_TYPE_PACKAGE;
+    PkgArg.Package.Count = 4;
+    PkgArg.Package.Elements = PkgElements;
+
+    /* Main package elements */
+
+    PkgElements[0].Type = ACPI_TYPE_INTEGER;
+    PkgElements[0].Integer.Value = 0x22228888;
+
+    PkgElements[1].Type = ACPI_TYPE_STRING;
+    PkgElements[1].String.Length = sizeof ("Top-level package");
+    PkgElements[1].String.Pointer = "Top-level package";
+
+    PkgElements[2].Type = ACPI_TYPE_BUFFER;
+    PkgElements[2].Buffer.Length = sizeof ("XXXX");
+    PkgElements[2].Buffer.Pointer = (UINT8 *) "XXXX";
+
+    PkgElements[3].Type = ACPI_TYPE_PACKAGE;
+    PkgElements[3].Package.Count = 2;
+    PkgElements[3].Package.Elements = Pkg2Elements;
+
+    /* Sub-package elements */
+
+    Pkg2Elements[0].Type = ACPI_TYPE_INTEGER;
+    Pkg2Elements[0].Integer.Value = 0x5555AAAABBBBCCCC;
+
+    Pkg2Elements[1].Type = ACPI_TYPE_STRING;
+    Pkg2Elements[1].String.Length = sizeof ("Nested Package");
+    Pkg2Elements[1].String.Pointer = "Nested Package";
+
+    /* Parameter object */
+
+    Params.Count = 1;
+    Params.Pointer = &PkgArg;
+
+    Status = AcpiEvaluateObject (NULL, "\\_PKG", &Params, NULL);
+}
+
+
 void
 AeMiscellaneousTests (
     void)
@@ -1053,6 +1110,9 @@ AeMiscellaneousTests (
     ACPI_STATUS             Status;
     UINT32                  LockHandle1;
     UINT32                  LockHandle2;
+
+
+    AeTestPackageArgument ();
 
 
     ReturnBuf.Length = 32;

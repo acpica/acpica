@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.130 $
+ *              $Revision: 1.131 $
  *
  *****************************************************************************/
 
@@ -149,6 +149,11 @@ static ACPI_STATUS
 AcpiUtCopyEsimpleToIsimple(
     ACPI_OBJECT             *UserObj,
     ACPI_OPERAND_OBJECT     **ReturnObj);
+
+static ACPI_STATUS
+AcpiUtCopyEpackageToIpackage (
+    ACPI_OBJECT             *ExternalObject,
+    ACPI_OPERAND_OBJECT     **InternalObject);
 
 static ACPI_STATUS
 AcpiUtCopySimpleObject (
@@ -628,83 +633,77 @@ ErrorExit:
 }
 
 
-#ifdef ACPI_FUTURE_IMPLEMENTATION
-/* Code to convert packages that are parameters to control methods */
-
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtCopyEpackageToIpackage
  *
- * PARAMETERS:  *InternalObject    - Pointer to the object we are returning
- *              *Buffer            - Where the object is returned
- *              *SpaceUsed         - Where the length of the object is returned
+ * PARAMETERS:  ExternalObject      - The external object to be converted
+ *              InternalObject      - Where the internal object is returned
  *
  * RETURN:      Status
  *
- * DESCRIPTION: This function is called to place a package object in a user
- *              buffer.  A package object by definition contains other objects.
- *
- *              The buffer is assumed to have sufficient space for the object.
- *              The caller must have verified the buffer length needed using the
- *              AcpiUtGetObjectSize function before calling this function.
+ * DESCRIPTION: Copy an external package object to an internal package.
+ *              Handles nested packages.
  *
  ******************************************************************************/
 
 static ACPI_STATUS
 AcpiUtCopyEpackageToIpackage (
-    ACPI_OPERAND_OBJECT     *InternalObject,
-    UINT8                   *Buffer,
-    UINT32                  *SpaceUsed)
+    ACPI_OBJECT             *ExternalObject,
+    ACPI_OPERAND_OBJECT     **InternalObject)
 {
-    UINT8                   *FreeSpace;
-    ACPI_OBJECT             *ExternalObject;
-    UINT32                  Length = 0;
-    UINT32                  ThisIndex;
-    UINT32                  ObjectSpace = 0;
-    ACPI_OPERAND_OBJECT     *ThisInternalObj;
-    ACPI_OBJECT             *ThisExternalObj;
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_OPERAND_OBJECT     *PackageObject;
+    ACPI_OPERAND_OBJECT     **PackageElements;
+    ACPI_NATIVE_UINT        i;
 
 
     ACPI_FUNCTION_TRACE (UtCopyEpackageToIpackage);
 
 
-    /*
-     * First package at head of the buffer
-     */
-    ExternalObject = (ACPI_OBJECT *)Buffer;
+    /* Create the package object */
+
+    PackageObject = AcpiUtCreatePackageObject (ExternalObject->Package.Count);
+    if (!PackageObject)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    PackageElements = PackageObject->Package.Elements;
 
     /*
-     * Free space begins right after the first package
+     * Recursive implementation. Probably ok, since nested external packages
+     * as parameters should be very rare.
      */
-    FreeSpace = Buffer + sizeof(ACPI_OBJECT);
+    for (i = 0; i < ExternalObject->Package.Count; i++)
+    {
+        Status = AcpiUtCopyEobjectToIobject (
+                    &ExternalObject->Package.Elements[i],
+                    &PackageElements[i]);
+        if (ACPI_FAILURE (Status))
+        {
+            /* Truncate package and delete it */
 
+            PackageObject->Package.Count = i;
+            PackageElements[i] = NULL;
+            AcpiUtRemoveReference (PackageObject);
+            return_ACPI_STATUS (Status);
+        }
+    }
 
-    ExternalObject->Type               = ACPI_GET_OBJECT_TYPE (InternalObject);
-    ExternalObject->Package.Count      = InternalObject->Package.Count;
-    ExternalObject->Package.Elements   = (ACPI_OBJECT *)FreeSpace;
-
-    /*
-     * Build an array of ACPI_OBJECTS in the buffer
-     * and move the free space past it
-     */
-    FreeSpace += ExternalObject->Package.Count * sizeof(ACPI_OBJECT);
-
-
-    /* Call WalkPackage */
-
+    *InternalObject = PackageObject;
+    return_ACPI_STATUS (Status);
 }
-
-#endif /* Future implementation */
 
 
 /*******************************************************************************
  *
  * FUNCTION:    AcpiUtCopyEobjectToIobject
  *
- * PARAMETERS:  *InternalObject    - The external object to be converted
- *              *BufferPtr      - Where the internal object is returned
+ * PARAMETERS:  ExternalObject      - The external object to be converted
+ *              InternalObject      - Where the internal object is returned
  *
- * RETURN:      Status          - the status of the call
+ * RETURN:      Status              - the status of the call
  *
  * DESCRIPTION: Converts an external object to an internal object.
  *
@@ -723,15 +722,8 @@ AcpiUtCopyEobjectToIobject (
 
     if (ExternalObject->Type == ACPI_TYPE_PACKAGE)
     {
-        /*
-         * Packages as external input to control methods are not supported,
-         */
-        ACPI_ERROR ((AE_INFO,
-            "Packages as parameters not implemented!"));
-
-        return_ACPI_STATUS (AE_NOT_IMPLEMENTED);
+        Status = AcpiUtCopyEpackageToIpackage (ExternalObject, InternalObject);
     }
-
     else
     {
         /*
@@ -936,34 +928,20 @@ AcpiUtCopyIelementToIelement (
          * This object is a package - go down another nesting level
          * Create and build the package object
          */
-        TargetObject = AcpiUtCreateInternalObject (ACPI_TYPE_PACKAGE);
+        TargetObject = AcpiUtCreatePackageObject (SourceObject->Package.Count);
         if (!TargetObject)
         {
             return (AE_NO_MEMORY);
         }
 
-        TargetObject->Package.Count = SourceObject->Package.Count;
-        TargetObject->Common.Flags  = SourceObject->Common.Flags;
+        TargetObject->Common.Flags = SourceObject->Common.Flags;
 
-        /*
-         * Create the object array
-         */
-        TargetObject->Package.Elements = ACPI_ALLOCATE_ZEROED (
-            ((ACPI_SIZE) SourceObject->Package.Count + 1) * sizeof (void *));
-        if (!TargetObject->Package.Elements)
-        {
-            Status = AE_NO_MEMORY;
-            goto ErrorExit;
-        }
+        /* Pass the new package object back to the package walk routine */
 
-        /*
-         * Pass the new package object back to the package walk routine
-         */
         State->Pkg.ThisTargetObj = TargetObject;
 
-        /*
-         * Store the object pointer in the parent package object
-         */
+        /* Store the object pointer in the parent package object */
+
         *ThisTargetPtr = TargetObject;
         break;
 

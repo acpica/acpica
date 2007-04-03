@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.200 $
+ *       $Revision: 1.201 $
  *
  *****************************************************************************/
 
@@ -647,6 +647,10 @@ AcpiUtDeleteObjectDesc (
 BOOLEAN
 AcpiUtValidInternalObject (
     void                    *Object);
+
+ACPI_OPERAND_OBJECT *
+AcpiUtCreatePackageObject (
+    UINT32                  Count);
 
 ACPI_OPERAND_OBJECT *
 AcpiUtCreateBufferObject (

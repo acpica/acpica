@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -227,6 +227,55 @@ AcpiUtCreateInternalObjectDbg (
     /* Any per-type initialization should go here */
 
     return_PTR (Object);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtCreatePackageObject
+ *
+ * PARAMETERS:  Count               - Number of package elements
+ *
+ * RETURN:      Pointer to a new Package object, null on failure
+ *
+ * DESCRIPTION: Create a fully initialized package object
+ *
+ ******************************************************************************/
+
+ACPI_OPERAND_OBJECT *
+AcpiUtCreatePackageObject (
+    UINT32                  Count)
+{
+    ACPI_OPERAND_OBJECT     *PackageDesc;
+    ACPI_OPERAND_OBJECT     **PackageElements;
+
+
+    ACPI_FUNCTION_TRACE_U32 (UtCreatePackageObject, Count);
+
+
+    /* Create a new Package object */
+
+    PackageDesc = AcpiUtCreateInternalObject (ACPI_TYPE_PACKAGE);
+    if (!PackageDesc)
+    {
+        return_PTR (NULL);
+    }
+
+    /*
+     * Create the element array. Count+1 allows the array to be null
+     * terminated.
+     */
+    PackageElements = ACPI_ALLOCATE_ZEROED ((ACPI_SIZE)
+                        (Count + 1) * sizeof (void *));
+    if (!PackageElements)
+    {
+        ACPI_FREE (PackageDesc);
+        return_PTR (NULL);
+    }
+
+    PackageDesc->Package.Count = Count;
+    PackageDesc->Package.Elements = PackageElements;
+    return_PTR (PackageDesc);
 }
 
 
