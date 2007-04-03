@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpeblk - GPE block creation and initialization.
- *              $Revision: 1.60 $
+ *              $Revision: 1.61 $
  *
  *****************************************************************************/
 
@@ -708,6 +708,12 @@ AcpiEvDeleteGpeXrupt (
     if (GpeXrupt->Previous)
     {
         GpeXrupt->Previous->Next = GpeXrupt->Next;
+    }
+    else
+    {
+        /* No previous, update list head */
+
+        AcpiGbl_GpeXruptListHead = GpeXrupt->Next;
     }
 
     if (GpeXrupt->Next)
