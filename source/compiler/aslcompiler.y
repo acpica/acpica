@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -1112,7 +1112,7 @@ Type6Opcode
 
 IncludeTerm
     : PARSEOP_INCLUDE '('			{$$ = TrCreateLeafNode (PARSEOP_INCLUDE);}
-        String  ')'                 {$$ = TrLinkChildren ($<n>3,1,$4);FlOpenIncludeFile ($4);}
+        String  ')'                 {TrLinkChildren ($<n>3,1,$4);FlOpenIncludeFile ($4);}
         TermList
         IncludeEndTerm              {$$ = TrLinkPeerNodes (3,$<n>3,$7,$8);}
     ;
@@ -1328,7 +1328,7 @@ IndexFieldTerm
 MethodTerm
     : PARSEOP_METHOD  '('			{$$ = TrCreateLeafNode (PARSEOP_METHOD);}
         NameString
-        OptionalByteConstExpr       {$$ = UtCheckIntegerRange ($5, 0, 7);}
+        OptionalByteConstExpr       {UtCheckIntegerRange ($5, 0, 7);}
         OptionalSerializeRuleKeyword
         OptionalByteConstExpr
         OptionalParameterTypePackage
@@ -1481,8 +1481,8 @@ ElseTerm
     | PARSEOP_ELSEIF '('			{$$ = TrCreateLeafNode (PARSEOP_ELSE);}
         TermArg						{$$ = TrCreateLeafNode (PARSEOP_IF);}
         ')' '{'
-            TermList '}'		    {$$ = TrLinkChildren ($<n>5,2,$4,$8);}
-        ElseTerm                    {$$ = TrLinkPeerNode ($<n>5,$11);}
+            TermList '}'		    {TrLinkChildren ($<n>5,2,$4,$8);}
+        ElseTerm                    {TrLinkPeerNode ($<n>5,$11);}
                                     {$$ = TrLinkChildren ($<n>3,1,$<n>5);}
 
     | PARSEOP_ELSEIF '('
@@ -2583,7 +2583,7 @@ DWordMemoryTerm
 
 DWordSpaceTerm
     : PARSEOP_DWORDSPACE '('        {$$ = TrCreateLeafNode (PARSEOP_DWORDSPACE);}
-        ByteConstExpr               {$$ = UtCheckIntegerRange ($4, 0xC0, 0xFF);}
+        ByteConstExpr               {UtCheckIntegerRange ($4, 0xC0, 0xFF);}
         OptionalResourceType
         OptionalDecodeType
         OptionalMinType
@@ -2655,7 +2655,7 @@ ExtendedMemoryTerm
 
 ExtendedSpaceTerm
     : PARSEOP_EXTENDEDSPACE '('     {$$ = TrCreateLeafNode (PARSEOP_EXTENDEDSPACE);}
-        ByteConstExpr               {$$ = UtCheckIntegerRange ($4, 0xC0, 0xFF);}
+        ByteConstExpr               {UtCheckIntegerRange ($4, 0xC0, 0xFF);}
         OptionalResourceType
         OptionalDecodeType
         OptionalMinType
@@ -2816,7 +2816,7 @@ QWordMemoryTerm
 
 QWordSpaceTerm
     : PARSEOP_QWORDSPACE '('        {$$ = TrCreateLeafNode (PARSEOP_QWORDSPACE);}
-        ByteConstExpr               {$$ = UtCheckIntegerRange ($4, 0xC0, 0xFF);}
+        ByteConstExpr               {UtCheckIntegerRange ($4, 0xC0, 0xFF);}
         OptionalResourceType
         OptionalDecodeType
         OptionalMinType
@@ -2927,7 +2927,7 @@ WordIOTerm
 
 WordSpaceTerm
     : PARSEOP_WORDSPACE '('         {$$ = TrCreateLeafNode (PARSEOP_WORDSPACE);}
-        ByteConstExpr               {$$ = UtCheckIntegerRange ($4, 0xC0, 0xFF);}
+        ByteConstExpr               {UtCheckIntegerRange ($4, 0xC0, 0xFF);}
         OptionalResourceType
         OptionalDecodeType
         OptionalMinType
