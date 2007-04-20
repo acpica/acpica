@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -823,15 +823,22 @@ AeExceptionHandler (
     ReturnObj.Length = ACPI_ALLOCATE_BUFFER;
 
     Status = AcpiEvaluateObject (NULL, "\\_ERR", &ArgList, &ReturnObj);
-    if (ACPI_SUCCESS (Status) &&
-        ReturnObj.Pointer)
+    if (ACPI_SUCCESS (Status))
     {
-        /* Override original status */
+        if (ReturnObj.Pointer)
+        {
+            /* Override original status */
 
-        NewAmlStatus = (ACPI_STATUS)
-            ((ACPI_OBJECT *) ReturnObj.Pointer)->Integer.Value;
+            NewAmlStatus = (ACPI_STATUS)
+                ((ACPI_OBJECT *) ReturnObj.Pointer)->Integer.Value;
 
-        AcpiOsFree (ReturnObj.Pointer);
+            AcpiOsFree (ReturnObj.Pointer);
+        }
+    }
+    else if (Status != AE_NOT_FOUND)
+    {
+        AcpiOsPrintf ("**** AcpiExec: Could not execute _ERR method, %s",
+            AcpiFormatException (Status));
     }
 
     /* Global override */
