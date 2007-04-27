@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
- *       $Revision: 1.47 $
+ *       $Revision: 1.48 $
  *
  *****************************************************************************/
 
@@ -202,6 +202,7 @@ typedef struct acpi_walk_state
     ACPI_THREAD_STATE               *Thread;
     ACPI_PARSE_DOWNWARDS            DescendingCallback;
     ACPI_PARSE_UPWARDS              AscendingCallback;
+    ACPI_MUTEX                      NotifySemaphore;    /* For notify handler synchronization */
 
 } ACPI_WALK_STATE;
 

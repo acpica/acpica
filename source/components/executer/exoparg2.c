@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.143 $
+ *              $Revision: 1.144 $
  *
  *****************************************************************************/
 
@@ -235,12 +235,16 @@ AcpiExOpcode_2A_0T_0R (
 
         /*
          * Dispatch the notify to the appropriate handler
-         * NOTE: the request is queued for execution after this method
-         * completes.  The notify handlers are NOT invoked synchronously
-         * from this thread -- because handlers may in turn run other
-         * control methods.
+         *
+         * NOTE: The notify handlers are executed in another thread because
+         * handlers may in turn execute other control methods. However, this
+         * thread will block until the notify handlers have completed
+         * execution. This is because some machines depend on this behavior.
+         *
+         * To summarize: when the Notify() AML operator returns, all notify
+         * handlers have been executed.
          */
-        Status = AcpiEvQueueNotifyRequest (Node, Value);
+        Status = AcpiEvQueueNotifyRequest (WalkState, Node, Value);
         break;
 
 

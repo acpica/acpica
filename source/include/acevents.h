@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acevents.h - Event subcomponent prototypes and defines
- *       $Revision: 1.107 $
+ *       $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -163,6 +163,7 @@ AcpiEvGetGpeNumberIndex (
 
 ACPI_STATUS
 AcpiEvQueueNotifyRequest (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue);
 
