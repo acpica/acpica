@@ -1,4 +1,28 @@
 ----------------------------------------
+08 May 2007. Summary of changes for version 20070508:
+
+1) ACPI CA Core Subsystem:
+
+Implemented a Microsoft compatibility design change for the handling of the Notify AML operator. Previously, notify handlers were dispatched and executed completely asynchronously in a deferred thread. The new design still executes the notify handlers in a different thread, but the original thread that executed the Notify() now waits at a synchronization point for the notify handler to complete. Some machines depend on a synchronous Notify operator in order to operate correctly.
+
+Implemented support to allow Package objects to be passed as method arguments to the external AcpiEvaluateObject interface. Previously, this would return the AE_NOT_IMPLEMENTED exception. This feature had not been implemented since there were no reserved control methods that required it until recently.
+
+Fixed a problem with the internal FADT conversion where ACPI 1.0 FADTs that contained invalid non-zero values in reserved fields could cause later failures because these fields have meaning in later revisions of the FADT. For incoming ACPI 1.0 FADTs, these fields are now always zeroed. (The fields are: Preferred_PM_Profile, PSTATE_CNT, CST_CNT, and IAPC_BOOT_FLAGS.)
+
+Fixed a problem where the Global Lock handle was not properly updated if a thread that acquired the Global Lock via executing AML code then attempted to acquire the lock via the AcpiAcquireGlobalLock interface. Reported by Joe Liu.
+
+Fixed a problem in AcpiEvDeleteGpeXrupt where the global interrupt list could be corrupted if the interrupt being removed was at the head of the list. Reported by Linn Crosetto.
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  78.0K Code, 17.1K Data,  95.1K Total
+    Debug Version:     155.9K Code, 63.1K Data, 219.0K Total
+  Current Release:
+    Non-Debug Version:  78.3K Code, 17.0K Data,  95.3K Total
+    Debug Version:     156.3K Code, 63.1K Data, 219.4K Total
+
+----------------------------------------
 20 March 2007. Summary of changes for version 20070320:
 
 1) ACPI CA Core Subsystem:
