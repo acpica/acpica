@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.171 $
+ *              $Revision: 1.172 $
  *
  *****************************************************************************/
 
@@ -630,7 +630,8 @@ AcpiPsParseAml (
             if ((Status == AE_ALREADY_EXISTS) &&
                 (!WalkState->MethodDesc->Method.Mutex))
             {
-                ACPI_INFO ((AE_INFO, "Marking method %4.4s as Serialized",
+                ACPI_INFO ((AE_INFO,
+					"Marking method %4.4s as Serialized because of AE_ALREADY_EXISTS error",
                     WalkState->MethodNode->Name.Ascii));
 
                 /*
