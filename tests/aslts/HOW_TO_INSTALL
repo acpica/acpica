@@ -1,0 +1,47 @@
+
+   How to install.
+
+There are two ways to install AML tests (see A and B below)
+on Unix-like environment.
+
+A.
+
+   > cd aslts
+   > make install
+
+B.
+
+   > aslts/bin/Do 0 aslts
+
+were 'aslts' is a root directory of the test suite,
+its base name must be just 'aslts'.
+
+The resulting AML codes of tests will be
+located into aslts/tmp/aml directory which one
+also is created automatically by make-install.
+
+The resulting AML codes of ASL tests are located into
+directories:
+
+   with optimization:
+
+       aslts/tmp/aml/opt/32
+       aslts/tmp/aml/opt/64
+
+    without optimization:
+
+       aslts/tmp/aml/nopt/32
+       aslts/tmp/aml/nopt/64
+
+If directories aslts/tmp/aml... don't exist they are
+created with the precautions.
+
+
+SEE ALSO
+
+   Comment to Do utility.
+
+ENVIRONMENT
+
+   Variable ASL should be set to the pathname of iASL compiler.
+
