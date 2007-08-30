@@ -133,6 +133,10 @@ SOURCE=..\..\source\components\utilities\utglobal.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\source\components\utilities\utinit.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\source\components\utilities\utmath.c
 # End Source File
 # Begin Source File
@@ -154,6 +158,10 @@ SOURCE=..\..\source\components\utilities\utresrc.c
 # Begin Source File
 
 SOURCE=..\..\source\components\utilities\utstate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\utilities\utxface.c
 # End Source File
 # End Group
 # Begin Group "Namespace"
@@ -274,6 +282,10 @@ SOURCE=..\..\source\compiler\aslrestype1.c
 # Begin Source File
 
 SOURCE=..\..\source\compiler\aslrestype2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\compiler\aslstartup.c
 # End Source File
 # Begin Source File
 
