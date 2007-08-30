@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -470,7 +470,7 @@ AdAmlDisassemble (
     {
         /* Always parse the tables, only option is what to display */
 
-        Status = AdParseTable (Table);
+        Status = AdParseTable (Table, TRUE);
         if (ACPI_FAILURE (Status))
         {
             AcpiOsPrintf ("Could not parse ACPI tables, %s\n",
@@ -547,7 +547,9 @@ AdAmlDisassemble (
             Status = AcpiNsRootInitialize ();
             AdAddExternalsToNamespace ();
 
-            Status = AdParseTable (Table);
+			/* Parse table. No need to reload it, however (FALSE) */
+
+            Status = AdParseTable (Table, FALSE);
             if (ACPI_FAILURE (Status))
             {
                 AcpiOsPrintf ("Could not parse ACPI tables, %s\n",
@@ -585,7 +587,8 @@ Cleanup:
     }
 
     AcpiPsDeleteParseTree (AcpiGbl_ParseOpRoot);
-    return Status;
+	AcpiGbl_ParseOpRoot = NULL;
+    return (Status);
 }
 
 
@@ -1046,7 +1049,8 @@ AdGetLocalTables (
 
 ACPI_STATUS
 AdParseTable (
-    ACPI_TABLE_HEADER       *Table)
+    ACPI_TABLE_HEADER       *Table,
+	BOOLEAN					LoadTable)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_WALK_STATE         *WalkState;
@@ -1102,12 +1106,15 @@ AdParseTable (
 
     /* Pass 2 */
 
-    Status = AcpiTbStoreTable ((ACPI_NATIVE_UINT) Table, Table,
-                Table->Length, ACPI_TABLE_ORIGIN_ALLOCATED, &TableIndex);
-    if (ACPI_FAILURE (Status))
-    {
-        return Status;
-    }
+	if (LoadTable)
+	{
+		Status = AcpiTbStoreTable ((ACPI_NATIVE_UINT) Table, Table,
+					Table->Length, ACPI_TABLE_ORIGIN_ALLOCATED, &TableIndex);
+		if (ACPI_FAILURE (Status))
+		{
+			return Status;
+		}
+	}
 
     fprintf (stderr, "Pass 2 parse of [%4.4s]\n", (char *) Table->Signature);
 
@@ -1128,5 +1135,6 @@ AdParseTable (
     fprintf (stderr, "Parsing completed\n");
     return AE_OK;
 }
+
 
 

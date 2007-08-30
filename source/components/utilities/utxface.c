@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,8 @@
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utxface")
 
+
+#ifndef ACPI_ASL_COMPILER
 
 /*******************************************************************************
  *
@@ -405,6 +407,8 @@ AcpiInitializeObjects (
 ACPI_EXPORT_SYMBOL (AcpiInitializeObjects)
 
 
+#endif
+
 /*******************************************************************************
  *
  * FUNCTION:    AcpiTerminate
@@ -456,6 +460,7 @@ AcpiTerminate (
 
 ACPI_EXPORT_SYMBOL (AcpiTerminate)
 
+#ifndef ACPI_ASL_COMPILER
 
 /*******************************************************************************
  *
@@ -636,3 +641,5 @@ AcpiPurgeCachedObjects (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiPurgeCachedObjects)
+
+#endif

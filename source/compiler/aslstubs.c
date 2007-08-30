@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.20 $
+ *              $Revision: 1.21 $
  *
  *****************************************************************************/
 
@@ -119,6 +119,8 @@
 #include "aslcompiler.h"
 #include "acdispat.h"
 #include "actables.h"
+#include "acevents.h"
+#include "acinterp.h"
 
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslstubs")
@@ -183,6 +185,7 @@ AcpiEvDeleteGpeBlock (
 
 ACPI_STATUS
 AcpiEvQueueNotifyRequest (
+    ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue)
 {
@@ -197,14 +200,14 @@ AcpiEvIsNotifyObject (
 }
 
 ACPI_STATUS
-AcpiEvAcquireGlobalLock(
-    UINT32                  Timeout)
+AcpiEvAcquireGlobalLock (
+    UINT16                  Timeout)
 {
     return (AE_OK);
 }
 
 ACPI_STATUS
-AcpiEvReleaseGlobalLock(
+AcpiEvReleaseGlobalLock (
     void)
 {
     return (AE_OK);

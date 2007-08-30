@@ -168,7 +168,8 @@ AdGetLocalTables (
 
 ACPI_STATUS
 AdParseTable (
-    ACPI_TABLE_HEADER       *Table);
+    ACPI_TABLE_HEADER       *Table,
+	BOOLEAN					LoadTable);
 
 ACPI_STATUS
 AdDisplayTables (

@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -126,6 +126,26 @@
 static void
 AeAddToErrorLog (
     ASL_ERROR_MSG           *Enode);
+
+
+void
+AeClearErrorLog (
+	void)
+{
+    ASL_ERROR_MSG           *Enode = Gbl_ErrorLog;
+    ASL_ERROR_MSG           *Next;
+
+    /* Walk the error node list */
+
+    while (Enode)
+    {
+		Next = Enode->Next;
+        ACPI_FREE (Enode);
+        Enode = Next;
+    }
+
+	Gbl_ErrorLog = NULL;
+}
 
 
 /*******************************************************************************
@@ -288,7 +308,8 @@ AePrintException (
                 if (Actual)
                 {
                     fprintf (OutputFile,
-                        "[*** iASL: Seek error on source code temp file ***]");
+                        "[*** iASL: Seek error on source code temp file %s ***]",
+						Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename);
                 }
                 else
                 {
@@ -296,7 +317,8 @@ AePrintException (
                     if (!RActual)
                     {
                         fprintf (OutputFile,
-                            "[*** iASL: Read error on source code temp file ***]");
+                            "[*** iASL: Read error on source code temp file %s ***]",
+							Gbl_Files[ASL_FILE_SOURCE_OUTPUT].Filename);
                     }
 
                     else while (RActual && SourceByte && (SourceByte != '\n'))

@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslglobal.h - Global variable definitions
- *              $Revision: 1.56 $
+ *              $Revision: 1.57 $
  *
  *****************************************************************************/
 
@@ -144,7 +144,7 @@ extern FILE                         *AslCompilerin;
 extern int                          AslCompilerdebug;
 extern const ASL_MAPPING_ENTRY      AslKeywordMapping[];
 extern char                         *AslCompilertext;
-extern char                         hex[];
+extern char                         HexLookup[];
 
 #define ASL_LINE_BUFFER_SIZE        512
 #define ASL_MSG_BUFFER_SIZE         4096
@@ -170,6 +170,9 @@ extern UINT32                       Gbl_ExceptionCount[];
 
 
 /* Option flags */
+
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DoCompile, TRUE);
+ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_DoSignon, TRUE);
 
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_Acpi2, FALSE);
 ASL_EXTERN BOOLEAN                  ASL_INIT_GLOBAL (Gbl_UseDefaultAmlFilename, TRUE);
