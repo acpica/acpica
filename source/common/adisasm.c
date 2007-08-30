@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -547,7 +547,7 @@ AdAmlDisassemble (
             Status = AcpiNsRootInitialize ();
             AdAddExternalsToNamespace ();
 
-			/* Parse table. No need to reload it, however (FALSE) */
+            /* Parse table. No need to reload it, however (FALSE) */
 
             Status = AdParseTable (Table, FALSE);
             if (ACPI_FAILURE (Status))
@@ -587,7 +587,7 @@ Cleanup:
     }
 
     AcpiPsDeleteParseTree (AcpiGbl_ParseOpRoot);
-	AcpiGbl_ParseOpRoot = NULL;
+    AcpiGbl_ParseOpRoot = NULL;
     return (Status);
 }
 
@@ -1050,7 +1050,7 @@ AdGetLocalTables (
 ACPI_STATUS
 AdParseTable (
     ACPI_TABLE_HEADER       *Table,
-	BOOLEAN					LoadTable)
+    BOOLEAN                 LoadTable)
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_WALK_STATE         *WalkState;
@@ -1106,15 +1106,15 @@ AdParseTable (
 
     /* Pass 2 */
 
-	if (LoadTable)
-	{
-		Status = AcpiTbStoreTable ((ACPI_NATIVE_UINT) Table, Table,
-					Table->Length, ACPI_TABLE_ORIGIN_ALLOCATED, &TableIndex);
-		if (ACPI_FAILURE (Status))
-		{
-			return Status;
-		}
-	}
+    if (LoadTable)
+    {
+        Status = AcpiTbStoreTable ((ACPI_NATIVE_UINT) Table, Table,
+                    Table->Length, ACPI_TABLE_ORIGIN_ALLOCATED, &TableIndex);
+        if (ACPI_FAILURE (Status))
+        {
+            return Status;
+        }
+    }
 
     fprintf (stderr, "Pass 2 parse of [%4.4s]\n", (char *) Table->Signature);
 
@@ -1135,6 +1135,5 @@ AdParseTable (
     fprintf (stderr, "Parsing completed\n");
     return AE_OK;
 }
-
 
 

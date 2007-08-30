@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstartup - Compiler startup routines, called from main
- *              $Revision: 1.1 $
+ *              $Revision: 1.2 $
  *
  *****************************************************************************/
 
@@ -125,9 +125,9 @@
         ACPI_MODULE_NAME    ("aslstartup")
 
 
-#define ASL_MAX_FILES	256
-char					*FileList[ASL_MAX_FILES];
-int						FileCount;
+#define ASL_MAX_FILES   256
+char                    *FileList[ASL_MAX_FILES];
+int                     FileCount;
 BOOLEAN                 AslToFile = TRUE;
 
 
@@ -135,7 +135,7 @@ BOOLEAN                 AslToFile = TRUE;
 
 static void
 AslInitializeGlobals (
-	void);
+    void);
 
 static char **
 AsDoWildcard (
@@ -156,35 +156,35 @@ AslDoOneFile (
  * RETURN:      None
  *
  * DESCRIPTION: Re-initialize globals needed to restart the compiler. This
- *				allows multiple files to be disassembled and/or compiled.
+ *              allows multiple files to be disassembled and/or compiled.
  *
  ******************************************************************************/
 
 static void
 AslInitializeGlobals (
-	void)
+    void)
 {
-	UINT32					i;
+    UINT32                  i;
 
 
-	/* Init compiler globals */
+    /* Init compiler globals */
 
-	Gbl_CurrentColumn = 0;
-	Gbl_CurrentLineNumber = 1;
-	Gbl_LogicalLineNumber = 1;
-	Gbl_CurrentLineOffset = 0;
-	Gbl_LineBufPtr = Gbl_CurrentLineBuffer;
+    Gbl_CurrentColumn = 0;
+    Gbl_CurrentLineNumber = 1;
+    Gbl_LogicalLineNumber = 1;
+    Gbl_CurrentLineOffset = 0;
+    Gbl_LineBufPtr = Gbl_CurrentLineBuffer;
 
-	Gbl_ErrorLog = NULL;
-	Gbl_NextError = NULL;
+    Gbl_ErrorLog = NULL;
+    Gbl_NextError = NULL;
 
-	AslGbl_NextEvent = 0;
-	for (i = 0; i < ASL_NUM_REPORT_LEVELS; i++)
-	{
-		Gbl_ExceptionCount[i] = 0;
-	}
+    AslGbl_NextEvent = 0;
+    for (i = 0; i < ASL_NUM_REPORT_LEVELS; i++)
+    {
+        Gbl_ExceptionCount[i] = 0;
+    }
 
-	Gbl_Files[ASL_FILE_AML_OUTPUT].Filename = NULL;
+    Gbl_Files[ASL_FILE_AML_OUTPUT].Filename = NULL;
 }
 
 
@@ -197,7 +197,7 @@ AslInitializeGlobals (
  * RETURN:      None
  *
  * DESCRIPTION: Process files via wildcards. This function is for the Windows
- *				case only.
+ *              case only.
  *
  ******************************************************************************/
 
@@ -211,29 +211,29 @@ AsDoWildcard (
     char                    *Filename;
 
 
-	FileCount = 0;
+    FileCount = 0;
 
-	/* Open parent directory */
+    /* Open parent directory */
 
     DirInfo = AcpiOsOpenDirectory (DirectoryPathname, FileSpecifier, REQUEST_FILE_ONLY);
     if (DirInfo)
     {
-		/* Process each file that matches the wildcard specification */
+        /* Process each file that matches the wildcard specification */
 
         while ((Filename = AcpiOsGetNextFilename (DirInfo)))
         {
-			/* Add the filename to the file list */
+            /* Add the filename to the file list */
 
-			FileList[FileCount] = AcpiOsAllocate (strlen (Filename) + 1);
-			strcpy (FileList[FileCount], Filename);
-			FileCount++;
-			
-			if (FileCount >= ASL_MAX_FILES)
-			{
-				printf ("Max files reached\n");
-				FileList[0] = NULL;
-				return (FileList);
-			}
+            FileList[FileCount] = AcpiOsAllocate (strlen (Filename) + 1);
+            strcpy (FileList[FileCount], Filename);
+            FileCount++;
+
+            if (FileCount >= ASL_MAX_FILES)
+            {
+                printf ("Max files reached\n");
+                FileList[0] = NULL;
+                return (FileList);
+            }
         }
 
         /* Cleanup */
@@ -241,18 +241,18 @@ AsDoWildcard (
         AcpiOsCloseDirectory (DirInfo);
     }
 
-	FileList[FileCount] = NULL;
-	return (FileList);
+    FileList[FileCount] = NULL;
+    return (FileList);
 
-#else	
-	/*
-	 * Linux/Unix cases - Wildcards are expanded by the shell automatically.
-	 * Just return the filename in a null terminated list
-	 */
-	FileList[0] = FileSpecifier;
-	FileList[1] = NULL;
+#else
+    /*
+     * Linux/Unix cases - Wildcards are expanded by the shell automatically.
+     * Just return the filename in a null terminated list
+     */
+    FileList[0] = FileSpecifier;
+    FileList[1] = NULL;
 
-	return (FileList);
+    return (FileList);
 #endif
 }
 
@@ -261,7 +261,7 @@ AsDoWildcard (
  *
  * FUNCTION:    AslDoOneFile
  *
- * PARAMETERS:  Filename		- Name of the file
+ * PARAMETERS:  Filename        - Name of the file
  *
  * RETURN:      Status
  *
@@ -273,18 +273,18 @@ static ACPI_STATUS
 AslDoOneFile (
     char                    *Filename)
 {
-	ACPI_STATUS				Status;
+    ACPI_STATUS             Status;
 
 
-	Gbl_Files[ASL_FILE_INPUT].Filename = Filename;
+    Gbl_Files[ASL_FILE_INPUT].Filename = Filename;
 
-	/* Re-initialize "some" compiler globals */
+    /* Re-initialize "some" compiler globals */
 
-	AslInitializeGlobals ();
+    AslInitializeGlobals ();
 
     /*
-	 * AML Disassembly (Optional)
-	 */
+     * AML Disassembly (Optional)
+     */
     if (Gbl_DisasmFlag || Gbl_GetAllTables)
     {
         /* ACPI CA subsystem initialization */
@@ -307,19 +307,19 @@ AslDoOneFile (
 
         AcpiGbl_DbOpt_disasm = TRUE;
         Status = AdAmlDisassemble (AslToFile,
-					Gbl_Files[ASL_FILE_INPUT].Filename,
-					Gbl_OutputFilenamePrefix,
-					&Gbl_Files[ASL_FILE_INPUT].Filename,
-					Gbl_GetAllTables);
+                    Gbl_Files[ASL_FILE_INPUT].Filename,
+                    Gbl_OutputFilenamePrefix,
+                    &Gbl_Files[ASL_FILE_INPUT].Filename,
+                    Gbl_GetAllTables);
         if (ACPI_FAILURE (Status))
         {
             return (Status);
         }
 
-		/* Shutdown compiler and ACPICA subsystem */
+        /* Shutdown compiler and ACPICA subsystem */
 
-		AeClearErrorLog ();
-		AcpiTerminate ();
+        AeClearErrorLog ();
+        AcpiTerminate ();
 
         /*
          * Gbl_Files[ASL_FILE_INPUT].Filename was replaced with the
@@ -355,19 +355,19 @@ AslDoOneFile (
         }
 
         Status = CmDoCompile ();
-		AcpiTerminate ();
+        AcpiTerminate ();
 
-		/*
-		 * Return non-zero exit code if there have been errors, unless the
-		 * global ignore error flag has been set
-		 */
-		if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
-		{
-			return (AE_ERROR);
-		}
+        /*
+         * Return non-zero exit code if there have been errors, unless the
+         * global ignore error flag has been set
+         */
+        if ((Gbl_ExceptionCount[ASL_ERROR] > 0) && (!Gbl_IgnoreErrors))
+        {
+            return (AE_ERROR);
+        }
 
-		AeClearErrorLog ();
-	}
+        AeClearErrorLog ();
+    }
 
     return (AE_OK);
 }
@@ -377,66 +377,66 @@ AslDoOneFile (
  *
  * FUNCTION:    AslDoOnePathname
  *
- * PARAMETERS:  Pathname			- Full pathname, possibly with wildcards
+ * PARAMETERS:  Pathname            - Full pathname, possibly with wildcards
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Process one pathname, possible terminated with a wildcard
- *				specification. If a wildcard, it is expanded and the multiple
- *				files are processed.
+ *              specification. If a wildcard, it is expanded and the multiple
+ *              files are processed.
  *
  ******************************************************************************/
 
 ACPI_STATUS
 AslDoOnePathname (
-	char					*Pathname)
+    char                    *Pathname)
 {
-	ACPI_STATUS				Status;
-	char					**FileList;
+    ACPI_STATUS             Status;
+    char                    **FileList;
     char                    *Filename;
-	char					*FullPathname;
+    char                    *FullPathname;
 
 
-	/* Split incoming path into a directory/filename combo */
+    /* Split incoming path into a directory/filename combo */
 
-	Status = FlSplitInputPathname (Pathname, &Gbl_DirectoryPath, &Filename);
-	if (ACPI_FAILURE (Status))
-	{
-		return (Status);
-	}
+    Status = FlSplitInputPathname (Pathname, &Gbl_DirectoryPath, &Filename);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
-	/* Expand possible wildcard into a file list (Windows/DOS only) */
+    /* Expand possible wildcard into a file list (Windows/DOS only) */
 
-	FileList = AsDoWildcard (Gbl_DirectoryPath, Filename);
-	while (*FileList)
-	{
-		FullPathname = ACPI_ALLOCATE (
-			strlen (Gbl_DirectoryPath) + strlen (*FileList) + 1);
+    FileList = AsDoWildcard (Gbl_DirectoryPath, Filename);
+    while (*FileList)
+    {
+        FullPathname = ACPI_ALLOCATE (
+            strlen (Gbl_DirectoryPath) + strlen (*FileList) + 1);
 
-		/* Construct a full path to the file */
+        /* Construct a full path to the file */
 
-		strcpy (FullPathname, Gbl_DirectoryPath);
-		strcat (FullPathname, *FileList);
+        strcpy (FullPathname, Gbl_DirectoryPath);
+        strcat (FullPathname, *FileList);
 
-		/*
-		 * If -p not specified, we will use the input filename as the
-		 * output filename prefix
-		 */
-		if (Gbl_UseDefaultAmlFilename)
-		{
-			Gbl_OutputFilenamePrefix = FullPathname;
-		}
+        /*
+         * If -p not specified, we will use the input filename as the
+         * output filename prefix
+         */
+        if (Gbl_UseDefaultAmlFilename)
+        {
+            Gbl_OutputFilenamePrefix = FullPathname;
+        }
 
-		Status = AslDoOneFile (FullPathname);
-		if (ACPI_FAILURE (Status))
-		{
-			return (Status);
-		}
-		
-		ACPI_FREE (FullPathname);
-		FileList++;
-	}
+        Status = AslDoOneFile (FullPathname);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
 
-	return (AE_OK);
+        ACPI_FREE (FullPathname);
+        FileList++;
+    }
+
+    return (AE_OK);
 }
 

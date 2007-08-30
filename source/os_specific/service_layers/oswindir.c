@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: oswindir - Windows directory access interfaces
- *              $Revision: 1.9 $
+ *              $Revision: 1.10 $
  *
  *****************************************************************************/
 
@@ -160,12 +160,12 @@ AcpiOsOpenDirectory (
     EXTERNAL_FIND_INFO      *SearchInfo;
 
 
-	/* No directory path means "use current directory" - use a dot */
+    /* No directory path means "use current directory" - use a dot */
 
-	if (!DirPathname || strlen (DirPathname) == 0)
-	{
-		DirPathname = ".";
-	}
+    if (!DirPathname || strlen (DirPathname) == 0)
+    {
+        DirPathname = ".";
+    }
 
     /* Allocate the info struct that will be returned to the caller */
 

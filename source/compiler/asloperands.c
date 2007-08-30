@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asloperands - AML operand processing
- *              $Revision: 1.62 $
+ *              $Revision: 1.63 $
  *
  *****************************************************************************/
 
@@ -949,7 +949,7 @@ OpnDoDefinitionBlock (
     ACPI_PARSE_OBJECT       *Child;
     ACPI_SIZE               Length;
     ACPI_NATIVE_UINT        i;
-	char					*Filename;
+    char                    *Filename;
 
 
     /*
@@ -967,17 +967,17 @@ OpnDoDefinitionBlock (
         *Child->Asl.Value.Buffer &&
         (Gbl_UseDefaultAmlFilename))
     {
-		/* 
-		 * We will use the AML filename that is embedded in the source file
-		 * for the output filename.
-		 */
-		Filename = ACPI_ALLOCATE (strlen (Gbl_DirectoryPath) +
-					strlen ((char *) Child->Asl.Value.Buffer) + 1);
+        /*
+         * We will use the AML filename that is embedded in the source file
+         * for the output filename.
+         */
+        Filename = ACPI_ALLOCATE (strlen (Gbl_DirectoryPath) +
+                    strlen ((char *) Child->Asl.Value.Buffer) + 1);
 
-		/* Prepend the current directory path */
+        /* Prepend the current directory path */
 
-		strcpy (Filename, Gbl_DirectoryPath);
-		strcat (Filename, (char *) Child->Asl.Value.Buffer);
+        strcpy (Filename, Gbl_DirectoryPath);
+        strcat (Filename, (char *) Child->Asl.Value.Buffer);
 
         Gbl_OutputFilenamePrefix = Filename;
     }

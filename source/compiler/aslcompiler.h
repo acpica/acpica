@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.h - common include file for iASL
- *              $Revision: 1.149 $
+ *              $Revision: 1.150 $
  *
  *****************************************************************************/
 
@@ -193,7 +193,7 @@ AslPushInputFileStack (
  */
 ACPI_STATUS
 AslDoOnePathname (
-	char					*Pathname);
+    char                    *Pathname);
 
 /*
  * aslcompile - compile mainline
@@ -315,7 +315,7 @@ AePrintErrorLog (
 
 void
 AeClearErrorLog (
-	void);
+    void);
 
 ACPI_PHYSICAL_ADDRESS
 AeLocalGetRootPointer (

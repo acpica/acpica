@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslmain - compiler main and utilities
- *              $Revision: 1.97 $
+ *              $Revision: 1.98 $
  *
  *****************************************************************************/
 
@@ -709,7 +709,7 @@ AslCommandLine (
         exit (1);
     }
 
-	return (AcpiGbl_Optind);
+    return (AcpiGbl_Optind);
 }
 
 
@@ -732,7 +732,7 @@ main (
     char                    **argv)
 {
     ACPI_STATUS             Status;
-	int						Index;
+    int                     Index;
 
 
 #ifdef _DEBUG
@@ -745,20 +745,20 @@ main (
     AslInitialize ();
     Index = AslCommandLine (argc, argv);
 
-	/* Process each pathname/filename in the list, with possible wildcards */
+    /* Process each pathname/filename in the list, with possible wildcards */
 
-	while (argv[Index])
-	{
-		Status = AslDoOnePathname (argv[Index]);
-		if (ACPI_FAILURE (Status))
-		{
-			return (-1);
-		}
+    while (argv[Index])
+    {
+        Status = AslDoOnePathname (argv[Index]);
+        if (ACPI_FAILURE (Status))
+        {
+            return (-1);
+        }
 
-		Index++;
-	}
+        Index++;
+    }
 
-	return (0);
+    return (0);
 }
 
 
