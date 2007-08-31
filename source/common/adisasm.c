@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -372,7 +372,7 @@ AdAmlDisassemble (
     ACPI_STATUS             Status;
     char                    *DisasmFilename = NULL;
     FILE                    *File = NULL;
-    ACPI_TABLE_HEADER       *Table;
+    ACPI_TABLE_HEADER       *Table = NULL;
     ACPI_TABLE_HEADER       *ExternalTable;
 
 
@@ -575,6 +575,17 @@ AdAmlDisassemble (
     }
 
 Cleanup:
+
+    if (Table && !AcpiUtIsAmlTable (Table))
+    {
+        ACPI_FREE (Table);
+    }
+
+    if (DisasmFilename)
+    {
+        ACPI_FREE (DisasmFilename);
+    }
+
     if (OutToFile && File)
     {
 
@@ -677,6 +688,8 @@ AdCreateTableHeader (
         "DefinitionBlock (\"%s\", \"%4.4s\", %hd, \"%.6s\", \"%.8s\", 0x%8.8X)\n",
         NewFilename, Table->Signature, Table->Revision,
         Table->OemId, Table->OemTableId, Table->OemRevision);
+
+    ACPI_FREE (NewFilename);
 }
 
 

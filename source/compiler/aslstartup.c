@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstartup - Compiler startup routines, called from main
- *              $Revision: 1.2 $
+ *              $Revision: 1.3 $
  *
  *****************************************************************************/
 
@@ -249,7 +249,8 @@ AsDoWildcard (
      * Linux/Unix cases - Wildcards are expanded by the shell automatically.
      * Just return the filename in a null terminated list
      */
-    FileList[0] = FileSpecifier;
+    FileList[0] = AcpiOsAllocate (strlen (FileSpecifier) + 1);
+    strcpy (FileList[0], FileSpecifier);
     FileList[1] = NULL;
 
     return (FileList);
@@ -434,9 +435,13 @@ AslDoOnePathname (
         }
 
         ACPI_FREE (FullPathname);
+        ACPI_FREE (*FileList);
+        *FileList = NULL;
         FileList++;
     }
 
+    ACPI_FREE (Gbl_DirectoryPath);
+    ACPI_FREE (Filename);
     return (AE_OK);
 }
 
