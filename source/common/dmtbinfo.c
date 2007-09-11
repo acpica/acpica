@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbinfo - Table info for non-AML tables
- *              $Revision: 1.13 $
+ *              $Revision: 1.14 $
  *
  *****************************************************************************/
 
@@ -807,6 +807,18 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoSbst[] =
     {ACPI_DMT_UINT32,   ACPI_SBST_OFFSET (WarningLevel),            "Warning Level"},
     {ACPI_DMT_UINT32,   ACPI_SBST_OFFSET (LowLevel),                "Low Level"},
     {ACPI_DMT_UINT32,   ACPI_SBST_OFFSET (CriticalLevel),           "Critical Level"},
+    {ACPI_DMT_EXIT,     0,                                          NULL}
+};
+
+
+/*******************************************************************************
+ *
+ * SLIC - Software Licensing Description Table. NOT FULLY IMPLEMENTED
+ *
+ ******************************************************************************/
+
+ACPI_DMTABLE_INFO           AcpiDmTableInfoSlic[] =
+{
     {ACPI_DMT_EXIT,     0,                                          NULL}
 };
 

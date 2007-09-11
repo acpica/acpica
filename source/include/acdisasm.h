@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.39 $
+ *       $Revision: 1.40 $
  *
  *****************************************************************************/
 
@@ -267,6 +267,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMcfg0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoRsdp2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSbst[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSlic[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSlit[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSpcr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoSpmi[];

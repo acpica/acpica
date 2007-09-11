@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.12 $
+ *              $Revision: 1.13 $
  *
  *****************************************************************************/
 
@@ -190,6 +190,7 @@ static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
     {ACPI_SIG_MCFG, NULL,                   AcpiDmDumpMcfg, "Memory Mapped Configuration table"},
     {ACPI_SIG_RSDT, NULL,                   AcpiDmDumpRsdt, "Root System Description Table"},
     {ACPI_SIG_SBST, AcpiDmTableInfoSbst,    NULL,           "Smart Battery Specification Table"},
+    {ACPI_SIG_SLIC, AcpiDmTableInfoSlic,    NULL,           "Software Licensing Description Table"},
     {ACPI_SIG_SLIT, NULL,                   AcpiDmDumpSlit, "System Locality Information Table"},
     {ACPI_SIG_SPCR, AcpiDmTableInfoSpcr,    NULL,           "Serial Port Console Redirection table"},
     {ACPI_SIG_SPMI, AcpiDmTableInfoSpmi,    NULL,           "Server Platform Management Interface table"},
