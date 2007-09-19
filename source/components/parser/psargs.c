@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psargs - Parse AML opcode arguments
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  *****************************************************************************/
 
@@ -329,12 +329,11 @@ AcpiPsGetNextNamepath (
     ACPI_PARSE_OBJECT       *Arg,
     BOOLEAN                 PossibleMethodCall)
 {
+    ACPI_STATUS             Status;
     char                    *Path;
     ACPI_PARSE_OBJECT       *NameOp;
-    ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     *MethodDesc;
     ACPI_NAMESPACE_NODE     *Node;
-    ACPI_GENERIC_STATE      ScopeInfo;
 
 
     ACPI_FUNCTION_TRACE (PsGetNextNamepath);
@@ -351,23 +350,16 @@ AcpiPsGetNextNamepath (
         return_ACPI_STATUS (AE_OK);
     }
 
-    /* Setup search scope info */
-
-    ScopeInfo.Scope.Node = NULL;
-    Node = ParserState->StartNode;
-    if (Node)
-    {
-        ScopeInfo.Scope.Node = Node;
-    }
-
     /*
-     * Lookup the name in the internal namespace. We don't want to add
-     * anything new to the namespace here, however, so we use MODE_EXECUTE.
+     * Lookup the name in the internal namespace, starting with the current
+     * scope. We don't want to add anything new to the namespace here,
+     * however, so we use MODE_EXECUTE.
      * Allow searching of the parent tree, but don't open a new scope -
      * we just want to lookup the object (must be mode EXECUTE to perform
      * the upsearch)
      */
-    Status = AcpiNsLookup (&ScopeInfo, Path, ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
+    Status = AcpiNsLookup (WalkState->ScopeInfo, Path,
+                ACPI_TYPE_ANY, ACPI_IMODE_EXECUTE,
                 ACPI_NS_SEARCH_PARENT | ACPI_NS_DONT_OPEN_SCOPE, NULL, &Node);
 
     /*
