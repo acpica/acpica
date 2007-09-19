@@ -1,4 +1,29 @@
 ----------------------------------------
+19 September 2007. Summary of changes for version 20070919:
+
+1) ACPI CA Core Subsystem:
+
+Designed and implemented new external interfaces to install and remove handlers for ACPI table-related events. Current events that are defined are LOAD and UNLOAD. These interfaces allow the host to track ACPI tables as they are dynamically loaded and unloaded. See AcpiInstallTableHandler and AcpiRemoveTableHandler. (Lin Ming and Bob Moore)
+
+Fixed a problem where the use of the AcpiGbl_AllMethodsSerialized flag (acpi_serialized option on Linux) could cause some systems to hang during initialization. (Bob Moore) BZ 8171
+
+Fixed a problem where objects of certain types (Device, ThermalZone, Processor, PowerResource) can be not found if they are declared and referenced from within the same control method (Lin Ming) BZ 341
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  78.3K Code, 17.0K Data,  95.3K Total
+    Debug Version:     156.3K Code, 63.1K Data, 219.4K Total
+  Current Release:
+    Non-Debug Version:  78.5K Code, 17.1K Data,  95.6K Total
+    Debug Version:     156.7K Code, 63.2K Data, 219.9K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Implemented support to allow multiple files to be compiled/disassembled in a single invocation. This includes command line wildcard support for both the Windows and Unix versions of the compiler. This feature simplifies the disassembly and compilation of multiple ACPI tables in a single directory.
+
+----------------------------------------
 08 May 2007. Summary of changes for version 20070508:
 
 1) ACPI CA Core Subsystem:
