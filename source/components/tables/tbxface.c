@@ -2,7 +2,7 @@
  *
  * Module Name: tbxface - Public interfaces to the ACPI subsystem
  *                         ACPI table oriented interfaces
- *              $Revision: 1.86 $
+ *              $Revision: 1.87 $
  *
  *****************************************************************************/
 
@@ -659,4 +659,110 @@ AcpiLoadTables (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiLoadTables)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiInstallTableHandler
+ *
+ * PARAMETERS:  Handler         - Table event handler
+ *              Context         - Value passed to the handler on each event
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install table event handler
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiInstallTableHandler (
+    ACPI_TABLE_HANDLER      Handler,
+    void                    *Context)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiInstallTableHandler);
+
+
+    if (!Handler)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Don't allow more than one handler */
+
+    if (AcpiGbl_TableHandler)
+    {
+        Status = AE_ALREADY_EXISTS;
+        goto Cleanup;
+    }
+
+    /* Install the handler */
+
+    AcpiGbl_TableHandler = Handler;
+    AcpiGbl_TableHandlerContext = Context;
+
+Cleanup:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiInstallTableHandler)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiRemoveTableHandler
+ *
+ * PARAMETERS:  Handler         - Table event handler that was installed
+ *                                previously.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Remove table event handler
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiRemoveTableHandler (
+    ACPI_TABLE_HANDLER      Handler)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (AcpiRemoveTableHandler);
+
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Make sure that the installed handler is the same */
+
+    if (!Handler ||
+        Handler != AcpiGbl_TableHandler)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto Cleanup;
+    }
+
+    /* Remove the handler */
+
+    AcpiGbl_TableHandler = NULL;
+
+Cleanup:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiRemoveTableHandler)
 

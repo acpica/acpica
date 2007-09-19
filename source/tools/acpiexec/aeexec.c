@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.120 $
+ *              $Revision: 1.121 $
  *
  *****************************************************************************/
 
@@ -860,6 +860,30 @@ AeExceptionHandler (
 
 /******************************************************************************
  *
+ * FUNCTION:    AeTableHandler
+ *
+ * PARAMETERS:  Table handler
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: System table handler for AcpiExec utility.
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AeTableHandler (
+    UINT32                  Event,
+    ACPI_TABLE_HEADER       *Table,         
+    void                    *Context)
+{
+
+    printf ("Table Event: %u\n", Event);
+    return (AE_OK);
+}
+
+
+/******************************************************************************
+ *
  * FUNCTION:    AeInstallHandlers
  *
  * PARAMETERS:  None
@@ -884,6 +908,13 @@ AeInstallHandlers (void)
 
     ACPI_FUNCTION_ENTRY ();
 
+
+    Status = AcpiInstallTableHandler (AeTableHandler, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        printf ("Could not install table handler, %s\n",
+            AcpiFormatException (Status));
+    }
 
     Status = AcpiInstallExceptionHandler (AeExceptionHandler);
     if (ACPI_FAILURE (Status))
@@ -1106,6 +1137,18 @@ AeTestPackageArgument (
 }
 
 
+ACPI_STATUS
+AeGetDevices (
+    ACPI_HANDLE                     ObjHandle,
+    UINT32                          NestingLevel,
+    void                            *Context,
+    void                            **ReturnValue)
+{
+
+    return (AE_OK);
+}
+
+
 void
 AeMiscellaneousTests (
     void)
@@ -1197,6 +1240,14 @@ AeMiscellaneousTests (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not release GlobalLock, %X\n", Status);
+    }
+
+    /* Get Devices */
+
+    Status = AcpiGetDevices (NULL, AeGetDevices, NULL, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Could not AcpiGetDevices, %X\n", Status);
     }
 }
 

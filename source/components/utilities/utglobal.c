@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.249 $
+ *              $Revision: 1.250 $
  *
  *****************************************************************************/
 
@@ -775,12 +775,13 @@ AcpiUtInitGlobals (
     AcpiGbl_GpeFadtBlocks[0]            = NULL;
     AcpiGbl_GpeFadtBlocks[1]            = NULL;
 
-    /* Global notify handlers */
+    /* Global handlers */
 
     AcpiGbl_SystemNotify.Handler        = NULL;
     AcpiGbl_DeviceNotify.Handler        = NULL;
     AcpiGbl_ExceptionHandler            = NULL;
     AcpiGbl_InitHandler                 = NULL;
+    AcpiGbl_TableHandler                = NULL;
 
     /* Global Lock support */
 

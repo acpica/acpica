@@ -224,6 +224,15 @@ AcpiGetTableByIndex (
     ACPI_NATIVE_UINT        TableIndex,
     ACPI_TABLE_HEADER       **OutTable);
 
+ACPI_STATUS
+AcpiInstallTableHandler (
+    ACPI_TABLE_HANDLER      Handler,
+    void                    *Context);
+
+ACPI_STATUS
+AcpiRemoveTableHandler (
+    ACPI_TABLE_HANDLER      Handler);
+
 
 /*
  * Namespace and name interfaces

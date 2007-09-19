@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -330,6 +330,14 @@ AcpiExLoadTableOp (
             Table->Signature, Table->OemId, Table->OemTableId));
     }
 
+    /* Invoke table handler if present */
+
+    if (AcpiGbl_TableHandler)
+    {
+        (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_LOAD, Table,
+                    AcpiGbl_TableHandlerContext);
+    }
+
     *ReturnDesc = DdbHandle;
     return_ACPI_STATUS  (Status);
 }
@@ -456,6 +464,14 @@ AcpiExLoadOp (
         return_ACPI_STATUS (Status);
     }
 
+    /* Invoke table handler if present */
+
+    if (AcpiGbl_TableHandler)
+    {
+        (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_LOAD, TableDesc.Pointer,
+                    AcpiGbl_TableHandlerContext);
+    }
+
 Cleanup:
     if (ACPI_FAILURE (Status))
     {
@@ -484,6 +500,7 @@ AcpiExUnloadTable (
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *TableDesc = DdbHandle;
     ACPI_NATIVE_UINT        TableIndex;
+    ACPI_TABLE_HEADER       *Table;
 
 
     ACPI_FUNCTION_TRACE (ExUnloadTable);
@@ -506,6 +523,18 @@ AcpiExUnloadTable (
 
     TableIndex = (ACPI_NATIVE_UINT) TableDesc->Reference.Object;
 
+    /* Invoke table handler if present */
+
+    if (AcpiGbl_TableHandler)
+    {
+        Status = AcpiGetTableByIndex (TableIndex, &Table);
+        if (ACPI_SUCCESS (Status))
+        {
+            (void) AcpiGbl_TableHandler (ACPI_TABLE_EVENT_UNLOAD, Table,
+                        AcpiGbl_TableHandlerContext);
+        }
+    }
+
     /*
      * Delete the entire namespace under this table Node
      * (Offset contains the TableId)
@@ -518,6 +547,6 @@ AcpiExUnloadTable (
     /* Delete the table descriptor (DdbHandle) */
 
     AcpiUtRemoveReference (TableDesc);
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 

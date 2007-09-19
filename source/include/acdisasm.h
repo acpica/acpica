@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.40 $
+ *       $Revision: 1.41 $
  *
  *****************************************************************************/
 
@@ -181,14 +181,14 @@ typedef const struct acpi_dmtable_info
 #define ACPI_DMT_SIG                    27
 
 typedef
-void (*ACPI_TABLE_HANDLER) (
+void (*ACPI_DMTABLE_HANDLER) (
     ACPI_TABLE_HEADER       *Table);
 
 typedef struct acpi_dmtable_data
 {
     char                    *Signature;
-    ACPI_DMTABLE_INFO        *TableInfo;
-    ACPI_TABLE_HANDLER      TableHandler;
+    ACPI_DMTABLE_INFO       *TableInfo;
+    ACPI_DMTABLE_HANDLER    TableHandler;
     char                    *Name;
 
 } ACPI_DMTABLE_DATA;

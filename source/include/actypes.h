@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.316 $
+ *       $Revision: 1.317 $
  *
  *****************************************************************************/
 
@@ -849,6 +849,13 @@ typedef struct acpi_system_info
 } ACPI_SYSTEM_INFO;
 
 
+/* Table Event Types */
+
+#define ACPI_TABLE_EVENT_LOAD           0x0
+#define ACPI_TABLE_EVENT_UNLOAD         0x1
+#define ACPI_NUM_TABLE_EVENTS           2
+
+
 /*
  * Types specific to the OS service interfaces
  */
@@ -893,6 +900,18 @@ ACPI_STATUS (*ACPI_EXCEPTION_HANDLER) (
     UINT16                          Opcode,
     UINT32                          AmlOffset,
     void                            *Context);
+
+/* Table Event handler (Load, LoadTable etc) and types */
+
+typedef
+ACPI_STATUS (*ACPI_TABLE_HANDLER) (
+    UINT32                          Event,
+    void                            *Table,
+    void                            *Context);
+
+#define ACPI_TABLE_LOAD             0x0
+#define ACPI_TABLE_UNLOAD           0x1
+#define ACPI_NUM_TABLE_EVENTS       2
 
 
 /* Address Spaces (For Operation Regions) */
