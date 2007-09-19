@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evregion - ACPI AddressSpace (OpRegion) handler dispatch
- *              $Revision: 1.168 $
+ *              $Revision: 1.169 $
  *
  *****************************************************************************/
 
@@ -454,14 +454,14 @@ AcpiEvAddressSpaceDispatch (
          * setup will potentially execute control methods
          * (e.g., _REG method for this region)
          */
-        AcpiExRelinquishInterpreter ();
+        AcpiExExitInterpreter ();
 
         Status = RegionSetup (RegionObj, ACPI_REGION_ACTIVATE,
                     HandlerDesc->AddressSpace.Context, &RegionContext);
 
         /* Re-enter the interpreter */
 
-        AcpiExReacquireInterpreter ();
+        AcpiExEnterInterpreter ();
 
         /* Check for failure of the Region Setup */
 
@@ -515,7 +515,7 @@ AcpiEvAddressSpaceDispatch (
          * exit the interpreter because the handler *might* block -- we don't
          * know what it will do, so we can't hold the lock on the intepreter.
          */
-        AcpiExRelinquishInterpreter();
+        AcpiExExitInterpreter();
     }
 
     /* Call the handler */
@@ -536,7 +536,7 @@ AcpiEvAddressSpaceDispatch (
          * We just returned from a non-default handler, we must re-enter the
          * interpreter
          */
-       AcpiExReacquireInterpreter ();
+       AcpiExEnterInterpreter ();
     }
 
     return_ACPI_STATUS (Status);
