@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.106 $
+ *              $Revision: 1.107 $
  *
  *****************************************************************************/
 
@@ -374,6 +374,7 @@ AcpiExLoadOp (
     ACPI_TABLE_DESC         TableDesc;
     ACPI_NATIVE_UINT        TableIndex;
     ACPI_STATUS             Status;
+    UINT32                  Length;
 
 
     ACPI_FUNCTION_TRACE (ExLoadOp);
@@ -425,19 +426,36 @@ AcpiExLoadOp (
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Buffer or Field %p %s\n",
             ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
 
+        Length = ObjDesc->Buffer.Length;
+
+        /* Must have at least an ACPI table header */
+
+        if (Length < sizeof (ACPI_TABLE_HEADER))
+        {
+            return_ACPI_STATUS (AE_INVALID_TABLE_LENGTH);
+        }
+
+        /* Validate checksum here. It won't get validated in TbAddTable */
+
+        Status = AcpiTbVerifyChecksum (
+                    (ACPI_TABLE_HEADER *) ObjDesc->Buffer.Pointer, Length);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+
         /*
          * We need to copy the buffer since the original buffer could be
          * changed or deleted in the future
          */
-        TableDesc.Pointer = ACPI_ALLOCATE (ObjDesc->Buffer.Length);
+        TableDesc.Pointer = ACPI_ALLOCATE (Length);
         if (!TableDesc.Pointer)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
 
-        ACPI_MEMCPY (TableDesc.Pointer, ObjDesc->Buffer.Pointer,
-            ObjDesc->Buffer.Length);
-        TableDesc.Length = ObjDesc->Buffer.Length;
+        ACPI_MEMCPY (TableDesc.Pointer, ObjDesc->Buffer.Pointer, Length);
+        TableDesc.Length = Length;
         TableDesc.Flags = ACPI_TABLE_ORIGIN_ALLOCATED;
         break;
 

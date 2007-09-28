@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils   - table utilities
- *              $Revision: 1.88 $
+ *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -239,7 +239,7 @@ AcpiTbVerifyChecksum (
     if (Checksum)
     {
         ACPI_WARNING ((AE_INFO,
-            "Incorrect checksum in table [%4.4s] -  %2.2X, should be %2.2X",
+            "Incorrect checksum in table [%4.4s] - %2.2X, should be %2.2X",
             Table->Signature, Table->Checksum, (UINT8) (Table->Checksum - Checksum)));
 
 #if (ACPI_CHECKSUM_ABORT)
