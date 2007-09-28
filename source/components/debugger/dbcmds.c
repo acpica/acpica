@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.152 $
+ *              $Revision: 1.153 $
  *
  ******************************************************************************/
 
@@ -1629,7 +1629,7 @@ AcpiDbIntegrityWalk (
         {
             Alias = FALSE;
         }
-    }  
+    }
 
     if (Node->Type > ACPI_TYPE_LOCAL_MAX)
     {

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.121 $
+ *              $Revision: 1.122 $
  *
  *****************************************************************************/
 
@@ -873,7 +873,7 @@ AeExceptionHandler (
 ACPI_STATUS
 AeTableHandler (
     UINT32                  Event,
-    ACPI_TABLE_HEADER       *Table,         
+    ACPI_TABLE_HEADER       *Table,
     void                    *Context)
 {
 
