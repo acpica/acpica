@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.133 $
+ *              $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -673,6 +673,12 @@ AcpiUtDumpBuffer2 (
     UINT32                  Temp32;
     UINT8                   BufChar;
 
+
+    if (!Buffer)
+    {
+        AcpiOsPrintf ("Null Buffer Pointer in DumpBuffer!\n");
+        return;
+    }
 
     if ((Count < 4) || (Count & 0x01))
     {

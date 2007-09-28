@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.104 $
+ *              $Revision: 1.105 $
  *
  *****************************************************************************/
 
@@ -380,7 +380,6 @@ AcpiExLoadOp (
 
 
     ACPI_MEMSET (&TableDesc, 0, sizeof (ACPI_TABLE_DESC));
-    TableDesc.Flags = ACPI_TABLE_ORIGIN_ALLOCATED;
 
     /* Source Object can be either an OpRegion or a Buffer/Field */
 
@@ -388,15 +387,15 @@ AcpiExLoadOp (
     {
     case ACPI_TYPE_REGION:
 
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Region %p %s\n",
+            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
+
         /* Region must be SystemMemory (from ACPI spec) */
 
         if (ObjDesc->Region.SpaceId != ACPI_ADR_SPACE_SYSTEM_MEMORY)
         {
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }
-
-        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Region %p %s\n",
-            ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
 
         /*
          * If the Region Address and Length have not been previously evaluated,
@@ -411,6 +410,11 @@ AcpiExLoadOp (
             }
         }
 
+        /*
+         * We will simply map the memory region for the table. However, the
+         * memory region is technically not guaranteed to remain stable and
+         * we may eventually have to copy the table to a local buffer.
+         */
         TableDesc.Address = ObjDesc->Region.Address;
         TableDesc.Length = ObjDesc->Region.Length;
         TableDesc.Flags = ACPI_TABLE_ORIGIN_MAPPED;
@@ -418,17 +422,23 @@ AcpiExLoadOp (
 
     case ACPI_TYPE_BUFFER: /* Buffer or resolved RegionField */
 
-        /* Simply extract the buffer from the buffer object */
-
         ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "Load from Buffer or Field %p %s\n",
             ObjDesc, AcpiUtGetObjectTypeName (ObjDesc)));
 
-        TableDesc.Pointer = ACPI_CAST_PTR (ACPI_TABLE_HEADER,
-            ObjDesc->Buffer.Pointer);
-        TableDesc.Length = TableDesc.Pointer->Length;
-        TableDesc.Flags = ACPI_TABLE_ORIGIN_ALLOCATED;
+        /*
+         * We need to copy the buffer since the original buffer could be
+         * changed or deleted in the future
+         */
+        TableDesc.Pointer = ACPI_ALLOCATE (ObjDesc->Buffer.Length);
+        if (!TableDesc.Pointer)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
 
-        ObjDesc->Buffer.Pointer = NULL;
+        ACPI_MEMCPY (TableDesc.Pointer, ObjDesc->Buffer.Pointer,
+            ObjDesc->Buffer.Length);
+        TableDesc.Length = ObjDesc->Buffer.Length;
+        TableDesc.Flags = ACPI_TABLE_ORIGIN_ALLOCATED;
         break;
 
     default:
@@ -475,6 +485,8 @@ AcpiExLoadOp (
 Cleanup:
     if (ACPI_FAILURE (Status))
     {
+        /* Delete allocated buffer or mapping */
+
         AcpiTbDeleteTable (&TableDesc);
     }
     return_ACPI_STATUS (Status);
