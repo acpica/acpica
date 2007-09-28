@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.203 $
+ *              $Revision: 1.204 $
  *
  *****************************************************************************/
 
@@ -210,6 +210,8 @@ AcpiExDoDebugObject (
         return_VOID;
     }
 
+    /* SourceDesc is of type ACPI_DESC_TYPE_OPERAND */
+
     switch (ACPI_GET_OBJECT_TYPE (SourceDesc))
     {
     case ACPI_TYPE_INTEGER:
@@ -266,11 +268,18 @@ AcpiExDoDebugObject (
         }
         else
         {
-            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[%s]\n",
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "[%s]",
                 AcpiPsGetOpcodeName (SourceDesc->Reference.Opcode)));
         }
 
+        if (SourceDesc->Reference.Opcode == AML_LOAD_OP) /* Load and LoadTable */
+        {
+            ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
+                " Table OwnerId %X\n", SourceDesc->Reference.Object));
+            break;
+        }
 
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT, "\n"));
         if (SourceDesc->Reference.Object)
         {
             if (ACPI_GET_DESCRIPTOR_TYPE (SourceDesc->Reference.Object) ==
