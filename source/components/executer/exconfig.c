@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -471,8 +471,11 @@ AcpiExLoadOp (
 
         /* TablePtr was deallocated above */
 
+        AcpiUtRemoveReference (DdbHandle);
         return_ACPI_STATUS (Status);
     }
+
+    AcpiUtRemoveReference (DdbHandle);
 
     /* Invoke table handler if present */
 
