@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.204 $
+ *              $Revision: 1.205 $
  *
  *****************************************************************************/
 
@@ -296,8 +296,17 @@ AcpiExDoDebugObject (
         }
         else if (SourceDesc->Reference.Node)
         {
-            AcpiExDoDebugObject ((SourceDesc->Reference.Node)->Object,
-                Level+4, 0);
+            if (ACPI_GET_DESCRIPTOR_TYPE (SourceDesc->Reference.Node) !=
+                    ACPI_DESC_TYPE_NAMED)
+            {
+                ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
+                    " %p - Not a valid namespace node\n"));
+            }
+            else
+            {
+                AcpiExDoDebugObject ((SourceDesc->Reference.Node)->Object,
+                    Level+4, 0);
+            }
         }
         break;
 
