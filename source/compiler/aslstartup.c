@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstartup - Compiler startup routines, called from main
- *              $Revision: 1.3 $
+ *              $Revision: 1.4 $
  *
  *****************************************************************************/
 
@@ -216,31 +216,36 @@ AsDoWildcard (
     /* Open parent directory */
 
     DirInfo = AcpiOsOpenDirectory (DirectoryPathname, FileSpecifier, REQUEST_FILE_ONLY);
-    if (DirInfo)
+    if (!DirInfo)
     {
-        /* Process each file that matches the wildcard specification */
+        /* Either the directory of file does not exist */
 
-        while ((Filename = AcpiOsGetNextFilename (DirInfo)))
-        {
-            /* Add the filename to the file list */
-
-            FileList[FileCount] = AcpiOsAllocate (strlen (Filename) + 1);
-            strcpy (FileList[FileCount], Filename);
-            FileCount++;
-
-            if (FileCount >= ASL_MAX_FILES)
-            {
-                printf ("Max files reached\n");
-                FileList[0] = NULL;
-                return (FileList);
-            }
-        }
-
-        /* Cleanup */
-
-        AcpiOsCloseDirectory (DirInfo);
+        Gbl_Files[ASL_FILE_INPUT].Filename = FileSpecifier;
+        FlFileError (ASL_FILE_INPUT, ASL_MSG_OPEN);
+        AslAbort ();
     }
 
+    /* Process each file that matches the wildcard specification */
+
+    while ((Filename = AcpiOsGetNextFilename (DirInfo)))
+    {
+        /* Add the filename to the file list */
+
+        FileList[FileCount] = AcpiOsAllocate (strlen (Filename) + 1);
+        strcpy (FileList[FileCount], Filename);
+        FileCount++;
+
+        if (FileCount >= ASL_MAX_FILES)
+        {
+            printf ("Max files reached\n");
+            FileList[0] = NULL;
+            return (FileList);
+        }
+    }
+
+    /* Cleanup */
+
+    AcpiOsCloseDirectory (DirInfo);
     FileList[FileCount] = NULL;
     return (FileList);
 
