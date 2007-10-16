@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.122 $
+ *              $Revision: 1.123 $
  *
  *****************************************************************************/
 
@@ -753,6 +753,8 @@ AeNotifyHandler (
         {
             AcpiOsPrintf ("**** Received a notify, value 0x%X\n", Value);
         }
+
+        (void) AcpiEvaluateObject (Device, "_NOT", NULL, NULL);
         break;
     }
 
