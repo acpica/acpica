@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  ******************************************************************************/
 
@@ -633,10 +633,12 @@ AcpiUtUpdateObjectReference (
 
         case ACPI_TYPE_LOCAL_REFERENCE:
             /*
-             * The target of an Index (a package, string, or buffer) must track
-             * changes to the ref count of the index.
+             * The target of an Index (a package, string, or buffer) or a named
+             * reference must track changes to the ref count of the index or
+             * target object.
              */
-            if (Object->Reference.Opcode == AML_INDEX_OP)
+            if ((Object->Reference.Opcode == AML_INDEX_OP) ||
+                (Object->Reference.Opcode == AML_INT_NAMEPATH_OP))
             {
                 NextObject = Object->Reference.Object;
             }

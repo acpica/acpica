@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -240,12 +240,24 @@ AcpiDsBuildInternalObject (
             {
                 return_ACPI_STATUS (Status);
             }
- 
+
             switch (Op->Common.Node->Type)
             {
             /*
              * For these types, we need the actual node, not the subobject.
-             * However, the subobject got an extra reference count above.
+             * However, the subobject did not get an extra reference count above.
+             *
+             * TBD: should ExResolveNodeToValue be changed to fix this?
+             */
+            case ACPI_TYPE_DEVICE:
+            case ACPI_TYPE_THERMAL:
+
+                AcpiUtAddReference (Op->Common.Node->Object);
+
+                /*lint -fallthrough */
+            /*
+             * For these types, we need the actual node, not the subobject.
+             * The subobject got an extra reference count in ExResolveNodeToValue.
              */
             case ACPI_TYPE_MUTEX:
             case ACPI_TYPE_METHOD:
@@ -253,23 +265,15 @@ AcpiDsBuildInternalObject (
             case ACPI_TYPE_PROCESSOR:
             case ACPI_TYPE_EVENT:
             case ACPI_TYPE_REGION:
-            case ACPI_TYPE_DEVICE:
-            case ACPI_TYPE_THERMAL:
 
-                ObjDesc = (ACPI_OPERAND_OBJECT *) Op->Common.Node;
+                /* We will create a reference object for these types below */
                 break;
 
             default:
-                break;
-            }
-
-            /*
-             * If above resolved to an operand object, we are done. Otherwise,
-             * we have a NS node, we must create the package entry as a named
-             * reference.
-             */
-            if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_NAMED)
-            {
+                /*
+                 * All other types - the node was resolved to an actual
+                 * object, we are done.
+                 */
                 goto Exit;
             }
         }
@@ -294,7 +298,7 @@ AcpiDsBuildInternalObject (
 
 Exit:
     *ObjDescPtr = ObjDesc;
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 
@@ -518,7 +522,7 @@ AcpiDsBuildInternalPackageObj (
         if (Arg->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
         {
             if (Arg->Common.Node->Type == ACPI_TYPE_METHOD)
-            {   
+            {
                 /*
                  * A method reference "looks" to the parser to be a method
                  * invocation, so we special case it here
@@ -842,6 +846,7 @@ AcpiDsInitObjectFromOp (
                 /* Node was saved in Op */
 
                 ObjDesc->Reference.Node = Op->Common.Node;
+                ObjDesc->Reference.Object = Op->Common.Node->Object;
             }
 
             ObjDesc->Reference.Opcode = Opcode;
