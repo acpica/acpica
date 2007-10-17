@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.135 $
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -211,6 +211,68 @@ AcpiDsBuildInternalObject (
                 return_ACPI_STATUS (Status);
             }
         }
+
+        /* Special object resolution for elements of a package */
+
+        if ((Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP) ||
+            (Op->Common.Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP))
+        {
+            /*
+             * Attempt to resolve the node to a value before we insert it into
+             * the package. If this is a reference to a common data type,
+             * resolve it immediately. According to the ACPI spec, package
+             * elements can only be "data objects" or method references.
+             * Attempt to resolve to an Integer, Buffer, String or Package.
+             * If cannot, return the named reference (for things like Devices,
+             * Methods, etc.) Buffer Fields and Fields will resolve to simple
+             * objects (int/buf/str/pkg).
+             *
+             * NOTE: References to things like Devices, Methods, Mutexes, etc.
+             * will remain as named references. This behavior is not described
+             * in the ACPI spec, but it appears to be an oversight.
+             */
+            ObjDesc = (ACPI_OPERAND_OBJECT *) Op->Common.Node;
+
+            Status = AcpiExResolveNodeToValue (
+                        ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE, &ObjDesc),
+                        WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
+ 
+            switch (Op->Common.Node->Type)
+            {
+            /*
+             * For these types, we need the actual node, not the subobject.
+             * However, the subobject got an extra reference count above.
+             */
+            case ACPI_TYPE_MUTEX:
+            case ACPI_TYPE_METHOD:
+            case ACPI_TYPE_POWER:
+            case ACPI_TYPE_PROCESSOR:
+            case ACPI_TYPE_EVENT:
+            case ACPI_TYPE_REGION:
+            case ACPI_TYPE_DEVICE:
+            case ACPI_TYPE_THERMAL:
+
+                ObjDesc = (ACPI_OPERAND_OBJECT *) Op->Common.Node;
+                break;
+
+            default:
+                break;
+            }
+
+            /*
+             * If above resolved to an operand object, we are done. Otherwise,
+             * we have a NS node, we must create the package entry as a named
+             * reference.
+             */
+            if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) != ACPI_DESC_TYPE_NAMED)
+            {
+                goto Exit;
+            }
+        }
     }
 
     /* Create and init a new internal ACPI object */
@@ -230,6 +292,7 @@ AcpiDsBuildInternalObject (
         return_ACPI_STATUS (Status);
     }
 
+Exit:
     *ObjDescPtr = ObjDesc;
     return_ACPI_STATUS (AE_OK);
 }
@@ -454,10 +517,23 @@ AcpiDsBuildInternalPackageObj (
     {
         if (Arg->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
         {
-            /* This package element is already built, just get it */
+            if (Arg->Common.Node->Type == ACPI_TYPE_METHOD)
+            {   
+                /*
+                 * A method reference "looks" to the parser to be a method
+                 * invocation, so we special case it here
+                 */
+                Arg->Common.AmlOpcode = AML_INT_NAMEPATH_OP;
+                Status = AcpiDsBuildInternalObject (WalkState, Arg,
+                            &ObjDesc->Package.Elements[i]);
+            }
+            else
+            {
+                /* This package element is already built, just get it */
 
-            ObjDesc->Package.Elements[i] =
-                ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, Arg->Common.Node);
+                ObjDesc->Package.Elements[i] =
+                    ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, Arg->Common.Node);
+            }
         }
         else
         {
