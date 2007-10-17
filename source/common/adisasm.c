@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -1131,7 +1131,7 @@ AdParseTable (
 
     fprintf (stderr, "Pass 2 parse of [%4.4s]\n", (char *) Table->Signature);
 
-    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS2, 0);
+    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS2, 0, NULL);
     if (ACPI_FAILURE (Status))
     {
         return (Status);

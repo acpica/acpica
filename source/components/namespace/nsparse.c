@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsparse - namespace interface to AML parser
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -143,7 +143,8 @@
 ACPI_STATUS
 AcpiNsOneCompleteParse (
     ACPI_NATIVE_UINT        PassNumber,
-    ACPI_NATIVE_UINT        TableIndex)
+    ACPI_NATIVE_UINT        TableIndex,
+    ACPI_NAMESPACE_NODE     *StartNode)
 {
     ACPI_PARSE_OBJECT       *ParseRoot;
     ACPI_STATUS             Status;
@@ -209,6 +210,13 @@ AcpiNsOneCompleteParse (
         return_ACPI_STATUS (Status);
     }
 
+    /* StartNode is the default location to load the table  */
+
+    if (StartNode && StartNode != AcpiGbl_RootNode)
+    {
+        AcpiDsScopeStackPush (StartNode, ACPI_TYPE_METHOD, WalkState);
+    }
+
     /* Parse the AML */
 
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "*PARSE* pass %d parse\n", PassNumber));
@@ -254,7 +262,7 @@ AcpiNsParseTable (
      * performs another complete parse of the AML.
      */
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** Start pass 1\n"));
-    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS1, TableIndex);
+    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS1, TableIndex, StartNode);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -270,7 +278,7 @@ AcpiNsParseTable (
      * parse objects are all cached.
      */
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "**** Start pass 2\n"));
-    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS2, TableIndex);
+    Status = AcpiNsOneCompleteParse (ACPI_IMODE_LOAD_PASS2, TableIndex, StartNode);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);

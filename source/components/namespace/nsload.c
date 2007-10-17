@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  *****************************************************************************/
 
@@ -195,7 +195,7 @@ AcpiNsLoadTable (
         goto Unlock;
     }
 
-    Status = AcpiNsParseTable (TableIndex, Node->Child);
+    Status = AcpiNsParseTable (TableIndex, Node);
     if (ACPI_SUCCESS (Status))
     {
         AcpiTbSetTableLoadedFlag (TableIndex, TRUE);

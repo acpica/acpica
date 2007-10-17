@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -472,7 +472,7 @@ AcpiExLoadOp (
         goto Cleanup;
     }
 
-    Status = AcpiExAddTable (TableIndex, AcpiGbl_RootNode, &DdbHandle);
+    Status = AcpiExAddTable (TableIndex, WalkState->ScopeInfo->Scope.Node, &DdbHandle);
     if (ACPI_FAILURE (Status))
     {
         /* On error, TablePtr was deallocated above */
