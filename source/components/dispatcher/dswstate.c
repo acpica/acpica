@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -917,13 +917,6 @@ AcpiDsDeleteWalkState (
         WalkState->Results = State->Common.Next;
 
         AcpiUtDeleteGenericState (State);
-    }
-
-    /* Additional objects */
-
-    if (WalkState->NotifySemaphore)
-    {
-        AcpiOsDeleteSemaphore (WalkState->NotifySemaphore);
     }
 
     ACPI_FREE (WalkState);

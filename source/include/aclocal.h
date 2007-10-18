@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: aclocal.h - Internal data types used across the ACPI subsystem
- *       $Revision: 1.248 $
+ *       $Revision: 1.249 $
  *
  *****************************************************************************/
 
@@ -717,7 +717,6 @@ typedef struct acpi_notify_info
     ACPI_STATE_COMMON
     ACPI_NAMESPACE_NODE             *Node;
     union acpi_operand_object       *HandlerObj;
-    ACPI_SEMAPHORE                  Semaphore;
 
 } ACPI_NOTIFY_INFO;
 

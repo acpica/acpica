@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.153 $
+ *              $Revision: 1.154 $
  *
  ******************************************************************************/
 
@@ -831,7 +831,7 @@ AcpiDbSendNotify (
 
          /* Send the notify */
 
-        Status = AcpiEvQueueNotifyRequest (NULL, Node, Value);
+        Status = AcpiEvQueueNotifyRequest (Node, Value);
         if (ACPI_FAILURE (Status))
         {
             AcpiOsPrintf ("Could not queue notify\n");

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -197,31 +197,18 @@ AcpiEvIsNotifyObject (
  *
  * FUNCTION:    AcpiEvQueueNotifyRequest
  *
- * PARAMETERS:  WalkState           - Current walk state
- *              Node                - NS node for the notified object
- *              NotifyValue         - Value from the Notify() request
+ * PARAMETERS:  Node            - NS node for the notified object
+ *              NotifyValue     - Value from the Notify() request
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Dispatch a device notification event to a previously
  *              installed handler.
  *
- * DESIGN NOTE: Original design had the notify handler(s) running completely
- * asychnonously from the original thread that executed the Notify(), because
- * the notify handler will probably execute control methods via AcpiEvaluate.
- * However, some machines assume that the notify handlers are executed
- * synchronously with the Notify operator and have completed execution when the
- * notify is complete. A possible change is to simply invoke the notify handlers
- * directly from here, but this has many side effects since the interpreter is
- * not designed to have the same thread re-enter the interpreter via the
- * AcpiEvaluate interface. The current design below simply waits on a semaphore
- * until the notify handler has completed execution.
- *
  ******************************************************************************/
 
 ACPI_STATUS
 AcpiEvQueueNotifyRequest (
-    ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue)
 {
@@ -298,56 +285,17 @@ AcpiEvQueueNotifyRequest (
             return (AE_NO_MEMORY);
         }
 
-        /* Create the notify semaphore if necessary */
-
-        if (!WalkState->NotifySemaphore)
-        {
-            Status = AcpiOsCreateSemaphore (1, 0, &WalkState->NotifySemaphore);
-            if (ACPI_FAILURE (Status))
-            {
-                return (Status);
-            }
-        }
-
-        /* Always unlock interpreter. (Even if serialized option is true) */
-
-        AcpiExExitInterpreter ();
-
-        /* Initialize the notify info block */
-
         NotifyInfo->Common.DescriptorType = ACPI_DESC_TYPE_STATE_NOTIFY;
         NotifyInfo->Notify.Node = Node;
         NotifyInfo->Notify.Value = (UINT16) NotifyValue;
-        NotifyInfo->Notify.Semaphore = WalkState->NotifySemaphore;
         NotifyInfo->Notify.HandlerObj = HandlerObj;
 
-        /*
-         * Execute the notify dispatcher (and handlers) in another thread. We
-         * do this because the notify handler can and probably will execute
-         * additional control methods. The AML interpreter does not allow a
-         * thread that is currently executing a control method to directly call
-         * AcpiEvaluate(), and this also reduces stack use for this thread.
-         */
-        Status = AcpiOsExecute (OSL_NOTIFY_HANDLER, AcpiEvNotifyDispatch,
-                    NotifyInfo);
-        if (ACPI_SUCCESS (Status))
+        Status = AcpiOsExecute (
+                    OSL_NOTIFY_HANDLER, AcpiEvNotifyDispatch, NotifyInfo);
+        if (ACPI_FAILURE (Status))
         {
-            /*
-             * Wait for the notify handler(s) to complete. Even though not
-             * specifically required by the ACPI specification, Some machines
-             * require that all notify handlers execute synchronously with
-             * the AML Notify operator.
-             */
-            AcpiOsWaitSemaphore (WalkState->NotifySemaphore, 1, ACPI_WAIT_FOREVER);
+            AcpiUtDeleteGenericState (NotifyInfo);
         }
-
-        /* All done with the info object */
-
-        AcpiUtDeleteGenericState (NotifyInfo);
-
-        /* Lock the interpreter */
-
-        AcpiExEnterInterpreter ();
     }
 
     if (!HandlerObj)
@@ -374,8 +322,7 @@ AcpiEvQueueNotifyRequest (
  * RETURN:      None.
  *
  * DESCRIPTION: Dispatch a device notification event to a previously
- *              installed handler. Upon completion, signal the original thread
- *              that initiated the notify request.
+ *              installed handler.
  *
  ******************************************************************************/
 
@@ -436,9 +383,9 @@ AcpiEvNotifyDispatch (
             HandlerObj->Notify.Context);
     }
 
-    /* Signal completion of the handler(s) via the notify semaphore */
+    /* All done with the info object */
 
-    AcpiOsSignalSemaphore (NotifyInfo->Notify.Semaphore, 1);
+    AcpiUtDeleteGenericState (NotifyInfo);
 }
 
 
