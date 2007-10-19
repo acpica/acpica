@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.123 $
+ *              $Revision: 1.124 $
  *
  *****************************************************************************/
 
@@ -839,7 +839,7 @@ AeExceptionHandler (
     }
     else if (Status != AE_NOT_FOUND)
     {
-        AcpiOsPrintf ("**** AcpiExec: Could not execute _ERR method, %s",
+        AcpiOsPrintf ("**** AcpiExec: Could not execute _ERR method, %s\n",
             AcpiFormatException (Status));
     }
 
@@ -872,6 +872,13 @@ AeExceptionHandler (
  *
  *****************************************************************************/
 
+char                *TableEvents[] =
+{
+    "LOAD",
+    "UNLOAD",
+    "UNKNOWN"
+};
+
 ACPI_STATUS
 AeTableHandler (
     UINT32                  Event,
@@ -879,7 +886,15 @@ AeTableHandler (
     void                    *Context)
 {
 
-    printf ("Table Event: %u\n", Event);
+    if (Event > ACPI_NUM_TABLE_EVENTS)
+    {
+        Event = ACPI_NUM_TABLE_EVENTS;
+    }
+
+    /* TBD: could dump entire table header, need a header dump routine */
+
+    printf ("**** AcpiExec: Table Event %s, [%4.4s] %p\n",
+        TableEvents[Event], &Table->Signature, Table);
     return (AE_OK);
 }
 
