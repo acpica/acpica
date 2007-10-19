@@ -1,4 +1,41 @@
 ----------------------------------------
+19 October 2007. Summary of changes for version 20071019:
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem with the Alias operator when the target of the alias is a named ASL operator that opens a new scope -- Scope, Device, PowerResource, Processor, and ThermalZone. In these cases, any children of the original operator could not be accessed via the alias, potentially causing unexpected AE_NOT_FOUND exceptions. (BZ 9067)
+
+Fixed a problem with the Package operator where all named references were created as object references and left otherwise unresolved. According to the ACPI specification, a Package can only contain Data Objects or references to control methods. The implication is that named references to Data Objects (Integer, Buffer, String, Package, BufferField, Field) should be resolved immediately upon package creation. This is the approach taken with this change. References to all other named objects (Methods, Devices, Scopes, etc.) are all now properly created as reference objects. (BZ 5328)
+
+Reverted a change to Notify handling that was introduced in version 20070508. This version changed the Notify handling from asynchronous to fully synchronous (Device driver Notify handling with respect to the Notify ASL operator). It was found that this change caused more problems than it solved and was removed by most users.
+
+Fixed a problem with the Increment and Decrement operators where the type of the target object could be unexpectedly and incorrectly changed. (BZ 353) Lin Ming.
+
+Fixed a problem with the Load and LoadTable operators where the table location within the namespace was ignored. Instead, the table was always loaded into the root or current scope. Lin Ming.
+
+Fixed a problem with the Load operator when loading a table from a buffer object. The input buffer was prematurely zeroed and/or deleted. (BZ 577)
+
+Fixed a problem with the Debug object where a store of a DdbHandle reference object to the Debug object could cause a fault.
+
+Added a table checksum verification for the Load operator, in the case where the load is from a buffer. (BZ 578).
+
+Implemented additional parameter validation for the LoadTable operator. The length of the input strings SignatureString, OemIdString, and OemTableId are now checked for maximum lengths. (BZ 582) Lin Ming.
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  78.5K Code, 17.1K Data,  95.6K Total
+    Debug Version:     156.7K Code, 63.2K Data, 219.9K Total
+  Current Release:
+    Non-Debug Version:  78.8K Code, 17.2K Data,  96.0K Total
+    Debug Version:     157.2K Code, 63.4K Data, 220.6K Total
+
+
+2) iASL Compiler/Disassembler:
+
+Fixed a problem where if a single file was specified and the file did not exist, no error message was emitted. (Introduced with wildcard support in version 20070917.)
+
+----------------------------------------
 19 September 2007. Summary of changes for version 20070919:
 
 1) ACPI CA Core Subsystem:
