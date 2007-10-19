@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslstubs - Stubs used to link to Aml interpreter
- *              $Revision: 1.21 $
+ *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -185,7 +185,6 @@ AcpiEvDeleteGpeBlock (
 
 ACPI_STATUS
 AcpiEvQueueNotifyRequest (
-    ACPI_WALK_STATE         *WalkState,
     ACPI_NAMESPACE_NODE     *Node,
     UINT32                  NotifyValue)
 {
