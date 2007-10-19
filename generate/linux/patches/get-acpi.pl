@@ -28,5 +28,6 @@ if ($ARGV[0])
 
 system("echo Getting version $version_name of ACPICA");
 system("rm -rf $cvsroot/source; cvs -z 6 -d $cvshome co $version $cvsroot/source");
+system("rm -rf $cvsroot/source/tools/aapits");
 system("rm -rf $cvsroot/generate/linux; cvs -z 6 -d $cvshome co $version $cvsroot/generate/linux");
 
