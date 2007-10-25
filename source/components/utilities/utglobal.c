@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.250 $
+ *              $Revision: 1.251 $
  *
  *****************************************************************************/
 
@@ -263,7 +263,7 @@ const ACPI_PREDEFINED_NAMES     AcpiGbl_PreDefinedNames[] =
  * Properties of the ACPI Object Types, both internal and external.
  * The table is indexed by values of ACPI_OBJECT_TYPE
  */
-const UINT8                     AcpiGbl_NsProperties[] =
+const UINT8                     AcpiGbl_NsProperties[ACPI_NUM_NS_TYPES] =
 {
     ACPI_NS_NORMAL,                     /* 00 Any              */
     ACPI_NS_NORMAL,                     /* 01 Number           */
@@ -824,7 +824,7 @@ AcpiUtInitGlobals (
 
 
 #ifdef ACPI_DEBUG_OUTPUT
-    AcpiGbl_LowestStackPointer          = ACPI_SIZE_MAX;
+    AcpiGbl_LowestStackPointer          = ACPI_CAST_PTR (ACPI_SIZE, ACPI_SIZE_MAX);
 #endif
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsaccess - Top-level functions for accessing ACPI namespace
- *              $Revision: 1.207 $
+ *              $Revision: 1.208 $
  *
  ******************************************************************************/
 
@@ -715,7 +715,7 @@ AcpiNsLookup (
              *
              * Then we have a type mismatch. Just warn and ignore it.
              */
-             if ((TypeToCheckFor != ACPI_TYPE_ANY)                  &&
+            if ((TypeToCheckFor != ACPI_TYPE_ANY)                   &&
                 (TypeToCheckFor != ACPI_TYPE_LOCAL_ALIAS)           &&
                 (TypeToCheckFor != ACPI_TYPE_LOCAL_METHOD_ALIAS)    &&
                 (TypeToCheckFor != ACPI_TYPE_LOCAL_SCOPE)           &&

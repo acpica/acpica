@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.80 $
+ *              $Revision: 1.81 $
  *
  ******************************************************************************/
 
@@ -158,7 +158,7 @@ static UINT8
 AcpiRsCountSetBits (
     UINT16                  BitField)
 {
-    UINT8                   BitsSet;
+    ACPI_NATIVE_UINT        BitsSet;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -168,10 +168,10 @@ AcpiRsCountSetBits (
     {
         /* Zero the least significant bit that is set */
 
-        BitField &= (BitField - 1);
+        BitField &= (UINT16) (BitField - 1);
     }
 
-    return (BitsSet);
+    return ((UINT8) BitsSet);
 }
 
 

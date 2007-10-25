@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  *****************************************************************************/
 
@@ -202,7 +202,7 @@ AcpiNsLoadTable (
     }
     else
     {
-        AcpiTbReleaseOwnerId (TableIndex);
+        (void) AcpiTbReleaseOwnerId (TableIndex);
     }
 
 Unlock:

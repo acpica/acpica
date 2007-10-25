@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsutils - Utilities for the resource manager
- *              $Revision: 1.67 $
+ *              $Revision: 1.68 $
  *
  ******************************************************************************/
 
@@ -187,7 +187,7 @@ AcpiRsEncodeBitmask (
     UINT8                   Count)
 {
     ACPI_NATIVE_UINT        i;
-    UINT16                  Mask;
+    ACPI_NATIVE_UINT        Mask;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -197,10 +197,10 @@ AcpiRsEncodeBitmask (
 
     for (i = 0, Mask = 0; i < Count; i++)
     {
-        Mask |= (0x0001 << List[i]);
+        Mask |= (0x1 << List[i]);
     }
 
-    return (Mask);
+    return ((UINT16) Mask);
 }
 
 

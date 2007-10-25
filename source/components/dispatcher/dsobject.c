@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.137 $
+ *              $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -231,7 +231,7 @@ AcpiDsBuildInternalObject (
              * will remain as named references. This behavior is not described
              * in the ACPI spec, but it appears to be an oversight.
              */
-            ObjDesc = (ACPI_OPERAND_OBJECT *) Op->Common.Node;
+            ObjDesc = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT, Op->Common.Node);
 
             Status = AcpiExResolveNodeToValue (
                         ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE, &ObjDesc),

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: nsnames - Name manipulation and search
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  ******************************************************************************/
 
@@ -279,7 +279,8 @@ AcpiNsGetPathnameLength (
     {
         if (ACPI_GET_DESCRIPTOR_TYPE (NextNode) != ACPI_DESC_TYPE_NAMED)
         {
-            ACPI_ERROR ((AE_INFO, "Invalid NS Node (%X) while traversing path", NextNode));
+            ACPI_ERROR ((AE_INFO, "Invalid NS Node (%p) while traversing path",
+                NextNode));
             return 0;
         }
         Size += ACPI_PATH_SEGMENT_LENGTH;

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.131 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -684,7 +684,7 @@ AcpiUtCopyEpackageToIpackage (
         {
             /* Truncate package and delete it */
 
-            PackageObject->Package.Count = i;
+            PackageObject->Package.Count = (UINT32) i;
             PackageElements[i] = NULL;
             AcpiUtRemoveReference (PackageObject);
             return_ACPI_STATUS (Status);

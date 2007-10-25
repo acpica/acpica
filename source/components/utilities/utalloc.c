@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utalloc - local memory allocation routines
- *              $Revision: 1.164 $
+ *              $Revision: 1.165 $
  *
  *****************************************************************************/
 
@@ -225,7 +225,7 @@ AcpiUtDeleteCaches (
     if (AcpiGbl_DisplayFinalMemStats)
     {
         ACPI_STRCPY (Buffer, "MEMORY");
-        AcpiDbDisplayStatistics (Buffer);
+        (void) AcpiDbDisplayStatistics (Buffer);
     }
 #endif
 

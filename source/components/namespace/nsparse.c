@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: nsparse - namespace interface to AML parser
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -200,21 +200,25 @@ AcpiNsOneCompleteParse (
         AmlStart = (UINT8 *) Table + sizeof (ACPI_TABLE_HEADER);
         AmlLength = Table->Length - sizeof (ACPI_TABLE_HEADER);
         Status = AcpiDsInitAmlWalk (WalkState, ParseRoot, NULL,
-                    AmlStart, AmlLength, NULL, (UINT8) PassNumber);
+                    AmlStart, (UINT32) AmlLength, NULL, (UINT8) PassNumber);
     }
 
     if (ACPI_FAILURE (Status))
     {
         AcpiDsDeleteWalkState (WalkState);
-        AcpiPsDeleteParseTree (ParseRoot);
-        return_ACPI_STATUS (Status);
+        goto Cleanup;
     }
 
     /* StartNode is the default location to load the table  */
 
     if (StartNode && StartNode != AcpiGbl_RootNode)
     {
-        AcpiDsScopeStackPush (StartNode, ACPI_TYPE_METHOD, WalkState);
+        Status = AcpiDsScopeStackPush (StartNode, ACPI_TYPE_METHOD, WalkState);
+        if (ACPI_FAILURE (Status))
+        {
+            AcpiDsDeleteWalkState (WalkState);
+            goto Cleanup;
+        }
     }
 
     /* Parse the AML */
@@ -222,6 +226,7 @@ AcpiNsOneCompleteParse (
     ACPI_DEBUG_PRINT ((ACPI_DB_PARSE, "*PARSE* pass %d parse\n", PassNumber));
     Status = AcpiPsParseAml (WalkState);
 
+Cleanup:
     AcpiPsDeleteParseTree (ParseRoot);
     return_ACPI_STATUS (Status);
 }

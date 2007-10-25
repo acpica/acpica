@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -121,7 +121,6 @@
 #include "acinterp.h"
 #include "amlcode.h"
 #include "acnamesp.h"
-#include "acevents.h"
 #include "actables.h"
 #include "acdispat.h"
 
@@ -447,7 +446,7 @@ AcpiExLoadOp (
         /* Validate checksum here. It won't get validated in TbAddTable */
 
         Status = AcpiTbVerifyChecksum (
-                    (ACPI_TABLE_HEADER *) ObjDesc->Buffer.Pointer, Length);
+                    ACPI_CAST_PTR (ACPI_TABLE_HEADER, ObjDesc->Buffer.Pointer), Length);
         if (ACPI_FAILURE (Status))
         {
             return_ACPI_STATUS (Status);
@@ -580,7 +579,7 @@ AcpiExUnloadTable (
      * (Offset contains the TableId)
      */
     AcpiTbDeleteNamespaceByOwner (TableIndex);
-    AcpiTbReleaseOwnerId (TableIndex);
+    (void) AcpiTbReleaseOwnerId (TableIndex);
 
     AcpiTbSetTableLoadedFlag (TableIndex, FALSE);
 

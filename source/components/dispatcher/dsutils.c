@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  ******************************************************************************/
 
@@ -826,10 +826,9 @@ AcpiDsCreateOperands (
     ACPI_STATUS             Status = AE_OK;
     ACPI_PARSE_OBJECT       *Arg;
     ACPI_PARSE_OBJECT       *Arguments[ACPI_OBJ_NUM_OPERANDS];
-    UINT8                   ArgCount = 0;
-    UINT8                   Count = 0;
-    UINT8                   Index = WalkState->NumOperands;
-    UINT8                   i;
+    UINT32                  ArgCount = 0;
+    UINT32                  Index = WalkState->NumOperands;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE_PTR (DsCreateOperands, FirstArg);
@@ -865,7 +864,7 @@ AcpiDsCreateOperands (
 
         /* Force the filling of the operand stack in inverse order */
 
-        WalkState->OperandIndex = Index;
+        WalkState->OperandIndex = (UINT8) Index;
 
         Status = AcpiDsCreateOperand (WalkState, Arg, Index);
         if (ACPI_FAILURE (Status))
@@ -873,7 +872,6 @@ AcpiDsCreateOperands (
             goto Cleanup;
         }
 
-        Count++;
         Index--;
 
         ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "Arg #%d (%p) done, Arg1=%p\n",

@@ -2,7 +2,7 @@
  *
  * Module Name: dbfileio - Debugger file I/O commands.  These can't usually
  *              be used when running the debugger in Ring 0 (Kernel mode)
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  ******************************************************************************/
 
@@ -118,9 +118,7 @@
 
 #include "acpi.h"
 #include "acdebug.h"
-#include "acnamesp.h"
 #include "actables.h"
-#include "acdisasm.h"
 
 #if (defined ACPI_DEBUGGER || defined ACPI_DISASSEMBLER)
 

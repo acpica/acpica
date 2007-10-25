@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.99 $
+ *              $Revision: 1.100 $
  *
  *****************************************************************************/
 
@@ -125,7 +125,7 @@
         ACPI_MODULE_NAME    ("psopcode")
 
 
-const UINT8                 AcpiGbl_ArgumentCount[] = {0,1,1,1,1,2,2,2,2,3,3,6};
+static const UINT8          AcpiGbl_ArgumentCount[] = {0,1,1,1,1,2,2,2,2,3,3,6};
 
 
 /*******************************************************************************

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.154 $
+ *              $Revision: 1.155 $
  *
  ******************************************************************************/
 
@@ -1411,8 +1411,8 @@ AcpiDmTestResourceConversion (
     OriginalAml = ReturnObj.Pointer;
 
     AcpiDmCompareAmlResources (
-        OriginalAml->Buffer.Pointer, OriginalAml->Buffer.Length,
-        NewAml.Pointer, NewAml.Length);
+        OriginalAml->Buffer.Pointer, (ACPI_RSDESC_SIZE) OriginalAml->Buffer.Length,
+        NewAml.Pointer, (ACPI_RSDESC_SIZE) NewAml.Length);
 
     /* Cleanup and exit */
 

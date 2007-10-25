@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -320,7 +320,7 @@ AcpiDsResultStackPush (
 
     /* Check for stack overflow */
 
-    if ((WalkState->ResultSize + ACPI_RESULTS_FRAME_OBJ_NUM) >
+    if (((UINT32) WalkState->ResultSize + ACPI_RESULTS_FRAME_OBJ_NUM) >
         ACPI_RESULTS_OBJ_NUM_MAX)
     {
         ACPI_ERROR ((AE_INFO, "Result stack overflow: State=%p Num=%X",
@@ -517,7 +517,7 @@ AcpiDsObjStackPopAndDelete (
     UINT32                  PopCount,
     ACPI_WALK_STATE         *WalkState)
 {
-    UINT32                  i;
+    ACPI_NATIVE_INT         i;
     ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
@@ -529,7 +529,7 @@ AcpiDsObjStackPopAndDelete (
         return;
     }
 
-    for (i = (PopCount - 1); i >= 0; i--)
+    for (i = (ACPI_NATIVE_INT)(PopCount - 1); i >= 0; i--)
     {
         if (WalkState->NumOperands == 0)
         {

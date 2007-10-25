@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmopcode - AML disassembler, specific AML opcodes
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  ******************************************************************************/
 
@@ -405,6 +405,9 @@ AcpiDmDisassembleOneOp (
 
         case AML_LLESS_OP:
             AcpiOsPrintf ("LGreaterEqual");
+            break;
+
+        default:
             break;
         }
         Op->Common.DisasmOpcode = 0;

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -117,7 +117,6 @@
 #define __DSMETHOD_C__
 
 #include "acpi.h"
-#include "acparser.h"
 #include "amlcode.h"
 #include "acdispat.h"
 #include "acinterp.h"
@@ -183,7 +182,7 @@ AcpiDsMethodError (
                     WalkState->MethodNode ?
                         WalkState->MethodNode->Name.Integer : 0,
                     WalkState->Opcode, WalkState->AmlOffset, NULL);
-        (void) AcpiExEnterInterpreter ();
+        AcpiExEnterInterpreter ();
     }
 
 #ifdef ACPI_DISASSEMBLER
@@ -651,8 +650,6 @@ AcpiDsTerminateControlMethod (
     ACPI_OPERAND_OBJECT     *MethodDesc,
     ACPI_WALK_STATE         *WalkState)
 {
-    ACPI_STATUS             Status;
-
 
     ACPI_FUNCTION_TRACE_PTR (DsTerminateControlMethod, WalkState);
 
@@ -669,29 +666,26 @@ AcpiDsTerminateControlMethod (
         /* Delete all arguments and locals */
 
         AcpiDsMethodDataDeleteAll (WalkState);
-    }
 
-    /*
-     * If method is serialized, release the mutex and restore the
-     * current sync level for this thread
-     */
-    if (MethodDesc->Method.Mutex)
-    {
-        /* Acquisition Depth handles recursive calls */
-
-        MethodDesc->Method.Mutex->Mutex.AcquisitionDepth--;
-        if (!MethodDesc->Method.Mutex->Mutex.AcquisitionDepth)
+        /*
+         * If method is serialized, release the mutex and restore the
+         * current sync level for this thread
+         */
+        if (MethodDesc->Method.Mutex)
         {
-            WalkState->Thread->CurrentSyncLevel =
-                MethodDesc->Method.Mutex->Mutex.OriginalSyncLevel;
+            /* Acquisition Depth handles recursive calls */
 
-            AcpiOsReleaseMutex (MethodDesc->Method.Mutex->Mutex.OsMutex);
-            MethodDesc->Method.Mutex->Mutex.ThreadId = 0;
+            MethodDesc->Method.Mutex->Mutex.AcquisitionDepth--;
+            if (!MethodDesc->Method.Mutex->Mutex.AcquisitionDepth)
+            {
+                WalkState->Thread->CurrentSyncLevel =
+                    MethodDesc->Method.Mutex->Mutex.OriginalSyncLevel;
+
+                AcpiOsReleaseMutex (MethodDesc->Method.Mutex->Mutex.OsMutex);
+                MethodDesc->Method.Mutex->Mutex.ThreadId = 0;
+            }
         }
-    }
 
-    if (WalkState)
-    {
         /*
          * Delete any namespace objects created anywhere within
          * the namespace by the execution of this method
@@ -740,7 +734,7 @@ AcpiDsTerminateControlMethod (
         if ((MethodDesc->Method.MethodFlags & AML_METHOD_SERIALIZED) &&
             (!MethodDesc->Method.Mutex))
         {
-            Status = AcpiDsCreateMethodMutex (MethodDesc);
+            (void) AcpiDsCreateMethodMutex (MethodDesc);
         }
 
         /* No more threads, we can free the OwnerId */

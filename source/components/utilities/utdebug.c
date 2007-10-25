@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.134 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -124,9 +124,9 @@
 
 #ifdef ACPI_DEBUG_OUTPUT
 
-static UINT32   AcpiGbl_PrevThreadId = 0xFFFFFFFF;
-static char     *AcpiGbl_FnEntryStr = "----Entry";
-static char     *AcpiGbl_FnExitStr  = "----Exit-";
+static ACPI_THREAD_ID       AcpiGbl_PrevThreadId = 0xFFFFFFFF;
+static char                 *AcpiGbl_FnEntryStr = "----Entry";
+static char                 *AcpiGbl_FnExitStr  = "----Exit-";
 
 /* Local prototypes */
 
@@ -151,10 +151,10 @@ void
 AcpiUtInitStackPtrTrace (
     void)
 {
-    UINT32                  CurrentSp;
+    ACPI_SIZE               CurrentSp;
 
 
-    AcpiGbl_EntryStackPointer = ACPI_PTR_DIFF (&CurrentSp, NULL);
+    AcpiGbl_EntryStackPointer = &CurrentSp;
 }
 
 
@@ -177,11 +177,9 @@ AcpiUtTrackStackPtr (
     ACPI_SIZE               CurrentSp;
 
 
-    CurrentSp = ACPI_PTR_DIFF (&CurrentSp, NULL);
-
-    if (CurrentSp < AcpiGbl_LowestStackPointer)
+    if (&CurrentSp < AcpiGbl_LowestStackPointer)
     {
-        AcpiGbl_LowestStackPointer = CurrentSp;
+        AcpiGbl_LowestStackPointer = &CurrentSp;
     }
 
     if (AcpiGbl_NestingLevel > AcpiGbl_DeepestNesting)

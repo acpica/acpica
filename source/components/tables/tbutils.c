@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbutils   - table utilities
- *              $Revision: 1.89 $
+ *              $Revision: 1.90 $
  *
  *****************************************************************************/
 
@@ -181,7 +181,7 @@ AcpiTbPrintTableHeader (
         /* FACS only has signature and length fields of common table header */
 
         ACPI_INFO ((AE_INFO, "%4.4s @ 0x%p/0x%04X",
-            Header->Signature, ACPI_CAST_PTR (void, Address), Header->Length));
+            Header->Signature, ACPI_CAST_PTR (UINT64, Address), Header->Length));
     }
     else if (ACPI_COMPARE_NAME (Header->Signature, ACPI_SIG_RSDP))
     {

@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbexec - debugger control method execution
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  ******************************************************************************/
 
@@ -551,7 +551,7 @@ AcpiDbMethodThread (
     /* Signal our completion */
 
     Allow = 0;
-    AcpiOsWaitSemaphore (Info->ThreadCompleteGate, 1, ACPI_WAIT_FOREVER);
+    (void) AcpiOsWaitSemaphore (Info->ThreadCompleteGate, 1, ACPI_WAIT_FOREVER);
     Info->NumCompleted++;
 
     if (Info->NumCompleted == Info->NumThreads)
@@ -560,7 +560,7 @@ AcpiDbMethodThread (
         Allow = 1;
     }
 
-    AcpiOsSignalSemaphore (Info->ThreadCompleteGate, 1);
+    (void) AcpiOsSignalSemaphore (Info->ThreadCompleteGate, 1);
 
     if (Allow)
     {
@@ -692,7 +692,7 @@ AcpiDbCreateExecutionThreads (
 
     /* Wait for all threads to complete */
 
-    AcpiOsWaitSemaphore (MainThreadGate, 1, ACPI_WAIT_FOREVER);
+    (void) AcpiOsWaitSemaphore (MainThreadGate, 1, ACPI_WAIT_FOREVER);
 
     AcpiDbSetOutputDestination (ACPI_DB_DUPLICATE_OUTPUT);
     AcpiOsPrintf ("All threads (%X) have completed\n", NumThreads);

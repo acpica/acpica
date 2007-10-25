@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.202 $
+ *              $Revision: 1.203 $
  *
  *****************************************************************************/
 
@@ -608,6 +608,13 @@ AcpiExDumpOperand (
             break;
 
 
+        case AML_LOAD_OP:
+
+            AcpiOsPrintf ("Reference: [DdbHandle] TableIndex %p\n",
+                ObjDesc->Reference.Object);
+            break;
+
+
         case AML_REF_OF_OP:
 
             AcpiOsPrintf ("Reference: (RefOf) %p\n",
@@ -740,7 +747,7 @@ AcpiExDumpOperand (
         else
         {
             AcpiOsPrintf (" base %8.8X%8.8X Length %X\n",
-                ACPI_FORMAT_UINT64 (ObjDesc->Region.Address),
+                ACPI_FORMAT_NATIVE_UINT (ObjDesc->Region.Address),
                 ObjDesc->Region.Length);
         }
         break;

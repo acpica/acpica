@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbinput - user front-end to the AML debugger
- *              $Revision: 1.114 $
+ *              $Revision: 1.115 $
  *
  ******************************************************************************/
 
@@ -866,7 +866,7 @@ AcpiDbCommandDispatch (
         break;
 
     case CMD_TRACE:
-        AcpiDebugTrace (AcpiGbl_DbArgs[1],0,0,1);
+        (void) AcpiDebugTrace (AcpiGbl_DbArgs[1],0,0,1);
         break;
 
     case CMD_TREE:
