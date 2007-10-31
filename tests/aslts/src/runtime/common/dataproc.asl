@@ -561,6 +561,7 @@ Method(m1af, 4)
 
 	Store(Index(arg0, 0), Local0)
 	Store(ObjectType(Local0), Local1)
+
 	if (LNotEqual(Local1, c009)) {
 		err(ts, z114, 0x112, 0, 0, Local1, c009)
 	} else {
@@ -572,6 +573,7 @@ Method(m1af, 4)
 
 	Store(Index(arg0, 1), Local0)
 	Store(ObjectType(Local0), Local1)
+
 	if (LNotEqual(Local1, c009)) {
 		err(ts, z114, 0x112, 0, 0, Local1, c009)
 	} else {
@@ -587,6 +589,7 @@ Method(m1af, 4)
 
 	Store(Index(arg0, 2), Local0)
 	Store(ObjectType(Local0), Local1)
+
 	if (LNotEqual(Local1, c00a)) {
 		err(ts, z114, 0x112, 0, 0, Local1, c00a)
 	} else {
@@ -602,6 +605,7 @@ Method(m1af, 4)
 
 	Store(Index(arg0, 3), Local0)
 	Store(ObjectType(Local0), Local1)
+
 	if (LNotEqual(Local1, c00b)) {
 		err(ts, z114, 0x112, 0, 0, Local1, c00a)
 	} else {
@@ -618,28 +622,33 @@ Method(m1af, 4)
 	Store(Index(arg0, 4), Local0)
 	m1aa(ts, Local0, c00c, 0, 0x13f)
 
+
+    // 5th element is a region field, which will be resolved to an integer
+
 	if (arg2) {
-		Store(Index(arg0, 5), Local0)
-		m1aa(ts, Local0, c00d, 0, 0x13f)
-		Store(Index(arg0, 5), Local0)
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c00d)) {
-			err(ts, z114, 0x112, 0, 0, Local1, c00d)
-		} else {
-			if (y518) {
-				Store(DerefOf(Local0), Local1)
-				if (arg3) {
-					Store(DerefOf(Local1), Local2)
-					Store(Local2, Local1)
-				}
-				if (y517) {
-					if (LNotEqual(Local1, 0xb0)) {
-						err(ts, z114, 0x112, 0, 0, Local1, 0xb0)
-					}
-				}
-			}
+	    Store(Index(arg0, 5), Local0)
+	    Store(ObjectType(Local0), Local1)
+		Store(DerefOf(Local0), Local7)
+
+        if (arg3) {
+	        if (LNotEqual(Local1, c00d)) {
+		        err(ts, z114, 0x112, 0, 0, Local1, c00d)
+	        } else {
+			    Store(DerefOf(Local7), Local6)
+			    Store(Local6, Local7)
+            }
+        }
+
+	    Store(ObjectType(Local7), Local5)
+
+	    if (LNotEqual(Local5, c009)) {
+		    err(ts, z114, 0x112, 0, 0, Local5, c009)
+	    } else {
+		    if (LNotEqual(Local7, 0)) {
+			    err(ts, z114, 0x112, 0, 0, Local7, 0)
+            }
 		}
-	}
+    }
 
 	if (arg1) {
 
@@ -668,29 +677,36 @@ Method(m1af, 4)
 		m1aa(ts, Local0, c015, 0, 0x13f)
 	}
 
+    // 14th element is a buffer field, which will be resolved to an integer
+
 	if (arg2) {
-		Store(Index(arg0, 14), Local0)
-		Store(ObjectType(Local0), Local1)
-		if (LNotEqual(Local1, c016)) {
-			err(ts, z114, 0x112, 0, 0, Local1, c016)
-		} else {
-			if (y518) {
-				Store(DerefOf(Local0), Local1)
-				if (arg3) {
-					Store(DerefOf(Local1), Local2)
-					Store(Local2, Local1)
-				}
-				if (y517) {
-					if (LNotEqual(Local1, 0xb0)) {
-						err(ts, z114, 0x112, 0, 0, Local1, 0xb0)
-					}
-				}
-			}
+	    Store(Index(arg0, 14), Local0)
+	    Store(ObjectType(Local0), Local1)
+		Store(DerefOf(Local0), Local7)
+
+        if (arg3) {
+	        if (LNotEqual(Local1, c016)) {
+		        err(ts, z114, 0x112, 0, 0, Local1, c016)
+	        } else {
+			    Store(DerefOf(Local7), Local6)
+			    Store(Local6, Local7)
+            }
+        }
+
+	    Store(ObjectType(Local7), Local5)
+
+	    if (LNotEqual(Local5, c009)) {
+		    err(ts, z114, 0x112, 0, 0, Local5, c009)
+	    } else {
+		    if (LNotEqual(Local7, 0xb0)) {
+			    err(ts, z114, 0x112, 0, 0, Local7, 0)
+            }
 		}
-	}
+    }
 
 	Store(Index(arg0, 15), Local0)
 	Store(ObjectType(Local0), Local1)
+
 	if (LNotEqual(Local1, c009)) {
 		err(ts, z114, 0x112, 0, 0, Local1, c009)
 	} else {
@@ -702,6 +718,7 @@ Method(m1af, 4)
 
 	Store(Index(arg0, 16), Local0)
 	Store(ObjectType(Local0), Local1)
+
 	if (LNotEqual(Local1, c009)) {
 		err(ts, z114, 0x112, 0, 0, Local1, c009)
 	} else {
@@ -713,6 +730,7 @@ Method(m1af, 4)
 
 	Store(Index(arg0, 17), Local0)
 	Store(ObjectType(Local0), Local1)
+
 	if (LNotEqual(Local1, c008)) {
 		err(ts, z114, 0x115, 0, 0, Local1, c008)
 	}

@@ -484,23 +484,23 @@ Case (58) {
 }
 Case (59) {
 	CopyObject(Index(p912, 0, Local0), Local1)
-	m1a3(Local0, c00d, z110, ts, 70)
-	m1a3(Local1, c00d, z110, ts, 71)
+	m1a3(Local0, c009, z110, ts, 70)
+	m1a3(Local1, c009, z110, ts, 71)
 }
 Case (60) {
 	CopyObject(Index(p913, 0, Local0), Local1)
-	m1a3(Local0, c00d, z110, ts, 72)
-	m1a3(Local1, c00d, z110, ts, 73)
+	m1a3(Local0, c009, z110, ts, 72)
+	m1a3(Local1, c009, z110, ts, 73)
 }
 Case (61) {
 	CopyObject(Index(p914, 0, Local0), Local1)
-	m1a3(Local0, c00d, z110, ts, 74)
-	m1a3(Local1, c00d, z110, ts, 75)
+	m1a3(Local0, c009, z110, ts, 74)
+	m1a3(Local1, c009, z110, ts, 75)
 }
 Case (62) {
 	CopyObject(Index(p915, 0, Local0), Local1)
-	m1a3(Local0, c016, z110, ts, 76)
-	m1a3(Local1, c016, z110, ts, 77)
+	m1a3(Local0, c009, z110, ts, 76)
+	m1a3(Local1, c009, z110, ts, 77)
 }
 
 	// Elements of Package are NOT Computational Data
@@ -633,23 +633,23 @@ Case (84) {
 }
 Case (85) {
 	Store(Index(p912, 0, Local0), Local1)
-	m1a3(Local0, c00d, z110, ts, 122)
-	m1a3(Local1, c00d, z110, ts, 123)
+	m1a3(Local0, c009, z110, ts, 122)
+	m1a3(Local1, c009, z110, ts, 123)
 }
 Case (86) {
 	Store(Index(p913, 0, Local0), Local1)
-	m1a3(Local0, c00d, z110, ts, 124)
-	m1a3(Local1, c00d, z110, ts, 125)
+	m1a3(Local0, c009, z110, ts, 124)
+	m1a3(Local1, c009, z110, ts, 125)
 }
 Case (87) {
 	Store(Index(p914, 0, Local0), Local1)
-	m1a3(Local0, c00d, z110, ts, 126)
-	m1a3(Local1, c00d, z110, ts, 127)
+	m1a3(Local0, c009, z110, ts, 126)
+	m1a3(Local1, c009, z110, ts, 127)
 }
 Case (88) {
 	Store(Index(p915, 0, Local0), Local1)
-	m1a3(Local0, c016, z110, ts, 128)
-	m1a3(Local1, c016, z110, ts, 129)
+	m1a3(Local0, c009, z110, ts, 128)
+	m1a3(Local1, c009, z110, ts, 129)
 }
 
 	// Elements of Package are NOT Computational Data
@@ -716,10 +716,10 @@ Default {
 	err(ts, z110, 1, 0, 0, ind0, 0)
 }
 
-	} /* Switch */
+    } /* Switch */
 
-	Decrement(lpN0)
-	Increment(lpC0)
+    Decrement(lpN0)
+    Increment(lpC0)
 
 	} /* While */
 

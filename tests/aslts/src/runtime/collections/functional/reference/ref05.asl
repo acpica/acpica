@@ -2735,21 +2735,23 @@ Method(m1b6)
 	m1a3(Local0, c00b, z108, ts, 925)
 	m1a3(Local1, c00b, z108, ts, 926)
 
+    // These objects become an integer in a package
+
 	CopyObject(Index(p912, 0, Local0), Local1)
-	m1a3(Local0, c00d, z108, ts, 927)
-	m1a3(Local1, c00d, z108, ts, 928)
+	m1a3(Local0, c009, z108, ts, 927)
+	m1a3(Local1, c009, z108, ts, 928)
 
 	CopyObject(Index(p913, 0, Local0), Local1)
-	m1a3(Local0, c00d, z108, ts, 929)
-	m1a3(Local1, c00d, z108, ts, 930)
+	m1a3(Local0, c009, z108, ts, 929)
+	m1a3(Local1, c009, z108, ts, 930)
 
 	CopyObject(Index(p914, 0, Local0), Local1)
-	m1a3(Local0, c00d, z108, ts, 931)
-	m1a3(Local1, c00d, z108, ts, 932)
+	m1a3(Local0, c009, z108, ts, 931)
+	m1a3(Local1, c009, z108, ts, 932)
 
 	CopyObject(Index(p915, 0, Local0), Local1)
-	m1a3(Local0, c016, z108, ts, 933)
-	m1a3(Local1, c016, z108, ts, 934)
+	m1a3(Local0, c009, z108, ts, 933)
+	m1a3(Local1, c009, z108, ts, 934)
 
 	// Elements of Package are NOT Computational Data
 
@@ -2969,21 +2971,23 @@ Method(m1b7)
 	m1a3(Local0, c00b, z108, ts, 1031)
 	m1a3(Local1, c00b, z108, ts, 1032)
 
+    // These objects become an integer in a package
+
 	Store(Index(p912, 0, Local0), Local1)
-	m1a3(Local0, c00d, z108, ts, 1033)
-	m1a3(Local1, c00d, z108, ts, 1034)
+	m1a3(Local0, c009, z108, ts, 1033)
+	m1a3(Local1, c009, z108, ts, 1034)
 
 	Store(Index(p913, 0, Local0), Local1)
-	m1a3(Local0, c00d, z108, ts, 1035)
-	m1a3(Local1, c00d, z108, ts, 1036)
+	m1a3(Local0, c009, z108, ts, 1035)
+	m1a3(Local1, c009, z108, ts, 1036)
 
 	Store(Index(p914, 0, Local0), Local1)
-	m1a3(Local0, c00d, z108, ts, 1037)
-	m1a3(Local1, c00d, z108, ts, 1038)
+	m1a3(Local0, c009, z108, ts, 1037)
+	m1a3(Local1, c009, z108, ts, 1038)
 
 	Store(Index(p915, 0, Local0), Local1)
-	m1a3(Local0, c016, z108, ts, 1039)
-	m1a3(Local1, c016, z108, ts, 1040)
+	m1a3(Local0, c009, z108, ts, 1039)
+	m1a3(Local1, c009, z108, ts, 1040)
 
 	// Elements of Package are NOT Computational Data
 
