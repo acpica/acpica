@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  *****************************************************************************/
 
@@ -882,7 +882,7 @@ char                *TableEvents[] =
 ACPI_STATUS
 AeTableHandler (
     UINT32                  Event,
-    ACPI_TABLE_HEADER       *Table,
+    void                    *Table,
     void                    *Context)
 {
 
@@ -894,7 +894,7 @@ AeTableHandler (
     /* TBD: could dump entire table header, need a header dump routine */
 
     printf ("**** AcpiExec: Table Event %s, [%4.4s] %p\n",
-        TableEvents[Event], &Table->Signature, Table);
+        TableEvents[Event], ((ACPI_TABLE_HEADER *) Table)->Signature, Table);
     return (AE_OK);
 }
 
@@ -1139,7 +1139,7 @@ AeTestPackageArgument (
     /* Sub-package elements */
 
     Pkg2Elements[0].Type = ACPI_TYPE_INTEGER;
-    Pkg2Elements[0].Integer.Value = 0x5555AAAABBBBCCCC;
+    Pkg2Elements[0].Integer.Value = (ACPI_INTEGER) 0x5555AAAABBBBCCCC;
 
     Pkg2Elements[1].Type = ACPI_TYPE_STRING;
     Pkg2Elements[1].String.Length = sizeof ("Nested Package");
