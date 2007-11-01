@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.203 $
+ *              $Revision: 1.204 $
  *
  *****************************************************************************/
 
@@ -617,8 +617,9 @@ AcpiExDumpOperand (
 
         case AML_REF_OF_OP:
 
-            AcpiOsPrintf ("Reference: (RefOf) %p\n",
-                ObjDesc->Reference.Object);
+            AcpiOsPrintf ("Reference: (RefOf) %p [%s]\n",
+                ObjDesc->Reference.Object,
+                AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *) ObjDesc->Reference.Object)->Common.Type));
             break;
 
 
@@ -659,8 +660,9 @@ AcpiExDumpOperand (
 
         case AML_INT_NAMEPATH_OP:
 
-            AcpiOsPrintf ("Reference.Node->Name %X\n",
-                ObjDesc->Reference.Node->Name.Integer);
+            AcpiOsPrintf ("Reference: Namepath %X [%4.4s]\n",
+                ObjDesc->Reference.Node->Name.Integer,
+                ObjDesc->Reference.Node->Name.Ascii);
             break;
 
 
@@ -1026,12 +1028,12 @@ AcpiExDumpReferenceObj (
 
     if (ObjDesc->Reference.Opcode == AML_INT_NAMEPATH_OP)
     {
-        AcpiOsPrintf ("Named Object %p ", ObjDesc->Reference.Node);
+        AcpiOsPrintf (" Named Object %p ", ObjDesc->Reference.Node);
 
         Status = AcpiNsHandleToPathname (ObjDesc->Reference.Node, &RetBuf);
         if (ACPI_FAILURE (Status))
         {
-            AcpiOsPrintf ("Could not convert name to pathname\n");
+            AcpiOsPrintf (" Could not convert name to pathname\n");
         }
         else
         {
@@ -1041,7 +1043,17 @@ AcpiExDumpReferenceObj (
     }
     else if (ObjDesc->Reference.Object)
     {
-        AcpiOsPrintf ("\nReferenced Object: %p\n", ObjDesc->Reference.Object);
+        if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_OPERAND)
+        {
+            AcpiOsPrintf (" Target: %p [%s]\n",
+                ObjDesc->Reference.Object,
+                AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *) ObjDesc->Reference.Object)->Common.Type));
+        }
+        else
+        {
+            AcpiOsPrintf (" Target: %p\n",
+                ObjDesc->Reference.Object);
+        }
     }
 }
 
@@ -1140,7 +1152,8 @@ AcpiExDumpPackageObj (
 
     case ACPI_TYPE_LOCAL_REFERENCE:
 
-        AcpiOsPrintf ("[Object Reference] ");
+        AcpiOsPrintf ("[Object Reference] %s",
+            (AcpiPsGetOpcodeInfo (ObjDesc->Reference.Opcode))->Name);
         AcpiExDumpReferenceObj (ObjDesc);
         break;
 
