@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -912,8 +912,8 @@ AeTableHandler (
  *
  *****************************************************************************/
 
-ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 4, 0x80};
-#define AEXEC_NUM_REGIONS   6
+ACPI_ADR_SPACE_TYPE         SpaceId[] = {0, 1, 2, 3, 4, 5, 6, 0x80};
+#define AEXEC_NUM_REGIONS   8
 
 ACPI_STATUS
 AeInstallHandlers (void)
@@ -984,13 +984,10 @@ AeInstallHandlers (void)
         printf ("No _SB_ found, %s\n", AcpiFormatException (Status));
     }
 
+    /* Set a handler for all supported operation regions */
+
     for (i = 0; i < AEXEC_NUM_REGIONS; i++)
     {
-        if (i == 2)
-        {
-            continue;
-        }
-
         Status = AcpiRemoveAddressSpaceHandler (AcpiGbl_RootNode,
                         SpaceId[i], AeRegionHandler);
 
