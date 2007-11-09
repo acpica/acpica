@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.75 $
+ *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -197,9 +197,11 @@ AcpiExResolveNodeToValue (
      * Several object types require no further processing:
      * 1) Device/Thermal objects don't have a "real" subobject, return the Node
      * 2) Method locals and arguments have a pseudo-Node
+     * 3) 10/2007: Added method type to assist with Package construction.
      */
     if ((EntryType == ACPI_TYPE_DEVICE)  ||
         (EntryType == ACPI_TYPE_THERMAL) ||
+        (EntryType == ACPI_TYPE_METHOD)  ||
         (Node->Flags & (ANOBJ_METHOD_ARG | ANOBJ_METHOD_LOCAL)))
     {
         return_ACPI_STATUS (AE_OK);
@@ -305,7 +307,6 @@ AcpiExResolveNodeToValue (
     /* For these objects, just return the object attached to the Node */
 
     case ACPI_TYPE_MUTEX:
-    case ACPI_TYPE_METHOD:
     case ACPI_TYPE_POWER:
     case ACPI_TYPE_PROCESSOR:
     case ACPI_TYPE_EVENT:
