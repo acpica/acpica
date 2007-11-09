@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.142 $
+ *              $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -286,6 +286,13 @@ AcpiExResolveObjectToValue (
 
             case ACPI_TYPE_PACKAGE:
 
+                /* If method call - leave the Reference on the stack */
+
+                if (WalkState->Opcode == AML_INT_METHODCALL_OP)
+                {
+                    break;
+                }
+
                 ObjDesc = *StackDesc->Reference.Where;
                 if (ObjDesc)
                 {
@@ -305,7 +312,7 @@ AcpiExResolveObjectToValue (
                      * the package, can't dereference it
                      */
                     ACPI_ERROR ((AE_INFO,
-                        "Attempt to deref an Index to NULL pkg element Idx=%p",
+                        "Attempt to dereference an Index to NULL package element Idx=%p",
                         StackDesc));
                     Status = AE_AML_UNINITIALIZED_ELEMENT;
                 }
@@ -317,7 +324,7 @@ AcpiExResolveObjectToValue (
                 /* Invalid reference object */
 
                 ACPI_ERROR ((AE_INFO,
-                    "Unknown TargetType %X in Index/Reference obj %p",
+                    "Unknown TargetType %X in Index/Reference object %p",
                     StackDesc->Reference.TargetType, StackDesc));
                 Status = AE_AML_INTERNAL;
                 break;
