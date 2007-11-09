@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  *****************************************************************************/
 
@@ -369,6 +369,7 @@ AcpiEvFixedEventDetect (
         {
             /* Found an active (signalled) event */
 
+            AcpiFixedEventCount[i]++;
             IntStatus |= AcpiEvFixedEventDispatch ((UINT32) i);
         }
     }
@@ -394,7 +395,6 @@ static UINT32
 AcpiEvFixedEventDispatch (
     UINT32                  Event)
 {
-
 
     ACPI_FUNCTION_ENTRY ();
 

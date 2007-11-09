@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.251 $
+ *              $Revision: 1.252 $
  *
  *****************************************************************************/
 
@@ -767,6 +767,15 @@ AcpiUtInitGlobals (
         AcpiGbl_OwnerIdMask[i]              = 0;
     }
     AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS - 1] = 0x80000000; /* Last ID is never valid */
+
+    /* Event counters */
+
+    AcpiSciCount                        = 0;
+
+    for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
+    {
+        AcpiFixedEventCount[i]              = 0;
+    }
 
     /* GPE support */
 
