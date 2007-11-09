@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.143 $
+ *              $Revision: 1.144 $
  *
  *****************************************************************************/
 
@@ -280,24 +280,27 @@ AcpiExResolveObjectToValue (
             {
             case ACPI_TYPE_BUFFER_FIELD:
 
-                /* Just return - leave the Reference on the stack */
+                /* Just return - do not dereference */
                 break;
 
 
             case ACPI_TYPE_PACKAGE:
 
-                /* If method call - leave the Reference on the stack */
+                /* If method call or CopyObject - do not dereference */
 
-                if (WalkState->Opcode == AML_INT_METHODCALL_OP)
+                if ((WalkState->Opcode == AML_INT_METHODCALL_OP) ||
+                    (WalkState->Opcode == AML_COPY_OP))
                 {
                     break;
                 }
+
+                /* Otherwise, dereference the PackageIndex to a package element */
 
                 ObjDesc = *StackDesc->Reference.Where;
                 if (ObjDesc)
                 {
                     /*
-                     * Valid obj descriptor, copy pointer to return value
+                     * Valid object descriptor, copy pointer to return value
                      * (i.e., dereference the package index)
                      * Delete the ref object, increment the returned object
                      */
@@ -308,7 +311,7 @@ AcpiExResolveObjectToValue (
                 else
                 {
                     /*
-                     * A NULL object descriptor means an unitialized element of
+                     * A NULL object descriptor means an uninitialized element of
                      * the package, can't dereference it
                      */
                     ACPI_ERROR ((AE_INFO,
@@ -336,7 +339,7 @@ AcpiExResolveObjectToValue (
         case AML_DEBUG_OP:
         case AML_LOAD_OP:
 
-            /* Just leave the object as-is */
+            /* Just leave the object as-is, do not dereference */
 
             break;
 

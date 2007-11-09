@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.76 $
+ *              $Revision: 1.77 $
  *
  *****************************************************************************/
 
@@ -332,12 +332,11 @@ AcpiExResolveNodeToValue (
 
         switch (SourceDesc->Reference.Opcode)
         {
-        case AML_LOAD_OP:
-
-            /* This is a DdbHandle */
-            /* Return an additional reference to the object */
-
+        case AML_LOAD_OP:   /* This is a DdbHandle */
         case AML_REF_OF_OP:
+        case AML_INDEX_OP:
+
+            /* Return an additional reference to the object */
 
             ObjDesc = SourceDesc;
             AcpiUtAddReference (ObjDesc);
