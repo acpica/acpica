@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmath - Integer math support routines
- *              $Revision: 1.22 $
+ *              $Revision: 1.23 $
  *
  ******************************************************************************/
 
@@ -387,7 +387,7 @@ AcpiUtShortDivide (
     }
     if (OutRemainder)
     {
-        *OutRemainder = (UINT32) InDividend % Divisor;
+        *OutRemainder = (UINT32) (InDividend % Divisor);
     }
 
     return_ACPI_STATUS (AE_OK);
