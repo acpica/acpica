@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.318 $
+ *       $Revision: 1.319 $
  *
  *****************************************************************************/
 
@@ -850,6 +850,19 @@ typedef struct acpi_system_info
     UINT32                          DebugLayer;
 
 } ACPI_SYSTEM_INFO;
+
+
+/*
+ * System statistecs returned by AcpiGetStatistics()
+ */
+typedef struct acpi_statistics
+{
+    UINT32                          SciCount;
+    UINT32                          GpeCount;
+    UINT32                          FixedEventCount[ACPI_NUM_FIXED_EVENTS];
+    UINT32                          MethodCount;
+
+} ACPI_STATISTICS;
 
 
 /* Table Event Types */

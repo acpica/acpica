@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acglobal.h - Declarations for global variables
- *       $Revision: 1.197 $
+ *       $Revision: 1.198 $
  *
  *****************************************************************************/
 
@@ -398,6 +398,7 @@ extern      UINT32                      AcpiGbl_NestingLevel;
 
 /* Event counters */
 
+ACPI_EXTERN UINT32                      AcpiMethodCount;
 ACPI_EXTERN UINT32                      AcpiGpeCount;
 ACPI_EXTERN UINT32                      AcpiSciCount;
 ACPI_EXTERN UINT32                      AcpiFixedEventCount[ACPI_NUM_FIXED_EVENTS];

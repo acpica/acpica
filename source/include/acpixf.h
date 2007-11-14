@@ -163,6 +163,10 @@ ACPI_STATUS
 AcpiGetSystemInfo (
     ACPI_BUFFER             *RetBuffer);
 
+ACPI_STATUS
+AcpiGetStatistics (
+    ACPI_STATISTICS         *Stats);
+
 const char *
 AcpiFormatException (
     ACPI_STATUS             Exception);

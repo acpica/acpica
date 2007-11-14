@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utxface - External interfaces for "global" ACPI functions
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -575,6 +575,51 @@ AcpiGetSystemInfo (
 }
 
 ACPI_EXPORT_SYMBOL (AcpiGetSystemInfo)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGetStatistics
+ *
+ * PARAMETERS:  Stats           - Where the statistics are returned
+ *
+ * RETURN:      Status          - the status of the call
+ *
+ * DESCRIPTION: Get the contents of the various system counters
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetStatistics (
+    ACPI_STATISTICS         *Stats)
+{
+    ACPI_FUNCTION_TRACE (AcpiGetStatistics);
+
+
+    /* Parameter validation */
+
+    if (!Stats)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* Various interrupt-based event counters */
+
+    Stats->SciCount = AcpiSciCount;
+    Stats->GpeCount = AcpiGpeCount;
+
+    ACPI_MEMCPY (Stats->FixedEventCount, AcpiFixedEventCount,
+        sizeof (AcpiFixedEventCount));
+
+
+    /* Other counters */
+
+    Stats->MethodCount = AcpiMethodCount;
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiGetStatistics)
 
 
 /*****************************************************************************

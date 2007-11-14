@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.137 $
+ *              $Revision: 1.138 $
  *
  *****************************************************************************/
 
@@ -383,6 +383,7 @@ AcpiDsBeginMethodExecution (
      * reentered one more time (even if it is the same thread)
      */
     ObjDesc->Method.ThreadCount++;
+    AcpiMethodCount++;
     return_ACPI_STATUS (Status);
 
 
