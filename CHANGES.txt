@@ -1,4 +1,37 @@
 ----------------------------------------
+14 November 2007. Summary of changes for version 20071114:
+
+1) ACPI CA Core Subsystem:
+
+Implemented event counters for each of the Fixed Events, the ACPI SCI (interrupt) itself, and control methods executed. Named AcpiFixedEventCount[], AcpiSciCount, and AcpiMethodCount respectively. These should be useful for debugging and statistics.
+
+Implemented a new external interface, AcpiGetStatistics, to retrieve the contents of the various event counters. Returns the current values for AcpiSciCount, AcpiGpeCount, the AcpiFixedEventCount array, and AcpiMethodCount. The interface can be expanded in the future if new counters are added. Device drivers should use this interface rather than access the counters directly.
+
+Fixed a problem with the FromBCD and ToBCD operators. With some compilers, the ShortDivide function worked incorrectly, causing problems with the BCD functions with large input values. A truncation from 64-bit to 32-bit inadvertently occurred. Internal BZ 435. Lin Ming
+
+Fixed a problem with Index references passed as method arguments. References passed as arguments to control methods were dereferenced immediately (before control was passed to the called method). The references are now correctly passed directly to the called method. BZ 5389. Lin Ming
+
+Fixed a problem with CopyObject used in conjunction with the Index operator. The reference was incorrectly dereferenced before the copy. The reference is now correctly copied. BZ 5391. Lin Ming
+
+Fixed a problem with Control Method references within Package objects. These references are now correctly generated. This completes the package construction overhaul that began in version 20071019.
+
+Example Code and Data Size: These are the sizes for the OS-independent acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug version of the code includes the debug output trace mechanism and has a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  78.8K Code, 17.2K Data,  96.0K Total
+    Debug Version:     157.2K Code, 63.4K Data, 220.6K Total
+  Current Release:
+    Non-Debug Version:  79.0K Code, 17.2K Data,  96.2K Total
+    Debug Version:     157.9K Code, 63.6K Data, 221.5K Total
+
+
+2) iASL Compiler/Disassembler and Tools:
+
+The AcpiExec utility now installs handlers for all of the predefined Operation Region types. New types supported are: PCI_Config, CMOS, and PCIBARTarget.
+
+Fixed a problem with the 64-bit version of AcpiExec where the extended (64-bit) address fields for the DSDT and FACS within the FADT were not being used, causing truncation of the upper 32-bits of these addresses. Lin Ming and Bob Moore
+
+----------------------------------------
 19 October 2007. Summary of changes for version 20071019:
 
 1) ACPI CA Core Subsystem:
