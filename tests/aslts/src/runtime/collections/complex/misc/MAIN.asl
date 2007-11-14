@@ -31,7 +31,7 @@
 DefinitionBlock(
 	"misc.aml",   // Output filename
 	"DSDT",     // Signature
-	0x02,       // DSDT Revision
+	0x01,       // DSDT Revision
 	"Intel",    // OEMID
 	"Many",     // TABLE ID
 	0x00000001  // OEM Revision

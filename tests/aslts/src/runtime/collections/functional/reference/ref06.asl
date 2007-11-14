@@ -215,42 +215,42 @@ Method(m1e0, 1)
 	            m1a3(Local0, c009, z110, ts, 4)
             }
             Case (5) {
-	            CopyObject(d900, Local0)
+	            CopyObject(RefOf(d900), Local0)
 	            m1a3(Local0, c00e, z110, ts, 5)
             }
             Case (6) {
-	            CopyObject(e900, Local0)
+	            CopyObject(RefOf(e900), Local0)
 	            m1a3(Local0, c00f, z110, ts, 6)
             }
             Case (7) {
 	            if (rn06) {
-		            CopyObject(m901, Local0)
+		            CopyObject(RefOf(m901), Local0)
 	            } else {
-		            CopyObject(DerefOf(RefOf(m901)), Local0)
+		            CopyObject(RefOf(m901), Local0)
 	            }
 	            m1a3(Local0, c010, z110, ts, 7)
             }
             Case (8) {
-	            CopyObject(mx90, Local0)
+	            CopyObject(RefOf(mx90), Local0)
 	            m1a3(Local0, c011, z110, ts, 8)
             }
             Case (9) {
 	            if (y510) {
-		            CopyObject(r900, Local0)
+		            CopyObject(RefOf(r900), Local0)
 		            m1a3(Local0, c012, z110, ts, 9)
 	            }
             }
             Case (10) {
-	            CopyObject(pw90, Local0)
+	            CopyObject(RefOf(pw90), Local0)
 	            m1a3(Local0, c013, z110, ts, 10)
             }
             Case (11) {
-	            CopyObject(pr90, Local0)
+	            CopyObject(RefOf(pr90), Local0)
 	            m1a3(Local0, c014, z110, ts, 11)
             }
             Case (12) {
 	            if (y508) {
-		            CopyObject(tz90, Local0)
+		            CopyObject(RefOf(tz90), Local0)
 		            m1a3(Local0, c015, z110, ts, 12)
 	            }
             }
@@ -331,8 +331,8 @@ Method(m1e0, 1)
 	            m1a3(Local0, c011, z110, ts, 28)
             }
             Case (29) {
-		            CopyObject(RefOf(r900), Local0)
-		            m1a3(Local0, c012, z110, ts, 29)
+                CopyObject(RefOf(r900), Local0)
+                m1a3(Local0, c012, z110, ts, 29)
             }
             Case (30) {
 	            CopyObject(RefOf(pw90), Local0)
@@ -393,8 +393,8 @@ Method(m1e0, 1)
 	            m1a3(Local0, c011, z110, ts, 42)
             }
             Case (43) {
-		            Store(RefOf(r900), Local0)
-		            m1a3(Local0, c012, z110, ts, 43)
+                Store(RefOf(r900), Local0)
+                m1a3(Local0, c012, z110, ts, 43)
             }
             Case (44) {
 	            Store(RefOf(pw90), Local0)
@@ -405,8 +405,8 @@ Method(m1e0, 1)
 	            m1a3(Local0, c014, z110, ts, 45)
             }
             Case (46) {
-		            Store(RefOf(tz90), Local0)
-		            m1a3(Local0, c015, z110, ts, 46)
+		        Store(RefOf(tz90), Local0)
+		        m1a3(Local0, c015, z110, ts, 46)
             }
             Case (47) {
 	            Store(RefOf(bf90), Local0)
@@ -733,5 +733,5 @@ Method(m1e0, 1)
 */
 
 
-	m1a6()
+//	m1a6()
 }

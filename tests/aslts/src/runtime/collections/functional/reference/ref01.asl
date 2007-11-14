@@ -4142,29 +4142,29 @@ Method(m16c, 1)
 	// Not Computational Data
 
 	m1aa(c080, e900, c009, c08a, 0x14a)
-	CopyObject(e9Z0, e900)
+	CopyObject(RefOf (e9Z0), e900)
 
 	m1aa(c080, mx90, c009, c08a, 0x14b)
-	CopyObject(mx91, mx90)
+	CopyObject(RefOf (mx91), mx90)
 
 	m1aa(c080, d900, c009, c08a, 0x14c)
-	CopyObject(d9Z0, d900)
+	CopyObject(RefOf (d9Z0), d900)
 
 	if (y508) {
 		m1aa(c080, tz90, c009, c08a, 0x14d)
-		CopyObject(tz91, tz90)
+		CopyObject(RefOf (tz91), tz90)
 	}
 
 	m1aa(c080, pr90, c009, c08a, 0x14e)
-	CopyObject(pr91, pr90)
+	CopyObject(RefOf (pr91), pr90)
 
 	if (y510) {
 		m1aa(c080, r900, c009, c08a, 0x14f)
-		CopyObject(r9Z0, r900)
+		CopyObject(RefOf (r9Z0), r900)
 	}
 
 	m1aa(c080, pw90, c009, c08a, 0x150)
-	CopyObject(pw91, pw90)
+	CopyObject(RefOf (pw91), pw90)
 
 	m000()
 	} /* m001 */
