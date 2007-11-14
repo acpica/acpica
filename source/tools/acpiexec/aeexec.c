@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.126 $
+ *              $Revision: 1.127 $
  *
  *****************************************************************************/
 
@@ -238,6 +238,8 @@ ACPI_STATUS
 AeBuildLocalTables (
     ACPI_TABLE_HEADER       *UserTable)
 {
+    ACPI_PHYSICAL_ADDRESS   DsdtAddress;
+
 
     /* Build an RSDT */
 
@@ -278,7 +280,13 @@ AeBuildLocalTables (
      * Examine the incoming user table.  At this point, it has been verified
      * to be either a DSDT, SSDT, or a PSDT, but they must be handled differently
      */
-    if (!ACPI_COMPARE_NAME (UserTable->Signature, ACPI_SIG_DSDT))
+    if (ACPI_COMPARE_NAME (UserTable->Signature, ACPI_SIG_DSDT))
+    {
+        /* The incoming user table is a DSDT */
+
+        DsdtAddress = ACPI_PTR_TO_PHYSADDR (UserTable);
+    }
+    else
     {
         /* Build a local DSDT because incoming table is an SSDT or PSDT */
 
@@ -291,6 +299,7 @@ AeBuildLocalTables (
         /* Install incoming table (SSDT or PSDT) directly into the RSDT */
 
         LocalRSDT->TableOffsetEntry[3] = ACPI_PTR_TO_PHYSADDR (UserTable);
+        DsdtAddress = ACPI_PTR_TO_PHYSADDR (&LocalDSDT);
     }
 
     /* Set checksums for both RSDT and RSDP */
@@ -298,25 +307,37 @@ AeBuildLocalTables (
     LocalRSDT->Header.Checksum = (UINT8) -AcpiTbChecksum ((void *) LocalRSDT, LocalRSDT->Header.Length);
     LocalRSDP.Checksum = (UINT8) -AcpiTbChecksum ((void *) &LocalRSDP, ACPI_RSDP_CHECKSUM_LENGTH);
 
-    /* Build a FADT so we can test the hardware/event init */
-
+    /*
+     * Build a FADT so we can test the hardware/event init
+     */
     ACPI_MEMSET (&LocalFADT, 0, sizeof (ACPI_TABLE_FADT));
     ACPI_STRNCPY (LocalFADT.Header.Signature, ACPI_SIG_FADT, 4);
 
-    LocalFADT.Facs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
-    if (!ACPI_COMPARE_NAME (UserTable->Signature, ACPI_SIG_DSDT))
+    /* Setup FADT header and DSDT/FACS addresses */
+
+    if (ACPI_MACHINE_WIDTH == 32)
     {
-        LocalFADT.Dsdt = ACPI_PTR_TO_PHYSADDR (&LocalDSDT);
+        /* Short (V1) FADT used for 32-bit case */
+
+        LocalFADT.Dsdt = DsdtAddress;
+        LocalFADT.Facs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
+
+        LocalFADT.Header.Revision = 1;
+        LocalFADT.Header.Length = ACPI_FADT_OFFSET (Flags);
     }
     else
     {
-        LocalFADT.Dsdt = ACPI_PTR_TO_PHYSADDR (UserTable);
+        /* Long (V2) FADT used for 64-bit case */
+
+        LocalFADT.XDsdt = DsdtAddress;
+        LocalFADT.XFacs = ACPI_PTR_TO_PHYSADDR (&LocalFACS);
+
+        LocalFADT.Header.Revision = 2;
+        LocalFADT.Header.Length = sizeof (ACPI_TABLE_FADT);
     }
 
-    /* Short (V1) FADT */
+    /* Miscellaneous FADT fields */
 
-    LocalFADT.Header.Revision = 1;
-    LocalFADT.Header.Length = ACPI_FADT_OFFSET (Flags);
     LocalFADT.Gpe0BlockLength = 16;
     LocalFADT.Gpe1BlockLength = 6;
     LocalFADT.Gpe1Base = 96;
@@ -1174,6 +1195,7 @@ AeMiscellaneousTests (
     ACPI_STATUS             Status;
     UINT32                  LockHandle1;
     UINT32                  LockHandle2;
+    ACPI_STATISTICS         Stats;
 
 
     AeTestPackageArgument ();
@@ -1262,6 +1284,12 @@ AeMiscellaneousTests (
     if (ACPI_FAILURE (Status))
     {
         AcpiOsPrintf ("Could not AcpiGetDevices, %X\n", Status);
+    }
+
+    Status = AcpiGetStatistics (&Stats);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiOsPrintf ("Could not AcpiGetStatistics, %X\n", Status);
     }
 }
 
