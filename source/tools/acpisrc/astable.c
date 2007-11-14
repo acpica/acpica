@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -414,6 +414,7 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_SIGNAL_FATAL_INFO",              SRC_TYPE_STRUCT},
     {"ACPI_SIZE",                           SRC_TYPE_SIMPLE},
     {"ACPI_SPINLOCK",                       SRC_TYPE_SIMPLE},
+    {"ACPI_STATISTICS",                     SRC_TYPE_STRUCT},
     {"ACPI_STATUS",                         SRC_TYPE_SIMPLE},
     {"ACPI_STRING",                         SRC_TYPE_SIMPLE},
     {"ACPI_STRING_TABLE",                   SRC_TYPE_STRUCT},
