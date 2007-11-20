@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.102 $
+ *              $Revision: 1.103 $
  *
  *****************************************************************************/
 
@@ -131,6 +131,7 @@ UINT32                  Gbl_CommentLines = 0;
 UINT32                  Gbl_SourceLines = 0;
 UINT32                  Gbl_LongLines = 0;
 UINT32                  Gbl_TotalLines = 0;
+UINT32                  Gbl_HeaderSize = 0;
 void                    *Gbl_StructDefs = NULL;
 
 struct stat             Gbl_StatBuf;
@@ -244,17 +245,19 @@ AsDisplayStats (void)
     }
 
     printf ("\nAcpiSrc statistics:\n\n");
-    printf ("%6d Files processed\n", Gbl_Files);
-    printf ("%6d Tabs found\n", Gbl_Tabs);
-    printf ("%6d Missing if/else braces\n", Gbl_MissingBraces);
-    printf ("%6d Non-ANSI comments found\n", Gbl_NonAnsiComments);
-    printf ("%6d Total Lines\n", Gbl_TotalLines);
-    printf ("%6d Lines of code\n", Gbl_SourceLines);
-    printf ("%6d Lines of non-comment whitespace\n", Gbl_WhiteLines);
-    printf ("%6d Lines of comments\n", Gbl_CommentLines);
-    printf ("%6d Long lines found\n", Gbl_LongLines);
-    printf ("%6.1f Ratio of code to whitespace\n", ((float) Gbl_SourceLines / (float) Gbl_WhiteLines));
-    printf ("%6.1f Ratio of code to comments\n", ((float) Gbl_SourceLines / (float) Gbl_CommentLines));
+    printf ("%8u Files processed\n", Gbl_Files);
+    printf ("%8u Tabs found\n", Gbl_Tabs);
+    printf ("%8u Missing if/else braces\n", Gbl_MissingBraces);
+    printf ("%8u Non-ANSI comments found\n", Gbl_NonAnsiComments);
+    printf ("%8u Total Lines\n", Gbl_TotalLines);
+    printf ("%8u Lines of code\n", Gbl_SourceLines);
+    printf ("%8u Lines of non-comment whitespace\n", Gbl_WhiteLines);
+    printf ("%8u Lines of comments\n", Gbl_CommentLines);
+    printf ("%8u Long lines found\n", Gbl_LongLines);
+    printf ("%6.1f Ratio of code to whitespace\n",
+        ((float) Gbl_SourceLines / (float) Gbl_WhiteLines));
+    printf ("%6.1f Ratio of code to comments\n", 
+        ((float) Gbl_SourceLines / (float) (Gbl_CommentLines + Gbl_NonAnsiComments)));
     return;
 }
 

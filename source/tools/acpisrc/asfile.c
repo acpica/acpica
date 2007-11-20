@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asfile - Main module for the acpi source processor utility
- *              $Revision: 1.41 $
+ *              $Revision: 1.42 $
  *
  *****************************************************************************/
 
@@ -260,6 +260,11 @@ AsProcessTree (
 
     AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
             FILE_TYPE_SOURCE, "*.y");
+
+    /* Do any ASL files */
+
+    AsDoWildcard (ConversionTable, SourcePath, TargetPath, MaxPathLength,
+            FILE_TYPE_HEADER, "*.asl");
 
     /* Do any subdirectories */
 
@@ -573,6 +578,12 @@ AsProcessOneFile (
     char                    *Pathname;
     char                    *OutPathname = NULL;
 
+
+    Gbl_HeaderSize = LINES_IN_LEGAL_HEADER; /* Normal C file and H header */
+    if (strstr (Filename, ".asl"))
+    {
+        Gbl_HeaderSize = 29; /* Lines in default ASL header */
+    }
 
     /* Allocate a file pathname buffer for both source and target */
 

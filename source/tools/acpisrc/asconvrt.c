@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asconvrt - Source conversion code
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -1258,7 +1258,7 @@ AsCountSourceLines (
 
     /* Adjust comment count for legal header */
 
-    CommentCount -= LINES_IN_LEGAL_HEADER;
+    CommentCount -= Gbl_HeaderSize;
 
     Gbl_SourceLines += LineCount;
     Gbl_WhiteLines += WhiteCount;

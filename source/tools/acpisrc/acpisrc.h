@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpisrc.h - Include file for AcpiSrc utility
- *              $Revision: 1.43 $
+ *              $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -200,6 +200,7 @@ extern UINT32                   Gbl_WhiteLines;
 extern UINT32                   Gbl_CommentLines;
 extern UINT32                   Gbl_LongLines;
 extern UINT32                   Gbl_TotalLines;
+extern UINT32                   Gbl_HeaderSize;
 extern struct stat              Gbl_StatBuf;
 extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
