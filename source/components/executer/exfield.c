@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exfield - ACPI AML (p-code) execution - field manipulation
- *              $Revision: 1.131 $
+ *              $Revision: 1.132 $
  *
  *****************************************************************************/
 
@@ -302,9 +302,7 @@ AcpiExWriteDataToField (
 {
     ACPI_STATUS             Status;
     UINT32                  Length;
-    UINT32                  RequiredLength;
     void                    *Buffer;
-    void                    *NewBuffer;
     ACPI_OPERAND_OBJECT     *BufferDesc;
 
 
@@ -410,36 +408,6 @@ AcpiExWriteDataToField (
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
-    /*
-     * We must have a buffer that is at least as long as the field
-     * we are writing to.  This is because individual fields are
-     * indivisible and partial writes are not supported -- as per
-     * the ACPI specification.
-     */
-    NewBuffer = NULL;
-    RequiredLength = ACPI_ROUND_BITS_UP_TO_BYTES (
-                        ObjDesc->CommonField.BitLength);
-
-    if (Length < RequiredLength)
-    {
-        /* We need to create a new buffer */
-
-        NewBuffer = ACPI_ALLOCATE_ZEROED (RequiredLength);
-        if (!NewBuffer)
-        {
-            return_ACPI_STATUS (AE_NO_MEMORY);
-        }
-
-        /*
-         * Copy the original data to the new buffer, starting
-         * at Byte zero.  All unused (upper) bytes of the
-         * buffer will be 0.
-         */
-        ACPI_MEMCPY ((char *) NewBuffer, (char *) Buffer, Length);
-        Buffer = NewBuffer;
-        Length = RequiredLength;
-    }
-
     ACPI_DEBUG_PRINT ((ACPI_DB_BFIELD,
         "FieldWrite [FROM]: Obj %p (%s:%X), Buf %p, ByteLen %X\n",
         SourceDesc, AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (SourceDesc)),
@@ -461,13 +429,6 @@ AcpiExWriteDataToField (
 
     Status = AcpiExInsertIntoField (ObjDesc, Buffer, Length);
     AcpiExReleaseGlobalLock (ObjDesc->CommonField.FieldFlags);
-
-    /* Free temporary buffer if we used one */
-
-    if (NewBuffer)
-    {
-        ACPI_FREE (NewBuffer);
-    }
 
     return_ACPI_STATUS (Status);
 }
