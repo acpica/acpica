@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.30 $
+ *              $Revision: 1.31 $
  *
  ******************************************************************************/
 
@@ -585,10 +585,14 @@ AcpiNsGetDeviceCallback (
         return (AE_CTRL_DEPTH);
     }
 
-    if (!(Flags & ACPI_STA_DEVICE_PRESENT))
+    if (!(Flags & ACPI_STA_DEVICE_PRESENT) &&
+        !(Flags & ACPI_STA_DEVICE_FUNCTIONING))
     {
-        /* Don't examine children of the device if not present */
-
+        /*
+         * Don't examine the children of the device only when the
+         * device is neither present nor functional. See ACPI spec,
+         * description of _STA for more information.
+         */
         return (AE_CTRL_DEPTH);
     }
 
@@ -662,7 +666,7 @@ AcpiNsGetDeviceCallback (
  *              value is returned to the caller.
  *
  *              This is a wrapper for WalkNamespace, but the callback performs
- *              additional filtering. Please see AcpiGetDeviceCallback.
+ *              additional filtering. Please see AcpiNsGetDeviceCallback.
  *
  ******************************************************************************/
 
