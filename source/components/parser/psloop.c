@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.16 $
+ *              $Revision: 1.17 $
  *
  *****************************************************************************/
 
@@ -338,7 +338,8 @@ AcpiPsBuildNamedOp (
     AcpiPsAppendArg (*Op, UnnamedOp->Common.Value.Arg);
     AcpiGbl_Depth++;
 
-    if ((*Op)->Common.AmlOpcode == AML_REGION_OP)
+    if ((*Op)->Common.AmlOpcode == AML_REGION_OP ||
+        (*Op)->Common.AmlOpcode == AML_DATA_REGION_OP)
     {
         /*
          * Defer final parsing of an OperationRegion body, because we don't
@@ -1132,7 +1133,8 @@ AcpiPsParseLoop (
                 AcpiGbl_Depth--;
             }
 
-            if (Op->Common.AmlOpcode == AML_REGION_OP)
+            if (Op->Common.AmlOpcode == AML_REGION_OP ||
+                Op->Common.AmlOpcode == AML_DATA_REGION_OP)
             {
                 /*
                  * Skip parsing of control method or opregion body,

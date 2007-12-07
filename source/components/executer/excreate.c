@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
- *              $Revision: 1.115 $
+ *              $Revision: 1.116 $
  *
  *****************************************************************************/
 
@@ -438,115 +438,6 @@ AcpiExCreateRegion (
     /* Install the new region object in the parent Node */
 
     Status = AcpiNsAttachObject (Node, ObjDesc, ACPI_TYPE_REGION);
-
-
-Cleanup:
-
-    /* Remove local reference to the object */
-
-    AcpiUtRemoveReference (ObjDesc);
-    return_ACPI_STATUS (Status);
-}
-
-
-/*******************************************************************************
- *
- * FUNCTION:    AcpiExCreateTableRegion
- *
- * PARAMETERS:  WalkState           - Current state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Create a new DataTableRegion object
- *
- ******************************************************************************/
-
-ACPI_STATUS
-AcpiExCreateTableRegion (
-    ACPI_WALK_STATE         *WalkState)
-{
-    ACPI_STATUS             Status;
-    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_OPERAND_OBJECT     *ObjDesc;
-    ACPI_NAMESPACE_NODE     *Node;
-    ACPI_OPERAND_OBJECT     *RegionObj2;
-    ACPI_NATIVE_UINT        TableIndex;
-    ACPI_TABLE_HEADER       *Table;
-
-
-    ACPI_FUNCTION_TRACE (ExCreateTableRegion);
-
-
-    /* Get the Node from the object stack  */
-
-    Node = WalkState->Op->Common.Node;
-
-    /*
-     * If the region object is already attached to this node,
-     * just return
-     */
-    if (AcpiNsGetAttachedObject (Node))
-    {
-        return_ACPI_STATUS (AE_OK);
-    }
-
-    /* Find the ACPI table */
-
-    Status = AcpiTbFindTable (Operand[1]->String.Pointer,
-                Operand[2]->String.Pointer, Operand[3]->String.Pointer,
-                &TableIndex);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Create the region descriptor */
-
-    ObjDesc = AcpiUtCreateInternalObject (ACPI_TYPE_REGION);
-    if (!ObjDesc)
-    {
-        return_ACPI_STATUS (AE_NO_MEMORY);
-    }
-
-    RegionObj2 = ObjDesc->Common.NextObject;
-    RegionObj2->Extra.RegionContext = NULL;
-
-    Status = AcpiGetTableByIndex (TableIndex, &Table);
-    if (ACPI_FAILURE (Status))
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Init the region from the operands */
-
-    ObjDesc->Region.SpaceId = REGION_DATA_TABLE;
-    ObjDesc->Region.Address = (ACPI_PHYSICAL_ADDRESS) ACPI_TO_INTEGER (Table);
-    ObjDesc->Region.Length = Table->Length;
-    ObjDesc->Region.Node = Node;
-    ObjDesc->Region.Flags = AOPOBJ_DATA_VALID;
-
-    /* Install the new region object in the parent Node */
-
-    Status = AcpiNsAttachObject (Node, ObjDesc, ACPI_TYPE_REGION);
-    if (ACPI_FAILURE (Status))
-    {
-        goto Cleanup;
-    }
-
-    Status = AcpiEvInitializeRegion (ObjDesc, FALSE);
-    if (ACPI_FAILURE (Status))
-    {
-        if (Status == AE_NOT_EXIST)
-        {
-            Status = AE_OK;
-        }
-        else
-        {
-            goto Cleanup;
-        }
-    }
-
-    ObjDesc->Region.Flags |= AOPOBJ_SETUP_COMPLETE;
 
 
 Cleanup:
