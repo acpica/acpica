@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.68 $
+ *              $Revision: 1.69 $
  *
  *****************************************************************************/
 
@@ -376,11 +376,18 @@ AcpiEvDisableGpe (
         /* Disable the requested runtime GPE */
 
         ACPI_CLEAR_BIT (GpeEventInfo->Flags, ACPI_GPE_RUN_ENABLED);
-        Status = AcpiHwWriteGpeEnableReg (GpeEventInfo);
-        break;
+
+        /*lint -fallthrough */
 
     default:
-        return_ACPI_STATUS (AE_BAD_PARAMETER);
+        /*
+         * Even if we don't know the GPE type, make sure that we always
+         * disable it. This can prevent a certain type of GPE flood, where
+         * the GPE has no _Lxx/_Exx method, and it cannot be determined
+         * whether the GPE is wake, run, or wake/run.
+         */
+        Status = AcpiHwWriteGpeEnableReg (GpeEventInfo);
+        break;
     }
 
     return_ACPI_STATUS (AE_OK);
