@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsutils - Dispatcher utilities
- *              $Revision: 1.125 $
+ *              $Revision: 1.126 $
  *
  ******************************************************************************/
 
@@ -374,7 +374,8 @@ AcpiDsIsResultUsed (
             (Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP)      ||
             (Op->Common.Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP)  ||
             (Op->Common.Parent->Common.AmlOpcode == AML_BUFFER_OP)       ||
-            (Op->Common.Parent->Common.AmlOpcode == AML_INT_EVAL_SUBTREE_OP))
+            (Op->Common.Parent->Common.AmlOpcode == AML_INT_EVAL_SUBTREE_OP) ||
+            (Op->Common.Parent->Common.AmlOpcode == AML_BANK_FIELD_OP))
         {
             /*
              * These opcodes allow TermArg(s) as operands and therefore

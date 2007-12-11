@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -192,6 +192,7 @@ AcpiUtCreateInternalObjectDbg (
     {
     case ACPI_TYPE_REGION:
     case ACPI_TYPE_BUFFER_FIELD:
+    case ACPI_TYPE_LOCAL_BANK_FIELD:
 
         /* These types require a secondary object */
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.173 $
+ *              $Revision: 1.174 $
  *
  *****************************************************************************/
 
@@ -288,6 +288,7 @@ AcpiPsCompleteThisOp (
                 (Op->Common.Parent->Common.AmlOpcode == AML_DATA_REGION_OP)  ||
                 (Op->Common.Parent->Common.AmlOpcode == AML_BUFFER_OP)       ||
                 (Op->Common.Parent->Common.AmlOpcode == AML_PACKAGE_OP)      ||
+                (Op->Common.Parent->Common.AmlOpcode == AML_BANK_FIELD_OP)   ||
                 (Op->Common.Parent->Common.AmlOpcode == AML_VAR_PACKAGE_OP))
             {
                 ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);

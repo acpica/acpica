@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psopcode - Parser/Interpreter opcode information table
- *              $Revision: 1.101 $
+ *              $Revision: 1.102 $
  *
  *****************************************************************************/
 
@@ -365,7 +365,7 @@ const ACPI_OPCODE_INFO    AcpiGbl_AmlOpInfo[AML_NUM_OPCODES] =
 /* 5C */ ACPI_OP ("PowerResource",      ARGP_POWER_RES_OP,         ARGI_POWER_RES_OP,          ACPI_TYPE_POWER,             AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_SIMPLE,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
 /* 5D */ ACPI_OP ("ThermalZone",        ARGP_THERMAL_ZONE_OP,      ARGI_THERMAL_ZONE_OP,       ACPI_TYPE_THERMAL,           AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_NO_OBJ,    AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_NSNODE | AML_NAMED),
 /* 5E */ ACPI_OP ("IndexField",         ARGP_INDEX_FIELD_OP,       ARGI_INDEX_FIELD_OP,        ACPI_TYPE_ANY,               AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_FIELD,     AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_FIELD),
-/* 5F */ ACPI_OP ("BankField",          ARGP_BANK_FIELD_OP,        ARGI_BANK_FIELD_OP,         ACPI_TYPE_ANY,               AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_FIELD,     AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_FIELD),
+/* 5F */ ACPI_OP ("BankField",          ARGP_BANK_FIELD_OP,        ARGI_BANK_FIELD_OP,         ACPI_TYPE_LOCAL_BANK_FIELD,  AML_CLASS_NAMED_OBJECT,    AML_TYPE_NAMED_FIELD,     AML_HAS_ARGS | AML_NSOBJECT | AML_NSOPCODE | AML_FIELD | AML_DEFER),
 
 /* Internal opcodes that map to invalid AML opcodes */
 

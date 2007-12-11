@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsfield - Dispatcher field routines
- *              $Revision: 1.84 $
+ *              $Revision: 1.85 $
  *
  *****************************************************************************/
 
@@ -386,12 +386,18 @@ AcpiDsGetFieldNames (
                 Arg->Common.Node = Info->FieldNode;
                 Info->FieldBitLength = Arg->Common.Value.Size;
 
-                /* Create and initialize an object for the new Field Node */
-
-                Status = AcpiExPrepFieldValue (Info);
-                if (ACPI_FAILURE (Status))
+                /*
+                 * If there is no object attached to the node, this node was just created
+                 * and we need to create the field object.  Otherwise, this was a lookup
+                 * of an existing node and we don't want to create the field object again.
+                 */
+                if (!AcpiNsGetAttachedObject (Info->FieldNode))
                 {
-                    return_ACPI_STATUS (Status);
+                    Status = AcpiExPrepFieldValue (Info);
+                    if (ACPI_FAILURE (Status))
+                    {
+                        return_ACPI_STATUS (Status);
+                    }
                 }
             }
 
@@ -511,10 +517,26 @@ AcpiDsInitFieldObjects (
     ACPI_PARSE_OBJECT       *Arg = NULL;
     ACPI_NAMESPACE_NODE     *Node;
     UINT8                   Type = 0;
+    UINT32                  Flags;
 
 
     ACPI_FUNCTION_TRACE_PTR (DsInitFieldObjects, Op);
 
+
+    /*
+     * During the load phase, we want to enter the name of the field into
+     * the namespace. During the execute phase (when we evaluate the BankValue
+     * operand), we want to lookup the name.
+     */
+    if (WalkState->DeferredNode)
+    {
+        Flags = ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE;
+    }
+    else
+    {
+        Flags = ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE |
+                    ACPI_NS_ERROR_IF_FOUND;
+    }
 
     switch (WalkState->Opcode)
     {
@@ -549,9 +571,7 @@ AcpiDsInitFieldObjects (
             Status = AcpiNsLookup (WalkState->ScopeInfo,
                             (char *) &Arg->Named.Name,
                             Type, ACPI_IMODE_LOAD_PASS1,
-                            ACPI_NS_NO_UPSEARCH | ACPI_NS_DONT_OPEN_SCOPE |
-                            ACPI_NS_ERROR_IF_FOUND,
-                            WalkState, &Node);
+                            Flags, WalkState, &Node);
             if (ACPI_FAILURE (Status))
             {
                 ACPI_ERROR_NAMESPACE ((char *) &Arg->Named.Name, Status);
@@ -583,7 +603,7 @@ AcpiDsInitFieldObjects (
  *
  * PARAMETERS:  Op              - Op containing the Field definition and args
  *              RegionNode      - Object for the containing Operation Region
- *  `           WalkState       - Current method state
+ *              WalkState       - Current method state
  *
  * RETURN:      Status
  *
@@ -632,35 +652,12 @@ AcpiDsCreateBankField (
         return_ACPI_STATUS (Status);
     }
 
-    /* Third arg is the BankValue */
-
-    /* TBD: This arg is a TermArg, not a constant, and must be evaluated */
-
+    /*
+     * Third arg is the BankValue
+     * This arg is a TermArg, not a constant
+     * It will be evaluated later, by AcpiDsEvalBankFieldOperands
+     */
     Arg = Arg->Common.Next;
-
-    /* Currently, only the following constants are supported */
-
-    switch (Arg->Common.AmlOpcode)
-    {
-    case AML_ZERO_OP:
-        Info.BankValue = 0;
-        break;
-
-    case AML_ONE_OP:
-        Info.BankValue = 1;
-        break;
-
-    case AML_BYTE_OP:
-    case AML_WORD_OP:
-    case AML_DWORD_OP:
-    case AML_QWORD_OP:
-        Info.BankValue = (UINT32) Arg->Common.Value.Integer;
-        break;
-
-    default:
-        Info.BankValue = 0;
-        ACPI_ERROR ((AE_INFO, "Non-constant BankValue for BankField is not implemented"));
-    }
 
     /* Fourth arg is the field flags */
 
@@ -672,8 +669,17 @@ AcpiDsCreateBankField (
     Info.FieldType = ACPI_TYPE_LOCAL_BANK_FIELD;
     Info.RegionNode = RegionNode;
 
-    Status = AcpiDsGetFieldNames (&Info, WalkState, Arg->Common.Next);
+    /*
+     * Use Info.DataRegisterNode to store BankField Op
+     * It's safe because DataRegisterNode will never be used when create bank field
+     * We store AmlStart and AmlLength in the BankField Op for late evaluation
+     * Used in AcpiExPrepFieldValue(Info)
+     *
+     * TBD: Or, should we add a field in ACPI_CREATE_FIELD_INFO, like "void *ParentOp"?
+     */
+    Info.DataRegisterNode = (ACPI_NAMESPACE_NODE*) Op;
 
+    Status = AcpiDsGetFieldNames (&Info, WalkState, Arg->Common.Next);
     return_ACPI_STATUS (Status);
 }
 

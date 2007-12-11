@@ -2,7 +2,7 @@
  *
  * Module Name: dsopcode - Dispatcher Op Region support and handling of
  *                         "control" opcodes
- *              $Revision: 1.113 $
+ *              $Revision: 1.114 $
  *
  *****************************************************************************/
 
@@ -303,6 +303,53 @@ AcpiDsGetBufferFieldArguments (
 
     ACPI_DEBUG_EXEC(AcpiUtDisplayInitPathname (ACPI_TYPE_BUFFER_FIELD, Node, NULL));
     ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] BufferField Arg Init\n",
+        AcpiUtGetNodeName (Node)));
+
+    /* Execute the AML code for the TermArg arguments */
+
+    Status = AcpiDsExecuteArguments (Node, AcpiNsGetParentNode (Node),
+                ExtraDesc->Extra.AmlLength, ExtraDesc->Extra.AmlStart);
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsGetBankFieldArguments
+ *
+ * PARAMETERS:  ObjDesc         - A valid BankField object
+ *
+ * RETURN:      Status.
+ *
+ * DESCRIPTION: Get BankField BankValue.  This implements the late
+ *              evaluation of these field attributes.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsGetBankFieldArguments (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+    ACPI_OPERAND_OBJECT     *ExtraDesc;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE_PTR (DsGetBankFieldArguments, ObjDesc);
+
+
+    if (ObjDesc->Common.Flags & AOPOBJ_DATA_VALID)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Get the AML pointer (method object) and BankField node */
+
+    ExtraDesc = AcpiNsGetSecondaryObject (ObjDesc);
+    Node = ObjDesc->BankField.Node;
+
+    ACPI_DEBUG_EXEC(AcpiUtDisplayInitPathname (ACPI_TYPE_LOCAL_BANK_FIELD, Node, NULL));
+    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[%4.4s] BankField Arg Init\n",
         AcpiUtGetNodeName (Node)));
 
     /* Execute the AML code for the TermArg arguments */
@@ -1129,6 +1176,113 @@ AcpiDsEvalDataObjectOperands (
         }
     }
 
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsEvalBankFieldOperands
+ *
+ * PARAMETERS:  WalkState       - Current walk
+ *              Op              - A valid BankField Op object
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Get BankField BankValue
+ *              Called from AcpiDsExecEndOp during BankField parse tree walk
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsEvalBankFieldOperands (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *OperandDesc;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_PARSE_OBJECT       *NextOp;
+    ACPI_PARSE_OBJECT       *Arg;
+
+
+    ACPI_FUNCTION_TRACE_PTR (DsEvalBankFieldOperands, Op);
+
+
+    /*
+     * This is where we evaluate the BankValue field of the
+     * BankField declaration
+     */
+
+    /* NextOp points to the op that holds the Region */
+
+    NextOp = Op->Common.Value.Arg;
+
+    /* NextOp points to the op that holds the Bank Register */
+
+    NextOp = NextOp->Common.Next;
+
+    /* NextOp points to the op that holds the Bank Value */
+
+    NextOp = NextOp->Common.Next;
+
+    /*
+     * Set proper index into operand stack for AcpiDsObjStackPush
+     * invoked inside AcpiDsCreateOperand.
+     *
+     * We use WalkState->Operands[0] to store the evaluated BankValue
+     */
+    WalkState->OperandIndex = 0;
+
+    Status = AcpiDsCreateOperand (WalkState, NextOp, 0);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    Status = AcpiExResolveToValue (&WalkState->Operands[0], WalkState);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    ACPI_DUMP_OPERANDS (ACPI_WALK_OPERANDS, ACPI_IMODE_EXECUTE,
+                    AcpiPsGetOpcodeName (Op->Common.AmlOpcode),
+                    1, "after AcpiExResolveOperands");
+
+    /*
+     * Get the BankValue operand and save it
+     * (at Top of stack)
+     */
+    OperandDesc = WalkState->Operands[0];
+
+    /* Arg points to the start Bank Field */
+
+    Arg = AcpiPsGetArg (Op, 4);
+    while (Arg)
+    {
+        /* Ignore OFFSET and ACCESSAS terms here */
+
+        if (Arg->Common.AmlOpcode == AML_INT_NAMEDFIELD_OP)
+        {
+            Node = Arg->Common.Node;
+
+            ObjDesc = AcpiNsGetAttachedObject (Node);
+            if (!ObjDesc)
+            {
+                return_ACPI_STATUS (AE_NOT_EXIST);
+            }
+
+            ObjDesc->BankField.Value = (UINT32) OperandDesc->Integer.Value;
+        }
+
+        /* Move to next field in the list */
+
+        Arg = Arg->Common.Next;
+    }
+
+    AcpiUtRemoveReference (OperandDesc);
     return_ACPI_STATUS (Status);
 }
 

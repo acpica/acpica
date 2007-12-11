@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -424,6 +424,16 @@ AcpiPsCreateOp (
     {
         /*
          * Backup to beginning of CreateXXXfield declaration
+         * BodyLength is unknown until we parse the body
+         */
+        Op->Named.Data = AmlOpStart;
+        Op->Named.Length = 0;
+    }
+
+    if (WalkState->Opcode == AML_BANK_FIELD_OP)
+    {
+        /*
+         * Backup to beginning of BankField declaration
          * BodyLength is unknown until we parse the body
          */
         Op->Named.Data = AmlOpStart;
@@ -1153,6 +1163,16 @@ AcpiPsParseLoop (
             /*
              * Backup to beginning of CreateXXXfield declaration (1 for
              * Opcode)
+             *
+             * BodyLength is unknown until we parse the body
+             */
+            Op->Named.Length = (UINT32) (ParserState->Aml - Op->Named.Data);
+        }
+
+        if (Op->Common.AmlOpcode == AML_BANK_FIELD_OP)
+        {
+            /*
+             * Backup to beginning of BankField declaration
              *
              * BodyLength is unknown until we parse the body
              */

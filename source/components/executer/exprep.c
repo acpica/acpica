@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exprep - ACPI AML (p-code) execution - field prep utilities
- *              $Revision: 1.142 $
+ *              $Revision: 1.143 $
  *
  *****************************************************************************/
 
@@ -511,6 +511,7 @@ AcpiExPrepFieldValue (
     ACPI_CREATE_FIELD_INFO  *Info)
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *SecondDesc = NULL;
     UINT32                  Type;
     ACPI_STATUS             Status;
 
@@ -597,6 +598,16 @@ AcpiExPrepFieldValue (
             ObjDesc->Field.AccessByteWidth,
             ObjDesc->BankField.RegionObj,
             ObjDesc->BankField.BankObj));
+
+        /*
+         * Remember location in AML stream of the field unit
+         * opcode and operands -- since the BankValue
+         * operands must be evaluated.
+         */
+        SecondDesc                  = ObjDesc->Common.NextObject;
+        SecondDesc->Extra.AmlStart  = ((ACPI_PARSE_OBJECT*) (Info->DataRegisterNode))->Named.Data;
+        SecondDesc->Extra.AmlLength = ((ACPI_PARSE_OBJECT*) (Info->DataRegisterNode))->Named.Length;
+
         break;
 
 

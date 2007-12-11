@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utdelete - object deletion and reference count utilities
- *              $Revision: 1.124 $
+ *              $Revision: 1.125 $
  *
  ******************************************************************************/
 
@@ -336,6 +336,19 @@ AcpiUtDeleteInternalObj (
 
         ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
             "***** Buffer Field %p\n", Object));
+
+        SecondDesc = AcpiNsGetSecondaryObject (Object);
+        if (SecondDesc)
+        {
+            AcpiUtDeleteObjectDesc (SecondDesc);
+        }
+        break;
+
+
+    case ACPI_TYPE_LOCAL_BANK_FIELD:
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+            "***** Bank Field %p\n", Object));
 
         SecondDesc = AcpiNsGetSecondaryObject (Object);
         if (SecondDesc)

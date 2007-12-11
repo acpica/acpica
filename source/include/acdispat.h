@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdispat.h - dispatcher (parser to interpreter interface)
- *       $Revision: 1.77 $
+ *       $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -131,6 +131,10 @@ AcpiDsGetBufferFieldArguments (
     ACPI_OPERAND_OBJECT     *ObjDesc);
 
 ACPI_STATUS
+AcpiDsGetBankFieldArguments (
+    ACPI_OPERAND_OBJECT     *ObjDesc);
+
+ACPI_STATUS
 AcpiDsGetRegionArguments (
     ACPI_OPERAND_OBJECT     *RgnDesc);
 
@@ -162,6 +166,11 @@ AcpiDsEvalDataObjectOperands (
     ACPI_WALK_STATE         *WalkState,
     ACPI_PARSE_OBJECT       *Op,
     ACPI_OPERAND_OBJECT     *ObjDesc);
+
+ACPI_STATUS
+AcpiDsEvalBankFieldOperands (
+    ACPI_WALK_STATE         *WalkState,
+    ACPI_PARSE_OBJECT       *Op);
 
 ACPI_STATUS
 AcpiDsInitializeRegion (

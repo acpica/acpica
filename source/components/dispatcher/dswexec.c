@@ -2,7 +2,7 @@
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -748,6 +748,17 @@ AcpiDsExecEndOp (
                     "Executing DataTableRegion Strings Op=%p\n", Op));
 
                 Status = AcpiDsEvalTableRegionOperands (WalkState, Op);
+                if (ACPI_FAILURE (Status))
+                {
+                    break;
+                }
+            }
+            else if (Op->Common.AmlOpcode == AML_BANK_FIELD_OP)
+            {
+                ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+                    "Executing BankField Op=%p\n", Op));
+
+                Status = AcpiDsEvalBankFieldOperands (WalkState, Op);
                 if (ACPI_FAILURE (Status))
                 {
                     break;
