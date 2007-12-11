@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asmain - Main module for the acpi source processor utility
- *              $Revision: 1.103 $
+ *              $Revision: 1.104 $
  *
  *****************************************************************************/
 
@@ -256,7 +256,7 @@ AsDisplayStats (void)
     printf ("%8u Long lines found\n", Gbl_LongLines);
     printf ("%6.1f Ratio of code to whitespace\n",
         ((float) Gbl_SourceLines / (float) Gbl_WhiteLines));
-    printf ("%6.1f Ratio of code to comments\n", 
+    printf ("%6.1f Ratio of code to comments\n",
         ((float) Gbl_SourceLines / (float) (Gbl_CommentLines + Gbl_NonAnsiComments)));
     return;
 }
