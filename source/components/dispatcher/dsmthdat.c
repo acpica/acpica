@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dsmthdat - control method arguments and local variables
- *              $Revision: 1.92 $
+ *              $Revision: 1.93 $
  *
  ******************************************************************************/
 
@@ -262,6 +262,8 @@ AcpiDsMethodDataDeleteAll (
             AcpiNsDetachObject (&WalkState->Arguments[Index]);
         }
     }
+
+    AcpiDsClearImplicitReturn (WalkState);
 
     return_VOID;
 }

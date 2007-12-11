@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsmethod - Parser/Interpreter interface - control method parsing
- *              $Revision: 1.138 $
+ *              $Revision: 1.139 $
  *
  *****************************************************************************/
 
@@ -184,6 +184,8 @@ AcpiDsMethodError (
                     WalkState->Opcode, WalkState->AmlOffset, NULL);
         AcpiExEnterInterpreter ();
     }
+
+    AcpiDsClearImplicitReturn (WalkState);
 
 #ifdef ACPI_DISASSEMBLER
     if (ACPI_FAILURE (Status))
