@@ -251,9 +251,9 @@ Name(y136, 1)	// CopyObject(A, B) for Buffers causes implicit
 Name(y157, 1)	// problems when ParameterTypes declaration data omitted
 Name(y164, 1)	// tests m22d and m26b of reference test
 Name(y176, 0)
-Name(y178, 0)	// Non-constant Bank values cause AE_NOT_FOUND or AE_AML_REGISTER_LIMIT 
+Name(y178, 1)	// Non-constant Bank values works since ACPICA release 20071211
 Name(y182, 1)
-Name(y192, 0)	// AcpiExec is unable to emulate access to BankField Objects
+Name(y192, 1)	// AcpiExec is able to emulate access to BankField Objects since ACPICA release 20071211
 Name(y200, 0)	// The code path taken after exception in AcpiPsParseLoop is incorrect
 Name(y203, 0)	// ObjectType operation falls into infinite loop for ring of RefOf references
 Name(y204, 0)	// SizeOf operation falls into infinite loop for ring of RefOf references
@@ -269,7 +269,7 @@ Name(y217, 0)	// Dynamic OpRegion _REG method execution problem
 Name(y220, 0)	// Inconsistent "Access is available/unavailable" _REG method calls
 Name(y221, 0)	// Alternating access to OpRegions covering different ranges
 Name(y222, 0)	// Alternating access to OpRegions of different Address Spaces
-Name(y223, 0)	// DataTableRegion with the non-constant *Strings causes an exception
+Name(y223, 1)	// DataTableRegion with the non-constant *Strings works since ACPICA release 20071211
 Name(y224, 0)	// AcpiExec is unable to emulate access to IndexField Objects
 Name(y238, 0)	// the jumping over levels in releasing mutexes is not prohibited
 Name(y242, 0)	// Releasing the mutex the first Acquired on the non-zero level makes Releasing the residuary mutexes of that level impossible
