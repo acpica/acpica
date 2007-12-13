@@ -332,9 +332,9 @@ Method(m7f4, 1)
 		DataTableRegion (DR00, arg1, "", "")
 
 		Field(DR00, AnyAcc, NoLock, Preserve) {
-			FU00, 0x180}
+			FU00, 32}
 
-		Store(FU00, Local0)
+		Store(ToString(FU00, 4), Local0)
 
 		if (LNotEqual(Local0, arg1)) {
 			err(arg0, z142, arg2, 0, 0, Local0, arg1)
@@ -345,7 +345,8 @@ Method(m7f4, 1)
 
 	m000(arg0, "DSDT", 27)
 	m000(arg0, "SSDT", 28)
-	m000(arg0, "RSDT", 29)
+	/* no RSDT in simulator */
+	//m000(arg0, "RSDT", 29)
 	m000(arg0, "TEST", 30)
 	m000(arg0, "BAD!", 31)
 	m000(arg0, "FACP", 32)
