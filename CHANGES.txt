@@ -3,17 +3,31 @@
 
 1) ACPI CA Core Subsystem:
 
-Implemented full support for deferred execution for the TermArg string arguments for DataTableRegion. This enables forward references and full operand resolution for the three string arguments. Similar to OperationRegion deferred argument execution.) Lin Ming. BZ 430
+Implemented full support for deferred execution for the TermArg string 
+arguments for DataTableRegion. This enables forward references and full 
+operand resolution for the three string arguments. Similar to OperationRegion 
+deferred argument execution.) Lin Ming. BZ 430
 
-Implemented full argument resolution support for the BankValue argument to BankField. Previously, only constants were supported, now any TermArg may be used. Lin Ming BZ 387, 393
+Implemented full argument resolution support for the BankValue argument to 
+BankField. Previously, only constants were supported, now any TermArg may be 
+used. Lin Ming BZ 387, 393
 
-Fixed a problem with AcpiGetDevices where the search of a branch of the device tree could be terminated prematurely. In accordance with the ACPI specification, the search down the current branch is terminated if a device is both not present and not functional (instead of just not present.) Yakui Zhao.
+Fixed a problem with AcpiGetDevices where the search of a branch of the 
+device tree could be terminated prematurely. In accordance with the ACPI 
+specification, the search down the current branch is terminated if a device 
+is both not present and not functional (instead of just not present.) Yakui 
+Zhao.
 
-Fixed a problem where "unknown" GPEs could be allowed to fire repeatedly if the underlying AML code changed the GPE enable registers. Now, any unknown incoming GPE (no _Lxx/_Exx method and not the EC GPE) is immediately disabled instead of simply ignored. Rui Zhang.
+Fixed a problem where "unknown" GPEs could be allowed to fire repeatedly if 
+the underlying AML code changed the GPE enable registers. Now, any unknown 
+incoming GPE (no _Lxx/_Exx method and not the EC GPE) is immediately disabled 
+instead of simply ignored. Rui Zhang.
 
-Fixed a problem with Index Fields where the Index register was incorrectly limited to a maximum of 32 bits. Now any size may be used.
+Fixed a problem with Index Fields where the Index register was incorrectly 
+limited to a maximum of 32 bits. Now any size may be used.
 
-Fixed a couple memory leaks associated with "implicit return" objects when the AML Interpreter slack mode is enabled. Lin Ming BZ 349
+Fixed a couple memory leaks associated with "implicit return" objects when 
+the AML Interpreter slack mode is enabled. Lin Ming BZ 349
 
 Example Code and Data Size: These are the sizes for the OS-independent 
 acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
