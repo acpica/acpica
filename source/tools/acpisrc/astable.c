@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.18 $
+ *              $Revision: 1.19 $
  *
  *****************************************************************************/
 
@@ -164,7 +164,7 @@ ACPI_STRING_TABLE           StandardDataTypes[] = {
 
 char                        LinuxHeader[] =
 "/*\n"
-" * Copyright (C) 2000 - 2007, R. Byron Moore\n"
+" * Copyright (C) 2000 - 2008, Intel Corp.\n"
 " * All rights reserved.\n"
 " *\n"
 " * Redistribution and use in source and binary forms, with or without\n"
@@ -716,8 +716,8 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
+    {"(c) 1999 - 2008",      "(c) 1999 - 2008",         REPLACE_WHOLE_WORD},
 #if 0
-    {"(c) 1999 - 2006",      "(c) 1999 - 2007",         REPLACE_WHOLE_WORD},
     {"AcpiTbSumTable", "AcpiTbSumTable",  REPLACE_WHOLE_WORD},
     {"ACPI_SIG_BOOT", "ACPI_SIG_BOOT",   REPLACE_WHOLE_WORD},
     {"ACPI_SIG_DBGP", "ACPI_SIG_DBGP",   REPLACE_WHOLE_WORD},
