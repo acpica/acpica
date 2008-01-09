@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: acpibinh - Include file for AcpiBin utility
- *              $Revision: 1.6 $
+ *              $Revision: 1.9 $
  *
  *****************************************************************************/
 
@@ -10,8 +10,8 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999, Intel Corp.  All rights
- * reserved.
+ * Some or all of this work - Copyright (c) 1999 - 2008, Intel Corp.
+ * All rights reserved.
  *
  * 2. License
  *
@@ -144,23 +144,12 @@
 #endif
 
 
-extern int                      optind;
-extern char                     *optarg;
-
 /* Globals */
 
 EXTERN BOOLEAN              INIT_GLOBAL (Gbl_TerseMode, FALSE);
-EXTERN BOOLEAN              INIT_GLOBAL (Gbl_CompareMode, FALSE);
-EXTERN BOOLEAN              INIT_GLOBAL (Gbl_DumpMode, FALSE);
 
 
 /* Prototypes */
-
-int
-getopt (
-    int                     argc,
-    char                    **argv,
-    char                    *opts);
 
 int
 AbCompareAmlFiles (
@@ -168,11 +157,21 @@ AbCompareAmlFiles (
     char                    *File2Path);
 
 int
+AbExtractAmlFile (
+    char                    *TableSig,
+    char                    *File1Path,
+    char                    *File2Path);
+
+int
 AbDumpAmlFile (
-    char                    *File1Path);
+    char                    *File1Path,
+    char                    *File2Path);
 
 void
 AbComputeChecksum (
     char                    *File1Path);
 
+void
+AbDisplayHeader (
+    char                    *File1Path);
 
