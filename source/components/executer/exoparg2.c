@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2007, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2008, Intel Corp.
  * All rights reserved.
  *
  * 2. License

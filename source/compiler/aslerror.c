@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslerror - Error handling and statistics
- *              $Revision: 1.94 $
+ *              $Revision: 1.95 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2007, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2008, Intel Corp.
  * All rights reserved.
  *
  * 2. License

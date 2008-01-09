@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.54 $
+ *              $Revision: 1.55 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2007, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2008, Intel Corp.
  * All rights reserved.
  *
  * 2. License

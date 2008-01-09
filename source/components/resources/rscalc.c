@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.81 $
+ *              $Revision: 1.82 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2007, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2008, Intel Corp.
  * All rights reserved.
  *
  * 2. License

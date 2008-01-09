@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresnte - AML Interpreter object resolution
- *              $Revision: 1.77 $
+ *              $Revision: 1.78 $
  *
  *****************************************************************************/
 
@@ -10,7 +10,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2007, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2008, Intel Corp.
  * All rights reserved.
  *
  * 2. License

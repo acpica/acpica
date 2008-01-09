@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
- *              $Revision: 1.166 $
+ *              $Revision: 1.167 $
  *
  *****************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2007, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2008, Intel Corp.
  * All rights reserved.
  *
  * 2. License

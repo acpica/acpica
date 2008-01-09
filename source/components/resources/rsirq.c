@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
- *              $Revision: 1.50 $
+ *              $Revision: 1.51 $
  *
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
  *
  * 1. Copyright Notice
  *
- * Some or all of this work - Copyright (c) 1999 - 2007, Intel Corp.
+ * Some or all of this work - Copyright (c) 1999 - 2008, Intel Corp.
  * All rights reserved.
  *
  * 2. License
