@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.109 $
+ *              $Revision: 1.110 $
  *
  *****************************************************************************/
 
@@ -654,19 +654,36 @@ AdCreateTableHeader (
     ACPI_TABLE_HEADER       *Table)
 {
     char                    *NewFilename;
+    UINT8                   Checksum;
 
 
+    /*
+     * Print file header and dump original table header
+     */
     AdDisassemblerHeader (Filename);
 
     AcpiOsPrintf (" *\n * Original Table Header:\n");
     AcpiOsPrintf (" *     Signature        \"%4.4s\"\n",    Table->Signature);
     AcpiOsPrintf (" *     Length           0x%8.8X (%u)\n", Table->Length, Table->Length);
     AcpiOsPrintf (" *     Revision         0x%2.2X\n",      Table->Revision);
+
+    /* Print and validate the table checksum */
+
+    AcpiOsPrintf (" *     Checksum         0x%2.2X",        Table->Checksum);
+
+    Checksum = AcpiTbChecksum (ACPI_CAST_PTR (UINT8, Table), Table->Length);
+    if (Checksum)
+    {
+        AcpiOsPrintf (" **** Incorrect checksum, should be 0x%2.2X", 
+            (UINT8) (Table->Checksum - Checksum));
+    }
+    AcpiOsPrintf ("\n");
+
     AcpiOsPrintf (" *     OEM ID           \"%.6s\"\n",     Table->OemId);
     AcpiOsPrintf (" *     OEM Table ID     \"%.8s\"\n",     Table->OemTableId);
     AcpiOsPrintf (" *     OEM Revision     0x%8.8X (%u)\n", Table->OemRevision, Table->OemRevision);
-    AcpiOsPrintf (" *     Creator ID       \"%.4s\"\n",     Table->AslCompilerId);
-    AcpiOsPrintf (" *     Creator Revision 0x%8.8X (%u)\n", Table->AslCompilerRevision, Table->AslCompilerRevision);
+    AcpiOsPrintf (" *     Compiler ID      \"%.4s\"\n",     Table->AslCompilerId);
+    AcpiOsPrintf (" *     Compiler Version 0x%8.8X (%u)\n", Table->AslCompilerRevision, Table->AslCompilerRevision);
     AcpiOsPrintf (" */\n");
 
     /* Create AML output filename based on input filename */
