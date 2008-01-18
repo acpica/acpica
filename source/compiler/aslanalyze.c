@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.116 $
+ *              $Revision: 1.117 $
  *
  *****************************************************************************/
 
@@ -956,9 +956,9 @@ AnMethodAnalysisWalkBegin (
                 MethodInfo->ValidArgTypes[ActualArgs] =
                     AnMapObjTypeToBtype (NextType);
                 NextType->Asl.ParseOpcode = PARSEOP_DEFAULT_ARG;
+                ActualArgs++;
             }
 
-            ActualArgs++;
             NextType = NextType->Asl.Next;
         }
 
