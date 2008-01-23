@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: asllookup- Namespace lookup
- *              $Revision: 1.105 $
+ *              $Revision: 1.106 $
  *
  *****************************************************************************/
 
@@ -466,7 +466,6 @@ LsDoOnePathname (
     ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
     ACPI_STATUS             Status;
     ACPI_BUFFER             TargetPath;
-
 
 
     TargetPath.Length = ACPI_ALLOCATE_LOCAL_BUFFER;

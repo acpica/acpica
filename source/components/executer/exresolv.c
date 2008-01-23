@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exresolv - AML Interpreter object resolution
- *              $Revision: 1.145 $
+ *              $Revision: 1.146 $
  *
  *****************************************************************************/
 
@@ -477,10 +477,10 @@ AcpiExResolveMultiple (
     }
 
     /*
-     * For reference objects created via the RefOf or Index operators,
-     * we need to get to the base object (as per the ACPI specification
-     * of the ObjectType and SizeOf operators).  This means traversing
-     * the list of possibly many nested references.
+     * For reference objects created via the RefOf, Index, or Load/LoadTable
+     * operators, we need to get to the base object (as per the ACPI
+     * specification of the ObjectType and SizeOf operators). This means
+     * traversing the list of possibly many nested references.
      */
     while (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_REFERENCE)
     {
@@ -556,6 +556,12 @@ AcpiExResolveMultiple (
                 goto Exit;
             }
             break;
+
+
+        case AML_LOAD_OP:
+
+            Type = ACPI_TYPE_DDB_HANDLE;
+            goto Exit;
 
 
         case AML_LOCAL_OP:

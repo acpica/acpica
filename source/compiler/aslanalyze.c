@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslanalyze.c - check for semantic errors
- *              $Revision: 1.117 $
+ *              $Revision: 1.118 $
  *
  *****************************************************************************/
 
@@ -272,7 +272,11 @@ AnMapArgTypeToBtype (
         return (ACPI_BTYPE_MUTEX);
 
     case ARGI_DDBHANDLE:
-        return (ACPI_BTYPE_DDB_HANDLE);
+        /*
+         * DDBHandleObject := SuperName
+         * ACPI_BTYPE_REFERENCE: Index reference as parameter of Load/Unload
+         */
+        return (ACPI_BTYPE_DDB_HANDLE | ACPI_BTYPE_REFERENCE);
 
     /* Interchangeable types */
     /*

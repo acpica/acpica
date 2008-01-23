@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.207 $
+ *              $Revision: 1.208 $
  *
  *****************************************************************************/
 
@@ -527,10 +527,23 @@ AcpiExStoreObjectToIndex (
          */
         ObjDesc = *(IndexDesc->Reference.Where);
 
-        Status = AcpiUtCopyIobjectToIobject (SourceDesc, &NewDesc, WalkState);
-        if (ACPI_FAILURE (Status))
+        if (ACPI_GET_OBJECT_TYPE (SourceDesc) == ACPI_TYPE_LOCAL_REFERENCE &&
+            SourceDesc->Reference.Opcode == AML_LOAD_OP)
         {
-            return_ACPI_STATUS (Status);
+            /* This is a DDBHandle, just add a reference to it */
+
+            AcpiUtAddReference (SourceDesc);
+            NewDesc = SourceDesc;
+        }
+        else
+        {
+            /* Normal object, copy it */
+
+            Status = AcpiUtCopyIobjectToIobject (SourceDesc, &NewDesc, WalkState);
+            if (ACPI_FAILURE (Status))
+            {
+                return_ACPI_STATUS (Status);
+            }
         }
 
         if (ObjDesc)

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.133 $
+ *              $Revision: 1.134 $
  *
  *****************************************************************************/
 
@@ -832,7 +832,16 @@ AcpiUtCopySimpleObject (
         /*
          * We copied the reference object, so we now must add a reference
          * to the object pointed to by the reference
+         *
+         * DDBHandle reference (from Load/LoadTable is a special reference,
+         * it's Reference.Object is the table index, so does not need to
+         * increase the reference count
          */
+        if (SourceDesc->Reference.Opcode == AML_LOAD_OP)
+        {
+            break;
+        }
+
         AcpiUtAddReference (SourceDesc->Reference.Object);
         break;
 

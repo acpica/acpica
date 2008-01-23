@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exdump - Interpreter debug output routines
- *              $Revision: 1.205 $
+ *              $Revision: 1.206 $
  *
  *****************************************************************************/
 
@@ -1045,9 +1045,21 @@ AcpiExDumpReferenceObj (
     {
         if (ACPI_GET_DESCRIPTOR_TYPE (ObjDesc) == ACPI_DESC_TYPE_OPERAND)
         {
-            AcpiOsPrintf (" Target: %p [%s]\n",
-                ObjDesc->Reference.Object,
-                AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *) ObjDesc->Reference.Object)->Common.Type));
+            AcpiOsPrintf (" Target: %p", ObjDesc->Reference.Object);
+            if (ObjDesc->Reference.Opcode == AML_LOAD_OP)
+            {
+                /*
+                 * For DDBHandle reference,
+                 * ObjDesc->Reference.Object is the table index
+                 */
+                AcpiOsPrintf (" [DDBHandle]\n");
+            }
+            else
+            {
+                AcpiOsPrintf (" [%s]\n",
+                    AcpiUtGetTypeName (((ACPI_OPERAND_OBJECT *)
+                        ObjDesc->Reference.Object)->Common.Type));
+            }
         }
         else
         {
