@@ -1,4 +1,54 @@
 ----------------------------------------
+23 January 2008. Summary of changes for version 20080123:
+
+1) ACPI CA Core Subsystem:
+
+Added the 2008 copyright to all module headers and signons. This affects virtually every file in the ACPICA core subsystem, the iASL compiler, and 
+the tools/utilities.
+
+Fixed a problem with the SizeOf operator when used with Package and Buffer objects. These objects have deferred execution for some arguments, and the execution is now completed before the SizeOf is executed. This problem caused unexpected AE_PACKAGE_LIMIT errors on some systems (Lin Ming, Bob Moore) BZ 9558
+
+Implemented an enhancement to the interpreter "slack mode". In the absence of an explicit return or an implicitly returned object from the last executed opcode, a control method will now implicitly return an integer of value 0 for Microsoft compatibility. (Lin Ming) BZ 392
+
+Fixed a problem with the Load operator where an exception was not returned in the case where the table is already loaded. (Lin Ming) BZ 463
+
+Implemented support for the use of DDBHandles as an Indexed Reference, as per the ACPI spec. (Lin Ming) BZ 486
+
+Implemented support for UserTerm (Method invocation) for the Unload operator as per the ACPI spec. (Lin Ming) BZ 580
+
+Fixed a problem with the LoadTable operator where the OemId and OemTableId input strings could cause unexpected failures if they were shorter than the maximum lengths allowed. (Lin Ming, Bob Moore) BZ 576
+
+Implemented support for UserTerm (Method invocation) for the Unload operator as per the ACPI spec. (Lin Ming) BZ 580
+
+Implemented header file support for new ACPI tables - BERT, ERST, EINJ, HEST, IBFT, UEFI, WDAT. Disassembler support is forthcoming.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has 
+a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  79.3K Code, 17.2K Data,  96.5K Total
+    Debug Version:     158.6K Code, 63.8K Data, 222.4K Total
+  Current Release:
+    Non-Debug Version:  79.5K Code, 17.2K Data,  96.7K Total
+    Debug Version:     159.0K Code, 63.8K Data, 222.8K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Implemented support in the disassembler for checksum validation on incoming binary DSDTs and SSDTs. If incorrect, a message is displayed within the table header dump at the start of the disassembly.
+
+Implemented additional debugging information in the namespace listing file created during compilation. In addition to the namespace hierarchy, the full pathname to each namespace object is displayed.
+
+Fixed a problem with the disassembler where invalid ACPI tables could cause faults or infinite loops.
+
+Fixed an unexpected parse error when using the optional "parameter types" list in a control method declaration. (Lin Ming) BZ 397
+
+Fixed a problem where two External declarations with the same name did not cause an error (Lin Ming) BZ 509
+
+Implemented support for full TermArgs (adding Argx, Localx and method invocation) for the ParameterData parameter to the LoadTable operator. (Lin Ming) BZ 583,587
+
+----------------------------------------
 19 December 2007. Summary of changes for version 20071219:
 
 1) ACPI CA Core Subsystem:
