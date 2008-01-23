@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbinfo - Table info for non-AML tables
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -400,7 +400,7 @@ ACPI_DMTABLE_INFO           AcpiDmTableInfoFadt2[] =
 
 ACPI_DMTABLE_INFO           AcpiDmTableInfoAsfHdr[] =
 {
-    {ACPI_DMT_UINT8,    ACPI_ASF0_OFFSET (Header.Type),             "Sub-Table Type"},
+    {ACPI_DMT_ASF,      ACPI_ASF0_OFFSET (Header.Type),             "Sub-Table Type"},
     {ACPI_DMT_UINT8,    ACPI_ASF0_OFFSET (Header.Reserved),         "Reserved"},
     {ACPI_DMT_UINT16,   ACPI_ASF0_OFFSET (Header.Length),           "Length"},
     {ACPI_DMT_EXIT,     0,                                          NULL}

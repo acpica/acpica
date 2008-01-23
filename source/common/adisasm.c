@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.110 $
+ *              $Revision: 1.111 $
  *
  *****************************************************************************/
 
@@ -674,7 +674,7 @@ AdCreateTableHeader (
     Checksum = AcpiTbChecksum (ACPI_CAST_PTR (UINT8, Table), Table->Length);
     if (Checksum)
     {
-        AcpiOsPrintf (" **** Incorrect checksum, should be 0x%2.2X", 
+        AcpiOsPrintf (" **** Incorrect checksum, should be 0x%2.2X",
             (UINT8) (Table->Checksum - Checksum));
     }
     AcpiOsPrintf ("\n");

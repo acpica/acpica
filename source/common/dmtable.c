@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.14 $
+ *              $Revision: 1.15 $
  *
  *****************************************************************************/
 
@@ -136,6 +136,16 @@ AcpiDmCheckAscii (
 
 
 /* These tables map a subtable type to a description string */
+
+static const char           *AcpiDmAsfSubnames[] =
+{
+    "ASF Information",
+    "ASF Alerts",
+    "ASF Remote Control",
+    "ASF RMCP Boot Options",
+    "ASF Address",
+    "Unknown SubTable Type"         /* Reserved */
+};
 
 static const char           *AcpiDmDmarSubnames[] =
 {
@@ -285,6 +295,7 @@ void
 AcpiDmDumpDataTable (
     ACPI_TABLE_HEADER       *Table)
 {
+    ACPI_STATUS             Status;
     ACPI_DMTABLE_DATA       *TableData;
     UINT32                  Length;
 
@@ -315,7 +326,11 @@ AcpiDmDumpDataTable (
          * All other tables must use the common ACPI table header, dump it now
          */
         Length = Table->Length;
-        AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoHeader);
+        Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoHeader);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
         AcpiOsPrintf ("\n");
 
         /* Match signature and dispatch appropriately */
@@ -420,7 +435,7 @@ AcpiDmLineHeader2 (
  *              TableOffset         - Starting offset within the table for this
  *                                    sub-descriptor (0 if main table)
  *              Table               - The ACPI table
- *              SubtableLength      - Lenghth of this sub-descriptor
+ *              SubtableLength      - Length of this sub-descriptor
  *              Info                - Info table for this ACPI table
  *
  * RETURN:      None
@@ -429,7 +444,7 @@ AcpiDmLineHeader2 (
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AcpiDmDumpTable (
     UINT32                  TableLength,
     UINT32                  TableOffset,
@@ -448,7 +463,7 @@ AcpiDmDumpTable (
     if (!Info)
     {
         AcpiOsPrintf ("Display not implemented\n");
-        return;
+        return (AE_NOT_IMPLEMENTED);
     }
 
     /* Walk entire Info table; Null name terminates */
@@ -467,7 +482,8 @@ AcpiDmDumpTable (
         if ((CurrentOffset >= TableLength) ||
             (SubtableLength && (Info->Offset >= SubtableLength)))
         {
-            return;
+            AcpiOsPrintf ("**** ACPI table terminates in the middle of a data structure!\n");
+            return (AE_BAD_DATA);
         }
 
         /* Generate the byte length for this field */
@@ -479,6 +495,7 @@ AcpiDmDumpTable (
         case ACPI_DMT_SPACEID:
         case ACPI_DMT_MADT:
         case ACPI_DMT_SRAT:
+        case ACPI_DMT_ASF:
             ByteLength = 1;
             break;
         case ACPI_DMT_UINT16:
@@ -513,6 +530,12 @@ AcpiDmDumpTable (
         default:
             ByteLength = 0;
             break;
+        }
+
+        if (CurrentOffset + ByteLength > TableLength)
+        {
+            AcpiOsPrintf ("**** ACPI table terminates in the middle of a data structure!\n");
+            return (AE_BAD_DATA);
         }
 
         /* Start a new line and decode the opcode */
@@ -572,9 +595,11 @@ AcpiDmDumpTable (
 
         case ACPI_DMT_UINT56:
 
-            AcpiOsPrintf ("%6.6X%8.8X\n",
-                ACPI_HIDWORD (ACPI_GET64 (Target)) & 0x00FFFFFF,
-                ACPI_LODWORD (ACPI_GET64 (Target)));
+            for (Temp8 = 0; Temp8 < 7; Temp8++)
+            {
+                AcpiOsPrintf ("%2.2X", Target[Temp8]);
+            }
+            AcpiOsPrintf ("\n");
             break;
 
         case ACPI_DMT_UINT64:
@@ -652,6 +677,19 @@ AcpiDmDumpTable (
                 CurrentOffset, Target, 0, AcpiDmTableInfoGas);
             break;
 
+        case ACPI_DMT_ASF:
+
+            /* ASF subtable types */
+
+            Temp16 = (UINT16) ((*Target) & 0x7F);  /* Top bit can be zero or one */
+            if (Temp16 > ACPI_ASF_TYPE_RESERVED)
+            {
+                Temp16 = ACPI_ASF_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf ("%2.2X <%s>\n", *Target, AcpiDmAsfSubnames[Temp16]);
+            break;
+
         case ACPI_DMT_DMAR:
 
             /* DMAR subtable types */
@@ -692,14 +730,16 @@ AcpiDmDumpTable (
             break;
 
         case ACPI_DMT_EXIT:
-            return;
+            return (AE_OK);
 
         default:
             ACPI_ERROR ((AE_INFO,
                 "**** Invalid table opcode [%X] ****\n", Info->Opcode));
-            return;
+            return (AE_SUPPORT);
         }
     }
+
+    return (AE_OK);
 }
 
 

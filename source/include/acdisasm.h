@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.42 $
+ *       $Revision: 1.43 $
  *
  *****************************************************************************/
 
@@ -174,11 +174,12 @@ typedef const struct acpi_dmtable_info
 #define ACPI_DMT_CHKSUM                 20
 #define ACPI_DMT_SPACEID                21
 #define ACPI_DMT_GAS                    22
-#define ACPI_DMT_DMAR                   23
-#define ACPI_DMT_MADT                   24
-#define ACPI_DMT_SRAT                   25
-#define ACPI_DMT_EXIT                   26
-#define ACPI_DMT_SIG                    27
+#define ACPI_DMT_ASF                    23
+#define ACPI_DMT_DMAR                   24
+#define ACPI_DMT_MADT                   25
+#define ACPI_DMT_SRAT                   26
+#define ACPI_DMT_EXIT                   27
+#define ACPI_DMT_SIG                    28
 
 typedef
 void (*ACPI_DMTABLE_HANDLER) (
@@ -285,7 +286,7 @@ void
 AcpiDmDumpDataTable (
     ACPI_TABLE_HEADER       *Table);
 
-void
+ACPI_STATUS
 AcpiDmDumpTable (
     UINT32                  TableLength,
     UINT32                  TableOffset,
