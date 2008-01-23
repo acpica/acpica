@@ -3,7 +3,7 @@
 /******************************************************************************
  *
  * Module Name: aslcompiler.y - Bison input file (ASL grammar and actions)
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -3070,8 +3070,7 @@ OptionalRangeType
 OptionalReference
     :                               {$$ = TrCreateLeafNode (PARSEOP_ZERO);}       /* Placeholder is a ZeroOp object */
     | ','                           {$$ = TrCreateLeafNode (PARSEOP_ZERO);}       /* Placeholder is a ZeroOp object */
-    | ',' DataObject                {$$ = $2;}
-    | ',' NameString                {$$ = $2;}
+    | ',' TermArg                   {$$ = $2;}
     ;
 
 OptionalResourceType_First
