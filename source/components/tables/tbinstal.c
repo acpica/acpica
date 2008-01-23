@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: tbinstal - ACPI table installation and removal
- *              $Revision: 1.93 $
+ *              $Revision: 1.94 $
  *
  *****************************************************************************/
 
@@ -261,6 +261,7 @@ AcpiTbAddTable (
 
         AcpiTbDeleteTable (TableDesc);
         *TableIndex = i;
+        Status = AE_ALREADY_EXISTS;
         goto Release;
     }
 
