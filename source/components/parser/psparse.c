@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: psparse - Parser top level AML parse routines
- *              $Revision: 1.175 $
+ *              $Revision: 1.176 $
  *
  *****************************************************************************/
 
@@ -691,6 +691,25 @@ AcpiPsParseAml (
                  */
                 if (!PreviousWalkState->ReturnDesc)
                 {
+                    /*
+                     * In slack mode execution, if there is no return value
+                     * we should implicitly return zero (0) as a default value.
+                     */
+                    if (AcpiGbl_EnableInterpreterSlack &&
+                        !PreviousWalkState->ImplicitReturnObj)
+                    {
+                        PreviousWalkState->ImplicitReturnObj =
+                            AcpiUtCreateInternalObject (ACPI_TYPE_INTEGER);
+                        if (!PreviousWalkState->ImplicitReturnObj)
+                        {
+                            return_ACPI_STATUS (AE_NO_MEMORY);
+                        }
+
+                        PreviousWalkState->ImplicitReturnObj->Integer.Value = 0;
+                    }
+
+                    /* Restart the calling control method */
+
                     Status = AcpiDsRestartControlMethod (WalkState,
                                 PreviousWalkState->ImplicitReturnObj);
                 }
