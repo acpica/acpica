@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dbcmds - debug commands and output routines
- *              $Revision: 1.156 $
+ *              $Revision: 1.157 $
  *
  ******************************************************************************/
 
@@ -443,13 +443,13 @@ AcpiDbDisplayTableInfo (
     for (i = 0; i < AcpiGbl_RootTableList.Count; i++)
     {
         TableDesc = &AcpiGbl_RootTableList.Tables[i];
-        AcpiOsPrintf ( "%4.4s at %p length %.5X",
+        AcpiOsPrintf ( "%.4s at %p length %.5X",
                 TableDesc->Signature.Ascii, TableDesc->Pointer,
                 (UINT32) TableDesc->Length);
 
         if (TableDesc->Pointer && (i != ACPI_TABLE_INDEX_FACS))
         {
-            AcpiOsPrintf (" OemId=\"%6s\" OemTableId=\"%8s\" OemRevision=%8.8X",
+            AcpiOsPrintf (" OemId=\"%.6s\" OemTableId=\"%.8s\" OemRevision=%8.8X",
                     TableDesc->Pointer->OemId,
                     TableDesc->Pointer->OemTableId,
                     TableDesc->Pointer->OemRevision);

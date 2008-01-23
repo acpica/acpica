@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
- *              $Revision: 1.112 $
+ *              $Revision: 1.113 $
  *
  *****************************************************************************/
 
@@ -334,7 +334,7 @@ AcpiExLoadTableOp (
     if (ACPI_SUCCESS (Status))
     {
         ACPI_INFO ((AE_INFO,
-            "Dynamic OEM Table Load - [%4.4s] OemId [%6.6s] OemTableId [%8.8s]",
+            "Dynamic OEM Table Load - [%.4s] OemId [%.6s] OemTableId [%.8s]",
             Table->Signature, Table->OemId, Table->OemTableId));
     }
 
@@ -583,9 +583,6 @@ AcpiExUnloadTable (
 
     AcpiTbSetTableLoadedFlag (TableIndex, FALSE);
 
-    /* Delete the table descriptor (DdbHandle) */
-
-    AcpiUtRemoveReference (TableDesc);
     return_ACPI_STATUS (AE_OK);
 }
 
