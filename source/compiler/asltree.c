@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: asltree - parse tree management
- *              $Revision: 1.64 $
+ *              $Revision: 1.65 $
  *
  *****************************************************************************/
 
@@ -914,6 +914,7 @@ TrLinkPeerNodes (
         This->Asl.Next = Next;
         This = Next;
     }
+    va_end (ap);
 
     DbgPrint (ASL_PARSE_OUTPUT,"\n\n");
     return (Start);

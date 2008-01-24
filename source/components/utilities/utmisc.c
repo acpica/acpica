@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.152 $
+ *              $Revision: 1.153 $
  *
  ******************************************************************************/
 
@@ -1248,6 +1248,7 @@ AcpiUtError (
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
     AcpiOsPrintf (" [%X]\n", ACPI_CA_VERSION);
+    va_end (args);
 }
 
 void  ACPI_INTERNAL_VAR_XFACE
@@ -1267,6 +1268,7 @@ AcpiUtException (
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
     AcpiOsPrintf (" [%X]\n", ACPI_CA_VERSION);
+    va_end (args);
 }
 
 void  ACPI_INTERNAL_VAR_XFACE
@@ -1284,6 +1286,7 @@ AcpiUtWarning (
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
     AcpiOsPrintf (" [%X]\n", ACPI_CA_VERSION);
+    va_end (args);
 }
 
 void  ACPI_INTERNAL_VAR_XFACE
@@ -1305,5 +1308,6 @@ AcpiUtInfo (
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
     AcpiOsPrintf ("\n");
+    va_end (args);
 }
 

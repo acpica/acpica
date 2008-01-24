@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utdebug - Debug print routines
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -302,6 +302,7 @@ AcpiUtDebugPrint (
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
+    va_end (args);
 }
 
 ACPI_EXPORT_SYMBOL (AcpiUtDebugPrint)
@@ -347,6 +348,7 @@ AcpiUtDebugPrintRaw (
 
     va_start (args, Format);
     AcpiOsVprintf (Format, args);
+    va_end (args);
 }
 
 ACPI_EXPORT_SYMBOL (AcpiUtDebugPrintRaw)

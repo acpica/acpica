@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: aslfiles - file I/O suppoert
- *              $Revision: 1.55 $
+ *              $Revision: 1.56 $
  *
  *****************************************************************************/
 
@@ -369,6 +369,8 @@ FlPrintFile (
     va_start (Args, Format);
 
     Actual = vfprintf (Gbl_Files[FileId].Handle, Format, Args);
+    va_end (Args);
+
     if (Actual == -1)
     {
         FlFileError (FileId, ASL_MSG_WRITE);
