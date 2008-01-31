@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.134 $
+ *              $Revision: 1.135 $
  *
  *****************************************************************************/
 
@@ -309,6 +309,9 @@ AcpiUtCopyIsimpleToEsimple (
         /*
          * There is no corresponding external object type
          */
+        ACPI_ERROR ((AE_INFO, "Unsupported object type, cannot convert to external object: %s",
+            AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (InternalObject))));
+
         return_ACPI_STATUS (AE_SUPPORT);
     }
 
@@ -570,6 +573,9 @@ AcpiUtCopyEsimpleToIsimple (
 
     default:
         /* All other types are not supported */
+
+        ACPI_ERROR ((AE_INFO, "Unsupported object type, cannot convert to internal object: %s",
+            AcpiUtGetTypeName (ExternalObject->Type)));
 
         return_ACPI_STATUS (AE_SUPPORT);
     }
