@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: adisasm - Application-level disassembler routines
- *              $Revision: 1.111 $
+ *              $Revision: 1.112 $
  *
  *****************************************************************************/
 
@@ -937,6 +937,7 @@ AdParseDeferredOps (
         case AML_CREATE_BYTE_FIELD_OP:
         case AML_CREATE_BIT_FIELD_OP:
         case AML_CREATE_FIELD_OP:
+        case AML_BANK_FIELD_OP:
 
             /* Nothing to do in these cases */
 
