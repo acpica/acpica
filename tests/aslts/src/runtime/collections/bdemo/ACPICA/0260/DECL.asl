@@ -54,8 +54,6 @@ Method(m029)
 		RFU0, 0x210,
 	}
 
-	External(\AUXD)
-
 
 
 	Method(m000)

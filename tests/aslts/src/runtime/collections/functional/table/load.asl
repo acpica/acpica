@@ -89,6 +89,35 @@
  *   defined in the Definition Block are not executed during load time")
  */
 
+		// Integer
+		External(\AUXD.INT0)
+		// String
+		External(\AUXD.STR0)
+		// Buffer
+		External(\AUXD.BUF0)
+		// Package
+		External(\AUXD.PAC0)
+		// Device
+		External(\AUXD.DEV0)
+		// Event
+		External(\AUXD.EVE0)
+		// Method
+		External(\AUXD.MMM0)
+		// Mutex
+		External(\AUXD.MTX0)
+		// Power Resource
+		External(\AUXD.PWR0)
+		// Processor
+		External(\AUXD.CPU0)
+		// Thermal Zone
+		External(\AUXD.TZN0)
+		// Buffer Field
+		External(\AUXD.BFL0)
+		// Field Unit
+		External(\AUXD.FLU0)
+		// OpRegion
+		External(\AUXD.OPR0)
+		
 Name(z174, 174)
 
 Device(DTM0) {
@@ -1239,31 +1268,6 @@ Device(DTM0) {
 		Name(DDB0, 0)
 		Name(DDBH, 0)
 
-		// Integer
-		External(\AUXD.INT0)
-		// String
-		External(\AUXD.STR0)
-		// Buffer
-		External(\AUXD.BUF0)
-		// Package
-		External(\AUXD.PAC0)
-		// Device
-		External(\AUXD.DEV0)
-		// Event
-		External(\AUXD.EVE0)
-		// Method
-		External(\AUXD.MMM0)
-		// Mutex
-		External(\AUXD.MTX0)
-		// Power Resource
-		External(\AUXD.PWR0)
-		// Processor
-		External(\AUXD.CPU0)
-		// Thermal Zone
-		External(\AUXD.TZN0)
-		// Buffer Field
-		External(\AUXD.BFL0)
-
 		Concatenate(arg0, "-tstb", arg0)
 
 		Store(BUF3, RFU3)
@@ -1691,35 +1695,6 @@ Device(DTM0) {
 		Name(DDB0, 0)
 		Name(DDB1, 0)
 		Name(DDBH, 0)
-
-		// Integer
-		External(\AUXD.INT0)
-		// String
-		External(\AUXD.STR0)
-		// Buffer
-		External(\AUXD.BUF0)
-		// Package
-		External(\AUXD.PAC0)
-		// Field Unit
-		External(\AUXD.FLU0)
-		// Device
-		External(\AUXD.DEV0)
-		// Event
-		External(\AUXD.EVE0)
-		// Method
-		External(\AUXD.MMM0, MethodObj)
-		// Mutex
-		External(\AUXD.MTX0)
-		// OpRegion
-		External(\AUXD.OPR0)
-		// Power Resource
-		External(\AUXD.PWR0)
-		// Processor
-		External(\AUXD.CPU0)
-		// Thermal Zone
-		External(\AUXD.TZN0)
-		// Buffer Field
-		External(\AUXD.BFL0)
 
 		Method(m000, 4)
 		{

@@ -57,8 +57,6 @@ Field(R258, ByteAcc, NoLock, Preserve) {
 
 Method(m17e)
 {
-	External(\AUXD.M000)
-
 	Store(B258, F258)
 
 	if (CondRefof(\AUXD, Local0)) {
