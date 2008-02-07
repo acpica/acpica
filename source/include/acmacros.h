@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.197 $
+ *       $Revision: 1.198 $
  *
  *****************************************************************************/
 
@@ -137,30 +137,6 @@
 
 
 /*
- * Full 64-bit integer must be available on both 32-bit and 64-bit platforms
- */
-#define ACPI_LODWORD(l)                 ((UINT32)(UINT64)(l))
-#define ACPI_HIDWORD(l)                 ((UINT16)((((UINT64)(l)) >> 32) & 0xFFFFFFFF))
-
-#if 0
-#define ACPI_HIDWORD(l)                 ((UINT32)(((*(UINT64_STRUCT *)(void *)(&l))).Hi))
-#endif
-
-/*
- * printf() format helpers
- */
-
-/* Split 64-bit integer into two 32-bit values. Use with %8.8X%8.8X */
-
-#define ACPI_FORMAT_UINT64(i)           ACPI_HIDWORD(i),ACPI_LODWORD(i)
-
-#if ACPI_MACHINE_WIDTH == 64
-#define ACPI_FORMAT_NATIVE_UINT(i)      ACPI_FORMAT_UINT64(i)
-#else
-#define ACPI_FORMAT_NATIVE_UINT(i)      0, (i)
-#endif
-
-/*
  * Extract data using a pointer.  Any more than a byte and we
  * get into potential aligment issues -- see the STORE macros below.
  * Use with care.
@@ -195,6 +171,35 @@
 #else
 #define ACPI_COMPARE_NAME(a,b)          (!ACPI_STRNCMP (ACPI_CAST_PTR (char,(a)), ACPI_CAST_PTR (char,(b)), ACPI_NAME_SIZE))
 #endif
+
+/*
+ * Full 64-bit integer must be available on both 32-bit and 64-bit platforms
+ */
+typedef struct acpi_integer_overlay
+{
+    UINT32              LoDword;
+    UINT32              HiDword;
+
+} ACPI_INTEGER_OVERLAY;
+
+#define ACPI_LODWORD(Integer)           (ACPI_CAST_PTR (ACPI_INTEGER_OVERLAY, &Integer)->LoDword)
+#define ACPI_HIDWORD(Integer)           (ACPI_CAST_PTR (ACPI_INTEGER_OVERLAY, &Integer)->HiDword)
+
+/*
+ * printf() format helpers
+ */
+
+/* Split 64-bit integer into two 32-bit values. Use with %8.8X%8.8X */
+
+#define ACPI_FORMAT_UINT64(i)           ACPI_HIDWORD(i),ACPI_LODWORD(i)
+
+#if ACPI_MACHINE_WIDTH == 64
+#define ACPI_FORMAT_NATIVE_UINT(i)      ACPI_FORMAT_UINT64(i)
+#else
+#define ACPI_FORMAT_NATIVE_UINT(i)      0, (i)
+#endif
+
+
 
 /*
  * Macros for moving data around to/from buffers that are possibly unaligned.
