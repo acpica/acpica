@@ -2,7 +2,7 @@
  *
  * Module Name: nsxfeval - Public interfaces to the ACPI subsystem
  *                         ACPI Object evaluation interfaces
- *              $Revision: 1.32 $
+ *              $Revision: 1.33 $
  *
  ******************************************************************************/
 
@@ -557,6 +557,7 @@ AcpiNsGetDeviceCallback (
     ACPI_DEVICE_ID          Hid;
     ACPI_COMPATIBLE_ID_LIST *Cid;
     ACPI_NATIVE_UINT        i;
+    BOOLEAN                 Found;
 
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
@@ -612,8 +613,10 @@ AcpiNsGetDeviceCallback (
 
         if (ACPI_STRNCMP (Hid.Value, Info->Hid, sizeof (Hid.Value)) != 0)
         {
-            /* Get the list of Compatible IDs */
-
+            /*
+             * HID does not match, attempt match within the
+             * list of Compatible IDs (CIDs)
+             */
             Status = AcpiUtExecute_CID (Node, &Cid);
             if (Status == AE_NOT_FOUND)
             {
@@ -626,18 +629,28 @@ AcpiNsGetDeviceCallback (
 
             /* Walk the CID list */
 
+            Found = FALSE;
             for (i = 0; i < Cid->Count; i++)
             {
                 if (ACPI_STRNCMP (Cid->Id[i].Value, Info->Hid,
-                                        sizeof (ACPI_COMPATIBLE_ID)) != 0)
+                        sizeof (ACPI_COMPATIBLE_ID)) == 0)
                 {
-                    ACPI_FREE (Cid);
-                    return (AE_OK);
+                    /* Found a matching CID */
+
+                    Found = TRUE;
+                    break;
                 }
             }
+
             ACPI_FREE (Cid);
+            if (!Found)
+            {
+                return (AE_OK);
+            }
         }
     }
+
+    /* We have a valid device, invoke the user function */
 
     Status = Info->UserFunction (ObjHandle, NestingLevel, Info->Context,
                 ReturnValue);
