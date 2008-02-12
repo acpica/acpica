@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtbdump - Dump ACPI data tables that contain no AML code
- *              $Revision: 1.17 $
+ *              $Revision: 1.18 $
  *
  *****************************************************************************/
 
@@ -597,6 +597,180 @@ AcpiDmDumpDmar (
 
         Offset += SubTable->Length;
         SubTable = ACPI_ADD_PTR (ACPI_DMAR_HEADER, SubTable, SubTable->Length);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpEinj
+ *
+ * PARAMETERS:  Table               - A EINJ table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a EINJ. This table type consists
+ *              of an open-ended number of subtables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpEinj (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_WHEA_HEADER        *SubTable;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_EINJ);
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoEinj);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Sub-tables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_WHEA_HEADER, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    0, AcpiDmTableInfoEinj0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Point to next sub-table (each subtable is of fixed length) */
+
+        Offset += sizeof (ACPI_WHEA_HEADER);
+        SubTable = ACPI_ADD_PTR (ACPI_WHEA_HEADER, SubTable,
+                        sizeof (ACPI_WHEA_HEADER));
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpErst
+ *
+ * PARAMETERS:  Table               - A ERST table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a ERST. This table type consists
+ *              of an open-ended number of subtables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpErst (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_WHEA_HEADER        *SubTable;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_ERST);
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoErst);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Sub-tables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_WHEA_HEADER, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    0, AcpiDmTableInfoEinj0);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Point to next sub-table (each subtable is of fixed length) */
+
+        Offset += sizeof (ACPI_WHEA_HEADER);
+        SubTable = ACPI_ADD_PTR (ACPI_WHEA_HEADER, SubTable,
+                        sizeof (ACPI_WHEA_HEADER));
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDmDumpHest
+ *
+ * PARAMETERS:  Table               - A HEST table
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Format the contents of a HEST. This table type consists
+ *              of an open-ended number of subtables.
+ *
+ ******************************************************************************/
+
+void
+AcpiDmDumpHest (
+    ACPI_TABLE_HEADER       *Table)
+{
+    ACPI_STATUS             Status;
+    ACPI_HEST_HEADER        *SubTable;
+    UINT32                  Length = Table->Length;
+    UINT32                  Offset = sizeof (ACPI_TABLE_HEST);
+    ACPI_DMTABLE_INFO       *InfoTable;
+    UINT32                  SubTableLength;
+
+
+    /* Main table */
+
+    Status = AcpiDmDumpTable (Length, 0, Table, 0, AcpiDmTableInfoHest);
+    if (ACPI_FAILURE (Status))
+    {
+        return;
+    }
+
+    /* Sub-tables */
+
+    SubTable = ACPI_ADD_PTR (ACPI_HEST_HEADER, Table, Offset);
+    while (Offset < Table->Length)
+    {
+        /* TBD: add new subtable types as examples become available */
+
+        switch (SubTable->Type)
+        {
+        case ACPI_HEST_TYPE_GENERIC_HARDWARE_ERROR_SOURCE:
+            InfoTable = AcpiDmTableInfoHest9;
+            SubTableLength = sizeof (ACPI_HEST_GENERIC);
+            break;
+
+        default:
+            AcpiOsPrintf ("\n**** Unknown HEST sub-table type %X\n", SubTable->Type);
+            return;
+        }
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Length, Offset, SubTable,
+                    0, InfoTable);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
+        /* Point to next sub-table (each subtable is of fixed length) */
+
+        Offset += SubTableLength;
+        SubTable = ACPI_ADD_PTR (ACPI_HEST_HEADER, SubTable, SubTableLength);
     }
 }
 

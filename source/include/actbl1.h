@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actbl1.h - Additional ACPI table definitions
- *       $Revision: 1.50 $
+ *       $Revision: 1.51 $
  *
  *****************************************************************************/
 
@@ -190,8 +190,8 @@ typedef struct acpi_whea_header
     UINT8                   Flags;
     UINT8                   Reserved;
     ACPI_GENERIC_ADDRESS    RegisterRegion;
-    UINT32                  Value;              /* Value used with Read/Write register */
-    UINT32                  Mask;               /* Bitmask required for this register instruction */
+    UINT64                  Value;              /* Value used with Read/Write register */
+    UINT64                  Mask;               /* Bitmask required for this register instruction */
 
 } ACPI_WHEA_HEADER;
 
@@ -341,6 +341,9 @@ typedef struct acpi_table_bert
 
 } ACPI_TABLE_BERT;
 
+
+/* Boot Error Region */
+
 typedef struct acpi_bert_region
 {
     UINT32                  BlockStatus;
@@ -348,7 +351,6 @@ typedef struct acpi_bert_region
     UINT32                  RawDataLength;
     UINT32                  DataLength;
     UINT32                  ErrorSeverity;
-    UINT8                   ErrorData[1];
 
 } ACPI_BERT_REGION;
 
@@ -573,6 +575,17 @@ enum AcpiEinjInstructions
     ACPI_EINJ_INSTRUCTION_RESERVED  = 5     /* 5 and greater are reserved */
 };
 
+/* EINJ Trigger Error Action Table */
+
+typedef struct acpi_einj_trigger
+{
+    UINT32                  HeaderSize;
+    UINT32                  Revision;
+    UINT32                  TableSize;
+    UINT32                  EntryCount;
+
+} ACPI_EINJ_TRIGGER;
+
 
 /*******************************************************************************
  *
@@ -660,7 +673,268 @@ typedef struct acpi_table_hest
 
 } ACPI_TABLE_HEST;
 
-/* TBD: Need Error Source Descriptor layout */
+
+/* HEST subtable header */
+
+typedef struct acpi_hest_header
+{
+    UINT16                  Type;
+
+} ACPI_HEST_HEADER;
+
+
+/* Values for Type field above for subtables */
+
+enum AcpiHestTypes
+{
+    ACPI_HEST_TYPE_XPF_MACHINE_CHECK             = 0,
+    ACPI_HEST_TYPE_XPF_CORRECTED_MACHINE_CHECK   = 1,
+    ACPI_HEST_TYPE_XPF_UNUSED                    = 2,
+    ACPI_HEST_TYPE_XPF_NON_MASKABLE_INTERRUPT    = 3,
+    ACPI_HEST_TYPE_IPF_CORRECTED_MACHINE_CHECK   = 4,
+    ACPI_HEST_TYPE_IPF_CORRECTED_PLATFORM_ERROR  = 5,
+    ACPI_HEST_TYPE_AER_ROOT_PORT                 = 6,
+    ACPI_HEST_TYPE_AER_ENDPOINT                  = 7,
+    ACPI_HEST_TYPE_AER_BRIDGE                    = 8,
+    ACPI_HEST_TYPE_GENERIC_HARDWARE_ERROR_SOURCE = 9,
+    ACPI_HEST_TYPE_RESERVED                      = 10    /* 10 and greater are reserved */
+};
+
+
+/*
+ * HEST Sub-subtables
+ */
+
+/* XPF Machine Check Error Bank */
+
+typedef struct acpi_hest_xpf_error_bank
+{
+    UINT8                   BankNumber;
+    UINT8                   ClearStatusOnInit;
+    UINT8                   StatusFormat;
+    UINT8                   ConfigWriteEnable;
+    UINT32                  ControlRegister;
+    UINT64                  ControlInitData;
+    UINT32                  StatusRegister;
+    UINT32                  AddressRegister;
+    UINT32                  MiscRegister;
+
+} ACPI_HEST_XPF_ERROR_BANK;
+
+
+/* Generic Error Status */
+
+typedef struct acpi_hest_generic_status
+{
+    UINT32                  BlockStatus;
+    UINT32                  RawDataOffset;
+    UINT32                  RawDataLength;
+    UINT32                  DataLength;
+    UINT32                  ErrorSeverity;
+
+} ACPI_HEST_GENERIC_STATUS;
+
+
+/* Generic Error Data */
+
+typedef struct acpi_hest_generic_data
+{
+    UINT8                   SectionType[16];
+    UINT32                  ErrorSeverity;
+    UINT16                  Revision;
+    UINT8                   ValidationBits;
+    UINT8                   Flags;
+    UINT32                  ErrorDataLength;
+    UINT8                   FruId[16];
+    UINT8                   FruText[20];
+
+} ACPI_HEST_GENERIC_DATA;
+
+
+/* Common HEST structure for PCI/AER types below (6,7,8) */
+
+typedef struct acpi_hest_aer_common
+{
+    UINT16                  SourceId;
+    UINT16                  ConfigWriteEnable;
+    UINT8                   Flags;
+    UINT8                   Enabled;
+    UINT32                  RecordsToPreAllocate;
+    UINT32                  MaxSectionsPerRecord;
+    UINT32                  Bus;
+    UINT16                  Device;
+    UINT16                  Function;
+    UINT16                  DeviceControl;
+    UINT16                  Reserved;
+    UINT32                  UncorrectableErrorMask;
+    UINT32                  UncorrectableErrorSeverity;
+    UINT32                  CorrectableErrorMask;
+    UINT32                  AdvancedErrorCababilities;
+
+} ACPI_HEST_AER_COMMON;
+
+
+/* Hardware Error Notification */
+
+typedef struct acpi_hest_notify
+{
+    UINT8                   Type;
+    UINT8                   Length;
+    UINT16                  ConfigWriteEnable;
+    UINT32                  PollInterval;
+    UINT32                  Vector;
+    UINT32                  PollingThresholdValue;
+    UINT32                  PollingThresholdWindow;
+    UINT32                  ErrorThresholdValue;
+    UINT32                  ErrorThresholdWindow;
+
+} ACPI_HEST_NOTIFY;
+
+/* Values for Notify Type field above */
+
+enum AcpiHestNotifyTypes
+{
+    ACPI_HEST_NOTIFY_POLLED     = 0,
+    ACPI_HEST_NOTIFY_EXTERNAL   = 1,
+    ACPI_HEST_NOTIFY_LOCAL      = 2,
+    ACPI_HEST_NOTIFY_SCI        = 3,
+    ACPI_HEST_NOTIFY_NMI        = 4,
+    ACPI_HEST_NOTIFY_RESERVED   = 5     /* 5 and greater are reserved */
+};
+
+
+/*
+ * HEST subtables
+ *
+ * From WHEA Design Document, 16 May 2007.
+ * Note: There is no subtable type 2 in this version of the document,
+ * and there are two different subtable type 3s.
+ */
+
+ /* 0: XPF Machine Check Exception */
+
+typedef struct acpi_hest_xpf_machine_check
+{
+    ACPI_HEST_HEADER        Header;
+    UINT16                  SourceId;
+    UINT16                  ConfigWriteEnable;
+    UINT8                   Flags;
+    UINT8                   Reserved1;
+    UINT32                  RecordsToPreAllocate;
+    UINT32                  MaxSectionsPerRecord;
+    UINT64                  GlobalCapabilityData;
+    UINT64                  GlobalControlData;
+    UINT8                   NumHardwareBanks;
+    UINT8                   Reserved2[7];
+
+} ACPI_HEST_XPF_MACHINE_CHECK;
+
+
+/* 1: XPF Corrected Machine Check */
+
+typedef struct acpi_table_hest_xpf_corrected
+{
+    ACPI_HEST_HEADER        Header;
+    UINT16                  SourceId;
+    UINT16                  ConfigWriteEnable;
+    UINT8                   Flags;
+    UINT8                   Enabled;
+    UINT32                  RecordsToPreAllocate;
+    UINT32                  MaxSectionsPerRecord;
+    ACPI_HEST_NOTIFY        Notify;
+    UINT8                   NumHardwareBanks;
+    UINT8                   Reserved[3];
+
+} ACPI_HEST_XPF_CORRECTED;
+
+
+/* 3: XPF Non-Maskable Interrupt */
+
+typedef struct acpi_hest_xpf_nmi
+{
+    ACPI_HEST_HEADER        Header;
+    UINT16                  SourceId;
+    UINT32                  Reserved;
+    UINT32                  RecordsToPreAllocate;
+    UINT32                  MaxSectionsPerRecord;
+    UINT32                  MaxRawDataLength;
+
+} ACPI_HEST_XPF_NMI;
+
+
+/* 4: IPF Corrected Machine Check */
+
+typedef struct acpi_hest_ipf_corrected
+{
+    ACPI_HEST_HEADER        Header;
+    UINT8                   Enabled;
+    UINT8                   Reserved;
+
+} ACPI_HEST_IPF_CORRECTED;
+
+
+/* 5: IPF Corrected Platform Error */
+
+typedef struct acpi_hest_ipf_corrected_platform
+{
+    ACPI_HEST_HEADER        Header;
+    UINT8                   Enabled;
+    UINT8                   Reserved;
+
+} ACPI_HEST_IPF_CORRECTED_PLATFORM;
+
+
+/* 6: PCI Express Root Port AER */
+
+typedef struct acpi_hest_aer_root
+{
+    ACPI_HEST_HEADER        Header;
+    ACPI_HEST_AER_COMMON    Aer;
+    UINT32                  RootErrorCommand;
+
+} ACPI_HEST_AER_ROOT;
+
+
+/* 7: PCI Express AER (AER Endpoint) */
+
+typedef struct acpi_hest_aer
+{
+    ACPI_HEST_HEADER        Header;
+    ACPI_HEST_AER_COMMON    Aer;
+
+} ACPI_HEST_AER;
+
+
+/* 8: PCI Express/PCI-X Bridge AER */
+
+typedef struct acpi_hest_aer_bridge
+{
+    ACPI_HEST_HEADER        Header;
+    ACPI_HEST_AER_COMMON    Aer;
+    UINT32                  SecondaryUncorrectableErrorMask;
+    UINT32                  SecondaryUncorrectableErrorSeverity;
+    UINT32                  SecondaryAdvancedCapabilities;
+
+} ACPI_HEST_AER_BRIDGE;
+
+
+/* 9: Generic Hardware Error Source */
+
+typedef struct acpi_hest_generic
+{
+    ACPI_HEST_HEADER        Header;
+    UINT16                  SourceId;
+    UINT16                  RelatedSourceId;
+    UINT8                   ConfigWriteEnable;
+    UINT8                   Enabled;
+    UINT32                  RecordsToPreAllocate;
+    UINT32                  MaxSectionsPerRecord;
+    UINT32                  MaxRawDataLength;
+    ACPI_GENERIC_ADDRESS    ErrorStatusAddress;
+    ACPI_HEST_NOTIFY        Notify;
+    UINT32                  ErrorStatusBlockLength;
+
+} ACPI_HEST_GENERIC;
 
 
 /*******************************************************************************
@@ -691,7 +965,7 @@ typedef struct acpi_table_hpet
 
 /*******************************************************************************
  *
- * IBFT - iSCSI Boot Firmware Table
+ * IBFT - Boot Firmware Table
  *
  ******************************************************************************/
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.43 $
+ *       $Revision: 1.44 $
  *
  *****************************************************************************/
 
@@ -176,10 +176,13 @@ typedef const struct acpi_dmtable_info
 #define ACPI_DMT_GAS                    22
 #define ACPI_DMT_ASF                    23
 #define ACPI_DMT_DMAR                   24
-#define ACPI_DMT_MADT                   25
-#define ACPI_DMT_SRAT                   26
-#define ACPI_DMT_EXIT                   27
-#define ACPI_DMT_SIG                    28
+#define ACPI_DMT_HEST                   25
+#define ACPI_DMT_HESTNTFY               26
+#define ACPI_DMT_HESTNTYP               27
+#define ACPI_DMT_MADT                   28
+#define ACPI_DMT_SRAT                   29
+#define ACPI_DMT_EXIT                   30
+#define ACPI_DMT_SIG                    31
 
 typedef
 void (*ACPI_DMTABLE_HANDLER) (
@@ -237,6 +240,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf3[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsf4[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoAsfHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBoot[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoBert[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCpep[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoCpep0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDbgp[];
@@ -246,11 +250,17 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmarScope[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmar0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmar1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEcdt[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEinj[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEinj0[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoErst[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFacs[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt1[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoFadt2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoGas[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHeader[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHest[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHest9[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHestNotify[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoHpet[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoMadt0[];
@@ -324,11 +334,19 @@ AcpiDmDumpDmar (
     ACPI_TABLE_HEADER       *Table);
 
 void
+AcpiDmDumpEinj (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpErst (
+    ACPI_TABLE_HEADER       *Table);
+
+void
 AcpiDmDumpFadt (
     ACPI_TABLE_HEADER       *Table);
 
 void
-AcpiDmDumpSrat (
+AcpiDmDumpHest (
     ACPI_TABLE_HEADER       *Table);
 
 void
@@ -349,6 +367,10 @@ AcpiDmDumpRsdt (
 
 void
 AcpiDmDumpSlit (
+    ACPI_TABLE_HEADER       *Table);
+
+void
+AcpiDmDumpSrat (
     ACPI_TABLE_HEADER       *Table);
 
 void

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dmtable - Support for ACPI tables that contain no AML code
- *              $Revision: 1.15 $
+ *              $Revision: 1.16 $
  *
  *****************************************************************************/
 
@@ -154,6 +154,31 @@ static const char           *AcpiDmDmarSubnames[] =
     "Unknown SubTable Type"         /* Reserved */
 };
 
+static const char           *AcpiDmHestSubnames[] =
+{
+    "XPF Machine Check Exception",
+    "XPF Corrected Machine Check",
+    "NOT USED???",
+    "XPF Non-Maskable Interrupt",
+    "IPF Corrected Machine Check",
+    "IPF Corrected Platform Error",
+    "PCI Express Root Port AER",
+    "PCI Express AER (AER Endpoint)",
+    "PCI Express/PCI-X Bridge AERn",
+    "Generic Hardware Error Source",
+    "Unknown SubTable Type"         /* Reserved */
+};
+
+static const char           *AcpiDmHestNotifySubnames[] =
+{
+    "Polled",
+    "External Interrupt",
+    "Local Interrupt",
+    "SCI",
+    "NMI",
+    "Unknown Notify Type"           /* Reserved */
+};
+
 static const char           *AcpiDmMadtSubnames[] =
 {
     "Processor Local APIC",         /* ACPI_MADT_TYPE_LOCAL_APIC */
@@ -190,11 +215,15 @@ static ACPI_DMTABLE_DATA    AcpiDmTableData[] =
 {
     {ACPI_SIG_ASF,  NULL,                   AcpiDmDumpAsf,  "Alert Standard Format table"},
     {ACPI_SIG_BOOT, AcpiDmTableInfoBoot,    NULL,           "Simple Boot Flag Table"},
+    {ACPI_SIG_BERT, AcpiDmTableInfoBert,    NULL,           "Boot Error Record Table"},
     {ACPI_SIG_CPEP, NULL,                   AcpiDmDumpCpep, "Corrected Platform Error Polling table"},
     {ACPI_SIG_DBGP, AcpiDmTableInfoDbgp,    NULL,           "Debug Port table"},
     {ACPI_SIG_DMAR, NULL,                   AcpiDmDumpDmar, "DMA Remapping table"},
     {ACPI_SIG_ECDT, AcpiDmTableInfoEcdt,    NULL,           "Embedded Controller Boot Resources Table"},
+    {ACPI_SIG_EINJ, NULL,                   AcpiDmDumpEinj, "Error Injection table"},
+    {ACPI_SIG_ERST, NULL,                   AcpiDmDumpErst, "Error Record Serialization Table"},
     {ACPI_SIG_FADT, NULL,                   AcpiDmDumpFadt, "Fixed ACPI Description Table"},
+    {ACPI_SIG_HEST, NULL,                   AcpiDmDumpHest, "Hardware Error Source Table"},
     {ACPI_SIG_HPET, AcpiDmTableInfoHpet,    NULL,           "High Precision Event Timer table"},
     {ACPI_SIG_MADT, NULL,                   AcpiDmDumpMadt, "Multiple APIC Description Table"},
     {ACPI_SIG_MCFG, NULL,                   AcpiDmDumpMcfg, "Memory Mapped Configuration table"},
@@ -458,6 +487,7 @@ AcpiDmDumpTable (
     UINT8                   Temp8;
     UINT16                  Temp16;
     ACPI_DMTABLE_DATA       *TableData;
+    BOOLEAN                 LastOutputBlankLine = FALSE;
 
 
     if (!Info)
@@ -496,10 +526,12 @@ AcpiDmDumpTable (
         case ACPI_DMT_MADT:
         case ACPI_DMT_SRAT:
         case ACPI_DMT_ASF:
+        case ACPI_DMT_HESTNTYP:
             ByteLength = 1;
             break;
         case ACPI_DMT_UINT16:
         case ACPI_DMT_DMAR:
+        case ACPI_DMT_HEST:
             ByteLength = 2;
             break;
         case ACPI_DMT_UINT24:
@@ -524,8 +556,20 @@ AcpiDmDumpTable (
             ByteLength = ACPI_STRLEN (ACPI_CAST_PTR (char, Target)) + 1;
             break;
         case ACPI_DMT_GAS:
-            AcpiOsPrintf ("\n");
+            if (!LastOutputBlankLine)
+            {
+                AcpiOsPrintf ("\n");
+                LastOutputBlankLine = TRUE;
+            }
             ByteLength = sizeof (ACPI_GENERIC_ADDRESS);
+            break;
+        case ACPI_DMT_HESTNTFY:
+            if (!LastOutputBlankLine)
+            {
+                AcpiOsPrintf ("\n");
+                LastOutputBlankLine = TRUE;
+            }
+            ByteLength = sizeof (ACPI_HEST_NOTIFY);
             break;
         default:
             ByteLength = 0;
@@ -675,6 +719,8 @@ AcpiDmDumpTable (
             AcpiOsPrintf ("<Generic Address Structure>\n");
             AcpiDmDumpTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
                 CurrentOffset, Target, 0, AcpiDmTableInfoGas);
+            AcpiOsPrintf ("\n");
+            LastOutputBlankLine = TRUE;
             break;
 
         case ACPI_DMT_ASF:
@@ -702,6 +748,42 @@ AcpiDmDumpTable (
 
             AcpiOsPrintf ("%4.4X <%s>\n", *Target, AcpiDmDmarSubnames[Temp16]);
             break;
+
+        case ACPI_DMT_HEST:
+
+            /* HEST subtable types */
+
+            Temp16 = *Target;
+            if (Temp16 > ACPI_HEST_TYPE_RESERVED)
+            {
+                Temp16 = ACPI_HEST_TYPE_RESERVED;
+            }
+
+            AcpiOsPrintf ("%4.4X (%s)\n", *Target, AcpiDmHestSubnames[Temp16]);
+            break;
+
+        case ACPI_DMT_HESTNTFY:
+
+            AcpiOsPrintf ("<Hardware Error Notification Structure>\n");
+            AcpiDmDumpTable (ACPI_CAST_PTR (ACPI_TABLE_HEADER, Table)->Length,
+                CurrentOffset, Target, 0, AcpiDmTableInfoHestNotify);
+            AcpiOsPrintf ("\n");
+            LastOutputBlankLine = TRUE;
+            break;
+
+        case ACPI_DMT_HESTNTYP:
+
+            /* HEST Notify types */
+
+            Temp8 = *Target;
+            if (Temp8 > ACPI_HEST_NOTIFY_RESERVED)
+            {
+                Temp8 = ACPI_HEST_NOTIFY_RESERVED;
+            }
+
+            AcpiOsPrintf ("%2.2X (%s)\n", *Target, AcpiDmHestNotifySubnames[Temp8]);
+            break;
+
 
         case ACPI_DMT_MADT:
 
