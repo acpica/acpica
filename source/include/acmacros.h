@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acmacros.h - C macros for the entire subsystem.
- *       $Revision: 1.198 $
+ *       $Revision: 1.199 $
  *
  *****************************************************************************/
 
@@ -198,7 +198,6 @@ typedef struct acpi_integer_overlay
 #else
 #define ACPI_FORMAT_NATIVE_UINT(i)      0, (i)
 #endif
-
 
 
 /*
