@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Module Name: exstore - AML Interpreter object store support
- *              $Revision: 1.208 $
+ *              $Revision: 1.209 $
  *
  *****************************************************************************/
 
@@ -708,10 +708,18 @@ AcpiExStoreObjectToNode (
 
     /* If no implicit conversion, drop into the default case below */
 
-    if ((!ImplicitConversion) || (WalkState->Opcode == AML_COPY_OP))
+    if ((!ImplicitConversion) || 
+          ((WalkState->Opcode == AML_COPY_OP) &&
+           (TargetType != ACPI_TYPE_LOCAL_REGION_FIELD) &&
+           (TargetType != ACPI_TYPE_LOCAL_BANK_FIELD) &&
+           (TargetType != ACPI_TYPE_LOCAL_INDEX_FIELD)))
     {
-        /* Force execution of default (no implicit conversion) */
-
+        /*
+         * Force execution of default (no implicit conversion). Note:
+         * CopyObject does not perform an implicit conversion, as per the ACPI
+         * spec -- except in case of region/bank/index fields -- because these
+         * objects must retain their original type permanently.
+         */
         TargetType = ACPI_TYPE_ANY;
     }
 
