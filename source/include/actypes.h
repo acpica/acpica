@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.320 $
+ *       $Revision: 1.321 $
  *
  *****************************************************************************/
 
@@ -1177,6 +1177,7 @@ typedef struct acpi_vendor_uuid
  */
 typedef struct acpi_resource_irq
 {
+    UINT8                           DescriptorLength;
     UINT8                           Triggering;
     UINT8                           Polarity;
     UINT8                           Sharable;
@@ -1184,7 +1185,6 @@ typedef struct acpi_resource_irq
     UINT8                           Interrupts[1];
 
 } ACPI_RESOURCE_IRQ;
-
 
 typedef struct ACPI_RESOURCE_DMA
 {
@@ -1196,9 +1196,9 @@ typedef struct ACPI_RESOURCE_DMA
 
 } ACPI_RESOURCE_DMA;
 
-
 typedef struct acpi_resource_start_dependent
 {
+    UINT8                           DescriptorLength;
     UINT8                           CompatibilityPriority;
     UINT8                           PerformanceRobustness;
 
