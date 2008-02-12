@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.70 $
+ *              $Revision: 1.71 $
  *
  *****************************************************************************/
 
@@ -125,6 +125,10 @@
 
 static void ACPI_SYSTEM_XFACE
 AcpiEvAsynchExecuteGpeMethod (
+    void                    *Context);
+
+static void ACPI_SYSTEM_XFACE
+AcpiEvAsynchEnableGpe (
     void                    *Context);
 
 
@@ -614,14 +618,24 @@ static void ACPI_SYSTEM_XFACE
 AcpiEvAsynchExecuteGpeMethod (
     void                    *Context)
 {
-    ACPI_GPE_EVENT_INFO     *GpeEventInfo = (void *) Context;
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo = Context;
     ACPI_STATUS             Status;
-    ACPI_GPE_EVENT_INFO     LocalGpeEventInfo;
+    ACPI_GPE_EVENT_INFO     *LocalGpeEventInfo;
     ACPI_EVALUATE_INFO      *Info;
 
 
     ACPI_FUNCTION_TRACE (EvAsynchExecuteGpeMethod);
 
+
+    /* Allocate a local GPE block */
+
+    LocalGpeEventInfo = ACPI_ALLOCATE_ZEROED (sizeof (ACPI_GPE_EVENT_INFO));
+    if (!LocalGpeEventInfo)
+    {
+        ACPI_EXCEPTION ((AE_INFO, AE_NO_MEMORY,
+            "while handling a GPE"));
+        return_VOID;
+    }
 
     Status = AcpiUtAcquireMutex (ACPI_MTX_EVENTS);
     if (ACPI_FAILURE (Status))
@@ -645,7 +659,7 @@ AcpiEvAsynchExecuteGpeMethod (
      * Take a snapshot of the GPE info for this level - we copy the
      * info to prevent a race condition with RemoveHandler/RemoveBlock.
      */
-    ACPI_MEMCPY (&LocalGpeEventInfo, GpeEventInfo,
+    ACPI_MEMCPY (LocalGpeEventInfo, GpeEventInfo,
         sizeof (ACPI_GPE_EVENT_INFO));
 
     Status = AcpiUtReleaseMutex (ACPI_MTX_EVENTS);
@@ -658,7 +672,7 @@ AcpiEvAsynchExecuteGpeMethod (
      * Must check for control method type dispatch one more
      * time to avoid race with EvGpeInstallHandler
      */
-    if ((LocalGpeEventInfo.Flags & ACPI_GPE_DISPATCH_MASK) ==
+    if ((LocalGpeEventInfo->Flags & ACPI_GPE_DISPATCH_MASK) ==
             ACPI_GPE_DISPATCH_METHOD)
     {
         /* Allocate the evaluation information block */
@@ -674,8 +688,8 @@ AcpiEvAsynchExecuteGpeMethod (
              * Invoke the GPE Method (_Lxx, _Exx) i.e., evaluate the _Lxx/_Exx
              * control method that corresponds to this GPE
              */
-            Info->PrefixNode = LocalGpeEventInfo.Dispatch.MethodNode;
-            Info->Parameters = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT *, GpeEventInfo);
+            Info->PrefixNode = LocalGpeEventInfo->Dispatch.MethodNode;
+            Info->Parameters = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT *, LocalGpeEventInfo);
             Info->ParameterType = ACPI_PARAM_GPE;
             Info->Flags = ACPI_IGNORE_RETURN_VALUE;
 
@@ -687,28 +701,64 @@ AcpiEvAsynchExecuteGpeMethod (
         {
             ACPI_EXCEPTION ((AE_INFO, Status,
                 "while evaluating GPE method [%4.4s]",
-                AcpiUtGetNodeName (LocalGpeEventInfo.Dispatch.MethodNode)));
+                AcpiUtGetNodeName (LocalGpeEventInfo->Dispatch.MethodNode)));
         }
     }
 
-    if ((LocalGpeEventInfo.Flags & ACPI_GPE_XRUPT_TYPE_MASK) ==
+    /* Defer enabling of GPE until all notify handlers are done */
+
+    Status = AcpiOsExecute (OSL_NOTIFY_HANDLER,
+                AcpiEvAsynchEnableGpe, LocalGpeEventInfo);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_FREE (LocalGpeEventInfo);
+    }
+    return_VOID;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvAsynchEnableGpe
+ *
+ * PARAMETERS:  Context (GpeEventInfo) - Info for this GPE
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Asynchronous clear/enable for GPE. This allows the GPE to
+ *              complete (i.e., finish execution of Notify)
+ *
+ ******************************************************************************/
+
+static void ACPI_SYSTEM_XFACE
+AcpiEvAsynchEnableGpe (
+    void                    *Context)
+{
+    ACPI_GPE_EVENT_INFO     *GpeEventInfo = Context;
+    ACPI_STATUS             Status;
+
+
+    if ((GpeEventInfo->Flags & ACPI_GPE_XRUPT_TYPE_MASK) ==
             ACPI_GPE_LEVEL_TRIGGERED)
     {
         /*
          * GPE is level-triggered, we clear the GPE status bit after
          * handling the event.
          */
-        Status = AcpiHwClearGpe (&LocalGpeEventInfo);
+        Status = AcpiHwClearGpe (GpeEventInfo);
         if (ACPI_FAILURE (Status))
         {
-            return_VOID;
+            goto Exit;
         }
     }
 
     /* Enable this GPE */
 
-    (void) AcpiHwWriteGpeEnableReg (&LocalGpeEventInfo);
-    return_VOID;
+    (void) AcpiHwWriteGpeEnableReg (GpeEventInfo);
+
+Exit:
+    ACPI_FREE (GpeEventInfo);
+    return;
 }
 
 
