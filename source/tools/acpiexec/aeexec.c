@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: aeexec - Support routines for AcpiExec utility
- *              $Revision: 1.128 $
+ *              $Revision: 1.129 $
  *
  *****************************************************************************/
 
@@ -1115,6 +1115,32 @@ AfInstallGpeBlock (
 }
 
 
+/* Test using a Buffer object as a method argument */
+
+void
+AeTestBufferArgument (void)
+{
+    ACPI_STATUS             Status;
+    ACPI_OBJECT_LIST        Params;
+    ACPI_OBJECT             BufArg;
+    UINT8                   Buffer[] = {
+        0,0,0,0,
+        4,0,0,0,
+        1,2,3,4};
+
+
+    BufArg.Type = ACPI_TYPE_BUFFER;
+    BufArg.Buffer.Length = 12;
+    BufArg.Buffer.Pointer = Buffer;
+
+    Params.Count = 1;
+    Params.Pointer = &BufArg;
+
+
+    Status = AcpiEvaluateObject (NULL, "\\BUF", &Params, NULL);
+}
+
+
 ACPI_OBJECT                 PkgArg;
 ACPI_OBJECT                 PkgElements[5];
 ACPI_OBJECT                 Pkg2Elements[5];
@@ -1198,6 +1224,7 @@ AeMiscellaneousTests (
     ACPI_STATISTICS         Stats;
 
 
+    AeTestBufferArgument();
     AeTestPackageArgument ();
 
 
