@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.135 $
+ *              $Revision: 1.136 $
  *
  *****************************************************************************/
 
@@ -616,6 +616,10 @@ AcpiUtCopyEsimpleToIsimple (
                      ExternalObject->Buffer.Length);
 
         InternalObject->Buffer.Length  = ExternalObject->Buffer.Length;
+
+        /* Mark buffer data valid */
+
+        InternalObject->Buffer.Flags |= AOPOBJ_DATA_VALID;
         break;
 
 
@@ -696,6 +700,10 @@ AcpiUtCopyEpackageToIpackage (
             return_ACPI_STATUS (Status);
         }
     }
+
+    /* Mark package data valid */
+    
+    PackageObject->Package.Flags |= AOPOBJ_DATA_VALID;
 
     *InternalObject = PackageObject;
     return_ACPI_STATUS (Status);
