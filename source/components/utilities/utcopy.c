@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
- *              $Revision: 1.136 $
+ *              $Revision: 1.137 $
  *
  *****************************************************************************/
 
@@ -118,6 +118,7 @@
 
 #include "acpi.h"
 #include "amlcode.h"
+#include "acnamesp.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -266,9 +267,8 @@ AcpiUtCopyIsimpleToEsimple (
 
     case ACPI_TYPE_LOCAL_REFERENCE:
 
-        /*
-         * This is an object reference.  Attempt to dereference it.
-         */
+        /* This is an object reference. */
+
         switch (InternalObject->Reference.Opcode)
         {
         case AML_INT_NAMEPATH_OP:
@@ -276,12 +276,13 @@ AcpiUtCopyIsimpleToEsimple (
             /* For namepath, return the object handle ("reference") */
 
         default:
-            /*
-             * Use the object type of "Any" to indicate a reference
-             * to object containing a handle to an ACPI named object.
-             */
-            ExternalObject->Type = ACPI_TYPE_ANY;
-            ExternalObject->Reference.Handle = InternalObject->Reference.Node;
+
+            /* We are referring to the namespace node */
+
+            ExternalObject->Reference.Handle =
+                InternalObject->Reference.Node;
+            ExternalObject->Reference.ActualType =
+                AcpiNsGetType (InternalObject->Reference.Node);
             break;
         }
         break;
@@ -562,6 +563,7 @@ AcpiUtCopyEsimpleToIsimple (
     case ACPI_TYPE_STRING:
     case ACPI_TYPE_BUFFER:
     case ACPI_TYPE_INTEGER:
+    case ACPI_TYPE_LOCAL_REFERENCE:
 
         InternalObject = AcpiUtCreateInternalObject (
                             (UINT8) ExternalObject->Type);
@@ -570,6 +572,11 @@ AcpiUtCopyEsimpleToIsimple (
             return_ACPI_STATUS (AE_NO_MEMORY);
         }
         break;
+
+    case ACPI_TYPE_ANY: /* This is the case for a NULL object */
+
+        *RetInternalObject = NULL;
+        return_ACPI_STATUS (AE_OK);
 
     default:
         /* All other types are not supported */
@@ -626,6 +633,14 @@ AcpiUtCopyEsimpleToIsimple (
     case ACPI_TYPE_INTEGER:
 
         InternalObject->Integer.Value   = ExternalObject->Integer.Value;
+        break;
+
+    case ACPI_TYPE_LOCAL_REFERENCE:
+
+        /* TBD: should validate incoming handle */
+
+        InternalObject->Reference.Opcode = AML_INT_NAMEPATH_OP;
+        InternalObject->Reference.Node = ExternalObject->Reference.Handle;
         break;
 
     default:
@@ -702,7 +717,7 @@ AcpiUtCopyEpackageToIpackage (
     }
 
     /* Mark package data valid */
-    
+
     PackageObject->Package.Flags |= AOPOBJ_DATA_VALID;
 
     *InternalObject = PackageObject;
