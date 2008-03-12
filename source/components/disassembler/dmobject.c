@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: dmobject - ACPI object decode and display
- *              $Revision: 1.23 $
+ *              $Revision: 1.24 $
  *
  ******************************************************************************/
 
@@ -352,7 +352,22 @@ AcpiDmDecodeNode (
         AcpiOsPrintf (" [Method Local]");
     }
 
-    AcpiDmDecodeInternalObject (AcpiNsGetAttachedObject (Node));
+    switch (Node->Type)
+    {
+    /* These types have no attached object */
+
+    case ACPI_TYPE_DEVICE:
+        AcpiOsPrintf (" Device");
+        break;
+
+    case ACPI_TYPE_THERMAL:
+        AcpiOsPrintf (" Thermal Zone");
+        break;
+
+    default:
+        AcpiDmDecodeInternalObject (AcpiNsGetAttachedObject (Node));
+        break;
+    }
 }
 
 
