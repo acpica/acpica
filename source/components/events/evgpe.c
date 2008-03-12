@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: evgpe - General Purpose Event handling and dispatch
- *              $Revision: 1.71 $
+ *              $Revision: 1.72 $
  *
  *****************************************************************************/
 
@@ -349,7 +349,14 @@ AcpiEvDisableGpe (
     ACPI_FUNCTION_TRACE (EvDisableGpe);
 
 
-    if (!(GpeEventInfo->Flags & ACPI_GPE_ENABLE_MASK))
+    /*
+     * Ignore this if the GPE is valid and not enabled.
+     *
+     * Flags is only zero if GPE is neither enabled or disabled -- it may
+     * be a spurious or stray GPE -- disable it in the default case below.
+     */
+    if (GpeEventInfo->Flags &&
+       (!(GpeEventInfo->Flags & ACPI_GPE_ENABLE_MASK)))
     {
         return_ACPI_STATUS (AE_OK);
     }
