@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rsio - IO and DMA resource descriptors
- *              $Revision: 1.37 $
+ *              $Revision: 1.38 $
  *
  ******************************************************************************/
 
@@ -353,7 +353,7 @@ ACPI_RSCONVERT_INFO   AcpiRsSetStartDpf[10] =
 
     /* Reset length to 1 byte (descriptor with flags byte) */
 
-    {ACPI_RSC_LENGTH,   0, 0, sizeof (AML_RESOURCE_IRQ)},
+    {ACPI_RSC_LENGTH,   0, 0, sizeof (AML_RESOURCE_START_DEPENDENT)},
 
 
     /*

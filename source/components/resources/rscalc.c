@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: rscalc - Calculate stream and list lengths
- *              $Revision: 1.83 $
+ *              $Revision: 1.84 $
  *
  ******************************************************************************/
 
@@ -314,7 +314,20 @@ AcpiRsGetAmlLength (
         {
         case ACPI_RESOURCE_TYPE_IRQ:
 
+            /* Length can be 3 or 2 */
+
             if (Resource->Data.Irq.DescriptorLength == 2)
+            {
+                TotalSize--;
+            }
+            break;
+
+
+        case ACPI_RESOURCE_TYPE_START_DEPENDENT:
+
+            /* Length can be 1 or 0 */
+
+            if (Resource->Data.Irq.DescriptorLength == 0)
             {
                 TotalSize--;
             }
