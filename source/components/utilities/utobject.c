@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utobject - ACPI object create/delete/size/cache routines
- *              $Revision: 1.107 $
+ *              $Revision: 1.108 $
  *
  *****************************************************************************/
 
@@ -555,26 +555,29 @@ AcpiUtGetSimpleObjectSize (
     ACPI_FUNCTION_TRACE_PTR (UtGetSimpleObjectSize, InternalObject);
 
 
-    /*
-     * Handle a null object (Could be a uninitialized package
-     * element -- which is legal)
-     */
-    if (!InternalObject)
-    {
-        *ObjLength = 0;
-        return_ACPI_STATUS (AE_OK);
-    }
-
-    /* Start with the length of the Acpi object */
+    /* Start with the length of the (external) Acpi object */
 
     Length = sizeof (ACPI_OBJECT);
 
+    /* A NULL object is allowed, can be a legal uninitialized package element */
+
+    if (!InternalObject)
+    {
+        /*
+         * Object is NULL, just return the length of ACPI_OBJECT
+         * (A NULL ACPI_OBJECT is an object of all zeroes.)
+         */
+        *ObjLength = ACPI_ROUND_UP_TO_NATIVE_WORD (Length);
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* A Namespace Node should never appear here */
+
     if (ACPI_GET_DESCRIPTOR_TYPE (InternalObject) == ACPI_DESC_TYPE_NAMED)
     {
-        /* Object is a named object (reference), just return the length */
+        /* A namespace node should never get here */
 
-        *ObjLength = ACPI_ROUND_UP_TO_NATIVE_WORD (Length);
-        return_ACPI_STATUS (Status);
+        return_ACPI_STATUS (AE_AML_INTERNAL);
     }
 
     /*
@@ -601,9 +604,8 @@ AcpiUtGetSimpleObjectSize (
     case ACPI_TYPE_PROCESSOR:
     case ACPI_TYPE_POWER:
 
-        /*
-         * No extra data for these types
-         */
+        /* No extra data for these types */
+
         break;
 
 

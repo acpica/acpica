@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.321 $
+ *       $Revision: 1.322 $
  *
  *****************************************************************************/
 
@@ -738,46 +738,51 @@ typedef UINT8                           ACPI_ADR_SPACE_TYPE;
 /*
  * External ACPI object definition
  */
+
+/*
+ * Note: Type == ACPI_TYPE_ANY (0) is used to indicate a NULL package element
+ * or an unresolved named reference.
+ */
 typedef union acpi_object
 {
     ACPI_OBJECT_TYPE                Type;   /* See definition of AcpiNsType for values */
     struct
     {
-        ACPI_OBJECT_TYPE                Type;
+        ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_INTEGER */
         ACPI_INTEGER                    Value;      /* The actual number */
     } Integer;
 
     struct
     {
-        ACPI_OBJECT_TYPE                Type;
+        ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_STRING */
         UINT32                          Length;     /* # of bytes in string, excluding trailing null */
         char                            *Pointer;   /* points to the string value */
     } String;
 
     struct
     {
-        ACPI_OBJECT_TYPE                Type;
+        ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_BUFFER */
         UINT32                          Length;     /* # of bytes in buffer */
         UINT8                           *Pointer;   /* points to the buffer */
     } Buffer;
 
     struct
     {
-        ACPI_OBJECT_TYPE                Type;
-        UINT32                          Fill1;
-        ACPI_HANDLE                     Handle;     /* object reference */
-    } Reference;
-
-    struct
-    {
-        ACPI_OBJECT_TYPE                Type;
+        ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_PACKAGE */
         UINT32                          Count;      /* # of elements in package */
         union acpi_object               *Elements;  /* Pointer to an array of ACPI_OBJECTs */
     } Package;
 
     struct
     {
-        ACPI_OBJECT_TYPE                Type;
+        ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_LOCAL_REFERENCE */
+        ACPI_OBJECT_TYPE                ActualType; /* Type associated with the Handle */
+        ACPI_HANDLE                     Handle;     /* object reference */
+    } Reference;
+
+    struct
+    {
+        ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_PROCESSOR */
         UINT32                          ProcId;
         ACPI_IO_ADDRESS                 PblkAddress;
         UINT32                          PblkLength;
@@ -785,7 +790,7 @@ typedef union acpi_object
 
     struct
     {
-        ACPI_OBJECT_TYPE                Type;
+        ACPI_OBJECT_TYPE                Type;       /* ACPI_TYPE_POWER */
         UINT32                          SystemLevel;
         UINT32                          ResourceOrder;
     } PowerResource;
