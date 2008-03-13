@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
- *       $Revision: 1.322 $
+ *       $Revision: 1.323 $
  *
  *****************************************************************************/
 
@@ -495,14 +495,20 @@ typedef UINT64                          ACPI_INTEGER;
 /*
  * Standard notify values
  */
-#define ACPI_NOTIFY_BUS_CHECK           (UINT8) 0
-#define ACPI_NOTIFY_DEVICE_CHECK        (UINT8) 1
-#define ACPI_NOTIFY_DEVICE_WAKE         (UINT8) 2
-#define ACPI_NOTIFY_EJECT_REQUEST       (UINT8) 3
-#define ACPI_NOTIFY_DEVICE_CHECK_LIGHT  (UINT8) 4
-#define ACPI_NOTIFY_FREQUENCY_MISMATCH  (UINT8) 5
-#define ACPI_NOTIFY_BUS_MODE_MISMATCH   (UINT8) 6
-#define ACPI_NOTIFY_POWER_FAULT         (UINT8) 7
+#define ACPI_NOTIFY_BUS_CHECK           (UINT8) 0x00
+#define ACPI_NOTIFY_DEVICE_CHECK        (UINT8) 0x01
+#define ACPI_NOTIFY_DEVICE_WAKE         (UINT8) 0x02
+#define ACPI_NOTIFY_EJECT_REQUEST       (UINT8) 0x03
+#define ACPI_NOTIFY_DEVICE_CHECK_LIGHT  (UINT8) 0x04
+#define ACPI_NOTIFY_FREQUENCY_MISMATCH  (UINT8) 0x05
+#define ACPI_NOTIFY_BUS_MODE_MISMATCH   (UINT8) 0x06
+#define ACPI_NOTIFY_POWER_FAULT         (UINT8) 0x07
+#define ACPI_NOTIFY_CAPABILITIES_CHECK  (UINT8) 0x08
+#define ACPI_NOTIFY_DEVICE_PLD_CHECK    (UINT8) 0x09
+#define ACPI_NOTIFY_RESERVED            (UINT8) 0x0A
+#define ACPI_NOTIFY_LOCALITY_UPDATE     (UINT8) 0x0B
+
+#define ACPI_NOTIFY_MAX                 0x0B
 
 /*
  * Types associated with ACPI names and objects.  The first group of
@@ -680,7 +686,7 @@ typedef UINT32                          ACPI_EVENT_STATUS;
 
 #define ACPI_SYSTEM_NOTIFY              0x1
 #define ACPI_DEVICE_NOTIFY              0x2
-#define ACPI_ALL_NOTIFY                 0x3
+#define ACPI_ALL_NOTIFY                 (ACPI_SYSTEM_NOTIFY | ACPI_DEVICE_NOTIFY)
 #define ACPI_MAX_NOTIFY_HANDLER_TYPE    0x3
 
 #define ACPI_MAX_SYS_NOTIFY             0x7f

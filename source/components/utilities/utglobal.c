@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
- *              $Revision: 1.254 $
+ *              $Revision: 1.255 $
  *
  *****************************************************************************/
 
@@ -689,6 +689,56 @@ AcpiUtGetMutexName (
     }
 
     return (AcpiGbl_MutexNames[MutexId]);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetNotifyName
+ *
+ * PARAMETERS:  NotifyValue     - Value from the Notify() request
+ *
+ * RETURN:      String corresponding to the Notify Value.
+ *
+ * DESCRIPTION: Translate a Notify Value to a notify namestring.
+ *
+ ******************************************************************************/
+
+/* Names for Notify() values, used for debug output */
+
+static const char        *AcpiGbl_NotifyValueNames[] =
+{
+    "Bus Check",
+    "Device Check",
+    "Device Wake",
+    "Eject Request",
+    "Device Check Light",
+    "Frequency Mismatch",
+    "Bus Mode Mismatch",
+    "Power Fault",
+    "Capabilities Check",
+    "Device PLD Check",
+    "Reserved",
+    "System Locality Update"
+};
+
+const char *
+AcpiUtGetNotifyName (
+    UINT32                  NotifyValue)
+{
+
+    if (NotifyValue <= ACPI_NOTIFY_MAX)
+    {
+        return (AcpiGbl_NotifyValueNames[NotifyValue]);
+    }
+    else if (NotifyValue <= ACPI_MAX_SYS_NOTIFY)
+    {
+        return ("Reserved");
+    }
+    else /* Greater or equal to 0x80 */
+    {
+        return ("**Device Specific**");
+    }
 }
 #endif
 

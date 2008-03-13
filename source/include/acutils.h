@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acutils.h -- prototypes for the common (subsystem-wide) procedures
- *       $Revision: 1.202 $
+ *       $Revision: 1.203 $
  *
  *****************************************************************************/
 
@@ -199,6 +199,10 @@ AcpiUtInitGlobals (
 char *
 AcpiUtGetMutexName (
     UINT32                  MutexId);
+
+const char *
+AcpiUtGetNotifyName (
+    UINT32                  NotifyValue);
 
 #endif
 
