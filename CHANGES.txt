@@ -1,4 +1,84 @@
 ----------------------------------------
+21 March 2008. Summary of changes for version 20080321:
+
+This release is available at www.acpica.org/downloads.
+
+
+1) ACPI CA Core Subsystem:
+
+Implemented an additional change to the GPE support in order to suppress spurious or stray GPEs. The AcpiEvDisableGpe function will now permanently disable incoming GPEs that are neither enabled nor disabled -- meaning that the GPE is unknown to the system. This should prevent future interrupt floods from that GPE. BZ 6217 (Zhang Rui)
+
+Fixed a problem where NULL package elements were not returned to the AcpiEvaluateObject interface correctly. The element was simply ignored instead of returning a NULL ACPI_OBJECT package element, potentially causing a buffer overflow and/or confusing the caller who expected a fixed number of elements. BZ 10132 (Lin Ming, Bob Moore)
+
+Fixed a problem with the CreateField, CreateXXXField (Bit, Byte, Word, Dword, Qword), Field, BankField, and IndexField operators when invoked from inside an executing control method. In this case, these operators created namespace nodes that were incorrectly left marked as permanent nodes instead of temporary nodes. This could cause a problem if there is race condition between an exiting control method and a running namespace walk. (Reported by Linn Crosetto)
+
+Fixed a problem where the CreateField and CreateXXXField operators would incorrectly allow duplicate names (the name of the field) with no exception generated.
+
+Implemented several changes for Notify handling. Added support for new Notify values (ACPI 2.0+) and improved the Notify debug output. Notify on PowerResource objects is no longer allowed, as per the ACPI specification. (Bob Moore, Zhang Rui)
+
+All Reference Objects returned via the AcpiEvaluateObject interface are now marked as type "REFERENCE" instead of "ANY". The type ANY is now reserved for NULL objects - either NULL package elements or unresolved named references.
+
+Fixed a problem where an extraneous debug message was produced for package objects (when debugging enabled). The message "Package List length larger than NumElements count" is now produced in the correct case, and is now an error message rather than a debug message. Added a debug message for the opposite case, where NumElements is larger than the Package List (the package will be padded out with NULL elements as per the ACPI spec.)
+
+Implemented several improvements for the output of the ASL "Debug" object to clarify and keep all data for a given object on one output line.
+
+Fixed two size calculation issues with the variable-length Start Dependent resource descriptor.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has 
+a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  79.7K Code, 17.3K Data,  97.0K Total
+    Debug Version:     158.9K Code, 64.0K Data, 222.9K Total
+  Current Release:
+    Non-Debug Version:  80.0K Code, 17.4K Data,  97.4K Total
+    Debug Version:     159.4K Code, 64.4K Data, 223.8K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Fixed a problem with the use of the Switch operator where execution of the containing method by multiple concurrent threads could cause an AE_ALREADY_EXISTS exception. This is caused by the fact that there is no actual Switch opcode, it must be simulated with local named temporary variables and if/else pairs. The solution chosen was to mark any method that uses Switch as Serialized, thus preventing multiple thread entries. BZ 469.
+
+----------------------------------------
+13 February 2008. Summary of changes for version 20080213:
+
+This release is available at www.acpica.org/downloads.
+
+
+1) ACPI CA Core Subsystem:
+
+Implemented another MS compatibility design change for GPE/Notify handling. GPEs are now cleared/enabled asynchronously to allow all pending notifies to complete first. It is expected that the OSL will queue the enable request behind all pending notify requests (may require changes to the local host OSL in AcpiOsExecute). Alexey Starikovskiy.
+
+Fixed a problem where buffer and package objects passed as arguments to a control method via the external AcpiEvaluateObject interface could cause an AE_AML_INTERNAL exception depending on the order and type of operators executed by the target control method.
+
+Fixed a problem where resource descriptor size optimization could cause a problem when a _CRS resource template is passed to a _SRS method. The _SRS resource template must use the same descriptors (with the same size) as returned from _CRS. This change affects the following resource descriptors: IRQ / IRQNoFlags and StartDependendentFn / StartDependentFnNoPri. (BZ 9487)
+
+Fixed a problem where a CopyObject to RegionField, BankField, and IndexField objects did not perform an implicit conversion as it should. These types must retain their initial type permanently as per the ACPI specification. However, a CopyObject to all other object types should not perform an implicit conversion, as per the ACPI specification. (Lin Ming, Bob Moore) BZ 388
+
+Fixed a problem with the AcpiGetDevices interface where the mechanism to match device CIDs did not examine the entire list of available CIDs, but instead aborted on the first non-matching CID. Andrew Patterson.
+
+Fixed a regression introduced in version 20071114. The ACPI_HIDWORD macro was inadvertently changed to return a 16-bit value instead of a 32-bit value, truncating the upper dword of a 64-bit value. This macro is only used to display debug output, so no incorrect calculations were made. Also, reimplemented the macro so that a 64-bit shift is not performed by inefficient compilers.
+
+Added missing va_end statements that should correspond with each va_start statement.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has 
+a much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  79.5K Code, 17.2K Data,  96.7K Total
+    Debug Version:     159.0K Code, 63.8K Data, 222.8K Total
+  Current Release:
+    Non-Debug Version:  79.7K Code, 17.3K Data,  97.0K Total
+    Debug Version:     158.9K Code, 64.0K Data, 222.9K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Implemented full disassembler support for the following new ACPI tables: BERT, EINJ, and ERST. Implemented partial disassembler support for the complicated HEST table. These tables support the Windows Hardware Error Architecture (WHEA).
+
+----------------------------------------
 23 January 2008. Summary of changes for version 20080123:
 
 1) ACPI CA Core Subsystem:
