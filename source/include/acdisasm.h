@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Name: acdisasm.h - AML disassembler
- *       $Revision: 1.44 $
+ *       $Revision: 1.45 $
  *
  *****************************************************************************/
 
@@ -446,7 +446,7 @@ AcpiDmCommaIfFieldMember (
  */
 UINT32
 AcpiDmDumpName (
-    char                    *Name);
+    UINT32                  Name);
 
 ACPI_STATUS
 AcpiPsDisplayObjectPathname (

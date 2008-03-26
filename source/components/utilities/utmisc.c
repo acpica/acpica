@@ -1,7 +1,7 @@
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
- *              $Revision: 1.153 $
+ *              $Revision: 1.154 $
  *
  ******************************************************************************/
 
@@ -807,34 +807,63 @@ AcpiUtValidAcpiName (
  * RETURN:      Repaired version of the name
  *
  * DESCRIPTION: Repair an ACPI name: Change invalid characters to '*' and
- *              return the new name.
+ *              return the new name. NOTE: the Name parameter must reside in
+ *              read/write memory, cannot be a const.
+ *
+ * An ACPI Name must consist of valid ACPI characters. We will repair the name
+ * if necessary because we don't want to abort because of this, but we want
+ * all namespace names to be printable. A warning message is appropriate.
+ *
+ * This issue came up because there are in fact machines that exhibit
+ * this problem, and we want to be able to enable ACPI support for them,
+ * even though there are a few bad names.
  *
  ******************************************************************************/
 
-ACPI_NAME
+void
 AcpiUtRepairName (
     char                    *Name)
 {
     ACPI_NATIVE_UINT        i;
-    char                    NewName[ACPI_NAME_SIZE];
+    BOOLEAN                 FoundBadChar = FALSE;
 
+
+    ACPI_FUNCTION_NAME (UtRepairName);
+
+
+    /* Check each character in the name */
 
     for (i = 0; i < ACPI_NAME_SIZE; i++)
     {
-        NewName[i] = Name[i];
+        if (AcpiUtValidAcpiChar (Name[i], i))
+        {
+            continue;
+        }
 
         /*
          * Replace a bad character with something printable, yet technically
          * still invalid. This prevents any collisions with existing "good"
          * names in the namespace.
          */
-        if (!AcpiUtValidAcpiChar (Name[i], i))
-        {
-            NewName[i] = '*';
-        }
+        Name[i] = '*';
+        FoundBadChar = TRUE;
     }
 
-    return (*(UINT32 *) NewName);
+    if (FoundBadChar)
+    {
+        /* Report warning only if in strict mode or debug mode */
+
+        if (!AcpiGbl_EnableInterpreterSlack)
+        {
+            ACPI_WARNING ((AE_INFO,
+                "Found bad character(s) in name, repaired: [%4.4s]\n", Name));
+        }
+        else
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
+                "Found bad character(s) in name, repaired: [%4.4s]\n", Name));
+        }
+    }
 }
 
 
