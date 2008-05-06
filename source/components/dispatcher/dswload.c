@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dswload - Dispatcher namespace load callbacks
- *              $Revision: 1.119 $
+ *              $Revision: 1.120 $
  *
  *****************************************************************************/
 
@@ -869,6 +869,13 @@ AcpiDsLoad2BeginOp (
 
         Status = AcpiNsLookup (WalkState->ScopeInfo, BufferPtr, ObjectType,
                     ACPI_IMODE_LOAD_PASS2, Flags, WalkState, &Node);
+
+        if (ACPI_SUCCESS (Status) && (Flags & ACPI_NS_TEMPORARY))
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+                "***New Node [%4.4s] %p is temporary\n",
+                AcpiUtGetNodeName (Node), Node));
+        }
         break;
     }
 
