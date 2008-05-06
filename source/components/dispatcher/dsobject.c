@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
- *              $Revision: 1.139 $
+ *              $Revision: 1.140 $
  *
  *****************************************************************************/
 
@@ -564,11 +564,40 @@ AcpiDsBuildInternalPackageObj (
         Arg = Arg->Common.Next;
     }
 
-    if (!Arg)
+    /* Check for match between NumElements and actual length of PackageList */
+
+    if (Arg)
     {
+        /*
+         * NumElements was exhausted, but there are remaining elements in the
+         * PackageList.
+         *
+         * Note: technically, this is an error, from ACPI spec: "It is an error
+         * for NumElements to be less than the number of elements in the
+         * PackageList". However, for now, we just print an error message and
+         * no exception is returned.
+         */
+        while (Arg)
+        {
+            /* Find out how many elements there really are */
+
+            i++;
+            Arg = Arg->Common.Next;
+        }
+
+        ACPI_ERROR ((AE_INFO,
+            "Package List length (%X) larger than NumElements count (%X), truncated\n",
+            i, ElementCount));
+    }
+    else if (i < ElementCount)
+    {
+        /*
+         * Arg list (elements) was exhausted, but we did not reach NumElements count.
+         * Note: this is not an error, the package is padded out with NULLs.
+         */
         ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
-            "Package List length larger than NumElements count (%X), truncated\n",
-            ElementCount));
+            "Package List length (%X) smaller than NumElements count (%X), padded with null elements\n",
+            i, ElementCount));
     }
 
     ObjDesc->Package.Flags |= AOPOBJ_DATA_VALID;
