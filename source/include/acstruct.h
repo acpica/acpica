@@ -280,6 +280,7 @@ typedef struct acpi_evaluate_info
     ACPI_OPERAND_OBJECT             **Parameters;
     ACPI_NAMESPACE_NODE             *ResolvedNode;
     ACPI_OPERAND_OBJECT             *ReturnObject;
+    UINT8                           ParamCount;
     UINT8                           PassNumber;
     UINT8                           ParameterType;
     UINT8                           ReturnObjectType;
