@@ -165,6 +165,7 @@ AeLocalGetRootPointer (
 FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency;
 
+char						TableName[ACPI_NAME_SIZE + 1];
 
 /******************************************************************************
  *
@@ -185,7 +186,7 @@ AcpiOsTerminate (void)
 }
 
 
-#ifndef ACPI_EXEC_APP
+#if (!defined ACPI_EXEC_APP && !defined ACPI_BIN_APP)
 /* Used by both iASL and AcpiDump applications */
 
 CHAR                s[500];
@@ -437,10 +438,6 @@ AcpiOsTableOverride (
     ACPI_TABLE_HEADER       *ExistingTable,
     ACPI_TABLE_HEADER       **NewTable)
 {
-#ifndef ACPI_EXEC_APP
-    char                    TableName[ACPI_NAME_SIZE + 1];
-#endif
-
 
     if (!ExistingTable || !NewTable)
     {
@@ -450,6 +447,7 @@ AcpiOsTableOverride (
     *NewTable = NULL;
 
 
+#ifndef ACPI_BIN_APP
 #ifdef ACPI_EXEC_APP
 
     /* This code exercises the table override mechanism in the core */
@@ -478,6 +476,7 @@ AcpiOsTableOverride (
     {
         AcpiOsPrintf ("Could not read %s from registry\n", TableName);
     }
+#endif
 #endif
 
     return (AE_OK);
