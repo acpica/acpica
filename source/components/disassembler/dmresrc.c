@@ -133,7 +133,7 @@ void (*ACPI_RESOURCE_HANDLER) (
     UINT32                  Length,
     UINT32                  Level);
 
-static ACPI_RESOURCE_HANDLER    AcpiGbl_DumpResourceDispatch [] =
+static ACPI_RESOURCE_HANDLER    AcpiGbl_DmResourceDispatch [] =
 {
     /* Small descriptors */
 
@@ -423,7 +423,7 @@ AcpiDmResourceTemplate (
             Node = Node->Peer;
         }
 
-        AcpiGbl_DumpResourceDispatch [ResourceIndex] (
+        AcpiGbl_DmResourceDispatch [ResourceIndex] (
             Aml, ResourceLength, Level);
 
         /* Descriptor post-processing */
