@@ -143,7 +143,7 @@ const char *
 AcpiUtValidateException (
     ACPI_STATUS             Status)
 {
-    ACPI_STATUS             SubStatus;
+    UINT32                  SubStatus;
     const char              *Exception = NULL;
 
 
@@ -169,7 +169,7 @@ AcpiUtValidateException (
 
         if (SubStatus <= AE_CODE_PGM_MAX)
         {
-            Exception = AcpiGbl_ExceptionNames_Pgm [SubStatus -1];
+            Exception = AcpiGbl_ExceptionNames_Pgm [SubStatus];
         }
         break;
 
@@ -177,7 +177,7 @@ AcpiUtValidateException (
 
         if (SubStatus <= AE_CODE_TBL_MAX)
         {
-            Exception = AcpiGbl_ExceptionNames_Tbl [SubStatus -1];
+            Exception = AcpiGbl_ExceptionNames_Tbl [SubStatus];
         }
         break;
 
@@ -185,7 +185,7 @@ AcpiUtValidateException (
 
         if (SubStatus <= AE_CODE_AML_MAX)
         {
-            Exception = AcpiGbl_ExceptionNames_Aml [SubStatus -1];
+            Exception = AcpiGbl_ExceptionNames_Aml [SubStatus];
         }
         break;
 
@@ -193,7 +193,7 @@ AcpiUtValidateException (
 
         if (SubStatus <= AE_CODE_CTRL_MAX)
         {
-            Exception = AcpiGbl_ExceptionNames_Ctrl [SubStatus -1];
+            Exception = AcpiGbl_ExceptionNames_Ctrl [SubStatus];
         }
         break;
 
