@@ -496,7 +496,7 @@ typedef struct acpi_integer_overlay
  * error messages. The __FILE__ macro is not very useful for this, because it
  * often includes the entire pathname to the module
  */
-#define ACPI_MODULE_NAME(Name)          static char ACPI_UNUSED_VAR *_AcpiModuleName = Name;
+#define ACPI_MODULE_NAME(Name)          static char ACPI_UNUSED_VAR _AcpiModuleName[] = Name;
 #else
 #define ACPI_MODULE_NAME(Name)
 #endif
@@ -549,19 +549,17 @@ typedef struct acpi_integer_overlay
 /*
  * If ACPI_GET_FUNCTION_NAME was not defined in the compiler-dependent header,
  * define it now. This is the case where there the compiler does not support
- * a __FUNCTION__ macro or equivalent. We save the function name on the
- * local stack.
+ * a __FUNCTION__ macro or equivalent.
  */
 #ifndef ACPI_GET_FUNCTION_NAME
 #define ACPI_GET_FUNCTION_NAME          _AcpiFunctionName
 /*
  * The Name parameter should be the procedure name as a quoted string.
- * This is declared as a local string ("MyFunctionName") so that it can
- * be also used by the function exit macros below.
+ * The function name is also used by the function exit macros below.
  * Note: (const char) is used to be compatible with the debug interfaces
  * and macros such as __FUNCTION__.
  */
-#define ACPI_FUNCTION_NAME(Name)        const char *_AcpiFunctionName = #Name;
+#define ACPI_FUNCTION_NAME(Name)        static const char _AcpiFunctionName[] = #Name;
 
 #else
 /* Compiler supports __FUNCTION__ (or equivalent) -- Ignore this macro */
