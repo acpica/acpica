@@ -350,16 +350,10 @@ AcpiEvDisableGpe (
 
 
     /*
-     * Ignore this if the GPE is valid and not enabled.
-     *
-     * Flags is only zero if GPE is neither enabled or disabled -- it may
-     * be a spurious or stray GPE -- disable it in the default case below.
+     * Note: Always disable the GPE, even if we think that that it is already
+     * disabled. It is possible that the AML or some other code has enabled
+     * the GPE behind our back.
      */
-    if (GpeEventInfo->Flags &&
-       (!(GpeEventInfo->Flags & ACPI_GPE_ENABLE_MASK)))
-    {
-        return_ACPI_STATUS (AE_OK);
-    }
 
     /* Make sure HW enable masks are updated */
 
@@ -392,7 +386,7 @@ AcpiEvDisableGpe (
 
     default:
         /*
-         * Even if we don't know the GPE type, make sure that we always
+         * If we don't know the GPE type, make sure that we always
          * disable it. This can prevent a certain type of GPE flood, where
          * the GPE has no _Lxx/_Exx method, and it cannot be determined
          * whether the GPE is wake, run, or wake/run.
