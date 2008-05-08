@@ -325,7 +325,7 @@ AcpiDmResourceTemplate (
     UINT32                  ByteCount)
 {
     ACPI_STATUS             Status;
-    ACPI_NATIVE_UINT        CurrentByteOffset;
+    UINT32                  CurrentByteOffset;
     UINT8                   ResourceType;
     UINT32                  ResourceLength;
     void                    *Aml;
@@ -343,7 +343,7 @@ AcpiDmResourceTemplate (
         Node = Node->Child;
     }
 
-    for (CurrentByteOffset = 0; CurrentByteOffset < ByteCount; )
+    for (CurrentByteOffset = 0; CurrentByteOffset < ByteCount;)
     {
         Aml = &ByteData[CurrentByteOffset];
 

@@ -255,9 +255,9 @@ ACPI_STATUS
 AcpiUtAllocateOwnerId (
     ACPI_OWNER_ID           *OwnerId)
 {
-    ACPI_NATIVE_UINT        i;
-    ACPI_NATIVE_UINT        j;
-    ACPI_NATIVE_UINT        k;
+    UINT32                  i;
+    UINT32                  j;
+    UINT32                  k;
     ACPI_STATUS             Status;
 
 
@@ -372,7 +372,7 @@ AcpiUtReleaseOwnerId (
 {
     ACPI_OWNER_ID           OwnerId = *OwnerIdPtr;
     ACPI_STATUS             Status;
-    ACPI_NATIVE_UINT        Index;
+    UINT32                  Index;
     UINT32                  Bit;
 
 
@@ -740,7 +740,7 @@ AcpiUtDisplayInitPathname (
 BOOLEAN
 AcpiUtValidAcpiChar (
     char                    Character,
-    ACPI_NATIVE_UINT        Position)
+    UINT32                  Position)
 {
 
     if (!((Character >= 'A' && Character <= 'Z') ||
@@ -780,7 +780,7 @@ BOOLEAN
 AcpiUtValidAcpiName (
     UINT32                  Name)
 {
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -824,7 +824,7 @@ void
 AcpiUtRepairName (
     char                    *Name)
 {
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
     BOOLEAN                 FoundBadChar = FALSE;
 
 

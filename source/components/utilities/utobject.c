@@ -266,8 +266,8 @@ AcpiUtCreatePackageObject (
      * Create the element array. Count+1 allows the array to be null
      * terminated.
      */
-    PackageElements = ACPI_ALLOCATE_ZEROED ((ACPI_SIZE)
-                        (Count + 1) * sizeof (void *));
+    PackageElements = ACPI_ALLOCATE_ZEROED (
+                        ((ACPI_SIZE) Count + 1) * sizeof (void *));
     if (!PackageElements)
     {
         ACPI_FREE (PackageDesc);

@@ -295,10 +295,10 @@ AcpiDmDumpAsf (
     ACPI_DMTABLE_INFO       *InfoTable;
     ACPI_DMTABLE_INFO       *DataInfoTable = NULL;
     UINT8                   *DataTable = NULL;
-    ACPI_NATIVE_UINT        DataCount = 0;
-    ACPI_NATIVE_UINT        DataLength = 0;
-    ACPI_NATIVE_UINT        DataOffset = 0;
-    ACPI_NATIVE_UINT        i;
+    UINT32                  DataCount = 0;
+    UINT32                  DataLength = 0;
+    UINT32                  DataOffset = 0;
+    UINT32                  i;
 
 
     /* No main table, only sub-tables */

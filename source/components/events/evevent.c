@@ -289,7 +289,7 @@ static ACPI_STATUS
 AcpiEvFixedEventInitialize (
     void)
 {
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
     ACPI_STATUS             Status;
 
 
@@ -338,7 +338,7 @@ AcpiEvFixedEventDetect (
     UINT32                  IntStatus = ACPI_INTERRUPT_NOT_HANDLED;
     UINT32                  FixedStatus;
     UINT32                  FixedEnable;
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_NAME (EvFixedEventDetect);
@@ -370,7 +370,7 @@ AcpiEvFixedEventDetect (
             /* Found an active (signalled) event */
 
             AcpiFixedEventCount[i]++;
-            IntStatus |= AcpiEvFixedEventDispatch ((UINT32) i);
+            IntStatus |= AcpiEvFixedEventDispatch (i);
         }
     }
 

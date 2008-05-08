@@ -471,7 +471,7 @@ AcpiOsMapMemory (
     ACPI_SIZE               length)
 {
 
-    return (ACPI_TO_POINTER ((ACPI_NATIVE_UINT) where));
+    return (ACPI_TO_POINTER ((ACPI_SIZE) where));
 }
 
 

@@ -169,7 +169,7 @@ AcpiNsLoadNamespace (
 
 ACPI_STATUS
 AcpiNsLoadTable (
-    ACPI_NATIVE_UINT        TableIndex,
+    UINT32                  TableIndex,
     ACPI_NAMESPACE_NODE     *Node);
 
 
@@ -198,13 +198,13 @@ AcpiNsGetNextNode (
  */
 ACPI_STATUS
 AcpiNsParseTable (
-    ACPI_NATIVE_UINT        TableIndex,
+    UINT32                  TableIndex,
     ACPI_NAMESPACE_NODE     *StartNode);
 
 ACPI_STATUS
 AcpiNsOneCompleteParse (
-    ACPI_NATIVE_UINT        PassNumber,
-    ACPI_NATIVE_UINT        TableIndex,
+    UINT32                  PassNumber,
+    UINT32                  TableIndex,
     ACPI_NAMESPACE_NODE     *StartNode);
 
 

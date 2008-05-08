@@ -169,7 +169,7 @@ AcpiEvInstallRegionHandlers (
     void)
 {
     ACPI_STATUS             Status;
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE (EvInstallRegionHandlers);
@@ -245,7 +245,7 @@ AcpiEvInitializeOpRegions (
     void)
 {
     ACPI_STATUS             Status;
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE (EvInitializeOpRegions);

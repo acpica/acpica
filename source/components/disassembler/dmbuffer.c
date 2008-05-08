@@ -282,7 +282,7 @@ AcpiDmIsUnicodeBuffer (
     UINT32                  WordCount;
     ACPI_PARSE_OBJECT       *SizeOp;
     ACPI_PARSE_OBJECT       *NextOp;
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
 
 
     /* Buffer size is the buffer argument */
@@ -320,7 +320,7 @@ AcpiDmIsUnicodeBuffer (
     for (i = 0; i < (ByteCount - 2); i += 2)
     {
         if ((!ACPI_IS_PRINT (ByteData[i])) ||
-            (ByteData[i + 1] != 0))
+            (ByteData[(ACPI_SIZE) i + 1] != 0))
         {
             return (FALSE);
         }
@@ -458,7 +458,7 @@ AcpiDmIsEisaId (
     UINT32                  Name;
     UINT32                  BigEndianId;
     ACPI_PARSE_OBJECT       *NextOp;
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
     UINT32                  Prefix[3];
 
 

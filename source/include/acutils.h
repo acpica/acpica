@@ -320,7 +320,7 @@ AcpiUtMemcpy (
 void *
 AcpiUtMemset (
     void                    *Dest,
-    ACPI_NATIVE_UINT        Value,
+    UINT8                   Value,
     ACPI_SIZE               Count);
 
 int
@@ -787,7 +787,7 @@ AcpiUtRepairName (
 BOOLEAN
 AcpiUtValidAcpiChar (
     char                    Character,
-    ACPI_NATIVE_UINT        Position);
+    UINT32                  Position);
 
 ACPI_STATUS
 AcpiUtStrtoul64 (

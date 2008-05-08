@@ -132,7 +132,7 @@
 
 static ACPI_STATUS
 AcpiExAddTable (
-    ACPI_NATIVE_UINT        TableIndex,
+    UINT32                  TableIndex,
     ACPI_NAMESPACE_NODE     *ParentNode,
     ACPI_OPERAND_OBJECT     **DdbHandle);
 
@@ -154,7 +154,7 @@ AcpiExAddTable (
 
 static ACPI_STATUS
 AcpiExAddTable (
-    ACPI_NATIVE_UINT        TableIndex,
+    UINT32                  TableIndex,
     ACPI_NAMESPACE_NODE     *ParentNode,
     ACPI_OPERAND_OBJECT     **DdbHandle)
 {
@@ -215,12 +215,12 @@ AcpiExLoadTableOp (
 {
     ACPI_STATUS             Status;
     ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
-    ACPI_NATIVE_UINT        TableIndex;
     ACPI_NAMESPACE_NODE     *ParentNode;
     ACPI_NAMESPACE_NODE     *StartNode;
     ACPI_NAMESPACE_NODE     *ParameterNode = NULL;
     ACPI_OPERAND_OBJECT     *DdbHandle;
     ACPI_TABLE_HEADER       *Table;
+    UINT32                  TableIndex;
 
 
     ACPI_FUNCTION_TRACE (ExLoadTableOp);
@@ -380,7 +380,7 @@ AcpiExLoadOp (
 {
     ACPI_OPERAND_OBJECT     *DdbHandle;
     ACPI_TABLE_DESC         TableDesc;
-    ACPI_NATIVE_UINT        TableIndex;
+    UINT32                  TableIndex;
     ACPI_STATUS             Status;
     UINT32                  Length;
 
@@ -538,7 +538,7 @@ AcpiExUnloadTable (
 {
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *TableDesc = DdbHandle;
-    ACPI_NATIVE_UINT        TableIndex;
+    UINT32                  TableIndex;
     ACPI_TABLE_HEADER       *Table;
 
 
@@ -558,9 +558,9 @@ AcpiExUnloadTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Get the table index from the DdbHandle */
+    /* Get the table index from the DdbHandle (ACPI_SIZE for 64-bit case) */
 
-    TableIndex = (ACPI_NATIVE_UINT) TableDesc->Reference.Object;
+    TableIndex = (UINT32) (ACPI_SIZE) TableDesc->Reference.Object;
 
     /* Invoke table handler if present */
 

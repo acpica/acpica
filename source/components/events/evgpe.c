@@ -429,7 +429,7 @@ AcpiEvGetGpeEventInfo (
 {
     ACPI_OPERAND_OBJECT     *ObjDesc;
     ACPI_GPE_BLOCK_INFO     *GpeBlock;
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_ENTRY ();
@@ -508,8 +508,8 @@ AcpiEvGpeDetect (
     UINT32                  StatusReg;
     UINT32                  EnableReg;
     ACPI_CPU_FLAGS          Flags;
-    ACPI_NATIVE_UINT        i;
-    ACPI_NATIVE_UINT        j;
+    UINT32                  i;
+    UINT32                  j;
 
 
     ACPI_FUNCTION_NAME (EvGpeDetect);
@@ -589,8 +589,8 @@ AcpiEvGpeDetect (
                      * or method.
                      */
                     IntStatus |= AcpiEvGpeDispatch (
-                        &GpeBlock->EventInfo[(i * ACPI_GPE_REGISTER_WIDTH) + j],
-                        (UINT32) j + GpeRegisterInfo->BaseGpeNumber);
+                        &GpeBlock->EventInfo[((ACPI_SIZE) i * ACPI_GPE_REGISTER_WIDTH) + j],
+                        j + GpeRegisterInfo->BaseGpeNumber);
                 }
             }
         }

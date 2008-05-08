@@ -988,7 +988,7 @@ AcpiDsEvalTableRegionOperands (
     ACPI_OPERAND_OBJECT     **Operand;
     ACPI_NAMESPACE_NODE     *Node;
     ACPI_PARSE_OBJECT       *NextOp;
-    ACPI_NATIVE_UINT        TableIndex;
+    UINT32                  TableIndex;
     ACPI_TABLE_HEADER       *Table;
 
 

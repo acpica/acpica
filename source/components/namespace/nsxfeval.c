@@ -556,7 +556,7 @@ AcpiNsGetDeviceCallback (
     UINT32                  Flags;
     ACPI_DEVICE_ID          Hid;
     ACPI_COMPATIBLE_ID_LIST *Cid;
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
     BOOLEAN                 Found;
 
 

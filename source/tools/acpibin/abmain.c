@@ -171,7 +171,7 @@ AbDisplayUsage (
 
 int ACPI_SYSTEM_XFACE
 main (
-    ACPI_NATIVE_UINT        argc,
+    ACPI_SIZE               argc,
     char                    *argv[])
 {
     int                     j;

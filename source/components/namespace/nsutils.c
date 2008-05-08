@@ -496,7 +496,7 @@ AcpiNsBuildInternalName (
     char                    *InternalName = Info->InternalName;
     char                    *ExternalName = Info->NextExternalChar;
     char                    *Result = NULL;
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_TRACE (NsBuildInternalName);
@@ -546,13 +546,13 @@ AcpiNsBuildInternalName (
         else if (NumSegments == 2)
         {
             InternalName[i] = AML_DUAL_NAME_PREFIX;
-            Result = &InternalName[(ACPI_NATIVE_UINT) (i+1)];
+            Result = &InternalName[(ACPI_SIZE) i+1];
         }
         else
         {
             InternalName[i] = AML_MULTI_NAME_PREFIX_OP;
-            InternalName[(ACPI_NATIVE_UINT) (i+1)] = (char) NumSegments;
-            Result = &InternalName[(ACPI_NATIVE_UINT) (i+2)];
+            InternalName[(ACPI_SIZE) i+1] = (char) NumSegments;
+            Result = &InternalName[(ACPI_SIZE) i+2];
         }
     }
 
@@ -698,12 +698,12 @@ AcpiNsExternalizeName (
     UINT32                  *ConvertedNameLength,
     char                    **ConvertedName)
 {
-    ACPI_NATIVE_UINT        NamesIndex = 0;
-    ACPI_NATIVE_UINT        NumSegments = 0;
-    ACPI_NATIVE_UINT        RequiredLength;
-    ACPI_NATIVE_UINT        PrefixLength = 0;
-    ACPI_NATIVE_UINT        i = 0;
-    ACPI_NATIVE_UINT        j = 0;
+    UINT32                  NamesIndex = 0;
+    UINT32                  NumSegments = 0;
+    UINT32                  RequiredLength;
+    UINT32                  PrefixLength = 0;
+    UINT32                  i = 0;
+    UINT32                  j = 0;
 
 
     ACPI_FUNCTION_TRACE (NsExternalizeName);
@@ -762,8 +762,8 @@ AcpiNsExternalizeName (
             /* <count> 4-byte names */
 
             NamesIndex = PrefixLength + 2;
-            NumSegments = (ACPI_NATIVE_UINT) (UINT8)
-                          InternalName[(ACPI_NATIVE_UINT) (PrefixLength + 1)];
+            NumSegments = (UINT8)
+                InternalName[(ACPI_SIZE) PrefixLength + 1];
             break;
 
         case AML_DUAL_NAME_PREFIX:

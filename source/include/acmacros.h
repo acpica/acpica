@@ -155,12 +155,12 @@
  */
 #define ACPI_CAST_PTR(t, p)             ((t *) (ACPI_UINTPTR_T) (p))
 #define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **) (ACPI_UINTPTR_T) (p))
-#define ACPI_ADD_PTR(t,a,b)             ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8,(a)) + (ACPI_NATIVE_UINT)(b)))
-#define ACPI_PTR_DIFF(a,b)              (ACPI_NATIVE_UINT) (ACPI_CAST_PTR (UINT8,(a)) - ACPI_CAST_PTR (UINT8,(b)))
+#define ACPI_ADD_PTR(t,a,b)             ACPI_CAST_PTR (t, (ACPI_CAST_PTR (UINT8,(a)) + (ACPI_SIZE)(b)))
+#define ACPI_PTR_DIFF(a,b)              (ACPI_SIZE) (ACPI_CAST_PTR (UINT8,(a)) - ACPI_CAST_PTR (UINT8,(b)))
 
 /* Pointer/Integer type conversions */
 
-#define ACPI_TO_POINTER(i)              ACPI_ADD_PTR (void,(void *) NULL,(ACPI_NATIVE_UINT) i)
+#define ACPI_TO_POINTER(i)              ACPI_ADD_PTR (void,(void *) NULL,(ACPI_SIZE) i)
 #define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p,(void *) NULL)
 #define ACPI_OFFSET(d,f)                (ACPI_SIZE) ACPI_PTR_DIFF (&(((d *)0)->f),(void *) NULL)
 #define ACPI_PHYSADDR_TO_PTR(i)         ACPI_TO_POINTER(i)
@@ -375,22 +375,22 @@ typedef struct acpi_integer_overlay
 /*
  * Rounding macros (Power of two boundaries only)
  */
-#define ACPI_ROUND_DOWN(value,boundary)     (((ACPI_NATIVE_UINT)(value)) & \
-                                                (~(((ACPI_NATIVE_UINT) boundary)-1)))
+#define ACPI_ROUND_DOWN(value,boundary)     (((ACPI_SIZE)(value)) & \
+                                                (~(((ACPI_SIZE) boundary)-1)))
 
-#define ACPI_ROUND_UP(value,boundary)       ((((ACPI_NATIVE_UINT)(value)) + \
-                                                (((ACPI_NATIVE_UINT) boundary)-1)) & \
-                                                (~(((ACPI_NATIVE_UINT) boundary)-1)))
+#define ACPI_ROUND_UP(value,boundary)       ((((ACPI_SIZE)(value)) + \
+                                                (((ACPI_SIZE) boundary)-1)) & \
+                                                (~(((ACPI_SIZE) boundary)-1)))
 
-/* Note: sizeof(ACPI_NATIVE_UINT) evaluates to either 2, 4, or 8 */
+/* Note: sizeof(ACPI_SIZE) evaluates to either 4 or 8 (32- vs 64-bit mode) */
 
 #define ACPI_ROUND_DOWN_TO_32BIT(a)         ACPI_ROUND_DOWN(a,4)
 #define ACPI_ROUND_DOWN_TO_64BIT(a)         ACPI_ROUND_DOWN(a,8)
-#define ACPI_ROUND_DOWN_TO_NATIVE_WORD(a)   ACPI_ROUND_DOWN(a,sizeof(ACPI_NATIVE_UINT))
+#define ACPI_ROUND_DOWN_TO_NATIVE_WORD(a)   ACPI_ROUND_DOWN(a,sizeof(ACPI_SIZE))
 
 #define ACPI_ROUND_UP_TO_32BIT(a)           ACPI_ROUND_UP(a,4)
 #define ACPI_ROUND_UP_TO_64BIT(a)           ACPI_ROUND_UP(a,8)
-#define ACPI_ROUND_UP_TO_NATIVE_WORD(a)     ACPI_ROUND_UP(a,sizeof(ACPI_NATIVE_UINT))
+#define ACPI_ROUND_UP_TO_NATIVE_WORD(a)     ACPI_ROUND_UP(a,sizeof(ACPI_SIZE))
 
 #define ACPI_ROUND_BITS_UP_TO_BYTES(a)      ACPI_DIV_8((a) + 7)
 #define ACPI_ROUND_BITS_DOWN_TO_BYTES(a)    ACPI_DIV_8((a))
@@ -401,7 +401,7 @@ typedef struct acpi_integer_overlay
 
 #define ACPI_ROUND_UP_TO(value,boundary)    (((value) + ((boundary)-1)) / (boundary))
 
-#define ACPI_IS_MISALIGNED(value)           (((ACPI_NATIVE_UINT)value) & (sizeof(ACPI_NATIVE_UINT)-1))
+#define ACPI_IS_MISALIGNED(value)           (((ACPI_SIZE)value) & (sizeof(ACPI_SIZE)-1))
 
 /*
  * Bitmask creation

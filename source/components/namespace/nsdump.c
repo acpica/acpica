@@ -160,7 +160,7 @@ AcpiNsPrintPathname (
     UINT32                  NumSegments,
     char                    *Pathname)
 {
-    ACPI_NATIVE_UINT        i;
+    UINT32                  i;
 
 
     ACPI_FUNCTION_NAME (NsPrintPathname);

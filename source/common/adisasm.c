@@ -179,7 +179,7 @@ AcpiDsMethodError (
 
 ACPI_STATUS
 AcpiNsLoadTable (
-    ACPI_NATIVE_UINT        TableIndex,
+    UINT32                  TableIndex,
     ACPI_NAMESPACE_NODE     *Node)
 {
     return (AE_NOT_IMPLEMENTED);
@@ -980,7 +980,7 @@ AdGetLocalTables (
     ACPI_TABLE_HEADER       *NewTable;
     UINT32                  NumTables;
     UINT32                  PointerSize;
-    ACPI_NATIVE_UINT        TableIndex;
+    UINT32                  TableIndex;
 
 
     if (GetAllTables)
@@ -1087,7 +1087,7 @@ AdParseTable (
     ACPI_WALK_STATE         *WalkState;
     UINT8                   *AmlStart;
     UINT32                  AmlLength;
-    ACPI_NATIVE_UINT        TableIndex;
+    UINT32                  TableIndex;
 
 
     if (!Table)
@@ -1139,7 +1139,7 @@ AdParseTable (
 
     if (LoadTable)
     {
-        Status = AcpiTbStoreTable ((ACPI_NATIVE_UINT) Table, Table,
+        Status = AcpiTbStoreTable ((ACPI_PHYSICAL_ADDRESS) Table, Table,
                     Table->Length, ACPI_TABLE_ORIGIN_ALLOCATED, &TableIndex);
         if (ACPI_FAILURE (Status))
         {

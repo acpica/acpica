@@ -668,8 +668,8 @@ AcpiUtDumpBuffer2 (
     UINT32                  Count,
     UINT32                  Display)
 {
-    ACPI_NATIVE_UINT        i = 0;
-    ACPI_NATIVE_UINT        j;
+    UINT32                  i = 0;
+    UINT32                  j;
     UINT32                  Temp32;
     UINT8                   BufChar;
 
@@ -691,7 +691,7 @@ AcpiUtDumpBuffer2 (
     {
         /* Print current offset */
 
-        AcpiOsPrintf ("%6.4X: ", (UINT32) i);
+        AcpiOsPrintf ("%6.4X: ", i);
 
         /* Print 16 hex chars */
 
@@ -702,7 +702,7 @@ AcpiUtDumpBuffer2 (
                 /* Dump fill spaces */
 
                 AcpiOsPrintf ("%*s", ((Display * 2) + 1), " ");
-                j += (ACPI_NATIVE_UINT) Display;
+                j += Display;
                 continue;
             }
 
@@ -711,35 +711,35 @@ AcpiUtDumpBuffer2 (
             case DB_BYTE_DISPLAY:
             default:    /* Default is BYTE display */
 
-                AcpiOsPrintf ("%02X ", Buffer[i + j]);
+                AcpiOsPrintf ("%02X ", Buffer[(ACPI_SIZE) i + j]);
                 break;
 
 
             case DB_WORD_DISPLAY:
 
-                ACPI_MOVE_16_TO_32 (&Temp32, &Buffer[i + j]);
+                ACPI_MOVE_16_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
                 AcpiOsPrintf ("%04X ", Temp32);
                 break;
 
 
             case DB_DWORD_DISPLAY:
 
-                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[i + j]);
+                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
                 AcpiOsPrintf ("%08X ", Temp32);
                 break;
 
 
             case DB_QWORD_DISPLAY:
 
-                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[i + j]);
+                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j]);
                 AcpiOsPrintf ("%08X", Temp32);
 
-                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[i + j + 4]);
+                ACPI_MOVE_32_TO_32 (&Temp32, &Buffer[(ACPI_SIZE) i + j + 4]);
                 AcpiOsPrintf ("%08X ", Temp32);
                 break;
             }
 
-            j += (ACPI_NATIVE_UINT) Display;
+            j += Display;
         }
 
         /*
@@ -755,7 +755,7 @@ AcpiUtDumpBuffer2 (
                 return;
             }
 
-            BufChar = Buffer[i + j];
+            BufChar = Buffer[(ACPI_SIZE) i + j];
             if (ACPI_IS_PRINT (BufChar))
             {
                 AcpiOsPrintf ("%c", BufChar);

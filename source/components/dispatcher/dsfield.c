@@ -575,7 +575,7 @@ AcpiDsInitFieldObjects (
 
     /*
      * Walk the list of entries in the FieldList
-     * Note: FieldList can be of zero length. In this case, Arg will be NULL.
+	 * Note: FieldList can be of zero length. In this case, Arg will be NULL.
      */
     while (Arg)
     {

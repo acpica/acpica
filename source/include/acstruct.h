@@ -222,7 +222,7 @@ typedef struct acpi_init_walk_info
     UINT16                          PackageInit;
     UINT16                          ObjectCount;
     ACPI_OWNER_ID                   OwnerId;
-    ACPI_NATIVE_UINT                TableIndex;
+    UINT32                          TableIndex;
 
 } ACPI_INIT_WALK_INFO;
 
