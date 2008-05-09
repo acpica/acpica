@@ -258,11 +258,11 @@ ACPI_EXPORT_SYMBOL (AcpiGetFirmwareWakingVector)
 
 ACPI_STATUS
 AcpiEnterSleepStatePrep (
-    UINT8               SleepState)
+    UINT8                   SleepState)
 {
-    ACPI_STATUS         Status;
-    ACPI_OBJECT_LIST    ArgList;
-    ACPI_OBJECT         Arg;
+    ACPI_STATUS             Status;
+    ACPI_OBJECT_LIST        ArgList;
+    ACPI_OBJECT             Arg;
 
 
     ACPI_FUNCTION_TRACE (AcpiEnterSleepStatePrep);
@@ -278,15 +278,12 @@ AcpiEnterSleepStatePrep (
         return_ACPI_STATUS (Status);
     }
 
-    /* Setup parameter object */
+    /* Execute the _PTS method (Prepare To Sleep) */
 
     ArgList.Count = 1;
     ArgList.Pointer = &Arg;
-
     Arg.Type = ACPI_TYPE_INTEGER;
     Arg.Integer.Value = SleepState;
-
-    /* Run the _PTS and _GTS methods */
 
     Status = AcpiEvaluateObject (NULL, METHOD_NAME__PTS, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
@@ -294,13 +291,7 @@ AcpiEnterSleepStatePrep (
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiEvaluateObject (NULL, METHOD_NAME__GTS, &ArgList, NULL);
-    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
-    {
-        return_ACPI_STATUS (Status);
-    }
-
-    /* Setup the argument to _SST */
+    /* Setup the argument to the _SST method (System STatus) */
 
     switch (SleepState)
     {
@@ -331,7 +322,7 @@ AcpiEnterSleepStatePrep (
         ACPI_EXCEPTION ((AE_INFO, Status, "While executing method _SST"));
     }
 
-    return_ACPI_STATUS (AE_OK);
+    return_ACPI_STATUS (Status);
 }
 
 ACPI_EXPORT_SYMBOL (AcpiEnterSleepStatePrep)
@@ -345,7 +336,7 @@ ACPI_EXPORT_SYMBOL (AcpiEnterSleepStatePrep)
  *
  * RETURN:      Status
  *
- * DESCRIPTION: Enter a system sleep state (see ACPI 2.0 spec p 231)
+ * DESCRIPTION: Enter a system sleep state
  *              THIS FUNCTION MUST BE CALLED WITH INTERRUPTS DISABLED
  *
  ******************************************************************************/
@@ -359,6 +350,8 @@ AcpiEnterSleepState (
     ACPI_BIT_REGISTER_INFO  *SleepTypeRegInfo;
     ACPI_BIT_REGISTER_INFO  *SleepEnableRegInfo;
     UINT32                  InValue;
+    ACPI_OBJECT_LIST        ArgList;
+    ACPI_OBJECT             Arg;
     ACPI_STATUS             Status;
 
 
@@ -416,6 +409,19 @@ AcpiEnterSleepState (
 
     Status = AcpiHwEnableAllWakeupGpes ();
     if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Execute the _GTS method (Going To Sleep) */
+
+    ArgList.Count = 1;
+    ArgList.Pointer = &Arg;
+    Arg.Type = ACPI_TYPE_INTEGER;
+    Arg.Integer.Value = SleepState;
+
+    Status = AcpiEvaluateObject (NULL, METHOD_NAME__GTS, &ArgList, NULL);
+    if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         return_ACPI_STATUS (Status);
     }
