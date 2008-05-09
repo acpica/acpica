@@ -331,7 +331,7 @@ AcpiDmNamestring (
     {
         /* Append Name segment */
 
-        AcpiDmDumpName (*(UINT32 *) Name);
+        AcpiDmDumpName (*ACPI_CAST_PTR (UINT32, Name));
 
         SegCount--;
         if (SegCount)
