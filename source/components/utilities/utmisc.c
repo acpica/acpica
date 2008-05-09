@@ -1264,9 +1264,9 @@ AcpiUtWalkPackageTree (
 
 void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtError (
-    char                    *ModuleName,
+    const char              *ModuleName,
     UINT32                  LineNumber,
-    char                    *Format,
+    const char              *Format,
     ...)
 {
     va_list                 args;
@@ -1282,10 +1282,10 @@ AcpiUtError (
 
 void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtException (
-    char                    *ModuleName,
+    const char              *ModuleName,
     UINT32                  LineNumber,
     ACPI_STATUS             Status,
-    char                    *Format,
+    const char              *Format,
     ...)
 {
     va_list                 args;
@@ -1302,9 +1302,9 @@ AcpiUtException (
 
 void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtWarning (
-    char                    *ModuleName,
+    const char              *ModuleName,
     UINT32                  LineNumber,
-    char                    *Format,
+    const char              *Format,
     ...)
 {
     va_list                 args;
@@ -1320,9 +1320,9 @@ AcpiUtWarning (
 
 void  ACPI_INTERNAL_VAR_XFACE
 AcpiUtInfo (
-    char                    *ModuleName,
+    const char              *ModuleName,
     UINT32                  LineNumber,
-    char                    *Format,
+    const char              *Format,
     ...)
 {
     va_list                 args;

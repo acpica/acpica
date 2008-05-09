@@ -342,7 +342,7 @@ AcpiNsPatternMatch (
 ACPI_STATUS
 AcpiNsGetNode (
     ACPI_NAMESPACE_NODE     *PrefixNode,
-    char                    *ExternalPathname,
+    const char              *ExternalPathname,
     UINT32                  Flags,
     ACPI_NAMESPACE_NODE     **OutNode);
 
@@ -431,24 +431,24 @@ AcpiNsLocal (
 
 void
 AcpiNsReportError (
-    char                    *ModuleName,
+    const char              *ModuleName,
     UINT32                  LineNumber,
-    char                    *InternalName,
+    const char              *InternalName,
     ACPI_STATUS             LookupStatus);
 
 void
 AcpiNsReportMethodError (
-    char                    *ModuleName,
+    const char              *ModuleName,
     UINT32                  LineNumber,
-    char                    *Message,
+    const char              *Message,
     ACPI_NAMESPACE_NODE     *Node,
-    char                    *Path,
+    const char              *Path,
     ACPI_STATUS             LookupStatus);
 
 void
 AcpiNsPrintNodePathname (
     ACPI_NAMESPACE_NODE     *Node,
-    char                    *Msg);
+    const char              *Msg);
 
 ACPI_STATUS
 AcpiNsBuildInternalName (
@@ -460,13 +460,13 @@ AcpiNsGetInternalNameLength (
 
 ACPI_STATUS
 AcpiNsInternalizeName (
-    char                    *DottedName,
+    const char              *DottedName,
     char                    **ConvertedName);
 
 ACPI_STATUS
 AcpiNsExternalizeName (
     UINT32                  InternalNameLength,
-    char                    *InternalName,
+    const char              *InternalName,
     UINT32                  *ConvertedNameLength,
     char                    **ConvertedName);
 
