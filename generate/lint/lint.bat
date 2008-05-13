@@ -1,13 +1,16 @@
-echo "Begin 64-bit lint" >> c:\acpi\Generate\lint\LintOut.txt
-"C:\Program Files\Lint\Lint-nt"  +v  -i"C:\Acpi\Generate\Lint"  std64.lnt  -os(C:\Acpi\Generate\Lint\LintOut.txt) %1 %2 %3 %4 %5 %6 %7 %8 %9
-echo "64-bit lint completed" >> c:\acpi\Generate\lint\LintOut.txt
-echo " " >> c:\acpi\Generate\lint\LintOut.txt
-echo "Begin 32-bit lint" >> c:\acpi\Generate\lint\LintOut.txt
-"C:\Program Files\Lint\Lint-nt"  +v  -i"C:\Acpi\Generate\Lint"  std32.lnt  +os(C:\Acpi\Generate\Lint\LintOut.txt) %1 %2 %3 %4 %5 %6 %7 %8 %9
-echo "32-bit lint completed" >> c:\acpi\Generate\lint\LintOut.txt
-rem "C:\Program Files\Lint\Lint-nt"  +v  -i"C:\Acpi\Generate\Lint"  std16.lnt  +os(C:\Acpi\Generate\Lint\LintOut.txt) %1 %2 %3 %4 %5 %6 %7 %8 %9
-rem echo "16-bit lint completed" >> c:\acpi\Generate\lint\LintOut.txt
+del LintOut.txt
+echo Begin 64-bit lint >> LintOut.txt
+
+"C:\Program Files\Lint\Lint-nt" +v std64.lnt +os(LintOut.txt) files.lnt
+
+echo 64-bit lint completed >> LintOut.txt
+echo -------------------------------------------- >> LintOut.txt
+echo Begin 32-bit lint >> LintOut.txt
+
+"C:\Program Files\Lint\Lint-nt" +v std32.lnt +os(LintOut.txt) files.lnt
+
+echo 32-bit lint completed >> LintOut.txt
 @echo off
 echo ---
-echo  output placed in C:\Acpi\Generate\Lint\LintOut.txt
+echo  Output placed in LintOut.txt
 

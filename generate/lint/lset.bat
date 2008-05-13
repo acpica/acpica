@@ -1,1 +1,1 @@
-set path=%PATH%;c:\acpi\generate\lint
+set path=%PATH%;$G

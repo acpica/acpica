@@ -3,10 +3,8 @@
 //                See  manual (chapter LIVING WITH LINT)
 //                for further details.
 
--ic:\acpi\source\include
--ic:\acpi\source\include\platform
--ic:\acpi\generate\msvc\aslcompiler
--ic:\progra~1\"Microsoft Visual Studio"\VC98\include
+-i"..\..\source\include"
+-i"..\..\source\include\platform"
 
 /* Global options */
 
@@ -14,7 +12,7 @@
 +fie            // Enum is integer
 -dACPI_USE_DO_WHILE_0
 -dACPI_DEBUG_OUTPUT
--dACPI_APPLICATION
+//-dACPI_APPLICATION
 -dACPI_DEBUGGER
 -dACPI_DISASSEMBLER
 -dACPI_ENABLE_OBJECT_CACHE
@@ -34,11 +32,11 @@
 -emacro( (413), ACPI_FADT_OFFSET )          // use of NULL pointer creates a stir
 -emacro( (413), ASL_RESDESC_OFFSET )        // use of NULL pointer creates a stir
 
-
 -emacro( 826, ACPI_NEXT_RESOURCE)           // Pointer cast
 -emacro( 826, ACPI_MOVE_UNALIGNED16_TO_16)  // Pointer cast
 -emacro( 826, ACPI_MOVE_UNALIGNED16_TO_32)  // Pointer cast
 -emacro( 826, ACPI_MOVE_UNALIGNED32_TO_32)  // Pointer cast
+-emacro( 826, ACPI_MOVE_32_TO_32)           // Pointer cast
 -emacro( 950, ACPI_INTERNAL_VAR_XFACE)      // Uses non-ANSI
 -emacro( 950, ACPI_SYSTEM_XFACE)            // Uses non-ANSI
 -emacro( 826, ACPI_CAST_PTR)                // Pointer cast
@@ -50,8 +48,13 @@
 
 -esym( 528, _AcpiModuleName)                // Symbol not always used, but always present
 -esym( 550, CurrentSp)                      // Used to track stack use
+-esym( 789, CurrentSp)                      // Used to track stack use
 -esym( 534, AcpiDmDumpName)                 // Return value not always used
 -esym( 534, AcpiDmCommaIfListMember)        // Return value not always used
+
+// Suppress warning about redefinition during lint of multiple modules
+-esym(767,_COMPONENT)
+
 
 /* Symbol exceptions for generation of iASL compiler */
 
@@ -71,3 +74,4 @@
 -e834   // - followed by + is "confusing" NOT.
 -e820   // Allow Boolean test of a parenthesized assignment
 -e778   // Allow constant expressions to evaluate to zero
+-e831
