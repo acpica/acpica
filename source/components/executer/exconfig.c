@@ -480,7 +480,14 @@ AcpiExLoadOp (
         goto Cleanup;
     }
 
-    Status = AcpiExAddTable (TableIndex, WalkState->ScopeInfo->Scope.Node, &DdbHandle);
+    /*
+     * Add the table to the namespace.
+     *
+     * Note: We load the table objects relative to the root of the namespace.
+     * This appears to go against the ACPI specification, but we do it for
+     * compatibility with other ACPI implementations.
+     */
+    Status = AcpiExAddTable (TableIndex, AcpiGbl_RootNode, &DdbHandle);
     if (ACPI_FAILURE (Status))
     {
         /* On error, TablePtr was deallocated above */
