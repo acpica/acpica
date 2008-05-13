@@ -23,8 +23,8 @@ CFG=AcpiSubsystem64 - Win32 Debug
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""$/Acpi Components/Subsystem", CQBAAAAA"
-# PROP Scc_LocalPath "..\.."
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
 CPP=cl.exe
 RSC=rc.exe
 
@@ -37,12 +37,12 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug"
+# PROP Output_Dir "AcpiSubsystem64"
+# PROP Intermediate_Dir "AcpiSubsystem64"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /MT /Za /W4 /Gm /GX /Zi /O1 /I "..\..\source\Include" /D "NDEBUG" /D "DRIVER" /D "_USE_INTEL_COMPILER" /D "ACPI_LIBRARY" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /FR /FD /c
-# SUBTRACT CPP /nologo /YX
+# ADD CPP /nologo /MT /Za /W4 /O1 /I "..\..\source\Include" /D "NDEBUG" /D "DRIVER" /D "_USE_INTEL_COMPILER" /D "ACPI_LIBRARY" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /FR /FD /c
+# SUBTRACT CPP /Gy /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,14 +50,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /out:"bin\acpica64.lib" /machine:IA64
-# SUBTRACT LIB32 /nologo
+# ADD LIB32 /nologo /out:"AcpiSubsystem64\acpica64.lib" /machine:IA64
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
-PostBuild_Desc=Copy library to acpi/libraries
-PostBuild_Cmds=copy bin\acpica64.lib ..\..\libraries\acpica64.lib	dir ..\..\libraries\acpica64.lib
+PostBuild_Desc=Copy library to libraries
+PostBuild_Cmds=copy AcpiSubsystem64\acpica64.lib ..\..\libraries	dir ..\..\libraries\acpica64.lib
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
@@ -69,12 +68,11 @@ PostBuild_Cmds=copy bin\acpica64.lib ..\..\libraries\acpica64.lib	dir ..\..\libr
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\Debug"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem64\Debug"
+# PROP Output_Dir "AcpiSubsystem64Debug"
+# PROP Intermediate_Dir "AcpiSubsystem64Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /MTd /Za /W4 /Gm /GX /Zi /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_FULL_DEBUG" /D "_USE_INTEL_COMPILER" /D "ACPI_LIBRARY" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /FR /FD /c
-# SUBTRACT CPP /nologo
+# ADD CPP /nologo /MTd /Za /W4 /Od /Oy /Gf /I "..\..\source\Include" /D "DEBUG" /D "DRIVER" /D "ACPI_FULL_DEBUG" /D "_USE_INTEL_COMPILER" /D "ACPI_LIBRARY" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /FR /FD /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -82,14 +80,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /out:"bin\acpica_dbg64.lib" /machine:IA64
-# SUBTRACT LIB32 /nologo
+# ADD LIB32 /nologo /out:"AcpiSubsystem64Debug\acpica64_dbg.lib" /machine:IA64
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
-PostBuild_Desc=Copy library to acpi/libraries
-PostBuild_Cmds=copy bin\acpica_dbg64.lib ..\..\libraries\acpica_dbg64.lib	dir ..\..\libraries\acpica_dbg64.lib
+PostBuild_Desc=Copy library to libraries
+PostBuild_Cmds=copy AcpiSubsystem64Debug\acpica64_dbg.lib ..\..\libraries	dir ..\..\libraries\acpica64_dbg.lib
 # End Special Build Tool
 
 !ENDIF 
@@ -112,12 +109,11 @@ SOURCE=..\..\source\components\utilities\utalloc.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utalloc.c
 InputName=utalloc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -125,12 +121,11 @@ InputName=utalloc
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utalloc.c
 InputName=utalloc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -145,12 +140,11 @@ SOURCE=..\..\source\components\utilities\utcache.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utcache.c
 InputName=utcache
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -158,12 +152,11 @@ InputName=utcache
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utcache.c
 InputName=utcache
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -178,12 +171,11 @@ SOURCE=..\..\source\components\utilities\utclib.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utclib.c
 InputName=utclib
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -191,12 +183,11 @@ InputName=utclib
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utclib.c
 InputName=utclib
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -211,12 +202,11 @@ SOURCE=..\..\source\components\utilities\utcopy.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utcopy.c
 InputName=utcopy
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -224,12 +214,11 @@ InputName=utcopy
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utcopy.c
 InputName=utcopy
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -244,12 +233,11 @@ SOURCE=..\..\source\components\utilities\utdebug.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utdebug.c
 InputName=utdebug
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -257,12 +245,11 @@ InputName=utdebug
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utdebug.c
 InputName=utdebug
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -277,12 +264,11 @@ SOURCE=..\..\source\components\utilities\utdelete.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utdelete.c
 InputName=utdelete
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -290,12 +276,11 @@ InputName=utdelete
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utdelete.c
 InputName=utdelete
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -310,12 +295,11 @@ SOURCE=..\..\source\components\utilities\uteval.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\uteval.c
 InputName=uteval
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -323,12 +307,11 @@ InputName=uteval
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\uteval.c
 InputName=uteval
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -343,12 +326,11 @@ SOURCE=..\..\source\components\utilities\utglobal.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utglobal.c
 InputName=utglobal
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -356,12 +338,11 @@ InputName=utglobal
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utglobal.c
 InputName=utglobal
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -376,12 +357,11 @@ SOURCE=..\..\source\components\utilities\utinit.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utinit.c
 InputName=utinit
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -389,12 +369,11 @@ InputName=utinit
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utinit.c
 InputName=utinit
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -409,12 +388,11 @@ SOURCE=..\..\source\components\utilities\utmath.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utmath.c
 InputName=utmath
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -422,12 +400,11 @@ InputName=utmath
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utmath.c
 InputName=utmath
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -442,12 +419,11 @@ SOURCE=..\..\source\components\utilities\utmisc.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utmisc.c
 InputName=utmisc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -455,12 +431,11 @@ InputName=utmisc
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utmisc.c
 InputName=utmisc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -475,12 +450,11 @@ SOURCE=..\..\source\components\utilities\utmutex.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utmutex.c
 InputName=utmutex
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -488,12 +462,11 @@ InputName=utmutex
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utmutex.c
 InputName=utmutex
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -508,12 +481,11 @@ SOURCE=..\..\source\components\utilities\utobject.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utobject.c
 InputName=utobject
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -521,12 +493,11 @@ InputName=utobject
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utobject.c
 InputName=utobject
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -541,12 +512,11 @@ SOURCE=..\..\source\components\utilities\utresrc.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utresrc.c
 InputName=utresrc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -554,12 +524,11 @@ InputName=utresrc
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utresrc.c
 InputName=utresrc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -574,12 +543,11 @@ SOURCE=..\..\source\components\utilities\utstate.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utstate.c
 InputName=utstate
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -587,12 +555,11 @@ InputName=utstate
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utstate.c
 InputName=utstate
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -607,12 +574,11 @@ SOURCE=..\..\source\components\utilities\utxface.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\utilities\utxface.c
 InputName=utxface
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -620,12 +586,11 @@ InputName=utxface
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\utilities\utxface.c
 InputName=utxface
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -644,12 +609,11 @@ SOURCE=..\..\source\components\events\evevent.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\events\evevent.c
 InputName=evevent
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -657,12 +621,11 @@ InputName=evevent
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\events\evevent.c
 InputName=evevent
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -677,12 +640,11 @@ SOURCE=..\..\source\COMPONENTS\EVENTS\evgpe.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\EVENTS\evgpe.c
 InputName=evgpe
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -690,12 +652,11 @@ InputName=evgpe
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\EVENTS\evgpe.c
 InputName=evgpe
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -710,12 +671,11 @@ SOURCE=..\..\SOURCE\COMPONENTS\EVENTS\evgpeblk.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\SOURCE\COMPONENTS\EVENTS\evgpeblk.c
 InputName=evgpeblk
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -723,12 +683,11 @@ InputName=evgpeblk
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\SOURCE\COMPONENTS\EVENTS\evgpeblk.c
 InputName=evgpeblk
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -743,12 +702,11 @@ SOURCE=..\..\source\components\events\evmisc.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\events\evmisc.c
 InputName=evmisc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -756,12 +714,11 @@ InputName=evmisc
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\events\evmisc.c
 InputName=evmisc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -776,12 +733,11 @@ SOURCE=..\..\source\components\events\evregion.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\events\evregion.c
 InputName=evregion
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -789,12 +745,11 @@ InputName=evregion
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\events\evregion.c
 InputName=evregion
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -809,12 +764,11 @@ SOURCE=..\..\source\components\events\evrgnini.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\events\evrgnini.c
 InputName=evrgnini
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -822,12 +776,11 @@ InputName=evrgnini
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\events\evrgnini.c
 InputName=evrgnini
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -842,12 +795,11 @@ SOURCE=..\..\source\components\events\evsci.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\events\evsci.c
 InputName=evsci
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -855,12 +807,11 @@ InputName=evsci
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\events\evsci.c
 InputName=evsci
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -875,12 +826,11 @@ SOURCE=..\..\source\components\events\evxface.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\events\evxface.c
 InputName=evxface
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -888,12 +838,11 @@ InputName=evxface
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\events\evxface.c
 InputName=evxface
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -908,12 +857,11 @@ SOURCE=..\..\source\components\events\evxfevnt.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\events\evxfevnt.c
 InputName=evxfevnt
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -921,12 +869,11 @@ InputName=evxfevnt
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\events\evxfevnt.c
 InputName=evxfevnt
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -941,12 +888,11 @@ SOURCE=..\..\source\components\events\evxfregn.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\events\evxfregn.c
 InputName=evxfregn
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -954,12 +900,11 @@ InputName=evxfregn
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\events\evxfregn.c
 InputName=evxfregn
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -978,12 +923,11 @@ SOURCE=..\..\source\components\hardware\hwacpi.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\hardware\hwacpi.c
 InputName=hwacpi
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -991,12 +935,11 @@ InputName=hwacpi
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\hardware\hwacpi.c
 InputName=hwacpi
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -1011,12 +954,11 @@ SOURCE=..\..\source\components\hardware\hwgpe.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\hardware\hwgpe.c
 InputName=hwgpe
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -1024,12 +966,11 @@ InputName=hwgpe
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\hardware\hwgpe.c
 InputName=hwgpe
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -1044,12 +985,11 @@ SOURCE=..\..\source\components\hardware\hwregs.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\hardware\hwregs.c
 InputName=hwregs
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -1057,12 +997,11 @@ InputName=hwregs
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\hardware\hwregs.c
 InputName=hwregs
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -1077,12 +1016,11 @@ SOURCE=..\..\source\components\hardware\hwsleep.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\hardware\hwsleep.c
 InputName=hwsleep
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -1090,12 +1028,11 @@ InputName=hwsleep
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\hardware\hwsleep.c
 InputName=hwsleep
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -1110,12 +1047,11 @@ SOURCE=..\..\source\components\hardware\hwtimer.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\hardware\hwtimer.c
 InputName=hwtimer
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -1123,775 +1059,11 @@ InputName=hwtimer
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\hardware\hwtimer.c
 InputName=hwtimer
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# End Group
-# Begin Group "Interpreter"
-
-# PROP Default_Filter ".c"
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exconfig.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exconfig.c
-InputName=exconfig
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exconfig.c
-InputName=exconfig
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exconvrt.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exconvrt.c
-InputName=exconvrt
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exconvrt.c
-InputName=exconvrt
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\excreate.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\excreate.c
-InputName=excreate
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\excreate.c
-InputName=excreate
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exdump.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exdump.c
-InputName=exdump
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exdump.c
-InputName=exdump
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exfield.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exfield.c
-InputName=exfield
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exfield.c
-InputName=exfield
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exfldio.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exfldio.c
-InputName=exfldio
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exfldio.c
-InputName=exfldio
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exmisc.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exmisc.c
-InputName=exmisc
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exmisc.c
-InputName=exmisc
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exmutex.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exmutex.c
-InputName=exmutex
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exmutex.c
-InputName=exmutex
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exnames.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exnames.c
-InputName=exnames
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exnames.c
-InputName=exnames
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exoparg1.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exoparg1.c
-InputName=exoparg1
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exoparg1.c
-InputName=exoparg1
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exoparg2.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exoparg2.c
-InputName=exoparg2
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exoparg2.c
-InputName=exoparg2
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exoparg3.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exoparg3.c
-InputName=exoparg3
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exoparg3.c
-InputName=exoparg3
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exoparg6.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exoparg6.c
-InputName=exoparg6
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exoparg6.c
-InputName=exoparg6
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exprep.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exprep.c
-InputName=exprep
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exprep.c
-InputName=exprep
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exregion.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exregion.c
-InputName=exregion
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exregion.c
-InputName=exregion
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exresnte.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exresnte.c
-InputName=exresnte
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exresnte.c
-InputName=exresnte
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exresolv.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exresolv.c
-InputName=exresolv
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exresolv.c
-InputName=exresolv
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exresop.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exresop.c
-InputName=exresop
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exresop.c
-InputName=exresop
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exstore.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exstore.c
-InputName=exstore
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exstore.c
-InputName=exstore
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exstoren.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exstoren.c
-InputName=exstoren
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exstoren.c
-InputName=exstoren
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exstorob.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exstorob.c
-InputName=exstorob
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exstorob.c
-InputName=exstorob
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exsystem.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exsystem.c
-InputName=exsystem
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exsystem.c
-InputName=exsystem
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exutils.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\executer\exutils.c
-InputName=exutils
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\executer\exutils.c
-InputName=exutils
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -1910,12 +1082,11 @@ SOURCE=..\..\source\components\namespace\nsaccess.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nsaccess.c
 InputName=nsaccess
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -1923,12 +1094,11 @@ InputName=nsaccess
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nsaccess.c
 InputName=nsaccess
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -1943,12 +1113,11 @@ SOURCE=..\..\source\components\namespace\nsalloc.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nsalloc.c
 InputName=nsalloc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -1956,12 +1125,11 @@ InputName=nsalloc
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nsalloc.c
 InputName=nsalloc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -1976,12 +1144,11 @@ SOURCE=..\..\source\components\namespace\nsdump.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nsdump.c
 InputName=nsdump
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -1989,12 +1156,11 @@ InputName=nsdump
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nsdump.c
 InputName=nsdump
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2009,12 +1175,11 @@ SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsdumpdv.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\NAMESPACE\nsdumpdv.c
 InputName=nsdumpdv
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2022,12 +1187,11 @@ InputName=nsdumpdv
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\NAMESPACE\nsdumpdv.c
 InputName=nsdumpdv
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2042,12 +1206,11 @@ SOURCE=..\..\source\components\namespace\nseval.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nseval.c
 InputName=nseval
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2055,12 +1218,11 @@ InputName=nseval
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nseval.c
 InputName=nseval
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2075,12 +1237,11 @@ SOURCE=..\..\source\components\namespace\nsinit.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nsinit.c
 InputName=nsinit
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2088,12 +1249,11 @@ InputName=nsinit
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nsinit.c
 InputName=nsinit
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2108,12 +1268,11 @@ SOURCE=..\..\source\components\namespace\nsload.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nsload.c
 InputName=nsload
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2121,12 +1280,11 @@ InputName=nsload
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nsload.c
 InputName=nsload
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2141,12 +1299,11 @@ SOURCE=..\..\source\components\namespace\nsnames.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nsnames.c
 InputName=nsnames
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2154,12 +1311,11 @@ InputName=nsnames
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nsnames.c
 InputName=nsnames
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2174,12 +1330,11 @@ SOURCE=..\..\source\components\namespace\nsobject.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nsobject.c
 InputName=nsobject
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2187,12 +1342,11 @@ InputName=nsobject
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nsobject.c
 InputName=nsobject
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2207,12 +1361,11 @@ SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
 InputName=nsparse
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2220,12 +1373,11 @@ InputName=nsparse
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
 InputName=nsparse
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2240,12 +1392,11 @@ SOURCE=..\..\source\components\namespace\nssearch.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nssearch.c
 InputName=nssearch
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2253,12 +1404,11 @@ InputName=nssearch
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nssearch.c
 InputName=nssearch
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2273,12 +1423,11 @@ SOURCE=..\..\source\components\namespace\nsutils.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nsutils.c
 InputName=nsutils
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2286,12 +1435,11 @@ InputName=nsutils
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nsutils.c
 InputName=nsutils
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2306,12 +1454,11 @@ SOURCE=..\..\source\components\namespace\nswalk.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nswalk.c
 InputName=nswalk
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2319,12 +1466,11 @@ InputName=nswalk
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nswalk.c
 InputName=nswalk
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2339,12 +1485,11 @@ SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsxfeval.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\NAMESPACE\nsxfeval.c
 InputName=nsxfeval
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2352,12 +1497,11 @@ InputName=nsxfeval
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\NAMESPACE\nsxfeval.c
 InputName=nsxfeval
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2372,12 +1516,11 @@ SOURCE=..\..\source\components\namespace\nsxfname.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nsxfname.c
 InputName=nsxfname
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2385,12 +1528,11 @@ InputName=nsxfname
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nsxfname.c
 InputName=nsxfname
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2405,12 +1547,11 @@ SOURCE=..\..\source\components\namespace\nsxfobj.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\namespace\nsxfobj.c
 InputName=nsxfobj
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2418,12 +1559,11 @@ InputName=nsxfobj
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\namespace\nsxfobj.c
 InputName=nsxfobj
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2442,12 +1582,11 @@ SOURCE=..\..\source\components\resources\rsaddr.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rsaddr.c
 InputName=rsaddr
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2455,12 +1594,11 @@ InputName=rsaddr
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rsaddr.c
 InputName=rsaddr
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2475,12 +1613,11 @@ SOURCE=..\..\source\components\resources\rscalc.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rscalc.c
 InputName=rscalc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2488,12 +1625,11 @@ InputName=rscalc
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rscalc.c
 InputName=rscalc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2508,12 +1644,11 @@ SOURCE=..\..\source\components\resources\rscreate.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rscreate.c
 InputName=rscreate
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2521,12 +1656,11 @@ InputName=rscreate
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rscreate.c
 InputName=rscreate
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2541,12 +1675,11 @@ SOURCE=..\..\source\components\resources\rsdump.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rsdump.c
 InputName=rsdump
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2554,12 +1687,11 @@ InputName=rsdump
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rsdump.c
 InputName=rsdump
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2574,12 +1706,11 @@ SOURCE=..\..\source\components\resources\rsinfo.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rsinfo.c
 InputName=rsinfo
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2587,12 +1718,11 @@ InputName=rsinfo
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rsinfo.c
 InputName=rsinfo
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2607,12 +1737,11 @@ SOURCE=..\..\source\components\resources\rsio.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rsio.c
 InputName=rsio
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2620,12 +1749,11 @@ InputName=rsio
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rsio.c
 InputName=rsio
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2640,12 +1768,11 @@ SOURCE=..\..\source\components\resources\rsirq.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rsirq.c
 InputName=rsirq
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2653,12 +1780,11 @@ InputName=rsirq
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rsirq.c
 InputName=rsirq
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2673,12 +1799,11 @@ SOURCE=..\..\source\components\resources\rslist.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rslist.c
 InputName=rslist
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2686,12 +1811,11 @@ InputName=rslist
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rslist.c
 InputName=rslist
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2706,12 +1830,11 @@ SOURCE=..\..\source\components\resources\rsmemory.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rsmemory.c
 InputName=rsmemory
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2719,12 +1842,11 @@ InputName=rsmemory
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rsmemory.c
 InputName=rsmemory
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2739,12 +1861,11 @@ SOURCE=..\..\source\components\resources\rsmisc.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rsmisc.c
 InputName=rsmisc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2752,12 +1873,11 @@ InputName=rsmisc
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rsmisc.c
 InputName=rsmisc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2772,12 +1892,11 @@ SOURCE=..\..\source\components\resources\rsutils.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rsutils.c
 InputName=rsutils
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2785,12 +1904,11 @@ InputName=rsutils
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rsutils.c
 InputName=rsutils
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2805,12 +1923,11 @@ SOURCE=..\..\source\components\resources\rsxface.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\resources\rsxface.c
 InputName=rsxface
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2818,12 +1935,11 @@ InputName=rsxface
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\resources\rsxface.c
 InputName=rsxface
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2842,12 +1958,11 @@ SOURCE=..\..\source\components\tables\tbfadt.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\tables\tbfadt.c
 InputName=tbfadt
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2855,12 +1970,11 @@ InputName=tbfadt
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\tables\tbfadt.c
 InputName=tbfadt
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2875,12 +1989,11 @@ SOURCE=..\..\source\components\tables\tbfind.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\tables\tbfind.c
 InputName=tbfind
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2888,12 +2001,11 @@ InputName=tbfind
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\tables\tbfind.c
 InputName=tbfind
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2908,12 +2020,11 @@ SOURCE=..\..\source\components\tables\tbinstal.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\tables\tbinstal.c
 InputName=tbinstal
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2921,12 +2032,11 @@ InputName=tbinstal
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\tables\tbinstal.c
 InputName=tbinstal
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2941,12 +2051,11 @@ SOURCE=..\..\source\components\tables\tbutils.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\tables\tbutils.c
 InputName=tbutils
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2954,12 +2063,11 @@ InputName=tbutils
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\tables\tbutils.c
 InputName=tbutils
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -2974,12 +2082,11 @@ SOURCE=..\..\source\components\tables\tbxface.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\tables\tbxface.c
 InputName=tbxface
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -2987,12 +2094,11 @@ InputName=tbxface
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\tables\tbxface.c
 InputName=tbxface
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -3007,12 +2113,11 @@ SOURCE=..\..\source\components\tables\tbxfroot.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\components\tables\tbxfroot.c
 InputName=tbxfroot
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -3020,680 +2125,11 @@ InputName=tbxfroot
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\components\tables\tbxfroot.c
 InputName=tbxfroot
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# End Group
-# Begin Group "Parser"
-
-# PROP Default_Filter ".c"
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psargs.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\parser\psargs.c
-InputName=psargs
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\parser\psargs.c
-InputName=psargs
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psloop.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\parser\psloop.c
-InputName=psloop
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\parser\psloop.c
-InputName=psloop
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psopcode.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\parser\psopcode.c
-InputName=psopcode
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\parser\psopcode.c
-InputName=psopcode
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psparse.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\parser\psparse.c
-InputName=psparse
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\parser\psparse.c
-InputName=psparse
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psscope.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\parser\psscope.c
-InputName=psscope
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\parser\psscope.c
-InputName=psscope
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\pstree.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\parser\pstree.c
-InputName=pstree
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\parser\pstree.c
-InputName=pstree
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psutils.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\parser\psutils.c
-InputName=psutils
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\parser\psutils.c
-InputName=psutils
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\pswalk.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\parser\pswalk.c
-InputName=pswalk
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\parser\pswalk.c
-InputName=pswalk
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psxface.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\parser\psxface.c
-InputName=psxface
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\parser\psxface.c
-InputName=psxface
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# End Group
-# Begin Group "Dispatcher"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsfield.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\dispatcher\dsfield.c
-InputName=dsfield
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\dispatcher\dsfield.c
-InputName=dsfield
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsinit.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsinit.c
-InputName=dsinit
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsinit.c
-InputName=dsinit
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsmethod.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\dispatcher\dsmethod.c
-InputName=dsmethod
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\dispatcher\dsmethod.c
-InputName=dsmethod
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsmthdat.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\dispatcher\dsmthdat.c
-InputName=dsmthdat
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\dispatcher\dsmthdat.c
-InputName=dsmthdat
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsobject.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\dispatcher\dsobject.c
-InputName=dsobject
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\dispatcher\dsobject.c
-InputName=dsobject
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsopcode.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\dispatcher\dsopcode.c
-InputName=dsopcode
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\dispatcher\dsopcode.c
-InputName=dsopcode
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsutils.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\dispatcher\dsutils.c
-InputName=dsutils
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\dispatcher\dsutils.c
-InputName=dsutils
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dswexec.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\dispatcher\dswexec.c
-InputName=dswexec
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\dispatcher\dswexec.c
-InputName=dswexec
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dswload.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\dispatcher\dswload.c
-InputName=dswload
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\dispatcher\dswload.c
-InputName=dswload
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dswscope.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\dispatcher\dswscope.c
-InputName=dswscope
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\dispatcher\dswscope.c
-InputName=dswscope
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dswstate.c
-
-!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
-InputPath=..\..\source\components\interpreter\dispatcher\dswstate.c
-InputName=dswstate
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
-InputPath=..\..\source\components\interpreter\dispatcher\dswstate.c
-InputName=dswstate
-
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -3712,12 +2148,11 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmbuffer.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmbuffer.c
 InputName=dmbuffer
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -3725,12 +2160,11 @@ InputName=dmbuffer
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmbuffer.c
 InputName=dmbuffer
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -3745,12 +2179,11 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmnames.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmnames.c
 InputName=dmnames
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -3758,12 +2191,11 @@ InputName=dmnames
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmnames.c
 InputName=dmnames
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -3778,12 +2210,11 @@ SOURCE=..\..\SOURCE\COMPONENTS\disassembler\dmobject.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\SOURCE\COMPONENTS\disassembler\dmobject.c
 InputName=dmobject
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -3791,12 +2222,11 @@ InputName=dmobject
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\SOURCE\COMPONENTS\disassembler\dmobject.c
 InputName=dmobject
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -3811,12 +2241,11 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmopcode.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmopcode.c
 InputName=dmopcode
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -3824,12 +2253,11 @@ InputName=dmopcode
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmopcode.c
 InputName=dmopcode
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -3844,12 +2272,11 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrc.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmresrc.c
 InputName=dmresrc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -3857,12 +2284,11 @@ InputName=dmresrc
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmresrc.c
 InputName=dmresrc
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -3877,12 +2303,11 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcl.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmresrcl.c
 InputName=dmresrcl
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -3890,12 +2315,11 @@ InputName=dmresrcl
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmresrcl.c
 InputName=dmresrcl
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -3910,12 +2334,11 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmresrcs.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmresrcs.c
 InputName=dmresrcs
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -3923,12 +2346,11 @@ InputName=dmresrcs
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmresrcs.c
 InputName=dmresrcs
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -3943,12 +2365,11 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmutils.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmutils.c
 InputName=dmutils
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -3956,12 +2377,11 @@ InputName=dmutils
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmutils.c
 InputName=dmutils
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -3976,12 +2396,11 @@ SOURCE=..\..\source\COMPONENTS\Disassembler\dmwalk.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmwalk.c
 InputName=dmwalk
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -3989,12 +2408,11 @@ InputName=dmwalk
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\Disassembler\dmwalk.c
 InputName=dmwalk
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -4013,12 +2431,11 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbcmds.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbcmds.c
 InputName=dbcmds
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -4026,12 +2443,11 @@ InputName=dbcmds
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbcmds.c
 InputName=dbcmds
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -4046,12 +2462,11 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbdisply.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbdisply.c
 InputName=dbdisply
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -4059,12 +2474,11 @@ InputName=dbdisply
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbdisply.c
 InputName=dbdisply
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -4079,12 +2493,11 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbexec.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbexec.c
 InputName=dbexec
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -4092,12 +2505,11 @@ InputName=dbexec
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbexec.c
 InputName=dbexec
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -4112,12 +2524,11 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c
 InputName=dbfileio
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -4125,12 +2536,11 @@ InputName=dbfileio
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbfileio.c
 InputName=dbfileio
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -4145,12 +2555,11 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbhistry.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbhistry.c
 InputName=dbhistry
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -4158,12 +2567,11 @@ InputName=dbhistry
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbhistry.c
 InputName=dbhistry
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -4178,12 +2586,11 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbinput.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbinput.c
 InputName=dbinput
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -4191,12 +2598,11 @@ InputName=dbinput
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbinput.c
 InputName=dbinput
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -4211,12 +2617,11 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbstats.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbstats.c
 InputName=dbstats
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -4224,12 +2629,11 @@ InputName=dbstats
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbstats.c
 InputName=dbstats
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -4244,12 +2648,11 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbutils.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbutils.c
 InputName=dbutils
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -4257,12 +2660,11 @@ InputName=dbutils
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbutils.c
 InputName=dbutils
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 
@@ -4277,12 +2679,11 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbxface.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\NoDebug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbxface.c
 InputName=dbxface
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
 
 # End Custom Build
 
@@ -4290,12 +2691,1356 @@ InputName=dbxface
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build
-IntDir=\Acpi\Generate\msvc\AcpiSubsystem64\Debug
 InputPath=..\..\source\COMPONENTS\DEBUGGER\dbxface.c
 InputName=dbxface
 
-"$(IntDir)/$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	icl /W4 /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "Interpreter"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exconfig.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exconfig.c
+InputName=exconfig
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exconfig.c
+InputName=exconfig
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exconvrt.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exconvrt.c
+InputName=exconvrt
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exconvrt.c
+InputName=exconvrt
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\excreate.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\excreate.c
+InputName=excreate
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\excreate.c
+InputName=excreate
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exdump.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exdump.c
+InputName=exdump
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exdump.c
+InputName=exdump
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exfield.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exfield.c
+InputName=exfield
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exfield.c
+InputName=exfield
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exfldio.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exfldio.c
+InputName=exfldio
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exfldio.c
+InputName=exfldio
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exmisc.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exmisc.c
+InputName=exmisc
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exmisc.c
+InputName=exmisc
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exmutex.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exmutex.c
+InputName=exmutex
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exmutex.c
+InputName=exmutex
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exnames.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exnames.c
+InputName=exnames
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exnames.c
+InputName=exnames
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg1.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exoparg1.c
+InputName=exoparg1
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exoparg1.c
+InputName=exoparg1
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg2.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exoparg2.c
+InputName=exoparg2
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exoparg2.c
+InputName=exoparg2
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg3.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exoparg3.c
+InputName=exoparg3
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exoparg3.c
+InputName=exoparg3
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg6.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exoparg6.c
+InputName=exoparg6
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exoparg6.c
+InputName=exoparg6
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exprep.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exprep.c
+InputName=exprep
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exprep.c
+InputName=exprep
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exregion.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exregion.c
+InputName=exregion
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exregion.c
+InputName=exregion
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exresnte.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exresnte.c
+InputName=exresnte
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exresnte.c
+InputName=exresnte
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exresolv.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exresolv.c
+InputName=exresolv
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exresolv.c
+InputName=exresolv
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exresop.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exresop.c
+InputName=exresop
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exresop.c
+InputName=exresop
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exstore.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exstore.c
+InputName=exstore
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exstore.c
+InputName=exstore
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exstoren.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exstoren.c
+InputName=exstoren
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exstoren.c
+InputName=exstoren
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exstorob.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exstorob.c
+InputName=exstorob
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exstorob.c
+InputName=exstorob
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exsystem.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exsystem.c
+InputName=exsystem
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exsystem.c
+InputName=exsystem
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exutils.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exutils.c
+InputName=exutils
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\executer\exutils.c
+InputName=exutils
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "Parser"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psargs.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psargs.c
+InputName=psargs
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psargs.c
+InputName=psargs
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psloop.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psloop.c
+InputName=psloop
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psloop.c
+InputName=psloop
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psopcode.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psopcode.c
+InputName=psopcode
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psopcode.c
+InputName=psopcode
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psparse.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psparse.c
+InputName=psparse
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psparse.c
+InputName=psparse
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psscope.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psscope.c
+InputName=psscope
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psscope.c
+InputName=psscope
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\pstree.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\pstree.c
+InputName=pstree
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\pstree.c
+InputName=pstree
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psutils.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psutils.c
+InputName=psutils
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psutils.c
+InputName=psutils
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\pswalk.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\pswalk.c
+InputName=pswalk
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\pswalk.c
+InputName=pswalk
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psxface.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psxface.c
+InputName=psxface
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\parser\psxface.c
+InputName=psxface
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "Dispatcher"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsfield.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsfield.c
+InputName=dsfield
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsfield.c
+InputName=dsfield
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsinit.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsinit.c
+InputName=dsinit
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsinit.c
+InputName=dsinit
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsmethod.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsmethod.c
+InputName=dsmethod
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsmethod.c
+InputName=dsmethod
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsmthdat.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsmthdat.c
+InputName=dsmthdat
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsmthdat.c
+InputName=dsmthdat
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsobject.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsobject.c
+InputName=dsobject
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsobject.c
+InputName=dsobject
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsopcode.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsopcode.c
+InputName=dsopcode
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsopcode.c
+InputName=dsopcode
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsutils.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsutils.c
+InputName=dsutils
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dsutils.c
+InputName=dsutils
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswexec.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dswexec.c
+InputName=dswexec
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dswexec.c
+InputName=dswexec
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswload.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dswload.c
+InputName=dswload
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dswload.c
+InputName=dswload
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswscope.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dswscope.c
+InputName=dswscope
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dswscope.c
+InputName=dswscope
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswstate.c
+
+!IF  "$(CFG)" == "AcpiSubsystem64 - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dswstate.c
+InputName=dswstate
+
+"AcpiSubsystem64\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /FoAcpiSubsystem64/ /WL /W4 /Wcheck /Wp64 /nologo /Qtrapuv /Wcheck /Wport /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D IA64 /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "AcpiSubsystem64 - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build
+InputPath=..\..\source\components\dispatcher\dswstate.c
+InputName=dswstate
+
+"AcpiSubsystem64Debug\$(InputName).obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	icl /W4 /FoAcpiSubsystem64/ /Qms0 /Zc:forScope /WL /D ACPI_DEBUG_OUTPUT /D ACPI_DISASSEMBLER /D IA64 /Qstd=c99 /Za /Ob1 /c /I..\..\source\include /D ACPI_MACHINE_WIDTH=64 /D ACPI_LIBRARY /D ACPI_DEBUGGER /nologo /Qtrapuv /RTCu /Wcheck /Wport $(InputPath)
 
 # End Custom Build
 

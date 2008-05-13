@@ -23,8 +23,8 @@ CFG=AcpiBin - Win32 Debug
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""$/Acpi/generate/msvc", SVBAAAAA"
-# PROP Scc_LocalPath "..\.."
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
 CPP=cl.exe
 RSC=rc.exe
 
@@ -37,25 +37,26 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "Release"
-# PROP Intermediate_Dir "Release"
+# PROP Output_Dir "AcpiBin"
+# PROP Intermediate_Dir "AcpiBin"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /GB /Gr /W4 /GX /O2 /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_APPLICATION" /FR"\Acpi\Generate\msvc\AcpiBin\NoDebug/" /FD /c
+# ADD CPP /nologo /Gr /W4 /O2 /I "..\..\source\include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_APPLICATION" /D "ACPI_BIN_APP" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"\Acpi\Generate\msvc\AcpiBin\NoDebug/AcpiBin.bsc"
+# ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /out:"bin/AcpiBin.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /nodefaultlib:"advapi32.lib"
+# SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Desc=Copy executable to acpi/libraries
-PostBuild_Cmds=copy bin\acpibin.exe ..\..\libraries\acpibin.exe
+PostBuild_Desc=Copy acpibin.exe to libraries
+PostBuild_Cmds=copy acpibin\acpibin.exe ..\..\libraries
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AcpiBin - Win32 Debug"
@@ -67,25 +68,25 @@ PostBuild_Cmds=copy bin\acpibin.exe ..\..\libraries\acpibin.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiBin"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiBin"
+# PROP Output_Dir "AcpiBinDebug"
+# PROP Intermediate_Dir "AcpiBinDebug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /GB /Gr /W4 /Gm /GX /ZI /Od /I "..\..\source\include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_APPLICATION" /FR"\Acpi\Generate\msvc\AcpiBin\Debug/" /FD /GZ /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /Gr /W4 /Zi /Od /Gf /I "..\..\source\include" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "ACPI_APPLICATION" /D "ACPI_BIN_APP" /FR /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"\Acpi\generate\msvc\AcpiBin\Debug/AcpiBin.bsc"
+# ADD BSC32 /nologo /o"AcpiBinDebug\AcpiBinDebug.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"bin/AcpiBinDebug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /out:"AcpiBinDebug\AcpiBinDebug.exe" /pdbtype:sept
+# SUBTRACT LINK32 /verbose /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
-PostBuild_Desc=Copy executable to acpi/libraries
-PostBuild_Cmds=copy bin\acpibindebug.exe ..\..\libraries\acpibindebug.exe
+PostBuild_Desc=Copy AcpiBinDebug.exe to libraries
+PostBuild_Cmds=copy acpibindebug\acpibindebug.exe ..\..\libraries
 # End Special Build Tool
 
 !ENDIF 

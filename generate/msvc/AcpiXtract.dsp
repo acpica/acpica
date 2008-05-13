@@ -37,12 +37,12 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiXtract\NoDebug"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiXtract\NoDebug"
+# PROP Output_Dir "AcpiXtract"
+# PROP Intermediate_Dir "AcpiXtract"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /GB /Gd /Za /W4 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /c
+# ADD CPP /nologo /Za /W4 /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -51,11 +51,11 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /out:"bin/AcpiXtract.exe"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /map /debug /machine:I386
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy utility to libraries directory
-PostBuild_Cmds=copy bin\AcpiXtract.exe ..\..\libraries
+PostBuild_Cmds=copy AcpiXtract\AcpiXtract.exe ..\..\libraries
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AcpiXtract - Win32 Debug"
@@ -67,25 +67,24 @@ PostBuild_Cmds=copy bin\AcpiXtract.exe ..\..\libraries
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiXtract\Debug"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiXtract\Debug"
+# PROP Output_Dir "AcpiXtractDebug"
+# PROP Intermediate_Dir "AcpiXtractDebug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /GB /Gd /Za /W4 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /Za /W4 /Zi /Od /Gf /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
+# ADD BSC32 /nologo /o"AcpiXtractDebug/AcpiXtractDebug.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /out:"bin/AcpiXtractDebug.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /out:"AcpiXtractDebug\AcpiXtractDebug.exe" /pdbtype:sept
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy utility to libraries directory
-PostBuild_Cmds=copy bin\AcpiXtractDebug.exe ..\..\libraries
+PostBuild_Cmds=copy AcpiXtractDebug\AcpiXtractDebug.exe ..\..\libraries
 # End Special Build Tool
 
 !ENDIF 

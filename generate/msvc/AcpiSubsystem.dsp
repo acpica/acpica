@@ -23,8 +23,8 @@ CFG=AcpiSubsystem - Win32 Debug
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""$/Acpi Components/Subsystem", CQBAAAAA"
-# PROP Scc_LocalPath "..\.."
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
 CPP=cl.exe
 RSC=rc.exe
 
@@ -37,12 +37,12 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem\NoDebug"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem\NoDebug"
+# PROP Output_Dir "AcpiSubsystem"
+# PROP Intermediate_Dir "AcpiSubsystem"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Gr /MT /Za /W4 /GX /O1 /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /Gr /MT /Za /W4 /GX- /O1 /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
+# SUBTRACT CPP /Gy /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,13 +50,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"bin\acpica.lib"
+# ADD LIB32 /nologo /out:"AcpiSubsystem\acpica.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
-PostBuild_Desc=Copy library to acpi/libraries
-PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\libraries\acpica.lib
+PostBuild_Desc=Copy library to libraries
+PostBuild_Cmds=copy AcpiSubsystem\acpica.lib ..\..\libraries	dir ..\..\libraries\acpica.lib
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AcpiSubsystem - Win32 Debug"
@@ -68,11 +68,12 @@ PostBuild_Cmds=copy bin\acpica.lib ..\..\libraries\acpica.lib	dir ..\..\librarie
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\Generate\msvc\AcpiSubsystem\Debug"
-# PROP Intermediate_Dir "\Acpi\Generate\msvc\AcpiSubsystem\Debug"
+# PROP Output_Dir "AcpiSubsystemDebug"
+# PROP Intermediate_Dir "AcpiSubsystemDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Gr /MTd /Za /W4 /GX /Z7 /Oa /Og /Os /Oy /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
+# ADD CPP /nologo /Gr /MTd /Za /W4 /GX- /Oa /Og /Os /Oy /Gf /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
+# SUBTRACT CPP /Z<none>
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -80,13 +81,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"bin\acpica_dbg.lib"
+# ADD LIB32 /nologo /out:"AcpiSubsystemDebug\acpica_dbg.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
 PreLink_Cmds=if NOT EXIST ..\..\libraries mkdir ..\..\libraries
-PostBuild_Desc=Copy library to acpi/libraries
-PostBuild_Cmds=copy bin\acpica_dbg.lib ..\..\libraries\acpica_dbg.lib	dir ..\..\libraries\acpica_dbg.lib
+PostBuild_Desc=Copy library to libraries
+PostBuild_Cmds=copy AcpiSubsystemDebug\acpica_dbg.lib ..\..\libraries	dir ..\..\libraries\acpica_dbg.lib
 # End Special Build Tool
 
 !ENDIF 
@@ -245,102 +246,6 @@ SOURCE=..\..\source\components\hardware\hwtimer.c
 # ADD CPP /Ze
 # End Source File
 # End Group
-# Begin Group "Interpreter"
-
-# PROP Default_Filter ".c"
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exconfig.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exconvrt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\excreate.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exdump.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exfield.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exfldio.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exmisc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exmutex.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exnames.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exoparg1.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exoparg2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exoparg3.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exoparg6.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exprep.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exregion.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exresnte.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exresolv.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exresop.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exstore.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exstoren.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exstorob.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exsystem.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\executer\exutils.c
-# End Source File
-# End Group
 # Begin Group "Namespace"
 
 # PROP Default_Filter ".c"
@@ -489,94 +394,6 @@ SOURCE=..\..\source\components\tables\tbxface.c
 SOURCE=..\..\source\components\tables\tbxfroot.c
 # End Source File
 # End Group
-# Begin Group "Parser"
-
-# PROP Default_Filter ".c"
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psargs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psloop.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psopcode.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psparse.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psscope.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\pstree.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\pswalk.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psxface.c
-# End Source File
-# End Group
-# Begin Group "Dispatcher"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsfield.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsinit.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsmethod.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsmthdat.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsobject.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsopcode.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dsutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dswexec.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dswload.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dswscope.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\dispatcher\dswstate.c
-# End Source File
-# End Group
 # Begin Group "Disassembler"
 
 # PROP Default_Filter ""
@@ -655,6 +472,190 @@ SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbutils.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\DEBUGGER\dbxface.c
+# End Source File
+# End Group
+# Begin Group "Interpreter"
+
+# PROP Default_Filter "*.c"
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exconfig.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exconvrt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\excreate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exfldio.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exmutex.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg3.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg6.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exprep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exregion.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exresnte.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exresolv.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exresop.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exstore.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exstoren.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exstorob.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exsystem.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exutils.c
+# End Source File
+# End Group
+# Begin Group "Dispatcher"
+
+# PROP Default_Filter "*.c"
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsinit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsmethod.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsmthdat.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswexec.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswload.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswstate.c
+# End Source File
+# End Group
+# Begin Group "Parser"
+
+# PROP Default_Filter "*.c"
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psloop.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psparse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\pstree.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\pswalk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psxface.c
 # End Source File
 # End Group
 # End Group

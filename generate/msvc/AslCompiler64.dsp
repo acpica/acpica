@@ -23,8 +23,8 @@ CFG=AslCompiler64 - Win32 Debug
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""$/Acpi/source/compiler", CRIAAAAA"
-# PROP Scc_LocalPath "..\.."
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
 CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
@@ -38,13 +38,13 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler64\NoDebug"
-# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler64\NoDebug"
+# PROP Output_Dir "AslCompiler64"
+# PROP Intermediate_Dir "AslCompiler64"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /c
-# ADD CPP /Gr /Za /W3 /Gm /GX /Zi /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "_IA64" /FR /FD /c
-# SUBTRACT CPP /nologo /YX
+# ADD CPP /nologo /Gr /Za /W4 /O2 /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "NDEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "_IA64" /FR /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
@@ -54,12 +54,12 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:IX86 /machine:IA64
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:yes /machine:IX86 /out:"Release/iasl64.exe" /machine:IA64
-# SUBTRACT LINK32 /pdb:none
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:IX86 /out:"AslCompiler64\iasl64.exe" /machine:IA64
+# SUBTRACT LINK32 /pdb:none /incremental:yes
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy compiler to libraries directory
-PostBuild_Cmds=copy Release\iasl64.exe ..\..\Libraries
+PostBuild_Cmds=copy AslCompiler64\iasl64.exe ..\..\Libraries
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "AslCompiler64 - Win32 Debug"
@@ -71,13 +71,13 @@ PostBuild_Cmds=copy Release\iasl64.exe ..\..\Libraries
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "\Acpi\generate\msvc\AslCompiler64\Debug"
-# PROP Intermediate_Dir "\Acpi\generate\msvc\AslCompiler64\Debug"
+# PROP Output_Dir "AslCompiler64Debug"
+# PROP Intermediate_Dir "AslCompiler64Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /Gr /Za /W4 /Gm /GX /Zi /Od /I "$(OutDir)" /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "_DEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "_IA64" /D "_M_IX86" /FR /FD /GZ /c
-# SUBTRACT CPP /nologo /YX
+# ADD CPP /nologo /Gr /Za /W4 /Zi /Od /Gf /I "$(OutDir)" /I "$(OutDir)\..\\" /I "..\..\source\Include" /D "_DEBUG" /D "WIN64" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /D "_IA64" /D "_M_IX86" /FR /FD /GZ /c
+# SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
@@ -87,12 +87,12 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:IX86 /pdbtype:sept /machine:IA64
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /debug /machine:IX86 /out:"Debug/iasldebug64.exe" /pdbtype:sept /machine:IA64
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /debug /machine:IX86 /out:"AslCompiler64Debug\iasl64debug.exe" /pdbtype:sept /machine:IA64
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy compiler to libraries directory
-PostBuild_Cmds=copy Debug\iasldebug64.exe ..\..\Libraries
+PostBuild_Cmds=copy AslCompiler64Debug\iasldebug64.exe ..\..\Libraries
 # End Special Build Tool
 
 !ENDIF 
@@ -292,78 +292,6 @@ SOURCE=..\..\source\compiler\asltree.c
 SOURCE=..\..\source\compiler\aslutils.c
 # End Source File
 # End Group
-# Begin Group "Parser"
-
-# PROP Default_Filter ".c"
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psargs.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\components\interpreter\parser\psloop.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psopcode.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psparse.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psscope.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\pstree.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\psutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\PARSER\pswalk.c
-# End Source File
-# End Group
-# Begin Group "Dispatcher"
-
-# PROP Default_Filter ".c"
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsfield.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsobject.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsopcode.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dsutils.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswexec.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswload.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswscope.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\DISPATCHER\dswstate.c
-# End Source File
-# End Group
 # Begin Group "Common"
 
 # PROP Default_Filter ".c"
@@ -412,90 +340,6 @@ SOURCE=.\AslCompiler\aslcompiler.y.c
 # Begin Source File
 
 SOURCE=.\AslCompiler\AslCompiler.y.h
-# End Source File
-# End Group
-# Begin Group "Interpreter"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exconvrt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\excreate.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exdump.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exmisc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exmutex.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exnames.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exoparg1.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exoparg2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exoparg3.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exoparg6.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exprep.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exregion.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exresnte.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exresolv.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exresop.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exstore.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exstoren.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exstorob.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exsystem.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\source\COMPONENTS\INTERPRETER\EXECUTER\exutils.c
 # End Source File
 # End Group
 # Begin Group "Disassembler"
@@ -558,6 +402,166 @@ SOURCE=..\..\source\COMPONENTS\tables\tbinstal.c
 SOURCE=..\..\source\COMPONENTS\tables\tbutils.c
 # End Source File
 # End Group
+# Begin Group "Dispatcher"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsfield.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dsutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswexec.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswload.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\dispatcher\dswstate.c
+# End Source File
+# End Group
+# Begin Group "Interpreter"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exconvrt.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\excreate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exdump.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exmutex.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exnames.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg1.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg2.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg3.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exoparg6.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exprep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exregion.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exresnte.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exresolv.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exresop.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exstore.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exstoren.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exstorob.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exsystem.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\executer\exutils.c
+# End Source File
+# End Group
+# Begin Group "Parser"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psargs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psloop.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psopcode.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psparse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psscope.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\pstree.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psutils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\pswalk.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\parser\psxface.c
+# End Source File
+# End Group
 # End Group
 # Begin Group "Header Files"
 
@@ -599,7 +603,7 @@ ProjDir=.
 InputPath=../../source/compiler/AslCompiler.l
 InputName=AslCompiler
 
-"$(ProjDir)/AslCompiler64/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"AslCompiler64/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(ProjDir)/AslCompiler64/$(InputName).l.c $(InputPath)
 
 # End Custom Build
@@ -607,12 +611,12 @@ InputName=AslCompiler
 !ELSEIF  "$(CFG)" == "AslCompiler64 - Win32 Debug"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building Lexer from $(InputPath) to $(ProjDir)/AslCompiler64/$(InputName).l.c
+# Begin Custom Build - Building Lexer from $(InputPath) to AslCompiler64/$(InputName).l.c
 ProjDir=.
 InputPath=../../source/compiler/AslCompiler.l
 InputName=AslCompiler
 
-"$(ProjDir)/AslCompiler64/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"AslCompiler64/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(ProjDir)/AslCompiler64/$(InputName).l.c $(InputPath)
 
 # End Custom Build
@@ -627,38 +631,36 @@ SOURCE=../../source/compiler/AslCompiler.y
 !IF  "$(CFG)" == "AslCompiler64 - Win32 Release"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building parser from $(InputPath) to $(ProjDir)/AslCompiler64/$(InputName).y.c
-WkspDir=.
+# Begin Custom Build - Building parser from $(InputPath) to $AslCompiler64/$(InputName).y.c
 ProjDir=.
 InputPath=../../source/compiler/AslCompiler.y
 InputName=AslCompiler
 
 BuildCmds= \
-	$(WkspDir)\..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler64/$(InputName).y.c $(InputPath)
+	..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler64/$(InputName).y.c $(InputPath)
 
-"$(ProjDir)/AslCompiler64/$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"AslCompiler64/$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 
-"$(ProjDir)/AslCompiler64/$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"AslCompiler64/$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "AslCompiler64 - Win32 Debug"
 
 # PROP Ignore_Default_Tool 1
-# Begin Custom Build - Building parser from $(InputPath) to $(ProjDir)/AslCompiler64/$(InputName).y.c
-WkspDir=.
+# Begin Custom Build - Building parser from $(InputPath) to AslCompiler64/$(InputName).y.c
 ProjDir=.
 InputPath=../../source/compiler/AslCompiler.y
 InputName=AslCompiler
 
 BuildCmds= \
-	$(WkspDir)\..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler64/$(InputName).y.c $(InputPath)
+	..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler64/$(InputName).y.c $(InputPath)
 
-"$(ProjDir)/AslCompiler64/$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"AslCompiler64/$(InputName).y.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 
-"$(ProjDir)/AslCompiler64/$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"AslCompiler64/$(InputName).y.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
    $(BuildCmds)
 # End Custom Build
 
