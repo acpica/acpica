@@ -1,4 +1,83 @@
 ----------------------------------------
+14 May 2008. Summary of changes for version 20080514:
+
+This release is available at http://acpica.org/downloads
+
+1) ACPI CA Core Subsystem:
+
+Fixed a problem where GPEs were enabled too early during the ACPICA 
+initialization. This could lead to "handler not installed" errors on some 
+machines. Moved GPE enable until after _REG/_STA/_INI methods are run. This 
+ensures that all operation regions and devices throughout the namespace have 
+been initialized before GPEs are enabled. Alexey Starikovskiy, BZ 9916.
+
+Implemented a change to the enter sleep code. Moved execution of the _GTS 
+method to just before setting sleep enable bit. The execution was moved from 
+AcpiEnterSleepStatePrep to AcpiEnterSleepState. _GTS is now executed 
+immediately before the SLP_EN bit is set, as per the ACPI specification. 
+Luming Yu, BZ 1653.
+
+Implemented a fix to disable unknown GPEs (2nd version). Now always disable 
+the GPE, even if ACPICA thinks that that it is already disabled. It is 
+possible that the AML or some other code has enabled the GPE unbeknownst to 
+the ACPICA code.
+
+Fixed a problem with the Field operator where zero-length fields would return 
+an AE_AML_NO_OPERAND exception during table load. Fix enables zero-length ASL 
+field declarations in Field(), BankField(), and IndexField(). BZ 10606.
+
+Implemented a fix for the Load operator, now load the table at the namespace 
+root. This reverts a change introduced in version 20071019. The table is now 
+loaded at the namespace root even though this goes against the ACPI 
+specification. This provides compatibility with other ACPI implementations. 
+The ACPI specification will be updated to reflect this in ACPI 4.0. Lin Ming.
+
+Fixed a problem where ACPICA would not Load() tables with unusual signatures. 
+Now ignore ACPI table signature for Load() operator. Only "SSDT" is 
+acceptable to the ACPI spec, but tables are seen with OEMx and null sigs. 
+Therefore, signature validation is worthless. Apparently MS ACPI accepts such 
+signatures, ACPICA must be compatible. BZ 10454.
+
+Fixed a possible negative array index in AcpiUtValidateException. Added NULL 
+fields to the exception string arrays to eliminate a -1 subtraction on the 
+SubStatus field.
+
+Updated the debug tracking macros to reduce overall code and data size. 
+Changed ACPI_MODULE_NAME and ACPI_FUNCTION_NAME to use arrays of strings 
+instead of pointers to static strings. Jan Beulich and Bob Moore.
+
+Implemented argument count checking in control method invocation via 
+AcpiEvaluateObject. Now emit an error if too few arguments, warning if too 
+many. This applies only to extern programmatic control method execution, not 
+method-to-method calls within the AML. Lin Ming.
+
+Eliminated the ACPI_NATIVE_UINT type across all ACPICA code. This type is no 
+longer needed, especially with the removal of 16-bit support. It was replaced 
+mostly with UINT32, but also ACPI_SIZE where a type that changes 32/64 bit on 
+32/64-bit platforms is required.
+
+Added the C const qualifier for appropriate string constants -- mostly 
+MODULE_NAME and printf format strings. Jan Beulich.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  80.0K Code, 17.4K Data,  97.4K Total
+    Debug Version:     159.4K Code, 64.4K Data, 223.8K Total
+  Current Release:
+    Non-Debug Version:  79.5K Code, 16.2K Data,  95.7K Total
+    Debug Version:     153.3K Code, 48.3K Data, 201.6K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Implemented ACPI table revision ID validation in the disassembler. Zero is 
+always invalid. For DSDTs, the ID controls the interpreter integer width. 1 
+means 32-bit and this is unusual. 2 or greater is 64-bit.
+
+----------------------------------------
 21 March 2008. Summary of changes for version 20080321:
 
 This release is available at www.acpica.org/downloads.
@@ -6,23 +85,51 @@ This release is available at www.acpica.org/downloads.
 
 1) ACPI CA Core Subsystem:
 
-Implemented an additional change to the GPE support in order to suppress spurious or stray GPEs. The AcpiEvDisableGpe function will now permanently disable incoming GPEs that are neither enabled nor disabled -- meaning that the GPE is unknown to the system. This should prevent future interrupt floods from that GPE. BZ 6217 (Zhang Rui)
+Implemented an additional change to the GPE support in order to suppress 
+spurious or stray GPEs. The AcpiEvDisableGpe function will now permanently 
+disable incoming GPEs that are neither enabled nor disabled -- meaning that 
+the GPE is unknown to the system. This should prevent future interrupt floods 
+from that GPE. BZ 6217 (Zhang Rui)
 
-Fixed a problem where NULL package elements were not returned to the AcpiEvaluateObject interface correctly. The element was simply ignored instead of returning a NULL ACPI_OBJECT package element, potentially causing a buffer overflow and/or confusing the caller who expected a fixed number of elements. BZ 10132 (Lin Ming, Bob Moore)
+Fixed a problem where NULL package elements were not returned to the 
+AcpiEvaluateObject interface correctly. The element was simply ignored 
+instead of returning a NULL ACPI_OBJECT package element, potentially causing 
+a buffer overflow and/or confusing the caller who expected a fixed number of 
+elements. BZ 10132 (Lin Ming, Bob Moore)
 
-Fixed a problem with the CreateField, CreateXXXField (Bit, Byte, Word, Dword, Qword), Field, BankField, and IndexField operators when invoked from inside an executing control method. In this case, these operators created namespace nodes that were incorrectly left marked as permanent nodes instead of temporary nodes. This could cause a problem if there is race condition between an exiting control method and a running namespace walk. (Reported by Linn Crosetto)
+Fixed a problem with the CreateField, CreateXXXField (Bit, Byte, Word, Dword, 
+Qword), Field, BankField, and IndexField operators when invoked from inside 
+an executing control method. In this case, these operators created namespace 
+nodes that were incorrectly left marked as permanent nodes instead of 
+temporary nodes. This could cause a problem if there is race condition 
+between an exiting control method and a running namespace walk. (Reported by 
+Linn Crosetto)
 
-Fixed a problem where the CreateField and CreateXXXField operators would incorrectly allow duplicate names (the name of the field) with no exception generated.
+Fixed a problem where the CreateField and CreateXXXField operators would 
+incorrectly allow duplicate names (the name of the field) with no exception 
+generated.
 
-Implemented several changes for Notify handling. Added support for new Notify values (ACPI 2.0+) and improved the Notify debug output. Notify on PowerResource objects is no longer allowed, as per the ACPI specification. (Bob Moore, Zhang Rui)
+Implemented several changes for Notify handling. Added support for new Notify 
+values (ACPI 2.0+) and improved the Notify debug output. Notify on 
+PowerResource objects is no longer allowed, as per the ACPI specification. 
+(Bob Moore, Zhang Rui)
 
-All Reference Objects returned via the AcpiEvaluateObject interface are now marked as type "REFERENCE" instead of "ANY". The type ANY is now reserved for NULL objects - either NULL package elements or unresolved named references.
+All Reference Objects returned via the AcpiEvaluateObject interface are now 
+marked as type "REFERENCE" instead of "ANY". The type ANY is now reserved for 
+NULL objects - either NULL package elements or unresolved named references.
 
-Fixed a problem where an extraneous debug message was produced for package objects (when debugging enabled). The message "Package List length larger than NumElements count" is now produced in the correct case, and is now an error message rather than a debug message. Added a debug message for the opposite case, where NumElements is larger than the Package List (the package will be padded out with NULL elements as per the ACPI spec.)
+Fixed a problem where an extraneous debug message was produced for package 
+objects (when debugging enabled). The message "Package List length larger 
+than NumElements count" is now produced in the correct case, and is now an 
+error message rather than a debug message. Added a debug message for the 
+opposite case, where NumElements is larger than the Package List (the package 
+will be padded out with NULL elements as per the ACPI spec.)
 
-Implemented several improvements for the output of the ASL "Debug" object to clarify and keep all data for a given object on one output line.
+Implemented several improvements for the output of the ASL "Debug" object to 
+clarify and keep all data for a given object on one output line.
 
-Fixed two size calculation issues with the variable-length Start Dependent resource descriptor.
+Fixed two size calculation issues with the variable-length Start Dependent 
+resource descriptor.
 
 Example Code and Data Size: These are the sizes for the OS-independent 
 acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
@@ -38,7 +145,12 @@ a much larger code and data size.
 
 2) iASL Compiler/Disassembler and Tools:
 
-Fixed a problem with the use of the Switch operator where execution of the containing method by multiple concurrent threads could cause an AE_ALREADY_EXISTS exception. This is caused by the fact that there is no actual Switch opcode, it must be simulated with local named temporary variables and if/else pairs. The solution chosen was to mark any method that uses Switch as Serialized, thus preventing multiple thread entries. BZ 469.
+Fixed a problem with the use of the Switch operator where execution of the 
+containing method by multiple concurrent threads could cause an 
+AE_ALREADY_EXISTS exception. This is caused by the fact that there is no 
+actual Switch opcode, it must be simulated with local named temporary 
+variables and if/else pairs. The solution chosen was to mark any method that 
+uses Switch as Serialized, thus preventing multiple thread entries. BZ 469.
 
 ----------------------------------------
 13 February 2008. Summary of changes for version 20080213:
@@ -48,19 +160,42 @@ This release is available at www.acpica.org/downloads.
 
 1) ACPI CA Core Subsystem:
 
-Implemented another MS compatibility design change for GPE/Notify handling. GPEs are now cleared/enabled asynchronously to allow all pending notifies to complete first. It is expected that the OSL will queue the enable request behind all pending notify requests (may require changes to the local host OSL in AcpiOsExecute). Alexey Starikovskiy.
+Implemented another MS compatibility design change for GPE/Notify handling. 
+GPEs are now cleared/enabled asynchronously to allow all pending notifies to 
+complete first. It is expected that the OSL will queue the enable request 
+behind all pending notify requests (may require changes to the local host OSL 
+in AcpiOsExecute). Alexey Starikovskiy.
 
-Fixed a problem where buffer and package objects passed as arguments to a control method via the external AcpiEvaluateObject interface could cause an AE_AML_INTERNAL exception depending on the order and type of operators executed by the target control method.
+Fixed a problem where buffer and package objects passed as arguments to a 
+control method via the external AcpiEvaluateObject interface could cause an 
+AE_AML_INTERNAL exception depending on the order and type of operators 
+executed by the target control method.
 
-Fixed a problem where resource descriptor size optimization could cause a problem when a _CRS resource template is passed to a _SRS method. The _SRS resource template must use the same descriptors (with the same size) as returned from _CRS. This change affects the following resource descriptors: IRQ / IRQNoFlags and StartDependendentFn / StartDependentFnNoPri. (BZ 9487)
+Fixed a problem where resource descriptor size optimization could cause a 
+problem when a _CRS resource template is passed to a _SRS method. The _SRS 
+resource template must use the same descriptors (with the same size) as 
+returned from _CRS. This change affects the following resource descriptors: 
+IRQ / IRQNoFlags and StartDependendentFn / StartDependentFnNoPri. (BZ 9487)
 
-Fixed a problem where a CopyObject to RegionField, BankField, and IndexField objects did not perform an implicit conversion as it should. These types must retain their initial type permanently as per the ACPI specification. However, a CopyObject to all other object types should not perform an implicit conversion, as per the ACPI specification. (Lin Ming, Bob Moore) BZ 388
+Fixed a problem where a CopyObject to RegionField, BankField, and IndexField 
+objects did not perform an implicit conversion as it should. These types must 
+retain their initial type permanently as per the ACPI specification. However, 
+a CopyObject to all other object types should not perform an implicit 
+conversion, as per the ACPI specification. (Lin Ming, Bob Moore) BZ 388
 
-Fixed a problem with the AcpiGetDevices interface where the mechanism to match device CIDs did not examine the entire list of available CIDs, but instead aborted on the first non-matching CID. Andrew Patterson.
+Fixed a problem with the AcpiGetDevices interface where the mechanism to 
+match device CIDs did not examine the entire list of available CIDs, but 
+instead aborted on the first non-matching CID. Andrew Patterson.
 
-Fixed a regression introduced in version 20071114. The ACPI_HIDWORD macro was inadvertently changed to return a 16-bit value instead of a 32-bit value, truncating the upper dword of a 64-bit value. This macro is only used to display debug output, so no incorrect calculations were made. Also, reimplemented the macro so that a 64-bit shift is not performed by inefficient compilers.
+Fixed a regression introduced in version 20071114. The ACPI_HIDWORD macro was 
+inadvertently changed to return a 16-bit value instead of a 32-bit value, 
+truncating the upper dword of a 64-bit value. This macro is only used to 
+display debug output, so no incorrect calculations were made. Also, 
+reimplemented the macro so that a 64-bit shift is not performed by 
+inefficient compilers.
 
-Added missing va_end statements that should correspond with each va_start statement.
+Added missing va_end statements that should correspond with each va_start 
+statement.
 
 Example Code and Data Size: These are the sizes for the OS-independent 
 acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
@@ -76,31 +211,49 @@ a much larger code and data size.
 
 2) iASL Compiler/Disassembler and Tools:
 
-Implemented full disassembler support for the following new ACPI tables: BERT, EINJ, and ERST. Implemented partial disassembler support for the complicated HEST table. These tables support the Windows Hardware Error Architecture (WHEA).
+Implemented full disassembler support for the following new ACPI tables: 
+BERT, EINJ, and ERST. Implemented partial disassembler support for the 
+complicated HEST table. These tables support the Windows Hardware Error 
+Architecture (WHEA).
 
 ----------------------------------------
 23 January 2008. Summary of changes for version 20080123:
 
 1) ACPI CA Core Subsystem:
 
-Added the 2008 copyright to all module headers and signons. This affects virtually every file in the ACPICA core subsystem, the iASL compiler, and 
+Added the 2008 copyright to all module headers and signons. This affects 
+virtually every file in the ACPICA core subsystem, the iASL compiler, and 
 the tools/utilities.
 
-Fixed a problem with the SizeOf operator when used with Package and Buffer objects. These objects have deferred execution for some arguments, and the execution is now completed before the SizeOf is executed. This problem caused unexpected AE_PACKAGE_LIMIT errors on some systems (Lin Ming, Bob Moore) BZ 9558
+Fixed a problem with the SizeOf operator when used with Package and Buffer 
+objects. These objects have deferred execution for some arguments, and the 
+execution is now completed before the SizeOf is executed. This problem caused 
+unexpected AE_PACKAGE_LIMIT errors on some systems (Lin Ming, Bob Moore) BZ 
+9558
 
-Implemented an enhancement to the interpreter "slack mode". In the absence of an explicit return or an implicitly returned object from the last executed opcode, a control method will now implicitly return an integer of value 0 for Microsoft compatibility. (Lin Ming) BZ 392
+Implemented an enhancement to the interpreter "slack mode". In the absence of 
+an explicit return or an implicitly returned object from the last executed 
+opcode, a control method will now implicitly return an integer of value 0 for 
+Microsoft compatibility. (Lin Ming) BZ 392
 
-Fixed a problem with the Load operator where an exception was not returned in the case where the table is already loaded. (Lin Ming) BZ 463
+Fixed a problem with the Load operator where an exception was not returned in 
+the case where the table is already loaded. (Lin Ming) BZ 463
 
-Implemented support for the use of DDBHandles as an Indexed Reference, as per the ACPI spec. (Lin Ming) BZ 486
+Implemented support for the use of DDBHandles as an Indexed Reference, as per 
+the ACPI spec. (Lin Ming) BZ 486
 
-Implemented support for UserTerm (Method invocation) for the Unload operator as per the ACPI spec. (Lin Ming) BZ 580
+Implemented support for UserTerm (Method invocation) for the Unload operator 
+as per the ACPI spec. (Lin Ming) BZ 580
 
-Fixed a problem with the LoadTable operator where the OemId and OemTableId input strings could cause unexpected failures if they were shorter than the maximum lengths allowed. (Lin Ming, Bob Moore) BZ 576
+Fixed a problem with the LoadTable operator where the OemId and OemTableId 
+input strings could cause unexpected failures if they were shorter than the 
+maximum lengths allowed. (Lin Ming, Bob Moore) BZ 576
 
-Implemented support for UserTerm (Method invocation) for the Unload operator as per the ACPI spec. (Lin Ming) BZ 580
+Implemented support for UserTerm (Method invocation) for the Unload operator 
+as per the ACPI spec. (Lin Ming) BZ 580
 
-Implemented header file support for new ACPI tables - BERT, ERST, EINJ, HEST, IBFT, UEFI, WDAT. Disassembler support is forthcoming.
+Implemented header file support for new ACPI tables - BERT, ERST, EINJ, HEST, 
+IBFT, UEFI, WDAT. Disassembler support is forthcoming.
 
 Example Code and Data Size: These are the sizes for the OS-independent 
 acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
@@ -116,17 +269,26 @@ a much larger code and data size.
 
 2) iASL Compiler/Disassembler and Tools:
 
-Implemented support in the disassembler for checksum validation on incoming binary DSDTs and SSDTs. If incorrect, a message is displayed within the table header dump at the start of the disassembly.
+Implemented support in the disassembler for checksum validation on incoming 
+binary DSDTs and SSDTs. If incorrect, a message is displayed within the table 
+header dump at the start of the disassembly.
 
-Implemented additional debugging information in the namespace listing file created during compilation. In addition to the namespace hierarchy, the full pathname to each namespace object is displayed.
+Implemented additional debugging information in the namespace listing file 
+created during compilation. In addition to the namespace hierarchy, the full 
+pathname to each namespace object is displayed.
 
-Fixed a problem with the disassembler where invalid ACPI tables could cause faults or infinite loops.
+Fixed a problem with the disassembler where invalid ACPI tables could cause 
+faults or infinite loops.
 
-Fixed an unexpected parse error when using the optional "parameter types" list in a control method declaration. (Lin Ming) BZ 397
+Fixed an unexpected parse error when using the optional "parameter types" 
+list in a control method declaration. (Lin Ming) BZ 397
 
-Fixed a problem where two External declarations with the same name did not cause an error (Lin Ming) BZ 509
+Fixed a problem where two External declarations with the same name did not 
+cause an error (Lin Ming) BZ 509
 
-Implemented support for full TermArgs (adding Argx, Localx and method invocation) for the ParameterData parameter to the LoadTable operator. (Lin Ming) BZ 583,587
+Implemented support for full TermArgs (adding Argx, Localx and method 
+invocation) for the ParameterData parameter to the LoadTable operator. (Lin 
+Ming) BZ 583,587
 
 ----------------------------------------
 19 December 2007. Summary of changes for version 20071219:
