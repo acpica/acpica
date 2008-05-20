@@ -536,6 +536,10 @@ AcpiDmDumpDmar (
             InfoTable = AcpiDmTableInfoDmar1;
             ScopeOffset = sizeof (ACPI_DMAR_RESERVED_MEMORY);
             break;
+        case ACPI_DMAR_TYPE_ATSR:
+            InfoTable = AcpiDmTableInfoDmar2;
+            ScopeOffset = sizeof (ACPI_DMAR_TYPE_ATSR);
+            break;
         default:
             AcpiOsPrintf ("\n**** Unknown DMAR sub-table type %X\n\n", SubTable->Type);
             return;
@@ -548,49 +552,42 @@ AcpiDmDumpDmar (
             return;
         }
 
-        /*
-         * Currently, a common flag indicates whether there are any
-         * device scope entries present at the end of the subtable.
-         */
-        if ((SubTable->Flags & ACPI_DMAR_INCLUDE_ALL) == 0)
+        /* Dump the device scope entries (if any) */
+
+        ScopeTable = ACPI_ADD_PTR (ACPI_DMAR_DEVICE_SCOPE, SubTable, ScopeOffset);
+        while (ScopeOffset < SubTable->Length)
         {
-            /* Dump the device scope entries */
-
-            ScopeTable = ACPI_ADD_PTR (ACPI_DMAR_DEVICE_SCOPE, SubTable, ScopeOffset);
-            while (ScopeOffset < SubTable->Length)
+            AcpiOsPrintf ("\n");
+            Status = AcpiDmDumpTable (Length, Offset + ScopeOffset, ScopeTable,
+                        ScopeTable->Length, AcpiDmTableInfoDmarScope);
+            if (ACPI_FAILURE (Status))
             {
-                AcpiOsPrintf ("\n");
-                Status = AcpiDmDumpTable (Length, Offset + ScopeOffset, ScopeTable,
-                            ScopeTable->Length, AcpiDmTableInfoDmarScope);
-                if (ACPI_FAILURE (Status))
-                {
-                    return;
-                }
-
-                /* Dump the PCI Path entries for this device scope */
-
-                PathOffset = sizeof (ACPI_DMAR_DEVICE_SCOPE); /* Path entries start at this offset */
-
-                PciPath = ACPI_ADD_PTR (UINT8, ScopeTable,
-                    sizeof (ACPI_DMAR_DEVICE_SCOPE));
-
-                while (PathOffset < ScopeTable->Length)
-                {
-                    AcpiDmLineHeader ((PathOffset + ScopeOffset + Offset), 2, "PCI Path");
-                    AcpiOsPrintf ("[%2.2X, %2.2X]\n", PciPath[0], PciPath[1]);
-
-                    /* Point to next PCI Path entry */
-
-                    PathOffset += 2;
-                    PciPath += 2;
-                }
-
-                /* Point to next device scope entry */
-
-                ScopeOffset += ScopeTable->Length;
-                ScopeTable = ACPI_ADD_PTR (ACPI_DMAR_DEVICE_SCOPE,
-                    ScopeTable, ScopeTable->Length);
+                return;
             }
+
+            /* Dump the PCI Path entries for this device scope */
+
+            PathOffset = sizeof (ACPI_DMAR_DEVICE_SCOPE); /* Path entries start at this offset */
+
+            PciPath = ACPI_ADD_PTR (UINT8, ScopeTable,
+                sizeof (ACPI_DMAR_DEVICE_SCOPE));
+
+            while (PathOffset < ScopeTable->Length)
+            {
+                AcpiDmLineHeader ((PathOffset + ScopeOffset + Offset), 2, "PCI Path");
+                AcpiOsPrintf ("[%2.2X, %2.2X]\n", PciPath[0], PciPath[1]);
+
+                /* Point to next PCI Path entry */
+
+                PathOffset += 2;
+                PciPath += 2;
+            }
+
+            /* Point to next device scope entry */
+
+            ScopeOffset += ScopeTable->Length;
+            ScopeTable = ACPI_ADD_PTR (ACPI_DMAR_DEVICE_SCOPE,
+                ScopeTable, ScopeTable->Length);
         }
 
         /* Point to next sub-table */

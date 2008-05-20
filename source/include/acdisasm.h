@@ -249,6 +249,7 @@ extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmarHdr[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmarScope[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmar0[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmar1[];
+extern ACPI_DMTABLE_INFO        AcpiDmTableInfoDmar2[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEcdt[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEinj[];
 extern ACPI_DMTABLE_INFO        AcpiDmTableInfoEinj0[];

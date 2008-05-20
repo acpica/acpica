@@ -436,6 +436,10 @@ typedef struct acpi_table_dmar
 
 } ACPI_TABLE_DMAR;
 
+/* Flags */
+
+#define ACPI_DMAR_INTR_REMAP        (1)
+
 /* DMAR subtable header */
 
 typedef struct acpi_dmar_header
