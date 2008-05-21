@@ -314,15 +314,17 @@ AcpiEnterSleepStatePrep (
         break;
     }
 
-    /* Set the system indicators to show the desired sleep state. */
-
+    /*
+     * Set the system indicators to show the desired sleep state.
+     * _SST is an optional method (return no error if not found)
+     */
     Status = AcpiEvaluateObject (NULL, METHOD_NAME__SST, &ArgList, NULL);
     if (ACPI_FAILURE (Status) && Status != AE_NOT_FOUND)
     {
         ACPI_EXCEPTION ((AE_INFO, Status, "While executing method _SST"));
     }
 
-    return_ACPI_STATUS (Status);
+    return_ACPI_STATUS (AE_OK);
 }
 
 ACPI_EXPORT_SYMBOL (AcpiEnterSleepStatePrep)
