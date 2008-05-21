@@ -1235,7 +1235,7 @@ AcpiDsEvalBankFieldOperands (
     }
 
     ACPI_DUMP_OPERANDS (ACPI_WALK_OPERANDS,
-		AcpiPsGetOpcodeName (Op->Common.AmlOpcode), 1);
+        AcpiPsGetOpcodeName (Op->Common.AmlOpcode), 1);
     /*
      * Get the BankValue operand and save it
      * (at Top of stack)

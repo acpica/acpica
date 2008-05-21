@@ -280,7 +280,7 @@ AcpiReallocateRootTable (
     }
 
     NewSize = ((ACPI_SIZE) AcpiGbl_RootTableList.Count +
-					ACPI_ROOT_TABLE_SIZE_INCREMENT) *
+                    ACPI_ROOT_TABLE_SIZE_INCREMENT) *
                 sizeof (ACPI_TABLE_DESC);
 
     /* Create new array and copy the old array */

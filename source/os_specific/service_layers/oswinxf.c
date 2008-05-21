@@ -165,7 +165,7 @@ AeLocalGetRootPointer (
 FILE                        *AcpiGbl_OutputFile;
 UINT64                      TimerFrequency;
 
-char						TableName[ACPI_NAME_SIZE + 1];
+char                        TableName[ACPI_NAME_SIZE + 1];
 
 /******************************************************************************
  *

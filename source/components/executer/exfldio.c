@@ -253,8 +253,8 @@ AcpiExSetupRegion (
             if (ACPI_ROUND_UP (RgnDesc->Region.Length,
                     ObjDesc->CommonField.AccessByteWidth) >=
                 ((ACPI_SIZE) ObjDesc->CommonField.BaseByteOffset +
-					ObjDesc->CommonField.AccessByteWidth +
-					FieldDatumByteOffset))
+                    ObjDesc->CommonField.AccessByteWidth +
+                    FieldDatumByteOffset))
             {
                 return_ACPI_STATUS (AE_OK);
             }

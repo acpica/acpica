@@ -302,8 +302,8 @@ AcpiTbResizeRootTableList (
     /* Increase the Table Array size */
 
     Tables = ACPI_ALLOCATE_ZEROED (
-		((ACPI_SIZE) AcpiGbl_RootTableList.Size + ACPI_ROOT_TABLE_SIZE_INCREMENT)
-		* sizeof (ACPI_TABLE_DESC));
+        ((ACPI_SIZE) AcpiGbl_RootTableList.Size + ACPI_ROOT_TABLE_SIZE_INCREMENT)
+        * sizeof (ACPI_TABLE_DESC));
     if (!Tables)
     {
         ACPI_ERROR ((AE_INFO, "Could not allocate new root table array"));

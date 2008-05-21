@@ -688,11 +688,11 @@ AcpiExDumpOperand (
 
         if (ObjDesc->Buffer.Pointer)
         {
-			Length = ObjDesc->Buffer.Length;
-			if (Length > 128)
-			{
-				Length = 128;
-			}
+            Length = ObjDesc->Buffer.Length;
+            if (Length > 128)
+            {
+                Length = 128;
+            }
 
             AcpiOsPrintf ("Buffer Contents: (displaying length 0x%.2X)\n", Length);
             ACPI_DUMP_BUFFER (ObjDesc->Buffer.Pointer, Length);
@@ -874,7 +874,7 @@ AcpiExDumpOperand (
  * FUNCTION:    AcpiExDumpOperands
  *
  * PARAMETERS:  Operands            - A list of Operand objects
- *              OpcodeName          - AML opcode name 
+ *              OpcodeName          - AML opcode name
  *              NumOperands         - Operand count for this opcode
  *
  * DESCRIPTION: Dump the operands associated with the opcode
