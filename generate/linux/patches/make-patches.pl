@@ -3,7 +3,7 @@
 # Make linux patches for ACPICA
 #
 # Usage:
-#   edit $release to reflect desired tag (release) of ACPICA
+#   edit $old_release to reflect desired tag (release) of ACPICA
 #   run perl make-patches.pl
 #   collect *.patch files
 #
@@ -19,14 +19,25 @@ use File::stat;
 #
 # Configuration
 #
-$release = "R03_20_07";
+$old_release = "R02_13_08";
+#
+# use "cvs-HEAD" for the latest version (head of repository tree)
+#
+$new_release = "R03_21_08";
+#
+$mbox_date = "Fri Mar 21 16:12:34 2008";
+
+$CVSPS_ARGS = "-z 6 -r $old_release -a rmoore1";
+# from above:  -s 16482,16484-
 
 $patch_from = "Bob Moore <robert.moore\@intel.com>";
 $patch_signoff = "Bob Moore <robert.moore\@intel.com>";
 $linux_patch_dir = "patches.linux";
 $cvs_patch_dir = "patches.cvs";
+$cvs_patch_name = $old_release.patch;
 $cvsps_log = 'cvsps.log';
-$mbox_name = "$linux_patch_dir/patches.mbox";
+$mbox_name = "$linux_patch_dir/$old_release.mbox";
+$linux_archive_dir = "archive.linux";
 
 $linux_patch_count;
 $patch_num;
@@ -42,43 +53,65 @@ $patch_num;
 # 4) Create the Linux patches
 #
 
+# Save previous mbox file
 
-# Generate the acpisrc utility
-
-#system("echo [make-patches] Generate acpisrc utility from source");
-#system("perl acpisrc.pl");
+system("mkdir -p $linux_archive_dir");
+system("cp $linux_patch_dir/*.mbox $linux_archive_dir");
 
 
-# Checkout the previous ACPICA release
+# Make clean patch directories
 
-system("echo [make-patches] Getting clean ACPICA release, version $release");
-system("perl get-acpi.pl $release");
+system("rm -rf $cvs_patch_dir");
+system("mkdir -p $cvs_patch_dir");
+system("rm -rf $linux_patch_dir");
+system("mkdir -p $linux_patch_dir");
+
+
+# Checkout the latest ACPICA release
+
+system("echo [make-patches] Getting clean ACPICA release, new version $new_release");
+system("perl get-acpi.pl $new_release");
+
+
+# Generate latest version of the acpisrc utility
+
+system("echo [make-patches] Generate acpisrc utility from source");
+system("perl acpisrc.pl");
+
+
+# Checkout the "older" ACPICA release
+
+system("echo [make-patches] Getting clean previous ACPICA release, version $old_release");
+system("perl get-acpi.pl $old_release");
 
 
 # Create CVS log
 
 system("echo [make-patches] Creating the CVS log");
-system("cd Acpi/source; cvsps -z 6 -u -r $release > ../../$cvsps_log");
+system("cd Acpi/source; cvsps $CVSPS_ARGS -u > ../../$cvsps_log");
 
 
 # Create CVS patches
 
 system("echo [make-patches] Creating the CVS patches");
-system("mkdir -p $cvs_patch_dir");
-system("cd Acpi/source; cvsps -z 6 -r $release -g -p ../../$cvs_patch_dir");
+system("cd Acpi/source; cvsps $CVSPS_ARGS -g -p ../../$cvs_patch_dir");
 
 
-# Create "linuxized" reference ACPICA directory
+# Create the merged patchfile for "native" ACPICA code
 
-system("echo [make-patches] Creating the Linuxized ACPICA source");
+system("echo [make-patches] Creating the merged native patch file");
+&make_merged_patch;
+
+
+# Create "linuxized" reference ACPICA directory from the "older" ACPICA tree
+
+system("echo [make-patches] Creating the Linuxized ACPICA source from $old_release");
 system("sh linuxize.sh");
 
 
 # Create the linux patches, one per file
 
 system("echo [make-patches] Creating the Linux patches");
-system("rm -rf $linux_patch_dir");
-system("mkdir -p $linux_patch_dir");
 &make_patches;
 
 
@@ -170,6 +203,14 @@ sub walk_cvsps_log
 }
 
 
+sub make_merged_patch
+{
+    system("rm -f $cvs_patch_dir/$cvs_patch_name");
+
+    system("cd $cvs_patch_dir; find . -name \"[0123456789]*.patch\" | xargs cat - >> $cvs_patch_name");
+}
+
+
 #
 # Create the mailbox format patchfile from the individual patches
 #
@@ -219,7 +260,7 @@ sub make_mbox_entry
     # Emit common patch header for mbox
 
     open(MBOX, ">>$mbox_name") or die ("Cannot open $mbox_name for appending");
-    print(MBOX "From nobody Wed Mar 21 16:27:33 2007\n");
+    print(MBOX "From nobody $mbox_date\n");
     print(MBOX "Subject: [Patch $patch_num/$linux_patch_count] ACPICA: $short_log\n");
     print(MBOX "From: $patch_from\n");
     print(MBOX "Date: $date\n");
