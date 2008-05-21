@@ -456,8 +456,7 @@ AcpiPsUpdateParameterList (
     UINT32                  i;
 
 
-    if ((Info->ParameterType == ACPI_PARAM_ARGS) &&
-        (Info->Parameters))
+    if (Info->Parameters)
     {
         /* Update reference count for each parameter */
 

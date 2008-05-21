@@ -690,8 +690,6 @@ AcpiEvAsynchExecuteGpeMethod (
              * control method that corresponds to this GPE
              */
             Info->PrefixNode = LocalGpeEventInfo->Dispatch.MethodNode;
-            Info->Parameters = ACPI_CAST_PTR (ACPI_OPERAND_OBJECT *, LocalGpeEventInfo);
-            Info->ParameterType = ACPI_PARAM_GPE;
             Info->Flags = ACPI_IGNORE_RETURN_VALUE;
 
             Status = AcpiNsEvaluate (Info);

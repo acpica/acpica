@@ -323,7 +323,6 @@ AcpiEvExecuteRegMethod (
     Info->PrefixNode = RegionObj2->Extra.Method_REG;
     Info->Pathname = NULL;
     Info->Parameters = Args;
-    Info->ParameterType = ACPI_PARAM_ARGS;
     Info->Flags = ACPI_IGNORE_RETURN_VALUE;
 
     /*

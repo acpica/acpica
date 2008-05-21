@@ -272,7 +272,6 @@ AcpiEvaluateObject (
     }
 
     Info->Pathname = Pathname;
-    Info->ParameterType = ACPI_PARAM_ARGS;
 
     /* Convert and validate the device handle */
 

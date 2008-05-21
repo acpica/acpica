@@ -184,7 +184,6 @@ typedef struct acpi_walk_state
     union acpi_operand_object       **CallerReturnDesc;
     ACPI_GENERIC_STATE              *ControlState;      /* List of control states (nested IFs) */
     struct acpi_namespace_node      *DeferredNode;      /* Used when executing deferred opcodes */
-    struct acpi_gpe_event_info      *GpeEventInfo;      /* Info for GPE (_Lxx/_Exx methods only */
     union acpi_operand_object       *ImplicitReturnObj;
     struct acpi_namespace_node      *MethodCallNode;    /* Called method Node*/
     ACPI_PARSE_OBJECT               *MethodCallOp;      /* MethodCall Op if running a method */
@@ -282,16 +281,10 @@ typedef struct acpi_evaluate_info
     ACPI_OPERAND_OBJECT             *ReturnObject;
     UINT8                           ParamCount;
     UINT8                           PassNumber;
-    UINT8                           ParameterType;
     UINT8                           ReturnObjectType;
     UINT8                           Flags;
 
 } ACPI_EVALUATE_INFO;
-
-/* Types for ParameterType above */
-
-#define ACPI_PARAM_ARGS                 0
-#define ACPI_PARAM_GPE                  1
 
 /* Values for Flags above */
 

@@ -763,16 +763,8 @@ AcpiDsInitAmlWalk (
 
     if (Info)
     {
-        if (Info->ParameterType == ACPI_PARAM_GPE)
-        {
-            WalkState->GpeEventInfo =
-                ACPI_CAST_PTR (ACPI_GPE_EVENT_INFO, Info->Parameters);
-        }
-        else
-        {
-            WalkState->Params = Info->Parameters;
-            WalkState->CallerReturnDesc = &Info->ReturnObject;
-        }
+        WalkState->Params = Info->Parameters;
+        WalkState->CallerReturnDesc = &Info->ReturnObject;
     }
 
     Status = AcpiPsInitScope (&WalkState->ParserState, Op);

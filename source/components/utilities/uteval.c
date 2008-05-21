@@ -288,7 +288,6 @@ AcpiUtEvaluateObject (
 
     Info->PrefixNode = PrefixNode;
     Info->Pathname = Path;
-    Info->ParameterType = ACPI_PARAM_ARGS;
 
     /* Evaluate the object/method */
 
