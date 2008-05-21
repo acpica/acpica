@@ -371,7 +371,7 @@ AcpiPsGetNextNamepath (
         PossibleMethodCall &&
         (Node->Type == ACPI_TYPE_METHOD))
     {
-        if (WalkState->Op->Common.AmlOpcode == AML_UNLOAD_OP)
+        if (WalkState->Opcode == AML_UNLOAD_OP)
         {
             /*
              * AcpiPsGetNextNamestring has increased the AML pointer,
@@ -831,7 +831,7 @@ AcpiPsGetNextArg (
 
             /* To support SuperName arg of Unload */
 
-            if (WalkState->Op->Common.AmlOpcode == AML_UNLOAD_OP)
+            if (WalkState->Opcode == AML_UNLOAD_OP)
             {
                 Status = AcpiPsGetNextNamepath (WalkState, ParserState, Arg, 1);
 
