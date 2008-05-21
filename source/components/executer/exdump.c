@@ -899,7 +899,7 @@ AcpiExDumpOperands (
     const char              *ModuleName,
     UINT32                  LineNumber)
 {
-    UINT32                  i;
+    INT32                   i;
 
 
     ACPI_FUNCTION_NAME (ExDumpOperands);
