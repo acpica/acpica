@@ -658,7 +658,7 @@ typedef struct acpi_integer_overlay
 /* Stack and buffer dumping */
 
 #define ACPI_DUMP_STACK_ENTRY(a)        AcpiExDumpOperand((a),0)
-#define ACPI_DUMP_OPERANDS(a,b,c,d,e)   AcpiExDumpOperands(a,b,c,d,e,_AcpiModuleName,__LINE__)
+#define ACPI_DUMP_OPERANDS(a,b,c)       AcpiExDumpOperands(a,b,c)
 
 
 #define ACPI_DUMP_ENTRY(a,b)            AcpiNsDumpEntry (a,b)
@@ -696,7 +696,7 @@ typedef struct acpi_integer_overlay
 #define ACPI_FUNCTION_VALUE_EXIT(s)
 #define ACPI_FUNCTION_ENTRY()
 #define ACPI_DUMP_STACK_ENTRY(a)
-#define ACPI_DUMP_OPERANDS(a,b,c,d,e)
+#define ACPI_DUMP_OPERANDS(a,b,c)
 #define ACPI_DUMP_ENTRY(a,b)
 #define ACPI_DUMP_TABLES(a,b)
 #define ACPI_DUMP_PATHNAME(a,b,c,d)

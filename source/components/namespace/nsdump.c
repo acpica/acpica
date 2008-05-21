@@ -609,13 +609,13 @@ AcpiNsDumpOneObject (
 
             if (ObjType > ACPI_TYPE_LOCAL_MAX)
             {
-                AcpiOsPrintf ("(Ptr to ACPI Object type %X [UNKNOWN])\n",
+                AcpiOsPrintf ("(Pointer to ACPI Object type %.2X [UNKNOWN])\n",
                     ObjType);
                 BytesToDump = 32;
             }
             else
             {
-                AcpiOsPrintf ("(Ptr to ACPI Object type %X [%s])\n",
+                AcpiOsPrintf ("(Pointer to ACPI Object type %.2X [%s])\n",
                     ObjType, AcpiUtGetTypeName (ObjType));
                 BytesToDump = sizeof (ACPI_OPERAND_OBJECT);
             }
