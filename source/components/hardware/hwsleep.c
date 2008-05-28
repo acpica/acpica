@@ -430,8 +430,8 @@ AcpiEnterSleepState (
 
     /* Get current value of PM1A control */
 
-    Status = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
-                ACPI_REGISTER_PM1_CONTROL, &PM1AControl);
+    Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL, 
+                &PM1AControl);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -457,15 +457,15 @@ AcpiEnterSleepState (
 
     /* Write #1: fill in SLP_TYP data */
 
-    Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                ACPI_REGISTER_PM1A_CONTROL, PM1AControl);
+    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL, 
+                PM1AControl);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                ACPI_REGISTER_PM1B_CONTROL, PM1BControl);
+    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL, 
+                PM1BControl);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -480,15 +480,15 @@ AcpiEnterSleepState (
 
     ACPI_FLUSH_CPU_CACHE ();
 
-    Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                ACPI_REGISTER_PM1A_CONTROL, PM1AControl);
+    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL, 
+                PM1AControl);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                ACPI_REGISTER_PM1B_CONTROL, PM1BControl);
+    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL, 
+                PM1BControl);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
@@ -509,8 +509,7 @@ AcpiEnterSleepState (
          */
         AcpiOsStall (10000000);
 
-        Status = AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                    ACPI_REGISTER_PM1_CONTROL,
+        Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_CONTROL,
                     SleepEnableRegInfo->AccessBitMask);
         if (ACPI_FAILURE (Status))
         {
@@ -654,8 +653,8 @@ AcpiLeaveSleepState (
 
         /* Get current value of PM1A control */
 
-        Status = AcpiHwRegisterRead (ACPI_MTX_DO_NOT_LOCK,
-                    ACPI_REGISTER_PM1_CONTROL, &PM1AControl);
+        Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL, 
+                    &PM1AControl);
         if (ACPI_SUCCESS (Status))
         {
             /* Clear SLP_EN and SLP_TYP fields */
@@ -671,10 +670,10 @@ AcpiLeaveSleepState (
 
             /* Just ignore any errors */
 
-            (void) AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                            ACPI_REGISTER_PM1A_CONTROL, PM1AControl);
-            (void) AcpiHwRegisterWrite (ACPI_MTX_DO_NOT_LOCK,
-                            ACPI_REGISTER_PM1B_CONTROL, PM1BControl);
+            (void) AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL, 
+                            PM1AControl);
+            (void) AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL, 
+                            PM1BControl);
         }
     }
 
