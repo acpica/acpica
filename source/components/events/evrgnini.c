@@ -393,6 +393,7 @@ AcpiEvPciConfigRegionSetup (
 
     if (!PciDeviceNode)
     {
+        ACPI_FREE (PciId);
         return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
     }
 
