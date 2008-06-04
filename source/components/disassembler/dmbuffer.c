@@ -525,6 +525,10 @@ AcpiDmIsEisaId (
     }
 
     NextOp = AcpiPsGetDepthNext (NULL, Op);
+    if (!NextOp)
+    {
+        return;
+    }
 
     /* Check for _HID - has one argument */
 
