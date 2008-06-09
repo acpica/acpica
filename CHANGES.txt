@@ -1,7 +1,71 @@
 ----------------------------------------
-14 May 2008. Summary of changes for version 20080514:
+09 June 2008. Summary of changes for version 20080609:
 
-This release is available at http://acpica.org/downloads
+1) ACPI CA Core Subsystem:
+
+Implemented a workaround for reversed _PRT entries. A significant number of 
+BIOSs erroneously reverse the _PRT SourceName and the SourceIndex. This 
+change dynamically detects and repairs this problem. Provides compatibility 
+with MS ACPI. BZ 6859
+
+Simplified the internal ACPI hardware interfaces to eliminate the locking 
+flag parameter from Register Read/Write. Added a new external interface, 
+AcpiGetRegisterUnlocked.
+
+Fixed a problem where the invocation of a GPE control method could hang. This 
+was a regression introduced in 20080514. The new method argument count 
+validation mechanism can enter an infinite loop when a GPE method is 
+dispatched. Problem fixed by removing the obsolete code that passed GPE block 
+information to the notify handler via the control method parameter pointer.
+
+Fixed a problem where the _SST execution status was incorrectly returned to 
+the caller of AcpiEnterSleepStatePrep. This was a regression introduced in 
+20080514. _SST is optional and a NOT_FOUND exception should never be 
+returned. BZ 716
+
+Fixed a problem where a deleted object could be accessed from within the AML 
+parser. This was a regression introduced in version 20080123 as a fix for the 
+Unload operator. Lin Ming. BZ 10669
+
+Cleaned up the debug operand dump mechanism. Eliminated unnecessary operands 
+and eliminated the use of a negative index in a loop. Operands are now 
+displayed in the correct order, not backwards. This also fixes a regression 
+introduced in 20080514 on 64-bit systems where the elimination of 
+ACPI_NATIVE_UINT caused the negative index to go large and positive. BZ 715
+
+Fixed a possible memory leak in EvPciConfigRegionSetup where the error exit 
+path did not delete a locally allocated structure.
+
+Updated definitions for the DMAR and SRAT tables to synchronize with the 
+current specifications. Includes disassembler support.
+
+Fixed a problem in the mutex debug code (in utmutex.c) where an incorrect 
+loop termination value was used. Loop terminated on iteration early, missing 
+one mutex. Linn Crosetto
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  79.5K Code, 16.2K Data,  95.7K Total
+    Debug Version:     153.3K Code, 48.3K Data, 201.6K Total
+  Current Release:
+    Non-Debug Version:  79.3K Code, 16.2K Data,  95.5K Total
+    Debug Version:     153.0K Code, 48.2K Data, 201.2K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Disassembler: Implemented support for EisaId() within _CID objects. Now 
+disassemble integer _CID objects back to EisaId invocations, including 
+multiple integers within _CID packages. Includes single-step support for 
+debugger also.
+
+Disassembler: Added support for DMAR and SRAT table definition changes.
+
+----------------------------------------
+14 May 2008. Summary of changes for version 20080514:
 
 1) ACPI CA Core Subsystem:
 
@@ -80,9 +144,6 @@ means 32-bit and this is unusual. 2 or greater is 64-bit.
 ----------------------------------------
 21 March 2008. Summary of changes for version 20080321:
 
-This release is available at www.acpica.org/downloads.
-
-
 1) ACPI CA Core Subsystem:
 
 Implemented an additional change to the GPE support in order to suppress 
@@ -154,9 +215,6 @@ uses Switch as Serialized, thus preventing multiple thread entries. BZ 469.
 
 ----------------------------------------
 13 February 2008. Summary of changes for version 20080213:
-
-This release is available at www.acpica.org/downloads.
-
 
 1) ACPI CA Core Subsystem:
 
