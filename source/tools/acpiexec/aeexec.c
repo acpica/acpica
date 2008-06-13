@@ -132,7 +132,7 @@ ACPI_TABLE_RSDP             LocalRsdp;
 /*
  * Misc ACPI tables to be installed
  */
-unsigned char Ssdt1Code[] =
+unsigned char Ssdt1Code[] = /* Has method _T98 */
 {
     0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "SSDT0..." */
     0x01,0xB8,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
@@ -142,7 +142,7 @@ unsigned char Ssdt1Code[] =
     0x39,0x38,0x00,0x70,0x0A,0x04,0x60,0xA4,  /* 00000028    "98.p..`." */
 };
 
-unsigned char Ssdt2Code[] =
+unsigned char Ssdt2Code[] = /* Has method _T99 */
 {
     0x53,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "SSDT0..." */
     0x01,0xB7,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
@@ -150,6 +150,16 @@ unsigned char Ssdt2Code[] =
     0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
     0x24,0x04,0x03,0x20,0x14,0x0B,0x5F,0x54,  /* 00000020    "$.. .._T" */
     0x39,0x39,0x00,0x70,0x0A,0x04,0x60,0xA4,  /* 00000028    "99.p..`." */
+};
+
+unsigned char Ssdt3Code[] = /* Has method _T97 */
+{
+    0x54,0x53,0x44,0x54,0x30,0x00,0x00,0x00,  /* 00000000    "TSDT0..." */
+    0x01,0xB8,0x49,0x6E,0x74,0x65,0x6C,0x00,  /* 00000008    "..Intel." */
+    0x4D,0x61,0x6E,0x79,0x00,0x00,0x00,0x00,  /* 00000010    "Many...." */
+    0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
+    0x24,0x04,0x03,0x20,0x14,0x0B,0x5F,0x54,  /* 00000020    "$.. .._T" */
+    0x39,0x37,0x00,0x70,0x0A,0x04,0x60,0xA4,  /* 00000028    "97.p..`." */
 };
 
 unsigned char Oem1Code[] =
@@ -481,6 +491,23 @@ AeRegionHandler (
     }
 
     /*
+     * Region support can be disabled with the -r option.
+     * We use this to support dynamically loaded tables where we pass a valid
+     * address to the AML.
+     */
+    if (AcpiGbl_DbOpt_NoRegionSupport)
+    {
+        BufferValue = ACPI_TO_POINTER (Address);
+        ByteWidth = (BitWidth / 8);
+
+        if (BitWidth % 8)
+        {
+            ByteWidth += 1;
+        }
+        goto DoFunction;
+    }
+
+    /*
      * Find the region's address space and length before searching
      * the linked list.
      */
@@ -661,6 +688,8 @@ AeRegionHandler (
     BufferValue = ((UINT8 *) RegionElement->Buffer +
                     ((ACPI_INTEGER) Address - (ACPI_INTEGER) RegionElement->Address));
 
+DoFunction:
+
     /*
      * Perform a read or write to the buffer space
      */
@@ -813,6 +842,43 @@ AeDeviceNotifyHandler (
     }
 
     (void) AcpiEvaluateObject (Device, "_NOT", NULL, NULL);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AeSetupConfiguration
+ *
+ * PARAMETERS:  RegionAddr          - Address for an ACPI table to be loaded
+ *                                    dynamically. Test purposes only.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Call AML _CFG configuration control method
+ *
+ *****************************************************************************/
+
+ACPI_STATUS
+AeSetupConfiguration (
+    void                    *RegionAddr)
+{
+    ACPI_STATUS             Status;
+    ACPI_OBJECT_LIST        ArgList;
+    ACPI_OBJECT             Arg[3];
+
+
+    /*
+     * Invoke _CFG method if present
+     */
+    ArgList.Count = 1;
+    ArgList.Pointer = Arg;
+
+    Arg[0].Type = ACPI_TYPE_INTEGER;
+    Arg[0].Integer.Value = (ACPI_INTEGER) RegionAddr;
+
+    Status = AcpiEvaluateObject (NULL, "\\_CFG", &ArgList, NULL);
+
+    return (AE_OK);
 }
 
 
@@ -1267,6 +1333,8 @@ AeMiscellaneousTests (
     UINT32                  LockHandle2;
     ACPI_STATISTICS         Stats;
 
+
+    AeSetupConfiguration (Ssdt3Code);
 
     AeTestBufferArgument();
     AeTestPackageArgument ();

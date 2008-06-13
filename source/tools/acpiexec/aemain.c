@@ -125,6 +125,7 @@
 
 UINT8           AcpiGbl_BatchMode = 0;
 BOOLEAN         AcpiGbl_IgnoreErrors = FALSE;
+BOOLEAN         AcpiGbl_DbOpt_NoRegionSupport = FALSE;
 char            BatchBuffer[128];
 
 
@@ -153,6 +154,7 @@ usage (void)
     printf ("   -i                  Do not run STA/INI methods during init\n");
     printf ("   -m                  Display final memory use statistics\n");
     printf ("   -o <OutputFile>     Send output to this file\n");
+    printf ("   -r                  Disable OpRegion address simulation\n");
     printf ("   -s                  Enable Interpreter Slack Mode\n");
     printf ("   -t                  Enable Interpreter Serialized Mode\n");
     printf ("   -v                  Verbose init output\n");
@@ -267,7 +269,7 @@ main (
 
     /* Get the command line options */
 
-    while ((j = AcpiGetopt (argc, argv, "?ab:de^gimo:stvx:")) != EOF) switch(j)
+    while ((j = AcpiGetopt (argc, argv, "?ab:de^gimo:rstvx:")) != EOF) switch(j)
     {
     case 'a':
         AcpiGbl_IgnoreErrors = TRUE;
@@ -319,6 +321,10 @@ main (
 
     case 'o':
         printf ("O option is not implemented\n");
+        break;
+
+    case 'r':
+        AcpiGbl_DbOpt_NoRegionSupport = TRUE;
         break;
 
     case 's':
