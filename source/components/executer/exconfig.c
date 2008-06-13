@@ -180,7 +180,7 @@ AcpiExAddTable (
 
     /* Install the new table into the local data structures */
 
-    ObjDesc->Reference.Object = ACPI_CAST_PTR (void, TableIndex);
+    ObjDesc->Reference.Object = ACPI_TO_POINTER (TableIndex);
 
     /* Add the table to the namespace */
 
@@ -511,6 +511,7 @@ AcpiExLoadOp (
         }
 
         ACPI_MEMCPY (TableDesc.Pointer, Table, Length);
+        TableDesc.Address = ACPI_TO_INTEGER (TableDesc.Pointer);
         break;
 
 
