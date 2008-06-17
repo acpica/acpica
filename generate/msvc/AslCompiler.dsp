@@ -76,7 +76,7 @@ PostBuild_Cmds=copy AslCompiler\iasl.exe ..\..\Libraries	dir ..\..\libraries\ias
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /YX /FD /GZ /c
-# ADD CPP /nologo /Za /W4 /Gi- /Zi /Od /Gf /I "$(OutDir)..\\" /I "..\..\source\Include" /I "$(OutDir)" /I "..\..\source\compiler" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FR /FD /GZ /c
+# ADD CPP /nologo /Za /W4 /Zi /Od /Gf /I "$(OutDir)..\\" /I "..\..\source\Include" /I "$(OutDir)" /I "..\..\source\compiler" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "YY_NEVER_INTERACTIVE" /D "ACPI_ASL_COMPILER" /FR /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG" /d "_AFXDLL"
@@ -671,10 +671,10 @@ SOURCE=../../source/compiler/aslcompiler.l
 # Begin Custom Build - Building iASL Lexer  from $(InputPath) to AslCompiler/$(InputName).l.c
 ProjDir=.
 InputPath=../../source/compiler/aslcompiler.l
-InputName=AslCompiler
+InputName=aslcompiler
 
 "AslCompiler/$(InputName).l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -o$(ProjDir)/AslCompiler/$(InputName).l.c $(InputPath)
+	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -o$(ProjDir)/AslCompiler/$(InputName).l.c $(InputPath)
 
 # End Custom Build
 
@@ -683,10 +683,10 @@ InputName=AslCompiler
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building iASL Lexer  from $(InputPath) to AslCompilerDebug/$(InputName)Debug.l.c
 InputPath=../../source/compiler/aslcompiler.l
-InputName=AslCompiler
+InputName=aslcompiler
 
 "AslCompilerDebug/$(InputName)Debug.l.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -CF -oAslCompilerDebug/$(InputName)Debug.l.c $(InputPath)
+	..\..\Tools_3rd_party\BisonFlex\flex.exe -PAslCompiler -i -s -oAslCompilerDebug/$(InputName)Debug.l.c $(InputPath)
 
 # End Custom Build
 
@@ -703,7 +703,7 @@ SOURCE=../../source/compiler/aslcompiler.y
 # Begin Custom Build - Building iASL Parser from $(InputPath) to AslCompiler/$(InputName).y.c
 ProjDir=.
 InputPath=../../source/compiler/aslcompiler.y
-InputName=AslCompiler
+InputName=aslcompiler
 
 BuildCmds= \
 	..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -o$(ProjDir)/AslCompiler/$(InputName).y.c $(InputPath)
@@ -720,7 +720,7 @@ BuildCmds= \
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Building iASL Parser from $(InputPath) to AslCompilerDebug/$(InputName)Debug.y.c
 InputPath=../../source/compiler/aslcompiler.y
-InputName=AslCompiler
+InputName=aslcompiler
 
 BuildCmds= \
 	..\..\Tools_3rd_party\BisonFlex\bison_custom.exe -pAslCompiler -t -d -v -oAslCompilerDebug/$(InputName).y.c $(InputPath) \
