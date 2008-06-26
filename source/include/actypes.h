@@ -1036,6 +1036,7 @@ typedef struct acpi_device_info
 {
     ACPI_COMMON_OBJ_INFO;
 
+    UINT32                          ParamCount;         /* If a method, required parameter count */
     UINT32                          Valid;              /* Indicates which fields below are valid */
     UINT32                          CurrentStatus;      /* _STA value */
     ACPI_INTEGER                    Address;            /* _ADR value if any */

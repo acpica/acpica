@@ -373,6 +373,11 @@ AcpiGetObjectInfo (
     Info->Name  = Node->Name.Integer;
     Info->Valid = 0;
 
+    if (Node->Type == ACPI_TYPE_METHOD)
+    {
+        Info->ParamCount = Node->Object->Method.ParamCount;
+    }
+
     Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
     if (ACPI_FAILURE (Status))
     {
