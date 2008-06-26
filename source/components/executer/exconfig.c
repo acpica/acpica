@@ -651,6 +651,9 @@ AcpiExUnloadTable (
 
     AcpiTbSetTableLoadedFlag (TableIndex, FALSE);
 
+    /* Table unloaded, remove a reference to the DdbHandle object */
+
+    AcpiUtRemoveReference (DdbHandle);
     return_ACPI_STATUS (AE_OK);
 }
 
