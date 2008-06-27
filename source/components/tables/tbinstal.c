@@ -196,7 +196,6 @@ AcpiTbAddTable (
     UINT32                  *TableIndex)
 {
     UINT32                  i;
-    UINT32                  Length;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -235,12 +234,18 @@ AcpiTbAddTable (
             }
         }
 
-        /* Check for a table match on the entire table length */
+        /*
+         * Check for a table match on the entire table length,
+         * not just the header.
+         */
+        if (TableDesc->Length != AcpiGbl_RootTableList.Tables[i].Length)
+        {
+            continue;
+        }
 
-        Length = ACPI_MIN (TableDesc->Length,
-                    AcpiGbl_RootTableList.Tables[i].Length);
         if (ACPI_MEMCMP (TableDesc->Pointer,
-                AcpiGbl_RootTableList.Tables[i].Pointer, Length))
+                AcpiGbl_RootTableList.Tables[i].Pointer,
+                AcpiGbl_RootTableList.Tables[i].Length))
         {
             continue;
         }
