@@ -2,31 +2,26 @@
 # get-acpi
 #
 # Checkout a version of ACPICA, including all source, headers, and
-# makefiles. The parameter, if given, specifies the CVS tag to be checked out.
+# makefiles. The parameter, if given, specifies the GIT tag to be checked out.
 #
-# requires CVS
+# requires GIT
 #
-# modify cvshome as necessary.
+# modify githome as necessary.
 #
 
-$cvshome = ":pserver:rmoore1\@cvs.sc.intel.com:/home/cmplr/cvs/acpica";
-$cvsroot = "Acpi";
+$githome = "http://www.acpica.org/repos/acpica.git";
+$gitroot = "acpica";
 
 $version;
-$version_name = "cvs-HEAD";
 
-
-# Get optional parameter and use as the CVS tag
+# Get optional parameter and use as the GIT tag
 
 if ($ARGV[0])
 {
-    $version = "-r $ARGV[0]";
-    $version_name = $ARGV[0];
+    $version = $ARGV[0];
 }
 
 # Checkout entire source and linux makefiles
 
-system("echo Getting version $version_name of ACPICA");
-system("rm -rf $cvsroot/source; cvs -z 6 -d $cvshome co $version $cvsroot/source");
-system("rm -rf $cvsroot/generate/linux; cvs -z 6 -d $cvshome co $version $cvsroot/generate/linux");
-
+system("echo Getting version $version of ACPICA");
+system("rm -rf $gitroot; http_proxy=http://proxy.jf.intel.com:911 git clone $githome");

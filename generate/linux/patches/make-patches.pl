@@ -7,35 +7,28 @@
 #   run perl make-patches.pl
 #   collect *.patch files
 #
-# Requires: cvs, cvsp
+# Requires: git
 #
 # Note: Must get the *previous* release of ACPICA to generate the patches
-#
-# These warnings are ok:
-# can't open cvsps.cache for write: No such file or directory
 #
 use File::stat;
 
 #
 # Configuration
 #
-$old_release = "R02_13_08";
+$old_release = "R03_21_08";
+$new_release = "R05_14_08";
 #
-# use "cvs-HEAD" for the latest version (head of repository tree)
-#
-$new_release = "R03_21_08";
-#
-$mbox_date = "Fri Mar 21 16:12:34 2008";
+$mbox_date = `date`;
 
-$CVSPS_ARGS = "-z 6 -r $old_release -a rmoore1";
-# from above:  -s 16482,16484-
+$GIT_ARGS = "$old_release";
 
 $patch_from = "Bob Moore <robert.moore\@intel.com>";
 $patch_signoff = "Bob Moore <robert.moore\@intel.com>";
 $linux_patch_dir = "patches.linux";
-$cvs_patch_dir = "patches.cvs";
-$cvs_patch_name = $old_release.patch;
-$cvsps_log = 'cvsps.log';
+$git_patch_dir = "patches.git";
+$git_patch_name = $old_release.patch;
+$git_log = 'git.log';
 $mbox_name = "$linux_patch_dir/$old_release.mbox";
 $linux_archive_dir = "archive.linux";
 
@@ -49,7 +42,7 @@ $patch_num;
 #
 # 1) Get the latest version of the acpisrc utility and generate it
 # 2) Checkout the specified tagged release of the ACPICA source
-# 3) Create the CVS logfile and patches against the original ACPICA source
+# 3) Create the GIT logfile and patches against the original ACPICA source
 # 4) Create the Linux patches
 #
 
@@ -61,8 +54,8 @@ system("cp $linux_patch_dir/*.mbox $linux_archive_dir");
 
 # Make clean patch directories
 
-system("rm -rf $cvs_patch_dir");
-system("mkdir -p $cvs_patch_dir");
+system("rm -rf $git_patch_dir");
+system("mkdir -p $git_patch_dir");
 system("rm -rf $linux_patch_dir");
 system("mkdir -p $linux_patch_dir");
 
@@ -79,22 +72,16 @@ system("echo [make-patches] Generate acpisrc utility from source");
 system("perl acpisrc.pl");
 
 
-# Checkout the "older" ACPICA release
+# Create GIT log
 
-system("echo [make-patches] Getting clean previous ACPICA release, version $old_release");
-system("perl get-acpi.pl $old_release");
-
-
-# Create CVS log
-
-system("echo [make-patches] Creating the CVS log");
-system("cd Acpi/source; cvsps $CVSPS_ARGS -u > ../../$cvsps_log");
+system("echo [make-patches] Creating the GIT log");
+system("cd acpica; sh ../create-git-log.sh $old_release $new_release  > ../$git_log");
 
 
-# Create CVS patches
+# Create GIT patches
 
-system("echo [make-patches] Creating the CVS patches");
-system("cd Acpi/source; cvsps $CVSPS_ARGS -g -p ../../$cvs_patch_dir");
+system("echo [make-patches] Creating the GIT patches");
+system("cd acpica; sh ../git-patches.sh $old_release $new_release ../$git_patch_dir");
 
 
 # Create the merged patchfile for "native" ACPICA code
@@ -106,7 +93,7 @@ system("echo [make-patches] Creating the merged native patch file");
 # Create "linuxized" reference ACPICA directory from the "older" ACPICA tree
 
 system("echo [make-patches] Creating the Linuxized ACPICA source from $old_release");
-system("sh linuxize.sh");
+system("sh linuxize.sh $old_release");
 
 
 # Create the linux patches, one per file
@@ -122,7 +109,7 @@ system("echo [make-patches] Creating the mbox patch file");
 
 
 #
-# Walk the log created by cvsps, invoke callback for each entry
+# Walk the log created by git, invoke callback for each entry
 # Example log entry:
 #
 # ---------------------
@@ -140,7 +127,7 @@ system("echo [make-patches] Creating the mbox patch file");
 # 	include/platform/aclinux.h:1.42->1.43 
 # 	tools/acpisrc/acpisrc.h:1.41->1.42 
 # 
-sub walk_cvsps_log
+sub walk_git_log
 {
     my $callback = @_[0];
     my $patch_name;
@@ -153,9 +140,9 @@ sub walk_cvsps_log
     my $short_idx;
 
 
-    # open the CVS log file
+    # open the GIT log file
 
-    open(INFO, $cvsps_log) or die ("Cannot open $cvsps_log");
+    open(INFO, $git_log) or die ("Cannot open $git_log");
 
     # process each entry in the log file
 
@@ -170,7 +157,7 @@ sub walk_cvsps_log
             $date = $1;
         }
 
-        # extract the CVS tag, "(none)" if none
+        # extract the GIT tag, "(none)" if none
 
         if (s/^Tag:\s*(.+)/\1/) {
             $tag = $1;
@@ -179,13 +166,13 @@ sub walk_cvsps_log
             # Construct the filename for the patch
 
             $file_name = "$linux_patch_dir/$patch_name";
-            if ($tag !~ /\(none\)/) {
-                $file_name .= "-".$tag;
-            }
+            #if ($tag !~ /\(none\)/) {
+            #    $file_name .= "-".$tag;
+            #}
             $file_name .= ".patch";
         }
 
-        # extract the CVS log message and make the linux patch
+        # extract the GIT log message and make the linux patch
 
         if (/^Log:/) {
             $/ = "";
@@ -205,9 +192,9 @@ sub walk_cvsps_log
 
 sub make_merged_patch
 {
-    system("rm -f $cvs_patch_dir/$cvs_patch_name");
+    system("rm -f $git_patch_dir/$git_patch_name");
 
-    system("cd $cvs_patch_dir; find . -name \"[0123456789]*.patch\" | xargs cat - >> $cvs_patch_name");
+    system("cd $git_patch_dir; find . -name \"[0123456789]*.patch\" | xargs cat - >> $git_patch_name");
 }
 
 
@@ -220,8 +207,8 @@ sub make_mbox
     $patch_num = 0;
     system("rm -f $mbox_name");
     
-    &walk_cvsps_log (count_patches);
-    &walk_cvsps_log (make_mbox_entry);
+    &walk_git_log (count_patches);
+    &walk_git_log (make_mbox_entry);
 }
 
 
@@ -277,13 +264,13 @@ sub make_mbox_entry
 
 
 #
-# This function creates the linux patches from the CVS log file.
-# Requires the cvs log and the cvs patch set (both created by cvsps)
+# This function creates the linux patches from the GIT log file.
+# Requires the git log and the git patch set (both created by git)
 #
 sub make_patches
 {
     $linux_patch_count = 0;
-    &walk_cvsps_log (make_patch);
+    &walk_git_log (make_patch);
 
     # cleanup
 
@@ -296,7 +283,7 @@ sub make_patches
 
 #
 # This function creates a linux patch from the corresponding
-# CVS patch against the original ACPICA source tree
+# GIT patch against the original ACPICA source tree
 #
 sub make_patch
 {
@@ -314,9 +301,9 @@ sub make_patch
     system("rm -rf original.linux");
     system("mv new.linux/ original.linux");
 
-    # Apply CVS patch to the non-linuxized ACPICA tree and linuxize the tree to "new.linux"
+    # Apply GIT patch to the non-linuxized ACPICA tree and linuxize the tree to "new.linux"
 
-    system("patch -p0 < $cvs_patch_dir/$patch_name.patch");
+    system("cd acpica; patch -p1 < ../$git_patch_dir/$patch_name.patch");
     system("sh linuxize.sh");
 
     # diff the new and original linuxed trees

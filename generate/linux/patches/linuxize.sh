@@ -5,14 +5,24 @@
 
 # Convert ACPICA source to Linux format
 
+version=$1
+branch=master
+
+if [ ! -z "$version" ] ; then
+	cd acpica
+	git checkout $version
+	cd ..
+fi
+
 rm -rf new.linux
-bin/acpisrc.exe -ldqy Acpi/source new.linux
+bin/acpisrc -ldqy acpica/source new.linux
 cd new.linux
 
 
 # delete the various cvs control directories and files
-
-find . -name cvs | xargs rm -rf
+# <no longer needed>
+#
+#find . -name cvs | xargs rm -rf
 
 
 # Update #include statements in all source files
@@ -26,7 +36,6 @@ find . -name cvs | xargs rm -rf
 # flatten the ACPICA directory structure
 
 mv components/* .
-mv interpreter/* .
 
 
 # delete all directories that are not needed by Linux
