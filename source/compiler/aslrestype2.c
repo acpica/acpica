@@ -2488,20 +2488,25 @@ RsDoInterruptDescriptor (
 
     InitializerOp = Op->Asl.Child;
     StringLength = RsGetStringDataLength (InitializerOp);
-    if (StringLength)
-    {
-        /* Make room for the ResourceSourceIndex */
-
-        OptionIndex++;
-    }
 
     /* Count the interrupt numbers */
 
     for (i = 0; InitializerOp; i++)
     {
         InitializerOp = ASL_GET_PEER_NODE (InitializerOp);
+
         if (i <= 6)
         {
+            if (i == 3 &&
+                InitializerOp->Asl.ParseOpcode != PARSEOP_DEFAULT_ARG)
+            {
+                /*
+                 * ResourceSourceIndex was specified, always make room for
+                 * it, even if the ResourceSource was omitted.
+                 */
+                OptionIndex++;
+            }
+
             continue;
         }
 
