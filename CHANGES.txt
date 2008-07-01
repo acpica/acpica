@@ -1,4 +1,97 @@
 ----------------------------------------
+01 July 2008. Summary of changes for version 20080701:
+
+This release is available at http://acpica.org/downloads
+Direct git access via http://www.acpica.org/repos/acpica.git
+
+0) Git source tree / acpica.org
+
+Fixed a problem where a git-clone from http would not transfer the entire source 
+tree.
+
+1) ACPI CA Core Subsystem:
+
+Implemented a "careful" GPE disable in AcpiEvDisableGpe, only modify one enable 
+bit. Now performs a read-change-write of the enable register instead of simply 
+writing out the cached enable mask. This will prevent inadvertent enabling of 
+GPEs if a rogue GPE is received during initialization (before GPE handlers are 
+installed.)
+
+Implemented a copy for dynamically loaded tables. Previously, dynamically loaded 
+tables were simply mapped - but on some machines this memory is corrupted after 
+suspend. Now copy the table to a local buffer. For the OpRegion case, added 
+checksum verify. Use the table length from the table header, not the region 
+length. For the Buffer case, use the table length also. Dennis Noordsij, Bob 
+Moore. BZ 10734
+
+Fixed a problem where the same ACPI table could not be dynamically loaded and 
+unloaded more than once. Without this change, a table cannot be loaded again 
+once it has been loaded/unloaded one time. The current mechanism does not 
+unregister a table upon an unload. During a load, if the same table is found, 
+this no longer returns an exception. BZ 722
+
+Fixed a problem where the wrong descriptor length was calculated for the EndTag 
+descriptor in 64-bit mode. The "minimal" descriptors such as EndTag are 
+calculated as 12 bytes long, but the actual length in the internal descriptor is 
+16 because of the round-up to 8 on the 64-bit build. Reported by Linn Crosetto. 
+BZ 728
+
+Fixed a possible memory leak in the Unload operator. The DdbHandle returned by 
+Load() did not have its reference count decremented during unload, leading to a 
+memory leak. Lin Ming. BZ 727
+
+Fixed a possible memory leak when deleting thermal/processor objects. Any 
+associated notify handlers (and objects) were not being deleted. Fiodor Suietov. 
+BZ 506
+
+Fixed the ordering of the ASCII names in the global mutex table to match the 
+actual mutex IDs. Used by AcpiUtGetMutexName, a function used for debug only. 
+Vegard Nossum. BZ 726
+
+Enhanced the AcpiGetObjectInfo interface to return the number of required 
+arguments if the object is a control method. Added this call to the debugger so 
+the proper number of default arguments are passed to a method. This prevents a 
+warning when executing methods from AcpiExec.
+
+Added a check for an invalid handle in AcpiGetObjectInfo. Return 
+AE_BAD_PARAMETER if input handle is invalid. BZ 474
+
+Fixed an extraneous warning from exconfig.c on the 64-bit build.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug 
+version of the code includes the debug output trace mechanism and has a much 
+larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  79.3K Code, 16.2K Data,  95.5K Total
+    Debug Version:     153.0K Code, 48.2K Data, 201.2K Total
+  Current Release:
+    Non-Debug Version:  79.6K Code, 16.2K Data,  95.8K Total
+    Debug Version:     153.5K Code, 48.2K Data, 201.7K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+iASL: Added two missing ACPI reserved names. Added _MTP and _ASZ, both resource 
+descriptor names.
+
+iASL: Detect invalid ASCII characters in input (windows version). Removed the "-
+CF" flag from the flex compile, enables correct detection of non-ASCII 
+characters in the input. BZ 441
+
+iASL: Eliminate warning when result of LoadTable is not used. Eliminate the 
+"result of operation not used" warning when the DDB handle returned from 
+LoadTable is not used. The warning is not needed. BZ 590
+
+AcpiExec: Add support for dynamic table load/unload. Now calls _CFG method to 
+pass address of table to the AML. Added option to disable OpRegion simulation to 
+allow creation of an OpRegion with a real address that was passed to _CFG. All 
+of this allows testing of the Load and Unload operators from AcpiExec.
+
+Debugger: update tables command for unloaded tables. Handle unloaded tables and 
+use the standard table header output routine.
+
+----------------------------------------
 09 June 2008. Summary of changes for version 20080609:
 
 1) ACPI CA Core Subsystem:
