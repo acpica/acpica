@@ -2641,6 +2641,14 @@ RsDoInterruptDescriptor (
 
             if (i == 7)
             {
+                if (InitializerOp->Asl.ParseOpcode == PARSEOP_DEFAULT_ARG)
+                {
+                    /* Must be at least one interrupt */
+
+                    AslError (ASL_ERROR, ASL_MSG_EX_INTERRUPT_LIST_MIN,
+                        InitializerOp, NULL);
+                }
+
                 /* Check now for duplicates in list */
 
                 RsCheckListForDuplicates (InitializerOp);
