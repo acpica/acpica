@@ -923,6 +923,17 @@ LkNamespaceLocateBegin (
     }
 
     /*
+     * One special case: CondRefOf operator - we don't care if the name exists
+     * or not at this point, just ignore it, the point of the operator is to
+     * determine if the name exists at runtime.
+     */
+    if ((Op->Asl.Parent) &&
+        (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_CONDREFOF))
+    {
+        return (AE_OK);
+    }
+
+    /*
      * We must enable the "search-to-root" for single NameSegs, but
      * we have to be very careful about opening up scopes
      */
@@ -1010,14 +1021,6 @@ LkNamespaceLocateBegin (
                 {
                     /* The name doesn't exist, period */
 
-                    if ((Op->Asl.Parent) &&
-                        (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_CONDREFOF))
-                    {
-                        /* Ignore not found if parent is CondRefOf */
-
-                        return (AE_OK);
-                    }
-
                     AslError (ASL_ERROR, ASL_MSG_NOT_EXIST,
                         Op, Op->Asl.ExternalName);
                 }
@@ -1029,14 +1032,6 @@ LkNamespaceLocateBegin (
                 if (Path[0] == AML_ROOT_PREFIX)
                 {
                     /* Gave full path, the object does not exist */
-
-                    if ((Op->Asl.Parent) &&
-                        (Op->Asl.Parent->Asl.ParseOpcode == PARSEOP_CONDREFOF))
-                    {
-                        /* Ignore not found if parent is CondRefOf */
-
-                        return (AE_OK);
-                    }
 
                     AslError (ASL_ERROR, ASL_MSG_NOT_EXIST, Op,
                         Op->Asl.ExternalName);
