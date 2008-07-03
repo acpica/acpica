@@ -203,6 +203,9 @@ AcpiDbExecuteMethod (
         return (Status);
     }
 
+    ParamObjects.Pointer = NULL;
+    ParamObjects.Count   = 0;
+
     ObjInfo = Buffer.Pointer;
     if (ObjInfo->Type == ACPI_TYPE_METHOD)
     {
