@@ -141,10 +141,6 @@ AsDoWildcard (
     char                    *DirectoryPathname,
     char                    *FileSpecifier);
 
-static ACPI_STATUS
-AslDoOneFile (
-    char                    *Filename);
-
 
 /*******************************************************************************
  *
@@ -274,7 +270,7 @@ AsDoWildcard (
  *
  ******************************************************************************/
 
-static ACPI_STATUS
+ACPI_STATUS
 AslDoOneFile (
     char                    *Filename)
 {

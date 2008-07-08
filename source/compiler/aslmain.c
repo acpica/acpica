@@ -743,6 +743,18 @@ main (
     AslInitialize ();
     Index = AslCommandLine (argc, argv);
 
+    /* Options that have no additional parameters or pathnames */
+
+    if (Gbl_GetAllTables)
+    {
+        Status = AslDoOneFile (NULL);
+        if (ACPI_FAILURE (Status))
+        {
+            return (-1);
+        }
+        return (0);
+    }
+
     /* Process each pathname/filename in the list, with possible wildcards */
 
     while (argv[Index])

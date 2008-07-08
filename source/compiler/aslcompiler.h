@@ -195,6 +195,10 @@ ACPI_STATUS
 AslDoOnePathname (
     char                    *Pathname);
 
+ACPI_STATUS
+AslDoOneFile (
+    char                    *Filename);
+
 /*
  * aslcompile - compile mainline
  */
