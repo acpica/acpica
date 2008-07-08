@@ -121,8 +121,6 @@
 #include "acparser.h"
 #include "amlcode.h"
 
-#include <ctype.h>
-
 #define _COMPONENT          ACPI_COMPILER
         ACPI_MODULE_NAME    ("aslanalyze")
 

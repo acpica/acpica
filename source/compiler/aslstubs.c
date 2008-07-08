@@ -115,7 +115,6 @@
  *
  *****************************************************************************/
 
-#include <stdio.h>
 #include "aslcompiler.h"
 #include "acdispat.h"
 #include "actables.h"

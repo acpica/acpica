@@ -119,8 +119,6 @@
 #define _DECLARE_GLOBALS
 
 #include "aslcompiler.h"
-#include "acnamesp.h"
-#include "actables.h"
 #include "acapps.h"
 
 #ifdef _DEBUG
