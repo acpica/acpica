@@ -165,7 +165,12 @@ AcpiInitializeSubsystem (
 
     /* Initialize all globals used by the subsystem */
 
-    AcpiUtInitGlobals ();
+    Status = AcpiUtInitGlobals ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status, "During initialization of globals"));
+        return_ACPI_STATUS (Status);
+    }
 
     /* Create the default mutex objects */
 

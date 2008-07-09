@@ -245,18 +245,27 @@ AdInitialize (
     /* ACPI CA subsystem initialization */
 
     Status = AcpiOsInitialize ();
-    AcpiUtInitGlobals ();
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    Status = AcpiUtInitGlobals ();
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
     Status = AcpiUtMutexInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        return Status;
+        return (Status);
     }
 
     Status = AcpiNsRootInitialize ();
     if (ACPI_FAILURE (Status))
     {
-        return Status;
+        return (Status);
     }
 
     /* Setup the Table Manager (cheat - there is no RSDT) */
@@ -265,7 +274,7 @@ AdInitialize (
     AcpiGbl_RootTableList.Count = 0;
     AcpiGbl_RootTableList.Tables = LocalTables;
 
-    return Status;
+    return (Status);
 }
 
 
@@ -275,7 +284,7 @@ AdInitialize (
  *
  * PARAMETERS:
  *
- * RETURN:      Status
+ * RETURN:      None
  *
  * DESCRIPTION:
  *

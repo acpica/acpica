@@ -776,14 +776,14 @@ AcpiUtValidObjectType (
  *
  * PARAMETERS:  None
  *
- * RETURN:      None
+ * RETURN:      Status
  *
  * DESCRIPTION: Init library globals.  All globals that require specific
  *              initialization should be initialized here!
  *
  ******************************************************************************/
 
-void
+ACPI_STATUS
 AcpiUtInitGlobals (
     void)
 {
@@ -799,7 +799,7 @@ AcpiUtInitGlobals (
     Status = AcpiUtCreateCaches ();
     if (ACPI_FAILURE (Status))
     {
-        return;
+        return_ACPI_STATUS (Status);
     }
 
     /* Mutex locked flags */
@@ -890,7 +890,7 @@ AcpiUtInitGlobals (
     AcpiGbl_DisplayFinalMemStats        = FALSE;
 #endif
 
-    return_VOID;
+    return_ACPI_STATUS (AE_OK);
 }
 
 /* Public globals */

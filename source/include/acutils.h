@@ -190,7 +190,7 @@ typedef struct acpi_pkg_info
 /*
  * utglobal - Global data structures and procedures
  */
-void
+ACPI_STATUS
 AcpiUtInitGlobals (
     void);
 
