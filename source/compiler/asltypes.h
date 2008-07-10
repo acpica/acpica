@@ -424,7 +424,8 @@ typedef enum
     ASL_MSG_NOT_REFERENCED,
     ASL_MSG_NON_ZERO,
     ASL_MSG_STRING_LENGTH,
-    ASL_MSG_SERIALIZED
+    ASL_MSG_SERIALIZED,
+    ASL_MSG_COMPILER_RESERVED
 
 } ASL_MESSAGE_IDS;
 
@@ -513,7 +514,7 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_RESERVED_OPERAND_TYPE */      "Invalid operand type for reserved name, must be",
 /*    ASL_MSG_RESERVED_RETURN_VALUE */      "Reserved method must return a value",
 /*    ASL_MSG_RESERVED_USE */               "Invalid use of reserved name",
-/*    ASL_MSG_RESERVED_WORD */              "Use of reserved word",
+/*    ASL_MSG_RESERVED_WORD */              "Use of reserved name",
 /*    ASL_MSG_RESOURCE_FIELD */             "Resource field name cannot be used as a target",
 /*    ASL_MSG_RESOURCE_INDEX */             "Missing ResourceSourceIndex (required)",
 /*    ASL_MSG_RESOURCE_LIST */              "Too many resource items (internal error)",
@@ -540,7 +541,8 @@ char                        *AslMessages [] = {
 /*    ASL_MSG_NOT_REFERENCED */             "Namespace object is not referenced",
 /*    ASL_MSG_NON_ZERO */                   "Operand evaluates to zero",
 /*    ASL_MSG_STRING_LENGTH */              "String literal too long",
-/*    ASL_MSG_SERIALIZED */                 "Control Method marked Serialized"
+/*    ASL_MSG_SERIALIZED */                 "Control Method marked Serialized",
+/*    ASL_MSG_COMPILER_RESERVED */          "Use of compiler reserved name"
 
 };
 

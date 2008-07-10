@@ -684,7 +684,15 @@ AnCheckForReservedName (
             return (ACPI_NOT_RESERVED_NAME);
         }
 
-        AslError (ASL_ERROR, ASL_MSG_RESERVED_WORD, Op, Op->Asl.ExternalName);
+        /*
+         * Was not actually emitted by the compiler. This is a special case,
+         * however. If the ASL code being compiled was the result of a
+         * dissasembly, it may possibly contain valid compiler-emitted names
+         * of the form "_T_x". We don't want to issue an error or even a
+         * warning and force the user to manually change the names. So, we
+         * will issue a remark instead.
+         */
+        AslError (ASL_REMARK, ASL_MSG_COMPILER_RESERVED, Op, Op->Asl.ExternalName);
         return (ACPI_COMPILER_RESERVED_NAME);
     }
 
