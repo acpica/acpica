@@ -1020,10 +1020,10 @@ AnMethodAnalysisWalkBegin (
         if (!MethodInfo)
         {
             /*
-             * Probably was an error in the method declaration,
-             * no additional error here
+             * Local was used outside a control method, or there was an error
+             * in the method declaration.
              */
-            ACPI_WARNING ((AE_INFO, "%p, No parent method", Op));
+            AslError (ASL_REMARK, ASL_MSG_LOCAL_OUTSIDE_METHOD, Op, Op->Asl.ExternalName);
             return (AE_ERROR);
         }
 
@@ -1064,10 +1064,10 @@ AnMethodAnalysisWalkBegin (
         if (!MethodInfo)
         {
             /*
-             * Probably was an error in the method declaration,
-             * no additional error here
+             * Arg was used outside a control method, or there was an error
+             * in the method declaration.
              */
-            ACPI_WARNING ((AE_INFO, "%p, No parent method", Op));
+            AslError (ASL_REMARK, ASL_MSG_LOCAL_OUTSIDE_METHOD, Op, Op->Asl.ExternalName);
             return (AE_ERROR);
         }
 
@@ -1715,6 +1715,19 @@ AnOperandTypecheckWalkEnd (
     RuntimeArgTypes = OpInfo->RuntimeArgs;
     OpcodeClass     = OpInfo->Class;
 
+    /*
+     * If we are creating a named object, check if we are within a while loop
+     * by checking if the parent is a WHILE op. This is a simple analysis, but
+     * probably sufficient for many cases.
+     */
+    if ((OpcodeClass == AML_CLASS_NAMED_OBJECT) ||
+        (OpcodeClass == AML_CLASS_CREATE))
+    {
+        if (Op->Asl.Parent->Asl.AmlOpcode == AML_WHILE_OP)
+        {
+            AslError (ASL_ERROR, ASL_MSG_NAMED_OBJECT_IN_WHILE, Op, NULL);
+        }
+    }
 
     /*
      * Special case for control opcodes IF/RETURN/WHILE since they
