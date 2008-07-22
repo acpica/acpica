@@ -119,6 +119,7 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
+#include "amlcode.h"
 
 ACPI_EXPORT_SYMBOL (AcpiGbl_FADT)
 
@@ -656,6 +657,45 @@ AcpiUtGetDescriptorName (
     return (ACPI_CAST_PTR (char,
         AcpiGbl_DescTypeNames[ACPI_GET_DESCRIPTOR_TYPE (Object)]));
 
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtGetReferenceName
+ *
+ * PARAMETERS:  Object               - An ACPI reference object
+ *
+ * RETURN:      Pointer to a string
+ *
+ * DESCRIPTION: Decode a reference object sub-type to a string.
+ *
+ ******************************************************************************/
+
+/* Printable names of reference object sub-types */
+
+const char *
+AcpiUtGetReferenceName (
+    ACPI_OPERAND_OBJECT     *Object)
+{
+
+    switch (Object->Reference.Opcode)
+    {
+    case AML_INT_NAMEPATH_OP:
+        return ("Name");
+
+    case AML_LOAD_OP:
+        return ("DDB-Handle");
+
+    case AML_REF_OF_OP:
+        return ("RefOf");
+
+    case AML_INDEX_OP:
+        return ("Index");
+
+    default:
+        return ("Unknown");
+    }
 }
 
 

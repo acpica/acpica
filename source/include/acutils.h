@@ -218,6 +218,10 @@ char *
 AcpiUtGetDescriptorName (
     void                    *Object);
 
+const char *
+AcpiUtGetReferenceName (
+    ACPI_OPERAND_OBJECT     *Object);
+
 char *
 AcpiUtGetObjectTypeName (
     ACPI_OPERAND_OBJECT     *ObjDesc);
