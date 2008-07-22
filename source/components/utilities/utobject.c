@@ -630,8 +630,9 @@ AcpiUtGetSimpleObjectSize (
              * Notably, Locals and Args are not supported, but this may be
              * required eventually.
              */
-            ACPI_ERROR ((AE_INFO,
-                "Unsupported Reference opcode=%X in object %p",
+            ACPI_ERROR ((AE_INFO, "Cannot convert to external object - "
+                "unsupported Reference type [%s] %X in object %p",
+                AcpiUtGetReferenceName (InternalObject),
                 InternalObject->Reference.Opcode, InternalObject));
             Status = AE_TYPE;
             break;
@@ -641,7 +642,9 @@ AcpiUtGetSimpleObjectSize (
 
     default:
 
-        ACPI_ERROR ((AE_INFO, "Unsupported type=%X in object %p",
+        ACPI_ERROR ((AE_INFO, "Cannot convert to external object - "
+            "unsupported type [%s] %X in object %p",
+            AcpiUtGetObjectTypeName (InternalObject),
             ACPI_GET_OBJECT_TYPE (InternalObject), InternalObject));
         Status = AE_TYPE;
         break;
