@@ -191,7 +191,18 @@ FlOpenLocalFile (
     char                    *Mode)
 {
 
-    strcpy (StringBuffer, Gbl_DirectoryPath);
+    StringBuffer[0] = 0;
+
+    /* Check for an absolute pathname */
+
+    if ((LocalName[0] != '/') &&        /* Forward slash */
+        (LocalName[0] != '\\') &&       /* backslash (Win) */
+        (LocalName[1] != ':'))          /* Device name (Win) */
+    {
+        /* The include file path is relative, prepend the directory path */
+
+        strcat (StringBuffer, Gbl_DirectoryPath);
+    }
     strcat (StringBuffer, LocalName);
 
     DbgPrint (ASL_PARSE_OUTPUT, "FlOpenLocalFile: %s\n", StringBuffer);
