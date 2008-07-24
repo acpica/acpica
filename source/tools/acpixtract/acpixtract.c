@@ -616,6 +616,13 @@ ExtractTables (
     if (OutputFile)
     {
         fclose (OutputFile);
+        if (State == EXTRACT_DATA)
+        {
+            /* Received an EOF while extracting data */
+
+            printf ("Acpi table [%4.4s] - % 6d bytes written to %s\n",
+                ThisSignature, TotalBytesWritten, Filename);
+        }
     }
 
     fclose (InputFile);
