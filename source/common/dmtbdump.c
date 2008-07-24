@@ -848,6 +848,12 @@ AcpiDmDumpMadt (
         case ACPI_MADT_TYPE_INTERRUPT_SOURCE:
             InfoTable = AcpiDmTableInfoMadt8;
             break;
+        case ACPI_MADT_TYPE_LOCAL_X2APIC:
+            InfoTable = AcpiDmTableInfoMadt9;
+            break;
+        case ACPI_MADT_TYPE_LOCAL_X2APIC_NMI:
+            InfoTable = AcpiDmTableInfoMadt10;
+            break;
         default:
             AcpiOsPrintf ("\n**** Unknown MADT sub-table type %X\n\n", SubTable->Type);
             return;
@@ -1033,6 +1039,16 @@ AcpiDmDumpSrat (
     SubTable = ACPI_ADD_PTR (ACPI_SUBTABLE_HEADER, Table, Offset);
     while (Offset < Table->Length)
     {
+        /* Common sub-table header */
+
+        AcpiOsPrintf ("\n");
+        Status = AcpiDmDumpTable (Table->Length, Offset, SubTable,
+                    SubTable->Length, AcpiDmTableInfoSratHdr);
+        if (ACPI_FAILURE (Status))
+        {
+            return;
+        }
+
         switch (SubTable->Type)
         {
         case ACPI_SRAT_TYPE_CPU_AFFINITY:
@@ -1040,6 +1056,9 @@ AcpiDmDumpSrat (
             break;
         case ACPI_SRAT_TYPE_MEMORY_AFFINITY:
             InfoTable = AcpiDmTableInfoSrat1;
+            break;
+        case ACPI_SRAT_TYPE_X2APIC_CPU_AFFINITY:
+            InfoTable = AcpiDmTableInfoSrat2;
             break;
         default:
             AcpiOsPrintf ("\n**** Unknown SRAT sub-table type %X\n", SubTable->Type);

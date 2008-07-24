@@ -191,6 +191,8 @@ static const char           *AcpiDmMadtSubnames[] =
     "I/O SAPIC",                    /* ACPI_MADT_TYPE_IO_SAPIC */
     "Local SAPIC",                  /* ACPI_MADT_TYPE_LOCAL_SAPIC */
     "Platform Interrupt Sources",   /* ACPI_MADT_TYPE_INTERRUPT_SOURCE */
+    "Processor Local x2APIC",       /* ACPI_MADT_TYPE_LOCAL_X2APIC */
+    "Local x2APIC NMI",             /* ACPI_MADT_TYPE_LOCAL_X2APIC_NMI */
     "Unknown SubTable Type"         /* Reserved */
 };
 
@@ -198,6 +200,7 @@ static const char           *AcpiDmSratSubnames[] =
 {
     "Processor Local APIC/SAPIC Affinity",
     "Memory Affinity",
+    "Processor Local x2APIC Affinity",
     "Unknown SubTable Type"         /* Reserved */
 };
 

@@ -1141,7 +1141,9 @@ enum AcpiMadtType
     ACPI_MADT_TYPE_IO_SAPIC             = 6,
     ACPI_MADT_TYPE_LOCAL_SAPIC          = 7,
     ACPI_MADT_TYPE_INTERRUPT_SOURCE     = 8,
-    ACPI_MADT_TYPE_RESERVED             = 9     /* 9 and greater are reserved */
+    ACPI_MADT_TYPE_LOCAL_X2APIC         = 9,
+    ACPI_MADT_TYPE_LOCAL_X2APIC_NMI     = 10,
+    ACPI_MADT_TYPE_RESERVED             = 11    /* 11 and greater are reserved */
 };
 
 
@@ -1260,6 +1262,30 @@ typedef struct acpi_madt_interrupt_source
 /* Flags field above */
 
 #define ACPI_MADT_CPEI_OVERRIDE     (1)
+
+/* 9: Processor Local X2_APIC (07/2008) */
+
+typedef struct acpi_madt_local_x2apic
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Reserved;           /* Reserved - must be zero */
+    UINT32                  LocalApicId;        /* Processor X2_APIC ID  */
+    UINT32                  LapicFlags;
+    UINT32                  Uid;                /* Extended X2_APIC processor ID */
+
+} ACPI_MADT_LOCAL_X2APIC;
+
+/* 10: Local X2APIC NMI (07/2008) */
+
+typedef struct acpi_madt_local_x2apic_nmi
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  IntiFlags;
+    UINT32                  Uid;                /* Processor X2_APIC ID */
+    UINT8                   Lint;               /* LINTn to which NMI is connected */
+    UINT8                   Reserved[3];
+
+} ACPI_MADT_LOCAL_X2APIC_NMI;
 
 
 /*
@@ -1423,12 +1449,17 @@ typedef struct acpi_table_srat
 
 enum AcpiSratType
 {
-    ACPI_SRAT_TYPE_CPU_AFFINITY     = 0,
-    ACPI_SRAT_TYPE_MEMORY_AFFINITY  = 1,
-    ACPI_SRAT_TYPE_RESERVED         = 2
+    ACPI_SRAT_TYPE_CPU_AFFINITY         = 0,
+    ACPI_SRAT_TYPE_MEMORY_AFFINITY      = 1,
+    ACPI_SRAT_TYPE_X2APIC_CPU_AFFINITY  = 2,
+    ACPI_SRAT_TYPE_RESERVED             = 3     /* 3 and greater are reserved */
 };
 
-/* SRAT sub-tables */
+/*
+ * SRAT Sub-tables, correspond to Type in ACPI_SUBTABLE_HEADER
+ */
+
+/* 0: Processor Local APIC/SAPIC Affinity */
 
 typedef struct acpi_srat_cpu_affinity
 {
@@ -1442,10 +1473,7 @@ typedef struct acpi_srat_cpu_affinity
 
 } ACPI_SRAT_CPU_AFFINITY;
 
-/* Flags */
-
-#define ACPI_SRAT_CPU_ENABLED       (1)         /* 00: Use affinity structure */
-
+/* 1: Memory Affinity */
 
 typedef struct acpi_srat_mem_affinity
 {
@@ -1465,6 +1493,22 @@ typedef struct acpi_srat_mem_affinity
 #define ACPI_SRAT_MEM_ENABLED       (1)         /* 00: Use affinity structure */
 #define ACPI_SRAT_MEM_HOT_PLUGGABLE (1<<1)      /* 01: Memory region is hot pluggable */
 #define ACPI_SRAT_MEM_NON_VOLATILE  (1<<2)      /* 02: Memory region is non-volatile */
+
+/* 2: Processor Local X2_APIC Affinity (07/2008) */
+
+typedef struct acpi_srat_x2apic_cpu_affinity
+{
+    ACPI_SUBTABLE_HEADER    Header;
+    UINT16                  Reserved;           /* Reserved, must be zero */
+    UINT32                  ProximityDomain;
+    UINT32                  ApicId;
+    UINT32                  Flags;
+
+} ACPI_SRAT_X2APIC_CPU_AFFINITY;
+
+/* Flags for ACPI_SRAT_CPU_AFFINITY and ACPI_SRAT_X2APIC_CPU_AFFINITY */
+
+#define ACPI_SRAT_CPU_ENABLED       (1)         /* 00: Use affinity structure */
 
 
 /*******************************************************************************

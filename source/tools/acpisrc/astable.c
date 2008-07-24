@@ -555,10 +555,13 @@ ACPI_TYPED_IDENTIFIER_TABLE           AcpiIdentifiers[] = {
     {"ACPI_MADT_PROCESSOR_APIC",            SRC_TYPE_STRUCT},
     {"ACPI_MADT_XRUPT_OVERRIDE",            SRC_TYPE_STRUCT},
     {"ACPI_MADT_XRUPT_SOURCE",              SRC_TYPE_STRUCT},
+    {"ACPI_MADT_LOCAL_X2APIC",              SRC_TYPE_STRUCT},
+    {"ACPI_MADT_LOCAL_X2APIC_NMI",          SRC_TYPE_STRUCT},
     {"ACPI_MCFG_ALLOCATION",                SRC_TYPE_STRUCT},
     {"ACPI_SRAT_CPU_AFFINITY",              SRC_TYPE_STRUCT},
     {"ACPI_SRAT_HEADER",                    SRC_TYPE_STRUCT},
     {"ACPI_SRAT_MEM_AFFINITY",              SRC_TYPE_STRUCT},
+    {"ACPI_SRAT_X2APIC_CPU_AFFINITY",       SRC_TYPE_STRUCT},
     {"ACPI_WDAT_ENTRY",                     SRC_TYPE_STRUCT},
 
 
