@@ -330,6 +330,13 @@ AcpiUtInitializeBuffer (
     ACPI_STATUS             Status = AE_OK;
 
 
+    /* Parameter validation */
+
+    if (!Buffer || !RequiredLength)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
     switch (Buffer->Length)
     {
     case ACPI_NO_BUFFER:

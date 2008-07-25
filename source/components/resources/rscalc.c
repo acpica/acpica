@@ -708,6 +708,10 @@ AcpiRsGetPciRoutingTableLength (
             {
                 TempSizeNeeded += AcpiNsGetPathnameLength (
                                     (*SubObjectList)->Reference.Node);
+                if (!TempSizeNeeded)
+                {
+                    return_ACPI_STATUS (AE_BAD_PARAMETER);
+                }
             }
         }
         else

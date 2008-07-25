@@ -315,7 +315,7 @@ UINT32
 AcpiNsOpensScope (
     ACPI_OBJECT_TYPE        Type);
 
-void
+ACPI_STATUS
 AcpiNsBuildExternalPath (
     ACPI_NAMESPACE_NODE     *Node,
     ACPI_SIZE               Size,

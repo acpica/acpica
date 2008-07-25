@@ -636,13 +636,22 @@ AcpiGetTagPathname (
     /* Get the full pathname to the parent buffer */
 
     RequiredSize = AcpiNsGetPathnameLength (BufferNode);
+    if (!RequiredSize)
+    {
+        return (NULL);
+    }
+
     Pathname = ACPI_ALLOCATE_ZEROED (RequiredSize + ACPI_PATH_SEGMENT_LENGTH);
     if (!Pathname)
     {
         return (NULL);
     }
 
-    AcpiNsBuildExternalPath (BufferNode, RequiredSize, Pathname);
+    Status = AcpiNsBuildExternalPath (BufferNode, RequiredSize, Pathname);
+    if (ACPI_FAILURE (Status))
+    {
+        return (NULL);
+    }
 
     /*
      * Create the full path to the resource and tag by: remove the buffer name,

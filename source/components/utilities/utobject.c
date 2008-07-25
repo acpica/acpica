@@ -549,6 +549,7 @@ AcpiUtGetSimpleObjectSize (
     ACPI_SIZE               *ObjLength)
 {
     ACPI_SIZE               Length;
+    ACPI_SIZE               Size;
     ACPI_STATUS             Status = AE_OK;
 
 
@@ -619,8 +620,13 @@ AcpiUtGetSimpleObjectSize (
              * Get the actual length of the full pathname to this object.
              * The reference will be converted to the pathname to the object
              */
-            Length += ACPI_ROUND_UP_TO_NATIVE_WORD (
-                        AcpiNsGetPathnameLength (InternalObject->Reference.Node));
+            Size = AcpiNsGetPathnameLength (InternalObject->Reference.Node);
+            if (!Size)
+            {
+                return_ACPI_STATUS (AE_BAD_PARAMETER);
+            }
+
+            Length += ACPI_ROUND_UP_TO_NATIVE_WORD (Size);
             break;
 
         default:
