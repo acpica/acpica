@@ -121,10 +121,17 @@
 #include "acpi.h"
 #include "acnamesp.h"
 #include "acinterp.h"
+#include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
         ACPI_MODULE_NAME    ("nsxfeval")
+
+/* Local prototypes */
+
+static void
+AcpiNsResolveReferences (
+    ACPI_EVALUATE_INFO      *Info);
 
 
 /*******************************************************************************
@@ -385,6 +392,10 @@ AcpiEvaluateObject (
 
             if (ACPI_SUCCESS (Status))
             {
+                /* Dereference Index and RefOf references */
+
+                AcpiNsResolveReferences (Info);
+
                 /* Get the size of the returned object */
 
                 Status = AcpiUtGetObjectSize (Info->ReturnObject,
@@ -449,6 +460,82 @@ Cleanup:
 }
 
 ACPI_EXPORT_SYMBOL (AcpiEvaluateObject)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiNsResolveReferences
+ *
+ * PARAMETERS:  Info                    - Evaluation info block
+ *
+ * RETURN:      Info->ReturnObject is replaced with the dereferenced object
+ *
+ * DESCRIPTION: Dereference certain reference objects. Called before an
+ *              internal return object is converted to an external ACPI_OBJECT.
+ *
+ * Performs an automatic dereference of Index and RefOf reference objects.
+ * These reference objects are not supported by the ACPI_OBJECT, so this is a
+ * last resort effort to return something useful. Also, provides compatibility
+ * with other ACPI implementations.
+ *
+ * NOTE: does not handle references within returned package objects or nested
+ * references, but this support could be added later if found to be necessary.
+ *
+ ******************************************************************************/
+
+static void
+AcpiNsResolveReferences (
+    ACPI_EVALUATE_INFO      *Info)
+{
+    ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
+    ACPI_NAMESPACE_NODE     *Node;
+
+
+    /* We are interested in reference objects only */
+
+    if (ACPI_GET_OBJECT_TYPE (Info->ReturnObject) != ACPI_TYPE_LOCAL_REFERENCE)
+    {
+        return;
+    }
+
+    /*
+     * Two types of references are supported - those created by Index and
+     * RefOf operators. A name reference (AML_NAMEPATH_OP) can be converted
+     * to an ACPI_OBJECT, so it is not dereferenced here. A DdbHandle
+     * (AML_LOAD_OP) cannot be dereferenced, nor can it be converted to
+     * an ACPI_OBJECT.
+     */
+    switch (Info->ReturnObject->Reference.Opcode)
+    {
+    case AML_INDEX_OP:
+
+        ObjDesc = *(Info->ReturnObject->Reference.Where);
+        break;
+
+    case AML_REF_OF_OP:
+
+        Node = Info->ReturnObject->Reference.Object;
+        if (Node)
+        {
+            ObjDesc = Node->Object;
+        }
+        break;
+
+    default:
+        return;
+    }
+
+    /* Replace the existing reference object */
+
+    if (ObjDesc)
+    {
+        AcpiUtAddReference (ObjDesc);
+        AcpiUtRemoveReference (Info->ReturnObject);
+        Info->ReturnObject = ObjDesc;
+    }
+
+    return;
+}
 
 
 /*******************************************************************************
