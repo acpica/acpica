@@ -1719,9 +1719,11 @@ AnOperandTypecheckWalkEnd (
      * If we are creating a named object, check if we are within a while loop
      * by checking if the parent is a WHILE op. This is a simple analysis, but
      * probably sufficient for many cases.
+     *
+     * Allow Scope(), Buffer(), and Package().
      */
-    if ((OpcodeClass == AML_CLASS_NAMED_OBJECT) ||
-        (OpcodeClass == AML_CLASS_CREATE))
+    if (((OpcodeClass == AML_CLASS_NAMED_OBJECT) && (Op->Asl.AmlOpcode != AML_SCOPE_OP)) ||
+        ((OpcodeClass == AML_CLASS_CREATE) && (OpInfo->Flags & AML_NSNODE)))
     {
         if (Op->Asl.Parent->Asl.AmlOpcode == AML_WHILE_OP)
         {
