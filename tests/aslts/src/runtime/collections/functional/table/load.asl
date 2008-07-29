@@ -129,8 +129,8 @@ Device(DTM0) {
 		0x4D,0x61,0x6E,0x79,0x00,0x00,0x00,0x00,  /* 00000010    "Many...." */
 		0x01,0x00,0x00,0x00,0x49,0x4E,0x54,0x4C,  /* 00000018    "....INTL" */
 		0x15,0x12,0x06,0x20,0x14,0x0F,0x5C,0x53,  /* 00000020    "... ..\S" */
-		0x53,0x30,0x30,0x00,0xA4,0x0D,0x5C,0x53,  /* 00000028    "S00...\S" */
-		0x53,0x30,0x30,0x00,
+		0x53,0x53,0x30,0x00,0xA4,0x0D,0x5C,0x53,  /* 00000028    "SS0...\S" */
+		0x53,0x53,0x30,0x00,
 	})
 
 	Name (SNML, "0123456789ABCDEF")
@@ -882,8 +882,9 @@ Device(DTM0) {
 		m003(Arg0, 7, RGN7)
 	}
 
-	// Check that "namespace location to load the Definition Block
-	// is relative to the current namespace" scope,
+	// Note: We load the table objects relative to the root of the namespace.
+	// This appears to go against the ACPI specification, but we do it for
+	// compatibility with other ACPI implementations.
 
 	// Originated from ssdt1.asl: iasl -tc ssdt1.asl
 	Name(BUF1, Buffer(){
@@ -948,14 +949,15 @@ Device(DTM0) {
 		} else {
 			err(arg0, z174, 0x02a, 0, 0, "NABS", 0)
 		}
+		//Note: We load the table objects relative to the root of the namespace.
 		if (CondRefof(\NCRR, Local0)) {
+		} else {
 			err(arg0, z174, 0x02b, 0, 0, "\\NCRR", 1)
 		}
 		if (CondRefof(\DTM0.NCRR, Local0)) {
 			err(arg0, z174, 0x02c, 0, 0, "\\DTM0.NCRR", 1)
 		}
 		if (CondRefof(\DTM0.TST8.NCRR, Local0)) {
-		} else {
 			err(arg0, z174, 0x02d, 0, 0, "\\DTM0.TST8.NCRR", 0)
 		}
 

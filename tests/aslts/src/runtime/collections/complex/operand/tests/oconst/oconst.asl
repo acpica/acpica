@@ -25177,7 +25177,8 @@ Method(m610)
 
 		Method(m009)
 		{
-			while (Buffer(1){0x00}) {
+			Name(buf0, Buffer(1){0x00})
+			while (buf0) {
 				Store(0, ist0)
 			}
 		}

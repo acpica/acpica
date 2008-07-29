@@ -517,6 +517,25 @@ Method(m806, 1)
 	/* Pack numbers of threads */
 	Store(m20d(arg0, numW), nth0)
 
+	/* Data */
+
+	Name(b001, Buffer(Multiply(min1, 2)) {0,0,     0,0,   0,1,   0,1,   0,1})
+	Name(b002, Buffer(Multiply(min1, 2)) {0,0,     1,1,   0,0,   1,1,   1,1})
+	Name(b003, Buffer(Multiply(min1, 2)) {0,0,     2,1,   2,1,   0,0,   2,1})
+	Name(b004, Buffer(Multiply(min1, 2)) {0,0,     3,1,   3,1,   3,1,   0,0})
+
+	Name(cm01, Package(min1) {0,   c107, 0,    0,    0})
+	Name(ee01, Buffer(min1)  {0,   63,   0,    0,    0}) // AE_AML_NOT_OWNER
+
+	Name(cm02, Package(min1) {0,   0,    c107, 0,    0})
+	Name(ee02, Buffer(min1)  {0,   0,    63,   0,    0}) // AE_AML_NOT_OWNER
+
+	Name(cm03, Package(min1) {0,   0,    0,    c107, 0})
+	Name(ee03, Buffer(min1)  {0,   0,    0,    63,   0}) // AE_AML_NOT_OWNER
+
+	Name(cm04, Package(min1) {0,   0,    0,    0,    c107})
+	Name(ee04, Buffer(min1)  {0,   0,    0,    0,    63}) // AE_AML_NOT_OWNER
+
 
 	/* Acquire */
 
@@ -533,26 +552,6 @@ Method(m806, 1)
 			ix00, // Indexes of mutexes           (buffer/Integer)
 			c106, // Expected completion statuses (buffer/Integer)
 			0)    // Expected hang statuses       (buffer/Integer)
-
-		/* Data */
-
-		Name(b001, Buffer(Multiply(min1, 2)) {0,0,     0,0,   0,1,   0,1,   0,1})
-		Name(b002, Buffer(Multiply(min1, 2)) {0,0,     1,1,   0,0,   1,1,   1,1})
-		Name(b003, Buffer(Multiply(min1, 2)) {0,0,     2,1,   2,1,   0,0,   2,1})
-		Name(b004, Buffer(Multiply(min1, 2)) {0,0,     3,1,   3,1,   3,1,   0,0})
-
-		Name(cm01, Package(min1) {0,   c107, 0,    0,    0})
-		Name(ee01, Buffer(min1)  {0,   63,   0,    0,    0}) // AE_AML_NOT_OWNER
-
-		Name(cm02, Package(min1) {0,   0,    c107, 0,    0})
-		Name(ee02, Buffer(min1)  {0,   0,    63,   0,    0}) // AE_AML_NOT_OWNER
-
-		Name(cm03, Package(min1) {0,   0,    0,    c107, 0})
-		Name(ee03, Buffer(min1)  {0,   0,    0,    63,   0}) // AE_AML_NOT_OWNER
-
-		Name(cm04, Package(min1) {0,   0,    0,    0,    c107})
-		Name(ee04, Buffer(min1)  {0,   0,    0,    0,    63}) // AE_AML_NOT_OWNER
-
 
 		/* 2. Threads thr-2, thr-3, thr-4 attempt to Release mutex of thr-1 */
 

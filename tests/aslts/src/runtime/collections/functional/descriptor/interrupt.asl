@@ -129,21 +129,6 @@ Name (p434, Package() {
 			0xf0f1f2f3, 0xf4f5f6f7, 0xf8f9fafb, 0xfcfdfeff}
 	},
 
-	// Particular cases
-
-
-	/*
-	 * RT18 - FAIL
-	 *
-	 * Bug 56.
-	 * 20.12.2005. At present situation is being treated
-	 * as one to be caught by compiler. After fixing the
-	 * bug (if any) the entry should be excluded from there.
-	 * Otherwise ACPICA or the test should be fixed.
-	 */
-	ResourceTemplate () {
-		Interrupt (ResourceConsumer, Edge, ActiveLow, Shared) {}
-	},
 	ResourceTemplate () {
 		Interrupt (ResourceConsumer, Edge, ActiveLow, Shared) {
 			  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
@@ -356,9 +341,6 @@ Name (p435, Package() {
 		0xf3, 0xf2, 0xf1, 0xf0, 0xf7, 0xf6, 0xf5, 0xf4,
 		0xfb, 0xfa, 0xf9, 0xf8, 0xff, 0xfe, 0xfd, 0xfc, 0x79, 0x00},
 
-	// Particular cases
-
-	Buffer () {0x89, 0x02, 0x00, 0x0f, 0x00, 0x79, 0x00},
 	// At the moment returning
 	// Buffer () {0x89, 0x06, 0x00, 0x0f, 0x01, 0x00, 0x00, 0x00, 0x00, 0x79, 0x00},
 

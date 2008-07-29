@@ -5785,9 +5785,9 @@ Method(ms2c, 1)
 		Store(1, Local0)
 		Store(0, Local1)
 
-		while (Local0) {
-			Name(WHIN, Ones)
+		Name(WHIN, Ones)
 
+		while (Local0) {
 			if (Local1) {
 				CH04(ts, 0, 0xff, z179, 0x2bd, 0, 0)
 			} else {
@@ -5806,9 +5806,9 @@ Method(ms2c, 1)
 		Store(2, Local0)
 		Store(0, Local1)
 
-		while (Local0) {
-			Name(WHIN, Ones)
+		Name(WHIN, Ones)
 
+		while (Local0) {
 			if (Local1) {
 				CH04(ts, 0, 0xff, z179, 0x2bf, 0, 0)
 			} else {
