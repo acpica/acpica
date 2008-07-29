@@ -1,4 +1,97 @@
 ----------------------------------------
+
+29 July 2008. Summary of changes for version 20080729:
+
+This release is available at http://acpica.org/downloads
+Direct git access via http://www.acpica.org/repos/acpica.git
+
+1) ACPI CA Core Subsystem:
+
+Fix a possible deadlock in the GPE dispatch. Remove call to 
+AcpiHwDisableAllGpes during wake in AcpiEvGpeDispatch. This call will attempt 
+to acquire the GPE lock but can deadlock since the GPE lock is already held 
+at dispatch time. This code was introduced in version 20060831 as a response 
+to Linux BZ 6881 and has since been removed from Linux.
+
+Add a function to dereference returned reference objects. Examines the return 
+object from a call to AcpiEvaluateObject. Any Index or RefOf references are 
+automatically dereferenced in an attempt to return something useful (these 
+reference types cannot be converted into an external ACPI_OBJECT.) Provides 
+MS compatibility. Lin Ming, Bob Moore. Linux BZ 11105
+
+x2APIC support: changes for MADT and SRAT ACPI tables. There are 2 new 
+subtables for the MADT and one new subtable for the SRAT. Includes 
+disassembler and AcpiSrc support. Data from the Intel 64 Architecture x2APIC 
+Specification, June 2008.
+
+Additional error checking for pathname utilities. Add error check after all 
+calls to AcpiNsGetPathnameLength. Add status return from 
+AcpiNsBuildExternalPath and check after all calls. Add parameter validation 
+to AcpiUtInitializeBuffer. Reported by and initial patch by Ingo Molnar.
+
+Return status from the global init function AcpiUtGlobalInitialize. This is 
+used by both the kernel subsystem and the utilities such as iASL compiler. 
+The function could possibly fail when the caches are initialized. Yang Yi.
+
+Add a function to decode reference object types to strings. Created for 
+improved error messages. 
+
+Improve object conversion error messages. Better error messages during object 
+conversion from internal to the external ACPI_OBJECT. Used for external calls 
+to AcpiEvaluateObject.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  79.6K Code, 16.2K Data,  95.8K Total
+    Debug Version:     153.5K Code, 48.2K Data, 201.7K Total
+  Current Release:
+    Non-Debug Version:  79.7K Code, 16.4K Data,  96.1K Total
+    Debug Version:     153.9K Code, 48.4K Data, 202.3K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Debugger: fix a possible hang when evaluating non-methods. Fixes a problem 
+introduced in version 20080701. If the object being evaluated (via execute 
+command) is not a method, the debugger can hang while trying to obtain non-
+existent parameters.
+
+iASL: relax error for using reserved "_T_x" identifiers. These names can 
+appear in a disassembled ASL file if they were emitted by the original 
+compiler. Instead of issuing an error or warning and forcing the user to 
+manually change these names, issue a remark instead.
+
+iASL: error if named object created in while loop. Emit an error if any named 
+object is created within a While loop. If allowed, this code will generate a 
+run-time error on the second iteration of the loop when an attempt is made to 
+create the same named object twice. ACPICA bugzilla 730.
+
+iASL: Support absolute pathnames for include files. Add support for absolute 
+pathnames within the Include operator. previously, only relative pathnames 
+were supported.
+
+iASL: Enforce minimum 1 interrupt in interrupt macro and Resource Descriptor. 
+The ACPI spec requires one interrupt minimum. BZ 423
+
+iASL: Handle a missing ResourceSource arg, with a present SourceIndex. 
+Handles the case for the Interrupt Resource Descriptor where
+the ResourceSource argument is omitted but ResourceSourceIndex
+is present. Now leave room for the Index. BZ 426
+
+iASL: Prevent error message if CondRefOf target does not exist. Fixes cases 
+where an error message is emitted if the target does not exist. BZ 516
+
+iASL: Fix broken -g option (get Windows ACPI tables). Fixes the -g option 
+(get ACPI tables on Windows). This was apparently broken in version 20070919.
+
+AcpiXtract: Handle EOF while extracting data. Correctly handle the case where 
+the EOF happens immediately after the last table in the input file. Print 
+completion message. Previously, no message was displayed in this case.
+
+----------------------------------------
 01 July 2008. Summary of changes for version 20080701:
 
 This release is available at http://acpica.org/downloads
@@ -6,19 +99,25 @@ Direct git access via http://www.acpica.org/repos/acpica.git
 
 0) Git source tree / acpica.org
 
-Fixed a problem where a git-clone from http would not transfer the entire source 
+Fixed a problem where a git-clone from http would not transfer the entire 
+source 
 tree.
 
 1) ACPI CA Core Subsystem:
 
-Implemented a "careful" GPE disable in AcpiEvDisableGpe, only modify one enable 
-bit. Now performs a read-change-write of the enable register instead of simply 
+Implemented a "careful" GPE disable in AcpiEvDisableGpe, only modify one 
+enable 
+bit. Now performs a read-change-write of the enable register instead of 
+simply 
 writing out the cached enable mask. This will prevent inadvertent enabling of 
-GPEs if a rogue GPE is received during initialization (before GPE handlers are 
+GPEs if a rogue GPE is received during initialization (before GPE handlers 
+are 
 installed.)
 
-Implemented a copy for dynamically loaded tables. Previously, dynamically loaded 
-tables were simply mapped - but on some machines this memory is corrupted after 
+Implemented a copy for dynamically loaded tables. Previously, dynamically 
+loaded 
+tables were simply mapped - but on some machines this memory is corrupted 
+after 
 suspend. Now copy the table to a local buffer. For the OpRegion case, added 
 checksum verify. Use the table length from the table header, not the region 
 length. For the Buffer case, use the table length also. Dennis Noordsij, Bob 
@@ -30,18 +129,24 @@ once it has been loaded/unloaded one time. The current mechanism does not
 unregister a table upon an unload. During a load, if the same table is found, 
 this no longer returns an exception. BZ 722
 
-Fixed a problem where the wrong descriptor length was calculated for the EndTag 
+Fixed a problem where the wrong descriptor length was calculated for the 
+EndTag 
 descriptor in 64-bit mode. The "minimal" descriptors such as EndTag are 
-calculated as 12 bytes long, but the actual length in the internal descriptor is 
-16 because of the round-up to 8 on the 64-bit build. Reported by Linn Crosetto. 
+calculated as 12 bytes long, but the actual length in the internal descriptor 
+is 
+16 because of the round-up to 8 on the 64-bit build. Reported by Linn 
+Crosetto. 
 BZ 728
 
-Fixed a possible memory leak in the Unload operator. The DdbHandle returned by 
-Load() did not have its reference count decremented during unload, leading to a 
+Fixed a possible memory leak in the Unload operator. The DdbHandle returned 
+by 
+Load() did not have its reference count decremented during unload, leading to 
+a 
 memory leak. Lin Ming. BZ 727
 
 Fixed a possible memory leak when deleting thermal/processor objects. Any 
-associated notify handlers (and objects) were not being deleted. Fiodor Suietov. 
+associated notify handlers (and objects) were not being deleted. Fiodor 
+Suietov. 
 BZ 506
 
 Fixed the ordering of the ASCII names in the global mutex table to match the 
@@ -49,8 +154,10 @@ actual mutex IDs. Used by AcpiUtGetMutexName, a function used for debug only.
 Vegard Nossum. BZ 726
 
 Enhanced the AcpiGetObjectInfo interface to return the number of required 
-arguments if the object is a control method. Added this call to the debugger so 
-the proper number of default arguments are passed to a method. This prevents a 
+arguments if the object is a control method. Added this call to the debugger 
+so 
+the proper number of default arguments are passed to a method. This prevents 
+a 
 warning when executing methods from AcpiExec.
 
 Added a check for an invalid handle in AcpiGetObjectInfo. Return 
@@ -59,7 +166,8 @@ AE_BAD_PARAMETER if input handle is invalid. BZ 474
 Fixed an extraneous warning from exconfig.c on the 64-bit build.
 
 Example Code and Data Size: These are the sizes for the OS-independent 
-acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The debug 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug 
 version of the code includes the debug output trace mechanism and has a much 
 larger code and data size.
 
@@ -72,10 +180,12 @@ larger code and data size.
 
 2) iASL Compiler/Disassembler and Tools:
 
-iASL: Added two missing ACPI reserved names. Added _MTP and _ASZ, both resource 
+iASL: Added two missing ACPI reserved names. Added _MTP and _ASZ, both 
+resource 
 descriptor names.
 
-iASL: Detect invalid ASCII characters in input (windows version). Removed the "-
+iASL: Detect invalid ASCII characters in input (windows version). Removed the 
+"-
 CF" flag from the flex compile, enables correct detection of non-ASCII 
 characters in the input. BZ 441
 
@@ -84,11 +194,14 @@ iASL: Eliminate warning when result of LoadTable is not used. Eliminate the
 LoadTable is not used. The warning is not needed. BZ 590
 
 AcpiExec: Add support for dynamic table load/unload. Now calls _CFG method to 
-pass address of table to the AML. Added option to disable OpRegion simulation to 
-allow creation of an OpRegion with a real address that was passed to _CFG. All 
+pass address of table to the AML. Added option to disable OpRegion simulation 
+to 
+allow creation of an OpRegion with a real address that was passed to _CFG. 
+All 
 of this allows testing of the Load and Unload operators from AcpiExec.
 
-Debugger: update tables command for unloaded tables. Handle unloaded tables and 
+Debugger: update tables command for unloaded tables. Handle unloaded tables 
+and 
 use the standard table header output routine.
 
 ----------------------------------------
