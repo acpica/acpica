@@ -241,6 +241,9 @@
 #elif defined(__sun)
 #include "acsolaris.h"
 
+#elif defined(__OS2__)
+#include "acos2.h"
+
 #else
 
 /* All other environments */
