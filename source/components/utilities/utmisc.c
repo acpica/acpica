@@ -860,7 +860,7 @@ AcpiUtRepairName (
         }
         else
         {
-            ACPI_DEBUG_PRINT ((ACPI_DB_WARN,
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
                 "Found bad character(s) in name, repaired: [%4.4s]\n", Name));
         }
     }

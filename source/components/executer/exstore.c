@@ -490,7 +490,7 @@ AcpiExStore (
 
         ACPI_ERROR ((AE_INFO, "Unknown Reference opcode %X",
             RefDesc->Reference.Opcode));
-        ACPI_DUMP_ENTRY (RefDesc, ACPI_LV_ERROR);
+        ACPI_DUMP_ENTRY (RefDesc, ACPI_LV_INFO);
 
         Status = AE_AML_INTERNAL;
         break;
