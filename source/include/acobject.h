@@ -569,6 +569,13 @@ typedef union acpi_operand_object
     ACPI_OBJECT_DATA                    Data;
     ACPI_OBJECT_CACHE_LIST              Cache;
 
+    /*
+     * Add namespace node to union in order to simplify code that accepts both
+     * ACPI_OPERAND_OBJECTs and ACPI_NAMESPACE_NODEs. The structures share
+     * a common DescriptorType field in order to differentiate them.
+     */
+    ACPI_NAMESPACE_NODE                 Node;
+
 } ACPI_OPERAND_OBJECT;
 
 
