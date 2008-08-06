@@ -728,6 +728,8 @@ AnCheckForReservedMethod (
     ASL_METHOD_INFO         *MethodInfo)
 {
     UINT32                  Index;
+    UINT32                  RequiredArgsCurrent;
+    UINT32                  RequiredArgsOld;
 
 
     /* Check for a match against the reserved name list */
@@ -764,15 +766,23 @@ AnCheckForReservedMethod (
 
         Gbl_ReservedMethods++;
 
-        /* Matched a reserved method name */
+        /*
+         * Matched a reserved method name
+         *
+         * Validate the ASL-defined argument count. Allow two different legal
+         * arg counts.
+         */
+        RequiredArgsCurrent = ReservedMethods[Index].NumArguments & 0x0F;
+        RequiredArgsOld = ReservedMethods[Index].NumArguments >> 4;
 
-        if (MethodInfo->NumArguments != ReservedMethods[Index].NumArguments)
+        if ((MethodInfo->NumArguments != RequiredArgsCurrent) &&
+            (MethodInfo->NumArguments != RequiredArgsOld))
         {
             sprintf (MsgBuffer, "%s requires %d",
                         ReservedMethods[Index].Name,
-                        ReservedMethods[Index].NumArguments);
+                        RequiredArgsCurrent);
 
-            if (MethodInfo->NumArguments > ReservedMethods[Index].NumArguments)
+            if (MethodInfo->NumArguments > RequiredArgsCurrent)
             {
                 AslError (ASL_WARNING, ASL_MSG_RESERVED_ARG_COUNT_HI, Op,
                     MsgBuffer);

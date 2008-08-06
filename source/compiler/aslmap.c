@@ -205,7 +205,7 @@ MpDisplayReservedNames (
         else
         {
             printf ("Method with %d arguments, ",
-                ReservedMethods[i].NumArguments);
+                ReservedMethods[i].NumArguments & 0x0F);
 
             if (ReservedMethods[i].Flags & ASL_RSVD_RETURN_VALUE)
             {
@@ -405,7 +405,7 @@ const ASL_RESERVED_INFO         ReservedMethods[] = {
     {"_S4W",     0,      ASL_RSVD_RETURN_VALUE},    /* Acpi 3.0 */
     {"_SB_",     0,      ASL_RSVD_SCOPE},
     {"_SBS",     0,      ASL_RSVD_RETURN_VALUE},
-    {"_SCP",     1,      0},
+    {"_SCP",     0x13,   0},                        /* Acpi 1.0 - one arg; Acpi 3.0 - three args */
     {"_SDD",     1,      0},                        /* Acpi 3.0 */
     {"_SEG",     0,      ASL_RSVD_RETURN_VALUE},
     {"_SHR",     0,      ASL_RSVD_RESOURCE_NAME},
