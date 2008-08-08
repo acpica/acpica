@@ -277,7 +277,28 @@ AcpiNsEvaluate (
     {
         /*
          * 2) Object is not a method, return its current value
+         *
+         * Disallow certain object types. For these, "evaluation" is undefined.
          */
+        switch (Info->ResolvedNode->Type)
+        {
+        case ACPI_TYPE_DEVICE:
+        case ACPI_TYPE_EVENT:
+        case ACPI_TYPE_MUTEX:
+        case ACPI_TYPE_REGION:
+        case ACPI_TYPE_THERMAL:
+        case ACPI_TYPE_LOCAL_SCOPE:
+
+            ACPI_ERROR ((AE_INFO,
+                "[%4.4s] Evaluation of object type [%s] is not supported",
+                Info->ResolvedNode->Name.Ascii,
+                AcpiUtGetTypeName (Info->ResolvedNode->Type)));
+
+            return_ACPI_STATUS (AE_TYPE);
+
+        default:
+            break;
+        }
 
         /*
          * Objects require additional resolution steps (e.g., the Node may be
