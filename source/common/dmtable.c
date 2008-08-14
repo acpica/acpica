@@ -744,26 +744,26 @@ AcpiDmDumpTable (
 
             /* DMAR subtable types */
 
-            Temp16 = *Target;
+            Temp16 = ACPI_GET16 (Target);
             if (Temp16 > ACPI_DMAR_TYPE_RESERVED)
             {
                 Temp16 = ACPI_DMAR_TYPE_RESERVED;
             }
 
-            AcpiOsPrintf ("%4.4X <%s>\n", *Target, AcpiDmDmarSubnames[Temp16]);
+            AcpiOsPrintf ("%4.4X <%s>\n", ACPI_GET16 (Target), AcpiDmDmarSubnames[Temp16]);
             break;
 
         case ACPI_DMT_HEST:
 
             /* HEST subtable types */
 
-            Temp16 = *Target;
+            Temp16 = ACPI_GET16 (Target);
             if (Temp16 > ACPI_HEST_TYPE_RESERVED)
             {
                 Temp16 = ACPI_HEST_TYPE_RESERVED;
             }
 
-            AcpiOsPrintf ("%4.4X (%s)\n", *Target, AcpiDmHestSubnames[Temp16]);
+            AcpiOsPrintf ("%4.4X (%s)\n", ACPI_GET16 (Target), AcpiDmHestSubnames[Temp16]);
             break;
 
         case ACPI_DMT_HESTNTFY:
@@ -823,6 +823,14 @@ AcpiDmDumpTable (
                 "**** Invalid table opcode [%X] ****\n", Info->Opcode));
             return (AE_SUPPORT);
         }
+    }
+
+    if (TableOffset && !SubtableLength)
+    {
+        /* If this table is not the main table, subtable must have valid length */
+
+        AcpiOsPrintf ("Invalid zero length subtable\n");
+        return (AE_BAD_DATA);
     }
 
     return (AE_OK);
