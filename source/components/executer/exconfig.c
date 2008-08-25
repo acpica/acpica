@@ -180,7 +180,7 @@ AcpiExAddTable (
 
     /* Install the new table into the local data structures */
 
-    ObjDesc->Reference.Object = ACPI_TO_POINTER (TableIndex);
+    ObjDesc->Reference.Value = TableIndex;
 
     /* Add the table to the namespace */
 
@@ -626,9 +626,9 @@ AcpiExUnloadTable (
         return_ACPI_STATUS (AE_BAD_PARAMETER);
     }
 
-    /* Get the table index from the DdbHandle (ACPI_SIZE for 64-bit case) */
+    /* Get the table index from the DdbHandle */
 
-    TableIndex = (UINT32) (ACPI_SIZE) TableDesc->Reference.Object;
+    TableIndex = TableDesc->Reference.Value;
 
     /* Invoke table handler if present */
 

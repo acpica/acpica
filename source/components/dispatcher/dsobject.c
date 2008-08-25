@@ -846,9 +846,9 @@ AcpiDsInitObjectFromOp (
 
 #ifndef ACPI_NO_METHOD_EXECUTION
             Status = AcpiDsMethodDataGetNode (AML_LOCAL_OP,
-                        ObjDesc->Reference.Offset,
-                        WalkState,
-                        (ACPI_NAMESPACE_NODE **) &ObjDesc->Reference.Object);
+                        ObjDesc->Reference.Offset, WalkState,
+                        ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE,
+                            &ObjDesc->Reference.Object));
 #endif
             break;
 
@@ -862,9 +862,9 @@ AcpiDsInitObjectFromOp (
 
 #ifndef ACPI_NO_METHOD_EXECUTION
             Status = AcpiDsMethodDataGetNode (AML_ARG_OP,
-                        ObjDesc->Reference.Offset,
-                        WalkState,
-                        (ACPI_NAMESPACE_NODE **) &ObjDesc->Reference.Object);
+                        ObjDesc->Reference.Offset, WalkState,
+                        ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE,
+                            &ObjDesc->Reference.Object));
 #endif
             break;
 

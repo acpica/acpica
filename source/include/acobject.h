@@ -492,6 +492,7 @@ typedef struct acpi_object_reference
     ACPI_NAMESPACE_NODE             *Node;
     union acpi_operand_object       **Where;
     UINT32                          Offset;             /* Used for ArgOp, LocalOp, and IndexOp */
+    UINT32                          Value;              /* Used for DdbHandle */
 
 } ACPI_OBJECT_REFERENCE;
 

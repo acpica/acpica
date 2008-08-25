@@ -280,7 +280,7 @@ AcpiExDoDebugObject (
         if (SourceDesc->Reference.Opcode == AML_LOAD_OP) /* Load and LoadTable */
         {
             ACPI_DEBUG_PRINT_RAW ((ACPI_DB_DEBUG_OBJECT,
-                " Table OwnerId %p\n", SourceDesc->Reference.Object));
+                " Table Index %X\n", SourceDesc->Reference.Value));
             break;
         }
 
