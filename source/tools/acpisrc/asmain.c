@@ -131,6 +131,7 @@ UINT32                  Gbl_CommentLines = 0;
 UINT32                  Gbl_SourceLines = 0;
 UINT32                  Gbl_LongLines = 0;
 UINT32                  Gbl_TotalLines = 0;
+UINT32                  Gbl_HeaderLines = 0;
 UINT32                  Gbl_HeaderSize = 0;
 void                    *Gbl_StructDefs = NULL;
 
@@ -254,10 +255,15 @@ AsDisplayStats (void)
     printf ("%8u Lines of non-comment whitespace\n", Gbl_WhiteLines);
     printf ("%8u Lines of comments\n", Gbl_CommentLines);
     printf ("%8u Long lines found\n", Gbl_LongLines);
-    printf ("%6.1f Ratio of code to whitespace\n",
+    printf ("%8.1f Ratio of code to whitespace\n",
         ((float) Gbl_SourceLines / (float) Gbl_WhiteLines));
-    printf ("%6.1f Ratio of code to comments\n",
+    printf ("%8.1f Ratio of code to comments\n",
         ((float) Gbl_SourceLines / (float) (Gbl_CommentLines + Gbl_NonAnsiComments)));
+    printf ("         %u%% code, %u%% comments, %u%% whitespace, %u%% headers\n",
+        (Gbl_SourceLines * 100) / Gbl_TotalLines,
+        (Gbl_CommentLines * 100) / Gbl_TotalLines,
+        (Gbl_WhiteLines * 100) / Gbl_TotalLines,
+        (Gbl_HeaderLines * 100) / Gbl_TotalLines);
     return;
 }
 

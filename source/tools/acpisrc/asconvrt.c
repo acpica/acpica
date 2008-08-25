@@ -1216,13 +1216,26 @@ AsCountSourceLines (
 
     while (*SubBuffer)
     {
-        /* Ignore comments */
+        /* Detect comments (// comments are not used, non-ansii) */
 
         if ((SubBuffer[0] == '/') &&
             (SubBuffer[1] == '*'))
         {
-            CommentCount++;
             SubBuffer += 2;
+
+            /* First line of multi-line comment is often just whitespace */
+
+            if (SubBuffer[0] == '\n')
+            {
+                WhiteCount++;
+                SubBuffer++;
+            }
+            else
+            {
+                CommentCount++;
+            }
+
+            /* Find end of comment */
 
             while (SubBuffer[0] && SubBuffer[1] &&
                     !(((SubBuffer[0] == '*') &&
@@ -1258,7 +1271,11 @@ AsCountSourceLines (
 
     /* Adjust comment count for legal header */
 
-    CommentCount -= Gbl_HeaderSize;
+    if (Gbl_HeaderSize < CommentCount)
+    {
+        CommentCount -= Gbl_HeaderSize;
+        Gbl_HeaderLines += Gbl_HeaderSize;
+    }
 
     Gbl_SourceLines += LineCount;
     Gbl_WhiteLines += WhiteCount;

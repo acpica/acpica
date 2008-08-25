@@ -317,13 +317,13 @@ AsDetectLoneLineFeeds (
         {
             if (!Gbl_IgnoreLoneLineFeeds)
             {
-                printf ("****File has UNIX format**** (LF only, not CR/LF) %d lines, %s\n",
-                    LfCount, Filename);
+                printf ("%s: ****File has UNIX format**** (LF only, not CR/LF) %d lines\n",
+                    Filename, LfCount);
             }
         }
         else
         {
-            printf ("%d lone linefeeds in file %s\n", LfCount, Filename);
+            printf ("%s: %d lone linefeeds in file\n", Filename, LfCount);
         }
         return TRUE;
     }
@@ -579,12 +579,6 @@ AsProcessOneFile (
     char                    *OutPathname = NULL;
 
 
-    Gbl_HeaderSize = LINES_IN_LEGAL_HEADER; /* Normal C file and H header */
-    if (strstr (Filename, ".asl"))
-    {
-        Gbl_HeaderSize = 29; /* Lines in default ASL header */
-    }
-
     /* Allocate a file pathname buffer for both source and target */
 
     Pathname = calloc (MaxPathLength + strlen (Filename) + 2, 1);
@@ -609,6 +603,20 @@ AsProcessOneFile (
     if (AsGetFile (Pathname, &Gbl_FileBuffer, &Gbl_FileSize))
     {
         return -1;
+    }
+
+    Gbl_HeaderSize = 0;
+    if (strstr (Filename, ".asl"))
+    {
+        Gbl_HeaderSize = LINES_IN_ASL_HEADER; /* Lines in default ASL header */
+    }
+    else if (strstr (Gbl_FileBuffer, LEGAL_HEADER_SIGNATURE))
+    {
+        Gbl_HeaderSize = LINES_IN_LEGAL_HEADER; /* Normal C file and H header */
+    }
+    else if (strstr (Gbl_FileBuffer, LINUX_HEADER_SIGNATURE))
+    {
+        Gbl_HeaderSize = LINES_IN_LINUX_HEADER; /* Linuxized C file and H header */
     }
 
     /* Process the file in the buffer */

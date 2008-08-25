@@ -115,8 +115,12 @@
  *
  *****************************************************************************/
 
-#define LINES_IN_LEGAL_HEADER               105 /* See above */
 
+#define LINES_IN_LEGAL_HEADER               105 /* See above */
+#define LEGAL_HEADER_SIGNATURE              " * 2.1. This is your license from Intel Corp. under its intellectual property"
+#define LINES_IN_LINUX_HEADER               34
+#define LINUX_HEADER_SIGNATURE              " * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS"
+#define LINES_IN_ASL_HEADER                 29 /* Header as output from disassembler */
 
 #include <stdio.h>
 #include <sys/stat.h>
@@ -201,6 +205,7 @@ extern UINT32                   Gbl_CommentLines;
 extern UINT32                   Gbl_LongLines;
 extern UINT32                   Gbl_TotalLines;
 extern UINT32                   Gbl_HeaderSize;
+extern UINT32                   Gbl_HeaderLines;
 extern struct stat              Gbl_StatBuf;
 extern char                     *Gbl_FileBuffer;
 extern UINT32                   Gbl_FileSize;
