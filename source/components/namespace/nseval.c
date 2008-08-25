@@ -232,19 +232,20 @@ AcpiNsEvaluate (
             }
         }
 
-        /* Error if too few arguments were passed in */
-
+        /*
+         * Warning if too few or too many arguments have been passed by the
+         * caller. We don't want to abort here with an error because an
+         * incorrect number of arguments may not cause the method to fail.
+         * However, the method will fail if there are too few arguments passed
+         * and the method attempts to use one of the missing ones.
+         */
         if (Info->ParamCount < Info->ObjDesc->Method.ParamCount)
         {
-            ACPI_ERROR ((AE_INFO,
+            ACPI_WARNING ((AE_INFO,
                 "Insufficient arguments - method [%4.4s] needs %d, found %d",
                 AcpiUtGetNodeName (Info->ResolvedNode),
                 Info->ObjDesc->Method.ParamCount, Info->ParamCount));
-            return_ACPI_STATUS (AE_MISSING_ARGUMENTS);
         }
-
-        /* Just a warning if too many arguments */
-
         else if (Info->ParamCount > Info->ObjDesc->Method.ParamCount)
         {
             ACPI_WARNING ((AE_INFO,
