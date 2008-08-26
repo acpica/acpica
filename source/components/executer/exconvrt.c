@@ -139,7 +139,7 @@ AcpiExConvertToAscii (
  *
  * FUNCTION:    AcpiExConvertToInteger
  *
- * PARAMETERS:  ObjDesc         - Object to be converted.  Must be an
+ * PARAMETERS:  ObjDesc         - Object to be converted. Must be an
  *                                Integer, Buffer, or String
  *              ResultDesc      - Where the new Integer object is returned
  *              Flags           - Used for string conversion
@@ -190,7 +190,7 @@ AcpiExConvertToInteger (
     }
 
     /*
-     * Convert the buffer/string to an integer.  Note that both buffers and
+     * Convert the buffer/string to an integer. Note that both buffers and
      * strings are treated as raw data - we don't convert ascii to hex for
      * strings.
      *
@@ -208,7 +208,7 @@ AcpiExConvertToInteger (
 
         /*
          * Convert string to an integer - for most cases, the string must be
-         * hexadecimal as per the ACPI specification.  The only exception (as
+         * hexadecimal as per the ACPI specification. The only exception (as
          * of ACPI 3.0) is that the ToInteger() operator allows both decimal
          * and hexadecimal strings (hex prefixed with "0x").
          */
@@ -253,6 +253,7 @@ AcpiExConvertToInteger (
 
 
     default:
+
         /* No other types can get here */
         break;
     }
@@ -281,7 +282,7 @@ AcpiExConvertToInteger (
  *
  * FUNCTION:    AcpiExConvertToBuffer
  *
- * PARAMETERS:  ObjDesc         - Object to be converted.  Must be an
+ * PARAMETERS:  ObjDesc         - Object to be converted. Must be an
  *                                Integer, Buffer, or String
  *              ResultDesc      - Where the new buffer object is returned
  *
@@ -476,7 +477,7 @@ AcpiExConvertToAscii (
     }
 
     /*
-     * Since leading zeros are supressed, we must check for the case where
+     * Since leading zeros are suppressed, we must check for the case where
      * the integer equals 0
      *
      * Finally, null terminate the string and return the length
@@ -496,7 +497,7 @@ AcpiExConvertToAscii (
  *
  * FUNCTION:    AcpiExConvertToString
  *
- * PARAMETERS:  ObjDesc         - Object to be converted.  Must be an
+ * PARAMETERS:  ObjDesc         - Object to be converted. Must be an
  *                                Integer, Buffer, or String
  *              ResultDesc      - Where the string object is returned
  *              Type            - String flags (base and conversion type)
@@ -592,7 +593,7 @@ AcpiExConvertToString (
             Base = 10;
 
             /*
-             * Calculate the final string length.  Individual string values
+             * Calculate the final string length. Individual string values
              * are variable length (include separator for each)
              */
             for (i = 0; i < ObjDesc->Buffer.Length; i++)
@@ -749,7 +750,7 @@ AcpiExConvertToTargetType (
         case ACPI_TYPE_LOCAL_BANK_FIELD:
         case ACPI_TYPE_LOCAL_INDEX_FIELD:
             /*
-             * These types require an Integer operand.  We can convert
+             * These types require an Integer operand. We can convert
              * a Buffer or a String to an Integer if necessary.
              */
             Status = AcpiExConvertToInteger (SourceDesc, ResultDesc,
@@ -759,7 +760,7 @@ AcpiExConvertToTargetType (
 
         case ACPI_TYPE_STRING:
             /*
-             * The operand must be a String.  We can convert an
+             * The operand must be a String. We can convert an
              * Integer or Buffer if necessary
              */
             Status = AcpiExConvertToString (SourceDesc, ResultDesc,
@@ -769,7 +770,7 @@ AcpiExConvertToTargetType (
 
         case ACPI_TYPE_BUFFER:
             /*
-             * The operand must be a Buffer.  We can convert an
+             * The operand must be a Buffer. We can convert an
              * Integer or String if necessary
              */
             Status = AcpiExConvertToBuffer (SourceDesc, ResultDesc);
