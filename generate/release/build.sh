@@ -59,7 +59,7 @@ mkdir -p unixtemp/os_specific
 #
 # Copy ACPICA subsystem source code
 #
-cp -r CHANGES.txt unixtemp/changes.txt
+cp -r documents/changes.txt unixtemp/changes.txt
 cp -r source/common unixtemp/common
 cp -r source/components/* unixtemp
 cp -r source/include unixtemp/include
@@ -154,7 +154,7 @@ mkdir -p wintemp/source/os_specific/service_layers
 #
 # Copy ACPICA subsystem source code
 #
-cp -r CHANGES.txt wintemp/changes.txt
+cp -r documents/changes.txt wintemp/changes.txt
 cp -r source/common wintemp/source/common
 cp -r source/components wintemp/source/
 cp -r source/include wintemp/source/include
@@ -227,7 +227,7 @@ mkdir wintemp
 #
 # Copy executables and documentation
 #
-cp -r CHANGES.txt wintemp/changes.txt
+cp -r documents/changes.txt wintemp/changes.txt
 cp documents/aslcompiler.pdf wintemp
 cp libraries/iasl.exe wintemp
 cp libraries/acpixtract.exe wintemp
@@ -261,7 +261,7 @@ echo
 echo ACPICA - Source code release package
 echo
 
-cp CHANGES.txt generate/release/current/changes.txt
+cp documents/changes.txt generate/release/current/changes.txt
 cd generate/release/current
 $PKZIP -add -max -password=acpica acpica-release-`date +%Y%m%d` changes.txt iasl-win-`date +%Y%m%d`.zip acpica-unix-`date +%Y%m%d`.tar.gz
 rm changes.txt
