@@ -233,7 +233,7 @@ AcpiNsGetExternalPathname (
     Size = AcpiNsGetPathnameLength (Node);
     if (!Size)
     {
-        return (NULL);
+        return_PTR (NULL);
     }
 
     /* Allocate a buffer to be returned to caller */
@@ -250,7 +250,8 @@ AcpiNsGetExternalPathname (
     Status = AcpiNsBuildExternalPath (Node, Size, NameBuffer);
     if (ACPI_FAILURE (Status))
     {
-        return (NULL);
+        ACPI_FREE (NameBuffer);
+        return_PTR (NULL);
     }
 
     return_PTR (NameBuffer);
