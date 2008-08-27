@@ -120,7 +120,7 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acevents.h"
-#include "amlcode.h"
+
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("utdelete")
@@ -659,8 +659,8 @@ AcpiUtUpdateObjectReference (
              * reference must track changes to the ref count of the index or
              * target object.
              */
-            if ((Object->Reference.Opcode == AML_INDEX_OP) ||
-                (Object->Reference.Opcode == AML_INT_NAMEPATH_OP))
+            if ((Object->Reference.Class == ACPI_REFCLASS_INDEX) ||
+                (Object->Reference.Class== ACPI_REFCLASS_NAME))
             {
                 NextObject = Object->Reference.Object;
             }

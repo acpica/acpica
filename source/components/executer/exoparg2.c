@@ -504,8 +504,8 @@ AcpiExOpcode_2A_1T_1R (
         /* Initialize the Index reference object */
 
         Index = Operand[1]->Integer.Value;
-        ReturnDesc->Reference.Offset = (UINT32) Index;
-        ReturnDesc->Reference.Opcode = AML_INDEX_OP;
+        ReturnDesc->Reference.Value = (UINT32) Index;
+        ReturnDesc->Reference.Class = ACPI_REFCLASS_INDEX;
 
         /*
          * At this point, the Source operand is a String, Buffer, or Package.

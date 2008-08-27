@@ -121,8 +121,6 @@
 #include "acdispat.h"
 #include "acinterp.h"
 #include "acnamesp.h"
-#include "acparser.h"
-#include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -330,11 +328,11 @@ AcpiExResolveNodeToValue (
 
     case ACPI_TYPE_LOCAL_REFERENCE:
 
-        switch (SourceDesc->Reference.Opcode)
+        switch (SourceDesc->Reference.Class)
         {
-        case AML_LOAD_OP:   /* This is a DdbHandle */
-        case AML_REF_OF_OP:
-        case AML_INDEX_OP:
+        case ACPI_REFCLASS_TABLE:   /* This is a DdbHandle */
+        case ACPI_REFCLASS_REFOF:
+        case ACPI_REFCLASS_INDEX:
 
             /* Return an additional reference to the object */
 
@@ -346,9 +344,8 @@ AcpiExResolveNodeToValue (
             /* No named references are allowed here */
 
             ACPI_ERROR ((AE_INFO,
-                "Unsupported Reference opcode %X (%s)",
-                SourceDesc->Reference.Opcode,
-                AcpiPsGetOpcodeName (SourceDesc->Reference.Opcode)));
+                "Unsupported Reference type %X",
+                SourceDesc->Reference.Class));
 
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
         }

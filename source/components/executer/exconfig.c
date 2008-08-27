@@ -119,7 +119,6 @@
 
 #include "acpi.h"
 #include "acinterp.h"
-#include "amlcode.h"
 #include "acnamesp.h"
 #include "actables.h"
 #include "acdispat.h"
@@ -175,7 +174,7 @@ AcpiExAddTable (
 
     /* Init the table handle */
 
-    ObjDesc->Reference.Opcode = AML_LOAD_OP;
+    ObjDesc->Reference.Class = ACPI_REFCLASS_TABLE;
     *DdbHandle = ObjDesc;
 
     /* Install the new table into the local data structures */

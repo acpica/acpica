@@ -309,45 +309,41 @@ AcpiExResolveOperands (
             if (!AcpiUtValidObjectType (ObjectType))
             {
                 ACPI_ERROR ((AE_INFO,
-                    "Bad operand object type [%X]",
-                    ObjectType));
+                    "Bad operand object type [%X]", ObjectType));
 
                 return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
             }
 
             if (ObjectType == (UINT8) ACPI_TYPE_LOCAL_REFERENCE)
             {
-                /* Decode the Reference */
+                /* Validate the Reference */
 
-                OpInfo = AcpiPsGetOpcodeInfo (Opcode);
-                if (OpInfo->Class == AML_CLASS_UNKNOWN)
+                switch (ObjDesc->Reference.Class)
                 {
-                    return_ACPI_STATUS (AE_AML_BAD_OPCODE);
-                }
+                case ACPI_REFCLASS_DEBUG:
 
-                switch (ObjDesc->Reference.Opcode)
-                {
-                case AML_DEBUG_OP:
                     TargetOp = AML_DEBUG_OP;
 
                     /*lint -fallthrough */
 
-                case AML_INDEX_OP:
-                case AML_REF_OF_OP:
-                case AML_ARG_OP:
-                case AML_LOCAL_OP:
-                case AML_LOAD_OP: /* DdbHandle from LOAD_OP or LOAD_TABLE_OP */
-                case AML_INT_NAMEPATH_OP: /* Reference to a named object */
+                case ACPI_REFCLASS_ARG:
+                case ACPI_REFCLASS_LOCAL:
+                case ACPI_REFCLASS_INDEX:
+                case ACPI_REFCLASS_REFOF:
+                case ACPI_REFCLASS_TABLE:    /* DdbHandle from LOAD_OP or LOAD_TABLE_OP */
+                case ACPI_REFCLASS_NAME:     /* Reference to a named object */
 
-                    ACPI_DEBUG_ONLY_MEMBERS (ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
-                        "Operand is a Reference, RefOpcode [%s]\n",
-                        (AcpiPsGetOpcodeInfo (ObjDesc->Reference.Opcode))->Name)));
+                    ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+                        "Operand is a Reference, Class [%s] %2.2X\n",
+                        AcpiUtGetReferenceName (ObjDesc),
+                        ObjDesc->Reference.Class));
                     break;
 
                 default:
+
                     ACPI_ERROR ((AE_INFO,
-                        "Operand is a Reference, Unknown Reference Opcode: %X",
-                        ObjDesc->Reference.Opcode));
+                        "Unknown Reference Class %2.2X in %p",
+                        ObjDesc->Reference.Class, ObjDesc));
 
                     return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
                 }
@@ -359,8 +355,7 @@ AcpiExResolveOperands (
 
             /* Invalid descriptor */
 
-            ACPI_ERROR ((AE_INFO,
-                "Invalid descriptor %p [%s]",
+            ACPI_ERROR ((AE_INFO, "Invalid descriptor %p [%s]",
                 ObjDesc, AcpiUtGetDescriptorName (ObjDesc)));
 
             return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
@@ -431,7 +426,7 @@ AcpiExResolveOperands (
              */
             if ((Opcode == AML_STORE_OP) &&
                 (ACPI_GET_OBJECT_TYPE (*StackPtr) == ACPI_TYPE_LOCAL_REFERENCE) &&
-                ((*StackPtr)->Reference.Opcode == AML_INDEX_OP))
+                ((*StackPtr)->Reference.Class == ACPI_REFCLASS_INDEX))
             {
                 goto NextOperand;
             }

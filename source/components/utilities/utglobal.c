@@ -119,7 +119,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "amlcode.h"
 
 ACPI_EXPORT_SYMBOL (AcpiGbl_FADT)
 
@@ -674,28 +673,43 @@ AcpiUtGetDescriptorName (
 
 /* Printable names of reference object sub-types */
 
+static const char           *AcpiGbl_RefClassNames[] =
+{
+    /* 00 */ "Local",
+    /* 01 */ "Argument",
+    /* 02 */ "RefOf",
+    /* 03 */ "Index",
+    /* 04 */ "DdbHandle",
+    /* 05 */ "Named Object",
+    /* 06 */ "Debug"
+};
+
 const char *
 AcpiUtGetReferenceName (
     ACPI_OPERAND_OBJECT     *Object)
 {
 
-    switch (Object->Reference.Opcode)
+    if (!Object)
     {
-    case AML_INT_NAMEPATH_OP:
-        return ("Name");
-
-    case AML_LOAD_OP:
-        return ("DDB-Handle");
-
-    case AML_REF_OF_OP:
-        return ("RefOf");
-
-    case AML_INDEX_OP:
-        return ("Index");
-
-    default:
-        return ("Unknown");
+        return ("NULL Object");
     }
+
+    if (ACPI_GET_DESCRIPTOR_TYPE (Object) != ACPI_DESC_TYPE_OPERAND)
+    {
+        return ("Not an Operand object");
+    }
+
+    if (Object->Common.Type != ACPI_TYPE_LOCAL_REFERENCE)
+    {
+        return ("Not a Reference object");
+    }
+
+    if (Object->Reference.Class > ACPI_REFCLASS_MAX)
+    {
+        return ("Unknown Reference class");
+    }
+
+    return (AcpiGbl_RefClassNames[Object->Reference.Class]);
 }
 
 

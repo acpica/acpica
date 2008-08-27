@@ -114,12 +114,10 @@
  *
  *****************************************************************************/
 
-
 #define __RSCREATE_C__
 
 #include "acpi.h"
 #include "acresrc.h"
-#include "amlcode.h"
 #include "acnamesp.h"
 
 #define _COMPONENT          ACPI_RESOURCES
@@ -377,11 +375,11 @@ AcpiRsCreatePciRoutingTable (
             {
             case ACPI_TYPE_LOCAL_REFERENCE:
 
-                if (ObjDesc->Reference.Opcode != AML_INT_NAMEPATH_OP)
+                if (ObjDesc->Reference.Class != ACPI_REFCLASS_NAME)
                 {
                     ACPI_ERROR ((AE_INFO,
-                        "(PRT[%X].Source) Need name, found reference op %X",
-                        Index, ObjDesc->Reference.Opcode));
+                        "(PRT[%X].Source) Need name, found Reference Class %X",
+                        Index, ObjDesc->Reference.Class));
                     return_ACPI_STATUS (AE_BAD_DATA);
                 }
 

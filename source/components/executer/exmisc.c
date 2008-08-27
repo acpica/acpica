@@ -170,11 +170,11 @@ AcpiExGetObjectReference (
         /*
          * Must be a reference to a Local or Arg
          */
-        switch (ObjDesc->Reference.Opcode)
+        switch (ObjDesc->Reference.Class)
         {
-        case AML_LOCAL_OP:
-        case AML_ARG_OP:
-        case AML_DEBUG_OP:
+        case ACPI_REFCLASS_LOCAL:
+        case ACPI_REFCLASS_ARG:
+        case ACPI_REFCLASS_DEBUG:
 
             /* The referenced object is the pseudo-node for the local/arg */
 
@@ -183,8 +183,8 @@ AcpiExGetObjectReference (
 
         default:
 
-            ACPI_ERROR ((AE_INFO, "Unknown Reference opcode %X",
-                ObjDesc->Reference.Opcode));
+            ACPI_ERROR ((AE_INFO, "Unknown Reference Class %2.2X",
+                ObjDesc->Reference.Class));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
         break;
@@ -215,7 +215,7 @@ AcpiExGetObjectReference (
         return_ACPI_STATUS (AE_NO_MEMORY);
     }
 
-    ReferenceObj->Reference.Opcode = AML_REF_OF_OP;
+    ReferenceObj->Reference.Class = ACPI_REFCLASS_REFOF;
     ReferenceObj->Reference.Object = ReferencedObj;
     *ReturnDesc = ReferenceObj;
 

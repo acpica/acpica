@@ -122,7 +122,6 @@
 #include "acdispat.h"
 #include "acinterp.h"
 #include "acnamesp.h"
-#include "acparser.h"
 
 
 #define _COMPONENT          ACPI_EXECUTER
@@ -230,7 +229,7 @@ AcpiExResolveObjectToValue (
     ACPI_STATUS             Status = AE_OK;
     ACPI_OPERAND_OBJECT     *StackDesc;
     ACPI_OPERAND_OBJECT     *ObjDesc = NULL;
-    UINT16                  Opcode;
+    UINT8                   RefType;
 
 
     ACPI_FUNCTION_TRACE (ExResolveObjectToValue);
@@ -244,26 +243,26 @@ AcpiExResolveObjectToValue (
     {
     case ACPI_TYPE_LOCAL_REFERENCE:
 
-        Opcode = StackDesc->Reference.Opcode;
+        RefType = StackDesc->Reference.Class;
 
-        switch (Opcode)
+        switch (RefType)
         {
-        case AML_LOCAL_OP:
-        case AML_ARG_OP:
+        case ACPI_REFCLASS_LOCAL:
+        case ACPI_REFCLASS_ARG:
 
             /*
              * Get the local from the method's state info
              * Note: this increments the local's object reference count
              */
-            Status = AcpiDsMethodDataGetValue (Opcode,
-                            StackDesc->Reference.Offset, WalkState, &ObjDesc);
+            Status = AcpiDsMethodDataGetValue (RefType,
+                            StackDesc->Reference.Value, WalkState, &ObjDesc);
             if (ACPI_FAILURE (Status))
             {
                 return_ACPI_STATUS (Status);
             }
 
             ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Arg/Local %X] ValueObj is %p\n",
-                StackDesc->Reference.Offset, ObjDesc));
+                StackDesc->Reference.Value, ObjDesc));
 
             /*
              * Now we can delete the original Reference Object and
@@ -274,7 +273,7 @@ AcpiExResolveObjectToValue (
             break;
 
 
-        case AML_INDEX_OP:
+        case ACPI_REFCLASS_INDEX:
 
             switch (StackDesc->Reference.TargetType)
             {
@@ -335,15 +334,15 @@ AcpiExResolveObjectToValue (
             break;
 
 
-        case AML_REF_OF_OP:
-        case AML_DEBUG_OP:
-        case AML_LOAD_OP:
+        case ACPI_REFCLASS_REFOF:
+        case ACPI_REFCLASS_DEBUG:
+        case ACPI_REFCLASS_TABLE:
 
             /* Just leave the object as-is, do not dereference */
 
             break;
 
-        case AML_INT_NAMEPATH_OP:   /* Reference to a named object */
+        case ACPI_REFCLASS_NAME:   /* Reference to a named object */
 
             /* Dereference the name */
 
@@ -368,8 +367,7 @@ AcpiExResolveObjectToValue (
         default:
 
             ACPI_ERROR ((AE_INFO,
-                "Unknown Reference opcode %X (%s) in %p",
-                Opcode, AcpiPsGetOpcodeName (Opcode), StackDesc));
+                "Unknown Reference type %X in %p", RefType, StackDesc));
             Status = AE_AML_INTERNAL;
             break;
         }
@@ -484,14 +482,14 @@ AcpiExResolveMultiple (
      */
     while (ACPI_GET_OBJECT_TYPE (ObjDesc) == ACPI_TYPE_LOCAL_REFERENCE)
     {
-        switch (ObjDesc->Reference.Opcode)
+        switch (ObjDesc->Reference.Class)
         {
-        case AML_REF_OF_OP:
-        case AML_INT_NAMEPATH_OP:
+        case ACPI_REFCLASS_REFOF:
+        case ACPI_REFCLASS_NAME:
 
             /* Dereference the reference pointer */
 
-            if (ObjDesc->Reference.Opcode == AML_REF_OF_OP)
+            if (ObjDesc->Reference.Class == ACPI_REFCLASS_REFOF)
             {
                 Node = ObjDesc->Reference.Object;
             }
@@ -530,7 +528,7 @@ AcpiExResolveMultiple (
             break;
 
 
-        case AML_INDEX_OP:
+        case ACPI_REFCLASS_INDEX:
 
             /* Get the type of this reference (index into another object) */
 
@@ -558,19 +556,19 @@ AcpiExResolveMultiple (
             break;
 
 
-        case AML_LOAD_OP:
+        case ACPI_REFCLASS_TABLE:
 
             Type = ACPI_TYPE_DDB_HANDLE;
             goto Exit;
 
 
-        case AML_LOCAL_OP:
-        case AML_ARG_OP:
+        case ACPI_REFCLASS_LOCAL:
+        case ACPI_REFCLASS_ARG:
 
             if (ReturnDesc)
             {
-                Status = AcpiDsMethodDataGetValue (ObjDesc->Reference.Opcode,
-                            ObjDesc->Reference.Offset, WalkState, &ObjDesc);
+                Status = AcpiDsMethodDataGetValue (ObjDesc->Reference.Class,
+                            ObjDesc->Reference.Value, WalkState, &ObjDesc);
                 if (ACPI_FAILURE (Status))
                 {
                     return_ACPI_STATUS (Status);
@@ -579,8 +577,8 @@ AcpiExResolveMultiple (
             }
             else
             {
-                Status = AcpiDsMethodDataGetNode (ObjDesc->Reference.Opcode,
-                            ObjDesc->Reference.Offset, WalkState, &Node);
+                Status = AcpiDsMethodDataGetNode (ObjDesc->Reference.Class,
+                            ObjDesc->Reference.Value, WalkState, &Node);
                 if (ACPI_FAILURE (Status))
                 {
                     return_ACPI_STATUS (Status);
@@ -596,7 +594,7 @@ AcpiExResolveMultiple (
             break;
 
 
-        case AML_DEBUG_OP:
+        case ACPI_REFCLASS_DEBUG:
 
             /* The Debug Object is of type "DebugObject" */
 
@@ -607,8 +605,7 @@ AcpiExResolveMultiple (
         default:
 
             ACPI_ERROR ((AE_INFO,
-                "Unknown Reference subtype %X",
-                ObjDesc->Reference.Opcode));
+                "Unknown Reference Class %2.2X", ObjDesc->Reference.Class));
             return_ACPI_STATUS (AE_AML_INTERNAL);
         }
     }

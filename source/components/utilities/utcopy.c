@@ -117,7 +117,6 @@
 #define __UTCOPY_C__
 
 #include "acpi.h"
-#include "amlcode.h"
 #include "acnamesp.h"
 
 
@@ -269,40 +268,47 @@ AcpiUtCopyIsimpleToEsimple (
 
         /* This is an object reference. */
 
-        switch (InternalObject->Reference.Opcode)
+        switch (InternalObject->Reference.Class)
         {
-        case AML_INT_NAMEPATH_OP:
+        case ACPI_REFCLASS_NAME:
 
-            /* For namepath, return the object handle ("reference") */
-
-        default:
-
-            /* We are referring to the namespace node */
-
+            /*
+             * For namepath, return the object handle ("reference")
+             * We are referring to the namespace node
+             */
             ExternalObject->Reference.Handle =
                 InternalObject->Reference.Node;
             ExternalObject->Reference.ActualType =
                 AcpiNsGetType (InternalObject->Reference.Node);
             break;
+
+        default:
+
+            /* All other reference types are unsupported */
+
+            return_ACPI_STATUS (AE_TYPE);
         }
         break;
 
 
     case ACPI_TYPE_PROCESSOR:
 
-        ExternalObject->Processor.ProcId      = InternalObject->Processor.ProcId;
-        ExternalObject->Processor.PblkAddress = InternalObject->Processor.Address;
-        ExternalObject->Processor.PblkLength  = InternalObject->Processor.Length;
+        ExternalObject->Processor.ProcId =
+            InternalObject->Processor.ProcId;
+        ExternalObject->Processor.PblkAddress =
+            InternalObject->Processor.Address;
+        ExternalObject->Processor.PblkLength =
+            InternalObject->Processor.Length;
         break;
 
 
     case ACPI_TYPE_POWER:
 
         ExternalObject->PowerResource.SystemLevel =
-                            InternalObject->PowerResource.SystemLevel;
+            InternalObject->PowerResource.SystemLevel;
 
         ExternalObject->PowerResource.ResourceOrder =
-                            InternalObject->PowerResource.ResourceOrder;
+            InternalObject->PowerResource.ResourceOrder;
         break;
 
 
@@ -310,7 +316,8 @@ AcpiUtCopyIsimpleToEsimple (
         /*
          * There is no corresponding external object type
          */
-        ACPI_ERROR ((AE_INFO, "Unsupported object type, cannot convert to external object: %s",
+        ACPI_ERROR ((AE_INFO,
+            "Unsupported object type, cannot convert to external object: %s",
             AcpiUtGetTypeName (ACPI_GET_OBJECT_TYPE (InternalObject))));
 
         return_ACPI_STATUS (AE_SUPPORT);
@@ -639,7 +646,7 @@ AcpiUtCopyEsimpleToIsimple (
 
         /* TBD: should validate incoming handle */
 
-        InternalObject->Reference.Opcode = AML_INT_NAMEPATH_OP;
+        InternalObject->Reference.Class = ACPI_REFCLASS_NAME;
         InternalObject->Reference.Node = ExternalObject->Reference.Handle;
         break;
 
@@ -862,11 +869,11 @@ AcpiUtCopySimpleObject (
          * We copied the reference object, so we now must add a reference
          * to the object pointed to by the reference
          *
-         * DDBHandle reference (from Load/LoadTable is a special reference,
-         * it's Reference.Object is the table index, so does not need to
+         * DDBHandle reference (from Load/LoadTable) is a special reference,
+         * it does not have a Reference.Object, so does not need to
          * increase the reference count
          */
-        if (SourceDesc->Reference.Opcode == AML_LOAD_OP)
+        if (SourceDesc->Reference.Class == ACPI_REFCLASS_TABLE)
         {
             break;
         }

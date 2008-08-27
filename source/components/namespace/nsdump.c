@@ -119,7 +119,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "acparser.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -442,8 +441,7 @@ AcpiNsDumpOneObject (
 
         case ACPI_TYPE_LOCAL_REFERENCE:
 
-            AcpiOsPrintf ("[%s]\n",
-                AcpiPsGetOpcodeName (ObjDesc->Reference.Opcode));
+            AcpiOsPrintf ("[%s]\n", AcpiUtGetReferenceName (ObjDesc));
             break;
 
 

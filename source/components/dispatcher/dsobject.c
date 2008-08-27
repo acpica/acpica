@@ -839,14 +839,14 @@ AcpiDsInitObjectFromOp (
         {
         case AML_TYPE_LOCAL_VARIABLE:
 
-            /* Split the opcode into a base opcode + offset */
+            /* Local ID (0-7) is (AML opcode - base AML_LOCAL_OP) */
 
-            ObjDesc->Reference.Opcode = AML_LOCAL_OP;
-            ObjDesc->Reference.Offset = Opcode - AML_LOCAL_OP;
+            ObjDesc->Reference.Value = Opcode - AML_LOCAL_OP;
+            ObjDesc->Reference.Class = ACPI_REFCLASS_LOCAL;
 
 #ifndef ACPI_NO_METHOD_EXECUTION
-            Status = AcpiDsMethodDataGetNode (AML_LOCAL_OP,
-                        ObjDesc->Reference.Offset, WalkState,
+            Status = AcpiDsMethodDataGetNode (ACPI_REFCLASS_LOCAL,
+                        ObjDesc->Reference.Value, WalkState,
                         ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE,
                             &ObjDesc->Reference.Object));
 #endif
@@ -855,30 +855,43 @@ AcpiDsInitObjectFromOp (
 
         case AML_TYPE_METHOD_ARGUMENT:
 
-            /* Split the opcode into a base opcode + offset */
+            /* Arg ID (0-6) is (AML opcode - base AML_ARG_OP) */
 
-            ObjDesc->Reference.Opcode = AML_ARG_OP;
-            ObjDesc->Reference.Offset = Opcode - AML_ARG_OP;
+            ObjDesc->Reference.Value = Opcode - AML_ARG_OP;
+            ObjDesc->Reference.Class = ACPI_REFCLASS_ARG;
 
 #ifndef ACPI_NO_METHOD_EXECUTION
-            Status = AcpiDsMethodDataGetNode (AML_ARG_OP,
-                        ObjDesc->Reference.Offset, WalkState,
+            Status = AcpiDsMethodDataGetNode (ACPI_REFCLASS_ARG,
+                        ObjDesc->Reference.Value, WalkState,
                         ACPI_CAST_INDIRECT_PTR (ACPI_NAMESPACE_NODE,
                             &ObjDesc->Reference.Object));
 #endif
             break;
 
-        default: /* Other literals, etc.. */
+        default: /* Object name or Debug object */
 
-            if (Op->Common.AmlOpcode == AML_INT_NAMEPATH_OP)
+            switch (Op->Common.AmlOpcode)
             {
+            case AML_INT_NAMEPATH_OP:
+
                 /* Node was saved in Op */
 
                 ObjDesc->Reference.Node = Op->Common.Node;
                 ObjDesc->Reference.Object = Op->Common.Node->Object;
-            }
+                ObjDesc->Reference.Class = ACPI_REFCLASS_NAME;
+                break;
 
-            ObjDesc->Reference.Opcode = Opcode;
+            case AML_DEBUG_OP:
+
+                ObjDesc->Reference.Class = ACPI_REFCLASS_DEBUG;
+                break;
+
+            default:
+
+                ACPI_ERROR ((AE_INFO,
+                    "Unimplemented reference type for AML opcode: %4.4X", Opcode));
+                return_ACPI_STATUS (AE_AML_OPERAND_TYPE);
+            }
             break;
         }
         break;

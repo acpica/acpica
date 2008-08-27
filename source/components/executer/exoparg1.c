@@ -969,16 +969,16 @@ AcpiExOpcode_1A_0T_1R (
                  *
                  * Must resolve/dereference the local/arg reference first
                  */
-                switch (Operand[0]->Reference.Opcode)
+                switch (Operand[0]->Reference.Class)
                 {
-                case AML_LOCAL_OP:
-                case AML_ARG_OP:
+                case ACPI_REFCLASS_LOCAL:
+                case ACPI_REFCLASS_ARG:
 
                     /* Set Operand[0] to the value of the local/arg */
 
                     Status = AcpiDsMethodDataGetValue (
-                                Operand[0]->Reference.Opcode,
-                                Operand[0]->Reference.Offset,
+                                Operand[0]->Reference.Class,
+                                Operand[0]->Reference.Value,
                                 WalkState, &TempDesc);
                     if (ACPI_FAILURE (Status))
                     {
@@ -993,7 +993,7 @@ AcpiExOpcode_1A_0T_1R (
                     Operand[0] = TempDesc;
                     break;
 
-                case AML_REF_OF_OP:
+                case ACPI_REFCLASS_REFOF:
 
                     /* Get the object to which the reference refers */
 
@@ -1068,9 +1068,9 @@ AcpiExOpcode_1A_0T_1R (
              * This must be a reference object produced by either the
              * Index() or RefOf() operator
              */
-            switch (Operand[0]->Reference.Opcode)
+            switch (Operand[0]->Reference.Class)
             {
-            case AML_INDEX_OP:
+            case ACPI_REFCLASS_INDEX:
 
                 /*
                  * The target type for the Index operator must be
@@ -1103,7 +1103,7 @@ AcpiExOpcode_1A_0T_1R (
                      * reference to the buffer itself.
                      */
                     ReturnDesc->Integer.Value =
-                        TempDesc->Buffer.Pointer[Operand[0]->Reference.Offset];
+                        TempDesc->Buffer.Pointer[Operand[0]->Reference.Value];
                     break;
 
 
@@ -1124,7 +1124,7 @@ AcpiExOpcode_1A_0T_1R (
                 default:
 
                     ACPI_ERROR ((AE_INFO,
-                        "Unknown Index TargetType %X in obj %p",
+                        "Unknown Index TargetType %X in reference object %p",
                         Operand[0]->Reference.TargetType, Operand[0]));
                     Status = AE_AML_OPERAND_TYPE;
                     goto Cleanup;
@@ -1132,7 +1132,7 @@ AcpiExOpcode_1A_0T_1R (
                 break;
 
 
-            case AML_REF_OF_OP:
+            case ACPI_REFCLASS_REFOF:
 
                 ReturnDesc = Operand[0]->Reference.Object;
 
@@ -1151,8 +1151,8 @@ AcpiExOpcode_1A_0T_1R (
 
             default:
                 ACPI_ERROR ((AE_INFO,
-                    "Unknown opcode in reference(%p) - %X",
-                    Operand[0], Operand[0]->Reference.Opcode));
+                    "Unknown class in reference(%p) - %2.2X",
+                    Operand[0], Operand[0]->Reference.Class));
 
                 Status = AE_TYPE;
                 goto Cleanup;

@@ -260,6 +260,13 @@ AcpiDbGenerateGpe (
     char                    *GpeArg,
     char                    *BlockArg);
 
+void
+AcpiDbCheckPredefinedNames (
+    void);
+
+void
+AcpiDbBatchExecute (
+    void);
 
 /*
  * dbdisply - debug display commands

@@ -118,8 +118,8 @@
 
 #include "acpi.h"
 #include "acresrc.h"
-#include "amlcode.h"
 #include "acnamesp.h"
+
 
 #define _COMPONENT          ACPI_RESOURCES
         ACPI_MODULE_NAME    ("rscalc")
@@ -676,8 +676,8 @@ AcpiRsGetPciRoutingTableLength (
                 ((ACPI_TYPE_LOCAL_REFERENCE ==
                     ACPI_GET_OBJECT_TYPE (*SubObjectList)) &&
 
-                    ((*SubObjectList)->Reference.Opcode ==
-                        AML_INT_NAMEPATH_OP))))
+                    ((*SubObjectList)->Reference.Class ==
+                        ACPI_REFCLASS_NAME))))
             {
                 NameFound = TRUE;
             }

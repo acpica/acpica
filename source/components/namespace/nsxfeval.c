@@ -121,7 +121,6 @@
 #include "acpi.h"
 #include "acnamesp.h"
 #include "acinterp.h"
-#include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_NAMESPACE
@@ -505,14 +504,14 @@ AcpiNsResolveReferences (
      * (AML_LOAD_OP) cannot be dereferenced, nor can it be converted to
      * an ACPI_OBJECT.
      */
-    switch (Info->ReturnObject->Reference.Opcode)
+    switch (Info->ReturnObject->Reference.Class)
     {
-    case AML_INDEX_OP:
+    case ACPI_REFCLASS_INDEX:
 
         ObjDesc = *(Info->ReturnObject->Reference.Where);
         break;
 
-    case AML_REF_OF_OP:
+    case ACPI_REFCLASS_REFOF:
 
         Node = Info->ReturnObject->Reference.Object;
         if (Node)

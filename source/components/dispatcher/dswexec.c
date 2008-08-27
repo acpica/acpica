@@ -536,10 +536,10 @@ AcpiDsExecEndOp (
                 (WalkState->Opcode == AML_STORE_OP) &&
                 (WalkState->Operands[0]->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
                 (WalkState->Operands[1]->Common.Type == ACPI_TYPE_LOCAL_REFERENCE) &&
-                (WalkState->Operands[0]->Reference.Opcode ==
-                 WalkState->Operands[1]->Reference.Opcode) &&
-                (WalkState->Operands[0]->Reference.Offset ==
-                 WalkState->Operands[1]->Reference.Offset))
+                (WalkState->Operands[0]->Reference.Class ==
+                 WalkState->Operands[1]->Reference.Class) &&
+                (WalkState->Operands[0]->Reference.Value ==
+                 WalkState->Operands[1]->Reference.Value))
             {
                 Status = AE_OK;
             }

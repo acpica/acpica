@@ -117,7 +117,6 @@
 
 #include "acpi.h"
 #include "acdispat.h"
-#include "amlcode.h"
 #include "acnamesp.h"
 #include "acevents.h"
 #include "acdebug.h"
@@ -943,7 +942,7 @@ AcpiDbSetMethodData (
             goto Cleanup;
         }
 
-        Status = AcpiDsStoreObjectToLocal (AML_ARG_OP, Index, ObjDesc,
+        Status = AcpiDsStoreObjectToLocal (ACPI_REFCLASS_ARG, Index, ObjDesc,
                     WalkState);
         if (ACPI_FAILURE (Status))
         {
@@ -966,7 +965,7 @@ AcpiDbSetMethodData (
             goto Cleanup;
         }
 
-        Status = AcpiDsStoreObjectToLocal (AML_LOCAL_OP, Index, ObjDesc,
+        Status = AcpiDsStoreObjectToLocal (ACPI_REFCLASS_LOCAL, Index, ObjDesc,
                     WalkState);
         if (ACPI_FAILURE (Status))
         {

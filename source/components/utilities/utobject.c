@@ -118,7 +118,6 @@
 
 #include "acpi.h"
 #include "acnamesp.h"
-#include "amlcode.h"
 
 
 #define _COMPONENT          ACPI_UTILITIES
@@ -612,9 +611,9 @@ AcpiUtGetSimpleObjectSize (
 
     case ACPI_TYPE_LOCAL_REFERENCE:
 
-        switch (InternalObject->Reference.Opcode)
+        switch (InternalObject->Reference.Class)
         {
-        case AML_INT_NAMEPATH_OP:
+        case ACPI_REFCLASS_NAME:
 
             /*
              * Get the actual length of the full pathname to this object.
@@ -637,9 +636,9 @@ AcpiUtGetSimpleObjectSize (
              * required eventually.
              */
             ACPI_ERROR ((AE_INFO, "Cannot convert to external object - "
-                "unsupported Reference type [%s] %X in object %p",
+                "unsupported Reference Class [%s] %X in object %p",
                 AcpiUtGetReferenceName (InternalObject),
-                InternalObject->Reference.Opcode, InternalObject));
+                InternalObject->Reference.Class, InternalObject));
             Status = AE_TYPE;
             break;
         }
