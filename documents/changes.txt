@@ -1,4 +1,72 @@
 ----------------------------------------
+29 August 2008. Summary of changes for version 20080829:
+
+1) ACPI CA Core Subsystem:
+
+Completed a major cleanup of the internal ACPI_OPERAND_OBJECT of type 
+Reference. Changes include the elimination of cheating on the Object field 
+for the DdbHandle subtype, addition of a reference class field to 
+differentiate the various reference types (instead of an AML opcode), and the 
+cleanup of debug output for this object. Lin Ming, Bob Moore. BZ 723
+
+Reduce an error to a warning for an incorrect method argument count. 
+Previously aborted with an error if too few arguments were passed to a 
+control method via the external ACPICA interface. Now issue a warning instead 
+and continue. Handles the case where the method inadvertently declares too 
+many arguments, but does not actually use the extra ones. Applies mainly to 
+the predefined methods. Lin Ming. Linux BZ 11032.
+
+Disallow the evaluation of named object types with no intrinsic value. Return 
+AE_TYPE for objects that have no value and therefore evaluation is undefined: 
+Device, Event, Mutex, Region, Thermal, and Scope. Previously, evaluation of 
+these types were allowed, but an exception would be generated at some point 
+during the evaluation. Now, the error is generated up front.
+
+Fixed a possible memory leak in the AcpiNsGetExternalPathname function 
+(nsnames.c). Fixes a leak in the error exit path.
+
+Removed the obsolete debug levels ACPI_DB_WARN and ACPI_DB_ERROR. These debug 
+levels were made obsolete by the ACPI_WARNING, ACPI_ERROR, and ACPI_EXCEPTION 
+interfaces. Also added ACPI_DB_EVENTS to correspond with the existing 
+ACPI_LV_EVENTS.
+
+Removed obsolete and/or unused exception codes from the acexcep.h header. 
+There is the possibility that certain device drivers may be affected if they 
+use any of these exceptions.
+
+The ACPICA documentation has been added to the public git source tree, under 
+acpica/documents. Included are the ACPICA programmer reference, the iASL 
+compiler reference, and the changes.txt release logfile.
+
+Example Code and Data Size: These are the sizes for the OS-independent 
+acpica.lib produced by the Microsoft Visual C++ 6.0 32-bit compiler. The 
+debug version of the code includes the debug output trace mechanism and has a 
+much larger code and data size.
+
+  Previous Release:
+    Non-Debug Version:  79.7K Code, 16.4K Data,  96.1K Total
+    Debug Version:     153.9K Code, 48.4K Data, 202.3K Total
+  Current Release:
+    Non-Debug Version:  79.7K Code, 16.4K Data,  96.1K Total
+    Debug Version:     153.7K Code, 48.2K Data, 201.9K Total
+
+2) iASL Compiler/Disassembler and Tools:
+
+Allow multiple argument counts for the predefined _SCP method. ACPI 3.0 
+defines _SCP with 3 arguments. Previous versions defined it with only 1 
+argument. iASL now allows both definitions.
+
+iASL/disassembler: avoid infinite loop on bad ACPI tables. Check for zero-
+length subtables when disassembling ACPI tables. Also fixed a couple of 
+errors where a full 16-bit table type field was not extracted from the input 
+properly.
+
+acpisrc: Improve comment counting mechanism for generating source code 
+statistics. Count first and last lines of multi-line comments as whitespace, 
+not comment lines. Handle Linux legal header in addition to standard acpica 
+header.
+
+----------------------------------------
 
 29 July 2008. Summary of changes for version 20080729:
 
