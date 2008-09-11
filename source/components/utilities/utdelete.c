@@ -696,10 +696,19 @@ AcpiUtUpdateObjectReference (
 
     return_ACPI_STATUS (AE_OK);
 
+
 ErrorExit:
 
     ACPI_EXCEPTION ((AE_INFO, Status,
         "Could not update object reference count"));
+
+    /* Free any stacked Update State objects */
+
+    while (StateList)
+    {
+        State = AcpiUtPopGenericState (&StateList);
+        AcpiUtDeleteGenericState (State);
+    }
 
     return_ACPI_STATUS (Status);
 }

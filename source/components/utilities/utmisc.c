@@ -1237,6 +1237,13 @@ AcpiUtWalkPackageTree (
                                             State->Pkg.ThisTargetObj, 0);
             if (!State)
             {
+                /* Free any stacked Update State objects */
+
+                while (StateList)
+                {
+                    State = AcpiUtPopGenericState (&StateList);
+                    AcpiUtDeleteGenericState (State);
+                }
                 return_ACPI_STATUS (AE_NO_MEMORY);
             }
         }
