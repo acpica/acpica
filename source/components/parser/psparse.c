@@ -222,6 +222,7 @@ AcpiPsCompleteThisOp (
     ACPI_PARSE_OBJECT       *Next;
     const ACPI_OPCODE_INFO  *ParentInfo;
     ACPI_PARSE_OBJECT       *ReplacementOp = NULL;
+    ACPI_STATUS             Status = AE_OK;
 
 
     ACPI_FUNCTION_TRACE_PTR (PsCompleteThisOp, Op);
@@ -274,7 +275,7 @@ AcpiPsCompleteThisOp (
             ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
             if (!ReplacementOp)
             {
-                goto AllocateError;
+                Status = AE_NO_MEMORY;
             }
             break;
 
@@ -294,7 +295,7 @@ AcpiPsCompleteThisOp (
                 ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
                 if (!ReplacementOp)
                 {
-                    goto AllocateError;
+                    Status = AE_NO_MEMORY;
                 }
             }
             else if ((Op->Common.Parent->Common.AmlOpcode == AML_NAME_OP) &&
@@ -307,11 +308,13 @@ AcpiPsCompleteThisOp (
                     ReplacementOp = AcpiPsAllocOp (Op->Common.AmlOpcode);
                     if (!ReplacementOp)
                     {
-                        goto AllocateError;
+                        Status = AE_NO_MEMORY;
                     }
-
-                    ReplacementOp->Named.Data = Op->Named.Data;
-                    ReplacementOp->Named.Length = Op->Named.Length;
+                    else
+                    {
+                        ReplacementOp->Named.Data = Op->Named.Data;
+                        ReplacementOp->Named.Length = Op->Named.Length;
+                    }
                 }
             }
             break;
@@ -321,7 +324,7 @@ AcpiPsCompleteThisOp (
             ReplacementOp = AcpiPsAllocOp (AML_INT_RETURN_VALUE_OP);
             if (!ReplacementOp)
             {
-                goto AllocateError;
+                Status = AE_NO_MEMORY;
             }
         }
 
@@ -379,15 +382,7 @@ Cleanup:
     /* Now we can actually delete the subtree rooted at Op */
 
     AcpiPsDeleteParseTree (Op);
-    return_ACPI_STATUS (AE_OK);
-
-
-AllocateError:
-
-    /* Always delete the subtree, even on error */
-
-    AcpiPsDeleteParseTree (Op);
-    return_ACPI_STATUS (AE_NO_MEMORY);
+    return_ACPI_STATUS (Status);
 }
 
 
