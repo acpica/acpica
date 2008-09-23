@@ -262,8 +262,6 @@ AcpiDsMethodDataDeleteAll (
         }
     }
 
-    AcpiDsClearImplicitReturn (WalkState);
-
     return_VOID;
 }
 

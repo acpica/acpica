@@ -256,6 +256,10 @@ AcpiDsGetPredicateValue (
         Status = AE_CTRL_FALSE;
     }
 
+    /* Predicate can be used for an implicit return value */
+
+    (void) AcpiDsDoImplicitReturn (LocalObjDesc, WalkState, TRUE);
+
 
 Cleanup:
 

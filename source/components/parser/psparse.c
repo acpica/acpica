@@ -726,9 +726,10 @@ AcpiPsParseAml (
             }
             else
             {
-                /* On error, delete any return object */
+                /* On error, delete any return object or implicit return */
 
                 AcpiUtRemoveReference (PreviousWalkState->ReturnDesc);
+                AcpiDsClearImplicitReturn (PreviousWalkState);
             }
         }
 
