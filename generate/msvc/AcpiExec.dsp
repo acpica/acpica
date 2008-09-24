@@ -48,10 +48,10 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiExec/AcpiExec.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /map /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /map /machine:I386 /out:"/acpica/generate/msvc/AcpiExec/AcpiExec.exe"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
@@ -79,10 +79,10 @@ PostBuild_Cmds=copy acpiexec\acpiexec.exe ..\..\libraries	dir ..\..\libraries\ac
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo /o"AcpiExecDebug/AcpiExecDebug.bsc"
+# ADD BSC32 /nologo /o"AcpiExecDebug/AcpiExecDebug.bsc" /o"/acpica/generate/msvc/AcpiExecDebug/AcpiExecDebug.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 libcmtd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /out:"AcpiExecDebug\AcpiExecDebug.exe" /pdbtype:sept
+# ADD LINK32 libcmtd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /map /debug /machine:I386 /nodefaultlib:"libcmt.lib" /out:"AcpiExecDebug/AcpiExecDebug.exe" /pdbtype:sept /out:"/acpica/generate/msvc/AcpiExecDebug/AcpiExecDebug.exe"
 # SUBTRACT LINK32 /verbose
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -221,6 +221,10 @@ SOURCE=..\..\source\components\namespace\nsobject.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\namespace\nspredef.c
 # End Source File
 # Begin Source File
 
@@ -805,6 +809,10 @@ SOURCE=..\..\source\Include\acpiosxf.h
 # Begin Source File
 
 SOURCE=..\..\source\Include\acpixf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\include\acpredef.h
 # End Source File
 # Begin Source File
 

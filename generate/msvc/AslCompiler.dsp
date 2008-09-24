@@ -51,10 +51,11 @@ RSC=rc.exe
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
+# ADD BSC32 /o"/acpica/generate/msvc/AslCompiler/AslCompiler.bsc"
+# SUBTRACT BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /out:"AslCompiler\iasl.exe"
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /machine:I386 /out:"/acpica/generate/msvc/AslCompiler\iasl.exe"
 # SUBTRACT LINK32 /pdb:none /incremental:yes
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -83,10 +84,10 @@ PostBuild_Cmds=copy AslCompiler\iasl.exe ..\..\Libraries	dir ..\..\libraries\ias
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
+# ADD BSC32 /nologo /o"AslCompilerDebug/AslCompilerDebug.bsc" /o"/acpica/generate/msvc/AslCompilerDebug/AslCompiler.bsc"
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /map /debug /machine:I386 /out:"AslCompilerDebug\iasldebug.exe" /pdbtype:sept
+# ADD LINK32 ..\..\tools_3rd_party\BisonFlex\libflex.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /incremental:no /map /debug /machine:I386 /pdbtype:sept /out:"/acpica/generate/msvc/AslCompilerDebug/iasldebug.exe"
 # SUBTRACT LINK32 /verbose
 # Begin Special Build Tool
 SOURCE="$(InputPath)"

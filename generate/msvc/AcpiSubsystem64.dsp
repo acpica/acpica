@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /MT /Za /W4 /O1 /I "..\..\source\Include" /D "NDEBUG" /D "DRIVER" /D "_USE_INTEL_COMPILER" /D "ACPI_LIBRARY" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN64" /FR /FD /c
-# SUBTRACT CPP /Gy /YX
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -1383,6 +1383,10 @@ InputName=nsparse
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\namespace\nspredef.c
 # End Source File
 # Begin Source File
 
@@ -4151,6 +4155,10 @@ SOURCE=..\..\source\Include\acpiosxf.h
 # Begin Source File
 
 SOURCE=..\..\source\Include\acpixf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\include\acpredef.h
 # End Source File
 # Begin Source File
 

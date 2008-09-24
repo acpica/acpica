@@ -41,16 +41,16 @@ RSC=rc.exe
 # PROP Intermediate_Dir "AcpiSubsystem"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Gr /MT /Za /W4 /GX- /O1 /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
-# SUBTRACT CPP /Gy /YX
+# ADD CPP /nologo /Gr /MT /Za /W4 /O1 /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "NDEBUG" /D "_GEN" /D "DRIVER" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
+# ADD BSC32 /nologo /o"/acpica/generate/msvc/AcpiSubsystem/AcpiSubsystem.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"AcpiSubsystem\acpica.lib"
+# ADD LIB32 /nologo /out:"/acpica/generate/msvc/AcpiSubsystem/acpica.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
@@ -72,16 +72,15 @@ PostBuild_Cmds=copy AcpiSubsystem\acpica.lib ..\..\libraries	dir ..\..\libraries
 # PROP Intermediate_Dir "AcpiSubsystemDebug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Gr /MTd /Za /W4 /GX- /Oa /Og /Os /Oy /Gf /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
-# SUBTRACT CPP /Z<none>
+# ADD CPP /nologo /Gr /MTd /Za /W4 /Oa /Og /Os /Oy /Gf /I "..\..\source\Include" /D "ACPI_LIBRARY" /D "ACPI_FULL_DEBUG" /D "_WINDOWS" /D PROCESSOR_ARCHITECTURE=x86 /D "WIN32" /FR /FD /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
+# ADD BSC32 /nologo /o"AcpiSubsystemDebug/AcpiSubsystemDebug.bsc" /o"/acpica/generate/msvc/AcpiSubsystemDebug/AcpiSubsystem.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"AcpiSubsystemDebug\acpica_dbg.lib"
+# ADD LIB32 /nologo /out:"/acpica/generate/msvc/AcpiSubsystemDebug/acpica_dbg.lib"
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Checking existence of acpi/libraries directory
@@ -288,6 +287,10 @@ SOURCE=..\..\source\components\namespace\nsobject.c
 # Begin Source File
 
 SOURCE=..\..\source\COMPONENTS\NAMESPACE\nsparse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\components\namespace\nspredef.c
 # End Source File
 # Begin Source File
 
@@ -765,6 +768,10 @@ SOURCE=..\..\source\Include\acpiosxf.h
 # Begin Source File
 
 SOURCE=..\..\source\Include\acpixf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\source\include\acpredef.h
 # End Source File
 # Begin Source File
 
