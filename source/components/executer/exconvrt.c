@@ -638,8 +638,14 @@ AcpiExConvertToString (
         /*
          * Create a new string object and string buffer
          * (-1 because of extra separator included in StringLength from above)
+         * Allow creation of zero-length strings from zero-length buffers.
          */
-        ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) (StringLength - 1));
+        if (StringLength)
+        {
+            StringLength--;
+        }
+
+        ReturnDesc = AcpiUtCreateStringObject ((ACPI_SIZE) StringLength);
         if (!ReturnDesc)
         {
             return_ACPI_STATUS (AE_NO_MEMORY);
@@ -663,7 +669,10 @@ AcpiExConvertToString (
          * Null terminate the string
          * (overwrites final comma/space from above)
          */
-        NewBuf--;
+        if (ObjDesc->Buffer.Length)
+        {
+            NewBuf--;
+        }
         *NewBuf = 0;
         break;
 
