@@ -159,6 +159,7 @@ AcpiNsEvaluate (
     ACPI_EVALUATE_INFO      *Info)
 {
     ACPI_STATUS             Status;
+    ACPI_NAMESPACE_NODE     *Node;
 
 
     ACPI_FUNCTION_TRACE (NsEvaluate);
@@ -199,6 +200,8 @@ AcpiNsEvaluate (
 
     ACPI_DEBUG_PRINT ((ACPI_DB_NAMES, "%s [%p] Value %p\n", Info->Pathname,
         Info->ResolvedNode, AcpiNsGetAttachedObject (Info->ResolvedNode)));
+
+    Node = Info->ResolvedNode;
 
     /*
      * Two major cases here:
@@ -340,9 +343,35 @@ AcpiNsEvaluate (
         }
     }
 
-    /*
-     * Check if there is a return value that must be dealt with
-     */
+    /* Validation of return values for ACPI-predefined methods and objects */
+
+    if ((Status == AE_OK) || (Status == AE_CTRL_RETURN_VALUE))
+    {
+        /*
+         * If this is the first evaluation, check the return value. This
+         * ensures that any warnings will only be emitted during the very
+         * first evaluation of the object.
+         */
+        if (!(Node->Flags & ANOBJ_EVALUATED))
+        {
+            /*
+             * Check for a predefined ACPI name. If found, validate the
+             * returned object.
+             *
+             * Note: Ignore return status for now, emit warnings if there are
+             * problems with the returned object. May change later to abort
+             * the method on invalid return object.
+             */
+            (void) AcpiNsCheckPredefinedNames (Node, Info->ReturnObject);
+        }
+
+        /* Mark the node as having been evaluated */
+
+        Node->Flags |= ANOBJ_EVALUATED;
+    }
+
+    /* Check if there is a return value that must be dealt with */
+
     if (Status == AE_CTRL_RETURN_VALUE)
     {
         /* If caller does not want the return value, delete it */

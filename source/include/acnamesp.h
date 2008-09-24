@@ -309,6 +309,25 @@ AcpiNsEvaluate (
 
 
 /*
+ * nspredef - Support for predefined/reserved names
+ */
+ACPI_STATUS
+AcpiNsCheckPredefinedNames (
+    ACPI_NAMESPACE_NODE     *Node,
+    ACPI_OPERAND_OBJECT     *ReturnObject);
+
+const ACPI_PREDEFINED_INFO *
+AcpiNsCheckForPredefinedName (
+    ACPI_NAMESPACE_NODE     *Node);
+
+void
+AcpiNsCheckParameterCount (
+    char                        *Pathname,
+    ACPI_NAMESPACE_NODE         *Node,
+    const ACPI_PREDEFINED_INFO  *Info);
+
+
+/*
  * nsnames - Name and Scope manipulation
  */
 UINT32

@@ -314,6 +314,13 @@ AcpiDbDisplayArgumentObject (
     ACPI_OPERAND_OBJECT     *ObjDesc,
     ACPI_WALK_STATE         *WalkState);
 
+void
+AcpiDbCheckPredefinedNames (
+    void);
+
+void
+AcpiDbBatchExecute (
+    void);
 
 /*
  * dbexec - debugger control method execution
