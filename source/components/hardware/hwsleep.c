@@ -2,7 +2,6 @@
 /******************************************************************************
  *
  * Name: hwsleep.c - ACPI Hardware Sleep/Wake Interface
- *              $Revision: 1.89 $
  *
  *****************************************************************************/
 
@@ -430,7 +429,7 @@ AcpiEnterSleepState (
 
     /* Get current value of PM1A control */
 
-    Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL, 
+    Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL,
                 &PM1AControl);
     if (ACPI_FAILURE (Status))
     {
@@ -457,14 +456,14 @@ AcpiEnterSleepState (
 
     /* Write #1: fill in SLP_TYP data */
 
-    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL, 
+    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL,
                 PM1AControl);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL, 
+    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL,
                 PM1BControl);
     if (ACPI_FAILURE (Status))
     {
@@ -480,14 +479,14 @@ AcpiEnterSleepState (
 
     ACPI_FLUSH_CPU_CACHE ();
 
-    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL, 
+    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL,
                 PM1AControl);
     if (ACPI_FAILURE (Status))
     {
         return_ACPI_STATUS (Status);
     }
 
-    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL, 
+    Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL,
                 PM1BControl);
     if (ACPI_FAILURE (Status))
     {
@@ -653,7 +652,7 @@ AcpiLeaveSleepState (
 
         /* Get current value of PM1A control */
 
-        Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL, 
+        Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL,
                     &PM1AControl);
         if (ACPI_SUCCESS (Status))
         {
@@ -670,9 +669,9 @@ AcpiLeaveSleepState (
 
             /* Just ignore any errors */
 
-            (void) AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL, 
+            (void) AcpiHwRegisterWrite (ACPI_REGISTER_PM1A_CONTROL,
                             PM1AControl);
-            (void) AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL, 
+            (void) AcpiHwRegisterWrite (ACPI_REGISTER_PM1B_CONTROL,
                             PM1BControl);
         }
     }

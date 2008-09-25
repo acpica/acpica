@@ -1,7 +1,6 @@
 /******************************************************************************
  *
  * Name: acpredef - Information table for ACPI predefined methods and objects
- *              $Revision: 1.1 $
  *
  *****************************************************************************/
 
@@ -208,7 +207,7 @@ enum AcpiReturnPackageTypes
  * is saved here (rather than in a separate table) in order to minimize the
  * overall size of the stored data.
  */
-static const ACPI_PREDEFINED_INFO     PredefinedNames[] = 
+static const ACPI_PREDEFINED_INFO     PredefinedNames[] =
 {
     {"_AC0", 0, ACPI_RTYPE_INTEGER},
     {"_AC1", 0, ACPI_RTYPE_INTEGER},

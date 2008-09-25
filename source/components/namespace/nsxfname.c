@@ -2,7 +2,6 @@
  *
  * Module Name: nsxfname - Public interfaces to the ACPI subsystem
  *                         ACPI Namespace oriented interfaces
- *              $Revision: 1.113 $
  *
  *****************************************************************************/
 

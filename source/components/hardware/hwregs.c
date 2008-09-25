@@ -3,7 +3,6 @@
  *
  * Module Name: hwregs - Read/write access functions for the various ACPI
  *                       control and status registers.
- *              $Revision: 1.188 $
  *
  ******************************************************************************/
 
@@ -381,7 +380,7 @@ AcpiGetRegisterUnlocked (
 
     /* Read from the register */
 
-    Status = AcpiHwRegisterRead (BitRegInfo->ParentRegister, 
+    Status = AcpiHwRegisterRead (BitRegInfo->ParentRegister,
                 &RegisterValue);
 
     if (ACPI_SUCCESS (Status))
@@ -475,7 +474,7 @@ AcpiSetRegister (
 
     /* Always do a register read first so we can insert the new bits  */
 
-    Status = AcpiHwRegisterRead (BitRegInfo->ParentRegister, 
+    Status = AcpiHwRegisterRead (BitRegInfo->ParentRegister,
                 &RegisterValue);
     if (ACPI_FAILURE (Status))
     {
@@ -503,7 +502,7 @@ AcpiSetRegister (
                     BitRegInfo->BitPosition, BitRegInfo->AccessBitMask);
         if (Value)
         {
-            Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_STATUS, 
+            Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_STATUS,
                         (UINT16) Value);
             RegisterValue = 0;
         }
@@ -515,7 +514,7 @@ AcpiSetRegister (
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition,
             BitRegInfo->AccessBitMask, Value);
 
-        Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_ENABLE, 
+        Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_ENABLE,
                     (UINT16) RegisterValue);
         break;
 
@@ -533,14 +532,14 @@ AcpiSetRegister (
         ACPI_REGISTER_INSERT_VALUE (RegisterValue, BitRegInfo->BitPosition,
             BitRegInfo->AccessBitMask, Value);
 
-        Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_CONTROL, 
+        Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM1_CONTROL,
                     (UINT16) RegisterValue);
         break;
 
 
     case ACPI_REGISTER_PM2_CONTROL:
 
-        Status = AcpiHwRegisterRead (ACPI_REGISTER_PM2_CONTROL, 
+        Status = AcpiHwRegisterRead (ACPI_REGISTER_PM2_CONTROL,
                     &RegisterValue);
         if (ACPI_FAILURE (Status))
         {
@@ -558,7 +557,7 @@ AcpiSetRegister (
             RegisterValue,
             ACPI_FORMAT_UINT64 (AcpiGbl_FADT.XPm2ControlBlock.Address)));
 
-        Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM2_CONTROL, 
+        Status = AcpiHwRegisterWrite (ACPI_REGISTER_PM2_CONTROL,
                     (UINT8) (RegisterValue));
         break;
 
@@ -734,7 +733,7 @@ AcpiHwRegisterWrite (
 
         /* Perform a read first to preserve certain bits (per ACPI spec) */
 
-        Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_STATUS, 
+        Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_STATUS,
                     &ReadValue);
         if (ACPI_FAILURE (Status))
         {
@@ -780,7 +779,7 @@ AcpiHwRegisterWrite (
          *
          * Note: This includes SCI_EN, we never want to change this bit
          */
-        Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL, 
+        Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_CONTROL,
                     &ReadValue);
         if (ACPI_FAILURE (Status))
         {

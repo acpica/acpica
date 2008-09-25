@@ -2,7 +2,6 @@
 /******************************************************************************
  *
  * Module Name: hwgpe - Low level GPE enable/disable/clear functions
- *              $Revision: 1.76 $
  *
  *****************************************************************************/
 
@@ -127,7 +126,6 @@ static ACPI_STATUS
 AcpiHwEnableWakeupGpeBlock (
     ACPI_GPE_XRUPT_INFO     *GpeXruptInfo,
     ACPI_GPE_BLOCK_INFO     *GpeBlock);
-
 
 
 /******************************************************************************

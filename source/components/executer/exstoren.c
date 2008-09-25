@@ -3,7 +3,6 @@
  *
  * Module Name: exstoren - AML Interpreter object store support,
  *                        Store to Node (namespace object)
- *              $Revision: 1.72 $
  *
  *****************************************************************************/
 

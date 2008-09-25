@@ -2,7 +2,6 @@
 /******************************************************************************
  *
  * Module Name: astable - Tables used for source conversion
- *              $Revision: 1.22 $
  *
  *****************************************************************************/
 
@@ -620,14 +619,12 @@ ACPI_IDENTIFIER_TABLE       LinuxEliminateMacros[] = {
 ACPI_IDENTIFIER_TABLE       LinuxEliminateLines_C[] = {
 
     {"#define __"},
-    {"$Revision"},
     {NULL}
 };
 
 
 ACPI_IDENTIFIER_TABLE       LinuxEliminateLines_H[] = {
 
-    {"$Revision"},
     {NULL}
 };
 
@@ -745,8 +742,8 @@ ACPI_CONVERSION_TABLE       StatsConversionTable = {
 ACPI_STRING_TABLE           CustomReplacements[] = {
 
 
-    {"(c) 1999 - 2008",      "(c) 1999 - 2008",         REPLACE_WHOLE_WORD},
 #if 0
+    {"(c) 1999 - 2008",      "(c) 1999 - 2008",         REPLACE_WHOLE_WORD},
     {"AcpiTbSumTable", "AcpiTbSumTable",  REPLACE_WHOLE_WORD},
     {"ACPI_SIG_BOOT", "ACPI_SIG_BOOT",   REPLACE_WHOLE_WORD},
     {"ACPI_SIG_DBGP", "ACPI_SIG_DBGP",   REPLACE_WHOLE_WORD},
@@ -797,7 +794,7 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
     /* C source files */
 
     CustomReplacements,
-    NULL,
+    LinuxEliminateLines_H,
     NULL,
     NULL,
     NULL,
@@ -807,7 +804,7 @@ ACPI_CONVERSION_TABLE       CustomConversionTable = {
     /* C header files */
 
     CustomReplacements,
-    NULL,
+    LinuxEliminateLines_H,
     NULL,
     NULL,
     NULL,

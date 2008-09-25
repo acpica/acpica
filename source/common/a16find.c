@@ -2,7 +2,6 @@
  *
  * Module Name: a16find - 16-bit (real mode) routines to find ACPI
  *                        tables in memory
- *              $Revision: 1.43 $
  *
  *****************************************************************************/
 
