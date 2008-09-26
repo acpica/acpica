@@ -31,7 +31,7 @@
 /*
  * Bug 186:
  *
- * SUMMARY: The predicate value of If/While operations is not implicitly returned in slack mode
+ * SUMMARY: The predicate value of If/While operations is implicitly returned in slack mode
  */
 
 
@@ -82,8 +82,15 @@ Method(mf6d)
 
 	if (SLCK) {
 		CH03("", 0, 0x001, 0, 0)
-		if (LNotEqual(i000, 0xabcd0000)) {
-			err("", zFFF, 0x002, 0, 0, i000, 0xabcd0000)
+
+		//y901: Predicate generates Implicit Return since ACPICA release 20080926	
+		if (y901) {
+			Store(0, Local0)
+		} else {
+			Store(0xabcd0000, Local0)
+		}
+		if (LNotEqual(i000, Local0)) {
+			err("", zFFF, 0x002, 0, 0, i000, Local0)
 		}
 	} else {
 		CH07("", 0, 0xff, 0, 0x003, 0, 0)
@@ -99,8 +106,15 @@ Method(mf6d)
 
 	if (SLCK) {
 		CH03("", 0, 0x005, 0, 0)
-		if (LNotEqual(i000, 0xabcd0001)) {
-			err("", zFFF, 0x006, 0, 0, i000, 0xabcd0001)
+
+		//y901: Predicate generates Implicit Return since ACPICA release 20080926	
+		if (y901) {
+			Store(0, Local0)
+		} else {
+			Store(0xabcd0001, Local0)
+		}
+		if (LNotEqual(i000, Local0)) {
+			err("", zFFF, 0x006, 0, 0, i000, Local0)
 		}
 	} else {
 		CH07("", 0, 0xff, 0, 0x007, 0, 0)
@@ -116,8 +130,15 @@ Method(mf6d)
 
 	if (SLCK) {
 		CH03("", 0, 0x009, 0, 0)
-		if (LNotEqual(i000, 0xabcd0002)) {
-			err("", zFFF, 0x00a, 0, 0, i000, 0xabcd0002)
+
+		//y901: Predicate generates Implicit Return since ACPICA release 20080926	
+		if (y901) {
+			Store(0, Local0)
+		} else {
+			Store(0xabcd0002, Local0)
+		}
+		if (LNotEqual(i000, Local0)) {
+			err("", zFFF, 0x00a, 0, 0, i000, Local0)
 		}
 	} else {
 		CH07("", 0, 0xff, 0, 0x00b, 0, 0)

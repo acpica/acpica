@@ -560,7 +560,7 @@ Method(SET2, 1) {
 	Case (5) {
 		Store(0, y135)
 		Store(1, y900)
-		Store(0, y901)
+		Store(1, y901) // Predicate generates Implicit Return since ACPICA release 20080926
 		Store(1, FLG9)
 		Store(1, y263)
 		Store(1, y275)

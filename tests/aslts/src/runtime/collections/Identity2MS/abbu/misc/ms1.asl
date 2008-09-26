@@ -2345,8 +2345,15 @@ Method(ms23, 1)
 
 		if (SLCK) {
 			if (CH03(ts, z179, 0x096, 0, 0)) {return}
-			if (LNotEqual(i000, 0xabcd000f)) {
-				err(ts, z179, 0x097, 0, 0, i000, 0xabcd000f)
+
+			//y901: Predicate generates Implicit Return since ACPICA release 20080926
+			if (y901) {
+				Store(0, Local0)
+			} else {
+				Store(0xabcd000f, Local0)
+			}
+			if (LNotEqual(i000, Local0)) {
+				err(ts, z179, 0x097, 0, 0, i000, Local0)
 			}
 		} else {
 			CH04(ts, 0, 0xff, z179, 0x098, 0, 0)
@@ -2376,8 +2383,15 @@ Method(ms23, 1)
 
 		if (SLCK) {
 			if (CH03(ts, z179, 0x099, 0, 0)) {return}
-			if (LNotEqual(i000, 0xabcd000d)) {
-				err(ts, z179, 0x09a, 0, 0, i000, 0xabcd000d)
+
+			//y901: Predicate generates Implicit Return since ACPICA release 20080926
+			if (y901) {
+				Store(0, Local0)
+			} else {
+				Store(0xabcd000d, Local0)
+			}
+			if (LNotEqual(i000, Local0)) {
+				err(ts, z179, 0x09a, 0, 0, i000, Local0)
 			}
 		} else {
 			CH04(ts, 0, 0xff, z179, 0x09b, 0, 0)
@@ -2408,8 +2422,15 @@ Method(ms23, 1)
 
 		if (SLCK) {
 			if (CH03(ts, z179, 0x09c, 0, 0)) {return}
-			if (LNotEqual(i000, 0xabcd000e)) {
-				err(ts, z179, 0x09d, 0, 0, i000, 0xabcd000e)
+
+			//y901: Predicate generates Implicit Return since ACPICA release 20080926
+			if (y901) {
+				Store(0, Local0)
+			} else {
+				Store(0xabcd000e, Local0)
+			}
+			if (LNotEqual(i000, Local0)) {
+				err(ts, z179, 0x09d, 0, 0, i000, Local0)
 			}
 		} else {
 			CH04(ts, 0, 0xff, z179, 0x09e, 0, 0)
